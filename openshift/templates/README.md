@@ -48,11 +48,11 @@ Where APP_DEPLOYMENT_TAG used is dev, test, prod as set up in Jenkins instance.
 The deployment config uses the moe-gwells-tools namespace since that is where the image stream resides.
 
 
-# How to access Jenkins for gwells
+# How to access Jenkins for GWELLS
 
 - Login to https://jenkins-moe-gwells-tools.pathfinder.gov.bc.ca with the username/password that was provided to you.
 
-# How to access OpenShift for gwells
+# How to access OpenShift for GWELLS
 
 ## Web UI
 - Login to https://console.pathfinder.gov.bc.ca:8443; you'll be prompted for GitHub authorization.
