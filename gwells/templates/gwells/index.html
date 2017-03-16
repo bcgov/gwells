@@ -1,0 +1,22 @@
+{% extends 'gwells/base.html' %}
+
+{% block title %}{% endblock %}
+
+{% block bodyheading_block %}Hello World{% endblock %}
+
+{% block introduction_block %}
+                    <p>Welcome to groundwater wells.</p>
+{% endblock %}
+
+{% block body_block %} 
+
+{% if yield_unit_list %}
+    <ul>
+    {% for unit in yield_unit_list %}
+        <li>{{ unit.code }}<br />{{ unit.description }}</li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No records could be found.</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends 'gwells/base.html' %}
+
+{% block title %}Search{% endblock %}
+
+{% block bodyheading_block %}Search{% endblock %}
+
+{% block introduction_block %}
+{% endblock %}
+
+{% block body_block %}                    
+                    <form action="/search" method="get">
+                        {{ form }}
+                        <input type="submit" value="Search" />
+                    </form>
+{% endblock %}

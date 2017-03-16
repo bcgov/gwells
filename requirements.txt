@@ -1,5 +1,6 @@
-django>=1.8,<1.9
-django-debug-toolbar==1.5
+django>=1.10,<1.11
+django-debug-toolbar==1.7
 gunicorn==19.4.5
 psycopg2==2.6.1
 whitenoise==3.0
+django-model-utils==2.6.1

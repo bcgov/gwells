@@ -69,7 +69,9 @@
             }
           }
         ],
-        "postCommit": {}
+        "postCommit": {
+		    "script": "python manage.py test gwells"
+		}
       }
     }
   ],
