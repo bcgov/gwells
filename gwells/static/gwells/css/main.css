@@ -208,11 +208,6 @@ th {
 	background-repeat: no-repeat;
 }
 
-#searchWidget .search .search-trigger {
-	background-image: url("../images/search-ico-blue.png");
-	right: 0;
-}
-
 #preSetSearchTerms, #allOption{
 	display: none;
 }
