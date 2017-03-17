@@ -10,11 +10,6 @@
 
 body,
 html {
-    /**    background: url(../img/air-background.jpg) no-repeat center center fixed;
-    -webkit-background-size: cover;
-    -moz-background-size: cover;
-    -o-background-size: cover; 
-    background-size: cover; **/
     background-color: #f1f1f1;
     color: #494949;
 }
