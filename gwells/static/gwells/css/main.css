@@ -629,7 +629,6 @@ ul.leftNav>li:first-child {
 }
 
 .contentPageLeftNavigation ul li.closed {
-	background-image: url("../images/sidecolumnnav_closed.gif");
 	background-position: 0 2px;
 }
 
@@ -646,7 +645,6 @@ ul.leftNav>li:first-child {
 }
 
 .contentPageLeftNavigation ul li.open {
-	background-image: url("../images/sidecolumnnav_open.gif");
 	background-position: 0 2px;
 }
 
