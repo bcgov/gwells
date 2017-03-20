@@ -12,7 +12,7 @@ from .forms import SearchForm
 
 class HelloWorldView(generic.ListView):
     template_name = 'gwells/index.html'
-    context_object_name = 'helloworld'
+    context_object_name = 'yield_unit_list'
 
     def get_queryset(self):
         """
