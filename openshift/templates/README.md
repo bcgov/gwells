@@ -41,7 +41,8 @@ Content type: application/json
 - Use the JSON file in this directory  and `oc` tool to create the necessary app resources within each project (user and password can be found in the postgresql deployment environment variables in the web gui):
 
 ```
-oc process -f gwells-app-environment.json -v DATABASE_USER=<user> -v DATABASE_PASSWORD=<password> -v APP_DEPLOYMENT_TAG=<tag> | oc create -f -
+oc project <projectname>
+oc process -f gwells-app-environment.json -v DATABASE_USER=<user> -v DATABASE_PASSWORD=<password> -v APP_DEPLOYMENT_TAG=<tag> -v APPLICATION_DOMAIN=gwells-<tag>.pathfinder.gov.bc.ca | oc create -f -
 ```
 
 Where APP_DEPLOYMENT_TAG used is dev, test, prod as set up in Jenkins instance.

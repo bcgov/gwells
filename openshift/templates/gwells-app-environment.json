@@ -145,6 +145,14 @@
                   {
                     "name": "APP_CONFIG",
                     "value": "${APP_CONFIG}"
+                  },
+                  {
+                    "name": "DJANGO_SECRET_KEY",
+                    "value": "${DJANGO_SECRET_KEY}"
+                  },
+                  {
+                    "name": "DJANGO_DEBUG",
+                    "value": "${DJANGO_DEBUG}"
                   }
                 ],
                 "resources": {
@@ -258,10 +266,24 @@
       "description": "Relative path to Gunicorn configuration file (optional)."
     },
     {
+      "name": "DJANGO_SECRET_KEY",
+      "displayName": "Django Secret Key",
+      "description": "Set this to a long random string.",
+      "generate": "expression",
+      "from": "[\\w]{50}"
+    },
+    {
       "name": "PIP_INDEX_URL",
       "displayName": "Custom PyPi Index URL",
       "description": "The custom PyPi index URL",
       "value": ""
+    },
+    {
+      "name": "DJANGO_DEBUG",
+      "displayName": "Django Debug",
+      "description": "If Django is in debug mode",
+      "required": true,
+      "value": "False"
     },
     {
       "name": "APP_DEPLOYMENT_TAG",
