@@ -13,6 +13,10 @@ class ProvinceState(models.Model):
     code = models.CharField(max_length=10)
     description = models.CharField(max_length=100)
     sort_order = models.IntegerField()
+    
+    class Meta:
+        db_table = 'gwells_province_state'
+
     def __str__(self):
         return self.code
 
@@ -25,6 +29,10 @@ class WellYieldUnit(models.Model):
     code = models.CharField(max_length=10)
     description = models.CharField(max_length=100)
     sort_order = models.IntegerField()
+    
+    class Meta:
+        db_table = 'gwells_well_yield_unit'
+
     def __str__(self):
         return self.code
 
@@ -39,10 +47,14 @@ class WellOwner(TimeStampedModel):
     street_number = models.IntegerField()
     street_name = models.CharField(max_length=100)
     city = models.CharField(max_length=100)
-    province_state_id = models.ForeignKey(ProvinceState, on_delete=models.CASCADE)
+    province_state_id = models.ForeignKey(ProvinceState, db_column='gwells_province_state_id', on_delete=models.CASCADE)
+    tracker = FieldTracker()
+    
+    class Meta:
+        db_table = 'gwells_well_owner'
+
     def __str__(self):
         return self.given_name + self.surname + street_number + street_name
-    tracker = FieldTracker()
 
 	
 
@@ -50,7 +62,7 @@ class Well(TimeStampedModel):
     """
     Well information.
     """
-    well_owner_id = models.ForeignKey(WellOwner, on_delete=models.CASCADE)
+    well_owner_id = models.ForeignKey(WellOwner, db_column='gwells_well_owner_id', on_delete=models.CASCADE)
     street_number = models.IntegerField()
     street_name = models.CharField(max_length=100)
     site_area = models.CharField(max_length=50)
@@ -64,10 +76,11 @@ class Well(TimeStampedModel):
     depth = models.DecimalField(max_digits=7, decimal_places=2)
     #depth_unit
     well_yield = models.DecimalField(max_digits=8, decimal_places=3)
-    well_yield_unit_id = models.ForeignKey(WellYieldUnit, on_delete=models.CASCADE)
+    well_yield_unit_id = models.ForeignKey(WellYieldUnit, db_column='gwells_well_yield_unit_id', on_delete=models.CASCADE)
+    tracker = FieldTracker()
+    
     def __str__(self):
         return self.street_number + self.street_name + self.identification_plate_number
-    tracker = FieldTracker()
 
 
 
