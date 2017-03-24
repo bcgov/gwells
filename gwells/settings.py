@@ -31,7 +31,7 @@ SECRET_KEY = os.getenv(
 #DEBUG = False
 DEBUG = os.getenv('DJANGO_DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '*.gov.bc.ca']
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
