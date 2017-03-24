@@ -12,4 +12,19 @@
                         {{ form }}
                         <input type="submit" value="Search" />
                     </form>
+
+    <br />
+    <br />
+
+{% if well_list %}
+    <ul>
+    {% for well in well_list %}
+        <li>{{ well.id }} &nbsp;{{ well.address_line }}</li>
+    {% endfor %}
+    </ul>
+	
+{% else %}
+    <p>No well records could be found.</p>
+{% endif %}
+					
 {% endblock %}

@@ -27,15 +27,13 @@ def well_search(request):
     if request.method == 'GET':
         form = SearchForm(request.GET)
         if form.is_valid():
-            #TODO
             # process the data in form.cleaned_data
             wellresults = form.process()
-            #pass
-    
+            
     else:
         form = SearchForm()
 
-    return render(request, 'gwells/search.html', {'form': form, 'wellresults': wellresults})
+    return render(request, 'gwells/search.html', {'form': form, 'well_list': wellresults})
    
    
    
