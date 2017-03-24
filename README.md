@@ -28,7 +28,7 @@ requirements.txt   - list of dependencies
 
 ## Local development
 
-To run this project in your development machine, follow these steps:
+To run this project in your development machine, ensure that Python 3.5 is installed, then follow these steps:
 
 1. (optional) Create and activate a [virtualenv](https://virtualenv.pypa.io/) (you may want to use [virtualenvwrapper](http://virtualenvwrapper.readthedocs.org/)).
 
