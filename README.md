@@ -31,8 +31,10 @@ requirements.txt   - list of dependencies
 To run this project in your development machine, ensure that Python 3.5 is installed, then follow these steps:
 
 1. (optional) Create and activate a [virtualenv](https://virtualenv.pypa.io/) (you may want to use [virtualenvwrapper](http://virtualenvwrapper.readthedocs.org/)).
-If you are developing against a Postgres database you can set environment variables with a postactivate script.  
-If working on Windows and using wirtualenvwrapper-win find the activate.bat script located in %USERPROFILE%\Envs\<envname>\Scripts and add the following:
+
+    If you are developing against a Postgres database you can set environment variables with a postactivate script.
+
+    If working on Windows and using wirtualenvwrapper-win find the activate.bat script located in %USERPROFILE%\Envs\myenv\Scripts and add the following:
 
 ```
 SET DATABASE_SERVICE_NAME=postgresql
