@@ -36,14 +36,14 @@ To run this project in your development machine, ensure that Python 3.5 is insta
 
     If working on Windows and using wirtualenvwrapper-win find the activate.bat script located in %USERPROFILE%\Envs\myenv\Scripts and add the following:
 
-```
-SET DATABASE_SERVICE_NAME=postgresql
-SET DATABASE_ENGINE=postgresql
-SET DATABASE_NAME=<dbname>
-SET DATABASE_USER=<user>
-SET DATABASE_PASSWORD=<pw>
-SET DJANGO_DEBUG=True
-```
+    ```
+    SET DATABASE_SERVICE_NAME=postgresql
+    SET DATABASE_ENGINE=postgresql
+    SET DATABASE_NAME=<dbname>
+    SET DATABASE_USER=<user>
+    SET DATABASE_PASSWORD=<pw>
+    SET DJANGO_DEBUG=True
+    ```
 
 2. Fork this repo and clone your fork:
 
