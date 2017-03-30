@@ -4,3 +4,4 @@ gunicorn==19.7.0
 psycopg2==2.6.1
 whitenoise==3.3
 django-model-utils==2.6.1
+django-crispy-forms==1.6.1

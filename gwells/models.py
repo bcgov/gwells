@@ -5,6 +5,7 @@ from model_utils import FieldTracker
 
 
 
+
 class ProvinceState(models.Model):
     """
     Lookup of Provinces/States.
@@ -41,8 +42,7 @@ class WellOwner(TimeStampedModel):
     """
     Well owner information.
     """
-    given_name = models.CharField(max_length=100, blank=True)
-    surname = models.CharField(max_length=100)
+    full_name = models.CharField(max_length=200)
     address_line = models.CharField(max_length=100)
     
     city = models.CharField(max_length=100)
@@ -53,7 +53,7 @@ class WellOwner(TimeStampedModel):
         db_table = 'gwells_well_owner'
 
     def __str__(self):
-        return self.given_name + self.surname + address_line
+        return self.full_name + address_line
 
 	
 
@@ -69,6 +69,7 @@ class Well(TimeStampedModel):
     legal_district_lot = models.IntegerField(blank=True, null=True)
     pid = models.IntegerField(blank=True, null=True)
     identification_plate_number = models.IntegerField(unique=True, blank=True, null=True)
+    well_tag_number = models.PositiveIntegerField(unique=True, blank=True, null=True)
     diameter = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True)  #currently text
     #diameter_unit
     well_drilled_depth = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True)
