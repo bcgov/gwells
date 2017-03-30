@@ -46,6 +46,7 @@ INSTALLED_APPS = (
     'welcome',
 	'django.contrib.postgres',
     'gwells',
+    'crispy_forms',
 )
 
 MIDDLEWARE = (
@@ -81,7 +82,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'wsgi.application'
-
+CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases

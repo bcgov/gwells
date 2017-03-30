@@ -23,17 +23,18 @@ class HelloWorldView(generic.ListView):
 
 
 def well_search(request):
-    wellresults = None
-    if request.method == 'GET':
+    well_results = None
+
+    if request.method == 'GET' and 'well' in request.GET:
         form = SearchForm(request.GET)
         if form.is_valid():
             # process the data in form.cleaned_data
-            wellresults = form.process()
+            well_results = form.process()
             
     else:
         form = SearchForm()
 
-    return render(request, 'gwells/search.html', {'form': form, 'well_list': wellresults})
+    return render(request, 'gwells/search.html', {'form': form, 'well_list': well_results})
    
    
    

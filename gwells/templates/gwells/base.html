@@ -134,7 +134,7 @@
     <!-- /HEADER -->
     <!-- BODY CONTENT -->
     <div id="topicTemplate" class="template container env-container">
-        <div id="breadcrumbContainer">
+        <!--<div id="breadcrumbContainer">
             <ol class="breadcrumb">
 
                 <li>
@@ -150,7 +150,7 @@
                     <a href="#">Breadcrumb Link</a>
                 </li>
             </ol>
-        </div>
+        </div>-->
         
         <!-- PAGE CONTENT -->
         <div class="row">
@@ -228,6 +228,7 @@
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <script src="{% static 'gwells/js/ie10-viewport-bug-workaround.js' %}"></script>
 
+    {% block jqscript_block %}{% endblock %}
 
 </body>
 
