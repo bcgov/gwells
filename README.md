@@ -18,11 +18,16 @@ It uses the Openshift Source-to-Image (S2I) strategy with Python 3.5 on centos7.
 Apart from the regular files created by Django (`project/*`, `welcome/*`, `manage.py`), this repository contains:
 
 ```
+
+database/          - Database-specific files
+└── scripts        - PostgrSQL DDL and [psql] (http://postgresguide.com/utilities/psql.html)  scripts
+
 openshift/         - OpenShift-specific files
 ├── scripts        - helper scripts
 └── templates      - application templates
 
 requirements.txt   - list of dependencies
+
 ```
 
 
