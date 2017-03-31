@@ -9,13 +9,16 @@ The legacy database is WELLS schema of ENVPROD1.NRS.GOV.BC.CA, and was exported 
 The legacy data was exported into human-readable CSV files, and stored outsitde of this github repo.
 
 1. Sync scripts to Postgres pod (from developer workstation):
+
     `oc rsync /Users/garywong/projects/gwells/github/database postgresql-2-2vvoh:/tmp`
 
 2.  Sync legacy CSV files to Postgres pod (from developer workstation):
+
     `oc rsync /Users/garywong/projects/gwells/legacy-data postgresql-2-2vvoh:/tmp`
 
 3.  Remote into Postgres pod (from developer workstation).  Note that the the pod name changew with
 each pod deployment, so get the name first (i.e. *oc get pods*):
+
     `oc rsh postgresql-2-2vvoh`
 
 4.  From the remote shell into the Postgres pod:
