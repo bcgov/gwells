@@ -20,7 +20,7 @@ Apart from the regular files created by Django (`project/*`, `welcome/*`, `manag
 ```
 
 database/          - Database-specific files
-└── scripts        - PostgrSQL DDL and [psql](http://postgresguide.com/utilities/psql.html)  scripts
+└── scripts        - PostgrSQL DDL and psql scripts
 
 openshift/         - OpenShift-specific files
 ├── scripts        - helper scripts
