@@ -21,25 +21,60 @@
 </div>
 <br />
 
-<div class="row">
-    <div class="col-md-12">
-        {% if well_list %}
-            <ul>
-            {% for well in well_list %}
-                <li>{{ well.id }} &nbsp;{{ well.address_line }}</li>
-            {% endfor %}
-            </ul>
+{% if well_list %}
+    {% for well in well_list %}
+        <div class="row">
+            <div class="col-md-1">
+                {{ well.well_tag_number }}
+            </div>
+            <div class="col-md-1">
+                {{ well.identification_plate_number }}
+            </div>
+            <div class="col-md-1">
+                <!--{{ well.well_owner_id__full_name }}-->
+            </div>
+            <div class="col-md-1">
+                {{ well.street_address }}
+            </div>
+            <div class="col-md-1">
+                {{ well.lot_number }}
+            </div>
+            <div class="col-md-1">
+                {{ well.legal_plan }}
+            </div>
+            <div class="col-md-1">
+                {{ well.legal_district_lot }}
+            </div>
+            <div class="col-md-1">
+                <!--{{ well.land_district_id__name }}-->
+            </div>
+            <div class="col-md-1">
+                {{ well.pid }}
+            </div>
+            <div class="col-md-1">
+                {{ well.diameter }}
+            </div>
+            <div class="col-md-1">
+                {{ well.finished_well_depth }}
+            </div>
+            <div class="col-md-1">
+            </div>
+        </div>
+    {% endfor %}
         	
-        {% elif 'well' in request.GET %}
+{% elif 'well' in request.GET %}
+    <div class="row">
+        <div class="col-md-12">
             <p>No well records could be found.</p>
-        {% endif %}
+        </div>
+    </div>
+{% endif %}
 
         <br />
         <p>
         Disclaimer text Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc sollicitudin hendrerit justo, quis dapibus mauris rhoncus sed. Vivamus nisi sem, pharetra quis mauris quis, scelerisque suscipit ligula. Cras arcu arcu, imperdiet et pretium quis, fermentum at arcu. Morbi efficitur erat vel eros iaculis posuere. Sed pharetra metus sed dolor laoreet placerat. Aliquam ut convallis purus, at tincidunt nibh. Phasellus fringilla purus vel risus aliquet, id pulvinar libero molestie. Mauris vel blandit orci, sed venenatis lacus.
         </p>
-    </div>
-</div>
+
 
 {% endblock %}
 
