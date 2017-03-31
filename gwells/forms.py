@@ -91,7 +91,7 @@ class SearchForm(forms.Form):
         
         if (well is not None):
             qset_well = Q(identification_plate_number__icontains=well) | Q(well_tag_number__icontains=well)
-            qset_addr = Q(address_line__icontains=addr)
+            qset_addr = Q(street_address__icontains=addr)
             qset_legal = Q(lot_number__icontains=legal) | Q(legal_plan__icontains=legal) | Q(legal_district_lot__icontains=legal) | Q(pid__icontains=legal)
             qset_owner = Q(well_owner_id__full_name__icontains=owner)
             qset = qset_well | qset_addr | qset_legal | qset_owner
