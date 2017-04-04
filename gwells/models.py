@@ -69,7 +69,7 @@ class WellOwner(TimeStampedModel):
         db_table = 'gwells_well_owner'
 
     def __str__(self):
-        return self.full_name + address_line
+        return self.full_name + street_address
 
 	
 
@@ -98,7 +98,7 @@ class Well(TimeStampedModel):
     tracker = FieldTracker()
     
     def __str__(self):
-        return self.address_line + self.identification_plate_number
+        return self.street_address + self.identification_plate_number
 
 
 
