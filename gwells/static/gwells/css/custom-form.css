@@ -556,3 +556,25 @@ fieldset[disabled] a.btn {
     padding:5px;
     border-radius:3px;
 }
+
+.form-group .controls {
+    text-align: right;
+}
+
+.row-header {
+	font-weight: bold;
+}
+
+.row-header:after {
+  content: "";
+  display: block;
+  border-bottom: 2px solid #d8d8d8;
+  margin: 0 15px;
+}
+
+.row-bordered:after {
+  content: "";
+  display: block;
+  border-bottom: 1px solid #d8d8d8;
+  margin: 0 15px;
+}
