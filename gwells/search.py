@@ -1,4 +1,6 @@
 from django.db.models import Q
+from functools import reduce
+import operator
 from .models import Well
 
 class Search():
@@ -6,12 +8,31 @@ class Search():
         well_results = None
         
        
-        if (well is not None):
-            qset_well = Q(identification_plate_number__icontains=well) | Q(well_tag_number__icontains=well)
-            qset_addr = Q(street_address__icontains=addr)
-            qset_legal = Q(lot_number__icontains=legal) | Q(legal_plan__icontains=legal) | Q(legal_district_lot__icontains=legal) | Q(pid__icontains=legal)
-            qset_owner = Q(well_owner_id__full_name__icontains=owner)
-            qset = qset_well | qset_addr | qset_legal | qset_owner
+        #if (well is not None):
+        q_list = []
+
+        if well:
+            q_list.append(Q(identification_plate_number__equals=well))
+            q_list.append(Q(well_tag_number__equals=well))
+
+        if addr:
+            q_list.append(Q(street_address__icontains=addr))
+
+        if legal:
+            q_list.append(Q(lot_number__icontains=legal))
+            q_list.append(Q(legal_plan__icontains=legal))
+            q_list.append(Q(legal_district_lot__icontains=legal))
+            q_list.append(Q(pid__icontains=legal))
+
+            #qset_owner = Q(well_owner_id__full_name__icontains=owner)
+        if len(q_list) > 0:
+            #print(reduce(operator.or_, q_list))
+            print(Well.objects.all())
+            
+            #well_results = Well.objects.extra({'identification_plate_number': 'CAST(identification_plate_number as VARCHAR(100))'}).filter(identification_plate_number__icontains=well).order_by('-id')
+            well_results = Well.objects.filter(identification_plate_number=123).order_by('-id')
+            #well_results = Well.objects.filter(reduce(operator.or_, q_list)).order_by('-id')
+                
 
             #token_list = querydata.split(' ')
 
@@ -22,7 +43,7 @@ class Search():
             #    qset.add(Q(address_line__icontains=token), qset.connector)
             #    qset_owner.add((Q(given_name__icontains=token) | Q(surname__icontains=token)), qset_owner.connector)
 
-            well_results = Well.objects.select_related('well_owner_id').filter(qset).order_by('-id')
+            #well_results = Well.objects.select_related('well_owner_id').filter(qset).order_by('-id')
  
 
             #wellresults = Well.objects.annotate(

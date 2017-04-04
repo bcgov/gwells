@@ -24,5 +24,5 @@ class SearchTestCase(TestCase):
         w.street_address = '555 Government Street'
 
     def test_well_search(self):
-   	    wells = Search.well_search('23', '', '', '')
+   	    wells = Search.well_search('123', '', '', '')
    	    self.assertEqual(wells.count(), 1)
