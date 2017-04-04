@@ -23,6 +23,10 @@ class SearchTestCase(TestCase):
         w.well_tag_number = 890
         w.street_address = '555 Government Street'
 
-    def test_well_search(self):
+    def test_well_search_well_number(self):
    	    wells = Search.well_search('123', '', '', '')
    	    self.assertEqual(wells.count(), 1)
+
+    def test_well_search_address(self):
+   	    wells = Search.well_search('', 'main', '', '')
+   	    self.assertEqual(wells.count(), 1)   	    

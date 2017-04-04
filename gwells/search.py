@@ -8,12 +8,11 @@ class Search():
         well_results = None
         
        
-        #if (well is not None):
         q_list = []
 
-        if well:
-            q_list.append(Q(identification_plate_number__equals=well))
-            q_list.append(Q(well_tag_number__equals=well))
+        #if well:
+        #    q_list.append(Q(identification_plate_number_icontains=well))
+        #    q_list.append(Q(well_tag_number__icontains=well))
 
         if addr:
             q_list.append(Q(street_address__icontains=addr))
@@ -26,12 +25,7 @@ class Search():
 
             #qset_owner = Q(well_owner_id__full_name__icontains=owner)
         if len(q_list) > 0:
-            #print(reduce(operator.or_, q_list))
-            print(Well.objects.all())
-            
-            #well_results = Well.objects.extra({'identification_plate_number': 'CAST(identification_plate_number as VARCHAR(100))'}).filter(identification_plate_number__icontains=well).order_by('-id')
-            well_results = Well.objects.filter(identification_plate_number=123).order_by('-id')
-            #well_results = Well.objects.filter(reduce(operator.or_, q_list)).order_by('-id')
+            well_results = Well.objects.filter(reduce(operator.or_, q_list)).order_by('-id')
                 
 
             #token_list = querydata.split(' ')
