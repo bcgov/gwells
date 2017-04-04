@@ -3,7 +3,6 @@ from django.shortcuts import get_object_or_404, render
 #from django.urls import reverse
 from django.views import generic
 from django.utils import timezone
-#from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 
 from .models import WellYieldUnit, Well
 from .forms import SearchForm
