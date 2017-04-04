@@ -36,7 +36,7 @@ Create a webhook for the push event only to Payload URL:  https://jenkins-moe-gw
 Content type: application/json
 
  
-- Deploy a Postgresql database instance with persistent storage into the project environment using the web gui and postgresql-presistent template
+- Deploy a Postgresql database instance with 2G persistent storage and 1G Memory, into the project environment using the web gui and postgresql-presistent template
 - Leave the Namespace set to openshift and set the PostgreSQL Database Name to gwells
 - Use the JSON file in this directory  and `oc` tool to create the necessary app resources within each project (user and password can be found in the postgresql deployment environment variables in the web gui):
 
