@@ -9,10 +9,13 @@ from model_utils import FieldTracker
 class ProvinceState(models.Model):
     """
     Lookup of Provinces/States.
+    Used to specify valid provinces or states for the address of the owner of a well.
+    It provides for a standard commonly understood code and description for provinces and states.
+    Some examples include: BC, AB, W
     """
     code = models.CharField(max_length=10)
     description = models.CharField(max_length=100)
-    sort_order = models.IntegerField()
+    sort_order = models.PositiveIntegerField()
     
     class Meta:
         db_table = 'gwells_province_state'
@@ -28,7 +31,7 @@ class LandDistrict(models.Model):
     """
     code = models.CharField(max_length=10)
     name = models.CharField(max_length=255)
-    sort_order = models.IntegerField()
+    sort_order = models.PositiveIntegerField()
     
     class Meta:
         db_table = 'gwells_land_district'
@@ -44,7 +47,7 @@ class WellYieldUnit(models.Model):
     """
     code = models.CharField(max_length=10)
     description = models.CharField(max_length=100)
-    sort_order = models.IntegerField()
+    sort_order = models.PositiveIntegerField()
     
     class Meta:
         db_table = 'gwells_well_yield_unit'
@@ -69,7 +72,7 @@ class WellOwner(TimeStampedModel):
         db_table = 'gwells_well_owner'
 
     def __str__(self):
-        return self.full_name + street_address
+        return '%s %s' % (self.full_name, self.street_address)
 
 	
 
@@ -84,8 +87,8 @@ class Well(TimeStampedModel):
     legal_plan = models.CharField(max_length=20, blank=True)
     legal_district_lot = models.CharField(max_length=20, blank=True)
     land_district_id = models.ForeignKey(LandDistrict, db_column='gwells_land_district_id', on_delete=models.CASCADE, blank=True, null=True)
-    pid = models.IntegerField(blank=True, null=True)
-    identification_plate_number = models.IntegerField(unique=True, blank=True, null=True)
+    pid = models.PositiveIntegerField(blank=True, null=True)
+    identification_plate_number = models.PositiveIntegerField(unique=True, blank=True, null=True)
     well_tag_number = models.PositiveIntegerField(unique=True, blank=True, null=True)
     diameter = models.CharField(max_length=9, blank=True)  #want to be integer in future
     #diameter_unit
@@ -98,7 +101,7 @@ class Well(TimeStampedModel):
     tracker = FieldTracker()
     
     def __str__(self):
-        return self.well_tag_number
+        return '%d %s' % (self.well_tag_number, self.street_address)
 
 
 
