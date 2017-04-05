@@ -23,53 +23,6 @@
 <br />
 
 {% if well_list %}
-    {% for well in well_list %}
-        <div class="row">
-            <div class="col-sm-1">
-                {{ well.well_tag_number }}
-            </div>
-            <div class="col-sm-1">
-                {{ well.identification_plate_number }}
-            </div>
-            <div class="col-sm-1">
-                <!--{{ well.well_owner_id__full_name }}-->
-            </div>
-            <div class="col-sm-1">
-                {{ well.street_address }}
-            </div>
-            <div class="col-sm-1">
-                {{ well.lot_number }}
-            </div>
-            <div class="col-sm-1">
-                {{ well.legal_plan }}
-            </div>
-            <div class="col-sm-1">
-                {{ well.legal_district_lot }}
-            </div>
-            <div class="col-sm-1">
-                <!--{{ well.land_district_id__name }}-->
-            </div>
-            <div class="col-sm-1">
-                {{ well.pid }}
-            </div>
-            <div class="col-sm-1">
-                {{ well.diameter }}
-            </div>
-            <div class="col-sm-1">
-                {{ well.finished_well_depth }}
-            </div>
-            <div class="col-sm-1">
-            </div>
-        </div>
-    {% endfor %}
-        	
-{% elif 'well' in request.GET %}
-    <!--<div class="row">
-        <div class="col-sm-12">
-            <p>No well records could be found.</p>
-        </div>
-    </div>-->
-
         <div class="row row-header">
             <div class="col-sm-1">
                 Well Tag #
@@ -80,7 +33,7 @@
             <div class="col-sm-1">
                 Owner
             </div>
-            <div class="col-sm-1">
+            <div class="col-sm-2">
                 Street Address
             </div>
             <div class="col-sm-1">
@@ -104,8 +57,92 @@
             <div class="col-sm-1">
                 Finished Well Depth
             </div>
-            <div class="col-sm-1">
+            <!--<div class="col-sm-1">
                 Map
+            </div>-->
+        </div>
+
+    {% for well in well_list %}
+        <div class="row">
+            <div class="col-sm-1">
+                {{ well.well_tag_number }}
+            </div>
+            <div class="col-sm-1">
+                {{ well.identification_plate_number }}
+            </div>
+            <div class="col-sm-1">
+                {{ well.well_owner_id__full_name }}
+            </div>
+            <div class="col-sm-2">
+                {{ well.street_address }}
+                {{ well.site_area }}
+            </div>
+            <div class="col-sm-1">
+                {{ well.lot_number }}
+            </div>
+            <div class="col-sm-1">
+                {{ well.legal_plan }}
+            </div>
+            <div class="col-sm-1">
+                {{ well.legal_district_lot }}
+            </div>
+            <div class="col-sm-1">
+                {{ well.land_district_id__name }}
+            </div>
+            <div class="col-sm-1">
+                {{ well.pid }}
+            </div>
+            <div class="col-sm-1">
+                {{ well.diameter }}
+            </div>
+            <div class="col-sm-1">
+                {{ well.finished_well_depth }}
+            </div>
+            <!--<div class="col-sm-1">
+            </div>-->
+        </div>
+    {% endfor %}
+        	
+{% elif 'well' in request.GET %}
+    <div class="row">
+        <div class="col-sm-12">
+            <p>No well records could be found.</p>
+        </div>
+    </div>
+
+        <!--<div class="row row-header">
+            <div class="col-sm-1">
+                Well Tag #
+            </div>
+            <div class="col-sm-1">
+                Well ID #
+            </div>
+            <div class="col-sm-1">
+                Owner
+            </div>
+            <div class="col-sm-2">
+                Street Address
+            </div>
+            <div class="col-sm-1">
+                Lot
+            </div>
+            <div class="col-sm-1">
+                Plan
+            </div>
+            <div class="col-sm-1">
+                District Lot
+            </div>
+            <div class="col-sm-1">
+                Land District
+            </div>
+            <div class="col-sm-1">
+                PID
+            </div>
+            <div class="col-sm-1">
+                Diameter
+            </div>
+            <div class="col-sm-1">
+                Finished Well Depth
             </div>
         </div>
         <div class="row row-bordered">
@@ -118,8 +155,8 @@
             <div class="col-sm-1">
                 John Smith
             </div>
-            <div class="col-sm-1">
-                123 Main St.
+            <div class="col-sm-2">
+                123 Main St. Victoria
             </div>
             <div class="col-sm-1">
                 1
@@ -142,8 +179,6 @@
             <div class="col-sm-1">
                 50
             </div>
-            <div class="col-sm-1">
-            </div>
         </div>
         <div class="row row-bordered">
             <div class="col-sm-1">
@@ -155,8 +190,8 @@
             <div class="col-sm-1">
                 Joe Smith
             </div>
-            <div class="col-sm-1">
-                7699 Government Street
+            <div class="col-sm-2">
+                7699 Government Street Victoria
             </div>
             <div class="col-sm-1">
                 
@@ -179,9 +214,42 @@
             <div class="col-sm-1">
                 100
             </div>
-            <div class="col-sm-1">
-            </div>
         </div>
+        <div class="row row-bordered">
+            <div class="col-sm-1">
+                <a href="#">566775</a>
+            </div>
+            <div class="col-sm-1">
+                1235
+            </div>
+            <div class="col-sm-1">
+                Joan Smith
+            </div>
+            <div class="col-sm-2">
+                300 Main St. Victoria
+            </div>
+            <div class="col-sm-1">
+                
+            </div>
+            <div class="col-sm-1">
+                
+            </div>
+            <div class="col-sm-1">
+                
+            </div>
+            <div class="col-sm-1">
+                
+            </div>
+            <div class="col-sm-1">
+                
+            </div>
+            <div class="col-sm-1">
+                20
+            </div>
+            <div class="col-sm-1">
+                60
+            </div>
+        </div>-->
 
 
 <!--
@@ -238,7 +306,10 @@
 
         <br />
         <p>
-        Disclaimer text Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc sollicitudin hendrerit justo, quis dapibus mauris rhoncus sed. Vivamus nisi sem, pharetra quis mauris quis, scelerisque suscipit ligula. Cras arcu arcu, imperdiet et pretium quis, fermentum at arcu. Morbi efficitur erat vel eros iaculis posuere. Sed pharetra metus sed dolor laoreet placerat. Aliquam ut convallis purus, at tincidunt nibh. Phasellus fringilla purus vel risus aliquet, id pulvinar libero molestie. Mauris vel blandit orci, sed venenatis lacus.
+            Can’t find your well? Try your search again using a different set of criteria.
+        </p>
+        <p>
+            Failures in data collection, storage and transmission, whether through human or system failures, are inherent in all systems and may make finding a specific well difficult. The submission of well records to the Province of BC was voluntary until February 29, 2016; as such, the Province does not have a record for every well.
         </p>
 
 
