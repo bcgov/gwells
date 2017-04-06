@@ -102,6 +102,24 @@
             </div>-->
         </div>
     {% endfor %}
+
+    {% if well_list.paginator.num_pages > 1 %}
+    <div class="row">
+        <ul class="pagination nav navbar-nav">
+        {% if well_list.has_previous %}
+            <li><a href="?page={{ well_list.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Prev</a></li>
+        {% endif %}
+        
+        {% for page in well_list.paginator.page_range %}
+            <li class="{% if well_list.number == page %}active{% endif %}"><a href="?page={{ page }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">{{ page }}</a></li>
+        {% endfor %}
+
+        {% if well_list.has_next %}
+            <li> <a href="?page={{ well_list.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Next</a></li>
+        {% endif %}
+        </ul>
+    </div>
+    {% endif %}        
         	
 {% elif 'well' in request.GET %}
     <div class="row">
@@ -109,148 +127,6 @@
             <p>No well records could be found.</p>
         </div>
     </div>
-
-        <!--<div class="row row-header">
-            <div class="col-sm-1">
-                Well Tag #
-            </div>
-            <div class="col-sm-1">
-                Well ID #
-            </div>
-            <div class="col-sm-1">
-                Owner
-            </div>
-            <div class="col-sm-2">
-                Street Address
-            </div>
-            <div class="col-sm-1">
-                Lot
-            </div>
-            <div class="col-sm-1">
-                Plan
-            </div>
-            <div class="col-sm-1">
-                District Lot
-            </div>
-            <div class="col-sm-1">
-                Land District
-            </div>
-            <div class="col-sm-1">
-                PID
-            </div>
-            <div class="col-sm-1">
-                Diameter
-            </div>
-            <div class="col-sm-1">
-                Finished Well Depth
-            </div>
-        </div>
-        <div class="row row-bordered">
-            <div class="col-sm-1">
-                <a href="#">456789</a>
-            </div>
-            <div class="col-sm-1">
-                7891235
-            </div>
-            <div class="col-sm-1">
-                John Smith
-            </div>
-            <div class="col-sm-2">
-                123 Main St. Victoria
-            </div>
-            <div class="col-sm-1">
-                1
-            </div>
-            <div class="col-sm-1">
-                5a
-            </div>
-            <div class="col-sm-1">
-                766
-            </div>
-            <div class="col-sm-1">
-                7
-            </div>
-            <div class="col-sm-1">
-                
-            </div>
-            <div class="col-sm-1">
-                10
-            </div>
-            <div class="col-sm-1">
-                50
-            </div>
-        </div>
-        <div class="row row-bordered">
-            <div class="col-sm-1">
-                <a href="#">456123</a>
-            </div>
-            <div class="col-sm-1">
-                
-            </div>
-            <div class="col-sm-1">
-                Joe Smith
-            </div>
-            <div class="col-sm-2">
-                7699 Government Street Victoria
-            </div>
-            <div class="col-sm-1">
-                
-            </div>
-            <div class="col-sm-1">
-                
-            </div>
-            <div class="col-sm-1">
-                
-            </div>
-            <div class="col-sm-1">
-                
-            </div>
-            <div class="col-sm-1">
-                
-            </div>
-            <div class="col-sm-1">
-                30
-            </div>
-            <div class="col-sm-1">
-                100
-            </div>
-        </div>
-        <div class="row row-bordered">
-            <div class="col-sm-1">
-                <a href="#">566775</a>
-            </div>
-            <div class="col-sm-1">
-                1235
-            </div>
-            <div class="col-sm-1">
-                Joan Smith
-            </div>
-            <div class="col-sm-2">
-                300 Main St. Victoria
-            </div>
-            <div class="col-sm-1">
-                
-            </div>
-            <div class="col-sm-1">
-                
-            </div>
-            <div class="col-sm-1">
-                
-            </div>
-            <div class="col-sm-1">
-                
-            </div>
-            <div class="col-sm-1">
-                
-            </div>
-            <div class="col-sm-1">
-                20
-            </div>
-            <div class="col-sm-1">
-                60
-            </div>
-        </div>-->
-
 
 <!--
 <table class="table table-responsive">
