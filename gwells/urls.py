@@ -12,7 +12,7 @@ urlpatterns = [
 
     url(r'^$', views.HelloWorldView.as_view()),
     url(r'^search$', views.well_search, name='search'),
-    #url(r'^well/(?P<pk>[0-9]+)/$', views.WellView.as_view(), name='well'),
+    url(r'^(?P<pk>[0-9]+)/$', views.DetailView.as_view(), name='detail'),
     url(r'^health$', health),
     url(r'^admin/', admin.site.urls),
     url(r'^test$', index),

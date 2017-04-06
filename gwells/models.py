@@ -56,7 +56,7 @@ class WellYieldUnit(models.Model):
         return self.code
 
 
-
+#TODO remove _id from fk attributes - based on Django best practices
 class WellOwner(TimeStampedModel):
     """
     Well owner information.

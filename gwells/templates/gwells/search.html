@@ -65,38 +65,38 @@
     {% for well in well_list %}
         <div class="row row-bordered">
             <div class="col-sm-1">
-                {{ well.well_tag_number }}
+                <a href="{% url 'detail' well.id %}">{{ well.well_tag_number }}</a>
             </div>
             <div class="col-sm-1">
-                {{ well.identification_plate_number }}
+                {{ well.identification_plate_number|default_if_none:'&nbsp;' }}
             </div>
             <div class="col-sm-1">
-                {{ well.well_owner_id__full_name }}
+                {{ well.well_owner_id__full_name|default_if_none:'&nbsp;' }}
             </div>
             <div class="col-sm-2">
-                {{ well.street_address }}
-                {{ well.site_area }}
+                {{ well.street_address|default_if_none:'' }}
+                {{ well.site_area|default_if_none:'&nbsp;' }}
             </div>
             <div class="col-sm-1">
-                {{ well.lot_number }}
+                {{ well.lot_number|default_if_none:'&nbsp;' }}
             </div>
             <div class="col-sm-1">
-                {{ well.legal_plan }}
+                {{ well.legal_plan|default_if_none:'&nbsp;' }}
             </div>
             <div class="col-sm-1">
-                {{ well.legal_district_lot }}
+                {{ well.legal_district_lot|default_if_none:'&nbsp;' }}
             </div>
             <div class="col-sm-1">
-                {{ well.land_district_id__name }}
+                {{ well.land_district_id__name|default_if_none:'&nbsp;' }}
             </div>
             <div class="col-sm-1">
-                {{ well.pid }}
+                {{ well.pid|default_if_none:'&nbsp;' }}
             </div>
             <div class="col-sm-1">
-                {{ well.diameter }}
+                {{ well.diameter|default_if_none:'&nbsp;' }}
             </div>
             <div class="col-sm-1">
-                {{ well.finished_well_depth }}
+                {{ well.finished_well_depth|default_if_none:'&nbsp;' }}
             </div>
             <!--<div class="col-sm-1">
             </div>-->

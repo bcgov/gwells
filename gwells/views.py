@@ -33,36 +33,14 @@ def well_search(request):
     else:
         form = SearchForm()
 
-    return render(request, 'gwells/search.html', {'form': form, 'well_list': well_results})
+    return render(request, 'gwells/search.html', {'form': form, 'well_list': well_results})  
+
    
-   
-   
-#class SearchResultsView(generic.ListView):
-#    template_name = 'gwells/searchresults.html'
-#    context_object_name = 'search_results'
 
-#    def get_queryset(self):
-#        """
-#        Return the search results.
-#        """
-#        return Well.objects.annotate(
-#		    search=SearchVector('street_name')
-#		).filter(search='Main st')
+class DetailView(generic.DetailView):
+    model = Well
+    context_object_name = 'well'
 
-
-
-#class WellView(generic.DetailView):
-#    model = Well
-#    template_name = 'gwells/well.html'
-#    context_object_name = 'well'
-
-#    def get_queryset(self):
-#        """
-#        Return the details of a well record.
-#        """
-#        return Well.objects.filter(
-#            last_modified__lte=timezone.now()
-#        ).order_by('-last_modified')[:5]
 
 
 
