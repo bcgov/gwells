@@ -13,29 +13,29 @@ class SearchTestCase(TestCase):
         prov = ProvinceState.objects.create(sort_order=1)
         prov.save()
 
-        owner = WellOwner.objects.create(province_state_id=prov)
+        owner = WellOwner.objects.create(province_state=prov)
         owner.full_name = 'John Smith'
         owner.save()
 
-        owner2 = WellOwner.objects.create(province_state_id=prov)
+        owner2 = WellOwner.objects.create(province_state=prov)
         owner2.full_name = 'Joe Smith'
         owner2.save()
 
-        w = Well.objects.create(well_owner_id=owner)
+        w = Well.objects.create(well_owner=owner)
         w.identification_plate_number = 123
         w.well_tag_number = 456
         w.street_address = '123 Main St.'
         w.legal_plan = '7789'
         w.save()
 
-        w = Well.objects.create(well_owner_id=owner)
+        w = Well.objects.create(well_owner=owner)
         w.identification_plate_number = 3456332
         w.well_tag_number = 890
         w.street_address = '555 Government Street'
         w.legal_district_lot = '789'
         w.save()
 
-        w = Well.objects.create(well_owner_id=owner2)
+        w = Well.objects.create(well_owner=owner2)
         w.identification_plate_number = 55555
         w.well_tag_number = 123
         w.street_address = '200 Main Street'

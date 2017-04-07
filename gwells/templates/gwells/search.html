@@ -30,10 +30,10 @@
             <div class="col-sm-1">
                 Well ID #
             </div>
-            <div class="col-sm-1">
+            <div class="col-sm-2">
                 Owner
             </div>
-            <div class="col-sm-2">
+            <div class="col-sm-1">
                 Street Address
             </div>
             <div class="col-sm-1">
@@ -70,10 +70,10 @@
             <div class="col-sm-1">
                 {{ well.identification_plate_number|default_if_none:'&nbsp;' }}
             </div>
-            <div class="col-sm-1">
-                {{ well.well_owner_id__full_name|default_if_none:'&nbsp;' }}
-            </div>
             <div class="col-sm-2">
+                {{ well.well_owner.full_name|default_if_none:'&nbsp;' }}
+            </div>
+            <div class="col-sm-1">
                 {{ well.street_address|default_if_none:'' }}
                 {{ well.site_area|default_if_none:'&nbsp;' }}
             </div>
@@ -87,7 +87,7 @@
                 {{ well.legal_district_lot|default_if_none:'&nbsp;' }}
             </div>
             <div class="col-sm-1">
-                {{ well.land_district_id__name|default_if_none:'&nbsp;' }}
+                {{ well.land_district__name|default_if_none:'&nbsp;' }}
             </div>
             <div class="col-sm-1">
                 {{ well.pid|default_if_none:'&nbsp;' }}

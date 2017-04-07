@@ -24,7 +24,7 @@ class Search():
             q_list.append(Q(pid__icontains=legal))
 
         if owner:
-            q_list.append(Q(well_owner_id__full_name__icontains=owner))
+            q_list.append(Q(well_owner__full_name__icontains=owner))
 
         if len(q_list) > 0:
             well_results = Well.objects.filter(reduce(operator.or_, q_list)).order_by('well_tag_number', 'id')
