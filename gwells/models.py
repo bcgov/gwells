@@ -56,7 +56,7 @@ class WellYieldUnit(models.Model):
         return self.code
 
 
-#TODO remove _id from fk attributes - based on Django best practices
+
 class WellOwner(TimeStampedModel):
     """
     Well owner information.
@@ -65,7 +65,7 @@ class WellOwner(TimeStampedModel):
     street_address = models.CharField(max_length=100)
     
     city = models.CharField(max_length=100)
-    province_state_id = models.ForeignKey(ProvinceState, db_column='gwells_province_state_id', on_delete=models.CASCADE, blank=True)
+    province_state = models.ForeignKey(ProvinceState, db_column='gwells_province_state_id', on_delete=models.CASCADE, blank=True)
     tracker = FieldTracker()
     
     class Meta:
@@ -80,13 +80,13 @@ class Well(TimeStampedModel):
     """
     Well information.
     """
-    well_owner_id = models.ForeignKey(WellOwner, db_column='gwells_well_owner_id', on_delete=models.CASCADE, blank=True, null=True)
+    well_owner = models.ForeignKey(WellOwner, db_column='gwells_well_owner_id', on_delete=models.CASCADE, blank=True, null=True)
     street_address = models.CharField(max_length=100, blank=True)
     site_area = models.CharField(max_length=50, blank=True)
     lot_number = models.CharField(max_length=10, blank=True)
     legal_plan = models.CharField(max_length=20, blank=True)
     legal_district_lot = models.CharField(max_length=20, blank=True)
-    land_district_id = models.ForeignKey(LandDistrict, db_column='gwells_land_district_id', on_delete=models.CASCADE, blank=True, null=True)
+    land_district = models.ForeignKey(LandDistrict, db_column='gwells_land_district_id', on_delete=models.CASCADE, blank=True, null=True)
     pid = models.PositiveIntegerField(blank=True, null=True)
     identification_plate_number = models.PositiveIntegerField(unique=True, blank=True, null=True)
     well_tag_number = models.PositiveIntegerField(unique=True, blank=True, null=True)
@@ -97,7 +97,7 @@ class Well(TimeStampedModel):
     finished_well_depth = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True)
     #depth_unit
     well_yield = models.DecimalField(max_digits=8, decimal_places=3, blank=True, null=True)
-    well_yield_unit_id = models.ForeignKey(WellYieldUnit, db_column='gwells_well_yield_unit_id', on_delete=models.CASCADE, blank=True, null=True)
+    well_yield_unit = models.ForeignKey(WellYieldUnit, db_column='gwells_well_yield_unit_id', on_delete=models.CASCADE, blank=True, null=True)
     tracker = FieldTracker()
     
     def __str__(self):
