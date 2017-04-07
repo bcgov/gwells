@@ -70,10 +70,74 @@
           }
         ],
         "postCommit": {
-		    "script": "python manage.py test gwells"
-		}
+		      "script": "python manage.py test gwells"
+		    }
       }
-    }
+    },
+    {
+        "kind": "ImageStream",
+        "apiVersion": "v1",
+        "metadata": {
+            "name": "${SCHEMASPY_NAME}",
+            "generation": 1,
+            "creationTimestamp": null
+        },
+        "spec": {
+            "tags": [
+                {
+                    "name": "${SCHEMASPY_NAME}",
+                    "annotations": null,
+                    "generation": null,
+                    "importPolicy": {}
+                }
+            ]
+        },
+        "status": {    
+        }
+    },
+    {
+      "kind": "BuildConfig",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "${SCHEMASPY_NAME}",
+        "creationTimestamp": null,
+        "labels": {
+          "app": "${SCHEMASPY_NAME}",
+          "buildconfig": "${SCHEMASPY_NAME}"                    
+        }                  
+      },
+      "spec": {                
+        "source": {
+          "type": "Git",
+          "git": {
+            "uri": "https://github.com/bcgov/SchemaSpy.git"
+          }
+        },
+        "strategy": {
+          "type": "Docker"
+        },
+        "output": {
+          "to": {
+            "kind": "ImageStreamTag",
+            "name": "${SCHEMASPY_NAME}:latest"
+          }
+        },
+        "resources": {},
+        "postCommit": {},
+        "nodeSelector": null,
+        "triggers": [
+          {
+            "type": "ConfigChange"
+          },
+          {
+            "type": "ImageChange",
+            "imageChange": {}
+          }
+        ]
+      },
+      "status": {                
+      }            
+    } 
   ],
   "parameters": [
     {
@@ -119,6 +183,13 @@
       "displayName": "Custom PyPi Index URL",
       "description": "The custom PyPi index URL",
       "value": ""
-    }
+    },
+    {
+      "name": "SCHEMASPY_NAME",
+      "displayName": "Schema Spy Name",
+      "description": "The name assigned to all of the schema spy objects defined in this template.",
+      "required": true,
+      "value": "schema-spy"
+    } 
   ]
 }
