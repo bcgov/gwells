@@ -57,9 +57,6 @@
             <div class="col-sm-1">
                 Finished Well Depth
             </div>
-            <!--<div class="col-sm-1">
-                Map
-            </div>-->
         </div>
 
     {% for well in well_list %}
@@ -98,8 +95,6 @@
             <div class="col-sm-1">
                 {{ well.finished_well_depth|default_if_none:'&nbsp;' }}
             </div>
-            <!--<div class="col-sm-1">
-            </div>-->
         </div>
     {% endfor %}
 
@@ -127,56 +122,6 @@
             <p>No well records could be found.</p>
         </div>
     </div>
-
-<!--
-<table class="table table-responsive">
-  <thead>
-    <tr>
-      <th class="col-sm-1">Well Tag #</th>
-      <th class="col-sm-1">Well ID #</th>
-      <th class="col-sm-1">Owner</th>
-      <th class="col-sm-1">Street Address</th>
-      <th class="col-sm-1">Lot</th>
-      <th class="col-sm-1">Plan</th>
-      <th class="col-sm-1">District Lot</th>
-      <th class="col-sm-1">Land District</th>
-      <th class="col-sm-1">PID</th>
-      <th class="col-sm-1">Diameter</th>
-      <th class="col-sm-1">Finished Well Depth</th>
-      <th class="col-sm-1">Map</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td class="col-sm-1"><a href="#">456789</a></td>
-      <td class="col-sm-1">7891235</td>
-      <td class="col-sm-1">John Smith</td>
-      <td class="col-sm-1">123 Main St.</td>
-      <td class="col-sm-1">1</td>
-      <td class="col-sm-1">5a</td>
-      <td class="col-sm-1">766</td>
-      <td class="col-sm-1">7</td>
-      <td class="col-sm-1"></td>
-      <td class="col-sm-1">10</td>
-      <td class="col-sm-1">50</td>
-      <td class="col-sm-1"></td>
-    </tr>
-    <tr>
-      <td class="col-sm-1"><a href="#">456123</a></td>
-      <td class="col-sm-1"></td>
-      <td class="col-sm-1">Joe Smith</td>
-      <td class="col-sm-1">7699 Government Street</td>
-      <td class="col-sm-1"></td>
-      <td class="col-sm-1"></td>
-      <td class="col-sm-1"></td>
-      <td class="col-sm-1"></td>
-      <td class="col-sm-1"></td>
-      <td class="col-sm-1">30</td>
-      <td class="col-sm-1">100</td>
-      <td class="col-sm-1"></td>
-    </tr>
-  </tbody>
-</table>-->
 
 {% endif %}
 

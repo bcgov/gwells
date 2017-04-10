@@ -1,5 +1,4 @@
 from django.test import TestCase
-#from unittest import mock
 from .models import WellOwner, ProvinceState, Well 
 from .search import Search
 
@@ -7,9 +6,6 @@ class SearchTestCase(TestCase):
     
     @classmethod
     def setUpTestData(cls):
-        #well_owner = mock.Mock(spec=WellOwner)
-        #well_owner._state = mock.Mock()
-
         prov = ProvinceState.objects.create(sort_order=1)
         prov.save()
 
@@ -70,4 +66,24 @@ class SearchTestCase(TestCase):
     def test_well_search_well_number_owner(self):
    	    wells = Search.well_search('123', '', '', 'john')
    	    self.assertEqual(wells.count(), 3)
+
+
+
+    def test_well_search_params_named_positional(self):
+        named = Search.well_search(addr='gov')
+        positional = Search.well_search('', 'gov', '', '')
+        self.assertEqual(named.count(), positional.count())
+
+
+
+    def test_well_search_empty_string_params(self):
+        wells = Search.well_search('', '', '', '')
+        self.assertIsNone(wells)
+
+
+
+    def test_well_search_none_params(self):
+        wells = Search.well_search(None, None, None, None)
+        self.assertIsNone(wells)
+
 

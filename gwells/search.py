@@ -4,7 +4,16 @@ import operator
 from .models import Well
 
 class Search():
-    def well_search(well, addr, legal, owner):
+    def well_search(well='', addr='', legal='', owner=''):
+        """
+        Search for wells
+
+        :param well: the identification plate number or well tag number
+        :param addr: part of the street address of the well
+        :param legal: part of the lot number, legal plan, legal district lot or pid
+        :param owner: part of the owner's full name
+        :returns: QuerySet of Well objects or None if no matching records found.
+        """
         well_results = None
         
        
