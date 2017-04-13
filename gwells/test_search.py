@@ -65,7 +65,7 @@ class SearchTestCase(TestCase):
 
     def test_well_search_well_number_owner(self):
    	    wells = Search.well_search('123', '', '', 'john')
-   	    self.assertEqual(wells.count(), 3)
+   	    self.assertEqual(wells.count(), 1)
 
 
 
