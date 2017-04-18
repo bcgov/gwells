@@ -1,18 +1,12 @@
 from django import forms
-from django.utils.safestring import mark_safe
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Submit
 from crispy_forms.bootstrap import FormActions
-from django.db.models import Q
-#from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
-from .models import Well
 from .search import Search
 
 class SearchForm(forms.Form):
     well = forms.IntegerField(
-        label=mark_safe('Well Number <a href="#" data-toggle="popover" data-container="body" data-placement="right" \
-            data-content="Enter the Identification Plate Number or Tag Number"> \
-            <i class="fa fa-question-circle" style="color:blue"></i></a>'),
+        label='Well Tag Number or Well Identification Plate Number',
         required=False,
         widget=forms.NumberInput(attrs={'placeholder': 'example: 123456'}),
         #help_text='Enter the Identification Plate Number or Tag Number',
@@ -26,21 +20,18 @@ class SearchForm(forms.Form):
     )
 
     legal = forms.CharField(
-        label=mark_safe('Legal Description <a href="#" data-toggle="popover" data-container="body" data-placement="right" \
-            data-content="Enter one of Lot, Plan, District Lot or PID"> \
-            <i class="fa fa-question-circle" style="color:blue"></i></a>'),
+        label='Legal Plan, District Lot or PID (Parcel Identifier)',
         max_length=100,
         required=False,
         widget=forms.TextInput(attrs={'placeholder': 'example: 123a'}),
-        #help_text='Enter one of Lot, Plan, District Lot or PID',
+        #help_text='Enter one of Legal Plan, District Lot or PID',
     )
 
     owner = forms.CharField(
-        label=mark_safe('Owner Name <a href="#" data-toggle="popover" data-container="body" data-placement="right" \
-            data-content="Enter part of the Owner\'s name"> \
-            <i class="fa fa-question-circle" style="color:blue"></i></a>'),
+        label='Owner Name',
         max_length=100,
         required=False,
+        widget=forms.TextInput(attrs={'placeholder': 'example: Smith or smi'}),
         #help_text='Enter part of the Owner\'s name',
     )
     

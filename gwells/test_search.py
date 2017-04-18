@@ -35,6 +35,7 @@ class SearchTestCase(TestCase):
         w.identification_plate_number = 55555
         w.well_tag_number = 123
         w.street_address = '200 Main Street'
+        w.pid = 54321
         w.save()
 
 
@@ -54,6 +55,15 @@ class SearchTestCase(TestCase):
     def test_well_search_legal(self):
    	    wells = Search.well_search('', '', '78', '')
    	    self.assertEqual(wells.count(), 2)
+
+
+
+    def test_well_search_legal_pid(self):
+        """ Check that pid can be found when searching with leading zeros
+            even though field is stored as an integer
+        """
+        wells = Search.well_search('', '', '00543', '')
+        self.assertEqual(wells.count(), 1)
 
 
 

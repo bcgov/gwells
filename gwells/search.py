@@ -10,7 +10,7 @@ class Search():
 
         :param well: the identification plate number or well tag number
         :param addr: part of the street address or site area of the well
-        :param legal: part of the lot number, legal plan, legal district lot or pid
+        :param legal: part of the legal plan, legal district lot or pid
         :param owner: part of the owner's full name
         :returns: QuerySet of Well objects or None if no matching records found.
         """
@@ -26,7 +26,8 @@ class Search():
             q_list.append(Q(street_address__icontains=addr) | Q(site_area__icontains=addr))
 
         if legal:
-            q_list.append(Q(lot_number__icontains=legal) | Q(legal_plan__icontains=legal) | Q(legal_district_lot__icontains=legal) | Q(pid__icontains=legal))
+            pid = legal.lstrip('0')
+            q_list.append(Q(legal_plan__icontains=legal) | Q(legal_district_lot__icontains=legal) | Q(pid__icontains=pid))
 
         if owner:
             q_list.append(Q(well_owner__full_name__icontains=owner))

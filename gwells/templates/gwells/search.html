@@ -6,15 +6,15 @@
 {% block bodyheading_block %}Search{% endblock %}
 
 {% block introduction_block %}
+    Enter the Well Identification Plate Number or Well Tag Number if known.  If not, try using a combination of the other search criteria. 
+    If you would like to specify different criteria, try the <a href="#">Advanced Search</a>.
+    <br /><br />
 {% endblock %}
 
 {% block body_block %}
 
 <div class="row">
     <div class="col-sm-4">
-        <div align="right">
-            <a href="#">Advanced Search</a>
-        </div>
         {% crispy form %}         
     </div>
     <div class="col-sm-8">
@@ -23,15 +23,22 @@
 <br />
 
 {% if well_list %}
+        <div class="row">
+            <div class="col-sm-12">
+                {{ well_list.start_index }}-{{ well_list.end_index }} of {{ well_list.paginator.count }} results
+                <br /><br />
+            </div>
+        </div>
+
         <div class="row row-header">
             <div class="col-sm-1">
                 Well Tag #
             </div>
             <div class="col-sm-1">
-                Well ID #
+                Well ID Plate #
             </div>
             <div class="col-sm-2">
-                Owner
+                Owner Name
             </div>
             <div class="col-sm-1">
                 Street Address
@@ -84,10 +91,10 @@
                 {{ well.legal_district_lot|default_if_none:'&nbsp;' }}
             </div>
             <div class="col-sm-1">
-                {{ well.land_district__name|default_if_none:'&nbsp;' }}
+                {{ well.land_district.name|default_if_none:'&nbsp;' }}
             </div>
             <div class="col-sm-1">
-                {{ well.pid|default_if_none:'&nbsp;' }}
+                {{ well.pid|stringformat:"09d"|default_if_none:'&nbsp;' }}
             </div>
             <div class="col-sm-1">
                 {{ well.diameter|default_if_none:'&nbsp;' }}
@@ -119,16 +126,18 @@
 {% elif 'well' in request.GET %}
     <div class="row">
         <div class="col-sm-12">
-            <p>No well records could be found.</p>
+            <p class="lead">No well records could be found.</p>
         </div>
     </div>
 
 {% endif %}
 
         <br />
-        <p>
-            Can’t find your well? Try your search again using a different set of criteria.
-        </p>
+{% if 'well' in request.GET %}
+    <p>
+        Can’t find your well? Try your search again using a different set of criteria.
+    </p>
+{% endif %}
         <p>
             Failures in data collection, storage and transmission, whether through human or system failures, are inherent in all systems and may make finding a specific well difficult. The submission of well records to the Province of BC was voluntary until February 29, 2016; as such, the Province does not have a record for every well.
         </p>
