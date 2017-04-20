@@ -1,6 +1,6 @@
 from django import forms
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Fieldset, Submit
+from crispy_forms.layout import Layout, Fieldset, Submit, Hidden
 from crispy_forms.bootstrap import FormActions
 from .search import Search
 
@@ -48,7 +48,9 @@ class SearchForm(forms.Form):
                 'well',
                 'addr',
                 'legal',
-                'owner'
+                'owner',
+                Hidden('sort', 'well_tag_number'),
+                Hidden('dir', 'asc')
             ),
             FormActions(
                 Submit('s', 'Search')

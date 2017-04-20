@@ -1,5 +1,5 @@
 {% extends 'gwells/base.html' %}
-{% load crispy_forms_tags %}
+{% load crispy_forms_tags pagination_tags sorting_tags %}
 
 {% block title %}Search{% endblock %}
 
@@ -23,46 +23,48 @@
 <br />
 
 {% if well_list %}
+    {% autosort well_list %}
+    {% autopaginate well_list 25 %}
         <div class="row">
             <div class="col-sm-12">
-                {{ well_list.start_index }}-{{ well_list.end_index }} of {{ well_list.paginator.count }} results
+                {{ page_obj.start_index }}-{{ page_obj.end_index }} of {{ page_obj.paginator.count }} results
                 <br /><br />
             </div>
         </div>
 
         <div class="row row-header">
             <div class="col-sm-1">
-                Well Tag #
+                {% anchor well_tag_number "Well Tag #" %}
             </div>
             <div class="col-sm-1">
-                Well ID Plate #
+                {% anchor identification_plate_number "Well ID Plate #" %}
             </div>
             <div class="col-sm-2">
-                Owner Name
+                {% anchor well_owner__full_name "Owner Name" %}
             </div>
             <div class="col-sm-1">
-                Street Address
+                {% anchor street_address "Street Address" %}
             </div>
             <div class="col-sm-1">
-                Lot
+                {% anchor lot_number "Lot" %}
             </div>
             <div class="col-sm-1">
-                Plan
+                {% anchor legal_plan "Plan" %}
             </div>
             <div class="col-sm-1">
-                District Lot
+                {% anchor legal_district_lot "District Lot" %}
             </div>
             <div class="col-sm-1">
-                Land District
+                {% anchor land_district "Land District" %}
             </div>
             <div class="col-sm-1">
-                PID
+                {% anchor pid "PID" %}
             </div>
             <div class="col-sm-1">
-                Diameter
+                {% anchor diameter "Diameter" %}
             </div>
             <div class="col-sm-1">
-                Finished Well Depth
+                {% anchor finished_well_depth "Finished Well Depth" %}
             </div>
         </div>
 
@@ -105,23 +107,11 @@
         </div>
     {% endfor %}
 
-    {% if well_list.paginator.num_pages > 1 %}
-    <div class="row">
-        <ul class="pagination nav navbar-nav">
-        {% if well_list.has_previous %}
-            <li><a href="?page={{ well_list.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Prev</a></li>
-        {% endif %}
-        
-        {% for page in well_list.paginator.page_range %}
-            <li class="{% if well_list.number == page %}active{% endif %}"><a href="?page={{ page }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">{{ page }}</a></li>
-        {% endfor %}
 
-        {% if well_list.has_next %}
-            <li> <a href="?page={{ well_list.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Next</a></li>
-        {% endif %}
-        </ul>
+    <div class="row">
+        {% paginate using 'gwells/bootstrap_pagination.html' %}
     </div>
-    {% endif %}        
+     
         	
 {% elif 'well' in request.GET %}
     <div class="row">
