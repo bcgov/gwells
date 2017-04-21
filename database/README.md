@@ -14,7 +14,7 @@ The legacy data was exported into human-readable CSV files, and stored outsitde 
 
 2.  Sync legacy CSV files to Postgres pod (from developer workstation):
 
-    `oc rsync /Users/garywong/projects/gwells/legacy-data postgresql-2-2vvoh:/tmp`
+    `oc rsync /Users/garywong/projects/gwells/legacy-data/postgres postgresql-2-2vvoh:/tmp`
 
 3.  Remote into Postgres pod (from developer workstation).  Note that the the pod name changew with
 each pod deployment, so get the name first (i.e. *oc get pods*):
@@ -23,11 +23,10 @@ each pod deployment, so get the name first (i.e. *oc get pods*):
 
 4.  From the remote shell into the Postgres pod:
     ```
-    cd /tmp  
+    cd /tmp/  
     psql -d gwells -U userGN0  -f ./database/scripts/drop-tables-cascade.sql 
     psql -d gwells -U userGN0  -f ./database/scripts/create-tables.sql
-    psql -d gwells -U userGN0  -f ./database/scripts/load-legacy-data.1-of-2.sql 
-    psql -d gwells -U userGN0  -f ./database/scripts/load-legacy-data.2-of-2.sql 
+    psql -d gwells -U userGN0  -f ./database/scripts/lload-search-ready-data.sql
     psql -d gwells -U userGN0  -f ./database/scripts/create-constraints.sql 
     ```
 
