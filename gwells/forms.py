@@ -1,4 +1,5 @@
 from django import forms
+from django.utils.safestring import mark_safe
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Submit, Hidden
 from crispy_forms.bootstrap import FormActions
@@ -6,10 +7,11 @@ from .search import Search
 
 class SearchForm(forms.Form):
     well = forms.IntegerField(
-        label='Well Tag Number or Well Identification Plate Number',
+        label=mark_safe('Well Tag Number or Well Identification Plate Number <a href="#" data-toggle="popover" data-container="body" data-placement="right" \
+            data-content="Enter the electronic filing number of the well or the number printed on the physical identification plate."> \
+            <i class="fa fa-question-circle" style="color:blue"></i></a>'),
         required=False,
         widget=forms.NumberInput(attrs={'placeholder': 'example: 123456'}),
-        #help_text='Enter the Identification Plate Number or Tag Number',
     )
 
     addr = forms.CharField(
@@ -20,11 +22,12 @@ class SearchForm(forms.Form):
     )
 
     legal = forms.CharField(
-        label='Legal Plan, District Lot or PID (Parcel Identifier)',
+        label=mark_safe('Legal Plan, District Lot or PID <a href="#" data-toggle="popover" data-container="body" data-placement="right" \
+            data-content="You can find the Legal Plan, District Lot or PID (Parcel Identifier) of your property on documents such as your property assessment, property tax notice or through your real estate transaction."> \
+            <i class="fa fa-question-circle" style="color:blue"></i></a>'),
         max_length=100,
         required=False,
         widget=forms.TextInput(attrs={'placeholder': 'example: 123a'}),
-        #help_text='Enter one of Legal Plan, District Lot or PID',
     )
 
     owner = forms.CharField(
@@ -32,7 +35,6 @@ class SearchForm(forms.Form):
         max_length=100,
         required=False,
         widget=forms.TextInput(attrs={'placeholder': 'example: Smith or smi'}),
-        #help_text='Enter part of the Owner\'s name',
     )
     
 
