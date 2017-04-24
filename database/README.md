@@ -7,6 +7,8 @@ The legacy database is WELLS schema of ENVPROD1.NRS.GOV.BC.CA, and was exported 
 ## Loading data upon which to run a live Search 
 
 The legacy data was exported into human-readable CSV files, and stored outsitde of this github repo.
+The seqreset.sql script was generated via Django using:
+    `python manage.py sqlsequencereset gwells > ./database/scripts/seqreset.sql`
 
 1. Sync scripts to Postgres pod (from developer workstation):
 
@@ -27,7 +29,8 @@ each pod deployment, so get the name first (i.e. *oc get pods*) from the correct
     psql -d gwells -U <user>  -f ./database/scripts/drop-tables-cascade.sql 
     psql -d gwells -U <user>  -f ./database/scripts/create-tables.sql
     psql -d gwells -U <user>  -f ./database/scripts/load-search-ready-data.sql
-    psql -d gwells -U <user>  -f ./database/scripts/create-constraints.sql 
+    psql -d gwells -U <user>  -f ./database/scripts/create-constraints.sql
+    psql -d gwells -U <user>  -f ./database/scripts/seqreset.sql 
     ```
 
 5. Run the psql client to verify the database objects:
