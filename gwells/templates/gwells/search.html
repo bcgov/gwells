@@ -116,7 +116,7 @@
 {% elif 'well' in request.GET %}
     <div class="row">
         <div class="col-sm-12">
-            <p class="lead">No well records could be found.</p>
+            <em>No well records could be found.</em>
         </div>
     </div>
 
@@ -129,7 +129,8 @@
     </p>
 {% endif %}
         <p>
-            Failures in data collection, storage and transmission, whether through human or system failures, are inherent in all systems and may make finding a specific well difficult. The submission of well records to the Province of BC was voluntary until February 29, 2016; as such, the Province does not have a record for every well.
+            We may not have a copy of your well record. Until February 29, 2016, it was voluntary for well drillers to submit well records to the Province. 
+            Also, issues related to data quality may make finding your well record difficult.
         </p>
 
 
@@ -138,7 +139,7 @@
 {% block jqscript_block %}
     <script>
         $(document).ready(function(){
-            $('[data-toggle="popover"]').popover(); 
+            $('[data-toggle="popover"]').popover({'trigger':'hover'});
         });
     </script>
 {% endblock %}
