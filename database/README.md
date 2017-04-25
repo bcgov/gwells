@@ -4,7 +4,7 @@
 
 The legacy database is WELLS schema of ENVPROD1.NRS.GOV.BC.CA, and was exported using SQL Developer (via [Citrix](https://dts.gov.bc.ca/Citrix/BCGOVWeb/) *Kamloops Desktop - ArcGIS 10-2* desktop).
 
-1. Copy the transformation (e.g. transforms the data while exporting to CSV) script to your H:\ drive (i.e. it will automatically be visible from Citrix):
+1. Copy the transformation (e.g. transforms the data while exporting to CSV) script to your H:\ drive (i.e. automatically visible from Citrix):
     [xform-legacy-data.sql](scripts/sql-developer/xform-legacy-data.sql)
 
 2. From the Windows Start Menu, open Oracle SQL*Developer
