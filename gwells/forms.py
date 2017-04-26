@@ -8,7 +8,7 @@ from .search import Search
 class SearchForm(forms.Form):
     well = forms.IntegerField(
         label=mark_safe('Well Tag Number or Well Identification Plate Number <a href="#" data-toggle="popover" data-container="body" data-placement="right" \
-            data-content="Enter the electronic filing number of the well or the number printed on the physical identification plate."> \
+            data-content="Well electronic filing number or physical identification plate number"> \
             <i class="fa fa-question-circle" style="color:blue"></i></a>'),
         required=False,
         widget=forms.NumberInput(attrs={'placeholder': 'example: 123456'}),
@@ -23,7 +23,7 @@ class SearchForm(forms.Form):
 
     legal = forms.CharField(
         label=mark_safe('Legal Plan, District Lot or PID <a href="#" data-toggle="popover" data-container="body" data-placement="right" \
-            data-content="You can find the Legal Plan, District Lot or PID (Parcel Identifier) of your property on documents such as your property assessment, property tax notice or through your real estate transaction."> \
+            data-content="Find the legal plan, district lot, or PID (parcel identifier) on the property assessment, property tax notice, or real estate transaction."> \
             <i class="fa fa-question-circle" style="color:blue"></i></a>'),
         max_length=100,
         required=False,
