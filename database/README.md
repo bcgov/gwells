@@ -2,9 +2,7 @@
 
 ## Export from the legacy Oracle database
 
-The legacy database is WELLS schema of ENVPROD1.NRS.GOV.BC.CA, and was exported using SQL Developer (via [Citrix](https://dts.gov.bc.ca/Citrix/BCGOVWeb/) *Kamloops Desktop - ArcGIS 10-2* desktop).
-
-1. Copy the transformation (e.g. transforms the data while exporting to CSV) script to your H:\ drive (i.e. automatically visible from Citrix):
+The legacy database is WELLS schema of ENVPROD1.NRS.GOV.BC.CA, and was exported using SQL Developer (via [Citrix](https://dts.gov.bc.ca/Citrix/BCGOVWeb/) *Kamloops Desktop - ArcGIS 10-2* desktop).  The transformation of data (e.g. datatype conversion, lookup code foreign keys, concatentation of strings) is done as part of the export script:
     [xform-legacy-data.sql](scripts/sql-developer/xform-legacy-data.sql)
 
 2. From the Windows Start Menu, open Oracle SQL*Developer
@@ -12,14 +10,15 @@ The legacy database is WELLS schema of ENVPROD1.NRS.GOV.BC.CA, and was exported 
 
 3. Login to ENVPROD1.NRS.GOV.BC.CA with an Oracle DB Account that can view WELLS schema objects
 
-4.  Navigate to the Oracle SQL Develoepr WorkSheet tab and enter the path of the copied transformation script:
-    `@h:\tmp\xform-legacy-data.sql`
+4.  Navigate to the Oracle SQL Developer WorkSheet tab and enter the path of the transformation script, via GitHub:
+    `@https://cdn.rawgit.com/bcgov/gwells/master/database/scripts/sql-developer/xform-legacy-data.sql`
+
 
     Three CSV files will be created:
     ```
-    land_district.csv
-    well_owner.csv
-    well.csv
+    H:\land_district.csv
+    H:\well_owner.csv
+    H:\well.csv
     ```
 
 5. Copy the CSV files over to your local workstation, ready to be included in the `rsync` [step below](#rsync-csv).
