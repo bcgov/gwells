@@ -16,7 +16,9 @@ The legacy database is WELLS schema of ENVPROD1.NRS.GOV.BC.CA, and was exported 
     `@https://cdn.rawgit.com/bcgov/gwells/master/database/scripts/sql-developer/xform-legacy-data.sql`
 
     *NOTE*: If Citirx permissions prevent you from running this script directly (i.e. unable to open file), then either
-    copy/download the script to a file on the Citrix account, or simply copy-and-paste into the WorkSheet tab.
+    copy/download the script to a file on the Citrix account.  Do not copy-and-paste as the run script "@" syntax is 
+    required to filter out the "SELECT FROM ... " output from the CSV.
+
 
     Three CSV files will be created on your networked Home drive (H:\):
     ```
