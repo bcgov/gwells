@@ -5,16 +5,20 @@
 The legacy database is WELLS schema of ENVPROD1.NRS.GOV.BC.CA, and was exported using SQL Developer (via [Citrix](https://dts.gov.bc.ca/Citrix/BCGOVWeb/) *Kamloops Desktop - ArcGIS 10-2* desktop).  The transformation of data (e.g. datatype conversion, lookup code foreign keys, concatentation of strings) is done as part of the export script:
     [xform-legacy-data.sql](scripts/sql-developer/xform-legacy-data.sql)
 
-2. From the Windows Start Menu, open Oracle SQL*Developer
-    Start -> All Programs -> Oracle Tools -> Oracle SQL Developer
+2. From the Windows Start Menu on the lower left of the Windows TaskBar, open Oracle SQL*Developer:
+    ```
+     -> All Programs -> Oracle Tools -> Oracle SQL Developer
+     ```
 
 3. Login to ENVPROD1.NRS.GOV.BC.CA with an Oracle DB Account that can view WELLS schema objects
 
 4.  Navigate to the Oracle SQL Developer WorkSheet tab and enter the path of the transformation script, via GitHub:
     `@https://cdn.rawgit.com/bcgov/gwells/master/database/scripts/sql-developer/xform-legacy-data.sql`
 
+    *NOTE*: If Citirx permissions prevent you from running this script directly (i.e. unable to open file), then either
+    copy/download the script to a file on the Citrix account, or simply copy-and-paste into the WorkSheet tab.
 
-    Three CSV files will be created:
+    Three CSV files will be created on your networked Home drive (H:\):
     ```
     H:\land_district.csv
     H:\well_owner.csv
@@ -22,11 +26,18 @@ The legacy database is WELLS schema of ENVPROD1.NRS.GOV.BC.CA, and was exported 
     ```
 
 5. Copy the CSV files over to your local workstation, ready to be included in the `rsync` [step below](#rsync-csv).
+   
+   *NOTE*: The code table values are not derived from the legacy tables.  The rows, and identifiers, are pre-populated and
+   ready to be loaded in:
+    ```
+    province_state.csv
+    well_yield_unit.csv
+    ```
 
-## Loading data upon which to run a live Search 
+## Loading data upon which to run a Search (against the PostGres DB) 
 
-The legacy data was exported into human-readable CSV files, and stored outsitde of this github repo.
-The seqreset.sql script was generated via Django using:
+The legacy data was exported into human-readable CSV files, and stored outside of GitHub.  This is for both 
+security and storage reasons.  The seqreset.sql script was generated via Django using:
     `python manage.py sqlsequencereset gwells > ./database/scripts/seqreset.sql`
 
 1. Sync scripts to Postgres pod (from developer workstation):
