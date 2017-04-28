@@ -27,8 +27,11 @@ The legacy database is WELLS schema of ENVPROD1.NRS.GOV.BC.CA, and was exported 
     H:\well.csv
     ```
 
-5. Copy the CSV files over to your local workstation, ready to be included in the `rsync` [step below](#rsync-csv).
-   
+5. Copy the CSV files over to your local workstation, ready to be included in the `rsync` [step below](#rsync-csv).  SQL Developer insists
+   on adding a blank line at the end of each generated CSV file, which runs into a PostGres bug when importing CSV with such a blank line. 
+   Remove this last line from each of the genereated files, either manually or via sed/awk/perl etc.
+
+
    *NOTE*: The code table values are not derived from the legacy tables.  The rows, and identifiers, are pre-populated and
    ready to be loaded in:
     ```
