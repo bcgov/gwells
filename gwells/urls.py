@@ -4,17 +4,19 @@ from django.contrib import admin
 
 from welcome.views import index, health
 from . import views
+from django.views.generic import TemplateView
 
 urlpatterns = [
     # Examples:
     # url(r'^$', 'project.views.home', name='home'),
     # url(r'^blog/', include('blog.urls')),
 
-    url(r'^$', views.HelloWorldView.as_view()),
+    url(r'^$', views.HelloWorldView.as_view(), name='home'),
     url(r'^search$', views.well_search, name='search'),
     url(r'^(?P<pk>[0-9]+)/$', views.DetailView.as_view(), name='detail'),
     url(r'^health$', health),
     url(r'^admin/', admin.site.urls),
+    url(r'^additional-information', TemplateView.as_view(template_name='gwells/additional_information.html'), name='additional_information'),
     url(r'^test$', index),
 ]
 
