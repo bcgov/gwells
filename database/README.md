@@ -70,7 +70,7 @@ each pod deployment, so get the name first (i.e. *oc get pods*) from the correct
     ```
 
 5. Run the psql client to verify the database objects:
-    `psql -d gwells -U userGN0`
+    `psql -d gwells -U <user>`
 
 ## Clear all data from which the live Search ran
 
