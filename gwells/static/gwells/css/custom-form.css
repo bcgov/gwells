@@ -45,6 +45,9 @@ button:hover {
 a.btn:hover {
     color: #fff;
 }
+a.btn {
+    text-decoration:none;
+}
 
 .btn {
     display: inline-block;
