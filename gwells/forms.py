@@ -1,7 +1,7 @@
 from django import forms
 from django.utils.safestring import mark_safe
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Fieldset, Submit, Hidden
+from crispy_forms.layout import Layout, Fieldset, Submit, Hidden, HTML
 from crispy_forms.bootstrap import FormActions
 from .search import Search
 
@@ -15,15 +15,17 @@ class SearchForm(forms.Form):
     )
 
     addr = forms.CharField(
-        label='Street Address',
+        label=mark_safe('Street Address <a href="#" data-toggle="popover" data-container="body" data-placement="right" \
+            data-content="For best results, try searching using the street name only."> \
+            <i class="fa fa-question-circle" style="color:blue"></i></a>'),
         max_length=100,
         required=False,
-        widget=forms.TextInput(attrs={'placeholder': 'example: 123 main st'}),
+        widget=forms.TextInput(attrs={'placeholder': 'example: 123 main'}),
     )
 
     legal = forms.CharField(
-        label=mark_safe('Legal Plan, District Lot or PID <a href="#" data-toggle="popover" data-container="body" data-placement="right" \
-            data-content="Find the legal plan, district lot, or PID (parcel identifier) on the property assessment, property tax notice, or real estate transaction."> \
+        label=mark_safe('Legal Plan or District Lot or PID <a href="#" data-toggle="popover" data-container="body" data-placement="right" \
+            data-content="Find the legal plan, district lot, or 9-digit PID (parcel identifier) on the property assessment, property tax notice, or real estate transaction."> \
             <i class="fa fa-question-circle" style="color:blue"></i></a>'),
         max_length=100,
         required=False,
@@ -31,7 +33,9 @@ class SearchForm(forms.Form):
     )
 
     owner = forms.CharField(
-        label='Owner Name',
+        label=mark_safe('Owner Name <a href="#" data-toggle="popover" data-container="body" data-placement="right" \
+            data-content="The owner name is usually the name of the well owner at time of drilling."> \
+            <i class="fa fa-question-circle" style="color:blue"></i></a>'),
         max_length=100,
         required=False,
         widget=forms.TextInput(attrs={'placeholder': 'example: Smith or smi'}),
@@ -55,7 +59,8 @@ class SearchForm(forms.Form):
                 Hidden('dir', 'asc')
             ),
             FormActions(
-                Submit('s', 'Search')
+                Submit('s', 'Search'),
+                HTML('<a class="btn btn-default" href="{% url \'search\' %}">Reset</a>'),
             )
         )
 
