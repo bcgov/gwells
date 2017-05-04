@@ -92,7 +92,7 @@ class Well(TimeStampedModel):
     well_tag_number = models.PositiveIntegerField(unique=True, blank=True, null=True)
     diameter = models.CharField(max_length=9, blank=True)  #want to be integer in future
     #diameter_unit
-    well_drilled_depth = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True)
+    total_depth_drilled = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True)
     #depth_unit
     finished_well_depth = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True)
     #depth_unit
