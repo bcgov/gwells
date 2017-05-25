@@ -1,0 +1,38 @@
+{% extends 'gwells/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Well Activity{% endblock %}
+
+{% block bodyheading_block %}Well Activity{% endblock %}
+
+{% block introduction_block %}
+     Submit activity on a well that does not exist in the system. Try a <a href="{% url 'search' %}">search</a> to see if the well exists in the system before submitting a report.
+     <br /><br />
+{% endblock %}
+
+{% block body_block %}
+
+
+		<form action="{% url 'well_activity_create' %}" method="post">
+			{% csrf_token %}
+    		{% crispy form %}
+    		{% crispy well_owner_form %}
+    		{% crispy well_activity_location_form %}
+
+    		<div class="form-group">
+    			<div class="controls">
+    				<input type="submit" name="s" value="Submit" class="btn btn-primary" id="submit-id-s" />
+    			</div>
+			</div>
+		</form>    
+
+
+{% endblock %}
+
+{% block jqscript_block %}
+    <script>
+        $(document).ready(function(){
+            $('[data-toggle="popover"]').popover({'trigger':'hover'});
+        });
+    </script>
+{% endblock %}
