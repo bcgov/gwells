@@ -1,5 +1,5 @@
 from django.test import TestCase
-from .models import WellOwner, ProvinceState, Well 
+from .models import WellOwner, ProvinceState, WellActivity 
 from .search import Search
 
 class SearchTestCase(TestCase):
@@ -17,21 +17,21 @@ class SearchTestCase(TestCase):
         owner2.full_name = 'Joe Smith'
         owner2.save()
 
-        w = Well.objects.create(well_owner=owner)
+        w = WellActivity.objects.create(well_owner=owner)
         w.identification_plate_number = 123
         w.well_tag_number = 456
         w.street_address = '123 Main St.'
         w.legal_plan = '7789'
         w.save()
 
-        w = Well.objects.create(well_owner=owner)
+        w = WellActivity.objects.create(well_owner=owner)
         w.identification_plate_number = 3456332
         w.well_tag_number = 890
         w.street_address = '555 Government Street'
         w.legal_district_lot = '789'
         w.save()
 
-        w = Well.objects.create(well_owner=owner2)
+        w = WellActivity.objects.create(well_owner=owner2)
         w.identification_plate_number = 55555
         w.well_tag_number = 123
         w.street_address = '200 Main Street'

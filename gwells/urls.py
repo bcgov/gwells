@@ -14,6 +14,8 @@ urlpatterns = [
     url(r'^$', views.HelloWorldView.as_view(), name='home'),
     url(r'^search$', views.well_search, name='search'),
     url(r'^(?P<pk>[0-9]+)/$', views.DetailView.as_view(), name='detail'),
+    url(r'^well-activity/create$', views.WellActivityCreateView.as_view(), name='well_activity_create'),
+    url(r'^well-activity/(?P<pk>[0-9]+)$', views.WellActivityDetailView.as_view(), name='well_activity_detail'),
     url(r'^health$', health),
     url(r'^admin/', admin.site.urls),
     url(r'^additional-information', TemplateView.as_view(template_name='gwells/additional_information.html'), name='additional_information'),

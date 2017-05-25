@@ -49,13 +49,13 @@
                 {% anchor street_address "Street Address" %}
             </div>
             <div class="col-sm-1">
-                {% anchor lot_number "Lot" %}
+                {% anchor lot "Lot" %}
             </div>
             <div class="col-sm-1">
-                {% anchor legal_plan "Plan" %}
+                {% anchor plan "Plan" %}
             </div>
             <div class="col-sm-1">
-                {% anchor legal_district_lot "District Lot" %}
+                {% anchor district_lot "District Lot" %}
             </div>
             <div class="col-sm-1">
                 {% anchor land_district "Land District" %}
@@ -84,16 +84,16 @@
             </div>
             <div class="col-sm-1">
                 {{ well.street_address|default_if_none:'' }}
-                {{ well.site_area|default_if_none:'&nbsp;' }}
+                {{ well.city|default_if_none:'&nbsp;' }}
             </div>
             <div class="col-sm-1">
-                {{ well.lot_number|default_if_none:'&nbsp;' }}
+                {{ well.lot|default_if_none:'&nbsp;' }}
             </div>
             <div class="col-sm-1">
-                {{ well.legal_plan|default_if_none:'&nbsp;' }}
+                {{ well.plan|default_if_none:'&nbsp;' }}
             </div>
             <div class="col-sm-1">
-                {{ well.legal_district_lot|default_if_none:'&nbsp;' }}
+                {{ well.district_lot|default_if_none:'&nbsp;' }}
             </div>
             <div class="col-sm-1">
                 {{ well.land_district.name|default_if_none:'&nbsp;' }}
