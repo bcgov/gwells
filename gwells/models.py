@@ -164,7 +164,7 @@ class WellActivity(TimeStampedModel):
     """
     Activity information on a Well.
     """
-    well_activity_type = models.ForeignKey(WellActivityType, db_column='gwells_well_activity_type_id', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Type of Work')
+    well_activity_type = models.ForeignKey(WellActivityType, db_column='gwells_well_activity_type_id', on_delete=models.CASCADE, verbose_name='Type of Work')
     #well_activity_type = models.ForeignKey(WellActivityType, db_column='gwells_well_activity_type_id', on_delete=models.CASCADE, verbose_name='Type of Work')
     class_of_well = models.ForeignKey(ClassOfWell, db_column='gwells_class_of_well_id', on_delete=models.CASCADE, verbose_name='Class of Well')
     subclass_of_well = models.ForeignKey(SubclassOfWell, db_column='gwells_subclass_of_well_id', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Subclass of Well')
