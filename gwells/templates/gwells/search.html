@@ -49,19 +49,19 @@
                 {% anchor street_address "Street Address" %}
             </div>
             <div class="col-sm-1">
-                {% anchor lot "Lot" %}
+                {% anchor legal_lot "Lot" %}
             </div>
             <div class="col-sm-1">
-                {% anchor plan "Plan" %}
+                {% anchor legal_plan "Plan" %}
             </div>
             <div class="col-sm-1">
-                {% anchor district_lot "District Lot" %}
+                {% anchor legal_district_lot "District Lot" %}
             </div>
             <div class="col-sm-1">
-                {% anchor land_district "Land District" %}
+                {% anchor legal_land_district "Land District" %}
             </div>
             <div class="col-sm-1">
-                {% anchor pid "PID" %}
+                {% anchor legal_pid "PID" %}
             </div>
             <div class="col-sm-1">
                 {% anchor diameter "Diameter (in)" %}
@@ -87,19 +87,19 @@
                 {{ well.city|default_if_none:'&nbsp;' }}
             </div>
             <div class="col-sm-1">
-                {{ well.lot|default_if_none:'&nbsp;' }}
+                {{ well.legal_lot|default_if_none:'&nbsp;' }}
             </div>
             <div class="col-sm-1">
-                {{ well.plan|default_if_none:'&nbsp;' }}
+                {{ well.legal_plan|default_if_none:'&nbsp;' }}
             </div>
             <div class="col-sm-1">
-                {{ well.district_lot|default_if_none:'&nbsp;' }}
+                {{ well.legal_district_lot|default_if_none:'&nbsp;' }}
             </div>
             <div class="col-sm-1">
-                {{ well.land_district.name|default_if_none:'&nbsp;' }}
+                {{ well.legal_land_district.name|default_if_none:'&nbsp;' }}
             </div>
             <div class="col-sm-1">
-                {{ well.pid|stringformat:"09d"|default_if_none:'&nbsp;' }}
+                {{ well.legal_pid|stringformat:"09d"|default_if_none:'&nbsp;' }}
             </div>
             <div class="col-sm-1">
                 {{ well.diameter|default_if_none:'&nbsp;' }}

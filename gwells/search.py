@@ -27,12 +27,12 @@ class Search():
 
         if legal:
             pid = legal.lstrip('0')
-            q_list.append(Q(legal_plan__icontains=legal) | Q(legal_district_lot__icontains=legal) | Q(legal_pid__icontains=pid))
+            q_list.append(Q(legal_plan__icontains=legal) | Q(legal_district_lot__icontains=legal) | Q(legal_pid=pid))
 
         if owner:
-            q_list.append(Q(well_owner__full_name__icontains=owner))
+            q_list.append(Q(wellowner__full_name__icontains=owner))
 
         if len(q_list) > 0:
-            well_results = WellActivity.objects.filter(reduce(operator.and_, q_list)).order_by('well_tag_number', 'id')
+            well_results = WellActivity.objects.distinct().filter(reduce(operator.and_, q_list)).order_by('well_tag_number', 'id')
                 
         return well_results
