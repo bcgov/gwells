@@ -42,9 +42,17 @@ class DetailView(generic.DetailView):
 
 
 
+class WellActivityListView(generic.ListView):
+    model = WellActivity
+    context_object_name = 'well_activity_list'
+    template_name = 'gwells/well_activity_list.html'
+
+
+
 class WellActivityDetailView(generic.DetailView):
     model = WellActivity
     context_object_name = 'well_activity'
+    template_name = 'gwells/well_activity_detail.html'
 
 
 

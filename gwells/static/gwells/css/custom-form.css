@@ -581,3 +581,15 @@ fieldset[disabled] a.btn {
   border-bottom: 1px solid #d8d8d8;
   margin: 0 15px;
 }
+
+input.name {
+    max-width: 325px;
+}
+
+input.city {
+    max-width: 200px;
+}
+
+input.postal {
+    max-width: 100px;
+}
