@@ -20,9 +20,10 @@ class ProvinceState(models.Model):
     
     class Meta:
         db_table = 'gwells_province_state'
+        ordering = ['sort_order', 'description']
 
     def __str__(self):
-        return self.code
+        return self.description
 
 
 
@@ -36,9 +37,10 @@ class LandDistrict(models.Model):
     
     class Meta:
         db_table = 'gwells_land_district'
+        ordering = ['sort_order', 'name']
 
     def __str__(self):
-        return self.code
+        return self.name
 
 
 
@@ -52,9 +54,10 @@ class WellYieldUnit(models.Model):
     
     class Meta:
         db_table = 'gwells_well_yield_unit'
+        ordering = ['sort_order', 'description']
 
     def __str__(self):
-        return self.code
+        return self.description
 
 
 
@@ -69,9 +72,10 @@ class WellActivityType(models.Model):
     
     class Meta:
         db_table = 'gwells_well_activity_type'
+        ordering = ['sort_order', 'description']
 
     def __str__(self):
-        return self.code
+        return self.description
 
 
 
@@ -86,9 +90,10 @@ class ClassOfWell(models.Model):
     
     class Meta:
         db_table = 'gwells_class_of_well'
+        ordering = ['sort_order', 'description']
 
     def __str__(self):
-        return self.code
+        return self.description
 
 
 
@@ -104,9 +109,10 @@ class SubclassOfWell(models.Model):
     
     class Meta:
         db_table = 'gwells_subclass_of_well'
+        ordering = ['sort_order', 'description']
 
     def __str__(self):
-        return '%s %s' % (self.class_of_well.code, self.code)
+        return self.description
 
 
 
@@ -121,9 +127,10 @@ class WellUse(models.Model):
     
     class Meta:
         db_table = 'gwells_well_use'
+        ordering = ['sort_order', 'description']
 
     def __str__(self):
-        return self.code
+        return self.description
 
 
 
@@ -136,9 +143,10 @@ class DrillingCompany(models.Model):
     
     class Meta:
         db_table = 'gwells_drilling_company'
+        verbose_name_plural = 'Drilling Companies'
 
     def __str__(self):
-        return '%s %s' % (self.first_name, self.surname)
+        return self.name
 
 
 
@@ -156,7 +164,7 @@ class Driller(models.Model):
         db_table = 'gwells_driller'
 
     def __str__(self):
-        return '%s %s' % (self.first_name, self.surname)
+        return '%s %s - %s' % (self.first_name, self.surname, self.registration_number)
 
 
 
@@ -165,7 +173,6 @@ class WellActivity(TimeStampedModel):
     Activity information on a Well.
     """
     well_activity_type = models.ForeignKey(WellActivityType, db_column='gwells_well_activity_type_id', on_delete=models.CASCADE, verbose_name='Type of Work')
-    #well_activity_type = models.ForeignKey(WellActivityType, db_column='gwells_well_activity_type_id', on_delete=models.CASCADE, verbose_name='Type of Work')
     class_of_well = models.ForeignKey(ClassOfWell, db_column='gwells_class_of_well_id', on_delete=models.CASCADE, verbose_name='Class of Well')
     subclass_of_well = models.ForeignKey(SubclassOfWell, db_column='gwells_subclass_of_well_id', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Subclass of Well')
     well_use = models.ForeignKey(WellUse, db_column='gwells_well_use_id', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Water Supply Well Intended Water Use')
@@ -177,7 +184,7 @@ class WellActivity(TimeStampedModel):
     activity_end_date = models.DateField(verbose_name='End Date of Work')
 
     street_address = models.CharField(max_length=100, blank=True, verbose_name='Street Address')
-    city = models.CharField(max_length=50, blank=True)
+    city = models.CharField(max_length=50, blank=True, verbose_name='Town/City')
     legal_lot = models.CharField(max_length=10, blank=True, verbose_name='Lot')
     legal_plan = models.CharField(max_length=20, blank=True, verbose_name='Plan')
     legal_district_lot = models.CharField(max_length=20, blank=True, verbose_name='District Lot')
@@ -185,8 +192,8 @@ class WellActivity(TimeStampedModel):
     legal_section = models.CharField(max_length=10, blank=True, verbose_name='Section')
     legal_township = models.CharField(max_length=20, blank=True, verbose_name='Township')
     legal_range = models.CharField(max_length=10, blank=True, verbose_name='Range')
-    legal_land_district = models.ForeignKey(LandDistrict, db_column='gwells_legal_land_district_id', on_delete=models.CASCADE, blank=True, null=True, verbose_name='PID')
-    legal_pid = models.PositiveIntegerField(blank=True, null=True)
+    legal_land_district = models.ForeignKey(LandDistrict, db_column='gwells_legal_land_district_id', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Land District')
+    legal_pid = models.PositiveIntegerField(blank=True, null=True, verbose_name='PID')
     well_location_description = models.CharField(max_length=500, blank=True)
 
     identification_plate_number = models.PositiveIntegerField(unique=True, blank=True, null=True)
@@ -207,8 +214,11 @@ class WellActivity(TimeStampedModel):
     #def get_absolute_url(self):
     #    return reverse('well_activity_detail', kwargs={'pk': self.pk})
 
+    class Meta:
+        db_table = 'gwells_well_activity'
+
     def __str__(self):
-        return '%d %s' % (self.well_tag_number, self.street_address)
+        return '%d %s %s' % (self.well_tag_number, self.well_activity_type.code, self.street_address)
 
 
 
@@ -220,7 +230,7 @@ class WellOwner(TimeStampedModel):
     full_name = models.CharField(max_length=200, verbose_name='Owner Name')
     mailing_address = models.CharField(max_length=100, verbose_name='Mailing Address')
     
-    city = models.CharField(max_length=100)
+    city = models.CharField(max_length=100, verbose_name='Town/City')
     province_state = models.ForeignKey(ProvinceState, db_column='gwells_province_state_id', on_delete=models.CASCADE, blank=True, verbose_name='Province')
     postal_code = models.CharField(max_length=10, blank=True, verbose_name='Postal Code')
 

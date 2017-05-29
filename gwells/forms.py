@@ -1,7 +1,7 @@
 from django import forms
 from django.utils.safestring import mark_safe
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Fieldset, Div, Submit, Hidden, HTML
+from crispy_forms.layout import Layout, Fieldset, Div, Submit, Hidden, HTML, Field
 from crispy_forms.bootstrap import FormActions
 from django.forms.models import inlineformset_factory
 from .search import Search
@@ -105,20 +105,23 @@ class WellOwnerForm(forms.ModelForm):
         self.helper.form_tag = False
         self.helper.disable_csrf = True
         self.helper.layout = Layout(
-            Div(
-                Div('full_name', css_class='col-sm-12'),
-                css_class='row',
-            ),
-            Div(
-                Div('mailing_address', css_class='col-sm-12'),
-                css_class='row',
-            ),
-            Div(
-                Div('city', css_class='col-sm-7'),
-                Div('province_state', css_class='col-sm-2'),
-                Div('postal_code', css_class='col-sm-3'),
-                css_class='row',
-            ),
+            Fieldset(
+                'Owner Information',
+                Div(
+                    Div(Field('full_name', css_class='name'), css_class='col-sm-12'),
+                    css_class='row',
+                ),
+                Div(
+                    Div(Field('mailing_address', css_class='name'), css_class='col-sm-12'),
+                    css_class='row',
+                ),
+                Div(
+                    Div(Field('city', css_class='city'), css_class='col-sm-3'),
+                    Div('province_state', css_class='col-sm-1'),
+                    Div(Field('postal_code', css_class='postal'), css_class='col-sm-8'),
+                    css_class='row',
+                ),
+            )
         )
         super(WellOwnerForm, self).__init__(*args, **kwargs)
     
@@ -134,34 +137,37 @@ class WellActivityTypeAndClassForm(forms.ModelForm):
         self.helper.form_tag = False
         self.helper.disable_csrf = True
         self.helper.layout = Layout(
-            Div(
-                Div('well_activity_type', css_class='col-sm-12'),
-                css_class='row',
-            ),
-            Div(
-                Div('class_of_well', css_class='col-sm-3'),
-                Div('subclass_of_well', css_class='col-sm-3'),
-                Div('well_use', css_class='col-sm-6'),
-                css_class='row',
-            ),
-            Div(
-                Div('driller_responsible', css_class='col-sm-12'),
-                css_class='row',
-            ),
-            Div(
-                Div('driller_name', css_class='col-sm-12'),
-                css_class='row',
-            ),
-            Div(
-                Div('consultant_name', css_class='col-sm-6'),
-                Div('consultant_company', css_class='col-sm-6'),
-                css_class='row',
-            ),
-            Div(
-                Div('activity_start_date', css_class='col-sm-6'),
-                Div('activity_end_date', css_class='col-sm-6'),
-                css_class='row',
-            ),
+            Fieldset(
+                '',
+                Div(
+                    Div(Field('well_activity_type', css_class='name'), css_class='col-sm-12'),
+                    css_class='row',
+                ),
+                Div(
+                    Div('class_of_well', css_class='col-sm-3'),
+                    Div('subclass_of_well', css_class='col-sm-3'),
+                    Div('well_use', css_class='col-sm-6'),
+                    css_class='row',
+                ),
+                Div(
+                    Div(Field('driller_responsible', css_class='name'), css_class='col-sm-12'),
+                    css_class='row',
+                ),
+                Div(
+                    Div(Field('driller_name', css_class='name'), css_class='col-sm-12'),
+                    css_class='row',
+                ),
+                Div(
+                    Div(Field('consultant_name', css_class='name'), css_class='col-sm-4'),
+                    Div(Field('consultant_company', css_class='name'), css_class='col-sm-8'),
+                    css_class='row',
+                ),
+                Div(
+                    Div('activity_start_date', css_class='col-sm-6'),
+                    Div('activity_end_date', css_class='col-sm-6'),
+                    css_class='row',
+                ),
+            )
         )
         super(WellActivityTypeAndClassForm, self).__init__(*args, **kwargs)
     
@@ -177,28 +183,37 @@ class WellActivityLocationForm(forms.ModelForm):
         self.helper.form_tag = False
         self.helper.disable_csrf = True
         self.helper.layout = Layout(
-            Div(
-                Div('street_address', css_class='col-sm-12'),
-                css_class='row',
-            ),
-            Div(
-                Div('city', css_class='col-sm-12'),
-                css_class='row',
-            ),
-            Div(
-                Div('legal_lot', css_class='col-sm-12'),
-                css_class='row',
-            ),
-            Div(
-                Div('legal_plan', css_class='col-sm-12'),
-                css_class='row',
-            ),
+            Fieldset(
+                'Well Location',
+                Div(
+                    Div(Field('street_address', css_class='name'), css_class='col-sm-12'),
+                    css_class='row',
+                ),
+                Div(
+                    Div(Field('city', css_class='city'), css_class='col-sm-12'),
+                    css_class='row',
+                ),
+                Div(
+                    Div('legal_lot', css_class='col-sm-3'),
+                    Div('legal_plan', css_class='col-sm-3'),
+                    Div('legal_district_lot', css_class='col-sm-3'),
+                    Div('legal_block', css_class='col-sm-3'),
+                    css_class='row',
+                ),
+                Div(
+                    Div('legal_section', css_class='col-sm-3'),
+                    Div('legal_township', css_class='col-sm-3'),
+                    Div('legal_range', css_class='col-sm-3'),
+                    Div('legal_land_district', css_class='col-sm-3'),
+                    css_class='row',
+                ),
+            )
         )
         super(WellActivityLocationForm, self).__init__(*args, **kwargs)
     
     class Meta:
         model = WellActivity
-        fields = ['street_address', 'city', 'legal_lot', 'legal_plan']
+        fields = ['street_address', 'city', 'legal_lot', 'legal_plan', 'legal_district_lot', 'legal_block', 'legal_section', 'legal_township', 'legal_range', 'legal_land_district']
 
 
 

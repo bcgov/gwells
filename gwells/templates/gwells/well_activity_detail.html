@@ -1,0 +1,58 @@
+{% extends 'gwells/base.html' %}
+
+{% block title %}Well Activity Details{% endblock %}
+
+{% block bodyheading_block %}Record of work performed on a well{% endblock %}
+
+{% block introduction_block %}
+{% endblock %}
+
+{% block body_block %}
+
+    <div class="row">
+        <div class="col-sm-12">
+            <label for="well_tag_number">Type of Work:</label>
+            <span id="well_tag_number">{{ well_activity.well_activity_type.description }}</span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <label for="well_tag_number">Class of Well:</label>
+            <span id="well_tag_number">{{ well_activity.class_of_well.description }}</span>
+        </div>
+        <div class="col-sm-6">
+            <label for="owner">Subclass:</label>
+            <span id="owner">{{ well_activity.subclass_of_well.description }}</span>            
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <label for="well_tag_number">Well Tag Number:</label>
+            <span id="well_tag_number">{{ well_activity.well_tag_number }}</span>
+        </div>
+        <div class="col-sm-6">
+            <label for="owner">Owner:</label>
+            <span id="owner">{{ well_activity.well_owner.full_name }}</span>            
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <label for="address">Street Address:</label>
+            <span id="address">{{ well_activity.street_address }}</span>
+        </div>
+        <div class="col-sm-6">
+            <!--<label for="well_drilled_depth">Well Drilled Depth:</label>
+            <span id="well_drilled_depth">{{ well_activity.well_drilled_depth }}</span>-->
+        </div>
+    </div>
+
+
+{% endblock %}
+
+{% block jqscript_block %}
+    <script>
+        $(document).ready(function(){
+            $('[data-toggle="popover"]').popover(); 
+        });
+    </script>
+{% endblock %}
