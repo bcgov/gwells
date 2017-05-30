@@ -6,6 +6,7 @@ from django.views.generic.edit import FormView
 #from django.utils import timezone
 from .models import WellYieldUnit, WellActivity, WellOwner
 from .forms import SearchForm, WellActivityTypeAndClassForm, WellOwnerForm, WellActivityLocationForm
+from .forms import WellActivityForm
 
 
 
@@ -116,4 +117,75 @@ class WellActivityCreateView(FormView):
             self.get_context_data(form=form,
                                   well_owner_form=well_owner_form,
                                   well_activity_location_form=well_activity_location_form,
+                                  ))
+
+
+
+class WellActivityCreateView2(FormView):
+    model = WellActivity
+    form_class = WellActivityForm
+    template_name = 'gwells/well_activity_form.html'
+    success_url = '/well-activity/'
+
+    def get(self, request, *args, **kwargs):
+        """
+        Handles GET requests and instantiates blank versions of the form
+        and its inline formsets.
+        """
+        self.object = None
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
+        #well_activity_location_form = WellActivityLocationForm()
+        return self.render_to_response(
+            self.get_context_data(form=form,
+                                  #well_activity_location_form=well_activity_location_form,
+                                  ))
+
+    def post(self, request, *args, **kwargs):
+        """
+        Handles POST requests, instantiating a form instance and its inline
+        formsets with the passed POST variables and then checking them for
+        validity.
+        """
+        self.object = None
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
+        #well_activity_location_form = WellActivityLocationForm(self.request.POST)
+        #if (form.is_valid() and well_owner_form.is_valid() and well_activity_location_form.is_valid()):
+        #    return self.form_valid(form, well_owner_form, well_activity_location_form)
+        #else:
+        #    return self.form_invalid(form, well_owner_form, well_activity_location_form)
+        if (form.is_valid()):
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
+
+    def form_valid(self, form):
+        """
+        Called if all forms are valid. Creates a WellActivity instance along with
+        associated WellOwner, Lithology, etc and then redirects to a
+        success page.
+        """
+        self.object = form.save()
+        
+        #full_name = form.cleaned_data.get('full_name')
+        #mailing_address = form.cleaned_data.get('mailing_address')
+        #city = form.cleaned_data.get('city')
+        #province_state = form.cleaned_data.get('province_state')
+        #postal_code = form.cleaned_data.get('postal_code')
+        #well_owner = WellOwner(full_name=full_name, mailing_address=mailing_address, city=city, province_state=province_state, postal_code=postal_code)
+        #well_owner.save()
+        
+        #well_activity_location_form.instance = self.object
+        #well_activity_location_form.save()
+        return HttpResponseRedirect(self.get_success_url())
+
+    def form_invalid(self, form):
+        """
+        Called if a form is invalid. Re-renders the context data with the
+        data-filled forms and errors.
+        """
+        return self.render_to_response(
+            self.get_context_data(form=form,
+                                  #well_activity_location_form=well_activity_location_form,
                                   ))

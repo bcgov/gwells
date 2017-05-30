@@ -16,8 +16,6 @@
 		<form action="{% url 'well_activity_create' %}" method="post">
 			{% csrf_token %}
     		{% crispy form %}
-    		{% crispy well_owner_form %}
-    		{% crispy well_activity_location_form %}
 
     		<div class="form-group">
     			<div class="controls">

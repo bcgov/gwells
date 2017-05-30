@@ -5,7 +5,7 @@ from crispy_forms.layout import Layout, Fieldset, Div, Submit, Hidden, HTML, Fie
 from crispy_forms.bootstrap import FormActions
 from django.forms.models import inlineformset_factory
 from .search import Search
-from .models import WellOwner, WellActivity
+from .models import WellOwner, WellActivity, ProvinceState
 
 class SearchForm(forms.Form):
     well = forms.IntegerField(
@@ -145,7 +145,7 @@ class WellActivityTypeAndClassForm(forms.ModelForm):
                 ),
                 Div(
                     Div('class_of_well', css_class='col-sm-3'),
-                    Div('subclass_of_well', css_class='col-sm-3'),
+                    #Div('subclass_of_well', css_class='col-sm-3'),
                     Div('well_use', css_class='col-sm-6'),
                     css_class='row',
                 ),
@@ -173,7 +173,7 @@ class WellActivityTypeAndClassForm(forms.ModelForm):
     
     class Meta:
         model = WellActivity
-        fields = ['well_activity_type', 'class_of_well', 'subclass_of_well', 'well_use', 'driller_responsible', 'driller_name', 'consultant_name', 'consultant_company', 'activity_start_date', 'activity_end_date']
+        fields = ['well_activity_type', 'class_of_well', 'well_use', 'driller_responsible', 'driller_name', 'consultant_name', 'consultant_company', 'activity_start_date', 'activity_end_date']
 
 
 
@@ -214,6 +214,109 @@ class WellActivityLocationForm(forms.ModelForm):
     class Meta:
         model = WellActivity
         fields = ['street_address', 'city', 'legal_lot', 'legal_plan', 'legal_district_lot', 'legal_block', 'legal_section', 'legal_township', 'legal_range', 'legal_land_district']
+
+
+
+class WellActivityForm(forms.ModelForm):
+    full_name = forms.CharField(
+        label='Owner Name',
+        max_length=200,
+        required=True,
+    )
+
+    mailing_address = forms.CharField(max_length=100, label='Mailing Address')
+    
+    city = forms.CharField(max_length=100, label='Town/City')
+    #province_state = 
+    postal_code = forms.CharField(max_length=10, required=False, label='Postal Code')
+
+    def __init__(self, *args, **kwargs):
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.disable_csrf = True
+        self.helper.layout = Layout(
+            Fieldset(
+                '',
+                Div(
+                    Div(Field('well_activity_type', css_class='name'), css_class='col-sm-12'),
+                    css_class='row',
+                ),
+                Div(
+                    Div('class_of_well', css_class='col-sm-3'),
+                    #Div('subclass_of_well', css_class='col-sm-3'),
+                    Div('well_use', css_class='col-sm-6'),
+                    css_class='row',
+                ),
+                Div(
+                    Div(Field('driller_responsible', css_class='name'), css_class='col-sm-12'),
+                    css_class='row',
+                ),
+                Div(
+                    Div(Field('driller_name', css_class='name'), css_class='col-sm-12'),
+                    css_class='row',
+                ),
+                Div(
+                    Div(Field('consultant_name', css_class='name'), css_class='col-sm-4'),
+                    Div(Field('consultant_company', css_class='name'), css_class='col-sm-8'),
+                    css_class='row',
+                ),
+                Div(
+                    Div('activity_start_date', css_class='col-sm-6'),
+                    Div('activity_end_date', css_class='col-sm-6'),
+                    css_class='row',
+                ),
+            ),
+            Fieldset(
+                'Owner Information',
+                Div(
+                    Div(Field('full_name', css_class='name'), css_class='col-sm-12'),
+                    css_class='row',
+                ),
+                Div(
+                    Div(Field('mailing_address', css_class='name'), css_class='col-sm-12'),
+                    css_class='row',
+                ),
+                Div(
+                    Div(Field('city', css_class='city'), css_class='col-sm-3'),
+                    Div('province_state', css_class='col-sm-1'),
+                    Div(Field('postal_code', css_class='postal'), css_class='col-sm-8'),
+                    css_class='row',
+                ),
+            ),
+            Fieldset(
+                'Well Location',
+                Div(
+                    Div(Field('street_address', css_class='name'), css_class='col-sm-12'),
+                    css_class='row',
+                ),
+                Div(
+                    Div(Field('city', css_class='city'), css_class='col-sm-12'),
+                    css_class='row',
+                ),
+                Div(
+                    Div('legal_lot', css_class='col-sm-3'),
+                    Div('legal_plan', css_class='col-sm-3'),
+                    Div('legal_district_lot', css_class='col-sm-3'),
+                    Div('legal_block', css_class='col-sm-3'),
+                    css_class='row',
+                ),
+                Div(
+                    Div('legal_section', css_class='col-sm-3'),
+                    Div('legal_township', css_class='col-sm-3'),
+                    Div('legal_range', css_class='col-sm-3'),
+                    Div('legal_land_district', css_class='col-sm-3'),
+                    css_class='row',
+                ),
+            )
+        )
+        super(WellActivityForm, self).__init__(*args, **kwargs)
+        self.fields['province_state']=forms.ModelChoiceField(queryset=ProvinceState.objects.order_by('sort_order'))
+    
+    class Meta:
+        model = WellActivity
+        fields = ['well_activity_type', 'class_of_well', 'well_use', 'driller_responsible', 'driller_name', 'consultant_name', 'consultant_company', 'activity_start_date', 'activity_end_date',
+            'full_name', 'mailing_address', 'city', 'postal_code',
+            'street_address', 'city', 'legal_lot', 'legal_plan', 'legal_district_lot', 'legal_block', 'legal_section', 'legal_township', 'legal_range', 'legal_land_district']
 
 
 
