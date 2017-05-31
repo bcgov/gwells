@@ -5,7 +5,7 @@ from crispy_forms.layout import Layout, Fieldset, Div, Submit, Hidden, HTML, Fie
 from crispy_forms.bootstrap import FormActions
 from django.forms.models import inlineformset_factory
 from .search import Search
-from .models import WellOwner, WellActivity, ProvinceState
+from .models import ActivitySubmission
 
 class SearchForm(forms.Form):
     well = forms.IntegerField(
@@ -108,17 +108,17 @@ class WellOwnerForm(forms.ModelForm):
             Fieldset(
                 'Owner Information',
                 Div(
-                    Div(Field('full_name', css_class='name'), css_class='col-sm-12'),
+                    Div(Field('owner_full_name', css_class='name'), css_class='col-sm-12'),
                     css_class='row',
                 ),
                 Div(
-                    Div(Field('mailing_address', css_class='name'), css_class='col-sm-12'),
+                    Div(Field('owner_mailing_address', css_class='name'), css_class='col-sm-12'),
                     css_class='row',
                 ),
                 Div(
-                    Div(Field('city', css_class='city'), css_class='col-sm-3'),
-                    Div('province_state', css_class='col-sm-1'),
-                    Div(Field('postal_code', css_class='postal'), css_class='col-sm-8'),
+                    Div(Field('owner_city', css_class='city'), css_class='col-sm-3'),
+                    Div('owner_province_state', css_class='col-sm-1'),
+                    Div(Field('owner_postal_code', css_class='postal'), css_class='col-sm-8'),
                     css_class='row',
                 ),
             )
@@ -126,12 +126,12 @@ class WellOwnerForm(forms.ModelForm):
         super(WellOwnerForm, self).__init__(*args, **kwargs)
     
     class Meta:
-        model = WellOwner
-        fields = ['full_name', 'mailing_address', 'city', 'province_state', 'postal_code']
+        model = ActivitySubmission
+        fields = ['owner_full_name', 'owner_mailing_address', 'owner_city', 'owner_province_state', 'owner_postal_code']
 
 
 
-class WellActivityTypeAndClassForm(forms.ModelForm):
+class ActivitySubmissionTypeAndClassForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
         self.helper.form_tag = False
@@ -144,9 +144,9 @@ class WellActivityTypeAndClassForm(forms.ModelForm):
                     css_class='row',
                 ),
                 Div(
-                    Div('class_of_well', css_class='col-sm-3'),
-                    #Div('subclass_of_well', css_class='col-sm-3'),
-                    Div('well_use', css_class='col-sm-6'),
+                    Div('well_class', css_class='col-sm-3'),
+                    Div('well_subclass', css_class='col-sm-3'),
+                    Div('intended_water_use', css_class='col-sm-6'),
                     css_class='row',
                 ),
                 Div(
@@ -163,21 +163,20 @@ class WellActivityTypeAndClassForm(forms.ModelForm):
                     css_class='row',
                 ),
                 Div(
-                    Div('activity_start_date', css_class='col-sm-6'),
-                    Div('activity_end_date', css_class='col-sm-6'),
+                    Div('work_start_date', css_class='col-sm-6'),
+                    Div('work_end_date', css_class='col-sm-6'),
                     css_class='row',
                 ),
             )
         )
-        super(WellActivityTypeAndClassForm, self).__init__(*args, **kwargs)
+        super(ActivitySubmissionTypeAndClassForm, self).__init__(*args, **kwargs)
     
     class Meta:
-        model = WellActivity
-        fields = ['well_activity_type', 'class_of_well', 'well_use', 'driller_responsible', 'driller_name', 'consultant_name', 'consultant_company', 'activity_start_date', 'activity_end_date']
+        model = ActivitySubmission
+        fields = ['well_activity_type', 'well_class', 'intended_water_use', 'driller_responsible', 'driller_name', 'consultant_name', 'consultant_company', 'work_start_date', 'work_end_date']
 
 
-
-class WellActivityLocationForm(forms.ModelForm):
+class ActivitySubmissionLocationForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
         self.helper.form_tag = False
@@ -209,27 +208,14 @@ class WellActivityLocationForm(forms.ModelForm):
                 ),
             )
         )
-        super(WellActivityLocationForm, self).__init__(*args, **kwargs)
+        super(ActivitySubmissionLocationForm, self).__init__(*args, **kwargs)
     
     class Meta:
-        model = WellActivity
+        model = ActivitySubmission
         fields = ['street_address', 'city', 'legal_lot', 'legal_plan', 'legal_district_lot', 'legal_block', 'legal_section', 'legal_township', 'legal_range', 'legal_land_district']
 
 
-
-class WellActivityForm(forms.ModelForm):
-    full_name = forms.CharField(
-        label='Owner Name',
-        max_length=200,
-        required=True,
-    )
-
-    mailing_address = forms.CharField(max_length=100, label='Mailing Address')
-    
-    city = forms.CharField(max_length=100, label='Town/City')
-    #province_state = 
-    postal_code = forms.CharField(max_length=10, required=False, label='Postal Code')
-
+class ActivitySubmissionForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
         self.helper.form_tag = False
@@ -242,9 +228,9 @@ class WellActivityForm(forms.ModelForm):
                     css_class='row',
                 ),
                 Div(
-                    Div('class_of_well', css_class='col-sm-3'),
-                    #Div('subclass_of_well', css_class='col-sm-3'),
-                    Div('well_use', css_class='col-sm-6'),
+                    Div('well_class', css_class='col-sm-3'),
+                    Div('well_subclass', css_class='col-sm-3'),
+                    Div('intended_water_use', css_class='col-sm-6'),
                     css_class='row',
                 ),
                 Div(
@@ -261,25 +247,25 @@ class WellActivityForm(forms.ModelForm):
                     css_class='row',
                 ),
                 Div(
-                    Div('activity_start_date', css_class='col-sm-6'),
-                    Div('activity_end_date', css_class='col-sm-6'),
+                    Div('work_start_date', css_class='col-sm-6'),
+                    Div('work_end_date', css_class='col-sm-6'),
                     css_class='row',
                 ),
             ),
             Fieldset(
                 'Owner Information',
                 Div(
-                    Div(Field('full_name', css_class='name'), css_class='col-sm-12'),
+                    Div(Field('owner_full_name', css_class='name'), css_class='col-sm-12'),
                     css_class='row',
                 ),
                 Div(
-                    Div(Field('mailing_address', css_class='name'), css_class='col-sm-12'),
+                    Div(Field('owner_mailing_address', css_class='name'), css_class='col-sm-12'),
                     css_class='row',
                 ),
                 Div(
-                    Div(Field('city', css_class='city'), css_class='col-sm-3'),
-                    Div('province_state', css_class='col-sm-1'),
-                    Div(Field('postal_code', css_class='postal'), css_class='col-sm-8'),
+                    Div(Field('owner_city', css_class='city'), css_class='col-sm-3'),
+                    Div('owner_province_state', css_class='col-sm-1'),
+                    Div(Field('owner_postal_code', css_class='postal'), css_class='col-sm-8'),
                     css_class='row',
                 ),
             ),
@@ -309,17 +295,15 @@ class WellActivityForm(forms.ModelForm):
                 ),
             )
         )
-        super(WellActivityForm, self).__init__(*args, **kwargs)
-        self.fields['province_state']=forms.ModelChoiceField(queryset=ProvinceState.objects.order_by('sort_order'))
+        super(ActivitySubmissionForm, self).__init__(*args, **kwargs)
     
     class Meta:
-        model = WellActivity
-        fields = ['well_activity_type', 'class_of_well', 'well_use', 'driller_responsible', 'driller_name', 'consultant_name', 'consultant_company', 'activity_start_date', 'activity_end_date',
-            'full_name', 'mailing_address', 'city', 'postal_code',
+        model = ActivitySubmission
+        fields = ['well_activity_type', 'well_class', 'intended_water_use', 'driller_responsible', 'driller_name', 'consultant_name', 'consultant_company', 'work_start_date', 'work_end_date',
+            'owner_full_name', 'owner_mailing_address', 'owner_city', 'owner_province_state', 'owner_postal_code',
             'street_address', 'city', 'legal_lot', 'legal_plan', 'legal_district_lot', 'legal_block', 'legal_section', 'legal_township', 'legal_range', 'legal_land_district']
 
 
 
-#WellOwnerFormSet = inlineformset_factory(WellActivity, WellOwner, form=WellOwnerForm, max_num=1, can_delete=False)
-#WellCompletionDataFormSet = inlineformset_factory(WellActivity, WellCompletionData, max_num=1, can_delete=False)
-#LithologyFormSet = inlineformset_factory(WellActivity, Lithology, extra=5)
+#WellCompletionDataFormSet = inlineformset_factory(ActivitySubmission, WellCompletionData, max_num=1, can_delete=False)
+#LithologyFormSet = inlineformset_factory(ActivitySubmission, Lithology, extra=5)
