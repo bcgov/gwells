@@ -43,7 +43,7 @@
                 {% anchor identification_plate_number "Well ID Plate #" %}
             </div>
             <div class="col-sm-2">
-                {% anchor well_owner__full_name "Owner Name" %}
+                {% anchor owner_full_name "Owner Name" %}
             </div>
             <div class="col-sm-1">
                 {% anchor street_address "Street Address" %}
@@ -74,13 +74,13 @@
     {% for well in well_list %}
         <div class="row row-bordered">
             <div class="col-sm-1">
-                <a href="{% url 'detail' well.id %}">{{ well.well_tag_number }}</a>
+                <a href="{% url 'detail' well.well_guid %}">{{ well.well_tag_number }}</a>
             </div>
             <div class="col-sm-1">
                 {{ well.identification_plate_number|default_if_none:'&nbsp;' }}
             </div>
             <div class="col-sm-2">
-                {{ well.well_owner.full_name|default_if_none:'&nbsp;' }}
+                {{ well.owner_full_name|default_if_none:'&nbsp;' }}
             </div>
             <div class="col-sm-1">
                 {{ well.street_address|default_if_none:'' }}

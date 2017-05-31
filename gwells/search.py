@@ -1,7 +1,7 @@
 from django.db.models import Q
 from functools import reduce
 import operator
-from .models import WellActivity
+from .models import ActivitySubmission
 
 class Search():
     def well_search(well='', addr='', legal='', owner=''):
@@ -30,9 +30,9 @@ class Search():
             q_list.append(Q(legal_plan__icontains=legal) | Q(legal_district_lot__icontains=legal) | Q(legal_pid=pid))
 
         if owner:
-            q_list.append(Q(wellowner__full_name__icontains=owner))
+            q_list.append(Q(owner_full_name__icontains=owner))
 
         if len(q_list) > 0:
-            well_results = WellActivity.objects.distinct().filter(reduce(operator.and_, q_list)).order_by('well_tag_number', 'id')
+            well_results = ActivitySubmission.objects.distinct().filter(reduce(operator.and_, q_list)).order_by('well_tag_number', 'created')
                 
         return well_results
