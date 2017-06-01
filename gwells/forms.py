@@ -145,7 +145,7 @@ class ActivitySubmissionTypeAndClassForm(forms.ModelForm):
                 ),
                 Div(
                     Div('well_class', css_class='col-sm-3'),
-                    Div('well_subclass', css_class='col-sm-3'),
+                    #Div('well_subclass', css_class='col-sm-3'),
                     Div('intended_water_use', css_class='col-sm-6'),
                     css_class='row',
                 ),
