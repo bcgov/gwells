@@ -13,9 +13,9 @@ urlpatterns = [
 
     url(r'^$', views.HelloWorldView.as_view(), name='home'),
     url(r'^search$', views.well_search, name='search'),
-    url(r'^(?P<pk>[0-9]+)/$', views.DetailView.as_view(), name='detail'),
+    url(r'^(?P<pk>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/$', views.DetailView.as_view(), name='detail'),
     url(r'^submission/$', views.ActivitySubmissionListView.as_view(), name='activity_submission_list'),
-    url(r'^submission/create$', views.ActivitySubmissionCreateView.as_view(), name='activity_submission_create'),
+    url(r'^submission/create$', views.ActivitySubmissionWizardView.as_view(), name='activity_submission_create'),
     url(r'^submission/(?P<pk>[0-9]+)$', views.ActivitySubmissionDetailView.as_view(), name='activity_submission_detail'),
     url(r'^health$', health),
     url(r'^admin/', admin.site.urls),

@@ -231,7 +231,7 @@ class ActivitySubmission(TimeStampedModel):
     """
     Activity information on a Well submitted by a user.
     """
-    #filing_number = models.AutoField(primary_key=True)
+    filing_number = models.AutoField(primary_key=True)
     activity_submission_guid = models.UUIDField(primary_key=False, default=uuid.uuid4, editable=False)
     well = models.ForeignKey(Well, db_column='well_guid', on_delete=models.CASCADE, blank=True, null=True)
     well_activity_type = models.ForeignKey(WellActivityType, db_column='well_activity_type_guid', on_delete=models.CASCADE, verbose_name='Type of Work')

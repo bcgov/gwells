@@ -49,6 +49,7 @@ INSTALLED_APPS = (
     'crispy_forms',
     'dj_pagination',
     'webstack_django_sorting',
+    'formtools',
 )
 
 MIDDLEWARE = (

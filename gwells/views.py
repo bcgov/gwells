@@ -4,8 +4,9 @@ from django.shortcuts import get_object_or_404, render
 from django.views import generic
 from django.views.generic.edit import FormView
 #from django.utils import timezone
+from formtools.wizard.views import SessionWizardView
 from .models import WellYieldUnit, Well, ActivitySubmission
-from .forms import SearchForm, ActivitySubmissionTypeAndClassForm, ActivitySubmissionLocationForm
+from .forms import SearchForm, ActivitySubmissionTypeAndClassForm, WellOwnerForm, ActivitySubmissionLocationForm
 from .forms import ActivitySubmissionForm
 
 
@@ -55,6 +56,21 @@ class ActivitySubmissionDetailView(generic.DetailView):
     context_object_name = 'activity_submission'
     template_name = 'gwells/activity_submission_detail.html'
 
+
+
+class ActivitySubmissionWizardView(SessionWizardView):
+    form_list = [ActivitySubmissionTypeAndClassForm, WellOwnerForm, ActivitySubmissionLocationForm]
+    template_name = 'gwells/activity_submission_form.html'
+
+    def done(self, form_list, **kwargs):
+        instance = ActivitySubmission()
+        for form in form_list:
+            for field, value in form.cleaned_data.items():
+                setattr(instance, field, value)
+        instance.save()
+
+        #lithology = form_dict['lithology'].save()
+        return HttpResponseRedirect('/submission/')
 
 
 class ActivitySubmissionCreateView(FormView):

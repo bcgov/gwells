@@ -12,14 +12,33 @@
 
 {% block body_block %}
 
-
+<p>Step {{ wizard.steps.step1 }} of {{ wizard.steps.count }}</p>
 		<form action="{% url 'activity_submission_create' %}" method="post">
 			{% csrf_token %}
-    		{% crispy form %}
+<table>
+{{ wizard.management_form }}
+{% if wizard.form.forms %}
+    {{ wizard.form.management_form }}
+    {% for form in wizard.form.forms %}
+        {% crispy form %}
+    {% endfor %}
+{% else %}
+    {% crispy wizard.form %}
+{% endif %}
+</table>
+
 
     		<div class="form-group">
     			<div class="controls">
-    				<input type="submit" name="s" value="Submit" class="btn btn-primary" id="submit-id-s" />
+{% if wizard.steps.prev %}
+<button name="wizard_goto_step" type="submit" value="{{ wizard.steps.prev }}" class="btn" id="previous">Prev step</button>
+{% endif %}
+{% if wizard.steps.next %}
+                    <input type="submit" name="wizard_goto_step" value="Next" class="btn btn-primary" id="submit-id-next" />
+<!--<button name="wizard_goto_step" type="submit" value="{{ wizard.steps.next }}" class="btn" id="next">Next Step</button>-->
+{% else %}
+    				<input type="submit" name="wizard_goto_step" value="Submit" class="btn btn-primary" id="submit-id-s" />
+{% endif %}
     			</div>
 			</div>
 		</form>    
