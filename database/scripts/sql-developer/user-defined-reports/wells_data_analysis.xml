@@ -47,7 +47,10 @@ order by count(*) desc]]></sql>
 				<header enable="false" generatedate="false">
 					<data>
 					
-					null										</data>
+					
+					
+					
+					null																									</data>
 				</header>
 				<footer enable="false" generatedate="false">
 					<data value="null" />
@@ -102,7 +105,10 @@ order by analysis_grp]]></sql>
 				<header enable="false" generatedate="false">
 					<data>
 					
-					null										</data>
+					
+					
+					
+					null																									</data>
 				</header>
 				<footer enable="false" generatedate="false">
 					<data value="null" />
@@ -117,7 +123,7 @@ order by analysis_grp]]></sql>
 		<name><![CDATA[TYPE_OF_WELL_CAP sorted by most-common ]]></name>
 		<description><![CDATA[WELLS_WELLS.TYPE_OF_WELL_CAP values, grouped and sorted by most-records-in-this-group to least-records-in-this-group.]]></description>
 		<tooltip><![CDATA[]]></tooltip>
-		<drillclass><![CDATA[null]]></drillclass>
+		<drillclass><![CDATA[]]></drillclass>
 		<CustomValues>
 			<TYPE>horizontal</TYPE>
 		</CustomValues>
@@ -148,7 +154,10 @@ order by count(*) desc]]></sql>
 				<table font="Times New Roman" size="10" style="NORMAL" color="-16777216" userowshading="false" oddrowshading="-1" evenrowshading="-1" showborders="true" spacingbefore="12" spacingafter="12" horizontalalign="LEFT" />
 				<header enable="false" generatedate="false">
 					<data>
-					null					</data>
+					
+					
+					
+					null																				</data>
 				</header>
 				<footer enable="false" generatedate="false">
 					<data value="null" />
@@ -163,7 +172,7 @@ order by count(*) desc]]></sql>
 		<name><![CDATA[TYPE_OF_WELL_CAP sorted alphabetically ]]></name>
 		<description><![CDATA[WELLS_WELLS.TYPE_OF_WELL_CAP values, grouped and sorted by the text value (to show mis-spellings or variations of).]]></description>
 		<tooltip><![CDATA[]]></tooltip>
-		<drillclass><![CDATA[null]]></drillclass>
+		<drillclass><![CDATA[]]></drillclass>
 		<CustomValues>
 			<TYPE>horizontal</TYPE>
 		</CustomValues>
@@ -188,7 +197,7 @@ order by analysis_grp]]></sql>
 		<name><![CDATA[WHERE_PLATE_ATTACHED sorted by most-common]]></name>
 		<description><![CDATA[WELLS_WELLS.WHERE_PLATE_ATTACHED values, grouped and sorted by most-records-in-this-group to least-records-in-this-group.]]></description>
 		<tooltip><![CDATA[]]></tooltip>
-		<drillclass><![CDATA[null]]></drillclass>
+		<drillclass><![CDATA[]]></drillclass>
 		<CustomValues>
 			<TYPE>horizontal</TYPE>
 		</CustomValues>
@@ -210,7 +219,7 @@ order by count(*) desc]]></sql>
 		<name><![CDATA[WHERE_PLATE_ATTACHED sorted alphabetically ]]></name>
 		<description><![CDATA[WELLS_WELLS.WHERE_PLATE_ATTACHED values, grouped and sorted by the text value (to show mis-spellings or variations of).]]></description>
 		<tooltip><![CDATA[]]></tooltip>
-		<drillclass><![CDATA[null]]></drillclass>
+		<drillclass><![CDATA[]]></drillclass>
 		<CustomValues>
 			<TYPE>horizontal</TYPE>
 		</CustomValues>
@@ -232,7 +241,7 @@ order by analysis_grp]]></sql>
 		<name><![CDATA[BACKFILL_TYPE sorted by most-common ]]></name>
 		<description><![CDATA[WELLS_WELLS.BACKFILL_TYPE values, grouped and sorted by most-records-in-this-group to least-records-in-this-group.]]></description>
 		<tooltip><![CDATA[]]></tooltip>
-		<drillclass><![CDATA[null]]></drillclass>
+		<drillclass><![CDATA[]]></drillclass>
 		<CustomValues>
 			<TYPE>horizontal</TYPE>
 		</CustomValues>
@@ -253,7 +262,7 @@ order by count(*) desc]]></sql>
 		<name><![CDATA[BACKFILL_TYPE sorted alphabetically ]]></name>
 		<description><![CDATA[WELLS_WELLS.BACKFILL_TYPE values, grouped and sorted by the text value (to show mis-spellings or variations of).]]></description>
 		<tooltip><![CDATA[]]></tooltip>
-		<drillclass><![CDATA[null]]></drillclass>
+		<drillclass><![CDATA[]]></drillclass>
 		<CustomValues>
 			<TYPE>horizontal</TYPE>
 		</CustomValues>
@@ -274,7 +283,7 @@ order by analysis_grp]]></sql>
 		<name><![CDATA[BACKFILL_MATERIAL sorted by most-common ]]></name>
 		<description><![CDATA[WELLS_WELLS.BACKFILL_MATERIAL values, grouped and sorted by most-records-in-this-group to least-records-in-this-group.]]></description>
 		<tooltip><![CDATA[]]></tooltip>
-		<drillclass><![CDATA[null]]></drillclass>
+		<drillclass><![CDATA[]]></drillclass>
 		<CustomValues>
 			<TYPE>horizontal</TYPE>
 		</CustomValues>
@@ -296,7 +305,7 @@ order by count(*) desc]]></sql>
 		<name><![CDATA[BACKFILL_MATERIAL sorted alphabetically ]]></name>
 		<description><![CDATA[WELLS_WELLS.BACKFILL_MATERIAL values, grouped and sorted by the text value (to show mis-spellings or variations of).]]></description>
 		<tooltip><![CDATA[]]></tooltip>
-		<drillclass><![CDATA[null]]></drillclass>
+		<drillclass><![CDATA[]]></drillclass>
 		<CustomValues>
 			<TYPE>horizontal</TYPE>
 		</CustomValues>
@@ -318,7 +327,7 @@ order by analysis_grp]]></sql>
 		<name><![CDATA[DIAMETER sorted by most-common ]]></name>
 		<description><![CDATA[WELLS_WELLS.DIAMETER values, grouped and sorted by most-records-in-this-group to least-records-in-this-group.]]></description>
 		<tooltip><![CDATA[]]></tooltip>
-		<drillclass><![CDATA[null]]></drillclass>
+		<drillclass><![CDATA[]]></drillclass>
 		<CustomValues>
 			<TYPE>horizontal</TYPE>
 		</CustomValues>
@@ -368,7 +377,10 @@ order by count(*) desc]]></sql>
 				<table font="Times New Roman" size="10" style="NORMAL" color="-16777216" userowshading="false" oddrowshading="-1" evenrowshading="-1" showborders="true" spacingbefore="12" spacingafter="12" horizontalalign="LEFT" />
 				<header enable="false" generatedate="false">
 					<data>
-					null					</data>
+					
+					
+					
+					null																				</data>
 				</header>
 				<footer enable="false" generatedate="false">
 					<data value="null" />
@@ -383,7 +395,7 @@ order by count(*) desc]]></sql>
 		<name><![CDATA[DIAMETER sorted by range ]]></name>
 		<description><![CDATA[WELLS_WELLS.DIAMETER values, grouped and sorted by the numeric range]]></description>
 		<tooltip><![CDATA[]]></tooltip>
-		<drillclass><![CDATA[null]]></drillclass>
+		<drillclass><![CDATA[]]></drillclass>
 		<CustomValues>
 			<TYPE>horizontal</TYPE>
 		</CustomValues>
@@ -433,7 +445,10 @@ order by analysis_grp]]></sql>
 				<table font="Times New Roman" size="10" style="NORMAL" color="-16777216" userowshading="false" oddrowshading="-1" evenrowshading="-1" showborders="true" spacingbefore="12" spacingafter="12" horizontalalign="LEFT" />
 				<header enable="false" generatedate="false">
 					<data>
-					null					</data>
+					
+					
+					
+					null																				</data>
 				</header>
 				<footer enable="false" generatedate="false">
 					<data value="null" />
@@ -443,6 +458,118 @@ order by analysis_grp]]></sql>
 				</security>
 				<pagesetup papersize="LETTER" orientation="1" measurement="in" margintop="1.0" marginbottom="1.0" marginleft="1.0" marginright="1.0" />
 			</pdf>
+	</display>
+	<display id="65b4755e-015c-1000-8001-8e229028fa45" type="" style="Table" enable="true">
+		<name><![CDATA[SCREEN_SLOT_SIZE sorted by most-common ]]></name>
+		<description><![CDATA[WELLS_WELLS.SCREEN_SLOT_SIZE values, grouped and sorted by most-records-in-this-group to least-records-in-this-group.
+]]></description>
+		<tooltip><![CDATA[]]></tooltip>
+		<drillclass><![CDATA[]]></drillclass>
+		<CustomValues>
+			<TYPE>horizontal</TYPE>
+		</CustomValues>
+		<query>
+			<sql><![CDATA[select analysis_grp, count(*)
+from
+(
+ select case when SCREEN_SLOT_SIZE is null or SCREEN_SLOT_SIZE = 0 then ' 0 / (null)'
+ 		else to_char(SCREEN_SLOT_SIZE)
+        end as analysis_grp
+ from wells_screens
+)
+group by analysis_grp
+order by count(*) desc]]></sql>
+			<binds>
+				<bind id="null">
+					<value><![CDATA[NULL_VALUE]]></value>
+				</bind>
+			</binds>
+		</query>
+			<pdf version="VERSION_1_7" compression="CONTENT">
+				<docproperty title="" author="" subject="" keywords="" />
+				<cell toppadding="2" bottompadding="2" leftpadding="2" rightpadding="2" horizontalalign="LEFT" verticalalign="TOP" wrap="true" />
+				<column>
+					<heading font="Times New Roman" size="10" style="NORMAL" color="-16777216" rowshading="-1" labeling="FIRST_PAGE" />
+					<footing font="Times New Roman" size="10" style="NORMAL" color="-16777216" rowshading="-1" labeling="NONE" />
+					<blob blob="NONE" zip="false" />
+				</column>
+				<table font="Times New Roman" size="10" style="NORMAL" color="-16777216" userowshading="false" oddrowshading="-1" evenrowshading="-1" showborders="true" spacingbefore="12" spacingafter="12" horizontalalign="LEFT" />
+				<header enable="false" generatedate="false">
+					<data>
+					
+					null										</data>
+				</header>
+				<footer enable="false" generatedate="false">
+					<data value="null" />
+				</footer>
+				<security enable="false" useopenpassword="false" openpassword="" encryption="EXCLUDE_METADATA">
+					<permission enable="false" permissionpassword="" allowcopying="true" allowprinting="true" allowupdating="false" allowaccessdevices="true" />
+				</security>
+				<pagesetup papersize="LETTER" orientation="1" measurement="in" margintop="1.0" marginbottom="1.0" marginleft="1.0" marginright="1.0" />
+			</pdf>
+		<display id="" type="" style="Table" enable="true">
+			<name><![CDATA[DETAILS]]></name>
+			<description><![CDATA[Detailed WELLS_SCREENS records]]></description>
+			<tooltip><![CDATA[]]></tooltip>
+			<drillclass><![CDATA[]]></drillclass>
+			<CustomValues>
+				<TYPE>horizontal</TYPE>
+			</CustomValues>
+			<query>
+				<sql><![CDATA[null]]></sql>
+			</query>
+				<pdf version="VERSION_1_7" compression="CONTENT">
+					<docproperty title="" author="" subject="" keywords="" />
+					<cell toppadding="2" bottompadding="2" leftpadding="2" rightpadding="2" horizontalalign="LEFT" verticalalign="TOP" wrap="true" />
+					<column>
+						<heading font="Times New Roman" size="10" style="NORMAL" color="-16777216" rowshading="-1" labeling="FIRST_PAGE" />
+						<footing font="Times New Roman" size="10" style="NORMAL" color="-16777216" rowshading="-1" labeling="NONE" />
+						<blob blob="NONE" zip="false" />
+					</column>
+					<table font="Times New Roman" size="10" style="NORMAL" color="-16777216" userowshading="false" oddrowshading="-1" evenrowshading="-1" showborders="true" spacingbefore="12" spacingafter="12" horizontalalign="LEFT" />
+					<header enable="false" generatedate="false">
+						<data>
+						
+						null												</data>
+					</header>
+					<footer enable="false" generatedate="false">
+						<data value="null" />
+					</footer>
+					<security enable="false" useopenpassword="false" openpassword="" encryption="EXCLUDE_METADATA">
+						<permission enable="false" permissionpassword="" allowcopying="true" allowprinting="true" allowupdating="false" allowaccessdevices="true" />
+					</security>
+					<pagesetup papersize="LETTER" orientation="1" measurement="in" margintop="1.0" marginbottom="1.0" marginleft="1.0" marginright="1.0" />
+				</pdf>
+		</display>
+	</display>
+	<display id="65b58508-015c-1000-8004-8e229028fa45" type="" style="Table" enable="true">
+		<name><![CDATA[SCREEN_SLOT_SIZE sorted by range ]]></name>
+		<description><![CDATA[WELLS_SCREENS.SCREEN_SLOT_SIZE values, grouped and sorted by the numeric range]]></description>
+		<tooltip><![CDATA[]]></tooltip>
+		<drillclass><![CDATA[]]></drillclass>
+		<CustomValues>
+			<TYPE>horizontal</TYPE>
+		</CustomValues>
+		<query>
+			<sql><![CDATA[select analysis_grp, count(*)
+from
+(
+ select case when SCREEN_SLOT_SIZE is null or SCREEN_SLOT_SIZE = 0 then ' 0 / (null)'
+ 		when SCREEN_SLOT_SIZE   >    0 and SCREEN_SLOT_SIZE <    1 then ' >  000 and < 1.0'
+ 		when SCREEN_SLOT_SIZE   >=   1 and SCREEN_SLOT_SIZE <   10 then ' >= 001 (inclusive) and <   10'
+ 		when SCREEN_SLOT_SIZE   >=  10 and SCREEN_SLOT_SIZE <  100 then ' >= 010 (inclusive) and <  100'
+ 		when SCREEN_SLOT_SIZE   >= 100 and SCREEN_SLOT_SIZE <  200 then ' >= 100 (inclusive) and <  200'
+ 		when SCREEN_SLOT_SIZE   >= 200 and SCREEN_SLOT_SIZE <  300 then ' >= 200 (inclusive) and <  300'
+ 		when SCREEN_SLOT_SIZE   >= 300 and SCREEN_SLOT_SIZE <  500 then ' >= 300 (inclusive) and <  500'
+ 		when SCREEN_SLOT_SIZE   >= 500 and SCREEN_SLOT_SIZE < 1000 then ' >= 500 (inclusive) and < 1000'
+
+ 		else to_char(SCREEN_SLOT_SIZE)
+        end as analysis_grp
+ from wells_screens
+)
+group by analysis_grp
+order by analysis_grp]]></sql>
+		</query>
 	</display>
 </folder>
 </displays>
