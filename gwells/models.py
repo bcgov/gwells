@@ -233,7 +233,7 @@ class ActivitySubmission(TimeStampedModel):
     """
     filing_number = models.AutoField(primary_key=True)
     activity_submission_guid = models.UUIDField(primary_key=False, default=uuid.uuid4, editable=False)
-    well = models.ForeignKey(Well, db_column='well_guid', on_delete=models.CASCADE, blank=True, null=True)
+    well = models.ForeignKey(Well, db_column='well_tag_number', on_delete=models.CASCADE, blank=True, null=True)
     well_activity_type = models.ForeignKey(WellActivityType, db_column='well_activity_type_guid', on_delete=models.CASCADE, verbose_name='Type of Work')
     well_class = models.ForeignKey(WellClass, db_column='well_class_guid', on_delete=models.CASCADE, verbose_name='Well Class')
     well_subclass = models.ForeignKey(WellSubclass, db_column='well_subclass_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Well Subclass')
