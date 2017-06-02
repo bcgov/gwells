@@ -24,7 +24,6 @@ class SearchTestCase(TestCase):
 
         w = Well.objects.create(well_class=well_class, owner_province_state=prov)
         w.identification_plate_number = 123
-        w.well_tag_number = 456
         w.street_address = '123 Main St.'
         w.legal_plan = '7789'
         w.owner_full_name = 'John Smith'
@@ -32,15 +31,13 @@ class SearchTestCase(TestCase):
 
         w2 = Well.objects.create(well_class=well_class, owner_province_state=prov)
         w2.identification_plate_number = 3456332
-        w2.well_tag_number = 890
         w2.street_address = '555 Government Street'
         w2.legal_district_lot = '789'
         w2.owner_full_name = 'Jane Doe'
         w2.save()
 
         w3 = Well.objects.create(well_class=well_class, owner_province_state=prov)
-        w3.identification_plate_number = 55555
-        w3.well_tag_number = 123
+        w3.identification_plate_number = 1
         w3.street_address = '200 Main Street'
         w3.pid = 54321
         w3.owner_full_name = 'Joe Smith'
@@ -49,7 +46,7 @@ class SearchTestCase(TestCase):
 
 
     def test_well_search_well_number(self):
-   	    wells = Search.well_search('123', '', '', '')
+   	    wells = Search.well_search('1', '', '', '')
    	    self.assertEqual(wells.count(), 2)
 
 

@@ -63,11 +63,19 @@ class ActivitySubmissionWizardView(SessionWizardView):
     template_name = 'gwells/activity_submission_form.html'
 
     def done(self, form_list, **kwargs):
-        instance = ActivitySubmission()
+        submission = ActivitySubmission()
         for form in form_list:
             for field, value in form.cleaned_data.items():
-                setattr(instance, field, value)
-        instance.save()
+                setattr(submission, field, value)
+
+        if submission.well_activity_type.code == 'CON' and submission.well is None:
+            #TODO
+            #w = submission.createWell()
+            #w = w.save()
+            #submission.well = w
+            submission.save()
+        else:
+            submission.save()
 
         #lithology = form_dict['lithology'].save()
         return HttpResponseRedirect('/submission/')
