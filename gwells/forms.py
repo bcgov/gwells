@@ -5,7 +5,7 @@ from crispy_forms.layout import Layout, Fieldset, Div, Submit, Hidden, HTML, Fie
 from crispy_forms.bootstrap import FormActions
 from django.forms.models import inlineformset_factory
 from .search import Search
-from .models import ActivitySubmission
+from .models import ActivitySubmission, WellActivityType
 
 class SearchForm(forms.Form):
     well = forms.IntegerField(
@@ -169,8 +169,17 @@ class ActivitySubmissionTypeAndClassForm(forms.ModelForm):
                 ),
             )
         )
+        
         super(ActivitySubmissionTypeAndClassForm, self).__init__(*args, **kwargs)
-    
+        
+        try:
+            con = WellActivityType.objects.get(code='CON')
+            self.initial['well_activity_type'] = con
+            #self.fields['well_activity_type'].widget = forms.RadioSelect(attrs={'id': 'value'})
+            self.fields['well_activity_type'].empty_label = None
+        except Exception as e:
+            pass
+
     class Meta:
         model = ActivitySubmission
         fields = ['well_activity_type', 'well_class', 'intended_water_use', 'driller_responsible', 'driller_name', 'consultant_name', 'consultant_company', 'work_start_date', 'work_end_date']

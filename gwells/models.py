@@ -182,7 +182,8 @@ class Well(TimeStampedModel):
     """
     Well information.
     """
-    well_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    well_tag_number = models.AutoField(primary_key=True)
+    well_guid = models.UUIDField(primary_key=False, default=uuid.uuid4, editable=False)
     well_class = models.ForeignKey(WellClass, db_column='well_class_guid', on_delete=models.CASCADE, verbose_name='Well Class')
     well_subclass = models.ForeignKey(WellSubclass, db_column='well_subclass_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Well Subclass')
     intended_water_use = models.ForeignKey(IntendedWaterUse, db_column='intended_water_use_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Water Supply Well Intended Water Use')
@@ -207,7 +208,6 @@ class Well(TimeStampedModel):
     well_location_description = models.CharField(max_length=500, blank=True, verbose_name='Well Location Description')
 
     identification_plate_number = models.PositiveIntegerField(unique=True, blank=True, null=True)
-    well_tag_number = models.PositiveIntegerField(unique=True, blank=True, null=True)
     diameter = models.CharField(max_length=9, blank=True)  #want to be integer in future
     #diameter_unit
     total_depth_drilled = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True)
@@ -265,7 +265,6 @@ class ActivitySubmission(TimeStampedModel):
     well_location_description = models.CharField(max_length=500, blank=True, verbose_name='Well Location Description')
 
     identification_plate_number = models.PositiveIntegerField(unique=True, blank=True, null=True)
-    well_tag_number = models.PositiveIntegerField(unique=True, blank=True, null=True)
     diameter = models.CharField(max_length=9, blank=True)  #want to be integer in future
     #diameter_unit
     total_depth_drilled = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True)
@@ -276,7 +275,35 @@ class ActivitySubmission(TimeStampedModel):
     well_yield_unit = models.ForeignKey(WellYieldUnit, db_column='well_yield_unit_guid', on_delete=models.CASCADE, blank=True, null=True)
     
     tracker = FieldTracker()
+
+    def createWell(self):
+        w = Well(well_class = self.well_class)
+        w.well_subclass = self.well_subclass
+        w.intended_water_use = self.intended_water_use
+        w.owner_full_name = self.owner_full_name
+        w.owner_mailing_address = self.owner_mailing_address
+        w.owner_city = self.owner_city
+        w.owner_province_state = self.owner_province_state
+        w.owner_postal_code = self.owner_postal_code
     
+        w.street_address = self.street_address
+        w.city = self.city
+        w.legal_lot = self.legal_lot
+        w.legal_plan = self.legal_plan
+        w.legal_district_lot = self.legal_district_lot
+        w.legal_block = self.legal_block
+        w.legal_section = self.legal_section
+        w.legal_township = self.legal_township
+        w.legal_range = self.legal_range
+        w.legal_land_district = self.legal_land_district
+        w.legal_pid = self.legal_pid
+        w.well_location_description = self.well_location_description
+
+        w.identification_plate_number = self.identification_plate_number
+        #TODO
+
+        return w;
+
     class Meta:
         db_table = 'gwells_activity_submission'
 
