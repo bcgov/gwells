@@ -124,6 +124,13 @@ class WellOwnerForm(forms.ModelForm):
             )
         )
         super(WellOwnerForm, self).__init__(*args, **kwargs)
+
+        try:
+            bc = WellActivityType.objects.get(code='BC')
+            self.initial['owner_province_state'] = bc
+            self.fields['owner_province_state'].empty_label = None
+        except Exception as e:
+            pass
     
     class Meta:
         model = ActivitySubmission
@@ -136,39 +143,6 @@ class ActivitySubmissionTypeAndClassForm(forms.ModelForm):
         self.helper = FormHelper()
         self.helper.form_tag = False
         self.helper.disable_csrf = True
-        self.helper.layout = Layout(
-            Fieldset(
-                '',
-                Div(
-                    Div(Field('well_activity_type', css_class='name'), css_class='col-sm-12'),
-                    css_class='row',
-                ),
-                Div(
-                    Div('well_class', css_class='col-sm-3'),
-                    #Div('well_subclass', css_class='col-sm-3'),
-                    Div('intended_water_use', css_class='col-sm-6'),
-                    css_class='row',
-                ),
-                Div(
-                    Div(Field('driller_responsible', css_class='name'), css_class='col-sm-12'),
-                    css_class='row',
-                ),
-                Div(
-                    Div(Field('driller_name', css_class='name'), css_class='col-sm-12'),
-                    css_class='row',
-                ),
-                Div(
-                    Div(Field('consultant_name', css_class='name'), css_class='col-sm-4'),
-                    Div(Field('consultant_company', css_class='name'), css_class='col-sm-8'),
-                    css_class='row',
-                ),
-                Div(
-                    Div('work_start_date', css_class='col-sm-6'),
-                    Div('work_end_date', css_class='col-sm-6'),
-                    css_class='row',
-                ),
-            )
-        )
         
         super(ActivitySubmissionTypeAndClassForm, self).__init__(*args, **kwargs)
         
@@ -182,7 +156,7 @@ class ActivitySubmissionTypeAndClassForm(forms.ModelForm):
 
     class Meta:
         model = ActivitySubmission
-        fields = ['well_activity_type', 'well_class', 'intended_water_use', 'driller_responsible', 'driller_name', 'consultant_name', 'consultant_company', 'work_start_date', 'work_end_date']
+        fields = ['well_activity_type', 'well_class', 'intended_water_use', 'identification_plate_number', 'driller_responsible', 'driller_name', 'consultant_name', 'consultant_company', 'work_start_date', 'work_end_date']
 
 
 class ActivitySubmissionLocationForm(forms.ModelForm):
@@ -222,95 +196,6 @@ class ActivitySubmissionLocationForm(forms.ModelForm):
     class Meta:
         model = ActivitySubmission
         fields = ['street_address', 'city', 'legal_lot', 'legal_plan', 'legal_district_lot', 'legal_block', 'legal_section', 'legal_township', 'legal_range', 'legal_land_district']
-
-
-class ActivitySubmissionForm(forms.ModelForm):
-    def __init__(self, *args, **kwargs):
-        self.helper = FormHelper()
-        self.helper.form_tag = False
-        self.helper.disable_csrf = True
-        self.helper.layout = Layout(
-            Fieldset(
-                '',
-                Div(
-                    Div(Field('well_activity_type', css_class='name'), css_class='col-sm-12'),
-                    css_class='row',
-                ),
-                Div(
-                    Div('well_class', css_class='col-sm-3'),
-                    Div('well_subclass', css_class='col-sm-3'),
-                    Div('intended_water_use', css_class='col-sm-6'),
-                    css_class='row',
-                ),
-                Div(
-                    Div(Field('driller_responsible', css_class='name'), css_class='col-sm-12'),
-                    css_class='row',
-                ),
-                Div(
-                    Div(Field('driller_name', css_class='name'), css_class='col-sm-12'),
-                    css_class='row',
-                ),
-                Div(
-                    Div(Field('consultant_name', css_class='name'), css_class='col-sm-4'),
-                    Div(Field('consultant_company', css_class='name'), css_class='col-sm-8'),
-                    css_class='row',
-                ),
-                Div(
-                    Div('work_start_date', css_class='col-sm-6'),
-                    Div('work_end_date', css_class='col-sm-6'),
-                    css_class='row',
-                ),
-            ),
-            Fieldset(
-                'Owner Information',
-                Div(
-                    Div(Field('owner_full_name', css_class='name'), css_class='col-sm-12'),
-                    css_class='row',
-                ),
-                Div(
-                    Div(Field('owner_mailing_address', css_class='name'), css_class='col-sm-12'),
-                    css_class='row',
-                ),
-                Div(
-                    Div(Field('owner_city', css_class='city'), css_class='col-sm-3'),
-                    Div('owner_province_state', css_class='col-sm-1'),
-                    Div(Field('owner_postal_code', css_class='postal'), css_class='col-sm-8'),
-                    css_class='row',
-                ),
-            ),
-            Fieldset(
-                'Well Location',
-                Div(
-                    Div(Field('street_address', css_class='name'), css_class='col-sm-12'),
-                    css_class='row',
-                ),
-                Div(
-                    Div(Field('city', css_class='city'), css_class='col-sm-12'),
-                    css_class='row',
-                ),
-                Div(
-                    Div('legal_lot', css_class='col-sm-3'),
-                    Div('legal_plan', css_class='col-sm-3'),
-                    Div('legal_district_lot', css_class='col-sm-3'),
-                    Div('legal_block', css_class='col-sm-3'),
-                    css_class='row',
-                ),
-                Div(
-                    Div('legal_section', css_class='col-sm-3'),
-                    Div('legal_township', css_class='col-sm-3'),
-                    Div('legal_range', css_class='col-sm-3'),
-                    Div('legal_land_district', css_class='col-sm-3'),
-                    css_class='row',
-                ),
-            )
-        )
-        super(ActivitySubmissionForm, self).__init__(*args, **kwargs)
-    
-    class Meta:
-        model = ActivitySubmission
-        fields = ['well_activity_type', 'well_class', 'intended_water_use', 'driller_responsible', 'driller_name', 'consultant_name', 'consultant_company', 'work_start_date', 'work_end_date',
-            'owner_full_name', 'owner_mailing_address', 'owner_city', 'owner_province_state', 'owner_postal_code',
-            'street_address', 'city', 'legal_lot', 'legal_plan', 'legal_district_lot', 'legal_block', 'legal_section', 'legal_township', 'legal_range', 'legal_land_district']
 
 
 

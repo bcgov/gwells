@@ -582,14 +582,18 @@ fieldset[disabled] a.btn {
   margin: 0 15px;
 }
 
-input.name {
+.name input {
     max-width: 325px;
 }
 
-input.city {
+.city input {
     max-width: 200px;
 }
 
-input.postal {
+.postal input {
     max-width: 100px;
+}
+
+.date input[type="text"] {
+    max-width: 125px;
 }
