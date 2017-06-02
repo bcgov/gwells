@@ -248,7 +248,7 @@ class ActivitySubmission(TimeStampedModel):
     owner_full_name = models.CharField(max_length=200, verbose_name='Owner Name')
     owner_mailing_address = models.CharField(max_length=100, verbose_name='Mailing Address')  
     owner_city = models.CharField(max_length=100, verbose_name='Town/City')
-    owner_province_state = models.ForeignKey(ProvinceState, db_column='province_state_guid', on_delete=models.CASCADE, blank=True, verbose_name='Province')
+    owner_province_state = models.ForeignKey(ProvinceState, db_column='province_state_guid', on_delete=models.CASCADE, verbose_name='Province')
     owner_postal_code = models.CharField(max_length=10, blank=True, verbose_name='Postal Code')
 
     street_address = models.CharField(max_length=100, blank=True, verbose_name='Street Address')
@@ -264,7 +264,7 @@ class ActivitySubmission(TimeStampedModel):
     legal_pid = models.PositiveIntegerField(blank=True, null=True, verbose_name='PID')
     well_location_description = models.CharField(max_length=500, blank=True, verbose_name='Well Location Description')
 
-    identification_plate_number = models.PositiveIntegerField(unique=True, blank=True, null=True)
+    identification_plate_number = models.PositiveIntegerField(unique=True, blank=True, null=True, verbose_name='Identification Plate Number')
     diameter = models.CharField(max_length=9, blank=True)  #want to be integer in future
     #diameter_unit
     total_depth_drilled = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True)
@@ -322,7 +322,7 @@ class LtsaOwner(TimeStampedModel):
     mailing_address = models.CharField(max_length=100, verbose_name='Mailing Address')
     
     city = models.CharField(max_length=100, verbose_name='Town/City')
-    province_state = models.ForeignKey(ProvinceState, db_column='province_state_guid', on_delete=models.CASCADE, blank=True, verbose_name='Province')
+    province_state = models.ForeignKey(ProvinceState, db_column='province_state_guid', on_delete=models.CASCADE, verbose_name='Province')
     postal_code = models.CharField(max_length=10, blank=True, verbose_name='Postal Code')
 
     tracker = FieldTracker()

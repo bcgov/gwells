@@ -7,7 +7,6 @@ from django.views.generic.edit import FormView
 from formtools.wizard.views import SessionWizardView
 from .models import WellYieldUnit, Well, ActivitySubmission
 from .forms import SearchForm, ActivitySubmissionTypeAndClassForm, WellOwnerForm, ActivitySubmissionLocationForm
-from .forms import ActivitySubmissionForm
 
 
 
@@ -58,9 +57,21 @@ class ActivitySubmissionDetailView(generic.DetailView):
 
 
 
+FORMS = [("type_and_class", ActivitySubmissionTypeAndClassForm),
+         ("owner", WellOwnerForm),
+         ("location", ActivitySubmissionLocationForm)]
+
+TEMPLATES = {"type_and_class": "gwells/activity_submission/type_and_class_form.html",
+             "owner": "gwells/activity_submission/owner_form.html",
+             "location": "gwells/activity_submission_form.html"}
+
+
+
 class ActivitySubmissionWizardView(SessionWizardView):
     form_list = [ActivitySubmissionTypeAndClassForm, WellOwnerForm, ActivitySubmissionLocationForm]
-    template_name = 'gwells/activity_submission_form.html'
+
+    def get_template_names(self):
+        return [TEMPLATES[self.steps.current]]
 
     def done(self, form_list, **kwargs):
         submission = ActivitySubmission()
@@ -79,73 +90,3 @@ class ActivitySubmissionWizardView(SessionWizardView):
 
         #lithology = form_dict['lithology'].save()
         return HttpResponseRedirect('/submission/')
-
-
-class ActivitySubmissionCreateView(FormView):
-    model = ActivitySubmission
-    form_class = ActivitySubmissionForm
-    template_name = 'gwells/activity_submission_form.html'
-    success_url = '/submission/'
-
-    def get(self, request, *args, **kwargs):
-        """
-        Handles GET requests and instantiates blank versions of the form
-        and its inline formsets.
-        """
-        self.object = None
-        form_class = self.get_form_class()
-        form = self.get_form(form_class)
-        #well_activity_location_form = WellActivityLocationForm()
-        return self.render_to_response(
-            self.get_context_data(form=form,
-                                  #well_activity_location_form=well_activity_location_form,
-                                  ))
-
-    def post(self, request, *args, **kwargs):
-        """
-        Handles POST requests, instantiating a form instance and its inline
-        formsets with the passed POST variables and then checking them for
-        validity.
-        """
-        self.object = None
-        form_class = self.get_form_class()
-        form = self.get_form(form_class)
-        #well_activity_location_form = WellActivityLocationForm(self.request.POST)
-        #if (form.is_valid() and lithology_description.is_valid() and well_activity_location_form.is_valid()):
-        #    return self.form_valid(form, lithology_description, well_activity_location_form)
-        #else:
-        #    return self.form_invalid(form, lithology_description, well_activity_location_form)
-        if (form.is_valid()):
-            return self.form_valid(form)
-        else:
-            return self.form_invalid(form)
-
-    def form_valid(self, form):
-        """
-        Called if all forms are valid. Creates a WellActivity instance along with
-        associated WellOwner, Lithology, etc and then redirects to a
-        success page.
-        """
-        self.object = form.save()
-        
-        #full_name = form.cleaned_data.get('full_name')
-        #mailing_address = form.cleaned_data.get('mailing_address')
-        #city = form.cleaned_data.get('city')
-        #province_state = form.cleaned_data.get('province_state')
-        #postal_code = form.cleaned_data.get('postal_code')
-        #well_owner = WellOwner(full_name=full_name, mailing_address=mailing_address, city=city, province_state=province_state, postal_code=postal_code)
-        #well_owner.save()
-
-        #well_activity_location_form.instance = self.object
-        #well_activity_location_form.save()
-        return HttpResponseRedirect(self.get_success_url())
-
-    def form_invalid(self, form):
-        """
-        Called if a form is invalid. Re-renders the context data with the
-        data-filled forms and errors.
-        """
-        return self.render_to_response(
-            self.get_context_data(form=form,
-                                  #well_activity_location_form=well_activity_location_form,
-                                  ))
