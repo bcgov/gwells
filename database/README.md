@@ -28,7 +28,7 @@ The legacy database is WELLS schema of ENVPROD1.NRS.GOV.BC.CA, and was exported 
     H:\xform_gwells_drilling_company.csv
     ```
 
-5. Copy the CSV files over to your local workstation, ready to be included in the `rsync` [step below](#rsync-csv).  SQL Developer insists
+5. Copy the CSV files over to your local workstation (e.g. ~/projects/gwells/legacy-data/postgres) , ready to be included in the `rsync` [step below](#rsync-csv).  SQL Developer insists
    on adding a blank line at the end of each generated CSV file, which runs into a PostGres bug when importing CSV with such a blank line. 
    Remove this last line from each of the genereated files, either manually or via sed/awk/perl etc.
 
@@ -52,22 +52,22 @@ security and storage reasons.  The seqreset.sql script was generated via Django 
 
 1. Sync scripts to Postgres pod (from developer workstation):
 
-    `oc rsync /Users/garywong/projects/gwells/github/database postgresql-2-2vvoh:/tmp`
+    `oc rsync /Users/garywong/projects/gwells/github/database postgresql-3-zxo8x:/tmp`
 
 
 2.  Sync all CSV files to Postgres pod (from developer workstation) <a id="rsync-csv"></a>:
 
-    `oc rsync /Users/garywong/projects/gwells/legacy-data/postgres postgresql-2-2vvoh:/tmp`
+    `oc rsync /Users/garywong/projects/gwells/legacy-data/postgres postgresql-3-zxo8x:/tmp`
 
 3.  Remote into Postgres pod (from developer workstation).  Note that the the pod name changew with
 each pod deployment, so get the name first (i.e. *oc get pods*) from the correct project (dev/test/prod):
 
-    `oc rsh postgresql-2-2vvoh`
+    `oc rsh postgresql-3-zxo8x`
 
 4.  From the remote shell into the PostGres pod:
     ```
     cd /tmp/  
-    psql -d gwells -U <user>  -f ./database/scripts/truncate-search-ready-data.sql
+    psql -d gwells -U <user>  -f ./database/scripts/truncate-submission-ready-data.sql
     psql -d gwells -U <user>  -f ./database/scripts/load-submission-ready-data.sql
     psql -d gwells -U <user>  -f ./database/scripts/seqreset.sql 
     ```
