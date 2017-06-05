@@ -1,21 +1,10 @@
 \encoding windows-1251
-\copy gwells_well_yield_unit 	FROM './postgres/gwells_well_yield_unit.csv' 	HEADER DELIMITER ',' CSV
-\copy gwells_province_state  	FROM './postgres/gwells_province_state.csv' 	HEADER DELIMITER ',' CSV
+\copy gwells_well_yield_unit 	  FROM './postgres/gwells_well_yield_unit.csv' 	  HEADER DELIMITER ',' CSV
+\copy gwells_province_state  	  FROM './postgres/gwells_province_state.csv' 	  HEADER DELIMITER ',' CSV
 \copy gwells_well_activity_type FROM './postgres/gwells_well_activity_type.csv' HEADER DELIMITER ',' CSV
 \copy gwells_intended_water_use	FROM './postgres/gwells_intended_water_use.csv' HEADER DELIMITER ',' CSV
-\copy gwells_well_class  		FROM './postgres/gwells_well_class.csv'  		HEADER DELIMITER ',' CSV
-\copy gwells_well_subclass   	FROM './postgres/gwells_well_subclass.csv'   	HEADER DELIMITER ',' CSV
-
-
-
-/*
-insert into gwells_drilling_company 
-values ('Data Conversion Drilling Compnay',
-        true,
-        '018d4c1047cb11e7a91992ebcb67fe33'
-        )
-;
-*/
+\copy gwells_well_class  	    	FROM './postgres/gwells_well_class.csv'  	    	HEADER DELIMITER ',' CSV
+\copy gwells_well_subclass    	FROM './postgres/gwells_well_subclass.csv'   	  HEADER DELIMITER ',' CSV
 
 CREATE unlogged TABLE IF NOT EXISTS xform_gwells_land_district (
   land_district_guid uuid,
@@ -23,7 +12,6 @@ CREATE unlogged TABLE IF NOT EXISTS xform_gwells_land_district (
   name               character varying(255),
   sort_order         integer
 );
-
 
 CREATE unlogged TABLE IF NOT EXISTS xform_gwells_well (
    created                      timestamp with time zone ,
@@ -64,8 +52,12 @@ CREATE unlogged TABLE IF NOT EXISTS xform_gwells_well (
 );
 
 
-
-
+CREATE unlogged TABLE IF NOT EXISTS xform_gwells_drilling_company (
+ drilling_company_guid uuid                   ,
+ name                  character varying(200) ,
+ is_hidden             boolean,
+ DRILLER_COMPANY_CODE  character varying(30)             
+);
 
 CREATE unlogged TABLE IF NOT EXISTS xform_gwells_driller (
   driller_guid          uuid                   ,
@@ -73,21 +65,26 @@ CREATE unlogged TABLE IF NOT EXISTS xform_gwells_driller (
   surname               character varying(100) ,
   registration_number   character varying(100) ,
   is_hidden             boolean                ,
-  drilling_company_guid uuid                
+ DRILLER_COMPANY_CODE  character varying(30)            
 );
 
+\encoding windows-1251
+\copy xform_gwells_land_district    FROM './postgres/xform_gwells_land_district.csv'    HEADER DELIMITER ',' CSV
+\copy xform_gwells_well             FROM './postgres/xform_gwells_well.csv'             HEADER DELIMITER ',' CSV
+\copy xform_gwells_drilling_company FROM './postgres/xform_gwells_drilling_company.csv' HEADER DELIMITER ',' CSV
+\copy xform_gwells_driller          FROM './postgres/xform_gwells_driller.csv'          HEADER DELIMITER ',' CSV
 
-CREATE unlogged TABLE IF NOT EXISTS xform_gwells_drilling_company (
- drilling_company_guid uuid                   ,
- name                  character varying(200) ,
- is_hidden             boolean,
- DRILLER_COMPANY_CODE  HERE => What character type?               
-);
+/*
+insert into gwells_drilling_company 
+values ('Data Conversion Drilling Compnay',
+        true,
+        '018d4c1047cb11e7a91992ebcb67fe33'
+        )
+;
+*/
 
 
-AND THEN THE \COPY  into xforms..
-
-AND THEN INSERT INTO AS SELECT FROM... joined on FK
+/* AND THEN INSERT INTO AS SELECT FROM... joined on FK */
 
 
 
