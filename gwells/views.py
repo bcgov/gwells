@@ -57,18 +57,17 @@ class ActivitySubmissionDetailView(generic.DetailView):
 
 
 
-FORMS = [("type_and_class", ActivitySubmissionTypeAndClassForm),
-         ("owner", WellOwnerForm),
-         ("location", ActivitySubmissionLocationForm)]
+FORMS = [('type_and_class', ActivitySubmissionTypeAndClassForm),
+         ('owner', WellOwnerForm),
+         ('location', ActivitySubmissionLocationForm)]
 
-TEMPLATES = {"type_and_class": "gwells/activity_submission/type_and_class_form.html",
-             "owner": "gwells/activity_submission/owner_form.html",
-             "location": "gwells/activity_submission_form.html"}
+TEMPLATES = {'type_and_class': 'gwells/activity_submission/type_and_class_form.html',
+             'owner': 'gwells/activity_submission/owner_form.html',
+             'location': 'gwells/activity_submission/location_form.html'}
 
 
 
 class ActivitySubmissionWizardView(SessionWizardView):
-    form_list = [ActivitySubmissionTypeAndClassForm, WellOwnerForm, ActivitySubmissionLocationForm]
 
     def get_template_names(self):
         return [TEMPLATES[self.steps.current]]
@@ -79,14 +78,14 @@ class ActivitySubmissionWizardView(SessionWizardView):
             for field, value in form.cleaned_data.items():
                 setattr(submission, field, value)
 
-        if submission.well_activity_type.code == 'CON' and submission.well is None:
+        #if submission.well_activity_type.code == 'CON' and submission.well is None:
             #TODO
             #w = submission.createWell()
             #w = w.save()
             #submission.well = w
-            submission.save()
-        else:
-            submission.save()
+        #    submission.save()
+        #else:
+        submission.save()
 
         #lithology = form_dict['lithology'].save()
         return HttpResponseRedirect('/submission/')
