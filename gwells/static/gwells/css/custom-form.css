@@ -594,6 +594,11 @@ fieldset[disabled] a.btn {
     max-width: 100px;
 }
 
-.date input[type="text"] {
+.date input {
     max-width: 125px;
+}
+
+p.help-block {
+    text-align: left;
+    margin-top: 5px;
 }
