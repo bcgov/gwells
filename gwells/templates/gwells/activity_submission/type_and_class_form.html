@@ -3,7 +3,7 @@
 
 {% block title %}Activity Submission{% endblock %}
 
-{% block bodyheading_block %}Well Activity{% endblock %}
+{% block bodyheading_block %}Submit Activity{% endblock %}
 
 {% block introduction_block %}
      Submit activity on a well that does not exist in the system. Try a <a href="{% url 'search' %}">search</a> to see if the well exists in the system before submitting a report.
@@ -19,7 +19,7 @@
             {{ wizard.form.errors }}
 
             <fieldset>
-            <legend>Well Type and Class</legend>
+            <legend>Type of Work and Well Class</legend>
             <div class="row">
                 <div class="col-md-4">
                     <div class="name">{{ wizard.form.well_activity_type|as_crispy_field }}</div>
@@ -57,7 +57,7 @@
                     {{ wizard.form.driller_name|as_crispy_field }}
                 </div>
                 <div class="col-md-4">
-                    <label><input type="checkbox" id="chkSameAsPersonResponsible" /> Same as Person Responsible for Drilling</label>
+                    <input type="checkbox" id="chkSameAsPersonResponsible" onClick="chkSameAsPersonResponsibleClicked();" /> <label for="chkSameAsPersonResponsible">Same as Person Responsible for Drilling</label>
                 </div>
             </div>
             <div class="row">
@@ -104,4 +104,22 @@
     $( "#id_type_and_class-work_end_date" ).datepicker({ dateFormat: 'yy-mm-dd' });
   } );
 </script>
+<script language="javascript">
+  function chkSameAsPersonResponsibleClicked() {
+    var dr = document.getElementById('id_type_and_class-driller_responsible');
+    var dname = document.getElementById('id_type_and_class-driller_name');
+    if (chkSameAsPersonResponsible.checked && dr.selectedIndex > 0) {
+      var dvalue = dr.options[dr.selectedIndex].text;
+      var index = dvalue.indexOf('-');
+      if (index > 0) {
+        dvalue = dvalue.substring(0, index-1);
+      }
+      dname.value = dvalue;
+      dname.readOnly = true;
+    } else {
+      dname.readOnly = false;
+    }
+  }
+</script>
+
 {% endblock %}
