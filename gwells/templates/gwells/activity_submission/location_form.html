@@ -26,21 +26,33 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-1">
-                    <label>1)</label>
+                <div class="col-md-2">
+                    <label>1) Civic Address</label>
                 </div>
+                <div class="col-md-10">
+                    <input type="checkbox" id="chkSameAsOwnerAddress" onClick="chkSameAsOwnerAddressClicked();" /> <label for="chkSameAsOwnerAddress">Same as Owner Address</label>
+                </div>
+            </div>
+            <div class="row">
                 <div class="col-md-4">
                     {{ wizard.form.street_address|as_crispy_field}}
                 </div>
                 <div class="col-md-7">
-                    <label><input type="checkbox" id="chkSameAsOwnerAddress" /> Same as Owner Address</label>
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-1">
-                </div>
-                <div class="col-md-11">
+                <div class="col-md-12">
                     <span class="city">{{ wizard.form.city|as_crispy_field}}</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    OR
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    &nbsp;
                 </div>
             </div>
             <div class="row">
@@ -49,8 +61,6 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-1">
-                </div>
                 <div class="col-md-2">
                     <span class="city">{{ wizard.form.legal_lot|as_crispy_field}}</span>
                 </div>
@@ -65,8 +75,6 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-1">
-                </div>
                 <div class="col-md-2">
                     <span class="city">{{ wizard.form.legal_section|as_crispy_field}}</span>
                 </div>
@@ -81,18 +89,40 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-1">
-                    <label>3)</label>
+                <div class="col-md-12">
+                    OR
                 </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    &nbsp;
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <label>3) Parcel Identifier</label>
+                </div>
+            </div>
+            <div class="row">
                 <div class="col-md-2">
                     {{ wizard.form.legal_pid|as_crispy_field}}
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-1">
+                <div class="col-md-12">
+                    &nbsp;
                 </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    &nbsp;
+                </div>
+            </div>
+            <div class="row">
                 <div class="col-md-8">
                     {{ wizard.form.well_location_description|as_crispy_field}}
+                </div>
+                <div class="col-md-4">
                 </div>
             </div>
             </fieldset>
@@ -115,4 +145,19 @@
 {% endblock %}
 
 {% block jqscript_block %}
+<script language="javascript">
+  function chkSameAsOwnerAddressClicked() {
+    var address = document.getElementById('id_location-street_address');
+    var city = document.getElementById('id_location-city');
+    if (chkSameAsOwnerAddress.checked) {
+      address.value = '{{ wizard_data.owner_mailing_address }}';
+      address.readOnly = true;
+      city.value = '{{ wizard_data.owner_city }}';
+      city.readOnly = true;
+    } else {
+      address.readOnly = false;
+      city.readOnly = false;                
+    }
+  }
+</script>
 {% endblock %}

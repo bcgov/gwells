@@ -107,7 +107,7 @@ class WellOwnerForm(forms.ModelForm):
         super(WellOwnerForm, self).__init__(*args, **kwargs)
 
         try:
-            bc = WellActivityType.objects.get(code='BC')
+            bc = ProvinceState.objects.get(code='BC')
             self.initial['owner_province_state'] = bc
             self.fields['owner_province_state'].empty_label = None
         except Exception as e:
