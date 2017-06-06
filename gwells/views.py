@@ -5,7 +5,7 @@ from django.views import generic
 from django.views.generic.edit import FormView
 #from django.utils import timezone
 from formtools.wizard.views import SessionWizardView
-from .models import WellYieldUnit, Well, ActivitySubmission
+from .models import WellYieldUnit, Well, ActivitySubmission, WellClass
 from .forms import SearchForm, ActivitySubmissionTypeAndClassForm, WellOwnerForm, ActivitySubmissionLocationForm
 
 
@@ -75,6 +75,11 @@ class ActivitySubmissionWizardView(SessionWizardView):
     def get_context_data(self, form, **kwargs):
         context = super(ActivitySubmissionWizardView, self).get_context_data(form=form, **kwargs)
         context['wizard_data'] = self.get_all_cleaned_data()
+        try:
+            water_supply_class = WellClass.objects.filter(code='WATER_SUPL')[0]
+            context['water_supply_well_class_guid'] = water_supply_class.well_class_guid
+        except Exception as e:
+            context['water_supply_well_class_guid'] = None
         return context
 
     def done(self, form_list, **kwargs):
