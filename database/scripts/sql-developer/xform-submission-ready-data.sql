@@ -92,7 +92,7 @@ SELECT /*csv*/
   SYS_GUID() AS driller_guid,
   INITCAP(TRIM(WELLS.WELLS_WELLS.CREW_DRILLER_NAME)) AS first_name,
   INITCAP(TRIM(CREW_DRILLER_NAME)) AS surname,
-  '1234' AS registration_number,
+  PERMIT_NUMBER AS registration_number,
   'N' AS is_hidden,
   WELLS.WELLS_WELLS.DRILLER_COMPANY_CODE 
 FROM WELLS.WELLS_WELLS
