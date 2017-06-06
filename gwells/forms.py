@@ -140,6 +140,8 @@ class ActivitySubmissionTypeAndClassForm(forms.ModelForm):
         fields = ['well_activity_type', 'well_class', 'intended_water_use', 'identification_plate_number', 'driller_responsible', 'driller_name', 'consultant_name', 'consultant_company', 'work_start_date', 'work_end_date']
         help_texts = {'work_start_date': "yyyy-mm-dd", 'work_end_date': "yyyy-mm-dd",}
 
+
+
 class ActivitySubmissionLocationForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
@@ -150,6 +152,7 @@ class ActivitySubmissionLocationForm(forms.ModelForm):
     class Meta:
         model = ActivitySubmission
         fields = ['street_address', 'city', 'legal_lot', 'legal_plan', 'legal_district_lot', 'legal_block', 'legal_section', 'legal_township', 'legal_range', 'legal_land_district', 'legal_pid', 'well_location_description']
+        help_texts = {'well_location_description': "Provide any additional well location details, such as physical landmarks",}
 
 
 

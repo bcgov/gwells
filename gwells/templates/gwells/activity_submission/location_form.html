@@ -1,9 +1,9 @@
 {% extends 'gwells/base.html' %}
 {% load crispy_forms_tags %}
 
-{% block title %}Well Activity{% endblock %}
+{% block title %}Activity Submission{% endblock %}
 
-{% block bodyheading_block %}Well Activity{% endblock %}
+{% block bodyheading_block %}{{ wizard_data.well_activity_type }}{% endblock %}
 
 {% block introduction_block %}
 {% endblock %}
@@ -21,40 +21,78 @@
             <legend>Well Location</legend>
             <div class="row">
                 <div class="col-md-12">
-                    <span class="name">{{ wizard.form.street_address|as_crispy_field}}</span>
+                    Please provide as much well location information as possible.<br />
+                    A minimum of one type of well location information is required below.<br /><br />
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-12">
+                <div class="col-md-1">
+                    <label>1)</label>
+                </div>
+                <div class="col-md-4">
+                    {{ wizard.form.street_address|as_crispy_field}}
+                </div>
+                <div class="col-md-7">
+                    <label><input type="checkbox" id="chkSameAsOwnerAddress" /> Same as Owner Address</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-1">
+                </div>
+                <div class="col-md-11">
                     <span class="city">{{ wizard.form.city|as_crispy_field}}</span>
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-3">
+                <div class="col-md-12">
+                    <label>2) Legal Description</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-1">
+                </div>
+                <div class="col-md-2">
                     <span class="city">{{ wizard.form.legal_lot|as_crispy_field}}</span>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <span class="city">{{ wizard.form.legal_plan|as_crispy_field}}</span>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <span class="city">{{ wizard.form.legal_district_lot|as_crispy_field}}</span>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <span class="city">{{ wizard.form.legal_block|as_crispy_field}}</span>
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-3">
+                <div class="col-md-1">
+                </div>
+                <div class="col-md-2">
                     <span class="city">{{ wizard.form.legal_section|as_crispy_field}}</span>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <span class="city">{{ wizard.form.legal_township|as_crispy_field}}</span>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <span class="city">{{ wizard.form.legal_range|as_crispy_field}}</span>
                 </div>
                 <div class="col-md-3">
                     <span class="city">{{ wizard.form.legal_land_district|as_crispy_field}}</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-1">
+                    <label>3)</label>
+                </div>
+                <div class="col-md-2">
+                    {{ wizard.form.legal_pid|as_crispy_field}}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-1">
+                </div>
+                <div class="col-md-8">
+                    {{ wizard.form.well_location_description|as_crispy_field}}
                 </div>
             </div>
             </fieldset>
@@ -63,12 +101,12 @@
     		<div class="form-group">
     			<div class="controls">
                 {% if wizard.steps.prev %}
-                    <button name="wizard_goto_step" type="submit" value="{{ wizard.steps.prev }}" class="btn" id="previous">Previous Step</button>
+                    <a class="btn btn-default" id="previous_button" href="javascript:history.go(-1);">Previous Step</a>
                 {% endif %}
                 {% if wizard.steps.next %}
                     <input type="submit" value="Next Step" class="btn btn-primary" id="submit-id-next" />
                 {% else %}
-    				<input type="submit" value="Submit" class="btn btn-primary" id="submit-id-s" />
+    				<input type="submit" value="Submit Report" class="btn btn-primary" id="submit-id-s" />
                 {% endif %}
     			</div>
 			</div>

@@ -72,6 +72,11 @@ class ActivitySubmissionWizardView(SessionWizardView):
     def get_template_names(self):
         return [TEMPLATES[self.steps.current]]
 
+    def get_context_data(self, form, **kwargs):
+        context = super(ActivitySubmissionWizardView, self).get_context_data(form=form, **kwargs)
+        context['wizard_data'] = self.get_all_cleaned_data()
+        return context
+
     def done(self, form_list, **kwargs):
         submission = ActivitySubmission()
         for form in form_list:
