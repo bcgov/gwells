@@ -104,25 +104,6 @@ class WellOwnerForm(forms.ModelForm):
         self.helper = FormHelper()
         self.helper.form_tag = False
         self.helper.disable_csrf = True
-        self.helper.layout = Layout(
-            Fieldset(
-                'Owner Information',
-                Div(
-                    Div(Field('owner_full_name', css_class='name'), css_class='col-sm-12'),
-                    css_class='row',
-                ),
-                Div(
-                    Div(Field('owner_mailing_address', css_class='name'), css_class='col-sm-12'),
-                    css_class='row',
-                ),
-                Div(
-                    Div(Field('owner_city', css_class='city'), css_class='col-sm-3'),
-                    Div('owner_province_state', css_class='col-sm-1'),
-                    Div(Field('owner_postal_code', css_class='postal'), css_class='col-sm-8'),
-                    css_class='row',
-                ),
-            )
-        )
         super(WellOwnerForm, self).__init__(*args, **kwargs)
 
         try:
@@ -157,6 +138,8 @@ class ActivitySubmissionTypeAndClassForm(forms.ModelForm):
     class Meta:
         model = ActivitySubmission
         fields = ['well_activity_type', 'well_class', 'intended_water_use', 'identification_plate_number', 'driller_responsible', 'driller_name', 'consultant_name', 'consultant_company', 'work_start_date', 'work_end_date']
+        help_texts = {'work_start_date': "yyyy-mm-dd", 'work_end_date': "yyyy-mm-dd",}
+
 
 
 class ActivitySubmissionLocationForm(forms.ModelForm):
@@ -164,38 +147,12 @@ class ActivitySubmissionLocationForm(forms.ModelForm):
         self.helper = FormHelper()
         self.helper.form_tag = False
         self.helper.disable_csrf = True
-        self.helper.layout = Layout(
-            Fieldset(
-                'Well Location',
-                Div(
-                    Div(Field('street_address', css_class='name'), css_class='col-sm-12'),
-                    css_class='row',
-                ),
-                Div(
-                    Div(Field('city', css_class='city'), css_class='col-sm-12'),
-                    css_class='row',
-                ),
-                Div(
-                    Div('legal_lot', css_class='col-sm-3'),
-                    Div('legal_plan', css_class='col-sm-3'),
-                    Div('legal_district_lot', css_class='col-sm-3'),
-                    Div('legal_block', css_class='col-sm-3'),
-                    css_class='row',
-                ),
-                Div(
-                    Div('legal_section', css_class='col-sm-3'),
-                    Div('legal_township', css_class='col-sm-3'),
-                    Div('legal_range', css_class='col-sm-3'),
-                    Div('legal_land_district', css_class='col-sm-3'),
-                    css_class='row',
-                ),
-            )
-        )
         super(ActivitySubmissionLocationForm, self).__init__(*args, **kwargs)
     
     class Meta:
         model = ActivitySubmission
-        fields = ['street_address', 'city', 'legal_lot', 'legal_plan', 'legal_district_lot', 'legal_block', 'legal_section', 'legal_township', 'legal_range', 'legal_land_district']
+        fields = ['street_address', 'city', 'legal_lot', 'legal_plan', 'legal_district_lot', 'legal_block', 'legal_section', 'legal_township', 'legal_range', 'legal_land_district', 'legal_pid', 'well_location_description']
+        help_texts = {'well_location_description': "Provide any additional well location details, such as physical landmarks",}
 
 
 
