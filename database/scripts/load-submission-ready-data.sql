@@ -65,27 +65,109 @@ CREATE unlogged TABLE IF NOT EXISTS xform_gwells_driller (
   surname               character varying(100) ,
   registration_number   character varying(100) ,
   is_hidden             boolean                ,
- DRILLER_COMPANY_CODE  character varying(30)            
+  DRILLER_COMPANY_CODE  character varying(30)            
 );
 
 \encoding windows-1251
 \copy xform_gwells_land_district    FROM './postgres/xform_gwells_land_district.csv'    HEADER DELIMITER ',' CSV
-\copy xform_gwells_well             FROM './postgres/xform_gwells_well.csv'             HEADER DELIMITER ',' CSV
 \copy xform_gwells_drilling_company FROM './postgres/xform_gwells_drilling_company.csv' HEADER DELIMITER ',' CSV
 \copy xform_gwells_driller          FROM './postgres/xform_gwells_driller.csv'          HEADER DELIMITER ',' CSV
+\copy xform_gwells_well             FROM './postgres/xform_gwells_well.csv'  WITH (HEADER, DELIMITER ',' , FORMAT CSV, FORCE_NULL(modified));
 
-/*
+
+INSERT INTO gwells_land_district (land_district_guid, code, name, sort_order)   
+SELECT land_district_guid, code, name, sort_order
+FROM xform_gwells_land_district;
+
+INSERT INTO gwells_drilling_company (drilling_company_guid, name, is_hidden)
+SELECT drilling_company_guid, name, is_hidden
+FROM xform_gwells_drilling_company;
+
 insert into gwells_drilling_company 
 values ('Data Conversion Drilling Compnay',
         true,
         '018d4c1047cb11e7a91992ebcb67fe33'
-        )
-;
+        );
+
+
+/*
+INSERT INTO gwells_driller (driller_guid, first_name, surname, registration_number, is_hidden, drilling_company_guid)
+SELECT driller.driller_guid, driller.first_name, driller.surname, driller.registration_number, driller.is_hidden, co.drilling_company_guid
+FROM  xform_gwells_driller driller, xform_gwells_drilling_company co
+WHERE driller.DRILLER_COMPANY_CODE = co.DRILLER_COMPANY_CODE;
 */
 
+/* TODO mismtach of counts 
+INSERT INTO gwells_driller (driller_guid, first_name, surname, registration_number, is_hidden, drilling_company_guid)
+SELECT driller.driller_guid, driller.first_name, driller.surname, driller.registration_number, driller.is_hidden, '018d4c1047cb11e7a91992ebcb67fe33'
+FROM  xform_gwells_driller driller
+WHERE driller.DRILLER_COMPANY_CODE is null;
+*/
 
-/* AND THEN INSERT INTO AS SELECT FROM... joined on FK */
-
-
-
-
+INSERT INTO gwells_well (
+  created                     ,
+  modified                    ,
+  well_tag_number             ,
+  well_guid                   ,
+  owner_full_name             ,
+  owner_mailing_address       ,
+  owner_city                  ,
+  owner_postal_code           ,
+  street_address              ,
+  city                        ,
+  legal_lot                   ,
+  legal_plan                  ,
+  legal_district_lot          ,
+  legal_block                 ,
+  legal_section               ,
+  legal_township              ,
+  legal_range                 ,
+  legal_pid                   ,
+  well_location_description   ,
+  identification_plate_number ,
+  diameter                    ,
+  total_depth_drilled         ,
+  finished_well_depth         ,
+  well_yield                  ,
+  intended_water_use_guid     ,
+  legal_land_district_guid    ,
+  province_state_guid         ,
+  well_class_guid             ,
+  well_subclass_guid          ,
+  well_yield_unit_guid)
+SELECT 
+old.created                      ,
+coalesce(old.modified,old.created),
+old.well_tag_number              ,
+old.well_guid                    ,
+old.owner_full_name              ,
+old.owner_mailing_address        ,
+old.owner_city                   ,
+old.owner_postal_code            ,
+old.street_address               ,
+old.city                         ,
+old.legal_lot                    ,
+old.legal_plan                   ,
+old.legal_district_lot           ,
+old.legal_block                  ,
+old.legal_section                ,
+old.legal_township               ,
+old.legal_range                  ,
+old.legal_pid                    ,
+old.well_location_description    ,
+old.identification_plate_number  ,
+old.diameter                     ,
+old.total_depth_drilled          ,
+old.finished_well_depth          ,
+old.well_yield                   ,
+use.intended_water_use_guid      ,
+land.land_district_guid          ,
+old.province_state_guid          ,
+class.well_class_guid     ,
+subclass.well_subclass_guid   ,
+old.well_yield_unit_guid       
+FROM xform_gwells_well old
+LEFT OUTER JOIN gwells_intended_water_use  use   ON   old.WELL_USE_CODE  = use.code
+LEFT OUTER JOIN xform_gwells_land_district land  ON old.LEGAL_LAND_DISTRICT_CODE = land.code 
+INNER      JOIN gwells_well_class          class ON old.CLASS_OF_WELL_CODE  = class.code  /* need to fix records with null class code in legacy .. UNK?*/
+LEFT OUTER JOIN gwells_well_subclass   subclass  ON old.SUBCLASS_OF_WELL_CODE = subclass.code  AND subclass.well_class_guid = class.well_class_guid
