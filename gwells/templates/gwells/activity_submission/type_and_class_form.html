@@ -37,7 +37,8 @@
                     {{ wizard.form.well_class|as_crispy_field }}
                 </div>
                 <div class="col-md-4">
-                    {{ wizard.form.intended_water_use|as_crispy_field }}
+                    <span id="spnSubclass">{{ wizard.form.well_subclass|as_crispy_field }}</span>
+                    <span id="spnIntendedWaterUse">{{ wizard.form.intended_water_use|as_crispy_field }}</span>
                 </div>
                 <div class="col-md-4">
                 </div>
@@ -100,9 +101,21 @@
 {% block jqscript_block %}
 <script>
   $( function() {
-    $( "#id_type_and_class-work_start_date" ).datepicker({ dateFormat: 'yy-mm-dd' });
-    $( "#id_type_and_class-work_end_date" ).datepicker({ dateFormat: 'yy-mm-dd' });
+    $( '#id_type_and_class-work_start_date' ).datepicker({ dateFormat: 'yy-mm-dd' });
+    $( '#id_type_and_class-work_end_date' ).datepicker({ dateFormat: 'yy-mm-dd' });
   } );
+  $('#id_type_and_class-well_class').on('change', function() {
+    if ($('#id_type_and_class-well_class option:selected').val() == '{{ water_supply_well_class_guid }}') {
+      $('#id_type_and_class-well_subclass option').prop('selected', false);
+      $('#spnSubclass').hide();
+      $('#spnIntendedWaterUse').show();
+    } else {
+      $('#id_type_and_class-intended_water_use option').prop('selected', false);
+      $('#spnIntendedWaterUse').hide();
+      $('#spnSubclass').show();
+    }
+  });
+  $('#id_type_and_class-well_class').trigger('change');
 </script>
 <script language="javascript">
   function chkSameAsPersonResponsibleClicked() {
@@ -120,6 +133,7 @@
       dname.readOnly = false;
     }
   }
+
 </script>
 
 {% endblock %}
