@@ -1,9 +1,9 @@
 {% extends 'gwells/base.html' %}
 {% load crispy_forms_tags %}
 
-{% block title %}Well Activity{% endblock %}
+{% block title %}Activity Submission{% endblock %}
 
-{% block bodyheading_block %}Well Activity{% endblock %}
+{% block bodyheading_block %}{{ wizard_data.well_activity_type }}{% endblock %}
 
 {% block introduction_block %}
 {% endblock %}
@@ -11,6 +11,27 @@
 {% block body_block %}
 
     <p>Step {{ wizard.steps.step1 }} of {{ wizard.steps.count }}</p>
+<!--
+    <h3>
+        {{ wizard_data.well_activity_type }}
+    </h3>
+    
+    <div class="row">
+        <div class="col-md-5">
+            Person Responsible for Drilling: {{ wizard_data.driller_responsible }}
+        </div>
+        <div class="col-md-3">
+            Well Class: {{ wizard_data.well_class }}
+        </div>
+        <div class="col-md-4">
+            {% if wizard_data.well_class.code == 'WATER_SUPL' %}
+                Intended Water Use: {{ wizard_data.intended_water_use }}
+            {% else %}
+                Well Subclass: {{ wizard_data.well_subclass }}
+            {% endif %}
+        </div>
+    </div>-->
+
         <form action="" method="post">
             {% csrf_token %}
             {{ wizard.management_form }}
@@ -20,23 +41,23 @@
             <fieldset>
             <legend>Owner Information</legend>
             <div class="row">
-                <div class="col-sm-12">
+                <div class="col-md-4">
                     <span class="name">{{ wizard.form.owner_full_name|as_crispy_field}}</span>
                 </div>
             </div>
             <div class="row">
-                <div class="col-sm-12">
+                <div class="col-md-4">
                     <span class="name">{{ wizard.form.owner_mailing_address|as_crispy_field}}</span>
                 </div>
             </div>
             <div class="row">
-                <div class="col-sm-3">
-                    <span class="city">{{ wizard.form.owner_city|as_crispy_field}}</span>
+                <div class="col-md-3">
+                    {{ wizard.form.owner_city|as_crispy_field}}
                 </div>
-                <div class="col-sm-1">
+                <div class="col-md-1">
                     {{ wizard.form.owner_province_state|as_crispy_field}}
                 </div>
-                <div class="col-sm-8">
+                <div class="col-md-8">
                     <span class="postal">{{ wizard.form.owner_postal_code|as_crispy_field}}</span>
                 </div>
             </div>
@@ -45,13 +66,13 @@
             <div class="form-group">
                 <div class="controls">
                 {% if wizard.steps.prev %}
-                    <a class="btn" id="previous_button" href="javascript:history.go(-1);">Previous Step</a>
-                    <button name="wizard_goto_step" type="submit" value="{{ wizard.steps.prev }}" class="btn" id="previous_button">Previous Step</button>
+                    <a class="btn btn-default" id="previous_button" href="javascript:history.go(-1);">Previous Step</a>
+                    <!--<button name="wizard_goto_step" type="submit" value="{{ wizard.steps.prev }}" class="btn" id="previous_button">Previous Step</button>-->
                 {% endif %}
                 {% if wizard.steps.next %}
                     <input type="submit" value="Next Step" class="btn btn-primary" id="submit-id-next" />
                 {% else %}
-                    <input type="submit" value="Submit" class="btn btn-primary" id="submit-id-s" />
+                    <input type="submit" value="Submit Report" class="btn btn-primary" id="submit-id-s" />
                 {% endif %}
                 </div>
             </div>
@@ -60,15 +81,4 @@
 {% endblock %}
 
 {% block jqscript_block %}
-<!--<script>
- $( function() {
-     $('#previous_button').click(function() {
-         $('<input/>').attr('type', 'hidden')
-           .attr('name', "wizard_goto_step")
-           .attr('value', $(this).val())
-           .appendTo('#wizard_form');
-         $("#wizard_form")[0].submit();
-     });
- });
- </script>-->
 {% endblock %}
