@@ -84,11 +84,10 @@ SELECT drilling_company_guid, name, is_hidden
 FROM xform_gwells_drilling_company;
 
 insert into gwells_drilling_company 
-values ('Data Conversion Drilling Compnay',
-        true,
-        '018d4c1047cb11e7a91992ebcb67fe33'
+values ('018d4c1047cb11e7a91992ebcb67fe33',
+        'Data Conversion Drilling Compnay',
+        true
         );
-
 
 /*
 INSERT INTO gwells_driller (driller_guid, first_name, surname, registration_number, is_hidden, drilling_company_guid)
