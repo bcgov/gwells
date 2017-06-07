@@ -3,13 +3,14 @@
 
 {% block title %}Activity Submission{% endblock %}
 
-{% block bodyheading_block %}{{ wizard_data.well_activity_type }}{% endblock %}
+{% block bodyheading_block %}Submit Activity{% endblock %}
 
 {% block introduction_block %}
+    {{ wizard_data.well_activity_type }} - {{ wizard_data.well_class }} - {{ wizard_data.work_start_date }}
+     <br /><br />
 {% endblock %}
 
 {% block body_block %}
-
     <p>Step {{ wizard.steps.step1 }} of {{ wizard.steps.count }}</p>
 <!--
     <h3>
@@ -35,8 +36,11 @@
         <form action="" method="post">
             {% csrf_token %}
             {{ wizard.management_form }}
-            {{ wizard.form.non_field_errors }}
-            {{ wizard.form.errors }}
+            {% if wizard.form.non_field_errors %}
+                <div id="errors" role="alert" aria-atomic="true" class="alert alert-danger">
+                {{ wizard.form.non_field_errors }}
+                </div>
+            {% endif %}
 
             <fieldset>
             <legend>Owner Information</legend>
