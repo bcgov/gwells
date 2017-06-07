@@ -15,8 +15,11 @@
         <form action="" method="post">
             {% csrf_token %}
             {{ wizard.management_form }}
-            {{ wizard.form.non_field_errors }}
-            {{ wizard.form.errors }}
+            {% if wizard.form.non_field_errors %}
+                <div id="errors" role="alert" aria-atomic="true" class="alert alert-danger">
+                {{ wizard.form.non_field_errors }}
+                </div>
+            {% endif %}
 
             <fieldset>
             <legend>Type of Work and Well Class</legend>
@@ -58,7 +61,7 @@
                     {{ wizard.form.driller_name|as_crispy_field }}
                 </div>
                 <div class="col-md-4">
-                    <input type="checkbox" id="chkSameAsPersonResponsible" onClick="chkSameAsPersonResponsibleClicked();" /> <label for="chkSameAsPersonResponsible">Same as Person Responsible for Drilling</label>
+                    <input type="checkbox" id="chkSameAsPersonResponsible" /> <label for="chkSameAsPersonResponsible">Same as Person Responsible for Drilling</label>
                 </div>
             </div>
             <div class="row">
@@ -100,10 +103,10 @@
 
 {% block jqscript_block %}
 <script>
-  $( function() {
-    $( '#id_type_and_class-work_start_date' ).datepicker({ dateFormat: 'yy-mm-dd' });
-    $( '#id_type_and_class-work_end_date' ).datepicker({ dateFormat: 'yy-mm-dd' });
-  } );
+  $(function() {
+    $('#id_type_and_class-work_start_date').datepicker({ dateFormat: 'yy-mm-dd' });
+    $('#id_type_and_class-work_end_date').datepicker({ dateFormat: 'yy-mm-dd' });
+  });
   $('#id_type_and_class-well_class').on('change', function() {
     if ($('#id_type_and_class-well_class option:selected').val() == '{{ water_supply_well_class_guid }}') {
       $('#id_type_and_class-well_subclass option').prop('selected', false);
@@ -116,24 +119,20 @@
     }
   });
   $('#id_type_and_class-well_class').trigger('change');
-</script>
-<script language="javascript">
-  function chkSameAsPersonResponsibleClicked() {
-    var dr = document.getElementById('id_type_and_class-driller_responsible');
-    var dname = document.getElementById('id_type_and_class-driller_name');
-    if (chkSameAsPersonResponsible.checked && dr.selectedIndex > 0) {
-      var dvalue = dr.options[dr.selectedIndex].text;
+
+  $('#chkSameAsPersonResponsible').on('change', function() {
+    if ($('#chkSameAsPersonResponsible').is(':checked') && $('#id_type_and_class-driller_responsible').prop('selectedIndex') > 0) {
+      var dvalue = $('#id_type_and_class-driller_responsible option:selected').text();
       var index = dvalue.indexOf('-');
       if (index > 0) {
         dvalue = dvalue.substring(0, index-1);
       }
-      dname.value = dvalue;
-      dname.readOnly = true;
+      $('#id_type_and_class-driller_name').val(dvalue);
+      $('#id_type_and_class-driller_name').prop("readonly", true);
     } else {
-      dname.readOnly = false;
+      $('#id_type_and_class-driller_name').prop("readonly", false);
     }
-  }
-
+  });
 </script>
 
 {% endblock %}
