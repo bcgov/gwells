@@ -571,5 +571,22 @@ group by analysis_grp
 order by analysis_grp]]></sql>
 		</query>
 	</display>
+	<display id="8998c669-015c-1000-8003-8e2290267878" type="" style="Table" enable="true">
+		<name><![CDATA[CLASS, SUBCLASS grouped by combination]]></name>
+		<description><![CDATA[Listing of all combinations of CLASS and SUBCLASS of WELL]]></description>
+		<tooltip><![CDATA[]]></tooltip>
+		<drillclass><![CDATA[null]]></drillclass>
+		<CustomValues>
+			<TYPE>horizontal</TYPE>
+		</CustomValues>
+		<query>
+			<sql><![CDATA[SELECT NVL2(CLASS_OF_WELL_CODCLASSIFIED_BY,CLASS_OF_WELL_CODCLASSIFIED_BY,'(null)') || 
+  NVL2(subclass_of_well_classified_by,' : ' ||  subclass_of_well_classified_by ,NULL) AS CLASS_SUBCLASS,
+COUNT(*) FROM WELLS.WELLS_WELLS
+GROUP BY NVL2(CLASS_OF_WELL_CODCLASSIFIED_BY,CLASS_OF_WELL_CODCLASSIFIED_BY,'(null)') || 
+  NVL2(subclass_of_well_classified_by,' : ' ||  subclass_of_well_classified_by ,NULL)
+ORDER BY CLASS_SUBCLASS]]></sql>
+		</query>
+	</display>
 </folder>
 </displays>
