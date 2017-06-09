@@ -41,9 +41,10 @@ CREATE unlogged TABLE IF NOT EXISTS xform_gwells_well (
    WELL_USE_CODE                character varying(10)    ,
    LEGAL_LAND_DISTRICT_CODE     character varying(10)    ,
    province_state_guid          uuid                     ,
-   CLASS_OF_WELL_CODE           character varying(30)    ,
-   SUBCLASS_OF_WELL_CODE        character varying(10)    ,
+   CLASS_OF_WELL_CODCLASSIFIED_BY character varying(10)  ,
+   SUBCLASS_OF_WELL_CLASSIFIED_BY character varying(10)  ,
    well_yield_unit_guid         uuid                     ,
+   DRILLING_METHOD_CODE         character varying(10)    ,
    LATITUDE                     numeric(8,6)             ,
    LONGITUDE                    numeric(9,6)             ,
    UTM_NORTH                    integer,
@@ -168,5 +169,5 @@ old.well_yield_unit_guid
 FROM xform_gwells_well old
 LEFT OUTER JOIN gwells_intended_water_use  use   ON   old.WELL_USE_CODE  = use.code
 LEFT OUTER JOIN xform_gwells_land_district land  ON old.LEGAL_LAND_DISTRICT_CODE = land.code 
-INNER      JOIN gwells_well_class          class ON old.CLASS_OF_WELL_CODE  = class.code  /* need to fix records with null class code in legacy .. UNK?*/
-LEFT OUTER JOIN gwells_well_subclass   subclass  ON old.SUBCLASS_OF_WELL_CODE = subclass.code  AND subclass.well_class_guid = class.well_class_guid
+INNER      JOIN gwells_well_class          class ON old.CLASS_OF_WELL_CODCLASSIFIED_BY = class.code 
+LEFT OUTER JOIN gwells_well_subclass   subclass  ON old.SUBCLASS_OF_WELL_CLASSIFIED_BY = subclass.code  AND subclass.well_class_guid = class.well_class_guid
