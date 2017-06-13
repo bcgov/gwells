@@ -3,9 +3,11 @@
 
 {% block title %}Activity Submission{% endblock %}
 
-{% block bodyheading_block %}{{ wizard_data.well_activity_type }}{% endblock %}
+{% block bodyheading_block %}Submit Activity{% endblock %}
 
 {% block introduction_block %}
+    {{ wizard_data.well_activity_type }} - {{ wizard_data.well_class }} - {{ wizard_data.work_start_date }}
+     <br /><br />
 {% endblock %}
 
 {% block body_block %}
@@ -14,14 +16,17 @@
         <form action="" method="post">
 			{% csrf_token %}
             {{ wizard.management_form }}
-            {{ wizard.form.non_field_errors }}
-            {{ wizard.form.errors }}
+            {% if wizard.form.non_field_errors %}
+                <div id="errors" role="alert" aria-atomic="true" class="alert alert-danger">
+                {{ wizard.form.non_field_errors }}
+                </div>
+            {% endif %}
 
             <fieldset>
             <legend>Well Location</legend>
             <div class="row">
                 <div class="col-md-12">
-                    Please provide as much well location information as possible.<br />
+                    Please provide as much well location information as possible.
                     A minimum of one type of well location information is required below.<br /><br />
                 </div>
             </div>
@@ -30,7 +35,7 @@
                     <label>1) Civic Address</label>
                 </div>
                 <div class="col-md-10">
-                    <input type="checkbox" id="chkSameAsOwnerAddress" onClick="chkSameAsOwnerAddressClicked();" /> <label for="chkSameAsOwnerAddress">Same as Owner Address</label>
+                    <input type="checkbox" id="chkSameAsOwnerAddress" /> <label for="chkSameAsOwnerAddress">Same as Owner Address</label>
                 </div>
             </div>
             <div class="row">
@@ -145,19 +150,17 @@
 {% endblock %}
 
 {% block jqscript_block %}
-<script language="javascript">
-  function chkSameAsOwnerAddressClicked() {
-    var address = document.getElementById('id_location-street_address');
-    var city = document.getElementById('id_location-city');
-    if (chkSameAsOwnerAddress.checked) {
-      address.value = '{{ wizard_data.owner_mailing_address }}';
-      address.readOnly = true;
-      city.value = '{{ wizard_data.owner_city }}';
-      city.readOnly = true;
+<script>
+  $('#chkSameAsOwnerAddress').on('change', function() {
+    if ($('#chkSameAsOwnerAddress').is(':checked')) {
+      $('#id_location-street_address').val('{{ wizard_data.owner_mailing_address }}');
+      $('#id_location-street_address').prop("readonly", true);
+      $('#id_location-city').val('{{ wizard_data.owner_city }}');
+      $('#id_location-city').prop("readonly", true);
     } else {
-      address.readOnly = false;
-      city.readOnly = false;                
+      $('#id_location-street_address').prop("readonly", false);
+      $('#id_location-city').prop("readonly", false);
     }
-  }
+  });
 </script>
 {% endblock %}
