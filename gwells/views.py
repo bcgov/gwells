@@ -82,7 +82,7 @@ class ActivitySubmissionWizardView(SessionWizardView):
         context = super(ActivitySubmissionWizardView, self).get_context_data(form=form, **kwargs)
         context['wizard_data'] = self.get_all_cleaned_data()
         try:
-            water_supply_class = WellClass.objects.filter(code='WATER_SUPL')[0]
+            water_supply_class = WellClass.objects.filter(code='WATR_SPPLY')[0]
             context['water_supply_well_class_guid'] = water_supply_class.well_class_guid
         except Exception as e:
             context['water_supply_well_class_guid'] = None
