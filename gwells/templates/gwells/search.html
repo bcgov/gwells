@@ -74,7 +74,7 @@
     {% for well in well_list %}
         <div class="row row-bordered">
             <div class="col-sm-1">
-                <a href="{% url 'detail' well.well_tag_number %}">{{ well.well_tag_number }}</a>
+                <a href="{% url 'well_detail' well.well_tag_number %}">{{ well.well_tag_number }}</a>
             </div>
             <div class="col-sm-1">
                 {{ well.identification_plate_number|default_if_none:'&nbsp;' }}
