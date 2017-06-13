@@ -37,9 +37,15 @@ def well_search(request):
 
    
 
-class DetailView(generic.DetailView):
-    model = ActivitySubmission
-    context_object_name = 'activity_submission'
+class WellDetailView(generic.DetailView):
+    model = Well
+    context_object_name = 'well'
+
+
+
+#class DetailView(generic.DetailView):
+#    model = ActivitySubmission
+#    context_object_name = 'activity_submission'
 
 
 

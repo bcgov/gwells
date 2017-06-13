@@ -10,33 +10,49 @@
 {% block body_block %}
 
     <div class="row">
-        <div class="col-sm-6">
+        <div class="col-md-6">
             <label for="well_tag_number">Well Tag Number:</label>
             <span id="well_tag_number">{{ well.well_tag_number }}</span>
         </div>
-        <div class="col-sm-6">
+        <div class="col-md-6">
             <label for="owner">Owner:</label>
             <span id="owner">{{ well.owner_full_name }}</span>            
         </div>
     </div>
     <div class="row">
-        <div class="col-sm-6">
+        <div class="col-md-6">
             <label for="address">Street Address:</label>
             <span id="address">{{ well.street_address }}</span>
         </div>
-        <div class="col-sm-6">
+        <div class="col-md-6">
             <label for="well_drilled_depth">Well Drilled Depth:</label>
             <span id="well_drilled_depth">{{ well.well_drilled_depth }}</span>
         </div>
     </div>
     <div class="row">
-        <div class="col-sm-6">
+        <div class="col-md-6">
             <label for="owner">Town/City:</label>
             <span id="owner">{{ well.city }}</span>            
         </div>
-        <div class="col-sm-6">
+        <div class="col-md-6">
             <label for="finished_well_depth">Finished Well Depth:</label>
             <span id="finished_well_depth">{{ well.finished_well_depth }}</span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <label for="latitude">Latitude:</label>
+            <span id="latitude">{{ well.latitude }}</span>
+        </div>
+        <div class="col-md-6">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <label for="longitude">Longitude:</label>
+            <span id="longitude">{{ well.longitude }}</span>
+        </div>
+        <div class="col-md-6">
         </div>
     </div>
 
@@ -48,9 +64,4 @@
 {% endblock %}
 
 {% block jqscript_block %}
-    <script>
-        $(document).ready(function(){
-            $('[data-toggle="popover"]').popover(); 
-        });
-    </script>
 {% endblock %}
