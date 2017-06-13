@@ -134,7 +134,9 @@ INSERT INTO gwells_well (
   province_state_guid         ,
   well_class_guid             ,
   well_subclass_guid          ,
-  well_yield_unit_guid)
+  well_yield_unit_guid        ,
+  latitude,
+  longitude)
 SELECT 
 old.created                      ,
 coalesce(old.modified,old.created),
@@ -165,7 +167,9 @@ land.land_district_guid          ,
 old.province_state_guid          ,
 class.well_class_guid     ,
 subclass.well_subclass_guid   ,
-old.well_yield_unit_guid       
+old.well_yield_unit_guid      ,
+old.LATITUDE                  ,
+old.LONGITUDE
 FROM xform_gwells_well old
 LEFT OUTER JOIN gwells_intended_water_use  use   ON   old.WELL_USE_CODE  = use.code
 LEFT OUTER JOIN xform_gwells_land_district land  ON old.LEGAL_LAND_DISTRICT_CODE = land.code 
