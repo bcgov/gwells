@@ -216,6 +216,8 @@ class Well(TimeStampedModel):
     #depth_unit
     well_yield = models.DecimalField(max_digits=8, decimal_places=3, blank=True, null=True)
     well_yield_unit = models.ForeignKey(WellYieldUnit, db_column='well_yield_unit_guid', on_delete=models.CASCADE, blank=True, null=True)
+    latitude = models.DecimalField(max_digits=8, decimal_places=6, blank=True, null=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
     
     tracker = FieldTracker()
     
@@ -273,6 +275,8 @@ class ActivitySubmission(TimeStampedModel):
     #depth_unit
     well_yield = models.DecimalField(max_digits=8, decimal_places=3, blank=True, null=True)
     well_yield_unit = models.ForeignKey(WellYieldUnit, db_column='well_yield_unit_guid', on_delete=models.CASCADE, blank=True, null=True)
+    latitude = models.DecimalField(max_digits=8, decimal_places=6, blank=True, null=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
     
     tracker = FieldTracker()
 

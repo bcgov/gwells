@@ -13,7 +13,7 @@
 {% if activity_submission_list %}
     <ul>
     {% for activity_submission in activity_submission_list %}
-        <li><a href="{% url 'activity_submission_detail' activity_submission.filing_number %}">{{ activity_submission.well_activity_type.description }}</a> - {{ activity_submission.work_start_date }} - {{ activity_submission.street_address }}</li>
+        <li><a href="{% url 'activity_submission_detail' activity_submission.filing_number %}">{{ activity_submission.well_activity_type.description }}</a> - {{ activity_submission.work_start_date }} - {{ activity_submission.street_address }} - {{ activity_submission.driller_responsible }}</li>
     {% endfor %}
     </ul>
 {% else %}

@@ -2,24 +2,13 @@
 
 {% block title %}{% endblock %}
 
-{% block bodyheading_block %}Hello World{% endblock %}
+{% block bodyheading_block %}The Drill Experts{% endblock %}
 
 {% block introduction_block %}
-                    <p>Welcome to groundwater wells.</p>
+                    <p>Welcome Bobby Wellersby.</p>
 {% endblock %}
 
 {% block body_block %} 
-
-{% if yield_unit_list %}
-    <ul>
-    {% for unit in yield_unit_list %}
-        <li>{{ unit.code }}<br />{{ unit.description }}</li>
-    {% endfor %}
-    </ul>
-{% else %}
-    <p>No records could be found.</p>
-{% endif %}
-
 <p>
 <a href="{% url 'activity_submission_create' %}">Enter a new report</a>
 </p>

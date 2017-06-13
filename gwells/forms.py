@@ -6,6 +6,7 @@ from crispy_forms.bootstrap import FormActions
 from django.forms.models import inlineformset_factory
 from .search import Search
 from .models import ActivitySubmission, WellActivityType
+from datetime import date
 
 class SearchForm(forms.Form):
     well = forms.IntegerField(
@@ -135,9 +136,25 @@ class ActivitySubmissionTypeAndClassForm(forms.ModelForm):
         except Exception as e:
             pass
 
+    def clean_work_start_date(self):
+        work_start_date = self.cleaned_data.get('work_start_date')
+        if work_start_date > date.today():
+            raise forms.ValidationError('Work start date cannot be in the future.')
+        return work_start_date
+
+    def clean(self):
+        cleaned_data = super(ActivitySubmissionTypeAndClassForm, self).clean()
+        work_start_date = cleaned_data.get('work_start_date')
+        work_end_date = cleaned_data.get('work_end_date')
+
+        if work_start_date and work_end_date:
+            if work_end_date < work_start_date:
+                raise forms.ValidationError('Work End Date cannot be earlier than Work Start Date.')
+        return cleaned_data
+
     class Meta:
         model = ActivitySubmission
-        fields = ['well_activity_type', 'well_class', 'intended_water_use', 'identification_plate_number', 'driller_responsible', 'driller_name', 'consultant_name', 'consultant_company', 'work_start_date', 'work_end_date']
+        fields = ['well_activity_type', 'well_class', 'well_subclass', 'intended_water_use', 'identification_plate_number', 'driller_responsible', 'driller_name', 'consultant_name', 'consultant_company', 'work_start_date', 'work_end_date']
         help_texts = {'work_start_date': "yyyy-mm-dd", 'work_end_date': "yyyy-mm-dd",}
 
 
