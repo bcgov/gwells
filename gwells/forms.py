@@ -105,6 +105,25 @@ class WellOwnerForm(forms.ModelForm):
         self.helper = FormHelper()
         self.helper.form_tag = False
         self.helper.disable_csrf = True
+        self.helper.layout = Layout(
+            Fieldset(
+                'Owner Information',
+                Div(
+                    Div('owner_full_name', css_class='col-md-4'),
+                    css_class='row',
+                ),
+                Div(
+                    Div('owner_mailing_address', css_class='col-md-4'),
+                    css_class='row',
+                ),
+                Div(
+                    Div('owner_city', css_class='col-md-3 city'),
+                    Div('owner_province_state', css_class='col-md-1'),
+                    Div('owner_postal_code', css_class='col-md-3 postal'),
+                    css_class='row',
+                ),
+            )
+        )
         super(WellOwnerForm, self).__init__(*args, **kwargs)
 
         try:
@@ -125,7 +144,44 @@ class ActivitySubmissionTypeAndClassForm(forms.ModelForm):
         self.helper = FormHelper()
         self.helper.form_tag = False
         self.helper.disable_csrf = True
-        
+        self.helper.layout = Layout(
+            Fieldset(
+                'Type of Work and Well Class',
+                Div(
+                    Div('well_activity_type', css_class='col-md-4'),
+                    css_class='row',
+                ),
+                Div(
+                    Div(HTML('<label for="units">Measurement units for data entry</label><br /><input type="radio" name="units" value="Imperial" checked /> Imperial<br /><input type="radio" name="units" value="Metric" disabled /> Metric<br /><br />'), css_class='col-md-12'),
+                    css_class='row',
+                ),
+                Div(
+                    Div('well_class', css_class='col-md-4'),
+                    Div(Div('well_subclass', id='divSubclass'), Div('intended_water_use', id='divIntendedWaterUse'), css_class='col-md-4'),
+                    css_class='row',
+                ),
+                Div(
+                    Div('identification_plate_number', css_class='col-md-3'),
+                    css_class='row',
+                ),
+                Div(
+                    Div('driller_responsible', css_class='col-md-4'),
+                    Div('driller_name', css_class='col-md-4'),
+                    Div(HTML('<input type="checkbox" id="chkSameAsPersonResponsible" /> <label for="chkSameAsPersonResponsible">Same as Person Responsible for Drilling</label>'), css_class='col-md-4'),
+                    css_class='row',
+                ),
+                Div(
+                    Div('consultant_name', css_class='col-md-4'),
+                    Div('consultant_company', css_class='col-md-4'),
+                    css_class='row',
+                ),
+                Div(
+                    Div('work_start_date', css_class='col-md-4 date'),
+                    Div('work_end_date', css_class='col-md-4 date'),
+                    css_class='row',
+                ),
+            )
+        )
         super(ActivitySubmissionTypeAndClassForm, self).__init__(*args, **kwargs)
         
         try:
@@ -164,6 +220,82 @@ class ActivitySubmissionLocationForm(forms.ModelForm):
         self.helper = FormHelper()
         self.helper.form_tag = False
         self.helper.disable_csrf = True
+        self.helper.layout = Layout(
+            Fieldset(
+                'Well Location',
+                Div(
+                    Div(HTML('Please provide as much well location information as possible. A minimum of one type of well location information is required below.<br /><br />'), css_class='col-md-12'),
+                    css_class='row',
+                ),
+                Div(
+                    Div(HTML('<label>1) Civic Address</label>'), css_class='col-md-2'),
+                    Div(HTML('<input type="checkbox" id="chkSameAsOwnerAddress" /> <label for="chkSameAsOwnerAddress">Same as Owner Address</label>'), css_class='col-md-10'),
+                    css_class='row',
+                ),
+                Div(
+                    Div('street_address', css_class='col-md-4'),
+                    css_class='row',
+                ),
+                Div(
+                    Div('city', css_class='col-md-4 city'),
+                    css_class='row',
+                ),
+                Div(
+                    Div(HTML('OR'), css_class='col-md-12'),
+                    css_class='row',
+                ),
+                Div(
+                    Div(HTML('&nbsp;'), css_class='col-md-12'),
+                    css_class='row',
+                ),
+                Div(
+                    Div(HTML('<label>2) Legal Description</label>'), css_class='col-md-12'),
+                    css_class='row',
+                ),
+                Div(
+                    Div('legal_lot', css_class='col-md-2 city'),
+                    Div('legal_plan', css_class='col-md-2 city'),
+                    Div('legal_district_lot', css_class='col-md-2 city'),
+                    Div('legal_block', css_class='col-md-2 city'),
+                    css_class='row',
+                ),
+                Div(
+                    Div('legal_section', css_class='col-md-2 city'),
+                    Div('legal_township', css_class='col-md-2 city'),
+                    Div('legal_range', css_class='col-md-2 city'),
+                    Div('legal_land_district', css_class='col-md-2 city'),
+                    css_class='row',
+                ),
+                Div(
+                    Div(HTML('OR'), css_class='col-md-12'),
+                    css_class='row',
+                ),
+                Div(
+                    Div(HTML('&nbsp;'), css_class='col-md-12'),
+                    css_class='row',
+                ),
+                Div(
+                    Div(HTML('<label>3) Parcel Identifier</label>'), css_class='col-md-12'),
+                    css_class='row',
+                ),
+                Div(
+                    Div('legal_pid', css_class='col-md-2'),
+                    css_class='row',
+                ),
+                Div(
+                    Div(HTML('&nbsp;'), css_class='col-md-12'),
+                    css_class='row',
+                ),
+                Div(
+                    Div(HTML('&nbsp;'), css_class='col-md-12'),
+                    css_class='row',
+                ),
+                Div(
+                    Div('well_location_description', css_class='col-md-8'),
+                    css_class='row',
+                ),
+            )
+        )
         super(ActivitySubmissionLocationForm, self).__init__(*args, **kwargs)
     
     class Meta:

@@ -67,9 +67,9 @@ FORMS = [('type_and_class', ActivitySubmissionTypeAndClassForm),
          ('owner', WellOwnerForm),
          ('location', ActivitySubmissionLocationForm)]
 
-TEMPLATES = {'type_and_class': 'gwells/activity_submission/type_and_class_form.html',
-             'owner': 'gwells/activity_submission/owner_form.html',
-             'location': 'gwells/activity_submission/location_form.html'}
+TEMPLATES = {'type_and_class': 'gwells/activity_submission_form.html',
+             'owner': 'gwells/activity_submission_form.html',
+             'location': 'gwells/activity_submission_form.html'}
 
 
 
