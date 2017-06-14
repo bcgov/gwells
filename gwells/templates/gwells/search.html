@@ -131,6 +131,10 @@
         Can’t find the well you are looking for? Try your search again using a different set of criteria. If you still need more assistance, Contact <a href="https://portal.nrs.gov.bc.ca/web/client/contact">FrontCounterBC</a>.
     </p>
 {% endif %}
+
+<!-- EXPERIMENTAL LEAFLET APP PLUGIN -->
+<div id="mapid"></div>
+
         <p>
             We may not have a copy of your well record. Until February 29, 2016, it was voluntary for well drillers to submit well records to the Province. 
             Issues related to data quality may make finding your well record difficult.
@@ -143,6 +147,10 @@
     <script>
         $(document).ready(function(){
             $('[data-toggle="popover"]').popover({'trigger':'hover'});
+            // EXPERIMENTAL LEAFLET APP PLUGIN
+            var myMap = L.map('mapid').setView([48.4284, 123.3656], 13);
+            L.tileLayer('http://maps.gov.bc.ca/arcserver/rest/services/Province/web_mercator_cache/MapServer', {
+            }).addTo(myMap);
         });
     </script>
 {% endblock %}
