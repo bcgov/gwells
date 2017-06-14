@@ -1,0 +1,99 @@
+{% extends 'gwells/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Activity Submission{% endblock %}
+
+{% block bodyheading_block %}Submit Activity{% endblock %}
+
+{% block introduction_block %}
+{% if wizard.steps.current == 'type_and_class' %}
+    Submit activity on a well that does not exist in the system. Try a <a href="{% url 'search' %}">search</a> to see if the well exists in the system before submitting a report.
+{% else %}
+    {{ wizard_data.well_activity_type }} - {{ wizard_data.well_class }} - {{ wizard_data.work_start_date }}
+{% endif %}
+     <br /><br />
+{% endblock %}
+
+{% block body_block %}
+
+<h4>Step {{ wizard.steps.step1 }} of {{ wizard.steps.count }}</h4>
+		<form action="" method="post">
+            {% csrf_token %}
+            {{ wizard.management_form }}
+
+            {% if wizard.form.forms %}
+                {{ wizard.form.management_form }}
+                {% for form in wizard.form.forms %}
+                    {% crispy form %}
+                {% endfor %}
+            {% else %}
+                {% crispy wizard.form %}
+            {% endif %}
+
+            <div class="form-group">
+                <div class="controls">
+                {% if wizard.steps.prev %}
+                    <a class="btn btn-default" id="previous_button" href="javascript:history.go(-1);">Previous Step</a>
+                {% endif %}
+                {% if wizard.steps.next %}
+                    <input type="submit" value="Next Step" class="btn btn-primary" id="submit-id-next" />
+                {% else %}
+                    <input type="submit" value="Submit Report" class="btn btn-primary" id="submit-id-s" />
+                {% endif %}
+                </div>
+            </div>
+		</form>    
+
+{% endblock %}
+
+{% block jqscript_block %}
+{% if wizard.steps.current == 'type_and_class' %}
+<script>
+  $(function() {
+    $('#id_type_and_class-work_start_date').datepicker({ dateFormat: 'yy-mm-dd' });
+    $('#id_type_and_class-work_end_date').datepicker({ dateFormat: 'yy-mm-dd' });
+    $('#divSubclass').hide();
+  });
+  $('#id_type_and_class-well_class').on('change', function() {
+    if ($('#id_type_and_class-well_class option:selected').val() == '{{ water_supply_well_class_guid }}') {
+      $('#id_type_and_class-well_subclass option').prop('selected', false);
+      //$('#divSubclass').hide();
+      $('#divIntendedWaterUse').show();
+    } else {
+      $('#id_type_and_class-intended_water_use option').prop('selected', false);
+      $('#divIntendedWaterUse').hide();
+      //$('#divSubclass').show();
+    }
+  });
+  $('#id_type_and_class-well_class').trigger('change');
+
+  $('#chkSameAsPersonResponsible').on('change', function() {
+    if ($('#chkSameAsPersonResponsible').is(':checked') && $('#id_type_and_class-driller_responsible').prop('selectedIndex') > 0) {
+      var dvalue = $('#id_type_and_class-driller_responsible option:selected').text();
+      var index = dvalue.indexOf('-');
+      if (index > 0) {
+        dvalue = dvalue.substring(0, index-1);
+      }
+      $('#id_type_and_class-driller_name').val(dvalue);
+      $('#id_type_and_class-driller_name').prop("readonly", true);
+    } else {
+      $('#id_type_and_class-driller_name').prop("readonly", false);
+    }
+  });
+</script>
+{% elif wizard.steps.current == 'location' %}
+<script>
+  $('#chkSameAsOwnerAddress').on('change', function() {
+    if ($('#chkSameAsOwnerAddress').is(':checked')) {
+      $('#id_location-street_address').val('{{ wizard_data.owner_mailing_address }}');
+      $('#id_location-street_address').prop("readonly", true);
+      $('#id_location-city').val('{{ wizard_data.owner_city }}');
+      $('#id_location-city').prop("readonly", true);
+    } else {
+      $('#id_location-street_address').prop("readonly", false);
+      $('#id_location-city').prop("readonly", false);
+    }
+  });
+</script>
+{% endif %}
+{% endblock %}

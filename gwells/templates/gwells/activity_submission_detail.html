@@ -66,6 +66,16 @@
         <div class="col-md-6">
         </div>
     </div>
+    <div class="row">
+        <div class="col-md-6">
+            <label for="identification_plate_number">Identification Plate Number:</label>
+            <span id="identification_plate_number">{{ activity_submission.identification_plate_number }}</span>
+        </div>
+        <div class="col-md-6">
+            <label for="location_desc">Location Description:</label>
+            <span id="location_desc">{{ activity_submission.well_location_description }}</span>            
+        </div>
+    </div>
 
 
 {% endblock %}
