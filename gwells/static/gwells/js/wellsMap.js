@@ -4,7 +4,7 @@ var wMap = (function() {
     var createMap = function(mapNodeId) {
         var myMap = L.map(mapNodeId).setView([48.4284, -123.3656], 13);
         L.esri.tiledMapLayer({
-        url: 'http://maps.gov.bc.ca/arcserver/rest/services/province/roads_wm/MapServer',
+        url: 'http://maps.gov.bc.ca/arcgis/rest/services/province/web_mercator_cache/MapServer/',
         maxZoom: 15
         }).addTo(myMap);                   
     }
