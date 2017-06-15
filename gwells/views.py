@@ -6,7 +6,7 @@ from django.views.generic.edit import FormView
 #from django.utils import timezone
 from formtools.wizard.views import SessionWizardView
 from .models import WellYieldUnit, Well, ActivitySubmission, WellClass
-from .forms import SearchForm, ActivitySubmissionTypeAndClassForm, WellOwnerForm, ActivitySubmissionLocationForm
+from .forms import SearchForm, ActivitySubmissionTypeAndClassForm, WellOwnerForm, ActivitySubmissionLocationForm, ActivitySubmissionGpsForm
 
 
 
@@ -65,11 +65,13 @@ class ActivitySubmissionDetailView(generic.DetailView):
 
 FORMS = [('type_and_class', ActivitySubmissionTypeAndClassForm),
          ('owner', WellOwnerForm),
-         ('location', ActivitySubmissionLocationForm)]
+         ('location', ActivitySubmissionLocationForm),
+         ('gps', ActivitySubmissionGpsForm)]
 
 TEMPLATES = {'type_and_class': 'gwells/activity_submission_form.html',
              'owner': 'gwells/activity_submission_form.html',
-             'location': 'gwells/activity_submission_form.html'}
+             'location': 'gwells/activity_submission_form.html',
+             'gps': 'gwells/activity_submission_form.html'}
 
 
 

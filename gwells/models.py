@@ -178,6 +178,46 @@ class Driller(models.Model):
 
 
 
+class GroundElevationMethod(models.Model):
+    """
+    The method used to determine the ground elevation of a well.
+    Some examples of methods to determine ground elevation include:
+    GPS, Altimeter, Differential GPS, Level, 1:50,000 map, 1:20,000 map, 1:10,000 map, 1:5,000 map.
+    """
+    ground_elevation_method_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    code = models.CharField(max_length=10)
+    description = models.CharField(max_length=100)
+    is_hidden = models.BooleanField(default=False)
+    sort_order = models.PositiveIntegerField()
+    
+    class Meta:
+        db_table = 'gwells_ground_elevation_method'
+        ordering = ['sort_order', 'description']
+
+    def __str__(self):
+        return self.description
+
+
+
+class DrillingMethod(models.Model):
+    """
+    The method used to drill a well. For example, air rotary, dual rotary, cable tool, excavating, other.
+    """
+    drilling_method_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    code = models.CharField(max_length=10)
+    description = models.CharField(max_length=100)
+    is_hidden = models.BooleanField(default=False)
+    sort_order = models.PositiveIntegerField()
+    
+    class Meta:
+        db_table = 'gwells_drilling_method'
+        ordering = ['sort_order', 'description']
+
+    def __str__(self):
+        return self.description
+
+
+
 class Well(TimeStampedModel):
     """
     Well information.
@@ -208,6 +248,16 @@ class Well(TimeStampedModel):
     well_location_description = models.CharField(max_length=500, blank=True, verbose_name='Well Location Description')
 
     identification_plate_number = models.PositiveIntegerField(unique=True, blank=True, null=True)
+
+    latitude = models.DecimalField(max_digits=8, decimal_places=6, blank=True, null=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
+    ground_elevation = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True, verbose_name='Ground Elevation')
+    ground_elevation_method = models.ForeignKey(GroundElevationMethod, db_column='ground_elevation_method_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Method for Determining Ground Elevation')
+    drilling_method = models.ForeignKey(DrillingMethod, db_column='drilling_method_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Drilling Method')
+    other_drilling_method = models.CharField(max_length=50, blank=True, verbose_name='Specify Other Drilling Method')
+    orientation_vertical = models.BooleanField(default=True, verbose_name='Well Orientation')
+
+
     diameter = models.CharField(max_length=9, blank=True)  #want to be integer in future
     #diameter_unit
     total_depth_drilled = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True)
@@ -216,8 +266,6 @@ class Well(TimeStampedModel):
     #depth_unit
     well_yield = models.DecimalField(max_digits=8, decimal_places=3, blank=True, null=True)
     well_yield_unit = models.ForeignKey(WellYieldUnit, db_column='well_yield_unit_guid', on_delete=models.CASCADE, blank=True, null=True)
-    latitude = models.DecimalField(max_digits=8, decimal_places=6, blank=True, null=True)
-    longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
     
     tracker = FieldTracker()
     
@@ -267,6 +315,16 @@ class ActivitySubmission(TimeStampedModel):
     well_location_description = models.CharField(max_length=500, blank=True, verbose_name='Well Location Description')
 
     identification_plate_number = models.PositiveIntegerField(unique=True, blank=True, null=True, verbose_name='Identification Plate Number')
+
+    latitude = models.DecimalField(max_digits=8, decimal_places=6, blank=True, null=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
+    ground_elevation = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True, verbose_name='Ground Elevation')
+    ground_elevation_method = models.ForeignKey(GroundElevationMethod, db_column='ground_elevation_method_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Method for Determining Ground Elevation')
+    drilling_method = models.ForeignKey(DrillingMethod, db_column='drilling_method_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Drilling Method')
+    other_drilling_method = models.CharField(max_length=50, blank=True, verbose_name='Specify Other Drilling Method')
+    orientation_vertical = models.BooleanField(default=True, verbose_name='Well Orientation', choices=((True, 'vertical'), (False, 'horizontal')))
+
+
     diameter = models.CharField(max_length=9, blank=True)  #want to be integer in future
     #diameter_unit
     total_depth_drilled = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True)
@@ -275,8 +333,6 @@ class ActivitySubmission(TimeStampedModel):
     #depth_unit
     well_yield = models.DecimalField(max_digits=8, decimal_places=3, blank=True, null=True)
     well_yield_unit = models.ForeignKey(WellYieldUnit, db_column='well_yield_unit_guid', on_delete=models.CASCADE, blank=True, null=True)
-    latitude = models.DecimalField(max_digits=8, decimal_places=6, blank=True, null=True)
-    longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
     
     tracker = FieldTracker()
 
