@@ -305,5 +305,67 @@ class ActivitySubmissionLocationForm(forms.ModelForm):
 
 
 
+class ActivitySubmissionGpsForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.disable_csrf = True
+        self.helper.layout = Layout(
+            Fieldset(
+                'Geographic Coordinates and Method of Drilling',
+                Div(
+                    Div(HTML('To determine coordinates using a Global Positioning System (GPS), set the datum to the North American Datum of 1983 (NAD 83), the current ministry standard for mapping.<br /><br />'), css_class='col-md-12'),
+                    css_class='row',
+                ),
+                Div(
+                    Div('latitude', css_class='col-md-2'),
+                    Div('longitude', css_class='col-md-2'),
+                    css_class='row',
+                ),
+                Div(
+                    Div(HTML('OR'), css_class='col-md-12'),
+                    css_class='row',
+                ),
+                Div(
+                    Div(HTML('&nbsp;'), css_class='col-md-12'),
+                    css_class='row',
+                ),
+                Div(
+                    Div(HTML('OR'), css_class='col-md-12'),
+                    css_class='row',
+                ),
+                Div(
+                    Div(HTML('&nbsp;'), css_class='col-md-12'),
+                    css_class='row',
+                ),
+                Div(
+                    Div(HTML('&nbsp;'), css_class='col-md-12'),
+                    css_class='row',
+                ),
+                Div(
+                    Div('ground_elevation', css_class='col-md-2'),
+                    Div('ground_elevation_method', css_class='col-md-4'),
+                    css_class='row',
+                ),
+                Div(
+                    Div('drilling_method', css_class='col-md-3'),
+                    Div('other_drilling_method', css_class='col-md-3'),
+                    css_class='row',
+                ),
+                Div(
+                    Div('orientation_vertical', css_class='col-md-3'),
+                    css_class='row',
+                ),
+            )
+        )
+        super(ActivitySubmissionGpsForm, self).__init__(*args, **kwargs)
+    
+    class Meta:
+        model = ActivitySubmission
+        fields = ['latitude', 'longitude', 'ground_elevation', 'ground_elevation_method', 'drilling_method', 'other_drilling_method', 'orientation_vertical']
+        help_texts = {'latitude': 'decimal degrees', 'longitude': 'decimal degrees',}
+        widgets = {'orientation_vertical': forms.RadioSelect}
+
+
 #WellCompletionDataFormSet = inlineformset_factory(ActivitySubmission, WellCompletionData, max_num=1, can_delete=False)
 #LithologyFormSet = inlineformset_factory(ActivitySubmission, Lithology, extra=5)
