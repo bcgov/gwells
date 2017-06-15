@@ -22,6 +22,7 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^additional-information', TemplateView.as_view(template_name='gwells/additional_information.html'), name='additional_information'),
     url(r'^test$', index),
+    url(r'^MAP_TEST/', views.map_test, name='MAP_TEST'), #TEMPORARY TEST PAGE FOR INITIAL MAP FUNCTIONALITY
 ]
 
 if settings.DEBUG:
