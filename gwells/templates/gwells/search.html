@@ -134,6 +134,12 @@
 
 <div id="search-map"></div>
 
+<!-- EXPERIMENTAL CODE FOR FUTURE ADD PAGE; THE FOLLOWING IS ***NOT*** SEARCH PAGE CODE!!! -->
+
+
+
+<!-- /EXPERIMENTAL CODE -->
+
         <p>
             We may not have a copy of your well record. Until February 29, 2016, it was voluntary for well drillers to submit well records to the Province. 
             Issues related to data quality may make finding your well record difficult.
@@ -147,7 +153,10 @@
         $(document).ready(function(){
             $('[data-toggle="popover"]').popover({'trigger':'hover'});
             // The search page has a map.
-            wMap.createMap('search-map');
+            var searchMap = wellsMap.createMap('search-map');
+
+            /* EXPERIMENTAL CODE FOR FUTURE ADD PAGE; THE FOLLOWING IS ***NOT*** SEARCH PAGE CODE!!! */
+
         });
     </script>
 {% endblock %}

@@ -1,5 +1,5 @@
 /** First go at a wellsMap module, which provides core map functionality to the GWELLS application. Depends on Leaflet. */
-var wMap = (function() {
+var wellsMap = (function() {
     /** Consts and objects. */
 
     // Options for creating a wellsMap
@@ -60,10 +60,10 @@ var wMap = (function() {
     var createMap = function (mapNodeId) {
         var initLatLong = wellsMapOptions.initLatLong || [48.4284, -123.3656];
         var initZoom = wellsMapOptions.initZoom || 13;
-        var myMap = L.map(mapNodeId).setView(initLatLong, initZoom);
-        _loadEsriLayers(myMap);
-        _loadWmsLayers(myMap);
-
+        var map = L.map(mapNodeId).setView(initLatLong, initZoom);
+        _loadEsriLayers(map);
+        _loadWmsLayers(map);
+        return map;
     }
     return {
         createMap: createMap
