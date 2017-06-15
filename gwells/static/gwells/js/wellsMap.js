@@ -19,6 +19,7 @@ var wMap = (function() {
                 rootUrl: 'https://openmaps.gov.bc.ca/geo/pub/WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW/ows?',
                 format: 'image/png',
                 layers: 'pub:WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW',
+                styles: 'Water_Wells_All',
                 transparent: true
             }
         ]
@@ -48,6 +49,7 @@ var wMap = (function() {
                 L.tileLayer.wms(wmsLayer.rootUrl, {
                     format: wmsLayer.format || 'image/png',
                     layers: wmsLayer.layers || '',
+                    styles: wmsLayer.styles || '',
                     transparent: wmsLayer.transparent || true
                 }).addTo(map);
             }
