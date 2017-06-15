@@ -28,6 +28,9 @@ body {
     font-size: 13px;
 }
 
+/* Leaflet map styles */
+
+#search-map { height: 720px; }
 
 /* logo whitespace */
 

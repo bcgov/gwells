@@ -132,8 +132,7 @@
     </p>
 {% endif %}
 
-<!-- EXPERIMENTAL LEAFLET APP PLUGIN -->
-<div id="mapid"></div>
+<div id="search-map"></div>
 
         <p>
             We may not have a copy of your well record. Until February 29, 2016, it was voluntary for well drillers to submit well records to the Province. 
@@ -148,7 +147,7 @@
         $(document).ready(function(){
             $('[data-toggle="popover"]').popover({'trigger':'hover'});
             // EXPERIMENTAL LEAFLET APP PLUGIN
-            wMap.createMap('mapid');
+            wMap.createMap('search-map');
         });
     </script>
 {% endblock %}
