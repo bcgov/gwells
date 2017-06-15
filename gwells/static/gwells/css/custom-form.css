@@ -560,7 +560,7 @@ fieldset[disabled] a.btn {
     border-radius:3px;
 }
 
-.form-group .controls {
+.formButtons .controls {
     text-align: right;
 }
 
@@ -597,4 +597,8 @@ div.date input {
 p.help-block {
     text-align: left;
     margin-top: 3px;
+}
+
+.form-group .controls .radio:first-child {
+    margin-top: 0px;
 }

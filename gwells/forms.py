@@ -2,7 +2,7 @@ from django import forms
 from django.utils.safestring import mark_safe
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Div, Submit, Hidden, HTML, Field
-from crispy_forms.bootstrap import FormActions
+from crispy_forms.bootstrap import FormActions, AppendedText
 from django.forms.models import inlineformset_factory
 from .search import Search
 from .models import ActivitySubmission, WellActivityType
@@ -64,6 +64,7 @@ class SearchForm(forms.Form):
             FormActions(
                 Submit('s', 'Search'),
                 HTML('<a class="btn btn-default" href="{% url \'search\' %}">Reset</a>'),
+                css_class='form-group formButtons',
             )
         )
 
@@ -298,6 +299,27 @@ class ActivitySubmissionLocationForm(forms.ModelForm):
         )
         super(ActivitySubmissionLocationForm, self).__init__(*args, **kwargs)
     
+    def clean(self):
+        cleaned_data = super(ActivitySubmissionLocationForm, self).clean()
+        
+        street_address = cleaned_data.get('street_address') 
+        city = cleaned_data.get('city')
+        address_provided = street_address and city
+
+        legal_lot = cleaned_data.get('legal_lot')
+        legal_plan = cleaned_data.get('legal_plan')
+        legal_district_lot = cleaned_data.get('legal_district_lot')
+        legal_block = cleaned_data.get('legal_block')
+        legal_section = cleaned_data.get('legal_section')
+        legal_township = cleaned_data.get('legal_township')
+        legal_range = cleaned_data.get('legal_range')
+        legal_land_district = cleaned_data.get('legal_land_district')
+        legal_provided = legal_lot and legal_plan and legal_land_district
+
+        if not address_provided and not legal_provided and not cleaned_data.get('legal_pid'):
+            raise forms.ValidationError('At least 1 of Civic Address, Legal Description (Lot, Plan and Land District) or Parcel Identifier must be provided.')
+        return cleaned_data
+
     class Meta:
         model = ActivitySubmission
         fields = ['street_address', 'city', 'legal_lot', 'legal_plan', 'legal_district_lot', 'legal_block', 'legal_section', 'legal_township', 'legal_range', 'legal_land_district', 'legal_pid', 'well_location_description']
@@ -318,12 +340,44 @@ class ActivitySubmissionGpsForm(forms.ModelForm):
                     css_class='row',
                 ),
                 Div(
-                    Div('latitude', css_class='col-md-2'),
-                    Div('longitude', css_class='col-md-2'),
-                    css_class='row',
-                ),
-                Div(
-                    Div(HTML('OR'), css_class='col-md-12'),
+                    Div(
+                        Div(
+                            Div(AppendedText('latitude', 'decimal degrees'), css_class='col-md-5'),
+                            Div(AppendedText('longitude', 'decimal degrees'), css_class='col-md-5'),
+                            css_class='row',
+                        ),
+                        Div(
+                            Div(HTML('OR'), css_class='col-md-12'),
+                            css_class='row',
+                        ),
+                        Div(
+                            Div(HTML('&nbsp;'), css_class='col-md-12'),
+                            css_class='row',
+                        ),
+                        Div(
+                            Div(HTML('<div id="div_id_gps-latitude_dms" class="form-group"> <label for="id_gps-latitude_d" class="control-label ">Latitude</label> <div class="controls "> <div class="input-group"> <input class="numberinput form-control" id="id_gps-latitude_d" name="gps-latitude_d" step="1" type="number" /> <span class="input-group-addon">deg</span> <input class="numberinput form-control" id="id_gps-latitude_m" name="gps-latitude_m" step="1" type="number" /> <span class="input-group-addon">min</span> <input class="numberinput form-control" id="id_gps-latitude_s" name="gps-latitude_s" step="0.01" type="number" /> <span class="input-group-addon">sec</span> </div> </div> </div>'), css_class='col-md-6'),
+                            Div(HTML('<div id="div_id_gps-longitude_dms" class="form-group"> <label for="id_gps-longitude_d" class="control-label ">Longitude</label> <div class="controls "> <div class="input-group"> <input class="numberinput form-control" id="id_gps-longitude_d" name="gps-longitude_d" step="1" type="number" /> <span class="input-group-addon">deg</span> <input class="numberinput form-control" id="id_gps-longitude_m" name="gps-longitude_m" step="1" type="number" /> <span class="input-group-addon">min</span> <input class="numberinput form-control" id="id_gps-longitude_s" name="gps-longitude_s" step="0.01" type="number" /> <span class="input-group-addon">sec</span> </div> </div> </div>'), css_class='col-md-6'),
+                            css_class='row',
+                        ),
+                        Div(
+                            Div(HTML('OR'), css_class='col-md-12'),
+                            css_class='row',
+                        ),
+                        Div(
+                            Div(HTML('&nbsp;'), css_class='col-md-12'),
+                            css_class='row',
+                        ),
+                        Div(
+                            Div(HTML('<div id="div_id_gps-zone" class="form-group"> <label for="id_gps-zone" class="control-label ">Zone</label> <div class="controls "> <select class="select form-control" id="id_gps-zone" name="gps-zone"><option value="" selected="selected">---------</option></select> </div> </div>'), css_class='col-md-4'),
+                            Div(HTML('<div id="div_id_gps-utm_easting" class="form-group"> <label for="id_gps-utm_easting" class="control-label ">UTM Easting</label> <div class="controls "> <div class="input-group"> <input class="numberinput form-control" id="id_gps-utm_easting" name="gps-utm_easting" step="0.01" type="number" /> <span class="input-group-addon">m</span> </div> </div> </div>'), css_class='col-md-4'),
+                            Div(HTML('<div id="div_id_gps-utm_northing" class="form-group"> <label for="id_gps-utm_northing" class="control-label ">UTM Northing</label> <div class="controls "> <div class="input-group"> <input class="numberinput form-control" id="id_gps-utm_northing" name="gps-utm_northing" step="0.01" type="number" /> <span class="input-group-addon">m</span> </div> </div> </div>'), css_class='col-md-4'),
+                            css_class='row',
+                        ),
+                        css_class='col-md-8',
+                    ),
+                    Div(HTML('<div id="divMap"></div>'),
+                        css_class='col-md-4',
+                    ),
                     css_class='row',
                 ),
                 Div(
@@ -331,25 +385,21 @@ class ActivitySubmissionGpsForm(forms.ModelForm):
                     css_class='row',
                 ),
                 Div(
-                    Div(HTML('OR'), css_class='col-md-12'),
-                    css_class='row',
-                ),
-                Div(
                     Div(HTML('&nbsp;'), css_class='col-md-12'),
                     css_class='row',
                 ),
                 Div(
-                    Div(HTML('&nbsp;'), css_class='col-md-12'),
-                    css_class='row',
-                ),
-                Div(
-                    Div('ground_elevation', css_class='col-md-2'),
+                    Div(AppendedText('ground_elevation', 'ft (asl)'), css_class='col-md-2'),
                     Div('ground_elevation_method', css_class='col-md-4'),
                     css_class='row',
                 ),
                 Div(
                     Div('drilling_method', css_class='col-md-3'),
                     Div('other_drilling_method', css_class='col-md-3'),
+                    css_class='row',
+                ),
+                Div(
+                    Div(HTML('&nbsp;'), css_class='col-md-12'),
                     css_class='row',
                 ),
                 Div(
@@ -363,7 +413,7 @@ class ActivitySubmissionGpsForm(forms.ModelForm):
     class Meta:
         model = ActivitySubmission
         fields = ['latitude', 'longitude', 'ground_elevation', 'ground_elevation_method', 'drilling_method', 'other_drilling_method', 'orientation_vertical']
-        help_texts = {'latitude': 'decimal degrees', 'longitude': 'decimal degrees',}
+        #help_texts = {'latitude': 'decimal degrees', 'longitude': 'decimal degrees',}
         widgets = {'orientation_vertical': forms.RadioSelect}
 
 
