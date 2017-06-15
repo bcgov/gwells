@@ -20,7 +20,9 @@ class HelloWorldView(generic.ListView):
         """
         return WellYieldUnit.objects.order_by('-sort_order')
 
-
+# TEMPORARY TEST PAGE FOR INITIAL MAP FUNCTIONALITY
+def map_test(request):
+    return render(request, 'gwells/map_test.html')
 
 def well_search(request):
     well_results = None
