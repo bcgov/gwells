@@ -14,8 +14,8 @@ body {
 	font-size: 13px;
 }
 
-/* EXPERIMENTAL LEAFLET APP PLUGIN*/
-#mapid { height: 180px; }
+/* EXPERIMENTAL LEAFLET APP PLUGIN */
+#mapid { height: 720px; }
 
 a {
 	color: #1a5a96;
