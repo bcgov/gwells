@@ -42,6 +42,11 @@ function WellsMap () {
 
     /** Private methods */
 
+    // Convenience method for checking whether a property exists (i.e., is neither null nor undefined)
+    var _exists = function (prop) {
+        return prop !== null && prop !== void 0;
+    }
+
     // TODO: Generalise to other ESRI layer types? Add 'type' switcher in wellsMapOptions.esriLayers objs?
     // TODO: Investigate ESRI leaflet layer controls
     // Loads ESRI layers. Currently ssumes MapServer. 
@@ -71,32 +76,30 @@ function WellsMap () {
         });
     };
 
+    var _newWellMarkerMoveEvent = function (moveEvent) {
+        var newLatLng = moveEvent.latlng;
+        if (_latNodeSelector !== null) {
+            $(_latNodeSelector).val(newLatLng.lat);
+        }
+        if (_longNodeSelector !== null) {
+            $(_longNodeSelector).val(newLatLng.lng);
+        }
+    }
+
     /** Public methods */
 
-    var setLatNodeSelector = function (nodeSelector) {
-        var selector = null;
-        if (typeof nodeSelector === "string") {
-            selector = nodeSelector;
-        }
-        _latNodeSelector = selector;
-    }
-    var setLongNodeSelector = function (nodeSelector) {
-        var selector = null;
-        if (typeof nodeSelector === "string") {
-            selector = nodeSelector;
-        }
-        _longNodeSelector = selector;
-    }
-
     // Places a marker to refine the placement of a new well.
-    var placeNewWellMarker = function (lat, long) {
+    var placeNewWellMarker = function ({lat: lat, long: long}) {
         if (_newWellMarker !== null && _leafletMap !== null) {
+            lat = _exists(lat) && !isNaN(lat) ? lat : _leafletMap.getCenter().lat;
+            long = _exists(long) && !isNaN(long) ? long : _leafletMap.getCenter().lng;
             _newWellMarker.setLatLng([lat, long]);
         }
         else if (_leafletMap !== null) {
             _newWellMarker = L.marker([lat, long], {
                 draggable: true
             }).addTo(_leafletMap);
+            _newWellMarker.on('move', _newWellMarkerMoveEvent);
         }
     }
 
@@ -107,24 +110,37 @@ function WellsMap () {
         }
     }
 
-    // TODO: More creation options?
     // Initialises the underlying Leaflet map.
-    var initMap = function (mapNodeId) {
-        if (_leafletMap) {
+    var initMap = function ({mapNodeId: mapNodeId, latNodeSelector: latNodeSelector, longNodeSelector: longNodeSelector}) {
+        if (!_exists(mapNodeId)) {
+            // If there's no mapNodeId, we shouldn't initialise the map.
+            console.log("ERROR: Map initialisation called but no map node ID provided.")
+            return;
+        }
+        if (_exists(_leafletMap)) {
+            // If we already have a map associated with this instance, we remove it.
+            _leafletMap.remove();
             _leafletMap = null;
         }
+        // Basic initialisation.
         var initLatLong = wellsMapOptions.initLatLong || [48.4284, -123.3656];
         var initZoom = wellsMapOptions.initZoom || 13;
         _leafletMap = L.map(mapNodeId).setView(initLatLong, initZoom);
         _loadEsriLayers(_leafletMap);
         _loadWmsLayers(_leafletMap);
+
+        // Set optional initial props.
+        if (_exists(latNodeSelector) && typeof (latNodeSelector) === "string") {
+            _latNodeSelector = latNodeSelector;
+        }
+        if (_exists(longNodeSelector) && typeof (longNodeSelector) === "string") {
+            _longNodeSelector = longNodeSelector;
+        }
     }
 
     return {
         initMap: initMap,
         placeNewWellMarker: placeNewWellMarker,
         removeNewWellMarker: removeNewWellMarker,
-        setLatNodeSelector: setLatNodeSelector,
-        setLongNodeSelector: setLongNodeSelector
     };
 };
