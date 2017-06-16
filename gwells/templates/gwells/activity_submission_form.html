@@ -96,4 +96,11 @@
   });
 </script>
 {% endif %}
+<script>
+  var addMap = null;
+  $(document).ready(function (){
+    addMap = new WellsMap();
+    addMap.initMap({mapNodeId: 'add-map'});
+  });
+</script>
 {% endblock %}
