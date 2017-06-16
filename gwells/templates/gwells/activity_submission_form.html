@@ -98,6 +98,13 @@
 {% endif %}
 <script>
   var addMap = null;
+  function placeNewWellMarker () {
+    //STUB
+    addMap.placeNewWellMarker();
+  };
+  function removeNewWellMarker () {
+    addMap.removeNewWellMarker();
+  };
   $(document).ready(function (){
     addMap = new WellsMap();
     addMap.initMap({mapNodeId: 'add-map'});

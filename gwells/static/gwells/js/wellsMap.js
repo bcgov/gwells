@@ -89,13 +89,17 @@ function WellsMap () {
     /** Public methods */
 
     // Places a newWellMarker on the map to help refine the placement of a new well.
-    var placeNewWellMarker = function ({lat: lat, long: long}) {
-        if (_newWellMarker !== null && _leafletMap !== null) {
-            lat = _exists(lat) && !isNaN(lat) ? lat : _leafletMap.getCenter().lat;
-            long = _exists(long) && !isNaN(long) ? long : _leafletMap.getCenter().lng;
+    var placeNewWellMarker = function (options) {
+        if (!_exists(_leafletMap)) {
+            return;
+        }
+        options = options || {};
+        var lat = options.lat || _leafletMap.getCenter().lat;
+        var long = options.long || _leafletMap.getCenter().lng;
+        if (_exists(_newWellMarker)) {
             _newWellMarker.setLatLng([lat, long]);
         }
-        else if (_leafletMap !== null) {
+        else {
             _newWellMarker = L.marker([lat, long], {
                 draggable: true
             }).addTo(_leafletMap);
@@ -105,14 +109,20 @@ function WellsMap () {
 
     // Removes the newWelMarker from the map.
     var removeNewWellMarker = function () {
-        if (_newWellMarker !== null && _leafletMap !== null) {
+        if (!_exists(_leafletMap)) {
+            return;
+        }
+        if (_exists(_newWellMarker)) {
             _leafletMap.removeLayer(_newWellMarker);
             _newWellMarker = null;
         }
     }
 
     // Initialises the underlying Leaflet map. The mapNodeId is mandatory; other properties are optional.
-    var initMap = function ({mapNodeId: mapNodeId, latNodeSelector: latNodeSelector, longNodeSelector: longNodeSelector}) {
+    // options argument has type {mapNodeId: string, latNodeSelector: string, longNodeSelector: string}
+    var initMap = function (options) {
+        options = options || {};
+        var mapNodeId = options.mapNodeId;
         if (!_exists(mapNodeId)) {
             // If there's no mapNodeId, we shouldn't initialise the map.
             console.log("ERROR: Map initialisation called but no map node ID provided.")
@@ -131,6 +141,8 @@ function WellsMap () {
         _loadWmsLayers(_leafletMap);
 
         // Set optional initial props.
+        var latNodeSelector = options.latNodeSelector;
+        var longNodeSelector = options.longNodeSelector;
         if (_exists(latNodeSelector) && typeof (latNodeSelector) === "string") {
             _latNodeSelector = latNodeSelector;
         }
