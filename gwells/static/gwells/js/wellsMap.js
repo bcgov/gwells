@@ -34,11 +34,11 @@ function WellsMap () {
     // A marker for a prospective well.
     var _newWellMarker = null;
 
-    // The DOM node of a form input corresponding to latitude.
-    var _latNode = null;
+    // The JQuery selector of a form input corresponding to latitude.
+    var _latNodeSelector = null;
 
-    // The DOM node of a form input corresponding to longitude.
-    var _longNode = null;
+    // The JQuery of a form input corresponding to longitude.
+    var _longNodeSelector = null;
 
     /** Private methods */
 
@@ -73,24 +73,38 @@ function WellsMap () {
 
     /** Public methods */
 
-    var setLatNode = function (nodeOrId) {
-        // Stub.
-        if (typeof nodeOrId === "string") {
+    var setLatNodeSelector = function (nodeSelector) {
+        var selector = null;
+        if (typeof nodeSelector === "string") {
+            selector = nodeSelector;
         }
+        _latNodeSelector = selector;
     }
-    var setLongNode = function (nodeOrId) {
-        // Stub.
+    var setLongNodeSelector = function (nodeSelector) {
+        var selector = null;
+        if (typeof nodeSelector === "string") {
+            selector = nodeSelector;
+        }
+        _longNodeSelector = selector;
     }
 
-    // Places a marker
+    // Places a marker to refine the placement of a new well.
     var placeNewWellMarker = function (lat, long) {
+        if (_newWellMarker !== null && _leafletMap !== null) {
+            _newWellMarker.setLatLng([lat, long]);
+        }
+        else if (_leafletMap !== null) {
+            _newWellMarker = L.marker([lat, long], {
+                draggable: true
+            }).addTo(_leafletMap);
+        }
+    }
+
+    var removeNewWellMarker = function () {
         if (_newWellMarker !== null && _leafletMap !== null) {
             _leafletMap.removeLayer(_newWellMarker);
             _newWellMarker = null;
         }
-        _newWellMarker = L.marker([lat, long], {
-            draggable: true
-        }).addTo(_leafletMap);
     }
 
     // TODO: More creation options?
@@ -108,6 +122,9 @@ function WellsMap () {
 
     return {
         initMap: initMap,
-        placeNewWellMarker: placeNewWellMarker
+        placeNewWellMarker: placeNewWellMarker,
+        removeNewWellMarker: removeNewWellMarker,
+        setLatNodeSelector: setLatNodeSelector,
+        setLongNodeSelector: setLongNodeSelector
     };
 };
