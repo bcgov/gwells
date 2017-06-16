@@ -375,7 +375,7 @@ class ActivitySubmissionGpsForm(forms.ModelForm):
                         ),
                         css_class='col-md-8',
                     ),
-                    Div(HTML('<div id="divMap"></div>'),
+                    Div(HTML('<div id="add-map"></div>'),
                         css_class='col-md-4',
                     ),
                     css_class='row',
