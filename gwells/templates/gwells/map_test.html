@@ -13,10 +13,14 @@ crossorigin=""/>
 <script src="../../../static/gwells/js/wellsMap.js"></script>
 
 <form id="test-map-form">
+         <!-- VICTORIA LAT/LONG DEFAULTS
+            Lat = 48.4284
+            Long = -123.3656
+         -->
     <table>
         <tr>
             <td>
-                <input type="text"></input>
+                <input id="lat-field" type="text" value="48.4284"></input>
             </td>
             <td>
                 Latitude
@@ -24,11 +28,12 @@ crossorigin=""/>
         </tr>
         <tr>
             <td>
-                <input type="text"></input>
+                <input id="long-field" type="text" value="-123.3656"></input>
             </td>
             <td>
                 Longitude
             </td>
+            <td><button type="button" onclick="placeMarker()">Place Marker</button></td>
         </tr>
     </table>
 </form>
@@ -36,7 +41,16 @@ crossorigin=""/>
 <div id="test-map"></div>
 
 <script>
+    var testMap = null;
+    function placeMarker() {
+        var lat = parseFloat($("#lat-field").val());
+        var long = parseFloat($("#long-field").val());
+        console.log("Lat = " + lat);
+        console.log("Long = " + long);
+        testMap.placeNewWellMarker(lat, long);
+    }
     $(document).ready(function (){
-        var testMap = wellsMap.createMap('test-map');
+        testMap = new WellsMap();
+        testMap.initMap('test-map');
     });
 </script>
