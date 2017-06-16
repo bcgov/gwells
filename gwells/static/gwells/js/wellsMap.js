@@ -1,5 +1,4 @@
 /** First go at a wellsMap module, which provides core map functionality to the GWELLS application. Depends on Leaflet. */
-/** This module is essentially a static class, providing options to create a wellsMap instance and then manipulate it by passing it into static functions. */
 function WellsMap () {
     /** Constants. */
 
@@ -48,7 +47,6 @@ function WellsMap () {
     }
 
     // TODO: Generalise to other ESRI layer types? Add 'type' switcher in wellsMapOptions.esriLayers objs?
-    // TODO: Investigate ESRI leaflet layer controls
     // Loads ESRI layers. Currently ssumes MapServer. 
     var _loadEsriLayers = function (map) {
         var esriLayers = wellsMapOptions.esriLayers;
@@ -76,6 +74,8 @@ function WellsMap () {
         });
     };
 
+    // The move event of the newWellMarker. This event updates
+    // the latitude and longitude fields associated with the new well.
     var _newWellMarkerMoveEvent = function (moveEvent) {
         var newLatLng = moveEvent.latlng;
         if (_latNodeSelector !== null) {
@@ -88,7 +88,7 @@ function WellsMap () {
 
     /** Public methods */
 
-    // Places a marker to refine the placement of a new well.
+    // Places a newWellMarker on the map to help refine the placement of a new well.
     var placeNewWellMarker = function ({lat: lat, long: long}) {
         if (_newWellMarker !== null && _leafletMap !== null) {
             lat = _exists(lat) && !isNaN(lat) ? lat : _leafletMap.getCenter().lat;
@@ -103,6 +103,7 @@ function WellsMap () {
         }
     }
 
+    // Removes the newWelMarker from the map.
     var removeNewWellMarker = function () {
         if (_newWellMarker !== null && _leafletMap !== null) {
             _leafletMap.removeLayer(_newWellMarker);
@@ -110,7 +111,7 @@ function WellsMap () {
         }
     }
 
-    // Initialises the underlying Leaflet map.
+    // Initialises the underlying Leaflet map. The mapNodeId is mandatory; other properties are optional.
     var initMap = function ({mapNodeId: mapNodeId, latNodeSelector: latNodeSelector, longNodeSelector: longNodeSelector}) {
         if (!_exists(mapNodeId)) {
             // If there's no mapNodeId, we shouldn't initialise the map.
@@ -138,6 +139,7 @@ function WellsMap () {
         }
     }
 
+    // The public members and methods of a wellsMap.
     return {
         initMap: initMap,
         placeNewWellMarker: placeNewWellMarker,
