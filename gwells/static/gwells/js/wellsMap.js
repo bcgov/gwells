@@ -8,9 +8,9 @@ function WellsMap () {
         initLatLong: [48.4284, -123.3656],
         initZoom: 13,
         esriLayers: [
-            {
+            /*{
                 url: 'http://maps.gov.bc.ca/arcgis/rest/services/province/web_mercator_cache/MapServer/'
-            },
+            },*/
             {
                 url: 'http://maps.gov.bc.ca/arcserver/rest/services/Province/roads_wm/MapServer'
             }
@@ -76,7 +76,6 @@ function WellsMap () {
     var setLatNode = function (nodeOrId) {
         // Stub.
         if (typeof nodeOrId === "string") {
-
         }
     }
     var setLongNode = function (nodeOrId) {
@@ -85,10 +84,11 @@ function WellsMap () {
 
     // Places a marker
     var placeNewWellMarker = function (lat, long) {
-        if (_newWellMarker !== null) {
+        if (_newWellMarker !== null && _leafletMap !== null) {
+            _leafletMap.removeLayer(_newWellMarker);
             _newWellMarker = null;
         }
-        L.marker([lat, long], {
+        _newWellMarker = L.marker([lat, long], {
             draggable: true
         }).addTo(_leafletMap);
     }
@@ -101,10 +101,9 @@ function WellsMap () {
         }
         var initLatLong = wellsMapOptions.initLatLong || [48.4284, -123.3656];
         var initZoom = wellsMapOptions.initZoom || 13;
-        var map = L.map(mapNodeId).setView(initLatLong, initZoom);
-        _loadEsriLayers(map);
-        _loadWmsLayers(map);
-        _leafletMap = map;
+        _leafletMap = L.map(mapNodeId).setView(initLatLong, initZoom);
+        _loadEsriLayers(_leafletMap);
+        _loadWmsLayers(_leafletMap);
     }
 
     return {
