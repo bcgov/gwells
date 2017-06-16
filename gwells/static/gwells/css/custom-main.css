@@ -30,8 +30,9 @@ body {
 
 /* Leaflet map styles */
 
-#edit-map { height: 720px }
-#search-map { height: 720px; }
+#add-map { 
+    height: 180px; 
+}
 
 /* logo whitespace */
 
