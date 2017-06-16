@@ -48,15 +48,13 @@ crossorigin=""/>
         var long = parseFloat($("#long-field").val());
         console.log("Lat = " + lat);
         console.log("Long = " + long);
-        testMap.placeNewWellMarker(lat, long);
+        testMap.placeNewWellMarker({lat: lat, long: long});
     }
     function removeMarker() {
         testMap.removeNewWellMarker();
     }
     $(document).ready(function (){
         testMap = new WellsMap();
-        testMap.initMap('test-map');
-        testMap.setLatNodeSelector('#lat-field');
-        testMap.setLongNodeSelector('#long-field');
+        testMap.initMap({mapNodeId: 'test-map', latNodeSelector: '#lat-field', longNodeSelector: '#long-field'});
     });
 </script>
