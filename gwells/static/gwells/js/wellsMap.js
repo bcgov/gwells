@@ -1,6 +1,7 @@
 /** First go at a wellsMap module, which provides core map functionality to the GWELLS application. Depends on Leaflet. */
-var wellsMap = (function() {
-    /** Consts and objects. */
+/** This module is essentially a static class, providing options to create a wellsMap instance and then manipulate it by passing it into static functions. */
+function WellsMap () {
+    /** Constants. */
 
     // Options for creating a wellsMap
     var wellsMapOptions = {
@@ -25,11 +26,25 @@ var wellsMap = (function() {
         ]
     };
 
+    /** Private members */
+    
+    // The underlying Leaflet map.
+    var _leafletMap = null;
+
+    // A marker for a prospective well.
+    var _newWellMarker = null;
+
+    // The DOM node of a form input corresponding to latitude.
+    var _latNode = null;
+
+    // The DOM node of a form input corresponding to longitude.
+    var _longNode = null;
+
     /** Private methods */
 
-    // Loads ESRI layers. Assumes MapServer. 
     // TODO: Generalise to other ESRI layer types? Add 'type' switcher in wellsMapOptions.esriLayers objs?
     // TODO: Investigate ESRI leaflet layer controls
+    // Loads ESRI layers. Currently ssumes MapServer. 
     var _loadEsriLayers = function (map) {
         var esriLayers = wellsMapOptions.esriLayers;
         esriLayers.forEach(function (esriLayer){
@@ -41,7 +56,7 @@ var wellsMap = (function() {
         });
     };
 
-    // TODO: FILL OUT OPTIONS?
+    // Loads WMS layers.
     var _loadWmsLayers = function (map) {
         var wmsLayers = wellsMapOptions.wmsLayers;
         wmsLayers.forEach(function (wmsLayer) {
@@ -56,16 +71,44 @@ var wellsMap = (function() {
         });
     };
 
+    /** Public methods */
+
+    var setLatNode = function (nodeOrId) {
+        // Stub.
+        if (typeof nodeOrId === "string") {
+
+        }
+    }
+    var setLongNode = function (nodeOrId) {
+        // Stub.
+    }
+
+    // Places a marker
+    var placeNewWellMarker = function (lat, long) {
+        if (_newWellMarker !== null) {
+            _newWellMarker = null;
+        }
+        L.marker([lat, long], {
+            draggable: true
+        }).addTo(_leafletMap);
+    }
+
     // TODO: More creation options?
-    var createMap = function (mapNodeId) {
+    // Initialises the underlying Leaflet map.
+    var initMap = function (mapNodeId) {
+        if (_leafletMap) {
+            _leafletMap = null;
+        }
         var initLatLong = wellsMapOptions.initLatLong || [48.4284, -123.3656];
         var initZoom = wellsMapOptions.initZoom || 13;
         var map = L.map(mapNodeId).setView(initLatLong, initZoom);
         _loadEsriLayers(map);
         _loadWmsLayers(map);
-        return map;
+        _leafletMap = map;
     }
+
     return {
-        createMap: createMap
+        initMap: initMap,
+        placeNewWellMarker: placeNewWellMarker
     };
-})();
+};
