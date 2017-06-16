@@ -3,7 +3,7 @@
 integrity="sha512-07I2e+7D8p6he1SIM+1twR5TIrhUQn9+I6yjqD53JQjFiMf8EtC93ty0/5vJTZGF8aAocvHYNEDJajGdNx1IsQ=="
 crossorigin=""/>
 <style>
-    #test-map { height: 720px; }
+    #test-map { height: 500px; }
 </style>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"
@@ -34,6 +34,7 @@ crossorigin=""/>
                 Longitude
             </td>
             <td><button type="button" onclick="placeMarker()">Place Marker</button></td>
+            <td><button type="button" onClick="removeMarker()">Remove Marker</button></td>
         </tr>
     </table>
 </form>
@@ -49,8 +50,13 @@ crossorigin=""/>
         console.log("Long = " + long);
         testMap.placeNewWellMarker(lat, long);
     }
+    function removeMarker() {
+        testMap.removeNewWellMarker();
+    }
     $(document).ready(function (){
         testMap = new WellsMap();
         testMap.initMap('test-map');
+        testMap.setLatNodeSelector('#lat-field');
+        testMap.setLongNodeSelector('#long-field');
     });
 </script>
