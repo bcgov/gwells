@@ -20,8 +20,6 @@ class HelloWorldView(generic.ListView):
         """
         return WellYieldUnit.objects.order_by('-sort_order')
 
-
-
 def well_search(request):
     well_results = None
 
