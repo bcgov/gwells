@@ -99,15 +99,18 @@
 <script>
   var addMap = null;
   function placeNewWellMarker () {
-    //STUB
-    addMap.placeNewWellMarker();
+    // SELECTOR ID VALUES HARD-CODED FOR NOW
+    var lat = parseFloat($("#id_gps-latitude").val());
+    var long = parseFloat($("#id_gps-longitude").val());
+    addMap.placeNewWellMarker({lat: lat, long: long});
   };
   function removeNewWellMarker () {
     addMap.removeNewWellMarker();
   };
   $(document).ready(function (){
     addMap = new WellsMap();
-    addMap.initMap({mapNodeId: 'add-map'});
+    // SELECTOR ID VALUES HARD-CODED FOR NOW
+    addMap.initMap({mapNodeId: 'add-map', latNodeSelector: '#id_gps-latitude', longNodeSelector: '#id_gps-longitude'});
   });
 </script>
 {% endblock %}
