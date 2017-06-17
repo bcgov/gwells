@@ -89,6 +89,7 @@ function WellsMap () {
     /** Public methods */
 
     // Places a newWellMarker on the map to help refine the placement of a new well.
+    // The options argument has type {lat: number, long: number}
     var placeNewWellMarker = function (options) {
         if (!_exists(_leafletMap)) {
             return;
@@ -119,7 +120,7 @@ function WellsMap () {
     }
 
     // Initialises the underlying Leaflet map. The mapNodeId is mandatory; other properties are optional.
-    // options argument has type {mapNodeId: string, latNodeSelector: string, longNodeSelector: string}
+    // The options argument has type {mapNodeId: string, latNodeSelector: string, longNodeSelector: string}
     var initMap = function (options) {
         options = options || {};
         var mapNodeId = options.mapNodeId;
