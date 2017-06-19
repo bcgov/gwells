@@ -98,10 +98,22 @@
 {% endif %}
 <script>
   var addMap = null;
+ // SELECTOR ID VALUES HARD-CODED FOR NOW
+  var latNodeSelector = '#id_gps-latitude';
+  var longNodeSelector = '#id_gps-longitude';
+
+  // Updates the latitude and longitude fields with the position of the marker
+  // for the prospective well when the marker is moved.
+  var markerMoveCallback = function (newLatLng) {
+    $(latNodeSelector).val(newLatLng.lat);
+    $(longNodeSelector).val(newLatLng.lng);
+  }
+
+
   function placeNewWellMarker () {
     // SELECTOR ID VALUES HARD-CODED FOR NOW
-    var lat = parseFloat($("#id_gps-latitude").val());
-    var long = parseFloat($("#id_gps-longitude").val());
+    var lat = parseFloat($(latNodeSelector).val());
+    var long = parseFloat($(longNodeSelector).val());
     addMap.placeNewWellMarker({lat: lat, long: long});
   };
   function removeNewWellMarker () {
@@ -109,8 +121,7 @@
   };
   $(document).ready(function (){
     addMap = new WellsMap();
-    // SELECTOR ID VALUES HARD-CODED FOR NOW
-    addMap.initMap({mapNodeId: 'add-map', latNodeSelector: '#id_gps-latitude', longNodeSelector: '#id_gps-longitude'});
+    addMap.initMap({mapNodeId: 'add-map', newWellMarkerMoveCallback: markerMoveCallback});
   });
 </script>
 {% endblock %}
