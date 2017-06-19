@@ -33,11 +33,8 @@ function WellsMap () {
     // A marker for a prospective well.
     var _newWellMarker = null;
 
-    // The JQuery selector of a form input corresponding to latitude.
-    var _latNodeSelector = null;
-
-    // The JQuery of a form input corresponding to longitude.
-    var _longNodeSelector = null;
+    // The callback function for _newWellMarker's move event
+    var _newWellMarkerMoveCallback = null;
 
     /** Private methods */
 
@@ -73,16 +70,11 @@ function WellsMap () {
             }
         });
     };
-
-    // The move event of the newWellMarker. This event updates
-    // the latitude and longitude fields associated with the new well.
+    
+    // Passes the newWellMarker's updated lat/long coordinates to the provided callback function, if it exists.
     var _newWellMarkerMoveEvent = function (moveEvent) {
-        var newLatLng = moveEvent.latlng;
-        if (_latNodeSelector !== null) {
-            $(_latNodeSelector).val(newLatLng.lat);
-        }
-        if (_longNodeSelector !== null) {
-            $(_longNodeSelector).val(newLatLng.lng);
+        if (_exists(_newWellMarkerMoveCallback)) {
+            _newWellMarkerMoveCallback(moveEvent.latlng);
         }
     }
 
@@ -97,6 +89,7 @@ function WellsMap () {
         options = options || {};
         var lat = options.lat || _leafletMap.getCenter().lat;
         var long = options.long || _leafletMap.getCenter().lng;
+        // TODO: Type-check?
         if (_exists(_newWellMarker)) {
             _newWellMarker.setLatLng([lat, long]);
         }
@@ -120,7 +113,7 @@ function WellsMap () {
     }
 
     // Initialises the underlying Leaflet map. The mapNodeId is mandatory; other properties are optional.
-    // The options argument has type {mapNodeId: string, latNodeSelector: string, longNodeSelector: string}
+    // The options argument has type {mapNodeId: string, newWellMarkerMoveCallback: function}
     var initMap = function (options) {
         options = options || {};
         var mapNodeId = options.mapNodeId;
@@ -141,21 +134,14 @@ function WellsMap () {
         _loadEsriLayers(_leafletMap);
         _loadWmsLayers(_leafletMap);
 
-        // Set optional initial props.
-        var latNodeSelector = options.latNodeSelector;
-        var longNodeSelector = options.longNodeSelector;
-        if (_exists(latNodeSelector) && typeof (latNodeSelector) === "string") {
-            _latNodeSelector = latNodeSelector;
-        }
-        if (_exists(longNodeSelector) && typeof (longNodeSelector) === "string") {
-            _longNodeSelector = longNodeSelector;
-        }
+        // Optional properties.
+        _newWellMarkerMoveCallback = options.newWellMarkerMoveCallback || null;
     }
 
     // The public members and methods of a wellsMap.
     return {
         initMap: initMap,
         placeNewWellMarker: placeNewWellMarker,
-        removeNewWellMarker: removeNewWellMarker,
+        removeNewWellMarker: removeNewWellMarker
     };
 };
