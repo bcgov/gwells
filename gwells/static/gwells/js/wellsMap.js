@@ -99,6 +99,11 @@ function WellsMap () {
 
     /** Public methods */
 
+    // Determines whether the map is 'open' (i.e., loaded and functional), using the nullity of _leafletMap as a proxy.
+    var isOpen = function () {
+        return _leafletMap !== null;
+    };
+
     // Places a newWellMarker on the map to help refine the placement of a new well.
     // The options argument has type {lat: number, long: number}
     var placeNewWellMarker = function (options) {
@@ -176,6 +181,7 @@ function WellsMap () {
 
     // The public members and methods of a wellsMap.
     return {
+        isOpen: isOpen,
         initMap: initMap,
         placeNewWellMarker: placeNewWellMarker,
         removeNewWellMarker: removeNewWellMarker
