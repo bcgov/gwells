@@ -102,16 +102,23 @@
   var latNodeSelector = '#id_gps-latitude';
   var longNodeSelector = '#id_gps-longitude';
 
+  function setLatLongFields(lat, long) {
+    $(latNodeSelector).val(lat);
+    $(longNodeSelector).val(long);
+  }
+
   // Updates the latitude and longitude fields with the position of the marker
   // for the prospective well when the marker is moved.
-  var markerMoveCallback = function (newLatLng) {
-    $(latNodeSelector).val(newLatLng.lat);
-    $(longNodeSelector).val(newLatLng.lng);
+  // newLatLng is a Leaflet LatLng object.
+  function markerMoveCallback (newLatLng) {
+    setLatLongFields(newLatLng.lat, newLatLng.lng);
   }
 
   function placeNewWellMarker () {
     var lat = parseFloat($(latNodeSelector).val());
     var long = parseFloat($(longNodeSelector).val());
+    lat = isNaN(lat) ? void 0 : lat;
+    long =isNaN(long) ? void 0 : long;    
     addMap.placeNewWellMarker({lat: lat, long: long});
   };
   function removeNewWellMarker () {
