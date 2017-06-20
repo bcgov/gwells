@@ -148,7 +148,7 @@
             $('[data-toggle="popover"]').popover({'trigger':'hover'});
             // The search page has a map.
             var searchMap = new WellsMap();
-            searchMap.initMap('search-map');
+            searchMap.initMap({mapNodeId: 'search-map'});
         });
     </script>
 {% endblock %}

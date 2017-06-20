@@ -34,6 +34,10 @@ body {
     height: 180px; 
 }
 
+#search-map {
+    height: 180px;
+}
+
 /* logo whitespace */
 
 #header .bcgov-title h1 {
