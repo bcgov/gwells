@@ -95,7 +95,7 @@
     }
   });
 </script>
-{% endif %}
+{% elif wizard.steps.current == 'gps' %}
 <script>
   var addMap = null;
  // SELECTOR ID VALUES HARD-CODED FOR NOW
@@ -118,9 +118,9 @@
     addMap.removeNewWellMarker();
   };
   $(document).ready(function (){
-    // TODO: Make map creation responsive to MAP-IT button click?
     addMap = new WellsMap();
     addMap.initMap({mapNodeId: 'add-map', newWellMarkerMoveCallback: markerMoveCallback});
   });
 </script>
+{% endif %}
 {% endblock %}
