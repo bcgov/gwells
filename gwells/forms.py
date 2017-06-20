@@ -376,9 +376,12 @@ class ActivitySubmissionGpsForm(forms.ModelForm):
                         css_class='col-md-8',
                     ),
                     Div(
+                        Div(
+                            Div(HTML('<button type="button" onclick="placeNewWellMarker()">Map It!</button>'), css_class='col-md-4'),
+                            Div(HTML('<button type="button" onclick="removeNewWellMarker()">Clear Map</button>'), css_class='col-md-4'),
+                            css_class='row',
+                        ),
                         Div(HTML('<div id="add-map"></div>')),
-                        Div(HTML('<button type="button" onclick="placeNewWellMarker()">Place Well Marker</button>')),
-                        Div(HTML('<button type="button" onclick="removeNewWellMarker()">Remove Well Marker</button>')),
                         css_class='col-md-4',
                     ),
                     css_class='row',

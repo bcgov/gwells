@@ -109,9 +109,7 @@
     $(longNodeSelector).val(newLatLng.lng);
   }
 
-
   function placeNewWellMarker () {
-    // SELECTOR ID VALUES HARD-CODED FOR NOW
     var lat = parseFloat($(latNodeSelector).val());
     var long = parseFloat($(longNodeSelector).val());
     addMap.placeNewWellMarker({lat: lat, long: long});
@@ -120,6 +118,7 @@
     addMap.removeNewWellMarker();
   };
   $(document).ready(function (){
+    // TODO: Make map creation responsive to MAP-IT button click?
     addMap = new WellsMap();
     addMap.initMap({mapNodeId: 'add-map', newWellMarkerMoveCallback: markerMoveCallback});
   });
