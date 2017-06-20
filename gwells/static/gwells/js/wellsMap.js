@@ -5,7 +5,7 @@ function WellsMap () {
     // Options for creating a wellsMap
     var wellsMapOptions = {
         // Initial centre of the map
-        initLatLong: [48.4284, -123.3656],
+        //initLatLong: [48.4284, -123.3656], VICTORIA COORDINATES
         // Minimum zoom level of the map (i.e., how far it can be zoomed out)
         minZoom: 4,
         // Bounding lats and longs of the map; corresponds to the lat/long extremes of BC. TODO: Refine?
@@ -54,6 +54,9 @@ function WellsMap () {
 
     // The callback function for _newWellMarker's move event
     var _newWellMarkerMoveCallback = null;
+
+    // The map's maximum bounds. This should be a Leaflet LatLngBounds object.
+    var _maxBounds = null;
 
     /** Private methods */
 
@@ -105,27 +108,37 @@ function WellsMap () {
     };
 
     // Places a newWellMarker on the map to help refine the placement of a new well.
+    // When placed by a button click, the map pans and zooms to centre on the marker.
     // The options argument has type {lat: number, long: number}
     var placeNewWellMarker = function (options) {
-        if (!_exists(_leafletMap)) {
+        // If the map does not exist or we do not have both latitude and longitude, bail out.
+        if (!_exists(_leafletMap) || !_exists(options) || !_exists(options.lat) || !_exists(options.long)) {
             return;
         }
-        options = options || {};
-        var lat = options.lat || _leafletMap.getCenter().lat;
-        var long = options.long || _leafletMap.getCenter().lng;
-        // TODO: Type-check?
+
+        var lat = options.lat;
+        var long = options.long;
+        var latLong = L.latLng([lat, long]);
+
+        // If the latitude and longitude do not fit within the map's maxBounds, bail out.
+        if (!_exists(_maxBounds) || !_maxBounds.contains(latLong)) {
+            return;
+        }
+        // Zoom default.
+        var zoomLevel = 17;
         if (_exists(_newWellMarker)) {
-            _newWellMarker.setLatLng([lat, long]);
+            _newWellMarker.setLatLng(latLong);
         }
         else {
-            _newWellMarker = L.marker([lat, long], {
+            _newWellMarker = L.marker(latLong, {
                 draggable: true
             }).addTo(_leafletMap);
             _newWellMarker.on('move', _newWellMarkerMoveEvent);
         }
+        _leafletMap.flyTo(latLong, zoomLevel);
     }
 
-    // Removes the newWelMarker from the map.
+    // Removes the newWellMarker from the map.
     var removeNewWellMarker = function () {
         if (!_exists(_leafletMap)) {
             return;
@@ -171,6 +184,7 @@ function WellsMap () {
         });
         if (_exists(maxBounds)) {
             _leafletMap.fitBounds(maxBounds);
+            _maxBounds = maxBounds;
         }
         _loadEsriLayers(_leafletMap);
         _loadWmsLayers(_leafletMap);
