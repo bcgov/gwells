@@ -95,13 +95,30 @@
     }
   });
 </script>
-{% endif %}
+{% elif wizard.steps.current == 'gps' %}
 <script>
   var addMap = null;
+ // SELECTOR ID VALUES HARD-CODED FOR NOW
+  var latNodeSelector = '#id_gps-latitude';
+  var longNodeSelector = '#id_gps-longitude';
+
+  function setLatLongFields(lat, long) {
+    $(latNodeSelector).val(lat);
+    $(longNodeSelector).val(long);
+  }
+
+  // Updates the latitude and longitude fields with the position of the marker
+  // for the prospective well when the marker is moved.
+  // newLatLng is a Leaflet LatLng object.
+  function markerMoveCallback (newLatLng) {
+    setLatLongFields(newLatLng.lat, newLatLng.lng);
+  }
+
   function placeNewWellMarker () {
-    // SELECTOR ID VALUES HARD-CODED FOR NOW
-    var lat = parseFloat($("#id_gps-latitude").val());
-    var long = parseFloat($("#id_gps-longitude").val());
+    var lat = parseFloat($(latNodeSelector).val());
+    var long = parseFloat($(longNodeSelector).val());
+    lat = isNaN(lat) ? void 0 : lat;
+    long =isNaN(long) ? void 0 : long;    
     addMap.placeNewWellMarker({lat: lat, long: long});
   };
   function removeNewWellMarker () {
@@ -109,8 +126,8 @@
   };
   $(document).ready(function (){
     addMap = new WellsMap();
-    // SELECTOR ID VALUES HARD-CODED FOR NOW
-    addMap.initMap({mapNodeId: 'add-map', latNodeSelector: '#id_gps-latitude', longNodeSelector: '#id_gps-longitude'});
+    addMap.initMap({mapNodeId: 'add-map', newWellMarkerMoveCallback: markerMoveCallback});
   });
 </script>
+{% endif %}
 {% endblock %}

@@ -4,24 +4,43 @@ function WellsMap () {
 
     // Options for creating a wellsMap
     var wellsMapOptions = {
-        initLatLong: [48.4284, -123.3656],
-        initZoom: 13,
+        // Initial centre of the map
+        //initLatLong: [48.4284, -123.3656], VICTORIA COORDINATES
+        // Minimum zoom level of the map (i.e., how far it can be zoomed out)
+        minZoom: 4,
+        // Bounding lats and longs of the map; corresponds to the lat/long extremes of BC. TODO: Refine?
+        mapBounds: {
+            top:  60.0223,
+            bottom: 48.2045556,
+            left: -139.0736706,
+            right: -114.0338224,
+            padding: 5 // Margin beyond extremes to pad the bounds with, as a percentage of the total bounding box.
+        },
+        // ESRI layers associated with the map
         esriLayers: [
-            /*{
+            /*{ // This is an alternate basemap.
                 url: 'http://maps.gov.bc.ca/arcgis/rest/services/province/web_mercator_cache/MapServer/'
             },*/
             {
                 url: 'http://maps.gov.bc.ca/arcserver/rest/services/Province/roads_wm/MapServer'
             }
         ],
+        // WMS layers associated with the map
         wmsLayers: [
             {
+                rootUrl: 'https://openmaps.gov.bc.ca/geo/pub/WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW/ows?',
+                format: 'image/png',
+                layers: 'pub:WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW',
+                styles: 'PMBC_Parcel_Fabric_Cadastre_Outlined', // TODO: Verify style
+                transparent: true
+            }/*,
+            {   // This is the DataBC Wells layer as viewed in iMap. Its data is updated daily, but not continuously, so it is likely not suitable for the GWELLS application.
                 rootUrl: 'https://openmaps.gov.bc.ca/geo/pub/WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW/ows?',
                 format: 'image/png',
                 layers: 'pub:WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW',
                 styles: 'Water_Wells_All',
                 transparent: true
-            }
+            } */
         ]
     };
 
@@ -33,11 +52,11 @@ function WellsMap () {
     // A marker for a prospective well.
     var _newWellMarker = null;
 
-    // The JQuery selector of a form input corresponding to latitude.
-    var _latNodeSelector = null;
+    // The callback function for _newWellMarker's move event
+    var _newWellMarkerMoveCallback = null;
 
-    // The JQuery of a form input corresponding to longitude.
-    var _longNodeSelector = null;
+    // The map's maximum bounds. This should be a Leaflet LatLngBounds object.
+    var _maxBounds = null;
 
     /** Private methods */
 
@@ -73,42 +92,53 @@ function WellsMap () {
             }
         });
     };
-
-    // The move event of the newWellMarker. This event updates
-    // the latitude and longitude fields associated with the new well.
+    
+    // Passes the newWellMarker's updated lat/long coordinates to the provided callback function, if it exists.
     var _newWellMarkerMoveEvent = function (moveEvent) {
-        var newLatLng = moveEvent.latlng;
-        if (_latNodeSelector !== null) {
-            $(_latNodeSelector).val(newLatLng.lat);
-        }
-        if (_longNodeSelector !== null) {
-            $(_longNodeSelector).val(newLatLng.lng);
+        if (_exists(_newWellMarkerMoveCallback)) {
+            _newWellMarkerMoveCallback(moveEvent.latlng);
         }
     }
 
     /** Public methods */
 
+    // Determines whether the map is 'open' (i.e., loaded and functional), using the nullity of _leafletMap as a proxy.
+    var isOpen = function () {
+        return _leafletMap !== null;
+    };
+
     // Places a newWellMarker on the map to help refine the placement of a new well.
+    // When placed by a button click, the map pans and zooms to centre on the marker.
     // The options argument has type {lat: number, long: number}
     var placeNewWellMarker = function (options) {
-        if (!_exists(_leafletMap)) {
+        // If the map does not exist or we do not have both latitude and longitude, bail out.
+        if (!_exists(_leafletMap) || !_exists(options) || !_exists(options.lat) || !_exists(options.long)) {
             return;
         }
-        options = options || {};
-        var lat = options.lat || _leafletMap.getCenter().lat;
-        var long = options.long || _leafletMap.getCenter().lng;
+
+        var lat = options.lat;
+        var long = options.long;
+        var latLong = L.latLng([lat, long]);
+
+        // If the latitude and longitude do not fit within the map's maxBounds, bail out.
+        if (!_exists(_maxBounds) || !_maxBounds.contains(latLong)) {
+            return;
+        }
+        // Zoom default.
+        var zoomLevel = 17;
         if (_exists(_newWellMarker)) {
-            _newWellMarker.setLatLng([lat, long]);
+            _newWellMarker.setLatLng(latLong);
         }
         else {
-            _newWellMarker = L.marker([lat, long], {
+            _newWellMarker = L.marker(latLong, {
                 draggable: true
             }).addTo(_leafletMap);
             _newWellMarker.on('move', _newWellMarkerMoveEvent);
         }
+        _leafletMap.flyTo(latLong, zoomLevel);
     }
 
-    // Removes the newWelMarker from the map.
+    // Removes the newWellMarker from the map.
     var removeNewWellMarker = function () {
         if (!_exists(_leafletMap)) {
             return;
@@ -120,7 +150,7 @@ function WellsMap () {
     }
 
     // Initialises the underlying Leaflet map. The mapNodeId is mandatory; other properties are optional.
-    // The options argument has type {mapNodeId: string, latNodeSelector: string, longNodeSelector: string}
+    // The options argument has type {mapNodeId: string, newWellMarkerMoveCallback: function}
     var initMap = function (options) {
         options = options || {};
         var mapNodeId = options.mapNodeId;
@@ -134,28 +164,40 @@ function WellsMap () {
             _leafletMap.remove();
             _leafletMap = null;
         }
+
         // Basic initialisation.
-        var initLatLong = wellsMapOptions.initLatLong || [48.4284, -123.3656];
-        var initZoom = wellsMapOptions.initZoom || 13;
-        _leafletMap = L.map(mapNodeId).setView(initLatLong, initZoom);
+        var initLatLong = wellsMapOptions.initLatLong || [53.7267, -127.6476]; // Fallback default to geographic centre of BC.
+        var minZoom = wellsMapOptions.minZoom || 4;  // Fallback default to whole-province view in small map box.
+        var bounds = wellsMapOptions.mapBounds || void 0; // If no bounds provided in options, don't fit to a bounding box.
+        // TODO: Break maxBounds generation into its own private method.
+        var maxBounds = void 0;
+        if (_exists(bounds.top) && _exists(bounds.bottom) && _exists(bounds.left) && _exists(bounds.right)) {
+            maxBounds = L.latLngBounds([L.latLng(bounds.top, bounds.left), L.latLng(bounds.bottom, bounds.right)]);
+            if (bounds.padding) {
+                maxBounds.pad(bounds.padding);
+            }
+        }
+        _leafletMap = L.map(mapNodeId, {
+            minZoom: minZoom,
+            maxBounds: maxBounds,
+            maxBoundsViscosity: 1.0
+        });
+        if (_exists(maxBounds)) {
+            _leafletMap.fitBounds(maxBounds);
+            _maxBounds = maxBounds;
+        }
         _loadEsriLayers(_leafletMap);
         _loadWmsLayers(_leafletMap);
 
-        // Set optional initial props.
-        var latNodeSelector = options.latNodeSelector;
-        var longNodeSelector = options.longNodeSelector;
-        if (_exists(latNodeSelector) && typeof (latNodeSelector) === "string") {
-            _latNodeSelector = latNodeSelector;
-        }
-        if (_exists(longNodeSelector) && typeof (longNodeSelector) === "string") {
-            _longNodeSelector = longNodeSelector;
-        }
+        // Optional properties.
+        _newWellMarkerMoveCallback = options.newWellMarkerMoveCallback || null;
     }
 
     // The public members and methods of a wellsMap.
     return {
+        isOpen: isOpen,
         initMap: initMap,
         placeNewWellMarker: placeNewWellMarker,
-        removeNewWellMarker: removeNewWellMarker,
+        removeNewWellMarker: removeNewWellMarker
     };
 };

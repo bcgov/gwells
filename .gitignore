@@ -62,3 +62,5 @@ target/
 
 # Custom GW
 activate
+
+gwells/migrations/0007_auto_20170620_1125\.py
