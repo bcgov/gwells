@@ -70,8 +70,9 @@
             </div>
         </div>
 
+    {% autoescape on %}   
     {% for well in well_list %}
-        <div class="row row-bordered">
+        <div id="well_spec_{{ well.well_guid }}" class="row row-bordered" data-well-lat="{{ well.latitude }}" data-well-long="{{ well.longitude }}">
             <div class="col-sm-1">
                 <a href="{% url 'well_detail' well.well_tag_number %}">{{ well.well_tag_number }}</a>
             </div>
@@ -108,7 +109,7 @@
             </div>
         </div>
     {% endfor %}
-
+    {% endautoescape %}
 
     <div class="row">
         {% paginate using 'gwells/bootstrap_pagination.html' %}
@@ -146,6 +147,7 @@
             // The search page has a map.
             var searchMap = new WellsMap();
             searchMap.initMap({mapNodeId: 'search-map'});
+            console.log($("[id^='well_spec_']"))
         });
     </script>
 {% endblock %}
