@@ -20,8 +20,7 @@
     <div class="col-sm-4">
         {% crispy form %}         
     </div>
-    <div class="col-sm-8">
-    </div>
+    <div id="search-map" class="col-md-4 col-md-offset-1"></div>
 </div>
 <br />
 
@@ -132,8 +131,6 @@
     </p>
 {% endif %}
 
-<div id="search-map"></div>
-
         <p>
             We may not have a copy of your well record. Until February 29, 2016, it was voluntary for well drillers to submit well records to the Province. 
             Issues related to data quality may make finding your well record difficult.
@@ -148,7 +145,7 @@
             $('[data-toggle="popover"]').popover({'trigger':'hover'});
             // The search page has a map.
             var searchMap = new WellsMap();
-            searchMap.initMap('search-map');
+            searchMap.initMap({mapNodeId: 'search-map'});
         });
     </script>
 {% endblock %}
