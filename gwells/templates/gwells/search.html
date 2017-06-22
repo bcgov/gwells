@@ -71,8 +71,14 @@
         </div>
 
     {% autoescape on %}   
+
+<!-- EXPERIMENTAL -->
+<script>
+    console.log(JSON.parse('{{wells_json|safe}}'))
+</script>
+
     {% for well in well_list %}
-        <div id="well_spec_{{ well.well_guid }}" class="row row-bordered" data-well-lat="{{ well.latitude }}" data-well-long="{{ well.longitude }}">
+        <div class="row row-bordered">
             <div class="col-sm-1">
                 <a href="{% url 'well_detail' well.well_tag_number %}">{{ well.well_tag_number }}</a>
             </div>
@@ -147,7 +153,6 @@
             // The search page has a map.
             var searchMap = new WellsMap();
             searchMap.initMap({mapNodeId: 'search-map'});
-            console.log($("[id^='well_spec_']"))
         });
     </script>
 {% endblock %}
