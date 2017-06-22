@@ -65,6 +65,11 @@ function WellsMap () {
         return prop !== null && prop !== void 0;
     }
 
+    // Convenience method for checking whether an object is an array.
+    var _isArray = function (arr) {
+        return _exists(arr.constructor) && arr.constructor === Array;
+    }
+
     // TODO: Generalise to other ESRI layer types? Add 'type' switcher in wellsMapOptions.esriLayers objs?
     // Loads ESRI layers. Currently ssumes MapServer. 
     var _loadEsriLayers = function (map) {
@@ -149,6 +154,16 @@ function WellsMap () {
         }
     }
 
+    // Displays wells and zooms to the bounding box to see all wells. Note
+    // the wells must have valid latitude and longitude data.
+    var drawAndZoom = function (wells) {
+        if(!_exists(_leafletMap) || !_isArray(wells)) {
+            return;
+        }
+
+        // TODO: FINISH
+    }
+
     // Initialises the underlying Leaflet map. The mapNodeId is mandatory; other properties are optional.
     // The options argument has type {mapNodeId: string, newWellMarkerMoveCallback: function}
     var initMap = function (options) {
@@ -198,6 +213,7 @@ function WellsMap () {
         isOpen: isOpen,
         initMap: initMap,
         placeNewWellMarker: placeNewWellMarker,
-        removeNewWellMarker: removeNewWellMarker
+        removeNewWellMarker: removeNewWellMarker,
+        drawAndZoom: drawAndZoom
     };
 };
