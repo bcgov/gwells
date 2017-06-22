@@ -52,11 +52,14 @@ function WellsMap () {
     // A marker for a prospective well.
     var _newWellMarker = null;
 
-    // The callback function for _newWellMarker's move event
+    // The callback function for _newWellMarker's move event.
     var _newWellMarkerMoveCallback = null;
 
     // The map's maximum bounds. This should be a Leaflet LatLngBounds object.
     var _maxBounds = null;
+
+    // Markers used to denote wells that have been searched for.
+    var _searchMarkers = [];
 
     /** Private methods */
 
@@ -103,6 +106,53 @@ function WellsMap () {
         if (_exists(_newWellMarkerMoveCallback)) {
             _newWellMarkerMoveCallback(moveEvent.latlng);
         }
+    }
+
+    var _isLatInBounds = function (lat) {
+        return wellsMapOptions.mapBounds.bottom <= lat && lat <= wellsMapOptions.mapBounds.top;
+    }
+
+    var _isLongInBounds = function (long) {
+        return wellsMapOptions.mapBounds.left <= long && long <= wellsMapOptions.mapBounds.right;
+    }
+
+    // Makes sure the latitude and longitude fit within the map's bounding box. This is necessary since lat/long data may
+    // only be correct up to a minus sign (especially longitude data in the Western hemisphere) due to users not knowing
+    // to enter a minus sign (or potentially entering a minus sign erronneously).
+    // If the lat and long are within the map's bounds, they are returned; if they can be corrected by flipping the sign,
+    // the sign's flips are returned. Else { NaN, NaN } is returned along with a console error.
+    // Takes a latLong parameter corresponding to { lat: number, long: number }
+    var _ensureLatLongIsInBounds = function (latLong) {
+        var lat = _exists(latLong.lat) ? latLong.lat : NaN;
+        var long = _exists(latLong.long) ? latLong.long : NaN;
+        if (!_isLatInBounds(lat)){
+            lat = -lat;
+            if (!_isLatInBounds(lat)) {
+                lat = NaN;
+            }
+        }
+        if (!_isLongInBounds(long)) {
+            long = -long;
+            if (!_isLongInBounds(long)) {
+                long = NaN;
+            }
+        }
+
+        if (isNaN(lat) || isNaN(long)) {
+            console.log("Invalid latitude or longitude. (Lat,Long): ("+latLong.lat+","+latLong.long+")");
+            return { lat: NaN, long: NaN };
+        }
+
+        return { lat: lat, long: long };
+    }
+
+    // Takes latitude and longitude and returns a Leaflet latLng object only if the lat/long are valid within the map's bounding box.
+    var _getLatLngInBC = function (lat, long) {
+        var processedLatLong = _ensureLatLongIsInBounds({lat: lat, long: long});
+        if (!isNaN(processedLatLong.lat) && !isNaN(processedLatLong.long)) {
+            return L.latLng([processedLatLong.lat, processedLatLong.long]);
+        }
+        return null;
     }
 
     /** Public methods */
@@ -157,11 +207,24 @@ function WellsMap () {
     // Displays wells and zooms to the bounding box to see all wells. Note
     // the wells must have valid latitude and longitude data.
     var drawAndZoom = function (wells) {
-        if(!_exists(_leafletMap) || !_isArray(wells)) {
+        if(!_exists(_leafletMap) || !_exists(wells) || !_isArray(wells)) {
             return;
         }
+        wells.forEach(function (well){
+            var rawLat = parseFloat(well.latitude);
+            var rawLong = parseFloat(well.longitude);
+            var latLong = _getLatLngInBC(rawLat, rawLong);
+            if (_exists(latLong)) {
+                var searchMarker = L.circleMarker(latLong);
+                searchMarker.addTo(_leafletMap);
+                _searchMarkers.push(searchMarker);
+            }
+        });
 
-        // TODO: FINISH
+        var markerBounds = L.featureGroup(_searchMarkers).getBounds();
+        console.log(markerBounds);
+
+        _leafletMap.fitBounds(markerBounds);
     }
 
     // Initialises the underlying Leaflet map. The mapNodeId is mandatory; other properties are optional.
