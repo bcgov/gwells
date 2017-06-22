@@ -145,10 +145,10 @@
             // The search page has a map.
             var searchMap = new WellsMap();
             searchMap.initMap({mapNodeId: 'search-map'});
-            var wellsJson = $("[data-wells-search-json]").attr("data-wells-search-json");
+            var wellsJson = $("[data-wells-search-json]").attr("data-wells-search-json") || null;
             var wells = JSON.parse(wellsJson);
 
-            searchMap.drawAndZoom(wellsJson);            
+            searchMap.drawAndZoom(wells);            
         });
     </script>
 {% endblock %}
