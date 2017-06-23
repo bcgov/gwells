@@ -38,6 +38,10 @@ body {
     height: 360px;
 }
 
+.identify-wells-operation {
+    cursor: crosshair!important;
+}
+
 /* logo whitespace */
 
 #header .bcgov-title h1 {
