@@ -26,7 +26,7 @@
 <br />
 
 {% if well_list %}
-    {% autosort well_list %}
+    <!-- Removed because the query is sorted and sliced in search.py { autosort well_list }-->
     {% autopaginate well_list 25 %}
         <div class="row">
             <div class="col-sm-12" data-wells-search-json="{{wells_json}}">
@@ -142,6 +142,8 @@
 {% block jqscript_block %}
     <script>
         var searchMap = null;
+        var startLatLongFieldName = "start_lat_long";
+        var endLatLongFieldName = "end_lat_long";
 
         function startIdentifyWellsOperation() {
             if (searchMap !== null) {
@@ -157,7 +159,11 @@
         function identifyWellsEndCallback(startLatLong, endLatLong) {
             $("#search-map").removeClass('identify-wells-operation');
             $("#identify-wells-btn").prop("disabled", false);
-            console.log("("+startLatLong+","+endLatLong+")");
+            var startLatLongString = startLatLong.lat + ',' + startLatLong.lng;
+            var endLatLongString = endLatLong.lat + ',' + endLatLong.lng;
+            $("[name="+startLatLongFieldName+"]").val(startLatLongString);
+            $("[name="+endLatLongFieldName+"]").val(endLatLongString);
+            $("#id-searchForm").submit();
         }
 
         $(document).ready(function(){
