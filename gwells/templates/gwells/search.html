@@ -154,9 +154,10 @@
             $("#identify-wells-btn").prop("disabled", true);
         }
 
-        function identifyWellsEndCallback() {
+        function identifyWellsEndCallback(startLatLong, endLatLong) {
             $("#search-map").removeClass('identify-wells-operation');
             $("#identify-wells-btn").prop("disabled", false);
+            console.log("("+startLatLong+","+endLatLong+")");
         }
 
         $(document).ready(function(){
