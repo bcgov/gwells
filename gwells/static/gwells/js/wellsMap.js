@@ -67,7 +67,7 @@ function WellsMap () {
     // Markers used to denote wells that have been searched for.
     var _searchMarkers = [];
 
-    // Whether the map is undergoing an IdentifyWells operation.
+    // Whether the map is undergoing an identifyWells operation.
     var _isIdentifyingWells = false;
 
     // The callback function for the beginning of an identifyWells operation.
@@ -75,6 +75,15 @@ function WellsMap () {
 
     // the callback function for the end of an identifyWells operation.
     var _identifyWellsEndCallback = null;
+
+    // The rectangle to draw on the map during an identifyWells operation.
+    var _identifyWellsRectangle = null;
+
+    // The starting corner of the identifyWellsRectangle
+    var _startCorner = null;
+
+    // The ending corner of the (final) identifyWellsRectangle 
+    var _endCorner = null;
 
     /** Private methods */
 
@@ -121,6 +130,45 @@ function WellsMap () {
         if (_exists(_newWellMarkerMoveCallback)) {
             _newWellMarkerMoveCallback(moveEvent.latlng);
         }
+    }
+
+    // Handles the mousemove event during the identifyWells operation. Specifically, this function draws the interstitial
+    // rectangles to help the user see the extent they're querying for wells.
+    var _mouseMoveForIdentifyWellsEvent = function (e) {
+        if (!_exists(_leafletMap) || !_exists(_startCorner)) {
+            return;
+        }
+        var tempCorner = e.latlng;
+        if (_exists(_identifyWellsRectangle)) {
+            _leafletMap.removeLayer(_identifyWellsRectangle);
+        }
+        _identifyWellsRectangle = L.rectangle([_startCorner, tempCorner]);
+        _identifyWellsRectangle.addTo(_leafletMap);
+    }
+
+    var _mouseDownForIdentifyWellsEvent = function (e) {
+        _leafletMap.dragging.disable();
+        _startCorner = e.latlng;
+        _leafletMap.on('mousemove', _mouseMoveForIdentifyWellsEvent);
+    }
+
+    var _mouseUpForIdentifyWellsEvent = function (e) {
+        _leafletMap.dragging.enable();
+        _endCorner = e.latlng;
+
+        _leafletMap.off('mousedown', _mouseDownForIdentifyWellsEvent);
+        _leafletMap.off('mouseup', _mouseUpForIdentifyWellsEvent);
+        _leafletMap.off('mousemove', _mouseMoveForIdentifyWellsEvent);
+        if (_exists(_identifyWellsRectangle)) {
+            _leafletMap.removeLayer(_identifyWellsRectangle);
+            _identifyWellsRectangle = null;
+        }       
+        _isIdentifyingWells = false;
+        if(_exists(_identifyWellsEndCallback)) {
+            _identifyWellsEndCallback(_startCorner, _endCorner);
+        }
+        _startCorner = null;
+        _endCorner = null;
     }
 
     var _isLatInBounds = function (lat) {
@@ -250,33 +298,13 @@ function WellsMap () {
             return;
         }
         _isIdentifyingWells = true;
+        _startCorner = null;
+        _endCorner = null;
         if (_exists(_identifyWellsStartCallback)) {
             _identifyWellsStartCallback();
         }
-// EXPERIMENTAL RECT-DRAWING BEHAVIOUR
-        var startCorner;
-        var endCorner;
-
-        var mouseDownEvent = function (e) {
-            _leafletMap.dragging.disable();
-            console.log("starting latLng:")
-            console.log(e.latlng)
-        }
-
-        var mouseUpEvent = function (e) {
-            _leafletMap.dragging.enable();
-            console.log("ending latlng:")
-            console.log(e.latlng)
-
-            _leafletMap.off('mousedown', mouseDownEvent);
-            _isIdentifyingWells = false;
-            if(_exists(_identifyWellsEndCallback)) {
-                _identifyWellsEndCallback();
-            }
-        }
-
-        _leafletMap.on('mousedown', mouseDownEvent);
-        _leafletMap.on('mouseup', mouseUpEvent);        
+        _leafletMap.on('mousedown', _mouseDownForIdentifyWellsEvent);
+        _leafletMap.on('mouseup', _mouseUpForIdentifyWellsEvent);
     }
 
     // Initialises the underlying Leaflet map. The mapNodeId is mandatory; other properties are optional.
