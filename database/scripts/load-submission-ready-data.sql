@@ -90,12 +90,12 @@ values ('018d4c1047cb11e7a91992ebcb67fe33',
         true
         );
 
-/*
+/* Fri 23 Jun 14:49:59 2017 GW Distinct for now until data cleanup */
+
 INSERT INTO gwells_driller (driller_guid, first_name, surname, registration_number, is_hidden, drilling_company_guid)
-SELECT driller.driller_guid, driller.first_name, driller.surname, driller.registration_number, driller.is_hidden, co.drilling_company_guid
+SELECT distinct driller.driller_guid, driller.first_name, driller.surname, driller.registration_number, driller.is_hidden, co.drilling_company_guid
 FROM  xform_gwells_driller driller, xform_gwells_drilling_company co
 WHERE driller.DRILLER_COMPANY_CODE = co.DRILLER_COMPANY_CODE;
-*/
 
 /* TODO mismtach of counts 
 INSERT INTO gwells_driller (driller_guid, first_name, surname, registration_number, is_hidden, drilling_company_guid)
