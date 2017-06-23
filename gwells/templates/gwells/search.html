@@ -20,6 +20,7 @@
     <div class="col-sm-4">
         {% crispy form %}         
     </div>
+    <button id="identify-wells-btn" type="button" onclick="startIdentifyWellsOperation()">Find Wells on Map</button>
     <div id="search-map" class="col-md-4 col-md-offset-1"></div>
 </div>
 <br />
@@ -140,14 +141,32 @@
 
 {% block jqscript_block %}
     <script>
+        var searchMap = null;
+
+        function startIdentifyWellsOperation() {
+            if (searchMap !== null) {
+                searchMap.startIdentifyWells();
+            }
+        }
+
+        function identifyWellsStartCallback() {
+            $("#search-map").addClass('identify-wells-operation');
+            $("#identify-wells-btn").prop("disabled", true);
+        }
+
+        function identifyWellsEndCallback() {
+            $("#search-map").removeClass('identify-wells-operation');
+            $("#identify-wells-btn").prop("disabled", false);
+        }
+
         $(document).ready(function(){
             $('[data-toggle="popover"]').popover({'trigger':'hover'});
             // The search page has a map.
-            var searchMap = new WellsMap();
-            searchMap.initMap({mapNodeId: 'search-map'});
+            searchMap = new WellsMap();
+            searchMap.initMap({mapNodeId: 'search-map', identifyWellsStartCallback: identifyWellsStartCallback, identifyWellsEndCallback: identifyWellsEndCallback});
             var wellsJson = $("[data-wells-search-json]").attr("data-wells-search-json") || null;
             var wells = JSON.parse(wellsJson);
-
+            // TODO: Test 'Smith' search in IE8 and, if sufficiently performant, make this part of searchMap initialisation
             searchMap.drawAndZoom(wells);            
         });
     </script>

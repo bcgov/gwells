@@ -1,4 +1,8 @@
-/** First go at a wellsMap module, which provides core map functionality to the GWELLS application. Depends on Leaflet. */
+/**
+ * The WellsMap class provides a Leaflet map with different functionality, depending upon the context in which it is deployed.
+ * It currently depends only on Leaflet, eschewing any plugins or other libraries in the interest of maintainability. 
+ * 
+ */
 function WellsMap () {
     /** Constants. */
 
@@ -8,7 +12,9 @@ function WellsMap () {
         //initLatLong: [48.4284, -123.3656], VICTORIA COORDINATES
         // Minimum zoom level of the map (i.e., how far it can be zoomed out)
         minZoom: 4,
-        // Bounding lats and longs of the map; corresponds to the lat/long extremes of BC. TODO: Refine?
+        // Maximum zoom of the map (i.e., how far it can be zoomed in)
+        maxZoom: 17,
+        // Bounding lats and longs of the map, corresponding to the lat/long extremes of BC. TODO: Refine?
         mapBounds: {
             top:  60.0223,
             bottom: 48.2045556,
@@ -60,6 +66,15 @@ function WellsMap () {
 
     // Markers used to denote wells that have been searched for.
     var _searchMarkers = [];
+
+    // Whether the map is undergoing an IdentifyWells operation.
+    var _isIdentifyingWells = false;
+
+    // The callback function for the beginning of an identifyWells operation.
+    var _identifyWellsStartCallback = null;
+
+    // the callback function for the end of an identifyWells operation.
+    var _identifyWellsEndCallback = null;
 
     /** Private methods */
 
@@ -224,7 +239,44 @@ function WellsMap () {
         var markerBounds = L.featureGroup(_searchMarkers).getBounds();
         console.log(markerBounds);
 
-        _leafletMap.fitBounds(markerBounds);
+        _leafletMap.fitBounds(markerBounds,{
+            maxZoom: wellsMapOptions.maxZoom
+        });
+    }
+
+    var startIdentifyWells = function () {
+        if (_isIdentifyingWells) {
+            // If the map is in the midst of an Identify, don't start a new one.
+            return;
+        }
+        _isIdentifyingWells = true;
+        if (_exists(_identifyWellsStartCallback)) {
+            _identifyWellsStartCallback();
+        }
+// EXPERIMENTAL RECT-DRAWING BEHAVIOUR
+        var startCorner;
+        var endCorner;
+
+        var mouseDownEvent = function (e) {
+            _leafletMap.dragging.disable();
+            console.log("starting latLng:")
+            console.log(e.latlng)
+        }
+
+        var mouseUpEvent = function (e) {
+            _leafletMap.dragging.enable();
+            console.log("ending latlng:")
+            console.log(e.latlng)
+
+            _leafletMap.off('mousedown', mouseDownEvent);
+            _isIdentifyingWells = false;
+            if(_exists(_identifyWellsEndCallback)) {
+                _identifyWellsEndCallback();
+            }
+        }
+
+        _leafletMap.on('mousedown', mouseDownEvent);
+        _leafletMap.on('mouseup', mouseUpEvent);        
     }
 
     // Initialises the underlying Leaflet map. The mapNodeId is mandatory; other properties are optional.
@@ -246,8 +298,10 @@ function WellsMap () {
         // Basic initialisation.
         var initLatLong = wellsMapOptions.initLatLong || [53.7267, -127.6476]; // Fallback default to geographic centre of BC.
         var minZoom = wellsMapOptions.minZoom || 4;  // Fallback default to whole-province view in small map box.
-        var bounds = wellsMapOptions.mapBounds || void 0; // If no bounds provided in options, don't fit to a bounding box.
+        var maxZoom = wellsMapOptions.maxZoom || 17;
+
         // TODO: Break maxBounds generation into its own private method.
+        var bounds = wellsMapOptions.mapBounds || void 0; // If no bounds provided in options, don't fit to a bounding box.
         var maxBounds = void 0;
         if (_exists(bounds.top) && _exists(bounds.bottom) && _exists(bounds.left) && _exists(bounds.right)) {
             maxBounds = L.latLngBounds([L.latLng(bounds.top, bounds.left), L.latLng(bounds.bottom, bounds.right)]);
@@ -257,6 +311,7 @@ function WellsMap () {
         }
         _leafletMap = L.map(mapNodeId, {
             minZoom: minZoom,
+            maxZoom: maxZoom,
             maxBounds: maxBounds,
             maxBoundsViscosity: 1.0
         });
@@ -269,6 +324,8 @@ function WellsMap () {
 
         // Optional properties.
         _newWellMarkerMoveCallback = options.newWellMarkerMoveCallback || null;
+        _identifyWellsStartCallback = options.identifyWellsStartCallback || null;
+        _identifyWellsEndCallback = options.identifyWellsEndCallback || null;
     }
 
     // The public members and methods of a wellsMap.
@@ -277,6 +334,7 @@ function WellsMap () {
         initMap: initMap,
         placeNewWellMarker: placeNewWellMarker,
         removeNewWellMarker: removeNewWellMarker,
-        drawAndZoom: drawAndZoom
+        drawAndZoom: drawAndZoom,
+        startIdentifyWells: startIdentifyWells
     };
 };
