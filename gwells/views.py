@@ -7,11 +7,8 @@ from django.views.generic.edit import FormView
 from formtools.wizard.views import SessionWizardView
 from .models import WellYieldUnit, Well, ActivitySubmission, WellClass
 from .forms import SearchForm, ActivitySubmissionTypeAndClassForm, WellOwnerForm, ActivitySubmissionLocationForm, ActivitySubmissionGpsForm
-
-# EXPERIMENTAL!!!
 import json
 from django.core.serializers.json import DjangoJSONEncoder
-# EXPERIMENTAL!!!
 
 class HelloWorldView(generic.ListView):
     template_name = 'gwells/index.html'
