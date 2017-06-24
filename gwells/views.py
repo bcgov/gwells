@@ -7,8 +7,8 @@ from django.views.generic.edit import FormView
 from formtools.wizard.views import SessionWizardView
 from .models import WellYieldUnit, Well, ActivitySubmission, WellClass
 from .forms import SearchForm, ActivitySubmissionTypeAndClassForm, WellOwnerForm, ActivitySubmissionLocationForm, ActivitySubmissionGpsForm
-
-
+import json
+from django.core.serializers.json import DjangoJSONEncoder
 
 class HelloWorldView(generic.ListView):
     template_name = 'gwells/index.html'
@@ -22,6 +22,7 @@ class HelloWorldView(generic.ListView):
 
 def well_search(request):
     well_results = None
+    well_results_json = None
 
     if request.method == 'GET' and 'well' in request.GET:
         form = SearchForm(request.GET)
@@ -31,9 +32,15 @@ def well_search(request):
     else:
         form = SearchForm()
 
-    return render(request, 'gwells/search.html', {'form': form, 'well_list': well_results})  
+    if well_results:
+        well_results_json = json.dumps(
+            [well.as_dict() for well in well_results],
+            cls=DjangoJSONEncoder)
 
-   
+    return render(request, 'gwells/search.html',
+                  {'form': form, 'well_list': well_results, 'wells_json': well_results_json})
+
+
 
 class WellDetailView(generic.DetailView):
     model = Well
