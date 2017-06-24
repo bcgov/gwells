@@ -32,14 +32,15 @@ def well_search(request):
     else:
         form = SearchForm()
 
-    if well_results is not None:
+    if well_results:
         well_results_json = json.dumps(
             [well.as_dict() for well in well_results],
             cls=DjangoJSONEncoder)
 
-    return render(request, 'gwells/search.html', {'form': form, 'well_list': well_results, 'wells_json': well_results_json})  
+    return render(request, 'gwells/search.html',
+                  {'form': form, 'well_list': well_results, 'wells_json': well_results_json})
 
-   
+
 
 class WellDetailView(generic.DetailView):
     model = Well
