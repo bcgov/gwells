@@ -275,7 +275,7 @@ class Well(TimeStampedModel):
     def __str__(self):
         return '%d %s' % (self.well_tag_number, self.street_address)
 
-    # EXPERIMENTAL: Beginning of custom JSON serialisation for Wells.
+    # Custom JSON serialisation for Wells. Expand as needed.
     def as_dict(self):
         return {
             "latitude": self.latitude,
