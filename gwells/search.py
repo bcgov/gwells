@@ -18,6 +18,8 @@ class Search():
         :returns: QuerySet of Well objects or None if no matching records found.
         """
         well_results = None
+
+        # The maximum number of results to return in a single search.
         query_limit = 1000
 
         q_list = []
@@ -36,21 +38,29 @@ class Search():
         if owner:
             q_list.append(Q(owner_full_name__icontains=owner))
 
-        if lat_long_box is not None and lat_long_box['start_corner'] and lat_long_box['end_corner']:
+        # If there is a lat_long_box, then a user has drawn a box on the map
+        #  to limit their query to within the box.
+        if lat_long_box and lat_long_box['start_corner'] and lat_long_box['end_corner']:
             delimiter = ','
             start_corner = lat_long_box['start_corner'].split(delimiter)
             end_corner = lat_long_box['end_corner'].split(delimiter)
 
-            # The minimum and maximum latitude values are as expected
-            max_lat = max(start_corner[0], end_corner[0])
-            min_lat = min(start_corner[0], end_corner[0])
+            # Casting to floats serves as last-minute sanitisation.
+            start_lat = float(start_corner[0])
+            start_long = float(start_corner[1])
+            end_lat = float(end_corner[0])
+            end_long = float(end_corner[1])
+
+            # The minimum and maximum latitude values should behave as expected
+            max_lat = max(start_lat, end_lat)
+            min_lat = min(start_lat, end_lat)
 
             # We must compare the absolute values of the minimum and maximum longitude values,
-            # since users often erronneously enter positive longitudes for BC.
-            max_long = max(abs(float(start_corner[1])), abs(float(end_corner[1])))
-            min_long = min(abs(float(start_corner[1])), abs(float(end_corner[1])))
+            # since users may erronneously enter positive longitudes for BC.
+            max_long = max(abs(start_long), abs(end_long))
+            min_long = min(abs(start_long), abs(end_long))
 
-            q_list.append(Q(latitude__abs__gt=min_lat) & Q(latitude__abs__lt=max_lat)
+            q_list.append(Q(latitude__gt=min_lat) & Q(latitude__lt=max_lat)
                           & Q(longitude__abs__gt=min_long) & Q(longitude__abs__lt=max_long))
 
         if q_list:

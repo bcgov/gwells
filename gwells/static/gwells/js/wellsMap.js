@@ -85,7 +85,7 @@ function WellsMap () {
     // The ending corner of the (final) identifyWellsRectangle 
     var _endCorner = null;
 
-    /** Private methods */
+    /** Private functions */
 
     // Convenience method for checking whether a property exists (i.e., is neither null nor undefined)
     var _exists = function (prop) {
@@ -95,6 +95,18 @@ function WellsMap () {
     // Convenience method for checking whether an object is an array.
     var _isArray = function (arr) {
         return _exists(arr.constructor) && arr.constructor === Array;
+    }
+
+    var _setMaxBounds = function () {
+        var maxBounds = void 0;
+        var bounds = wellsMapOptions.mapBounds || void 0; // If no bounds provided in options, don't fit to a bounding box.
+        if (_exists(bounds.top) && _exists(bounds.bottom) && _exists(bounds.left) && _exists(bounds.right)) {
+            maxBounds = L.latLngBounds([L.latLng(bounds.top, bounds.left), L.latLng(bounds.bottom, bounds.right)]);
+            if (bounds.padding) {
+                maxBounds.pad(bounds.padding);
+            }
+        }
+        return maxBounds;
     }
 
     // TODO: Generalise to other ESRI layer types? Add 'type' switcher in wellsMapOptions.esriLayers objs?
@@ -146,12 +158,17 @@ function WellsMap () {
         _identifyWellsRectangle.addTo(_leafletMap);
     }
 
+    // Handles the mousedown event during the identifyWells operation. Specifically, this function disables map dragging 
+    // and sets the starting corner of the rectangle to be drawn, as well as subscribing the map to _mouseMoveForIdentifyWellsEvent.
     var _mouseDownForIdentifyWellsEvent = function (e) {
         _leafletMap.dragging.disable();
         _startCorner = e.latlng;
         _leafletMap.on('mousemove', _mouseMoveForIdentifyWellsEvent);
     }
 
+    // Handles the mouseup event during the identifyWells operation. Specifically, this function re-enables dragging, sets
+    // the ending corner of the rectangle, unsubscribes the map from the events, passes the corner info to the callback,
+    // and resets the private members associated with the operation.
     var _mouseUpForIdentifyWellsEvent = function (e) {
         _leafletMap.dragging.enable();
         _endCorner = e.latlng;
@@ -171,10 +188,12 @@ function WellsMap () {
         _endCorner = null;
     }
 
+    // Determines whether a given latitude is within the map's bounds.
     var _isLatInBounds = function (lat) {
         return wellsMapOptions.mapBounds.bottom <= lat && lat <= wellsMapOptions.mapBounds.top;
     }
 
+    // Determines whether a given longitude is within the map's bounds.
     var _isLongInBounds = function (long) {
         return wellsMapOptions.mapBounds.left <= long && long <= wellsMapOptions.mapBounds.right;
     }
@@ -183,7 +202,7 @@ function WellsMap () {
     // only be correct up to a minus sign (especially longitude data in the Western hemisphere) due to users not knowing
     // to enter a minus sign (or potentially entering a minus sign erronneously).
     // If the lat and long are within the map's bounds, they are returned; if they can be corrected by flipping the sign,
-    // the sign's flips are returned. Else { NaN, NaN } is returned along with a console error.
+    // the negated values are returned. Else { NaN, NaN } is returned along with a console error.
     // Takes a latLong parameter corresponding to { lat: number, long: number }
     var _ensureLatLongIsInBounds = function (latLong) {
         var lat = _exists(latLong.lat) ? latLong.lat : NaN;
@@ -267,7 +286,7 @@ function WellsMap () {
         }
     }
 
-    // Displays wells and zooms to the bounding box to see all wells. Note
+    // Displays wells and zooms to the bounding box to see all displayed wells. Note
     // the wells must have valid latitude and longitude data.
     var drawAndZoom = function (wells) {
         if(!_exists(_leafletMap) || !_exists(wells) || !_isArray(wells)) {
@@ -292,6 +311,11 @@ function WellsMap () {
         });
     }
 
+    // Starts the identifyWells operation. This operation comprises several events, generally initiated when a user clicks
+    // an appropriate button on the Search page. The map's style is dynamically changed so that the mouse pointer turns to
+    // crosshairs, and the map itself is prepared in this method to let a user draw a rectangle on it by clicking and dragging
+    // over the map. Once the mouse is released, the starting and ending corners of the box are collected, added to the Search
+    // form, and submitted for processing.
     var startIdentifyWells = function () {
         if (_isIdentifyingWells) {
             // If the map is in the midst of an Identify, don't start a new one.
@@ -305,6 +329,7 @@ function WellsMap () {
         }
         _leafletMap.on('mousedown', _mouseDownForIdentifyWellsEvent);
         _leafletMap.on('mouseup', _mouseUpForIdentifyWellsEvent);
+        // TODO: Subscribe to 'mouseout' & treat it like 'mouseup'?
     }
 
     // Initialises the underlying Leaflet map. The mapNodeId is mandatory; other properties are optional.
@@ -328,15 +353,7 @@ function WellsMap () {
         var minZoom = wellsMapOptions.minZoom || 4;  // Fallback default to whole-province view in small map box.
         var maxZoom = wellsMapOptions.maxZoom || 17;
 
-        // TODO: Break maxBounds generation into its own private method.
-        var bounds = wellsMapOptions.mapBounds || void 0; // If no bounds provided in options, don't fit to a bounding box.
-        var maxBounds = void 0;
-        if (_exists(bounds.top) && _exists(bounds.bottom) && _exists(bounds.left) && _exists(bounds.right)) {
-            maxBounds = L.latLngBounds([L.latLng(bounds.top, bounds.left), L.latLng(bounds.bottom, bounds.right)]);
-            if (bounds.padding) {
-                maxBounds.pad(bounds.padding);
-            }
-        }
+        var maxBounds = _setMaxBounds();
         _leafletMap = L.map(mapNodeId, {
             minZoom: minZoom,
             maxZoom: maxZoom,

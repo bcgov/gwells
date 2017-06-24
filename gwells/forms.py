@@ -91,16 +91,25 @@ class SearchForm(forms.Form):
         addr = cleaned_data.get('addr')
         legal = cleaned_data.get('legal')
         owner = cleaned_data.get('owner')
+        # start_lat_long and end_lat_long are programatically-generated, and
+        # should consist of a dictionary of a comma-separated list consisting
+        # of two floats that comprise latitude and longitude. They are used
+        # in the identifyWells operation to query all wells whose lat/long info
+        # place them within a user-drawn rectangle on the search page map.
         start_lat_long = cleaned_data.get('start_lat_long')
         end_lat_long = cleaned_data.get('end_lat_long')
 
+        # If only one of the rectangle's points exist, we cannot perform the query.
+        if bool(start_lat_long) != bool(end_lat_long):
+            raise forms.ValidationError(
+                "identifyWells operation did not provide sufficient data. "
+                "The map may not accurately reflect query results."
+            )
         if (not well and not addr and not legal and
                 not owner and not (start_lat_long and end_lat_long)):
             raise forms.ValidationError(
                 "At least 1 search field is required."
             )
-
-
 
     def process(self):
         well_results = None
