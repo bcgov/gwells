@@ -1,10 +1,13 @@
 from django.db.models import Q
 from functools import reduce
 import operator
+from django.db.models import DecimalField
+from .custom_transforms import AbsoluteValue
+DecimalField.register_lookup(AbsoluteValue)
 from .models import Well
 
 class Search():
-    def well_search(well='', addr='', legal='', owner=''):
+    def well_search(well='', addr='', legal='', owner='', lat_long_box=None):
         """
         Search for wells
 
@@ -15,8 +18,10 @@ class Search():
         :returns: QuerySet of Well objects or None if no matching records found.
         """
         well_results = None
-        
-       
+
+        # The maximum number of results to return in a single search.
+        query_limit = 1000
+
         q_list = []
 
         if well:
@@ -27,12 +32,39 @@ class Search():
 
         if legal:
             pid = legal.lstrip('0')
-            q_list.append(Q(legal_plan__icontains=legal) | Q(legal_district_lot__icontains=legal) | Q(legal_pid=pid))
+            q_list.append(Q(legal_plan__icontains=legal) |
+                          Q(legal_district_lot__icontains=legal) | Q(legal_pid=pid))
 
         if owner:
             q_list.append(Q(owner_full_name__icontains=owner))
 
-        if len(q_list) > 0:
-            well_results = Well.objects.distinct().filter(reduce(operator.and_, q_list)).order_by('well_tag_number', 'created')
-                
+        # If there is a lat_long_box, then a user has drawn a box on the map
+        #  to limit their query to within the box.
+        if lat_long_box and lat_long_box['start_corner'] and lat_long_box['end_corner']:
+            delimiter = ','
+            start_corner = lat_long_box['start_corner'].split(delimiter)
+            end_corner = lat_long_box['end_corner'].split(delimiter)
+
+            # Casting to floats serves as last-minute sanitisation.
+            start_lat = float(start_corner[0])
+            start_long = float(start_corner[1])
+            end_lat = float(end_corner[0])
+            end_long = float(end_corner[1])
+
+            # The minimum and maximum latitude values should behave as expected
+            max_lat = max(start_lat, end_lat)
+            min_lat = min(start_lat, end_lat)
+
+            # We must compare the absolute values of the minimum and maximum longitude values,
+            # since users may erronneously enter positive longitudes for BC.
+            max_long = max(abs(start_long), abs(end_long))
+            min_long = min(abs(start_long), abs(end_long))
+
+            q_list.append(Q(latitude__gt=min_lat) & Q(latitude__lt=max_lat)
+                          & Q(longitude__abs__gt=min_long) & Q(longitude__abs__lt=max_long))
+
+        if q_list:
+            well_results = Well.objects.distinct().filter(
+                reduce(operator.and_, q_list)).order_by('well_tag_number', 'created')[:query_limit]
+
         return well_results
