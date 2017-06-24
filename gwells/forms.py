@@ -44,10 +44,20 @@ class SearchForm(forms.Form):
         widget=forms.TextInput(attrs={'placeholder': 'example: Smith or smi'}),
     )
     
+    start_lat_long = forms.CharField(
+        widget=forms.HiddenInput(),
+        required=False
+    )
+
+    end_lat_long = forms.CharField(
+        widget=forms.HiddenInput(),
+        required=False
+    )
 
     @property
     def helper(self):
         helper = FormHelper()
+        helper.form_id = 'id-searchForm'
         helper.form_method = 'get'
         helper.form_action = ''
 
@@ -59,7 +69,11 @@ class SearchForm(forms.Form):
                 'legal',
                 'owner',
                 Hidden('sort', 'well_tag_number'),
-                Hidden('dir', 'asc')
+                Hidden('dir', 'asc'),
+                # start_lat_long and end_lat_long are programatically generated
+                # based on an identifyWells operation on the client.
+                Hidden('start_lat_long', ''),
+                Hidden('end_lat_long', '')
             ),
             FormActions(
                 Submit('s', 'Search'),
@@ -71,35 +85,46 @@ class SearchForm(forms.Form):
         return helper
 
 
-
     def clean(self):
         cleaned_data = super(SearchForm, self).clean()
         well = cleaned_data.get('well')
         addr = cleaned_data.get('addr')
         legal = cleaned_data.get('legal')
         owner = cleaned_data.get('owner')
+        # start_lat_long and end_lat_long are programatically-generated, and
+        # should consist of a dictionary of a comma-separated list consisting
+        # of two floats that comprise latitude and longitude. They are used
+        # in the identifyWells operation to query all wells whose lat/long info
+        # place them within a user-drawn rectangle on the search page map.
+        start_lat_long = cleaned_data.get('start_lat_long')
+        end_lat_long = cleaned_data.get('end_lat_long')
 
-        if not well and not addr and not legal and not owner:
+        # If only one of the rectangle's points exist, we cannot perform the query.
+        if bool(start_lat_long) != bool(end_lat_long):
+            raise forms.ValidationError(
+                "identifyWells operation did not provide sufficient data. "
+                "The map may not accurately reflect query results."
+            )
+        if (not well and not addr and not legal and
+                not owner and not (start_lat_long and end_lat_long)):
             raise forms.ValidationError(
                 "At least 1 search field is required."
             )
 
-
-
     def process(self):
         well_results = None
-        
+
         well = self.cleaned_data.get('well')
         addr = self.cleaned_data.get('addr')
         legal = self.cleaned_data.get('legal')
         owner = self.cleaned_data.get('owner')
-        
-        well_results = Search.well_search(well, addr, legal, owner)
+        start_lat_long = self.cleaned_data.get('start_lat_long')
+        end_lat_long = self.cleaned_data.get('end_lat_long')
+        lat_long_box = {'start_corner': start_lat_long, 'end_corner': end_lat_long}
 
-            
+        well_results = Search.well_search(well, addr, legal, owner, lat_long_box)
+
         return well_results
-
-
 
 class WellOwnerForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
