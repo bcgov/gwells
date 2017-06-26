@@ -102,6 +102,14 @@
   var latNodeSelector = '#id_gps-latitude';
   var longNodeSelector = '#id_gps-longitude';
   var latDMSDegreeNodeSelector = '#id_gps-latitude_d';
+  var latDMSMinuteNodeSelector = '#id_gps-latitude_m';
+  var latDMSSecondNodeSelector = '#id_gps-latitude_s';
+  var longDMSDegreeNodeSelector = '#id_gps-longitude_d';
+  var longDMSMinuteNodeSelector = '#id_gps-longitude_m';
+  var longDMSSecondNodeSelector = '#id_gps-longitude_s';
+  var zoneUTMNodeSelector  = 'id_gps-zone';
+  var eastingUTMNodeSelector  = 'id_gps-utm_easting';
+  var northingUTMNodeSelector  = 'id_gps-utm_northing';
 
   function setLatLongFields(lat, long) {
     $(latNodeSelector).val(lat).trigger('change');
@@ -119,7 +127,7 @@
     var lat = parseFloat($(latNodeSelector).val());
     var long = parseFloat($(longNodeSelector).val());
     lat = isNaN(lat) ? void 0 : lat;
-    long =isNaN(long) ? void 0 : long;    
+    long = isNaN(long) ? void 0 : long;    
     addMap.placeNewWellMarker({lat: lat, long: long});
   };
   function removeNewWellMarker () {
@@ -131,7 +139,15 @@
     CoordSync.init({
       latDDNodeSelector: latNodeSelector, 
       longDDNodeSelector: longNodeSelector,
-      latDMSDegreeNodeSelector: latDMSDegreeNodeSelector
+      latDMSDegreeNodeSelector: latDMSDegreeNodeSelector,
+      latDMSMinuteNodeSelector: latDMSMinuteNodeSelector,
+      latDMSSecondNodeSelector: latDMSSecondNodeSelector,
+      longDMSDegreeNodeSelector: longDMSDegreeNodeSelector,
+      longDMSMinuteNodeSelector: longDMSMinuteNodeSelector,
+      longDMSSecondNodeSelector: longDMSSecondNodeSelector,
+      zoneUTMNodeSelector: zoneUTMNodeSelector,
+      eastingUTMNodeSelector: eastingUTMNodeSelector,
+      northingUTMNodeSelector: northingUTMNodeSelector
     });
   });
 </script>

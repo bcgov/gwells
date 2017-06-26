@@ -19,7 +19,7 @@ _latDMSDegreeField = null;
 _latDMSMinuteField = null;
 _latDMSSecondField = null;
 _longDMSDegreeField = null;
-_longDMSMinuteFIeld = null;
+_longDMSMinuteField = null;
 _longDMSSecondField = null;
 
 // The UTM fields
@@ -29,30 +29,88 @@ _northingUTMField = null;
 
 /** Eventing subscription code */
 function _latDDFieldOnChange () {
-    console.log('Latitude: ' + _latDDField.val());
-    _latDMSDegreeField.val(_ddToDegrees(_latDDField.val()));
+    console.log("LAT FIELD CHANGED!")
+    var newLatDD = _latDDField.val();
+    _latDMSDegreeField.val(_ddToDegrees(newLatDD));
+    _latDMSMinuteField.val(_ddToMinutes(newLatDD));
+    _latDMSSecondField.val(_ddToSeconds(newLatDD));
+}
+
+function _longDDFieldOnChange() {
+    var newLongDD = _longDDField.val();
+    _longDMSDegreeField.val(_ddToDegrees(newLongDD));
+    _longDMSMinuteField.val(_ddToMinutes(newLongDD));
+    _longDMSSecondField.val(_ddToSeconds(newLongDD));
+}
+
+function _setLatDDFromLatDMS() {
+    var deg = parseFloat(_latDMSDegreeField.val());
+    var min = parseFloat(_latDMSMinuteField.val());
+    var sec = parseFloat(_latDMSSecondField.val());
+    _latDDField.val(_dmsToDD(deg, min, sec));
+}
+
+function _setLongDDFromLongDMS() {
+    var deg = parseFloat(_longDMSDegreeField.val());
+    var min = parseFloat(_longDMSMinuteField.val());
+    var sec = parseFloat(_longDMSSecondField.val());
+    _longDDField.val(_dmsToDD(deg, min, sec));
 }
 
 function _latDMSDegreeFieldOnChange () {
-    console.log('LatDegree: ' + _latDMSDegreeField.val());
+    _setLatDDFromLatDMS();
+}
+
+function _latDMSMinuteFieldOnChange () {
+    _setLatDDFromLatDMS();
+} 
+
+function _latDMSSecondFieldOnChange () {
+    _setLatDDFromLatDMS();
+}
+
+function _longDMSDegreeFieldOnChange() {
+    _setLongDDFromLongDMS();
+}
+
+function _longDMSMinuteFieldOnCHange() {
+    _setLongDDFromLongDMS();
+}
+
+function _longDMSSecondFieldOnChange() {
+    _setLongDDFromLongDMS();    
 }
 
 /** DD/DMS conversion code */
 
 // Convers a lat or long from Decimal Degrees to DMS Degrees. The DMS Degree is found by simply truncating the Decimal Degree (i.e., returning its integer part.)
 function _ddToDegrees (dec) {
+    dec = _numOrZeroIfNaN(dec);
     return parseInt(dec);
 }
 
 // Convers a lat or long from Decimal Degrees to DMS Minutes. A DMS Minute is 1/60th of a DMS Degree (which is identical to a DD integer). A DMS Minute is an integer.
 function _ddToMinutes (dec) {
-    var frac = (dec * 60) % 60;
+    dec = _numOrZeroIfNaN(dec);
+    var frac = (Math.abs(dec) * 60) % 60;
     return parseInt(frac);
 }
 
-// Converts a lat or long from Decimal Degrees to DMS Seconds. A DMS Second is 1/60th of a DMS Minute. A DMS Second may be a fraction.
+// Converts a lat or long from Decimal Degrees to DMS Seconds. A DMS Second is 1/60th of a DMS Minute. A DMS Second may be a fraction, and should be rounded to two decimals.
 function _ddToSeconds (dec) {
-    return (Math.abs(dec) * 3600) % 60;
+    dec = _numOrZeroIfNaN(dec);
+    return ((Math.abs(dec) * 3600) % 60).toFixed(2);
+}
+
+function _dmsToDD(deg, min, sec) {
+    deg = _numOrZeroIfNaN(deg);
+    min = _numOrZeroIfNaN(min);
+    sec = _numOrZeroIfNaN(sec);
+    return deg + (min/60) + (sec/3600);
+}
+
+function _numOrZeroIfNaN(num) {
+    return isNaN(num) || isNaN(parseInt(num)) ? 0 : num;
 }
 
 /** UTM conversion code */
@@ -644,16 +702,21 @@ function _ddToSeconds (dec) {
         _latDMSMinuteField = $(options.latDMSMinuteNodeSelector) || null;
         _latDMSSecondField = $(options.latDMSSecondNodeSelector) || null;
         _longDMSDegreeField = $(options.longDMSDegreeNodeSelector) || null;
-        _longDMSMinuteFIeld = $(options.longDMSMinuteNodeSelector) || null;
-        _longDMSSecondField = $(options._longDMSSecondNodeSelector) || null;
+        _longDMSMinuteField = $(options.longDMSMinuteNodeSelector) || null;
+        _longDMSSecondField = $(options.longDMSSecondNodeSelector) || null;
         _zoneUTMField = $(options.zoneUTMNodeSelector) || null;
         _eastingUTMField = $(options.eastingUTMNodeSelector) || null;
         _northingUTMField = $(options.northingUTMNodeSelector) || null;
 
         // Subscribe the nodes to the events
         _latDDField.on('change', _latDDFieldOnChange);
-
+        _longDDField.on('change', _longDDFieldOnChange);
         _latDMSDegreeField.on('change', _latDMSDegreeFieldOnChange);
+        _latDMSMinuteField.on('change', _latDMSMinuteFieldOnChange);
+        _latDMSSecondField.on('change', _latDMSSecondFieldOnChange);
+        _longDMSDegreeField.on('change', _longDMSDegreeFieldOnChange);
+        _longDMSMinuteField.on('change', _longDMSDegreeFieldOnChange);
+        _longDMSSecondField.on('change', _longDMSSecondFieldOnChange);
     }
 
     return {
