@@ -107,9 +107,9 @@
   var longDMSDegreeNodeSelector = '#id_gps-longitude_d';
   var longDMSMinuteNodeSelector = '#id_gps-longitude_m';
   var longDMSSecondNodeSelector = '#id_gps-longitude_s';
-  var zoneUTMNodeSelector  = 'id_gps-zone';
-  var eastingUTMNodeSelector  = 'id_gps-utm_easting';
-  var northingUTMNodeSelector  = 'id_gps-utm_northing';
+  var zoneUTMNodeSelector  = '#id_gps-zone';
+  var eastingUTMNodeSelector  = '#id_gps-utm_easting';
+  var northingUTMNodeSelector  = '#id_gps-utm_northing';
 
   function setLatLongFields(lat, long) {
     $(latNodeSelector).val(lat).trigger('change');
@@ -144,10 +144,11 @@
       latDMSSecondNodeSelector: latDMSSecondNodeSelector,
       longDMSDegreeNodeSelector: longDMSDegreeNodeSelector,
       longDMSMinuteNodeSelector: longDMSMinuteNodeSelector,
-      longDMSSecondNodeSelector: longDMSSecondNodeSelector,
-      zoneUTMNodeSelector: zoneUTMNodeSelector,
-      eastingUTMNodeSelector: eastingUTMNodeSelector,
-      northingUTMNodeSelector: northingUTMNodeSelector
+      longDMSSecondNodeSelector: longDMSSecondNodeSelector
+      /** UTM conversion is ready, but the form doesn't have UTM support yet. */
+      //zoneUTMNodeSelector: zoneUTMNodeSelector,
+      //eastingUTMNodeSelector: eastingUTMNodeSelector,
+      //northingUTMNodeSelector: northingUTMNodeSelector
     });
   });
 </script>
