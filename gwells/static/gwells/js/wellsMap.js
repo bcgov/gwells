@@ -44,14 +44,17 @@ function WellsMap (options) {
     // The underlying Leaflet map.
     var _leafletMap = null;
 
+    // The map's maximum bounds. This should be a Leaflet LatLngBounds object.
+    var _maxBounds = null;
+
+    // The map's maximum zoom level.
+    var _maxZoom = null;
+
     // A marker for a particular well.
     var _wellMarker = null;
 
     // The callback function for _wellMarker's move event.
     var _wellMarkerMoveCallback = null;
-
-    // The map's maximum bounds. This should be a Leaflet LatLngBounds object.
-    var _maxBounds = null;
 
     // Markers used to denote wells that have been searched for.
     var _searchMarkers = [];
@@ -179,12 +182,18 @@ function WellsMap (options) {
 
     // Determines whether a given latitude is within the map's bounds.
     var _isLatInBounds = function (lat) {
-        return wellsMapOptions.mapBounds.bottom <= lat && lat <= wellsMapOptions.mapBounds.top;
+        if (_exists(_maxBounds)) {
+            return _maxBounds.getSouth() <= lat && lat <= _maxBounds.getNorth();
+        }
+        // If _maxBounds doesn't exist, the latitude is valid.
+        return true;
     }
 
     // Determines whether a given longitude is within the map's bounds.
     var _isLongInBounds = function (long) {
-        return wellsMapOptions.mapBounds.left <= long && long <= wellsMapOptions.mapBounds.right;
+        if (_exists(_maxBounds)) {
+            return _maxBounds.getWest() <= long && long <= _maxBounds.getEast();
+        }
     }
 
     // Makes sure the latitude and longitude fit within the map's bounding box. This is necessary since lat/long data may
@@ -228,21 +237,28 @@ function WellsMap (options) {
 
     /** Public methods */
 
-    // Places a wellMarker on the map to help refine the placement of a new well.
-    // When placed by a button click, the map pans and zooms to centre on the marker.
+    // 
+    // 
     // The options argument has type {lat: number, long: number}
+    /**
+     * Places a wellMarker on the map to help refine the placement of a well.
+     * When placed by a button click, the map pans and zooms to centre on the marker.
+     * @param options An object conforming to:
+     * {
+     *  lat: float,
+     *  long: float
+     * }
+     */    
     var placeWellMarker = function (options) {
         // If the map does not exist or we do not have both latitude and longitude, bail out.
-        if (!_exists(_leafletMap) || !_exists(options) || !_exists(options.lat) || !_exists(options.long)) {
+        if (!_exists(_leafletMap) || !_exists(_maxBounds) || !_exists(options) || !_exists(options.lat) || !_exists(options.long)) {
             return;
         }
 
-        var lat = options.lat;
-        var long = options.long;
-        var latLong = L.latLng([lat, long]);
+        var latLong = _getLatLngInBC(options.lat, options.long);
 
         // If the latitude and longitude do not fit within the map's maxBounds, bail out.
-        if (!_exists(_maxBounds) || !_maxBounds.contains(latLong)) {
+        if (!_exists(latLong)) {
             return;
         }
         // Zoom default.
@@ -288,10 +304,8 @@ function WellsMap (options) {
         });
 
         var markerBounds = L.featureGroup(_searchMarkers).getBounds();
-        console.log(markerBounds);
-
         _leafletMap.fitBounds(markerBounds,{
-            maxZoom: wellsMapOptions.maxZoom
+            maxZoom: _maxZoom || _leafletMap.getMaxZoom()
         });
     }
 
@@ -332,8 +346,8 @@ function WellsMap (options) {
     }
 
     // Basic initialisation.
-    var minZoom = options.minZoom || wellsMapOptions.minZoom || 4;  // Fallback default to whole-province view in small map box.
-    var maxZoom = options.maxZoom || wellsMapOptions.maxZoom || 17;
+    var minZoom = options.minZoom || 4;  // Fallback default to whole-province view in small map box.
+    var maxZoom = options.maxZoom || 17;
     var maxBounds = _setMaxBounds(options.mapBounds);
     _leafletMap = L.map(mapNodeId, {
         minZoom: minZoom,
