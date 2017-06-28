@@ -20,9 +20,15 @@
     <div class="col-sm-4">
         {% crispy form %}         
     </div>
-    <button id="identify-wells-btn" type="button" onclick="startIdentifyWellsOperation()">Find Wells on Map</button>
-    <div id="search-map" class="col-md-4 col-md-offset-1"></div>
-</div>
+    <div class="col-md-8">
+        <div class="row">
+        <button id="identify-wells-btn" type="button" onclick="startIdentifyWellsOperation()">Select Area on Map</button>
+        </div>
+        <div class="row">
+        <div id="search-map" class="col"></div>
+        </div>
+    </div>
+ </div>
 <br />
 
 {% if well_list %}
@@ -151,7 +157,7 @@
         minZoom: 4,
         // Maximum zoom of the map (i.e., how far it can be zoomed in)
         maxZoom: 17,
-        // Bounding lats and longs of the map, corresponding to the lat/long extremes of BC. TODO: Refine?
+        // Bounding lats and longs of the map, corresponding to the lat/long extremes of BC.
         mapBounds: {
             north:  60.0223,
             south: 48.2045556,
@@ -161,9 +167,6 @@
         },
         // ESRI layers associated with the map
         esriLayers: [
-            /*{ // This is an alternate basemap.
-                url: 'http://maps.gov.bc.ca/arcgis/rest/services/province/web_mercator_cache/MapServer/'
-            },*/
             {
                 url: 'http://maps.gov.bc.ca/arcserver/rest/services/Province/roads_wm/MapServer'
             }
@@ -174,18 +177,16 @@
                 rootUrl: 'https://openmaps.gov.bc.ca/geo/pub/WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW/ows?',
                 format: 'image/png',
                 layers: 'pub:WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW',
-                styles: 'PMBC_Parcel_Fabric_Cadastre_Outlined', // TODO: Verify style
+                styles: 'PMBC_Parcel_Fabric_Cadastre_Outlined',
                 transparent: true
-            }/*,
-            {   // This is the DataBC Wells layer as viewed in iMap. Its data is updated daily, but not continuously, so it is likely not suitable for the GWELLS application.
-                // It is presented here merely for possible convenience.
-                rootUrl: 'https://openmaps.gov.bc.ca/geo/pub/WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW/ows?',
-                format: 'image/png',
-                layers: 'pub:WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW',
-                styles: 'Water_Wells_All',
-                transparent: true
-            } */
-        ], 
+            }        
+        ],
+        // Settings for a Leaflet circleMarker
+        wellMarkerStyle: {
+          radius: 3, // The radius of the circleMarker
+          color: '#0147b7', // The color of the circleMarker
+          fillOpacity: 1.0 // How transparent the circleMarker's fill is
+       },        
         identifyWellsStartCallback: identifyWellsStartCallback, 
         identifyWellsEndCallback: identifyWellsEndCallback    
     };
@@ -226,7 +227,6 @@
         searchMap = new WellsMap(searchMapOptions);
         var wellsJson = $("[data-wells-search-json]").attr("data-wells-search-json") || null;
         var wells = JSON.parse(wellsJson);
-        // TODO: Test 'Smith' search in IE8 and, if sufficiently performant, make this part of searchMap initialisation
         searchMap.drawAndZoom(wells);            
     });
 </script>
