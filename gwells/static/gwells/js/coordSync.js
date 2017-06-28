@@ -7,6 +7,12 @@
  */
 var CoordSync = (function () {
 
+// The bounding box of the coordinates in DD. If set, then the _latDDField and _longDDField will
+// be constrained to within this box, signalling an error if an erroneous value is entered, with
+// the caveat that users may enter the longitude without a minus sign (since all longs in BC are negative
+// in DD), and coordSync will make the longitude negative in an attempt to improve the accuracy of data entry.
+_latLongDDBoundingBox = null;
+
 /** JQuery nodes that correspond to the fields that will subscribe to events. */
 
 // The input fields associated with latitude and longitude decimal degrees
@@ -632,6 +638,7 @@ var init = function(options) {
     _zoneUTMField = $(options.zoneUTMNodeSelector) || null;
     _eastingUTMField = $(options.eastingUTMNodeSelector) || null;
     _northingUTMField = $(options.northingUTMNodeSelector) || null;
+    _latLongDDBoundingBox = options._latLongDDBoundingBox || null;
 
     // Subscribe the nodes to the events
     _latDDField.on('change', _latLongDDFieldOnChange);
