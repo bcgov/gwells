@@ -109,10 +109,10 @@
       maxZoom: 17,
       // Bounding lats and longs of the map, corresponding to the lat/long extremes of BC.
       mapBounds: {
-          top:  60.0223,
-          bottom: 48.2045556,
-          left: -139.0736706,
-          right: -114.0338224,
+          north:  60.0223,
+          south: 48.2045556,
+          west: -139.0736706,
+          east: -114.0338224,
           padding: 5 // Margin beyond extremes to pad the bounds with, as a percentage of the total bounding box.
       },
       // ESRI layers associated with the map
@@ -158,9 +158,13 @@
   var eastingUTMNodeSelector  = '#id_gps-utm_easting';
   var northingUTMNodeSelector  = '#id_gps-utm_northing';
 
+  // Sets the latitude and longitude fields from the map, rounding to
+  // six decimal places.
   function setLatLongFields(lat, long) {
-    $(latNodeSelector).val(lat).trigger('change');
-    $(longNodeSelector).val(long).trigger('change');
+    var fixedLat = lat.toFixed(6);
+    var fixedLong = long.toFixed(6);
+    $(latNodeSelector).val(fixedLat).trigger('change');
+    $(longNodeSelector).val(fixedLong).trigger('change');
   }
 
   // Updates the latitude and longitude fields with the position of the marker
@@ -170,6 +174,12 @@
     setLatLongFields(newLatLng.lat, newLatLng.lng);
   }
 
+  // Presents validation errors to users.
+  function latLongValidationCallback (error) {
+    // TODO: Add normally-hidden field to present message.
+    console.log(error);
+  }
+
   function placeWellMarker () {
     var lat = parseFloat($(latNodeSelector).val());
     var long = parseFloat($(longNodeSelector).val());
@@ -177,6 +187,7 @@
     long = isNaN(long) ? void 0 : long;    
     addMap.placeWellMarker({lat: lat, long: long});
   };
+
   function removeWellMarker () {
     addMap.removeWellMarker();
   };
@@ -191,11 +202,11 @@
       longDMSDegreeNodeSelector: longDMSDegreeNodeSelector,
       longDMSMinuteNodeSelector: longDMSMinuteNodeSelector,
       longDMSSecondNodeSelector: longDMSSecondNodeSelector,
-      latLongDDBoundingBox: addMapOptions.mapBounds
-      /** UTM conversion is ready, but the form doesn't have UTM support yet. */
-      //zoneUTMNodeSelector: zoneUTMNodeSelector,
-      //eastingUTMNodeSelector: eastingUTMNodeSelector,
-      //northingUTMNodeSelector: northingUTMNodeSelector
+      latLongDDBoundingBox: addMapOptions.mapBounds,
+      latLongValidationCallback: latLongValidationCallback,
+      zoneUTMNodeSelector: zoneUTMNodeSelector,
+      eastingUTMNodeSelector: eastingUTMNodeSelector,
+      northingUTMNodeSelector: northingUTMNodeSelector
     });
   });
 </script>
