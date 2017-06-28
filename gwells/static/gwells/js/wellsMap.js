@@ -1,68 +1,60 @@
 /**
  * The WellsMap class provides a Leaflet map with different functionality, depending upon the context in which it is deployed.
- * It currently depends only on Leaflet, eschewing any plugins or other libraries in the interest of maintainability. 
+ * It currently depends only on Leaflet, eschewing any plugins or other libraries in the interest of maintainability.
  * 
+ * A NOTE ON FUNCTIONALITY: This class can be initialised in different ways, which exposes its functionality differently.
+ * If sufficient hooks are supplied in map construction, the map can perform the following tasks:
+ *  - Supply a single draggable marker which, when moved, advertises the marker's new lat/long coordinates
+ *  - Allow the user to draw a rectangle which, when finished drawing, advertises the rectangle's opposing corners
+ *      in lat/long terms
+ * @param options An object conforming to the following scheme (using TS notation):
+ * {
+ *   mapNodeId: string, // The DOM ID of the div into which the Leaflet map will be placed
+ *   esriLayers: [ // ESRI layers associated with the map
+ *       {
+ *          url: string // A URL to an Esri MapServer map service.
+ *       }
+ *   ],
+ *   wmsLayers: [ // WMS layers associated with the map
+ *       {
+ *          rootUrl: string, // URL to the OWS service of the WMS layer; e.g., 'https://openmaps.gov.bc.ca/geo/pub/WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW/ows?'
+ *          format: string, // Format of the tiles; e.g., 'image/png'
+ *          layers: string, // Layers of the OWS service; e.g., 'pub:WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW'.
+ *          styles: string, // Styles of the OWS service; e.g., 'PMBC_Parcel_Fabric_Cadastre_Outlined'
+ *          transparent: boolean // Whether the tiles are transparent (other than the features drawn upon them)
+ *      } 
+ *   ],
+ *   minZoom?: number,  // The minimum zoom level of the map (i.e., how far it can be zoomed out)
+ *   maxZoom?: number,  // The maximum zoom level of the map (i.e., how far it can be zoomed in)
+ *   mapBounds?: { // Latitude and longitude extremes of the bounding rectangle for the map.
+ *      north: float, // The top latitude of the map
+ *      south: float, // The bottom latitude of the map
+ *      west: float, // The leftmost longitude of the map
+ *      east: float, // The rightmost longitude of the map
+ *      padding: int // Margin beyond extremes to pad the bounds with, as a percentage of the total bounding box.     
+ *   },
+ *   wellMarkerMoveCallback?: function, // Function to call when the map's wellMarker moves 
+ *   identifyWellsStartCallback?: function, // Function to call when an identifyWells operation is started
+ *   identifyWellsEndCallback?: function // Function to call when an identifyWells operation ends
+ * }
  */
-function WellsMap () {
-    /** Constants. */
-
-    // Options for creating a wellsMap
-    var wellsMapOptions = {
-        // Initial centre of the map
-        //initLatLong: [48.4284, -123.3656], VICTORIA COORDINATES
-        // Minimum zoom level of the map (i.e., how far it can be zoomed out)
-        minZoom: 4,
-        // Maximum zoom of the map (i.e., how far it can be zoomed in)
-        maxZoom: 17,
-        // Bounding lats and longs of the map, corresponding to the lat/long extremes of BC. TODO: Refine?
-        mapBounds: {
-            top:  60.0223,
-            bottom: 48.2045556,
-            left: -139.0736706,
-            right: -114.0338224,
-            padding: 5 // Margin beyond extremes to pad the bounds with, as a percentage of the total bounding box.
-        },
-        // ESRI layers associated with the map
-        esriLayers: [
-            /*{ // This is an alternate basemap.
-                url: 'http://maps.gov.bc.ca/arcgis/rest/services/province/web_mercator_cache/MapServer/'
-            },*/
-            {
-                url: 'http://maps.gov.bc.ca/arcserver/rest/services/Province/roads_wm/MapServer'
-            }
-        ],
-        // WMS layers associated with the map
-        wmsLayers: [
-            {
-                rootUrl: 'https://openmaps.gov.bc.ca/geo/pub/WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW/ows?',
-                format: 'image/png',
-                layers: 'pub:WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW',
-                styles: 'PMBC_Parcel_Fabric_Cadastre_Outlined', // TODO: Verify style
-                transparent: true
-            }/*,
-            {   // This is the DataBC Wells layer as viewed in iMap. Its data is updated daily, but not continuously, so it is likely not suitable for the GWELLS application.
-                rootUrl: 'https://openmaps.gov.bc.ca/geo/pub/WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW/ows?',
-                format: 'image/png',
-                layers: 'pub:WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW',
-                styles: 'Water_Wells_All',
-                transparent: true
-            } */
-        ]
-    };
-
+function WellsMap (options) {
     /** Private members */
     
     // The underlying Leaflet map.
     var _leafletMap = null;
 
-    // A marker for a prospective well.
-    var _newWellMarker = null;
-
-    // The callback function for _newWellMarker's move event.
-    var _newWellMarkerMoveCallback = null;
-
     // The map's maximum bounds. This should be a Leaflet LatLngBounds object.
     var _maxBounds = null;
+
+    // The map's maximum zoom level.
+    var _maxZoom = null;
+
+    // A marker for a particular well.
+    var _wellMarker = null;
+
+    // The callback function for _wellMarker's move event.
+    var _wellMarkerMoveCallback = null;
 
     // Markers used to denote wells that have been searched for.
     var _searchMarkers = [];
@@ -97,11 +89,10 @@ function WellsMap () {
         return _exists(arr.constructor) && arr.constructor === Array;
     }
 
-    var _setMaxBounds = function () {
+    var _setMaxBounds = function (bounds) {
         var maxBounds = void 0;
-        var bounds = wellsMapOptions.mapBounds || void 0; // If no bounds provided in options, don't fit to a bounding box.
-        if (_exists(bounds.top) && _exists(bounds.bottom) && _exists(bounds.left) && _exists(bounds.right)) {
-            maxBounds = L.latLngBounds([L.latLng(bounds.top, bounds.left), L.latLng(bounds.bottom, bounds.right)]);
+        if (_exists(bounds) && _exists(bounds.north) && _exists(bounds.south) && _exists(bounds.west) && _exists(bounds.east)) {
+            maxBounds = L.latLngBounds([L.latLng(bounds.north, bounds.west), L.latLng(bounds.south, bounds.east)]);
             if (bounds.padding) {
                 maxBounds.pad(bounds.padding);
             }
@@ -109,38 +100,39 @@ function WellsMap () {
         return maxBounds;
     }
 
-    // TODO: Generalise to other ESRI layer types? Add 'type' switcher in wellsMapOptions.esriLayers objs?
-    // Loads ESRI layers. Currently ssumes MapServer. 
-    var _loadEsriLayers = function (map) {
-        var esriLayers = wellsMapOptions.esriLayers;
-        esriLayers.forEach(function (esriLayer){
-            if (esriLayer && esriLayer.url) {
-                L.esri.tiledMapLayer({
-                url: esriLayer.url
-                }).addTo(map);                               
-            }
-        });
+    // Loads ESRI MapServer services.
+    var _loadEsriLayers = function (esriLayers) {
+        if (_exists(_leafletMap)) {
+            esriLayers.forEach(function (esriLayer){
+                if (esriLayer && esriLayer.url) {
+                    L.esri.tiledMapLayer({
+                    url: esriLayer.url
+                    }).addTo(_leafletMap);                               
+                }
+            });
+        }
     };
 
     // Loads WMS layers.
-    var _loadWmsLayers = function (map) {
-        var wmsLayers = wellsMapOptions.wmsLayers;
-        wmsLayers.forEach(function (wmsLayer) {
-            if (wmsLayer && wmsLayer.rootUrl) {
-                L.tileLayer.wms(wmsLayer.rootUrl, {
-                    format: wmsLayer.format || 'image/png',
-                    layers: wmsLayer.layers || '',
-                    styles: wmsLayer.styles || '',
-                    transparent: wmsLayer.transparent || true
-                }).addTo(map);
-            }
-        });
+    var _loadWmsLayers = function (wmsLayers) {
+        if (_exists(_leafletMap)) {
+            wmsLayers.forEach(function (wmsLayer) {
+                if (wmsLayer && wmsLayer.rootUrl) {
+                    L.tileLayer.wms(wmsLayer.rootUrl, {
+                        format: wmsLayer.format || 'image/png',
+                        layers: wmsLayer.layers || '',
+                        styles: wmsLayer.styles || '',
+                        transparent: wmsLayer.transparent || true
+                    }).addTo(_leafletMap);
+                }
+            });
+        }
     };
     
-    // Passes the newWellMarker's updated lat/long coordinates to the provided callback function, if it exists.
-    var _newWellMarkerMoveEvent = function (moveEvent) {
-        if (_exists(_newWellMarkerMoveCallback)) {
-            _newWellMarkerMoveCallback(moveEvent.latlng);
+    // Passes the wellMarker's updated lat/long coordinates to the provided callback function, if it exists.
+    var _wellMarkerMoveEvent = function (moveEvent) {
+        if (_exists(_wellMarkerMoveCallback)) {
+            _wellMarkerMoveCallback(moveEvent.latlng);
         }
     }
 
@@ -190,12 +182,18 @@ function WellsMap () {
 
     // Determines whether a given latitude is within the map's bounds.
     var _isLatInBounds = function (lat) {
-        return wellsMapOptions.mapBounds.bottom <= lat && lat <= wellsMapOptions.mapBounds.top;
+        if (_exists(_maxBounds)) {
+            return _maxBounds.getSouth() <= lat && lat <= _maxBounds.getNorth();
+        }
+        // If _maxBounds doesn't exist, the latitude is valid.
+        return true;
     }
 
     // Determines whether a given longitude is within the map's bounds.
     var _isLongInBounds = function (long) {
-        return wellsMapOptions.mapBounds.left <= long && long <= wellsMapOptions.mapBounds.right;
+        if (_exists(_maxBounds)) {
+            return _maxBounds.getWest() <= long && long <= _maxBounds.getEast();
+        }
     }
 
     // Makes sure the latitude and longitude fit within the map's bounding box. This is necessary since lat/long data may
@@ -239,50 +237,52 @@ function WellsMap () {
 
     /** Public methods */
 
-    // Determines whether the map is 'open' (i.e., loaded and functional), using the nullity of _leafletMap as a proxy.
-    var isOpen = function () {
-        return _leafletMap !== null;
-    };
-
-    // Places a newWellMarker on the map to help refine the placement of a new well.
-    // When placed by a button click, the map pans and zooms to centre on the marker.
+    // 
+    // 
     // The options argument has type {lat: number, long: number}
-    var placeNewWellMarker = function (options) {
+    /**
+     * Places a wellMarker on the map to help refine the placement of a well.
+     * When placed by a button click, the map pans and zooms to centre on the marker.
+     * @param options An object conforming to:
+     * {
+     *  lat: float,
+     *  long: float
+     * }
+     */    
+    var placeWellMarker = function (options) {
         // If the map does not exist or we do not have both latitude and longitude, bail out.
-        if (!_exists(_leafletMap) || !_exists(options) || !_exists(options.lat) || !_exists(options.long)) {
+        if (!_exists(_leafletMap) || !_exists(_maxBounds) || !_exists(options) || !_exists(options.lat) || !_exists(options.long)) {
             return;
         }
 
-        var lat = options.lat;
-        var long = options.long;
-        var latLong = L.latLng([lat, long]);
+        var latLong = _getLatLngInBC(options.lat, options.long);
 
         // If the latitude and longitude do not fit within the map's maxBounds, bail out.
-        if (!_exists(_maxBounds) || !_maxBounds.contains(latLong)) {
+        if (!_exists(latLong)) {
             return;
         }
         // Zoom default.
         var zoomLevel = 17;
-        if (_exists(_newWellMarker)) {
-            _newWellMarker.setLatLng(latLong);
+        if (_exists(_wellMarker)) {
+            _wellMarker.setLatLng(latLong);
         }
         else {
-            _newWellMarker = L.marker(latLong, {
+            _wellMarker = L.marker(latLong, {
                 draggable: true
             }).addTo(_leafletMap);
-            _newWellMarker.on('move', _newWellMarkerMoveEvent);
+            _wellMarker.on('move', _wellMarkerMoveEvent);
         }
         _leafletMap.flyTo(latLong, zoomLevel);
     }
 
-    // Removes the newWellMarker from the map.
-    var removeNewWellMarker = function () {
+    // Removes the wellMarker from the map.
+    var removeWellMarker = function () {
         if (!_exists(_leafletMap)) {
             return;
         }
-        if (_exists(_newWellMarker)) {
-            _leafletMap.removeLayer(_newWellMarker);
-            _newWellMarker = null;
+        if (_exists(_wellMarker)) {
+            _leafletMap.removeLayer(_wellMarker);
+            _wellMarker = null;
         }
     }
 
@@ -304,10 +304,8 @@ function WellsMap () {
         });
 
         var markerBounds = L.featureGroup(_searchMarkers).getBounds();
-        console.log(markerBounds);
-
         _leafletMap.fitBounds(markerBounds,{
-            maxZoom: wellsMapOptions.maxZoom
+            maxZoom: _maxZoom || _leafletMap.getMaxZoom()
         });
     }
 
@@ -332,53 +330,53 @@ function WellsMap () {
         // TODO: Subscribe to 'mouseout' & treat it like 'mouseup'?
     }
 
-    // Initialises the underlying Leaflet map. The mapNodeId is mandatory; other properties are optional.
-    // The options argument has type {mapNodeId: string, newWellMarkerMoveCallback: function}
-    var initMap = function (options) {
-        options = options || {};
-        var mapNodeId = options.mapNodeId;
-        if (!_exists(mapNodeId)) {
-            // If there's no mapNodeId, we shouldn't initialise the map.
-            console.log("ERROR: Map initialisation called but no map node ID provided.")
-            return;
-        }
-        if (_exists(_leafletMap)) {
-            // If we already have a map associated with this instance, we remove it.
-            _leafletMap.remove();
-            _leafletMap = null;
-        }
+    /** Construction */
 
-        // Basic initialisation.
-        var initLatLong = wellsMapOptions.initLatLong || [53.7267, -127.6476]; // Fallback default to geographic centre of BC.
-        var minZoom = wellsMapOptions.minZoom || 4;  // Fallback default to whole-province view in small map box.
-        var maxZoom = wellsMapOptions.maxZoom || 17;
-
-        var maxBounds = _setMaxBounds();
-        _leafletMap = L.map(mapNodeId, {
-            minZoom: minZoom,
-            maxZoom: maxZoom,
-            maxBounds: maxBounds,
-            maxBoundsViscosity: 1.0
-        });
-        if (_exists(maxBounds)) {
-            _leafletMap.fitBounds(maxBounds);
-            _maxBounds = maxBounds;
-        }
-        _loadEsriLayers(_leafletMap);
-        _loadWmsLayers(_leafletMap);
-
-        // Optional properties.
-        _newWellMarkerMoveCallback = options.newWellMarkerMoveCallback || null;
-        _identifyWellsStartCallback = options.identifyWellsStartCallback || null;
-        _identifyWellsEndCallback = options.identifyWellsEndCallback || null;
+    options = options || {};
+    var mapNodeId = options.mapNodeId;
+    if (!_exists(mapNodeId)) {
+        // If there's no mapNodeId, we shouldn't initialise the map.
+        console.log("ERROR: Map initialisation called but no map node ID provided.")
+        return;
+    }
+    if (_exists(_leafletMap)) {
+        // If we already have a map associated with this instance, we remove it.
+        _leafletMap.remove();
+        _leafletMap = null;
     }
 
-    // The public members and methods of a wellsMap.
+    // Basic initialisation.
+    var minZoom = options.minZoom || 4;  // Fallback default to whole-province view in small map box.
+    var maxZoom = options.maxZoom || 17;
+    var maxBounds = _setMaxBounds(options.mapBounds);
+    _leafletMap = L.map(mapNodeId, {
+        minZoom: minZoom,
+        maxZoom: maxZoom,
+        maxBounds: maxBounds,
+        maxBoundsViscosity: 1.0
+    });
+    if (_exists(maxBounds)) {
+        _leafletMap.fitBounds(maxBounds);
+        _maxBounds = maxBounds;
+    }
+    var esriLayers = options.esriLayers;
+    var wmsLayers = options.wmsLayers;
+    if (_exists(esriLayers)) {
+        _loadEsriLayers(esriLayers);
+    }
+    if (_exists(wmsLayers)) {
+        _loadWmsLayers(wmsLayers);
+    }
+
+    // Optional properties.
+    _wellMarkerMoveCallback = options.wellMarkerMoveCallback || null;
+    _identifyWellsStartCallback = options.identifyWellsStartCallback || null;
+    _identifyWellsEndCallback = options.identifyWellsEndCallback || null;
+        
+    // The public members and methods of a WellsMap.
     return {
-        isOpen: isOpen,
-        initMap: initMap,
-        placeNewWellMarker: placeNewWellMarker,
-        removeNewWellMarker: removeNewWellMarker,
+        placeWellMarker: placeWellMarker,
+        removeWellMarker: removeWellMarker,
         drawAndZoom: drawAndZoom,
         startIdentifyWells: startIdentifyWells
     };
