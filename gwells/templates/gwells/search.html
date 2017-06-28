@@ -140,48 +140,94 @@
 {% endblock %}
 
 {% block jqscript_block %}
-    <script>
-        // The search page has a map.
-        var searchMap = null;
-        // Hard-coded names for the hidden lat-long fields that delineate a
-        // rectangle drawn by the user as part of an identifyWells operation.
-        var startLatLongFieldName = "start_lat_long";
-        var endLatLongFieldName = "end_lat_long";
-
-        function startIdentifyWellsOperation() {
-            if (searchMap !== null) {
-                searchMap.startIdentifyWells();
+<script>
+    // The search page has a map.
+    var searchMap = null;
+    // Options for creating the searchMap
+    var searchMapOptions = {
+        // The ID of the addMap div.
+        mapNodeId: 'search-map',
+        // Minimum zoom level of the map (i.e., how far it can be zoomed out)
+        minZoom: 4,
+        // Maximum zoom of the map (i.e., how far it can be zoomed in)
+        maxZoom: 17,
+        // Bounding lats and longs of the map, corresponding to the lat/long extremes of BC. TODO: Refine?
+        mapBounds: {
+            north:  60.0223,
+            south: 48.2045556,
+            west: -139.0736706,
+            east: -114.0338224,
+            padding: 5 // Margin beyond extremes to pad the bounds with, as a percentage of the total bounding box.
+        },
+        // ESRI layers associated with the map
+        esriLayers: [
+            /*{ // This is an alternate basemap.
+                url: 'http://maps.gov.bc.ca/arcgis/rest/services/province/web_mercator_cache/MapServer/'
+            },*/
+            {
+                url: 'http://maps.gov.bc.ca/arcserver/rest/services/Province/roads_wm/MapServer'
             }
-        }
+        ],
+        // WMS layers associated with the map
+        wmsLayers: [
+            {
+                rootUrl: 'https://openmaps.gov.bc.ca/geo/pub/WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW/ows?',
+                format: 'image/png',
+                layers: 'pub:WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW',
+                styles: 'PMBC_Parcel_Fabric_Cadastre_Outlined', // TODO: Verify style
+                transparent: true
+            }/*,
+            {   // This is the DataBC Wells layer as viewed in iMap. Its data is updated daily, but not continuously, so it is likely not suitable for the GWELLS application.
+                // It is presented here merely for possible convenience.
+                rootUrl: 'https://openmaps.gov.bc.ca/geo/pub/WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW/ows?',
+                format: 'image/png',
+                layers: 'pub:WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW',
+                styles: 'Water_Wells_All',
+                transparent: true
+            } */
+        ], 
+        identifyWellsStartCallback: identifyWellsStartCallback, 
+        identifyWellsEndCallback: identifyWellsEndCallback    
+    };
 
-        // We want to alter the map to have crosshairs during identifyWells,
-        // as well as disabling the button until the operation is over.
-        // TODO: Style button, hide on operation init?
-        function identifyWellsStartCallback() {
-            $("#search-map").addClass('identify-wells-operation');
-            $("#identify-wells-btn").prop("disabled", true);
-        }
+    // Hard-coded names for the hidden lat-long fields that delineate a
+    // rectangle drawn by the user as part of an identifyWells operation.
+    var startLatLongFieldName = "start_lat_long";
+    var endLatLongFieldName = "end_lat_long";
 
-        // Remove the crosshairs from the map, re-enable the button, gather
-        // the corners of the rectangle, and submit the form.
-        function identifyWellsEndCallback(startLatLong, endLatLong) {
-            $("#search-map").removeClass('identify-wells-operation');
-            $("#identify-wells-btn").prop("disabled", false);
-            var startLatLongString = startLatLong.lat + ',' + startLatLong.lng;
-            var endLatLongString = endLatLong.lat + ',' + endLatLong.lng;
-            $("[name="+startLatLongFieldName+"]").val(startLatLongString);
-            $("[name="+endLatLongFieldName+"]").val(endLatLongString);
-            $("#id-searchForm").submit();
+    function startIdentifyWellsOperation() {
+        if (searchMap !== null) {
+            searchMap.startIdentifyWells();
         }
+    }
 
-        $(document).ready(function(){
-            $('[data-toggle="popover"]').popover({'trigger':'hover'});
-            searchMap = new WellsMap();
-            searchMap.initMap({mapNodeId: 'search-map', identifyWellsStartCallback: identifyWellsStartCallback, identifyWellsEndCallback: identifyWellsEndCallback});
-            var wellsJson = $("[data-wells-search-json]").attr("data-wells-search-json") || null;
-            var wells = JSON.parse(wellsJson);
-            // TODO: Test 'Smith' search in IE8 and, if sufficiently performant, make this part of searchMap initialisation
-            searchMap.drawAndZoom(wells);            
-        });
-    </script>
+    // We want to alter the map to have crosshairs during identifyWells,
+    // as well as disabling the button until the operation is over.
+    // TODO: Style button, hide on operation init?
+    function identifyWellsStartCallback() {
+        $("#search-map").addClass('identify-wells-operation');
+        $("#identify-wells-btn").prop("disabled", true);
+    }
+
+    // Remove the crosshairs from the map, re-enable the button, gather
+    // the corners of the rectangle, and submit the form.
+    function identifyWellsEndCallback(startLatLong, endLatLong) {
+        $("#search-map").removeClass('identify-wells-operation');
+        $("#identify-wells-btn").prop("disabled", false);
+        var startLatLongString = startLatLong.lat + ',' + startLatLong.lng;
+        var endLatLongString = endLatLong.lat + ',' + endLatLong.lng;
+        $("[name="+startLatLongFieldName+"]").val(startLatLongString);
+        $("[name="+endLatLongFieldName+"]").val(endLatLongString);
+        $("#id-searchForm").submit();
+    }
+
+    $(document).ready(function(){
+        $('[data-toggle="popover"]').popover({'trigger':'hover'});
+        searchMap = new WellsMap(searchMapOptions);
+        var wellsJson = $("[data-wells-search-json]").attr("data-wells-search-json") || null;
+        var wells = JSON.parse(wellsJson);
+        // TODO: Test 'Smith' search in IE8 and, if sufficiently performant, make this part of searchMap initialisation
+        searchMap.drawAndZoom(wells);            
+    });
+</script>
 {% endblock %}

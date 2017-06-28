@@ -97,14 +97,74 @@
 </script>
 {% elif wizard.steps.current == 'gps' %}
 <script>
+//VOCTORIA LAT LONG: 48.4284, -123.3656
   var addMap = null;
- // SELECTOR ID VALUES HARD-CODED FOR NOW
+  // Options for creating the addMap
+  var addMapOptions = {
+      // The ID of the addMap div.
+      mapNodeId: 'add-map',
+      // Minimum zoom level of the map (i.e., how far it can be zoomed out)
+      minZoom: 4,
+      // Maximum zoom of the map (i.e., how far it can be zoomed in)
+      maxZoom: 17,
+      // Bounding lats and longs of the map, corresponding to the lat/long extremes of BC.
+      mapBounds: {
+          north:  60.0223,
+          south: 48.2045556,
+          west: -139.0736706,
+          east: -114.0338224,
+          padding: 5 // Margin beyond extremes to pad the bounds with, as a percentage of the total bounding box.
+      },
+      // ESRI layers associated with the map
+      esriLayers: [
+          /*{ // This is an alternate basemap.
+              url: 'http://maps.gov.bc.ca/arcgis/rest/services/province/web_mercator_cache/MapServer/'
+          },*/
+          {
+              url: 'http://maps.gov.bc.ca/arcserver/rest/services/Province/roads_wm/MapServer'
+          }
+      ],
+      // WMS layers associated with the map
+      wmsLayers: [
+          {
+              rootUrl: 'https://openmaps.gov.bc.ca/geo/pub/WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW/ows?',
+              format: 'image/png',
+              layers: 'pub:WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW',
+              styles: 'PMBC_Parcel_Fabric_Cadastre_Outlined', // TODO: Verify style
+              transparent: true
+          }/*,
+          {   // This is the DataBC Wells layer as viewed in iMap. Its data is updated daily, but not continuously, so it is likely not suitable for the GWELLS application.
+              // It is presented here merely for possible convenience.
+              rootUrl: 'https://openmaps.gov.bc.ca/geo/pub/WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW/ows?',
+              format: 'image/png',
+              layers: 'pub:WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW',
+              styles: 'Water_Wells_All',
+              transparent: true
+          } */
+      ],
+      wellMarkerMoveCallback: markerMoveCallback,      
+  };
+
+  // JQuery selectors for the appropriate spatial coordinate DOM nodes.
   var latNodeSelector = '#id_gps-latitude';
   var longNodeSelector = '#id_gps-longitude';
+  var latDMSDegreeNodeSelector = '#id_gps-latitude_d';
+  var latDMSMinuteNodeSelector = '#id_gps-latitude_m';
+  var latDMSSecondNodeSelector = '#id_gps-latitude_s';
+  var longDMSDegreeNodeSelector = '#id_gps-longitude_d';
+  var longDMSMinuteNodeSelector = '#id_gps-longitude_m';
+  var longDMSSecondNodeSelector = '#id_gps-longitude_s';
+  var zoneUTMNodeSelector  = '#id_gps-zone';
+  var eastingUTMNodeSelector  = '#id_gps-utm_easting';
+  var northingUTMNodeSelector  = '#id_gps-utm_northing';
 
+  // Sets the latitude and longitude fields from the map, rounding to
+  // six decimal places.
   function setLatLongFields(lat, long) {
-    $(latNodeSelector).val(lat);
-    $(longNodeSelector).val(long);
+    var fixedLat = lat.toFixed(6);
+    var fixedLong = long.toFixed(6);
+    $(latNodeSelector).val(fixedLat).trigger('change');
+    $(longNodeSelector).val(fixedLong).trigger('change');
   }
 
   // Updates the latitude and longitude fields with the position of the marker
@@ -114,19 +174,40 @@
     setLatLongFields(newLatLng.lat, newLatLng.lng);
   }
 
-  function placeNewWellMarker () {
+  // Presents validation errors to users.
+  function latLongValidationCallback (error) {
+    // TODO: Add normally-hidden field to present message.
+    console.log(error);
+  }
+
+  function placeWellMarker () {
     var lat = parseFloat($(latNodeSelector).val());
     var long = parseFloat($(longNodeSelector).val());
     lat = isNaN(lat) ? void 0 : lat;
-    long =isNaN(long) ? void 0 : long;    
-    addMap.placeNewWellMarker({lat: lat, long: long});
+    long = isNaN(long) ? void 0 : long;    
+    addMap.placeWellMarker({lat: lat, long: long});
   };
-  function removeNewWellMarker () {
-    addMap.removeNewWellMarker();
+
+  function removeWellMarker () {
+    addMap.removeWellMarker();
   };
   $(document).ready(function (){
-    addMap = new WellsMap();
-    addMap.initMap({mapNodeId: 'add-map', newWellMarkerMoveCallback: markerMoveCallback});
+    addMap = new WellsMap(addMapOptions);
+    CoordSync.init({
+      latDDNodeSelector: latNodeSelector, 
+      longDDNodeSelector: longNodeSelector,
+      latDMSDegreeNodeSelector: latDMSDegreeNodeSelector,
+      latDMSMinuteNodeSelector: latDMSMinuteNodeSelector,
+      latDMSSecondNodeSelector: latDMSSecondNodeSelector,
+      longDMSDegreeNodeSelector: longDMSDegreeNodeSelector,
+      longDMSMinuteNodeSelector: longDMSMinuteNodeSelector,
+      longDMSSecondNodeSelector: longDMSSecondNodeSelector,
+      latLongDDBoundingBox: addMapOptions.mapBounds,
+      latLongValidationCallback: latLongValidationCallback,
+      zoneUTMNodeSelector: zoneUTMNodeSelector,
+      eastingUTMNodeSelector: eastingUTMNodeSelector,
+      northingUTMNodeSelector: northingUTMNodeSelector
+    });
   });
 </script>
 {% endif %}
