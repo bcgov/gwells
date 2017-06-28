@@ -27,10 +27,10 @@
  *   minZoom?: number,  // The minimum zoom level of the map (i.e., how far it can be zoomed out)
  *   maxZoom?: number,  // The maximum zoom level of the map (i.e., how far it can be zoomed in)
  *   mapBounds?: { // Latitude and longitude extremes of the bounding rectangle for the map.
- *      top: float, // The top latitude of the map
- *      bottom: float, // The bottom latitude of the map
- *      left: float, // The leftmost longitude of the map
- *      right: float, // The rightmost longitude of the map
+ *      north: float, // The top latitude of the map
+ *      south: float, // The bottom latitude of the map
+ *      west: float, // The leftmost longitude of the map
+ *      east: float, // The rightmost longitude of the map
  *      padding: int // Margin beyond extremes to pad the bounds with, as a percentage of the total bounding box.     
  *   },
  *   wellMarkerMoveCallback?: function, // Function to call when the map's wellMarker moves 
@@ -91,8 +91,8 @@ function WellsMap (options) {
 
     var _setMaxBounds = function (bounds) {
         var maxBounds = void 0;
-        if (_exists(bounds) && _exists(bounds.top) && _exists(bounds.bottom) && _exists(bounds.left) && _exists(bounds.right)) {
-            maxBounds = L.latLngBounds([L.latLng(bounds.top, bounds.left), L.latLng(bounds.bottom, bounds.right)]);
+        if (_exists(bounds) && _exists(bounds.north) && _exists(bounds.south) && _exists(bounds.west) && _exists(bounds.east)) {
+            maxBounds = L.latLngBounds([L.latLng(bounds.north, bounds.west), L.latLng(bounds.south, bounds.east)]);
             if (bounds.padding) {
                 maxBounds.pad(bounds.padding);
             }
