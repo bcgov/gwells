@@ -33,7 +33,12 @@
  *      east: float, // The rightmost longitude of the map
  *      padding: int // Margin beyond extremes to pad the bounds with, as a percentage of the total bounding box.     
  *   },
- *   wellMarkerMoveCallback?: function, // Function to call when the map's wellMarker moves 
+ *   wellMarkerStyle?: { // Settings for a Leaflet circleMarker
+ *      radius: int, // The radius of the circleMarker
+ *      color: string, // The hex string for the colour of the circleMarker
+ *      fillOpacity: float // How transparent the circleMarker's fill is
+ *   },
+ *   wellPushpinMoveCallback?: function, // Function to call when the map's wellPushpin moves 
  *   identifyWellsStartCallback?: function, // Function to call when an identifyWells operation is started
  *   identifyWellsEndCallback?: function // Function to call when an identifyWells operation ends
  * }
@@ -50,14 +55,17 @@ function WellsMap (options) {
     // The map's maximum zoom level.
     var _maxZoom = null;
 
-    // A marker for a particular well.
-    var _wellMarker = null;
+    // A pushpin marker for a particular well. This indicates a single well on the screen that may be editable.
+    var _wellPushpin = null;
 
-    // The callback function for _wellMarker's move event.
-    var _wellMarkerMoveCallback = null;
+    // The callback function for _wellPushpin's move event.
+    var _wellPushpinMoveCallback = null;
 
-    // Markers used to denote wells that have been searched for.
-    var _searchMarkers = [];
+    // Markers used to denote wells.
+    var _wellMarkers = [];
+
+    // Leaflet style for the _wellMarkers
+    var _wellMarkerStyle = null;
 
     // Whether the map is undergoing an identifyWells operation.
     var _isIdentifyingWells = false;
@@ -129,10 +137,10 @@ function WellsMap (options) {
         }
     };
     
-    // Passes the wellMarker's updated lat/long coordinates to the provided callback function, if it exists.
-    var _wellMarkerMoveEvent = function (moveEvent) {
-        if (_exists(_wellMarkerMoveCallback)) {
-            _wellMarkerMoveCallback(moveEvent.latlng);
+    // Passes the wellPushpin's updated lat/long coordinates to the provided callback function, if it exists.
+    var _wellPushpinMoveEvent = function (moveEvent) {
+        if (_exists(_wellPushpinMoveCallback)) {
+            _wellPushpinMoveCallback(moveEvent.latlng);
         }
     }
 
@@ -241,7 +249,7 @@ function WellsMap (options) {
     // 
     // The options argument has type {lat: number, long: number}
     /**
-     * Places a wellMarker on the map to help refine the placement of a well.
+     * Places a wellPushpin on the map to help refine the placement of a well.
      * When placed by a button click, the map pans and zooms to centre on the marker.
      * @param options An object conforming to:
      * {
@@ -249,7 +257,7 @@ function WellsMap (options) {
      *  long: float
      * }
      */    
-    var placeWellMarker = function (options) {
+    var placeWellPushpin = function (options) {
         // If the map does not exist or we do not have both latitude and longitude, bail out.
         if (!_exists(_leafletMap) || !_exists(_maxBounds) || !_exists(options) || !_exists(options.lat) || !_exists(options.long)) {
             return;
@@ -263,26 +271,26 @@ function WellsMap (options) {
         }
         // Zoom default.
         var zoomLevel = 17;
-        if (_exists(_wellMarker)) {
-            _wellMarker.setLatLng(latLong);
+        if (_exists(_wellPushpin)) {
+            _wellPushpin.setLatLng(latLong);
         }
         else {
-            _wellMarker = L.marker(latLong, {
+            _wellPushpin = L.marker(latLong, {
                 draggable: true
             }).addTo(_leafletMap);
-            _wellMarker.on('move', _wellMarkerMoveEvent);
+            _wellPushpin.on('move', _wellPushpinMoveEvent);
         }
         _leafletMap.flyTo(latLong, zoomLevel);
     }
 
-    // Removes the wellMarker from the map.
-    var removeWellMarker = function () {
+    // Removes the wellPushpin from the map.
+    var removeWellPushpin = function () {
         if (!_exists(_leafletMap)) {
             return;
         }
-        if (_exists(_wellMarker)) {
-            _leafletMap.removeLayer(_wellMarker);
-            _wellMarker = null;
+        if (_exists(_wellPushpin)) {
+            _leafletMap.removeLayer(_wellPushpin);
+            _wellPushpin = null;
         }
     }
 
@@ -292,18 +300,19 @@ function WellsMap (options) {
         if(!_exists(_leafletMap) || !_exists(wells) || !_isArray(wells)) {
             return;
         }
+        var style = _wellMarkerStyle || void 0;
         wells.forEach(function (well){
             var rawLat = parseFloat(well.latitude);
             var rawLong = parseFloat(well.longitude);
             var latLong = _getLatLngInBC(rawLat, rawLong);
             if (_exists(latLong)) {
-                var searchMarker = L.circleMarker(latLong);
-                searchMarker.addTo(_leafletMap);
-                _searchMarkers.push(searchMarker);
+                var wellMarker = L.circleMarker(latLong, style);
+                wellMarker.addTo(_leafletMap);
+                _wellMarkers.push(wellMarker);
             }
         });
 
-        var markerBounds = L.featureGroup(_searchMarkers).getBounds();
+        var markerBounds = L.featureGroup(_wellMarkers).getBounds();
         _leafletMap.fitBounds(markerBounds,{
             maxZoom: _maxZoom || _leafletMap.getMaxZoom()
         });
@@ -368,15 +377,20 @@ function WellsMap (options) {
         _loadWmsLayers(wmsLayers);
     }
 
-    // Optional properties.
-    _wellMarkerMoveCallback = options.wellMarkerMoveCallback || null;
+    /** Optional properties */
+
+    // Style properties
+    _wellMarkerStyle = options.wellMarkerStyle || null;
+
+    // Callbacks
+    _wellPushpinMoveCallback = options.wellPushpinMoveCallback || null;    
     _identifyWellsStartCallback = options.identifyWellsStartCallback || null;
     _identifyWellsEndCallback = options.identifyWellsEndCallback || null;
         
     // The public members and methods of a WellsMap.
     return {
-        placeWellMarker: placeWellMarker,
-        removeWellMarker: removeWellMarker,
+        placeWellPushpin: placeWellPushpin,
+        removeWellPushpin: removeWellPushpin,
         drawAndZoom: drawAndZoom,
         startIdentifyWells: startIdentifyWells
     };

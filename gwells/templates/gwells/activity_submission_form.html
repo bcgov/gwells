@@ -142,7 +142,7 @@
               transparent: true
           } */
       ],
-      wellMarkerMoveCallback: markerMoveCallback,      
+      wellPushpinMoveCallback: pushpinMoveCallback,      
   };
 
   // JQuery selectors for the appropriate spatial coordinate DOM nodes.
@@ -167,10 +167,10 @@
     $(longNodeSelector).val(fixedLong).trigger('change');
   }
 
-  // Updates the latitude and longitude fields with the position of the marker
-  // for the prospective well when the marker is moved.
+  // Updates the latitude and longitude fields with the position of the pushpin
+  // for the prospective well when the pushpin is moved.
   // newLatLng is a Leaflet LatLng object.
-  function markerMoveCallback (newLatLng) {
+  function pushpinMoveCallback (newLatLng) {
     setLatLongFields(newLatLng.lat, newLatLng.lng);
   }
 
@@ -180,16 +180,16 @@
     console.log(error);
   }
 
-  function placeWellMarker () {
+  function placeWellPushpin () {
     var lat = parseFloat($(latNodeSelector).val());
     var long = parseFloat($(longNodeSelector).val());
     lat = isNaN(lat) ? void 0 : lat;
     long = isNaN(long) ? void 0 : long;    
-    addMap.placeWellMarker({lat: lat, long: long});
+    addMap.placeWellPushpin({lat: lat, long: long});
   };
 
-  function removeWellMarker () {
-    addMap.removeWellMarker();
+  function removeWellPushpin () {
+    addMap.removeWellPushpin();
   };
   $(document).ready(function (){
     addMap = new WellsMap(addMapOptions);
