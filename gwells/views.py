@@ -1,4 +1,4 @@
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, render
 #from django.urls import reverse
 from django.views import generic
@@ -40,6 +40,25 @@ def well_search(request):
     return render(request, 'gwells/search.html',
                   {'form': form, 'well_list': well_results, 'wells_json': well_results_json})
 
+
+def map_well_search(request):
+    well_results_json = None
+
+    if (request.method == 'GET' and 'start_lat_long' in request.GET
+            and 'end_lat_long' in request.GET):
+        well_results_json = SearchForm(request.GET)
+        if well_results_json.is_valid():
+            well_results_json = well_results_json.process()
+
+    if well_results_json:
+        well_results_json = json.dumps(
+            [well.as_dict() for well in well_results_json],
+            cls=DjangoJSONEncoder)
+
+    else:
+        well_results_json = {}
+
+    return JsonResponse(well_results_json, safe=False)
 
 
 class WellDetailView(generic.DetailView):
