@@ -39,7 +39,7 @@
             <span id="finished_well_depth">{{ well.finished_well_depth }}</span>
         </div>
     </div>
-    <div class="row">
+    <div id="guid-row" class="row" data-well-guid="{{ well.well_guid }}">
         <div class="col-md-6">
             <label for="latitude">Latitude:</label>
             <span id="latitude" data-latitude="{{ well.latitude }}">{{ well.latitude }}</span>
@@ -107,10 +107,13 @@
     $(document).ready(function () {
         var lat = $("#latitude").data("latitude");
         var long = $("#longitude").data("longitude");
-        // The map starts centred on a given point at the lowest zoom level, and that point happens to contain the well of interest
+        var guid = $("#guid-row").data("well-guid");
+        // The map starts centred on a given point at the lowest zoom level, and that point happens to contain the well of interest.
         detailMapOptions.initCentre = [lat, long];
-        detailMapOptions.wellPushpinInit = [lat, long];
+        detailMapOptions.wellPushpinInit = {lat: lat, long: long, wellDetails: { guid: guid }};
         detailMap = new WellsMap(detailMapOptions);
+        // Once the map is loaded, we query for all wells in the bounding box
+        detailMap.searchWellsInBoundingBox();
     });
 
 </script>
