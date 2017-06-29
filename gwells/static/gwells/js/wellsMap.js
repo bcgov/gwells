@@ -445,7 +445,8 @@ function WellsMap (options) {
             maxBounds: _maxBounds,
             maxBoundsViscosity: 1.0,
             zoomControl: canZoom,
-            scrollWheelZoom: canZoom
+            scrollWheelZoom: canZoom,
+            keyboardPanDelta: canPan ? 80 : 0
         });
         if (_exists(initCentre) && _isArray(initCentre) && initCentre.length === 2) {
             var rawLat = initCentre[0];
