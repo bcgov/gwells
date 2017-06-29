@@ -1,6 +1,6 @@
 /**
  * The WellsMap class provides a Leaflet map with different functionality, depending upon the context in which it is deployed.
- * It currently depends only on Leaflet, eschewing any plugins or other libraries in the interest of maintainability.
+ * It currently depends only on Leaflet, esri-leaflet, and JQuery, eschewing any other plugins libraries in the interest of maintainability.
  * 
  * A NOTE ON FUNCTIONALITY: This class can be initialised in different ways, which exposes its functionality differently.
  * If sufficient hooks are supplied in map construction, the map can perform the following tasks:
@@ -48,8 +48,9 @@
  * }
  */
 function WellsMap (options) {
+    'use strict';
     /** Private members */
-    
+
     // The underlying Leaflet map.
     var _leafletMap = null;
 
@@ -86,7 +87,7 @@ function WellsMap (options) {
     // The starting corner of the identifyWellsRectangle
     var _startCorner = null;
 
-    // The ending corner of the (final) identifyWellsRectangle 
+    // The ending corner of the (final) identifyWellsRectangle
     var _endCorner = null;
 
     /** Private functions */
@@ -246,6 +247,25 @@ function WellsMap (options) {
         return null;
     }
 
+    // Submits an XHR to return all wells within the given latLngBounds.
+    var _searchByAjax = function (latLngBounds) {
+        var northWestLatLng = latLngBounds.getNorthWest();
+        var southEastLatLng = latLngBounds.getSouthEast();
+        var startLatLong = northWestLatLng.lat + "," + northWestLatLng.lng;
+        var endLatLong = southEastLatLng.lat + "," + southEastLatLng.lng;
+        $.ajax({
+            url: '/ajax/map_well_search/',
+            data: {
+                'start_lat_long': startLatLong,
+                'end_lat_long': endLatLong
+            },
+            dataType: 'json',
+            success: function (response) {
+                console.log(response);
+            }
+        });
+    }
+
     /** Public methods */
 
     // 
@@ -335,7 +355,7 @@ function WellsMap (options) {
         _leafletMap.on('mousedown', _mouseDownForIdentifyWellsEvent);
         _leafletMap.on('mouseup', _mouseUpForIdentifyWellsEvent);
         // TODO: Subscribe to 'mouseout' & treat it like 'mouseup'?
-    }
+    };
 
     /** Construction */
 
@@ -400,14 +420,17 @@ function WellsMap (options) {
 
     var wellPushpinInit = options.wellPushpinInit || null;
     if (_exists(wellPushpinInit) && _isArray(wellPushpinInit) && wellPushpinInit.length === 2) {
-        var rawlat = parseFloat(wellPushpinInit[0]);
+        var rawLat = parseFloat(wellPushpinInit[0]);
         var rawLong = parseFloat(wellPushpinInit[1]);
         if (_exists(rawLat) && _exists(rawLong) && !isNaN(rawLat) && !isNaN(rawLong)) {
             var pinPoint = _getLatLngInBC(rawLat, rawLong);
             placeWellPushpin(pinPoint);
         }
     }
-        
+
+    /** TEMPORARY AUTOQUERY TEST */
+    _searchByAjax(_leafletMap.getBounds());
+
     // The public members and methods of a WellsMap.
     return {
         placeWellPushpin: placeWellPushpin,

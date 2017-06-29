@@ -68,13 +68,11 @@
 {% block jqscript_block %}
 <script>
     var detailMap = null;
-    var lat = $("#latitude").data("latitude");
-    var long = $("#longitude").data("longitude");
     var detailMapOptions = {
         // The ID of the addMap div.
         mapNodeId: 'detail-map',
         // The initial centre of the map
-        initCentre: [lat, long],
+        initCentre: null, // Will be filled in before call in $(document).ready()
         // Maximum zoom of the map (i.e., how far it can be zoomed in)
         maxZoom: 17,
         // The detailMap cannot be zoomed
@@ -103,11 +101,15 @@
           color: '#0147b7', // The color of the circleMarker
           fillOpacity: 1.0 // How transparent the circleMarker's fill is
        },
-       wellPushpinInit: [lat, long] // The map is centred on a particular well.
+       wellPushpinInit: null, // Will be filled in before call in $(document).ready()
     };
 
     $(document).ready(function () {
-        // TODO: Update detailMapOptions here in case the relevant fields (involving lat & long) were settled when options was first defined.
+        var lat = $("#latitude").data("latitude");
+        var long = $("#longitude").data("longitude");
+        // The map starts centred on a given point at the lowest zoom level, and that point happens to contain the well of interest
+        detailMapOptions.initCentre = [lat, long];
+        detailMapOptions.wellPushpinInit = [lat, long];
         detailMap = new WellsMap(detailMapOptions);
     });
 

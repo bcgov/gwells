@@ -22,6 +22,7 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^additional-information', TemplateView.as_view(template_name='gwells/additional_information.html'), name='additional_information'),
     url(r'^test$', index),
+    url(r'^ajax/map_well_search/$', views.map_well_search, name='map_well_search'),
 ]
 
 if settings.DEBUG:
