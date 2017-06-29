@@ -6,7 +6,7 @@
  * This module depends on JQuery.
  */
 var CoordSync = (function () {
-
+'use strict';
 /** Properties and convenience methods */
 
 // Convenience method to check that a property exists and has a defined value.
@@ -18,10 +18,10 @@ function _exists(prop) {
 // be constrained to within this box, signalling an error if an erroneous value is entered, with
 // the caveat that users may enter the longitude without a minus sign (since all longs in BC are negative
 // in DD), and coordSync will make the longitude negative in an attempt to improve the accuracy of data entry.
-_latLongDDBoundingBox = null;
+var _latLongDDBoundingBox = null;
 
 // The validation callback.
-_latLongValidationCallback = null;
+var _latLongValidationCallback = null;
 
 // Checks to see whether a given latitude is within the bounding box.
 function _latIsInBox (lat) {
@@ -83,21 +83,21 @@ function _validateLatLongDDFields () {
 /** JQuery nodes that correspond to the fields that will subscribe to events. */
 
 // The input fields associated with latitude and longitude decimal degrees
-_latDDField = null;
-_longDDField = null;
+var _latDDField = null;
+var _longDDField = null;
 
 // The DMS fields
-_latDMSDegreeField = null;
-_latDMSMinuteField = null;
-_latDMSSecondField = null;
-_longDMSDegreeField = null;
-_longDMSMinuteField = null;
-_longDMSSecondField = null;
+var _latDMSDegreeField = null;
+var _latDMSMinuteField = null;
+var _latDMSSecondField = null;
+var _longDMSDegreeField = null;
+var _longDMSMinuteField = null;
+var _longDMSSecondField = null;
 
 // The UTM fields
-_zoneUTMField = null;
-_eastingUTMField = null;
-_northingUTMField = null;
+var _zoneUTMField = null;
+var _eastingUTMField = null;
+var _northingUTMField = null;
 
 /** Field updates */
 

@@ -184,8 +184,9 @@
     var lat = parseFloat($(latNodeSelector).val());
     var long = parseFloat($(longNodeSelector).val());
     lat = isNaN(lat) ? void 0 : lat;
-    long = isNaN(long) ? void 0 : long;    
-    addMap.placeWellPushpin({lat: lat, long: long});
+    long = isNaN(long) ? void 0 : long; 
+    var latLng = L.latLng([lat,long]);   
+    addMap.placeWellPushpin(latLng);
   };
 
   function removeWellPushpin () {
