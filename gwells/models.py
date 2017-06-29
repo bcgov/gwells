@@ -279,7 +279,8 @@ class Well(TimeStampedModel):
     def as_dict(self):
         return {
             "latitude": self.latitude,
-            "longitude": self.longitude
+            "longitude": self.longitude,
+            "guid": self.well_guid
         }
 
 

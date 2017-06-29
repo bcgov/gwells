@@ -225,6 +225,7 @@
     $(document).ready(function(){
         $('[data-toggle="popover"]').popover({'trigger':'hover'});
         searchMap = new WellsMap(searchMapOptions);
+        // TODO: Tag the data-containing div with an id and fetch it with $("#data-id").data("wells-search-json")?
         var wellsJson = $("[data-wells-search-json]").attr("data-wells-search-json") || null;
         var wells = JSON.parse(wellsJson);
         searchMap.drawAndZoom(wells);            
