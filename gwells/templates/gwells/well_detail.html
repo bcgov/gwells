@@ -42,7 +42,7 @@
     <div class="row">
         <div class="col-md-6">
             <label for="latitude">Latitude:</label>
-            <span id="latitude">{{ well.latitude }}</span>
+            <span id="latitude" data-latitude="{{ well.latitude }}">{{ well.latitude }}</span>
         </div>
         <div class="col-md-6">
         </div>
@@ -50,7 +50,7 @@
     <div class="row">
         <div class="col-md-6">
             <label for="longitude">Longitude:</label>
-            <span id="longitude">{{ well.longitude }}</span>
+            <span id="longitude" data-longitude="{{ well.longitude }}">{{ well.longitude }}</span>
         </div>
         <div class="col-md-6">
         </div>
@@ -61,7 +61,55 @@
         <br /><br />
         <a href="https://a100.gov.bc.ca/pub/wells/wellsreport1.do?wellTagNumber={{ well.well_tag_number }}">View Report</a>
     </div>
+
+    <div id="detail-map"></div>
 {% endblock %}
 
 {% block jqscript_block %}
+<script>
+    var detailMap = null;
+    var lat = $("#latitude").data("latitude");
+    var long = $("#longitude").data("longitude");
+    var detailMapOptions = {
+        // The ID of the addMap div.
+        mapNodeId: 'detail-map',
+        // The initial centre of the map
+        initCentre: [lat, long],
+        // Maximum zoom of the map (i.e., how far it can be zoomed in)
+        maxZoom: 17,
+        // The detailMap cannot be zoomed
+        canZoom: false,
+        // The detailMap cannot be panned
+        canPan: false,
+        // ESRI layers associated with the map
+        esriLayers: [
+            {
+                url: 'http://maps.gov.bc.ca/arcserver/rest/services/Province/roads_wm/MapServer'
+            }
+        ],
+        // WMS layers associated with the map
+        wmsLayers: [
+            {
+                rootUrl: 'https://openmaps.gov.bc.ca/geo/pub/WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW/ows?',
+                format: 'image/png',
+                layers: 'pub:WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW',
+                styles: 'PMBC_Parcel_Fabric_Cadastre_Outlined',
+                transparent: true
+            }        
+        ],
+        // Settings for a Leaflet circleMarker
+        wellMarkerStyle: {
+          radius: 3, // The radius of the circleMarker
+          color: '#0147b7', // The color of the circleMarker
+          fillOpacity: 1.0 // How transparent the circleMarker's fill is
+       },
+       wellPushpinInit: [lat, long] // The map is centred on a particular well.
+    };
+
+    $(document).ready(function () {
+        // TODO: Update detailMapOptions here in case the relevant fields (involving lat & long) were settled when options was first defined.
+        detailMap = new WellsMap(detailMapOptions);
+    });
+
+</script>
 {% endblock %}
