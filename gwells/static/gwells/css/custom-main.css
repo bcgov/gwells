@@ -38,6 +38,10 @@ body {
     height: 325px;
 }
 
+#detail-map {
+    height: 360px;
+}
+
 .identify-wells-operation {
     cursor: crosshair!important;
 }
