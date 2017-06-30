@@ -103,12 +103,31 @@ function _validateLatLongDMSFields () {
 }
 
 function _validateUTMFields () {
-    _correctPositiveLong();
-
+    // We *don't* call _correctPositiveLong() here by design, since UTM coordinates should be entered accurately, and if they're not, that's a problem.
     if(_exists(_latLongValidationCallback)) {
+        var errMsg = '';
+        var eastMsg = '';
+        var northMsg = '';
+        var zoneMsg = '';
         var zone = parseInt(_zoneUTMField.val());
         var easting = parseFloat(_eastingUTMField.val());
         var northing = parseFloat(_northingUTMField.val());
+        var latLong = _utmToDD({zone: zone, easting: easting, northing: northing});
+        var lat = latLong.lat;
+        var long = latLong.long;
+
+        if (!_latIsInBox(lat)) {
+            northMsg = 'Invalid northing: ' + northing;
+        }
+        if (!_longIsInBox(long)) {
+            eastMsg = 'Invalid easting: ' + easting;
+        }
+        if (eastMsg && northMsg) {
+            errMsg = _errorPrepend + eastMsg + '. ' + northMsg;
+        } else if (eastMsg || northMsg) {
+            errMsg = _errorPrepend + eastMsg + northMsg;
+        }
+        _latLongValidationCallback(errMsg);
     }
 }
 
@@ -214,50 +233,43 @@ function _setDDFromDMS () {
 
 // Converts DD to UTM and sets the UTM fields. Originally based on code from the UTM Conversion section.
 function _setUTMFromDD () {
-    var long = parseFloat(_longDDField.val());
     var lat = parseFloat(_latDDField.val());
+    var long = parseFloat(_longDDField.val());
 
     // If either field is NaN, bail out.
     if (isNaN(lat) || isNaN(long)) {
         return;
     }
-    var xy = [];
-    // Compute the UTM zone.
-    var zone = Math.floor ((long + 180.0) / 6) + 1;
-
-    // Recompute zone and set the xy array.
-    zone = LatLonToUTMXY (DegToRad (lat), DegToRad (long), zone, xy);
-    var easting = xy[0].toFixed(2);
-    var northing = xy[1].toFixed(2);
-    _zoneUTMField.val(zone);
-    _eastingUTMField.val(easting);
-    _northingUTMField.val(northing);
+    var utmObj = _ddToUTM(lat, long);
+    if (_exists(utmObj.zone) && _exists(utmObj.easting) && _exists(utmObj.northing)) {
+        _zoneUTMField.val(utmObj.zone);
+        _eastingUTMField.val(utmObj.easting);
+        _northingUTMField.val(utmObj.northing);
+    } else {
+        console.log("Could not convert (lat,long) = ("+lat+","+long+") to UTM.");
+    }
 }
 
 // Converts UTM to DD and sets the DD fields. Originally based on code from the UTM Conversion section.
 function _setDDFromUTM ()
-{                                  
-    var latlon = [];
-    var x, y, zone, southhemi;
-    
-    x = parseFloat(_eastingUTMField.val());
-    y = parseFloat(_northingUTMField.val());
-    zone = parseFloat(_zoneUTMField.val());
+{                                      
+    var easting = parseFloat(_eastingUTMField.val());
+    var northing = parseFloat(_northingUTMField.val());
+    var zone = parseFloat(_zoneUTMField.val());
     
     // If any field is inappropriate, bail out
-    if (isNaN(x) || isNaN(y) || isNaN(zone)) {
+    if (isNaN(easting) || isNaN(northing) || isNaN(zone)) {
         return;
     }
-    // The application is only concerned about the northern hemisphere.
-    southhemi = false;
 
-    UTMXYToLatLon (x, y, zone, southhemi, latlon);
-    var long = RadToDeg(latlon[1]).toFixed(2);
-    var lat = RadToDeg(latlon[0]).toFixed(2);
-    _longDDField.val(long);
-    _latDDField.val(lat);
+    var latLong = _utmToDD({zone: zone, easting: easting, northing: northing});
+    if (_exists(latLong.lat) && _exists(latLong.long)) {
+        _longDDField.val(latLong.long);
+        _latDDField.val(latLong.lat);
+    } else {
+        console.log("Could not convert UTM to lat/long");
+    }
 }
-
 
 /** DD/DMS Conversion */
 
@@ -298,12 +310,38 @@ function _dmsToDD(deg, min, sec) {
 
 /** UTM conversion code */
 
-/** 
+function _ddToUTM(lat, long) {
+    var xy = [];
+    // Compute the UTM zone.
+    var zone = Math.floor ((long + 180.0) / 6) + 1;
+
+    // Recompute zone and set the xy array.
+    zone = LatLonToUTMXY (DegToRad (lat), DegToRad (long), zone, xy);
+    var easting = xy[0].toFixed(2);
+    var northing = xy[1].toFixed(2);
+    return {zone: zone, easting: easting, northing: northing};
+}
+
+function _utmToDD(utmObj) {
+    var latlon = [];
+    var easting = utmObj.easting;
+    var northing = utmObj.northing;
+    var zone = utmObj.zone;
+    // The application is only concerned about the northern hemisphere.
+    var southhemi = false;
+    UTMXYToLatLon (easting, northing, zone, southhemi, latlon);
+    var long = RadToDeg(latlon[1]).toFixed(2);
+    var lat = RadToDeg(latlon[0]).toFixed(2);
+    return {lat: lat, long: long};
+}
+
+/**
  * The code below is (only very slightly) adapted from http://home.hiwaay.net/~taylorc/toolbox/geography/geoutm.html, which as of this writing is released by implicit license
  * under the verbiage "The JavaScript source code in this document may be copied and reused without restriction".
  * NOTE: This code was written with WGS84 in mind, while BC uses NAD83 according to http://www.empr.gov.bc.ca/Mining/Geoscience/MapPlace/OnlineHelpDocuments/Pages/faq.aspx#7.
  * For our purposes, these can be regarded as identical, since the difference in the polar radius between them is finer than the precision of the algorithm.
  */
+
 var pi = Math.PI;
 
 /* Ellipsoid model constants (actual values here are for WGS84) */
