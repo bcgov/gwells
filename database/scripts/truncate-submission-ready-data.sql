@@ -3,6 +3,8 @@
 truncate gwells_activity_submission restart identity cascade;
 truncate gwells_driller             restart identity cascade;
 truncate gwells_drilling_company    restart identity cascade;
+truncate gwells_drilling_method     restart identity cascade;
+truncate gwells_ground_elevation_method restart identity cascade;
 truncate gwells_intended_water_use  restart identity cascade;
 truncate gwells_land_district       restart identity cascade;
 truncate gwells_ltsa_owner          restart identity cascade;

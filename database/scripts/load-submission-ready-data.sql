@@ -1,10 +1,12 @@
 \encoding windows-1251
-\copy gwells_well_yield_unit 	  FROM './postgres/gwells_well_yield_unit.csv' 	  HEADER DELIMITER ',' CSV
-\copy gwells_province_state  	  FROM './postgres/gwells_province_state.csv' 	  HEADER DELIMITER ',' CSV
-\copy gwells_well_activity_type FROM './postgres/gwells_well_activity_type.csv' HEADER DELIMITER ',' CSV
-\copy gwells_intended_water_use	FROM './postgres/gwells_intended_water_use.csv' HEADER DELIMITER ',' CSV
-\copy gwells_well_class  	    	FROM './postgres/gwells_well_class.csv'  	    	HEADER DELIMITER ',' CSV
-\copy gwells_well_subclass    	FROM './postgres/gwells_well_subclass.csv'   	  HEADER DELIMITER ',' CSV
+\copy gwells_well_yield_unit 	  FROM './gwells_well_yield_unit.csv' 	  HEADER DELIMITER ',' CSV
+\copy gwells_province_state  	  FROM './gwells_province_state.csv' 	  HEADER DELIMITER ',' CSV
+\copy gwells_well_activity_type FROM './gwells_well_activity_type.csv' HEADER DELIMITER ',' CSV
+\copy gwells_intended_water_use	FROM './gwells_intended_water_use.csv' HEADER DELIMITER ',' CSV
+\copy gwells_well_class  	    	FROM './gwells_well_class.csv'  	    	HEADER DELIMITER ',' CSV
+\copy gwells_well_subclass    	FROM './gwells_well_subclass.csv'   	  HEADER DELIMITER ',' CSV
+\copy gwells_drilling_method    FROM './gwells_drilling_method.csv'    HEADER DELIMITER ',' CSV
+\copy gwells_ground_elevation_method FROM './gwells_ground_elevation_method.csv' HEADER DELIMITER ',' CSV
 
 CREATE unlogged TABLE IF NOT EXISTS xform_gwells_land_district (
   land_district_guid uuid,
@@ -49,7 +51,8 @@ CREATE unlogged TABLE IF NOT EXISTS xform_gwells_well (
    LONGITUDE                    numeric(9,6)             ,
    UTM_NORTH                    integer,
    UTM_EAST                     integer,
-   UTM_ZONE_CODE                character varying(10)  
+   UTM_ZONE_CODE                character varying(10)  ,
+   ORIENTATION_VERTICAL         boolean
 );
 
 
@@ -70,10 +73,10 @@ CREATE unlogged TABLE IF NOT EXISTS xform_gwells_driller (
 );
 
 \encoding windows-1251
-\copy xform_gwells_land_district    FROM './postgres/xform_gwells_land_district.csv'    HEADER DELIMITER ',' CSV
-\copy xform_gwells_drilling_company FROM './postgres/xform_gwells_drilling_company.csv' HEADER DELIMITER ',' CSV
-\copy xform_gwells_driller          FROM './postgres/xform_gwells_driller.csv'          HEADER DELIMITER ',' CSV
-\copy xform_gwells_well             FROM './postgres/xform_gwells_well.csv'  WITH (HEADER, DELIMITER ',' , FORMAT CSV, FORCE_NULL(modified));
+\copy xform_gwells_land_district    FROM './xform_gwells_land_district.csv'    HEADER DELIMITER ',' CSV
+\copy xform_gwells_drilling_company FROM './xform_gwells_drilling_company.csv' HEADER DELIMITER ',' CSV
+\copy xform_gwells_driller          FROM './xform_gwells_driller.csv'          HEADER DELIMITER ',' CSV
+\copy xform_gwells_well             FROM './xform_gwells_well.csv'  WITH (HEADER, DELIMITER ',' , FORMAT CSV, FORCE_NULL(modified));
 
 
 INSERT INTO gwells_land_district (land_district_guid, code, name, sort_order)   
@@ -136,7 +139,9 @@ INSERT INTO gwells_well (
   well_subclass_guid          ,
   well_yield_unit_guid        ,
   latitude,
-  longitude)
+  longitude,
+  orientation_vertical 
+  )
 SELECT 
 old.created                      ,
 coalesce(old.modified,old.created),
@@ -169,9 +174,11 @@ class.well_class_guid     ,
 subclass.well_subclass_guid   ,
 old.well_yield_unit_guid      ,
 old.LATITUDE                  ,
-old.LONGITUDE
+old.LONGITUDE                 ,
+old.orientation_vertical
 FROM xform_gwells_well old
-LEFT OUTER JOIN gwells_intended_water_use  use   ON   old.WELL_USE_CODE  = use.code
+LEFT OUTER JOIN gwells_intended_water_use  use   ON old.WELL_USE_CODE  = use.code
 LEFT OUTER JOIN xform_gwells_land_district land  ON old.LEGAL_LAND_DISTRICT_CODE = land.code 
 INNER      JOIN gwells_well_class          class ON old.CLASS_OF_WELL_CODCLASSIFIED_BY = class.code 
-LEFT OUTER JOIN gwells_well_subclass   subclass  ON old.SUBCLASS_OF_WELL_CLASSIFIED_BY = subclass.code  AND subclass.well_class_guid = class.well_class_guid
+LEFT OUTER JOIN gwells_well_subclass   subclass  ON old.SUBCLASS_OF_WELL_CLASSIFIED_BY = subclass.code 
+                AND subclass.well_class_guid = class.well_class_guid;
