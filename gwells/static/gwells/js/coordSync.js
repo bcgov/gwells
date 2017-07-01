@@ -3,6 +3,7 @@
  * Day Minute Second, and UTM. We take the Decimal Degrees fields as the source of truth (i.e., these are the fields which 
  * are stored in the database).
  * If a user enters data into any other field, it is converted here to DD, altering the DD fields, which in turn update the other fields.
+ * The fields undergo basic validation, which propagates an error message up to the module's caller, where it is dealt with appropriately.
  * This module depends on JQuery.
  */
 var CoordSync = (function () {
@@ -14,13 +15,24 @@ function _exists(prop) {
     return prop !== null && prop !== void 0;
 }
 
+// Convenience method for turning NaN into zero; generally used for ease of presentation.
+function _numOrZeroIfNaN(num) {
+    if (isNaN(num)) {
+        return 0;
+    }
+    return num;
+}
+
 // The bounding box of the coordinates in DD. If set, then the _latDDField and _longDDField will
 // be constrained to within this box, signalling an error if an erroneous value is entered, with
 // the caveat that users may enter the longitude without a minus sign (since all longs in BC are negative
 // in DD), and coordSync will make the longitude negative in an attempt to improve the accuracy of data entry.
 var _latLongDDBoundingBox = null;
 
-// The validation callback.
+// The start of any error message for geographic coordinates.
+var _errorPrepend = 'WARNING: Geographic coordinates outside of BC. ';
+
+// The validation callback to invoke from the module's caller..
 var _latLongValidationCallback = null;
 
 // Checks to see whether a given latitude is within the bounding box.
@@ -40,7 +52,7 @@ function _longIsInBox (long) {
 }
 
 // Users can enter positive value for longitude, even though DD values for BC are negative (since BC is west of Greenwich). This function
-// ensures longitudes in the _longDDField are below zero.
+// ensures longitudes in the _longDDField are below zero. Should be called when DD or DMS fields change.
 function _correctPositiveLong() {
     var long = parseFloat(_longDDField.val());
     if (isNaN(long)) {
@@ -51,17 +63,102 @@ function _correctPositiveLong() {
     _longDDField.val(long);
 }
 
+/** Field validation */
+
+// Validates the DMS fields, to be called only when users change DMS field values manually.
+function _areLatLongDMSFieldsValid () {
+    var errMsg = '';
+    if(_exists(_latLongValidationCallback)) {
+        var latMsg = '';
+        var longMsg = '';
+
+        // Get the DMS values.
+        var latDeg = parseFloat(_latDMSDegreeField.val());
+        var latMin = parseFloat(_latDMSMinuteField.val());
+        var latSec = parseFloat(_latDMSSecondField.val());
+        var longDeg = parseFloat(_longDMSDegreeField.val());
+        var longMin = parseFloat(_longDMSMinuteField.val());
+        var longSec = parseFloat(_longDMSSecondField.val());
+
+        // Convert to lat/long DD and check if the DDs are in the bounding box.
+        var lat = _dmsToDD(latDeg, latMin, latSec);
+        var long = _dmsToDD(longDeg, longMin, longSec);
+        if (!_latIsInBox(lat)) {
+            latDeg = _numOrZeroIfNaN(latDeg);
+            latMin = _numOrZeroIfNaN(latMin);
+            latSec = _numOrZeroIfNaN(latSec);
+            latMsg = 'Invalid latitude: ' + latDeg + "'" + latMin + "''" + latSec;
+        }
+        // Since users can enter positive longitude in the DMS field, we must validate the negation if the first run fails.
+        if (!_longIsInBox(long) && !_longIsInBox(-long)) {
+            longDeg = _numOrZeroIfNaN(longDeg);
+            longMin = _numOrZeroIfNaN(longMin);
+            longSec = _numOrZeroIfNaN(longSec);
+            longMsg = 'Invalid longitude: ' + longDeg + "'" + longMin + "''" + longSec;
+        }
+
+        // If either (or both) are out of the box, prepend errMsg with the global prepend and append appropriately.
+        if (latMsg && longMsg) {
+            errMsg = _errorPrepend + latMsg + '. ' + longMsg;
+        }
+        else if (latMsg || longMsg) {
+            errMsg = _errorPrepend + latMsg + longMsg;
+        }
+
+        // Propagate the error message to the caller (where an empty message implies no error).
+        _latLongValidationCallback(errMsg);
+    }
+    return !errMsg;
+}
+
+// Validates UTM fields, to be called only when users change UTM fields manually.
+function _areUTMFieldsValid () {
+    var errMsg = '';
+    if(_exists(_latLongValidationCallback)) {
+        var eastMsg = '';
+        var northMsg = '';
+        var zoneMsg = 'UTM zone must be selected from list.';
+
+        // Check the zone first, and only validate easting and northing if the zone has been selected.
+        var zone = parseInt(_zoneUTMField.val());
+        if (_exists(zone) && !isNaN(zone)) {
+            var easting = parseFloat(_eastingUTMField.val());
+            var northing = parseFloat(_northingUTMField.val());
+
+            // Convert to lat/long DD via the supplied algorithm, and then check whether the point is in the bounding box.
+            var latLong = _utmToDD({zone: zone, easting: easting, northing: northing});
+            var lat = latLong.lat;
+            var long = latLong.long;            
+            if (!_latIsInBox(lat)) {
+                northMsg = 'Invalid northing: ' + northing;
+            }
+            if (!_longIsInBox(long)) {
+                eastMsg = 'Invalid easting: ' + easting;
+            }
+
+            // If either or both fields are invalid, prepend errMsg with the global prepend and append appropriately.
+            if (eastMsg && northMsg) {
+                errMsg = _errorPrepend + eastMsg + '. ' + northMsg;
+            } else if (eastMsg || northMsg) {
+                errMsg = _errorPrepend + eastMsg + northMsg;
+            }
+        } else { // If no zone was selected, return zoneMsg to the caller.
+            errMsg = zoneMsg;
+        }
+        _latLongValidationCallback(errMsg);
+    }
+    return !errMsg;
+}
+
 // Ensures the latitude and longitude Decimal Degree fields are within the bounding box.
-function _validateLatLongDDFields () {
-    // Corrects longitude, if required.
-    _correctPositiveLong();
+function _areLatLongDDFieldsValid () {
+    var errMsg = '';
     // If the callback exists, we check to see if the lat/long is within the box, returning an error if one arises.
     if (_exists(_latLongValidationCallback)) {
         var lat = parseFloat(_latDDField.val());
-        var long = parseFloat(_longDDField.val());        
+        var long = parseFloat(_longDDField.val());
         var latMsg = '';
         var longMsg = '';
-        var errMsg = '';
         if (!_latIsInBox(lat)) {
             latMsg = 'Invalid latitude: ' + _latDDField.val();
         }
@@ -69,15 +166,14 @@ function _validateLatLongDDFields () {
             longMsg = 'Invalid longitude: ' + _longDDField.val();
         }
         if (latMsg && longMsg) {
-            errMsg = latMsg + '. ' + longMsg;
+            errMsg = _errorPrepend + latMsg + '. ' + longMsg;
         }
         else if (latMsg || longMsg) {
-            errMsg = latMsg + longMsg;
+            errMsg = _errorPrepend + latMsg + longMsg;
         }
-        if (errMsg) {
-            _latLongValidationCallback(new Error(errMsg));
-        }
+        _latLongValidationCallback(errMsg);
     }
+    return !errMsg;
 }
 
 /** JQuery nodes that correspond to the fields that will subscribe to events. */
@@ -103,23 +199,57 @@ var _northingUTMField = null;
 
 // Dispatches changes to DMS and UTM with suitable conversions and validation.
 function _latLongDDFieldOnChange () {
-    _validateLatLongDDFields();
-    _setDMSFromDD();
-    _setUTMFromDD();
+    // If a user enters DD directly, we accept positive longitudes, but correct them on the fly.
+    _correctPositiveLong();
+    if (_areLatLongDDFieldsValid()) {
+        _setDMSFromDD();
+        _setUTMFromDD();
+    } else {
+        _clearDMSFields();
+        _clearUTMFields();
+    }
 }
 
 // Dispatches changes to DD and UTM with suitable conversions and validation.
 function _latLongDMSFieldOnChange () {
-    _setDDFromDMS();
-    _validateLatLongDDFields();
-    _setUTMFromDD();
+    if(_areLatLongDMSFieldsValid()) {
+        _setDDFromDMS();
+        _setUTMFromDD();
+    } else {
+        _clearDDFields();
+        _clearUTMFields();
+    }
 }
 
 // Dispatches changes to DD and DMS with suitable conversions and validation.
 function _utmFieldOnChange () {
-    _setDDFromUTM();
-    _validateLatLongDDFields();
-    _setDMSFromDD();
+    if(_areUTMFieldsValid()) {
+        _setDDFromUTM();
+        _setDMSFromDD();
+    } else {
+        _clearDDFields();
+        _clearDMSFields();
+    }
+}
+
+function _clearDDFields () {
+    _latDDField.val('');
+    _longDDField.val('');
+}
+
+function _clearDMSFields () {
+    _latDMSDegreeField.val('');
+    _latDMSMinuteField.val('');
+    _latDMSSecondField.val('');
+    _longDMSDegreeField.val('');
+    _longDMSMinuteField.val('');
+    _longDMSSecondField.val('');
+}
+
+function _clearUTMFields () {
+    _zoneUTMField.val('');
+    _eastingUTMField.val('');
+    _northingUTMField.val('');
 }
 
 // Converts DD to DMS and updates the DMS fields.
@@ -147,57 +277,54 @@ function _setDDFromDMS () {
     var longSec = parseFloat(_longDMSSecondField.val());
 
     // Set the lat/long DD values with appropriate conversions.
-    _latDDField.val(_dmsToDD(latDeg, latMin, latSec));
-    _longDDField.val(_dmsToDD(longDeg, longMin, longSec));    
+    var lat = _dmsToDD(latDeg, latMin, latSec);
+    var long = _dmsToDD(longDeg, longMin, longSec);
+    _latDDField.val(isNaN(lat) ? '' : lat);
+    _longDDField.val(isNaN(long) ? '' : long);
+
+    // If a user entered a positive longitude DMS that was otherwise valid, we correct the _longDDField here.
+    _correctPositiveLong();
 }
 
 // Converts DD to UTM and sets the UTM fields. Originally based on code from the UTM Conversion section.
 function _setUTMFromDD () {
-    var long = parseFloat(_longDDField.val());
     var lat = parseFloat(_latDDField.val());
+    var long = parseFloat(_longDDField.val());
 
     // If either field is NaN, bail out.
     if (isNaN(lat) || isNaN(long)) {
         return;
     }
-    var xy = new Array(2);
-    // Compute the UTM zone.
-    var zone = Math.floor ((long + 180.0) / 6) + 1;
-
-    // Recompute zone and set the xy array.
-    zone = LatLonToUTMXY (DegToRad (lat), DegToRad (long), zone, xy);
-
-    _zoneUTMField.val(zone);
-    //_zoneUTMField.select();
-
-    _eastingUTMField.val(xy[0]);
-    _northingUTMField.val(xy[1]);
+    var utmObj = _ddToUTM(lat, long);
+    if (_exists(utmObj.zone) && _exists(utmObj.easting) && _exists(utmObj.northing)) {
+        _zoneUTMField.val(utmObj.zone);
+        _eastingUTMField.val(utmObj.easting);
+        _northingUTMField.val(utmObj.northing);
+    } else {
+        console.log("Could not convert (lat,long) = ("+lat+","+long+") to UTM.");
+    }
 }
 
 // Converts UTM to DD and sets the DD fields. Originally based on code from the UTM Conversion section.
 function _setDDFromUTM ()
-{                                  
-    latlon = new Array(2);
-    var x, y, zone, southhemi;
-    
-    x = parseFloat(_eastingUTMField.val());
-    y = parseFloat(_northingUTMField.val());
-    zone = parseFloat(_zoneUTMField.val());
-    
+{                                      
+    var easting = parseFloat(_eastingUTMField.val());
+    var northing = parseFloat(_northingUTMField.val());
+    var zone = parseFloat(_zoneUTMField.val());
+
     // If any field is inappropriate, bail out
-    if (isNaN(x) || isNaN(y) || isNaN(zone)) {
+    if (isNaN(easting) || isNaN(northing) || isNaN(zone)) {
         return;
     }
-    // The application is only concerned about the northern hemisphere.
-    southhemi = false;
 
-    UTMXYToLatLon (x, y, zone, southhemi, latlon);
-    var long = RadToDeg(latlon[1]);
-    var lat = RadToDeg(latlon[0]);
-    _longDDField.val(long);
-    _latDDField.val(lat);
+    var latLong = _utmToDD({zone: zone, easting: easting, northing: northing});
+    if (_exists(latLong.lat) && _exists(latLong.long)) {
+        _longDDField.val(latLong.long);
+        _latDDField.val(latLong.lat);
+    } else {
+        console.log("Could not convert UTM to lat/long");
+    }
 }
-
 
 /** DD/DMS Conversion */
 
@@ -229,7 +356,7 @@ function _ddToSeconds (dec) {
 // Converts a lat or long from DMS to Decimal Degrees.
 function _dmsToDD(deg, min, sec) {
     if (isNaN(deg)) {
-        return '';
+        return NaN;
     }
     min = isNaN(min) ? 0 : min;
     sec = isNaN(sec) ? 0 : min;
@@ -238,12 +365,38 @@ function _dmsToDD(deg, min, sec) {
 
 /** UTM conversion code */
 
-/** 
+function _ddToUTM(lat, long) {
+    var xy = [];
+    // Compute the UTM zone.
+    var zone = Math.floor ((long + 180.0) / 6) + 1;
+
+    // Recompute zone and set the xy array.
+    zone = LatLonToUTMXY (DegToRad (lat), DegToRad (long), zone, xy);
+    var easting = xy[0].toFixed(2);
+    var northing = xy[1].toFixed(2);
+    return {zone: zone, easting: easting, northing: northing};
+}
+
+function _utmToDD(utmObj) {
+    var latlon = [];
+    var easting = utmObj.easting;
+    var northing = utmObj.northing;
+    var zone = utmObj.zone;
+    // The application is only concerned about the northern hemisphere.
+    var southhemi = false;
+    UTMXYToLatLon (easting, northing, zone, southhemi, latlon);
+    var long = RadToDeg(latlon[1]).toFixed(2);
+    var lat = RadToDeg(latlon[0]).toFixed(2);
+    return {lat: lat, long: long};
+}
+
+/**
  * The code below is (only very slightly) adapted from http://home.hiwaay.net/~taylorc/toolbox/geography/geoutm.html, which as of this writing is released by implicit license
  * under the verbiage "The JavaScript source code in this document may be copied and reused without restriction".
  * NOTE: This code was written with WGS84 in mind, while BC uses NAD83 according to http://www.empr.gov.bc.ca/Mining/Geoscience/MapPlace/OnlineHelpDocuments/Pages/faq.aspx#7.
  * For our purposes, these can be regarded as identical, since the difference in the polar radius between them is finer than the precision of the algorithm.
  */
+
 var pi = Math.PI;
 
 /* Ellipsoid model constants (actual values here are for WGS84) */
