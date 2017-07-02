@@ -56,7 +56,7 @@ def map_well_search(request):
             cls=DjangoJSONEncoder)
 
     else:
-        well_results_json = {}
+        well_results_json = '[]'
 
     return JsonResponse(well_results_json, safe=False)
 
