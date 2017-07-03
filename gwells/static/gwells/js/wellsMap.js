@@ -409,7 +409,6 @@ function WellsMap (options) {
         // more information to aid in well placement without having to load too many wells at once.
         _leafletMap.on('moveend', _searchBoundingBoxOnMoveEnd);
         _leafletMap.flyTo(latLong, zoomLevel);
-        _leafletMap.on('zoomend', _searchBoundingBoxOnZoomEnd);
     };
 
     // Removes the wellPushpin from the map and clears it of any extant wells.
