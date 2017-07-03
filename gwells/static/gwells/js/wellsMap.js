@@ -353,18 +353,13 @@ function WellsMap (options) {
         }
     };
 
-    var _searchBoundingBoxOnZoomEnd = function () {
-        // TODO: Exctract this as a named function so the 'off' works (and also because it's prettier)
-        console.log('zoomend triggered')
+    var _searchBoundingBoxOnMoveEnd = function () {
         _searchWellsInBoundingBox();
-        _leafletMap.off('zoomend', _searchBoundingBoxOnZoomEnd);
     };
 
     var _wellPushpinMoveEndEvent = function () {
-        var pinPoint = _wellPushpin.pushpinMarker.getLatLng();
-        _leafletMap.panTo(pinPoint);
-        _searchWellsInBoundingBox();
-        console.log('_wellPushpinMoveEndEvent')
+        var latLng = _wellPushpin.pushpinMarker.getLatLng();
+        _leafletMap.panTo(latLng);
     };
 
     /** Public methods */
@@ -374,6 +369,7 @@ function WellsMap (options) {
      * When placed by a button click, the map pans and zooms to centre on the marker.
      * @param latLng A Leaflet latLng where the wellPushpin will be placed
      */
+    // TODO: Potentially overload with an array for lat/long vals?
     var placeWellPushpin = function (latLng, wellDetails) {
         // If the map or the latLng do not exist, bail out.
         if (!_exists(_leafletMap) || !_exists(latLng)) {
@@ -395,13 +391,13 @@ function WellsMap (options) {
                 draggable: _exists(_wellPushpinMoveCallback) // The pin should only drag if the map's calling page has a hook to handle movement
             }).addTo(_leafletMap);
             _wellPushpin.pushpinMarker.on('move', _wellPushpinMoveEvent);
-            _leafletMap.on('moveend', _wellPushpinMoveEndEvent);
+            _wellPushpin.pushpinMarker.on('moveend', _wellPushpinMoveEndEvent);
         }
         if (_exists(wellDetails) && _exists(wellDetails.guid)) {
             _wellPushpin.wellDetails = wellDetails;
         }
+        _leafletMap.on('moveend', _searchBoundingBoxOnMoveEnd);
         _leafletMap.flyTo(latLong, zoomLevel);
-        _leafletMap.on('zoomend', _searchBoundingBoxOnZoomEnd);
     };
 
     // Removes the wellPushpin from the map.
@@ -411,9 +407,9 @@ function WellsMap (options) {
         }
         if (_exists(_wellPushpin) && _exists(_wellPushpin.pushpinMarker)) {
             _leafletMap.removeLayer(_wellPushpin.pushpinMarker);
-            // TODO: Fix logic for moveend for pushpin!!
-            _leafletMap.off('moveend', _wellPushpinMoveEndEvent);
+            _leafletMap.off('moveend', _searchBoundingBoxOnMoveEnd);
             _wellPushpin = null;
+            _clearWells();
         }
     };
 
