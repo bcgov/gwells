@@ -181,7 +181,9 @@
   function latLongValidationCallback (error) {
     if (error === '') {
       $(".lat-long-error-pane").hide();
+      placeWellPushpin();
     } else {
+      removeWellPushpin();
       $(".lat-long-error-pane").text(error);
       $(".lat-long-error-pane").show();
     }
@@ -191,9 +193,12 @@
     var lat = parseFloat($(latNodeSelector).val());
     var long = parseFloat($(longNodeSelector).val());
     lat = isNaN(lat) ? void 0 : lat;
-    long = isNaN(long) ? void 0 : long; 
-    var latLng = L.latLng([lat,long]);   
-    addMap.placeWellPushpin(latLng);
+    long = isNaN(long) ? void 0 : long;
+    if (lat !== void 0 && long !== void 0) {
+      var latLng = L.latLng([lat,long]);
+      // TODO: INVESTIGATE STACK OVERFLOW ON PUSHPIN MOVE   
+      addMap.placeWellPushpin(latLng);
+    }
   };
 
   function removeWellPushpin () {
