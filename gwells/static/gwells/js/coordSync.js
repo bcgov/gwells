@@ -39,6 +39,11 @@ var _validationErrorCallback = null;
 // The callback to invoke on validation success after all fields are settled.
 var _validationSuccessCallback = null;
 
+// The precisions of the fields, defaulted to zero for truthy-checking.
+var _latLongDDPrecision = 6;
+var _latLongDMSSecondPrecision = 2;
+var _utmPrecision = 2;
+
 // Checks to see whether a given latitude is within the bounding box.
 function _latIsInBox (lat) {
     if (!isNaN(lat) && _exists(_latLongDDBoundingBox) && _exists(_latLongDDBoundingBox.north) && _exists(_latLongDDBoundingBox.south)) {
@@ -355,7 +360,7 @@ function _ddToSeconds (dec) {
     if (isNaN(dec)) {
         return '';
     }
-    return ((Math.abs(dec) * 3600) % 60).toFixed(2);
+    return ((Math.abs(dec) * 3600) % 60).toFixed(_latLongDMSSecondPrecision);
 }
 
 // Converts an absolute value of a lat or long from DMS to Decimal Degrees.
@@ -364,8 +369,8 @@ function _dmsToDD(deg, min, sec) {
         return NaN;
     }
     min = isNaN(min) ? 0 : min;
-    sec = isNaN(sec) ? 0 : min;
-    var coord = (deg + (min/60) + (sec/3600)).toFixed(6);
+    sec = isNaN(sec) ? 0 : sec;
+    var coord = (deg + (min/60) + (sec/3600)).toFixed(_latLongDDPrecision);
     return coord;
 }
 
@@ -378,8 +383,8 @@ function _ddToUTM(lat, long) {
 
     // Recompute zone and set the xy array.
     zone = LatLonToUTMXY (DegToRad (lat), DegToRad (long), zone, xy);
-    var easting = xy[0].toFixed(2);
-    var northing = xy[1].toFixed(2);
+    var easting = xy[0].toFixed(_utmPrecision);
+    var northing = xy[1].toFixed(_utmPrecision);
     return {zone: zone, easting: easting, northing: northing};
 }
 
@@ -392,8 +397,8 @@ function _utmToDD(utmObj) {
     var southhemi = false;
     UTMXYToLatLon (easting, northing, zone, southhemi, latlon);
     // We are only concerned with six decimal places of precision.
-    var long = RadToDeg(latlon[1]).toFixed(6);
-    var lat = RadToDeg(latlon[0]).toFixed(6);
+    var long = RadToDeg(latlon[1]).toFixed(_latLongDDPrecision);
+    var lat = RadToDeg(latlon[0]).toFixed(_latLongDDPrecision);
     return {lat: lat, long: long};
 }
 
@@ -894,6 +899,10 @@ var syncFromDDFields = function () {
  *          east: float,
  *          west: float
  *      },
+ *    // The precision of the coordinates
+ *    latLongDDPrecision: int,
+ *    latLongDMSSecondPrecision: int,
+ *    utmPrecision: int,
  *    validationErrorCallback: function, // Callback for validation errors
  *    validationSuccessCallback: function // Callback to invoke on validation success once all fields are synchronised.
  *  }
@@ -916,6 +925,12 @@ var init = function(options) {
     _latLongDDBoundingBox = options.latLongDDBoundingBox || null;
     _validationErrorCallback = options.validationErrorCallback || null;
     _validationSuccessCallback = options.validationSuccessCallback || null;
+
+    // Set the field precisions
+    _latLongDDPrecision = options.latLongDDPrecision;
+    _latLongDMSSecondPrecision = options.latLongDMSSecondPrecision;
+    _utmPrecision = options.utmPrecision;
+
 
     // Subscribe the nodes to the change event.
     _latDDField.on('change', _latLongDDFieldOnChange);
