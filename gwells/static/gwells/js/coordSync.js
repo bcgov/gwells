@@ -207,10 +207,10 @@ function _areUTMFieldsValid () {
 /** Field updates */
 
 // Dispatches changes to DMS and UTM with suitable conversions and validation.
-function _latLongDDFieldOnChange (programmaticChange) {
+function _latLongDDFieldOnChange () {
     // If a user enters DD directly, we accept positive longitudes, but correct them on the fly.
     _correctPositiveLong();
-    if (_areLatLongDDFieldsValid(programmaticChange)) {
+    if (_areLatLongDDFieldsValid()) {
         _setDMSFromDD();
         _setUTMFromDD();
         _validationSuccessCallback();
@@ -872,6 +872,7 @@ function UTMXYToLatLon (x, y, zone, southhemi, latlon)
 
 // Synchronises the non-DD fields to the DD fields. This function should be called with programmatic
 // coordinate updates, and so does not require validation.
+// TODO: Comment on why this is necessary or refactor to remove it
 var syncFromDDFields = function () {
     _setDMSFromDD();
     _setUTMFromDD();
@@ -879,8 +880,7 @@ var syncFromDDFields = function () {
 
 /** Module initialisation.
  * @param options An object with properties conforming to: 
- * {  
- *    customChangeEventName: string, // The name of the custom change event, which is fired programmatically (as opposed to by user input)
+ * {
  *    // Each nodeSelector is a JQuery selector string; e.g., '#nodeId'.
  *    latDDNodeSelector: string, 
  *    longDDNodeSelector: string,
