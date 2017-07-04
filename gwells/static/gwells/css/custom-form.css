@@ -3,7 +3,7 @@
 label {
     display: inline-block;
     max-width: 100%;
-    margin-bottom: 5px;
+    margin-bottom: 3px;
     font-weight: 700;
 }
 
@@ -17,13 +17,6 @@ label {
 .form-horizontal .form-group {
     margin-left: auto;
     margin-right: auto;
-}
-
-.lat-long-error-pane {
-    background-color: yellow;
-    text-align: center;
-    font-weight: bold;
-    display: none;
 }
 
 /* remove radius from form controls */
@@ -608,4 +601,12 @@ p.help-block {
 
 .form-group .controls .radio:first-child {
     margin-top: 0px;
+}
+
+.form-group .form-control,
+.form-group .input-group-addon {
+    height: 23px;
+    padding: 1px 5px;
+    font-size: 12px;
+    line-height: 1.5;
 }
