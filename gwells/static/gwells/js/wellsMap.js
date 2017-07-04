@@ -353,10 +353,13 @@ function WellsMap (options) {
         }
     };
 
+    // Issues a query to fetch wells in the bounding box, meant to subscribe to
+    // the map's moveend event while a wellPushpin is present on the map.
     var _searchBoundingBoxOnMoveEnd = function () {
         _searchWellsInBoundingBox();
     };
 
+    // When the wellPushpin is moved, pan to re-centre the pushpin.
     var _wellPushpinMoveEndEvent = function () {
         var latLng = _wellPushpin.pushpinMarker.getLatLng();
         _leafletMap.panTo(latLng);
@@ -388,7 +391,7 @@ function WellsMap (options) {
         } else {
             _wellPushpin = {};
             _wellPushpin.pushpinMarker = L.marker(latLong, {
-                draggable: _exists(_wellPushpinMoveCallback) // The pin should only drag if the map's calling page has a hook to handle movement
+                draggable: _exists(_wellPushpinMoveCallback) // The pin should only drag if the map's caller has a hook to handle movement
             }).addTo(_leafletMap);
             _wellPushpin.pushpinMarker.on('move', _wellPushpinMoveEvent);
             _wellPushpin.pushpinMarker.on('moveend', _wellPushpinMoveEndEvent);
@@ -396,17 +399,20 @@ function WellsMap (options) {
         if (_exists(wellDetails) && _exists(wellDetails.guid)) {
             _wellPushpin.wellDetails = wellDetails;
         }
+        // If the pin exists, the map should refresh the wells it displays when it is moved, to provide
+        // more information to aid in well placement without having to load too many wells at once.
         _leafletMap.on('moveend', _searchBoundingBoxOnMoveEnd);
         _leafletMap.flyTo(latLong, zoomLevel);
     };
 
-    // Removes the wellPushpin from the map.
+    // Removes the wellPushpin from the map and clears it of any extant wells.
     var removeWellPushpin = function () {
         if (!_exists(_leafletMap)) {
             return;
         }
         if (_exists(_wellPushpin) && _exists(_wellPushpin.pushpinMarker)) {
             _leafletMap.removeLayer(_wellPushpin.pushpinMarker);
+            // If there isn't a pin, we shouldn't re-query on every map move.
             _leafletMap.off('moveend', _searchBoundingBoxOnMoveEnd);
             _wellPushpin = null;
             _clearWells();
