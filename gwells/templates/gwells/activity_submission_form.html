@@ -164,7 +164,7 @@
   var utmPrecision = 2;
 
   // CSS selector for the geographic warning pane
-  var coordErrorPaneClassSelector = '.coord-error-pane'
+  var coordErrorPaneSelector = '#coord-error-pane'
 
   // Sets the latitude and longitude fields programmatically, rounding to
   // six decimal places per database standard.
@@ -188,13 +188,13 @@
   function validationErrorCallback (error) {
     if (error === '') {
       // If the error message was empty, hide the error pane and clear it.
-      $(coordErrorPaneClassSelector).hide();
-      $(coordErrorPaneClassSelector).text('');
+      $(coordErrorPaneSelector).hide();
+      $(coordErrorPaneSelector).text('');
     } else {
       // If the error message exists, remove the well pushpin and display the message in the error pane.
       removeWellPushpin();
-      $(coordErrorPaneClassSelector).text(error);
-      $(coordErrorPaneClassSelector).show();
+      $(coordErrorPaneSelector).text(error);
+      $(coordErrorPaneSelector).show();
     }
   }
 
