@@ -222,6 +222,7 @@
   $(document).ready(function (){
     addMap = new WellsMap(addMapOptions);
     CoordSync.init({
+      customChangeEventName: customLatLongDDChangeEventName,
       latDDNodeSelector: latNodeSelector, 
       longDDNodeSelector: longNodeSelector,
       latDMSDegreeNodeSelector: latDMSDegreeNodeSelector,
