@@ -367,6 +367,10 @@ class ActivitySubmissionGpsForm(forms.ModelForm):
                 Div(
                     Div(
                         Div(
+                            Div(HTML('<div class="lat-long-error-pane"></div>')),
+                            css_class='row',
+                        ),
+                        Div(
                             Div(AppendedText('latitude', 'decimal degrees'), css_class='col-md-5'),
                             Div(AppendedText('longitude', 'decimal degrees'), css_class='col-md-5'),
                             css_class='row',
