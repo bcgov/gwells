@@ -97,7 +97,7 @@
 </script>
 {% elif wizard.steps.current == 'gps' %}
 <script>
-//VOCTORIA LAT LONG: 48.4284, -123.3656
+  /** addMap block */
   var addMap = null;
   // Options for creating the addMap
   var addMapOptions = {
@@ -145,6 +145,44 @@
       wellPushpinMoveCallback: pushpinMoveCallback,      
   };
 
+  // Sets the latitude and longitude fields programmatically, rounding to
+  // six decimal places per database standard.
+  function setLatLongFields(lat, long) {
+    var fixedLat = lat.toFixed(6);
+    var fixedLong = long.toFixed(6);
+    $(latNodeSelector).val(fixedLat);
+    $(longNodeSelector).val(fixedLong);
+    // Since this change is programmatic, we can bypass user validation.
+    CoordSync.syncFromDDFields();
+  }
+
+  // Updates the latitude and longitude fields with the position of the pushpin
+  // for the prospective well when the pushpin is moved.
+  // newLatLng is a Leaflet LatLng object.
+  function pushpinMoveCallback (newLatLng) {
+    setLatLongFields(newLatLng.lat, newLatLng.lng);
+  }
+
+  // Places a well pushpin on the map based on the coordinates of the lat/long fields (in decimal degrees),
+  // passing these coordinates along to the map for it to generate or move the pushpin as it sees fit.
+  function placeWellPushpin () {
+    var lat = parseFloat($(latNodeSelector).val());
+    var long = parseFloat($(longNodeSelector).val());
+    lat = isNaN(lat) ? void 0 : lat;
+    long = isNaN(long) ? void 0 : long;
+    if (lat !== void 0 && long !== void 0) {
+      var latLng = L.latLng([lat,long]);
+      addMap.placeWellPushpin(latLng);
+    }
+  };
+
+  // Calls on the map to remove the well pushpin. Currently used for 'Clear Map' button.
+  function removeWellPushpin () {
+    addMap.removeWellPushpin();
+  };
+
+  /** CoordSync block */
+
   // JQuery selectors for the appropriate spatial coordinate DOM nodes.
   var latNodeSelector = '#id_gps-latitude';
   var longNodeSelector = '#id_gps-longitude';
@@ -166,24 +204,6 @@
   // CSS selector for the geographic warning pane
   var coordErrorPaneSelector = '#coord-error-pane'
 
-  // Sets the latitude and longitude fields programmatically, rounding to
-  // six decimal places per database standard.
-  function setLatLongFields(lat, long) {
-    var fixedLat = lat.toFixed(6);
-    var fixedLong = long.toFixed(6);
-    $(latNodeSelector).val(fixedLat);
-    $(longNodeSelector).val(fixedLong);
-    // Since this change is programmatic, we can bypass user validation.
-    CoordSync.syncFromDDFields();
-  }
-
-  // Updates the latitude and longitude fields with the position of the pushpin
-  // for the prospective well when the pushpin is moved.
-  // newLatLng is a Leaflet LatLng object.
-  function pushpinMoveCallback (newLatLng) {
-    setLatLongFields(newLatLng.lat, newLatLng.lng);
-  }
-
   // Callback sent to coordSync, to be run when users manually change coordinate fields.
   function validationErrorCallback (error) {
     if (error === '') {
@@ -198,30 +218,7 @@
     }
   }
 
-
-  // Places a well pushpin on the map based on the coordinates of the lat/long fields (in decimal degrees),
-  // passing these coordinates along to the map for it to generate or move the pushpin as it sees fit.
-  function placeWellPushpin () {
-    var lat = parseFloat($(latNodeSelector).val());
-    var long = parseFloat($(longNodeSelector).val());
-    lat = isNaN(lat) ? void 0 : lat;
-    long = isNaN(long) ? void 0 : long;
-    if (lat !== void 0 && long !== void 0) {
-      var latLng = L.latLng([lat,long]);
-      addMap.placeWellPushpin(latLng);
-    }
-  };
-
-  // Calls on the map to remove the well pushpin.
-  function removeWellPushpin () {
-    addMap.removeWellPushpin();
-  };
-
-  // On page load, we generate addMap and initiate CoordSync to individually manage map behaviour and
-  // the coordination of the coordinate input fields.
-  $(document).ready(function (){
-    addMap = new WellsMap(addMapOptions);
-    CoordSync.init({
+  var coordSyncOptions = {
       latDDNodeSelector: latNodeSelector, 
       longDDNodeSelector: longNodeSelector,
       latDMSDegreeNodeSelector: latDMSDegreeNodeSelector,
@@ -239,7 +236,13 @@
       utmPrecision: utmPrecision,
       validationErrorCallback: validationErrorCallback,
       validationSuccessCallback: placeWellPushpin      
-    });
+    };
+
+  // On page load, we generate addMap and initiate CoordSync to individually manage map behaviour and
+  // the coordination of the coordinate input fields.
+  $(document).ready(function (){
+    addMap = new WellsMap(addMapOptions);
+    CoordSync.init(coordSyncOptions);
   });
 </script>
 {% endif %}

@@ -22,7 +22,7 @@
  *          layers: string, // Layers of the OWS service; e.g., 'pub:WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW'.
  *          styles: string, // Styles of the OWS service; e.g., 'PMBC_Parcel_Fabric_Cadastre_Outlined'
  *          transparent: boolean // Whether the tiles are transparent (other than the features drawn upon them)
- *      } 
+ *      }
  *   ],
  *   initCentre?: [float], // A two-element array representing the latitude and longitude of the centre of the map. If omitted, the map is fit to mapBounds, so one of these must exist.
  *   canZoom?: bool, // Whether the map can be zoomed. Defaults to true.
@@ -34,7 +34,7 @@
  *      south: float, // The bottom latitude of the map
  *      west: float, // The leftmost longitude of the map
  *      east: float, // The rightmost longitude of the map
- *      padding: int // Margin beyond extremes to pad the bounds with, as a percentage of the total bounding box.     
+ *      padding: int // Margin beyond extremes to pad the bounds with, as a percentage of the total bounding box.
  *   },
  *   wellPushpinInit?: { // An object for setting the latitude, longitude, and details of a wellPushpin on init.
  *      lat: float, // The initial latitude of the pushpin
@@ -43,12 +43,12 @@
  *          guid: string // The GUID of the well, for identification and special handling
  *      }
  *   },
- *   wellPushpinMoveCallback?: function, // Function to call when the map's wellPushpin moves 
+ *   wellPushpinMoveCallback?: function, // Function to call when the map's wellPushpin moves
  *   identifyWellsStartCallback?: function, // Function to call when an identifyWells operation is started
  *   identifyWellsEndCallback?: function // Function to call when an identifyWells operation ends
  * }
  */
-function WellsMap (options) {
+function WellsMap(options) {
     'use strict';
 
     /** Class constants */
