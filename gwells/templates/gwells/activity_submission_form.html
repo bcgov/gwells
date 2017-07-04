@@ -158,16 +158,24 @@
   var eastingUTMNodeSelector  = '#id_gps-utm_easting';
   var northingUTMNodeSelector  = '#id_gps-utm_northing';
 
-  // CSS class for the geographic warning pane
-  var latLongErrorPaneClass = 'lat-long-error-pane'
+  // Custom change event name for the event that captures programmatic lat/long DD changes.
+  // This custom event avoids a potential infinite loop wherein the validation callback 
+  // tries to place the well pushpin while it's moving, which calls setLatLongFields and 
+  // triggers a new round of validation.
+  var customLatLongDDChangeEventName = 'programmaticLatLongDDChange';
+
+  // CSS selector for the geographic warning pane
+  var latLongErrorPaneClassSelector = '.lat-long-error-pane'
 
   // Sets the latitude and longitude fields from the map, rounding to
-  // six decimal places.
+  // six decimal places per database standard.
   function setLatLongFields(lat, long) {
     var fixedLat = lat.toFixed(6);
     var fixedLong = long.toFixed(6);
-    $(latNodeSelector).val(fixedLat).trigger('change');
-    $(longNodeSelector).val(fixedLong).trigger('change');
+    // We trigger a custom change event to let coordSync know it doesn't need to
+    // validate these changes, since they come from the map itself.
+    $(latNodeSelector).val(fixedLat).trigger(customLatLongDDChangeEventName);
+    $(longNodeSelector).val(fixedLong).trigger(customLatLongDDChangeEventName);
   }
 
   // Updates the latitude and longitude fields with the position of the pushpin
@@ -177,18 +185,26 @@
     setLatLongFields(newLatLng.lat, newLatLng.lng);
   }
 
-  // Presents validation errors to users.
+  // Callback sent to coordSync, to be run when users manually change coordinate fields.
+  // If an empty string is returned, we assume the coordinates are valid, and update the map
+  // accordingly.
   function latLongValidationCallback (error) {
     if (error === '') {
-      $(".lat-long-error-pane").hide();
+      // If the error message was empty, hide the error pane, clear it, and place the well pushpin.
+      $(latLongErrorPaneClassSelector).hide();
+      $(latLongErrorPaneClassSelector).text('');
       placeWellPushpin();
     } else {
+      // If the error message exists, remove the well pushpin and display the message in the error pane.
       removeWellPushpin();
-      $(".lat-long-error-pane").text(error);
-      $(".lat-long-error-pane").show();
+      $(latLongErrorPaneClassSelector).text(error);
+      $(latLongErrorPaneClassSelector).show();
     }
   }
 
+
+  // Places a well pushpin on the map based on the coordinates of the lat/long fields (in decimal degrees),
+  // passing these coordinates along to the map for it to generate or move the pushpin as it sees fit.
   function placeWellPushpin () {
     var lat = parseFloat($(latNodeSelector).val());
     var long = parseFloat($(longNodeSelector).val());
@@ -196,17 +212,21 @@
     long = isNaN(long) ? void 0 : long;
     if (lat !== void 0 && long !== void 0) {
       var latLng = L.latLng([lat,long]);
-      // TODO: INVESTIGATE STACK OVERFLOW ON PUSHPIN MOVE   
       addMap.placeWellPushpin(latLng);
     }
   };
 
+  // Calls on the map to remove the well pushpin.
   function removeWellPushpin () {
     addMap.removeWellPushpin();
   };
+
+  // On page load, we generate addMap and initiate CoordSync to individually manage map behaviour and
+  // the coordination of the coordinate input fields.
   $(document).ready(function (){
     addMap = new WellsMap(addMapOptions);
     CoordSync.init({
+      customChangeEventName: customLatLongDDChangeEventName,
       latDDNodeSelector: latNodeSelector, 
       longDDNodeSelector: longNodeSelector,
       latDMSDegreeNodeSelector: latDMSDegreeNodeSelector,
