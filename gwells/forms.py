@@ -367,7 +367,7 @@ class ActivitySubmissionGpsForm(forms.ModelForm):
                 Div(
                     Div(
                         Div(
-                            Div(HTML('<div class="lat-long-error-pane"></div>')),
+                            Div(HTML('<div class="coord-error-pane"></div>')),
                             css_class='row',
                         ),
                         Div(

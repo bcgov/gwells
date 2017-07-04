@@ -19,7 +19,7 @@ label {
     margin-right: auto;
 }
 
-.lat-long-error-pane {
+.coord-error-pane {
     background-color: yellow;
     text-align: center;
     font-weight: bold;

@@ -386,16 +386,22 @@ function WellsMap (options) {
         }
         // The map zooms to the its maxZoom to display the pushpin.
         var zoomLevel = _leafletMap.getMaxZoom();
-        if (_exists(_wellPushpin)) {
-            _wellPushpin.pushpinMarker.setLatLng(latLong);
+        // If the pushpin exists and the movement is substantive, move the pin. Else if
+        // the pushpin does not exist, create it and place it at the coordinates.
+        if (_exists(_wellPushpin) && _exists(_wellPushpin.pushpinMarker)) {
+            if (!_wellPushpin.pushpinMarker.getLatLng().equals(latLong)) {
+                _wellPushpin.pushpinMarker.setLatLng(latLong);
+            }
         } else {
             _wellPushpin = {};
             _wellPushpin.pushpinMarker = L.marker(latLong, {
                 draggable: _exists(_wellPushpinMoveCallback) // The pin should only drag if the map's caller has a hook to handle movement
             }).addTo(_leafletMap);
+            // The pin should subscribe to move and moveend events.
             _wellPushpin.pushpinMarker.on('move', _wellPushpinMoveEvent);
             _wellPushpin.pushpinMarker.on('moveend', _wellPushpinMoveEndEvent);
         }
+        // If the wellDetails properties exist, assign them.
         if (_exists(wellDetails) && _exists(wellDetails.guid)) {
             _wellPushpin.wellDetails = wellDetails;
         }

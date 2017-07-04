@@ -159,7 +159,7 @@
   var northingUTMNodeSelector  = '#id_gps-utm_northing';
 
   // CSS selector for the geographic warning pane
-  var latLongErrorPaneClassSelector = '.lat-long-error-pane'
+  var coordErrorPaneClassSelector = '.coord-error-pane'
 
   // Sets the latitude and longitude fields from the map, rounding to
   // six decimal places per database standard.
@@ -179,17 +179,16 @@
   }
 
   // Callback sent to coordSync, to be run when users manually change coordinate fields.
-  function latLongValidationCallback (error) {
+  function validationErrorCallback (error) {
     if (error === '') {
-      // If the error message was empty, hide the error pane, clear it, and place the well pushpin.
-      $(latLongErrorPaneClassSelector).hide();
-      $(latLongErrorPaneClassSelector).text('');
-      placeWellPushpin();
+      // If the error message was empty, hide the error pane and clear it.
+      $(coordErrorPaneClassSelector).hide();
+      $(coordErrorPaneClassSelector).text('');
     } else {
       // If the error message exists, remove the well pushpin and display the message in the error pane.
       removeWellPushpin();
-      $(latLongErrorPaneClassSelector).text(error);
-      $(latLongErrorPaneClassSelector).show();
+      $(coordErrorPaneClassSelector).text(error);
+      $(coordErrorPaneClassSelector).show();
     }
   }
 
@@ -225,11 +224,12 @@
       longDMSDegreeNodeSelector: longDMSDegreeNodeSelector,
       longDMSMinuteNodeSelector: longDMSMinuteNodeSelector,
       longDMSSecondNodeSelector: longDMSSecondNodeSelector,
-      latLongDDBoundingBox: addMapOptions.mapBounds,
-      latLongValidationCallback: latLongValidationCallback,
       zoneUTMNodeSelector: zoneUTMNodeSelector,
       eastingUTMNodeSelector: eastingUTMNodeSelector,
-      northingUTMNodeSelector: northingUTMNodeSelector
+      northingUTMNodeSelector: northingUTMNodeSelector,
+      latLongDDBoundingBox: addMapOptions.mapBounds,
+      validationErrorCallback: validationErrorCallback,
+      validationSuccessCallback: placeWellPushpin      
     });
   });
 </script>
