@@ -19,13 +19,6 @@ label {
     margin-right: auto;
 }
 
-.coord-error-pane {
-    background-color: yellow;
-    text-align: center;
-    font-weight: bold;
-    display: none;
-}
-
 /* remove radius from form controls */
 
 .input-group-addon,
