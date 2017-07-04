@@ -34,7 +34,10 @@ var _latLongDDBoundingBox = null;
 var _errorPrepend = 'WARNING: Geographic coordinates outside of BC. ';
 
 // The validation callback to invoke from the module's caller.
-var _latLongValidationCallback = null;
+var _validationErrorCallback = null;
+
+// The callback to invoke on validation success after all fields are settled.
+var _validationSuccessCallback = null;
 
 // Checks to see whether a given latitude is within the bounding box.
 function _latIsInBox (lat) {
@@ -89,7 +92,7 @@ var _northingUTMField = null;
 function _areLatLongDDFieldsValid () {
     var errMsg = '';
     // If the callback exists, we check to see if the lat/long is within the box, returning an error if one arises.
-    if (_exists(_latLongValidationCallback)) {
+    if (_exists(_validationErrorCallback)) {
         var lat = parseFloat(_latDDField.val());
         var long = parseFloat(_longDDField.val());
         var latMsg = '';
@@ -106,7 +109,7 @@ function _areLatLongDDFieldsValid () {
         else if (latMsg || longMsg) {
             errMsg = _errorPrepend + latMsg + longMsg;
         }
-        _latLongValidationCallback(errMsg);
+        _validationErrorCallback(errMsg);
     }
     return !errMsg;
 }
@@ -114,7 +117,7 @@ function _areLatLongDDFieldsValid () {
 // Validates the DMS fields, to be called only when users change DMS field values manually.
 function _areLatLongDMSFieldsValid () {
     var errMsg = '';
-    if(_exists(_latLongValidationCallback)) {
+    if(_exists(_validationErrorCallback)) {
         var latMsg = '';
         var longMsg = '';
 
@@ -152,7 +155,7 @@ function _areLatLongDMSFieldsValid () {
         }
 
         // Propagate the error message to the caller (where an empty message implies no error).
-        _latLongValidationCallback(errMsg);
+        _validationErrorCallback(errMsg);
     }
     return !errMsg;
 }
@@ -160,7 +163,7 @@ function _areLatLongDMSFieldsValid () {
 // Validates UTM fields, to be called only when users change UTM fields manually.
 function _areUTMFieldsValid () {
     var errMsg = '';
-    if(_exists(_latLongValidationCallback)) {
+    if(_exists(_validationErrorCallback)) {
         var eastMsg = '';
         var northMsg = '';
         var zoneMsg = 'UTM zone must be selected from list.';
@@ -191,7 +194,7 @@ function _areUTMFieldsValid () {
         } else { // If no zone was selected, return zoneMsg to the caller.
             errMsg = zoneMsg;
         }
-        _latLongValidationCallback(errMsg);
+        _validationErrorCallback(errMsg);
     }
     return !errMsg;
 }
@@ -205,6 +208,7 @@ function _latLongDDFieldOnChange (programmaticChange) {
     if (_areLatLongDDFieldsValid(programmaticChange)) {
         _setDMSFromDD();
         _setUTMFromDD();
+        _validationSuccessCallback();
     } else {
         _clearDMSFields();
         _clearUTMFields();
@@ -216,6 +220,7 @@ function _latLongDMSFieldOnChange () {
     if(_areLatLongDMSFieldsValid()) {
         _setDDFromDMS();
         _setUTMFromDD();
+        _validationSuccessCallback();
     } else {
         _clearDDFields();
         _clearUTMFields();
@@ -227,6 +232,7 @@ function _utmFieldOnChange () {
     if(_areUTMFieldsValid()) {
         _setDDFromUTM();
         _setDMSFromDD();
+        _validationSuccessCallback();
     } else {
         _clearDDFields();
         _clearDMSFields();
@@ -385,8 +391,9 @@ function _utmToDD(utmObj) {
     // The application is only concerned about the northern hemisphere.
     var southhemi = false;
     UTMXYToLatLon (easting, northing, zone, southhemi, latlon);
-    var long = RadToDeg(latlon[1]).toFixed(2);
-    var lat = RadToDeg(latlon[0]).toFixed(2);
+    // We are only concerned with six decimal places of precision.
+    var long = RadToDeg(latlon[1]).toFixed(6);
+    var lat = RadToDeg(latlon[0]).toFixed(6);
     return {lat: lat, long: long};
 }
 
@@ -878,13 +885,17 @@ var syncFromDDFields = function () {
  *    longDMSDegreeNodeSelector: string,
  *    longDMSMinuteNodeSelector: string,
  *    longDMSSecondNodeSelector: string,
+ *    zoneUTMNodeSelector: string,
+ *    eastingUTMNodeSelector: string,
+ *    northingUTMNodeSelector: string,
  *    latLongDDBoundingBox: { // The bounds of valid latitude and longitude
  *          north: float,
  *          south: float,
  *          east: float,
  *          west: float
  *      },
- *    latLongValidationCallback: function // Callback for validation errors
+ *    validationErrorCallback: function, // Callback for validation errors
+ *    validationSuccessCallback: function // Callback to invoke on validation success once all fields are synchronised.
  *  }
  */
 var init = function(options) {
@@ -903,7 +914,8 @@ var init = function(options) {
 
     // Set the validation objects
     _latLongDDBoundingBox = options.latLongDDBoundingBox || null;
-    _latLongValidationCallback = options.latLongValidationCallback || null;
+    _validationErrorCallback = options.validationErrorCallback || null;
+    _validationSuccessCallback = options.validationSuccessCallback || null;
 
     // Subscribe the nodes to the change event.
     _latDDField.on('change', _latLongDDFieldOnChange);
