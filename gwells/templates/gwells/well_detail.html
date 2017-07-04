@@ -95,12 +95,6 @@
                 transparent: true
             }        
         ],
-        // Settings for a Leaflet circleMarker
-        wellMarkerStyle: {
-          radius: 3, // The radius of the circleMarker
-          color: '#0147b7', // The color of the circleMarker
-          fillOpacity: 1.0 // How transparent the circleMarker's fill is
-       },
        wellPushpinInit: null, // Will be filled in before call in $(document).ready()
     };
 
@@ -112,8 +106,6 @@
         detailMapOptions.initCentre = [lat, long];
         detailMapOptions.wellPushpinInit = {lat: lat, long: long, wellDetails: { guid: guid }};
         detailMap = new WellsMap(detailMapOptions);
-        // Once the map is loaded, we query for all wells in the bounding box
-        detailMap.searchWellsInBoundingBox();
     });
 
 </script>
