@@ -158,12 +158,6 @@
   var eastingUTMNodeSelector  = '#id_gps-utm_easting';
   var northingUTMNodeSelector  = '#id_gps-utm_northing';
 
-  // Custom change event name for the event that captures programmatic lat/long DD changes.
-  // This custom event avoids a potential infinite loop wherein the validation callback 
-  // tries to place the well pushpin while it's moving, which calls setLatLongFields and 
-  // triggers a new round of validation.
-  var customLatLongDDChangeEventName = 'programmaticLatLongDDChange';
-
   // CSS selector for the geographic warning pane
   var latLongErrorPaneClassSelector = '.lat-long-error-pane'
 
@@ -172,10 +166,9 @@
   function setLatLongFields(lat, long) {
     var fixedLat = lat.toFixed(6);
     var fixedLong = long.toFixed(6);
-    // We trigger a custom change event to let coordSync know it doesn't need to
-    // validate these changes, since they come from the map itself.
-    $(latNodeSelector).val(fixedLat).trigger(customLatLongDDChangeEventName);
-    $(longNodeSelector).val(fixedLong).trigger(customLatLongDDChangeEventName);
+    $(latNodeSelector).val(fixedLat);
+    $(longNodeSelector).val(fixedLong);
+    CoordSync.syncFromDDFields();
   }
 
   // Updates the latitude and longitude fields with the position of the pushpin
@@ -186,8 +179,6 @@
   }
 
   // Callback sent to coordSync, to be run when users manually change coordinate fields.
-  // If an empty string is returned, we assume the coordinates are valid, and update the map
-  // accordingly.
   function latLongValidationCallback (error) {
     if (error === '') {
       // If the error message was empty, hide the error pane, clear it, and place the well pushpin.
@@ -226,7 +217,6 @@
   $(document).ready(function (){
     addMap = new WellsMap(addMapOptions);
     CoordSync.init({
-      customChangeEventName: customLatLongDDChangeEventName,
       latDDNodeSelector: latNodeSelector, 
       longDDNodeSelector: longNodeSelector,
       latDMSDegreeNodeSelector: latDMSDegreeNodeSelector,
