@@ -1,9 +1,10 @@
 /**
- * This library syncronises the coordinate fields of the fourth Activity Submission fields. The three field groups are Decimal Degrees,
- * Day Minute Second, and UTM. We take the Decimal Degrees fields as the source of truth (i.e., these are the fields which 
- * are stored in the database).
+ * This library synchronises the geographic coordinate fields of the GWELLS application, specifically for entering the location of a well. 
+ * The three field groups are Decimal Degrees, Day Minute Second, and UTM. 
+ * We take the Decimal Degrees fields as the source of truth (i.e., these are the fields which are stored in the database).
  * If a user enters data into any other field, it is converted here to DD, altering the DD fields, which in turn update the other fields.
- * The fields undergo basic validation, which propagates an error message up to the module's caller, where it is dealt with appropriately.
+ * The fields undergo basic validation when changed manually by a user entering data in a field.
+ * Validation is propagated up to the module's caller, where it is dealt with appropriately.
  * This module depends on JQuery.
  */
 var CoordSync = (function () {
@@ -32,7 +33,7 @@ var _latLongDDBoundingBox = null;
 // The start of any error message for geographic coordinates.
 var _errorPrepend = 'WARNING: Geographic coordinates outside of BC. ';
 
-// The validation callback to invoke from the module's caller..
+// The validation callback to invoke from the module's caller.
 var _latLongValidationCallback = null;
 
 // Checks to see whether a given latitude is within the bounding box.
@@ -63,7 +64,57 @@ function _correctPositiveLong() {
     _longDDField.val(long);
 }
 
+/** JQuery nodes that correspond to the fields that will subscribe to events. */
+
+// The input fields associated with latitude and longitude decimal degrees
+var _latDDField = null;
+var _longDDField = null;
+
+// The DMS fields
+var _latDMSDegreeField = null;
+var _latDMSMinuteField = null;
+var _latDMSSecondField = null;
+var _longDMSDegreeField = null;
+var _longDMSMinuteField = null;
+var _longDMSSecondField = null;
+
+// The UTM fields
+var _zoneUTMField = null;
+var _eastingUTMField = null;
+var _northingUTMField = null;
+
 /** Field validation */
+
+// Ensures the latitude and longitude Decimal Degree fields are within the bounding box.
+// If the change was invoked programmatically, we assume it is valid.
+function _areLatLongDDFieldsValid (programmaticChange) {
+    if (programmaticChange) {
+        return true;
+    }
+
+    var errMsg = '';
+    // If the callback exists, we check to see if the lat/long is within the box, returning an error if one arises.
+    if (_exists(_latLongValidationCallback)) {
+        var lat = parseFloat(_latDDField.val());
+        var long = parseFloat(_longDDField.val());
+        var latMsg = '';
+        var longMsg = '';
+        if (!_latIsInBox(lat)) {
+            latMsg = 'Invalid latitude: ' + _latDDField.val();
+        }
+        if (!_longIsInBox(long)) {
+            longMsg = 'Invalid longitude: ' + _longDDField.val();
+        }
+        if (latMsg && longMsg) {
+            errMsg = _errorPrepend + latMsg + '. ' + longMsg;
+        }
+        else if (latMsg || longMsg) {
+            errMsg = _errorPrepend + latMsg + longMsg;
+        }
+        _latLongValidationCallback(errMsg);
+    }
+    return !errMsg;
+}
 
 // Validates the DMS fields, to be called only when users change DMS field values manually.
 function _areLatLongDMSFieldsValid () {
@@ -150,58 +201,13 @@ function _areUTMFieldsValid () {
     return !errMsg;
 }
 
-// Ensures the latitude and longitude Decimal Degree fields are within the bounding box.
-function _areLatLongDDFieldsValid () {
-    var errMsg = '';
-    // If the callback exists, we check to see if the lat/long is within the box, returning an error if one arises.
-    if (_exists(_latLongValidationCallback)) {
-        var lat = parseFloat(_latDDField.val());
-        var long = parseFloat(_longDDField.val());
-        var latMsg = '';
-        var longMsg = '';
-        if (!_latIsInBox(lat)) {
-            latMsg = 'Invalid latitude: ' + _latDDField.val();
-        }
-        if (!_longIsInBox(long)) {
-            longMsg = 'Invalid longitude: ' + _longDDField.val();
-        }
-        if (latMsg && longMsg) {
-            errMsg = _errorPrepend + latMsg + '. ' + longMsg;
-        }
-        else if (latMsg || longMsg) {
-            errMsg = _errorPrepend + latMsg + longMsg;
-        }
-        _latLongValidationCallback(errMsg);
-    }
-    return !errMsg;
-}
-
-/** JQuery nodes that correspond to the fields that will subscribe to events. */
-
-// The input fields associated with latitude and longitude decimal degrees
-var _latDDField = null;
-var _longDDField = null;
-
-// The DMS fields
-var _latDMSDegreeField = null;
-var _latDMSMinuteField = null;
-var _latDMSSecondField = null;
-var _longDMSDegreeField = null;
-var _longDMSMinuteField = null;
-var _longDMSSecondField = null;
-
-// The UTM fields
-var _zoneUTMField = null;
-var _eastingUTMField = null;
-var _northingUTMField = null;
-
 /** Field updates */
 
 // Dispatches changes to DMS and UTM with suitable conversions and validation.
-function _latLongDDFieldOnChange () {
+function _latLongDDFieldOnChange (programmaticChange) {
     // If a user enters DD directly, we accept positive longitudes, but correct them on the fly.
     _correctPositiveLong();
-    if (_areLatLongDDFieldsValid()) {
+    if (_areLatLongDDFieldsValid(programmaticChange)) {
         _setDMSFromDD();
         _setUTMFromDD();
     } else {
@@ -300,8 +306,6 @@ function _setUTMFromDD () {
         _zoneUTMField.val(utmObj.zone);
         _eastingUTMField.val(utmObj.easting);
         _northingUTMField.val(utmObj.northing);
-    } else {
-        console.log("Could not convert (lat,long) = ("+lat+","+long+") to UTM.");
     }
 }
 
@@ -321,8 +325,6 @@ function _setDDFromUTM ()
     if (_exists(latLong.lat) && _exists(latLong.long)) {
         _longDDField.val(latLong.long);
         _latDDField.val(latLong.lat);
-    } else {
-        console.log("Could not convert UTM to lat/long");
     }
 }
 
@@ -858,7 +860,9 @@ function UTMXYToLatLon (x, y, zone, southhemi, latlon)
 
 /** Module initialisation.
  * @param options An object with properties conforming to: 
- * {  // Each nodeSelector is a JQuery selector string; e.g., '#nodeId'.
+ * {  
+ *    customChangeEventName: string, // The name of the custom change event, which is fired programmatically (as opposed to by user input)
+ *    // Each nodeSelector is a JQuery selector string; e.g., '#nodeId'.
  *    latDDNodeSelector: string, 
  *    longDDNodeSelector: string,
  *    latDMSDegreeNodeSelector: string, 
@@ -894,18 +898,26 @@ var init = function(options) {
     _latLongDDBoundingBox = options.latLongDDBoundingBox || null;
     _latLongValidationCallback = options.latLongValidationCallback || null;
 
-    // Subscribe the nodes to the events
-    _latDDField.on('change', _latLongDDFieldOnChange);
-    _longDDField.on('change', _latLongDDFieldOnChange);
+    // Subscribe the nodes to the (user-generated) change event.
+    _latDDField.on('change', function () {_latLongDDFieldOnChange(false)});
+    _longDDField.on('change', function () {_latLongDDFieldOnChange(false)});
     _latDMSDegreeField.on('change', _latLongDMSFieldOnChange);
     _latDMSMinuteField.on('change', _latLongDMSFieldOnChange);
     _latDMSSecondField.on('change', _latLongDMSFieldOnChange);
     _longDMSDegreeField.on('change', _latLongDMSFieldOnChange);
     _longDMSMinuteField.on('change', _latLongDMSFieldOnChange);
     _longDMSSecondField.on('change', _latLongDMSFieldOnChange);
-    _zoneUTMField.on('change', _utmFieldOnChange)
-    _eastingUTMField.on('change', _utmFieldOnChange)
-    _northingUTMField.on('change', _utmFieldOnChange)
+    _zoneUTMField.on('change', _utmFieldOnChange);
+    _eastingUTMField.on('change', _utmFieldOnChange);
+    _northingUTMField.on('change', _utmFieldOnChange);
+
+    var customChangeEventName = options.customChangeEventName;
+    if (customChangeEventName) {
+        // If we're passed a customEventName, subscribe the lat and long DD fields to the custom event, which
+        // bypasses validation for these fields.
+        _latDDField.on(customChangeEventName, function () {_latLongDDFieldOnChange(true)});
+        _longDDField.on(customChangeEventName, function () {_latLongDDFieldOnChange(true)});
+    }
 }
 
 return {
