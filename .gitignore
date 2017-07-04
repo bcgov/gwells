@@ -61,6 +61,7 @@ docs/_build/
 target/
 
 # Visual Studio files
+gwells.sln
 gwells.pyproj
 .vs/
 
