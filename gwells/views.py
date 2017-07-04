@@ -6,7 +6,7 @@ from django.views.generic.edit import FormView
 #from django.utils import timezone
 from formtools.wizard.views import SessionWizardView
 from .models import WellYieldUnit, Well, ActivitySubmission, WellClass
-from .forms import SearchForm, ActivitySubmissionTypeAndClassForm, WellOwnerForm, ActivitySubmissionLocationForm, ActivitySubmissionGpsForm
+from .forms import SearchForm, ActivitySubmissionTypeAndClassForm, WellOwnerForm, ActivitySubmissionLocationForm, ActivitySubmissionGpsForm, ActivitySubmissionLithologyFormSet
 import json
 from django.core.serializers.json import DjangoJSONEncoder
 
@@ -90,12 +90,16 @@ class ActivitySubmissionDetailView(generic.DetailView):
 FORMS = [('type_and_class', ActivitySubmissionTypeAndClassForm),
          ('owner', WellOwnerForm),
          ('location', ActivitySubmissionLocationForm),
-         ('gps', ActivitySubmissionGpsForm)]
+         ('gps', ActivitySubmissionGpsForm),
+         ('lithology', ActivitySubmissionLithologyFormSet),
+        ]
 
 TEMPLATES = {'type_and_class': 'gwells/activity_submission_form.html',
              'owner': 'gwells/activity_submission_form.html',
              'location': 'gwells/activity_submission_form.html',
-             'gps': 'gwells/activity_submission_form.html'}
+             'gps': 'gwells/activity_submission_form.html',
+             'lithology': 'gwells/activity_submission_lithology_form.html',
+            }
 
 
 
@@ -107,11 +111,17 @@ class ActivitySubmissionWizardView(SessionWizardView):
     def get_context_data(self, form, **kwargs):
         context = super(ActivitySubmissionWizardView, self).get_context_data(form=form, **kwargs)
         context['wizard_data'] = self.get_all_cleaned_data()
-        try:
-            water_supply_class = WellClass.objects.filter(code='WATR_SPPLY')[0]
-            context['water_supply_well_class_guid'] = water_supply_class.well_class_guid
-        except Exception as e:
-            context['water_supply_well_class_guid'] = None
+
+        if self.steps.current == 'type_and_class':
+            try:
+                water_supply_class = WellClass.objects.filter(code='WATR_SPPLY')[0]
+                context['water_supply_well_class_guid'] = water_supply_class.well_class_guid
+            except Exception as e:
+                context['water_supply_well_class_guid'] = None
+       # elif self.steps.current == 'lithology':
+       #     formset = ActivitySubmissionLithologyFormSet()
+       #     helper = LithologyFormSetHelper()
+       #     context.update({'formset': formset, 'helper': helper})
         return context
 
     def done(self, form_list, **kwargs):

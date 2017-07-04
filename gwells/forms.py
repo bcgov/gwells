@@ -5,7 +5,7 @@ from crispy_forms.layout import Layout, Fieldset, Div, Submit, Hidden, HTML, Fie
 from crispy_forms.bootstrap import FormActions, AppendedText
 from django.forms.models import inlineformset_factory
 from .search import Search
-from .models import ActivitySubmission, WellActivityType, ProvinceState
+from .models import ActivitySubmission, WellActivityType, ProvinceState, LithologyDescription
 from datetime import date
 
 class SearchForm(forms.Form):
@@ -175,10 +175,7 @@ class ActivitySubmissionTypeAndClassForm(forms.ModelForm):
                 'Type of Work and Well Class',
                 Div(
                     Div('well_activity_type', css_class='col-md-4'),
-                    css_class='row',
-                ),
-                Div(
-                    Div(HTML('<label for="units">Measurement units for data entry</label><br /><input type="radio" name="units" value="Imperial" checked /> Imperial<br /><input type="radio" name="units" value="Metric" disabled /> Metric<br /><br />'), css_class='col-md-12'),
+                    Div(HTML('<label for="units">Measurement units for data entry</label><br /><input type="radio" name="units" value="Imperial" checked /> Imperial<br /><input type="radio" name="units" value="Metric" disabled /> Metric<br /><br />'), css_class='col-md-4'),
                     css_class='row',
                 ),
                 Div(
@@ -213,7 +210,6 @@ class ActivitySubmissionTypeAndClassForm(forms.ModelForm):
         try:
             con = WellActivityType.objects.get(code='CON')
             self.initial['well_activity_type'] = con
-            #self.fields['well_activity_type'].widget = forms.RadioSelect(attrs={'id': 'value'})
             self.fields['well_activity_type'].empty_label = None
         except Exception as e:
             pass
@@ -238,6 +234,7 @@ class ActivitySubmissionTypeAndClassForm(forms.ModelForm):
         model = ActivitySubmission
         fields = ['well_activity_type', 'well_class', 'well_subclass', 'intended_water_use', 'identification_plate_number', 'driller_responsible', 'driller_name', 'consultant_name', 'consultant_company', 'work_start_date', 'work_end_date']
         help_texts = {'work_start_date': "yyyy-mm-dd", 'work_end_date': "yyyy-mm-dd",}
+        widgets = {'well_activity_type': forms.RadioSelect}
 
 
 
@@ -452,5 +449,83 @@ class ActivitySubmissionGpsForm(forms.ModelForm):
         widgets = {'orientation_vertical': forms.RadioSelect}
 
 
+
+class LithologyForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.disable_csrf = True
+        self.helper.form_show_labels = False
+        self.helper.render_required_fields = True
+        self.helper.render_hidden_fields = True
+        self.helper.layout = Layout(
+            HTML('<tr valign="top">'),
+            HTML('<td>'),
+            'lithology_from',
+            HTML('</td>'),
+            HTML('<td>'),
+            'lithology_to',
+            HTML('</td>'),
+            HTML('<td>'),
+            'surficial_material',
+            HTML('</td>'),
+            HTML('<td>'),
+            'bedrock_material',
+            HTML('</td>'),
+            HTML('<td>'),
+            'bedrock_material_descriptor',
+            HTML('</td>'),
+            HTML('<td>'),
+            'lithology_structure',
+            HTML('</td>'),
+            HTML('<td>'),
+            'lithology_weathering',
+            HTML('</td>'),
+            HTML('<td>'),
+            'lithology_colour',
+            HTML('</td>'),
+            HTML('<td>'),
+            'lithology_hardness',
+            HTML('</td>'),
+            HTML('<td>'),
+            'lithology_moisture',
+            HTML('</td>'),
+            HTML('<td>'),
+            'water_bearing_estimated_flow',
+            HTML('</td>'),
+            HTML('<td>'),
+            'lithology_observation',
+            HTML('</td>'),
+            HTML('</tr>'),
+        )
+        super(LithologyForm, self).__init__(*args, **kwargs)
+    
+    def clean(self):
+        cleaned_data = super(LithologyForm, self).clean()
+        
+        lithology_from = cleaned_data.get('lithology_from') 
+        lithology_to = cleaned_data.get('lithology_to') 
+        surficial_material = cleaned_data.get('surficial_material')
+        bedrock_material = cleaned_data.get('bedrock_material')
+        errors = []
+
+        if lithology_to < lithology_from:
+            errors.append('To must be greater than or equal to From.')
+
+        if not surficial_material and not bedrock_material:
+            errors.append('Surficial Material or Bedrock is required.')
+
+        if len(errors) > 0:
+            raise forms.ValidationError(errors)
+
+        return cleaned_data
+
+    class Meta:
+        model = LithologyDescription
+        fields = ['lithology_from', 'lithology_to', 'surficial_material', 'bedrock_material', 'bedrock_material_descriptor', 'lithology_structure', 'lithology_weathering', 'lithology_colour', 'lithology_hardness', 'lithology_moisture', 'water_bearing_estimated_flow', 'lithology_observation']
+
+
+
+
 #WellCompletionDataFormSet = inlineformset_factory(ActivitySubmission, WellCompletionData, max_num=1, can_delete=False)
-#LithologyFormSet = inlineformset_factory(ActivitySubmission, Lithology, extra=5)
+ActivitySubmissionLithologyFormSet = inlineformset_factory(ActivitySubmission, LithologyDescription, form=LithologyForm, fk_name='activity_submission', can_delete=False, extra=10)

@@ -1,7 +1,7 @@
 import datetime
 import uuid
 from django.db import models
-from  django.utils import timezone
+from django.utils import timezone
 from model_utils.models import TimeStampedModel
 from model_utils import FieldTracker
 
@@ -218,6 +218,158 @@ class DrillingMethod(models.Model):
 
 
 
+class SurficialMaterial(models.Model):
+    """
+    The surficial material encountered in lithology
+    """
+    surficial_material_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    code = models.CharField(max_length=10)
+    description = models.CharField(max_length=100)
+    is_hidden = models.BooleanField(default=False)
+    sort_order = models.PositiveIntegerField()
+    
+    class Meta:
+        db_table = 'gwells_surficial_material'
+        ordering = ['sort_order', 'description']
+
+    def __str__(self):
+        return self.description
+
+
+
+class BedrockMaterial(models.Model):
+    """
+    The bedrock material encountered in lithology
+    """
+    bedrock_material_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    code = models.CharField(max_length=10)
+    description = models.CharField(max_length=100)
+    is_hidden = models.BooleanField(default=False)
+    sort_order = models.PositiveIntegerField()
+    
+    class Meta:
+        db_table = 'gwells_bedrock_material'
+        ordering = ['sort_order', 'description']
+
+    def __str__(self):
+        return self.description
+
+
+
+class BedrockMaterialDescriptor(models.Model):
+    """
+    Further descriptor of the bedrock material encountered in lithology
+    """
+    bedrock_material_descriptor_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    code = models.CharField(max_length=10)
+    description = models.CharField(max_length=100)
+    is_hidden = models.BooleanField(default=False)
+    sort_order = models.PositiveIntegerField()
+    
+    class Meta:
+        db_table = 'gwells_bedrock_material_descriptor'
+        ordering = ['sort_order', 'description']
+
+    def __str__(self):
+        return self.description
+
+
+
+class LithologyStructure(models.Model):
+    """
+    Structure of the lithology
+    """
+    lithology_structure_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    code = models.CharField(max_length=10)
+    description = models.CharField(max_length=100)
+    is_hidden = models.BooleanField(default=False)
+    sort_order = models.PositiveIntegerField()
+    
+    class Meta:
+        db_table = 'gwells_lithology_structure'
+        ordering = ['sort_order', 'description']
+
+    def __str__(self):
+        return self.description
+
+
+
+class LithologyWeathering(models.Model):
+    """
+    Weathering of the surficial material encountered in lithology
+    """
+    lithology_weathering_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    code = models.CharField(max_length=10)
+    description = models.CharField(max_length=100)
+    is_hidden = models.BooleanField(default=False)
+    sort_order = models.PositiveIntegerField()
+    
+    class Meta:
+        db_table = 'gwells_lithology_weathering'
+        ordering = ['sort_order', 'description']
+
+    def __str__(self):
+        return self.description
+
+
+
+class LithologyColour(models.Model):
+    """
+    Colour of the lithology
+    """
+    lithology_colour_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    code = models.CharField(max_length=10)
+    description = models.CharField(max_length=100)
+    is_hidden = models.BooleanField(default=False)
+    sort_order = models.PositiveIntegerField()
+    
+    class Meta:
+        db_table = 'gwells_lithology_colour'
+        ordering = ['sort_order', 'description']
+
+    def __str__(self):
+        return self.description
+
+
+
+class LithologyHardness(models.Model):
+    """
+    Hardness of the lithology
+    """
+    lithology_hardness_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    code = models.CharField(max_length=10)
+    description = models.CharField(max_length=100)
+    is_hidden = models.BooleanField(default=False)
+    sort_order = models.PositiveIntegerField()
+    
+    class Meta:
+        db_table = 'gwells_lithology_hardness'
+        ordering = ['sort_order', 'description']
+
+    def __str__(self):
+        return self.description
+
+
+
+class LithologyMoisture(models.Model):
+    """
+    Moisture of the lithology
+    """
+    lithology_moisture_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    code = models.CharField(max_length=10)
+    description = models.CharField(max_length=100)
+    is_hidden = models.BooleanField(default=False)
+    sort_order = models.PositiveIntegerField()
+    
+    class Meta:
+        db_table = 'gwells_lithology_moisture'
+        ordering = ['sort_order', 'description']
+
+    def __str__(self):
+        return self.description
+
+
+
 class Well(TimeStampedModel):
     """
     Well information.
@@ -384,7 +536,7 @@ class LtsaOwner(TimeStampedModel):
     Well owner information.
     """
     lsts_owner_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    well = models.ForeignKey(Well, db_column='well_guid', on_delete=models.CASCADE, blank=True, null=True)
+    well = models.ForeignKey(Well, db_column='well_tag_number', on_delete=models.CASCADE, blank=True, null=True)
     full_name = models.CharField(max_length=200, verbose_name='Owner Name')
     mailing_address = models.CharField(max_length=100, verbose_name='Mailing Address')
     
@@ -401,6 +553,34 @@ class LtsaOwner(TimeStampedModel):
         return '%s %s' % (self.full_name, self.mailing_address)
 
 
+
+class LithologyDescription(models.Model):
+    """
+    Lithology information details
+    """
+    lithology_description_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    activity_submission = models.ForeignKey(ActivitySubmission, db_column='filing_number', on_delete=models.CASCADE, blank=True, null=True)
+    well = models.ForeignKey(Well, db_column='well_tag_number', on_delete=models.CASCADE, blank=True, null=True)
+    lithology_from = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='From')
+    lithology_to = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='To')
+    surficial_material = models.ForeignKey(SurficialMaterial, db_column='surficial_material_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Surficial Material')
+    bedrock_material = models.ForeignKey(BedrockMaterial, db_column='bedrock_material_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Bedrock Material')
+    bedrock_material_descriptor = models.ForeignKey(BedrockMaterialDescriptor, db_column='bedrock_material_descriptor_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Descriptor')
+    lithology_structure = models.ForeignKey(LithologyStructure, db_column='lithology_structure_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Structure')
+    lithology_weathering = models.ForeignKey(LithologyWeathering, db_column='lithology_weathering_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Weathering')
+    lithology_colour = models.ForeignKey(LithologyColour, db_column='lithology_colour_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Colour')
+    lithology_hardness = models.ForeignKey(LithologyHardness, db_column='lithology_hardness_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Hardness')
+    lithology_moisture = models.ForeignKey(LithologyMoisture, db_column='lithology_moisture_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Moisture')
+    water_bearing_estimated_flow = models.DecimalField(max_digits=10, decimal_places=4, verbose_name='Water Bearing Estimated Flow')
+    lithology_observation = models.CharField(max_length=250, blank=True, verbose_name='Observations')
+    class Meta:
+        db_table = 'gwells_lithology_description'
+
+    def __str__(self):
+        if self.activity_submission:
+            return 'activity_submission {} {} {}'.format(self.activity_submission, self.lithology_from, self.lithology_to)
+        else:
+            return 'well {} {} {}'.format(self.well, self.lithology_from, self.lithology_to)
 
 
 
