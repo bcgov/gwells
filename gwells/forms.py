@@ -5,7 +5,7 @@ from crispy_forms.layout import Layout, Fieldset, Div, Submit, Hidden, HTML, Fie
 from crispy_forms.bootstrap import FormActions, AppendedText
 from django.forms.models import inlineformset_factory
 from .search import Search
-from .models import ActivitySubmission, WellActivityType, ProvinceState, LithologyDescription
+from .models import ActivitySubmission, WellActivityType, ProvinceState, DrillingMethod, LithologyDescription
 from datetime import date
 
 class SearchForm(forms.Form):
@@ -395,8 +395,8 @@ class ActivitySubmissionGpsForm(forms.ModelForm):
                         ),
                         Div(
                             Div(HTML('<div id="div_id_gps-zone" class="form-group"> <label for="id_gps-zone" class="control-label ">Zone</label> <div class="controls "> <select class="select form-control" id="id_gps-zone" name="gps-zone"><option value="" selected="selected">---------</option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option></select> </div> </div>'), css_class='col-md-2'),
-                            Div(HTML('<div id="div_id_gps-utm_easting" class="form-group"> <label for="id_gps-utm_easting" class="control-label ">UTM Easting</label> <div class="controls "> <div class="input-group"> <input class="numberinput form-control" id="id_gps-utm_easting" name="gps-utm_easting" step="0.01" type="number" /> <span class="input-group-addon">m</span> </div> </div> </div>'), css_class='col-md-3'),
-                            Div(HTML('<div id="div_id_gps-utm_northing" class="form-group"> <label for="id_gps-utm_northing" class="control-label ">UTM Northing</label> <div class="controls "> <div class="input-group"> <input class="numberinput form-control" id="id_gps-utm_northing" name="gps-utm_northing" step="0.01" type="number" /> <span class="input-group-addon">m</span> </div> </div> </div>'), css_class='col-md-3'),
+                            Div(HTML('<div id="div_id_gps-utm_easting" class="form-group"> <label for="id_gps-utm_easting" class="control-label ">UTM Easting</label> <div class="controls "> <div class="input-group"> <input class="numberinput form-control" id="id_gps-utm_easting" name="gps-utm_easting" step="1" type="number" min="200000" max="800000" /> <span class="input-group-addon">m</span> </div> </div> </div>'), css_class='col-md-3'),
+                            Div(HTML('<div id="div_id_gps-utm_northing" class="form-group"> <label for="id_gps-utm_northing" class="control-label ">UTM Northing</label> <div class="controls "> <div class="input-group"> <input class="numberinput form-control" id="id_gps-utm_northing" name="gps-utm_northing" step="1" type="number" min="5350500" max="6655250" /> <span class="input-group-addon">m</span> </div> </div> </div>'), css_class='col-md-3'),
                             css_class='row',
                         ),
                         css_class='col-md-8',
@@ -437,10 +437,56 @@ class ActivitySubmissionGpsForm(forms.ModelForm):
         )
         super(ActivitySubmissionGpsForm, self).__init__(*args, **kwargs)
     
+    def clean_latitude(self):
+        latitude = self.cleaned_data.get('latitude')
+
+        # latitude is not required in the DB due to historical records, but is required for new records
+        if not latitude:
+            raise forms.ValidationError('This field is required.');
+
+        if latitude < 48.2045556 or latitude > 60.0223:
+            raise forms.ValidationError('Latitude must be between 60.0223 and 48.2045556.')
+
+        return latitude
+
+    def clean_longitude(self):
+        longitude = self.cleaned_data.get('longitude') 
+
+        # longitude is not required in the DB due to historical records, but is required for new records
+        if not longitude:
+            raise forms.ValidationError('This field is required.');
+
+        if longitude < -139.0736706 or longitude > -114.0338224:
+            raise forms.ValidationError('Longitude must be between -139.0736706 and -114.0338224.')
+
+        return longitude
+
+    def clean(self):
+        cleaned_data = super(ActivitySubmissionGpsForm, self).clean()
+        
+        ground_elevation = cleaned_data.get('ground_elevation')
+        ground_elevation_method = cleaned_data.get('ground_elevation_method')
+        drilling_method = cleaned_data.get('drilling_method')
+        other_drilling_method = cleaned_data.get('other_drilling_method')
+        errors = []
+
+        if ground_elevation and not ground_elevation_method:
+            errors.append('Method for Determining Ground Elevation is required when specifying Ground Elevation.')
+
+        try:
+            if drilling_method == DrillingMethod.objects.filter(code='OTHER')[0] and not other_drilling_method:
+                errors.append('Specify Other Drilling Method.')
+        except Exception as e:
+            errors.append('Configuration error: Other Drilling Method does not exist, please contact the administrator.')
+
+        if len(errors) > 0:
+            raise forms.ValidationError(errors)
+
+        return cleaned_data
+
     class Meta:
         model = ActivitySubmission
         fields = ['latitude', 'longitude', 'ground_elevation', 'ground_elevation_method', 'drilling_method', 'other_drilling_method', 'orientation_vertical']
-        #help_texts = {'latitude': 'decimal degrees', 'longitude': 'decimal degrees',}
         widgets = {'orientation_vertical': forms.RadioSelect}
 
 
@@ -495,6 +541,24 @@ class LithologyForm(forms.ModelForm):
         )
         super(LithologyForm, self).__init__(*args, **kwargs)
     
+    def clean_lithology_from(self):
+        lithology_from = self.cleaned_data.get('lithology_from') 
+
+        # lithology_from is not required in the DB due to historical records, but is required for new records
+        if not lithology_from:
+            raise forms.ValidationError('This field is required.');
+
+        return lithology_from
+
+    def clean_lithology_to(self):
+        lithology_to = self.cleaned_data.get('lithology_to') 
+        
+        # lithology_to is not required in the DB due to historical records, but is required for new records
+        if not lithology_to:
+            raise forms.ValidationError('This field is required.');
+
+        return lithology_to
+
     def clean(self):
         cleaned_data = super(LithologyForm, self).clean()
         
@@ -504,7 +568,7 @@ class LithologyForm(forms.ModelForm):
         bedrock_material = cleaned_data.get('bedrock_material')
         errors = []
 
-        if lithology_to < lithology_from:
+        if lithology_from and lithology_to and lithology_to < lithology_from:
             errors.append('To must be greater than or equal to From.')
 
         if not surficial_material and not bedrock_material:
