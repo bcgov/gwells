@@ -314,9 +314,14 @@ function WellsMap(options) {
 
     // Generates a popup content string (HTML) for a well marker, based on the data that well has available.
     var _generateWellMarkerPopupContents = function (well) {
-        var guid = well.guid;
-        var contentString = '<p> Well guid: ' + guid + '</p>';
-
+        var tagNum = well.well_tag_number;
+        var strAdd = well.street_address;
+        var idPlateNum = well.well_plate_id;
+        var contentString = '';
+        contentString += '<p>ID Plate Number: ' + idPlateNum + "</p>";
+        contentString += '<p>Tag Number: ' + '<a href="/well/' + tagNum + '">' + tagNum + '</a>' + '</p>';
+        contentString += '<p>Street Address: ' + strAdd + '</p>';
+console.log(well);
         return contentString;
     };
 
