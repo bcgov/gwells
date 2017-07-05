@@ -368,8 +368,8 @@ class ActivitySubmissionGpsForm(forms.ModelForm):
                             css_class='row',
                         ),
                         Div(
-                            Div(AppendedText('latitude', 'decimal degrees'), css_class='col-md-5'),
-                            Div(AppendedText('longitude', 'decimal degrees'), css_class='col-md-5'),
+                            Div(AppendedText('latitude', 'decimal degrees'), css_class='col-md-4'),
+                            Div(AppendedText('longitude', 'decimal degrees'), css_class='col-md-4'),
                             css_class='row',
                         ),
                         Div(
@@ -381,8 +381,8 @@ class ActivitySubmissionGpsForm(forms.ModelForm):
                             css_class='row',
                         ),
                         Div(
-                            Div(HTML('<div id="div_id_gps-latitude_dms" class="form-group"> <label for="id_gps-latitude_d" class="control-label ">Latitude</label> <div class="controls "> <div class="input-group"> <input class="numberinput form-control" id="id_gps-latitude_d" name="gps-latitude_d" step="1" type="number" /> <span class="input-group-addon">deg</span> <input class="numberinput form-control" id="id_gps-latitude_m" name="gps-latitude_m" step="1" type="number" /> <span class="input-group-addon">min</span> <input class="numberinput form-control" id="id_gps-latitude_s" name="gps-latitude_s" step="0.01" type="number" /> <span class="input-group-addon">sec</span> </div> </div> </div>'), css_class='col-md-6'),
-                            Div(HTML('<div id="div_id_gps-longitude_dms" class="form-group"> <label for="id_gps-longitude_d" class="control-label ">Longitude</label> <div class="controls "> <div class="input-group"> <input class="numberinput form-control" id="id_gps-longitude_d" name="gps-longitude_d" step="1" type="number" /> <span class="input-group-addon">deg</span> <input class="numberinput form-control" id="id_gps-longitude_m" name="gps-longitude_m" step="1" type="number" /> <span class="input-group-addon">min</span> <input class="numberinput form-control" id="id_gps-longitude_s" name="gps-longitude_s" step="0.01" type="number" /> <span class="input-group-addon">sec</span> </div> </div> </div>'), css_class='col-md-6'),
+                            Div(HTML('<div id="div_id_gps-latitude_dms" class="form-group"> <label for="id_gps-latitude_d" class="control-label ">Latitude</label> <div class="controls "> <div class="input-group"> <input class="numberinput form-control" id="id_gps-latitude_d" name="gps-latitude_d" step="1" type="number" /> <span class="input-group-addon">deg</span> <input class="numberinput form-control" id="id_gps-latitude_m" name="gps-latitude_m" step="1" type="number" /> <span class="input-group-addon">min</span> <input class="numberinput form-control" id="id_gps-latitude_s" name="gps-latitude_s" step="0.01" type="number" /> <span class="input-group-addon">sec</span> </div> </div> </div>'), css_class='col-md-5'),
+                            Div(HTML('<div id="div_id_gps-longitude_dms" class="form-group"> <label for="id_gps-longitude_d" class="control-label ">Longitude</label> <div class="controls "> <div class="input-group"> <input class="numberinput form-control" id="id_gps-longitude_d" name="gps-longitude_d" step="1" type="number" /> <span class="input-group-addon">deg</span> <input class="numberinput form-control" id="id_gps-longitude_m" name="gps-longitude_m" step="1" type="number" /> <span class="input-group-addon">min</span> <input class="numberinput form-control" id="id_gps-longitude_s" name="gps-longitude_s" step="0.01" type="number" /> <span class="input-group-addon">sec</span> </div> </div> </div>'), css_class='col-md-5'),
                             css_class='row',
                         ),
                         Div(
@@ -394,9 +394,9 @@ class ActivitySubmissionGpsForm(forms.ModelForm):
                             css_class='row',
                         ),
                         Div(
-                            Div(HTML('<div id="div_id_gps-zone" class="form-group"> <label for="id_gps-zone" class="control-label ">Zone</label> <div class="controls "> <select class="select form-control" id="id_gps-zone" name="gps-zone"><option value="" selected="selected">---------</option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option></select> </div> </div>'), css_class='col-md-4'),
-                            Div(HTML('<div id="div_id_gps-utm_easting" class="form-group"> <label for="id_gps-utm_easting" class="control-label ">UTM Easting</label> <div class="controls "> <div class="input-group"> <input class="numberinput form-control" id="id_gps-utm_easting" name="gps-utm_easting" step="0.01" type="number" /> <span class="input-group-addon">m</span> </div> </div> </div>'), css_class='col-md-4'),
-                            Div(HTML('<div id="div_id_gps-utm_northing" class="form-group"> <label for="id_gps-utm_northing" class="control-label ">UTM Northing</label> <div class="controls "> <div class="input-group"> <input class="numberinput form-control" id="id_gps-utm_northing" name="gps-utm_northing" step="0.01" type="number" /> <span class="input-group-addon">m</span> </div> </div> </div>'), css_class='col-md-4'),
+                            Div(HTML('<div id="div_id_gps-zone" class="form-group"> <label for="id_gps-zone" class="control-label ">Zone</label> <div class="controls "> <select class="select form-control" id="id_gps-zone" name="gps-zone"><option value="" selected="selected">---------</option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option></select> </div> </div>'), css_class='col-md-2'),
+                            Div(HTML('<div id="div_id_gps-utm_easting" class="form-group"> <label for="id_gps-utm_easting" class="control-label ">UTM Easting</label> <div class="controls "> <div class="input-group"> <input class="numberinput form-control" id="id_gps-utm_easting" name="gps-utm_easting" step="0.01" type="number" /> <span class="input-group-addon">m</span> </div> </div> </div>'), css_class='col-md-3'),
+                            Div(HTML('<div id="div_id_gps-utm_northing" class="form-group"> <label for="id_gps-utm_northing" class="control-label ">UTM Northing</label> <div class="controls "> <div class="input-group"> <input class="numberinput form-control" id="id_gps-utm_northing" name="gps-utm_northing" step="0.01" type="number" /> <span class="input-group-addon">m</span> </div> </div> </div>'), css_class='col-md-3'),
                             css_class='row',
                         ),
                         css_class='col-md-8',
@@ -422,11 +422,11 @@ class ActivitySubmissionGpsForm(forms.ModelForm):
                 ),
                 Div(
                     Div(AppendedText('ground_elevation', 'ft (asl)'), css_class='col-md-2'),
-                    Div('ground_elevation_method', css_class='col-md-4'),
+                    Div('ground_elevation_method', css_class='col-md-3'),
                     css_class='row',
                 ),
                 Div(
-                    Div('drilling_method', css_class='col-md-3'),
+                    Div('drilling_method', css_class='col-md-2'),
                     Div('other_drilling_method', css_class='col-md-3'),
                     css_class='row',
                 ),
