@@ -312,6 +312,14 @@ function WellsMap(options) {
         _wellMarkers = [];
     };
 
+    // Generates a popup content string (HTML) for a well marker, based on the data that well has available.
+    var _generateWellMarkerPopupContents = function (well) {
+        var guid = well.guid;
+        var contentString = '<p> Well guid: ' + guid + '</p>';
+
+        return contentString;
+    };
+
     // Draws wells that can be drawn. Currently a well cannot be drawn if it is associated with the wellPushpin.
     var _drawWells = function (wells) {
         // First we clear any extant markers
@@ -323,11 +331,12 @@ function WellsMap(options) {
         if (_exists(_wellPushpin) && _exists(_wellPushpin.wellDetails) && _exists(_wellPushpin.wellDetails.guid)) {
             wellPushpinGuid = _wellPushpin.wellDetails.guid;
         }
-        wells.forEach(function (well){
+        wells.forEach(function (well) {
             var latLong = _getLatLngInBC(well.latitude, well.longitude);
             var wellGuid = well.guid;            
             if (_exists(latLong) && _canDrawWell(wellPushpinGuid, wellGuid)) {
                 var wellMarker = L.circleMarker(latLong, style);
+                wellMarker.bindPopup(_generateWellMarkerPopupContents(well));
                 wellMarker.addTo(_leafletMap);
                 _wellMarkers.push(wellMarker);
             }
