@@ -16,7 +16,7 @@
 
 {% block body_block %}
 
-<h4>Step {{ wizard.steps.step1 }} of {{ wizard.steps.count }}</h4>
+<h4 class="stepheading">Step {{ wizard.steps.step1 }} of {{ wizard.steps.count }}</h4>
 		<form action="" method="post">
             {% csrf_token %}
             {{ wizard.management_form }}
@@ -26,8 +26,8 @@
                     <table>
                         <thead>
                             <tr>
-                                <th>From</th>
-                                <th>To</th>
+                                <th>From*</th>
+                                <th>To*</th>
                                 <th>Surficial Material</th>
                                 <th>Bedrock</th>
                                 <th>Descriptor</th>
