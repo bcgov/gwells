@@ -356,7 +356,7 @@ class ActivitySubmissionGpsForm(forms.ModelForm):
         self.helper.disable_csrf = True
         self.helper.layout = Layout(
             Fieldset(
-                'Geographic Coordinates and Method of Drilling',
+                'Geographic Coordinates',
                 Div(
                     Div(HTML('To determine coordinates using a Global Positioning System (GPS), set the datum to the North American Datum of 1983 (NAD 83), the current ministry standard for mapping.<br /><br />'), css_class='col-md-12'),
                     css_class='row',
@@ -407,14 +407,9 @@ class ActivitySubmissionGpsForm(forms.ModelForm):
                     ),
                     css_class='row',
                 ),
-                Div(
-                    Div(HTML('&nbsp;'), css_class='col-md-12'),
-                    css_class='row',
-                ),
-                Div(
-                    Div(HTML('&nbsp;'), css_class='col-md-12'),
-                    css_class='row',
-                ),
+            ),
+            Fieldset(
+                'Method of Drilling',
                 Div(
                     Div(AppendedText('ground_elevation', 'ft (asl)'), css_class='col-md-2'),
                     Div('ground_elevation_method', css_class='col-md-3'),
