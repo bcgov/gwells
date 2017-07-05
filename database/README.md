@@ -33,7 +33,6 @@ The legacy database is WELLS schema of ENVPROD1.NRS.GOV.BC.CA, and was exported 
 
    *NOTE*: The code table values are not derived from the legacy tables, so they are prefixed
    with the 'gwells' to denote this.  The rows, and UUID identifiers, are pre-populated and ready to be loaded in:
-
     ```
     gwells_drilling_method.csv
     gwells_intended_water_use.csv 
@@ -53,7 +52,6 @@ security and storage reasons.  The seqreset.sql script was generated via Django 
     `python manage.py sqlsequencereset gwells > ./database/scripts/seqreset.sql`
 
 Consolidate all scripts and CSV files into a single folder on the developer workstation.  For example:
-
     ```
     cp -v ~/projects/gwells/github/database/scripts/*.sql /Users/garywong/tmp/gwells
     cp -v ~/projects/gwells/legacy-data/postgres/*.csv  /Users/garywong/tmp/gwells
