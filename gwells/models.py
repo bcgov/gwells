@@ -432,7 +432,10 @@ class Well(TimeStampedModel):
         return {
             "latitude": self.latitude,
             "longitude": self.longitude,
-            "guid": self.well_guid
+            "guid": self.well_guid,
+            "well_plate_id": self.identification_plate_number,
+            "street_address": self.street_address,
+            "well_tag_number": self.well_tag_number
         }
 
 
