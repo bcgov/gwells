@@ -142,7 +142,7 @@
               transparent: true
           } */
       ],
-      wellPushpinMoveCallback: pushpinMoveCallback,      
+      wellPushpinMoveCallback: pushpinMoveCallback
   };
 
   // Sets the latitude and longitude fields programmatically, rounding to
@@ -150,10 +150,8 @@
   function setLatLongFields(lat, long) {
     var fixedLat = lat.toFixed(6);
     var fixedLong = long.toFixed(6);
-    $(latNodeSelector).val(fixedLat);
-    $(longNodeSelector).val(fixedLong);
-    // Since this change is programmatic, we can bypass user validation.
-    CoordSync.syncFromDDFields();
+    $(latNodeSelector).val(fixedLat).trigger(programmaticChangeEventName);
+    $(longNodeSelector).val(fixedLong).trigger(programmaticChangeEventName);
   }
 
   // Updates the latitude and longitude fields with the position of the pushpin
@@ -168,17 +166,9 @@
   function placeWellPushpin () {
     var lat = parseFloat($(latNodeSelector).val());
     var long = parseFloat($(longNodeSelector).val());
-    lat = isNaN(lat) ? void 0 : lat;
-    long = isNaN(long) ? void 0 : long;
     if (lat !== void 0 && long !== void 0) {
-      var latLng = L.latLng([lat,long]);
-      addMap.placeWellPushpin(latLng);
+      addMap.placeWellPushpin([lat, long]);
     }
-  };
-
-  // Calls on the map to remove the well pushpin. Currently used for 'Clear Map' button.
-  function removeWellPushpin () {
-    addMap.removeWellPushpin();
   };
 
   /** CoordSync block */
@@ -201,6 +191,9 @@
   var latLongDMSSecondPrecision = 2;
   var utmPrecision = 2;
 
+  // The name of the programmatic change event.
+  var programmaticChangeEventName = 'programmatic-change';
+
   // CSS selector for the geographic warning pane
   var coordErrorPaneSelector = '#coord-error-pane'
 
@@ -212,13 +205,14 @@
       $(coordErrorPaneSelector).text('');
     } else {
       // If the error message exists, remove the well pushpin and display the message in the error pane.
-      removeWellPushpin();
+      addMap.removeWellPushpin();
       $(coordErrorPaneSelector).text(error);
       $(coordErrorPaneSelector).show();
     }
   }
 
   var coordSyncOptions = {
+      progChangeEvent: programmaticChangeEventName,
       latDDNodeSelector: latNodeSelector, 
       longDDNodeSelector: longNodeSelector,
       latDMSDegreeNodeSelector: latDMSDegreeNodeSelector,

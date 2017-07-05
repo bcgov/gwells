@@ -402,12 +402,7 @@ class ActivitySubmissionGpsForm(forms.ModelForm):
                         css_class='col-md-8',
                     ),
                     Div(
-                        Div(
-                            Div(HTML('<button type="button">Map It!</button>'), css_class='col-md-4', onclick='placeWellPushpin()'),
-                            Div(HTML('<button type="button">Clear Map</button>'), css_class='col', onclick='removeWellPushpin()'),
-                            css_class='row',
-                        ),
-                        Div(HTML('<div id="add-map"></div>')),
+                        id='add-map',
                         css_class='col-md-4',
                     ),
                     css_class='row',
