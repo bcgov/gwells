@@ -40,12 +40,12 @@ node('maven') {
 
    stage('deploy-test') {
       input "Deploy to test?"
-      openshiftTag destStream: 'tfrs', verbose: 'true', destTag: 'test', srcStream: 'tfrs', srcTag: '$BUILD_ID'
+      openshiftTag destStream: 'gwells', verbose: 'true', destTag: 'test', srcStream: 'gwells', srcTag: '$BUILD_ID'
    }
 
    stage('deploy-prod') {
       input "Deploy to prod?"
-      openshiftTag destStream: 'tfrs', verbose: 'true', destTag: 'prod', srcStream: 'tfrs', srcTag: '$BUILD_ID'
+      openshiftTag destStream: 'gwells', verbose: 'true', destTag: 'prod', srcStream: 'gwells', srcTag: '$BUILD_ID'
    }
 
 }
