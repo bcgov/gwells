@@ -52,10 +52,8 @@ security and storage reasons.  The seqreset.sql script was generated via Django 
     `python manage.py sqlsequencereset gwells > ./database/scripts/seqreset.sql`
 
 Consolidate all scripts and CSV files into a single folder on the developer workstation.  For example:
-    ```
-    cp -v ~/projects/gwells/github/database/scripts/*.sql /Users/garywong/tmp/gwells
-    cp -v ~/projects/gwells/legacy-data/postgres/*.csv  /Users/garywong/tmp/gwells
-    ```
+    ```cp -v ~/projects/gwells/github/database/scripts/*.sql /Users/garywong/tmp/gwells```
+    ```cp -v ~/projects/gwells/legacy-data/postgres/*.csv  /Users/garywong/tmp/gwells```
 
     The complete file listing is:
     - gwells_drilling_method.csv
