@@ -3,8 +3,9 @@
  * The three field groups are Decimal Degrees, Day Minute Second, and UTM. 
  * We take the Decimal Degrees fields as the source of truth (i.e., these are the fields which are stored in the database).
  * If a user enters data into any other field, it is converted here to DD, altering the DD fields, which in turn update the other fields.
- * The fields undergo basic validation when changed manually by a user entering data in a field.
- * Validation is propagated up to the module's caller, where it is dealt with appropriately.
+ * The fields undergo basic validation when changed manually by a user entering data in a field. Validation is propagated up to the module's 
+ * caller, where it is dealt with appropriately.
+ * Programmatic changes to the DD fields are supported, which bypass sending validation success to the caller.
  * This module depends on JQuery.
  */
 var CoordSync = (function () {
@@ -207,13 +208,18 @@ function _areUTMFieldsValid () {
 /** Field updates */
 
 // Dispatches changes to DMS and UTM with suitable conversions and validation.
-function _latLongDDFieldOnChange () {
+// Since the lat/long DD fields are the 'anchor' fields, they can be programmatically changed.
+// In that case, we prevent the validationSuccessCallback from firing, as that callback is
+// only for user-entered data changes in the input fields.
+function _latLongDDFieldOnChange (programmaticallyChanged) {
     // If a user enters DD directly, we accept positive longitudes, but correct them on the fly.
     _correctPositiveLong();
     if (_areLatLongDDFieldsValid()) {
         _setDMSFromDD();
         _setUTMFromDD();
-        _validationSuccessCallback();
+        if (!programmaticallyChanged) {
+            _validationSuccessCallback();
+        }
     } else {
         _clearDMSFields();
         _clearUTMFields();
@@ -868,19 +874,10 @@ function UTMXYToLatLon (x, y, zone, southhemi, latlon)
 
 /** End of UTM conversion code */
 
-/** Public methods */
-
-// Synchronises the non-DD fields to the DD fields. This function should be called with programmatic
-// coordinate updates, and so does not require validation.
-// TODO: Comment on why this is necessary or refactor to remove it
-var syncFromDDFields = function () {
-    _setDMSFromDD();
-    _setUTMFromDD();
-}
-
 /** Module initialisation.
  * @param options An object with properties conforming to: 
  * {
+ *    progChangeEvent: string, // The name of the event whereby the coordinates are programmatically changed (e.g., by the map on pushpin move)
  *    // Each nodeSelector is a JQuery selector string; e.g., '#nodeId'.
  *    latDDNodeSelector: string, 
  *    longDDNodeSelector: string,
@@ -931,23 +928,25 @@ var init = function(options) {
     _latLongDMSSecondPrecision = options.latLongDMSSecondPrecision;
     _utmPrecision = options.utmPrecision;
 
+    // Subscribe the lat/long nodes to the progChangeEvent
+    _latDDField.on(options.progChangeEvent, function () { _latLongDDFieldOnChange(true); });
+    _longDDField.on(options.progChangeEvent, function () { _latLongDDFieldOnChange(true); });
 
     // Subscribe the nodes to the change event.
-    _latDDField.on('change', _latLongDDFieldOnChange);
-    _longDDField.on('change', _latLongDDFieldOnChange);
-    _latDMSDegreeField.on('change', _latLongDMSFieldOnChange);
-    _latDMSMinuteField.on('change', _latLongDMSFieldOnChange);
-    _latDMSSecondField.on('change', _latLongDMSFieldOnChange);
-    _longDMSDegreeField.on('change', _latLongDMSFieldOnChange);
-    _longDMSMinuteField.on('change', _latLongDMSFieldOnChange);
-    _longDMSSecondField.on('change', _latLongDMSFieldOnChange);
-    _zoneUTMField.on('change', _utmFieldOnChange);
-    _eastingUTMField.on('change', _utmFieldOnChange);
-    _northingUTMField.on('change', _utmFieldOnChange);
+    _latDDField.on('change', function () { _latLongDDFieldOnChange(false); });
+    _longDDField.on('change', function () { _latLongDDFieldOnChange(false); });
+    _latDMSDegreeField.on('change', function () { _latLongDMSFieldOnChange(false); });
+    _latDMSMinuteField.on('change', function () { _latLongDMSFieldOnChange(false); });
+    _latDMSSecondField.on('change', function () { _latLongDMSFieldOnChange(false); });
+    _longDMSDegreeField.on('change', function () { _latLongDMSFieldOnChange(false); });
+    _longDMSMinuteField.on('change', function () { _latLongDMSFieldOnChange(false); });
+    _longDMSSecondField.on('change', function () { _latLongDMSFieldOnChange(false); });
+    _zoneUTMField.on('change', function () { _utmFieldOnChange(false); });
+    _eastingUTMField.on('change', function () { _utmFieldOnChange(false); });
+    _northingUTMField.on('change', function () { _utmFieldOnChange(false); });
 }
 
 return {
-    init: init,
-    syncFromDDFields: syncFromDDFields
+    init: init
 }
 })();
