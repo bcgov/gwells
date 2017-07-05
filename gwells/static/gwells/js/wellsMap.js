@@ -22,7 +22,7 @@
  *          layers: string, // Layers of the OWS service; e.g., 'pub:WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW'.
  *          styles: string, // Styles of the OWS service; e.g., 'PMBC_Parcel_Fabric_Cadastre_Outlined'
  *          transparent: boolean // Whether the tiles are transparent (other than the features drawn upon them)
- *      } 
+ *      }
  *   ],
  *   initCentre?: [float], // A two-element array representing the latitude and longitude of the centre of the map. If omitted, the map is fit to mapBounds, so one of these must exist.
  *   canZoom?: bool, // Whether the map can be zoomed. Defaults to true.
@@ -34,7 +34,7 @@
  *      south: float, // The bottom latitude of the map
  *      west: float, // The leftmost longitude of the map
  *      east: float, // The rightmost longitude of the map
- *      padding: int // Margin beyond extremes to pad the bounds with, as a percentage of the total bounding box.     
+ *      padding: int // Margin beyond extremes to pad the bounds with, as a percentage of the total bounding box.
  *   },
  *   wellPushpinInit?: { // An object for setting the latitude, longitude, and details of a wellPushpin on init.
  *      lat: float, // The initial latitude of the pushpin
@@ -43,12 +43,12 @@
  *          guid: string // The GUID of the well, for identification and special handling
  *      }
  *   },
- *   wellPushpinMoveCallback?: function, // Function to call when the map's wellPushpin moves 
+ *   wellPushpinMoveCallback?: function, // Function to call when the map's wellPushpin moves
  *   identifyWellsStartCallback?: function, // Function to call when an identifyWells operation is started
  *   identifyWellsEndCallback?: function // Function to call when an identifyWells operation ends
  * }
  */
-function WellsMap (options) {
+function WellsMap(options) {
     'use strict';
 
     /** Class constants */
@@ -370,16 +370,15 @@ function WellsMap (options) {
     /**
      * Places a wellPushpin on the map to help refine the placement of a well.
      * When placed by a button click, the map pans and zooms to centre on the marker.
-     * @param latLng A Leaflet latLng where the wellPushpin will be placed
+     * @param latLongArray An array of [lat, long], where lat and long specify where the wellPushpin will be placed
      */
-    // TODO: Potentially overload with an array for lat/long vals?
-    var placeWellPushpin = function (latLng, wellDetails) {
+    var placeWellPushpin = function (latLongArray, wellDetails) {
         // If the map or the latLng do not exist, bail out.
-        if (!_exists(_leafletMap) || !_exists(latLng)) {
+        if (!_exists(_leafletMap) || !_exists(latLongArray) || !_isArray(latLongArray) || latLongArray.length !== 2) {
             return;
         }
         // We ensure the lat/long is in BC, in case it was passed in without checking.
-        var latLong = _getLatLngInBC(latLng.lat, latLng.lng);
+        var latLong = _getLatLngInBC(latLongArray[0], latLongArray[1]);
         // If the latitude and longitude do not fit within the map's maxBounds, bail out.
         if (!_exists(latLong)) {
             return;
@@ -515,17 +514,14 @@ function WellsMap (options) {
         }
 
         // Callbacks
-        _wellPushpinMoveCallback = options.wellPushpinMoveCallback || null;    
+        _wellPushpinMoveCallback = options.wellPushpinMoveCallback || null;
         _identifyWellsStartCallback = options.identifyWellsStartCallback || null;
         _identifyWellsEndCallback = options.identifyWellsEndCallback || null;
 
         var wellPushpinInit = options.wellPushpinInit || null;
         if (_exists(wellPushpinInit) && _exists(wellPushpinInit.lat) && _exists(wellPushpinInit.long)) {
-            var rawLat = wellPushpinInit.lat;
-            var rawLong = wellPushpinInit.long;
-            var pinPoint = _getLatLngInBC(rawLat, rawLong);
             var details = wellPushpinInit.wellDetails;
-            placeWellPushpin(pinPoint, details);
+            placeWellPushpin([wellPushpinInit.lat, wellPushpinInit.long], details);
         }
     }(options));
 
