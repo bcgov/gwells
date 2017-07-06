@@ -83,7 +83,8 @@ function WellsMap(options) {
     //     pushpinMarker: L.marker, // The Leaflet marker that points to the well's location
     //     wellDetails: {
     //         guid: string, // The well's globally-unique ID, to avoid drawing with other (non-interactive) wells
-    //     }
+    //     },
+    //     wellMarker: L.circleMarker // The Leaflet circleMarker that represents the well itself.
     // }
     var _wellPushpin = null;
 
@@ -165,8 +166,12 @@ function WellsMap(options) {
 
     // Passes the wellPushpin's updated lat/long coordinates to the provided callback function, if it exists.
     var _wellPushpinMoveEvent = function (moveEvent) {
+        var latLng = moveEvent.latlng;
+        if (_exists(_wellPushpin.wellMarker)) {
+            _wellPushpin.wellMarker.setLatLng(latLng);
+        }
         if (_exists(_wellPushpinMoveCallback)) {
-            _wellPushpinMoveCallback(moveEvent.latlng);
+            _wellPushpinMoveCallback(latLng);
         }
     };
 
@@ -431,6 +436,7 @@ function WellsMap(options) {
             _wellPushpin.pushpinMarker = L.marker(latLong, {
                 draggable: _exists(_wellPushpinMoveCallback) // The pin should only drag if the map's caller has a hook to handle movement
             }).addTo(_leafletMap);
+            _wellPushpin.wellMarker = L.circleMarker(latLong, _WELL_MARKER_STYLE).addTo(_leafletMap);
             // The pin should subscribe to move and moveend events.
             _wellPushpin.pushpinMarker.on('move', _wellPushpinMoveEvent);
             _wellPushpin.pushpinMarker.on('moveend', _wellPushpinMoveEndEvent);
@@ -452,6 +458,7 @@ function WellsMap(options) {
         }
         if (_exists(_wellPushpin) && _exists(_wellPushpin.pushpinMarker)) {
             _leafletMap.removeLayer(_wellPushpin.pushpinMarker);
+            _leafletMap.removeLayer(_wellPushpin.wellMarker);
             // If there isn't a pin, we shouldn't re-query on every map move.
             _leafletMap.off('moveend', _searchBoundingBoxOnMoveEnd);
             _wellPushpin = null;
