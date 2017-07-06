@@ -237,19 +237,17 @@ function WellsMap(options) {
         return true;
     };
 
-    // Makes sure the latitude and longitude fit within the map's bounding box, if one exists. This is necessary since lat/long data may
-    // only be correct up to a minus sign (especially longitude data in the Western hemisphere) due to users not knowing
-    // to enter a minus sign (or potentially entering a minus sign erronneously).
+    // Makes sure the latitude and longitude fit within the map's bounding box, if one exists.
     // If the lat and long are within the map's bounds, they are returned; if they can be corrected by flipping the sign,
     // the negated values are returned. Else { NaN, NaN } is returned along with a console error.
     // Takes a latLong parameter corresponding to { lat: number, long: number }
     var _ensureLatLongIsInBounds = function (latLong) {
         var lat = _exists(latLong.lat) ? latLong.lat : NaN;
         var long = _exists(latLong.long) ? latLong.long : NaN;
-        if (long > 0) {
-            // Even if there's not a bounding box, we'll flip positive longitudes.
-            long = -long;
-        }
+        // if (long > 0) {
+        //     // Even if there's not a bounding box, we'll flip positive longitudes.
+        //     long = -long;
+        // }
         if (!_isLatInBounds(lat)){
             lat = NaN;
         }
@@ -337,15 +335,15 @@ function WellsMap(options) {
         // This dictionary's values will in general consist of a (potentially processed)
         // subset of the JSON returned by the Python well search service.
         var contentObj = {
-            'ID Plate Number': well.idPlateNum || '',
-            'Tag Number': _generateWellTagUrl(well.well_tag_number), // We turn the well tag number into a local URL to the summary page.
+            'Well Tag Number': _generateWellTagUrl(well.well_tag_number), // We turn the well tag number into a local URL to the summary page.
+            'Identification Plate Number': well.identification_plate_number || '',
             'Street Address': well.street_address || ''
         };
 
         // We build the contentString from the contentObj dictionary, using paragraphs as property delimiters.
         var contentString = '';
         $.each(contentObj, function (contentKey, contentVal) {
-            contentString += '<p>' + contentKey + ': ' + contentVal + '</p>';
+            contentString += '' + contentKey + ': ' + contentVal + '<br />';
         });
         return contentString;
     };
@@ -407,13 +405,15 @@ function WellsMap(options) {
 
     // The pushpin's wellMarker is removed during zoom, since circleMarkers do not dynamically re-size during zoom
     // (and so will expand to the entire map if zooming in from far away, for example).
+    // TODO: Determine if wellMarker is needed
     var _wellPushpinZoomStartEvent = function () {
-        _leafletMap.removeLayer(_wellPushpin.wellMarker);
+        //_leafletMap.removeLayer(_wellPushpin.wellMarker);
     };
 
     // The pushpin's wellMarker is replaced after zoom ends.
+    // TODO: Determine if wellMarker is needed
     var _wellPushpinZoomEndEvent = function () {
-        _wellPushpin.wellMarker.addTo(_leafletMap);
+        //_wellPushpin.wellMarker.addTo(_leafletMap);
     };
 
     /** Public methods */
@@ -447,8 +447,10 @@ function WellsMap(options) {
             _wellPushpin.pushpinMarker = L.marker(latLong, {
                 draggable: _exists(_wellPushpinMoveCallback) // The pin should only drag if the map's caller has a hook to handle movement
             }).addTo(_leafletMap);
-            _wellPushpin.wellMarker = L.circleMarker(latLong, _WELL_MARKER_STYLE).addTo(_leafletMap);
-            // The pin should subscribe to move and moveend events.
+            // TODO: Determine if wellMarker is needed, or if indeed it is counterproductive for well placement/verification
+            //_wellPushpin.wellMarker = L.circleMarker(latLong, _WELL_MARKER_STYLE).addTo(_leafletMap);
+
+            // The pin should subscribe to move events.
             _wellPushpin.pushpinMarker.on('move', _wellPushpinMoveEvent);
             _wellPushpin.pushpinMarker.on('moveend', _wellPushpinMoveEndEvent);
         }
@@ -463,8 +465,8 @@ function WellsMap(options) {
         // CircleMarkers expand during zoom, and so if the pin's wellMarker is placed on a very zoomed-out map,
         // the wellMarker will come to encompass the entire map while it zooms in. To circumvent this,
         // we remove the wellMarker during zoom.
-        _leafletMap.on('zoomstart', _wellPushpinZoomStartEvent);
-        _leafletMap.on('zoomend', _wellPushpinZoomEndEvent)
+        // _leafletMap.on('zoomstart', _wellPushpinZoomStartEvent);
+        // _leafletMap.on('zoomend', _wellPushpinZoomEndEvent);
         _leafletMap.flyTo(latLong, zoomLevel);
     };
 
@@ -478,8 +480,8 @@ function WellsMap(options) {
             _leafletMap.removeLayer(_wellPushpin.wellMarker);
             // Unsubscribe from the pushpin-related events.
             _leafletMap.off('moveend', _searchBoundingBoxOnMoveEnd);
-            _leafletMap.off('zoomstart', _wellPushpinZoomStartEvent);
-            _leafletMap.off('zoomend', _wellPushpinZoomEndEvent);
+            // _leafletMap.off('zoomstart', _wellPushpinZoomStartEvent);
+            // _leafletMap.off('zoomend', _wellPushpinZoomEndEvent);
             _wellPushpin = null;
             _clearWells();
         }
@@ -548,7 +550,7 @@ function WellsMap(options) {
             maxBounds: _maxBounds,
             maxBoundsViscosity: 1.0,
             zoomControl: canZoom,
-            scrollWheelZoom: canZoom,
+            scrollWheelZoom: canZoom ? 'center' : false, // We want the map to stay centred on scrollwheel zoom if zoom is enabled.
             keyboardPanDelta: canPan ? 80 : 0
         });
         if (_exists(initCentre) && _isArray(initCentre) && initCentre.length === 2) {
