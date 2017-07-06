@@ -237,19 +237,17 @@ function WellsMap(options) {
         return true;
     };
 
-    // Makes sure the latitude and longitude fit within the map's bounding box, if one exists. This is necessary since lat/long data may
-    // only be correct up to a minus sign (especially longitude data in the Western hemisphere) due to users not knowing
-    // to enter a minus sign (or potentially entering a minus sign erronneously).
+    // Makes sure the latitude and longitude fit within the map's bounding box, if one exists.
     // If the lat and long are within the map's bounds, they are returned; if they can be corrected by flipping the sign,
     // the negated values are returned. Else { NaN, NaN } is returned along with a console error.
     // Takes a latLong parameter corresponding to { lat: number, long: number }
     var _ensureLatLongIsInBounds = function (latLong) {
         var lat = _exists(latLong.lat) ? latLong.lat : NaN;
         var long = _exists(latLong.long) ? latLong.long : NaN;
-        if (long > 0) {
-            // Even if there's not a bounding box, we'll flip positive longitudes.
-            long = -long;
-        }
+        // if (long > 0) {
+        //     // Even if there's not a bounding box, we'll flip positive longitudes.
+        //     long = -long;
+        // }
         if (!_isLatInBounds(lat)){
             lat = NaN;
         }
