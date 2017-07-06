@@ -54,13 +54,13 @@ function WellsMap(options) {
     /** Class constants */
 
     // The URL used to search for wells.
-    var _searchUrl = '/ajax/map_well_search/';
+    var _SEARCH_URL = '/ajax/map_well_search/';
 
     // The zoom level beyond which the map issues queries for wells.
-    var _searchMinZoomLevel = 14;
+    var _SEARCH_MIN_ZOOM_LEVEL = 14;
 
     // Leaflet style for the _wellMarkers
-    var _wellMarkerStyle = {
+    var _WELL_MARKER_STYLE = {
           radius: 3, // The radius of the circleMarker
           color: '#0147b7', // The color of the circleMarker
           fillOpacity: 1.0 // How transparent the circleMarker's fill is
@@ -83,7 +83,8 @@ function WellsMap(options) {
     //     pushpinMarker: L.marker, // The Leaflet marker that points to the well's location
     //     wellDetails: {
     //         guid: string, // The well's globally-unique ID, to avoid drawing with other (non-interactive) wells
-    //     }
+    //     },
+    //     wellMarker: L.circleMarker // The Leaflet circleMarker that represents the well itself.
     // }
     var _wellPushpin = null;
 
@@ -165,8 +166,12 @@ function WellsMap(options) {
 
     // Passes the wellPushpin's updated lat/long coordinates to the provided callback function, if it exists.
     var _wellPushpinMoveEvent = function (moveEvent) {
+        var latLng = moveEvent.latlng;
+        if (_exists(_wellPushpin.wellMarker)) {
+            _wellPushpin.wellMarker.setLatLng(latLng);
+        }
         if (_exists(_wellPushpinMoveCallback)) {
-            _wellPushpinMoveCallback(moveEvent.latlng);
+            _wellPushpinMoveCallback(latLng);
         }
     };
 
@@ -312,22 +317,57 @@ function WellsMap(options) {
         _wellMarkers = [];
     };
 
+    // Parses the input to generate an internal URL to the well details summary page. If the input is not a number (or null),
+    // an empty string is returned.
+    var _generateWellTagUrl = function (tagNum) {
+        var num = parseInt(tagNum);
+        if (!_exists(num) || isNaN(num)) {
+            return '';
+        }
+        return '<a href="/well/' + num + '">' + num + '</a>';
+    };
+
+    // Generates a popup content HTML string for a well marker, based on the data that well has available.
+    var _generateWellMarkerPopupContents = function (well) {
+        if (!_exists(well)) {
+            return;
+        }
+        // contentObj is a dictionary whose keys correspond to the display names of
+        // well data attributes and whose values correspond to the specific well's data.
+        // This dictionary's values will in general consist of a (potentially processed)
+        // subset of the JSON returned by the Python well search service.
+        var contentObj = {
+            'ID Plate Number': well.idPlateNum || '',
+            'Tag Number': _generateWellTagUrl(well.well_tag_number), // We turn the well tag number into a local URL to the summary page.
+            'Street Address': well.street_address || ''
+        };
+
+        // We build the contentString from the contentObj dictionary, using paragraphs as property delimiters.
+        var contentString = '';
+        $.each(contentObj, function (contentKey, contentVal) {
+            contentString += '<p>' + contentKey + ': ' + contentVal + '</p>';
+        });
+        return contentString;
+    };
+
     // Draws wells that can be drawn. Currently a well cannot be drawn if it is associated with the wellPushpin.
     var _drawWells = function (wells) {
         // First we clear any extant markers
         _clearWells();
 
-        // Now we draw the wells, checking to prevent a marker from being drawn where a pushpin will be.
-        var style = _wellMarkerStyle || void 0;
+        // Markers should only be clickable when there is no wellPushpin available.
+        var style = $.extend({}, _WELL_MARKER_STYLE, {interactive: !_wellPushpin});
         var wellPushpinGuid = null;
+        // Now we draw the wells, checking to prevent a marker from being drawn where a pushpin will be.
         if (_exists(_wellPushpin) && _exists(_wellPushpin.wellDetails) && _exists(_wellPushpin.wellDetails.guid)) {
             wellPushpinGuid = _wellPushpin.wellDetails.guid;
         }
-        wells.forEach(function (well){
+        wells.forEach(function (well) {
             var latLong = _getLatLngInBC(well.latitude, well.longitude);
-            var wellGuid = well.guid;            
+            var wellGuid = well.guid;
             if (_exists(latLong) && _canDrawWell(wellPushpinGuid, wellGuid)) {
                 var wellMarker = L.circleMarker(latLong, style);
+                wellMarker.bindPopup(_generateWellMarkerPopupContents(well));
                 wellMarker.addTo(_leafletMap);
                 _wellMarkers.push(wellMarker);
             }
@@ -347,9 +387,9 @@ function WellsMap(options) {
 
     // Searches for all wells in the map's current bounding box, provided the map is beyond the minimum searching zoom level.
     var _searchWellsInBoundingBox = function () {
-        if (_exists(_leafletMap) && _leafletMap.getZoom() >= _searchMinZoomLevel) {
+        if (_exists(_leafletMap) && _leafletMap.getZoom() >= _SEARCH_MIN_ZOOM_LEVEL) {
             var mapBounds = _leafletMap.getBounds();
-            _searchByAjax(_searchUrl, mapBounds, _searchByAjaxSuccessCallback);
+            _searchByAjax(_SEARCH_URL, mapBounds, _searchByAjaxSuccessCallback);
         }
     };
 
@@ -363,6 +403,17 @@ function WellsMap(options) {
     var _wellPushpinMoveEndEvent = function () {
         var latLng = _wellPushpin.pushpinMarker.getLatLng();
         _leafletMap.panTo(latLng);
+    };
+
+    // The pushpin's wellMarker is removed during zoom, since circleMarkers do not dynamically re-size during zoom
+    // (and so will expand to the entire map if zooming in from far away, for example).
+    var _wellPushpinZoomStartEvent = function () {
+        _leafletMap.removeLayer(_wellPushpin.wellMarker);
+    };
+
+    // The pushpin's wellMarker is replaced after zoom ends.
+    var _wellPushpinZoomEndEvent = function () {
+        _wellPushpin.wellMarker.addTo(_leafletMap);
     };
 
     /** Public methods */
@@ -396,6 +447,7 @@ function WellsMap(options) {
             _wellPushpin.pushpinMarker = L.marker(latLong, {
                 draggable: _exists(_wellPushpinMoveCallback) // The pin should only drag if the map's caller has a hook to handle movement
             }).addTo(_leafletMap);
+            _wellPushpin.wellMarker = L.circleMarker(latLong, _WELL_MARKER_STYLE).addTo(_leafletMap);
             // The pin should subscribe to move and moveend events.
             _wellPushpin.pushpinMarker.on('move', _wellPushpinMoveEvent);
             _wellPushpin.pushpinMarker.on('moveend', _wellPushpinMoveEndEvent);
@@ -407,6 +459,12 @@ function WellsMap(options) {
         // If the pin exists, the map should refresh the wells it displays when it is moved, to provide
         // more information to aid in well placement without having to load too many wells at once.
         _leafletMap.on('moveend', _searchBoundingBoxOnMoveEnd);
+
+        // CircleMarkers expand during zoom, and so if the pin's wellMarker is placed on a very zoomed-out map,
+        // the wellMarker will come to encompass the entire map while it zooms in. To circumvent this,
+        // we remove the wellMarker during zoom.
+        _leafletMap.on('zoomstart', _wellPushpinZoomStartEvent);
+        _leafletMap.on('zoomend', _wellPushpinZoomEndEvent)
         _leafletMap.flyTo(latLong, zoomLevel);
     };
 
@@ -417,8 +475,11 @@ function WellsMap(options) {
         }
         if (_exists(_wellPushpin) && _exists(_wellPushpin.pushpinMarker)) {
             _leafletMap.removeLayer(_wellPushpin.pushpinMarker);
-            // If there isn't a pin, we shouldn't re-query on every map move.
+            _leafletMap.removeLayer(_wellPushpin.wellMarker);
+            // Unsubscribe from the pushpin-related events.
             _leafletMap.off('moveend', _searchBoundingBoxOnMoveEnd);
+            _leafletMap.off('zoomstart', _wellPushpinZoomStartEvent);
+            _leafletMap.off('zoomend', _wellPushpinZoomEndEvent);
             _wellPushpin = null;
             _clearWells();
         }

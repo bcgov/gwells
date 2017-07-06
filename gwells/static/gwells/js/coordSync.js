@@ -43,7 +43,7 @@ var _validationSuccessCallback = null;
 // The precisions of the fields, defaulted to zero for truthy-checking.
 var _latLongDDPrecision = 6;
 var _latLongDMSSecondPrecision = 2;
-var _utmPrecision = 2;
+var _utmPrecision = 0;
 
 // Checks to see whether a given latitude is within the bounding box.
 function _latIsInBox (lat) {
