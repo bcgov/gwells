@@ -104,6 +104,7 @@ TEMPLATES = {'type_and_class': 'gwells/activity_submission_form.html',
 
 
 class ActivitySubmissionWizardView(SessionWizardView):
+    instance = None
 
     def get_template_names(self):
         return [TEMPLATES[self.steps.current]]
@@ -124,11 +125,16 @@ class ActivitySubmissionWizardView(SessionWizardView):
        #     context.update({'formset': formset, 'helper': helper})
         return context
 
+    def get_form_instance(self, step):
+        if self.instance is None:
+            self.instance = ActivitySubmission()
+        return self.instance
+    
     def done(self, form_list, **kwargs):
-        submission = ActivitySubmission()
-        for form in form_list:
-            for field, value in form.cleaned_data.items():
-                setattr(submission, field, value)
+        submission = self.instance
+        #for form in form_list:
+        #    for field, value in form.cleaned_data.items():
+        #        setattr(submission, field, value)
 
         #if submission.well_activity_type.code == 'CON' and submission.well is None:
             #TODO
