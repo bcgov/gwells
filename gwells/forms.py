@@ -496,10 +496,10 @@ class LithologyForm(forms.ModelForm):
         self.helper.render_hidden_fields = True
         self.helper.layout = Layout(
             HTML('<tr valign="top">'),
-            HTML('<td>'),
+            HTML('<td width="6%">'),
             'lithology_from',
             HTML('</td>'),
-            HTML('<td>'),
+            HTML('<td width="6%">'),
             'lithology_to',
             HTML('</td>'),
             HTML('<td>'),
@@ -531,7 +531,7 @@ class LithologyForm(forms.ModelForm):
             HTML('</td>'),
             HTML('<td>'),
             'lithology_observation',
-            HTML('</td>'),
+            HTML('{% if form.instance.pk %}{{ form.DELETE }}{% endif %}</td>'),
             HTML('</tr>'),
         )
         super(LithologyForm, self).__init__(*args, **kwargs)
