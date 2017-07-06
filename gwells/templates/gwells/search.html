@@ -30,8 +30,9 @@
     </div>
  </div>
 <br />
-
-{% if well_list %}
+{% if too_many_wells %}
+    <div class="alert alert-danger">{{ too_many_wells }}</div>
+{% elif well_list %}
     <!-- Removed because the query is sorted and sliced in search.py { autosort well_list }-->
     <div id="wells-json" data-wells-search-json="{{wells_json}}"></div>
     {% autopaginate well_list 25 %}
