@@ -35,7 +35,7 @@ def well_search(request):
   
     if well_results:
         if len(well_results) > SearchForm.WELL_RESULTS_LIMIT:
-            well_results_overflow = 'Query returned more than ' + str(SearchForm.WELL_RESULTS_LIMIT) + ' wells. Please refine your search.'
+            well_results_overflow = ('Query returned more than %d wells. Please refine your search.' % SearchForm.WELL_RESULTS_LIMIT)
             well_results = None
         else:
             well_results_json = json.dumps(
