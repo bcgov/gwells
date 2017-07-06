@@ -407,13 +407,15 @@ function WellsMap(options) {
 
     // The pushpin's wellMarker is removed during zoom, since circleMarkers do not dynamically re-size during zoom
     // (and so will expand to the entire map if zooming in from far away, for example).
+    // TODO: Determine if wellMarker is needed
     var _wellPushpinZoomStartEvent = function () {
-        _leafletMap.removeLayer(_wellPushpin.wellMarker);
+        //_leafletMap.removeLayer(_wellPushpin.wellMarker);
     };
 
     // The pushpin's wellMarker is replaced after zoom ends.
+    // TODO: Determine if wellMarker is needed
     var _wellPushpinZoomEndEvent = function () {
-        _wellPushpin.wellMarker.addTo(_leafletMap);
+        //_wellPushpin.wellMarker.addTo(_leafletMap);
     };
 
     /** Public methods */
@@ -449,10 +451,10 @@ function WellsMap(options) {
             }).addTo(_leafletMap);
             // TODO: Determine if wellMarker is needed, or if indeed it is counterproductive for well placement/verification
             //_wellPushpin.wellMarker = L.circleMarker(latLong, _WELL_MARKER_STYLE).addTo(_leafletMap);
-            //_wellPushpin.pushpinMarker.on('moveend', _wellPushpinMoveEndEvent);
 
-            // The pin should subscribe to move event.
+            // The pin should subscribe to move events.
             _wellPushpin.pushpinMarker.on('move', _wellPushpinMoveEvent);
+            _wellPushpin.pushpinMarker.on('moveend', _wellPushpinMoveEndEvent);
         }
         // If the wellDetails properties exist, assign them.
         if (_exists(wellDetails) && _exists(wellDetails.guid)) {
@@ -465,8 +467,8 @@ function WellsMap(options) {
         // CircleMarkers expand during zoom, and so if the pin's wellMarker is placed on a very zoomed-out map,
         // the wellMarker will come to encompass the entire map while it zooms in. To circumvent this,
         // we remove the wellMarker during zoom.
-    // _leafletMap.on('zoomstart', _wellPushpinZoomStartEvent);
-    // _leafletMap.on('zoomend', _wellPushpinZoomEndEvent);
+        // _leafletMap.on('zoomstart', _wellPushpinZoomStartEvent);
+        // _leafletMap.on('zoomend', _wellPushpinZoomEndEvent);
         _leafletMap.flyTo(latLong, zoomLevel);
     };
 
@@ -550,7 +552,7 @@ function WellsMap(options) {
             maxBounds: _maxBounds,
             maxBoundsViscosity: 1.0,
             zoomControl: canZoom,
-            scrollWheelZoom: canZoom,
+            scrollWheelZoom: canZoom ? 'center' : false, // We want the map to stay centred on scrollwheel zoom if zoom is enabled.
             keyboardPanDelta: canPan ? 80 : 0
         });
         if (_exists(initCentre) && _isArray(initCentre) && initCentre.length === 2) {
