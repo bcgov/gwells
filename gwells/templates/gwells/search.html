@@ -22,10 +22,10 @@
     </div>
     <div class="col-md-8">
         <div class="row">
-        <button id="identify-wells-btn" type="button" onclick="startIdentifyWellsOperation()">Select Area on Map</button>
+            <button id="identify-wells-btn" class="btn btn-primary" type="button" onclick="startIdentifyWellsOperation()">Select Area on Map</button>
         </div>
         <div class="row">
-        <div id="search-map" class="col"></div>
+            <div id="search-map" class="col-md-6"></div>
         </div>
     </div>
  </div>
@@ -33,9 +33,10 @@
 
 {% if well_list %}
     <!-- Removed because the query is sorted and sliced in search.py { autosort well_list }-->
+    <div id="wells-json" data-wells-search-json="{{wells_json}}"></div>
     {% autopaginate well_list 25 %}
         <div class="row">
-            <div class="col-sm-12" data-wells-search-json="{{wells_json}}">
+            <div class="col-sm-12">
                 {{ page_obj.start_index }}-{{ page_obj.end_index }} of {{ page_obj.paginator.count }} results
                 <br /><br />
             </div>
@@ -220,7 +221,7 @@
         $('[data-toggle="popover"]').popover({'trigger':'hover'});
         searchMap = new WellsMap(searchMapOptions);
         // TODO: Tag the data-containing div with an id and fetch it with $("#data-id").data("wells-search-json")?
-        var wellsJson = $("[data-wells-search-json]").attr("data-wells-search-json") || null;
+        var wellsJson = $("#wells-json").attr("data-wells-search-json") || null;
         var wells = JSON.parse(wellsJson);
         searchMap.drawAndZoom(wells);            
     });
