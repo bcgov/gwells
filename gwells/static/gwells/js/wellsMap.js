@@ -447,10 +447,12 @@ function WellsMap(options) {
             _wellPushpin.pushpinMarker = L.marker(latLong, {
                 draggable: _exists(_wellPushpinMoveCallback) // The pin should only drag if the map's caller has a hook to handle movement
             }).addTo(_leafletMap);
-            _wellPushpin.wellMarker = L.circleMarker(latLong, _WELL_MARKER_STYLE).addTo(_leafletMap);
-            // The pin should subscribe to move and moveend events.
+            // TODO: Determine if wellMarker is needed, or if indeed it is counterproductive for well placement/verification
+            //_wellPushpin.wellMarker = L.circleMarker(latLong, _WELL_MARKER_STYLE).addTo(_leafletMap);
+            //_wellPushpin.pushpinMarker.on('moveend', _wellPushpinMoveEndEvent);
+
+            // The pin should subscribe to move event.
             _wellPushpin.pushpinMarker.on('move', _wellPushpinMoveEvent);
-            _wellPushpin.pushpinMarker.on('moveend', _wellPushpinMoveEndEvent);
         }
         // If the wellDetails properties exist, assign them.
         if (_exists(wellDetails) && _exists(wellDetails.guid)) {
@@ -463,8 +465,8 @@ function WellsMap(options) {
         // CircleMarkers expand during zoom, and so if the pin's wellMarker is placed on a very zoomed-out map,
         // the wellMarker will come to encompass the entire map while it zooms in. To circumvent this,
         // we remove the wellMarker during zoom.
-        _leafletMap.on('zoomstart', _wellPushpinZoomStartEvent);
-        _leafletMap.on('zoomend', _wellPushpinZoomEndEvent)
+    // _leafletMap.on('zoomstart', _wellPushpinZoomStartEvent);
+    // _leafletMap.on('zoomend', _wellPushpinZoomEndEvent);
         _leafletMap.flyTo(latLong, zoomLevel);
     };
 
@@ -478,8 +480,8 @@ function WellsMap(options) {
             _leafletMap.removeLayer(_wellPushpin.wellMarker);
             // Unsubscribe from the pushpin-related events.
             _leafletMap.off('moveend', _searchBoundingBoxOnMoveEnd);
-            _leafletMap.off('zoomstart', _wellPushpinZoomStartEvent);
-            _leafletMap.off('zoomend', _wellPushpinZoomEndEvent);
+            // _leafletMap.off('zoomstart', _wellPushpinZoomStartEvent);
+            // _leafletMap.off('zoomend', _wellPushpinZoomEndEvent);
             _wellPushpin = null;
             _clearWells();
         }
