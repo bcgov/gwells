@@ -312,22 +312,57 @@ function WellsMap(options) {
         _wellMarkers = [];
     };
 
+    // Parses the input to generate an internal URL to the well details summary page. If the input is not a number (or null),
+    // an empty string is returned.
+    var _generateWellTagUrl = function (tagNum) {
+        var num = parseInt(tagNum);
+        if (!_exists(num) || isNaN(num)) {
+            return '';
+        }
+        return '<a href="/well/' + num + '">' + num + '</a>';
+    };
+
+    // Generates a popup content HTML string for a well marker, based on the data that well has available.
+    var _generateWellMarkerPopupContents = function (well) {
+        if (!_exists(well)) {
+            return;
+        }
+        // contentObj is a dictionary whose keys correspond to the display names of
+        // well data attributes and whose values correspond to the specific well's data.
+        // This dictionary's values will in general consist of a (potentially processed)
+        // subset of the JSON returned by the Python well search service.
+        var contentObj = {
+            'ID Plate Number': well.idPlateNum || '',
+            'Tag Number': _generateWellTagUrl(well.well_tag_number), // We turn the well tag number into a local URL to the summary page.
+            'Street Address': well.street_address || ''
+        };
+
+        // We build the contentString from the contentObj dictionary, using paragraphs as property delimiters.
+        var contentString = '';
+        $.each(contentObj, function (contentKey, contentVal) {
+            contentString += '<p>' + contentKey + ': ' + contentVal + '</p>';
+        });
+        return contentString;
+    };
+
     // Draws wells that can be drawn. Currently a well cannot be drawn if it is associated with the wellPushpin.
     var _drawWells = function (wells) {
         // First we clear any extant markers
         _clearWells();
 
-        // Now we draw the wells, checking to prevent a marker from being drawn where a pushpin will be.
-        var style = _wellMarkerStyle || void 0;
+        // Markers should only be clickable when there is no wellPushpin available.
+        var style = $.extend({}, _wellMarkerStyle, {interactive: !_wellPushpin});
         var wellPushpinGuid = null;
+        // Now we draw the wells, checking to prevent a marker from being drawn where a pushpin will be.
         if (_exists(_wellPushpin) && _exists(_wellPushpin.wellDetails) && _exists(_wellPushpin.wellDetails.guid)) {
             wellPushpinGuid = _wellPushpin.wellDetails.guid;
         }
-        wells.forEach(function (well){
+        wells.forEach(function (well) {
             var latLong = _getLatLngInBC(well.latitude, well.longitude);
-            var wellGuid = well.guid;            
+            var wellGuid = well.guid;
             if (_exists(latLong) && _canDrawWell(wellPushpinGuid, wellGuid)) {
                 var wellMarker = L.circleMarker(latLong, style);
+                wellMarker.bindPopup(_generateWellMarkerPopupContents(well));
                 wellMarker.addTo(_leafletMap);
                 _wellMarkers.push(wellMarker);
             }
