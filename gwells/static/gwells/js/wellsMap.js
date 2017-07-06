@@ -54,13 +54,13 @@ function WellsMap(options) {
     /** Class constants */
 
     // The URL used to search for wells.
-    var _searchUrl = '/ajax/map_well_search/';
+    var _SEARCH_URL = '/ajax/map_well_search/';
 
     // The zoom level beyond which the map issues queries for wells.
-    var _searchMinZoomLevel = 14;
+    var _SEARCH_MIN_ZOOM_LEVEL = 14;
 
     // Leaflet style for the _wellMarkers
-    var _wellMarkerStyle = {
+    var _WELL_MARKER_STYLE = {
           radius: 3, // The radius of the circleMarker
           color: '#0147b7', // The color of the circleMarker
           fillOpacity: 1.0 // How transparent the circleMarker's fill is
@@ -351,7 +351,7 @@ function WellsMap(options) {
         _clearWells();
 
         // Markers should only be clickable when there is no wellPushpin available.
-        var style = $.extend({}, _wellMarkerStyle, {interactive: !_wellPushpin});
+        var style = $.extend({}, _WELL_MARKER_STYLE, {interactive: !_wellPushpin});
         var wellPushpinGuid = null;
         // Now we draw the wells, checking to prevent a marker from being drawn where a pushpin will be.
         if (_exists(_wellPushpin) && _exists(_wellPushpin.wellDetails) && _exists(_wellPushpin.wellDetails.guid)) {
@@ -382,9 +382,9 @@ function WellsMap(options) {
 
     // Searches for all wells in the map's current bounding box, provided the map is beyond the minimum searching zoom level.
     var _searchWellsInBoundingBox = function () {
-        if (_exists(_leafletMap) && _leafletMap.getZoom() >= _searchMinZoomLevel) {
+        if (_exists(_leafletMap) && _leafletMap.getZoom() >= _SEARCH_MIN_ZOOM_LEVEL) {
             var mapBounds = _leafletMap.getBounds();
-            _searchByAjax(_searchUrl, mapBounds, _searchByAjaxSuccessCallback);
+            _searchByAjax(_SEARCH_URL, mapBounds, _searchByAjaxSuccessCallback);
         }
     };
 
