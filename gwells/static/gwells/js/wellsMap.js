@@ -83,7 +83,8 @@ function WellsMap(options) {
     //     pushpinMarker: L.marker, // The Leaflet marker that points to the well's location
     //     wellDetails: {
     //         guid: string, // The well's globally-unique ID, to avoid drawing with other (non-interactive) wells
-    //     }
+    //     },
+    //     wellMarker: L.circleMarker // The Leaflet circleMarker that represents the well itself.
     // }
     var _wellPushpin = null;
 
@@ -165,8 +166,12 @@ function WellsMap(options) {
 
     // Passes the wellPushpin's updated lat/long coordinates to the provided callback function, if it exists.
     var _wellPushpinMoveEvent = function (moveEvent) {
+        var latLng = moveEvent.latlng;
+        if (_exists(_wellPushpin.wellMarker)) {
+            _wellPushpin.wellMarker.setLatLng(latLng);
+        }
         if (_exists(_wellPushpinMoveCallback)) {
-            _wellPushpinMoveCallback(moveEvent.latlng);
+            _wellPushpinMoveCallback(latLng);
         }
     };
 
@@ -400,6 +405,17 @@ function WellsMap(options) {
         _leafletMap.panTo(latLng);
     };
 
+    // The pushpin's wellMarker is removed during zoom, since circleMarkers do not dynamically re-size during zoom
+    // (and so will expand to the entire map if zooming in from far away, for example).
+    var _wellPushpinZoomStartEvent = function () {
+        _leafletMap.removeLayer(_wellPushpin.wellMarker);
+    };
+
+    // The pushpin's wellMarker is replaced after zoom ends.
+    var _wellPushpinZoomEndEvent = function () {
+        _wellPushpin.wellMarker.addTo(_leafletMap);
+    };
+
     /** Public methods */
 
     /**
@@ -431,6 +447,7 @@ function WellsMap(options) {
             _wellPushpin.pushpinMarker = L.marker(latLong, {
                 draggable: _exists(_wellPushpinMoveCallback) // The pin should only drag if the map's caller has a hook to handle movement
             }).addTo(_leafletMap);
+            _wellPushpin.wellMarker = L.circleMarker(latLong, _WELL_MARKER_STYLE).addTo(_leafletMap);
             // The pin should subscribe to move and moveend events.
             _wellPushpin.pushpinMarker.on('move', _wellPushpinMoveEvent);
             _wellPushpin.pushpinMarker.on('moveend', _wellPushpinMoveEndEvent);
@@ -442,6 +459,12 @@ function WellsMap(options) {
         // If the pin exists, the map should refresh the wells it displays when it is moved, to provide
         // more information to aid in well placement without having to load too many wells at once.
         _leafletMap.on('moveend', _searchBoundingBoxOnMoveEnd);
+
+        // CircleMarkers expand during zoom, and so if the pin's wellMarker is placed on a very zoomed-out map,
+        // the wellMarker will come to encompass the entire map while it zooms in. To circumvent this,
+        // we remove the wellMarker during zoom.
+        _leafletMap.on('zoomstart', _wellPushpinZoomStartEvent);
+        _leafletMap.on('zoomend', _wellPushpinZoomEndEvent)
         _leafletMap.flyTo(latLong, zoomLevel);
     };
 
@@ -452,8 +475,11 @@ function WellsMap(options) {
         }
         if (_exists(_wellPushpin) && _exists(_wellPushpin.pushpinMarker)) {
             _leafletMap.removeLayer(_wellPushpin.pushpinMarker);
-            // If there isn't a pin, we shouldn't re-query on every map move.
+            _leafletMap.removeLayer(_wellPushpin.wellMarker);
+            // Unsubscribe from the pushpin-related events.
             _leafletMap.off('moveend', _searchBoundingBoxOnMoveEnd);
+            _leafletMap.off('zoomstart', _wellPushpinZoomStartEvent);
+            _leafletMap.off('zoomend', _wellPushpinZoomEndEvent);
             _wellPushpin = null;
             _clearWells();
         }

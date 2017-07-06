@@ -8,61 +8,64 @@
 {% endblock %}
 
 {% block body_block %}
-
     <div class="row">
-        <div class="col-md-6">
-            <label for="well_tag_number">Well Tag Number:</label>
-            <span id="well_tag_number">{{ well.well_tag_number }}</span>
+        <div class="col-lg-7">    
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="well_tag_number">Well Tag Number:</label>
+                    <span id="well_tag_number">{{ well.well_tag_number }}</span>
+                </div>
+                <div class="col-md-6">
+                    <label for="owner">Owner:</label>
+                    <span id="owner">{{ well.owner_full_name }}</span>            
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="address">Street Address:</label>
+                    <span id="address">{{ well.street_address }}</span>
+                </div>
+                <div class="col-md-6">
+                    <label for="well_drilled_depth">Well Drilled Depth:</label>
+                    <span id="well_drilled_depth">{{ well.well_drilled_depth }}</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="owner">Town/City:</label>
+                    <span id="owner">{{ well.city }}</span>            
+                </div>
+                <div class="col-md-6">
+                    <label for="finished_well_depth">Finished Well Depth:</label>
+                    <span id="finished_well_depth">{{ well.finished_well_depth }}</span>
+                </div>
+            </div>
+            <div id="guid-row" class="row" data-well-guid="{{ well.well_guid }}">
+                <div class="col-md-6">
+                    <label for="latitude">Latitude:</label>
+                    <span id="latitude" data-latitude="{{ well.latitude }}">{{ well.latitude }}</span>
+                </div>
+                <div class="col-md-6">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="longitude">Longitude:</label>
+                    <span id="longitude" data-longitude="{{ well.longitude }}">{{ well.longitude }}</span>
+                </div>
+                <div class="col-md-6">
+                </div>
+            </div>
         </div>
-        <div class="col-md-6">
-            <label for="owner">Owner:</label>
-            <span id="owner">{{ well.owner_full_name }}</span>            
+        <div class="col-md-4">
+            <div id="detail-map"></div>        
         </div>
     </div>
-    <div class="row">
-        <div class="col-md-6">
-            <label for="address">Street Address:</label>
-            <span id="address">{{ well.street_address }}</span>
-        </div>
-        <div class="col-md-6">
-            <label for="well_drilled_depth">Well Drilled Depth:</label>
-            <span id="well_drilled_depth">{{ well.well_drilled_depth }}</span>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-6">
-            <label for="owner">Town/City:</label>
-            <span id="owner">{{ well.city }}</span>            
-        </div>
-        <div class="col-md-6">
-            <label for="finished_well_depth">Finished Well Depth:</label>
-            <span id="finished_well_depth">{{ well.finished_well_depth }}</span>
-        </div>
-    </div>
-    <div id="guid-row" class="row" data-well-guid="{{ well.well_guid }}">
-        <div class="col-md-6">
-            <label for="latitude">Latitude:</label>
-            <span id="latitude" data-latitude="{{ well.latitude }}">{{ well.latitude }}</span>
-        </div>
-        <div class="col-md-6">
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-6">
-            <label for="longitude">Longitude:</label>
-            <span id="longitude" data-longitude="{{ well.longitude }}">{{ well.longitude }}</span>
-        </div>
-        <div class="col-md-6">
-        </div>
-    </div>
-
 
     <div>
         <br /><br />
         <a href="https://a100.gov.bc.ca/pub/wells/wellsreport1.do?wellTagNumber={{ well.well_tag_number }}">View Report</a>
     </div>
-
-    <div id="detail-map"></div>
 {% endblock %}
 
 {% block jqscript_block %}
@@ -75,8 +78,8 @@
         initCentre: null, // Will be filled in before call in $(document).ready()
         // Maximum zoom of the map (i.e., how far it can be zoomed in)
         maxZoom: 17,
-        // The detailMap cannot be zoomed
-        canZoom: false,
+        // Minimum zoom of the map (i.e., how far it can be zoomed out)
+        minZoom: 14,
         // The detailMap cannot be panned
         canPan: false,
         // ESRI layers associated with the map
