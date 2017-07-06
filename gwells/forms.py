@@ -53,6 +53,8 @@ class SearchForm(forms.Form):
         widget=forms.HiddenInput(),
         required=False
     )
+ 
+    WELL_RESULTS_LIMIT = 1000
 
     @property
     def helper(self):
@@ -122,7 +124,7 @@ class SearchForm(forms.Form):
         end_lat_long = self.cleaned_data.get('end_lat_long')
         lat_long_box = {'start_corner': start_lat_long, 'end_corner': end_lat_long}
 
-        well_results = Search.well_search(well, addr, legal, owner, lat_long_box)
+        well_results = Search.well_search(well, addr, legal, owner, lat_long_box, self.WELL_RESULTS_LIMIT)
 
         return well_results
 
