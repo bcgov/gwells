@@ -40,7 +40,7 @@
                     <span id="finished_well_depth">{{ well.finished_well_depth }}</span>
                 </div>
             </div>
-            <div id="guid-row" class="row" data-well-guid="{{ well.well_guid }}">
+            <div class="row">
                 <div class="col-md-6">
                     <label for="latitude">Latitude:</label>
                     <span id="latitude" data-latitude="{{ well.latitude }}">{{ well.latitude }}</span>
@@ -60,6 +60,7 @@
         <div class="col-md-4">
             <div id="detail-map"></div>        
         </div>
+        <div id="guid-row" data-well-guid="{{ well.well_guid }}"></div>
     </div>
 
     <div>
