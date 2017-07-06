@@ -17,7 +17,7 @@
 {% block body_block %}
 
 <h4 class="stepheading">Step {{ wizard.steps.step1 }} of {{ wizard.steps.count }}</h4>
-		<form action="" method="post">
+		<form id="lithologyForm" action="" method="post">
             {% csrf_token %}
             {{ wizard.management_form }}
             <fieldset>
@@ -53,35 +53,6 @@
 
                         </tbody>
                     </table>
-                    <!--
-                    {{ formset.non_form_errors.as_ul }}
-                    <table>
-                        {% for form in formset.forms %}
-                        {% if forloop.first %}
-                        <thead>
-                            <tr>
-                                {% for field in form.visible_fields %}
-                                <th>{{ field.label|capfirst }}</th>
-                                {% endfor %}
-                            </tr>
-                        </thead>
-                        {% endif %}
-                        <tr class="{% cycle '' 'alt-row' %}">
-                            {% for field in form.visible_fields %}
-                            <td>
-                                {# Include the hidden fields in the form #}
-                                {% if forloop.first %}
-                                {% for hidden in form.hidden_fields %}
-                                {{ hidden }}
-                                {% endfor %}
-                                {% endif %}
-                                {{ field.errors.as_ul }}
-                                {{ field }}
-                            </td>
-                            {% endfor %}
-                        </tr>
-                        {% endfor %}
-                    </table>-->
                 </div>
             </fieldset>
                 <div class="form-group formButtons">
@@ -101,169 +72,12 @@
 {% endblock %}
 
 {% block jqscript_block %}
-{% if wizard.steps.current == 'type_and_class' %}
-<script>
-  $(function() {
-    $('#id_type_and_class-work_start_date').datepicker({ dateFormat: 'yy-mm-dd' });
-    $('#id_type_and_class-work_end_date').datepicker({ dateFormat: 'yy-mm-dd' });
-    $('#divSubclass').hide();
-  });
-  $('#id_type_and_class-well_class').on('change', function() {
-    if ($('#id_type_and_class-well_class option:selected').val() == '{{ water_supply_well_class_guid }}') {
-      $('#id_type_and_class-well_subclass option').prop('selected', false);
-      //$('#divSubclass').hide();
-      $('#divIntendedWaterUse').show();
-    } else {
-      $('#id_type_and_class-intended_water_use option').prop('selected', false);
-      $('#divIntendedWaterUse').hide();
-      //$('#divSubclass').show();
-    }
-  });
-  $('#id_type_and_class-well_class').trigger('change');
-
-  $('#chkSameAsPersonResponsible').on('change', function() {
-    if ($('#chkSameAsPersonResponsible').is(':checked') && $('#id_type_and_class-driller_responsible').prop('selectedIndex') > 0) {
-      var dvalue = $('#id_type_and_class-driller_responsible option:selected').text();
-      var index = dvalue.indexOf('-');
-      if (index > 0) {
-        dvalue = dvalue.substring(0, index-1);
-      }
-      $('#id_type_and_class-driller_name').val(dvalue);
-      $('#id_type_and_class-driller_name').prop("readonly", true);
-    } else {
-      $('#id_type_and_class-driller_name').prop("readonly", false);
-    }
-  });
+<script type="text/javascript">
+    $(function () {
+        $('#lithologyForm tbody tr').formset({
+            prefix: '{{ wizard.form.prefix }}'
+            ,addText: 'add another row'
+        });
+    })
 </script>
-{% elif wizard.steps.current == 'location' %}
-<script>
-  $('#chkSameAsOwnerAddress').on('change', function() {
-    if ($('#chkSameAsOwnerAddress').is(':checked')) {
-      $('#id_location-street_address').val('{{ wizard_data.owner_mailing_address }}');
-      $('#id_location-street_address').prop("readonly", true);
-      $('#id_location-city').val('{{ wizard_data.owner_city }}');
-      $('#id_location-city').prop("readonly", true);
-    } else {
-      $('#id_location-street_address').prop("readonly", false);
-      $('#id_location-city').prop("readonly", false);
-    }
-  });
-</script>
-{% elif wizard.steps.current == 'gps' %}
-<script>
-//VOCTORIA LAT LONG: 48.4284, -123.3656
-  var addMap = null;
-  // Options for creating the addMap
-  var addMapOptions = {
-      // The ID of the addMap div.
-      mapNodeId: 'add-map',
-      // Minimum zoom level of the map (i.e., how far it can be zoomed out)
-      minZoom: 4,
-      // Maximum zoom of the map (i.e., how far it can be zoomed in)
-      maxZoom: 17,
-      // Bounding lats and longs of the map, corresponding to the lat/long extremes of BC.
-      mapBounds: {
-          north:  60.0223,
-          south: 48.2045556,
-          west: -139.0736706,
-          east: -114.0338224,
-          padding: 5 // Margin beyond extremes to pad the bounds with, as a percentage of the total bounding box.
-      },
-      // ESRI layers associated with the map
-      esriLayers: [
-          /*{ // This is an alternate basemap.
-              url: 'http://maps.gov.bc.ca/arcgis/rest/services/province/web_mercator_cache/MapServer/'
-          },*/
-          {
-              url: 'http://maps.gov.bc.ca/arcserver/rest/services/Province/roads_wm/MapServer'
-          }
-      ],
-      // WMS layers associated with the map
-      wmsLayers: [
-          {
-              rootUrl: 'https://openmaps.gov.bc.ca/geo/pub/WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW/ows?',
-              format: 'image/png',
-              layers: 'pub:WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW',
-              styles: 'PMBC_Parcel_Fabric_Cadastre_Outlined', // TODO: Verify style
-              transparent: true
-          }/*,
-          {   // This is the DataBC Wells layer as viewed in iMap. Its data is updated daily, but not continuously, so it is likely not suitable for the GWELLS application.
-              // It is presented here merely for possible convenience.
-              rootUrl: 'https://openmaps.gov.bc.ca/geo/pub/WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW/ows?',
-              format: 'image/png',
-              layers: 'pub:WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW',
-              styles: 'Water_Wells_All',
-              transparent: true
-          } */
-      ],
-      wellPushpinMoveCallback: pushpinMoveCallback,      
-  };
-
-  // JQuery selectors for the appropriate spatial coordinate DOM nodes.
-  var latNodeSelector = '#id_gps-latitude';
-  var longNodeSelector = '#id_gps-longitude';
-  var latDMSDegreeNodeSelector = '#id_gps-latitude_d';
-  var latDMSMinuteNodeSelector = '#id_gps-latitude_m';
-  var latDMSSecondNodeSelector = '#id_gps-latitude_s';
-  var longDMSDegreeNodeSelector = '#id_gps-longitude_d';
-  var longDMSMinuteNodeSelector = '#id_gps-longitude_m';
-  var longDMSSecondNodeSelector = '#id_gps-longitude_s';
-  var zoneUTMNodeSelector  = '#id_gps-zone';
-  var eastingUTMNodeSelector  = '#id_gps-utm_easting';
-  var northingUTMNodeSelector  = '#id_gps-utm_northing';
-
-  // Sets the latitude and longitude fields from the map, rounding to
-  // six decimal places.
-  function setLatLongFields(lat, long) {
-    var fixedLat = lat.toFixed(6);
-    var fixedLong = long.toFixed(6);
-    $(latNodeSelector).val(fixedLat).trigger('change');
-    $(longNodeSelector).val(fixedLong).trigger('change');
-  }
-
-  // Updates the latitude and longitude fields with the position of the pushpin
-  // for the prospective well when the pushpin is moved.
-  // newLatLng is a Leaflet LatLng object.
-  function pushpinMoveCallback (newLatLng) {
-    setLatLongFields(newLatLng.lat, newLatLng.lng);
-  }
-
-  // Presents validation errors to users.
-  function latLongValidationCallback (error) {
-    // TODO: Add normally-hidden field to present message.
-    console.log(error);
-  }
-
-  function placeWellPushpin () {
-    var lat = parseFloat($(latNodeSelector).val());
-    var long = parseFloat($(longNodeSelector).val());
-    lat = isNaN(lat) ? void 0 : lat;
-    long = isNaN(long) ? void 0 : long; 
-    var latLng = L.latLng([lat,long]);   
-    addMap.placeWellPushpin(latLng);
-  };
-
-  function removeWellPushpin () {
-    addMap.removeWellPushpin();
-  };
-  $(document).ready(function (){
-    addMap = new WellsMap(addMapOptions);
-    CoordSync.init({
-      latDDNodeSelector: latNodeSelector, 
-      longDDNodeSelector: longNodeSelector,
-      latDMSDegreeNodeSelector: latDMSDegreeNodeSelector,
-      latDMSMinuteNodeSelector: latDMSMinuteNodeSelector,
-      latDMSSecondNodeSelector: latDMSSecondNodeSelector,
-      longDMSDegreeNodeSelector: longDMSDegreeNodeSelector,
-      longDMSMinuteNodeSelector: longDMSMinuteNodeSelector,
-      longDMSSecondNodeSelector: longDMSSecondNodeSelector,
-      latLongDDBoundingBox: addMapOptions.mapBounds,
-      latLongValidationCallback: latLongValidationCallback,
-      zoneUTMNodeSelector: zoneUTMNodeSelector,
-      eastingUTMNodeSelector: eastingUTMNodeSelector,
-      northingUTMNodeSelector: northingUTMNodeSelector
-    });
-  });
-</script>
-{% endif %}
 {% endblock %}
