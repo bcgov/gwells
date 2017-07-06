@@ -337,15 +337,15 @@ function WellsMap(options) {
         // This dictionary's values will in general consist of a (potentially processed)
         // subset of the JSON returned by the Python well search service.
         var contentObj = {
-            'ID Plate Number': well.idPlateNum || '',
-            'Tag Number': _generateWellTagUrl(well.well_tag_number), // We turn the well tag number into a local URL to the summary page.
+            'Well Tag Number': _generateWellTagUrl(well.well_tag_number), // We turn the well tag number into a local URL to the summary page.
+            'Identification Plate Number': well.identification_plate_number || '',
             'Street Address': well.street_address || ''
         };
 
         // We build the contentString from the contentObj dictionary, using paragraphs as property delimiters.
         var contentString = '';
         $.each(contentObj, function (contentKey, contentVal) {
-            contentString += '<p>' + contentKey + ': ' + contentVal + '</p>';
+            contentString += '' + contentKey + ': ' + contentVal + '<br />';
         });
         return contentString;
     };
