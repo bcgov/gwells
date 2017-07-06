@@ -405,6 +405,17 @@ function WellsMap(options) {
         _leafletMap.panTo(latLng);
     };
 
+    // The pushpin's wellMarker is removed during zoom, since circleMarkers do not dynamically re-size during zoom
+    // (and so will expand to the entire map if zooming in from far away, for example).
+    var _wellPushpinZoomStartEvent = function () {
+        _leafletMap.removeLayer(_wellPushpin.wellMarker);
+    };
+
+    // The pushpin's wellMarker is replaced after zoom ends.
+    var _wellPushpinZoomEndEvent = function () {
+        _wellPushpin.wellMarker.addTo(_leafletMap);
+    };
+
     /** Public methods */
 
     /**
@@ -448,6 +459,12 @@ function WellsMap(options) {
         // If the pin exists, the map should refresh the wells it displays when it is moved, to provide
         // more information to aid in well placement without having to load too many wells at once.
         _leafletMap.on('moveend', _searchBoundingBoxOnMoveEnd);
+
+        // CircleMarkers expand during zoom, and so if the pin's wellMarker is placed on a very zoomed-out map,
+        // the wellMarker will come to encompass the entire map while it zooms in. To circumvent this,
+        // we remove the wellMarker during zoom.
+        _leafletMap.on('zoomstart', _wellPushpinZoomStartEvent);
+        _leafletMap.on('zoomend', _wellPushpinZoomEndEvent)
         _leafletMap.flyTo(latLong, zoomLevel);
     };
 
@@ -459,8 +476,10 @@ function WellsMap(options) {
         if (_exists(_wellPushpin) && _exists(_wellPushpin.pushpinMarker)) {
             _leafletMap.removeLayer(_wellPushpin.pushpinMarker);
             _leafletMap.removeLayer(_wellPushpin.wellMarker);
-            // If there isn't a pin, we shouldn't re-query on every map move.
+            // Unsubscribe from the pushpin-related events.
             _leafletMap.off('moveend', _searchBoundingBoxOnMoveEnd);
+            _leafletMap.off('zoomstart', _wellPushpinZoomStartEvent);
+            _leafletMap.off('zoomend', _wellPushpinZoomEndEvent);
             _wellPushpin = null;
             _clearWells();
         }
