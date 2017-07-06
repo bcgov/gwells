@@ -130,7 +130,7 @@ class ActivitySubmissionWizardView(SessionWizardView):
             self.instance = ActivitySubmission()
         return self.instance
     
-    def done(self, form_list, **kwargs):
+    def done(self, form_list, form_dict, **kwargs):
         submission = self.instance
         #for form in form_list:
         #    for field, value in form.cleaned_data.items():
@@ -144,6 +144,6 @@ class ActivitySubmissionWizardView(SessionWizardView):
         #    submission.save()
         #else:
         submission.save()
+        lithology_list = form_dict['lithology'].save()
 
-        #lithology = form_dict['lithology'].save()
         return HttpResponseRedirect('/submission/')
