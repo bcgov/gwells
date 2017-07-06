@@ -63,14 +63,22 @@ function _longIsInBox (long) {
 
 // Users can enter positive value for longitude, even though DD values for BC are negative (since BC is west of Greenwich). This function
 // ensures longitudes in the _longDDField are below zero. Should be called when DD or DMS fields change.
-function _correctPositiveLong() {
+function _correctPositiveLongDD () {
     var long = parseFloat(_longDDField.val());
     if (isNaN(long)) {
         return;
     }
-
     long = long < 0 ? long : -long;
     _longDDField.val(long);
+}
+
+function _correctPositiveLongDMS () {
+    var long = parseFloat(_longDMSDegreeField.val());
+    if (isNaN(long)) {
+        return;
+    }
+    long = long < 0 ? long : -long;
+    _longDMSDegreeField.val(long);
 }
 
 /** JQuery nodes that correspond to the fields that will subscribe to events. */
@@ -131,7 +139,7 @@ function _areLatLongDMSFieldsValid () {
         var latDeg = parseFloat(_latDMSDegreeField.val());
         var latMin = parseFloat(_latDMSMinuteField.val());
         var latSec = parseFloat(_latDMSSecondField.val());
-        var longDeg = Math.abs(parseFloat(_longDMSDegreeField.val()));
+        var longDeg = parseFloat(_longDMSDegreeField.val());
         var longMin = parseFloat(_longDMSMinuteField.val());
         var longSec = parseFloat(_longDMSSecondField.val());
 
@@ -145,7 +153,7 @@ function _areLatLongDMSFieldsValid () {
             latMsg = 'Invalid latitude: ' + latDeg + "'" + latMin + "''" + latSec;
         }
         // Since users can enter positive longitude in the DMS field, we must validate the negation if the first run fails.
-        if (!_longIsInBox(long) && !_longIsInBox(-long)) {
+        if (!_longIsInBox(long)) {
             longDeg = _numOrZeroIfNaN(longDeg);
             longMin = _numOrZeroIfNaN(longMin);
             longSec = _numOrZeroIfNaN(longSec);
@@ -213,7 +221,7 @@ function _areUTMFieldsValid () {
 // only for user-entered data changes in the input fields.
 function _latLongDDFieldOnChange (programmaticallyChanged) {
     // If a user enters DD directly, we accept positive longitudes, but correct them on the fly.
-    _correctPositiveLong();
+    _correctPositiveLongDD();
     if (_areLatLongDDFieldsValid()) {
         _setDMSFromDD();
         _setUTMFromDD();
@@ -228,6 +236,7 @@ function _latLongDDFieldOnChange (programmaticallyChanged) {
 
 // Dispatches changes to DD and UTM with suitable conversions and validation.
 function _latLongDMSFieldOnChange () {
+    _correctPositiveLongDMS();
     if(_areLatLongDMSFieldsValid()) {
         _setDDFromDMS();
         _setUTMFromDD();
@@ -290,8 +299,7 @@ function _setDDFromDMS () {
     var latDeg = parseFloat(_latDMSDegreeField.val());
     var latMin = parseFloat(_latDMSMinuteField.val());
     var latSec = parseFloat(_latDMSSecondField.val());
-    // The degree field of a valid longitude is negative, but the algorithm processes absolute values.
-    var longDeg = Math.abs(parseFloat(_longDMSDegreeField.val()));
+    var longDeg = parseFloat(_longDMSDegreeField.val());
     var longMin = parseFloat(_longDMSMinuteField.val());
     var longSec = parseFloat(_longDMSSecondField.val());
 
@@ -300,10 +308,7 @@ function _setDDFromDMS () {
     var lat = _dmsToDD(latDeg, latMin, latSec);
     var long = _dmsToDD(longDeg, longMin, longSec);
     _latDDField.val(isNaN(lat) ? '' : lat);
-    _longDDField.val(isNaN(long) ? '' : -long);
-
-    // If a user entered a positive longitude DMS that was otherwise valid, we correct the _longDDField here.
-    _correctPositiveLong();
+    _longDDField.val(isNaN(long) ? '' : long);
 }
 
 // Converts DD to UTM and sets the UTM fields. Originally based on code from the UTM Conversion section.
@@ -369,15 +374,19 @@ function _ddToSeconds (dec) {
     return ((Math.abs(dec) * 3600) % 60).toFixed(_latLongDMSSecondPrecision);
 }
 
-// Converts an absolute value of a lat or long from DMS to Decimal Degrees.
+// Converts a lat or long from DMS to Decimal Degrees.
 function _dmsToDD(deg, min, sec) {
     if (isNaN(deg)) {
         return NaN;
     }
+    // The algorithm works on absolute values, so we preserve the sign of the degree, abs it,
+    // and return the signed coordinate after conversion.
+    var sign = deg >= 0 ? 1 : -1;
+    deg = Math.abs(deg);
     min = isNaN(min) ? 0 : min;
     sec = isNaN(sec) ? 0 : sec;
     var coord = (deg + (min/60) + (sec/3600)).toFixed(_latLongDDPrecision);
-    return coord;
+    return sign * coord;
 }
 
 /** UTM conversion code */
