@@ -22,7 +22,8 @@ class HelloWorldView(generic.ListView):
 
 def well_search(request):
     well_results = None
-    well_results_json = None
+    well_results_overflow = None
+    well_results_json = '[]'
 
     if request.method == 'GET' and 'well' in request.GET:
         form = SearchForm(request.GET)
@@ -31,32 +32,37 @@ def well_search(request):
             well_results = form.process()
     else:
         form = SearchForm()
-
+  
     if well_results:
-        well_results_json = json.dumps(
-            [well.as_dict() for well in well_results],
-            cls=DjangoJSONEncoder)
+        if len(well_results) > SearchForm.WELL_RESULTS_LIMIT:
+            well_results_overflow = 'Query returned more than ' + str(SearchForm.WELL_RESULTS_LIMIT) + ' wells. Please refine your search.'
+            well_results = None
+        else:
+            well_results_json = json.dumps(
+                [well.as_dict() for well in well_results],
+                cls=DjangoJSONEncoder)
 
     return render(request, 'gwells/search.html',
-                  {'form': form, 'well_list': well_results, 'wells_json': well_results_json})
+                  {'form': form, 'well_list': well_results,
+                   'too_many_wells': well_results_overflow,
+                   'wells_json': well_results_json
+                  })
 
 
 def map_well_search(request):
-    well_results_json = None
+    well_results = None
+    well_results_json = '[]'
 
     if (request.method == 'GET' and 'start_lat_long' in request.GET
             and 'end_lat_long' in request.GET):
-        well_results_json = SearchForm(request.GET)
-        if well_results_json.is_valid():
-            well_results_json = well_results_json.process()
+        well_results = SearchForm(request.GET)
+        if well_results.is_valid():
+            well_results = well_results.process()
 
-    if well_results_json:
+    if well_results and not len(well_results) > SearchForm.WELL_RESULTS_LIMIT:
         well_results_json = json.dumps(
-            [well.as_dict() for well in well_results_json],
+            [well.as_dict() for well in well_results],
             cls=DjangoJSONEncoder)
-
-    else:
-        well_results_json = '[]'
 
     return JsonResponse(well_results_json, safe=False)
 
