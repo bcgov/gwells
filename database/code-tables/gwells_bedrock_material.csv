@@ -1,0 +1,11 @@
+bedrock_material_guid,code,description,is_hidden,sort_order 
+"5b90fbe262a311e7907ba6006ad3dba0","Shale","Shale","N","10"
+"5b90fffc62a311e7907ba6006ad3dba0","Sandstone","Sandstone","N","20"
+"5b91047062a311e7907ba6006ad3dba0","Limestone","Limestone","N","30"
+"5b91067862a311e7907ba6006ad3dba0","Granite","Granite","N","40"
+"5b91086262a311e7907ba6006ad3dba0","Ash/Tuff","Ash/Tuff","N","50"
+"5b910ede62a311e7907ba6006ad3dba0","Basalt","Basalt","N","60"
+"5b9110a062a311e7907ba6006ad3dba0","Oth Volca","Other Volcanic Rocks","N","60"
+"5b91123a62a311e7907ba6006ad3dba0","Metamorph","Metamorphic Rocks","N","80"
+"5b9113d462a311e7907ba6006ad3dba0","Oth Intr","Other Intrusive Rocks","N","90"
+"5b91156e62a311e7907ba6006ad3dba0","Oth Sedi","Other Sedimentary Rocks","N","100"

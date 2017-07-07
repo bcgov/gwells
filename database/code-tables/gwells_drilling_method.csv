@@ -1,0 +1,12 @@
+drilling_method_guid,code,description,is_hidden,sort_order 
+"262aca1e5db211e7907ba6006ad3dba0","AIR_ROTARY","Air Rotary","N","10"
+"262ace565db211e7907ba6006ad3dba0","AUGER","Auger","N","20"
+"262ad3d85db211e7907ba6006ad3dba0","CABLE_TOOL","Cable Tool","N","30"
+"262ad54a5db211e7907ba6006ad3dba0","DRIVING","Driving","N","40"
+"262ad6265db211e7907ba6006ad3dba0","DUGOUT","Dugout","N","50"
+"262ad6ee5db211e7907ba6006ad3dba0","DUO_ROTARY","Duo Rotary","N","60"
+"262ad7b65db211e7907ba6006ad3dba0","EXCAVATING","Excavating","N","70"
+"262adb445db211e7907ba6006ad3dba0","JETTING","Jetting","N","80"
+"262adc2a5db211e7907ba6006ad3dba0","MUD_ROTARY","Mud Rotary","N","90"
+"262adcf25db211e7907ba6006ad3dba0","OTHER","Other","N","100"
+"262addb05db211e7907ba6006ad3dba0","UNK","Unknown","N","110"

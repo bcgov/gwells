@@ -1,12 +1,20 @@
 \encoding windows-1251
-\copy gwells_well_yield_unit 	  FROM './gwells_well_yield_unit.csv' 	  HEADER DELIMITER ',' CSV
-\copy gwells_province_state  	  FROM './gwells_province_state.csv' 	  HEADER DELIMITER ',' CSV
+\copy gwells_well_yield_unit 	  FROM './gwells_well_yield_unit.csv'   HEADER DELIMITER ',' CSV
+\copy gwells_province_state  	  FROM './gwells_province_state.csv' 	   HEADER DELIMITER ',' CSV
 \copy gwells_well_activity_type FROM './gwells_well_activity_type.csv' HEADER DELIMITER ',' CSV
 \copy gwells_intended_water_use	FROM './gwells_intended_water_use.csv' HEADER DELIMITER ',' CSV
-\copy gwells_well_class  	    	FROM './gwells_well_class.csv'  	    	HEADER DELIMITER ',' CSV
-\copy gwells_well_subclass    	FROM './gwells_well_subclass.csv'   	  HEADER DELIMITER ',' CSV
+\copy gwells_well_class  	    	FROM './gwells_well_class.csv'  	   	HEADER DELIMITER ',' CSV
+\copy gwells_well_subclass    	FROM './gwells_well_subclass.csv'     HEADER DELIMITER ',' CSV
 \copy gwells_drilling_method    FROM './gwells_drilling_method.csv'    HEADER DELIMITER ',' CSV
 \copy gwells_ground_elevation_method FROM './gwells_ground_elevation_method.csv' HEADER DELIMITER ',' CSV
+\copy gwells_lithology_structure FROM './gwells_lithology_structure.csv' HEADER DELIMITER ',' CSV
+\copy gwells_lithology_moisture  FROM './gwells_lithology_moisture.csv'  HEADER DELIMITER ',' CSV
+\copy gwells_lithology_hardness  FROM './gwells_lithology_hardness.csv'  HEADER DELIMITER ',' CSV
+\copy gwells_bedrock_material_descriptor FROM './gwells_bedrock_material_descriptor.csv' HEADER DELIMITER ',' CSV
+\copy gwells_bedrock_material     FROM './gwells_bedrock_material.csv' HEADER DELIMITER ',' CSV
+\copy gwells_lithology_colour     FROM './gwells_lithology_colour.csv' HEADER DELIMITER ',' CSV
+\copy gwells_lithology_weathering FROM './gwells_lithology_weathering.csv' HEADER DELIMITER ',' CSV
+\copy gwells_surficial_material   FROM './gwells_surficial_material.csv'   HEADER DELIMITER ',' CSV
 
 CREATE unlogged TABLE IF NOT EXISTS xform_gwells_land_district (
   land_district_guid uuid,
@@ -93,19 +101,10 @@ values ('018d4c1047cb11e7a91992ebcb67fe33',
         true
         );
 
-/* Fri 23 Jun 14:49:59 2017 GW Distinct for now until data cleanup */
-
 INSERT INTO gwells_driller (driller_guid, first_name, surname, registration_number, is_hidden, drilling_company_guid)
 SELECT driller.driller_guid, driller.first_name, driller.surname, driller.registration_number, driller.is_hidden, co.drilling_company_guid
 FROM  xform_gwells_driller driller, xform_gwells_drilling_company co
 WHERE driller.DRILLER_COMPANY_CODE = co.DRILLER_COMPANY_CODE;
-
-/* TODO mismtach of counts 
-INSERT INTO gwells_driller (driller_guid, first_name, surname, registration_number, is_hidden, drilling_company_guid)
-SELECT driller.driller_guid, driller.first_name, driller.surname, driller.registration_number, driller.is_hidden, '018d4c1047cb11e7a91992ebcb67fe33'
-FROM  xform_gwells_driller driller
-WHERE driller.DRILLER_COMPANY_CODE is null;
-*/
 
 INSERT INTO gwells_well (
   created                     ,

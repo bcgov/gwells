@@ -32,17 +32,24 @@ The legacy database is WELLS schema of ENVPROD1.NRS.GOV.BC.CA, and was exported 
    Remove this last line from each of the genereated files, either manually or via sed/awk/perl etc.
 
    *NOTE*: The code table values are not derived from the legacy tables, so they are prefixed
-   with the 'gwells' to denote this.  The rows, and UUID identifiers, are pre-populated and ready to be loaded in:
+   with the 'gwells' to denote this.  The rows, and UUID identifiers, are pre-populated and ready to be loaded:
     ```
+    gwells_bedrock_material.csv
+    gwells_bedrock_material_descriptor.csv
     gwells_drilling_method.csv
-    gwells_intended_water_use.csv 
     gwells_ground_elevation_method.csv
+    gwells_intended_water_use.csv
+    gwells_lithology_colour.csv
+    gwells_lithology_hardness.csv
+    gwells_lithology_moisture.csv
+    gwells_lithology_structure.csv
+    gwells_lithology_weathering.csv
     gwells_province_state.csv
+    gwells_surficial_material.csv
     gwells_well_activity_type.csv
     gwells_well_class.csv
     gwells_well_subclass.csv
-    gwells_well_yield_unit.csv 
-
+    gwells_well_yield_unit.csv
     ```    
 
 ## Loading data upon which to run a Search (against the PostGres DB) 
