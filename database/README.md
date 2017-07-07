@@ -98,7 +98,7 @@ each pod deployment, so get the name first (i.e. *oc get pods*) from the correct
     ```
     psql -d gwells -U <user>```
 
-## Clear all data from which the live Search ran
+## Clear all data from which the live Submit ran
 
 Repeat steps 1-3, and then:
 
