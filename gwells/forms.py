@@ -128,6 +128,8 @@ class SearchForm(forms.Form):
 
         return well_results
 
+
+
 class WellOwnerForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
@@ -154,17 +156,22 @@ class WellOwnerForm(forms.ModelForm):
         )
         super(WellOwnerForm, self).__init__(*args, **kwargs)
 
+        # display code instead of the value from __str__ in the model
+        self.fields['owner_province_state'].label_from_instance = self.label_from_instance_code
         try:
             bc = ProvinceState.objects.get(code='BC')
             self.initial['owner_province_state'] = bc
             self.fields['owner_province_state'].empty_label = None
         except Exception as e:
             pass
+
+    @staticmethod
+    def label_from_instance_code(obj):
+        return obj.code
     
     class Meta:
         model = ActivitySubmission
         fields = ['owner_full_name', 'owner_mailing_address', 'owner_city', 'owner_province_state', 'owner_postal_code']
-
 
 
 class ActivitySubmissionTypeAndClassForm(forms.ModelForm):
