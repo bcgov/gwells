@@ -465,15 +465,6 @@ class ActivitySubmissionGpsForm(forms.ModelForm):
 
         return longitude
 
-    def clean_drilling_method(self):
-        drilling_method = self.cleaned_data.get('drilling_method') 
-
-        # drilling_method is not required in the DB due to historical records, but is required for new records
-        if not drilling_method:
-            raise forms.ValidationError('This field is required.');
-
-        return drilling_method
-
     def clean(self):
         cleaned_data = super(ActivitySubmissionGpsForm, self).clean()
         
@@ -500,7 +491,6 @@ class ActivitySubmissionGpsForm(forms.ModelForm):
     class Meta:
         model = ActivitySubmission
         fields = ['latitude', 'longitude', 'ground_elevation', 'ground_elevation_method', 'drilling_method', 'other_drilling_method', 'orientation_vertical']
-        labels = {'drilling_method': 'Drilling Method*' }
         widgets = {'orientation_vertical': forms.RadioSelect}
 
 
@@ -554,24 +544,6 @@ class LithologyForm(forms.ModelForm):
             HTML('</tr>'),
         )
         super(LithologyForm, self).__init__(*args, **kwargs)
-    
-    def clean_lithology_from(self):
-        lithology_from = self.cleaned_data.get('lithology_from') 
-
-        # lithology_from is not required in the DB due to historical records, but is required for new records
-        if not lithology_from:
-            raise forms.ValidationError('This field is required.');
-
-        return lithology_from
-
-    def clean_lithology_to(self):
-        lithology_to = self.cleaned_data.get('lithology_to') 
-        
-        # lithology_to is not required in the DB due to historical records, but is required for new records
-        if not lithology_to:
-            raise forms.ValidationError('This field is required.');
-
-        return lithology_to
 
     def clean(self):
         cleaned_data = super(LithologyForm, self).clean()
