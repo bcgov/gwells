@@ -1,0 +1,9 @@
+bedrock_material_descriptor_guid,code,description,is_hidden,sort_order 
+"49a5cec062a411e7907ba6006ad3dba0","Weathered","Weathered","N","10"
+"49a5d1ea62a411e7907ba6006ad3dba0","Competent","Competent","N","20"
+"49a5d3e862a411e7907ba6006ad3dba0","Fractured","Fractured","N","30"
+"49a5d4c462a411e7907ba6006ad3dba0","Jointed","Jointed","N","40"
+"49a5d58c62a411e7907ba6006ad3dba0","Interbed","Interbedded","N","50"
+"49a5d99c62a411e7907ba6006ad3dba0","Fault","Fault","N","60"
+"49a5dac862a411e7907ba6006ad3dba0","Fault Open","Fault Open","N","70"
+"f37d398862a411e7907ba6006ad3dba0","Fault Goug","Fault Gouge","N","80"
