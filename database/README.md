@@ -72,7 +72,7 @@ The complete file listing is:
 - gwells_well_yield_unit.csv
 - load-submission-ready-data.sql
 - truncate-submission-ready-data.sql
-- xform_gwells_driller.csv*
+- xform_gwells_driller.csv
 - xform_gwells_drilling_company.csv
 - xform_gwells_land_district.csv
 - xform_gwells_well.csv
@@ -87,13 +87,16 @@ each pod deployment, so get the name first (i.e. *oc get pods*) from the correct
     ```oc rsh postgresql-3-zxo8x```
 
 3.  Once in the the remote shell:
-    ```cd /tmp/gwells  
+    ```
+    cd /tmp/gwells  
     psql -d gwells -U <user>  -f ./truncate-submission-ready-data.sql
     psql -d gwells -U <user>  -f ./load-submission-ready-data.sql
     psql -d gwells -U <user>  -f ./seqreset.sql```
 
 4. Run the psql client to verify the database objects:
-    ```psql -d gwells -U <user>```
+
+    ```
+    psql -d gwells -U <user>```
 
 ## Clear all data from which the live Search ran
 
@@ -101,9 +104,10 @@ Repeat steps 1-3, and then:
 
 4.  From the remote shell into the Postgres pod:
 
-```cd /tmp/ 
-```
- 
-```
-psql -d gwells -U <user>  -f ./database/scripts/truncate-submission-ready-data.sql
-```
+    ```
+    cd /tmp/ 
+    ```
+
+    ```
+    psql -d gwells -U <user>  -f ./database/scripts/truncate-submission-ready-data.sql
+    ```
