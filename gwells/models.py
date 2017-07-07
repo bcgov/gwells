@@ -574,7 +574,7 @@ class LithologyDescription(models.Model):
     lithology_colour = models.ForeignKey(LithologyColour, db_column='lithology_colour_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Colour')
     lithology_hardness = models.ForeignKey(LithologyHardness, db_column='lithology_hardness_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Hardness')
     lithology_moisture = models.ForeignKey(LithologyMoisture, db_column='lithology_moisture_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Moisture')
-    water_bearing_estimated_flow = models.DecimalField(max_digits=10, decimal_places=4, verbose_name='Water Bearing Estimated Flow')
+    water_bearing_estimated_flow = models.DecimalField(max_digits=10, decimal_places=4, blank=True, null=True, verbose_name='Water Bearing Estimated Flow')
     lithology_observation = models.CharField(max_length=250, blank=True, verbose_name='Observations')
     class Meta:
         db_table = 'gwells_lithology_description'

@@ -478,7 +478,7 @@ class ActivitySubmissionGpsForm(forms.ModelForm):
             errors.append('Method for Determining Ground Elevation is required when specifying Ground Elevation.')
 
         try:
-            if drilling_method == DrillingMethod.objects.filter(code='OTHER')[0] and not other_drilling_method:
+            if drilling_method == DrillingMethod.objects.get(code='OTHER') and not other_drilling_method:
                 errors.append('Specify Other Drilling Method.')
         except Exception as e:
             errors.append('Configuration error: Other Drilling Method does not exist, please contact the administrator.')
@@ -540,7 +540,7 @@ class LithologyForm(forms.ModelForm):
             HTML('</td>'),
             HTML('<td>'),
             'lithology_observation',
-            HTML('{% if form.instance.pk %}{{ form.DELETE }}{% endif %}</td>'),
+            HTML('</td><td>{% if form.instance.pk %}{{ form.DELETE }}{% endif %}</td>'),
             HTML('</tr>'),
         )
         super(LithologyForm, self).__init__(*args, **kwargs)
@@ -577,6 +577,15 @@ class LithologyForm(forms.ModelForm):
 
         if not surficial_material and not bedrock_material:
             errors.append('Surficial Material or Bedrock is required.')
+
+        if bedrock_material:
+            lithology_moisture = cleaned_data.get('lithology_moisture')
+            water_bearing_estimated_flow = cleaned_data.get('water_bearing_estimated_flow')
+            try:
+                if lithology_moisture == LithologyMoisture.objects.get(code='Water Bear') and not water_bearing_estimated_flow:
+                    errors.append('Water Bearing Estimated Flow is required for Water Bearing Bedrock.')
+            except Exception as e:
+                errors.append('Configuration error: Water Bearing Lithology Moisture does not exist, please contact the administrator.')
 
         if len(errors) > 0:
             raise forms.ValidationError(errors)
