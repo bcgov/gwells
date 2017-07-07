@@ -27,11 +27,11 @@ The legacy database is WELLS schema of ENVPROD1.NRS.GOV.BC.CA, and was exported 
     H:\xform_gwells_drilling_company.csv
     ```
 
-5. Copy the CSV files over to your local workstation (e.g. ~/projects/gwells/legacy-data/postgres) , ready to be included in the `rsync` [step below](#rsync-csv).  SQL Developer insists
-   on adding a blank line at the end of each generated CSV file, which runs into a PostGres bug when importing CSV with such a blank line. 
-   Remove this last line from each of the genereated files, either manually or via sed/awk/perl etc.
+5. Copy the CSV files over to your local workstation (e.g. ~/projects/gwells/legacy-data/postgres) , ready to be included in the
+    `rsync` [step below](#rsync-csv).  SQL Developer insists on adding a blank line at the end of each generated CSV file, which
+    runs into a PostGres bug when importing CSV with such a blank line.   Remove this last line from each of the genereated files, either manually or via sed/awk/perl etc.
 
-   *NOTE*: The code table values are not derived from the legacy tables, so they are prefixed
+   *NOTE*: The [code tables](database/code-tables) are not derived from the legacy tables, so they are prefixed
    with the 'gwells' to denote this.  The rows, and UUID identifiers, are pre-populated and ready to be loaded:
     ```
     gwells_bedrock_material.csv
@@ -59,8 +59,10 @@ security and storage reasons.  The seqreset.sql script was generated via Django 
     `python manage.py sqlsequencereset gwells > ./database/scripts/seqreset.sql`
 
 Consolidate all scripts and CSV files into a single folder on the developer workstation.  For example:
-    ```cp -v ~/projects/gwells/github/database/scripts/*.sql /Users/garywong/tmp/gwells```
-    ```cp -v ~/projects/gwells/legacy-data/postgres/*.csv  /Users/garywong/tmp/gwells```
+
+    `cp -v ~/projects/gwells/github/database/scripts/*.sql /Users/garywong/tmp/gwells`
+
+    `cp -v ~/projects/gwells/github/database/code-tables/*.csv  /Users/garywong/tmp/gwells`
 
     The complete file listing is:
     - gwells_drilling_method.csv
