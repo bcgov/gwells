@@ -3,14 +3,16 @@
 ## Export from the legacy Oracle database
 
 The legacy database is WELLS schema of ENVPROD1.NRS.GOV.BC.CA, and was exported using SQL Developer (via [Citrix](https://dts.gov.bc.ca/Citrix/BCGOVWeb/) *Kamloops Desktop - ArcGIS 10-2* desktop).  The transformation of data (e.g. datatype conversion, lookup code foreign keys, concatentation of strings) is done as part of the export script:
-    [xform-submission-data.sql](scripts/sql-developer/xform-submission-ready-data.sql)
+    [xform-submission-ready-data.sql](scripts/sql-developer/xform-submission-ready-data.sql)
 
-2. From the Windows Start Menu on the lower left of the Windows TaskBar, open Oracle SQL*Developer:
+1. From the Windows Start Menu on the lower left of the Windows TaskBar, open Oracle SQL*Developer:
+
 ```-> All Programs -> Oracle Tools -> Oracle SQL Developer```
 
-3. Login to ENVPROD1.NRS.GOV.BC.CA with an Oracle DB Account that can view WELLS schema objects
+2. Login to ENVPROD1.NRS.GOV.BC.CA with an Oracle DB Account that can view WELLS schema objects
 
-4.  Navigate to the Oracle SQL Developer WorkSheet tab and enter the path of the transformation script, via GitHub:
+3.  Navigate to the Oracle SQL Developer WorkSheet tab and enter the path of the transformation script, via GitHub:
+
     `@https://cdn.rawgit.com/bcgov/gwells/master/database/scripts/sql-developer/xform-submission-ready-data.sql`
 
     *NOTE*: If Citirx permissions prevent you from running this script directly (i.e. unable to open file), then either
@@ -23,7 +25,7 @@ The legacy database is WELLS schema of ENVPROD1.NRS.GOV.BC.CA, and was exported 
     H:\xform_gwells_driller.csv
     H:\xform_gwells_drilling_company.csv```
 
-5. Copy the CSV files over to your local workstation (e.g. ~/projects/gwells/legacy-data/postgres) , ready to be included in the
+4. Copy the CSV files over to your local workstation (e.g. ~/projects/gwells/legacy-data/postgres) , ready to be included in the
     `rsync` [step below](#rsync-csv).  SQL Developer insists on adding a blank line at the end of each generated CSV file, which
     runs into a PostGres bug when importing CSV with such a blank line.   Remove this last line from each of the genereated files, either manually or via sed/awk/perl etc.
 
@@ -46,15 +48,17 @@ The legacy database is WELLS schema of ENVPROD1.NRS.GOV.BC.CA, and was exported 
     gwells_well_subclass.csv
     gwells_well_yield_unit.csv```    
 
-## Loading data upon which to run a Search (against the PostGres DB) 
+## Loading data upon which to Submit data (against the PostGres DB) 
 
 The legacy data was exported into human-readable CSV files, and stored outside of GitHub.  This is for both 
 security and storage reasons.  The seqreset.sql script was generated via Django using:
-    `python manage.py sqlsequencereset gwells > ./database/scripts/seqreset.sql`
+
+```python manage.py sqlsequencereset gwells > ./database/scripts/seqreset.sql```
 
 Consolidate all scripts and CSV files into a single folder on the developer workstation.  For example:
 ```cp -v ~/projects/gwells/github/database/scripts/*.sql /Users/garywong/tmp/gwells
-cp -v ~/projects/gwells/github/database/code-tables/*.csv  /Users/garywong/tmp/gwells
+```
+```cp -v ~/projects/gwells/github/database/code-tables/*.csv  /Users/garywong/tmp/gwells
 ```
 
     The complete file listing is:
@@ -74,10 +78,12 @@ cp -v ~/projects/gwells/github/database/code-tables/*.csv  /Users/garywong/tmp/g
     - xform_gwells_well.csv
 
 1.  Sync all CSV and SQL files to Postgres pod, from that single source directory <a id="rsync-csv"></a> on the developer workstation:
+
 ```oc rsync /Users/garywong/tmp/gwells postgresql-3-zxo8x:/tmp```
 
 2.  Remote into Postgres pod (from developer workstation).  Note that the the pod name changew with
 each pod deployment, so get the name first (i.e. *oc get pods*) from the correct project (dev/test/prod):
+
 ```oc rsh postgresql-3-zxo8x```
 
 3.  Once in the the remote shell:
