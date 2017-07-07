@@ -5,7 +5,7 @@ from crispy_forms.layout import Layout, Fieldset, Div, Submit, Hidden, HTML, Fie
 from crispy_forms.bootstrap import FormActions, AppendedText
 from django.forms.models import inlineformset_factory
 from .search import Search
-from .models import ActivitySubmission, WellActivityType, ProvinceState, DrillingMethod, LithologyDescription
+from .models import ActivitySubmission, WellActivityType, ProvinceState, DrillingMethod, LithologyDescription, LithologyMoisture
 from datetime import date
 
 class SearchForm(forms.Form):
@@ -465,6 +465,15 @@ class ActivitySubmissionGpsForm(forms.ModelForm):
 
         return longitude
 
+    def clean_drilling_method(self):
+        drilling_method = self.cleaned_data.get('drilling_method') 
+
+        # drilling_method is not required in the DB due to historical records, but is required for new records
+        if not drilling_method:
+            raise forms.ValidationError('This field is required.');
+
+        return drilling_method
+
     def clean(self):
         cleaned_data = super(ActivitySubmissionGpsForm, self).clean()
         
@@ -491,6 +500,7 @@ class ActivitySubmissionGpsForm(forms.ModelForm):
     class Meta:
         model = ActivitySubmission
         fields = ['latitude', 'longitude', 'ground_elevation', 'ground_elevation_method', 'drilling_method', 'other_drilling_method', 'orientation_vertical']
+        labels = {'drilling_method': 'Drilling Method*' }
         widgets = {'orientation_vertical': forms.RadioSelect}
 
 
