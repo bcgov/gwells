@@ -5,7 +5,7 @@ from crispy_forms.layout import Layout, Fieldset, Div, Submit, Hidden, HTML, Fie
 from crispy_forms.bootstrap import FormActions, AppendedText
 from django.forms.models import inlineformset_factory
 from .search import Search
-from .models import ActivitySubmission, WellActivityType, ProvinceState, DrillingMethod, LithologyDescription
+from .models import ActivitySubmission, WellActivityType, ProvinceState, DrillingMethod, LithologyDescription, LithologyMoisture
 from datetime import date
 
 class SearchForm(forms.Form):
@@ -128,6 +128,8 @@ class SearchForm(forms.Form):
 
         return well_results
 
+
+
 class WellOwnerForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
@@ -154,17 +156,22 @@ class WellOwnerForm(forms.ModelForm):
         )
         super(WellOwnerForm, self).__init__(*args, **kwargs)
 
+        # display code instead of the value from __str__ in the model
+        self.fields['owner_province_state'].label_from_instance = self.label_from_instance_code
         try:
             bc = ProvinceState.objects.get(code='BC')
             self.initial['owner_province_state'] = bc
             self.fields['owner_province_state'].empty_label = None
         except Exception as e:
             pass
+
+    @staticmethod
+    def label_from_instance_code(obj):
+        return obj.code
     
     class Meta:
         model = ActivitySubmission
         fields = ['owner_full_name', 'owner_mailing_address', 'owner_city', 'owner_province_state', 'owner_postal_code']
-
 
 
 class ActivitySubmissionTypeAndClassForm(forms.ModelForm):
@@ -471,7 +478,7 @@ class ActivitySubmissionGpsForm(forms.ModelForm):
             errors.append('Method for Determining Ground Elevation is required when specifying Ground Elevation.')
 
         try:
-            if drilling_method == DrillingMethod.objects.filter(code='OTHER')[0] and not other_drilling_method:
+            if drilling_method == DrillingMethod.objects.get(code='OTHER') and not other_drilling_method:
                 errors.append('Specify Other Drilling Method.')
         except Exception as e:
             errors.append('Configuration error: Other Drilling Method does not exist, please contact the administrator.')
@@ -533,28 +540,10 @@ class LithologyForm(forms.ModelForm):
             HTML('</td>'),
             HTML('<td>'),
             'lithology_observation',
-            HTML('{% if form.instance.pk %}{{ form.DELETE }}{% endif %}</td>'),
+            HTML('</td><td>{% if form.instance.pk %}{{ form.DELETE }}{% endif %}</td>'),
             HTML('</tr>'),
         )
         super(LithologyForm, self).__init__(*args, **kwargs)
-    
-    def clean_lithology_from(self):
-        lithology_from = self.cleaned_data.get('lithology_from') 
-
-        # lithology_from is not required in the DB due to historical records, but is required for new records
-        if not lithology_from:
-            raise forms.ValidationError('This field is required.');
-
-        return lithology_from
-
-    def clean_lithology_to(self):
-        lithology_to = self.cleaned_data.get('lithology_to') 
-        
-        # lithology_to is not required in the DB due to historical records, but is required for new records
-        if not lithology_to:
-            raise forms.ValidationError('This field is required.');
-
-        return lithology_to
 
     def clean(self):
         cleaned_data = super(LithologyForm, self).clean()
@@ -570,6 +559,15 @@ class LithologyForm(forms.ModelForm):
 
         if not surficial_material and not bedrock_material:
             errors.append('Surficial Material or Bedrock is required.')
+
+        if bedrock_material:
+            lithology_moisture = cleaned_data.get('lithology_moisture')
+            water_bearing_estimated_flow = cleaned_data.get('water_bearing_estimated_flow')
+            try:
+                if lithology_moisture == LithologyMoisture.objects.get(code='Water Bear') and not water_bearing_estimated_flow:
+                    errors.append('Water Bearing Estimated Flow is required for Water Bearing Bedrock.')
+            except Exception as e:
+                errors.append('Configuration error: Water Bearing Lithology Moisture does not exist, please contact the administrator.')
 
         if len(errors) > 0:
             raise forms.ValidationError(errors)

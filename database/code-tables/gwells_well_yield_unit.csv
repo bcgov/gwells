@@ -1,0 +1,8 @@
+well_yield_unit_guid,code,description,sort_order
+"c4634b4847c311e7a91992ebcb67fe33","GPH","Gallons per Hour (U.S./Imperial)","100"
+"c4634ef447c311e7a91992ebcb67fe33","GPM","Gallons per Minute (U.S./Imperial)","2"
+"c4634ff847c311e7a91992ebcb67fe33","IGM","Imperial Gallons per Minute","100"
+"c46350c047c311e7a91992ebcb67fe33","LPS","Litres Per Second","100"
+"c463518847c311e7a91992ebcb67fe33","UNK","Unknown Yield","100"
+"c463525047c311e7a91992ebcb67fe33","USGM","U.S. Gallons per Minute","1"
+"c46347b047c311e7a91992ebcb67fe33","DRY","Dry Hole","100"

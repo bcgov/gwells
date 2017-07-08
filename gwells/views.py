@@ -138,17 +138,24 @@ class ActivitySubmissionWizardView(SessionWizardView):
     
     def done(self, form_list, form_dict, **kwargs):
         submission = self.instance
-        #for form in form_list:
-        #    for field, value in form.cleaned_data.items():
-        #        setattr(submission, field, value)
 
-        #if submission.well_activity_type.code == 'CON' and submission.well is None:
+        #if submission.well_activity_type.code == 'CON' and not submission.well:
             #TODO
             #w = submission.createWell()
-            #w = w.save()
+            #w.save()
+            #submission = submission.save()
+            #lithology_list = form_dict['lithology'].save()
             #submission.well = w
-        #    submission.save()
+            #submission.save()
+            #lithology_list = list(lithology_list)
+            #for lith in lithology_list:
+            #    lith.activity_submission = None
+            #    lith.well = w
+            #    lith.save()
         #else:
+            #submission.save()
+            #lithology_list = form_dict['lithology'].save()
+
         submission.save()
         lithology_list = form_dict['lithology'].save()
 
