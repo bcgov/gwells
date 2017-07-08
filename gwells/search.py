@@ -50,14 +50,11 @@ class Search():
 
             # We must compare the absolute values of the minimum and maximum longitude values,
             # since users may erronneously enter positive longitudes for BC.
-            #max_long = max(abs(start_long), abs(end_long))
-            #min_long = min(abs(start_long), abs(end_long))
             max_long = max(start_long, end_long)
             min_long = min(start_long, end_long)
 
             q_list.append(Q(latitude__gt=min_lat) & Q(latitude__lt=max_lat)
                           & Q(longitude__gt=min_long) & Q(longitude__lt=max_long))
-                            #& Q(longitude__abs__gt=min_long) & Q(longitude__abs__lt=max_long))
         if q_list:
             # If there are too many results, we return one plus the query limit to engage post-query logic in views.py
             well_results = Well.objects.distinct().filter(
