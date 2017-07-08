@@ -99,7 +99,16 @@
 <script>
   /** addMap block */
   var addMap = null;
-  // Options for creating the addMap
+  // Options for creating the addMap. This was the first map instance created, and as such the options are more fleshed-out
+  // with alternative examples that were (or might be) considered, and therefore may be used as a template for developing
+  // future out-of-the-box WellsMap instances.
+  // This map instance has the ability to display a pushpin that the user can move by clicking and dragging; through the
+  // wellPushpinMoveCallback, it communicates the latitude and longitude of the pushpin to the form template, which then
+  // triggers the change events on the designated latitude and longitude fields. As with all pushpin map instances, the
+  // map issues AJAX queries every time the map or the pushpin moves, so that the user always sees surrounding wells, and
+  // the map 'forgets' wells that are outside of the bounding box.
+  // TODO: Make the $(document).ready() call fetch the lat/long fields and feed them in as an initial pushpin location, if
+  // present.
   var addMapOptions = {
       // The ID of the addMap div.
       mapNodeId: 'add-map',

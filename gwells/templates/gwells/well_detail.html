@@ -72,6 +72,10 @@
 {% block jqscript_block %}
 <script>
     var detailMap = null;
+    // Options for creating the detailMap. This map instance opens with a pushpin over the location of the well
+    // of interest, and (as with all maps with a pushpin) the map issues an AJAX query to show the surrounding wells
+    // within the map's bounding box, which are displayed as circleMarkers. The map also has limited zoom capability, 
+    // so that users can find further surrounding wells. None of the wells (circleMarkers or the pushpin) is interactive.
     var detailMapOptions = {
         // The ID of the addMap div.
         mapNodeId: 'detail-map',
