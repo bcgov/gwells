@@ -1,12 +1,26 @@
 /**
  * The WellsMap class provides a Leaflet map with different functionality, depending upon the context in which it is deployed.
  * It currently depends only on Leaflet, esri-leaflet, and JQuery, eschewing any other plugins libraries in the interest of maintainability.
- * 
+ *
  * A NOTE ON FUNCTIONALITY: This class can be initialised in different ways, which exposes its functionality differently.
- * If sufficient hooks are supplied in map construction, the map can perform the following tasks:
- *  - Supply a single draggable marker which, when moved, advertises the marker's new lat/long coordinates
- *  - Allow the user to draw a rectangle which, when finished drawing, advertises the rectangle's opposing corners
- *      in lat/long terms
+ * If sufficient parameters are supplied in map construction, the map can perform the following tasks:
+ *  - Draw a single pushpin (i.e., a Leaflet marker) which causes the map to emit AJAX requests to show all wells
+ *      in the bounding box (except the well that is being represented by the pushpin). The map will reissue queries for wells
+ *      in the bounding box whenever the map is panned or zoomed, provided the pushpin is present.
+ *      The pushpin can be fed into the map's initialisation options via wellPushpinInit or added/moved
+ *      programmatically through the public method placeWellPushpin(). It may be removed via removeWellPushpin().
+ *      If the wellPushpinMoveCallback is supplied on map init, the pushpin can be moved by dragging, which advertises the
+ *      pushpin's latitude and longitude to the callback. The map will centre on the pushpin and reissue queries for surrounding
+ *      wells whenever the pushpin is moved.
+ *  - Allow the user to draw a rectangle via the public startIdentifyWells() method. If the map init supplies an identifyWellsEndCallback,
+ *      the map advertises a pair of latitude/longitude coordinates corresponding to extreme corners of the rectangle as it was when the user
+ *      released the mouse button.
+ *  - Display an ESRI MapServer layer as a base layer.
+ *  - Display an array of WMS tile layers as overlays.
+ * The map is able to pan and zoom by default, but this behaviour can be disabled by passing appropriate booleans. Note that if zooming is allowed,
+ * the map will always zoom into and out of the centre of the map, regardless if the zoom event arises from zoom buttons or the mouse wheel. Also,
+ * the constructor allows the map to set its zoom levels, as well as the initial centre or a bounding box to fit (precisely one of these is required 
+ * for a given instance).
  * @param options An object conforming to the following scheme (using TS notation):
  * {
  *   mapNodeId: string, // The DOM ID of the div into which the Leaflet map will be placed
@@ -212,7 +226,7 @@ function WellsMap(options) {
             _identifyWellsRectangle = null;
         }       
         _isIdentifyingWells = false;
-        if(_exists(_identifyWellsEndCallback)) {
+        if (_exists(_identifyWellsEndCallback)) {
             _identifyWellsEndCallback(_startCorner, _endCorner);
         }
         _startCorner = null;
