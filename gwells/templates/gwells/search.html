@@ -31,7 +31,11 @@
  </div>
 <br />
 {% if too_many_wells %}
-    <div class="alert alert-danger">{{ too_many_wells }}</div>
+    <div class="row">
+        <div class="col-sm-12 alert-warning">
+            <em>{{ too_many_wells }}</em>
+        </div>
+    </div>
 {% elif well_list %}
     <!-- Removed because the query is sorted and sliced in search.py { autosort well_list }-->
     <div id="wells-json" data-wells-search-json="{{wells_json}}"></div>
@@ -125,7 +129,7 @@
         	
 {% elif 'well' in request.GET %}
     <div class="row">
-        <div class="col-sm-12">
+        <div class="col-sm-12 alert-warning">
             <em>No well records could be found.</em>
         </div>
     </div>
