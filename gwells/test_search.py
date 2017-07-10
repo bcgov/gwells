@@ -23,17 +23,8 @@ class SearchTestCase(TestCase):
         prov = ProvinceState.objects.create(sort_order=1)
         prov.save()
 
-        #activity_type = WellActivityType.objects.create(sort_order=1)
-        #activity_type.save()
-
         well_class = WellClass.objects.create(sort_order=1)
         well_class.save()
-
-        #c = DrillingCompany.objects.create()
-        #c.save()
-
-        #d = Driller.objects.create(drilling_company=c)
-
 
         w = Well.objects.create(well_class=well_class, owner_province_state=prov)
         w.identification_plate_number = 123
@@ -52,7 +43,7 @@ class SearchTestCase(TestCase):
         w3 = Well.objects.create(well_class=well_class, owner_province_state=prov)
         w3.identification_plate_number = 1
         w3.street_address = '200 Main Street'
-        w3.pid = 54321
+        w3.legal_pid = 54321
         w3.owner_full_name = 'Joe Smith'
         w3.save()
 
@@ -76,12 +67,12 @@ class SearchTestCase(TestCase):
 
 
 
-    #def test_well_search_legal_pid(self):
-    #    """ Check that pid can be found when searching with leading zeros
-    #        even though field is stored as an integer
-    #    """
-    #    wells = Search.well_search('', '', '000054321', '')
-    #    self.assertEqual(wells.count(), 1)
+    def test_well_search_legal_pid(self):
+        """ Check that pid can be found when searching with leading zeros
+            even though field is stored as an integer
+        """
+        wells = Search.well_search('', '', '000054321', '')
+        self.assertEqual(wells.count(), 1)
 
 
 
