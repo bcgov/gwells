@@ -614,3 +614,10 @@ p.help-block {
 #topicTemplate h4.stepheading {
     margin-bottom: 0.1em;
 }
+
+.table-tight td {
+    padding: 1px;
+}
+.table-tight td .form-group {
+    margin-bottom: 2px;
+}
