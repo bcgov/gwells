@@ -70,7 +70,7 @@ function WellsMap(options) {
     // The URL used to search for wells.
     var _SEARCH_URL = '/ajax/map_well_search/';
 
-    // The zoom level beyond which the map issues queries for wells.
+    // The zoom level beyond which the map issues AJAX queries for wells, and beneath which removes AJAX-queried wells.
     var _SEARCH_MIN_ZOOM_LEVEL = 14;
 
     // Leaflet style for the _wellMarkers
@@ -410,9 +410,19 @@ function WellsMap(options) {
 
     // When the wellPushpin is moved, pan to re-centre the pushpin.
     var _wellPushpinMoveEndEvent = function () {
-        var latLng = _wellPushpin.pushpinMarker.getLatLng();
-        _leafletMap.panTo(latLng);
+        _leafletMap.panTo(_wellPushpin.pushpinMarker.getLatLng());
     };
+
+    // When the map is zoomed with a wellPushpin, pan to re-centre the pushpin (which
+    // is needed if the map is near the bounding box), and clear the surrounding wells
+    // if the zoom level is below the minimum search level.
+    var _wellPushpinZoomEndEvent = function () {
+        _leafletMap.panTo(_wellPushpin.pushpinMarker.getLatLng());
+        if (_leafletMap.getZoom() < _SEARCH_MIN_ZOOM_LEVEL) {
+            _clearWells();
+        }
+
+    }
 
     /** Public methods */
 
@@ -458,11 +468,11 @@ function WellsMap(options) {
         // more information to aid in well placement without having to load too many wells at once.
         _leafletMap.on('moveend', _searchBoundingBoxOnMoveEnd);
 
-        // CircleMarkers expand during zoom, and so if the pin's wellMarker is placed on a very zoomed-out map,
-        // the wellMarker will come to encompass the entire map while it zooms in. To circumvent this,
-        // we remove the wellMarker during zoom.
-        // _leafletMap.on('zoomstart', _wellPushpinZoomStartEvent);
-        // _leafletMap.on('zoomend', _wellPushpinZoomEndEvent);
+        // If the pin exists, zoomend should re-centre the pin and clear wells if the zoom level
+        // is beneath the _SEARCH_MIN_ZOOM_LEVEL.
+        _leafletMap.on('zoomend', _wellPushpinZoomEndEvent);
+
+        // Finally, the map should fly to the pin.
         _leafletMap.flyTo(latLong, zoomLevel);
     };
 
@@ -475,6 +485,7 @@ function WellsMap(options) {
             _leafletMap.removeLayer(_wellPushpin.pushpinMarker);
             // Unsubscribe from the pushpin-related events.
             _leafletMap.off('moveend', _searchBoundingBoxOnMoveEnd);
+            _leafletMap.off('zoomend', _wellPushpinZoomEndEvent);
             _wellPushpin = null;
             _clearWells();
         }
