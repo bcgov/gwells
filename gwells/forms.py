@@ -540,7 +540,7 @@ class LithologyForm(forms.ModelForm):
             HTML('</td>'),
             HTML('<td>'),
             'lithology_observation',
-            HTML('</td><td>{% if form.instance.pk %}{{ form.DELETE }}{% endif %}</td>'),
+            HTML('</td><td width="5%">{% if form.instance.pk %}{{ form.DELETE }}{% endif %}</td>'),
             HTML('</tr>'),
         )
         super(LithologyForm, self).__init__(*args, **kwargs)
