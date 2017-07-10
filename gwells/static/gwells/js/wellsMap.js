@@ -491,7 +491,7 @@ function WellsMap(options) {
         }
         if (_exists(_wellPushpin) && _exists(_wellPushpin.pushpinMarker)) {
             _leafletMap.removeLayer(_wellPushpin.pushpinMarker);
-            _leafletMap.removeLayer(_wellPushpin.wellMarker);
+            //_leafletMap.removeLayer(_wellPushpin.wellMarker);
             // Unsubscribe from the pushpin-related events.
             _leafletMap.off('moveend', _searchBoundingBoxOnMoveEnd);
             // _leafletMap.off('zoomstart', _wellPushpinZoomStartEvent);
