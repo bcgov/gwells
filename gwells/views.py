@@ -139,24 +139,21 @@ class ActivitySubmissionWizardView(SessionWizardView):
     def done(self, form_list, form_dict, **kwargs):
         submission = self.instance
 
-        #if submission.well_activity_type.code == 'CON' and not submission.well:
+        if submission.well_activity_type.code == 'CON' and not submission.well:
             #TODO
-            #w = submission.createWell()
-            #w.save()
-            #submission = submission.save()
-            #lithology_list = form_dict['lithology'].save()
-            #submission.well = w
-            #submission.save()
-            #lithology_list = list(lithology_list)
-            #for lith in lithology_list:
-            #    lith.activity_submission = None
-            #    lith.well = w
-            #    lith.save()
-        #else:
-            #submission.save()
-            #lithology_list = form_dict['lithology'].save()
-
-        submission.save()
-        lithology_list = form_dict['lithology'].save()
+            w = submission.createWell()
+            w.save()
+            submission.well = w
+            submission.save()
+            lithology_list = form_dict['lithology'].save()
+            lithology_list = list(lithology_list)
+            for lith in lithology_list:
+                lith.pk = None
+                lith.activity_submission = None
+                lith.well = w
+                lith.save()
+        else:
+            submission.save()
+            lithology_list = form_dict['lithology'].save()
 
         return HttpResponseRedirect('/submission/')
