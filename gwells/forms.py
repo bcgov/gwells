@@ -449,7 +449,7 @@ class ActivitySubmissionGpsForm(forms.ModelForm):
             raise forms.ValidationError('This field is required.');
 
         if latitude < 48.2045556 or latitude > 60.0223:
-            raise forms.ValidationError('Latitude must be between 60.0223 and 48.2045556.')
+            raise forms.ValidationError('Latitude must be between 48.2045556 and 60.0223.')
 
         return latitude
 

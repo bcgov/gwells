@@ -112,10 +112,10 @@ function _areLatLongDDFieldsValid () {
         var latMsg = '';
         var longMsg = '';
         if (!_latIsInBox(lat)) {
-            latMsg = 'Invalid latitude: ' + _latDDField.val();
+            latMsg = 'Latitude must be between 48.2045556 and 60.0223';
         }
         if (!_longIsInBox(long)) {
-            longMsg = 'Invalid longitude: ' + _longDDField.val();
+            longMsg = 'Longitude must be between -139.0736706 and -114.0338224';
         }
         if (latMsg && longMsg) {
             errMsg = _errorPrepend + latMsg + '. ' + longMsg;
