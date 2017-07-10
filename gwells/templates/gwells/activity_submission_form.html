@@ -112,18 +112,6 @@
   var addMapOptions = {
       // The ID of the addMap div.
       mapNodeId: 'add-map',
-      // Minimum zoom level of the map (i.e., how far it can be zoomed out)
-      minZoom: 4,
-      // Maximum zoom of the map (i.e., how far it can be zoomed in)
-      maxZoom: 17,
-      // Bounding lats and longs of the map, corresponding to the lat/long extremes of BC.
-      mapBounds: {
-          north:  60.0223,
-          south: 48.2045556,
-          west: -139.0736706,
-          east: -114.0338224,
-          padding: 5 // Margin beyond extremes to pad the bounds with, as a percentage of the total bounding box.
-      },
       // ESRI layers associated with the map
       esriLayers: [
           /*{ // This is an alternate basemap.
@@ -151,6 +139,20 @@
               transparent: true
           } */
       ],
+      initCentre: null, // Will be set in $(document).ready(), if lat/long fields are populated
+      // Minimum zoom level of the map (i.e., how far it can be zoomed out)
+      minZoom: 4,
+      // Maximum zoom of the map (i.e., how far it can be zoomed in)
+      maxZoom: 17,
+      // Bounding lats and longs of the map, corresponding to the lat/long extremes of BC.
+      mapBounds: {
+          north:  60.0223,
+          south: 48.2045556,
+          west: -139.0736706,
+          east: -114.0338224,
+          padding: 5 // Margin beyond extremes to pad the bounds with, as a percentage of the total bounding box.
+      },
+      wellPushpinInit: null, // Will be set in $(document).ready(), if lat/long fields are populated
       wellPushpinMoveCallback: pushpinMoveCallback
   };
 
@@ -244,6 +246,12 @@
   // On page load, we generate addMap and initiate CoordSync to individually manage map behaviour and
   // the coordination of the coordinate input fields.
   $(document).ready(function (){
+    var lat = parseFloat($(latNodeSelector).val());
+    var long = parseFloat($(longNodeSelector).val());
+    if (lat !== null && !isNaN(lat) && long !== null && !isNaN(long)) {
+      addMapOptions.initCentre = [lat, long];
+      addMapOptions.wellPushpinInit = {lat: lat, long: long};
+    }
     addMap = new WellsMap(addMapOptions);
     CoordSync.init(coordSyncOptions);
   });
