@@ -25,6 +25,10 @@ class Search():
         :param addr: part of the street address or site area of the well
         :param legal: part of the legal plan, legal district lot or pid
         :param owner: part of the owner's full name
+        :param lat_long_box: an object including 'start_corner' and 'end_corner', 
+            each a latitude-longitude pair describing extreme corners of an extent rectangle
+            from within which the wells are to be selected
+        :param query_limit: the number of wells the caller will display
         :returns: QuerySet of Well objects or None if no matching records found.
         """
         well_results = None
