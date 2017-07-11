@@ -1,3 +1,16 @@
+"""
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+"""
 from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, render
 #from django.urls import reverse
@@ -139,24 +152,21 @@ class ActivitySubmissionWizardView(SessionWizardView):
     def done(self, form_list, form_dict, **kwargs):
         submission = self.instance
 
-        #if submission.well_activity_type.code == 'CON' and not submission.well:
+        if submission.well_activity_type.code == 'CON' and not submission.well:
             #TODO
-            #w = submission.createWell()
-            #w.save()
-            #submission = submission.save()
-            #lithology_list = form_dict['lithology'].save()
-            #submission.well = w
-            #submission.save()
-            #lithology_list = list(lithology_list)
-            #for lith in lithology_list:
-            #    lith.activity_submission = None
-            #    lith.well = w
-            #    lith.save()
-        #else:
-            #submission.save()
-            #lithology_list = form_dict['lithology'].save()
-
-        submission.save()
-        lithology_list = form_dict['lithology'].save()
+            w = submission.createWell()
+            w.save()
+            submission.well = w
+            submission.save()
+            lithology_list = form_dict['lithology'].save()
+            lithology_list = list(lithology_list)
+            for lith in lithology_list:
+                lith.pk = None
+                lith.activity_submission = None
+                lith.well = w
+                lith.save()
+        else:
+            submission.save()
+            lithology_list = form_dict['lithology'].save()
 
         return HttpResponseRedirect('/submission/')
