@@ -1,0 +1,5 @@
+lithology_hardness_guid,code,description,is_hidden,sort_order 
+"aeab546062a511e7907ba6006ad3dba0","V. Soft","Very Soft","N","10"
+"aeab59b062a511e7907ba6006ad3dba0","Stiff","Stiff","N","20"
+"aeab5d4862a511e7907ba6006ad3dba0","Medium","Medium","N","30"
+"aeab5f0a62a511e7907ba6006ad3dba0","V. Stiff","Very Stiff","N","40"

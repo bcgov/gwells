@@ -22,20 +22,26 @@
     </div>
     <div class="col-md-8">
         <div class="row">
-        <button id="identify-wells-btn" type="button" onclick="startIdentifyWellsOperation()">Select Area on Map</button>
+            <button id="identify-wells-btn" class="btn btn-default" type="button" onclick="startIdentifyWellsOperation()">Select Area on Map</button>
         </div>
         <div class="row">
-        <div id="search-map" class="col"></div>
+            <div id="search-map" class="col-md-7"></div>
         </div>
     </div>
  </div>
 <br />
-
-{% if well_list %}
+{% if too_many_wells %}
+    <div class="row">
+        <div class="col-sm-12 alert-warning">
+            <em>{{ too_many_wells }}</em>
+        </div>
+    </div>
+{% elif well_list %}
     <!-- Removed because the query is sorted and sliced in search.py { autosort well_list }-->
+    <div id="wells-json" data-wells-search-json="{{wells_json}}"></div>
     {% autopaginate well_list 25 %}
         <div class="row">
-            <div class="col-sm-12" data-wells-search-json="{{wells_json}}">
+            <div class="col-sm-12">
                 {{ page_obj.start_index }}-{{ page_obj.end_index }} of {{ page_obj.paginator.count }} results
                 <br /><br />
             </div>
@@ -123,7 +129,7 @@
         	
 {% elif 'well' in request.GET %}
     <div class="row">
-        <div class="col-sm-12">
+        <div class="col-sm-12 alert-warning">
             <em>No well records could be found.</em>
         </div>
     </div>
@@ -147,9 +153,13 @@
 
 {% block jqscript_block %}
 <script>
-    // The search page has a map.
     var searchMap = null;
-    // Options for creating the searchMap
+    // Options for creating the searchMap. This map instance has the ability to drive search queries via the
+    // startIdentifyWellsOperation, which allows a user to draw a rectangle, and the endIdentifyWellsOperation,
+    // which bundles opposite corners of this rectangle into the form before submitting it for the server
+    // to process. The map also displays any wells successfully returned from a form search, whether or not
+    // the search was driven by drawing a rectangle or by a user manually submitting the form.
+    // Wells can be clicked to display a subset of their tabulated information in a popup directly on the map.
     var searchMapOptions = {
         // The ID of the addMap div.
         mapNodeId: 'search-map',
@@ -181,12 +191,6 @@
                 transparent: true
             }        
         ],
-        // Settings for a Leaflet circleMarker
-        wellMarkerStyle: {
-          radius: 3, // The radius of the circleMarker
-          color: '#0147b7', // The color of the circleMarker
-          fillOpacity: 1.0 // How transparent the circleMarker's fill is
-       },        
         identifyWellsStartCallback: identifyWellsStartCallback, 
         identifyWellsEndCallback: identifyWellsEndCallback    
     };
@@ -225,8 +229,7 @@
     $(document).ready(function(){
         $('[data-toggle="popover"]').popover({'trigger':'hover'});
         searchMap = new WellsMap(searchMapOptions);
-        // TODO: Tag the data-containing div with an id and fetch it with $("#data-id").data("wells-search-json")?
-        var wellsJson = $("[data-wells-search-json]").attr("data-wells-search-json") || null;
+        var wellsJson = $("#wells-json").attr("data-wells-search-json") || null;
         var wells = JSON.parse(wellsJson);
         searchMap.drawAndZoom(wells);            
     });

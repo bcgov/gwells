@@ -1,0 +1,5 @@
+province_state_guid,code,description,sort_order
+"f46b70b647d411e7a91992ebcb67fe33","BC","British Colmubia","1"
+"f46b742647d411e7a91992ebcb67fe33","AB","Alberta","2"
+"f46b77b447d411e7a91992ebcb67fe33","WA","Washington State","10"
+"f46b7b1a47d411e7a91992ebcb67fe33","OTH","Other","20"

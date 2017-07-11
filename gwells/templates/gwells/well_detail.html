@@ -8,66 +8,74 @@
 {% endblock %}
 
 {% block body_block %}
-
     <div class="row">
-        <div class="col-md-6">
-            <label for="well_tag_number">Well Tag Number:</label>
-            <span id="well_tag_number">{{ well.well_tag_number }}</span>
+        <div class="col-lg-7">    
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="well_tag_number">Well Tag Number:</label>
+                    <span id="well_tag_number">{{ well.well_tag_number }}</span>
+                </div>
+                <div class="col-md-6">
+                    <label for="owner">Owner:</label>
+                    <span id="owner">{{ well.owner_full_name }}</span>            
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="address">Street Address:</label>
+                    <span id="address">{{ well.street_address }}</span>
+                </div>
+                <div class="col-md-6">
+                    <label for="well_drilled_depth">Well Drilled Depth:</label>
+                    <span id="well_drilled_depth">{{ well.well_drilled_depth }}</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="owner">Town/City:</label>
+                    <span id="owner">{{ well.city }}</span>            
+                </div>
+                <div class="col-md-6">
+                    <label for="finished_well_depth">Finished Well Depth:</label>
+                    <span id="finished_well_depth">{{ well.finished_well_depth }}</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="latitude">Latitude:</label>
+                    <span id="latitude" data-latitude="{{ well.latitude }}">{{ well.latitude }}</span>
+                </div>
+                <div class="col-md-6">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="longitude">Longitude:</label>
+                    <span id="longitude" data-longitude="{{ well.longitude }}">{{ well.longitude }}</span>
+                </div>
+                <div class="col-md-6">
+                </div>
+            </div>
         </div>
-        <div class="col-md-6">
-            <label for="owner">Owner:</label>
-            <span id="owner">{{ well.owner_full_name }}</span>            
+        <div class="col-md-4">
+            <div id="detail-map"></div>        
         </div>
+        <div id="guid-row" data-well-guid="{{ well.well_guid }}"></div>
     </div>
-    <div class="row">
-        <div class="col-md-6">
-            <label for="address">Street Address:</label>
-            <span id="address">{{ well.street_address }}</span>
-        </div>
-        <div class="col-md-6">
-            <label for="well_drilled_depth">Well Drilled Depth:</label>
-            <span id="well_drilled_depth">{{ well.well_drilled_depth }}</span>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-6">
-            <label for="owner">Town/City:</label>
-            <span id="owner">{{ well.city }}</span>            
-        </div>
-        <div class="col-md-6">
-            <label for="finished_well_depth">Finished Well Depth:</label>
-            <span id="finished_well_depth">{{ well.finished_well_depth }}</span>
-        </div>
-    </div>
-    <div id="guid-row" class="row" data-well-guid="{{ well.well_guid }}">
-        <div class="col-md-6">
-            <label for="latitude">Latitude:</label>
-            <span id="latitude" data-latitude="{{ well.latitude }}">{{ well.latitude }}</span>
-        </div>
-        <div class="col-md-6">
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-6">
-            <label for="longitude">Longitude:</label>
-            <span id="longitude" data-longitude="{{ well.longitude }}">{{ well.longitude }}</span>
-        </div>
-        <div class="col-md-6">
-        </div>
-    </div>
-
 
     <div>
         <br /><br />
         <a href="https://a100.gov.bc.ca/pub/wells/wellsreport1.do?wellTagNumber={{ well.well_tag_number }}">View Report</a>
     </div>
-
-    <div id="detail-map"></div>
 {% endblock %}
 
 {% block jqscript_block %}
 <script>
     var detailMap = null;
+    // Options for creating the detailMap. This map instance opens with a pushpin over the location of the well
+    // of interest, and (as with all maps with a pushpin) the map issues an AJAX query to show the surrounding wells
+    // within the map's bounding box, which are displayed as circleMarkers. The map also has limited zoom capability, 
+    // so that users can find further surrounding wells. None of the wells (circleMarkers or the pushpin) is interactive.
     var detailMapOptions = {
         // The ID of the addMap div.
         mapNodeId: 'detail-map',
@@ -75,8 +83,8 @@
         initCentre: null, // Will be filled in before call in $(document).ready()
         // Maximum zoom of the map (i.e., how far it can be zoomed in)
         maxZoom: 17,
-        // The detailMap cannot be zoomed
-        canZoom: false,
+        // Minimum zoom of the map (i.e., how far it can be zoomed out)
+        minZoom: 14,
         // The detailMap cannot be panned
         canPan: false,
         // ESRI layers associated with the map
@@ -95,12 +103,6 @@
                 transparent: true
             }        
         ],
-        // Settings for a Leaflet circleMarker
-        wellMarkerStyle: {
-          radius: 3, // The radius of the circleMarker
-          color: '#0147b7', // The color of the circleMarker
-          fillOpacity: 1.0 // How transparent the circleMarker's fill is
-       },
        wellPushpinInit: null, // Will be filled in before call in $(document).ready()
     };
 
@@ -112,8 +114,6 @@
         detailMapOptions.initCentre = [lat, long];
         detailMapOptions.wellPushpinInit = {lat: lat, long: long, wellDetails: { guid: guid }};
         detailMap = new WellsMap(detailMapOptions);
-        // Once the map is loaded, we query for all wells in the bounding box
-        detailMap.searchWellsInBoundingBox();
     });
 
 </script>

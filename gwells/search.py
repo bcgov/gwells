@@ -1,13 +1,23 @@
+"""
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+"""
 from django.db.models import Q
 from functools import reduce
 import operator
-from django.db.models import DecimalField
-from .custom_transforms import AbsoluteValue
-DecimalField.register_lookup(AbsoluteValue)
 from .models import Well
 
 class Search():
-    def well_search(well='', addr='', legal='', owner='', lat_long_box=None):
+    def well_search(well='', addr='', legal='', owner='', lat_long_box=None, query_limit=1000):
         """
         Search for wells
 
@@ -18,10 +28,6 @@ class Search():
         :returns: QuerySet of Well objects or None if no matching records found.
         """
         well_results = None
-
-        # The maximum number of results to return in a single search.
-        query_limit = 1000
-
         q_list = []
 
         if well:
@@ -57,14 +63,14 @@ class Search():
 
             # We must compare the absolute values of the minimum and maximum longitude values,
             # since users may erronneously enter positive longitudes for BC.
-            max_long = max(abs(start_long), abs(end_long))
-            min_long = min(abs(start_long), abs(end_long))
+            max_long = max(start_long, end_long)
+            min_long = min(start_long, end_long)
 
             q_list.append(Q(latitude__gt=min_lat) & Q(latitude__lt=max_lat)
-                          & Q(longitude__abs__gt=min_long) & Q(longitude__abs__lt=max_long))
-
+                          & Q(longitude__gt=min_long) & Q(longitude__lt=max_long))
         if q_list:
+            # If there are too many results, we return one plus the query limit to engage post-query logic in views.py
             well_results = Well.objects.distinct().filter(
-                reduce(operator.and_, q_list)).order_by('well_tag_number', 'created')[:query_limit]
+                reduce(operator.and_, q_list)).order_by('well_tag_number', 'created')[:(query_limit+1)]
 
         return well_results

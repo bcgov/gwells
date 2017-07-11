@@ -1,0 +1,5 @@
+well_activity_type_guid,code,description,is_hidden,sort_order
+"2f92205e47e911e7a91992ebcb67fe33","PRE","Pre-Drilling","N","0"
+"bbfd2e4e47df11e7a91992ebcb67fe33","CON","Construction","N","2"
+"bbfd30f647df11e7a91992ebcb67fe33","ALT","Alteration","N","4"
+"bbfd320447df11e7a91992ebcb67fe33","DEC","Decommission","N","6"
