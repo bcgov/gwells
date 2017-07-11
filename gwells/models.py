@@ -1,3 +1,16 @@
+"""
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+"""
 import datetime
 import uuid
 from django.db import models
@@ -432,7 +445,10 @@ class Well(TimeStampedModel):
         return {
             "latitude": self.latitude,
             "longitude": self.longitude,
-            "guid": self.well_guid
+            "guid": self.well_guid,
+            "identification_plate_number": self.identification_plate_number,
+            "street_address": self.street_address,
+            "well_tag_number": self.well_tag_number
         }
 
 
@@ -475,11 +491,11 @@ class ActivitySubmission(TimeStampedModel):
 
     identification_plate_number = models.PositiveIntegerField(unique=True, blank=True, null=True, verbose_name='Identification Plate Number')
 
-    latitude = models.DecimalField(max_digits=8, decimal_places=6, blank=True, null=True)
-    longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
+    latitude = models.DecimalField(max_digits=8, decimal_places=6, blank=False, null=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=False, null=True)
     ground_elevation = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True, verbose_name='Ground Elevation')
     ground_elevation_method = models.ForeignKey(GroundElevationMethod, db_column='ground_elevation_method_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Method for Determining Ground Elevation')
-    drilling_method = models.ForeignKey(DrillingMethod, db_column='drilling_method_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Drilling Method')
+    drilling_method = models.ForeignKey(DrillingMethod, db_column='drilling_method_guid', on_delete=models.CASCADE, blank=False, null=True, verbose_name='Drilling Method')
     other_drilling_method = models.CharField(max_length=50, blank=True, verbose_name='Specify Other Drilling Method')
     orientation_vertical = models.BooleanField(default=True, verbose_name='Well Orientation', choices=((True, 'vertical'), (False, 'horizontal')))
 
@@ -519,6 +535,13 @@ class ActivitySubmission(TimeStampedModel):
         w.well_location_description = self.well_location_description
 
         w.identification_plate_number = self.identification_plate_number
+        w.latitude = self.latitude
+        w.longitude = self.longitude
+        w.ground_elevation = self.ground_elevation
+        w.ground_elevation_method = self.ground_elevation_method
+        w.drilling_method = self.drilling_method
+        w.other_drilling_method = self.other_drilling_method
+        w.orientation_vertical = self.orientation_vertical
         #TODO
 
         return w;
@@ -561,8 +584,8 @@ class LithologyDescription(models.Model):
     lithology_description_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     activity_submission = models.ForeignKey(ActivitySubmission, db_column='filing_number', on_delete=models.CASCADE, blank=True, null=True)
     well = models.ForeignKey(Well, db_column='well_tag_number', on_delete=models.CASCADE, blank=True, null=True)
-    lithology_from = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='From')
-    lithology_to = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='To')
+    lithology_from = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='From', blank=False)
+    lithology_to = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='To', blank=False)
     surficial_material = models.ForeignKey(SurficialMaterial, db_column='surficial_material_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Surficial Material')
     bedrock_material = models.ForeignKey(BedrockMaterial, db_column='bedrock_material_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Bedrock Material')
     bedrock_material_descriptor = models.ForeignKey(BedrockMaterialDescriptor, db_column='bedrock_material_descriptor_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Descriptor')
@@ -571,7 +594,7 @@ class LithologyDescription(models.Model):
     lithology_colour = models.ForeignKey(LithologyColour, db_column='lithology_colour_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Colour')
     lithology_hardness = models.ForeignKey(LithologyHardness, db_column='lithology_hardness_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Hardness')
     lithology_moisture = models.ForeignKey(LithologyMoisture, db_column='lithology_moisture_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Moisture')
-    water_bearing_estimated_flow = models.DecimalField(max_digits=10, decimal_places=4, verbose_name='Water Bearing Estimated Flow')
+    water_bearing_estimated_flow = models.DecimalField(max_digits=10, decimal_places=4, blank=True, null=True, verbose_name='Water Bearing Estimated Flow')
     lithology_observation = models.CharField(max_length=250, blank=True, verbose_name='Observations')
     class Meta:
         db_table = 'gwells_lithology_description'

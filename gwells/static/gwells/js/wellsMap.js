@@ -1,12 +1,26 @@
 /**
  * The WellsMap class provides a Leaflet map with different functionality, depending upon the context in which it is deployed.
  * It currently depends only on Leaflet, esri-leaflet, and JQuery, eschewing any other plugins libraries in the interest of maintainability.
- * 
+ *
  * A NOTE ON FUNCTIONALITY: This class can be initialised in different ways, which exposes its functionality differently.
- * If sufficient hooks are supplied in map construction, the map can perform the following tasks:
- *  - Supply a single draggable marker which, when moved, advertises the marker's new lat/long coordinates
- *  - Allow the user to draw a rectangle which, when finished drawing, advertises the rectangle's opposing corners
- *      in lat/long terms
+ * If sufficient parameters are supplied in map construction, the map can perform the following tasks:
+ *  - Draw a single pushpin (i.e., a Leaflet marker) which causes the map to emit AJAX requests to show all wells
+ *      in the bounding box (except the well that is being represented by the pushpin). The map will reissue queries for wells
+ *      in the bounding box whenever the map is panned or zoomed, provided the pushpin is present.
+ *      The pushpin can be fed into the map's initialisation options via wellPushpinInit or added/moved
+ *      programmatically through the public method placeWellPushpin(). It may be removed via removeWellPushpin().
+ *      If the wellPushpinMoveCallback is supplied on map init, the pushpin can be moved by dragging, which advertises the
+ *      pushpin's latitude and longitude to the callback. The map will centre on the pushpin and reissue queries for surrounding
+ *      wells whenever the pushpin is moved.
+ *  - Allow the user to draw a rectangle via the public startIdentifyWells() method. If the map init supplies an identifyWellsEndCallback,
+ *      the map advertises a pair of latitude/longitude coordinates corresponding to extreme corners of the rectangle as it was when the user
+ *      released the mouse button.
+ *  - Display an ESRI MapServer layer as a base layer.
+ *  - Display an array of WMS tile layers as overlays.
+ * The map is able to pan and zoom by default, but this behaviour can be disabled by passing appropriate booleans. Note that if zooming is allowed,
+ * the map will always zoom into and out of the centre of the map, regardless if the zoom event arises from zoom buttons or the mouse wheel. Also,
+ * the constructor allows the map to set its zoom levels, as well as the initial centre or a bounding box to fit (precisely one of these is required 
+ * for a given instance).
  * @param options An object conforming to the following scheme (using TS notation):
  * {
  *   mapNodeId: string, // The DOM ID of the div into which the Leaflet map will be placed
@@ -22,7 +36,7 @@
  *          layers: string, // Layers of the OWS service; e.g., 'pub:WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW'.
  *          styles: string, // Styles of the OWS service; e.g., 'PMBC_Parcel_Fabric_Cadastre_Outlined'
  *          transparent: boolean // Whether the tiles are transparent (other than the features drawn upon them)
- *      } 
+ *      }
  *   ],
  *   initCentre?: [float], // A two-element array representing the latitude and longitude of the centre of the map. If omitted, the map is fit to mapBounds, so one of these must exist.
  *   canZoom?: bool, // Whether the map can be zoomed. Defaults to true.
@@ -34,12 +48,7 @@
  *      south: float, // The bottom latitude of the map
  *      west: float, // The leftmost longitude of the map
  *      east: float, // The rightmost longitude of the map
- *      padding: int // Margin beyond extremes to pad the bounds with, as a percentage of the total bounding box.     
- *   },
- *   wellMarkerStyle?: { // Settings for a Leaflet circleMarker
- *      radius: int, // The radius of the circleMarker
- *      color: string, // The hex string for the colour of the circleMarker
- *      fillOpacity: float // How transparent the circleMarker's fill is
+ *      padding: int // Margin beyond extremes to pad the bounds with, as a percentage of the total bounding box.
  *   },
  *   wellPushpinInit?: { // An object for setting the latitude, longitude, and details of a wellPushpin on init.
  *      lat: float, // The initial latitude of the pushpin
@@ -48,17 +57,30 @@
  *          guid: string // The GUID of the well, for identification and special handling
  *      }
  *   },
- *   wellPushpinMoveCallback?: function, // Function to call when the map's wellPushpin moves 
+ *   wellPushpinMoveCallback?: function, // Function to call when the map's wellPushpin moves
  *   identifyWellsStartCallback?: function, // Function to call when an identifyWells operation is started
  *   identifyWellsEndCallback?: function // Function to call when an identifyWells operation ends
  * }
  */
-function WellsMap (options) {
+function WellsMap(options) {
     'use strict';
-    /** Private members */
+
+    /** Class constants */
 
     // The URL used to search for wells.
-    var _searchUrl = '/ajax/map_well_search/';
+    var _SEARCH_URL = '/ajax/map_well_search/';
+
+    // The zoom level beyond which the map issues AJAX queries for wells, and beneath which removes AJAX-queried wells.
+    var _SEARCH_MIN_ZOOM_LEVEL = 14;
+
+    // Leaflet style for the _wellMarkers
+    var _WELL_MARKER_STYLE = {
+          radius: 3, // The radius of the circleMarker
+          color: '#0147b7', // The color of the circleMarker
+          fillOpacity: 1.0 // How transparent the circleMarker's fill is
+    };
+
+    /** Private members dynamically set */
 
     // The underlying Leaflet map.
     var _leafletMap = null;
@@ -66,7 +88,7 @@ function WellsMap (options) {
     // The map's maximum bounds. This should be a Leaflet LatLngBounds object.
     var _maxBounds = null;
 
-    // The map's maximum zoom level.
+    // The map's maximum zoom level (i.e., the furthest the map can be zoomed in).
     var _maxZoom = null;
 
     // An object containing a pushpin marker and a data schematic for a particular well. This indicates a single well on the screen that may be editable.
@@ -75,18 +97,16 @@ function WellsMap (options) {
     //     pushpinMarker: L.marker, // The Leaflet marker that points to the well's location
     //     wellDetails: {
     //         guid: string, // The well's globally-unique ID, to avoid drawing with other (non-interactive) wells
-    //     }
+    //     },
+    //     wellMarker: L.circleMarker // The Leaflet circleMarker that represents the well itself.
     // }
     var _wellPushpin = null;
 
     // The callback function for _wellPushpin's move event.
     var _wellPushpinMoveCallback = null;
 
-    // Markers used to denote wells.
+    // Markers used to denote wells. This var should only be accessed directly, so do not write var newArr = _wellMarkers anywhere in the class.
     var _wellMarkers = [];
-
-    // Leaflet style for the _wellMarkers
-    var _wellMarkerStyle = null;
 
     // Whether the map is undergoing an identifyWells operation.
     var _isIdentifyingWells = false;
@@ -161,7 +181,8 @@ function WellsMap (options) {
     // Passes the wellPushpin's updated lat/long coordinates to the provided callback function, if it exists.
     var _wellPushpinMoveEvent = function (moveEvent) {
         if (_exists(_wellPushpinMoveCallback)) {
-            _wellPushpinMoveCallback(moveEvent.latlng);
+            var latLng = moveEvent.latlng;
+            _wellPushpinMoveCallback(latLng);
         }
     };
 
@@ -202,7 +223,7 @@ function WellsMap (options) {
             _identifyWellsRectangle = null;
         }       
         _isIdentifyingWells = false;
-        if(_exists(_identifyWellsEndCallback)) {
+        if (_exists(_identifyWellsEndCallback)) {
             _identifyWellsEndCallback(_startCorner, _endCorner);
         }
         _startCorner = null;
@@ -227,19 +248,17 @@ function WellsMap (options) {
         return true;
     };
 
-    // Makes sure the latitude and longitude fit within the map's bounding box, if one exists. This is necessary since lat/long data may
-    // only be correct up to a minus sign (especially longitude data in the Western hemisphere) due to users not knowing
-    // to enter a minus sign (or potentially entering a minus sign erronneously).
+    // Makes sure the latitude and longitude fit within the map's bounding box, if one exists.
     // If the lat and long are within the map's bounds, they are returned; if they can be corrected by flipping the sign,
     // the negated values are returned. Else { NaN, NaN } is returned along with a console error.
     // Takes a latLong parameter corresponding to { lat: number, long: number }
     var _ensureLatLongIsInBounds = function (latLong) {
         var lat = _exists(latLong.lat) ? latLong.lat : NaN;
         var long = _exists(latLong.long) ? latLong.long : NaN;
-        if (long > 0) {
-            // Even if there's not a bounding box, we'll flip positive longitudes.
-            long = -long;
-        }
+        // if (long > 0) {
+        //     // Even if there's not a bounding box, we'll flip positive longitudes.
+        //     long = -long;
+        // }
         if (!_isLatInBounds(lat)){
             lat = NaN;
         }
@@ -296,18 +315,68 @@ function WellsMap (options) {
         }
     };
 
+    // Clears the _wellMarkers from the map and resets the array.
+    var _clearWells = function () {
+        if (_exists(_leafletMap) && _isArray(_wellMarkers)) {
+            _wellMarkers.forEach(function (wellMarker) {
+                _leafletMap.removeLayer(wellMarker);
+            });
+        }
+        // We can confidently overwrite the array because the class should never create any references to _wellMarkers.
+        _wellMarkers = [];
+    };
+
+    // Parses the input to generate an internal URL to the well details summary page. If the input is not a number (or null),
+    // an empty string is returned.
+    var _generateWellTagUrl = function (tagNum) {
+        var num = parseInt(tagNum);
+        if (!_exists(num) || isNaN(num)) {
+            return '';
+        }
+        return '<a href="/well/' + num + '">' + num + '</a>';
+    };
+
+    // Generates a popup content HTML string for a well marker, based on the data that well has available.
+    var _generateWellMarkerPopupContents = function (well) {
+        if (!_exists(well)) {
+            return;
+        }
+        // contentObj is a dictionary whose keys correspond to the display names of
+        // well data attributes and whose values correspond to the specific well's data.
+        // This dictionary's values will in general consist of a (potentially processed)
+        // subset of the JSON returned by the Python well search service.
+        var contentObj = {
+            'Well Tag Number': _generateWellTagUrl(well.well_tag_number), // We turn the well tag number into a local URL to the summary page.
+            'Identification Plate Number': well.identification_plate_number || '',
+            'Street Address': well.street_address || ''
+        };
+
+        // We build the contentString from the contentObj dictionary, using paragraphs as property delimiters.
+        var contentString = '';
+        $.each(contentObj, function (contentKey, contentVal) {
+            contentString += '' + contentKey + ': ' + contentVal + '<br />';
+        });
+        return contentString;
+    };
+
     // Draws wells that can be drawn. Currently a well cannot be drawn if it is associated with the wellPushpin.
     var _drawWells = function (wells) {
-        var style = _wellMarkerStyle || void 0;
+        // First we clear any extant markers
+        _clearWells();
+
+        // Markers should only be clickable when there is no wellPushpin available.
+        var style = $.extend({}, _WELL_MARKER_STYLE, {interactive: !_wellPushpin});
         var wellPushpinGuid = null;
+        // Now we draw the wells, checking to prevent a marker from being drawn where a pushpin will be.
         if (_exists(_wellPushpin) && _exists(_wellPushpin.wellDetails) && _exists(_wellPushpin.wellDetails.guid)) {
             wellPushpinGuid = _wellPushpin.wellDetails.guid;
         }
-        wells.forEach(function (well){
+        wells.forEach(function (well) {
             var latLong = _getLatLngInBC(well.latitude, well.longitude);
-            var wellGuid = well.guid;            
+            var wellGuid = well.guid;
             if (_exists(latLong) && _canDrawWell(wellPushpinGuid, wellGuid)) {
                 var wellMarker = L.circleMarker(latLong, style);
+                wellMarker.bindPopup(_generateWellMarkerPopupContents(well));
                 wellMarker.addTo(_leafletMap);
                 _wellMarkers.push(wellMarker);
             }
@@ -325,52 +394,100 @@ function WellsMap (options) {
         }
     };
 
+    // Searches for all wells in the map's current bounding box, provided the map is beyond the minimum searching zoom level.
+    var _searchWellsInBoundingBox = function () {
+        if (_exists(_leafletMap) && _leafletMap.getZoom() >= _SEARCH_MIN_ZOOM_LEVEL) {
+            var mapBounds = _leafletMap.getBounds();
+            _searchByAjax(_SEARCH_URL, mapBounds, _searchByAjaxSuccessCallback);
+        }
+    };
+
+    // Issues a query to fetch wells in the bounding box, meant to subscribe to
+    // the map's moveend event while a wellPushpin is present on the map.
+    var _searchBoundingBoxOnMoveEnd = function () {
+        _searchWellsInBoundingBox();
+    };
+
+    // When the wellPushpin is moved, pan to re-centre the pushpin.
+    var _wellPushpinMoveEndEvent = function () {
+        _leafletMap.panTo(_wellPushpin.pushpinMarker.getLatLng());
+    };
+
+    // When the map is zoomed with a wellPushpin, pan to re-centre the pushpin (which
+    // is needed if the map is near the bounding box), and clear the surrounding wells
+    // if the zoom level is below the minimum search level.
+    var _wellPushpinZoomEndEvent = function () {
+        _leafletMap.panTo(_wellPushpin.pushpinMarker.getLatLng());
+        if (_leafletMap.getZoom() < _SEARCH_MIN_ZOOM_LEVEL) {
+            _clearWells();
+        }
+
+    }
+
     /** Public methods */
 
-    // 
-    // 
-    // The options argument has type {lat: number, long: number}
     /**
      * Places a wellPushpin on the map to help refine the placement of a well.
      * When placed by a button click, the map pans and zooms to centre on the marker.
-     * @param latLng A Leaflet latLng where the wellPushpin will be placed
-     */    
-    var placeWellPushpin = function (latLng, wellDetails) {
+     * @param latLongArray An array of [lat, long], where lat and long specify where the wellPushpin will be placed
+     */
+    var placeWellPushpin = function (latLongArray, wellDetails) {
         // If the map or the latLng do not exist, bail out.
-        if (!_exists(_leafletMap) || !_exists(latLng)) {
+        if (!_exists(_leafletMap) || !_exists(latLongArray) || !_isArray(latLongArray) || latLongArray.length !== 2) {
             return;
         }
         // We ensure the lat/long is in BC, in case it was passed in without checking.
-        var latLong = _getLatLngInBC(latLng.lat, latLng.lng);
+        var latLong = _getLatLngInBC(latLongArray[0], latLongArray[1]);
         // If the latitude and longitude do not fit within the map's maxBounds, bail out.
         if (!_exists(latLong)) {
             return;
         }
         // The map zooms to the its maxZoom to display the pushpin.
         var zoomLevel = _leafletMap.getMaxZoom();
-        if (_exists(_wellPushpin)) {
-            _wellPushpin.pushpinMarker.setLatLng(latLong);            
+        // If the pushpin exists and the movement is substantive, move the pin. Else if
+        // the pushpin does not exist, create it and place it at the coordinates.
+        if (_exists(_wellPushpin) && _exists(_wellPushpin.pushpinMarker)) {
+            if (!_wellPushpin.pushpinMarker.getLatLng().equals(latLong)) {
+                _wellPushpin.pushpinMarker.setLatLng(latLong);
+            }
         } else {
             _wellPushpin = {};
             _wellPushpin.pushpinMarker = L.marker(latLong, {
-                draggable: _exists(_wellPushpinMoveCallback) // The pin should only drag if the map's calling page has a hook to handle movement
+                draggable: _exists(_wellPushpinMoveCallback) // The pin should only drag if the map's caller has a hook to handle movement
             }).addTo(_leafletMap);
+
+            // The pin should subscribe to move events.
             _wellPushpin.pushpinMarker.on('move', _wellPushpinMoveEvent);
+            _wellPushpin.pushpinMarker.on('moveend', _wellPushpinMoveEndEvent);
         }
+        // If the wellDetails properties exist, assign them.
         if (_exists(wellDetails) && _exists(wellDetails.guid)) {
             _wellPushpin.wellDetails = wellDetails;
         }
+        // If the pin exists, the map should refresh the wells it displays when it is moved, to provide
+        // more information to aid in well placement without having to load too many wells at once.
+        _leafletMap.on('moveend', _searchBoundingBoxOnMoveEnd);
+
+        // If the pin exists, zoomend should re-centre the pin and clear wells if the zoom level
+        // is beneath the _SEARCH_MIN_ZOOM_LEVEL.
+        _leafletMap.on('zoomend', _wellPushpinZoomEndEvent);
+
+        // Finally, the map should fly to the pin.
         _leafletMap.flyTo(latLong, zoomLevel);
     };
 
-    // Removes the wellPushpin from the map.
+    // Removes the wellPushpin from the map and clears it of any extant wells.
     var removeWellPushpin = function () {
         if (!_exists(_leafletMap)) {
             return;
         }
-        if (_exists(_wellPushpin)) {
-            _leafletMap.removeLayer(_wellPushpin);
+        if (_exists(_wellPushpin) && _exists(_wellPushpin.pushpinMarker)) {
+            _leafletMap.removeLayer(_wellPushpin.pushpinMarker);
+            // Unsubscribe from the pushpin-related events.
+            _leafletMap.off('moveend', _searchBoundingBoxOnMoveEnd);
+            _leafletMap.off('zoomend', _wellPushpinZoomEndEvent);
             _wellPushpin = null;
+            _clearWells();
         }
     };
 
@@ -407,14 +524,6 @@ function WellsMap (options) {
         _leafletMap.on('mouseup', _mouseUpForIdentifyWellsEvent);
     };
 
-    // Searches for all wells in the map's current bounding box.
-    var searchWellsInBoundingBox = function () {
-        if (_exists(_leafletMap)) {
-            var mapBounds = _leafletMap.getBounds();
-            _searchByAjax(_searchUrl, mapBounds, _searchByAjaxSuccessCallback);
-        }
-    };
-
     /** IIFE for construction of a WellsMap */
     (function (options) {
         options = options || {};
@@ -445,7 +554,7 @@ function WellsMap (options) {
             maxBounds: _maxBounds,
             maxBoundsViscosity: 1.0,
             zoomControl: canZoom,
-            scrollWheelZoom: canZoom,
+            scrollWheelZoom: canZoom ? 'center' : false, // We want the map to stay centred on scrollwheel zoom if zoom is enabled.
             keyboardPanDelta: canPan ? 80 : 0
         });
         if (_exists(initCentre) && _isArray(initCentre) && initCentre.length === 2) {
@@ -471,19 +580,15 @@ function WellsMap (options) {
             _loadWmsLayers(options.wmsLayers);
         }
 
-        // Callbacks and markers/pushpins
-        _wellMarkerStyle = options.wellMarkerStyle || null;
-        _wellPushpinMoveCallback = options.wellPushpinMoveCallback || null;    
+        // Callbacks
+        _wellPushpinMoveCallback = options.wellPushpinMoveCallback || null;
         _identifyWellsStartCallback = options.identifyWellsStartCallback || null;
         _identifyWellsEndCallback = options.identifyWellsEndCallback || null;
 
         var wellPushpinInit = options.wellPushpinInit || null;
         if (_exists(wellPushpinInit) && _exists(wellPushpinInit.lat) && _exists(wellPushpinInit.long)) {
-            var rawLat = wellPushpinInit.lat;
-            var rawLong = wellPushpinInit.long;
-            var pinPoint = _getLatLngInBC(rawLat, rawLong);
             var details = wellPushpinInit.wellDetails;
-            placeWellPushpin(pinPoint, details);
+            placeWellPushpin([wellPushpinInit.lat, wellPushpinInit.long], details);
         }
     }(options));
 
@@ -492,7 +597,6 @@ function WellsMap (options) {
         placeWellPushpin: placeWellPushpin,
         removeWellPushpin: removeWellPushpin,
         drawAndZoom: drawAndZoom,
-        startIdentifyWells: startIdentifyWells,
-        searchWellsInBoundingBox: searchWellsInBoundingBox
+        startIdentifyWells: startIdentifyWells
     };
 }

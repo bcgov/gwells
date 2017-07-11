@@ -1,3 +1,16 @@
+"""
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+"""
 from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, render
 #from django.urls import reverse
@@ -22,7 +35,8 @@ class HelloWorldView(generic.ListView):
 
 def well_search(request):
     well_results = None
-    well_results_json = None
+    well_results_overflow = None
+    well_results_json = '[]'
 
     if request.method == 'GET' and 'well' in request.GET:
         form = SearchForm(request.GET)
@@ -31,32 +45,37 @@ def well_search(request):
             well_results = form.process()
     else:
         form = SearchForm()
-
+  
     if well_results:
-        well_results_json = json.dumps(
-            [well.as_dict() for well in well_results],
-            cls=DjangoJSONEncoder)
+        if len(well_results) > SearchForm.WELL_RESULTS_LIMIT:
+            well_results_overflow = ('Query returned more than %d wells. Please refine your search.' % SearchForm.WELL_RESULTS_LIMIT)
+            well_results = None
+        else:
+            well_results_json = json.dumps(
+                [well.as_dict() for well in well_results],
+                cls=DjangoJSONEncoder)
 
     return render(request, 'gwells/search.html',
-                  {'form': form, 'well_list': well_results, 'wells_json': well_results_json})
+                  {'form': form, 'well_list': well_results,
+                   'too_many_wells': well_results_overflow,
+                   'wells_json': well_results_json
+                  })
 
 
 def map_well_search(request):
-    well_results_json = None
+    well_results = None
+    well_results_json = '[]'
 
     if (request.method == 'GET' and 'start_lat_long' in request.GET
             and 'end_lat_long' in request.GET):
-        well_results_json = SearchForm(request.GET)
-        if well_results_json.is_valid():
-            well_results_json = well_results_json.process()
+        well_results = SearchForm(request.GET)
+        if well_results.is_valid():
+            well_results = well_results.process()
 
-    if well_results_json:
+    if well_results and not len(well_results) > SearchForm.WELL_RESULTS_LIMIT:
         well_results_json = json.dumps(
-            [well.as_dict() for well in well_results_json],
+            [well.as_dict() for well in well_results],
             cls=DjangoJSONEncoder)
-
-    else:
-        well_results_json = {}
 
     return JsonResponse(well_results_json, safe=False)
 
@@ -104,6 +123,7 @@ TEMPLATES = {'type_and_class': 'gwells/activity_submission_form.html',
 
 
 class ActivitySubmissionWizardView(SessionWizardView):
+    instance = None
 
     def get_template_names(self):
         return [TEMPLATES[self.steps.current]]
@@ -124,20 +144,29 @@ class ActivitySubmissionWizardView(SessionWizardView):
        #     context.update({'formset': formset, 'helper': helper})
         return context
 
-    def done(self, form_list, **kwargs):
-        submission = ActivitySubmission()
-        for form in form_list:
-            for field, value in form.cleaned_data.items():
-                setattr(submission, field, value)
+    def get_form_instance(self, step):
+        if self.instance is None:
+            self.instance = ActivitySubmission()
+        return self.instance
+    
+    def done(self, form_list, form_dict, **kwargs):
+        submission = self.instance
 
-        #if submission.well_activity_type.code == 'CON' and submission.well is None:
+        if submission.well_activity_type.code == 'CON' and not submission.well:
             #TODO
-            #w = submission.createWell()
-            #w = w.save()
-            #submission.well = w
-        #    submission.save()
-        #else:
-        submission.save()
+            w = submission.createWell()
+            w.save()
+            submission.well = w
+            submission.save()
+            lithology_list = form_dict['lithology'].save()
+            lithology_list = list(lithology_list)
+            for lith in lithology_list:
+                lith.pk = None
+                lith.activity_submission = None
+                lith.well = w
+                lith.save()
+        else:
+            submission.save()
+            lithology_list = form_dict['lithology'].save()
 
-        #lithology = form_dict['lithology'].save()
         return HttpResponseRedirect('/submission/')
