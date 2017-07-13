@@ -15,13 +15,34 @@ import datetime
 import uuid
 from django.db import models
 from django.utils import timezone
-from model_utils.models import TimeStampedModel
+from django.core.validators import MinValueValidator
+from decimal import Decimal
 from model_utils import FieldTracker
 
 
 
 
-class ProvinceState(models.Model):
+class AuditModel(models.Model):
+    """
+    An abstract base class model that provides audit fields.
+    """
+    who_created = models.CharField(max_length=30)
+    when_created = models.DateTimeField(blank=True, null=True)
+    who_updated = models.CharField(max_length=30)
+    when_updated = models.DateTimeField(blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        ''' On save, update timestamps '''
+        if self._state.adding == True:
+            self.when_created = timezone.now()
+        self.when_updated = timezone.now()
+        return super(AuditModel, self).save(*args, **kwargs)
+
+    class Meta:
+        abstract = True
+        
+        
+class ProvinceState(AuditModel):
     """
     Lookup of Provinces/States.
     Used to specify valid provinces or states for the address of the owner of a well.
@@ -42,7 +63,7 @@ class ProvinceState(models.Model):
 
 
 
-class LandDistrict(models.Model):
+class LandDistrict(AuditModel):
     """
     Lookup of Land Districts.
     """
@@ -60,7 +81,7 @@ class LandDistrict(models.Model):
 
 
 
-class WellYieldUnit(models.Model):
+class WellYieldUnit(AuditModel):
     """
     Units of Well Yield.
     """
@@ -78,7 +99,7 @@ class WellYieldUnit(models.Model):
 
 
 
-class WellActivityType(models.Model):
+class WellActivityType(AuditModel):
     """
     Types of Well Activity.
     """
@@ -97,7 +118,7 @@ class WellActivityType(models.Model):
 
 
 
-class WellClass(models.Model):
+class WellClass(AuditModel):
     """
     Class of Well type.
     """
@@ -116,7 +137,7 @@ class WellClass(models.Model):
 
 
 
-class WellSubclass(models.Model):
+class WellSubclass(AuditModel):
     """
     Subclass of Well type.
     """
@@ -136,7 +157,7 @@ class WellSubclass(models.Model):
 
 
 
-class IntendedWaterUse(models.Model):
+class IntendedWaterUse(AuditModel):
     """
     Usage of Wells (water supply).
     """
@@ -155,7 +176,7 @@ class IntendedWaterUse(models.Model):
 
 
 
-class DrillingCompany(models.Model):
+class DrillingCompany(AuditModel):
     """
     Companies who perform drilling.
     """
@@ -172,7 +193,7 @@ class DrillingCompany(models.Model):
 
 
 
-class Driller(models.Model):
+class Driller(AuditModel):
     """
     People responsible for drilling.
     """
@@ -191,7 +212,7 @@ class Driller(models.Model):
 
 
 
-class GroundElevationMethod(models.Model):
+class GroundElevationMethod(AuditModel):
     """
     The method used to determine the ground elevation of a well.
     Some examples of methods to determine ground elevation include:
@@ -212,7 +233,7 @@ class GroundElevationMethod(models.Model):
 
 
 
-class DrillingMethod(models.Model):
+class DrillingMethod(AuditModel):
     """
     The method used to drill a well. For example, air rotary, dual rotary, cable tool, excavating, other.
     """
@@ -231,7 +252,7 @@ class DrillingMethod(models.Model):
 
 
 
-class SurficialMaterial(models.Model):
+class SurficialMaterial(AuditModel):
     """
     The surficial material encountered in lithology
     """
@@ -250,7 +271,7 @@ class SurficialMaterial(models.Model):
 
 
 
-class BedrockMaterial(models.Model):
+class BedrockMaterial(AuditModel):
     """
     The bedrock material encountered in lithology
     """
@@ -269,7 +290,7 @@ class BedrockMaterial(models.Model):
 
 
 
-class BedrockMaterialDescriptor(models.Model):
+class BedrockMaterialDescriptor(AuditModel):
     """
     Further descriptor of the bedrock material encountered in lithology
     """
@@ -288,7 +309,7 @@ class BedrockMaterialDescriptor(models.Model):
 
 
 
-class LithologyStructure(models.Model):
+class LithologyStructure(AuditModel):
     """
     Structure of the lithology
     """
@@ -307,7 +328,7 @@ class LithologyStructure(models.Model):
 
 
 
-class LithologyWeathering(models.Model):
+class LithologyWeathering(AuditModel):
     """
     Weathering of the surficial material encountered in lithology
     """
@@ -326,7 +347,7 @@ class LithologyWeathering(models.Model):
 
 
 
-class LithologyColour(models.Model):
+class LithologyColour(AuditModel):
     """
     Colour of the lithology
     """
@@ -345,7 +366,7 @@ class LithologyColour(models.Model):
 
 
 
-class LithologyHardness(models.Model):
+class LithologyHardness(AuditModel):
     """
     Hardness of the lithology
     """
@@ -364,7 +385,7 @@ class LithologyHardness(models.Model):
 
 
 
-class LithologyMoisture(models.Model):
+class LithologyMoisture(AuditModel):
     """
     Moisture of the lithology
     """
@@ -383,7 +404,7 @@ class LithologyMoisture(models.Model):
 
 
 
-class Well(TimeStampedModel):
+class Well(AuditModel):
     """
     Well information.
     """
@@ -452,7 +473,7 @@ class Well(TimeStampedModel):
         }
 
 
-class ActivitySubmission(TimeStampedModel):
+class ActivitySubmission(AuditModel):
     """
     Activity information on a Well submitted by a user.
     """
@@ -554,7 +575,7 @@ class ActivitySubmission(TimeStampedModel):
 
 
 
-class LtsaOwner(TimeStampedModel):
+class LtsaOwner(AuditModel):
     """
     Well owner information.
     """
@@ -577,15 +598,15 @@ class LtsaOwner(TimeStampedModel):
 
 
 
-class LithologyDescription(models.Model):
+class LithologyDescription(AuditModel):
     """
     Lithology information details
     """
     lithology_description_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     activity_submission = models.ForeignKey(ActivitySubmission, db_column='filing_number', on_delete=models.CASCADE, blank=True, null=True)
     well = models.ForeignKey(Well, db_column='well_tag_number', on_delete=models.CASCADE, blank=True, null=True)
-    lithology_from = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='From', blank=False)
-    lithology_to = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='To', blank=False)
+    lithology_from = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='From', blank=False, validators=[MinValueValidator(Decimal('0.00'))])
+    lithology_to = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='To', blank=False, validators=[MinValueValidator(Decimal('0.01'))])
     surficial_material = models.ForeignKey(SurficialMaterial, db_column='surficial_material_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Surficial Material')
     bedrock_material = models.ForeignKey(BedrockMaterial, db_column='bedrock_material_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Bedrock Material')
     bedrock_material_descriptor = models.ForeignKey(BedrockMaterialDescriptor, db_column='bedrock_material_descriptor_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Descriptor')
