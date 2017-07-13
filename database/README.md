@@ -23,30 +23,12 @@ The legacy database is WELLS schema of ENVPROD1.NRS.GOV.BC.CA, and was exported 
     ```H:\xform_gwells_land_district.csv    
     H:\xform_gwells_well.csv
     H:\xform_gwells_driller.csv
-    H:\xform_gwells_drilling_company.csv```
+    H:\xform_gwells_drilling_company.csv
+```
 
-4. Copy the CSV files over to your local workstation (e.g. ~/projects/gwells/legacy-data/postgres) , ready to be included in the
+4. Copy these generated CSV files over to your local workstation (e.g. /Users/garywong/tmp/gwells), ready to be included in the
     `rsync` [step below](#rsync-csv).  SQL Developer insists on adding a blank line at the end of each generated CSV file, which
     runs into a PostGres bug when importing CSV with such a blank line.   Remove this last line from each of the genereated files, either manually or via sed/awk/perl etc.
-
-   *NOTE*: The [code tables](code-tables) are not derived from the legacy tables, so they are prefixed
-   with the 'gwells' to denote this.  The rows, and UUID identifiers, are pre-populated and ready to be loaded:
-    ```gwells_bedrock_material.csv
-    gwells_bedrock_material_descriptor.csv
-    gwells_drilling_method.csv
-    gwells_ground_elevation_method.csv
-    gwells_intended_water_use.csv
-    gwells_lithology_colour.csv
-    gwells_lithology_hardness.csv
-    gwells_lithology_moisture.csv
-    gwells_lithology_structure.csv
-    gwells_lithology_weathering.csv
-    gwells_province_state.csv
-    gwells_surficial_material.csv
-    gwells_well_activity_type.csv
-    gwells_well_class.csv
-    gwells_well_subclass.csv
-    gwells_well_yield_unit.csv```    
 
 ## Loading data upon which to Submit data (against the PostGres DB) 
 
@@ -55,27 +37,12 @@ security and storage reasons.  The seqreset.sql script was generated via Django 
 
 ```python manage.py sqlsequencereset gwells > ./database/scripts/seqreset.sql```
 
-Consolidate all scripts and CSV files into a single folder on the developer workstation.  For example:
+Consolidate all versioned scripts and CSV files from your local git repo, into that single folder above (e.g. /Users/garywong/tmp/gwells).  For example:
 
 ```cp -v ~/projects/gwells/github/database/scripts/*.sql /Users/garywong/tmp/gwells```
 
 ```cp -v ~/projects/gwells/github/database/code-tables/*.csv  /Users/garywong/tmp/gwells```
 
-The complete file listing is:
-- gwells_drilling_method.csv
-- gwells_ground_elevation_method.csv
-- gwells_intended_water_use.csv
-- gwells_province_state.csv
-- gwells_well_activity_type.csv
-- gwells_well_class.csv
-- gwells_well_subclass.csv
-- gwells_well_yield_unit.csv
-- load-submission-ready-data.sql
-- truncate-submission-ready-data.sql
-- xform_gwells_driller.csv
-- xform_gwells_drilling_company.csv
-- xform_gwells_land_district.csv
-- xform_gwells_well.csv
 
 1.  Sync all CSV and SQL files to Postgres pod, from that single source directory <a id="rsync-csv"></a> on the developer workstation:
 
@@ -91,6 +58,7 @@ each pod deployment, so get the name first (i.e. *oc get pods*) from the correct
     cd /tmp/gwells  
     psql -d gwells -U <user>  -f ./truncate-submission-ready-data.sql
     psql -d gwells -U <user>  -f ./load-submission-ready-data.sql
+    psql -d gwells -U <user>  -f ./post-load.sql
     psql -d gwells -U <user>  -f ./seqreset.sql```
 
 4. Run the psql client to verify the database objects:
