@@ -1,19 +1,36 @@
 # How to configure a CI/CD pipeline for GWELLS on OpenShift
 
 - Create a project to house the Jenkins instance that will be responsible for promoting application images (via OpenShift ImageStreamTags) across environment; the exact project name used was "moe-gwells-tools".
-- Create the BuildConfiguration within this project using the ```oc``` command and "gwells-build.json" file:
+
+```
+oc add-project moe-gwells-tools
+```
+- Create the objects needed to form the build pipeline within this project using the ```oc``` command and "gwells-build.json" file:
 
 ```
 oc process -f gwells-build.json | oc create -f -
 ```
 
-This build config is in the openshift namespace as it uses the Python 3.5 S2I strategy.
+The gwells-build.json template file contains the following objects:
 
+- Build Configuration for the gwells Python 3.5 S2I build
+- Build Configuration for the OpenShift Pipeline that runs the build
+- Deployment Configuration for a Postgres database used by SonarQube
+- Persistent volume for the above Postgres database
+- A Deployment Configuration for SonarQube
 
-- Deploy a Jenkins instance with persistent storage into the tools project (moe-gwells-tools) using the web gui
-  - Install the promoted builds plugin
-  - Install the GitHub plugin
-  - Install the Environment Injector plugin
+Note that when the above objects are added to the "moe-gwells-tools" namespace, and the Pipeline is run for the first time, OpenShift will automatically create a Jenkins Pipeline deployment.
+
+Obtain the credentials for this Pipeline deployment by viewing the Environment properties of the Jenkins Pipeline deployment.
+
+Login to the Jenkins instance by clicking on the appropriate link in the Routes tab, a username of admin and the password found above.
+
+Currently there is one setting that has to be set manually, due to a known issue with the OpenShift Pipeline system.  Click on Manage Jenkins, and then Configure Jenkins.  Scroll down to the Jenkins Location section, and adjust the setting for Jenkins URL to match the actual URL for Jenkins.
+
+In the OpenShift Builder section, increase the Build timeout to match typical build times for your application.  For example you may need to increase the build time to 1800 if the build time is 30 minutes.
+
+In the Cloud section, adjust the maven image so that it has an increased Memory Limit.  Note that you will need to click the Advanced button to show the Memory Limit section.  A limit of 2Gi is recommended in order for SonarQube to run properly.
+
 - Configure a job that has an OpenShift ImageStream Watcher as its SCM source and promotion states for each environment
 - In each promotion configuration, tag the target build's image to the appropriate promotion level; this was done using a shell command because the OpenShift plugins do not appear to handle parameter subsitution inside promotions properly.
 - Create an OpenShift project for each "environment" (e.g. DEV, TEST, PROD); Exact names used were moe-gwells-dev, moe-gwells-test, moe-gwells-prod
