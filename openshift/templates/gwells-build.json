@@ -228,7 +228,7 @@
         "database-password" : "${DATABASE_PASSWORD}"
       }
     },
-{
+	{
       "kind": "PersistentVolumeClaim",
       "apiVersion": "v1",
       "metadata": {
@@ -241,6 +241,23 @@
         "resources": {
           "requests": {
             "storage": "${DATABASE_VOLUME_CAPACITY}"
+          }
+        }
+      }
+    },
+	{
+      "kind": "PersistentVolumeClaim",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "sonarqube-data"
+      },
+      "spec": {
+        "accessModes": [
+          "ReadWriteOnce"
+        ],
+        "resources": {
+          "requests": {
+            "storage": "2Gi"
           }
         }
       }
