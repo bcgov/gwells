@@ -189,7 +189,7 @@
         }
     },
     "spec": {
-        "host": "devops-sandbox-sonarqube.pathfinder.gov.bc.ca",
+        "host": "sonarqube-gwells-tools.pathfinder.gov.bc.ca",
         "to": {
             "kind": "Service",
             "name": "sonarqube",
@@ -203,7 +203,7 @@
     "status": {
         "ingress": [
             {
-                "host": "devops-sandbox-sonarqube.pathfinder.gov.bc.ca",
+                "host": "sonarqube-gwells-tools.pathfinder.gov.bc.ca",
                 "routerName": "router",
                 "conditions": [
                     {
