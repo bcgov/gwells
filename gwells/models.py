@@ -404,6 +404,44 @@ class LithologyMoisture(AuditModel):
 
 
 
+class CasingType(AuditModel):
+    """
+    Type of Casing used on a well
+    """
+    casing_type_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    code = models.CharField(max_length=10)
+    description = models.CharField(max_length=100)
+    is_hidden = models.BooleanField(default=False)
+    sort_order = models.PositiveIntegerField()
+    
+    class Meta:
+        db_table = 'gwells_casing_type'
+        ordering = ['sort_order', 'description']
+
+    def __str__(self):
+        return self.description
+
+
+
+class CasingMaterial(AuditModel):
+    """
+     The material used for casing a well, e.g., Cement, Plastic, Steel.
+    """
+    casing_material_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    code = models.CharField(max_length=10)
+    description = models.CharField(max_length=100)
+    is_hidden = models.BooleanField(default=False)
+    sort_order = models.PositiveIntegerField()
+    
+    class Meta:
+        db_table = 'gwells_casing_material'
+        ordering = ['sort_order', 'description']
+
+    def __str__(self):
+        return self.description
+
+
+
 class Well(AuditModel):
     """
     Well information.
@@ -617,6 +655,7 @@ class LithologyDescription(AuditModel):
     lithology_moisture = models.ForeignKey(LithologyMoisture, db_column='lithology_moisture_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Moisture')
     water_bearing_estimated_flow = models.DecimalField(max_digits=10, decimal_places=4, blank=True, null=True, verbose_name='Water Bearing Estimated Flow')
     lithology_observation = models.CharField(max_length=250, blank=True, verbose_name='Observations')
+    
     class Meta:
         db_table = 'gwells_lithology_description'
 
@@ -625,6 +664,32 @@ class LithologyDescription(AuditModel):
             return 'activity_submission {} {} {}'.format(self.activity_submission, self.lithology_from, self.lithology_to)
         else:
             return 'well {} {} {}'.format(self.well, self.lithology_from, self.lithology_to)
+
+
+
+class Casing(AuditModel):
+    """
+    Casing information
+    """
+    casing_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    activity_submission = models.ForeignKey(ActivitySubmission, db_column='filing_number', on_delete=models.CASCADE, blank=True, null=True)
+    well = models.ForeignKey(Well, db_column='well_tag_number', on_delete=models.CASCADE, blank=True, null=True)
+    casing_from = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='From', blank=False, validators=[MinValueValidator(Decimal('0.00'))])
+    casing_to = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='To', blank=False, validators=[MinValueValidator(Decimal('0.01'))])
+    internal_diameter = models.DecimalField(max_digits=8, decimal_places=3, verbose_name='Diameter', blank=False, validators=[MinValueValidator(Decimal('0.5'))])
+    casing_type = models.ForeignKey(CasingType, db_column='casing_type_guid', on_delete=models.CASCADE, verbose_name='Casing Type')
+    casing_material = models.ForeignKey(CasingMaterial, db_column='casing_material_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Casing Material')
+    wall_thickness = models.DecimalField(max_digits=6, decimal_places=3, verbose_name='Wall Thickness', blank=False, validators=[MinValueValidator(Decimal('0.5'))])
+    drive_shoe = models.BooleanField(default=False, verbose_name='Drive Shoe', choices=((True, 'Yes'), (False, 'No')))
+    
+    class Meta:
+        db_table = 'gwells_casing'
+
+    def __str__(self):
+        if self.activity_submission:
+            return 'activity_submission {} {} {}'.format(self.activity_submission, self.casing_from, self.casing_to)
+        else:
+            return 'well {} {} {}'.format(self.well, self.casing_from, self.casing_to)
 
 
 
