@@ -19,7 +19,8 @@ from django.views.generic.edit import FormView
 #from django.utils import timezone
 from formtools.wizard.views import SessionWizardView
 from .models import WellYieldUnit, Well, ActivitySubmission, WellClass
-from .forms import SearchForm, ActivitySubmissionTypeAndClassForm, WellOwnerForm, ActivitySubmissionLocationForm, ActivitySubmissionGpsForm, ActivitySubmissionLithologyFormSet
+from .forms import SearchForm, ActivitySubmissionTypeAndClassForm, WellOwnerForm, ActivitySubmissionLocationForm, ActivitySubmissionGpsForm
+from .forms import ActivitySubmissionLithologyFormSet, ActivitySubmissionCasingFormSet, ActivitySubmissionSurfaceSealForm
 import json
 from django.core.serializers.json import DjangoJSONEncoder
 
@@ -111,6 +112,7 @@ FORMS = [('type_and_class', ActivitySubmissionTypeAndClassForm),
          ('location', ActivitySubmissionLocationForm),
          ('gps', ActivitySubmissionGpsForm),
          ('lithology', ActivitySubmissionLithologyFormSet),
+         ('casing', ActivitySubmissionSurfaceSealForm),
         ]
 
 TEMPLATES = {'type_and_class': 'gwells/activity_submission_form.html',
@@ -118,6 +120,7 @@ TEMPLATES = {'type_and_class': 'gwells/activity_submission_form.html',
              'location': 'gwells/activity_submission_form.html',
              'gps': 'gwells/activity_submission_form.html',
              'lithology': 'gwells/activity_submission_lithology_form.html',
+             'casing': 'gwells/activity_submission_casing_form.html',
             }
 
 
@@ -138,10 +141,9 @@ class ActivitySubmissionWizardView(SessionWizardView):
                 context['water_supply_well_class_guid'] = water_supply_class.well_class_guid
             except Exception as e:
                 context['water_supply_well_class_guid'] = None
-       # elif self.steps.current == 'lithology':
-       #     formset = ActivitySubmissionLithologyFormSet()
-       #     helper = LithologyFormSetHelper()
-       #     context.update({'formset': formset, 'helper': helper})
+        elif self.steps.current == 'casing':
+            formset = ActivitySubmissionCasingFormSet()
+            context.update({'formset': formset})
         return context
 
     def get_form_instance(self, step):
