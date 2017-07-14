@@ -621,3 +621,7 @@ p.help-block {
 .table-tight td .form-group {
     margin-bottom: 2px;
 }
+
+thead tr {
+    vertical-align: top;
+}
