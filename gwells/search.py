@@ -71,6 +71,6 @@ class Search():
         if q_list:
             # If there are too many results, we return one plus the query limit to engage post-query logic in views.py
             well_results = Well.objects.distinct().filter(
-                reduce(operator.and_, q_list)).order_by('well_tag_number', 'created')[:(query_limit+1)]
+                reduce(operator.and_, q_list)).order_by('well_tag_number', 'when_created')[:(query_limit+1)]
 
         return well_results
