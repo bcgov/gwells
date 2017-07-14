@@ -15,10 +15,10 @@ from django import forms
 from django.utils.safestring import mark_safe
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Div, Submit, Hidden, HTML, Field
-from crispy_forms.bootstrap import FormActions, AppendedText
+from crispy_forms.bootstrap import FormActions, AppendedText, InlineRadios
 from django.forms.models import inlineformset_factory
 from .search import Search
-from .models import ActivitySubmission, WellActivityType, ProvinceState, DrillingMethod, LithologyDescription, LithologyMoisture
+from .models import ActivitySubmission, WellActivityType, ProvinceState, DrillingMethod, LithologyDescription, LithologyMoisture, Casing
 from datetime import date
 
 class SearchForm(forms.Form):
@@ -595,6 +595,89 @@ class LithologyForm(forms.ModelForm):
 
 
 
+class CasingForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.disable_csrf = True
+        self.helper.form_show_labels = False
+        self.helper.render_required_fields = True
+        self.helper.render_hidden_fields = True
+        self.helper.layout = Layout(
+            HTML('<tr valign="top">'),
+            HTML('<td width="5%">'),
+            'casing_from',
+            HTML('</td>'),
+            HTML('<td width="5%">'),
+            'casing_to',
+            HTML('</td>'),
+            HTML('<td width="10%">'),
+            'internal_diameter',
+            HTML('</td>'),
+            HTML('<td>'),
+            'casing_type',
+            HTML('</td>'),
+            HTML('<td>'),
+            'casing_material',
+            HTML('</td>'),
+            HTML('<td width="10%">'),
+            'wall_thickness',
+            HTML('</td>'),
+            HTML('<td>'),
+            InlineRadios('drive_shoe'),
+            HTML('</td><td width="5%">{% if form.instance.pk %}{{ form.DELETE }}{% endif %}</td>'),
+            HTML('</tr>'),
+        )
+        super(CasingForm, self).__init__(*args, **kwargs)
+
+        self.fields['drive_shoe'].label = False
+
+    def clean(self):
+        cleaned_data = super(CasingForm, self).clean()
+        
+
+        return cleaned_data
+
+    class Meta:
+        model = Casing
+        fields = ['casing_from', 'casing_to', 'internal_diameter', 'casing_type', 'casing_material', 'wall_thickness', 'drive_shoe']
+
+
+
+class ActivitySubmissionSurfaceSealForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.disable_csrf = True
+        self.helper.layout = Layout(
+            Div(
+                Div('surface_seal_material', css_class='col-md-3'),
+                Div(AppendedText('surface_seal_depth', 'ft'), css_class='col-md-2'),
+                Div(AppendedText('surface_seal_thickness', 'in'), css_class='col-md-2'),
+                css_class='row',
+            ),
+            Div(
+                Div('surface_seal_method', css_class='col-md-3'),
+                css_class='row',
+            ),
+            Div(
+                Div(HTML('&nbsp;'), css_class='col-md-12'),
+                css_class='row',
+            ),
+            Div(
+                Div('backfill_type', css_class='col-md-3'),
+                Div(AppendedText('backfill_depth', 'ft'), css_class='col-md-2'),
+                css_class='row',
+            ),
+        )
+        super(ActivitySubmissionSurfaceSealForm, self).__init__(*args, **kwargs)
+
+    class Meta:
+        model = ActivitySubmission
+        fields = ['surface_seal_material', 'surface_seal_depth', 'surface_seal_thickness', 'surface_seal_method', 'backfill_type', 'backfill_depth']
+
+
 
 #WellCompletionDataFormSet = inlineformset_factory(ActivitySubmission, WellCompletionData, max_num=1, can_delete=False)
 ActivitySubmissionLithologyFormSet = inlineformset_factory(ActivitySubmission, LithologyDescription, form=LithologyForm, fk_name='activity_submission', can_delete=False, extra=10)
+ActivitySubmissionCasingFormSet = inlineformset_factory(ActivitySubmission, Casing, form=CasingForm, fk_name='activity_submission', can_delete=False, extra=5)
