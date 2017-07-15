@@ -617,6 +617,8 @@ function WellsMap(options) {
             var details = wellPushpinInit.wellDetails;
             placeWellPushpin([wellPushpinInit.lat, wellPushpinInit.long], details);
         }
+
+        _leafletMap.attributionControl.setPosition('topright');
     }(options));
 
     // The public members and methods of a WellsMap.
