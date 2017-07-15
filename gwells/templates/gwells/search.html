@@ -221,10 +221,12 @@
     function identifyWellsEndCallback(startLatLong, endLatLong) {
         $("#search-map").removeClass('identify-wells-operation');
         $("#identify-wells-btn").prop("disabled", false);
-        var startLatLongString = startLatLong.lat + latLongDelimiter + startLatLong.lng;
-        var endLatLongString = endLatLong.lat + latLongDelimiter + endLatLong.lng;
-        $("[name="+startLatLongFieldName+"]").val(startLatLongString);
-        $("[name="+endLatLongFieldName+"]").val(endLatLongString);
+        if (startLatLong && endLatLong) {
+            var startLatLongString = startLatLong.lat + latLongDelimiter + startLatLong.lng;
+            var endLatLongString = endLatLong.lat + latLongDelimiter + endLatLong.lng;
+            $("[name="+startLatLongFieldName+"]").val(startLatLongString);
+            $("[name="+endLatLongFieldName+"]").val(endLatLongString);
+        }
         $("#id-searchForm").submit();
     }
 
