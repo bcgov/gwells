@@ -119,7 +119,7 @@ function WellsMap(options) {
     var _identifyWellsRectangle = null;
 
     // The rectangle to draw when displaying wells from drawAndFitBounds()
-    var _maxBoundsRectangle = null;
+    var _drawAndFitBoundsRectangle = null;
 
     // The starting corner of the identifyWellsRectangle
     var _startCorner = null;
@@ -501,9 +501,9 @@ function WellsMap(options) {
         if (!_exists(_leafletMap) || !_exists(wells) || !_isArray(wells)) {
             return;
         }
-        if (_exists(_maxBoundsRectangle)) {
-            _leafletMap.removeLayer(_maxBoundsRectangle);
-            _maxBoundsRectangle = null;
+        if (_exists(_drawAndFitBoundsRectangle)) {
+            _leafletMap.removeLayer(_drawAndFitBoundsRectangle);
+            _drawAndFitBoundsRectangle = null;
         }
         _drawWells(wells);
 
@@ -519,11 +519,11 @@ function WellsMap(options) {
         markerBounds = L.latLngBounds([northWestCorner, southEastCorner]).pad(padding);
 
         // Draw the new rectangle to enclose the markers.
-        _maxBoundsRectangle = L.rectangle(markerBounds, {
+        _drawAndFitBoundsRectangle = L.rectangle(markerBounds, {
             fillOpacity: 0, // The fill should be transparent.
             interactive: false // Users should click through the rectangle to the markers.
         });
-        _maxBoundsRectangle.addTo(_leafletMap);
+        _drawAndFitBoundsRectangle.addTo(_leafletMap);
 
         // Now that the rectangle is drawn, reset the map's maxBounds and fit the map to it.
         _leafletMap.setMaxBounds(markerBounds);
