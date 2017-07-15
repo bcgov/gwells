@@ -217,6 +217,7 @@ function WellsMap(options) {
 
         _leafletMap.off('mousedown', _mouseDownForIdentifyWellsEvent);
         _leafletMap.off('mouseup', _mouseUpForIdentifyWellsEvent);
+        _leafletMap.off('mouseout', _mouseUpForIdentifyWellsEvent);
         _leafletMap.off('mousemove', _mouseMoveForIdentifyWellsEvent);
         if (_exists(_identifyWellsRectangle)) {
             _leafletMap.removeLayer(_identifyWellsRectangle);
@@ -522,6 +523,7 @@ function WellsMap(options) {
         }
         _leafletMap.on('mousedown', _mouseDownForIdentifyWellsEvent);
         _leafletMap.on('mouseup', _mouseUpForIdentifyWellsEvent);
+        _leafletMap.on('mouseout', _mouseUpForIdentifyWellsEvent);
     };
 
     /** IIFE for construction of a WellsMap */
