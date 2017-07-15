@@ -617,7 +617,8 @@ function WellsMap(options) {
             var details = wellPushpinInit.wellDetails;
             placeWellPushpin([wellPushpinInit.lat, wellPushpinInit.long], details);
         }
-
+        
+        // Position of the attribution control
         _leafletMap.attributionControl.setPosition('topright');
     }(options));
 
