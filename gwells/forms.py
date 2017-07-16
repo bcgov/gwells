@@ -426,6 +426,7 @@ class ActivitySubmissionGpsForm(forms.ModelForm):
                     Div(
                         id='add-map',
                         css_class='col-md-4',
+                        aria_label='This map shows the location of a prospective well as a light blue pushpin, as well as any existing wells as dark blue circles. Coordinates for the prospective well may be refined by dragging the pushpin with the mouse.'
                     ),
                     css_class='row',
                 ),
