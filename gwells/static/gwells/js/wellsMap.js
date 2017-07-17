@@ -494,7 +494,6 @@ function WellsMap(options) {
     };
 
     // Displays wells and zooms to the bounding box to see all displayed wells.
-    // Sets the map's bounding box to the displayed well area and draws a rectangle to show
     // limit of wells data.
     // Note the wells must have valid latitude and longitude data.
     var drawAndFitBounds = function (wells) {
@@ -525,8 +524,7 @@ function WellsMap(options) {
         });
         _drawAndFitBoundsRectangle.addTo(_leafletMap);
 
-        // Now that the rectangle is drawn, reset the map's maxBounds and fit the map to it.
-        _leafletMap.setMaxBounds(markerBounds);
+        // Now that the rectangle is drawn, fit the map to it.
         _leafletMap.fitBounds(markerBounds);
     };
 
@@ -618,8 +616,9 @@ function WellsMap(options) {
             placeWellPushpin([wellPushpinInit.lat, wellPushpinInit.long], details);
         }
         
+        // TODO: Settle attribution (possibly even external to the map)
         // Position of the attribution control
-        _leafletMap.attributionControl.setPosition('topright');
+        //_leafletMap.attributionControl.setPosition('topright');
     }(options));
 
     // The public members and methods of a WellsMap.
