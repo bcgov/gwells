@@ -24,8 +24,9 @@
         <div class="row">
             <button id="identify-wells-btn" class="btn btn-default" type="button" onclick="startIdentifyWellsOperation()">Select Area on Map</button>
         </div>
+        <br />
         <div class="row">
-            <div id="search-map" class="col-md-7"></div>
+            <div aria-label="A map associated with GWELLS Search. All well information in this map is accessible via the table of well results that opens below the search form when a search succeeds." id="search-map" class="col-md-7"></div>
         </div>
     </div>
  </div>
@@ -170,10 +171,10 @@
         // Bounding lats and longs of the map, corresponding to the lat/long extremes of BC.
         mapBounds: {
             north:  60.0223,
-            south: 48.2045556,
-            west: -139.0736706,
-            east: -114.0338224,
-            padding: 5 // Margin beyond extremes to pad the bounds with, as a percentage of the total bounding box.
+            south: 48.204556,
+            west: -139.073671,
+            east: -114.033822,
+            padding: 0.05 // Margin beyond extremes to pad the bounds with, as a ratio of the total bounding box.
         },
         // ESRI layers associated with the map
         esriLayers: [
@@ -199,6 +200,7 @@
     // rectangle drawn by the user as part of an identifyWells operation.
     var startLatLongFieldName = "start_lat_long";
     var endLatLongFieldName = "end_lat_long";
+    var latLongDelimiter = ",";
 
     function startIdentifyWellsOperation() {
         if (searchMap !== null) {
@@ -208,7 +210,6 @@
 
     // We want to alter the map to have crosshairs during identifyWells,
     // as well as disabling the button until the operation is over.
-    // TODO: Style button, hide on operation init?
     function identifyWellsStartCallback() {
         $("#search-map").addClass('identify-wells-operation');
         $("#identify-wells-btn").prop("disabled", true);
@@ -219,10 +220,12 @@
     function identifyWellsEndCallback(startLatLong, endLatLong) {
         $("#search-map").removeClass('identify-wells-operation');
         $("#identify-wells-btn").prop("disabled", false);
-        var startLatLongString = startLatLong.lat + ',' + startLatLong.lng;
-        var endLatLongString = endLatLong.lat + ',' + endLatLong.lng;
-        $("[name="+startLatLongFieldName+"]").val(startLatLongString);
-        $("[name="+endLatLongFieldName+"]").val(endLatLongString);
+        if (startLatLong && endLatLong) {
+            var startLatLongString = startLatLong.lat + latLongDelimiter + startLatLong.lng;
+            var endLatLongString = endLatLong.lat + latLongDelimiter + endLatLong.lng;
+            $("[name="+startLatLongFieldName+"]").val(startLatLongString);
+            $("[name="+endLatLongFieldName+"]").val(endLatLongString);
+        }
         $("#id-searchForm").submit();
     }
 
@@ -231,7 +234,7 @@
         searchMap = new WellsMap(searchMapOptions);
         var wellsJson = $("#wells-json").attr("data-wells-search-json") || null;
         var wells = JSON.parse(wellsJson);
-        searchMap.drawAndZoom(wells);            
+        searchMap.drawAndFitBounds(wells);            
     });
 </script>
 {% endblock %}
