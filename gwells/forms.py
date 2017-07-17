@@ -462,8 +462,8 @@ class ActivitySubmissionGpsForm(forms.ModelForm):
         if not latitude:
             raise forms.ValidationError('This field is required.');
 
-        if latitude < 48.2045556 or latitude > 60.0223:
-            raise forms.ValidationError('Latitude must be between 48.2045556 and 60.0223.')
+        if latitude < 48.204555 or latitude > 60.0223:
+            raise forms.ValidationError('Latitude must be between 48.204556 and 60.0223.')
 
         return latitude
 
@@ -474,8 +474,8 @@ class ActivitySubmissionGpsForm(forms.ModelForm):
         if not longitude:
             raise forms.ValidationError('This field is required.');
 
-        if longitude < -139.0736706 or longitude > -114.0338224:
-            raise forms.ValidationError('Longitude must be between -139.0736706 and -114.0338224.')
+        if longitude < -139.073671 or longitude > -114.033822:
+            raise forms.ValidationError('Longitude must be between -139.073671 and -114.033822.')
 
         return longitude
 
@@ -507,7 +507,7 @@ class ActivitySubmissionGpsForm(forms.ModelForm):
         fields = ['latitude', 'longitude', 'ground_elevation', 'ground_elevation_method', 'drilling_method', 'other_drilling_method', 'orientation_vertical']
         widgets = {'orientation_vertical': forms.RadioSelect,
                    'latitude': forms.TextInput(attrs={'type': 'number', 'min': '48.204556', 'max': '60.0223', 'step': 'any'}),
-                   'longitude': forms.TextInput(attrs={'type': 'number', 'min': '-139.073671', 'max': '139.073671', 'step': 'any'})}
+                   'longitude': forms.TextInput(attrs={'type': 'number', 'min': '-139.073671', 'max': '-114.033822', 'step': 'any'})}
 
 
 
