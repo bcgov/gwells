@@ -227,7 +227,7 @@
         "database-user" : "${SONAR_DATABASE_USER}",
         "database-password" : "${SONAR_DATABASE_PASSWORD}",
 		"database-admin-password" : "${SONAR_DATABASE_ADMIN_PASSWORD}",
-		"sonar-admin-password" : "${SONAR_DATABASE_PASSWORD}"
+		"sonar-admin-password" : "${SONAR_ADMIN_PASSWORD}"
       }
     },
 	{
@@ -522,7 +522,12 @@
                         "env": [
                             {
                                 "name": "SONARQUBE_JDBC_USERNAME",
-                                "value": "sonarqube"
+                                "valueFrom": {
+                                      "secretKeyRef" : {
+                                        "name" : "sonarqube-secrets",
+                                        "key" : "database-user"
+                                    }
+                                }
                             },
                             {
                                 "name": "SONARQUBE_JDBC_URL",
