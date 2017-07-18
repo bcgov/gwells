@@ -373,11 +373,19 @@
 								},
 								{
 									"name": "POSTGRESQL_PASSWORD",
-									"value": "${DATABASE_PASSWORD}"
+									"valueFrom": {
+                                      "secretKeyRef" : {
+                                        "name" : "sonarqube-secrets",
+                                        "key" : "database-password"
+                                    }                        
 								},
 								{
 									"name": "POSTGRESQL_USER",
-									"value": "${DATABASE_USER}"
+									"valueFrom": {
+                                      "secretKeyRef" : {
+                                        "name" : "sonarqube-secrets",
+                                        "key" : "database-user"
+                                    }                        
 								}
 							],
 							"readinessProbe": {
