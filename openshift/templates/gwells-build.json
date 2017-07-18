@@ -224,8 +224,8 @@
         "name": "sonarqube-secrets"
       },
       "stringData" : {
-        "database-user" : "${DATABASE_USER}",
-        "database-password" : "${DATABASE_PASSWORD}"
+        "database-user" : "${SONAR_DATABASE_USER}",
+        "database-password" : "${SONAR_DATABASE_PASSWORD}"
       }
     },
 	{
