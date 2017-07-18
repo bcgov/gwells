@@ -594,6 +594,36 @@
         "availableReplicas": 0,
         "unavailableReplicas": 0
     }
+},
+{
+    "kind": "Service",
+    "apiVersion": "v1",
+    "metadata": {
+        "name": "sonarqube",
+        "creationTimestamp": null,
+        "labels": {
+            "app": "sonarqube"
+        }
+    },
+    "spec": {
+        "ports": [
+            {
+                "name": "9000-tcp",
+                "protocol": "TCP",
+                "port": 9000,
+                "targetPort": 9000
+            }
+        ],
+        "selector": {
+            "app": "sonarqube",
+            "deploymentconfig": "sonarqube"
+        },
+        "type": "ClusterIP",
+        "sessionAffinity": "None"
+    },
+    "status": {
+        "loadBalancer": {}
+    }
 }
   ],
   "parameters": [
