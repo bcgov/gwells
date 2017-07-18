@@ -225,7 +225,9 @@
       },
       "stringData" : {
         "database-user" : "${SONAR_DATABASE_USER}",
-        "database-password" : "${SONAR_DATABASE_PASSWORD}"
+        "database-password" : "${SONAR_DATABASE_PASSWORD}",
+		"database-admin-password" : "${SONAR_DATABASE_ADMIN_PASSWORD}",
+		"sonar-admin-password" : "${SONAR_DATABASE_PASSWORD}"
       }
     },
 	{
@@ -377,6 +379,15 @@
                                       "secretKeyRef" : {
                                         "name" : "sonarqube-secrets",
                                         "key" : "database-password"
+										}
+                                    }                        
+								},
+								{
+									"name": "POSTGRESQL_ADMIN_PASSWORD",
+									"valueFrom": {
+                                      "secretKeyRef" : {
+                                        "name" : "sonarqube-secrets",
+                                        "key" : "database-admin-password"
 										}
                                     }                        
 								},
@@ -643,6 +654,13 @@
       "name": "SONAR_DATABASE_PASSWORD",
       "displayName": "Database Password",
       "description": "Password for the Sonar Database user.",
+      "generate": "expression",
+      "from": "[a-zA-Z0-9]{16}"
+    },
+	{
+      "name": "SONAR_DATABASE_ADMIN_PASSWORD",
+      "displayName": "Database Admin Password",
+      "description": "Password for the Admin Database user.",
       "generate": "expression",
       "from": "[a-zA-Z0-9]{16}"
     },
