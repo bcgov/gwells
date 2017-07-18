@@ -1,0 +1,712 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<displays>
+<folder>
+	<name><![CDATA[WELLS Data Analysis]]></name>
+	<tooltip><![CDATA[WELLS Datea Analysis]]></tooltip>
+	<description><![CDATA[Snippets to list known datea quality issues - can be exported
+to Excel.]]></description>
+		<display id="5fbf5769-015c-1000-8001-8e2290245be9" type="" style="Table" enable="true">
+		<name><![CDATA[SEALANT_MATERIAL sorted by most-common]]></name>
+		<description><![CDATA[WELLS_WELLS.SEALANT_MATERIAL values, grouped and sorted by most-records-in-this-group to least-records-in-this-group.]]></description>
+		<tooltip><![CDATA[]]></tooltip>
+		<drillclass><![CDATA[]]></drillclass>
+		<CustomValues>
+			<TYPE>horizontal</TYPE>
+		</CustomValues>
+		<query>
+			<sql><![CDATA[select analysis_grp, count(*)
+from
+(
+ select case when sealant_material is null or sealant_material in ('UNKNOWN','NOT PROVIDED') 
+ 					then 'null / UNKNOWN / NOT PROVIDED'
+			 when upper(sealant_material) in ('GROUT') then 'GROUT'
+			 when upper(sealant_material) in ('BENSEAL') then 'BENSEAL'
+			 when upper(sealant_material) in ('CEMENT') then 'CEMENT'
+			 when upper(sealant_material) in ('BENONITE','BETNONITE','BETNONITE','BEOTNITE') then 'BENONITE'
+			 when upper(sealant_material) in ('BENTONITE GROUT','BENTONITE FROUT') then 'BENTONITE GROUT'
+			 when upper(sealant_material) in ('3/8 BENTONITE','3/8 BENTONITE CHIPS') then '3/8 BENTONITE or 3/8 BENTONITE CHIPS'
+			 when upper(sealant_material) in ('BENTONITE', 'BENTIONITE','BENT') then 'BENTONITE, BENTIONITE,BENT'
+			 when upper(sealant_material) in ('BENTONITE CHIPS', 'BENTONITE CHIP','BENT CHIPS') 
+			 	then 'BENTONITE CHIPS, BENTONITE CHIP,BENT CHIPS'
+			 else sealant_material
+        end as analysis_grp
+ from wells_wells
+)
+group by analysis_grp
+order by count(*) desc]]></sql>
+		</query>
+			<pdf version="VERSION_1_7" compression="CONTENT">
+				<docproperty title="" author="" subject="" keywords="" />
+				<cell toppadding="2" bottompadding="2" leftpadding="2" rightpadding="2" horizontalalign="LEFT" verticalalign="TOP" wrap="true" />
+				<column>
+					<heading font="Times New Roman" size="10" style="NORMAL" color="-16777216" rowshading="-1" labeling="FIRST_PAGE" />
+					<footing font="Times New Roman" size="10" style="NORMAL" color="-16777216" rowshading="-1" labeling="NONE" />
+					<blob blob="NONE" zip="false" />
+				</column>
+				<table font="Times New Roman" size="10" style="NORMAL" color="-16777216" userowshading="false" oddrowshading="-1" evenrowshading="-1" showborders="true" spacingbefore="12" spacingafter="12" horizontalalign="LEFT" />
+				<header enable="false" generatedate="false">
+					<data>
+					
+					
+					
+					
+					
+					
+					
+					
+					null																																													</data>
+				</header>
+				<footer enable="false" generatedate="false">
+					<data value="null" />
+				</footer>
+				<security enable="false" useopenpassword="false" openpassword="" encryption="EXCLUDE_METADATA">
+					<permission enable="false" permissionpassword="" allowcopying="true" allowprinting="true" allowupdating="false" allowaccessdevices="true" />
+				</security>
+				<pagesetup papersize="LETTER" orientation="1" measurement="in" margintop="1.0" marginbottom="1.0" marginleft="1.0" marginright="1.0" />
+			</pdf>
+	</display>
+	<display id="5fc0c4f9-015c-1000-8007-8e2290245be9" type="" style="Table" enable="true">
+		<name><![CDATA[SEALANT_MATERIAL sorted alphabetically]]></name>
+		<description><![CDATA[WELLS_WELLS.SEALANT_MATERIAL values, grouped and sorted by the text value (to show mis-spellings or variations of).
+
+]]></description>
+		<tooltip><![CDATA[]]></tooltip>
+		<drillclass><![CDATA[]]></drillclass>
+		<CustomValues>
+			<TYPE>horizontal</TYPE>
+		</CustomValues>
+		<query>
+			<sql><![CDATA[select analysis_grp, count(*)
+from
+(
+ select case when sealant_material is null or sealant_material in ('UNKNOWN','NOT PROVIDED') 
+ 					then 'null / UNKNOWN / NOT PROVIDED'
+			 when upper(sealant_material) in ('GROUT') then 'GROUT'
+			 when upper(sealant_material) in ('BENSEAL') then 'BENSEAL'
+			 when upper(sealant_material) in ('CEMENT') then 'CEMENT'
+			 when upper(sealant_material) in ('BENONITE','BETNONITE','BETNONITE','BEOTNITE') then 'BENONITE'
+			 when upper(sealant_material) in ('BENTONITE GROUT','BENTONITE FROUT') then 'BENTONITE GROUT'
+			 when upper(sealant_material) in ('3/8 BENTONITE','3/8 BENTONITE CHIPS') then '3/8 BENTONITE or 3/8 BENTONITE CHIPS'
+			 when upper(sealant_material) in ('BENTONITE', 'BENTIONITE','BENT') then 'BENTONITE, BENTIONITE,BENT'
+			 when upper(sealant_material) in ('BENTONITE CHIPS', 'BENTONITE CHIP','BENT CHIPS') 
+			 	then 'BENTONITE CHIPS, BENTONITE CHIP,BENT CHIPS'
+			 else sealant_material
+        end as analysis_grp
+ from wells_wells
+)
+group by analysis_grp
+order by analysis_grp]]></sql>
+		</query>
+			<pdf version="VERSION_1_7" compression="CONTENT">
+				<docproperty title="" author="" subject="" keywords="" />
+				<cell toppadding="2" bottompadding="2" leftpadding="2" rightpadding="2" horizontalalign="LEFT" verticalalign="TOP" wrap="true" />
+				<column>
+					<heading font="Times New Roman" size="10" style="NORMAL" color="-16777216" rowshading="-1" labeling="FIRST_PAGE" />
+					<footing font="Times New Roman" size="10" style="NORMAL" color="-16777216" rowshading="-1" labeling="NONE" />
+					<blob blob="NONE" zip="false" />
+				</column>
+				<table font="Times New Roman" size="10" style="NORMAL" color="-16777216" userowshading="false" oddrowshading="-1" evenrowshading="-1" showborders="true" spacingbefore="12" spacingafter="12" horizontalalign="LEFT" />
+				<header enable="false" generatedate="false">
+					<data>
+					
+					
+					
+					
+					
+					
+					
+					
+					null																																													</data>
+				</header>
+				<footer enable="false" generatedate="false">
+					<data value="null" />
+				</footer>
+				<security enable="false" useopenpassword="false" openpassword="" encryption="EXCLUDE_METADATA">
+					<permission enable="false" permissionpassword="" allowcopying="true" allowprinting="true" allowupdating="false" allowaccessdevices="true" />
+				</security>
+				<pagesetup papersize="LETTER" orientation="1" measurement="in" margintop="1.0" marginbottom="1.0" marginleft="1.0" marginright="1.0" />
+			</pdf>
+	</display>
+	<display id="60592d79-015c-1000-8005-8e22901c32d9" type="" style="Table" enable="true">
+		<name><![CDATA[TYPE_OF_WELL_CAP sorted by most-common ]]></name>
+		<description><![CDATA[WELLS_WELLS.TYPE_OF_WELL_CAP values, grouped and sorted by most-records-in-this-group to least-records-in-this-group.]]></description>
+		<tooltip><![CDATA[]]></tooltip>
+		<drillclass><![CDATA[]]></drillclass>
+		<CustomValues>
+			<TYPE>horizontal</TYPE>
+		</CustomValues>
+		<query>
+			<sql><![CDATA[select analysis_grp, count(*)
+from
+(
+ select case when TYPE_OF_WELL_CAP is null or TYPE_OF_WELL_CAP in ('UNKNOWN','NOT PROVIDED')
+ 					then 'null / UNKNOWN / NOT PROVIDED'
+			 when upper(TYPE_OF_WELL_CAP) in ('6" ALUMINIUM CAP', '6" ALUMINIUM CAP.','6" ALUMINUM CAP') then '6" ALUMINIUM CAP'
+			 when upper(TYPE_OF_WELL_CAP) in ('6" WATER TIGHT','6" WATERTIGHT') then '6" WATER TIGHT'
+			 when upper(TYPE_OF_WELL_CAP) in ('6"','6 INCH') then '6" / 6 INCH'			 
+			 else upper(trim(TYPE_OF_WELL_CAP))
+        end as analysis_grp
+ from wells_wells
+)
+group by analysis_grp
+order by count(*) desc]]></sql>
+		</query>
+			<pdf version="VERSION_1_7" compression="CONTENT">
+				<docproperty title="" author="" subject="" keywords="" />
+				<cell toppadding="2" bottompadding="2" leftpadding="2" rightpadding="2" horizontalalign="LEFT" verticalalign="TOP" wrap="true" />
+				<column>
+					<heading font="Times New Roman" size="10" style="NORMAL" color="-16777216" rowshading="-1" labeling="FIRST_PAGE" />
+					<footing font="Times New Roman" size="10" style="NORMAL" color="-16777216" rowshading="-1" labeling="NONE" />
+					<blob blob="NONE" zip="false" />
+				</column>
+				<table font="Times New Roman" size="10" style="NORMAL" color="-16777216" userowshading="false" oddrowshading="-1" evenrowshading="-1" showborders="true" spacingbefore="12" spacingafter="12" horizontalalign="LEFT" />
+				<header enable="false" generatedate="false">
+					<data>
+					
+					
+					
+					
+					
+					
+					
+					null																																								</data>
+				</header>
+				<footer enable="false" generatedate="false">
+					<data value="null" />
+				</footer>
+				<security enable="false" useopenpassword="false" openpassword="" encryption="EXCLUDE_METADATA">
+					<permission enable="false" permissionpassword="" allowcopying="true" allowprinting="true" allowupdating="false" allowaccessdevices="true" />
+				</security>
+				<pagesetup papersize="LETTER" orientation="1" measurement="in" margintop="1.0" marginbottom="1.0" marginleft="1.0" marginright="1.0" />
+			</pdf>
+	</display>
+	<display id="605a4d67-015c-1000-8008-8e22901c32d9" type="" style="Table" enable="true">
+		<name><![CDATA[TYPE_OF_WELL_CAP sorted alphabetically ]]></name>
+		<description><![CDATA[WELLS_WELLS.TYPE_OF_WELL_CAP values, grouped and sorted by the text value (to show mis-spellings or variations of).]]></description>
+		<tooltip><![CDATA[]]></tooltip>
+		<drillclass><![CDATA[]]></drillclass>
+		<CustomValues>
+			<TYPE>horizontal</TYPE>
+		</CustomValues>
+		<query>
+			<sql><![CDATA[select analysis_grp, count(*)
+from
+(
+ select case when TYPE_OF_WELL_CAP is null or TYPE_OF_WELL_CAP in ('UNKNOWN','NOT PROVIDED')
+ 					then 'null / UNKNOWN / NOT PROVIDED'
+			 when upper(TYPE_OF_WELL_CAP) in ('6" ALUMINIUM CAP', '6" ALUMINIUM CAP.','6" ALUMINUM CAP') then '6" ALUMINIUM CAP'
+			 when upper(TYPE_OF_WELL_CAP) in ('6" WATER TIGHT','6" WATERTIGHT') then '6" WATER TIGHT'
+			 when upper(TYPE_OF_WELL_CAP) in ('6"','6 INCH') then '6" / 6 INCH'			 
+			 else upper(trim(TYPE_OF_WELL_CAP))
+        end as analysis_grp
+ from wells_wells
+)
+group by analysis_grp
+order by analysis_grp]]></sql>
+		</query>
+	</display>
+	<display id="605f737d-015c-1000-8009-8e22901c32d9" type="" style="Table" enable="true">
+		<name><![CDATA[WHERE_PLATE_ATTACHED sorted by most-common]]></name>
+		<description><![CDATA[WELLS_WELLS.WHERE_PLATE_ATTACHED values, grouped and sorted by most-records-in-this-group to least-records-in-this-group.]]></description>
+		<tooltip><![CDATA[]]></tooltip>
+		<drillclass><![CDATA[]]></drillclass>
+		<CustomValues>
+			<TYPE>horizontal</TYPE>
+		</CustomValues>
+		<query>
+			<sql><![CDATA[select analysis_grp, count(*)
+from
+(
+ select case when WHERE_PLATE_ATTACHED is null or WHERE_PLATE_ATTACHED in ('UKNOWN','UNKNONW','UNKNOQN','UNKNOWN','UNKNOWNU','UNKNWON','UNKOWN','NO WELL TAG',
+ 'NO WELL TAG ATTACHED','NONE','NONE AT THIS TIME','NONE ATTACHED') then 'null / UNKNOWN / NONE / etc.'
+			 else upper(trim(WHERE_PLATE_ATTACHED))
+        end as analysis_grp
+ from wells_wells
+)
+group by analysis_grp
+order by count(*) desc]]></sql>
+		</query>
+	</display>
+	<display id="605fff86-015c-1000-800a-8e22901c32d9" type="" style="Table" enable="true">
+		<name><![CDATA[WHERE_PLATE_ATTACHED sorted alphabetically ]]></name>
+		<description><![CDATA[WELLS_WELLS.WHERE_PLATE_ATTACHED values, grouped and sorted by the text value (to show mis-spellings or variations of).]]></description>
+		<tooltip><![CDATA[]]></tooltip>
+		<drillclass><![CDATA[]]></drillclass>
+		<CustomValues>
+			<TYPE>horizontal</TYPE>
+		</CustomValues>
+		<query>
+			<sql><![CDATA[select analysis_grp, count(*)
+from
+(
+ select case when WHERE_PLATE_ATTACHED is null or WHERE_PLATE_ATTACHED in ('UKNOWN','UNKNONW','UNKNOQN','UNKNOWN','UNKNOWNU','UNKNWON','UNKOWN','NO WELL TAG',
+ 'NO WELL TAG ATTACHED','NONE','NONE AT THIS TIME','NONE ATTACHED') then 'null / UNKNOWN / NONE / etc.'
+			 else upper(trim(WHERE_PLATE_ATTACHED))
+        end as analysis_grp
+ from wells_wells
+)
+group by analysis_grp
+order by analysis_grp]]></sql>
+		</query>
+	</display>
+	<display id="6068e17c-015c-1000-800b-8e22901c32d9" type="" style="Table" enable="true">
+		<name><![CDATA[BACKFILL_TYPE sorted by most-common ]]></name>
+		<description><![CDATA[WELLS_WELLS.BACKFILL_TYPE values, grouped and sorted by most-records-in-this-group to least-records-in-this-group.]]></description>
+		<tooltip><![CDATA[]]></tooltip>
+		<drillclass><![CDATA[]]></drillclass>
+		<CustomValues>
+			<TYPE>horizontal</TYPE>
+		</CustomValues>
+		<query>
+			<sql><![CDATA[select analysis_grp, count(*)
+from
+(
+ select case when BACKFILL_TYPE is null or BACKFILL_TYPE in ('NONE') then 'null / NONE'
+			 else upper(trim(BACKFILL_TYPE))
+        end as analysis_grp
+ from wells_wells
+)
+group by analysis_grp
+order by count(*) desc]]></sql>
+		</query>
+	</display>
+	<display id="606a0f01-015c-1000-800c-8e22901c32d9" type="" style="Table" enable="true">
+		<name><![CDATA[BACKFILL_TYPE sorted alphabetically ]]></name>
+		<description><![CDATA[WELLS_WELLS.BACKFILL_TYPE values, grouped and sorted by the text value (to show mis-spellings or variations of).]]></description>
+		<tooltip><![CDATA[]]></tooltip>
+		<drillclass><![CDATA[]]></drillclass>
+		<CustomValues>
+			<TYPE>horizontal</TYPE>
+		</CustomValues>
+		<query>
+			<sql><![CDATA[select analysis_grp, count(*)
+from
+(
+ select case when BACKFILL_TYPE is null or BACKFILL_TYPE in ('NONE') then 'null / NONE'
+			 else upper(trim(BACKFILL_TYPE))
+        end as analysis_grp
+ from wells_wells
+)
+group by analysis_grp
+order by analysis_grp]]></sql>
+		</query>
+	</display>
+	<display id="606be746-015c-1000-800d-8e22901c32d9" type="" style="Table" enable="true">
+		<name><![CDATA[BACKFILL_MATERIAL sorted by most-common ]]></name>
+		<description><![CDATA[WELLS_WELLS.BACKFILL_MATERIAL values, grouped and sorted by most-records-in-this-group to least-records-in-this-group.]]></description>
+		<tooltip><![CDATA[]]></tooltip>
+		<drillclass><![CDATA[]]></drillclass>
+		<CustomValues>
+			<TYPE>horizontal</TYPE>
+		</CustomValues>
+		<query>
+			<sql><![CDATA[select analysis_grp, count(*)
+from
+(
+ select case when BACKFILL_MATERIAL is null or BACKFILL_MATERIAL in ('UNKNOWN','UNKNOWN MATERIAL','NONE','NOT APPLICABLE','NOT PROVIDED') 
+ 			 then 'null / UNKNOWN / NONE / NOT APPLICABLE / NOT PROVIDED'
+			 else upper(trim(BACKFILL_MATERIAL))
+        end as analysis_grp
+ from wells_wells
+)
+group by analysis_grp
+order by count(*) desc]]></sql>
+		</query>
+	</display>
+	<display id="606c64dd-015c-1000-800e-8e22901c32d9" type="" style="Table" enable="true">
+		<name><![CDATA[BACKFILL_MATERIAL sorted alphabetically ]]></name>
+		<description><![CDATA[WELLS_WELLS.BACKFILL_MATERIAL values, grouped and sorted by the text value (to show mis-spellings or variations of).]]></description>
+		<tooltip><![CDATA[]]></tooltip>
+		<drillclass><![CDATA[]]></drillclass>
+		<CustomValues>
+			<TYPE>horizontal</TYPE>
+		</CustomValues>
+		<query>
+			<sql><![CDATA[select analysis_grp, count(*)
+from
+(
+ select case when BACKFILL_MATERIAL is null or BACKFILL_MATERIAL in ('UNKNOWN','UNKNOWN MATERIAL','NONE','NOT APPLICABLE','NOT PROVIDED') 
+ 			 then 'null / UNKNOWN / NONE / NOT APPLICABLE / NOT PROVIDED'
+			 else upper(trim(BACKFILL_MATERIAL))
+        end as analysis_grp
+ from wells_wells
+)
+group by analysis_grp
+order by analysis_grp]]></sql>
+		</query>
+	</display>
+	<display id="606e94e2-015c-1000-800f-8e22901c32d9" type="" style="Table" enable="true">
+		<name><![CDATA[WELLS.DIAMETER sorted by most-common ]]></name>
+		<description><![CDATA[WELLS_WELLS.DIAMETER values, grouped and sorted by most-records-in-this-group to least-records-in-this-group.]]></description>
+		<tooltip><![CDATA[]]></tooltip>
+		<drillclass><![CDATA[]]></drillclass>
+		<CustomValues>
+			<TYPE>horizontal</TYPE>
+		</CustomValues>
+		<query>
+			<sql><![CDATA[select analysis_grp, count(*)
+from
+(
+ select case when diameter is null or diameter = '0.0' or diameter = '0' or diameter='UNK'  then '0 / (null) / UNK'
+ 			 when NOT REGEXP_LIKE(diameter,'^-?\d+(\.\d+)?$') then diameter
+			 when to_number(diameter)   >   0 and to_number(diameter) <   1 then '>  000 and < 1.0'
+			 when to_number(diameter)  >=   1 and to_number(diameter) <   2 then '>= 001 (inclusive) and <   2'
+			 when to_number(diameter)  >=   2 and to_number(diameter) <   3 then '>= 002 (inclusive) and <   3'
+			 when to_number(diameter)  >=   3 and to_number(diameter) <   4 then '>= 003 (inclusive) and <   4'
+			 when to_number(diameter)  >=   4 and to_number(diameter) <   5 then '>= 004 (inclusive) and <   5'
+			 when to_number(diameter)  >=   5 and to_number(diameter) <   6 then '>= 005 (inclusive) and <   6'
+			 when diameter  = '6.' or (to_number(diameter)  >=  6 and to_number(diameter) < 7) 
+			 															    then '>= 006 (inclusive) and <   7'
+			 when to_number(diameter)  >=   7 and to_number(diameter) <   8 then '>= 007 (inclusive) and <   8'
+			 when to_number(diameter)  >=   8 and to_number(diameter) <   9 then '>= 008 (inclusive) and <   9'
+			 when to_number(diameter)  >=   9 and to_number(diameter) <  10 then '>= 009 (inclusive) and <  10'
+			 when to_number(diameter)  >=  10 and to_number(diameter) <  11 then '>= 010 (inclusive) and <  11'
+			 when to_number(diameter)  >=  11 and to_number(diameter) <  12 then '>= 011 (inclusive) and <  12'
+			 when to_number(diameter)  >=  12 and to_number(diameter) <  13 then '>= 012 (inclusive) and <  13'
+			 when to_number(diameter)  >=  13 and to_number(diameter) <  20 then '>= 013 (inclusive) and <  20'
+			 when to_number(diameter)  >=  20 and to_number(diameter) <  30 then '>= 020 (inclusive) and <  30'
+			 when to_number(diameter)  >=  30 and to_number(diameter) <  40 then '>= 030 (inclusive) and <  40'
+			 when to_number(diameter)  >=  40 and to_number(diameter) <  50 then '>= 040 (inclusive) and <  50'
+			 when to_number(diameter)  >=  50 and to_number(diameter) <  60 then '>= 050 (inclusive) and <  60'
+			 when to_number(diameter)  >=  60 and to_number(diameter) < 100 then '>= 060 (inclusive) and < 100'
+			 when to_number(diameter)  >= 100 and to_number(diameter) < 200 then '>= 100 (inclusive) and < 200'
+			 when to_number(diameter)  >= 200 and to_number(diameter) < 500 then '>= 200 (inclusive) and < 500'
+			 else diameter
+        end as analysis_grp
+ from wells_wells
+)
+group by analysis_grp
+order by count(*) desc]]></sql>
+		</query>
+			<pdf version="VERSION_1_7" compression="CONTENT">
+				<docproperty title="" author="" subject="" keywords="" />
+				<cell toppadding="2" bottompadding="2" leftpadding="2" rightpadding="2" horizontalalign="LEFT" verticalalign="TOP" wrap="true" />
+				<column>
+					<heading font="Times New Roman" size="10" style="NORMAL" color="-16777216" rowshading="-1" labeling="FIRST_PAGE" />
+					<footing font="Times New Roman" size="10" style="NORMAL" color="-16777216" rowshading="-1" labeling="NONE" />
+					<blob blob="NONE" zip="false" />
+				</column>
+				<table font="Times New Roman" size="10" style="NORMAL" color="-16777216" userowshading="false" oddrowshading="-1" evenrowshading="-1" showborders="true" spacingbefore="12" spacingafter="12" horizontalalign="LEFT" />
+				<header enable="false" generatedate="false">
+					<data>
+					
+					
+					
+					
+					
+					
+					
+					null																																								</data>
+				</header>
+				<footer enable="false" generatedate="false">
+					<data value="null" />
+				</footer>
+				<security enable="false" useopenpassword="false" openpassword="" encryption="EXCLUDE_METADATA">
+					<permission enable="false" permissionpassword="" allowcopying="true" allowprinting="true" allowupdating="false" allowaccessdevices="true" />
+				</security>
+				<pagesetup papersize="LETTER" orientation="1" measurement="in" margintop="1.0" marginbottom="1.0" marginleft="1.0" marginright="1.0" />
+			</pdf>
+	</display>
+	<display id="60c2638d-015c-1000-8012-8e22901c32d9" type="" style="Table" enable="true">
+		<name><![CDATA[WELLS.DIAMETER sorted by range ]]></name>
+		<description><![CDATA[WELLS_WELLS.DIAMETER values, grouped and sorted by the numeric range]]></description>
+		<tooltip><![CDATA[]]></tooltip>
+		<drillclass><![CDATA[]]></drillclass>
+		<CustomValues>
+			<TYPE>horizontal</TYPE>
+		</CustomValues>
+		<query>
+			<sql><![CDATA[select analysis_grp, count(*)
+from
+(
+ select case when diameter is null or diameter = '0.0' or diameter = '0' or diameter='UNK'  then ' 0 / (null) / UNK'
+ 			 when NOT REGEXP_LIKE(diameter,'^-?\d+(\.\d+)?$') then diameter
+			 when to_number(diameter)   >   0 and to_number(diameter) <   1 then ' >  000 and < 1.0'
+			 when to_number(diameter)  >=   1 and to_number(diameter) <   2 then ' >= 001 (inclusive) and <   2'
+			 when to_number(diameter)  >=   2 and to_number(diameter) <   3 then ' >= 002 (inclusive) and <   3'
+			 when to_number(diameter)  >=   3 and to_number(diameter) <   4 then ' >= 003 (inclusive) and <   4'
+			 when to_number(diameter)  >=   4 and to_number(diameter) <   5 then ' >= 004 (inclusive) and <   5'
+			 when to_number(diameter)  >=   5 and to_number(diameter) <   6 then ' >= 005 (inclusive) and <   6'
+			 when diameter  = '6.' or (to_number(diameter)  >=  6 and to_number(diameter) < 7) 
+			 															    then ' >= 006 (inclusive) and <   7'
+			 when to_number(diameter)  >=   7 and to_number(diameter) <   8 then ' >= 007 (inclusive) and <   8'
+			 when to_number(diameter)  >=   8 and to_number(diameter) <   9 then ' >= 008 (inclusive) and <   9'
+			 when to_number(diameter)  >=   9 and to_number(diameter) <  10 then ' >= 009 (inclusive) and <  10'
+			 when to_number(diameter)  >=  10 and to_number(diameter) <  11 then ' >= 010 (inclusive) and <  11'
+			 when to_number(diameter)  >=  11 and to_number(diameter) <  12 then ' >= 011 (inclusive) and <  12'
+			 when to_number(diameter)  >=  12 and to_number(diameter) <  13 then ' >= 012 (inclusive) and <  13'
+			 when to_number(diameter)  >=  13 and to_number(diameter) <  20 then ' >= 013 (inclusive) and <  20'
+			 when to_number(diameter)  >=  20 and to_number(diameter) <  30 then ' >= 020 (inclusive) and <  30'
+			 when to_number(diameter)  >=  30 and to_number(diameter) <  40 then ' >= 030 (inclusive) and <  40'
+			 when to_number(diameter)  >=  40 and to_number(diameter) <  50 then ' >= 040 (inclusive) and <  50'
+			 when to_number(diameter)  >=  50 and to_number(diameter) <  60 then ' >= 050 (inclusive) and <  60'
+			 when to_number(diameter)  >=  60 and to_number(diameter) < 100 then ' >= 060 (inclusive) and < 100'
+			 when to_number(diameter)  >= 100 and to_number(diameter) < 200 then ' >= 100 (inclusive) and < 200'
+			 when to_number(diameter)  >= 200 and to_number(diameter) < 500 then ' >= 200 (inclusive) and < 500'
+			 else diameter
+        end as analysis_grp
+ from wells_wells
+)
+group by analysis_grp
+order by analysis_grp]]></sql>
+		</query>
+			<pdf version="VERSION_1_7" compression="CONTENT">
+				<docproperty title="" author="" subject="" keywords="" />
+				<cell toppadding="2" bottompadding="2" leftpadding="2" rightpadding="2" horizontalalign="LEFT" verticalalign="TOP" wrap="true" />
+				<column>
+					<heading font="Times New Roman" size="10" style="NORMAL" color="-16777216" rowshading="-1" labeling="FIRST_PAGE" />
+					<footing font="Times New Roman" size="10" style="NORMAL" color="-16777216" rowshading="-1" labeling="NONE" />
+					<blob blob="NONE" zip="false" />
+				</column>
+				<table font="Times New Roman" size="10" style="NORMAL" color="-16777216" userowshading="false" oddrowshading="-1" evenrowshading="-1" showborders="true" spacingbefore="12" spacingafter="12" horizontalalign="LEFT" />
+				<header enable="false" generatedate="false">
+					<data>
+					
+					
+					
+					
+					
+					
+					
+					null																																								</data>
+				</header>
+				<footer enable="false" generatedate="false">
+					<data value="null" />
+				</footer>
+				<security enable="false" useopenpassword="false" openpassword="" encryption="EXCLUDE_METADATA">
+					<permission enable="false" permissionpassword="" allowcopying="true" allowprinting="true" allowupdating="false" allowaccessdevices="true" />
+				</security>
+				<pagesetup papersize="LETTER" orientation="1" measurement="in" margintop="1.0" marginbottom="1.0" marginleft="1.0" marginright="1.0" />
+			</pdf>
+	</display>
+	<display id="65b4755e-015c-1000-8001-8e229028fa45" type="" style="Table" enable="true">
+		<name><![CDATA[SCREEN_SLOT_SIZE sorted by most-common ]]></name>
+		<description><![CDATA[WELLS_WELLS.SCREEN_SLOT_SIZE values, grouped and sorted by most-records-in-this-group to least-records-in-this-group.
+]]></description>
+		<tooltip><![CDATA[]]></tooltip>
+		<drillclass><![CDATA[]]></drillclass>
+		<CustomValues>
+			<TYPE>horizontal</TYPE>
+		</CustomValues>
+		<query>
+			<sql><![CDATA[select analysis_grp, count(*)
+from
+(
+ select case when SCREEN_SLOT_SIZE is null or SCREEN_SLOT_SIZE = 0 then ' 0 / (null)'
+ 		else to_char(SCREEN_SLOT_SIZE)
+        end as analysis_grp
+ from wells_screens
+)
+group by analysis_grp
+order by count(*) desc]]></sql>
+			<binds>
+				<bind id="null">
+					<value><![CDATA[NULL_VALUE]]></value>
+				</bind>
+			</binds>
+		</query>
+			<pdf version="VERSION_1_7" compression="CONTENT">
+				<docproperty title="" author="" subject="" keywords="" />
+				<cell toppadding="2" bottompadding="2" leftpadding="2" rightpadding="2" horizontalalign="LEFT" verticalalign="TOP" wrap="true" />
+				<column>
+					<heading font="Times New Roman" size="10" style="NORMAL" color="-16777216" rowshading="-1" labeling="FIRST_PAGE" />
+					<footing font="Times New Roman" size="10" style="NORMAL" color="-16777216" rowshading="-1" labeling="NONE" />
+					<blob blob="NONE" zip="false" />
+				</column>
+				<table font="Times New Roman" size="10" style="NORMAL" color="-16777216" userowshading="false" oddrowshading="-1" evenrowshading="-1" showborders="true" spacingbefore="12" spacingafter="12" horizontalalign="LEFT" />
+				<header enable="false" generatedate="false">
+					<data>
+					
+					
+					
+					
+					
+					null																														</data>
+				</header>
+				<footer enable="false" generatedate="false">
+					<data value="null" />
+				</footer>
+				<security enable="false" useopenpassword="false" openpassword="" encryption="EXCLUDE_METADATA">
+					<permission enable="false" permissionpassword="" allowcopying="true" allowprinting="true" allowupdating="false" allowaccessdevices="true" />
+				</security>
+				<pagesetup papersize="LETTER" orientation="1" measurement="in" margintop="1.0" marginbottom="1.0" marginleft="1.0" marginright="1.0" />
+			</pdf>
+		<display id="" type="" style="Table" enable="true">
+			<name><![CDATA[DETAILS]]></name>
+			<description><![CDATA[Detailed WELLS_SCREENS records]]></description>
+			<tooltip><![CDATA[]]></tooltip>
+			<drillclass><![CDATA[]]></drillclass>
+			<CustomValues>
+				<TYPE>horizontal</TYPE>
+			</CustomValues>
+			<query>
+				<sql><![CDATA[null]]></sql>
+			</query>
+				<pdf version="VERSION_1_7" compression="CONTENT">
+					<docproperty title="" author="" subject="" keywords="" />
+					<cell toppadding="2" bottompadding="2" leftpadding="2" rightpadding="2" horizontalalign="LEFT" verticalalign="TOP" wrap="true" />
+					<column>
+						<heading font="Times New Roman" size="10" style="NORMAL" color="-16777216" rowshading="-1" labeling="FIRST_PAGE" />
+						<footing font="Times New Roman" size="10" style="NORMAL" color="-16777216" rowshading="-1" labeling="NONE" />
+						<blob blob="NONE" zip="false" />
+					</column>
+					<table font="Times New Roman" size="10" style="NORMAL" color="-16777216" userowshading="false" oddrowshading="-1" evenrowshading="-1" showborders="true" spacingbefore="12" spacingafter="12" horizontalalign="LEFT" />
+					<header enable="false" generatedate="false">
+						<data>
+						
+						
+						
+						
+						
+						null																																				</data>
+					</header>
+					<footer enable="false" generatedate="false">
+						<data value="null" />
+					</footer>
+					<security enable="false" useopenpassword="false" openpassword="" encryption="EXCLUDE_METADATA">
+						<permission enable="false" permissionpassword="" allowcopying="true" allowprinting="true" allowupdating="false" allowaccessdevices="true" />
+					</security>
+					<pagesetup papersize="LETTER" orientation="1" measurement="in" margintop="1.0" marginbottom="1.0" marginleft="1.0" marginright="1.0" />
+				</pdf>
+		</display>
+	</display>
+	<display id="65b58508-015c-1000-8004-8e229028fa45" type="" style="Table" enable="true">
+		<name><![CDATA[SCREEN_SLOT_SIZE sorted by range ]]></name>
+		<description><![CDATA[WELLS_SCREENS.SCREEN_SLOT_SIZE values, grouped and sorted by the numeric range]]></description>
+		<tooltip><![CDATA[]]></tooltip>
+		<drillclass><![CDATA[]]></drillclass>
+		<CustomValues>
+			<TYPE>horizontal</TYPE>
+		</CustomValues>
+		<query>
+			<sql><![CDATA[select analysis_grp, count(*)
+from
+(
+ select case when SCREEN_SLOT_SIZE is null or SCREEN_SLOT_SIZE = 0 then ' 0 / (null)'
+ 		when SCREEN_SLOT_SIZE   >    0 and SCREEN_SLOT_SIZE <    1 then ' >  000 and < 1.0'
+ 		when SCREEN_SLOT_SIZE   >=   1 and SCREEN_SLOT_SIZE <   10 then ' >= 001 (inclusive) and <   10'
+ 		when SCREEN_SLOT_SIZE   >=  10 and SCREEN_SLOT_SIZE <  100 then ' >= 010 (inclusive) and <  100'
+ 		when SCREEN_SLOT_SIZE   >= 100 and SCREEN_SLOT_SIZE <  200 then ' >= 100 (inclusive) and <  200'
+ 		when SCREEN_SLOT_SIZE   >= 200 and SCREEN_SLOT_SIZE <  300 then ' >= 200 (inclusive) and <  300'
+ 		when SCREEN_SLOT_SIZE   >= 300 and SCREEN_SLOT_SIZE <  500 then ' >= 300 (inclusive) and <  500'
+ 		when SCREEN_SLOT_SIZE   >= 500 and SCREEN_SLOT_SIZE < 1000 then ' >= 500 (inclusive) and < 1000'
+
+ 		else to_char(SCREEN_SLOT_SIZE)
+        end as analysis_grp
+ from wells_screens
+)
+group by analysis_grp
+order by analysis_grp]]></sql>
+		</query>
+	</display>
+	<display id="8998c669-015c-1000-8003-8e2290267878" type="" style="Table" enable="true">
+		<name><![CDATA[CLASS, SUBCLASS grouped by combination]]></name>
+		<description><![CDATA[Listing of all combinations of CLASS and SUBCLASS of WELL]]></description>
+		<tooltip><![CDATA[]]></tooltip>
+		<drillclass><![CDATA[]]></drillclass>
+		<CustomValues>
+			<TYPE>horizontal</TYPE>
+		</CustomValues>
+		<query>
+			<sql><![CDATA[SELECT NVL2(CLASS_OF_WELL_CODCLASSIFIED_BY,CLASS_OF_WELL_CODCLASSIFIED_BY,'(null)') || 
+  NVL2(subclass_of_well_classified_by,' : ' ||  subclass_of_well_classified_by ,NULL) AS CLASS_SUBCLASS,
+COUNT(*) FROM WELLS.WELLS_WELLS
+GROUP BY NVL2(CLASS_OF_WELL_CODCLASSIFIED_BY,CLASS_OF_WELL_CODCLASSIFIED_BY,'(null)') || 
+  NVL2(subclass_of_well_classified_by,' : ' ||  subclass_of_well_classified_by ,NULL)
+ORDER BY CLASS_SUBCLASS]]></sql>
+		</query>
+	</display>
+	<display id="3defbca4-015d-1000-8001-8e2290254aab" type="" style="Table" enable="true">
+		<name><![CDATA[PERFORATIONS.Lliner_thickness sorted by most-common ]]></name>
+		<description><![CDATA[WELLS_PERFORATIONS.Lliner_thickness values, grouped and sorted by most-records-in-this-group to least-records-in-this-group.]]></description>
+		<tooltip><![CDATA[]]></tooltip>
+		<drillclass><![CDATA[null]]></drillclass>
+		<CustomValues>
+			<TYPE>horizontal</TYPE>
+		</CustomValues>
+		<query>
+			<sql><![CDATA[SELECT distinct(WELLS.WELLS_PERFORATIONS.LINER_THICKNESS), count(*) FROM WELLS.WELLS_PERFORATIONS group by WELLS.WELLS_PERFORATIONS.LINER_THICKNESS order by count(*) desc]]></sql>
+		</query>
+	</display>
+	<display id="3df1215f-015d-1000-8002-8e2290254aab" type="" style="Table" enable="true">
+		<name><![CDATA[PERFORATIONS.liner_thickness sorted by range ]]></name>
+		<description><![CDATA[WELLS_PERFORATIONS.liner_thickness values, grouped and sorted by the numeric range]]></description>
+		<tooltip><![CDATA[]]></tooltip>
+		<drillclass><![CDATA[null]]></drillclass>
+		<CustomValues>
+			<TYPE>horizontal</TYPE>
+		</CustomValues>
+		<query>
+			<sql><![CDATA[SELECT distinct(WELLS.WELLS_PERFORATIONS.LINER_THICKNESS), count(*) FROM WELLS.WELLS_PERFORATIONS group by WELLS.WELLS_PERFORATIONS.LINER_THICKNESS order  by WELLS.WELLS_PERFORATIONS.LINER_THICKNESS]]></sql>
+		</query>
+	</display>
+	<display id="3e2386f6-015d-1000-8003-8e2290254aab" type="" style="Table" enable="true">
+		<name><![CDATA[WELLS_CASINGS.CASING_WALL sorted by most-common ]]></name>
+		<description><![CDATA[CASINGS.CASING_WALL values, grouped and sorted by most-records-in-this-group to least-records-in-this-group.]]></description>
+		<tooltip><![CDATA[]]></tooltip>
+		<drillclass><![CDATA[null]]></drillclass>
+		<CustomValues>
+			<TYPE>horizontal</TYPE>
+		</CustomValues>
+		<query>
+			<sql><![CDATA[SELECT distinct(WELLS.WELLS_CASINGS.CASING_WALL), count(*) FROM WELLS.WELLS_CASINGS group by WELLS.WELLS_CASINGS.CASING_WALL order by count(*) desc]]></sql>
+		</query>
+	</display>
+	<display id="3e245e8f-015d-1000-8004-8e2290254aab" type="" style="Table" enable="true">
+		<name><![CDATA[WELLS_CASINGS.CASING_WALL  sorted by range ]]></name>
+		<description><![CDATA[CASINGS.CASING_WALL values, grouped and sorted by the numeric range]]></description>
+		<tooltip><![CDATA[]]></tooltip>
+		<drillclass><![CDATA[null]]></drillclass>
+		<CustomValues>
+			<TYPE>horizontal</TYPE>
+		</CustomValues>
+		<query>
+			<sql><![CDATA[SELECT distinct(WELLS.WELLS_CASINGS.CASING_WALL), count(*) FROM WELLS.WELLS_CASINGS group by WELLS.WELLS_CASINGS.CASING_WALL order  by WELLS.WELLS_CASINGS.CASING_WALL]]></sql>
+		</query>
+	</display>
+	<display id="3e2c5f4a-015d-1000-8005-8e2290254aab" type="" style="Table" enable="true">
+		<name><![CDATA[WELLS_CASINGS.CASING_MATERIAL_CODE sorted by most-common ]]></name>
+		<description><![CDATA[CASINGS.CASING_MATERIAL_CODE values, grouped and sorted by most-records-in-this-group to least-records-in-this-group.]]></description>
+		<tooltip><![CDATA[]]></tooltip>
+		<drillclass><![CDATA[null]]></drillclass>
+		<CustomValues>
+			<TYPE>horizontal</TYPE>
+		</CustomValues>
+		<query>
+			<sql><![CDATA[SELECT DISTINCT WELLS.WELLS_CASINGS.CASING_MATERIAL_CODE, COUNT(*)
+FROM WELLS.WELLS_CASINGS
+GROUP BY WELLS.WELLS_CASINGS.CASING_MATERIAL_CODE
+ order by count(*) desc]]></sql>
+		</query>
+	</display>
+	<display id="3e2d74cd-015d-1000-8006-8e2290254aab" type="" style="Table" enable="true">
+		<name><![CDATA[WELLS_CASINGS.CASING_MATERIAL_CODE  sorted by range ]]></name>
+		<description><![CDATA[CASINGS.CASING_MATERIAL_CODE values, grouped and sorted by the numeric range]]></description>
+		<tooltip><![CDATA[]]></tooltip>
+		<drillclass><![CDATA[null]]></drillclass>
+		<CustomValues>
+			<TYPE>horizontal</TYPE>
+		</CustomValues>
+		<query>
+			<sql><![CDATA[SELECT DISTINCT WELLS.WELLS_CASINGS.CASING_MATERIAL_CODE, COUNT(*)
+FROM WELLS.WELLS_CASINGS
+GROUP BY WELLS.WELLS_CASINGS.CASING_MATERIAL_CODE
+order by WELLS.WELLS_CASINGS.CASING_MATERIAL_CODE]]></sql>
+		</query>
+	</display>
+	<display id="3e35358c-015d-1000-8007-8e2290254aab" type="" style="Table" enable="true">
+		<name><![CDATA[WELLS_WELLS.LINER_MATERIAL_CODE]]></name>
+		<description><![CDATA[WELLS.LINER_MATERIAL_CODE values, grouped and sorted]]></description>
+		<tooltip><![CDATA[]]></tooltip>
+		<drillclass><![CDATA[null]]></drillclass>
+		<CustomValues>
+			<TYPE>horizontal</TYPE>
+		</CustomValues>
+		<query>
+			<sql><![CDATA[SELECT DISTINCT WELLS.WELLS_WELLS.LINER_MATERIAL_CODE, COUNT(*)
+FROM WELLS.WELLS_WELLS
+GROUP BY  WELLS.WELLS_WELLS.LINER_MATERIAL_CODE]]></sql>
+		</query>
+	</display>
+</folder>
+</displays>

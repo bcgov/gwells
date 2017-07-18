@@ -17,6 +17,7 @@
  *      released the mouse button.
  *  - Display an ESRI MapServer layer as a base layer.
  *  - Display an array of WMS tile layers as overlays.
+ *  - Draw a static rectangle around wells supplied via the drawAndFitBounds() method.
  * The map is able to pan and zoom by default, but this behaviour can be disabled by passing appropriate booleans. Note that if zooming is allowed,
  * the map will always zoom into and out of the centre of the map, regardless if the zoom event arises from zoom buttons or the mouse wheel. Also,
  * the constructor allows the map to set its zoom levels, as well as the initial centre or a bounding box to fit (precisely one of these is required 
@@ -88,9 +89,6 @@ function WellsMap(options) {
     // The map's maximum bounds. This should be a Leaflet LatLngBounds object.
     var _maxBounds = null;
 
-    // The map's maximum zoom level (i.e., the furthest the map can be zoomed in).
-    var _maxZoom = null;
-
     // An object containing a pushpin marker and a data schematic for a particular well. This indicates a single well on the screen that may be editable.
     // The object conforms to:
     // {
@@ -119,6 +117,9 @@ function WellsMap(options) {
 
     // The rectangle to draw on the map during an identifyWells operation.
     var _identifyWellsRectangle = null;
+
+    // The rectangle to draw when displaying wells from drawAndFitBounds()
+    var _drawAndFitBoundsRectangle = null;
 
     // The starting corner of the identifyWellsRectangle
     var _startCorner = null;
@@ -200,8 +201,8 @@ function WellsMap(options) {
         _identifyWellsRectangle.addTo(_leafletMap);
     };
 
-    // Handles the mousedown event during the identifyWells operation. Specifically, this function disables map dragging 
-    // and sets the starting corner of the rectangle to be drawn, as well as subscribing the map to _mouseMoveForIdentifyWellsEvent.
+    // Handles the mousedown event during the identifyWells operation. Specifically, and sets the starting corner of
+    // the rectangle to be drawn, as well as subscribing the map to _mouseMoveForIdentifyWellsEvent.
     var _mouseDownForIdentifyWellsEvent = function (e) {
         _leafletMap.dragging.disable();
         _startCorner = e.latlng;
@@ -217,6 +218,7 @@ function WellsMap(options) {
 
         _leafletMap.off('mousedown', _mouseDownForIdentifyWellsEvent);
         _leafletMap.off('mouseup', _mouseUpForIdentifyWellsEvent);
+        _leafletMap.off('mouseout', _mouseUpForIdentifyWellsEvent);
         _leafletMap.off('mousemove', _mouseMoveForIdentifyWellsEvent);
         if (_exists(_identifyWellsRectangle)) {
             _leafletMap.removeLayer(_identifyWellsRectangle);
@@ -491,17 +493,39 @@ function WellsMap(options) {
         }
     };
 
-    // Displays wells and zooms to the bounding box to see all displayed wells. Note
-    // the wells must have valid latitude and longitude data.
-    var drawAndZoom = function (wells) {
+    // Displays wells and zooms to the bounding box to see all displayed wells.
+    // limit of wells data.
+    // Note the wells must have valid latitude and longitude data.
+    var drawAndFitBounds = function (wells) {
         if (!_exists(_leafletMap) || !_exists(wells) || !_isArray(wells)) {
             return;
         }
+        if (_exists(_drawAndFitBoundsRectangle)) {
+            _leafletMap.removeLayer(_drawAndFitBoundsRectangle);
+            _drawAndFitBoundsRectangle = null;
+        }
         _drawWells(wells);
+
+        // Once wells are drawn, we draw a (static) rectangle that encompasses them, with a bit of
+        // a padded buffer to include wells on the edges of the rectangle.
+        var buffer = 0.00005;
+        var padding = 0.01;
+        
+        // With the above constants, we get the bounds of the _wellMarkers and pad them with the buffer and padding.
         var markerBounds = L.featureGroup(_wellMarkers).getBounds();
-        _leafletMap.fitBounds(markerBounds,{
-            maxZoom: _maxZoom || _leafletMap.getMaxZoom()
+        var northWestCorner = L.latLng(markerBounds.getNorthWest().lat + buffer, markerBounds.getNorthWest().lng - buffer);
+        var southEastCorner = L.latLng(markerBounds.getSouthEast().lat - buffer, markerBounds.getSouthEast().lng + buffer);
+        markerBounds = L.latLngBounds([northWestCorner, southEastCorner]).pad(padding);
+
+        // Draw the new rectangle to enclose the markers.
+        _drawAndFitBoundsRectangle = L.rectangle(markerBounds, {
+            fillOpacity: 0, // The fill should be transparent.
+            interactive: false // Users should click through the rectangle to the markers.
         });
+        _drawAndFitBoundsRectangle.addTo(_leafletMap);
+
+        // Now that the rectangle is drawn, fit the map to it.
+        _leafletMap.fitBounds(markerBounds);
     };
 
     // Starts the identifyWells operation. This operation comprises several events, generally initiated when a user clicks
@@ -522,6 +546,7 @@ function WellsMap(options) {
         }
         _leafletMap.on('mousedown', _mouseDownForIdentifyWellsEvent);
         _leafletMap.on('mouseup', _mouseUpForIdentifyWellsEvent);
+        _leafletMap.on('mouseout', _mouseUpForIdentifyWellsEvent);
     };
 
     /** IIFE for construction of a WellsMap */
@@ -590,13 +615,17 @@ function WellsMap(options) {
             var details = wellPushpinInit.wellDetails;
             placeWellPushpin([wellPushpinInit.lat, wellPushpinInit.long], details);
         }
+        
+        // TODO: Settle attribution (possibly even external to the map)
+        // Position of the attribution control
+        //_leafletMap.attributionControl.setPosition('topright');
     }(options));
 
     // The public members and methods of a WellsMap.
     return {
         placeWellPushpin: placeWellPushpin,
         removeWellPushpin: removeWellPushpin,
-        drawAndZoom: drawAndZoom,
+        drawAndFitBounds: drawAndFitBounds,
         startIdentifyWells: startIdentifyWells
     };
 }

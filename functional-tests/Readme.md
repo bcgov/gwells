@@ -70,8 +70,10 @@ As mentioned above this framework leverages the Page Object Model Pattern to red
 Each page you would like to be able Assertions on need to be defined as follows:
 ```
 class AccountBalance extends Page {
+
     static url = '<url>'
     static at = {title == "<page title>"}
+
 }
 ```
 
