@@ -377,6 +377,7 @@
                                       "secretKeyRef" : {
                                         "name" : "sonarqube-secrets",
                                         "key" : "database-password"
+										}
                                     }                        
 								},
 								{
@@ -385,6 +386,7 @@
                                       "secretKeyRef" : {
                                         "name" : "sonarqube-secrets",
                                         "key" : "database-user"
+										}
                                     }                        
 								}
 							],
