@@ -151,7 +151,8 @@
           padding: 0.05 // Margin beyond extremes to pad the bounds with, as a ratio of the total bounding box.
       },
       wellPushpinInit: null, // Will be set in $(document).ready(), if lat/long fields are populated
-      wellPushpinMoveCallback: pushpinMoveCallback
+      wellPushpinMoveCallback: pushpinMoveCallback,
+      externalAttributionNodeId: 'attribution' // The ID of the external node to contain the attribution.
   };
 
   // Sets the latitude and longitude fields programmatically, rounding to
