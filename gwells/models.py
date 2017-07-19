@@ -561,7 +561,9 @@ class Well(AuditModel):
         db_table = 'gwells_well'
 
     def __str__(self):
-        return '%d %s' % (self.well_tag_number, self.street_address)
+        if self.well_tag_number:
+            return '%d %s' % (self.well_tag_number, self.street_address)
+            return 'No well tag number %s' % (self.street_address)
 
     # Custom JSON serialisation for Wells. Expand as needed.
     def as_dict(self):
@@ -687,7 +689,10 @@ class ActivitySubmission(AuditModel):
         db_table = 'gwells_activity_submission'
 
     def __str__(self):
-        return '%d %s %s' % (self.well_tag_number, self.well_activity_type.code, self.street_address)
+        if self.filing_number:
+            return '%s %d %s %s' % (self.activity_submission_guid, self.filing_number, self.well_activity_type.code, self.street_address)
+        else:
+            return '%s %s' % (self.activity_submission_guid, self.street_address)
 
 
 
