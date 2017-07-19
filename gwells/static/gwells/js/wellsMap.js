@@ -60,7 +60,8 @@
  *   },
  *   wellPushpinMoveCallback?: function, // Function to call when the map's wellPushpin moves
  *   identifyWellsStartCallback?: function, // Function to call when an identifyWells operation is started
- *   identifyWellsEndCallback?: function // Function to call when an identifyWells operation ends
+ *   identifyWellsEndCallback?: function, // Function to call when an identifyWells operation ends
+ *   externalAttributionNodeId?: string // ID of the DOM node (exterior to the map) where the map's attribution will be displayed.
  * }
  */
 function WellsMap(options) {
@@ -615,10 +616,11 @@ function WellsMap(options) {
             var details = wellPushpinInit.wellDetails;
             placeWellPushpin([wellPushpinInit.lat, wellPushpinInit.long], details);
         }
-        
-        // TODO: Settle attribution (possibly even external to the map)
-        // Position of the attribution control
-        //_leafletMap.attributionControl.setPosition('topright');
+
+        // If given an external DOM node to display the map's attribution, hook it up here.
+        if (_exists(options.externalAttributionNodeId)) {
+           $("#" + options.externalAttributionNodeId).append(_leafletMap.attributionControl.getContainer());
+        }
     }(options));
 
     // The public members and methods of a WellsMap.
