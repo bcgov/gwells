@@ -20,34 +20,38 @@ node('maven') {
            echo "SONARQUBE_URL: ${SONARQUBE_URL}"
 
            dir('sonar-runner') {
-            sh returnStdout: true, script: './gradlew sonarqube -Dsonar.host.url=${SONARQUBE_URL} -Dsonar.verbose=true --stacktrace --info  -Dsonar.sources=..'
+            sh returnStdout: true, script: "./gradlew sonarqube -Dsonar.host.url=${SONARQUBE_URL} -Dsonar.verbose=true --stacktrace --info  -Dsonar.sources=.."
         }
     }
-}
-
-stage('build') {
+	stage('build') {
 	 echo "Building..."
 	 openshiftBuild bldCfg: 'gwells', showBuildLogs: 'true'
 	 openshiftTag destStream: 'gwells', verbose: 'true', destTag: '$BUILD_ID', srcStream: 'gwells', srcTag: 'latest'
 	 openshiftTag destStream: 'gwells', verbose: 'true', destTag: 'dev', srcStream: 'gwells', srcTag: 'latest'
-}
-
-node('maven'){
-   stage('validation') {
+    }
+	
+	stage('validation') {
           dir('functional-tests'){
                 // sh './gradlew --debug --stacktrace phantomJsTest'
       }
    }
 }
 
+
 stage('deploy-test') {
   input "Deploy to test?"
-  openshiftTag destStream: 'gwells', verbose: 'true', destTag: 'test', srcStream: 'gwells', srcTag: '$BUILD_ID'
+  
+  node('maven'){
+     openshiftTag destStream: 'gwells', verbose: 'true', destTag: 'test', srcStream: 'gwells', srcTag: '$BUILD_ID'
+  }
 }
 
 stage('deploy-prod') {
   input "Deploy to prod?"
-  openshiftTag destStream: 'gwells', verbose: 'true', destTag: 'prod', srcStream: 'gwells', srcTag: '$BUILD_ID'
+  node('maven'){
+     openshiftTag destStream: 'gwells', verbose: 'true', destTag: 'prod', srcStream: 'gwells', srcTag: '$BUILD_ID'
+  }
+  
 }
 
 
