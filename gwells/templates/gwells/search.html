@@ -28,6 +28,7 @@ Use <a href="#">Advanced Search</a> for additional search options
         <br />
         <div class="row">
             <div aria-label="A map associated with GWELLS Search. All well information in this map is accessible via the table of well results that opens below the search form when a search succeeds." id="search-map" class="col-md-7"></div>
+            <div id="attribution"></div>
         </div>
     </div>
  </div>
@@ -156,6 +157,9 @@ Use <a href="#">Advanced Search</a> for additional search options
 {% block jqscript_block %}
 <script>
     var searchMap = null;
+    var searchMapNodeId = 'search-map';
+    var attribNode = 'attribution'; // The ID of the external node to contain the attribution.
+    
     // Options for creating the searchMap. This map instance has the ability to drive search queries via the
     // startIdentifyWellsOperation, which allows a user to draw a rectangle, and the endIdentifyWellsOperation,
     // which bundles opposite corners of this rectangle into the form before submitting it for the server
@@ -164,7 +168,7 @@ Use <a href="#">Advanced Search</a> for additional search options
     // Wells can be clicked to display a subset of their tabulated information in a popup directly on the map.
     var searchMapOptions = {
         // The ID of the addMap div.
-        mapNodeId: 'search-map',
+        mapNodeId: searchMapNodeId,
         // Minimum zoom level of the map (i.e., how far it can be zoomed out)
         minZoom: 4,
         // Maximum zoom of the map (i.e., how far it can be zoomed in)
@@ -194,7 +198,8 @@ Use <a href="#">Advanced Search</a> for additional search options
             }        
         ],
         identifyWellsStartCallback: identifyWellsStartCallback, 
-        identifyWellsEndCallback: identifyWellsEndCallback    
+        identifyWellsEndCallback: identifyWellsEndCallback,
+        externalAttributionNodeId: attribNode 
     };
 
     // Hard-coded names for the hidden lat-long fields that delineate a
@@ -212,14 +217,14 @@ Use <a href="#">Advanced Search</a> for additional search options
     // We want to alter the map to have crosshairs during identifyWells,
     // as well as disabling the button until the operation is over.
     function identifyWellsStartCallback() {
-        $("#search-map").addClass('identify-wells-operation');
+        $("#"+searchMapNodeId).addClass('identify-wells-operation');
         $("#identify-wells-btn").prop("disabled", true);
     }
 
     // Remove the crosshairs from the map, re-enable the button, gather
     // the corners of the rectangle, and submit the form.
     function identifyWellsEndCallback(startLatLong, endLatLong) {
-        $("#search-map").removeClass('identify-wells-operation');
+        $("#"+searchMapNodeId).removeClass('identify-wells-operation');
         $("#identify-wells-btn").prop("disabled", false);
         if (startLatLong && endLatLong) {
             var startLatLongString = startLatLong.lat + latLongDelimiter + startLatLong.lng;
