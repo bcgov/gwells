@@ -112,7 +112,8 @@ FORMS = [('type_and_class', ActivitySubmissionTypeAndClassForm),
          ('location', ActivitySubmissionLocationForm),
          ('gps', ActivitySubmissionGpsForm),
          ('lithology', ActivitySubmissionLithologyFormSet),
-         ('casing', ActivitySubmissionSurfaceSealForm),
+         ('casing', ActivitySubmissionCasingFormSet),
+         ('surface_seal', ActivitySubmissionSurfaceSealForm),
         ]
 
 TEMPLATES = {'type_and_class': 'gwells/activity_submission_form.html',
@@ -121,6 +122,7 @@ TEMPLATES = {'type_and_class': 'gwells/activity_submission_form.html',
              'gps': 'gwells/activity_submission_form.html',
              'lithology': 'gwells/activity_submission_lithology_form.html',
              'casing': 'gwells/activity_submission_casing_form.html',
+             'surface_seal': 'gwells/activity_submission_form.html',
             }
 
 
@@ -141,9 +143,6 @@ class ActivitySubmissionWizardView(SessionWizardView):
                 context['water_supply_well_class_guid'] = water_supply_class.well_class_guid
             except Exception as e:
                 context['water_supply_well_class_guid'] = None
-        elif self.steps.current == 'casing':
-            formset = ActivitySubmissionCasingFormSet()
-            context.update({'formset': formset})
         return context
 
     def get_form_instance(self, step):
@@ -151,6 +150,20 @@ class ActivitySubmissionWizardView(SessionWizardView):
             self.instance = ActivitySubmission()
         return self.instance
     
+    def get_form_initial(self, step):
+        initial = {}
+
+        if step == 'surface_seal':
+            casing_data = self.get_cleaned_data_for_step('casing')
+            initial.update({'casing_exists': False})
+            if casing_data:
+                for casing in casing_data:
+                    if casing:
+                        initial.update({'casing_exists': True})
+                        break
+        
+        return initial
+
     def done(self, form_list, form_dict, **kwargs):
         submission = self.instance
 
@@ -167,8 +180,16 @@ class ActivitySubmissionWizardView(SessionWizardView):
                 lith.activity_submission = None
                 lith.well = w
                 lith.save()
+            casing_list = form_dict['casing'].save()
+            casing_list = list(casing_list)
+            for casing in casing_list:
+                casing.pk = None
+                casing.activity_submission = None
+                casing.well = w
+                casing.save()
         else:
             submission.save()
             lithology_list = form_dict['lithology'].save()
+            casing_list = form_dict['casing'].save()
 
         return HttpResponseRedirect('/submission/')

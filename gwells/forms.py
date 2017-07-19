@@ -640,7 +640,31 @@ class CasingForm(forms.ModelForm):
 
     def clean(self):
         cleaned_data = super(CasingForm, self).clean()
-        
+
+        casing_type = cleaned_data.get('casing_type')
+        casing_material = cleaned_data.get('casing_material')
+        casing_from = cleaned_data.get('casing_from')
+        casing_to = cleaned_data.get('casing_to')
+        errors = []
+
+        try:
+            if casing_type != CasingType.objects.get(code='OPEN HOLE') and not casing_material:#TODO
+                self.add_error('casing_material', 'This field is required.')
+        except Exception as e:
+            errors.append('Configuration error: Open Hole Casing Type does not exist, please contact the administrator.')
+
+        try:
+            if casing_type == CasingType.objects.get(code='OPEN HOLE') and casing_material:#TODO
+                self.add_error('casing_material', 'Open Hole should not have a casing material.')
+        except Exception as e:
+            errors.append('Configuration error: Open Hole Casing Type does not exist, please contact the administrator.')
+
+        if casing_from and casing_to and casing_to < casing_from:
+            errors.append('To must be greater than or equal to From.')
+
+
+        if len(errors) > 0:
+            raise forms.ValidationError(errors)        
 
         return cleaned_data
 
@@ -655,28 +679,56 @@ class ActivitySubmissionSurfaceSealForm(forms.ModelForm):
         self.helper = FormHelper()
         self.helper.form_tag = False
         self.helper.disable_csrf = True
+        self.helper.render_hidden_fields = True
         self.helper.layout = Layout(
-            Div(
-                Div('surface_seal_material', css_class='col-md-3'),
-                Div(AppendedText('surface_seal_depth', 'ft'), css_class='col-md-2'),
-                Div(AppendedText('surface_seal_thickness', 'in'), css_class='col-md-2'),
-                css_class='row',
-            ),
-            Div(
-                Div('surface_seal_method', css_class='col-md-3'),
-                css_class='row',
-            ),
-            Div(
-                Div(HTML('&nbsp;'), css_class='col-md-12'),
-                css_class='row',
-            ),
-            Div(
-                Div('backfill_type', css_class='col-md-3'),
-                Div(AppendedText('backfill_depth', 'ft'), css_class='col-md-2'),
-                css_class='row',
-            ),
+            Fieldset(
+                'Surface Seal and Backfill Information',
+                Div(
+                    Div('surface_seal_material', css_class='col-md-3'),
+                    Div(AppendedText('surface_seal_depth', 'ft'), css_class='col-md-2'),
+                    Div(AppendedText('surface_seal_thickness', 'in'), css_class='col-md-2'),
+                    css_class='row',
+                ),
+                Div(
+                    Div('surface_seal_method', css_class='col-md-3'),
+                    css_class='row',
+                ),
+                Div(
+                    Div(HTML('&nbsp;'), css_class='col-md-12'),
+                    css_class='row',
+                ),
+                Div(
+                    Div('backfill_type', css_class='col-md-3'),
+                    Div(AppendedText('backfill_depth', 'ft'), css_class='col-md-2'),
+                    css_class='row',
+                ),
+            )
         )
         super(ActivitySubmissionSurfaceSealForm, self).__init__(*args, **kwargs)
+
+    def clean_surface_seal_material(self):
+        surface_seal_material = self.cleaned_data.get('surface_seal_material') 
+
+        if self.initial['casing_exists'] and not surface_seal_material:
+            raise forms.ValidationError('This field is required when casing specified.');
+
+    def clean_surface_seal_depth(self):
+        surface_seal_depth = self.cleaned_data.get('surface_seal_depth') 
+
+        if self.initial['casing_exists'] and not surface_seal_depth:
+            raise forms.ValidationError('This field is required when casing specified.');
+
+    def clean_surface_seal_thickness(self):
+        surface_seal_thickness = self.cleaned_data.get('surface_seal_thickness') 
+
+        if self.initial['casing_exists'] and not surface_seal_thickness:
+            raise forms.ValidationError('This field is required when casing specified.');
+
+    def clean_surface_seal_method(self):
+        surface_seal_method = self.cleaned_data.get('surface_seal_method') 
+
+        if self.initial['casing_exists'] and not surface_seal_method:
+            raise forms.ValidationError('This field is required when casing specified.');
 
     class Meta:
         model = ActivitySubmission
