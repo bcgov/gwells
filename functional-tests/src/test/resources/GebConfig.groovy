@@ -12,11 +12,11 @@ import org.openqa.selenium.phantomjs.PhantomJSDriver
 import org.openqa.selenium.remote.DesiredCapabilities
 
 waiting {
-	timeout = 30
+	timeout = 15
 	retryInterval = 0.25
 }
 
-atCheckWaiting = [30, 025]
+atCheckWaiting = [15, 025]
 
 environments {
 
@@ -44,8 +44,9 @@ environments {
 //
 // phantomJs --> “./gradlew phantomJsTest”   (headless)
 // chrome    --> "./gradlew chromeTest"
-baseUrl = "http://tfrs-mem-tfrs-dev.pathfinder.gov.bc.ca/"
+baseUrl = "http://gwells-dev.pathfinder.gov.bc.ca"
 
+baseNavigatorWaiting = true
 
 println """
             .  .       .

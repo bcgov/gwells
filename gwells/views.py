@@ -19,7 +19,8 @@ from django.views.generic.edit import FormView
 #from django.utils import timezone
 from formtools.wizard.views import SessionWizardView
 from .models import WellYieldUnit, Well, ActivitySubmission, WellClass
-from .forms import SearchForm, ActivitySubmissionTypeAndClassForm, WellOwnerForm, ActivitySubmissionLocationForm, ActivitySubmissionGpsForm, ActivitySubmissionLithologyFormSet
+from .forms import SearchForm, ActivitySubmissionTypeAndClassForm, WellOwnerForm, ActivitySubmissionLocationForm, ActivitySubmissionGpsForm
+from .forms import ActivitySubmissionLithologyFormSet, ActivitySubmissionCasingFormSet, ActivitySubmissionSurfaceSealForm
 import json
 from django.core.serializers.json import DjangoJSONEncoder
 
@@ -37,6 +38,7 @@ def well_search(request):
     well_results = None
     well_results_overflow = None
     well_results_json = '[]'
+    lat_long_box = '{}'
 
     if request.method == 'GET' and 'well' in request.GET:
         form = SearchForm(request.GET)
@@ -48,17 +50,23 @@ def well_search(request):
   
     if well_results:
         if len(well_results) > SearchForm.WELL_RESULTS_LIMIT:
-            well_results_overflow = ('Query returned more than %d wells. Please refine your search.' % SearchForm.WELL_RESULTS_LIMIT)
+            well_results_overflow = ('Query returned more than %d wells. Please refine your search or select a smaller area to look for wells in.' % SearchForm.WELL_RESULTS_LIMIT)
             well_results = None
         else:
             well_results_json = json.dumps(
                 [well.as_dict() for well in well_results],
                 cls=DjangoJSONEncoder)
+        start_lat_long = form.cleaned_data.get('start_lat_long')
+        end_lat_long = form.cleaned_data.get('end_lat_long')
+        lat_long_box = json.dumps(
+            {'startCorner': start_lat_long, 'endCorner': end_lat_long}, 
+            cls=DjangoJSONEncoder)
 
     return render(request, 'gwells/search.html',
                   {'form': form, 'well_list': well_results,
                    'too_many_wells': well_results_overflow,
-                   'wells_json': well_results_json
+                   'wells_json': well_results_json,
+                   'lat_long_box': lat_long_box
                   })
 
 
@@ -111,6 +119,8 @@ FORMS = [('type_and_class', ActivitySubmissionTypeAndClassForm),
          ('location', ActivitySubmissionLocationForm),
          ('gps', ActivitySubmissionGpsForm),
          ('lithology', ActivitySubmissionLithologyFormSet),
+         ('casing', ActivitySubmissionCasingFormSet),
+         ('surface_seal', ActivitySubmissionSurfaceSealForm),
         ]
 
 TEMPLATES = {'type_and_class': 'gwells/activity_submission_form.html',
@@ -118,6 +128,8 @@ TEMPLATES = {'type_and_class': 'gwells/activity_submission_form.html',
              'location': 'gwells/activity_submission_form.html',
              'gps': 'gwells/activity_submission_form.html',
              'lithology': 'gwells/activity_submission_lithology_form.html',
+             'casing': 'gwells/activity_submission_casing_form.html',
+             'surface_seal': 'gwells/activity_submission_form.html',
             }
 
 
@@ -138,10 +150,6 @@ class ActivitySubmissionWizardView(SessionWizardView):
                 context['water_supply_well_class_guid'] = water_supply_class.well_class_guid
             except Exception as e:
                 context['water_supply_well_class_guid'] = None
-       # elif self.steps.current == 'lithology':
-       #     formset = ActivitySubmissionLithologyFormSet()
-       #     helper = LithologyFormSetHelper()
-       #     context.update({'formset': formset, 'helper': helper})
         return context
 
     def get_form_instance(self, step):
@@ -149,12 +157,26 @@ class ActivitySubmissionWizardView(SessionWizardView):
             self.instance = ActivitySubmission()
         return self.instance
     
+    def get_form_initial(self, step):
+        initial = {}
+
+        if step == 'surface_seal':
+            casing_data = self.get_cleaned_data_for_step('casing')
+            initial.update({'casing_exists': False})
+            if casing_data:
+                for casing in casing_data:
+                    if casing:
+                        initial.update({'casing_exists': True})
+                        break
+        
+        return initial
+
     def done(self, form_list, form_dict, **kwargs):
         submission = self.instance
 
         if submission.well_activity_type.code == 'CON' and not submission.well:
             #TODO
-            w = submission.createWell()
+            w = submission.create_well()
             w.save()
             submission.well = w
             submission.save()
@@ -165,8 +187,16 @@ class ActivitySubmissionWizardView(SessionWizardView):
                 lith.activity_submission = None
                 lith.well = w
                 lith.save()
+            casing_list = form_dict['casing'].save()
+            casing_list = list(casing_list)
+            for casing in casing_list:
+                casing.pk = None
+                casing.activity_submission = None
+                casing.well = w
+                casing.save()
         else:
             submission.save()
             lithology_list = form_dict['lithology'].save()
+            casing_list = form_dict['casing'].save()
 
         return HttpResponseRedirect('/submission/')
