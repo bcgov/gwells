@@ -18,7 +18,7 @@ from crispy_forms.layout import Layout, Fieldset, Div, Submit, Hidden, HTML, Fie
 from crispy_forms.bootstrap import FormActions, AppendedText, InlineRadios
 from django.forms.models import inlineformset_factory
 from .search import Search
-from .models import ActivitySubmission, WellActivityType, ProvinceState, DrillingMethod, LithologyDescription, LithologyMoisture, Casing
+from .models import ActivitySubmission, WellActivityType, ProvinceState, DrillingMethod, LithologyDescription, LithologyMoisture, Casing, CasingType
 from datetime import date
 
 class SearchForm(forms.Form):
@@ -642,13 +642,13 @@ class CasingForm(forms.ModelForm):
         errors = []
 
         try:
-            if casing_type != CasingType.objects.get(code='OPEN HOLE') and not casing_material:#TODO
+            if casing_type != CasingType.objects.get(code='OPEN') and not casing_material:
                 self.add_error('casing_material', 'This field is required.')
         except Exception as e:
             errors.append('Configuration error: Open Hole Casing Type does not exist, please contact the administrator.')
 
         try:
-            if casing_type == CasingType.objects.get(code='OPEN HOLE') and casing_material:#TODO
+            if casing_type == CasingType.objects.get(code='OPEN') and casing_material:
                 self.add_error('casing_material', 'Open Hole should not have a casing material.')
         except Exception as e:
             errors.append('Configuration error: Open Hole Casing Type does not exist, please contact the administrator.')
