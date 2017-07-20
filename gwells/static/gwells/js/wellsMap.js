@@ -59,6 +59,11 @@
  *      }
  *   },
  *   wellPushpinMoveCallback?: function, // Function to call when the map's wellPushpin moves
+ *   // Indicates the map should be drawn with an 'identify' rectangle to start with. Overwritten by the identifyWellsOperation.
+ *   identifyWellsRectangle?: {
+ *      startCorner: string, // Comma-separated string of theform 'lat,long' denoting the rectangle's starting corner
+ *      endCorner: string // Comma-separated string of theform 'lat,long' denoting the rectangle's ending corner
+ *   },
  *   identifyWellsStartCallback?: function, // Function to call when an identifyWells operation is started
  *   identifyWellsEndCallback?: function, // Function to call when an identifyWells operation ends
  *   externalAttributionNodeId?: string // ID of the DOM node (exterior to the map) where the map's attribution will be displayed.
@@ -118,9 +123,6 @@ function WellsMap(options) {
 
     // The rectangle to draw on the map during an identifyWells operation.
     var _identifyWellsRectangle = null;
-
-    // The rectangle to draw when displaying wells from drawAndFitBounds()
-    var _drawAndFitBoundsRectangle = null;
 
     // The starting corner of the identifyWellsRectangle
     var _startCorner = null;
@@ -362,6 +364,37 @@ function WellsMap(options) {
         return contentString;
     };
 
+    // Draws an initial identifyWellsRectangle, if the appropriate latLongBox was supplied to the map's initialisation.
+    // The latLongBox is of type {startCorner: string, endCorner: string}, where the corners are comma-separated pairs
+    // of latitude and longitude denoting extreme corners of the rectangle to be drawn.
+    var _drawInitialIdentifyWellsRectangle = function (latLongBox) {
+        if (!_leafletMap) {
+            return;
+        }
+        // We assume the delimiter is a comma for convenience.
+        var delimiter = ",";
+        var startLatLongString = latLongBox.startCorner;
+        var endLatLongString = latLongBox.endCorner;
+        if (startLatLongString  && endLatLongString && typeof startLatLongString === "string" && typeof endLatLongString === "string") {
+            // latLongBox has the appropriate data, so we parse it into arrays of floats.
+            var startLatLong = startLatLongString.split(delimiter).map(function (val) {
+                return parseFloat(val);
+            });
+            var endLatLong = endLatLongString.split(delimiter).map(function (val) {
+                return parseFloat(val);
+            });
+            // We turn the floats into Leaflet latLng objects before drawing the rectangle.
+            var startCorner = L.latLng(startLatLong);
+            var endCorner = L.latLng(endLatLong);
+            if (_identifyWellsRectangle) {
+                _leafletMap.removeLayer(_identifyWellsRectangle);
+            }
+            _identifyWellsRectangle = L.rectangle([startCorner, endCorner], {
+                fillOpacity: 0 // The rectangle should have no fill.
+            }).addTo(_leafletMap);
+        }
+    };
+
     // Draws wells that can be drawn. Currently a well cannot be drawn if it is associated with the wellPushpin.
     var _drawWells = function (wells) {
         // First we clear any extant markers
@@ -501,10 +534,6 @@ function WellsMap(options) {
         if (!_exists(_leafletMap) || !_exists(wells) || !_isArray(wells)) {
             return;
         }
-        if (_exists(_drawAndFitBoundsRectangle)) {
-            _leafletMap.removeLayer(_drawAndFitBoundsRectangle);
-            _drawAndFitBoundsRectangle = null;
-        }
         _drawWells(wells);
 
         // Once wells are drawn, we draw a (static) rectangle that encompasses them, with a bit of
@@ -518,14 +547,7 @@ function WellsMap(options) {
         var southEastCorner = L.latLng(markerBounds.getSouthEast().lat - buffer, markerBounds.getSouthEast().lng + buffer);
         markerBounds = L.latLngBounds([northWestCorner, southEastCorner]).pad(padding);
 
-        // Draw the new rectangle to enclose the markers.
-        _drawAndFitBoundsRectangle = L.rectangle(markerBounds, {
-            fillOpacity: 0, // The fill should be transparent.
-            interactive: false // Users should click through the rectangle to the markers.
-        });
-        _drawAndFitBoundsRectangle.addTo(_leafletMap);
-
-        // Now that the rectangle is drawn, fit the map to it.
+        // Now that we have the right bounds, fit the map to them.
         _leafletMap.fitBounds(markerBounds);
     };
 
@@ -606,11 +628,15 @@ function WellsMap(options) {
             _loadWmsLayers(options.wmsLayers);
         }
 
-        // Callbacks
+        // Callbacks        
         _wellPushpinMoveCallback = options.wellPushpinMoveCallback || null;
         _identifyWellsStartCallback = options.identifyWellsStartCallback || null;
         _identifyWellsEndCallback = options.identifyWellsEndCallback || null;
 
+        // Initial graphics
+        if (_exists(options.identifyWellsRectangle)) {
+            _drawInitialIdentifyWellsRectangle(options.identifyWellsRectangle);
+        }
         var wellPushpinInit = options.wellPushpinInit || null;
         if (_exists(wellPushpinInit) && _exists(wellPushpinInit.lat) && _exists(wellPushpinInit.long)) {
             var details = wellPushpinInit.wellDetails;

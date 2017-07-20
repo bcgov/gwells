@@ -88,7 +88,7 @@ class SearchForm(forms.Form):
                 # start_lat_long and end_lat_long are programatically generated
                 # based on an identifyWells operation on the client.
                 Hidden('start_lat_long', ''),
-                Hidden('end_lat_long', '')
+                Hidden('end_lat_long', ''),
             ),
             FormActions(
                 Submit('s', 'Search'),
