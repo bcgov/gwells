@@ -9,6 +9,7 @@
  * This module depends on JQuery.
  */
 var CoordSync = (function () {
+'use strict';
 /** Properties and convenience methods */
 
 // Convenience method to check that a property exists and has a defined value.
