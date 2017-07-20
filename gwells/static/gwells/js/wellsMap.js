@@ -14,10 +14,9 @@
  *      wells whenever the pushpin is moved.
  *  - Allow the user to draw a rectangle via the public startIdentifyWells() method. If the map init supplies an identifyWellsEndCallback,
  *      the map advertises a pair of latitude/longitude coordinates corresponding to extreme corners of the rectangle as it was when the user
- *      released the mouse button.
+ *      released the mouse button. If the corners of a rectangle are passed to the map, the map initialises fit to this rectangle.
  *  - Display an ESRI MapServer layer as a base layer.
  *  - Display an array of WMS tile layers as overlays.
- *  - Draw a static rectangle around wells supplied via the drawAndFitBounds() method.
  * The map is able to pan and zoom by default, but this behaviour can be disabled by passing appropriate booleans. Note that if zooming is allowed,
  * the map will always zoom into and out of the centre of the map, regardless if the zoom event arises from zoom buttons or the mouse wheel. Also,
  * the constructor allows the map to set its zoom levels, as well as the initial centre or a bounding box to fit (precisely one of these is required 
@@ -390,7 +389,8 @@ function WellsMap(options) {
                 _leafletMap.removeLayer(_identifyWellsRectangle);
             }
             _identifyWellsRectangle = L.rectangle([startCorner, endCorner], {
-                fillOpacity: 0 // The rectangle should have no fill.
+                fillOpacity: 0, // The rectangle should have no fill.
+                interactive: false // The rectangle shouldn't interfere with click events.
             }).addTo(_leafletMap);
         }
     };
@@ -527,8 +527,7 @@ function WellsMap(options) {
         }
     };
 
-    // Displays wells and zooms to the bounding box to see all displayed wells.
-    // limit of wells data.
+    // Displays wells and zooms to the _identifyWellsRectangle to see all displayed wells.
     // Note the wells must have valid latitude and longitude data.
     var drawAndFitBounds = function (wells) {
         if (!_exists(_leafletMap) || !_exists(wells) || !_isArray(wells)) {
@@ -546,6 +545,11 @@ function WellsMap(options) {
         var northWestCorner = L.latLng(markerBounds.getNorthWest().lat + buffer, markerBounds.getNorthWest().lng - buffer);
         var southEastCorner = L.latLng(markerBounds.getSouthEast().lat - buffer, markerBounds.getSouthEast().lng + buffer);
         markerBounds = L.latLngBounds([northWestCorner, southEastCorner]).pad(padding);
+
+        // If there is an _identifyWellsRectangle, we should fit the map's bounds to it, instead.
+        if (_exists(_identifyWellsRectangle)) {
+            markerBounds = _identifyWellsRectangle.getBounds();
+        }
 
         // Now that we have the right bounds, fit the map to them.
         _leafletMap.fitBounds(markerBounds);
