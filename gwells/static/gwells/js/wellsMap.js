@@ -137,7 +137,7 @@ function WellsMap(options) {
 
     // Convenience method for checking whether an object is an array.
     var _isArray = function (arr) {
-        return exists (arr) && _exists(arr.constructor) && arr.constructor === Array;
+        return _exists(arr) && _exists(arr.constructor) && arr.constructor === Array;
     };
 
     var _setMaxBounds = function (bounds) {
