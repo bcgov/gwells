@@ -247,9 +247,8 @@ class ActivitySubmissionTypeAndClassForm(forms.ModelForm):
         work_start_date = cleaned_data.get('work_start_date')
         work_end_date = cleaned_data.get('work_end_date')
 
-        if work_start_date and work_end_date:
-            if work_end_date < work_start_date:
-                raise forms.ValidationError('Work End Date cannot be earlier than Work Start Date.')
+        if work_start_date and work_end_date and work_end_date < work_start_date:
+            raise forms.ValidationError('Work End Date cannot be earlier than Work Start Date.')
         return cleaned_data
 
     class Meta:
@@ -352,11 +351,6 @@ class ActivitySubmissionLocationForm(forms.ModelForm):
 
         legal_lot = cleaned_data.get('legal_lot')
         legal_plan = cleaned_data.get('legal_plan')
-        legal_district_lot = cleaned_data.get('legal_district_lot')
-        legal_block = cleaned_data.get('legal_block')
-        legal_section = cleaned_data.get('legal_section')
-        legal_township = cleaned_data.get('legal_township')
-        legal_range = cleaned_data.get('legal_range')
         legal_land_district = cleaned_data.get('legal_land_district')
         legal_provided = legal_lot and legal_plan and legal_land_district
 
