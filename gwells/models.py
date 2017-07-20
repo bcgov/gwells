@@ -644,7 +644,7 @@ class ActivitySubmission(AuditModel):
     
     tracker = FieldTracker()
 
-    def createWell(self):
+    def create_well(self):
         w = Well(well_class = self.well_class)
         w.well_subclass = self.well_subclass
         w.intended_water_use = self.intended_water_use

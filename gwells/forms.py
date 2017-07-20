@@ -247,9 +247,8 @@ class ActivitySubmissionTypeAndClassForm(forms.ModelForm):
         work_start_date = cleaned_data.get('work_start_date')
         work_end_date = cleaned_data.get('work_end_date')
 
-        if work_start_date and work_end_date:
-            if work_end_date < work_start_date:
-                raise forms.ValidationError('Work End Date cannot be earlier than Work Start Date.')
+        if work_start_date and work_end_date and work_end_date < work_start_date:
+            raise forms.ValidationError('Work End Date cannot be earlier than Work Start Date.')
         return cleaned_data
 
     class Meta:
