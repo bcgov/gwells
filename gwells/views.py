@@ -176,7 +176,7 @@ class ActivitySubmissionWizardView(SessionWizardView):
 
         if submission.well_activity_type.code == 'CON' and not submission.well:
             #TODO
-            w = submission.createWell()
+            w = submission.create_well()
             w.save()
             submission.well = w
             submission.save()
