@@ -16,6 +16,10 @@
 \copy gwells_lithology_weathering FROM './gwells_lithology_weathering.csv' HEADER DELIMITER ',' CSV
 \copy gwells_surficial_material   FROM './gwells_surficial_material.csv'   HEADER DELIMITER ',' CSV
 
+\copy gwells_casing_material FROM './gwells_casing_material.csv' HEADER DELIMITER ',' CSV
+\copy gwells_casing_type     FROM './gwells_casing_type.csv'     HEADER DELIMITER ',' CSV
+
+
 CREATE unlogged TABLE IF NOT EXISTS xform_gwells_land_district (
   land_district_guid uuid,
   code               character varying(10),

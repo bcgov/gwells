@@ -35,37 +35,35 @@ The legacy database is WELLS schema of ENVPROD1.NRS.GOV.BC.CA, and was exported 
 The legacy data was exported into human-readable CSV files, and stored outside of GitHub.  This is for both 
 security and storage reasons.  The seqreset.sql script was generated via Django using:
 
-```python manage.py sqlsequencereset gwells > ./database/scripts/seqreset.sql```
+    python manage.py sqlsequencereset gwells > ./database/scripts/seqreset.sql
 
 Consolidate all versioned scripts and CSV files from your local git repo, into that single folder above (e.g. /Users/garywong/tmp/gwells).  For example:
 
-```cp -v ~/projects/gwells/github/database/scripts/*.sql /Users/garywong/tmp/gwells```
+    cp -v ~/projects/gwells/github/database/scripts/*.sql /Users/garywong/tmp/gwells
 
-```cp -v ~/projects/gwells/github/database/code-tables/*.csv  /Users/garywong/tmp/gwells```
+    cp -v ~/projects/gwells/github/database/code-tables/*.csv  /Users/garywong/tmp/gwells
 
 
 1.  Sync all CSV and SQL files to Postgres pod, from that single source directory <a id="rsync-csv"></a> on the developer workstation:
 
-    ```oc rsync /Users/garywong/tmp/gwells postgresql-3-zxo8x:/tmp```
+    oc rsync /Users/garywong/tmp/gwells postgresql-3-zxo8x:/tmp
 
 2.  Remote into Postgres pod (from developer workstation).  Note that the the pod name changew with
 each pod deployment, so get the name first (i.e. *oc get pods*) from the correct project (dev/test/prod):
 
-    ```oc rsh postgresql-3-zxo8x```
+    oc rsh postgresql-3-zxo8x
 
 3.  Once in the the remote shell:
-    ```
+
     cd /tmp/gwells  
     psql -d gwells -U <user>  -f ./truncate-submission-ready-data.sql
     psql -d gwells -U <user>  -f ./load-submission-ready-data.sql
     psql -d gwells -U <user>  -f ./post-load.sql
-    psql -d gwells -U <user>  -f ./seqreset.sql```
+    psql -d gwells -U <user>  -f ./seqreset.sql 
 
 4. Run the psql client to verify the database objects:
 
-    ```
     psql -d gwells -U <user>
-    ```
 
 ## Clear all data from which the live Submit ran
 
@@ -73,10 +71,7 @@ Repeat steps 1-3, and then:
 
 4.  From the remote shell into the Postgres pod:
 
-    ```
     cd /tmp/ 
-    ```
-
-    ```
+    
     psql -d gwells -U <user>  -f ./database/scripts/truncate-submission-ready-data.sql
-    ```
+    
