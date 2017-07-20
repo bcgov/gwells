@@ -75,9 +75,13 @@
     $(function() {
         var diameter = ['2', '3', '4', '6', '8', '10', '12', '14', '16', '18', '20', '22', '24', '36', '48'];
         $('input[id $= "-internal_diameter"]').autocomplete({
-        source: diameter
+            source: diameter
+        });
+        var thickness = ['0.125', '0.188', '0.248', '0.250'];
+        $('input[id $= "-wall_thickness"]').autocomplete({
+            source: thickness
+        });
     });
-  });
     $(function () {
         $('#casingForm tbody tr').formset({
             prefix: '{{ wizard.form.prefix }}'

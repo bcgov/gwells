@@ -563,6 +563,7 @@ class Well(AuditModel):
     def __str__(self):
         if self.well_tag_number:
             return '%d %s' % (self.well_tag_number, self.street_address)
+        else:
             return 'No well tag number %s' % (self.street_address)
 
     # Custom JSON serialisation for Wells. Expand as needed.
@@ -643,7 +644,7 @@ class ActivitySubmission(AuditModel):
     
     tracker = FieldTracker()
 
-    def createWell(self):
+    def create_well(self):
         w = Well(well_class = self.well_class)
         w.well_subclass = self.well_subclass
         w.intended_water_use = self.intended_water_use
@@ -762,7 +763,7 @@ class Casing(AuditModel):
     internal_diameter = models.DecimalField(max_digits=8, decimal_places=3, verbose_name='Diameter', blank=False, validators=[MinValueValidator(Decimal('0.5'))])
     casing_type = models.ForeignKey(CasingType, db_column='casing_type_guid', on_delete=models.CASCADE, verbose_name='Casing Type')
     casing_material = models.ForeignKey(CasingMaterial, db_column='casing_material_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Casing Material')
-    wall_thickness = models.DecimalField(max_digits=6, decimal_places=3, verbose_name='Wall Thickness', blank=False, validators=[MinValueValidator(Decimal('0.5'))])
+    wall_thickness = models.DecimalField(max_digits=6, decimal_places=3, verbose_name='Wall Thickness', blank=False, validators=[MinValueValidator(Decimal('0.01'))])
     drive_shoe = models.BooleanField(default=False, verbose_name='Drive Shoe', choices=((True, 'Yes'), (False, 'No')))
     
     class Meta:
