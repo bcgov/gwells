@@ -107,8 +107,6 @@
   // triggers the change events on the designated latitude and longitude fields. As with all pushpin map instances, the
   // map issues AJAX queries every time the map or the pushpin moves, so that the user always sees surrounding wells, and
   // the map 'forgets' wells that are outside of the bounding box.
-  // TODO: Make the $(document).ready() call fetch the lat/long fields and feed them in as an initial pushpin location, if
-  // present.
   var addMapOptions = {
       // The ID of the addMap div.
       mapNodeId: 'add-map',
@@ -147,13 +145,14 @@
       // Bounding lats and longs of the map, corresponding to the lat/long extremes of BC.
       mapBounds: {
           north:  60.0223,
-          south: 48.2045556,
-          west: -139.0736706,
-          east: -114.0338224,
-          padding: 5 // Margin beyond extremes to pad the bounds with, as a percentage of the total bounding box.
+          south: 48.204556,
+          west: -139.073671,
+          east: -114.033822,
+          padding: 0.05 // Margin beyond extremes to pad the bounds with, as a ratio of the total bounding box.
       },
       wellPushpinInit: null, // Will be set in $(document).ready(), if lat/long fields are populated
-      wellPushpinMoveCallback: pushpinMoveCallback
+      wellPushpinMoveCallback: pushpinMoveCallback,
+      externalAttributionNodeId: 'attribution' // The ID of the external node to contain the attribution.
   };
 
   // Sets the latitude and longitude fields programmatically, rounding to

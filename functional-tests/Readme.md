@@ -13,14 +13,10 @@ Goals:
 
  ----
 
-## Project Background
-The reference implementation of this framework is the Province of British Columbia Transportation Fuel Reporting System (TFRS)
+## Acknowledgement 
+The functional test framework contained here was based on those developed by the BC Government Transportation Fuels Reporting System project, available at the following URL:
 
-Github Repositories: https://github.com/bcgov
-
-TFRS Source Code: https://github.com/bcgov/tfrs
-
-Application Development Environment: http://tfrs-mem-tfrs-dev.pathfinder.gov.bc.ca/
+https://github.com/bcgov/tfrs
 
 ----
 ## Framework Background
@@ -74,8 +70,10 @@ As mentioned above this framework leverages the Page Object Model Pattern to red
 Each page you would like to be able Assertions on need to be defined as follows:
 ```
 class AccountBalance extends Page {
-    static url = 'account-balance'
-    static at = {title == "TFRS Website"}
+
+    static url = '<url>'
+    static at = {title == "<page title>"}
+
 }
 ```
 

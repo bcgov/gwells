@@ -15,10 +15,10 @@ from django import forms
 from django.utils.safestring import mark_safe
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Div, Submit, Hidden, HTML, Field
-from crispy_forms.bootstrap import FormActions, AppendedText
+from crispy_forms.bootstrap import FormActions, AppendedText, InlineRadios
 from django.forms.models import inlineformset_factory
 from .search import Search
-from .models import ActivitySubmission, WellActivityType, ProvinceState, DrillingMethod, LithologyDescription, LithologyMoisture
+from .models import ActivitySubmission, WellActivityType, ProvinceState, DrillingMethod, LithologyDescription, LithologyMoisture, Casing, CasingType
 from datetime import date
 
 class SearchForm(forms.Form):
@@ -88,7 +88,7 @@ class SearchForm(forms.Form):
                 # start_lat_long and end_lat_long are programatically generated
                 # based on an identifyWells operation on the client.
                 Hidden('start_lat_long', ''),
-                Hidden('end_lat_long', '')
+                Hidden('end_lat_long', ''),
             ),
             FormActions(
                 Submit('s', 'Search'),
@@ -247,9 +247,8 @@ class ActivitySubmissionTypeAndClassForm(forms.ModelForm):
         work_start_date = cleaned_data.get('work_start_date')
         work_end_date = cleaned_data.get('work_end_date')
 
-        if work_start_date and work_end_date:
-            if work_end_date < work_start_date:
-                raise forms.ValidationError('Work End Date cannot be earlier than Work Start Date.')
+        if work_start_date and work_end_date and work_end_date < work_start_date:
+            raise forms.ValidationError('Work End Date cannot be earlier than Work Start Date.')
         return cleaned_data
 
     class Meta:
@@ -352,11 +351,6 @@ class ActivitySubmissionLocationForm(forms.ModelForm):
 
         legal_lot = cleaned_data.get('legal_lot')
         legal_plan = cleaned_data.get('legal_plan')
-        legal_district_lot = cleaned_data.get('legal_district_lot')
-        legal_block = cleaned_data.get('legal_block')
-        legal_section = cleaned_data.get('legal_section')
-        legal_township = cleaned_data.get('legal_township')
-        legal_range = cleaned_data.get('legal_range')
         legal_land_district = cleaned_data.get('legal_land_district')
         legal_provided = legal_lot and legal_plan and legal_land_district
 
@@ -424,7 +418,13 @@ class ActivitySubmissionGpsForm(forms.ModelForm):
                         css_class='col-md-8',
                     ),
                     Div(
-                        id='add-map',
+                        Div(
+                            id='add-map',
+                            aria_label='This map shows the location of a prospective well as a light blue pushpin, as well as any existing wells as dark blue circles. Coordinates for the prospective well may be refined by dragging the pushpin with the mouse.'
+                        ),
+                        Div(
+                            id='attribution'
+                        ),
                         css_class='col-md-4',
                     ),
                     css_class='row',
@@ -461,8 +461,8 @@ class ActivitySubmissionGpsForm(forms.ModelForm):
         if not latitude:
             raise forms.ValidationError('This field is required.');
 
-        if latitude < 48.2045556 or latitude > 60.0223:
-            raise forms.ValidationError('Latitude must be between 48.2045556 and 60.0223.')
+        if latitude < 48.204555 or latitude > 60.0223:
+            raise forms.ValidationError('Latitude must be between 48.204556 and 60.0223.')
 
         return latitude
 
@@ -473,8 +473,8 @@ class ActivitySubmissionGpsForm(forms.ModelForm):
         if not longitude:
             raise forms.ValidationError('This field is required.');
 
-        if longitude < -139.0736706 or longitude > -114.0338224:
-            raise forms.ValidationError('Longitude must be between -139.0736706 and -114.0338224.')
+        if longitude < -139.073671 or longitude > -114.033822:
+            raise forms.ValidationError('Longitude must be between -139.073671 and -114.033822.')
 
         return longitude
 
@@ -506,7 +506,7 @@ class ActivitySubmissionGpsForm(forms.ModelForm):
         fields = ['latitude', 'longitude', 'ground_elevation', 'ground_elevation_method', 'drilling_method', 'other_drilling_method', 'orientation_vertical']
         widgets = {'orientation_vertical': forms.RadioSelect,
                    'latitude': forms.TextInput(attrs={'type': 'number', 'min': '48.204556', 'max': '60.0223', 'step': 'any'}),
-                   'longitude': forms.TextInput(attrs={'type': 'number', 'min': '-139.073671', 'max': '139.073671', 'step': 'any'})}
+                   'longitude': forms.TextInput(attrs={'type': 'number', 'min': '-139.073671', 'max': '-114.033822', 'step': 'any'})}
 
 
 
@@ -595,6 +595,141 @@ class LithologyForm(forms.ModelForm):
 
 
 
+class CasingForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.disable_csrf = True
+        self.helper.form_show_labels = False
+        self.helper.render_required_fields = True
+        self.helper.render_hidden_fields = True
+        self.helper.layout = Layout(
+            HTML('<tr valign="top">'),
+            HTML('<td width="5%">'),
+            'casing_from',
+            HTML('</td>'),
+            HTML('<td width="5%">'),
+            'casing_to',
+            HTML('</td>'),
+            HTML('<td width="10%">'),
+            'internal_diameter',
+            HTML('</td>'),
+            HTML('<td>'),
+            'casing_type',
+            HTML('</td>'),
+            HTML('<td>'),
+            'casing_material',
+            HTML('</td>'),
+            HTML('<td width="10%">'),
+            'wall_thickness',
+            HTML('</td>'),
+            HTML('<td>'),
+            InlineRadios('drive_shoe'),
+            HTML('</td><td width="5%">{% if form.instance.pk %}{{ form.DELETE }}{% endif %}</td>'),
+            HTML('</tr>'),
+        )
+        super(CasingForm, self).__init__(*args, **kwargs)
+
+        self.fields['drive_shoe'].label = False
+
+    def clean(self):
+        cleaned_data = super(CasingForm, self).clean()
+
+        casing_type = cleaned_data.get('casing_type')
+        casing_material = cleaned_data.get('casing_material')
+        casing_from = cleaned_data.get('casing_from')
+        casing_to = cleaned_data.get('casing_to')
+        errors = []
+
+        try:
+            if casing_type != CasingType.objects.get(code='OPEN') and not casing_material:
+                self.add_error('casing_material', 'This field is required.')
+        except Exception as e:
+            errors.append('Configuration error: Open Hole Casing Type does not exist, please contact the administrator.')
+
+        try:
+            if casing_type == CasingType.objects.get(code='OPEN') and casing_material:
+                self.add_error('casing_material', 'Open Hole should not have a casing material.')
+        except Exception as e:
+            errors.append('Configuration error: Open Hole Casing Type does not exist, please contact the administrator.')
+
+        if casing_from and casing_to and casing_to < casing_from:
+            errors.append('To must be greater than or equal to From.')
+
+
+        if len(errors) > 0:
+            raise forms.ValidationError(errors)        
+
+        return cleaned_data
+
+    class Meta:
+        model = Casing
+        fields = ['casing_from', 'casing_to', 'internal_diameter', 'casing_type', 'casing_material', 'wall_thickness', 'drive_shoe']
+
+
+
+class ActivitySubmissionSurfaceSealForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.disable_csrf = True
+        self.helper.render_hidden_fields = True
+        self.helper.layout = Layout(
+            Fieldset(
+                'Surface Seal and Backfill Information',
+                Div(
+                    Div('surface_seal_material', css_class='col-md-3'),
+                    Div(AppendedText('surface_seal_depth', 'ft'), css_class='col-md-2'),
+                    Div(AppendedText('surface_seal_thickness', 'in'), css_class='col-md-2'),
+                    css_class='row',
+                ),
+                Div(
+                    Div('surface_seal_method', css_class='col-md-3'),
+                    css_class='row',
+                ),
+                Div(
+                    Div(HTML('&nbsp;'), css_class='col-md-12'),
+                    css_class='row',
+                ),
+                Div(
+                    Div('backfill_type', css_class='col-md-3'),
+                    Div(AppendedText('backfill_depth', 'ft'), css_class='col-md-2'),
+                    css_class='row',
+                ),
+            )
+        )
+        super(ActivitySubmissionSurfaceSealForm, self).__init__(*args, **kwargs)
+
+    def clean_surface_seal_material(self):
+        surface_seal_material = self.cleaned_data.get('surface_seal_material') 
+
+        if self.initial['casing_exists'] and not surface_seal_material:
+            raise forms.ValidationError('This field is required when casing specified.');
+
+    def clean_surface_seal_depth(self):
+        surface_seal_depth = self.cleaned_data.get('surface_seal_depth') 
+
+        if self.initial['casing_exists'] and not surface_seal_depth:
+            raise forms.ValidationError('This field is required when casing specified.');
+
+    def clean_surface_seal_thickness(self):
+        surface_seal_thickness = self.cleaned_data.get('surface_seal_thickness') 
+
+        if self.initial['casing_exists'] and not surface_seal_thickness:
+            raise forms.ValidationError('This field is required when casing specified.');
+
+    def clean_surface_seal_method(self):
+        surface_seal_method = self.cleaned_data.get('surface_seal_method') 
+
+        if self.initial['casing_exists'] and not surface_seal_method:
+            raise forms.ValidationError('This field is required when casing specified.');
+
+    class Meta:
+        model = ActivitySubmission
+        fields = ['surface_seal_material', 'surface_seal_depth', 'surface_seal_thickness', 'surface_seal_method', 'backfill_type', 'backfill_depth']
+
+
 
 #WellCompletionDataFormSet = inlineformset_factory(ActivitySubmission, WellCompletionData, max_num=1, can_delete=False)
 ActivitySubmissionLithologyFormSet = inlineformset_factory(ActivitySubmission, LithologyDescription, form=LithologyForm, fk_name='activity_submission', can_delete=False, extra=10)
+ActivitySubmissionCasingFormSet = inlineformset_factory(ActivitySubmission, Casing, form=CasingForm, fk_name='activity_submission', can_delete=False, extra=5)

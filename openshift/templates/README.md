@@ -25,14 +25,16 @@ Obtain the credentials for this Pipeline deployment by viewing the Environment p
 
 Login to the Jenkins instance by clicking on the appropriate link in the Routes tab, a username of admin and the password found above.
 
-Currently there is one setting that has to be set manually, due to a known issue with the OpenShift Pipeline system.  Click on Manage Jenkins, and then Configure Jenkins.  Scroll down to the Jenkins Location section, and adjust the setting for Jenkins URL to match the actual URL for Jenkins.
+Perform the following steps:
 
-In the OpenShift Builder section, increase the Build timeout to match typical build times for your application.  For example you may need to increase the build time to 1800 if the build time is 30 minutes.
+- Click on Manage Jenkins, and then Configure Jenkins.  
+- Scroll down to the Jenkins Location section, and adjust the setting for Jenkins URL to match the actual URL for Jenkins.
+- Scroll down to the Jenkins Location section, and adjust the setting for Jenkins URL to match the actual URL for Jenkins.
 
-In the Cloud section, adjust the maven image so that it has an increased Memory Limit.  Note that you will need to click the Advanced button to show the Memory Limit section.  A limit of 2Gi is recommended in order for SonarQube to run properly.
+- In the OpenShift Builder section, increase the Build timeout to match typical build times for your application.  For example you may need to increase the build time to 1800 if the build time is 30 minutes.
 
-- Configure a job that has an OpenShift ImageStream Watcher as its SCM source and promotion states for each environment
-- In each promotion configuration, tag the target build's image to the appropriate promotion level; this was done using a shell command because the OpenShift plugins do not appear to handle parameter subsitution inside promotions properly.
+- In the Cloud section, adjust the maven image so that it has an increased Memory Limit.  Note that you will need to click the Advanced button to show the Memory Limit section.  A limit of 2Gi is recommended in order for SonarQube to run properly.
+
 - Create an OpenShift project for each "environment" (e.g. DEV, TEST, PROD); Exact names used were moe-gwells-dev, moe-gwells-test, moe-gwells-prod
 - Configure the access controls to allow the Jenkins instance to tag imagestreams in the environment projects, and to allow the environment projects to pull images from the tools project:
  
