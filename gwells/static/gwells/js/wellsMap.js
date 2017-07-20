@@ -69,6 +69,7 @@
  * }
  */
 function WellsMap(options) {
+    'use strict';
     /** Class constants */
 
     // The URL used to search for wells.
