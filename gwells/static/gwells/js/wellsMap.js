@@ -69,8 +69,6 @@
  * }
  */
 function WellsMap(options) {
-    'use strict';
-
     /** Class constants */
 
     // The URL used to search for wells.
@@ -96,13 +94,14 @@ function WellsMap(options) {
 
     // An object containing a pushpin marker and a data schematic for a particular well. This indicates a single well on the screen that may be editable.
     // The object conforms to:
-    // {
-    //     pushpinMarker: L.marker, // The Leaflet marker that points to the well's location
-    //     wellDetails: {
-    //         guid: string, // The well's globally-unique ID, to avoid drawing with other (non-interactive) wells
-    //     },
-    //     wellMarker: L.circleMarker // The Leaflet circleMarker that represents the well itself.
-    // }
+    /* {
+     *     pushpinMarker: L.marker, // The Leaflet marker that points to the well's location
+     *     wellDetails: {
+     *         guid: string, // The well's globally-unique ID, to avoid drawing with other (non-interactive) wells
+     *     },
+     *     wellMarker: L.circleMarker // The Leaflet circleMarker that represents the well itself.
+     * }
+     * */
     var _wellPushpin = null;
 
     // The callback function for _wellPushpin's move event.
@@ -138,12 +137,12 @@ function WellsMap(options) {
 
     // Convenience method for checking whether an object is an array.
     var _isArray = function (arr) {
-        return _exists(arr.constructor) && arr.constructor === Array;
+        return exists (arr) && _exists(arr.constructor) && arr.constructor === Array;
     };
 
     var _setMaxBounds = function (bounds) {
         var maxBounds = null;
-        if (_exists(bounds) && _exists(bounds.north) && _exists(bounds.south) && _exists(bounds.west) && _exists(bounds.east)) {
+        if (_exists(bounds.north) && _exists(bounds.south) && _exists(bounds.west) && _exists(bounds.east)) {
             maxBounds = L.latLngBounds([L.latLng(bounds.north, bounds.west), L.latLng(bounds.south, bounds.east)]);
             if (bounds.padding) {
                 maxBounds.pad(bounds.padding);
@@ -259,10 +258,6 @@ function WellsMap(options) {
     var _ensureLatLongIsInBounds = function (latLong) {
         var lat = _exists(latLong.lat) ? latLong.lat : NaN;
         var long = _exists(latLong.long) ? latLong.long : NaN;
-        // if (long > 0) {
-        //     // Even if there's not a bounding box, we'll flip positive longitudes.
-        //     long = -long;
-        // }
         if (!_isLatInBounds(lat)){
             lat = NaN;
         }
@@ -270,7 +265,6 @@ function WellsMap(options) {
             long = NaN;
         }
         if (isNaN(lat) || isNaN(long)) {
-            console.log("Invalid latitude or longitude. (Lat,Long): ("+latLong.lat+","+latLong.long+")");
             return {lat: NaN, long: NaN};
         }
         return {lat: lat, long: long};
@@ -302,11 +296,7 @@ function WellsMap(options) {
                 'end_lat_long': endLatLong
             },
             dataType: 'json',
-            success: success,
-            error: function (xhr, status, error) {
-                var msg = "An error occurred while searching for wells. STATUS: " + status + ".  ERROR " + error + ".";
-                console.log(msg);
-            }
+            success: success
         });
     };
 
@@ -425,8 +415,6 @@ function WellsMap(options) {
         var wells = JSON.parse(results);
         if (_isArray(wells)) {
             _drawWells(wells);
-        } else {
-            console.log("Could not parse wells data.");
         }
     };
 
@@ -466,10 +454,11 @@ function WellsMap(options) {
      * Places a wellPushpin on the map to help refine the placement of a well.
      * When placed by a button click, the map pans and zooms to centre on the marker.
      * @param latLongArray An array of [lat, long], where lat and long specify where the wellPushpin will be placed
+     * @param wellDetails An object conforming to the _wellPushpin's wellDetails property.
      */
     var placeWellPushpin = function (latLongArray, wellDetails) {
         // If the map or the latLng do not exist, bail out.
-        if (!_exists(_leafletMap) || !_exists(latLongArray) || !_isArray(latLongArray) || latLongArray.length !== 2) {
+        if (!_exists(_leafletMap) || !_isArray(latLongArray)) {
             return;
         }
         // We ensure the lat/long is in BC, in case it was passed in without checking.
@@ -482,10 +471,8 @@ function WellsMap(options) {
         var zoomLevel = _leafletMap.getMaxZoom();
         // If the pushpin exists and the movement is substantive, move the pin. Else if
         // the pushpin does not exist, create it and place it at the coordinates.
-        if (_exists(_wellPushpin) && _exists(_wellPushpin.pushpinMarker)) {
-            if (!_wellPushpin.pushpinMarker.getLatLng().equals(latLong)) {
-                _wellPushpin.pushpinMarker.setLatLng(latLong);
-            }
+        if (_exists(_wellPushpin) && _exists(_wellPushpin.pushpinMarker) && !_wellPushpin.pushpinMarker.getLatLng().equals(latLong)) {
+            _wellPushpin.pushpinMarker.setLatLng(latLong);
         } else {
             _wellPushpin = {};
             _wellPushpin.pushpinMarker = L.marker(latLong, {
@@ -496,10 +483,8 @@ function WellsMap(options) {
             _wellPushpin.pushpinMarker.on('move', _wellPushpinMoveEvent);
             _wellPushpin.pushpinMarker.on('moveend', _wellPushpinMoveEndEvent);
         }
-        // If the wellDetails properties exist, assign them.
-        if (_exists(wellDetails) && _exists(wellDetails.guid)) {
-            _wellPushpin.wellDetails = wellDetails;
-        }
+        // Assign wellDetails to the _wellPushpin.
+        _wellPushpin.wellDetails = wellDetails;
         // If the pin exists, the map should refresh the wells it displays when it is moved, to provide
         // more information to aid in well placement without having to load too many wells at once.
         _leafletMap.on('moveend', _searchBoundingBoxOnMoveEnd);
@@ -581,8 +566,6 @@ function WellsMap(options) {
         options = options || {};
         var mapNodeId = options.mapNodeId;
         if (!_exists(mapNodeId)) {
-            // If there's no mapNodeId, we shouldn't initialise the map.
-            console.log("ERROR: Map initialisation called but no map node ID provided.")
             return;
         }
         if (_exists(_leafletMap)) {

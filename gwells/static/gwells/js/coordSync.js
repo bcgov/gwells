@@ -9,7 +9,6 @@
  * This module depends on JQuery.
  */
 var CoordSync = (function () {
-'use strict';
 /** Properties and convenience methods */
 
 // Convenience method to check that a property exists and has a defined value.
@@ -44,6 +43,27 @@ var _validationSuccessCallback = null;
 var _latLongDDPrecision = 6;
 var _latLongDMSSecondPrecision = 2;
 var _utmPrecision = 0;
+
+/** JQuery nodes that correspond to the fields that will subscribe to events. */
+
+// The input fields associated with latitude and longitude decimal degrees
+var _latDDField = null;
+var _longDDField = null;
+
+// The DMS fields
+var _latDMSDegreeField = null;
+var _latDMSMinuteField = null;
+var _latDMSSecondField = null;
+var _longDMSDegreeField = null;
+var _longDMSMinuteField = null;
+var _longDMSSecondField = null;
+
+// The UTM fields
+var _zoneUTMField = null;
+var _eastingUTMField = null;
+var _northingUTMField = null;
+
+/** Field validation */
 
 // Checks to see whether a given latitude is within the bounding box.
 function _latIsInBox (lat) {
@@ -80,27 +100,6 @@ function _correctPositiveLongDMS () {
     long = long < 0 ? long : -long;
     _longDMSDegreeField.val(long);
 }
-
-/** JQuery nodes that correspond to the fields that will subscribe to events. */
-
-// The input fields associated with latitude and longitude decimal degrees
-var _latDDField = null;
-var _longDDField = null;
-
-// The DMS fields
-var _latDMSDegreeField = null;
-var _latDMSMinuteField = null;
-var _latDMSSecondField = null;
-var _longDMSDegreeField = null;
-var _longDMSMinuteField = null;
-var _longDMSSecondField = null;
-
-// The UTM fields
-var _zoneUTMField = null;
-var _eastingUTMField = null;
-var _northingUTMField = null;
-
-/** Field validation */
 
 // Ensures the latitude and longitude Decimal Degree fields are within the bounding box.
 function _areLatLongDDFieldsValid () {
@@ -429,7 +428,6 @@ var pi = Math.PI;
 /* Ellipsoid model constants (actual values here are for WGS84) */
 var sm_a = 6378137.0;
 var sm_b = 6356752.314;
-var sm_EccSquared = 6.69437999013e-03;
 
 var UTMScaleFactor = 0.9996;
 
@@ -631,7 +629,6 @@ function MapLatLonToXY (phi, lambda, lambda0, xy)
 {
     var N, nu2, ep2, t, t2, l;
     var l3coef, l4coef, l5coef, l6coef, l7coef, l8coef;
-    var tmp;
 
     /* Precalculate ep2 */
     ep2 = (Math.pow (sm_a, 2.0) - Math.pow (sm_b, 2.0)) / Math.pow (sm_b, 2.0);
@@ -645,7 +642,6 @@ function MapLatLonToXY (phi, lambda, lambda0, xy)
     /* Precalculate t */
     t = Math.tan (phi);
     t2 = t * t;
-    tmp = (t2 * t2 * t2) - Math.pow (t, 6.0);
 
     /* Precalculate l */
     l = lambda - lambda0;
@@ -883,6 +879,52 @@ function UTMXYToLatLon (x, y, zone, southhemi, latlon)
 
 /** End of UTM conversion code */
 
+/** Constructor functions. The private helpers take the same object as the init() method. */
+
+function _setFieldNodes (options) {
+    _latDDField = $(options.latDDNodeSelector) || null;
+    _longDDField = $(options.longDDNodeSelector) || null;
+    _latDMSDegreeField = $(options.latDMSDegreeNodeSelector) || null;
+    _latDMSMinuteField = $(options.latDMSMinuteNodeSelector) || null;
+    _latDMSSecondField = $(options.latDMSSecondNodeSelector) || null;
+    _longDMSDegreeField = $(options.longDMSDegreeNodeSelector) || null;
+    _longDMSMinuteField = $(options.longDMSMinuteNodeSelector) || null;
+    _longDMSSecondField = $(options.longDMSSecondNodeSelector) || null;
+    _zoneUTMField = $(options.zoneUTMNodeSelector) || null;
+    _eastingUTMField = $(options.eastingUTMNodeSelector) || null;
+    _northingUTMField = $(options.northingUTMNodeSelector) || null;
+}
+
+function _setValidationObjects (options) {
+    _latLongDDBoundingBox = options.latLongDDBoundingBox || null;
+    _validationErrorCallback = options.validationErrorCallback || null;
+    _validationSuccessCallback = options.validationSuccessCallback || null;    
+}
+
+function _setFieldPrecisions (options) {
+    _latLongDDPrecision = options.latLongDDPrecision;
+    _latLongDMSSecondPrecision = options.latLongDMSSecondPrecision;
+    _utmPrecision = options.utmPrecision;
+}
+
+function _subscribeFieldsToChangeEvents (options) {
+    // Subscribe the lat/long nodes to the progChangeEvent
+    _latDDField.on(options.progChangeEvent, function () { _latLongDDFieldOnChange(true); });
+    _longDDField.on(options.progChangeEvent, function () { _latLongDDFieldOnChange(true); });
+
+    // Subscribe the nodes to the change event.
+    _latDDField.on('change', function () { _latLongDDFieldOnChange(false); });
+    _longDDField.on('change', function () { _latLongDDFieldOnChange(false); });
+    _latDMSDegreeField.on('change', _latLongDMSFieldOnChange);
+    _latDMSMinuteField.on('change', _latLongDMSFieldOnChange);
+    _latDMSSecondField.on('change', _latLongDMSFieldOnChange);
+    _longDMSDegreeField.on('change', _latLongDMSFieldOnChange);
+    _longDMSMinuteField.on('change', _latLongDMSFieldOnChange);
+    _longDMSSecondField.on('change', _latLongDMSFieldOnChange);
+    _zoneUTMField.on('change', _utmFieldOnChange);
+    _eastingUTMField.on('change', _utmFieldOnChange);
+    _northingUTMField.on('change',_utmFieldOnChange);    
+}
 /** Module initialisation.
  * @param options An object with properties conforming to: 
  * {
@@ -914,45 +956,10 @@ function UTMXYToLatLon (x, y, zone, southhemi, latlon)
  *  }
  */
 var init = function(options) {
-    // Set the nodes
-    _latDDField = $(options.latDDNodeSelector) || null;
-    _longDDField = $(options.longDDNodeSelector) || null;
-    _latDMSDegreeField = $(options.latDMSDegreeNodeSelector) || null;
-    _latDMSMinuteField = $(options.latDMSMinuteNodeSelector) || null;
-    _latDMSSecondField = $(options.latDMSSecondNodeSelector) || null;
-    _longDMSDegreeField = $(options.longDMSDegreeNodeSelector) || null;
-    _longDMSMinuteField = $(options.longDMSMinuteNodeSelector) || null;
-    _longDMSSecondField = $(options.longDMSSecondNodeSelector) || null;
-    _zoneUTMField = $(options.zoneUTMNodeSelector) || null;
-    _eastingUTMField = $(options.eastingUTMNodeSelector) || null;
-    _northingUTMField = $(options.northingUTMNodeSelector) || null;
-
-    // Set the validation objects
-    _latLongDDBoundingBox = options.latLongDDBoundingBox || null;
-    _validationErrorCallback = options.validationErrorCallback || null;
-    _validationSuccessCallback = options.validationSuccessCallback || null;
-
-    // Set the field precisions
-    _latLongDDPrecision = options.latLongDDPrecision;
-    _latLongDMSSecondPrecision = options.latLongDMSSecondPrecision;
-    _utmPrecision = options.utmPrecision;
-
-    // Subscribe the lat/long nodes to the progChangeEvent
-    _latDDField.on(options.progChangeEvent, function () { _latLongDDFieldOnChange(true); });
-    _longDDField.on(options.progChangeEvent, function () { _latLongDDFieldOnChange(true); });
-
-    // Subscribe the nodes to the change event.
-    _latDDField.on('change', function () { _latLongDDFieldOnChange(false); });
-    _longDDField.on('change', function () { _latLongDDFieldOnChange(false); });
-    _latDMSDegreeField.on('change', function () { _latLongDMSFieldOnChange(false); });
-    _latDMSMinuteField.on('change', function () { _latLongDMSFieldOnChange(false); });
-    _latDMSSecondField.on('change', function () { _latLongDMSFieldOnChange(false); });
-    _longDMSDegreeField.on('change', function () { _latLongDMSFieldOnChange(false); });
-    _longDMSMinuteField.on('change', function () { _latLongDMSFieldOnChange(false); });
-    _longDMSSecondField.on('change', function () { _latLongDMSFieldOnChange(false); });
-    _zoneUTMField.on('change', function () { _utmFieldOnChange(false); });
-    _eastingUTMField.on('change', function () { _utmFieldOnChange(false); });
-    _northingUTMField.on('change', function () { _utmFieldOnChange(false); });
+    _setFieldNodes(options);
+    _setValidationObjects(options);
+    _setFieldPrecisions(options);
+    _subscribeFieldsToChangeEvents(options);
 }
 
 return {
