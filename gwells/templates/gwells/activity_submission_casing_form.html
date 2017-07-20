@@ -30,30 +30,29 @@
                             <tr>
                                 <th>From*<br />ft (bgl)</th>
                                 <th>To*<br />ft (bgl)</th>
-                                <th>Diameter (in)</th>
-                                <th>Casing Type</th>
+                                <th>Diameter* (in)</th>
+                                <th>Casing Type*</th>
                                 <th>Casing Material</th>
-                                <th>Wall Thickness<br />(in)</th>
+                                <th>Wall Thickness*<br />(in)</th>
                                 <th>Drive Shoe</th>
                                 <th></th>
                             </tr>
                         </thead>
                         <tbody>
-                            {% crispy formset formset.form.helper %}
+                            {% if wizard.form.forms %}
+                            {{ wizard.form.management_form }}
+                            {% for form in wizard.form.forms %}
+                            {% crispy form %}
+                            {% endfor %}
+                            {% else %}
+                            {% crispy wizard.form %}
+                            {% endif %}
 
                         </tbody>
                     </table>
                 </div>
                 <br />
 
-                {% if wizard.form.forms %}
-                {{ wizard.form.management_form }}
-                {% for form in wizard.form.forms %}
-                {% crispy form %}
-                {% endfor %}
-                {% else %}
-                {% crispy wizard.form %}
-                {% endif %}
             </fieldset>
                 <div class="form-group formButtons">
                     <div class="controls">
