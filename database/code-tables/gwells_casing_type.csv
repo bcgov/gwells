@@ -1,0 +1,4 @@
+casing_type_guid,code,description,is_hidden,sort_order 
+"59bc478c6c1611e7907ba6006ad3dba0","PROD","Production Casing","N","10"
+"59bc4f8e6c1611e7907ba6006ad3dba0","SURF","Surface Casing","N","20"
+"59bc53626c1611e7907ba6006ad3dba0","OPEN","Open Hole","N","30"
