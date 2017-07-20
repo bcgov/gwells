@@ -38,6 +38,7 @@ def well_search(request):
     well_results = None
     well_results_overflow = None
     well_results_json = '[]'
+    lat_long_box = '{}'
 
     if request.method == 'GET' and 'well' in request.GET:
         form = SearchForm(request.GET)
@@ -55,11 +56,17 @@ def well_search(request):
             well_results_json = json.dumps(
                 [well.as_dict() for well in well_results],
                 cls=DjangoJSONEncoder)
+        start_lat_long = form.cleaned_data.get('start_lat_long')
+        end_lat_long = form.cleaned_data.get('end_lat_long')
+        lat_long_box = json.dumps(
+            {'startCorner': start_lat_long, 'endCorner': end_lat_long}, 
+            cls=DjangoJSONEncoder)
 
     return render(request, 'gwells/search.html',
                   {'form': form, 'well_list': well_results,
                    'too_many_wells': well_results_overflow,
-                   'wells_json': well_results_json
+                   'wells_json': well_results_json,
+                   'lat_long_box': lat_long_box
                   })
 
 
