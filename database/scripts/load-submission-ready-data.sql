@@ -1,7 +1,11 @@
 \encoding windows-1251
 \copy gwells_well_yield_unit 	  FROM './gwells_well_yield_unit.csv'   HEADER DELIMITER ',' CSV
 \copy gwells_province_state  	  FROM './gwells_province_state.csv' 	   HEADER DELIMITER ',' CSV
-\copy gwells_well_activity_type FROM './gwells_well_activity_type.csv' HEADER DELIMITER ',' CSV
+
+\copy gwells_well_activity_type (well_activity_type_guid,code,description,is_hidden,sort_order,who_created,when_created,who_updated,when_updated) FROM './gwells_well_activity_type.csv' HEADER DELIMITER ',' CSV
+
+
+
 \copy gwells_intended_water_use	FROM './gwells_intended_water_use.csv' HEADER DELIMITER ',' CSV
 \copy gwells_well_class  	    	FROM './gwells_well_class.csv'  	   	HEADER DELIMITER ',' CSV
 \copy gwells_well_subclass    	FROM './gwells_well_subclass.csv'     HEADER DELIMITER ',' CSV

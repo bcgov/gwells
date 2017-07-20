@@ -7,7 +7,7 @@ The legacy database is WELLS schema of ENVPROD1.NRS.GOV.BC.CA, and was exported 
 
 1. From the Windows Start Menu on the lower left of the Windows TaskBar, open Oracle SQL*Developer:
 
-    ```-> All Programs -> Oracle Tools -> Oracle SQL Developer```
+    -> All Programs -> Oracle Tools -> Oracle SQL Developer
 
 2. Login to ENVPROD1.NRS.GOV.BC.CA with an Oracle DB Account that can view WELLS schema objects
 
@@ -20,15 +20,13 @@ The legacy database is WELLS schema of ENVPROD1.NRS.GOV.BC.CA, and was exported 
     required to filter out the "SELECT FROM ... " output from the CSV.
 
     Four CSV files will be created on your networked Home drive (H:\), prefixed with 'xform' to denote that an additional transformation step is required before inserting into 'gwells' tables:
-    ```H:\xform_gwells_land_district.csv    
+
+    H:\xform_gwells_land_district.csv    
     H:\xform_gwells_well.csv
     H:\xform_gwells_driller.csv
     H:\xform_gwells_drilling_company.csv
-```
 
-4. Copy these generated CSV files over to your local workstation (e.g. /Users/garywong/tmp/gwells), ready to be included in the
-    `rsync` [step below](#rsync-csv).  SQL Developer insists on adding a blank line at the end of each generated CSV file, which
-    runs into a PostGres bug when importing CSV with such a blank line.   Remove this last line from each of the genereated files, either manually or via sed/awk/perl etc.
+4. Copy these generated CSV files over to your local workstation (e.g. /Users/garywong/tmp/gwells), ready to be included in the `rsync` [step below](#rsync-csv).  SQL Developer insists on adding a blank line at the end of each generated CSV file, which runs into a PostGres bug when importing CSV with such a blank line.   Remove this last line from each of the genereated files, either manually or via sed/awk/perl etc.
 
 ## Loading data upon which to Submit data (against the PostGres DB) 
 
@@ -40,9 +38,7 @@ security and storage reasons.  The seqreset.sql script was generated via Django 
 Consolidate all versioned scripts and CSV files from your local git repo, into that single folder above (e.g. /Users/garywong/tmp/gwells).  For example:
 
     cp -v ~/projects/gwells/github/database/scripts/*.sql /Users/garywong/tmp/gwells
-
     cp -v ~/projects/gwells/github/database/code-tables/*.csv  /Users/garywong/tmp/gwells
-
 
 1.  Sync all CSV and SQL files to Postgres pod, from that single source directory <a id="rsync-csv"></a> on the developer workstation:
 
