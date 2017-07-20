@@ -26,9 +26,8 @@ class FlowSpecs extends GebReportingSpec {
         
         //Test Externally Linked Pages
         HomePage      | "Copyright"        | 1             | 3                 || Copyright
-        // These external tests are not currently working
-		//HomePage      | "Disclaimer"       | 1             | 3                 || Disclaimer
-        //HomePage      | "Privacy"          | 1             | 3                 || Privacy
+		HomePage      | "Disclaimer"       | 1             | 3                 || Disclaimer
+        HomePage      | "Privacy"          | 1             | 3                 || Privacy
         HomePage      | "Accessibility"    | 1             | 3                 || Accessibility
     }
 }
