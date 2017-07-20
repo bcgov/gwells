@@ -582,7 +582,7 @@ function WellsMap(options) {
         // Bools need a stricter check because of JS lazy evaluation
         var canZoom = _exists(options.canZoom) ? options.canZoom : true;
         var canPan = _exists(options.canPan) ? options.canPan : true;
-        _maxBounds = _setMaxBounds(options.mapBounds) || void 0;
+        _maxBounds = _exists(options.mapBounds) ? _setMaxBounds(options.mapBounds) : void 0;
         _leafletMap = L.map(mapNodeId, {
             minZoom: minZoom,
             maxZoom: maxZoom,
