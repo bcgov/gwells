@@ -9,6 +9,7 @@
  * This module depends on JQuery.
  */
 var CoordSync = (function () {
+'use strict';
 /** Properties and convenience methods */
 
 // Convenience method to check that a property exists and has a defined value.
@@ -375,15 +376,13 @@ function _ddToSeconds (dec) {
 
 // Converts a lat or long from DMS to Decimal Degrees.
 function _dmsToDD(deg, min, sec) {
-    if (isNaN(deg)) {
+    if (isNaN(deg) || isNaN (min) || isNaN(sec)) {
         return NaN;
     }
     // The algorithm works on absolute values, so we preserve the sign of the degree, abs it,
     // and return the signed coordinate after conversion.
     var sign = deg >= 0 ? 1 : -1;
     deg = Math.abs(deg);
-    min = isNaN(min) ? 0 : min;
-    sec = isNaN(sec) ? 0 : sec;
     var coord = (deg + (min/60) + (sec/3600)).toFixed(_latLongDDPrecision);
     return sign * coord;
 }
