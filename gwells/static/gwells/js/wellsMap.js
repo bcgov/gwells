@@ -69,6 +69,7 @@
  * }
  */
 function WellsMap(options) {
+    'use strict';
     /** Class constants */
 
     // The URL used to search for wells.
@@ -503,10 +504,11 @@ function WellsMap(options) {
             return;
         }
         if (_exists(_wellPushpin) && _exists(_wellPushpin.pushpinMarker)) {
-            _leafletMap.removeLayer(_wellPushpin.pushpinMarker);
             // Unsubscribe from the pushpin-related events.
             _leafletMap.off('moveend', _searchBoundingBoxOnMoveEnd);
             _leafletMap.off('zoomend', _wellPushpinZoomEndEvent);
+            _leafletMap.removeLayer(_wellPushpin.pushpinMarker);
+            _wellPushpin.pushpinMarker = null;
             _wellPushpin = null;
             _clearWells();
         }
