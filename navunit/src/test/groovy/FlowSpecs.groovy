@@ -23,7 +23,9 @@ class FlowSpecs extends GebReportingSpec {
         where:
         startPage           | clickLink                     | clickCount    | timeoutSeconds    || assertPage
         HomePage       		| "ribbon-search"               | 1             | 3                 || SearchPage
+        HomePage            | "navbar-search"               | 1             | 3                 || SearchPage
         SearchPage    		| "ribbon-home"                 | 1             | 3                 || HomePage
+        SearchPage          | "navbar-home"                 | 1             | 3                 || HomePage
         
         //Test Externally Linked Pages
 		HomePage            | "footer-disclaimer"     | 1             | 3                 || Disclaimer
