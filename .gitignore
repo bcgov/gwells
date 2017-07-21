@@ -67,6 +67,7 @@ gwells.pyproj
 
 #NavUnit
 navunit/.gradle/
+navunit/gebReports/
 
 # Custom GW
 activate
