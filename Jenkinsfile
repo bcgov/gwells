@@ -23,7 +23,7 @@ node('maven') {
         }
     }
 	
-	stage('build') {
+	stage('build and deploy to dev') {
 	    echo "Building..."
 	    openshiftBuild bldCfg: 'gwells', showBuildLogs: 'true'
 	    openshiftTag destStream: 'gwells', verbose: 'true', destTag: '$BUILD_ID', srcStream: 'gwells', srcTag: 'latest'
@@ -31,7 +31,7 @@ node('maven') {
     }
 	
 	stage('validation') {
-        dir('functional-tests') {
+        dir('navunit') {
             sh './gradlew --debug --stacktrace phantomJsTest'
         }
     }
