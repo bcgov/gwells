@@ -15,20 +15,20 @@ class FlowSpecs extends GebReportingSpec {
 	    given: "I start on the #startPage"
 			to startPage
         when: "I click on the link #clickLink"
-			$("a", text:"$clickLink").click()
+			$("a", id:"$clickLink").click()
         then:
 			at assertPage
 		
 		
         where:
         startPage           | clickLink                     | clickCount    | timeoutSeconds    || assertPage
-        HomePage       		| "Search"                      | 1             | 3                || SearchPage
+        HomePage       		| "ribbon-search"               | 1             | 3                 || SearchPage
+        SearchPage    		| "ribbon-home"                 | 1             | 3                 || HomePage
         
         //Test Externally Linked Pages
-        HomePage      | "Copyright"        | 1             | 3                 || Copyright
-        // These external tests are not currently working
-		//HomePage      | "Disclaimer"       | 1             | 3                 || Disclaimer
-        //HomePage      | "Privacy"          | 1             | 3                 || Privacy
-        HomePage      | "Accessibility"    | 1             | 3                 || Accessibility
+		HomePage            | "footer-disclaimer"     | 1             | 3                 || Disclaimer
+        HomePage            | "footer-privacy"        | 1             | 3                 || Privacy
+        HomePage            | "footer-accessibility"  | 1             | 3                 || Accessibility
+        HomePage            | "footer-copyright"      | 1             | 3                 || Copyright
     }
 }
