@@ -505,8 +505,8 @@ class ActivitySubmissionGpsForm(forms.ModelForm):
         model = ActivitySubmission
         fields = ['latitude', 'longitude', 'ground_elevation', 'ground_elevation_method', 'drilling_method', 'other_drilling_method', 'orientation_vertical']
         widgets = {'orientation_vertical': forms.RadioSelect,
-                   'latitude': forms.TextInput(attrs={'type': 'number', 'min': '48.204556', 'max': '60.0223', 'step': 'any'}),
-                   'longitude': forms.TextInput(attrs={'type': 'number', 'min': '-139.073671', 'max': '-114.033822', 'step': 'any'})}
+                   'latitude': forms.TextInput(attrs={'type': 'number', 'min': '48.20456', 'max': '60.0222', 'step': 'any'}),
+                   'longitude': forms.TextInput(attrs={'type': 'number', 'min': '-139.07367', 'max': '-114.03383', 'step': 'any'})}
 
 
 
