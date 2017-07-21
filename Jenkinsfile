@@ -27,11 +27,15 @@ node('maven') {
 	    echo "Building..."
 	    openshiftBuild bldCfg: 'gwells', showBuildLogs: 'true'
 	    openshiftTag destStream: 'gwells', verbose: 'true', destTag: '$BUILD_ID', srcStream: 'gwells', srcTag: 'latest'
-	    openshiftTag destStream: 'gwells', verbose: 'true', destTag: 'dev', srcStream: 'gwells', srcTag: 'latest'
     }
 	
+    stage('deploy-dev') {
+        echo "Deploying to dev..."
+        openshiftTag destStream: 'gwells', verbose: 'true', destTag: 'dev', srcStream: 'gwells', srcTag: 'latest'
+    }
+    
 	stage('validation') {
-        dir('functional-tests') {
+        dir('navunit') {
             sh './gradlew --debug --stacktrace phantomJsTest'
         }
     }

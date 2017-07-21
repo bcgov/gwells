@@ -649,7 +649,7 @@ class CasingForm(forms.ModelForm):
 
         try:
             if casing_type == CasingType.objects.get(code='OPEN') and casing_material:
-                self.add_error('casing_material', 'Open Hole should not have a casing material.')
+                self.add_error('casing_material', 'Open Hole cannot have a casing material.')
         except Exception as e:
             errors.append('Configuration error: Open Hole Casing Type does not exist, please contact the administrator.')
 

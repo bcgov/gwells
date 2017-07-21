@@ -112,11 +112,11 @@
                     <div id="navbar" class="collapse navbar-collapse" role="navigation">
 <a id="navigation-anchor"></a>
                         <ul class="nav navbar-nav">
-                            <li><a href="{% url 'home' %}">Home</a></li>
+                            <li><a id="navbar-home" href="{% url 'home' %}">Home</a></li>
                             <li><a href="#">Navigation Link 1</a></li>
                             <li><a href="#">Navigation Link 2</a></li>
                             <li><a href="#">Navigation Link 3</a></li>
-                            <li><a href="{% url 'search' %}">Search</a></li>
+                            <li><a id="navbar-search" href="{% url 'search' %}">Search</a></li>
                         </ul>
                     </div>
                     <!-- /COLLAPSING NAVBAR -->
@@ -125,11 +125,11 @@
             <div class="navigationRibbon">
                 <div class="level2Navigation">
                     <div class="container">
-                        <a href="{% url 'home' %}">Home</a>
+                        <a id="ribbon-home" href="{% url 'home' %}">Home</a>
                         <a href="#">Navigation Link 1</a>
                         <a href="#">Navigation Link 2</a>
                         <a href="#">Navigation Link 3</a>
-                        <a href="{% url 'search' %}">Search</a>
+                        <a id="ribbon-search" href="{% url 'search' %}">Search</a>
                     </div>
                 </div>
             </div>
@@ -192,22 +192,22 @@
                     <div id="footerAdminLinks" class="row">
                         <ul class="inline">
                             <li>
-                                <a href="#" target="_self">Home</a>
+                                <a id="footer-home" href="/" target="_self">Home</a>
                             </li>
                             <li>
                                 <a href="#" target="_self">About this site</a>
                             </li>
                             <li>
-                                <a href="http://gov.bc.ca/disclaimer/" target="_self">Disclaimer</a>
+                                <a id="footer-disclaimer" href="http://gov.bc.ca/disclaimer/" target="_self">Disclaimer</a>
                             </li>
                             <li>
-                                <a href="http://gov.bc.ca/privacy/" target="_self">Privacy</a>
+                                <a id="footer-privacy" href="http://gov.bc.ca/privacy/" target="_self">Privacy</a>
                             </li>
                             <li>
-                                <a href="http://gov.bc.ca/webaccessibility/" target="_self">Accessibility</a>
+                                <a id="footer-accessibility" href="http://gov.bc.ca/webaccessibility/" target="_self">Accessibility</a>
                             </li>
                             <li>
-                                <a href="http://gov.bc.ca/copyright" target="_self">Copyright</a>
+                                <a id="footer-copyright" href="http://gov.bc.ca/copyright" target="_self">Copyright</a>
                             </li>
                             <li>
                                 <a href="#" target="_self">Contact Us</a>
