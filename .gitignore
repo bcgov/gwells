@@ -65,5 +65,8 @@ gwells.sln
 gwells.pyproj
 .vs/
 
+#NavUnit
+navunit/.gradle/
+
 # Custom GW
 activate
