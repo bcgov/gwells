@@ -1,5 +1,5 @@
-lithology_hardness_guid,code,description,is_hidden,sort_order 
-"aeab546062a511e7907ba6006ad3dba0","V. Soft","Very Soft","N","10"
-"aeab59b062a511e7907ba6006ad3dba0","Stiff","Stiff","N","20"
-"aeab5d4862a511e7907ba6006ad3dba0","Medium","Medium","N","30"
-"aeab5f0a62a511e7907ba6006ad3dba0","V. Stiff","Very Stiff","N","40"
+lithology_hardness_guid,code,description,is_hidden,sort_order,when_created,when_updated,who_created,who_updated
+"aeab546062a511e7907ba6006ad3dba0","V. Soft","Very Soft","N","10","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
+"aeab59b062a511e7907ba6006ad3dba0","Stiff","Stiff","N","20","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
+"aeab5d4862a511e7907ba6006ad3dba0","Medium","Medium","N","30","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
+"aeab5f0a62a511e7907ba6006ad3dba0","V. Stiff","Very Stiff","N","40","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
