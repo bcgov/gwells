@@ -52,12 +52,13 @@ each pod deployment, so get the name first (i.e. *oc get pods*) from the correct
 
 3.  Once in the the remote shell:
 
-    cd /tmp/gwells  
-    psql -d gwells -U <user>  -f ./truncate-submission-ready-data.sql
-    psql -d gwells -U <user>  -f ./load-submission-ready-data.sql
-    psql -d gwells -U <user>  -f ./post-load.sql
-    psql -d gwells -U <user>  -f ./seqreset.sql 
-
+'''
+cd /tmp/gwells  
+psql -d gwells -U <user>  -f ./truncate-submission-ready-data.sql
+psql -d gwells -U <user>  -f ./load-submission-ready-data.sql
+psql -d gwells -U <user>  -f ./post-load.sql
+psql -d gwells -U <user>  -f ./seqreset.sql 
+'''
 4. Run the psql client to verify the database objects:
 
     psql -d gwells -U <user>
