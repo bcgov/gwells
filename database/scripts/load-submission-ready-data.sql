@@ -20,22 +20,60 @@
 \copy gwells_casing_material FROM './gwells_casing_material.csv' HEADER DELIMITER ',' CSV
 \copy gwells_casing_type     FROM './gwells_casing_type.csv'     HEADER DELIMITER ',' CSV
 
-/* These will need further transformation to link to existing data */
-xform_gwells_surface_seal_method
-xform_gwells_backfill_type
-\copy gwells_surface_seal_material   FROM './xform_gwells_surface_seal_material.csv' HEADER DELIMITER ',' CSV
-- make distinct on CODE
+/* This will need further transformation to link to existing data */
+CREATE unlogged TABLE IF NOT EXISTS xform_gwells_surface_seal_method (
+  who_created              character varying(30)   ,
+  when_created             timestamp with time zone,
+  who_updated              character varying(30)   ,
+  when_updated             timestamp with time zone,
+  surface_seal_method_guid uuid                    ,
+  code                     character varying(10)   ,
+  description              character varying(100)  ,
+  is_hidden                boolean                 ,
+  sort_order               integer                 
+);
+
+/* This will need further transformation to link to existing data */
+CREATE unlogged TABLE IF NOT EXISTS xform_gwells_backfill_type (
+  who_created        character varying(30)   ,
+  when_created       timestamp with time zone,
+  who_updated        character varying(30)   ,
+  when_updated       timestamp with time zone,
+  backfill_type_guid uuid                    ,
+  code               character varying(10)   ,
+  description        character varying(100)  ,
+  is_hidden          boolean                 ,
+  sort_order         integer                 ,
+  BACKFILL_MATERIAL  character varying(30)    
+);
+
+/* This will need further transformation to link to existing data */
+CREATE unlogged TABLE IF NOT EXISTS xform_gwells_surface_seal_material(
+  who_created                 character varying(30)   ,
+  when_created                timestamp with time zone,
+  who_updated                 character varying(30)   ,
+  when_updated                timestamp with time zone,
+  surface_seal_material_guid  uuid                    ,
+  code                        character varying(10)   ,
+  description                 character varying(100)  ,
+  is_hidden                   boolean                 ,
+  sort_order                  integer       ,
+  SEALANT_MATERIAL            character varying(30)          
+);
+/* - make distinct on CODE */ 
 
 CREATE unlogged TABLE IF NOT EXISTS xform_gwells_land_district (
   land_district_guid uuid,
   code               character varying(10),
   name               character varying(255),
-  sort_order         integer
+  sort_order         integer,
+  when_created       timestamp with time zone,
+  when_updated       timestamp with time zone,
+  who_created        character varying(30)   ,
+  who_updated        character varying(30) 
 );
 
 CREATE unlogged TABLE IF NOT EXISTS xform_gwells_well (
-   created                      timestamp with time zone ,
-   modified                     timestamp with time zone ,
    well_tag_number              integer                  ,
    well_guid                    uuid                     ,
    owner_full_name              character varying(200)   ,
@@ -70,7 +108,11 @@ CREATE unlogged TABLE IF NOT EXISTS xform_gwells_well (
    UTM_NORTH                    integer,
    UTM_EAST                     integer,
    UTM_ZONE_CODE                character varying(10)  ,
-   ORIENTATION_VERTICAL         boolean
+   ORIENTATION_VERTICAL         boolean,
+   when_created                 timestamp with time zone,
+   when_updated                 timestamp with time zone,
+   who_created                  character varying(30)   ,
+   who_updated                  character varying(30)    
 );
 
 
@@ -103,27 +145,31 @@ INSERT INTO gwells_land_district (land_district_guid, code, name, sort_order,
 SELECT land_district_guid, code, name, sort_order,when_created, when_updated, who_created, who_updated
 FROM xform_gwells_land_district;
 
-INSERT INTO gwells_drilling_company (drilling_company_guid, name, is_hidden,driller_company_code)
-SELECT drilling_company_guid, name, is_hidden, driller_company_code
+INSERT INTO gwells_drilling_company (drilling_company_guid, name, is_hidden,
+   when_created, when_updated, who_created , who_updated /* , driller_company_code */)
+SELECT drilling_company_guid, name, is_hidden,
+  when_created, when_updated, who_created , who_updated /* driller_company_code */
 FROM xform_gwells_drilling_company;
 
-insert into gwells_drilling_company 
-values ('018d4c1047cb11e7a91992ebcb67fe33',
+INSERT INTO GWELLS_DRILLING_COMPANY (drilling_company_guid, name, is_hidden,
+   when_created, when_updated, who_created , who_updated /* , driller_company_code */)
+VALUES ('018d4c1047cb11e7a91992ebcb67fe33',
         'Data Conversion Drilling Compnay',
         true,
-        'DUMMYRECORD'
-        );
+        '2017-07-01 00:00:00-08',
+        '2017-07-01 00:00:00-08',  
+        'ETL_USER',
+        'ETL_USER'
+);
 
 INSERT INTO gwells_driller (driller_guid, first_name, surname, registration_number, is_hidden, drilling_company_guid,
-  ,when_created, when_updated, who_created, who_updated)
+  when_created, when_updated, who_created, who_updated)
 SELECT dr.driller_guid, dr.first_name, dr.surname, dr.registration_number, dr.is_hidden, 
 co.drilling_company_guid, when_created, when_updated, who_created, who_updated
 FROM  xform_gwells_driller dr, xform_gwells_drilling_company co
 WHERE dr.DRILLER_COMPANY_CODE = co.DRILLER_COMPANY_CODE;
 
 INSERT INTO gwells_well (
-  created                     ,
-  modified                    ,
   well_tag_number             ,
   well_guid                   ,
   owner_full_name             ,
@@ -154,11 +200,13 @@ INSERT INTO gwells_well (
   well_yield_unit_guid        ,
   latitude,
   longitude,
-  orientation_vertical 
+  orientation_vertical,
+  when_created                ,
+  when_updated                ,
+  who_created                 ,
+  who_updated                 
   )
 SELECT 
-old.created                      ,
-coalesce(old.modified,old.created),
 old.well_tag_number              ,
 old.well_guid                    ,
 old.owner_full_name              ,
@@ -189,7 +237,11 @@ subclass.well_subclass_guid   ,
 old.well_yield_unit_guid      ,
 old.LATITUDE                  ,
 old.LONGITUDE                 ,
-old.orientation_vertical
+old.orientation_vertical      ,
+old.when_created              ,
+coalesce(old.when_updated,old.when_created),
+old.who_created               ,
+old.who_updated      
 FROM xform_gwells_well old
 LEFT OUTER JOIN gwells_intended_water_use  use   ON old.WELL_USE_CODE  = use.code
 LEFT OUTER JOIN xform_gwells_land_district land  ON old.LEGAL_LAND_DISTRICT_CODE = land.code 
