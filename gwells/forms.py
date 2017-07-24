@@ -639,7 +639,7 @@ class CasingForm(forms.ModelForm):
         casing_to = cleaned_data.get('casing_to')
         casing_type = cleaned_data.get('casing_type')
         casing_material = cleaned_data.get('casing_material')
-        casing_material = cleaned_data.get('wall_thickness')
+        wall_thickness = cleaned_data.get('wall_thickness')
         errors = []
 
         if casing_from and casing_to and casing_to < casing_from:
