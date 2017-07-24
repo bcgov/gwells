@@ -50,7 +50,7 @@ class ProvinceState(AuditModel):
     Some examples include: BC, AB, W
     """
     province_state_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    code = models.CharField(max_length=10)
+    code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
     sort_order = models.PositiveIntegerField()
     
@@ -68,7 +68,7 @@ class LandDistrict(AuditModel):
     Lookup of Land Districts.
     """
     land_district_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    code = models.CharField(max_length=10)
+    code = models.CharField(max_length=10, unique=True)
     name = models.CharField(max_length=255)
     sort_order = models.PositiveIntegerField()
     
@@ -86,7 +86,7 @@ class WellYieldUnit(AuditModel):
     Units of Well Yield.
     """
     well_yield_unit_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    code = models.CharField(max_length=10)
+    code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
     sort_order = models.PositiveIntegerField()
     
@@ -104,7 +104,7 @@ class WellActivityType(AuditModel):
     Types of Well Activity.
     """
     well_activity_type_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    code = models.CharField(max_length=10)
+    code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
@@ -123,7 +123,7 @@ class WellClass(AuditModel):
     Class of Well type.
     """
     well_class_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    code = models.CharField(max_length=10)
+    code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
@@ -152,6 +152,15 @@ class WellSubclass(AuditModel):
         db_table = 'gwells_well_subclass'
         ordering = ['sort_order', 'description']
 
+    def validate_unique(self, exclude=None):
+        qs = Room.objects.filter(name=self.code)
+        if qs.filter(well_class__code=self.well_class__code).exists():
+            raise ValidationError('Code must be unique per Well Class')
+
+    def save(self, *args, **kwargs):
+        self.validate_unique()
+        super(WellSubclass, self).save(*args, **kwargs)
+
     def __str__(self):
         return self.description
 
@@ -162,7 +171,7 @@ class IntendedWaterUse(AuditModel):
     Usage of Wells (water supply).
     """
     intended_water_use_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    code = models.CharField(max_length=10)
+    code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
@@ -181,7 +190,7 @@ class DrillingCompany(AuditModel):
     Companies who perform drilling.
     """
     drilling_company_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    name = models.CharField(max_length=200)
+    name = models.CharField(max_length=200, unique=True)
     is_hidden = models.BooleanField(default=False)
     
     class Meta:
@@ -219,7 +228,7 @@ class GroundElevationMethod(AuditModel):
     GPS, Altimeter, Differential GPS, Level, 1:50,000 map, 1:20,000 map, 1:10,000 map, 1:5,000 map.
     """
     ground_elevation_method_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    code = models.CharField(max_length=10)
+    code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
@@ -238,7 +247,7 @@ class DrillingMethod(AuditModel):
     The method used to drill a well. For example, air rotary, dual rotary, cable tool, excavating, other.
     """
     drilling_method_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    code = models.CharField(max_length=10)
+    code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
@@ -257,7 +266,7 @@ class SurficialMaterial(AuditModel):
     The surficial material encountered in lithology
     """
     surficial_material_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    code = models.CharField(max_length=10)
+    code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
@@ -276,7 +285,7 @@ class BedrockMaterial(AuditModel):
     The bedrock material encountered in lithology
     """
     bedrock_material_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    code = models.CharField(max_length=10)
+    code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
@@ -295,7 +304,7 @@ class BedrockMaterialDescriptor(AuditModel):
     Further descriptor of the bedrock material encountered in lithology
     """
     bedrock_material_descriptor_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    code = models.CharField(max_length=10)
+    code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
@@ -314,7 +323,7 @@ class LithologyStructure(AuditModel):
     Structure of the lithology
     """
     lithology_structure_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    code = models.CharField(max_length=10)
+    code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
@@ -333,7 +342,7 @@ class LithologyWeathering(AuditModel):
     Weathering of the surficial material encountered in lithology
     """
     lithology_weathering_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    code = models.CharField(max_length=10)
+    code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
@@ -352,7 +361,7 @@ class LithologyColour(AuditModel):
     Colour of the lithology
     """
     lithology_colour_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    code = models.CharField(max_length=10)
+    code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
@@ -371,7 +380,7 @@ class LithologyHardness(AuditModel):
     Hardness of the lithology
     """
     lithology_hardness_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    code = models.CharField(max_length=10)
+    code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
@@ -390,7 +399,7 @@ class LithologyMoisture(AuditModel):
     Moisture of the lithology
     """
     lithology_moisture_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    code = models.CharField(max_length=10)
+    code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
@@ -409,7 +418,7 @@ class CasingType(AuditModel):
     Type of Casing used on a well
     """
     casing_type_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    code = models.CharField(max_length=10)
+    code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
@@ -428,7 +437,7 @@ class CasingMaterial(AuditModel):
      The material used for casing a well, e.g., Cement, Plastic, Steel.
     """
     casing_material_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    code = models.CharField(max_length=10)
+    code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
@@ -447,7 +456,7 @@ class SurfaceSealMaterial(AuditModel):
      Sealant material used that is installed in the annular space around the outside of the outermost casing and between multiple casings of a well.
     """
     surface_seal_material_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    code = models.CharField(max_length=10)
+    code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
@@ -466,7 +475,7 @@ class SurfaceSealMethod(AuditModel):
      Method used to install the surface seal in the annular space around the outside of the outermost casing and between mulitple casings of a well.
     """
     surface_seal_method_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    code = models.CharField(max_length=10)
+    code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
@@ -485,7 +494,7 @@ class BackfillType(AuditModel):
       Type of backfill used in the construction of the well.
     """
     backfill_type_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    code = models.CharField(max_length=10)
+    code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
@@ -763,7 +772,7 @@ class Casing(AuditModel):
     internal_diameter = models.DecimalField(max_digits=8, decimal_places=3, verbose_name='Diameter', blank=False, validators=[MinValueValidator(Decimal('0.5'))])
     casing_type = models.ForeignKey(CasingType, db_column='casing_type_guid', on_delete=models.CASCADE, verbose_name='Casing Type')
     casing_material = models.ForeignKey(CasingMaterial, db_column='casing_material_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Casing Material')
-    wall_thickness = models.DecimalField(max_digits=6, decimal_places=3, verbose_name='Wall Thickness', blank=False, validators=[MinValueValidator(Decimal('0.01'))])
+    wall_thickness = models.DecimalField(max_digits=6, decimal_places=3, verbose_name='Wall Thickness', blank=True, null=True, validators=[MinValueValidator(Decimal('0.01'))])
     drive_shoe = models.BooleanField(default=False, verbose_name='Drive Shoe', choices=((True, 'Yes'), (False, 'No')))
     
     class Meta:

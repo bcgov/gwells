@@ -18,6 +18,7 @@ The gwells-build.json template file contains the following objects:
 - Deployment Configuration for a Postgres database used by SonarQube
 - Persistent volume for the above Postgres database
 - A Deployment Configuration for SonarQube
+- Persistent volume for the above SonarQube instance
 
 Note that when the above objects are added to the "moe-gwells-tools" namespace, and the Pipeline is run for the first time, OpenShift will automatically create a Jenkins Pipeline deployment.
 
@@ -51,7 +52,7 @@ oc policy add-role-to-user edit system:serviceaccount:moe-gwells-tools:default -
 
 
 In the GitHub repository go to Settings > Webhooks > Add webhook
-Create a webhook for the push event only to Payload URL:  https://jenkins-moe-gwells-tools.pathfinder.gov.bc.ca/github-webhook/
+Create a webhook for the push event only to Payload URL specified in the OpenShift Console at: Edit Build Config gwells-pipeline > Triggers > Github webhooks
 Content type: application/json
 
  
@@ -70,7 +71,7 @@ The deployment config uses the moe-gwells-tools namespace since that is where th
 
 # How to access Jenkins for GWELLS
 
-- Login to https://jenkins-moe-gwells-tools.pathfinder.gov.bc.ca with the username/password that was provided to you.
+- Login to https://jenkins-pipeline-svc-moe-gwells-tools.pathfinder.gov.bc.ca with the username/password that was provided to you.
 
 # How to access OpenShift for GWELLS
 
@@ -78,7 +79,7 @@ The deployment config uses the moe-gwells-tools namespace since that is where th
 - Login to https://console.pathfinder.gov.bc.ca:8443; you'll be prompted for GitHub authorization.
 
 ## Command-line (```oc```) tools
-- Download OpenShift [command line tools](https://github.com/openshift/origin/releases/download/v1.2.1/openshift-origin-client-tools-v1.2.1-5e723f6-mac.zip), unzip, and add ```oc``` to your PATH.  
+- Download OpenShift [command line tools](https://github.com/openshift/origin/releases/download/v1.5.1/openshift-origin-client-tools-v1.5.1-7b451fc-windows.zip), unzip, and add ```oc``` to your PATH.  
 - Copy command line login string from https://console.pathfinder.gov.bc.ca:8443/console/command-line.  It will look like ```oc login https://console.pathfinder.gov.bc.ca:8443 --token=xtyz123xtyz123xtyz123xtyz123```
 - Paste the login string into a terminal session.  You are now authenticated against OpenShift and will be able to execute ```oc``` commands. ```oc -h``` provides a summary of available commands.
 
@@ -90,10 +91,6 @@ The deployment config uses the moe-gwells-tools namespace since that is where th
 
 [Red Hat Container Development Kit](http://developers.redhat.com/products/cdk/overview/)
 
-# OpenShift CI/CD pieline Demos:
-
-- https://www.youtube.com/watch?v=65BnTLcDAJI
-- https://www.youtube.com/watch?v=wSFyg6Etwx8
 
 
   
