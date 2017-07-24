@@ -635,26 +635,30 @@ class CasingForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super(CasingForm, self).clean()
 
-        casing_type = cleaned_data.get('casing_type')
-        casing_material = cleaned_data.get('casing_material')
         casing_from = cleaned_data.get('casing_from')
         casing_to = cleaned_data.get('casing_to')
+        casing_type = cleaned_data.get('casing_type')
+        casing_material = cleaned_data.get('casing_material')
+        casing_material = cleaned_data.get('wall_thickness')
         errors = []
-
-        try:
-            if casing_type != CasingType.objects.get(code='OPEN') and not casing_material:
-                self.add_error('casing_material', 'This field is required.')
-        except Exception as e:
-            errors.append('Configuration error: Open Hole Casing Type does not exist, please contact the administrator.')
-
-        try:
-            if casing_type == CasingType.objects.get(code='OPEN') and casing_material:
-                self.add_error('casing_material', 'Open Hole cannot have a casing material.')
-        except Exception as e:
-            errors.append('Configuration error: Open Hole Casing Type does not exist, please contact the administrator.')
 
         if casing_from and casing_to and casing_to < casing_from:
             errors.append('To must be greater than or equal to From.')
+
+        try:
+            open_casing_type = CasingType.objects.get(code='OPEN')
+        except Exception as e:
+            errors.append('Configuration error: Open Hole Casing Type does not exist, please contact the administrator.')
+
+        if open_casing_type:
+            if casing_type != open_casing_type and not casing_material:
+                self.add_error('casing_material', 'This field is required.')
+
+            if casing_type != open_casing_type and not wall_thickness:
+                self.add_error('wall_thickness', 'This field is required.')
+
+            if casing_type == open_casing_type and casing_material:
+                self.add_error('casing_material', 'Open Hole cannot have a casing material.')
 
 
         if len(errors) > 0:
