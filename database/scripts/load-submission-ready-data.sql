@@ -1,10 +1,7 @@
 \encoding windows-1251
 \copy gwells_well_yield_unit 	  FROM './gwells_well_yield_unit.csv'   HEADER DELIMITER ',' CSV
 \copy gwells_province_state  	  FROM './gwells_province_state.csv' 	   HEADER DELIMITER ',' CSV
-
 \copy gwells_well_activity_type (well_activity_type_guid,code,description,is_hidden,sort_order,who_created,when_created,who_updated,when_updated) FROM './gwells_well_activity_type.csv' HEADER DELIMITER ',' CSV
-
-
 
 \copy gwells_intended_water_use	FROM './gwells_intended_water_use.csv' HEADER DELIMITER ',' CSV
 \copy gwells_well_class  	    	FROM './gwells_well_class.csv'  	   	HEADER DELIMITER ',' CSV
@@ -23,6 +20,11 @@
 \copy gwells_casing_material FROM './gwells_casing_material.csv' HEADER DELIMITER ',' CSV
 \copy gwells_casing_type     FROM './gwells_casing_type.csv'     HEADER DELIMITER ',' CSV
 
+/* These will need further transformation to link to existing data */
+xform_gwells_surface_seal_method
+xform_gwells_backfill_type
+\copy gwells_surface_seal_material   FROM './xform_gwells_surface_seal_material.csv' HEADER DELIMITER ',' CSV
+- make distinct on CODE
 
 CREATE unlogged TABLE IF NOT EXISTS xform_gwells_land_district (
   land_district_guid uuid,
@@ -88,6 +90,7 @@ CREATE unlogged TABLE IF NOT EXISTS xform_gwells_driller (
   DRILLER_COMPANY_CODE  character varying(30)            
 );
 
+
 \encoding windows-1251
 \copy xform_gwells_land_district    FROM './xform_gwells_land_district.csv'    HEADER DELIMITER ',' CSV
 \copy xform_gwells_drilling_company FROM './xform_gwells_drilling_company.csv' HEADER DELIMITER ',' CSV
@@ -95,24 +98,28 @@ CREATE unlogged TABLE IF NOT EXISTS xform_gwells_driller (
 \copy xform_gwells_well             FROM './xform_gwells_well.csv'  WITH (HEADER, DELIMITER ',' , FORMAT CSV, FORCE_NULL(modified));
 
 
-INSERT INTO gwells_land_district (land_district_guid, code, name, sort_order)   
-SELECT land_district_guid, code, name, sort_order
+INSERT INTO gwells_land_district (land_district_guid, code, name, sort_order,
+  when_created, when_updated, who_created, who_updated)
+SELECT land_district_guid, code, name, sort_order,when_created, when_updated, who_created, who_updated
 FROM xform_gwells_land_district;
 
-INSERT INTO gwells_drilling_company (drilling_company_guid, name, is_hidden)
-SELECT drilling_company_guid, name, is_hidden
+INSERT INTO gwells_drilling_company (drilling_company_guid, name, is_hidden,driller_company_code)
+SELECT drilling_company_guid, name, is_hidden, driller_company_code
 FROM xform_gwells_drilling_company;
 
 insert into gwells_drilling_company 
 values ('018d4c1047cb11e7a91992ebcb67fe33',
         'Data Conversion Drilling Compnay',
-        true
+        true,
+        'DUMMYRECORD'
         );
 
-INSERT INTO gwells_driller (driller_guid, first_name, surname, registration_number, is_hidden, drilling_company_guid)
-SELECT driller.driller_guid, driller.first_name, driller.surname, driller.registration_number, driller.is_hidden, co.drilling_company_guid
-FROM  xform_gwells_driller driller, xform_gwells_drilling_company co
-WHERE driller.DRILLER_COMPANY_CODE = co.DRILLER_COMPANY_CODE;
+INSERT INTO gwells_driller (driller_guid, first_name, surname, registration_number, is_hidden, drilling_company_guid,
+  ,when_created, when_updated, who_created, who_updated)
+SELECT dr.driller_guid, dr.first_name, dr.surname, dr.registration_number, dr.is_hidden, 
+co.drilling_company_guid, when_created, when_updated, who_created, who_updated
+FROM  xform_gwells_driller dr, xform_gwells_drilling_company co
+WHERE dr.DRILLER_COMPANY_CODE = co.DRILLER_COMPANY_CODE;
 
 INSERT INTO gwells_well (
   created                     ,

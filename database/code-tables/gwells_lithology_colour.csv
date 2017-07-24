@@ -1,9 +1,9 @@
-lithology_colour_guid,code,description,is_hidden,sort_order 
-"510dba5a62a011e7907ba6006ad3dba0","Black","Black","N","10"
-"510dc59062a011e7907ba6006ad3dba0","Blue","Blue","N","20"
-"510dc6ee62a011e7907ba6006ad3dba0","Brown","Brown","N","30"
-"510dc7d462a011e7907ba6006ad3dba0","Grey","Grey","N","40"
-"510dc89c62a011e7907ba6006ad3dba0","Green","Green","N","50"
-"510dc96462a011e7907ba6006ad3dba0","Red","Red","N","60"
-"510dca2c62a011e7907ba6006ad3dba0","Tar","Tar","N","70"
-"510dcaf462a011e7907ba6006ad3dba0","Vari","Vari-Coloured","N","80"
+lithology_colour_guid,code,description,is_hidden,sort_order,when_created,when_updated,who_created,who_updated
+"510dba5a62a011e7907ba6006ad3dba0","Black","Black","N","10","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
+"510dc59062a011e7907ba6006ad3dba0","Blue","Blue","N","20","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
+"510dc6ee62a011e7907ba6006ad3dba0","Brown","Brown","N","30","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
+"510dc7d462a011e7907ba6006ad3dba0","Grey","Grey","N","40","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
+"510dc89c62a011e7907ba6006ad3dba0","Green","Green","N","50","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
+"510dc96462a011e7907ba6006ad3dba0","Red","Red","N","60","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
+"510dca2c62a011e7907ba6006ad3dba0","Tar","Tar","N","70","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
+"510dcaf462a011e7907ba6006ad3dba0","Vari","Vari-Coloured","N","80","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
