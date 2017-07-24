@@ -7,6 +7,8 @@
  *  - Draw a single pushpin (i.e., a Leaflet marker) which causes the map to emit AJAX requests to show all wells
  *      in the bounding box (except the well that is being represented by the pushpin). The map will reissue queries for wells
  *      in the bounding box whenever the map is panned or zoomed, provided the pushpin is present.
+ *      If the map is beneath a certain zoom level, it will draw a rectangle to show queried wells and refrain from querying further
+ *      until zoomed beyond the minimum (in order to prevent querying and rendering an inordinate number of wells).
  *      The pushpin can be fed into the map's initialisation options via wellPushpinInit or added/moved
  *      programmatically through the public method placeWellPushpin(). It may be removed via removeWellPushpin().
  *      If the wellPushpinMoveCallback is supplied on map init, the pushpin can be moved by dragging, which advertises the
@@ -128,6 +130,10 @@ function WellsMap(options) {
 
     // The ending corner of the (final) identifyWellsRectangle
     var _endCorner = null;
+
+    // The rectangle to be drawn when the zoom level is below the search minimum, delimiting
+    // the extent of the queried wells to be displayed.
+    var _searchMinRectangle = null;
 
     /** Private functions */
 
@@ -410,8 +416,7 @@ function WellsMap(options) {
         });
     };
 
-    // Handles the results of an AJAX call to 'ajax/map_well_search/'. Currently the expected behaviour is to draw the wells
-    // that can be drawn.
+    // Handles the results of an AJAX call to 'ajax/map_well_search/'.
     var _searchByAjaxSuccessCallback = function (results) {
         var wells = JSON.parse(results);
         if (_isArray(wells)) {
@@ -420,8 +425,10 @@ function WellsMap(options) {
     };
 
     // Searches for all wells in the map's current bounding box, provided the map is beyond the minimum searching zoom level.
+    // We clear the extant wells before re-querying, for simplicity.
     var _searchWellsInBoundingBox = function () {
         if (_exists(_leafletMap) && _leafletMap.getZoom() >= _SEARCH_MIN_ZOOM_LEVEL) {
+            _clearWells();
             var mapBounds = _leafletMap.getBounds();
             _searchByAjax(_SEARCH_URL, mapBounds, _searchByAjaxSuccessCallback);
         }
@@ -431,6 +438,7 @@ function WellsMap(options) {
     // the map's moveend event while a wellPushpin is present on the map.
     var _searchBoundingBoxOnMoveEnd = function () {
         _searchWellsInBoundingBox();
+        _handleSearchMinRectangle();
     };
 
     // When the wellPushpin is moved, pan to re-centre the pushpin.
@@ -443,11 +451,27 @@ function WellsMap(options) {
     // if the zoom level is below the minimum search level.
     var _wellPushpinZoomEndEvent = function () {
         _leafletMap.panTo(_wellPushpin.pushpinMarker.getLatLng());
-        if (_leafletMap.getZoom() < _SEARCH_MIN_ZOOM_LEVEL) {
-            _clearWells();
-        }
+    };
 
-    }
+    // When the map is zoomed and there is a wellPushpin, we only query for wells while the map
+    // is within the searchMinRectangle. Thus we need to draw the rectangle when the map is zoomed
+    // beyond the search minimum, or destroy it when the map is zoomed within.
+    var _handleSearchMinRectangle = function () {
+
+        if (_leafletMap.getZoom() === _SEARCH_MIN_ZOOM_LEVEL) {
+            if (_exists(_searchMinRectangle)) {
+                _leafletMap.removeLayer(_searchMinRectangle);
+                _searchMinRectangle = null;
+            }
+            _searchMinRectangle = L.rectangle(_leafletMap.getBounds(), {
+                fillOpacity: 0,
+                interactive: false
+            }).addTo(_leafletMap);            
+        } else if (_leafletMap.getZoom() > _SEARCH_MIN_ZOOM_LEVEL && _exists(_searchMinRectangle)) {
+            _leafletMap.removeLayer(_searchMinRectangle);
+            _searchMinRectangle = null;
+        }
+    };
 
     /** Public methods */
 
@@ -617,7 +641,7 @@ function WellsMap(options) {
             _loadWmsLayers(options.wmsLayers);
         }
 
-        // Callbacks        
+        // Callbacks
         _wellPushpinMoveCallback = options.wellPushpinMoveCallback || null;
         _identifyWellsStartCallback = options.identifyWellsStartCallback || null;
         _identifyWellsEndCallback = options.identifyWellsEndCallback || null;
