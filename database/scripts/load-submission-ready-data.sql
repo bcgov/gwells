@@ -120,6 +120,10 @@ CREATE unlogged TABLE IF NOT EXISTS xform_gwells_drilling_company (
  drilling_company_guid uuid                   ,
  name                  character varying(200) ,
  is_hidden             boolean,
+ when_created          timestamp with time zone,
+ when_updated          timestamp with time zone,
+ who_created           character varying(30)   ,
+ who_updated           character varying(30)   ,  
  DRILLER_COMPANY_CODE  character varying(30)             
 );
 
@@ -129,6 +133,10 @@ CREATE unlogged TABLE IF NOT EXISTS xform_gwells_driller (
   surname               character varying(100) ,
   registration_number   character varying(100) ,
   is_hidden             boolean                ,
+  when_created          timestamp with time zone,
+  when_updated          timestamp with time zone,
+  who_created           character varying(30)   ,
+  who_updated           character varying(30)   ,    
   DRILLER_COMPANY_CODE  character varying(30)            
 );
 
@@ -137,7 +145,7 @@ CREATE unlogged TABLE IF NOT EXISTS xform_gwells_driller (
 \copy xform_gwells_land_district    FROM './xform_gwells_land_district.csv'    HEADER DELIMITER ',' CSV
 \copy xform_gwells_drilling_company FROM './xform_gwells_drilling_company.csv' HEADER DELIMITER ',' CSV
 \copy xform_gwells_driller          FROM './xform_gwells_driller.csv'          HEADER DELIMITER ',' CSV
-\copy xform_gwells_well             FROM './xform_gwells_well.csv'  WITH (HEADER, DELIMITER ',' , FORMAT CSV, FORCE_NULL(modified));
+\copy xform_gwells_well             FROM './xform_gwells_well.csv'  WITH (HEADER, DELIMITER ',' , FORMAT CSV, FORCE_NULL(when_updated));
 
 
 INSERT INTO gwells_land_district (land_district_guid, code, name, sort_order,
@@ -165,7 +173,7 @@ VALUES ('018d4c1047cb11e7a91992ebcb67fe33',
 INSERT INTO gwells_driller (driller_guid, first_name, surname, registration_number, is_hidden, drilling_company_guid,
   when_created, when_updated, who_created, who_updated)
 SELECT dr.driller_guid, dr.first_name, dr.surname, dr.registration_number, dr.is_hidden, 
-co.drilling_company_guid, when_created, when_updated, who_created, who_updated
+co.drilling_company_guid, dr.when_created, dr.when_updated, dr.who_created, dr.who_updated
 FROM  xform_gwells_driller dr, xform_gwells_drilling_company co
 WHERE dr.DRILLER_COMPANY_CODE = co.DRILLER_COMPANY_CODE;
 
