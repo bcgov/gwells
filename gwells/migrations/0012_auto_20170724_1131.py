@@ -125,11 +125,6 @@ class Migration(migrations.Migration):
             field=models.CharField(max_length=10, unique=True),
         ),
         migrations.AlterField(
-            model_name='wellsubclass',
-            name='code',
-            field=models.CharField(max_length=10, unique=True),
-        ),
-        migrations.AlterField(
             model_name='wellyieldunit',
             name='code',
             field=models.CharField(max_length=10, unique=True),
