@@ -143,7 +143,7 @@ class WellSubclass(AuditModel):
     """
     well_subclass_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     well_class = models.ForeignKey(WellClass, db_column='well_class_guid', on_delete=models.CASCADE, blank=True)
-    code = models.CharField(max_length=10, unique=True)
+    code = models.CharField(max_length=10)
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
@@ -151,6 +151,15 @@ class WellSubclass(AuditModel):
     class Meta:
         db_table = 'gwells_well_subclass'
         ordering = ['sort_order', 'description']
+
+    def validate_unique(self, exclude=None):
+        qs = Room.objects.filter(name=self.code)
+        if qs.filter(well_class__code=self.well_class__code).exists():
+            raise ValidationError('Code must be unique per Well Class')
+
+    def save(self, *args, **kwargs):
+        self.validate_unique()
+        super(WellSubclass, self).save(*args, **kwargs)
 
     def __str__(self):
         return self.description
@@ -763,7 +772,7 @@ class Casing(AuditModel):
     internal_diameter = models.DecimalField(max_digits=8, decimal_places=3, verbose_name='Diameter', blank=False, validators=[MinValueValidator(Decimal('0.5'))])
     casing_type = models.ForeignKey(CasingType, db_column='casing_type_guid', on_delete=models.CASCADE, verbose_name='Casing Type')
     casing_material = models.ForeignKey(CasingMaterial, db_column='casing_material_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Casing Material')
-    wall_thickness = models.DecimalField(max_digits=6, decimal_places=3, verbose_name='Wall Thickness', blank=False, validators=[MinValueValidator(Decimal('0.01'))])
+    wall_thickness = models.DecimalField(max_digits=6, decimal_places=3, verbose_name='Wall Thickness', blank=True, null=True, validators=[MinValueValidator(Decimal('0.01'))])
     drive_shoe = models.BooleanField(default=False, verbose_name='Drive Shoe', choices=((True, 'Yes'), (False, 'No')))
     
     class Meta:

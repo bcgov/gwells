@@ -23,19 +23,46 @@ SET VERIFY OFF
 SET TERMOUT OFF
 SPOOL H:\xform_gwells_backfill_type.csv
 SELECT /*csv*/  
+  'ETL_USER' AS who_created,
+  '2017-07-01 00:00:00-08' AS when_created,
+  'ETL_USER' AS who_updated,
+  '2017-07-01 00:00:00-08' AS when_updated,
   SYS_GUID() AS backfill_type_guid,
-  CODE,
-  INITCAP(CODE) AS description,
+  regexp_replace(
+  regexp_replace(
+  regexp_replace(
+  regexp_replace(
+  regexp_replace(
+  regexp_replace(
+  regexp_replace(
+  regexp_replace(
+  regexp_replace(
+  regexp_replace( 
+  regexp_replace(BACKFILL_MATERIAL,
+  'BENTONITE|BENTONTIE|BENONITE|BENTANITE','BT',1,0,'i')
+  , 'GRAVEL','GRV',1,0,'i')
+  , 'GROUT','GRT',1,0,'i')
+  , 'WASHED|WASH','WSH',1,0,'i')
+  , 'ROCK','RK',1,0,'i')
+  , 'CONCRETE','CC',1,0,'i')
+  , 'CEMENT','CMT',1,0,'i')
+  , 'NATIVE','NTV',1,0,'i')
+  , 'NATURAL','NAT',1,0,'i')
+  , ' MINUS |MINUS','-',1,0,'i')
+  , 'CRUSHED|CRUSH','CRSH',1,0,'i')
+  AS CODE,
+  INITCAP(BACKFILL_MATERIAL) AS description,
   'N' AS is_hidden,
-  ROWNUM * 10 AS SORT_ORDER
+  ROWNUM * 10 AS SORT_ORDER,
+  BACKFILL_MATERIAL AS BACKFILL_MATERIAL
 FROM (
-  SELECT DISTINCT UPPER(TRIM(BACKFILL_MATERIAL)) AS CODE
+  SELECT DISTINCT UPPER(TRIM(BACKFILL_MATERIAL)) AS BACKFILL_MATERIAL
   FROM WELLS.WELLS_WELLS
   WHERE BACKFILL_MATERIAL IS NOT NULL 
-  AND   BACKFILL_MATERIAL NOT IN ('UNKNOWN','UNKNOWN MATERIAL','NONE','NOT APPLICABLE','NOT PROVIDED','N/A')
+  AND   BACKFILL_MATERIAL NOT IN ('UNKNOWN','UNKNOWN MATERIAL',
+    'NONE','NOT APPLICABLE','NOT PROVIDED','N/A','2007-03-07')
   ORDER BY UPPER(TRIM(BACKFILL_MATERIAL))
 )
-ORDER BY CODE
 /
 SPOOL OFF
 
@@ -75,6 +102,7 @@ FROM (
   AND SEALANT_MATERIAL != 'UNKNOWN'
   ORDER BY  UPPER(TRIM(SEALANT_MATERIAL))
 )
+/*
 WHERE LENGTH(
   regexp_replace(
   regexp_replace(
@@ -89,13 +117,9 @@ WHERE LENGTH(
   , ' INCH','"',1,0,'i')
   , 'CONCRETE','CC',1,0,'i')
 ) < 11
+*/
 /
 SPOOL OFF
-
-
-
-
-
 
 
 
@@ -150,10 +174,6 @@ SET VERIFY OFF
 SET TERMOUT OFF
 SPOOL H:\xform_gwells_well.csv
 SELECT /*csv*/ 
-  to_char(WELLS.WELLS_WELLS.WHEN_CREATED,'YYYY-MM-DD HH24:MI:SS') || '-08' /* PST Timezone */ AS created,
-  NVL2(WELLS.WELLS_WELLS.WHEN_UPDATED,
-      to_char(WELLS.WELLS_WELLS.WHEN_UPDATED,'YYYY-MM-DD HH24:MI:SS') || '-08' /* PST Timezone */,
-      NULL) AS modified,
   WELLS.WELLS_WELLS.WELL_TAG_NUMBER,
   SYS_GUID() AS WELL_GUID,
   NVL2(WELLS.WELLS_OWNERS.GIVEN_NAME,WELLS.WELLS_OWNERS.GIVEN_NAME || ' ', NULL) || WELLS.WELLS_OWNERS.SURNAME AS owner_full_name,
@@ -214,7 +234,26 @@ SELECT /*csv*/
   CASE
      WHEN WELLS.WELLS_WELLS.ORIENTATION_OF_WELL_CODE = 'HORIZ' THEN 'N'
      ELSE 'Y'
-  END AS orientation_vertical
+  END AS orientation_vertical,
+  to_char(WELLS.WELLS_WELLS.WHEN_CREATED,'YYYY-MM-DD HH24:MI:SS') || '-08' /* PST Timezone */ AS when_created,
+  NVL2(WELLS.WELLS_WELLS.WHEN_UPDATED,
+      to_char(WELLS.WELLS_WELLS.WHEN_UPDATED,'YYYY-MM-DD HH24:MI:SS') || '-08' /* PST Timezone */,
+      NULL) AS when_updated,
+  'ETL_USER' AS who_created,
+  'ETL_USER' AS who_updated
+/*
+
+other_drilling_method        | character varying(50)    | 
+ drilling_method_guid         | uuid                     | 
+ ground_elevation_method_guid | uuid                     |
+
+backfill_depth               | numeric(7,2)             | 
+ surface_seal_depth           | numeric(5,2)             | 
+ surface_seal_thickness       | numeric(7,2)             | 
+ backfill_type_guid           | uuid                     | 
+ surface_seal_material_guid   | uuid                     | 
+ surface_seal_method_guid     | uuid                     | 
+*/  
 FROM WELLS.WELLS_WELLS
 LEFT OUTER JOIN WELLS.WELLS_OWNERS
 ON WELLS.WELLS_OWNERS.OWNER_ID = WELLS.WELLS_WELLS.OWNER_ID
@@ -233,6 +272,10 @@ SELECT /*csv*/
   INITCAP(REGEXP_SUBSTR(CREW_DRILLER_NAME,'\S+$' )) AS surname,
   PERMIT_NUMBER AS registration_number,
   'N' AS is_hidden,
+  '2017-07-01 00:00:00-08' AS when_created,
+  '2017-07-01 00:00:00-08' AS when_updated,  
+  'ETL_USER' AS who_created,
+  'ETL_USER' AS who_updated,
   WELLS.WELLS_WELLS.DRILLER_COMPANY_CODE
 FROM WELLS.WELLS_WELLS 
 WHERE ROWID IN (
@@ -262,6 +305,10 @@ SELECT /*csv*/
      WHEN WELLS.WELLS_DRILLER_CODES.STATUS_FLAG = 'N' THEN 'Y'
      WHEN WELLS.WELLS_DRILLER_CODES.STATUS_FLAG = 'Y' THEN 'N'
   END AS is_hidden,  
+  '2017-07-01 00:00:00-08' AS when_created,
+  '2017-07-01 00:00:00-08' AS when_updated,  
+  'ETL_USER' AS who_created,
+  'ETL_USER' AS who_updated,
   WELLS.WELLS_DRILLER_CODES.DRILLER_COMPANY_CODE AS driller_company_code
 FROM WELLS.WELLS_DRILLER_CODES
 /
