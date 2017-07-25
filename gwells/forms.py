@@ -682,7 +682,7 @@ class ActivitySubmissionSurfaceSealForm(forms.ModelForm):
             Fieldset(
                 'Surface Seal and Backfill Information',
                 Div(
-                    Div('surface_seal_material', css_class='col-md-3'),
+                    Div('surface_seal_type', css_class='col-md-3'),
                     Div(AppendedText('surface_seal_depth', 'ft'), css_class='col-md-2'),
                     Div(AppendedText('surface_seal_thickness', 'in'), css_class='col-md-2'),
                     css_class='row',
@@ -704,10 +704,10 @@ class ActivitySubmissionSurfaceSealForm(forms.ModelForm):
         )
         super(ActivitySubmissionSurfaceSealForm, self).__init__(*args, **kwargs)
 
-    def clean_surface_seal_material(self):
-        surface_seal_material = self.cleaned_data.get('surface_seal_material') 
+    def clean_surface_seal_type(self):
+        surface_seal_type = self.cleaned_data.get('surface_seal_type') 
 
-        if self.initial['casing_exists'] and not surface_seal_material:
+        if self.initial['casing_exists'] and not surface_seal_type:
             raise forms.ValidationError('This field is required when casing specified.');
 
     def clean_surface_seal_depth(self):
@@ -730,7 +730,7 @@ class ActivitySubmissionSurfaceSealForm(forms.ModelForm):
 
     class Meta:
         model = ActivitySubmission
-        fields = ['surface_seal_material', 'surface_seal_depth', 'surface_seal_thickness', 'surface_seal_method', 'backfill_type', 'backfill_depth']
+        fields = ['surface_seal_type', 'surface_seal_depth', 'surface_seal_thickness', 'surface_seal_method', 'backfill_type', 'backfill_depth']
 
 
 
