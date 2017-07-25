@@ -453,6 +453,11 @@ class ActivitySubmissionGpsForm(forms.ModelForm):
             )
         )
         super(ActivitySubmissionGpsForm, self).__init__(*args, **kwargs)
+        # Make fields required on the form even though they are not required in the DB due to legacy data issues
+        # TODO - check admin or staff user and don't make these fields required
+        self.fields['latitude'].required = True
+        self.fields['longitude'].required = True
+        self.fields['drilling_method'].required = True
     
     def clean_latitude(self):
         latitude = self.cleaned_data.get('latitude')
