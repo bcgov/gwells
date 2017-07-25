@@ -151,12 +151,6 @@ CREATE unlogged TABLE IF NOT EXISTS xform_gwells_driller (
 \copy xform_gwells_surface_seal_material FROM './xform_gwells_surface_seal_material.csv' HEADER DELIMITER ',' CSV
 \copy xform_gwells_surface_seal_method FROM './xform_gwells_surface_seal_method.csv' HEADER DELIMITER ',' CSV
 
-
-
-\copy xform_gwells_backfill_type    FROM './xform_gwells_backfill_type.csv' HEADER DELIMITER ',' CSV
-\copy xform_gwells_surface_seal_material FROM './xform_gwells_surface_seal_material.csv' HEADER DELIMITER ',' CSV
-\copy xform_gwells_surface_seal_method FROM './xform_gwells_surface_seal_method.csv' HEADER DELIMITER ',' CSV
-
 INSERT INTO gwells_backfill_type (who_created,when_created,who_updated,when_updated,
     backfill_type_guid,code,description,is_hidden,sort_order)
 SELECT who_created,when_created,who_updated,when_updated,
