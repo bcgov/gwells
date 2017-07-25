@@ -19,13 +19,16 @@ The legacy database is WELLS schema of ENVPROD1.NRS.GOV.BC.CA, and was exported 
     copy/download the script to a file on the Citrix account.  Do not copy-and-paste as the run script "@" syntax is 
     required to filter out the "SELECT FROM ... " output from the CSV.
 
-    Four CSV files will be created on your networked Home drive (H:\), prefixed with 'xform' to denote that an additional transformation step is required before inserting into 'gwells' tables:
+    Seven CSV files will be created on your networked Home drive (H:\), prefixed with 'xform' to denote that an additional transformation step is required before inserting into 'gwells' tables:
 
 ```
-H:\xform_gwells_land_district.csv    
-H:\xform_gwells_well.csv
+H:\xform_gwells_backfill_type.csv
 H:\xform_gwells_driller.csv
 H:\xform_gwells_drilling_company.csv
+H:\xform_gwells_land_district.csv
+H:\xform_gwells_surface_seal_material.csv
+H:\xform_gwells_surface_seal_method.csv
+H:\xform_gwells_well.csv
 ```
 
 4. Copy these generated CSV files over to your local workstation (e.g. /Users/garywong/tmp/gwells), ready to be included in the `rsync` [step below](#rsync-csv).  SQL Developer insists on adding a blank line at the end of each generated CSV file, which runs into a PostGres bug when importing CSV with such a blank line.   Remove this last line from each of the genereated files, either manually or via sed/awk/perl etc.
