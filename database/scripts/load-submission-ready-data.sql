@@ -40,11 +40,11 @@ CREATE unlogged TABLE IF NOT EXISTS xform_gwells_backfill_type (
   who_updated        character varying(30)   ,
   when_updated       timestamp with time zone,
   backfill_type_guid uuid                    ,
-  code               character varying(10)   ,
+  code               character varying(100)  ,
   description        character varying(100)  ,
   is_hidden          boolean                 ,
   sort_order         integer                 ,
-  BACKFILL_MATERIAL  character varying(30)    
+  BACKFILL_MATERIAL  character varying(100)    
 );
 
 /* This will need further transformation to link to existing data */
@@ -54,11 +54,11 @@ CREATE unlogged TABLE IF NOT EXISTS xform_gwells_surface_seal_material(
   who_updated                 character varying(30)   ,
   when_updated                timestamp with time zone,
   surface_seal_material_guid  uuid                    ,
-  code                        character varying(10)   ,
+  code                        character varying(100)   ,
   description                 character varying(100)  ,
   is_hidden                   boolean                 ,
   sort_order                  integer       ,
-  SEALANT_MATERIAL            character varying(30)          
+  SEALANT_MATERIAL            character varying(100)          
 );
 /* - make distinct on CODE */ 
 
@@ -146,6 +146,46 @@ CREATE unlogged TABLE IF NOT EXISTS xform_gwells_driller (
 \copy xform_gwells_drilling_company FROM './xform_gwells_drilling_company.csv' HEADER DELIMITER ',' CSV
 \copy xform_gwells_driller          FROM './xform_gwells_driller.csv'          HEADER DELIMITER ',' CSV
 \copy xform_gwells_well             FROM './xform_gwells_well.csv'  WITH (HEADER, DELIMITER ',' , FORMAT CSV, FORCE_NULL(when_updated));
+
+\copy xform_gwells_backfill_type    FROM './xform_gwells_backfill_type.csv' HEADER DELIMITER ',' CSV
+\copy xform_gwells_surface_seal_material FROM './xform_gwells_surface_seal_material.csv' HEADER DELIMITER ',' CSV
+\copy xform_gwells_surface_seal_method FROM './xform_gwells_surface_seal_method.csv' HEADER DELIMITER ',' CSV
+
+
+
+\copy xform_gwells_backfill_type    FROM './xform_gwells_backfill_type.csv' HEADER DELIMITER ',' CSV
+\copy xform_gwells_surface_seal_material FROM './xform_gwells_surface_seal_material.csv' HEADER DELIMITER ',' CSV
+\copy xform_gwells_surface_seal_method FROM './xform_gwells_surface_seal_method.csv' HEADER DELIMITER ',' CSV
+
+INSERT INTO gwells_backfill_type (who_created,when_created,who_updated,when_updated,
+    backfill_type_guid,code,description,is_hidden,sort_order)
+SELECT who_created,when_created,who_updated,when_updated,
+  backfill_type_guid, code,description,is_hidden,sort_order
+FROM xform_gwells_backfill_type
+WHERE length(code) < 11
+AND  code not in 
+  (SELECT CODE
+  FROM xform_gwells_backfill_type 
+  group by code
+  having count(*) > 1);
+
+INSERT INTO gwells_surface_seal_material (who_created,when_created,who_updated,when_updated,
+    surface_seal_material_guid,code,description,is_hidden,sort_order)
+SELECT who_created,when_created,who_updated,when_updated,
+  surface_seal_material_guid, code,description,is_hidden,sort_order
+FROM xform_gwells_surface_seal_material
+WHERE length(code) < 11
+AND  code not in 
+  (SELECT CODE
+  FROM xform_gwells_surface_seal_material 
+  group by code
+  having count(*) > 1);
+
+INSERT INTO gwells_surface_seal_method (who_created,when_created,who_updated,when_updated,
+    surface_seal_method_guid,code,description,is_hidden,sort_order)
+SELECT who_created,when_created,who_updated,when_updated,
+  surface_seal_method_guid, code,description,is_hidden,sort_order
+FROM xform_gwells_surface_seal_method;
 
 
 INSERT INTO gwells_land_district (land_district_guid, code, name, sort_order,
