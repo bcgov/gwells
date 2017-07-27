@@ -196,9 +196,8 @@ Use <a href="#">Advanced Search</a> for additional search options
                 transparent: true
             }        
         ],
-        identifyWellsRectangle: null,
-        identifyWellsStartCallback: identifyWellsStartCallback, 
-        identifyWellsEndCallback: identifyWellsEndCallback,
+        initialExtentRectangle: null,
+        externalQueryCallback: searchWellsByExtentCallback,
         externalAttributionNodeId: attribNode 
     };
 
@@ -210,22 +209,12 @@ Use <a href="#">Advanced Search</a> for additional search options
 
     function startIdentifyWellsOperation() {
         if (searchMap !== null) {
-            searchMap.startIdentifyWells();
+            searchMap.searchWellsByExtent();
         }
     }
 
-    // We want to alter the map to have crosshairs during identifyWells,
-    // as well as disabling the button until the operation is over.
-    function identifyWellsStartCallback() {
-        $("#"+searchMapNodeId).addClass('identify-wells-operation');
-        $("#identify-wells-btn").prop("disabled", true);
-    }
-
-    // Remove the crosshairs from the map, re-enable the button, gather
-    // the corners of the rectangle, and submit the form.
-    function identifyWellsEndCallback(startLatLong, endLatLong) {
+    function searchWellsByExtentCallback(startLatLong, endLatLong) {
         $("#"+searchMapNodeId).removeClass('identify-wells-operation');
-        $("#identify-wells-btn").prop("disabled", false);
         if (startLatLong && endLatLong) {
             var startLatLongString = startLatLong.lat + latLongDelimiter + startLatLong.lng;
             var endLatLongString = endLatLong.lat + latLongDelimiter + endLatLong.lng;
@@ -240,7 +229,7 @@ Use <a href="#">Advanced Search</a> for additional search options
         var wellsJson = $("#wells-json").attr("data-wells-search-json") || null;
         var wells = JSON.parse(wellsJson);
         var latLongBox = JSON.parse($("#wells-json").attr("data-lat-long-box") || null);
-        searchMapOptions.identifyWellsRectangle = latLongBox;
+        searchMapOptions.initialExtentRectangle = latLongBox;
         searchMap = new WellsMap(searchMapOptions);
         searchMap.drawAndFitBounds(wells);            
     });
