@@ -453,6 +453,11 @@ class ActivitySubmissionGpsForm(forms.ModelForm):
             )
         )
         super(ActivitySubmissionGpsForm, self).__init__(*args, **kwargs)
+        # Make fields required on the form even though they are not required in the DB due to legacy data issues
+        # TODO - check admin or staff user and don't make these fields required
+        self.fields['latitude'].required = True
+        self.fields['longitude'].required = True
+        self.fields['drilling_method'].required = True
     
     def clean_latitude(self):
         latitude = self.cleaned_data.get('latitude')
@@ -639,7 +644,7 @@ class CasingForm(forms.ModelForm):
         casing_to = cleaned_data.get('casing_to')
         casing_type = cleaned_data.get('casing_type')
         casing_material = cleaned_data.get('casing_material')
-        casing_material = cleaned_data.get('wall_thickness')
+        wall_thickness = cleaned_data.get('wall_thickness')
         errors = []
 
         if casing_from and casing_to and casing_to < casing_from:
@@ -682,7 +687,7 @@ class ActivitySubmissionSurfaceSealForm(forms.ModelForm):
             Fieldset(
                 'Surface Seal and Backfill Information',
                 Div(
-                    Div('surface_seal_material', css_class='col-md-3'),
+                    Div('surface_seal_type', css_class='col-md-3'),
                     Div(AppendedText('surface_seal_depth', 'ft'), css_class='col-md-2'),
                     Div(AppendedText('surface_seal_thickness', 'in'), css_class='col-md-2'),
                     css_class='row',
@@ -704,10 +709,10 @@ class ActivitySubmissionSurfaceSealForm(forms.ModelForm):
         )
         super(ActivitySubmissionSurfaceSealForm, self).__init__(*args, **kwargs)
 
-    def clean_surface_seal_material(self):
-        surface_seal_material = self.cleaned_data.get('surface_seal_material') 
+    def clean_surface_seal_type(self):
+        surface_seal_type = self.cleaned_data.get('surface_seal_type') 
 
-        if self.initial['casing_exists'] and not surface_seal_material:
+        if self.initial['casing_exists'] and not surface_seal_type:
             raise forms.ValidationError('This field is required when casing specified.');
 
     def clean_surface_seal_depth(self):
@@ -730,7 +735,7 @@ class ActivitySubmissionSurfaceSealForm(forms.ModelForm):
 
     class Meta:
         model = ActivitySubmission
-        fields = ['surface_seal_material', 'surface_seal_depth', 'surface_seal_thickness', 'surface_seal_method', 'backfill_type', 'backfill_depth']
+        fields = ['surface_seal_type', 'surface_seal_depth', 'surface_seal_thickness', 'surface_seal_method', 'backfill_type', 'backfill_depth']
 
 
 

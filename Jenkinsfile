@@ -1,5 +1,16 @@
 node('maven') {
-    stage('checkout') {
+    stage('build') {
+        echo "Building..."
+        openshiftBuild bldCfg: 'gwells', showBuildLogs: 'true'
+        openshiftTag destStream: 'gwells', verbose: 'true', destTag: '$BUILD_ID', srcStream: 'gwells', srcTag: 'latest'
+    }
+    
+    stage('deploy-dev') {
+        echo "Deploying to dev..."
+        openshiftTag destStream: 'gwells', verbose: 'true', destTag: 'dev', srcStream: 'gwells', srcTag: 'latest'
+    }
+    
+    stage('checkout for static code analysis') {
         echo "checking out source"
         echo "Build: ${BUILD_ID}"
         checkout scm
@@ -23,17 +34,6 @@ node('maven') {
         }
     }
 	
-	stage('build') {
-	    echo "Building..."
-	    openshiftBuild bldCfg: 'gwells', showBuildLogs: 'true'
-	    openshiftTag destStream: 'gwells', verbose: 'true', destTag: '$BUILD_ID', srcStream: 'gwells', srcTag: 'latest'
-    }
-	
-    stage('deploy-dev') {
-        echo "Deploying to dev..."
-        openshiftTag destStream: 'gwells', verbose: 'true', destTag: 'dev', srcStream: 'gwells', srcTag: 'latest'
-    }
-    
 	stage('validation') {
         dir('navunit') {
             sh './gradlew --debug --stacktrace phantomJsTest'
