@@ -451,18 +451,18 @@ class CasingMaterial(AuditModel):
 
 
 
-class SurfaceSealType(AuditModel):
+class SurfaceSealMaterial(AuditModel):
     """
-     Sealant type used that is installed in the annular space around the outside of the outermost casing and between multiple casings of a well.
+     Sealant material used that is installed in the annular space around the outside of the outermost casing and between multiple casings of a well.
     """
-    surface_seal_type_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    surface_seal_material_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
     
     class Meta:
-        db_table = 'gwells_surface_seal_type'
+        db_table = 'gwells_surface_seal_material'
         ordering = ['sort_order', 'description']
 
     def __str__(self):
@@ -482,25 +482,6 @@ class SurfaceSealMethod(AuditModel):
     
     class Meta:
         db_table = 'gwells_surface_seal_method'
-        ordering = ['sort_order', 'description']
-
-    def __str__(self):
-        return self.description
-
-
-
-class BackfillType(AuditModel):
-    """
-      Type of backfill used in the construction of the well.
-    """
-    backfill_type_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    code = models.CharField(max_length=10, unique=True)
-    description = models.CharField(max_length=100)
-    is_hidden = models.BooleanField(default=False)
-    sort_order = models.PositiveIntegerField()
-    
-    class Meta:
-        db_table = 'gwells_backfill_type'
         ordering = ['sort_order', 'description']
 
     def __str__(self):
@@ -547,11 +528,11 @@ class Well(AuditModel):
     other_drilling_method = models.CharField(max_length=50, blank=True, verbose_name='Specify Other Drilling Method')
     orientation_vertical = models.BooleanField(default=True, verbose_name='Well Orientation')
 
-    surface_seal_type = models.ForeignKey(SurfaceSealType, db_column='surface_seal_type_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Surface Seal Type')
+    surface_seal_material = models.ForeignKey(SurfaceSealMaterial, db_column='surface_seal_material_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Surface Seal Material')
     surface_seal_depth = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Surface Seal Depth')
     surface_seal_thickness = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Surface Seal Thickness')
     surface_seal_method = models.ForeignKey(SurfaceSealMethod, db_column='surface_seal_method_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Surface Seal Installation Method')
-    backfill_type = models.ForeignKey(BackfillType, db_column='backfill_type_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Backfill Type')
+    backfill_above_surface_seal = models.CharField(max_length=250, blank=True, verbose_name='Backfill Material Above Surface Seal')
     backfill_depth = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Backfill Depth')
 
 
@@ -634,11 +615,11 @@ class ActivitySubmission(AuditModel):
     other_drilling_method = models.CharField(max_length=50, blank=True, verbose_name='Specify Other Drilling Method')
     orientation_vertical = models.BooleanField(default=True, verbose_name='Well Orientation', choices=((True, 'vertical'), (False, 'horizontal')))
 
-    surface_seal_type = models.ForeignKey(SurfaceSealType, db_column='surface_seal_type_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Surface Seal Type')
+    surface_seal_material = models.ForeignKey(SurfaceSealMaterial, db_column='surface_seal_material_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Surface Seal Material')
     surface_seal_depth = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Surface Seal Depth')
     surface_seal_thickness = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Surface Seal Thickness', validators=[MinValueValidator(Decimal('1.00'))])
     surface_seal_method = models.ForeignKey(SurfaceSealMethod, db_column='surface_seal_method_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Surface Seal Installation Method')
-    backfill_type = models.ForeignKey(BackfillType, db_column='backfill_type_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Backfill Type')
+    backfill_above_surface_seal = models.CharField(max_length=250, blank=True, verbose_name='Backfill Material Above Surface Seal')
     backfill_depth = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Backfill Depth')
 
 
@@ -685,11 +666,11 @@ class ActivitySubmission(AuditModel):
         w.other_drilling_method = self.other_drilling_method
         w.orientation_vertical = self.orientation_vertical
 
-        w.surface_seal_type = self.surface_seal_type
+        w.surface_seal_material = self.surface_seal_material
         w.surface_seal_depth = self.surface_seal_depth
         w.surface_seal_thickness = self.surface_seal_thickness
         w.surface_seal_method = self.surface_seal_method
-        w.backfill_type = self.backfill_type
+        w.backfill_above_surface_seal = self.backfill_above_surface_seal
         w.backfill_depth = self.backfill_depth
         #TODO
 
