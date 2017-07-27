@@ -189,11 +189,10 @@ function WellsMap(options) {
 
     // Passes the wellPushpin's updated lat/long coordinates to the provided callback function, if it exists.
     var _wellPushpinMoveEvent = function (moveEvent) {
-        var latLng = moveEvent.latlng;
         if (_exists(_wellPushpinMoveCallback)) {
+            var latLng = moveEvent.latlng;
             _wellPushpinMoveCallback(latLng);
         }
-        _wellPushpin.wellMarker.setLatLng(latLng);
     };
 
     // Handles the mousemove event during the identifyWells operation. Specifically, this function draws the interstitial
