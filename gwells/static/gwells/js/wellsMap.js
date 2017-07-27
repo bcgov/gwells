@@ -5,7 +5,7 @@
  * A NOTE ON FUNCTIONALITY: This class can be initialised in different ways, which exposes its functionality differently.
  * If sufficient parameters are supplied in map construction, the map can perform the following tasks:
  *  - Draw a single pushpin (i.e., a Leaflet marker akin to a Google marker) which causes the map to emit AJAX requests to show all wells
- *      in the bounding box (except the well that is being represented by the pushpinm which the pin itself has coupled). The map will
+ *      in the bounding box (except the well that is being represented by the pushpin which the pin itself has coupled). The map will
  *      reissue queries for wells in the bounding box whenever the map is panned or zoomed, provided the pushpin is present.
  *      If the map is beneath a certain zoom level, it will draw a rectangle to show queried wells and refrain from querying further
  *      until zoomed beyond the minimum (in order to prevent querying and rendering an inordinate number of wells).
