@@ -70,13 +70,13 @@ SET TRIMSPOOL ON
 SET ECHO OFF
 SET VERIFY OFF
 SET TERMOUT OFF
-SPOOL H:\xform_gwells_surface_seal_material.csv
+SPOOL H:\xform_gwells_surface_seal_type.csv
 SELECT /*csv*/  
   'ETL_USER' AS who_created,
   '2017-07-01 00:00:00-08' AS when_created,
   'ETL_USER' AS who_updated,
   '2017-07-01 00:00:00-08' AS when_updated,
-  SYS_GUID() AS surface_seal_material_guid,
+  SYS_GUID() AS surface_seal_type_guid,
   regexp_replace(
   regexp_replace(
   regexp_replace(
@@ -251,7 +251,7 @@ backfill_depth               | numeric(7,2)             |
  surface_seal_depth           | numeric(5,2)             | 
  surface_seal_thickness       | numeric(7,2)             | 
  backfill_type_guid           | uuid                     | 
- surface_seal_material_guid   | uuid                     | 
+ surface_seal_type_guid   | uuid                     | 
  surface_seal_method_guid     | uuid                     | 
 */  
 FROM WELLS.WELLS_WELLS
