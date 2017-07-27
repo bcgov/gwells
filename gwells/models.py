@@ -533,7 +533,7 @@ class Well(AuditModel):
     surface_seal_thickness = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Surface Seal Thickness')
     surface_seal_method = models.ForeignKey(SurfaceSealMethod, db_column='surface_seal_method_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Surface Seal Installation Method')
     backfill_above_surface_seal = models.CharField(max_length=250, blank=True, verbose_name='Backfill Material Above Surface Seal')
-    backfill_depth = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Backfill Depth')
+    backfill_above_surface_seal_depth = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Backfill Depth')
 
 
     diameter = models.CharField(max_length=9, blank=True)  #want to be integer in future
@@ -620,7 +620,7 @@ class ActivitySubmission(AuditModel):
     surface_seal_thickness = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Surface Seal Thickness', validators=[MinValueValidator(Decimal('1.00'))])
     surface_seal_method = models.ForeignKey(SurfaceSealMethod, db_column='surface_seal_method_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Surface Seal Installation Method')
     backfill_above_surface_seal = models.CharField(max_length=250, blank=True, verbose_name='Backfill Material Above Surface Seal')
-    backfill_depth = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Backfill Depth')
+    backfill_above_surface_seal_depth = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Backfill Depth')
 
 
     diameter = models.CharField(max_length=9, blank=True)  #want to be integer in future
@@ -671,7 +671,7 @@ class ActivitySubmission(AuditModel):
         w.surface_seal_thickness = self.surface_seal_thickness
         w.surface_seal_method = self.surface_seal_method
         w.backfill_above_surface_seal = self.backfill_above_surface_seal
-        w.backfill_depth = self.backfill_depth
+        w.backfill_above_surface_seal_depth = self.backfill_above_surface_seal_depth
         #TODO
 
         return w;
