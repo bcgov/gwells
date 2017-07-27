@@ -494,11 +494,12 @@ function WellsMap(options) {
     };
 
     var searchWellsByExtent = function () {
-        if (_exists(_externalQueryCallback))
-        var boundingBox = _leafletMap.getBounds();
-        var northWestCorner = boundingBox.getNorthWest();
-        var southEastCorner = boundingBox.getSouthEast();
-        
+        if (_exists(_externalQueryCallback)) {
+            var boundingBox = _leafletMap.getBounds();
+            var northWestCorner = boundingBox.getNorthWest();
+            var southEastCorner = boundingBox.getSouthEast();
+            _externalQueryCallback(northWestCorner, southEastCorner);
+        }
     };
 
     /** IIFE for construction of a WellsMap */
