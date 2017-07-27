@@ -41,7 +41,7 @@
  *      }
  *   ],
  *   initCentre?: [float], // A two-element array representing the latitude and longitude of the centre of the map. If omitted, the map is fit to mapBounds, so one of these must exist.
- *   canZoom?: bool, // Whether the map can be zoomed. Defaults to true.
+ *   centreZoom?: bool, // Whether the map zoom always tracks the centre of the map. Defaults to false.
  *   canPan?: bool, // Whether the map can be panned after initial load. Defaults to true.
  *   minZoom?: number,  // The minimum zoom level of the map (i.e., how far it can be zoomed out)
  *   maxZoom?: number,  // The maximum zoom level of the map (i.e., how far it can be zoomed in)
@@ -434,6 +434,25 @@ function WellsMap(options) {
         }
     };
 
+    // When the map is zoomed and there is a wellPushpin, we only query for wells while the map
+    // is within the searchMinRectangle. Thus we need to draw the rectangle when the map is zoomed
+    // beyond the search minimum, or destroy it when the map is zoomed within.
+    var _handleSearchMinRectangle = function () {
+        if (_leafletMap.getZoom() === _SEARCH_MIN_ZOOM_LEVEL) {
+            if (_exists(_searchMinRectangle)) {
+                _leafletMap.removeLayer(_searchMinRectangle);
+                _searchMinRectangle = null;
+            }
+            _searchMinRectangle = L.rectangle(_leafletMap.getBounds(), {
+                fillOpacity: 0,
+                interactive: false
+            }).addTo(_leafletMap);            
+        } else if (_leafletMap.getZoom() > _SEARCH_MIN_ZOOM_LEVEL && _exists(_searchMinRectangle)) {
+            _leafletMap.removeLayer(_searchMinRectangle);
+            _searchMinRectangle = null;
+        }
+    };
+
     // Issues a query to fetch wells in the bounding box, meant to subscribe to
     // the map's moveend event while a wellPushpin is present on the map.
     var _searchBoundingBoxOnMoveEnd = function () {
@@ -451,26 +470,6 @@ function WellsMap(options) {
     // if the zoom level is below the minimum search level.
     var _wellPushpinZoomEndEvent = function () {
         _leafletMap.panTo(_wellPushpin.pushpinMarker.getLatLng());
-    };
-
-    // When the map is zoomed and there is a wellPushpin, we only query for wells while the map
-    // is within the searchMinRectangle. Thus we need to draw the rectangle when the map is zoomed
-    // beyond the search minimum, or destroy it when the map is zoomed within.
-    var _handleSearchMinRectangle = function () {
-
-        if (_leafletMap.getZoom() === _SEARCH_MIN_ZOOM_LEVEL) {
-            if (_exists(_searchMinRectangle)) {
-                _leafletMap.removeLayer(_searchMinRectangle);
-                _searchMinRectangle = null;
-            }
-            _searchMinRectangle = L.rectangle(_leafletMap.getBounds(), {
-                fillOpacity: 0,
-                interactive: false
-            }).addTo(_leafletMap);            
-        } else if (_leafletMap.getZoom() > _SEARCH_MIN_ZOOM_LEVEL && _exists(_searchMinRectangle)) {
-            _leafletMap.removeLayer(_searchMinRectangle);
-            _searchMinRectangle = null;
-        }
     };
 
     /** Public methods */
@@ -617,7 +616,7 @@ function WellsMap(options) {
         var initCentre = options.initCentre || null;
 
         // Bools need a stricter check because of JS lazy evaluation
-        var canZoom = _exists(options.canZoom) ? options.canZoom : true;
+        var centreZoom = _exists(options.centreZoom) ? options.centreZoom : false;
         var canPan = _exists(options.canPan) ? options.canPan : true;
         _maxBounds = _exists(options.mapBounds) ? _setMaxBounds(options.mapBounds) : void 0;
         _leafletMap = L.map(mapNodeId, {
@@ -625,8 +624,7 @@ function WellsMap(options) {
             maxZoom: maxZoom,
             maxBounds: _maxBounds,
             maxBoundsViscosity: 1.0,
-            zoomControl: canZoom,
-            scrollWheelZoom: canZoom ? 'center' : false, // We want the map to stay centred on scrollwheel zoom if zoom is enabled.
+            scrollWheelZoom: centreZoom ? 'center' : true, // We want the map to stay centred on scrollwheel zoom if zoom is enabled.
             keyboardPanDelta: canPan ? 80 : 0
         });
         if (_exists(initCentre) && _isArray(initCentre) && initCentre.length === 2) {
