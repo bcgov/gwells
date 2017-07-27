@@ -255,5 +255,16 @@
     CoordSync.init(coordSyncOptions);
   });
 </script>
+
+{% elif wizard.steps.current == 'surface_seal' %}
+<script type="text/javascript">
+    $(function () {
+        var material = ['Bentonite Grout', 'Bentonite Chips', 'Drill Cuttings', 'Gravel', 'Sand', 'Native Material'];
+        $('input[id $= "-backfill_above_surface_seal"]').autocomplete({
+            source: material
+        });
+    });
+</script>
+
 {% endif %}
 {% endblock %}
