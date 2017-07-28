@@ -893,10 +893,10 @@ class ActivitySubmission(AuditModel):
         w.screen_intake = self.screen_intake
         w.screen_type = self.screen_type
         w.screen_material = self.screen_material
-        w.other_screen_material = self.otehr_screen_material
+        w.other_screen_material = self.other_screen_material
         w.screen_opening = self.screen_opening
         w.screen_bottom = self.screen_bottom
-        w.other_screen_bottom = self.otehr_screen_bottom
+        w.other_screen_bottom = self.other_screen_bottom
 
         w.filter_pack_from = self.filter_pack_from
         w.filter_pack_to = self.filter_pack_to
@@ -1028,9 +1028,9 @@ class Screen(AuditModel):
     well = models.ForeignKey(Well, db_column='well_tag_number', on_delete=models.CASCADE, blank=True, null=True)
     screen_from = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='From', blank=False, validators=[MinValueValidator(Decimal('0.00'))])
     screen_to = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='To', blank=False, validators=[MinValueValidator(Decimal('0.01'))])
-    internal_diameter = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='Diameter', blank=False, validators=[MinValueValidator(Decimal('0.0'))])
+    internal_diameter = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='Diameter', blank=True, null=True, validators=[MinValueValidator(Decimal('0.0'))])
     assembly_type = models.ForeignKey(ScreenAssemblyType, db_column='screen_assembly_type_guid', on_delete=models.CASCADE, blank=True, null=True)
-    slot_size = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='Slot Size', blank=False, validators=[MinValueValidator(Decimal('0.00'))])
+    slot_size = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='Slot Size', blank=True, null=True, validators=[MinValueValidator(Decimal('0.00'))])
     
     class Meta:
         db_table = 'gwells_screen'
