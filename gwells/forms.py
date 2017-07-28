@@ -18,7 +18,7 @@ from crispy_forms.layout import Layout, Fieldset, Div, Submit, Hidden, HTML, Fie
 from crispy_forms.bootstrap import FormActions, AppendedText, InlineRadios
 from django.forms.models import inlineformset_factory
 from .search import Search
-from .models import ActivitySubmission, WellActivityType, ProvinceState, DrillingMethod, LithologyDescription, LithologyMoisture, Casing, CasingType
+from .models import ActivitySubmission, WellActivityType, ProvinceState, DrillingMethod, LithologyDescription, LithologyMoisture, Casing, CasingType, LinerPerforation
 from datetime import date
 
 class SearchForm(forms.Form):
@@ -739,6 +739,96 @@ class ActivitySubmissionSurfaceSealForm(forms.ModelForm):
 
 
 
+class ActivitySubmissionLinerForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.disable_csrf = True
+        self.helper.render_hidden_fields = True
+        self.helper.layout = Layout(
+            Fieldset(
+                'Liner Information',
+                Div(
+                    Div('liner_material', css_class='col-md-3'),
+                    css_class='row',
+                ),
+                Div(
+                    Div(AppendedText('liner_diameter', 'in'), css_class='col-md-2'),
+                    Div(AppendedText('liner_thickness', 'in'), css_class='col-md-2'),
+                    css_class='row',
+                ),
+                Div(
+                    Div(AppendedText('liner_from', 'ft (bgl)'), css_class='col-md-2'),
+                    Div(AppendedText('liner_to', 'ft (bgl)'), css_class='col-md-2'),
+                    css_class='row',
+                ),
+            )
+        )
+        super(ActivitySubmissionLinerForm, self).__init__(*args, **kwargs)
+
+    def clean(self):
+        cleaned_data = super(ActivitySubmissionLinerForm, self).clean()
+
+        liner_from = cleaned_data.get('liner_from')
+        liner_to = cleaned_data.get('liner_to')
+        errors = []
+
+        if liner_from and liner_to and liner_to < liner_from:
+            errors.append('To must be greater than or equal to From.')
+
+        if len(errors) > 0:
+            raise forms.ValidationError(errors)        
+
+        return cleaned_data
+
+    class Meta:
+        model = ActivitySubmission
+        fields = ['liner_material', 'liner_diameter', 'liner_thickness', 'liner_from', 'liner_to']
+
+
+
+class LinerPerforationForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.disable_csrf = True
+        self.helper.form_show_labels = False
+        self.helper.render_required_fields = True
+        self.helper.render_hidden_fields = True
+        self.helper.layout = Layout(
+            HTML('<tr valign="top">'),
+            HTML('<td>'),
+            'liner_perforation_from',
+            HTML('</td>'),
+            HTML('<td>'),
+            'liner_perforation_to',
+            HTML('</td><td width="75">{% if form.instance.pk %}{{ form.DELETE }}{% endif %}</td>'),
+            HTML('</tr>'),
+        )
+        super(LinerPerforationForm, self).__init__(*args, **kwargs)
+
+    def clean(self):
+        cleaned_data = super(LinerPerforationForm, self).clean()
+
+        liner_perforation_from = cleaned_data.get('liner_perforation_from')
+        liner_perforation_to = cleaned_data.get('liner_perforation_to')
+        errors = []
+
+        if liner_perforation_from and liner_perforation_to and liner_perforation_to < liner_perforation_from:
+            errors.append('To must be greater than or equal to From.')
+
+        if len(errors) > 0:
+            raise forms.ValidationError(errors)        
+
+        return cleaned_data
+
+    class Meta:
+        model = LinerPerforation
+        fields = ['liner_perforation_from', 'liner_perforation_to']
+
+
+
 #WellCompletionDataFormSet = inlineformset_factory(ActivitySubmission, WellCompletionData, max_num=1, can_delete=False)
 ActivitySubmissionLithologyFormSet = inlineformset_factory(ActivitySubmission, LithologyDescription, form=LithologyForm, fk_name='activity_submission', can_delete=False, extra=10)
 ActivitySubmissionCasingFormSet = inlineformset_factory(ActivitySubmission, Casing, form=CasingForm, fk_name='activity_submission', can_delete=False, extra=5)
+ActivitySubmissionLinerPerforationFormSet = inlineformset_factory(ActivitySubmission, LinerPerforation, form=LinerPerforationForm, fk_name='activity_submission', can_delete=False, extra=5)
