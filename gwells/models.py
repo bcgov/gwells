@@ -508,6 +508,158 @@ class LinerMaterial(AuditModel):
 
 
 
+class ScreenIntake(AuditModel):
+    """
+     Refers to the type of intake mechanism for a well screen, i.e. Screen, Open Bottom, Uncased Hole.
+    """
+    screen_intake_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    code = models.CharField(max_length=10, unique=True)
+    description = models.CharField(max_length=100)
+    is_hidden = models.BooleanField(default=False)
+    sort_order = models.PositiveIntegerField()
+    
+    class Meta:
+        db_table = 'gwells_screen_intake'
+        ordering = ['sort_order', 'description']
+
+    def __str__(self):
+        return self.description
+
+
+
+class ScreenType(AuditModel):
+    """
+     The possible types of well screens, i.e. Telescope, Pipe Size.
+    """
+    screen_type_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    code = models.CharField(max_length=10, unique=True)
+    description = models.CharField(max_length=100)
+    is_hidden = models.BooleanField(default=False)
+    sort_order = models.PositiveIntegerField()
+    
+    class Meta:
+        db_table = 'gwells_screen_type'
+        ordering = ['sort_order', 'description']
+
+    def __str__(self):
+        return self.description
+
+
+
+class ScreenMaterial(AuditModel):
+    """
+     The material used to construct a well screen, i.e. Plastic, Stainless Steel, Other.
+    """
+    screen_material_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    code = models.CharField(max_length=10, unique=True)
+    description = models.CharField(max_length=100)
+    is_hidden = models.BooleanField(default=False)
+    sort_order = models.PositiveIntegerField()
+    
+    class Meta:
+        db_table = 'gwells_screen_material'
+        ordering = ['sort_order', 'description']
+
+    def __str__(self):
+        return self.description
+
+
+
+class ScreenOpening(AuditModel):
+    """
+     The type of opening on a well screen, i.e. Continuous Slot, Slotted, Perforated Pipe.
+    """
+    screen_opening_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    code = models.CharField(max_length=10, unique=True)
+    description = models.CharField(max_length=100)
+    is_hidden = models.BooleanField(default=False)
+    sort_order = models.PositiveIntegerField()
+    
+    class Meta:
+        db_table = 'gwells_screen_opening'
+        ordering = ['sort_order', 'description']
+
+    def __str__(self):
+        return self.description
+
+
+
+class ScreenBottom(AuditModel):
+    """
+     The type of bottom on a well screen, i.e. Bail, Plate, Plug, Other.
+    """
+    screen_bottom_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    code = models.CharField(max_length=10, unique=True)
+    description = models.CharField(max_length=100)
+    is_hidden = models.BooleanField(default=False)
+    sort_order = models.PositiveIntegerField()
+    
+    class Meta:
+        db_table = 'gwells_screen_bottom'
+        ordering = ['sort_order', 'description']
+
+    def __str__(self):
+        return self.description
+
+
+
+class ScreenAssemblyType(AuditModel):
+    """
+     The category of screen assembly, i.e. K-Packer & Riser, K-Packer, Lead Packer, Riser Pipe, Screen, Screen Blank, Tail Pipe.
+    """
+    screen_assembly_type_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    code = models.CharField(max_length=10, unique=True)
+    description = models.CharField(max_length=100)
+    is_hidden = models.BooleanField(default=False)
+    sort_order = models.PositiveIntegerField()
+    
+    class Meta:
+        db_table = 'gwells_screen_assembly_type'
+        ordering = ['sort_order', 'description']
+
+    def __str__(self):
+        return self.description
+
+
+
+class FilterPackMaterial(AuditModel):
+    """
+     The material used to pack a well filter, e.g. Very coarse sand, Very fine gravel, Fine gravel.
+    """
+    filter_pack_material_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    code = models.CharField(max_length=10, unique=True)
+    description = models.CharField(max_length=100)
+    is_hidden = models.BooleanField(default=False)
+    sort_order = models.PositiveIntegerField()
+    
+    class Meta:
+        db_table = 'gwells_filter_pack_material'
+        ordering = ['sort_order', 'description']
+
+    def __str__(self):
+        return self.description
+
+
+
+class FilterPackMaterialSize(AuditModel):
+    """
+     The size of material used to pack a well filter, e.g. 1.0 - 2.0 mm, 2.0 - 4.0 mm, 4.0 - 8.0 mm.
+    """
+    filter_pack_material_size_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    code = models.CharField(max_length=10, unique=True)
+    description = models.CharField(max_length=100)
+    is_hidden = models.BooleanField(default=False)
+    sort_order = models.PositiveIntegerField()
+    
+    class Meta:
+        db_table = 'gwells_filter_pack_material_size'
+        ordering = ['sort_order', 'description']
+
+    def __str__(self):
+        return self.description
+
+
+
 class Well(AuditModel):
     """
     Well information.
@@ -558,7 +710,21 @@ class Well(AuditModel):
     liner_diameter = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Liner Diameter', validators=[MinValueValidator(Decimal('0.00'))])
     liner_thickness = models.DecimalField(max_digits=5, decimal_places=3, blank=True, null=True, verbose_name='Liner Thickness', validators=[MinValueValidator(Decimal('0.00'))])
     liner_from = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Liner From', validators=[MinValueValidator(Decimal('0.00'))])
-    liner_to = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Liner To', validators=[MinValueValidator(Decimal('0.00'))])
+    liner_to = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Liner To', validators=[MinValueValidator(Decimal('0.01'))])
+
+    screen_intake = models.ForeignKey(ScreenIntake, db_column='screen_intake_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Intake')
+    screen_type = models.ForeignKey(ScreenType, db_column='screen_type_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Screen Type')
+    other_screen_material = models.CharField(max_length=50, blank=True, verbose_name='Other Screen Material')
+    screen_opening = models.ForeignKey(ScreenOpening, db_column='screen_opening_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Screen Opening')
+    screen_bottom = models.ForeignKey(ScreenBottom, db_column='screen_bottom_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Screen Bottom')
+    other_screen_bottom = models.CharField(max_length=50, blank=True, verbose_name='Other Screen Bottom')
+
+    filter_pack_from = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Filter Pack From', validators=[MinValueValidator(Decimal('0.00'))])
+    filter_pack_to = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Filter Pack To', validators=[MinValueValidator(Decimal('0.01'))])
+    filter_pack_thickness = models.DecimalField(max_digits=5, decimal_places=3, blank=True, null=True, verbose_name='Filter Pack Thickness', validators=[MinValueValidator(Decimal('0.00'))])
+    filter_pack_material = models.ForeignKey(FilterPackMaterial, db_column='filter_pack_material_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Filter Pack Material')
+    filter_pack_material_size = models.ForeignKey(FilterPackMaterialSize, db_column='filter_pack_material_size_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Filter Pack Material Size')
+
 
 
     diameter = models.CharField(max_length=9, blank=True)  #want to be integer in future
@@ -653,6 +819,20 @@ class ActivitySubmission(AuditModel):
     liner_from = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Liner From', validators=[MinValueValidator(Decimal('0.00'))])
     liner_to = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Liner To', validators=[MinValueValidator(Decimal('0.01'))])
 
+    screen_intake = models.ForeignKey(ScreenIntake, db_column='screen_intake_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Intake')
+    screen_type = models.ForeignKey(ScreenType, db_column='screen_type_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Screen Type')
+    screen_material = models.ForeignKey(ScreenMaterial, db_column='screen_material_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Screen Material')
+    other_screen_material = models.CharField(max_length=50, blank=True, verbose_name='Other Screen Material')
+    screen_opening = models.ForeignKey(ScreenOpening, db_column='screen_opening_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Screen Opening')
+    screen_bottom = models.ForeignKey(ScreenBottom, db_column='screen_bottom_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Screen Bottom')
+    other_screen_bottom = models.CharField(max_length=50, blank=True, verbose_name='Other Screen Bottom')
+
+    filter_pack_from = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Filter Pack From', validators=[MinValueValidator(Decimal('0.00'))])
+    filter_pack_to = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Filter Pack To', validators=[MinValueValidator(Decimal('0.01'))])
+    filter_pack_thickness = models.DecimalField(max_digits=5, decimal_places=3, blank=True, null=True, verbose_name='Filter Pack Thickness', validators=[MinValueValidator(Decimal('0.00'))])
+    filter_pack_material = models.ForeignKey(FilterPackMaterial, db_column='filter_pack_material_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Filter Pack Material')
+    filter_pack_material_size = models.ForeignKey(FilterPackMaterialSize, db_column='filter_pack_material_size_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Filter Pack Material Size')
+
 
     diameter = models.CharField(max_length=9, blank=True)  #want to be integer in future
     #diameter_unit
@@ -707,6 +887,22 @@ class ActivitySubmission(AuditModel):
         w.liner_material = self.liner_material
         w.liner_diameter = self.liner_diameter
         w.liner_thickness = self.liner_thickness
+        w.liner_from = self.liner_from
+        w.liner_to = self.liner_to
+
+        w.screen_intake = self.screen_intake
+        w.screen_type = self.screen_type
+        w.screen_material = self.screen_material
+        w.other_screen_material = self.otehr_screen_material
+        w.screen_opening = self.screen_opening
+        w.screen_bottom = self.screen_bottom
+        w.other_screen_bottom = self.otehr_screen_bottom
+
+        w.filter_pack_from = self.filter_pack_from
+        w.filter_pack_to = self.filter_pack_to
+        w.filter_pack_thickness = self.filter_pack_thickness
+        w.filter_pack_material = self.filter_pack_material
+        w.filter_pack_material_size = self.filter_pack_material_size
         #TODO
 
         return w;
@@ -820,6 +1016,31 @@ class LinerPerforation(AuditModel):
             return 'activity_submission {} {} {}'.format(self.activity_submission, self.liner_perforation_from, self.liner_perforation_to)
         else:
             return 'well {} {} {}'.format(self.well, self.liner_perforation_from, self.liner_perforation_to)
+
+
+
+class Screen(AuditModel):
+    """
+    Screen in a well
+    """
+    screen_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    activity_submission = models.ForeignKey(ActivitySubmission, db_column='filing_number', on_delete=models.CASCADE, blank=True, null=True)
+    well = models.ForeignKey(Well, db_column='well_tag_number', on_delete=models.CASCADE, blank=True, null=True)
+    screen_from = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='From', blank=False, validators=[MinValueValidator(Decimal('0.00'))])
+    screen_to = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='To', blank=False, validators=[MinValueValidator(Decimal('0.01'))])
+    internal_diameter = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='Diameter', blank=False, validators=[MinValueValidator(Decimal('0.0'))])
+    assembly_type = models.ForeignKey(ScreenAssemblyType, db_column='screen_assembly_type_guid', on_delete=models.CASCADE, blank=True, null=True)
+    slot_size = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='Slot Size', blank=False, validators=[MinValueValidator(Decimal('0.00'))])
+    
+    class Meta:
+        db_table = 'gwells_screen'
+
+    def __str__(self):
+        if self.activity_submission:
+            return 'activity_submission {} {} {}'.format(self.activity_submission, self.screen_from, self.screen_to)
+        else:
+            return 'well {} {} {}'.format(self.well, self.screen_from, self.screen_to)
+
 
 
 
