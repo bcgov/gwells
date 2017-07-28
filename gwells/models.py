@@ -796,7 +796,7 @@ class ActivitySubmission(AuditModel):
     legal_pid = models.PositiveIntegerField(blank=True, null=True, verbose_name='PID')
     well_location_description = models.CharField(max_length=500, blank=True, verbose_name='Well Location Description')
 
-    identification_plate_number = models.PositiveIntegerField(unique=True, blank=True, null=True, verbose_name='Identification Plate Number')
+    identification_plate_number = models.PositiveIntegerField(blank=True, null=True, verbose_name='Identification Plate Number')
 
     latitude = models.DecimalField(max_digits=8, decimal_places=6, blank=True, null=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
