@@ -489,6 +489,25 @@ class SurfaceSealMethod(AuditModel):
 
 
 
+class LinerMaterial(AuditModel):
+    """
+     Liner material installed in a well to protect the well pump or other works in the well from damage.
+    """
+    liner_material_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    code = models.CharField(max_length=10, unique=True)
+    description = models.CharField(max_length=100)
+    is_hidden = models.BooleanField(default=False)
+    sort_order = models.PositiveIntegerField()
+    
+    class Meta:
+        db_table = 'gwells_liner_material'
+        ordering = ['sort_order', 'description']
+
+    def __str__(self):
+        return self.description
+
+
+
 class Well(AuditModel):
     """
     Well information.
@@ -534,6 +553,12 @@ class Well(AuditModel):
     surface_seal_method = models.ForeignKey(SurfaceSealMethod, db_column='surface_seal_method_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Surface Seal Installation Method')
     backfill_above_surface_seal = models.CharField(max_length=250, blank=True, verbose_name='Backfill Material Above Surface Seal')
     backfill_above_surface_seal_depth = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Backfill Depth')
+
+    liner_material = models.ForeignKey(LinerMaterial, db_column='liner_material_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Liner Material')
+    liner_diameter = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Liner Diameter', validators=[MinValueValidator(Decimal('0.00'))])
+    liner_thickness = models.DecimalField(max_digits=5, decimal_places=3, blank=True, null=True, verbose_name='Liner Thickness', validators=[MinValueValidator(Decimal('0.00'))])
+    liner_from = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Liner From', validators=[MinValueValidator(Decimal('0.00'))])
+    liner_to = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Liner To', validators=[MinValueValidator(Decimal('0.00'))])
 
 
     diameter = models.CharField(max_length=9, blank=True)  #want to be integer in future
@@ -622,6 +647,12 @@ class ActivitySubmission(AuditModel):
     backfill_above_surface_seal = models.CharField(max_length=250, blank=True, verbose_name='Backfill Material Above Surface Seal')
     backfill_above_surface_seal_depth = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Backfill Depth')
 
+    liner_material = models.ForeignKey(LinerMaterial, db_column='liner_material_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Liner Material')
+    liner_diameter = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Liner Diameter', validators=[MinValueValidator(Decimal('0.00'))])
+    liner_thickness = models.DecimalField(max_digits=5, decimal_places=3, blank=True, null=True, verbose_name='Liner Thickness', validators=[MinValueValidator(Decimal('0.00'))])
+    liner_from = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Liner From', validators=[MinValueValidator(Decimal('0.00'))])
+    liner_to = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Liner To', validators=[MinValueValidator(Decimal('0.01'))])
+
 
     diameter = models.CharField(max_length=9, blank=True)  #want to be integer in future
     #diameter_unit
@@ -672,6 +703,10 @@ class ActivitySubmission(AuditModel):
         w.surface_seal_method = self.surface_seal_method
         w.backfill_above_surface_seal = self.backfill_above_surface_seal
         w.backfill_above_surface_seal_depth = self.backfill_above_surface_seal_depth
+
+        w.liner_material = self.liner_material
+        w.liner_diameter = self.liner_diameter
+        w.liner_thickness = self.liner_thickness
         #TODO
 
         return w;
@@ -764,6 +799,27 @@ class Casing(AuditModel):
             return 'activity_submission {} {} {}'.format(self.activity_submission, self.casing_from, self.casing_to)
         else:
             return 'well {} {} {}'.format(self.well, self.casing_from, self.casing_to)
+
+
+
+class LinerPerforation(AuditModel):
+    """
+    Perforation in a well liner
+    """
+    liner_perforation_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    activity_submission = models.ForeignKey(ActivitySubmission, db_column='filing_number', on_delete=models.CASCADE, blank=True, null=True)
+    well = models.ForeignKey(Well, db_column='well_tag_number', on_delete=models.CASCADE, blank=True, null=True)
+    liner_perforation_from = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='Perforated From', blank=False, validators=[MinValueValidator(Decimal('0.00'))])
+    liner_perforation_to = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='Perforated To', blank=False, validators=[MinValueValidator(Decimal('0.01'))])
+    
+    class Meta:
+        db_table = 'gwells_liner_perforation'
+
+    def __str__(self):
+        if self.activity_submission:
+            return 'activity_submission {} {} {}'.format(self.activity_submission, self.liner_perforation_from, self.liner_perforation_to)
+        else:
+            return 'well {} {} {}'.format(self.well, self.liner_perforation_from, self.liner_perforation_to)
 
 
 
