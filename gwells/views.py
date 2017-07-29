@@ -20,7 +20,8 @@ from django.views.generic.edit import FormView
 from formtools.wizard.views import SessionWizardView
 from .models import WellYieldUnit, Well, ActivitySubmission, WellClass
 from .forms import SearchForm, ActivitySubmissionTypeAndClassForm, WellOwnerForm, ActivitySubmissionLocationForm, ActivitySubmissionGpsForm
-from .forms import ActivitySubmissionLithologyFormSet, ActivitySubmissionCasingFormSet, ActivitySubmissionSurfaceSealForm
+from .forms import ActivitySubmissionLithologyFormSet, ActivitySubmissionCasingFormSet, ActivitySubmissionSurfaceSealForm, ActivitySubmissionLinerForm, ActivitySubmissionLinerPerforationFormSet
+from .forms import ActivitySubmissionScreenIntakeForm, ActivitySubmissionScreenFormSet
 import json
 from django.core.serializers.json import DjangoJSONEncoder
 
@@ -121,6 +122,10 @@ FORMS = [('type_and_class', ActivitySubmissionTypeAndClassForm),
          ('lithology', ActivitySubmissionLithologyFormSet),
          ('casing', ActivitySubmissionCasingFormSet),
          ('surface_seal', ActivitySubmissionSurfaceSealForm),
+         ('liner', ActivitySubmissionLinerForm),
+         ('liner_perforation', ActivitySubmissionLinerPerforationFormSet),
+         ('screen_intake', ActivitySubmissionScreenIntakeForm),
+         ('screen', ActivitySubmissionScreenFormSet),
         ]
 
 TEMPLATES = {'type_and_class': 'gwells/activity_submission_form.html',
@@ -130,6 +135,10 @@ TEMPLATES = {'type_and_class': 'gwells/activity_submission_form.html',
              'lithology': 'gwells/activity_submission_lithology_form.html',
              'casing': 'gwells/activity_submission_casing_form.html',
              'surface_seal': 'gwells/activity_submission_form.html',
+             'liner': 'gwells/activity_submission_form.html',
+             'liner_perforation': 'gwells/activity_submission_liner_perforation_form.html',
+             'screen_intake': 'gwells/activity_submission_form.html',
+             'screen': 'gwells/activity_submission_screen_form.html',
             }
 
 
@@ -194,9 +203,25 @@ class ActivitySubmissionWizardView(SessionWizardView):
                 casing.activity_submission = None
                 casing.well = w
                 casing.save()
+            perforation_list = form_dict['liner_perforation'].save()
+            perforation_list = list(perforation_list)
+            for perforation in perforation_list:
+                perforation.pk = None
+                perforation.activity_submission = None
+                perforation.well = w
+                perforation.save()
+            screen_list = form_dict['screen'].save()
+            screen_list = list(screen_list)
+            for screen in screen_list:
+                screen.pk = None
+                screen.activity_submission = None
+                screen.well = w
+                screen.save()
         else:
             submission.save()
             lithology_list = form_dict['lithology'].save()
             casing_list = form_dict['casing'].save()
+            perforation_list = form_dict['liner_perforation'].save()
+            screen_list = form_dict['screen'].save()
 
         return HttpResponseRedirect('/submission/')
