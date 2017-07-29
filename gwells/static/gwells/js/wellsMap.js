@@ -128,6 +128,9 @@ function WellsMap(options) {
     // Callback for the external query
     var _externalQueryCallback = null;
 
+    // Custom control to invoke the external query
+    var _externalQueryControl = null;
+
     /** Private functions */
 
     // Convenience method for checking whether a property exists (i.e., is neither null nor undefined)
@@ -396,6 +399,24 @@ function WellsMap(options) {
         _wellPushpin.wellMarker.addTo(_leafletMap);
     };
 
+    var _createExternalQueryControl = function () {
+        var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
+        container.innerHtml = 'Search Wells In This Area';
+        var ctrl = L.Control.extend({
+            options: {
+                position: 'topright'
+            },
+            onAdd: function () {
+                L.DomEvent.on(container, 'onclick', searchWellsByExtent());
+                return container;
+            },
+            onRemove: function () {
+                L.DomEvent.off(container);
+            }
+        });
+        return ctrl;
+    };
+
     /** Public methods */
 
     /**
@@ -569,6 +590,11 @@ function WellsMap(options) {
         // If given an external DOM node to display the map's attribution, hook it up here.
         if (_exists(options.externalAttributionNodeId)) {
            $("#" + options.externalAttributionNodeId).append(_leafletMap.attributionControl.getContainer());
+        }
+
+        // If the _externalQueryCallback exists, we should create the custom control to invoke it.
+        if (_exists(_externalQueryCallback)) {
+            _externalQueryControl = _createExternalQueryControl();
         }
     }(options));
 
