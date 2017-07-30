@@ -400,21 +400,22 @@ function WellsMap(options) {
     };
 
     var _createExternalQueryControl = function () {
-        var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
-        container.innerHtml = 'Search Wells In This Area';
-        var ctrl = L.Control.extend({
-            options: {
-                position: 'topright'
-            },
+        var container = L.DomUtil.create('button', 'leaflet-bar leaflet-control leaflet-control-custom');
+        container.innerHTML = 'Search Wells In This Area';
+        return L.Control.extend({
             onAdd: function () {
-                L.DomEvent.on(container, 'onclick', searchWellsByExtent());
+                L.DomEvent.on(container,
+                    'click dblclick',
+                    function (e) { 
+                        e.preventDefault();
+                        searchWellsByExtent();
+                    }, this);
                 return container;
             },
             onRemove: function () {
                 L.DomEvent.off(container);
             }
         });
-        return ctrl;
     };
 
     /** Public methods */
@@ -515,6 +516,7 @@ function WellsMap(options) {
     };
 
     var searchWellsByExtent = function () {
+        console.log("Ya clicked ter surch!");
         if (_exists(_externalQueryCallback)) {
             var boundingBox = _leafletMap.getBounds();
             var northWestCorner = boundingBox.getNorthWest();
@@ -595,6 +597,11 @@ function WellsMap(options) {
         // If the _externalQueryCallback exists, we should create the custom control to invoke it.
         if (_exists(_externalQueryCallback)) {
             _externalQueryControl = _createExternalQueryControl();
+            L.Control.ExternalQuery = _externalQueryControl;
+            L.control.externalquery = function (opts) {
+                return new L.Control.ExternalQuery(opts);
+            }
+            L.control.externalquery({position: 'topright'}).addTo(_leafletMap);
         }
     }(options));
 
