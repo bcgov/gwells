@@ -14,7 +14,7 @@
  *      If the wellPushpinMoveCallback is supplied on map init, the pushpin can be moved by dragging, which advertises the
  *      pushpin's latitude and longitude to the callback. The map will centre on the pushpin and reissue queries for surrounding
  *      wells whenever the pushpin is moved.
- *  - Allow the map to search wells via the searchWellsByExtent() method. If the map init supplies a searchWellsByExtentCallback,
+ *  - Allow the map to search wells via the _searchWellsByExtent() method. If the map init supplies a searchWellsByExtentCallback,
  *      the map advertises a pair of latitude/longitude coordinates corresponding to extreme corners of the rectangle's bounding box.
  *      If the corners of a rectangle are passed to the map via initialExtentRectangle, the map initialises fit to this rectangle.
  *  - Display an ESRI MapServer layer as a base layer.
@@ -45,6 +45,11 @@
  *   canPan?: bool, // Whether the map can be panned after initial load. Defaults to true.
  *   minZoom?: number,  // The minimum zoom level of the map (i.e., how far it can be zoomed out)
  *   maxZoom?: number,  // The maximum zoom level of the map (i.e., how far it can be zoomed in)
+ *   // Indicates the map should be started zoomed into a particular extent.
+ *   initialExtent?: {
+ *      startCorner: string, // Comma-separated string of theform 'lat,long' denoting the extent rectangle's starting corner
+ *      endCorner: string // Comma-separated string of theform 'lat,long' denoting the extent rectangle's ending corner
+ *   },
  *   mapBounds?: { // Latitude and longitude extremes of the bounding rectangle for the map.
  *      north: float, // The top latitude of the map
  *      south: float, // The bottom latitude of the map
@@ -60,11 +65,6 @@
  *      }
  *   },
  *   wellPushpinMoveCallback?: function, // Function to call when the map's wellPushpin moves
- *   // Indicates the map should be drawn with an 'identify' rectangle to start with. Overwritten by the identifyWellsOperation.
- *   initialExtentRectangle?: {
- *      startCorner: string, // Comma-separated string of theform 'lat,long' denoting the rectangle's starting corner
- *      endCorner: string // Comma-separated string of theform 'lat,long' denoting the rectangle's ending corner
- *   },
  *   externalQueryCallback?: function, // Function to call when the map's bounding box is bundled into an external query
  *   externalAttributionNodeId?: string // ID of the DOM node (exterior to the map) where the map's attribution will be displayed.
  * }
@@ -128,9 +128,6 @@ function WellsMap(options) {
     // Callback for the external query
     var _externalQueryCallback = null;
 
-    // Custom control to invoke the external query
-    var _externalQueryControl = null;
-
     /** Private functions */
 
     // Convenience method for checking whether a property exists (i.e., is neither null nor undefined)
@@ -142,6 +139,24 @@ function WellsMap(options) {
     var _isArray = function (arr) {
         return _exists(arr) && _exists(arr.constructor) && arr.constructor === Array;
     };
+
+    var _setInitialExtentBounds = function (initialExtent) {
+        var initExtBounds = null;
+        if (typeof initialExtent.startCorner === 'string' && typeof initialExtent.endCorner === 'string') {
+            var delimiter = ",";
+            var startLatLongArray = initialExtent.startCorner.split(delimiter).map(function (val) {
+                return parseFloat(val);
+            });
+            var endLatLongArray = initialExtent.endCorner.split(delimiter).map(function (val) {
+                return parseFloat(val);
+            });
+            if (startLatLongArray.length === 2 && endLatLongArray.length === 2) {
+                var startLatLng = L.latLng(startLatLongArray[0], startLatLongArray[1]);
+                var endLatLng = L.latLng(endLatLongArray[0], endLatLongArray[1]);
+                initExtBounds = L.latLngBounds(startLatLng, endLatLng);
+            }
+        }
+    }
 
     var _setMaxBounds = function (bounds) {
         var maxBounds = null;
@@ -399,23 +414,42 @@ function WellsMap(options) {
         _wellPushpin.wellMarker.addTo(_leafletMap);
     };
 
+    var _searchWellsByExtent = function () {
+        if (_exists(_externalQueryCallback)) {
+            var boundingBox = _leafletMap.getBounds();
+            var northWestCorner = boundingBox.getNorthWest();
+            var southEastCorner = boundingBox.getSouthEast();
+            _externalQueryCallback(northWestCorner, southEastCorner);
+        }
+    };
+
     var _createExternalQueryControl = function () {
         var container = L.DomUtil.create('button', 'leaflet-bar leaflet-control leaflet-control-custom');
         container.innerHTML = 'Search Wells In This Area';
         return L.Control.extend({
-            onAdd: function () {
+            onAdd: function (map) {
                 L.DomEvent.on(container,
                     'click dblclick',
                     function (e) { 
                         e.preventDefault();
-                        searchWellsByExtent();
+                        _searchWellsByExtent();
                     }, this);
+                    map.externalQueryControl = this;
                 return container;
             },
-            onRemove: function () {
+            onRemove: function (map) {
                 L.DomEvent.off(container);
+                delete map.externalQueryControl;
             }
         });
+    };
+
+    var _externalQueryControlZoomEvent = function () {
+        if (_leafletMap.getZoom() < _SEARCH_MIN_ZOOM_LEVEL && _exists(_leafletMap.externalQueryControl)) {
+            _leafletMap.removeControl(_leafletMap.externalQueryControl);
+        } else if (_leafletMap.getZoom() >= _SEARCH_MIN_ZOOM_LEVEL && !_exists(_leafletMap.hasExternalQueryControl)) {
+            _leafletMap.addControl(L.control.externalquery({position: 'topright'}));
+        }
     };
 
     /** Public methods */
@@ -492,39 +526,6 @@ function WellsMap(options) {
         }
     };
 
-    // Displays wells and zooms to the to see all displayed wells.
-    // Note the wells must have valid latitude and longitude data.
-    var drawAndFitBounds = function (wells) {
-        if (!_exists(_leafletMap) || !_exists(wells) || !_isArray(wells)) {
-            return;
-        }
-        _drawWells(wells);
-
-        // Once wells are drawn, we draw a (static) rectangle that encompasses them, with a bit of
-        // a padded buffer to include wells on the edges of the rectangle.
-        var buffer = 0.00005;
-        var padding = 0.01;
-        
-        // With the above constants, we get the bounds of the _wellMarkers and pad them with the buffer and padding.
-        var markerBounds = L.featureGroup(_wellMarkers).getBounds();
-        var northWestCorner = L.latLng(markerBounds.getNorthWest().lat + buffer, markerBounds.getNorthWest().lng - buffer);
-        var southEastCorner = L.latLng(markerBounds.getSouthEast().lat - buffer, markerBounds.getSouthEast().lng + buffer);
-        markerBounds = L.latLngBounds([northWestCorner, southEastCorner]).pad(padding);
-
-        // Now that we have the right bounds, fit the map to them.
-        _leafletMap.fitBounds(markerBounds);
-    };
-
-    var searchWellsByExtent = function () {
-        console.log("Ya clicked ter surch!");
-        if (_exists(_externalQueryCallback)) {
-            var boundingBox = _leafletMap.getBounds();
-            var northWestCorner = boundingBox.getNorthWest();
-            var southEastCorner = boundingBox.getSouthEast();
-            _externalQueryCallback(northWestCorner, southEastCorner);
-        }
-    };
-
     /** IIFE for construction of a WellsMap */
     (function (options) {
         options = options || {};
@@ -546,6 +547,7 @@ function WellsMap(options) {
         // Bools need a stricter check because of JS lazy evaluation
         var centreZoom = _exists(options.centreZoom) ? options.centreZoom : false;
         var canPan = _exists(options.canPan) ? options.canPan : true;
+        var initialExtentBounds = _exists(options.initialExtent) ? _setInitialExtentBounds(options.initialExtent) : void 0;
         _maxBounds = _exists(options.mapBounds) ? _setMaxBounds(options.mapBounds) : void 0;
         _leafletMap = L.map(mapNodeId, {
             minZoom: minZoom,
@@ -562,6 +564,8 @@ function WellsMap(options) {
             if (_exists(centreLatLng)) {
                 _leafletMap.setView(centreLatLng, maxZoom);
             }
+        } else if (_exists(options.initialExtent)) {
+            _leafletMap.fitBounds(initialExtentBounds);
         } else if (_exists(_maxBounds)) {
             _leafletMap.fitBounds(_maxBounds);
         }
@@ -596,21 +600,17 @@ function WellsMap(options) {
 
         // If the _externalQueryCallback exists, we should create the custom control to invoke it.
         if (_exists(_externalQueryCallback)) {
-            _externalQueryControl = _createExternalQueryControl();
-            L.Control.ExternalQuery = _externalQueryControl;
+            L.Control.ExternalQuery = _createExternalQueryControl();
             L.control.externalquery = function (opts) {
                 return new L.Control.ExternalQuery(opts);
             }
-            L.control.externalquery({position: 'topright'}).addTo(_leafletMap);
+            _leafletMap.on('zoomend', _externalQueryControlZoomEvent);
         }
     }(options));
 
     // The public members and methods of a WellsMap.
     return {
         placeWellPushpin: placeWellPushpin,
-        removeWellPushpin: removeWellPushpin,
-        drawAndFitBounds: drawAndFitBounds,
-        // TODO: Remove this when custom control is within the map
-        searchWellsByExtent: searchWellsByExtent
+        removeWellPushpin: removeWellPushpin
     };
 }
