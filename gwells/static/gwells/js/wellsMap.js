@@ -14,9 +14,7 @@
  *      If the wellPushpinMoveCallback is supplied on map init, the pushpin can be moved by dragging, which advertises the
  *      pushpin's latitude and longitude to the callback. The map will centre on the pushpin and reissue queries for surrounding
  *      wells whenever the pushpin is moved.
- *  - Allow the map to search wells via the _searchWellsByExtent() method. If the map init supplies a searchWellsByExtentCallback,
- *      the map advertises a pair of latitude/longitude coordinates corresponding to extreme corners of the rectangle's bounding box.
- *      If the corners of a rectangle are passed to the map via initialExtentRectangle, the map initialises fit to this rectangle.
+ *  - Call an external query callback (if one is supplied), passing it the map's current extent to add as a search parameter.
  *  - Display an ESRI MapServer layer as a base layer.
  *  - Display an array of WMS tile layers as overlays.
  * The map is able to pan and zoom by default, but this behaviour can be disabled by passing appropriate booleans. Note that if zooming is allowed,
@@ -156,6 +154,7 @@ function WellsMap(options) {
                 initExtBounds = L.latLngBounds(startLatLng, endLatLng);
             }
         }
+        return initExtBounds;
     }
 
     var _setMaxBounds = function (bounds) {
@@ -414,7 +413,8 @@ function WellsMap(options) {
         _wellPushpin.wellMarker.addTo(_leafletMap);
     };
 
-    var _searchWellsByExtent = function () {
+    // Gets the bounding box of the current map view and sends it to the external query callback.
+    var _sendExtentToExternalQuery = function () {
         if (_exists(_externalQueryCallback)) {
             var boundingBox = _leafletMap.getBounds();
             var northWestCorner = boundingBox.getNorthWest();
@@ -423,6 +423,7 @@ function WellsMap(options) {
         }
     };
 
+    // Creates a Leaflet Control comprising a button which, when clicked, invokes the external query.
     var _createExternalQueryControl = function () {
         var container = L.DomUtil.create('button', 'leaflet-bar leaflet-control leaflet-control-custom');
         container.innerHTML = 'Search Wells In This Area';
@@ -432,7 +433,7 @@ function WellsMap(options) {
                     'click dblclick',
                     function (e) { 
                         e.preventDefault();
-                        _searchWellsByExtent();
+                        _sendExtentToExternalQuery();
                     }, this);
                     map.externalQueryControl = this;
                 return container;
@@ -444,7 +445,9 @@ function WellsMap(options) {
         });
     };
 
-    var _externalQueryControlZoomEvent = function () {
+    // Places the external query control on the map when the map is moved while it is above the minimum zoom level,
+    // or removes the control when the map is moved while it is below the minimum zoom level.
+    var _placeExternalQueryControl = function () {
         if (_leafletMap.getZoom() < _SEARCH_MIN_ZOOM_LEVEL && _exists(_leafletMap.externalQueryControl)) {
             _leafletMap.removeControl(_leafletMap.externalQueryControl);
         } else if (_leafletMap.getZoom() >= _SEARCH_MIN_ZOOM_LEVEL && !_exists(_leafletMap.hasExternalQueryControl)) {
@@ -547,8 +550,12 @@ function WellsMap(options) {
         // Bools need a stricter check because of JS lazy evaluation
         var centreZoom = _exists(options.centreZoom) ? options.centreZoom : false;
         var canPan = _exists(options.canPan) ? options.canPan : true;
-        var initialExtentBounds = _exists(options.initialExtent) ? _setInitialExtentBounds(options.initialExtent) : void 0;
+
+        // Bounds
+        var initialExtentBounds = _exists(options.initialExtent) ? _setInitialExtentBounds(options.initialExtent) : void 0;        
         _maxBounds = _exists(options.mapBounds) ? _setMaxBounds(options.mapBounds) : void 0;
+
+        // Map initialisation
         _leafletMap = L.map(mapNodeId, {
             minZoom: minZoom,
             maxZoom: maxZoom,
@@ -557,6 +564,8 @@ function WellsMap(options) {
             scrollWheelZoom: centreZoom ? 'center' : true, // We want the map to stay centred on scrollwheel zoom if zoom is enabled.
             keyboardPanDelta: canPan ? 80 : 0
         });
+
+        // Centre, zoom, bound settings
         if (_exists(initCentre) && _isArray(initCentre) && initCentre.length === 2) {
             var rawLat = initCentre[0];
             var rawLong = initCentre[1];
@@ -570,11 +579,18 @@ function WellsMap(options) {
             _leafletMap.fitBounds(_maxBounds);
         }
 
+        // Draw initial wells if required
+        if (_exists(options.initialWells)) {
+            _drawWells(options.initialWells);
+        }
+
+        // Disable panning if required
         if (!canPan) {
             _leafletMap.dragging.disable();
             _leafletMap.doubleClickZoom.disable();
         }
 
+        // Layers
         if (_exists(options.esriLayers)) {
             _loadEsriLayers(options.esriLayers);
         }
@@ -604,7 +620,7 @@ function WellsMap(options) {
             L.control.externalquery = function (opts) {
                 return new L.Control.ExternalQuery(opts);
             }
-            _leafletMap.on('zoomend', _externalQueryControlZoomEvent);
+            _leafletMap.on('move', _placeExternalQueryControl);
         }
     }(options));
 
