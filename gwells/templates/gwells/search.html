@@ -23,10 +23,6 @@ Use <a href="#">Advanced Search</a> for additional search options
     </div>
     <div class="col-md-8">
         <div class="row">
-            <button id="identify-wells-btn" class="btn btn-default" type="button" onclick="startIdentifyWellsOperation()">Select Area on Map</button>
-        </div>
-        <br />
-        <div class="row">
             <div aria-label="A map associated with GWELLS Search. All well information in this map is accessible via the table of well results that opens below the search form when a search succeeds." id="search-map" class="col-md-7"></div>
             <div id="attribution"></div>
         </div>
@@ -196,7 +192,7 @@ Use <a href="#">Advanced Search</a> for additional search options
                 transparent: true
             }        
         ],
-        initialExtentRectangle: null,
+        initialExtent: null,
         externalQueryCallback: searchWellsByExtentCallback,
         externalAttributionNodeId: attribNode 
     };
@@ -206,12 +202,6 @@ Use <a href="#">Advanced Search</a> for additional search options
     var startLatLongFieldName = "start_lat_long";
     var endLatLongFieldName = "end_lat_long";
     var latLongDelimiter = ",";
-
-    function startIdentifyWellsOperation() {
-        if (searchMap !== null) {
-            searchMap.searchWellsByExtent();
-        }
-    }
 
     function searchWellsByExtentCallback(startLatLong, endLatLong) {
         $("#"+searchMapNodeId).removeClass('identify-wells-operation');
@@ -229,9 +219,9 @@ Use <a href="#">Advanced Search</a> for additional search options
         var wellsJson = $("#wells-json").attr("data-wells-search-json") || null;
         var wells = JSON.parse(wellsJson);
         var latLongBox = JSON.parse($("#wells-json").attr("data-lat-long-box") || null);
-        searchMapOptions.initialExtentRectangle = latLongBox;
+        searchMapOptions.initialExtent = latLongBox;
+        searchMapOptions.initialWells = wells;
         searchMap = new WellsMap(searchMapOptions);
-        searchMap.drawAndFitBounds(wells);            
     });
 </script>
 {% endblock %}
