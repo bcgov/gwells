@@ -362,7 +362,6 @@ function WellsMap(options) {
     // We clear the extant wells before re-querying, for simplicity.
     var _searchWellsInBoundingBox = function () {
         if (_exists(_leafletMap) && _leafletMap.getZoom() >= _SEARCH_MIN_ZOOM_LEVEL) {
-            _clearWells();
             var mapBounds = _leafletMap.getBounds();
             _searchByAjax(_SEARCH_URL, mapBounds, _searchByAjaxSuccessCallback);
         }
