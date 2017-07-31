@@ -20,8 +20,8 @@ from django.views.generic.edit import FormView
 from formtools.wizard.views import SessionWizardView
 from .models import WellYieldUnit, Well, ActivitySubmission, WellClass
 from .forms import SearchForm, ActivitySubmissionTypeAndClassForm, WellOwnerForm, ActivitySubmissionLocationForm, ActivitySubmissionGpsForm
-from .forms import ActivitySubmissionLithologyFormSet, ActivitySubmissionCasingFormSet, ActivitySubmissionSurfaceSealForm, ActivitySubmissionLinerForm, ActivitySubmissionLinerPerforationFormSet
-from .forms import ActivitySubmissionScreenIntakeForm, ActivitySubmissionScreenFormSet
+from .forms import ActivitySubmissionLithologyFormSet, ActivitySubmissionCasingFormSet, ActivitySubmissionSurfaceSealForm, ActivitySubmissionLinerPerforationFormSet
+from .forms import ActivitySubmissionScreenIntakeForm, ActivitySubmissionScreenFormSet, ActivitySubmissionFilterPackForm
 import json
 from django.core.serializers.json import DjangoJSONEncoder
 
@@ -122,10 +122,10 @@ FORMS = [('type_and_class', ActivitySubmissionTypeAndClassForm),
          ('lithology', ActivitySubmissionLithologyFormSet),
          ('casing', ActivitySubmissionCasingFormSet),
          ('surface_seal', ActivitySubmissionSurfaceSealForm),
-         ('liner', ActivitySubmissionLinerForm),
          ('liner_perforation', ActivitySubmissionLinerPerforationFormSet),
          ('screen_intake', ActivitySubmissionScreenIntakeForm),
          ('screen', ActivitySubmissionScreenFormSet),
+         ('filter_pack', ActivitySubmissionFilterPackForm),
         ]
 
 TEMPLATES = {'type_and_class': 'gwells/activity_submission_form.html',
@@ -135,10 +135,10 @@ TEMPLATES = {'type_and_class': 'gwells/activity_submission_form.html',
              'lithology': 'gwells/activity_submission_lithology_form.html',
              'casing': 'gwells/activity_submission_casing_form.html',
              'surface_seal': 'gwells/activity_submission_form.html',
-             'liner': 'gwells/activity_submission_form.html',
              'liner_perforation': 'gwells/activity_submission_liner_perforation_form.html',
              'screen_intake': 'gwells/activity_submission_form.html',
              'screen': 'gwells/activity_submission_screen_form.html',
+             'filter_pack': 'gwells/activity_submission_form.html',
             }
 
 
