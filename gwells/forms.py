@@ -845,13 +845,13 @@ class ActivitySubmissionScreenIntakeForm(forms.ModelForm):
                 Div(
                     Div('screen_type', css_class='col-md-2'),
                     Div('screen_material', css_class='col-md-2'),
-                    Div('other_screen_material', css_class='col-md-2'),
+                    Div('other_screen_material', css_class='col-md-3'),
                     css_class='row',
                 ),
                 Div(
                     Div('screen_opening', css_class='col-md-2'),
                     Div('screen_bottom', css_class='col-md-2'),
-                    Div('other_screen_bottom', css_class='col-md-2'),
+                    Div('other_screen_bottom', css_class='col-md-3'),
                     css_class='row',
                 ),
             )
@@ -962,6 +962,41 @@ class ScreenForm(forms.ModelForm):
     class Meta:
         model = Screen
         fields = ['screen_from', 'screen_to', 'internal_diameter', 'assembly_type', 'slot_size']
+
+
+
+class ActivitySubmissionFilterPackForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.disable_csrf = True
+        self.helper.render_hidden_fields = True
+        self.helper.layout = Layout(
+            Fieldset(
+                'Filter Pack',
+                Div(
+                    Div(AppendedText('filter_pack_from', 'ft'), css_class='col-md-2'),
+                    Div(AppendedText('filter_pack_to', 'ft'), css_class='col-md-2'),
+                    Div(AppendedText('filter_pack_thickness', 'in'), css_class='col-md-2'),
+                    css_class='row',
+                ),
+                Div(
+                    Div('filter_pack_material', css_class='col-md-3'),
+                    Div('filter_pack_material_size', css_class='col-md-3'),
+                    css_class='row',
+                ),
+            )
+        )
+        super(ActivitySubmissionFilterPackForm, self).__init__(*args, **kwargs)
+
+    def clean(self):
+        cleaned_data = super(ActivitySubmissionFilterPackForm, self).clean()
+
+        return cleaned_data
+
+    class Meta:
+        model = ActivitySubmission
+        fields = ['filter_pack_from', 'filter_pack_to', 'filter_pack_thickness', 'filter_pack_material', 'filter_pack_material_size']
 
 
 
