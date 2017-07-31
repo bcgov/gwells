@@ -14,9 +14,7 @@
  *      If the wellPushpinMoveCallback is supplied on map init, the pushpin can be moved by dragging, which advertises the
  *      pushpin's latitude and longitude to the callback. The map will centre on the pushpin and reissue queries for surrounding
  *      wells whenever the pushpin is moved.
- *  - Allow the user to draw a rectangle via the public startIdentifyWells() method. If the map init supplies an identifyWellsEndCallback,
- *      the map advertises a pair of latitude/longitude coordinates corresponding to extreme corners of the rectangle as it was when the user
- *      released the mouse button. If the corners of a rectangle are passed to the map, the map initialises fit to this rectangle.
+ *  - Call an external query callback (if one is supplied), passing it the map's current extent to add as a search parameter.
  *  - Display an ESRI MapServer layer as a base layer.
  *  - Display an array of WMS tile layers as overlays.
  * The map is able to pan and zoom by default, but this behaviour can be disabled by passing appropriate booleans. Note that if zooming is allowed,
@@ -45,6 +43,11 @@
  *   canPan?: bool, // Whether the map can be panned after initial load. Defaults to true.
  *   minZoom?: number,  // The minimum zoom level of the map (i.e., how far it can be zoomed out)
  *   maxZoom?: number,  // The maximum zoom level of the map (i.e., how far it can be zoomed in)
+ *   // Indicates the map should be started zoomed into a particular extent.
+ *   initialExtent?: {
+ *      startCorner: string, // Comma-separated string of theform 'lat,long' denoting the extent rectangle's starting corner
+ *      endCorner: string // Comma-separated string of theform 'lat,long' denoting the extent rectangle's ending corner
+ *   },
  *   mapBounds?: { // Latitude and longitude extremes of the bounding rectangle for the map.
  *      north: float, // The top latitude of the map
  *      south: float, // The bottom latitude of the map
@@ -60,13 +63,7 @@
  *      }
  *   },
  *   wellPushpinMoveCallback?: function, // Function to call when the map's wellPushpin moves
- *   // Indicates the map should be drawn with an 'identify' rectangle to start with. Overwritten by the identifyWellsOperation.
- *   identifyWellsRectangle?: {
- *      startCorner: string, // Comma-separated string of theform 'lat,long' denoting the rectangle's starting corner
- *      endCorner: string // Comma-separated string of theform 'lat,long' denoting the rectangle's ending corner
- *   },
- *   identifyWellsStartCallback?: function, // Function to call when an identifyWells operation is started
- *   identifyWellsEndCallback?: function, // Function to call when an identifyWells operation ends
+ *   externalQueryCallback?: function, // Function to call when the map's bounding box is bundled into an external query
  *   externalAttributionNodeId?: string // ID of the DOM node (exterior to the map) where the map's attribution will be displayed.
  * }
  */
@@ -122,27 +119,12 @@ function WellsMap(options) {
     // Markers used to denote wells. This var should only be accessed directly, so do not write var newArr = _wellMarkers anywhere in the class.
     var _wellMarkers = [];
 
-    // Whether the map is undergoing an identifyWells operation.
-    var _isIdentifyingWells = false;
-
-    // The callback function for the beginning of an identifyWells operation.
-    var _identifyWellsStartCallback = null;
-
-    // the callback function for the end of an identifyWells operation.
-    var _identifyWellsEndCallback = null;
-
-    // The rectangle to draw on the map during an identifyWells operation.
-    var _identifyWellsRectangle = null;
-
-    // The starting corner of the identifyWellsRectangle
-    var _startCorner = null;
-
-    // The ending corner of the (final) identifyWellsRectangle
-    var _endCorner = null;
-
     // The rectangle to be drawn when the zoom level is below the search minimum, delimiting
     // the extent of the queried wells to be displayed.
     var _searchMinRectangle = null;
+
+    // Callback for the external query
+    var _externalQueryCallback = null;
 
     /** Private functions */
 
@@ -155,6 +137,25 @@ function WellsMap(options) {
     var _isArray = function (arr) {
         return _exists(arr) && _exists(arr.constructor) && arr.constructor === Array;
     };
+
+    var _setInitialExtentBounds = function (initialExtent) {
+        var initExtBounds = null;
+        if (typeof initialExtent.startCorner === 'string' && typeof initialExtent.endCorner === 'string') {
+            var delimiter = ",";
+            var startLatLongArray = initialExtent.startCorner.split(delimiter).map(function (val) {
+                return parseFloat(val);
+            });
+            var endLatLongArray = initialExtent.endCorner.split(delimiter).map(function (val) {
+                return parseFloat(val);
+            });
+            if (startLatLongArray.length === 2 && endLatLongArray.length === 2) {
+                var startLatLng = L.latLng(startLatLongArray[0], startLatLongArray[1]);
+                var endLatLng = L.latLng(endLatLongArray[0], endLatLongArray[1]);
+                initExtBounds = L.latLngBounds(startLatLng, endLatLng);
+            }
+        }
+        return initExtBounds;
+    }
 
     var _setMaxBounds = function (bounds) {
         var maxBounds = null;
@@ -203,51 +204,6 @@ function WellsMap(options) {
             _wellPushpinMoveCallback(latLng);
         }
         _wellPushpin.wellMarker.setLatLng(latLng);
-    };
-
-    // Handles the mousemove event during the identifyWells operation. Specifically, this function draws the interstitial
-    // rectangles to help the user see the extent they're querying for wells.
-    var _mouseMoveForIdentifyWellsEvent = function (e) {
-        if (!_exists(_leafletMap) || !_exists(_startCorner)) {
-            return;
-        }
-        var tempCorner = e.latlng;
-        if (_exists(_identifyWellsRectangle)) {
-            _leafletMap.removeLayer(_identifyWellsRectangle);
-        }
-        _identifyWellsRectangle = L.rectangle([_startCorner, tempCorner]);
-        _identifyWellsRectangle.addTo(_leafletMap);
-    };
-
-    // Handles the mousedown event during the identifyWells operation. Specifically, and sets the starting corner of
-    // the rectangle to be drawn, as well as subscribing the map to _mouseMoveForIdentifyWellsEvent.
-    var _mouseDownForIdentifyWellsEvent = function (e) {
-        _leafletMap.dragging.disable();
-        _startCorner = e.latlng;
-        _leafletMap.on('mousemove', _mouseMoveForIdentifyWellsEvent);
-    };
-
-    // Handles the mouseup event during the identifyWells operation. Specifically, this function re-enables dragging, sets
-    // the ending corner of the rectangle, unsubscribes the map from the events, passes the corner info to the callback,
-    // and resets the private members associated with the operation.
-    var _mouseUpForIdentifyWellsEvent = function (e) {
-        _leafletMap.dragging.enable();
-        _endCorner = e.latlng;
-
-        _leafletMap.off('mousedown', _mouseDownForIdentifyWellsEvent);
-        _leafletMap.off('mouseup', _mouseUpForIdentifyWellsEvent);
-        _leafletMap.off('mouseout', _mouseUpForIdentifyWellsEvent);
-        _leafletMap.off('mousemove', _mouseMoveForIdentifyWellsEvent);
-        if (_exists(_identifyWellsRectangle)) {
-            _leafletMap.removeLayer(_identifyWellsRectangle);
-            _identifyWellsRectangle = null;
-        }       
-        _isIdentifyingWells = false;
-        if (_exists(_identifyWellsEndCallback)) {
-            _identifyWellsEndCallback(_startCorner, _endCorner);
-        }
-        _startCorner = null;
-        _endCorner = null;
     };
 
     // Determines whether a given latitude is within the map's bounds.
@@ -370,38 +326,6 @@ function WellsMap(options) {
         return contentString;
     };
 
-    // Draws an initial identifyWellsRectangle, if the appropriate latLongBox was supplied to the map's initialisation.
-    // The latLongBox is of type {startCorner: string, endCorner: string}, where the corners are comma-separated pairs
-    // of latitude and longitude denoting extreme corners of the rectangle to be drawn.
-    var _drawInitialIdentifyWellsRectangle = function (latLongBox) {
-        if (!_leafletMap) {
-            return;
-        }
-        // We assume the delimiter is a comma for convenience.
-        var delimiter = ",";
-        var startLatLongString = latLongBox.startCorner;
-        var endLatLongString = latLongBox.endCorner;
-        if (startLatLongString  && endLatLongString && typeof startLatLongString === "string" && typeof endLatLongString === "string") {
-            // latLongBox has the appropriate data, so we parse it into arrays of floats.
-            var startLatLong = startLatLongString.split(delimiter).map(function (val) {
-                return parseFloat(val);
-            });
-            var endLatLong = endLatLongString.split(delimiter).map(function (val) {
-                return parseFloat(val);
-            });
-            // We turn the floats into Leaflet latLng objects before drawing the rectangle.
-            var startCorner = L.latLng(startLatLong);
-            var endCorner = L.latLng(endLatLong);
-            if (_identifyWellsRectangle) {
-                _leafletMap.removeLayer(_identifyWellsRectangle);
-            }
-            _identifyWellsRectangle = L.rectangle([startCorner, endCorner], {
-                fillOpacity: 0, // The rectangle should have no fill.
-                interactive: false // The rectangle shouldn't interfere with click events.
-            }).addTo(_leafletMap);
-        }
-    };
-
     // Draws wells that can be drawn. Currently a well cannot be drawn if it is associated with the wellPushpin.
     var _drawWells = function (wells) {
         // First we clear any extant markers
@@ -438,7 +362,6 @@ function WellsMap(options) {
     // We clear the extant wells before re-querying, for simplicity.
     var _searchWellsInBoundingBox = function () {
         if (_exists(_leafletMap) && _leafletMap.getZoom() >= _SEARCH_MIN_ZOOM_LEVEL) {
-            _clearWells();
             var mapBounds = _leafletMap.getBounds();
             _searchByAjax(_SEARCH_URL, mapBounds, _searchByAjaxSuccessCallback);
         }
@@ -487,6 +410,48 @@ function WellsMap(options) {
     var _wellPushpinZoomEndEvent = function () {
         _leafletMap.panTo(_wellPushpin.pushpinMarker.getLatLng());
         _wellPushpin.wellMarker.addTo(_leafletMap);
+    };
+
+    // Gets the bounding box of the current map view and sends it to the external query callback.
+    var _sendExtentToExternalQuery = function () {
+        if (_exists(_externalQueryCallback)) {
+            var boundingBox = _leafletMap.getBounds();
+            var northWestCorner = boundingBox.getNorthWest();
+            var southEastCorner = boundingBox.getSouthEast();
+            _externalQueryCallback(northWestCorner, southEastCorner);
+        }
+    };
+
+    // Creates a Leaflet Control comprising a button which, when clicked, invokes the external query.
+    var _createExternalQueryControl = function () {
+        var container = L.DomUtil.create('button', 'leaflet-bar leaflet-control leaflet-control-custom');
+        container.innerHTML = 'Search Wells In This Area';
+        return L.Control.extend({
+            onAdd: function (map) {
+                L.DomEvent.on(container,
+                    'click dblclick',
+                    function (e) { 
+                        e.preventDefault();
+                        _sendExtentToExternalQuery();
+                    }, this);
+                    map.externalQueryControl = this;
+                return container;
+            },
+            onRemove: function (map) {
+                L.DomEvent.off(container);
+                delete map.externalQueryControl;
+            }
+        });
+    };
+
+    // Places the external query control on the map when the map is moved while it is above the minimum zoom level,
+    // or removes the control when the map is moved while it is below the minimum zoom level.
+    var _placeExternalQueryControl = function () {
+        if (_leafletMap.getZoom() < _SEARCH_MIN_ZOOM_LEVEL && _exists(_leafletMap.externalQueryControl)) {
+            _leafletMap.removeControl(_leafletMap.externalQueryControl);
+        } else if (_leafletMap.getZoom() >= _SEARCH_MIN_ZOOM_LEVEL && !_exists(_leafletMap.hasExternalQueryControl)) {
+            _leafletMap.addControl(L.control.externalquery({position: 'topright'}));
+        }
     };
 
     /** Public methods */
@@ -563,55 +528,6 @@ function WellsMap(options) {
         }
     };
 
-    // Displays wells and zooms to the _identifyWellsRectangle to see all displayed wells.
-    // Note the wells must have valid latitude and longitude data.
-    var drawAndFitBounds = function (wells) {
-        if (!_exists(_leafletMap) || !_exists(wells) || !_isArray(wells)) {
-            return;
-        }
-        _drawWells(wells);
-
-        // Once wells are drawn, we draw a (static) rectangle that encompasses them, with a bit of
-        // a padded buffer to include wells on the edges of the rectangle.
-        var buffer = 0.00005;
-        var padding = 0.01;
-        
-        // With the above constants, we get the bounds of the _wellMarkers and pad them with the buffer and padding.
-        var markerBounds = L.featureGroup(_wellMarkers).getBounds();
-        var northWestCorner = L.latLng(markerBounds.getNorthWest().lat + buffer, markerBounds.getNorthWest().lng - buffer);
-        var southEastCorner = L.latLng(markerBounds.getSouthEast().lat - buffer, markerBounds.getSouthEast().lng + buffer);
-        markerBounds = L.latLngBounds([northWestCorner, southEastCorner]).pad(padding);
-
-        // If there is an _identifyWellsRectangle, we should fit the map's bounds to it, instead.
-        if (_exists(_identifyWellsRectangle)) {
-            markerBounds = _identifyWellsRectangle.getBounds();
-        }
-
-        // Now that we have the right bounds, fit the map to them.
-        _leafletMap.fitBounds(markerBounds);
-    };
-
-    // Starts the identifyWells operation. This operation comprises several events, generally initiated when a user clicks
-    // an appropriate button on the Search page. The map's style is dynamically changed so that the mouse pointer turns to
-    // crosshairs, and the map itself is prepared in this method to let a user draw a rectangle on it by clicking and dragging
-    // over the map. Once the mouse is released, the starting and ending corners of the box are collected, added to the Search
-    // form, and submitted for processing.
-    var startIdentifyWells = function () {
-        if (_exists(_leafletMap) && _isIdentifyingWells) {
-            // If the map is in the midst of an Identify, don't start a new one.
-            return;
-        }
-        _isIdentifyingWells = true;
-        _startCorner = null;
-        _endCorner = null;
-        if (_exists(_identifyWellsStartCallback)) {
-            _identifyWellsStartCallback();
-        }
-        _leafletMap.on('mousedown', _mouseDownForIdentifyWellsEvent);
-        _leafletMap.on('mouseup', _mouseUpForIdentifyWellsEvent);
-        _leafletMap.on('mouseout', _mouseUpForIdentifyWellsEvent);
-    };
-
     /** IIFE for construction of a WellsMap */
     (function (options) {
         options = options || {};
@@ -633,7 +549,12 @@ function WellsMap(options) {
         // Bools need a stricter check because of JS lazy evaluation
         var centreZoom = _exists(options.centreZoom) ? options.centreZoom : false;
         var canPan = _exists(options.canPan) ? options.canPan : true;
+
+        // Bounds
+        var initialExtentBounds = _exists(options.initialExtent) ? _setInitialExtentBounds(options.initialExtent) : void 0;        
         _maxBounds = _exists(options.mapBounds) ? _setMaxBounds(options.mapBounds) : void 0;
+
+        // Map initialisation
         _leafletMap = L.map(mapNodeId, {
             minZoom: minZoom,
             maxZoom: maxZoom,
@@ -642,6 +563,8 @@ function WellsMap(options) {
             scrollWheelZoom: centreZoom ? 'center' : true, // We want the map to stay centred on scrollwheel zoom if zoom is enabled.
             keyboardPanDelta: canPan ? 80 : 0
         });
+
+        // Centre, zoom, bound settings
         if (_exists(initCentre) && _isArray(initCentre) && initCentre.length === 2) {
             var rawLat = initCentre[0];
             var rawLong = initCentre[1];
@@ -649,15 +572,24 @@ function WellsMap(options) {
             if (_exists(centreLatLng)) {
                 _leafletMap.setView(centreLatLng, maxZoom);
             }
+        } else if (_exists(options.initialExtent)) {
+            _leafletMap.fitBounds(initialExtentBounds);
         } else if (_exists(_maxBounds)) {
             _leafletMap.fitBounds(_maxBounds);
         }
 
+        // Draw initial wells if required
+        if (_exists(options.initialWells)) {
+            _drawWells(options.initialWells);
+        }
+
+        // Disable panning if required
         if (!canPan) {
             _leafletMap.dragging.disable();
             _leafletMap.doubleClickZoom.disable();
         }
 
+        // Layers
         if (_exists(options.esriLayers)) {
             _loadEsriLayers(options.esriLayers);
         }
@@ -667,13 +599,9 @@ function WellsMap(options) {
 
         // Callbacks
         _wellPushpinMoveCallback = options.wellPushpinMoveCallback || null;
-        _identifyWellsStartCallback = options.identifyWellsStartCallback || null;
-        _identifyWellsEndCallback = options.identifyWellsEndCallback || null;
+        _externalQueryCallback = options.externalQueryCallback || null;
 
         // Initial graphics
-        if (_exists(options.identifyWellsRectangle)) {
-            _drawInitialIdentifyWellsRectangle(options.identifyWellsRectangle);
-        }
         var wellPushpinInit = options.wellPushpinInit || null;
         if (_exists(wellPushpinInit) && _exists(wellPushpinInit.lat) && _exists(wellPushpinInit.long)) {
             var details = wellPushpinInit.wellDetails;
@@ -684,13 +612,20 @@ function WellsMap(options) {
         if (_exists(options.externalAttributionNodeId)) {
            $("#" + options.externalAttributionNodeId).append(_leafletMap.attributionControl.getContainer());
         }
+
+        // If the _externalQueryCallback exists, we should create the custom control to invoke it.
+        if (_exists(_externalQueryCallback)) {
+            L.Control.ExternalQuery = _createExternalQueryControl();
+            L.control.externalquery = function (opts) {
+                return new L.Control.ExternalQuery(opts);
+            }
+            _leafletMap.on('move', _placeExternalQueryControl);
+        }
     }(options));
 
     // The public members and methods of a WellsMap.
     return {
         placeWellPushpin: placeWellPushpin,
-        removeWellPushpin: removeWellPushpin,
-        drawAndFitBounds: drawAndFitBounds,
-        startIdentifyWells: startIdentifyWells
+        removeWellPushpin: removeWellPushpin
     };
 }
