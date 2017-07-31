@@ -6,26 +6,24 @@
 {% block bodyheading_block %}Search{% endblock %}
 
 {% block introduction_block %}
-Search with text or by selecting an area on the map.<br />For text searching:
-    <ul>
-        <li>Search by well tag or well ID plate number (if known) for the most precise results</li>
-        <li>If not known, try searching with one or more additional fields</li>
-    </ul>
-Use <a href="#">Advanced Search</a> for additional search options
-    <br /><br />
 {% endblock %}
 
 {% block body_block %}
 
 <div class="row">
-    <div class="col-sm-4">
+    <div class="col-md-4">
+        Search with text or by viewing an area on the map.<br />You must be zoomed into a small area before you can search for wells within that area.<br />For text searching:
+        <ul>
+            <li>Search by well tag or well ID plate number (if known) for the most precise results</li>
+            <li>If not known, try searching with one or more additional fields</li>
+        </ul>
+        Use <a href="#">Advanced Search</a> for additional search options
+        <br /><br />
         {% crispy form %}         
     </div>
-    <div class="col-md-8">
-        <div class="row">
-            <div aria-label="A map associated with GWELLS Search. All well information in this map is accessible via the table of well results that opens below the search form when a search succeeds." id="search-map" class="col-md-7"></div>
+    <div class="col-md-6">
+            <div aria-label="A map associated with GWELLS Search. All well information in this map is accessible via the table of well results that opens below the search form when a search succeeds." id="search-map"></div>
             <div id="attribution"></div>
-        </div>
     </div>
  </div>
 <br />

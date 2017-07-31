@@ -560,10 +560,6 @@ fieldset[disabled] a.btn {
     border-radius:3px;
 }
 
-.formButtons .controls {
-    text-align: right;
-}
-
 .row-header {
 	font-weight: bold;
 }

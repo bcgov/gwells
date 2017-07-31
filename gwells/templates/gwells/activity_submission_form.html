@@ -265,12 +265,6 @@
         $('#id_surface_seal-backfill_above_surface_seal').autocomplete({
             source: material
         });
-    });
-</script>
-
-{% elif wizard.steps.current == 'liner' %}
-<script type="text/javascript">
-    $(function () {
         var thickness = ['0.125', '0.188', '0.248', '0.250'];
         $('#id_liner-liner_thickness').autocomplete({
             source: thickness
