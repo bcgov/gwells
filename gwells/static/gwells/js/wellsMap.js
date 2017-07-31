@@ -149,9 +149,11 @@ function WellsMap(options) {
                 return parseFloat(val);
             });
             if (startLatLongArray.length === 2 && endLatLongArray.length === 2) {
-                var startLatLng = L.latLng(startLatLongArray[0], startLatLongArray[1]);
-                var endLatLng = L.latLng(endLatLongArray[0], endLatLongArray[1]);
-                initExtBounds = L.latLngBounds(startLatLng, endLatLng);
+                var startLatLng = _getLatLngInBC(startLatLongArray[0], startLatLongArray[1]);
+                var endLatLng = _getLatLngInBC(endLatLongArray[0], endLatLongArray[1]);
+                if (_exists(startLatLng) && _exists(endLatLng)) {
+                    initExtBounds = L.latLngBounds(startLatLng, endLatLng);
+                }
             }
         }
         return initExtBounds;
@@ -327,7 +329,9 @@ function WellsMap(options) {
     };
 
     // Draws wells that can be drawn. Currently a well cannot be drawn if it is associated with the wellPushpin.
-    var _drawWells = function (wells) {
+    // @param wells the wells to draw
+    // @param fitBounds whether to fit the map to the returned wells' bounds
+    var _drawWells = function (wells, fitBounds) {
         // First we clear any extant markers
         _clearWells();
 
@@ -348,6 +352,12 @@ function WellsMap(options) {
                 _wellMarkers.push(wellMarker);
             }
         });
+        if (fitBounds) {
+            var featureGroup = new L.featureGroup(_wellMarkers);
+            if (_exists(featureGroup)) {
+                _leafletMap.fitBounds(featureGroup.getBounds());
+            }
+        }
     };
 
     // Handles the results of an AJAX call to 'ajax/map_well_search/'.
@@ -572,7 +582,7 @@ function WellsMap(options) {
             if (_exists(centreLatLng)) {
                 _leafletMap.setView(centreLatLng, maxZoom);
             }
-        } else if (_exists(options.initialExtent)) {
+        } else if (_exists(initialExtentBounds)) {
             _leafletMap.fitBounds(initialExtentBounds);
         } else if (_exists(_maxBounds)) {
             _leafletMap.fitBounds(_maxBounds);
@@ -580,7 +590,7 @@ function WellsMap(options) {
 
         // Draw initial wells if required
         if (_exists(options.initialWells)) {
-            _drawWells(options.initialWells);
+            _drawWells(options.initialWells, true);
         }
 
         // Disable panning if required
