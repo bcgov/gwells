@@ -18,18 +18,18 @@ It uses the Openshift Source-to-Image (S2I) strategy with Python 3.5 on centos7.
 Apart from the regular files created by Django (`project/*`, `welcome/*`, `manage.py`), this repository contains:
 
 ```
+database/           - Database-specific files
+└── code-tables     - Static code table sql scripts
+└── scripts         - PostgrSQL psql scripts
+  └── sql-developer - SQL Developer Oracle SQL scripts
 
-database/          - Database-specific files
-└── scripts        - PostgrSQL DDL and psql scripts
+openshift/          - OpenShift-specific files
+├── scripts         - helper scripts
+└── templates       - application templates
 
-openshift/         - OpenShift-specific files
-├── scripts        - helper scripts
-└── templates      - application templates
-
-requirements.txt   - list of dependencies
+requirements.txt    - list of dependencies
 
 ```
-
 
 ## Local development
 
@@ -52,7 +52,7 @@ To run this project in your development machine, ensure that Python 3.5 is insta
 
 2. Fork this repo and clone your fork:
 
-    `git clone https://github.com/bcgov/gwells.git`
+    `git clone https://github.com/<github-user>/gwells.git`
 
 3. Install dependencies:
 
