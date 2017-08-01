@@ -787,7 +787,7 @@ class LinerPerforationForm(forms.ModelForm):
             HTML('</td>'),
             HTML('<td>'),
             'liner_perforation_to',
-            HTML('</td><td width="75">{% if form.instance.pk %}{{ form.DELETE }}{% endif %}</td>'),
+            HTML('</td><td width="75">&nbsp;{% if form.instance.pk %}{{ form.DELETE }}{% endif %}</td>'),
             HTML('</tr>'),
         )
         super(LinerPerforationForm, self).__init__(*args, **kwargs)
@@ -923,7 +923,7 @@ class ScreenForm(forms.ModelForm):
             HTML('</td>'),
             HTML('<td width="60">'),
             'slot_size',
-            HTML('</td><td width="75">{% if form.instance.pk %}{{ form.DELETE }}{% endif %}</td>'),
+            HTML('</td><td width="75">&nbsp;{% if form.instance.pk %}{{ form.DELETE }}{% endif %}</td>'),
             HTML('</tr>'),
         )
         super(ScreenForm, self).__init__(*args, **kwargs)

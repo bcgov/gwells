@@ -18,7 +18,7 @@ from django.views import generic
 from django.views.generic.edit import FormView
 #from django.utils import timezone
 from formtools.wizard.views import SessionWizardView
-from .models import WellYieldUnit, Well, ActivitySubmission, WellClass
+from .models import WellYieldUnit, Well, ActivitySubmission, WellClass, ScreenIntake
 from .forms import SearchForm, ActivitySubmissionTypeAndClassForm, WellOwnerForm, ActivitySubmissionLocationForm, ActivitySubmissionGpsForm
 from .forms import ActivitySubmissionLithologyFormSet, ActivitySubmissionCasingFormSet, ActivitySubmissionSurfaceSealForm, ActivitySubmissionLinerPerforationFormSet
 from .forms import ActivitySubmissionScreenIntakeForm, ActivitySubmissionScreenFormSet, ActivitySubmissionFilterPackForm
@@ -154,8 +154,9 @@ class ActivitySubmissionWizardView(SessionWizardView):
         context['wizard_data'] = self.get_all_cleaned_data()
 
         if self.steps.current == 'type_and_class':
+            # Get the pk of water supply well class so jquery can show/hide intended water use field
             try:
-                water_supply_class = WellClass.objects.filter(code='WATR_SPPLY')[0]
+                water_supply_class = WellClass.objects.get(code='WATR_SPPLY')
                 context['water_supply_well_class_guid'] = water_supply_class.well_class_guid
             except Exception as e:
                 context['water_supply_well_class_guid'] = None
@@ -170,6 +171,7 @@ class ActivitySubmissionWizardView(SessionWizardView):
         initial = {}
 
         if step == 'surface_seal':
+            # Determine if casing exists so surface seal fields can be validated as required in their clean methods
             casing_data = self.get_cleaned_data_for_step('casing')
             initial.update({'casing_exists': False})
             if casing_data:
@@ -177,7 +179,19 @@ class ActivitySubmissionWizardView(SessionWizardView):
                     if casing:
                         initial.update({'casing_exists': True})
                         break
-        
+        elif step == 'screen':
+            # Make at least 1 row of screen required if Screen Intake == Screen on the previous step
+            intake_data = self.get_cleaned_data_for_step('screen_intake')
+            form_class = self.form_list[step]
+            form_class.min_num = 0
+            if intake_data:
+                try:
+                    screen_screen_intake = ScreenIntake.objects.get(code='SCREEN') #TODO
+                except Exception as e:
+                    screen_screen_intake = None
+                if intake_data.get('screen_intake') and intake_data.get('screen_intake') == screen_screen_intake:
+                    form_class.min_num = 1
+                
         return initial
 
     def done(self, form_list, form_dict, **kwargs):
