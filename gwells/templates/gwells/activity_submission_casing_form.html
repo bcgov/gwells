@@ -81,7 +81,8 @@
     $(function () {
         $('#casingForm tbody tr').formset({
             prefix: '{{ wizard.form.prefix }}'
-            ,addText: 'add another row'
+            , addText: 'add another row'
+            , keepFieldValues: 'input[name $= "-drive_shoe"]'
         });
     })
 </script>
