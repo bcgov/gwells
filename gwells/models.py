@@ -660,6 +660,25 @@ class FilterPackMaterialSize(AuditModel):
 
 
 
+class DevelopmentMethod(AuditModel):
+    """
+     How the well was developed in order to remove the fine sediment and other organic or inorganic material that immediately surrounds the well screen, the drill hole or the intake area at the bottom of the well, e.g. air lifting, pumping, bailing.
+    """
+    development_method_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    code = models.CharField(max_length=10, unique=True)
+    description = models.CharField(max_length=100)
+    is_hidden = models.BooleanField(default=False)
+    sort_order = models.PositiveIntegerField()
+    
+    class Meta:
+        db_table = 'gwells_development_method'
+        ordering = ['sort_order', 'description']
+
+    def __str__(self):
+        return self.description
+
+
+
 class Well(AuditModel):
     """
     Well information.
@@ -724,6 +743,10 @@ class Well(AuditModel):
     filter_pack_thickness = models.DecimalField(max_digits=5, decimal_places=3, blank=True, null=True, verbose_name='Filter Pack Thickness', validators=[MinValueValidator(Decimal('0.00'))])
     filter_pack_material = models.ForeignKey(FilterPackMaterial, db_column='filter_pack_material_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Filter Pack Material')
     filter_pack_material_size = models.ForeignKey(FilterPackMaterialSize, db_column='filter_pack_material_size_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Filter Pack Material Size')
+
+    development_method = models.ForeignKey(DevelopmentMethod, db_column='development_method_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Development Method')
+    development_hours = models.DecimalField(max_digits=9, decimal_places=2, blank=True, null=True, verbose_name='Development Total Duration', validators=[MinValueValidator(Decimal('0.00'))])
+    development_notes = models.CharField(max_length=255, blank=True, verbose_name='Development Notes')
 
 
 
@@ -833,6 +856,10 @@ class ActivitySubmission(AuditModel):
     filter_pack_material = models.ForeignKey(FilterPackMaterial, db_column='filter_pack_material_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Filter Pack Material')
     filter_pack_material_size = models.ForeignKey(FilterPackMaterialSize, db_column='filter_pack_material_size_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Filter Pack Material Size')
 
+    development_method = models.ForeignKey(DevelopmentMethod, db_column='development_method_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Development Method')
+    development_hours = models.DecimalField(max_digits=9, decimal_places=2, blank=True, null=True, verbose_name='Development Total Duration', validators=[MinValueValidator(Decimal('0.00'))])
+    development_notes = models.CharField(max_length=255, blank=True, verbose_name='Development Notes')
+
 
     diameter = models.CharField(max_length=9, blank=True)  #want to be integer in future
     #diameter_unit
@@ -903,6 +930,10 @@ class ActivitySubmission(AuditModel):
         w.filter_pack_thickness = self.filter_pack_thickness
         w.filter_pack_material = self.filter_pack_material
         w.filter_pack_material_size = self.filter_pack_material_size
+
+        w.development_method = self.development_method
+        w.development_hours = self.development_hours
+        w.development_notes = self.development_notes
         #TODO
 
         return w;
