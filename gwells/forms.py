@@ -188,6 +188,7 @@ class WellOwnerForm(forms.ModelForm):
         fields = ['owner_full_name', 'owner_mailing_address', 'owner_city', 'owner_province_state', 'owner_postal_code']
 
 
+
 class ActivitySubmissionTypeAndClassForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
@@ -981,6 +982,36 @@ class ActivitySubmissionFilterPackForm(forms.ModelForm):
     class Meta:
         model = ActivitySubmission
         fields = ['filter_pack_from', 'filter_pack_to', 'filter_pack_thickness', 'filter_pack_material', 'filter_pack_material_size']
+
+
+
+class ActivitySubmissionDevelopmentForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.disable_csrf = True
+        self.helper.layout = Layout(
+            Fieldset(
+                'Well Development',
+                Div(
+                    Div('development_method', css_class='col-md-3'),
+                    css_class='row',
+                ),
+                Div(
+                    Div(AppendedText('development_hours', 'hrs'), css_class='col-md-3'),
+                    css_class='row',
+                ),
+                Div(
+                    Div('development_notes', css_class='col-md-6'),
+                    css_class='row',
+                ),
+            )
+        )
+        super(ActivitySubmissionDevelopmentForm, self).__init__(*args, **kwargs)
+   
+    class Meta:
+        model = ActivitySubmission
+        fields = ['development_method', 'development_hours', 'development_notes']
 
 
 
