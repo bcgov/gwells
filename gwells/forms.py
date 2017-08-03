@@ -208,7 +208,8 @@ class ActivitySubmissionTypeAndClassForm(forms.ModelForm):
                     css_class='row',
                 ),
                 Div(
-                    Div('identification_plate_number', css_class='col-md-3'),
+                    Div('identification_plate_number', css_class='col-md-4'),
+                    Div('where_plate_attached', css_class='col-md-4'),
                     css_class='row',
                 ),
                 Div(
@@ -255,7 +256,7 @@ class ActivitySubmissionTypeAndClassForm(forms.ModelForm):
 
     class Meta:
         model = ActivitySubmission
-        fields = ['well_activity_type', 'well_class', 'well_subclass', 'intended_water_use', 'identification_plate_number', 'driller_responsible', 'driller_name', 'consultant_name', 'consultant_company', 'work_start_date', 'work_end_date']
+        fields = ['well_activity_type', 'well_class', 'well_subclass', 'intended_water_use', 'identification_plate_number', 'where_plate_attached', 'driller_responsible', 'driller_name', 'consultant_name', 'consultant_company', 'work_start_date', 'work_end_date']
         help_texts = {'work_start_date': "yyyy-mm-dd", 'work_end_date': "yyyy-mm-dd",}
         widgets = {'well_activity_type': forms.RadioSelect}
 

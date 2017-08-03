@@ -709,6 +709,7 @@ class Well(AuditModel):
     well_location_description = models.CharField(max_length=500, blank=True, verbose_name='Well Location Description')
 
     identification_plate_number = models.PositiveIntegerField(unique=True, blank=True, null=True)
+    where_plate_attached = models.CharField(max_length=500, blank=True, verbose_name='Where Identification Plate Is Attached')
 
     latitude = models.DecimalField(max_digits=8, decimal_places=6, blank=True, null=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
@@ -820,6 +821,7 @@ class ActivitySubmission(AuditModel):
     well_location_description = models.CharField(max_length=500, blank=True, verbose_name='Well Location Description')
 
     identification_plate_number = models.PositiveIntegerField(blank=True, null=True, verbose_name='Identification Plate Number')
+    where_plate_attached = models.CharField(max_length=500, blank=True, verbose_name='Where Identification Plate Is Attached')
 
     latitude = models.DecimalField(max_digits=8, decimal_places=6, blank=True, null=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
