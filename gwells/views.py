@@ -21,7 +21,7 @@ from formtools.wizard.views import SessionWizardView
 from .models import WellYieldUnit, Well, ActivitySubmission, WellClass, ScreenIntake
 from .forms import SearchForm, ActivitySubmissionTypeAndClassForm, WellOwnerForm, ActivitySubmissionLocationForm, ActivitySubmissionGpsForm
 from .forms import ActivitySubmissionLithologyFormSet, ActivitySubmissionCasingFormSet, ActivitySubmissionSurfaceSealForm, ActivitySubmissionLinerPerforationFormSet
-from .forms import ActivitySubmissionScreenIntakeForm, ActivitySubmissionScreenFormSet, ActivitySubmissionFilterPackForm
+from .forms import ActivitySubmissionScreenIntakeForm, ActivitySubmissionScreenFormSet, ActivitySubmissionFilterPackForm, ActivitySubmissionDevelopmentForm
 import json
 from django.core.serializers.json import DjangoJSONEncoder
 
@@ -126,6 +126,7 @@ FORMS = [('type_and_class', ActivitySubmissionTypeAndClassForm),
          ('screen_intake', ActivitySubmissionScreenIntakeForm),
          ('screen', ActivitySubmissionScreenFormSet),
          ('filter_pack', ActivitySubmissionFilterPackForm),
+         ('development', ActivitySubmissionDevelopmentForm),
         ]
 
 TEMPLATES = {'type_and_class': 'gwells/activity_submission_form.html',
@@ -139,6 +140,7 @@ TEMPLATES = {'type_and_class': 'gwells/activity_submission_form.html',
              'screen_intake': 'gwells/activity_submission_form.html',
              'screen': 'gwells/activity_submission_screen_form.html',
              'filter_pack': 'gwells/activity_submission_form.html',
+             'development': 'gwells/activity_submission_form.html',
             }
 
 
