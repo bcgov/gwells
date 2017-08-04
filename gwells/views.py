@@ -11,19 +11,22 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
-from django.http import HttpResponseRedirect, JsonResponse
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, render
 #from django.urls import reverse
 from django.views import generic
 from django.views.generic.edit import FormView
 #from django.utils import timezone
 from formtools.wizard.views import SessionWizardView
-from .models import WellYieldUnit, Well, ActivitySubmission, WellClass, ScreenIntake
+from .models import WellActivityType, WellYieldUnit, Well, ActivitySubmission, WellClass, ScreenIntake
 from .forms import SearchForm, ActivitySubmissionTypeAndClassForm, WellOwnerForm, ActivitySubmissionLocationForm, ActivitySubmissionGpsForm
 from .forms import ActivitySubmissionLithologyFormSet, ActivitySubmissionCasingFormSet, ActivitySubmissionSurfaceSealForm, ActivitySubmissionLinerPerforationFormSet
 from .forms import ActivitySubmissionScreenIntakeForm, ActivitySubmissionScreenFormSet, ActivitySubmissionFilterPackForm, ActivitySubmissionDevelopmentForm
 import json
 from django.core.serializers.json import DjangoJSONEncoder
+
+def health(request):
+    return HttpResponse(WellActivityType.objects.count())
 
 class HelloWorldView(generic.ListView):
     template_name = 'gwells/index.html'
