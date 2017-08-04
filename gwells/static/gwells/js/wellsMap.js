@@ -75,8 +75,11 @@ function WellsMap(options) {
     var _SEARCH_URL = '/ajax/map_well_search/';
 
     // The zoom level beyond which the map issues AJAX queries for wells, and beneath which removes AJAX-queried wells.
-    var _SEARCH_MIN_ZOOM_LEVEL = 14;
+    var _AJAX_SEARCH_MIN_ZOOM_LEVEL = 14;
 
+    // The zoom level beyond which the map presents the external query control, and beneath which removes the control.
+    var _EXTERNAL_QUERY_MIN_ZOOM_LEVEL = 10;
+    
     // Leaflet style for the _wellMarkers
     var _WELL_MARKER_STYLE = {
           radius: 3, // The radius of the circleMarker
@@ -86,10 +89,7 @@ function WellsMap(options) {
 
     var _WELL_PUSHPIN_WELL_MARKER_STYLE = {
         radius: 3,
-        weight: 1,
-        color: '#FF0000',
-        fillColor: '#0147b7',
-        fill: true,
+        fillColor: '#0025a1',
         fillOpacity: 1.0
     };
 
@@ -373,7 +373,7 @@ function WellsMap(options) {
     // Searches for all wells in the map's current bounding box, provided the map is beyond the minimum searching zoom level.
     // We clear the extant wells before re-querying, for simplicity.
     var _searchWellsInBoundingBox = function () {
-        if (_exists(_leafletMap) && _leafletMap.getZoom() >= _SEARCH_MIN_ZOOM_LEVEL) {
+        if (_exists(_leafletMap) && _leafletMap.getZoom() >= _AJAX_SEARCH_MIN_ZOOM_LEVEL) {
             var mapBounds = _leafletMap.getBounds();
             _searchByAjax(_SEARCH_URL, mapBounds, _searchByAjaxSuccessCallback);
         }
@@ -383,7 +383,7 @@ function WellsMap(options) {
     // is within the searchMinRectangle. Thus we need to draw the rectangle when the map is zoomed
     // beyond the search minimum, or destroy it when the map is zoomed within.
     var _handleSearchMinRectangle = function () {
-        if (_leafletMap.getZoom() === _SEARCH_MIN_ZOOM_LEVEL) {
+        if (_leafletMap.getZoom() === _AJAX_SEARCH_MIN_ZOOM_LEVEL) {
             if (_exists(_searchMinRectangle)) {
                 _leafletMap.removeLayer(_searchMinRectangle);
                 _searchMinRectangle = null;
@@ -392,7 +392,7 @@ function WellsMap(options) {
                 fillOpacity: 0,
                 interactive: false
             }).addTo(_leafletMap);            
-        } else if (_leafletMap.getZoom() > _SEARCH_MIN_ZOOM_LEVEL && _exists(_searchMinRectangle)) {
+        } else if (_leafletMap.getZoom() > _AJAX_SEARCH_MIN_ZOOM_LEVEL && _exists(_searchMinRectangle)) {
             _leafletMap.removeLayer(_searchMinRectangle);
             _searchMinRectangle = null;
         }
@@ -459,9 +459,9 @@ function WellsMap(options) {
     // Places the external query control on the map when the map is moved while it is above the minimum zoom level,
     // or removes the control when the map is moved while it is below the minimum zoom level.
     var _placeExternalQueryControl = function () {
-        if (_leafletMap.getZoom() < _SEARCH_MIN_ZOOM_LEVEL && _exists(_leafletMap.externalQueryControl)) {
+        if (_leafletMap.getZoom() < _EXTERNAL_QUERY_MIN_ZOOM_LEVEL && _exists(_leafletMap.externalQueryControl)) {
             _leafletMap.removeControl(_leafletMap.externalQueryControl);
-        } else if (_leafletMap.getZoom() >= _SEARCH_MIN_ZOOM_LEVEL && !_exists(_leafletMap.hasExternalQueryControl)) {
+        } else if (_leafletMap.getZoom() >= _EXTERNAL_QUERY_MIN_ZOOM_LEVEL && !_exists(_leafletMap.hasExternalQueryControl)) {
             _leafletMap.addControl(L.control.externalquery({position: 'topright'}));
         }
     };
@@ -627,6 +627,13 @@ function WellsMap(options) {
         if (_exists(options.externalAttributionNodeId)) {
            $("#" + options.externalAttributionNodeId).append(_leafletMap.attributionControl.getContainer());
         }
+
+        // The map should have a scale control
+        L.control.scale({
+            metric: true,
+            imperial: false,
+            position: 'bottomleft'
+        }).addTo(_leafletMap);
 
         // If the _externalQueryCallback exists, we should create the custom control to invoke it.
         if (_exists(_externalQueryCallback)) {
