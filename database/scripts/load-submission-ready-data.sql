@@ -20,6 +20,7 @@
 \copy gwells_casing_material FROM './gwells_casing_material.csv' HEADER DELIMITER ',' CSV
 \copy gwells_casing_type     FROM './gwells_casing_type.csv'     HEADER DELIMITER ',' CSV
 
+
 /* This will need further transformation to link to existing data */
 CREATE unlogged TABLE IF NOT EXISTS xform_gwells_surface_seal_method (
   who_created              character varying(30)   ,
@@ -34,21 +35,7 @@ CREATE unlogged TABLE IF NOT EXISTS xform_gwells_surface_seal_method (
 );
 
 /* This will need further transformation to link to existing data */
-CREATE unlogged TABLE IF NOT EXISTS xform_gwells_backfill_type (
-  who_created        character varying(30)   ,
-  when_created       timestamp with time zone,
-  who_updated        character varying(30)   ,
-  when_updated       timestamp with time zone,
-  backfill_type_guid uuid                    ,
-  code               character varying(100)  ,
-  description        character varying(100)  ,
-  is_hidden          boolean                 ,
-  sort_order         integer                 ,
-  BACKFILL_MATERIAL  character varying(100)    
-);
-
-/* This will need further transformation to link to existing data */
-CREATE unlogged TABLE IF NOT EXISTS xform_gwells_surface_seal_material(
+CREATE unlogged TABLE IF NOT EXISTS xform_gwells_surface_seal_material (
   who_created                 character varying(30)   ,
   when_created                timestamp with time zone,
   who_updated                 character varying(30)   ,
@@ -102,19 +89,21 @@ CREATE unlogged TABLE IF NOT EXISTS xform_gwells_well (
    CLASS_OF_WELL_CODCLASSIFIED_BY character varying(10)  ,
    SUBCLASS_OF_WELL_CLASSIFIED_BY character varying(10)  ,
    well_yield_unit_guid         uuid                     ,
-   DRILLING_METHOD_CODE         character varying(10)    ,
-   LATITUDE                     numeric(8,6)             ,
-   LONGITUDE                    numeric(9,6)             ,
-   UTM_NORTH                    integer,
-   UTM_EAST                     integer,
-   UTM_ZONE_CODE                character varying(10)  ,
-   ORIENTATION_VERTICAL         boolean,
+   latitude                     numeric(8,6)             ,
+   longitude                    numeric(9,6)             ,
+   ground_elevation             numeric(10,2) ,   
+   orientation_vertical         boolean,
+   other_drilling_method  character varying(50)   ,
+   drilling_method_guid         uuid   ,
+   ground_elevation_method_guid uuid ,
+   BKFILL_ABOVE_SRFC_SEAL_DEPTH numeric(7,2), /* backfill_above_surface_seal_depth */
+   backfill_above_surface_seal  character varying(250),
+   SEALANT_MATERIAL             character varying(100) ,
    when_created                 timestamp with time zone,
    when_updated                 timestamp with time zone,
    who_created                  character varying(30)   ,
    who_updated                  character varying(30)    
 );
-
 
 CREATE unlogged TABLE IF NOT EXISTS xform_gwells_drilling_company (
  drilling_company_guid uuid                   ,
@@ -145,7 +134,7 @@ CREATE unlogged TABLE IF NOT EXISTS xform_gwells_driller (
 \copy xform_gwells_land_district    FROM './xform_gwells_land_district.csv'    HEADER DELIMITER ',' CSV
 \copy xform_gwells_drilling_company FROM './xform_gwells_drilling_company.csv' HEADER DELIMITER ',' CSV
 \copy xform_gwells_driller          FROM './xform_gwells_driller.csv'          HEADER DELIMITER ',' CSV
-\copy xform_gwells_well             FROM './xform_gwells_well.csv'  WITH (HEADER, DELIMITER ',' , FORMAT CSV, FORCE_NULL(when_updated));
+\copy xform_gwells_well             FROM './xform_gwells_well.csv'  WITH (HEADER, DELIMITER ',' , FORMAT CSV, FORCE_NULL(when_updated,drilling_method_guid,ground_elevation_method_guid));
 
 \copy xform_gwells_surface_seal_material FROM './xform_gwells_surface_seal_material.csv' HEADER DELIMITER ',' CSV
 \copy xform_gwells_surface_seal_method FROM './xform_gwells_surface_seal_method.csv' HEADER DELIMITER ',' CSV
@@ -230,12 +219,41 @@ INSERT INTO gwells_well (
   well_yield_unit_guid        ,
   latitude,
   longitude,
+  ground_elevation,
   orientation_vertical,
-  backfill_above_surface_seal,
+  other_drilling_method,
+  drilling_method_guid,
+  ground_elevation_method_guid,
   when_created                ,
   when_updated                ,
   who_created                 ,
-  who_updated                 
+  who_updated                 ,
+  backfill_above_surface_seal_depth,
+  surface_seal_depth        ,
+  surface_seal_thickness    ,
+  surface_seal_method_guid  ,
+  backfill_above_surface_seal,
+  surface_seal_material_guid,
+  /*  
+  liner_diameter             ,  
+  liner_from                 ,  
+  liner_thickness            ,  
+  liner_to                   ,  
+  liner_material_guid        ,  
+  filter_pack_from           ,  
+  filter_pack_thickness      ,  
+  filter_pack_to             ,  
+  other_screen_bottom         ,
+  other_screen_material       ,
+  filter_pack_material_guid   ,   
+  filter_pack_material_size_guid,
+  screen_bottom_guid  ,           
+  screen_intake_guid  ,           
+  screen_opening_guid ,           
+  screen_type_guid           
+  */    
+  other_screen_bottom,
+  other_screen_material
   )
 SELECT 
 old.well_tag_number              ,
@@ -268,15 +286,31 @@ subclass.well_subclass_guid   ,
 old.well_yield_unit_guid      ,
 old.LATITUDE                  ,
 old.LONGITUDE                 ,
+old.GROUND_ELEVATION,
 old.orientation_vertical      ,
-'',
+old.other_drilling_method,
+old.drilling_method_guid ,
+old.ground_elevation_method_guid,
 old.when_created              ,
 coalesce(old.when_updated,old.when_created),
 old.who_created               ,
-old.who_updated      
+old.who_updated      ,
+old.bkfill_above_srfc_seal_depth,
+null,
+null,
+null,
+old.backfill_above_surface_seal,
+null, /* seal_material.surface_seal_material_guid   Should match  INSERT 0 111556 */
+'',
+''
 FROM xform_gwells_well old
 LEFT OUTER JOIN gwells_intended_water_use  use   ON old.WELL_USE_CODE  = use.code
 LEFT OUTER JOIN xform_gwells_land_district land  ON old.LEGAL_LAND_DISTRICT_CODE = land.code 
 INNER      JOIN gwells_well_class          class ON old.CLASS_OF_WELL_CODCLASSIFIED_BY = class.code 
 LEFT OUTER JOIN gwells_well_subclass   subclass  ON old.SUBCLASS_OF_WELL_CLASSIFIED_BY = subclass.code 
-                AND subclass.well_class_guid = class.well_class_guid;
+                AND subclass.well_class_guid = class.well_class_guid
+/*
+LEFT OUTER JOIN xform_gwells_surface_seal_material seal_material 
+  ON old.SEALANT_MATERIAL = seal_material.SEALANT_MATERIAL 
+*/
+;
