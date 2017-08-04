@@ -11,19 +11,22 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
-from django.http import HttpResponseRedirect, JsonResponse
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, render
 #from django.urls import reverse
 from django.views import generic
 from django.views.generic.edit import FormView
 #from django.utils import timezone
 from formtools.wizard.views import SessionWizardView
-from .models import WellYieldUnit, Well, ActivitySubmission, WellClass, ScreenIntake
+from .models import WellActivityType, WellYieldUnit, Well, ActivitySubmission, WellClass, ScreenIntake
 from .forms import SearchForm, ActivitySubmissionTypeAndClassForm, WellOwnerForm, ActivitySubmissionLocationForm, ActivitySubmissionGpsForm
 from .forms import ActivitySubmissionLithologyFormSet, ActivitySubmissionCasingFormSet, ActivitySubmissionSurfaceSealForm, ActivitySubmissionLinerPerforationFormSet
 from .forms import ActivitySubmissionScreenIntakeForm, ActivitySubmissionScreenFormSet, ActivitySubmissionFilterPackForm, ActivitySubmissionDevelopmentForm
 import json
 from django.core.serializers.json import DjangoJSONEncoder
+
+def health(request):
+    return HttpResponse(WellActivityType.objects.count())
 
 class HelloWorldView(generic.ListView):
     template_name = 'gwells/index.html'
@@ -42,6 +45,14 @@ def well_search(request):
     lat_long_box = '{}'
 
     if request.method == 'GET' and 'well' in request.GET:
+        # The lat_long_box is returned as a JSON string regardless of the validity of the form,
+        # provided the request has both a start_lat_long and an end_lat_long
+        if 'start_lat_long' in request.GET and 'end_lat_long' in request.GET:
+            start_lat_long = request.GET['start_lat_long']
+            end_lat_long = request.GET['end_lat_long']
+            lat_long_box = json.dumps(
+                {'startCorner': start_lat_long, 'endCorner': end_lat_long}, 
+                cls=DjangoJSONEncoder)
         form = SearchForm(request.GET)
         if form.is_valid():
             # process the data in form.cleaned_data
@@ -57,11 +68,6 @@ def well_search(request):
             well_results_json = json.dumps(
                 [well.as_dict() for well in well_results],
                 cls=DjangoJSONEncoder)
-        start_lat_long = form.cleaned_data.get('start_lat_long')
-        end_lat_long = form.cleaned_data.get('end_lat_long')
-        lat_long_box = json.dumps(
-            {'startCorner': start_lat_long, 'endCorner': end_lat_long}, 
-            cls=DjangoJSONEncoder)
 
     return render(request, 'gwells/search.html',
                   {'form': form, 'well_list': well_results,

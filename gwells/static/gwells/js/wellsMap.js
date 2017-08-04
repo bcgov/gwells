@@ -323,7 +323,7 @@ function WellsMap(options) {
                 _wellMarkers.push(wellMarker);
             }
         });
-        if (fitBounds) {
+        if (fitBounds && _wellMarkers.length !== 0) {
             var featureGroup = new L.featureGroup(_wellMarkers);
             if (_exists(featureGroup)) {
                 _leafletMap.fitBounds(featureGroup.getBounds());
@@ -439,7 +439,7 @@ function WellsMap(options) {
 
     // Creates a Leaflet Control comprising a button which, when clicked, invokes the external query.
     var _createExternalQueryControl = function () {
-        var container = L.DomUtil.create('button', 'leaflet-bar leaflet-control leaflet-control-custom');
+        var container = L.DomUtil.create('div', 'leaflet-control leaflet-area-search');
         container.innerHTML = 'Search Wells In This Area';
         return L.Control.extend({
             onAdd: function (map) {
@@ -596,9 +596,10 @@ function WellsMap(options) {
             _leafletMap.fitBounds(_maxBounds);
         }
 
-        // Draw initial wells if required
+        // If the map has wells to draw from the beginning, draw them, fitting the map
+        // to them if an initial extent was not provided
         if (_exists(options.initialWells)) {
-            _drawWells(options.initialWells, true);
+            _drawWells(options.initialWells, !_exists(initialExtentBounds));
         }
 
         // Disable panning if required
