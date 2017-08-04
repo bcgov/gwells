@@ -42,8 +42,14 @@ body {
     height: 360px;
 }
 
-.identify-wells-operation {
-    cursor: crosshair!important;
+div .leaflet-area-search {
+    display: inline-block;
+    color: #000;
+    border: 1px solid #ddd;
+    background: #fff;
+    box-shadow: 2px 2px 1px rgba(0,0,0,0.4);
+    padding: 5px;
+    cursor: pointer;
 }
 
 /* logo whitespace */
