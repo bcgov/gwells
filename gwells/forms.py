@@ -653,6 +653,7 @@ class CasingForm(forms.ModelForm):
         if casing_from and casing_to and casing_to < casing_from:
             errors.append('To must be greater than or equal to From.')
 
+        open_casing_type = None
         try:
             open_casing_type = CasingType.objects.get(code='OPEN')
         except Exception as e:
@@ -856,39 +857,37 @@ class ActivitySubmissionScreenIntakeForm(forms.ModelForm):
         other_screen_bottom = cleaned_data.get('other_screen_bottom')
         errors = []
 
-#        try:
-#            screen_screen_intake = ScreenIntake.objects.get(code='SCREEN')
-#        except Exception as e:
-#            errors.append('Configuration error: Screen Intake for Screen does not exist, please contact the administrator.')
+        screen_screen_intake = None
+        try:
+            screen_screen_intake = ScreenIntake.objects.get(code='SCREEN')
+        except Exception as e:
+            errors.append('Configuration error: Screen Intake for Screen does not exist, please contact the administrator.')
         
-#        if screen_screen_intake:
-#            if screen_intake == screen_screen_intake and not screen_type:
-#                self.add_error('screen_type', 'This field is required if Intake is a Screen.')
+        if screen_screen_intake:
+            if screen_intake == screen_screen_intake and not screen_type:
+                self.add_error('screen_type', 'This field is required if Intake is a Screen.')
 
-#            if screen_intake == screen_screen_intake and not screen_material:
-#                self.add_error('screen_material', 'This field is required if Intake is a Screen.')
+            if screen_intake == screen_screen_intake and not screen_material:
+                self.add_error('screen_material', 'This field is required if Intake is a Screen.')
 
-#            if screen_intake == screen_screen_intake and not screen_opening:
-#                self.add_error('screen_opening', 'This field is required if Intake is a Screen.')
+            if screen_intake == screen_screen_intake and not screen_opening:
+                self.add_error('screen_opening', 'This field is required if Intake is a Screen.')
 
- #           if screen_intake == screen_screen_intake and not screen_bottom:
- #               self.add_error('screen_bottom', 'This field is required if Intake is a Screen.')
+            if screen_intake == screen_screen_intake and not screen_bottom:
+                self.add_error('screen_bottom', 'This field is required if Intake is a Screen.')
 
- #       try:
- #           oth_screen_material = ScreenMaterial.objects.get(code='OTHER')
- #       except Exception as e:
- #           errors.append('Configuration error: Other Screen Material does not exist, please contact the administrator.')
+        try:
+            if screen_material == ScreenMaterial.objects.get(code='OTHER') and not other_screen_material:
+                self.add_error('other_screen_material', 'This field is required.')
+        except Exception as e:
+            errors.append('Configuration error: Other Screen Material does not exist, please contact the administrator.')
         
-#        if screen_material == oth_screen_material and not other_screen_material:
-#            self.add_error('other_screen_material', 'Specify Other Screen Material.')
+        try:
+            if screen_bottom == ScreenBottom.objects.get(code='OTHER') and not other_screen_bottom:
+                self.add_error('other_screen_bottom', 'This field is required.')
+        except Exception as e:
+            errors.append('Configuration error: Other Screen Bottom does not exist, please contact the administrator.')
 
- #       try:
- #           oth_screen_bottom = ScreenBottom.objects.get(code='OTHER')
- #       except Exception as e:
- #           errors.append('Configuration error: Other Screen Bottom does not exist, please contact the administrator.')
-        
- #       if screen_bottom == oth_screen_bottom and not other_screen_bottom:
- #           self.add_error('other_screen_bottom', 'Specify Other Screen Bottom.')
 
         if len(errors) > 0:
             raise forms.ValidationError(errors)        
