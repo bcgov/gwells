@@ -42,6 +42,14 @@ def well_search(request):
     lat_long_box = '{}'
 
     if request.method == 'GET' and 'well' in request.GET:
+        # The lat_long_box is returned as a JSON string regardless of the validity of the form,
+        # provided the request has both a start_lat_long and an end_lat_long
+        if 'start_lat_long' in request.GET and 'end_lat_long' in request.GET:
+            start_lat_long = request.GET['start_lat_long']
+            end_lat_long = request.GET['end_lat_long']
+            lat_long_box = json.dumps(
+                {'startCorner': start_lat_long, 'endCorner': end_lat_long}, 
+                cls=DjangoJSONEncoder)
         form = SearchForm(request.GET)
         if form.is_valid():
             # process the data in form.cleaned_data
@@ -57,11 +65,6 @@ def well_search(request):
             well_results_json = json.dumps(
                 [well.as_dict() for well in well_results],
                 cls=DjangoJSONEncoder)
-        start_lat_long = form.cleaned_data.get('start_lat_long')
-        end_lat_long = form.cleaned_data.get('end_lat_long')
-        lat_long_box = json.dumps(
-            {'startCorner': start_lat_long, 'endCorner': end_lat_long}, 
-            cls=DjangoJSONEncoder)
 
     return render(request, 'gwells/search.html',
                   {'form': form, 'well_list': well_results,
