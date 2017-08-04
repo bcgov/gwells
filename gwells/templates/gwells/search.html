@@ -27,6 +27,7 @@
     </div>
  </div>
 <br />
+<div id="wells-json" data-wells-search-json="{{wells_json}}" data-lat-long-box="{{lat_long_box}}"></div>
 {% if too_many_wells %}
     <div class="row">
         <div class="col-md-12 alert alert-warning">
@@ -34,7 +35,6 @@
         </div>
     </div>
 {% elif well_list %}
-    <div id="wells-json" data-wells-search-json="{{wells_json}}" data-lat-long-box="{{lat_long_box}}"></div>
     {% autopaginate well_list 25 %}
         <div class="row">
             <div class="col-sm-12">
@@ -202,7 +202,6 @@
     var latLongDelimiter = ",";
 
     function searchWellsByExtentCallback(startLatLong, endLatLong) {
-        $("#"+searchMapNodeId).removeClass('identify-wells-operation');
         if (startLatLong && endLatLong) {
             var startLatLongString = startLatLong.lat + latLongDelimiter + startLatLong.lng;
             var endLatLongString = endLatLong.lat + latLongDelimiter + endLatLong.lng;
