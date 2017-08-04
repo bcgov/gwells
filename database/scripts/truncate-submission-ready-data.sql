@@ -36,4 +36,4 @@ drop table xform_gwells_driller          cascade;
 drop table xform_gwells_drilling_company cascade;
 drop table xform_gwells_surface_seal_material cascade;
 drop table xform_gwells_surface_seal_method cascade;
-drop table xform_gwells_backfill_type cascade;
+/* drop table xform_gwells_backfill_type cascade; */
