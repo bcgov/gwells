@@ -15,7 +15,6 @@ from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin
 
-from welcome.views import index, health
 from . import views
 from django.views.generic import TemplateView
 
@@ -31,10 +30,9 @@ urlpatterns = [
     url(r'^submission/create$', views.ActivitySubmissionWizardView.as_view(views.FORMS), name='activity_submission_create'),
     url(r'^submission/(?P<pk>[0-9]+)$', views.ActivitySubmissionDetailView.as_view(), name='activity_submission_detail'),
     url(r'^well/(?P<pk>[0-9]+)$', views.WellDetailView.as_view(), name='well_detail'),
-    url(r'^health$', health),
+    url(r'^health$', views.health),
     url(r'^admin/', admin.site.urls),
     url(r'^additional-information', TemplateView.as_view(template_name='gwells/additional_information.html'), name='additional_information'),
-    url(r'^test$', index),
     url(r'^ajax/map_well_search/$', views.map_well_search, name='map_well_search'),
 ]
 
