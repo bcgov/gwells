@@ -205,7 +205,9 @@ function WellsMap(options) {
         if (_exists(_wellPushpinMoveCallback)) {
             _wellPushpinMoveCallback(latLng);
         }
-        _wellPushpin.wellMarker.setLatLng(latLng);
+        if (_exists(_wellPushpin) && _exists(_wellPushpin.wellMarker)) {
+            _wellPushpin.wellMarker.setLatLng(latLng);
+        }
     };
 
     // Determines whether a given latitude is within the map's bounds.
@@ -527,7 +529,10 @@ function WellsMap(options) {
         }
         if (_exists(_wellPushpin) && _exists(_wellPushpin.pushpinMarker)) {
             // Unsubscribe from the pushpin-related events.
+            _wellPushpin.pushpinMarker.off('move', _wellPushpinMoveEvent);
+            _wellPushpin.pushpinMarker.off('moveend', _wellPushpinMoveEndEvent);
             _leafletMap.off('moveend', _searchBoundingBoxOnMoveEnd);
+            _leafletMap.off('zoomstart', _wellPushpinZoomStartEvent);
             _leafletMap.off('zoomend', _wellPushpinZoomEndEvent);
             _leafletMap.removeLayer(_wellPushpin.pushpinMarker);
             _leafletMap.removeLayer(_wellPushpin.wellMarker);
