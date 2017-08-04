@@ -20,7 +20,6 @@
 \copy gwells_casing_material FROM './gwells_casing_material.csv' HEADER DELIMITER ',' CSV
 \copy gwells_casing_type     FROM './gwells_casing_type.csv'     HEADER DELIMITER ',' CSV
 
-
 /* This will need further transformation to link to existing data */
 CREATE unlogged TABLE IF NOT EXISTS xform_gwells_surface_seal_method (
   who_created              character varying(30)   ,
@@ -253,7 +252,9 @@ INSERT INTO gwells_well (
   screen_type_guid           
   */    
   other_screen_bottom,
-  other_screen_material
+  other_screen_material,
+  development_notes,
+  where_plate_attached 
   )
 SELECT 
 old.well_tag_number              ,
@@ -301,6 +302,8 @@ null,
 null,
 old.backfill_above_surface_seal,
 null, /* seal_material.surface_seal_material_guid   Should match  INSERT 0 111556 */
+'',
+'',
 '',
 ''
 FROM xform_gwells_well old
