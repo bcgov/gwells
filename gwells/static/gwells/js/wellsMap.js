@@ -126,14 +126,12 @@ function WellsMap(options) {
     // Callback for the external query
     var _externalQueryCallback = null;
 
-    /** Private functions */
+    /** Convenience functions */
 
-    // Convenience method for checking whether a property exists (i.e., is neither null nor undefined)
     var _exists = function (prop) {
         return prop !== null && prop !== void 0;
     };
 
-    // Convenience method for checking whether an object is an array.
     var _isArray = function (arr) {
         return _exists(arr) && _exists(arr.constructor) && arr.constructor === Array;
     };
@@ -157,7 +155,7 @@ function WellsMap(options) {
             }
         }
         return initExtBounds;
-    }
+    };
 
     var _setMaxBounds = function (bounds) {
         var maxBounds = null;
@@ -183,7 +181,6 @@ function WellsMap(options) {
         }
     };
 
-    // Loads WMS layers.
     var _loadWmsLayers = function (wmsLayers) {
         if (_exists(_leafletMap)) {
             wmsLayers.forEach(function (wmsLayer) {
@@ -199,18 +196,6 @@ function WellsMap(options) {
         }
     };
 
-    // Passes the wellPushpin's updated lat/long coordinates to the provided callback function, if it exists.
-    var _wellPushpinMoveEvent = function (moveEvent) {
-        var latLng = moveEvent.latlng;
-        if (_exists(_wellPushpinMoveCallback)) {
-            _wellPushpinMoveCallback(latLng);
-        }
-        if (_exists(_wellPushpin) && _exists(_wellPushpin.wellMarker)) {
-            _wellPushpin.wellMarker.setLatLng(latLng);
-        }
-    };
-
-    // Determines whether a given latitude is within the map's bounds.
     var _isLatInBounds = function (lat) {
         if (_exists(_maxBounds)) {
             return _maxBounds.getSouth() <= lat && lat <= _maxBounds.getNorth();
@@ -219,7 +204,6 @@ function WellsMap(options) {
         return true;
     };
 
-    // Determines whether a given longitude is within the map's bounds.
     var _isLongInBounds = function (long) {
         if (_exists(_maxBounds)) {
             return _maxBounds.getWest() <= long && long <= _maxBounds.getEast();
@@ -260,22 +244,7 @@ function WellsMap(options) {
         return null;
     };
 
-    // Submits an XHR to return all wells within the given latLngBounds.
-    var _searchByAjax = function (url, latLngBounds, success) {
-        var northWestLatLng = latLngBounds.getNorthWest();
-        var southEastLatLng = latLngBounds.getSouthEast();
-        var startLatLong = northWestLatLng.lat + "," + northWestLatLng.lng;
-        var endLatLong = southEastLatLng.lat + "," + southEastLatLng.lng;
-        $.ajax({
-            url: url,
-            data: {
-                'start_lat_long': startLatLong,
-                'end_lat_long': endLatLong
-            },
-            dataType: 'json',
-            success: success
-        });
-    };
+    /** Well drawing matter */
 
     // A wellMarker should only be added if it is not the same as the pushpinWell, which is handled differently.
     var _canDrawWell = function (pushpinWellGuid, wellToDrawGuid) {
@@ -362,6 +331,25 @@ function WellsMap(options) {
         }
     };
 
+    /** AJAX search matter */
+
+    // Submits an XHR to return all wells within the given latLngBounds.
+    var _searchByAjax = function (url, latLngBounds, success) {
+        var northWestLatLng = latLngBounds.getNorthWest();
+        var southEastLatLng = latLngBounds.getSouthEast();
+        var startLatLong = northWestLatLng.lat + "," + northWestLatLng.lng;
+        var endLatLong = southEastLatLng.lat + "," + southEastLatLng.lng;
+        $.ajax({
+            url: url,
+            data: {
+                'start_lat_long': startLatLong,
+                'end_lat_long': endLatLong
+            },
+            dataType: 'json',
+            success: success
+        });
+    };
+
     // Handles the results of an AJAX call to 'ajax/map_well_search/'.
     var _searchByAjaxSuccessCallback = function (results) {
         var wells = JSON.parse(results);
@@ -376,6 +364,19 @@ function WellsMap(options) {
         if (_exists(_leafletMap) && _leafletMap.getZoom() >= _AJAX_SEARCH_MIN_ZOOM_LEVEL) {
             var mapBounds = _leafletMap.getBounds();
             _searchByAjax(_SEARCH_URL, mapBounds, _searchByAjaxSuccessCallback);
+        }
+    };
+
+    /** Well pushpin matter */
+
+    // Passes the wellPushpin's updated lat/long coordinates to the provided callback function, if it exists.
+    var _wellPushpinMoveEvent = function (moveEvent) {
+        var latLng = moveEvent.latlng;
+        if (_exists(_wellPushpinMoveCallback)) {
+            _wellPushpinMoveCallback(latLng);
+        }
+        if (_exists(_wellPushpin) && _exists(_wellPushpin.wellMarker)) {
+            _wellPushpin.wellMarker.setLatLng(latLng);
         }
     };
 
@@ -423,6 +424,8 @@ function WellsMap(options) {
         _leafletMap.panTo(_wellPushpin.pushpinMarker.getLatLng());
         _wellPushpin.wellMarker.addTo(_leafletMap);
     };
+
+    /** External query matter */
 
     // Gets the bounding box of the current map view and sends it to the external query callback.
     var _sendExtentToExternalQuery = function () {
