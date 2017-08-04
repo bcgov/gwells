@@ -202,7 +202,6 @@
     var latLongDelimiter = ",";
 
     function searchWellsByExtentCallback(startLatLong, endLatLong) {
-        $("#"+searchMapNodeId).removeClass('identify-wells-operation');
         if (startLatLong && endLatLong) {
             var startLatLongString = startLatLong.lat + latLongDelimiter + startLatLong.lng;
             var endLatLongString = endLatLong.lat + latLongDelimiter + endLatLong.lng;

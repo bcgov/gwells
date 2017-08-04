@@ -439,7 +439,7 @@ function WellsMap(options) {
 
     // Creates a Leaflet Control comprising a button which, when clicked, invokes the external query.
     var _createExternalQueryControl = function () {
-        var container = L.DomUtil.create('button', 'leaflet-bar leaflet-control leaflet-control-custom');
+        var container = L.DomUtil.create('div', 'leaflet-control leaflet-area-search');
         container.innerHTML = 'Search Wells In This Area';
         return L.Control.extend({
             onAdd: function (map) {
