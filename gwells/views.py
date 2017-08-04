@@ -155,7 +155,7 @@ class ActivitySubmissionWizardView(SessionWizardView):
         context = super(ActivitySubmissionWizardView, self).get_context_data(form=form, **kwargs)
         context['wizard_data'] = self.get_all_cleaned_data()
 
-        if self.steps.current == 'type_and_class':
+        if self.steps.current == 'type_and_class' and not 'water_supply_well_class_guid' in context:
             # Get the pk of water supply well class so jquery can show/hide intended water use field
             try:
                 water_supply_class = WellClass.objects.get(code='WATR_SPPLY')
@@ -186,12 +186,12 @@ class ActivitySubmissionWizardView(SessionWizardView):
             intake_data = self.get_cleaned_data_for_step('screen_intake')
             form_class = self.form_list[step]
             form_class.min_num = 0
-            if intake_data:
+            if intake_data and intake_data.get('screen_intake'):
                 try:
                     screen_screen_intake = ScreenIntake.objects.get(code='SCREEN') #TODO
                 except Exception as e:
                     screen_screen_intake = None
-                if intake_data.get('screen_intake') and intake_data.get('screen_intake') == screen_screen_intake:
+                if intake_data.get('screen_intake') == screen_screen_intake:
                     form_class.min_num = 1
                 
         return initial
