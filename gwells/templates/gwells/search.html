@@ -19,7 +19,7 @@
         </ul>
         Use <a href="#">Advanced Search</a> for additional search options
         <br /><br />
-        {% crispy form %}         
+        {% crispy form %}
     </div>
     <div class="col-md-6">
             <div aria-label="A map associated with GWELLS Search. All well information in this map is accessible via the table of well results that opens below the search form when a search succeeds." id="search-map"></div>
@@ -29,7 +29,7 @@
 <br />
 {% if too_many_wells %}
     <div class="row">
-        <div class="col-sm-12 alert-warning">
+        <div class="col-md-12 alert alert-warning">
             <em>{{ too_many_wells }}</em>
         </div>
     </div>
@@ -125,7 +125,7 @@
         	
 {% elif 'well' in request.GET %}
     <div class="row">
-        <div class="col-sm-12 alert-warning">
+        <div class="col-md-12 alert alert-warning">
             <em>No well records could be found.</em>
         </div>
     </div>

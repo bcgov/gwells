@@ -188,6 +188,7 @@ class WellOwnerForm(forms.ModelForm):
         fields = ['owner_full_name', 'owner_mailing_address', 'owner_city', 'owner_province_state', 'owner_postal_code']
 
 
+
 class ActivitySubmissionTypeAndClassForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
@@ -207,7 +208,8 @@ class ActivitySubmissionTypeAndClassForm(forms.ModelForm):
                     css_class='row',
                 ),
                 Div(
-                    Div('identification_plate_number', css_class='col-md-3'),
+                    Div('identification_plate_number', css_class='col-md-4'),
+                    Div('where_plate_attached', css_class='col-md-4'),
                     css_class='row',
                 ),
                 Div(
@@ -254,7 +256,7 @@ class ActivitySubmissionTypeAndClassForm(forms.ModelForm):
 
     class Meta:
         model = ActivitySubmission
-        fields = ['well_activity_type', 'well_class', 'well_subclass', 'intended_water_use', 'identification_plate_number', 'driller_responsible', 'driller_name', 'consultant_name', 'consultant_company', 'work_start_date', 'work_end_date']
+        fields = ['well_activity_type', 'well_class', 'well_subclass', 'intended_water_use', 'identification_plate_number', 'where_plate_attached', 'driller_responsible', 'driller_name', 'consultant_name', 'consultant_company', 'work_start_date', 'work_end_date']
         help_texts = {'work_start_date': "yyyy-mm-dd", 'work_end_date': "yyyy-mm-dd",}
         widgets = {'well_activity_type': forms.RadioSelect}
 
@@ -787,7 +789,7 @@ class LinerPerforationForm(forms.ModelForm):
             HTML('</td>'),
             HTML('<td>'),
             'liner_perforation_to',
-            HTML('</td><td width="75">{% if form.instance.pk %}{{ form.DELETE }}{% endif %}</td>'),
+            HTML('</td><td width="75">&nbsp;{% if form.instance.pk %}{{ form.DELETE }}{% endif %}</td>'),
             HTML('</tr>'),
         )
         super(LinerPerforationForm, self).__init__(*args, **kwargs)
@@ -923,7 +925,7 @@ class ScreenForm(forms.ModelForm):
             HTML('</td>'),
             HTML('<td width="60">'),
             'slot_size',
-            HTML('</td><td width="75">{% if form.instance.pk %}{{ form.DELETE }}{% endif %}</td>'),
+            HTML('</td><td width="75">&nbsp;{% if form.instance.pk %}{{ form.DELETE }}{% endif %}</td>'),
             HTML('</tr>'),
         )
         super(ScreenForm, self).__init__(*args, **kwargs)
@@ -981,6 +983,36 @@ class ActivitySubmissionFilterPackForm(forms.ModelForm):
     class Meta:
         model = ActivitySubmission
         fields = ['filter_pack_from', 'filter_pack_to', 'filter_pack_thickness', 'filter_pack_material', 'filter_pack_material_size']
+
+
+
+class ActivitySubmissionDevelopmentForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.disable_csrf = True
+        self.helper.layout = Layout(
+            Fieldset(
+                'Well Development',
+                Div(
+                    Div('development_method', css_class='col-md-3'),
+                    css_class='row',
+                ),
+                Div(
+                    Div(AppendedText('development_hours', 'hrs'), css_class='col-md-3'),
+                    css_class='row',
+                ),
+                Div(
+                    Div('development_notes', css_class='col-md-6'),
+                    css_class='row',
+                ),
+            )
+        )
+        super(ActivitySubmissionDevelopmentForm, self).__init__(*args, **kwargs)
+   
+    class Meta:
+        model = ActivitySubmission
+        fields = ['development_method', 'development_hours', 'development_notes']
 
 
 
