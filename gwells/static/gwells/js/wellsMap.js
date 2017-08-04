@@ -75,8 +75,11 @@ function WellsMap(options) {
     var _SEARCH_URL = '/ajax/map_well_search/';
 
     // The zoom level beyond which the map issues AJAX queries for wells, and beneath which removes AJAX-queried wells.
-    var _SEARCH_MIN_ZOOM_LEVEL = 14;
+    var _AJAX_SEARCH_MIN_ZOOM_LEVEL = 14;
 
+    // The zoom level beyond which the map presents the external query control, and beneath which removes the control.
+    var _EXTERNAL_QUERY_MIN_ZOOM_LEVEL = 10;
+    
     // Leaflet style for the _wellMarkers
     var _WELL_MARKER_STYLE = {
           radius: 3, // The radius of the circleMarker
@@ -86,10 +89,7 @@ function WellsMap(options) {
 
     var _WELL_PUSHPIN_WELL_MARKER_STYLE = {
         radius: 3,
-        weight: 1,
-        color: '#FF0000',
-        fillColor: '#0147b7',
-        fill: true,
+        fillColor: '#0025a1',
         fillOpacity: 1.0
     };
 
@@ -126,14 +126,12 @@ function WellsMap(options) {
     // Callback for the external query
     var _externalQueryCallback = null;
 
-    /** Private functions */
+    /** Convenience functions */
 
-    // Convenience method for checking whether a property exists (i.e., is neither null nor undefined)
     var _exists = function (prop) {
         return prop !== null && prop !== void 0;
     };
 
-    // Convenience method for checking whether an object is an array.
     var _isArray = function (arr) {
         return _exists(arr) && _exists(arr.constructor) && arr.constructor === Array;
     };
@@ -157,7 +155,7 @@ function WellsMap(options) {
             }
         }
         return initExtBounds;
-    }
+    };
 
     var _setMaxBounds = function (bounds) {
         var maxBounds = null;
@@ -183,7 +181,6 @@ function WellsMap(options) {
         }
     };
 
-    // Loads WMS layers.
     var _loadWmsLayers = function (wmsLayers) {
         if (_exists(_leafletMap)) {
             wmsLayers.forEach(function (wmsLayer) {
@@ -199,16 +196,6 @@ function WellsMap(options) {
         }
     };
 
-    // Passes the wellPushpin's updated lat/long coordinates to the provided callback function, if it exists.
-    var _wellPushpinMoveEvent = function (moveEvent) {
-        var latLng = moveEvent.latlng;
-        if (_exists(_wellPushpinMoveCallback)) {
-            _wellPushpinMoveCallback(latLng);
-        }
-        _wellPushpin.wellMarker.setLatLng(latLng);
-    };
-
-    // Determines whether a given latitude is within the map's bounds.
     var _isLatInBounds = function (lat) {
         if (_exists(_maxBounds)) {
             return _maxBounds.getSouth() <= lat && lat <= _maxBounds.getNorth();
@@ -217,7 +204,6 @@ function WellsMap(options) {
         return true;
     };
 
-    // Determines whether a given longitude is within the map's bounds.
     var _isLongInBounds = function (long) {
         if (_exists(_maxBounds)) {
             return _maxBounds.getWest() <= long && long <= _maxBounds.getEast();
@@ -258,22 +244,7 @@ function WellsMap(options) {
         return null;
     };
 
-    // Submits an XHR to return all wells within the given latLngBounds.
-    var _searchByAjax = function (url, latLngBounds, success) {
-        var northWestLatLng = latLngBounds.getNorthWest();
-        var southEastLatLng = latLngBounds.getSouthEast();
-        var startLatLong = northWestLatLng.lat + "," + northWestLatLng.lng;
-        var endLatLong = southEastLatLng.lat + "," + southEastLatLng.lng;
-        $.ajax({
-            url: url,
-            data: {
-                'start_lat_long': startLatLong,
-                'end_lat_long': endLatLong
-            },
-            dataType: 'json',
-            success: success
-        });
-    };
+    /** Well drawing matter */
 
     // A wellMarker should only be added if it is not the same as the pushpinWell, which is handled differently.
     var _canDrawWell = function (pushpinWellGuid, wellToDrawGuid) {
@@ -360,6 +331,25 @@ function WellsMap(options) {
         }
     };
 
+    /** AJAX search matter */
+
+    // Submits an XHR to return all wells within the given latLngBounds.
+    var _searchByAjax = function (url, latLngBounds, success) {
+        var northWestLatLng = latLngBounds.getNorthWest();
+        var southEastLatLng = latLngBounds.getSouthEast();
+        var startLatLong = northWestLatLng.lat + "," + northWestLatLng.lng;
+        var endLatLong = southEastLatLng.lat + "," + southEastLatLng.lng;
+        $.ajax({
+            url: url,
+            data: {
+                'start_lat_long': startLatLong,
+                'end_lat_long': endLatLong
+            },
+            dataType: 'json',
+            success: success
+        });
+    };
+
     // Handles the results of an AJAX call to 'ajax/map_well_search/'.
     var _searchByAjaxSuccessCallback = function (results) {
         var wells = JSON.parse(results);
@@ -371,9 +361,22 @@ function WellsMap(options) {
     // Searches for all wells in the map's current bounding box, provided the map is beyond the minimum searching zoom level.
     // We clear the extant wells before re-querying, for simplicity.
     var _searchWellsInBoundingBox = function () {
-        if (_exists(_leafletMap) && _leafletMap.getZoom() >= _SEARCH_MIN_ZOOM_LEVEL) {
+        if (_exists(_leafletMap) && _leafletMap.getZoom() >= _AJAX_SEARCH_MIN_ZOOM_LEVEL) {
             var mapBounds = _leafletMap.getBounds();
             _searchByAjax(_SEARCH_URL, mapBounds, _searchByAjaxSuccessCallback);
+        }
+    };
+
+    /** Well pushpin matter */
+
+    // Passes the wellPushpin's updated lat/long coordinates to the provided callback function, if it exists.
+    var _wellPushpinMoveEvent = function (moveEvent) {
+        var latLng = moveEvent.latlng;
+        if (_exists(_wellPushpinMoveCallback)) {
+            _wellPushpinMoveCallback(latLng);
+        }
+        if (_exists(_wellPushpin) && _exists(_wellPushpin.wellMarker)) {
+            _wellPushpin.wellMarker.setLatLng(latLng);
         }
     };
 
@@ -381,7 +384,7 @@ function WellsMap(options) {
     // is within the searchMinRectangle. Thus we need to draw the rectangle when the map is zoomed
     // beyond the search minimum, or destroy it when the map is zoomed within.
     var _handleSearchMinRectangle = function () {
-        if (_leafletMap.getZoom() === _SEARCH_MIN_ZOOM_LEVEL) {
+        if (_leafletMap.getZoom() === _AJAX_SEARCH_MIN_ZOOM_LEVEL) {
             if (_exists(_searchMinRectangle)) {
                 _leafletMap.removeLayer(_searchMinRectangle);
                 _searchMinRectangle = null;
@@ -390,7 +393,7 @@ function WellsMap(options) {
                 fillOpacity: 0,
                 interactive: false
             }).addTo(_leafletMap);            
-        } else if (_leafletMap.getZoom() > _SEARCH_MIN_ZOOM_LEVEL && _exists(_searchMinRectangle)) {
+        } else if (_leafletMap.getZoom() > _AJAX_SEARCH_MIN_ZOOM_LEVEL && _exists(_searchMinRectangle)) {
             _leafletMap.removeLayer(_searchMinRectangle);
             _searchMinRectangle = null;
         }
@@ -421,6 +424,8 @@ function WellsMap(options) {
         _leafletMap.panTo(_wellPushpin.pushpinMarker.getLatLng());
         _wellPushpin.wellMarker.addTo(_leafletMap);
     };
+
+    /** External query matter */
 
     // Gets the bounding box of the current map view and sends it to the external query callback.
     var _sendExtentToExternalQuery = function () {
@@ -457,9 +462,9 @@ function WellsMap(options) {
     // Places the external query control on the map when the map is moved while it is above the minimum zoom level,
     // or removes the control when the map is moved while it is below the minimum zoom level.
     var _placeExternalQueryControl = function () {
-        if (_leafletMap.getZoom() < _SEARCH_MIN_ZOOM_LEVEL && _exists(_leafletMap.externalQueryControl)) {
+        if (_leafletMap.getZoom() < _EXTERNAL_QUERY_MIN_ZOOM_LEVEL && _exists(_leafletMap.externalQueryControl)) {
             _leafletMap.removeControl(_leafletMap.externalQueryControl);
-        } else if (_leafletMap.getZoom() >= _SEARCH_MIN_ZOOM_LEVEL && !_exists(_leafletMap.hasExternalQueryControl)) {
+        } else if (_leafletMap.getZoom() >= _EXTERNAL_QUERY_MIN_ZOOM_LEVEL && !_exists(_leafletMap.hasExternalQueryControl)) {
             _leafletMap.addControl(L.control.externalquery({position: 'topright'}));
         }
     };
@@ -527,7 +532,10 @@ function WellsMap(options) {
         }
         if (_exists(_wellPushpin) && _exists(_wellPushpin.pushpinMarker)) {
             // Unsubscribe from the pushpin-related events.
+            _wellPushpin.pushpinMarker.off('move', _wellPushpinMoveEvent);
+            _wellPushpin.pushpinMarker.off('moveend', _wellPushpinMoveEndEvent);
             _leafletMap.off('moveend', _searchBoundingBoxOnMoveEnd);
+            _leafletMap.off('zoomstart', _wellPushpinZoomStartEvent);
             _leafletMap.off('zoomend', _wellPushpinZoomEndEvent);
             _leafletMap.removeLayer(_wellPushpin.pushpinMarker);
             _leafletMap.removeLayer(_wellPushpin.wellMarker);
@@ -622,6 +630,13 @@ function WellsMap(options) {
         if (_exists(options.externalAttributionNodeId)) {
            $("#" + options.externalAttributionNodeId).append(_leafletMap.attributionControl.getContainer());
         }
+
+        // The map should have a scale control
+        L.control.scale({
+            metric: true,
+            imperial: false,
+            position: 'bottomleft'
+        }).addTo(_leafletMap);
 
         // If the _externalQueryCallback exists, we should create the custom control to invoke it.
         if (_exists(_externalQueryCallback)) {
