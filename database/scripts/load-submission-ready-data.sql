@@ -20,6 +20,16 @@
 \copy gwells_casing_material FROM './gwells_casing_material.csv' HEADER DELIMITER ',' CSV
 \copy gwells_casing_type     FROM './gwells_casing_type.csv'     HEADER DELIMITER ',' CSV
 
+\copy gwells_screen_type     FROM './gwells_screen_type.csv'     HEADER DELIMITER ',' CSV
+\copy gwells_screen_intake   FROM './gwells_screen_intake.csv'   HEADER DELIMITER ',' CSV
+\copy gwells_screen_opening  FROM './gwells_screen_opening.csv'  HEADER DELIMITER ',' CSV
+\copy gwells_screen_bottom   FROM './gwells_screen_bottom.csv'   HEADER DELIMITER ',' CSV
+\copy gwells_screen_material FROM './gwells_screen_material.csv' HEADER DELIMITER ',' CSV
+\copy gwells_liner_material FROM './gwells_liner_material.csv' HEADER DELIMITER ',' CSV
+\copy gwells_filter_pack_material FROM './gwells_filter_pack_material.csv' HEADER DELIMITER ',' CSV
+\copy gwells_filter_pack_material_size FROM './gwells_filter_pack_material_size.csv' HEADER DELIMITER ',' CSV
+
+
 /* This will need further transformation to link to existing data */
 CREATE unlogged TABLE IF NOT EXISTS xform_gwells_surface_seal_method (
   who_created              character varying(30)   ,
@@ -244,10 +254,10 @@ INSERT INTO gwells_well (
   filter_pack_to             ,  
   other_screen_bottom         ,
   other_screen_material       ,
-  filter_pack_material_guid   ,   
-  filter_pack_material_size_guid,
-  screen_bottom_guid  ,           
-  screen_intake_guid  ,           
+  filter_pack_material_guid   ,    
+  filter_pack_material_size_guid,  
+  screen_bottom_guid  ,            
+  screen_intake_guid  ,            
   screen_opening_guid ,           
   screen_type_guid           
   */    
