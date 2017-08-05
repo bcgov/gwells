@@ -734,6 +734,7 @@ class Well(AuditModel):
 
     screen_intake = models.ForeignKey(ScreenIntake, db_column='screen_intake_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Intake')
     screen_type = models.ForeignKey(ScreenType, db_column='screen_type_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Screen Type')
+    screen_material = models.ForeignKey(ScreenMaterial, db_column='screen_material_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Screen Material')
     other_screen_material = models.CharField(max_length=50, blank=True, verbose_name='Specify Other Screen Material')
     screen_opening = models.ForeignKey(ScreenOpening, db_column='screen_opening_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Screen Opening')
     screen_bottom = models.ForeignKey(ScreenBottom, db_column='screen_bottom_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Screen Bottom')
