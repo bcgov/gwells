@@ -29,6 +29,15 @@ truncate gwells_well_class          restart identity cascade;
 truncate gwells_well_subclass       restart identity cascade;
 truncate gwells_well_yield_unit     restart identity cascade;
 
+truncate gwells_screen_type               restart identity cascade;   
+truncate gwells_screen_intake             restart identity cascade;
+truncate gwells_screen_opening            restart identity cascade;
+truncate gwells_screen_bottom             restart identity cascade;
+truncate gwells_screen_material           restart identity cascade;
+truncate gwells_liner_material            restart identity cascade;
+truncate gwells_filter_pack_material      restart identity cascade;
+truncate gwells_filter_pack_material_size restart identity cascade;
+
 /* Drop all temporary transformation tables */
 drop table xform_gwells_land_district cascade;
 drop table xform_gwells_well             cascade;
