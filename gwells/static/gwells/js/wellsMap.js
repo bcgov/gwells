@@ -126,6 +126,12 @@ function WellsMap(options) {
     // Callback for the external query
     var _externalQueryCallback = null;
 
+    // The latLng where the _zoomRectangle begins
+    var _zoomRectangleAnchor = null;
+
+    // Rectangle to draw for rectangleZoom
+    var _zoomRectangle = null;
+
     /** Convenience functions */
 
     var _exists = function (prop) {
@@ -472,18 +478,67 @@ function WellsMap(options) {
 
     /** Rectangle zoom matter */
 
-    var _rectangleZoomClickEvent = function () {
-        console.log('Map clicked!');
-
-        _leafletMap.off('click', _rectangleZoomClickEvent);
+    // Handles the end of the drawing behaviour.
+    var _rectangleZoomMouseupEvent = function (e) {
+        // Get the final bounds.
+        var bounds = L.latLngBounds([_zoomRectangleAnchor, e.latlng]);
+        // Remove the rectangle and null the members.
+        _leafletMap.removeLayer(_zoomRectangle);
+        _zoomRectangle = null;
+        _zoomRectangleAnchor = null;
+        // Fit the map to the new bounds.
+        _leafletMap.fitBounds(bounds);
+        // Unsubscribe to all of the event handlers (including this one).
+        _leafletMap.off('mousedown', _rectangleZoomMousedownEvent);
+        _leafletMap.off('mousemove', _rectangleZoomMousemoveEvent);
+        _leafletMap.off('mouseup', _rectangleZoomMouseupEvent);
+        // Re-enable panning.
+        _leafletMap.dragging.enable();
     };
 
+    // Draws the rectangle.
+    var _rectangleZoomMousemoveEvent = function (e) {
+        // Should have been set in the mousedown handler.
+        var startCorner = _zoomRectangleAnchor;
+        // Set by mousemove.
+        var endCorner = e.latlng;
+        // Draw or modify the rectangle.
+        if (!_exists(_zoomRectangle)) {
+            _zoomRectangle = L.rectangle([startCorner, endCorner]).addTo(_leafletMap);
+        } else {
+            _zoomRectangle.setBounds([startCorner, endCorner]);
+        }
+        // Subscribe to the mouseup event.
+        _leafletMap.on('mouseup', _rectangleZoomMouseupEvent);
+    };
+
+    // When the user clicks, set the rectangle's anchor point and set the map to begin drawing.
+    var _rectangleZoomMousedownEvent = function (e) {
+        // The map shouldn't pan during rectangle draw.
+        _leafletMap.dragging.disable();
+        if (_exists(_zoomRectangle)) {
+            // If the _zoomRectangle somehow exists, remove it.
+            _leafletMap.removeLayer(_zoomRectangle);
+            _zoomRectangle = null;
+            _zoomRectangleAnchor = null;
+        }
+        // Set the anchor point and the mousemove handler.
+        _zoomRectangleAnchor = e.latlng;
+        _leafletMap.on('mousemove', _rectangleZoomMousemoveEvent);
+    };
+
+    // The actions that the map should take at the beginning of rectangle zoom.
     var _startRectangleZoom = function () {
-        // Multiple clicks of the control shouldn't stack click events.
-        _leafletMap.off('click', _rectangleZoomClickEvent);
-        _leafletMap.on('click', _rectangleZoomClickEvent);
+        // Multiple clicks of the control shouldn't stack events.
+        _leafletMap.off('mousedown', _rectangleZoomMousedownEvent);
+        _leafletMap.off('mousemove', _rectangleZoomMousemoveEvent);
+        _leafletMap.off('mouseup', _rectangleZoomMouseupEvent);
+        // Kick off the event chain with mousedown.
+        _leafletMap.on('mousedown', _rectangleZoomMousedownEvent);
     };
 
+    // Creates the rectangle zoom control, which allows the user to draw a rectangle and zooms the
+    // map to fit the rectangle drawn.
     var _createRectangleZoomControl = function () {
         var container = L.DomUtil.create('div', 'leaflet-control leaflet-rectangle-zoom');
         return L.Control.extend({
