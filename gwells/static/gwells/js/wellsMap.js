@@ -447,6 +447,7 @@ function WellsMap(options) {
                     'click dblclick',
                     function (e) { 
                         e.preventDefault();
+                        e.stopPropagation();
                         _sendExtentToExternalQuery();
                     }, this);
                     map.externalQueryControl = this;
@@ -467,6 +468,41 @@ function WellsMap(options) {
         } else if (_leafletMap.getZoom() >= _EXTERNAL_QUERY_MIN_ZOOM_LEVEL && !_exists(_leafletMap.hasExternalQueryControl)) {
             _leafletMap.addControl(L.control.externalquery({position: 'topright'}));
         }
+    };
+
+    /** Rectangle zoom matter */
+
+    var _rectangleZoomClickEvent = function () {
+        console.log('Map clicked!');
+
+        _leafletMap.off('click', _rectangleZoomClickEvent);
+    };
+
+    var _startRectangleZoom = function () {
+        // Multiple clicks of the control shouldn't stack click events.
+        _leafletMap.off('click', _rectangleZoomClickEvent);
+        _leafletMap.on('click', _rectangleZoomClickEvent);
+    };
+
+    var _createRectangleZoomControl = function () {
+        var container = L.DomUtil.create('div', 'leaflet-control leaflet-rectangle-zoom');
+        return L.Control.extend({
+            onAdd: function (map) {
+                L.DomEvent.on(container,
+                'click dblclick',
+                function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    _startRectangleZoom();
+                }, this);
+                map.rectangleZoomControl = this;
+                return container;
+            },
+            onRemove: function (map) {
+                L.DomEvent.off(container);
+                delete map.rectangleZoomControl;
+            }
+        })
     };
 
     /** Public methods */
@@ -646,6 +682,15 @@ function WellsMap(options) {
                 return new L.Control.ExternalQuery(opts);
             }
             _leafletMap.on('move', _placeExternalQueryControl);
+        }
+
+        // If the map can be panned, it should have a rectangleZoomControl
+        if (canPan) {
+            L.Control.RectangleZoom = _createRectangleZoomControl();
+            L.control.rectangleZoom = function (opts) {
+                return new L.Control.RectangleZoom(opts);
+            }
+            _leafletMap.addControl(L.control.rectangleZoom({position: 'topleft'}));
         }
     }(options));
 
