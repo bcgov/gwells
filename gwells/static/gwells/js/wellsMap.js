@@ -543,13 +543,16 @@ function WellsMap(options) {
         var container = L.DomUtil.create('div', 'leaflet-control leaflet-rectangle-zoom');
         return L.Control.extend({
             onAdd: function (map) {
-                L.DomEvent.on(container,
-                'click dblclick',
-                function (e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    _startRectangleZoom();
-                }, this);
+                L.DomEvent.on(
+                    container,
+                    'click dblclick',
+                    function (e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        _startRectangleZoom();
+                    },
+                    this
+                );
                 map.rectangleZoomControl = this;
                 return container;
             },
@@ -557,7 +560,58 @@ function WellsMap(options) {
                 L.DomEvent.off(container);
                 delete map.rectangleZoomControl;
             }
-        })
+        });
+    };
+
+    /** Geolocation matter */
+
+    // Zooms the map to the fetched location.
+    var _getAndZoomToLocation = function (location) {
+        if (location && location.coords) {
+            var lat = location.coords.latitude;
+            var long = location.coords.longitude;
+            if (_exists(lat) && _exists(long)) {
+                _leafletMap.flyTo(L.latLng(parseFloat(lat), parseFloat(long)), _leafletMap.getMaxZoom());
+            }
+        }
+    };
+
+    // Handles any errors in fetching user's location.
+    var _handleGeolocationErrors = function (error) {
+        // TODO: Finalise.
+        console.log(error);
+    };
+
+    // Performs a final check on geolocation ability before fetching the device's location.
+    var _startGeolocation = function () {
+        if (navigator && navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(_getAndZoomToLocation, _handleGeolocationErrors);
+        }
+    };
+
+    // Creates a geolocation control, which allows a user to zoom the map onto their device's location.
+    var _createGeolocationControl = function () {
+        var container = L.DomUtil.create('div', 'leaflet-control leaflet-geolocation');
+        return L.Control.extend({
+            onAdd: function (map) {
+                L.DomEvent.on(
+                    container,
+                    'click dblclick',
+                    function (e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        _startGeolocation();
+                    },
+                    this
+                );
+                map.geolocationControl = this;
+                return container;
+            },
+            onRemove: function (map) {
+                L.DomEvent.off(container);
+                delete map.geolocationControl;
+            }
+        });
     };
 
     /** Public methods */
@@ -739,13 +793,21 @@ function WellsMap(options) {
             _leafletMap.on('move', _placeExternalQueryControl);
         }
 
-        // If the map can be panned, it should have a rectangleZoomControl
+        // If the map can be panned, it should have a rectangleZoomControl and a geolocationControl, if the browser
+        // can support geolocation.
         if (canPan) {
             L.Control.RectangleZoom = _createRectangleZoomControl();
             L.control.rectangleZoom = function (opts) {
                 return new L.Control.RectangleZoom(opts);
             }
             _leafletMap.addControl(L.control.rectangleZoom({position: 'topleft'}));
+            if (navigator && navigator.geolocation) {
+                L.Control.Geolocation = _createGeolocationControl();
+                L.control.geolocation = function (opts) {
+                    return new L.Control.Geolocation(opts);
+                }
+                _leafletMap.addControl(L.control.geolocation({position: 'topleft'}));
+            }
         }
     }(options));
 
