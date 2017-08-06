@@ -487,7 +487,7 @@ function WellsMap(options) {
         _zoomRectangle = null;
         _zoomRectangleAnchor = null;
         // Fit the map to the new bounds.
-        _leafletMap.fitBounds(bounds);
+        _leafletMap.flyToBounds(bounds);
         // Unsubscribe to all of the event handlers (including this one).
         _leafletMap.off('mousedown', _rectangleZoomMousedownEvent);
         _leafletMap.off('mousemove', _rectangleZoomMousemoveEvent);
