@@ -99,7 +99,7 @@ function WellsMap(options) {
     // The ID of the DOM node containing the map.
     var _mapNodeId = null;
 
-    // The ID of the DOM node in which to display any map errors.
+    // The ID of the DOM node in which to display any map errors. Initially only used for geolocation, but could be adapted.
     var _errorsNodeId = null;
 
     // The underlying Leaflet map.
@@ -744,6 +744,7 @@ function WellsMap(options) {
         var initialExtentBounds = _exists(options.initialExtent) ? _setInitialExtentBounds(options.initialExtent) : void 0;        
         _maxBounds = _exists(options.mapBounds) ? _setMaxBounds(options.mapBounds) : void 0;
 
+        // Assign the errors node ID. Initially only used for geolocation on the search map, but can be adapted more generically.
         _errorsNodeId = options.mapErrorsNodeId;
 
         // Map initialisation
