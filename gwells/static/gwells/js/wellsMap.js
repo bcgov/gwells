@@ -95,6 +95,9 @@ function WellsMap(options) {
 
     /** Private members dynamically set */
 
+    // The ID of the DOM node containing the map.
+    var _mapNodeId = null;
+
     // The underlying Leaflet map.
     var _leafletMap = null;
 
@@ -494,6 +497,8 @@ function WellsMap(options) {
         _leafletMap.off('mouseup', _rectangleZoomMouseupEvent);
         // Re-enable panning.
         _leafletMap.dragging.enable();
+        // Re-enable regular cursor.
+        $('#' + _mapNodeId).css('cursor', '');
     };
 
     // Draws the rectangle.
@@ -535,12 +540,14 @@ function WellsMap(options) {
         _leafletMap.off('mouseup', _rectangleZoomMouseupEvent);
         // Kick off the event chain with mousedown.
         _leafletMap.on('mousedown', _rectangleZoomMousedownEvent);
+        // The map's cursor should update to reflect the operation in progress.
+        $('#' + _mapNodeId).css('cursor', 'crosshair');
     };
 
     // Creates the rectangle zoom control, which allows the user to draw a rectangle and zooms the
     // map to fit the rectangle drawn.
     var _createRectangleZoomControl = function () {
-        var container = L.DomUtil.create('div', 'leaflet-control leaflet-rectangle-zoom');
+        var container = L.DomUtil.create('div', 'leaflet-control leaflet-select-zoom');
         return L.Control.extend({
             onAdd: function (map) {
                 L.DomEvent.on(
@@ -694,8 +701,8 @@ function WellsMap(options) {
     /** IIFE for construction of a WellsMap */
     (function (options) {
         options = options || {};
-        var mapNodeId = options.mapNodeId;
-        if (!_exists(mapNodeId)) {
+        _mapNodeId = options.mapNodeId;
+        if (!_exists(_mapNodeId)) {
             return;
         }
         if (_exists(_leafletMap)) {
@@ -718,7 +725,7 @@ function WellsMap(options) {
         _maxBounds = _exists(options.mapBounds) ? _setMaxBounds(options.mapBounds) : void 0;
 
         // Map initialisation
-        _leafletMap = L.map(mapNodeId, {
+        _leafletMap = L.map(_mapNodeId, {
             minZoom: minZoom,
             maxZoom: maxZoom,
             maxBounds: _maxBounds,
@@ -793,9 +800,9 @@ function WellsMap(options) {
             _leafletMap.on('move', _placeExternalQueryControl);
         }
 
-        // If the map can be panned, it should have a rectangleZoomControl and a geolocationControl, if the browser
+        // If the map has an external search query, it should have a rectangleZoomControl and a geolocationControl, if the browser
         // can support geolocation.
-        if (canPan) {
+        if (_exists(_externalQueryCallback)) {
             L.Control.RectangleZoom = _createRectangleZoomControl();
             L.control.rectangleZoom = function (opts) {
                 return new L.Control.RectangleZoom(opts);
