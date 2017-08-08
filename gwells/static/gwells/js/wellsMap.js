@@ -64,7 +64,8 @@
  *   },
  *   wellPushpinMoveCallback?: function, // Function to call when the map's wellPushpin moves
  *   externalQueryCallback?: function, // Function to call when the map's bounding box is bundled into an external query
- *   externalAttributionNodeId?: string // ID of the DOM node (exterior to the map) where the map's attribution will be displayed.
+ *   externalAttributionNodeId?: string, // ID of the DOM node (exterior to the map) where the map's attribution will be displayed.
+ *   mapErrorsNodeId?: string // ID of the DOM node (exterior to the map) where any map errors will be displayed.
  * }
  */
 function WellsMap(options) {
@@ -94,6 +95,12 @@ function WellsMap(options) {
     };
 
     /** Private members dynamically set */
+
+    // The ID of the DOM node containing the map.
+    var _mapNodeId = null;
+
+    // The ID of the DOM node in which to display any map errors. Initially only used for geolocation, but could be adapted.
+    var _errorsNodeId = null;
 
     // The underlying Leaflet map.
     var _leafletMap = null;
@@ -494,6 +501,8 @@ function WellsMap(options) {
         _leafletMap.off('mouseup', _rectangleZoomMouseupEvent);
         // Re-enable panning.
         _leafletMap.dragging.enable();
+        // Re-enable regular cursor.
+        $('#' + _mapNodeId).css('cursor', '');
     };
 
     // Draws the rectangle.
@@ -535,12 +544,14 @@ function WellsMap(options) {
         _leafletMap.off('mouseup', _rectangleZoomMouseupEvent);
         // Kick off the event chain with mousedown.
         _leafletMap.on('mousedown', _rectangleZoomMousedownEvent);
+        // The map's cursor should update to reflect the operation in progress.
+        $('#' + _mapNodeId).css('cursor', 'crosshair');
     };
 
     // Creates the rectangle zoom control, which allows the user to draw a rectangle and zooms the
     // map to fit the rectangle drawn.
     var _createRectangleZoomControl = function () {
-        var container = L.DomUtil.create('div', 'leaflet-control leaflet-rectangle-zoom');
+        var container = L.DomUtil.create('div', 'leaflet-control leaflet-select-zoom');
         return L.Control.extend({
             onAdd: function (map) {
                 L.DomEvent.on(
@@ -567,6 +578,10 @@ function WellsMap(options) {
 
     // Zooms the map to the fetched location.
     var _getAndZoomToLocation = function (location) {
+        if (_exists(_errorsNodeId)) {
+            $('#' + _errorsNodeId).html('');
+            $('#' + _errorsNodeId).hide();
+        }
         if (location && location.coords) {
             var lat = location.coords.latitude;
             var long = location.coords.longitude;
@@ -578,14 +593,26 @@ function WellsMap(options) {
 
     // Handles any errors in fetching user's location.
     var _handleGeolocationErrors = function (error) {
-        // TODO: Finalise.
+        if (_exists(_errorsNodeId)) {
+            var msg = 'GEOLOCATION ERROR (' + error.code + '): ' + error.message;
+            $('#' + _errorsNodeId).html('<em>' + msg + '</em>');
+            $('#' + _errorsNodeId).show();
+        }
         console.log(error);
     };
 
     // Performs a final check on geolocation ability before fetching the device's location.
     var _startGeolocation = function () {
         if (navigator && navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(_getAndZoomToLocation, _handleGeolocationErrors);
+            navigator.geolocation.getCurrentPosition(
+                _getAndZoomToLocation,
+                _handleGeolocationErrors,
+                {
+                    // Default options for cached and fresh data retrieval.
+                    maximumAge: 30000,
+                    timeout: 27000
+                }
+            );
         }
     };
 
@@ -694,8 +721,8 @@ function WellsMap(options) {
     /** IIFE for construction of a WellsMap */
     (function (options) {
         options = options || {};
-        var mapNodeId = options.mapNodeId;
-        if (!_exists(mapNodeId)) {
+        _mapNodeId = options.mapNodeId;
+        if (!_exists(_mapNodeId)) {
             return;
         }
         if (_exists(_leafletMap)) {
@@ -717,8 +744,11 @@ function WellsMap(options) {
         var initialExtentBounds = _exists(options.initialExtent) ? _setInitialExtentBounds(options.initialExtent) : void 0;        
         _maxBounds = _exists(options.mapBounds) ? _setMaxBounds(options.mapBounds) : void 0;
 
+        // Assign the errors node ID. Initially only used for geolocation on the search map, but can be adapted more generically.
+        _errorsNodeId = options.mapErrorsNodeId;
+
         // Map initialisation
-        _leafletMap = L.map(mapNodeId, {
+        _leafletMap = L.map(_mapNodeId, {
             minZoom: minZoom,
             maxZoom: maxZoom,
             maxBounds: _maxBounds,
@@ -793,9 +823,9 @@ function WellsMap(options) {
             _leafletMap.on('move', _placeExternalQueryControl);
         }
 
-        // If the map can be panned, it should have a rectangleZoomControl and a geolocationControl, if the browser
+        // If the map has an external search query, it should have a rectangleZoomControl and a geolocationControl, if the browser
         // can support geolocation.
-        if (canPan) {
+        if (_exists(_externalQueryCallback)) {
             L.Control.RectangleZoom = _createRectangleZoomControl();
             L.control.rectangleZoom = function (opts) {
                 return new L.Control.RectangleZoom(opts);
