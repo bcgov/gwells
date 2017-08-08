@@ -64,7 +64,8 @@
  *   },
  *   wellPushpinMoveCallback?: function, // Function to call when the map's wellPushpin moves
  *   externalQueryCallback?: function, // Function to call when the map's bounding box is bundled into an external query
- *   externalAttributionNodeId?: string // ID of the DOM node (exterior to the map) where the map's attribution will be displayed.
+ *   externalAttributionNodeId?: string, // ID of the DOM node (exterior to the map) where the map's attribution will be displayed.
+ *   mapErrorsNodeId?: string // ID of the DOM node (exterior to the map) where any map errors will be displayed.
  * }
  */
 function WellsMap(options) {
@@ -97,6 +98,9 @@ function WellsMap(options) {
 
     // The ID of the DOM node containing the map.
     var _mapNodeId = null;
+
+    // The ID of the DOM node in which to display any map errors.
+    var _errorsNodeId = null;
 
     // The underlying Leaflet map.
     var _leafletMap = null;
@@ -574,6 +578,10 @@ function WellsMap(options) {
 
     // Zooms the map to the fetched location.
     var _getAndZoomToLocation = function (location) {
+        if (_exists(_errorsNodeId)) {
+            $('#' + _errorsNodeId).html('');
+            $('#' + _errorsNodeId).hide();
+        }
         if (location && location.coords) {
             var lat = location.coords.latitude;
             var long = location.coords.longitude;
@@ -585,14 +593,26 @@ function WellsMap(options) {
 
     // Handles any errors in fetching user's location.
     var _handleGeolocationErrors = function (error) {
-        // TODO: Finalise.
+        if (_exists(_errorsNodeId)) {
+            var msg = 'GEOLOCATION ERROR (' + error.code + '): ' + error.message;
+            $('#' + _errorsNodeId).html('<em>' + msg + '</em>');
+            $('#' + _errorsNodeId).show();
+        }
         console.log(error);
     };
 
     // Performs a final check on geolocation ability before fetching the device's location.
     var _startGeolocation = function () {
         if (navigator && navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(_getAndZoomToLocation, _handleGeolocationErrors);
+            navigator.geolocation.getCurrentPosition(
+                _getAndZoomToLocation,
+                _handleGeolocationErrors,
+                {
+                    // Default options for cached and fresh data retrieval.
+                    maximumAge: 30000,
+                    timeout: 27000
+                }
+            );
         }
     };
 
@@ -723,6 +743,8 @@ function WellsMap(options) {
         // Bounds
         var initialExtentBounds = _exists(options.initialExtent) ? _setInitialExtentBounds(options.initialExtent) : void 0;        
         _maxBounds = _exists(options.mapBounds) ? _setMaxBounds(options.mapBounds) : void 0;
+
+        _errorsNodeId = options.mapErrorsNodeId;
 
         // Map initialisation
         _leafletMap = L.map(_mapNodeId, {
