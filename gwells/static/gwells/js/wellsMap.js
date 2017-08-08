@@ -126,6 +126,12 @@ function WellsMap(options) {
     // Callback for the external query
     var _externalQueryCallback = null;
 
+    // The latLng where the _zoomRectangle begins
+    var _zoomRectangleAnchor = null;
+
+    // Rectangle to draw for rectangleZoom
+    var _zoomRectangle = null;
+
     /** Convenience functions */
 
     var _exists = function (prop) {
@@ -447,6 +453,7 @@ function WellsMap(options) {
                     'click dblclick',
                     function (e) { 
                         e.preventDefault();
+                        e.stopPropagation();
                         _sendExtentToExternalQuery();
                     }, this);
                     map.externalQueryControl = this;
@@ -467,6 +474,144 @@ function WellsMap(options) {
         } else if (_leafletMap.getZoom() >= _EXTERNAL_QUERY_MIN_ZOOM_LEVEL && !_exists(_leafletMap.hasExternalQueryControl)) {
             _leafletMap.addControl(L.control.externalquery({position: 'topright'}));
         }
+    };
+
+    /** Rectangle zoom matter */
+
+    // Handles the end of the drawing behaviour.
+    var _rectangleZoomMouseupEvent = function (e) {
+        // Get the final bounds.
+        var bounds = L.latLngBounds([_zoomRectangleAnchor, e.latlng]);
+        // Remove the rectangle and null the members.
+        _leafletMap.removeLayer(_zoomRectangle);
+        _zoomRectangle = null;
+        _zoomRectangleAnchor = null;
+        // Fit the map to the new bounds.
+        _leafletMap.flyToBounds(bounds);
+        // Unsubscribe to all of the event handlers (including this one).
+        _leafletMap.off('mousedown', _rectangleZoomMousedownEvent);
+        _leafletMap.off('mousemove', _rectangleZoomMousemoveEvent);
+        _leafletMap.off('mouseup', _rectangleZoomMouseupEvent);
+        // Re-enable panning.
+        _leafletMap.dragging.enable();
+    };
+
+    // Draws the rectangle.
+    var _rectangleZoomMousemoveEvent = function (e) {
+        // Should have been set in the mousedown handler.
+        var startCorner = _zoomRectangleAnchor;
+        // Set by mousemove.
+        var endCorner = e.latlng;
+        // Draw or modify the rectangle.
+        if (!_exists(_zoomRectangle)) {
+            _zoomRectangle = L.rectangle([startCorner, endCorner]).addTo(_leafletMap);
+        } else {
+            _zoomRectangle.setBounds([startCorner, endCorner]);
+        }
+        // Subscribe to the mouseup event.
+        _leafletMap.on('mouseup', _rectangleZoomMouseupEvent);
+    };
+
+    // When the user clicks, set the rectangle's anchor point and set the map to begin drawing.
+    var _rectangleZoomMousedownEvent = function (e) {
+        // The map shouldn't pan during rectangle draw.
+        _leafletMap.dragging.disable();
+        if (_exists(_zoomRectangle)) {
+            // If the _zoomRectangle somehow exists, remove it.
+            _leafletMap.removeLayer(_zoomRectangle);
+            _zoomRectangle = null;
+            _zoomRectangleAnchor = null;
+        }
+        // Set the anchor point and the mousemove handler.
+        _zoomRectangleAnchor = e.latlng;
+        _leafletMap.on('mousemove', _rectangleZoomMousemoveEvent);
+    };
+
+    // The actions that the map should take at the beginning of rectangle zoom.
+    var _startRectangleZoom = function () {
+        // Multiple clicks of the control shouldn't stack events.
+        _leafletMap.off('mousedown', _rectangleZoomMousedownEvent);
+        _leafletMap.off('mousemove', _rectangleZoomMousemoveEvent);
+        _leafletMap.off('mouseup', _rectangleZoomMouseupEvent);
+        // Kick off the event chain with mousedown.
+        _leafletMap.on('mousedown', _rectangleZoomMousedownEvent);
+    };
+
+    // Creates the rectangle zoom control, which allows the user to draw a rectangle and zooms the
+    // map to fit the rectangle drawn.
+    var _createRectangleZoomControl = function () {
+        var container = L.DomUtil.create('div', 'leaflet-control leaflet-rectangle-zoom');
+        return L.Control.extend({
+            onAdd: function (map) {
+                L.DomEvent.on(
+                    container,
+                    'click dblclick',
+                    function (e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        _startRectangleZoom();
+                    },
+                    this
+                );
+                map.rectangleZoomControl = this;
+                return container;
+            },
+            onRemove: function (map) {
+                L.DomEvent.off(container);
+                delete map.rectangleZoomControl;
+            }
+        });
+    };
+
+    /** Geolocation matter */
+
+    // Zooms the map to the fetched location.
+    var _getAndZoomToLocation = function (location) {
+        if (location && location.coords) {
+            var lat = location.coords.latitude;
+            var long = location.coords.longitude;
+            if (_exists(lat) && _exists(long)) {
+                _leafletMap.flyTo(L.latLng(parseFloat(lat), parseFloat(long)), _leafletMap.getMaxZoom());
+            }
+        }
+    };
+
+    // Handles any errors in fetching user's location.
+    var _handleGeolocationErrors = function (error) {
+        // TODO: Finalise.
+        console.log(error);
+    };
+
+    // Performs a final check on geolocation ability before fetching the device's location.
+    var _startGeolocation = function () {
+        if (navigator && navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(_getAndZoomToLocation, _handleGeolocationErrors);
+        }
+    };
+
+    // Creates a geolocation control, which allows a user to zoom the map onto their device's location.
+    var _createGeolocationControl = function () {
+        var container = L.DomUtil.create('div', 'leaflet-control leaflet-geolocation');
+        return L.Control.extend({
+            onAdd: function (map) {
+                L.DomEvent.on(
+                    container,
+                    'click dblclick',
+                    function (e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        _startGeolocation();
+                    },
+                    this
+                );
+                map.geolocationControl = this;
+                return container;
+            },
+            onRemove: function (map) {
+                L.DomEvent.off(container);
+                delete map.geolocationControl;
+            }
+        });
     };
 
     /** Public methods */
@@ -646,6 +791,23 @@ function WellsMap(options) {
                 return new L.Control.ExternalQuery(opts);
             }
             _leafletMap.on('move', _placeExternalQueryControl);
+        }
+
+        // If the map can be panned, it should have a rectangleZoomControl and a geolocationControl, if the browser
+        // can support geolocation.
+        if (canPan) {
+            L.Control.RectangleZoom = _createRectangleZoomControl();
+            L.control.rectangleZoom = function (opts) {
+                return new L.Control.RectangleZoom(opts);
+            }
+            _leafletMap.addControl(L.control.rectangleZoom({position: 'topleft'}));
+            if (navigator && navigator.geolocation) {
+                L.Control.Geolocation = _createGeolocationControl();
+                L.control.geolocation = function (opts) {
+                    return new L.Control.Geolocation(opts);
+                }
+                _leafletMap.addControl(L.control.geolocation({position: 'topleft'}));
+            }
         }
     }(options));
 
