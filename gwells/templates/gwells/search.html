@@ -24,6 +24,7 @@
     <div class="col-md-6">
             <div aria-label="A map associated with GWELLS Search. All well information in this map is accessible via the table of well results that opens below the search form when a search succeeds." id="search-map"></div>
             <div id="attribution"></div>
+            <div id="map-errors" class="col-md-12 alert alert-warning" hidden></div>
     </div>
  </div>
 <br />
@@ -152,6 +153,7 @@
     var searchMap = null;
     var searchMapNodeId = 'search-map';
     var attribNode = 'attribution'; // The ID of the external node to contain the attribution.
+    var mapErrorsNodeId = 'map-errors'; // The ID of the external node to display map operation errors.
 
     // Options for creating the searchMap. This map instance has the ability to drive search queries via the
     // startIdentifyWellsOperation, which allows a user to draw a rectangle, and the endIdentifyWellsOperation,
@@ -192,7 +194,8 @@
         ],
         initialExtent: null,
         externalQueryCallback: searchWellsByExtentCallback,
-        externalAttributionNodeId: attribNode 
+        externalAttributionNodeId: attribNode,
+        mapErrorsNodeId: mapErrorsNodeId
     };
 
     // Hard-coded names for the hidden lat-long fields that delineate a
