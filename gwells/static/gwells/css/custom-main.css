@@ -52,6 +52,24 @@ div .leaflet-area-search {
     cursor: pointer;
 }
 
+div .leaflet-rectangle-zoom {
+    background-image: url('../icons/draw_and_zoom.jpg');
+    width: 33px;
+    height: 33px;
+    padding: 5px;
+    box-shadow: 2px 2px 1px rgba(0,0,0,0.4);
+    cursor: pointer;
+}
+
+div .leaflet-geolocation {
+    background-image: url('../icons/geolocate.png');
+    width: 33px;
+    height: 33px;
+    padding: 5px;
+    box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.4);
+    cursor: pointer;
+}
+
 /* logo whitespace */
 
 #header .bcgov-title h1 {
