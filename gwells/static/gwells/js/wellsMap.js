@@ -564,6 +564,7 @@ function WellsMap(options) {
                     },
                     this
                 );
+                container.title = "Click and drag to zoom into an area";
                 map.rectangleZoomControl = this;
                 return container;
             },
@@ -631,6 +632,7 @@ function WellsMap(options) {
                     },
                     this
                 );
+                container.title = "Locate your device on the map";
                 map.geolocationControl = this;
                 return container;
             },
