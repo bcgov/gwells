@@ -47,7 +47,7 @@ div .leaflet-area-search {
     color: #000;
     border: 1px solid #ddd;
     background: #fff;
-    box-shadow: 2px 2px 1px rgba(0,0,0,0.4);
+    box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.4);
     padding: 5px;
     cursor: pointer;
 }
@@ -57,17 +57,25 @@ div .leaflet-select-zoom {
     width: 30px;
     height: 30px;
     padding: 5px;
-    box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.4);
+    box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.4);
     cursor: pointer;
+}
+
+div .leaflet-select-zoom:hover {
+    opacity: 0.8;
 }
 
 div .leaflet-geolocation {
     background-image: url('../icons/geolocate.png');
-    width: 33px;
-    height: 33px;
+    width: 30px;
+    height: 30px;
     padding: 5px;
-    box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.4);
+    box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.4);
     cursor: pointer;
+}
+
+div .leaflet-geolocation:hover {
+    opacity: 0.8;
 }
 
 /* logo whitespace */
