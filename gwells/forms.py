@@ -19,7 +19,7 @@ from crispy_forms.bootstrap import FormActions, AppendedText, InlineRadios
 from django.forms.models import inlineformset_factory
 from .search import Search
 from .models import ActivitySubmission, WellActivityType, ProvinceState, DrillingMethod, LithologyDescription, LithologyMoisture, Casing, CasingType, LinerPerforation
-from .models import ScreenIntake, ScreenMaterial, ScreenBottom, Screen
+from .models import ScreenIntake, ScreenMaterial, ScreenBottom, Screen, ProductionData
 from datetime import date
 
 class SearchForm(forms.Form):
@@ -955,7 +955,6 @@ class ActivitySubmissionFilterPackForm(forms.ModelForm):
         self.helper = FormHelper()
         self.helper.form_tag = False
         self.helper.disable_csrf = True
-        self.helper.render_hidden_fields = True
         self.helper.layout = Layout(
             Fieldset(
                 'Filter Pack',
@@ -1015,8 +1014,47 @@ class ActivitySubmissionDevelopmentForm(forms.ModelForm):
 
 
 
+class ProductionDataForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.disable_csrf = True
+        self.helper.layout = Layout(
+            Fieldset(
+                'Well Production',
+                Div(
+                    Div('yield_estimation_method', css_class='col-md-3'),
+                    css_class='row',
+                ),
+                Div(
+                    Div(AppendedText('yield_estimation_rate', 'USgpm'), css_class='col-md-3'),
+                    Div(AppendedText('yield_estimation_duration', 'hrs'), css_class='col-md-3'),
+                    css_class='row',
+                ),
+                Div(
+                    Div(AppendedText('static_level', 'ft (btoc)'), css_class='col-md-3'),
+                    Div(AppendedText('drawdown', 'ft (btoc)'), css_class='col-md-3'),
+                    css_class='row',
+                ),
+                Div(
+                    Div('hydro_fracturing_performed', css_class='col-md-3'),
+                    Div(AppendedText('hydro_fracturing_yield_increase', 'USgpm'), css_class='col-md-3'),
+                    css_class='row',
+                ),
+            )
+        )
+        super(ProductionDataForm, self).__init__(*args, **kwargs)
+   
+    class Meta:
+        model = ProductionData
+        fields = ['yield_estimation_method', 'yield_estimation_rate', 'yield_estimation_duration', 'static_level', 'drawdown', 'hydro_fracturing_performed', 'hydro_fracturing_yield_increase']
+        widgets = {'hydro_fracturing_performed': forms.RadioSelect}
+
+
+
 #WellCompletionDataFormSet = inlineformset_factory(ActivitySubmission, WellCompletionData, max_num=1, can_delete=False)
 ActivitySubmissionLithologyFormSet = inlineformset_factory(ActivitySubmission, LithologyDescription, form=LithologyForm, fk_name='activity_submission', can_delete=False, extra=10)
 ActivitySubmissionCasingFormSet = inlineformset_factory(ActivitySubmission, Casing, form=CasingForm, fk_name='activity_submission', can_delete=False, extra=5)
 ActivitySubmissionLinerPerforationFormSet = inlineformset_factory(ActivitySubmission, LinerPerforation, form=LinerPerforationForm, fk_name='activity_submission', can_delete=False, extra=5)
 ActivitySubmissionScreenFormSet = inlineformset_factory(ActivitySubmission, Screen, form=ScreenForm, fk_name='activity_submission', can_delete=False, extra=5)
+ProductionDataFormSet = inlineformset_factory(ActivitySubmission, ProductionData, form=ProductionDataForm, fk_name='activity_submission', can_delete=True, min_num=1, max_num=1)
