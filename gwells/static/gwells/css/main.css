@@ -237,34 +237,30 @@ th {
 	border-top: 2px solid #fcba19;
 }
 
-.navigationRibbon a {
-	color: #fff;
-	display: table-cell;
-	text-align: center;
-	vertical-align: middle;
-	padding: 10px 15px;
-	position: relative;
+.level2Navigation ul {
+    margin: 0;
+    padding: 0;
 }
 
-.navigationRibbon a+a:after {
-	content: "";
-	background: #748bad;
-	position: absolute;
-	bottom: 25%;
-	left: 0;
-	height: 50%;
-	width: 1px;
+.level2Navigation li {
+    display: inline-block;
+    border-right: solid 1px #748bad;
+    margin: 10px 0px;
 }
 
-.navigationRibbon a.current {
-	text-decoration: underline;
-	font-weight: bold;
+.level2Navigation li:last-child {
+    border-right: none;
 }
 
-.navigationRibbon .level2Navigation a.current {
-	background-image: url("../images/nav-ribbon-arrow.png");
-	background-position: center bottom;
-	background-repeat: no-repeat;
+.level2Navigation li a {
+    text-decoration: none;
+    padding: 0px 13px;
+    color: white;
+    display: inline-block;
+}
+
+.level2Navigation li a:hover {
+    text-decoration: underline;
 }
 
 .navigationRibbon .level2Navigation {
