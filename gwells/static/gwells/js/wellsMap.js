@@ -519,6 +519,7 @@ function WellsMap(options) {
         _leafletMap.on('mouseup', _rectangleZoomMouseupEvent);
     };
 
+    // If the mouse leaves the map, we attempt to finish the operation as though the mouse were released.
     var _rectangleZoomMouseoutEvent = function () {
         _zoomToRectangle();
         _stopRectangleZoom();
