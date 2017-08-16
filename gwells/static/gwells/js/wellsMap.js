@@ -653,7 +653,7 @@ function WellsMap(options) {
                     },
                     this
                 );
-                container.title = "Locate your device on the map";
+                container.title = "View my surrounding area";
                 map.geolocationControl = this;
                 return container;
             },
