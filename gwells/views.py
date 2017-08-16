@@ -21,7 +21,7 @@ from formtools.wizard.views import SessionWizardView
 from .models import WellActivityType, WellYieldUnit, Well, ActivitySubmission, WellClass, ScreenIntake
 from .forms import SearchForm, ActivitySubmissionTypeAndClassForm, WellOwnerForm, ActivitySubmissionLocationForm, ActivitySubmissionGpsForm
 from .forms import ActivitySubmissionLithologyFormSet, ActivitySubmissionCasingFormSet, ActivitySubmissionSurfaceSealForm, ActivitySubmissionLinerPerforationFormSet
-from .forms import ActivitySubmissionScreenIntakeForm, ActivitySubmissionScreenFormSet, ActivitySubmissionFilterPackForm, ActivitySubmissionDevelopmentForm
+from .forms import ActivitySubmissionScreenIntakeForm, ActivitySubmissionScreenFormSet, ActivitySubmissionFilterPackForm, ActivitySubmissionDevelopmentForm, ProductionDataFormSet
 import json
 from django.core.serializers.json import DjangoJSONEncoder
 
@@ -133,6 +133,7 @@ FORMS = [('type_and_class', ActivitySubmissionTypeAndClassForm),
          ('screen', ActivitySubmissionScreenFormSet),
          ('filter_pack', ActivitySubmissionFilterPackForm),
          ('development', ActivitySubmissionDevelopmentForm),
+         ('production_data', ProductionDataFormSet),
         ]
 
 TEMPLATES = {'type_and_class': 'gwells/activity_submission_form.html',
@@ -147,6 +148,7 @@ TEMPLATES = {'type_and_class': 'gwells/activity_submission_form.html',
              'screen': 'gwells/activity_submission_screen_form.html',
              'filter_pack': 'gwells/activity_submission_form.html',
              'development': 'gwells/activity_submission_form.html',
+             'production_data': 'gwells/activity_submission_form.html',
             }
 
 
@@ -239,11 +241,19 @@ class ActivitySubmissionWizardView(SessionWizardView):
                 screen.activity_submission = None
                 screen.well = w
                 screen.save()
+            production_list = form_dict['production_data'].save()
+            production_list = list(production_list)
+            for production in production_list:
+                production.pk = None
+                production.activity_submission = None
+                production.well = w
+                production.save()
         else:
             submission.save()
             lithology_list = form_dict['lithology'].save()
             casing_list = form_dict['casing'].save()
             perforation_list = form_dict['liner_perforation'].save()
             screen_list = form_dict['screen'].save()
+            production_list = form_dict['production_data'].save()
 
         return HttpResponseRedirect('/submission/')
