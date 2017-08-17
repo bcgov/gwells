@@ -587,7 +587,7 @@ function WellsMap(options) {
                     },
                     this
                 );
-                container.title = "Click and drag to zoom into an area";
+                container.title = "Click or tap, then drag area of interest on the map.  Map will zoom to that location.";
                 map.rectangleZoomControl = this;
                 return container;
             },
