@@ -497,7 +497,7 @@ function WellsMap(options) {
     };
 
     // Handles the end of the drawing behaviour.
-    var _rectangleZoomMouseupEvent = function () {
+    var _rectangleZoomSecondClickEvent = function () {
         _zoomToRectangle();
         _stopRectangleZoom();
     };
@@ -516,19 +516,16 @@ function WellsMap(options) {
             _zoomRectangle.setBounds([startCorner, endCorner]);
         }
         // Subscribe to the mouseup event.
-        _leafletMap.on('mouseup', _rectangleZoomMouseupEvent);
+        _leafletMap.on('click', _rectangleZoomSecondClickEvent);
     };
 
     // If the mouse leaves the map, we attempt to finish the operation as though the mouse were released.
     var _rectangleZoomMouseoutEvent = function () {
-        _zoomToRectangle();
         _stopRectangleZoom();
     }
 
     // When the user clicks, set the rectangle's anchor point and set the map to begin drawing.
-    var _rectangleZoomMousedownEvent = function (e) {
-        // The map shouldn't pan during rectangle draw.
-        _leafletMap.dragging.disable();
+    var _rectangleZoomFirstClickEvent = function (e) {
         // Set the anchor point and the mousemove handler.
         _zoomRectangleAnchor = e.latlng;
         _leafletMap.on('mousemove', _rectangleZoomMousemoveEvent);
@@ -544,9 +541,9 @@ function WellsMap(options) {
             _zoomRectangleAnchor = null;    
         }
         // Unsubscribe to all of the event handlers.
-        _leafletMap.off('mousedown', _rectangleZoomMousedownEvent);
+        _leafletMap.off('click', _rectangleZoomSecondClickEvent);
         _leafletMap.off('mousemove', _rectangleZoomMousemoveEvent);
-        _leafletMap.off('mouseup', _rectangleZoomMouseupEvent);
+        _leafletMap.off('click', _rectangleZoomFirstClickEvent);
         _leafletMap.off('mouseout', _rectangleZoomMouseoutEvent);
         // Re-enable panning.
         _leafletMap.dragging.enable();
@@ -562,8 +559,10 @@ function WellsMap(options) {
             _stopRectangleZoom();
         } else {
             _isRectangleZooming = true;
-            // Kick off the event chain with mousedown.
-            _leafletMap.on('mousedown', _rectangleZoomMousedownEvent);
+            // The map shouldn't pan during rectangle draw.
+            _leafletMap.dragging.disable();
+            // Kick off the event chain with click.
+            _leafletMap.on('click', _rectangleZoomFirstClickEvent);
             // The map's cursor should update to reflect the operation in progress.
             $('#' + _mapNodeId).css('cursor', 'crosshair');
         }
@@ -577,7 +576,7 @@ function WellsMap(options) {
             onAdd: function (map) {
                 L.DomEvent.on(
                     container,
-                    'mousedown',
+                    'click',
                     function (e) {
                         e.preventDefault();
                         e.stopPropagation();
