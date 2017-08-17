@@ -1021,7 +1021,7 @@ class ProductionDataForm(forms.ModelForm):
         self.helper.disable_csrf = True
         self.helper.layout = Layout(
             Fieldset(
-                'Well Production',
+                'Well Yield Estimation',
                 Div(
                     Div('yield_estimation_method', css_class='col-md-3'),
                     css_class='row',
@@ -1037,7 +1037,7 @@ class ProductionDataForm(forms.ModelForm):
                     css_class='row',
                 ),
                 Div(
-                    Div('hydro_fracturing_performed', css_class='col-md-3'),
+                    Div(InlineRadios('hydro_fracturing_performed'), css_class='col-md-3'),
                     Div(AppendedText('hydro_fracturing_yield_increase', 'USgpm'), css_class='col-md-3'),
                     css_class='row',
                 ),
