@@ -199,7 +199,7 @@ class ActivitySubmissionWizardView(SessionWizardView):
             form_class.min_num = 0
             if intake_data and intake_data.get('screen_intake'):
                 try:
-                    screen_screen_intake = ScreenIntake.objects.get(code='SCREEN') #TODO
+                    screen_screen_intake = ScreenIntake.objects.get(code='SCREEN')
                 except Exception as e:
                     screen_screen_intake = None
                 if intake_data.get('screen_intake') == screen_screen_intake:
