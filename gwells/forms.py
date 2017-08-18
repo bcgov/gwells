@@ -1129,6 +1129,21 @@ class WellCompletionForm(forms.ModelForm):
         self.fields['finished_well_depth'].required = True
         self.fields['final_casing_stick_up'].required = True
 
+    def clean(self):
+        cleaned_data = super(WellCompletionForm, self).clean()
+        
+        total_depth_drilled = cleaned_data.get('total_depth_drilled') 
+        finished_well_depth = cleaned_data.get('finished_well_depth') 
+        errors = []
+
+        if total_depth_drilled and finished_well_depth and total_depth_drilled < finished_well_depth:
+            errors.append('Finished Well Depth can\'t be greater than Total Depth Drilled.')
+
+        if len(errors) > 0:
+            raise forms.ValidationError(errors)
+
+        return cleaned_data
+
     class Meta:
         model = ActivitySubmission
         fields = ['total_depth_drilled', 'finished_well_depth', 'final_casing_stick_up', 'bedrock_depth', 'static_water_level', 'well_yield', 'artestian_flow', 'artestian_pressure', 'well_cap_type', 'well_disinfected']
