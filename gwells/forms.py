@@ -169,6 +169,9 @@ class WellOwnerForm(forms.ModelForm):
             )
         )
         super(WellOwnerForm, self).__init__(*args, **kwargs)
+        # Make fields required on the form even though they are not required in the DB due to legacy data issues
+        # TODO - check admin or staff user and don't make these fields required
+        self.fields['owner_postal_code'].required = True
 
         # display code instead of the value from __str__ in the model
         self.fields['owner_province_state'].label_from_instance = self.label_from_instance_code
