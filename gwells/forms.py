@@ -1087,6 +1087,55 @@ class ActivitySubmissionWaterQualityForm(forms.ModelForm):
 
 
 
+class WellCompletionForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.disable_csrf = True
+        self.helper.layout = Layout(
+            Fieldset(
+                'Well Completion Details',
+                Div(
+                    Div(AppendedText('total_depth_drilled', 'ft'), css_class='col-md-3'),
+                    Div(AppendedText('finished_well_depth', 'ft (bgl)'), css_class='col-md-3'),
+                    css_class='row',
+                ),
+                Div(
+                    Div(AppendedText('final_casing_stick_up', 'in'), css_class='col-md-3'),
+                    Div(AppendedText('bedrock_depth', 'ft (bgl)'), css_class='col-md-3'),
+                    css_class='row',
+                ),
+                Div(
+                    Div(AppendedText('static_water_level', 'ft (btoc)'), css_class='col-md-3'),
+                    Div(AppendedText('well_yield', 'USgpm'), css_class='col-md-3'),
+                    css_class='row',
+                ),
+                Div(
+                    Div(AppendedText('artestian_flow', 'USgpm'), css_class='col-md-3'),
+                    Div(AppendedText('artestian_pressure', 'ft'), css_class='col-md-3'),
+                    css_class='row',
+                ),
+                Div(
+                    Div('well_cap_type', css_class='col-md-3'),
+                    Div(InlineRadios('well_disinfected'), css_class='col-md-3'),
+                    css_class='row',
+                ),
+            )
+        )
+        super(WellCompletionForm, self).__init__(*args, **kwargs)
+        # Make fields required on the form even though they are not required in the DB due to legacy data issues
+        # TODO - check admin or staff user and don't make these fields required
+        self.fields['total_depth_drilled'].required = True
+        self.fields['finished_well_depth'].required = True
+        self.fields['final_casing_stick_up'].required = True
+
+    class Meta:
+        model = ActivitySubmission
+        fields = ['total_depth_drilled', 'finished_well_depth', 'final_casing_stick_up', 'bedrock_depth', 'static_water_level', 'well_yield', 'artestian_flow', 'artestian_pressure', 'well_cap_type', 'well_disinfected']
+        widgets = {'well_disinfected': forms.RadioSelect}
+
+
+
 #WellCompletionDataFormSet = inlineformset_factory(ActivitySubmission, WellCompletionData, max_num=1, can_delete=False)
 ActivitySubmissionLithologyFormSet = inlineformset_factory(ActivitySubmission, LithologyDescription, form=LithologyForm, fk_name='activity_submission', can_delete=False, extra=10)
 ActivitySubmissionCasingFormSet = inlineformset_factory(ActivitySubmission, Casing, form=CasingForm, fk_name='activity_submission', can_delete=False, extra=5)

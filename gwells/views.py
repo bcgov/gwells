@@ -22,7 +22,7 @@ from .models import WellActivityType, WellYieldUnit, Well, ActivitySubmission, W
 from .forms import SearchForm, ActivitySubmissionTypeAndClassForm, WellOwnerForm, ActivitySubmissionLocationForm, ActivitySubmissionGpsForm
 from .forms import ActivitySubmissionLithologyFormSet, ActivitySubmissionCasingFormSet, ActivitySubmissionSurfaceSealForm, ActivitySubmissionLinerPerforationFormSet
 from .forms import ActivitySubmissionScreenIntakeForm, ActivitySubmissionScreenFormSet, ActivitySubmissionFilterPackForm, ActivitySubmissionDevelopmentForm, ProductionDataFormSet
-from .forms import ActivitySubmissionWaterQualityForm
+from .forms import ActivitySubmissionWaterQualityForm, WellCompletionForm
 import json
 from django.core.serializers.json import DjangoJSONEncoder
 
@@ -126,6 +126,7 @@ FORMS = [('type_and_class', ActivitySubmissionTypeAndClassForm),
          ('owner', WellOwnerForm),
          ('location', ActivitySubmissionLocationForm),
          ('gps', ActivitySubmissionGpsForm),
+         ('well_completion', WellCompletionForm),
          ('lithology', ActivitySubmissionLithologyFormSet),
          ('casing', ActivitySubmissionCasingFormSet),
          ('surface_seal', ActivitySubmissionSurfaceSealForm),
@@ -142,6 +143,7 @@ TEMPLATES = {'type_and_class': 'gwells/activity_submission_form.html',
              'owner': 'gwells/activity_submission_form.html',
              'location': 'gwells/activity_submission_form.html',
              'gps': 'gwells/activity_submission_form.html',
+             'well_completion': 'gwells/activity_submission_form.html',
              'lithology': 'gwells/activity_submission_lithology_form.html',
              'casing': 'gwells/activity_submission_casing_form.html',
              'surface_seal': 'gwells/activity_submission_form.html',
