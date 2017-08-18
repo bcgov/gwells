@@ -734,25 +734,25 @@ class ActivitySubmissionSurfaceSealForm(forms.ModelForm):
         surface_seal_material = self.cleaned_data.get('surface_seal_material') 
 
         if self.initial['casing_exists'] and not surface_seal_material:
-            raise forms.ValidationError('This field is required when casing specified.');
+            raise forms.ValidationError('This field is required.');
 
     def clean_surface_seal_depth(self):
         surface_seal_depth = self.cleaned_data.get('surface_seal_depth') 
 
         if self.initial['casing_exists'] and not surface_seal_depth:
-            raise forms.ValidationError('This field is required when casing specified.');
+            raise forms.ValidationError('This field is required.');
 
     def clean_surface_seal_thickness(self):
         surface_seal_thickness = self.cleaned_data.get('surface_seal_thickness') 
 
         if self.initial['casing_exists'] and not surface_seal_thickness:
-            raise forms.ValidationError('This field is required when casing specified.');
+            raise forms.ValidationError('This field is required.');
 
     def clean_surface_seal_method(self):
         surface_seal_method = self.cleaned_data.get('surface_seal_method') 
 
         if self.initial['casing_exists'] and not surface_seal_method:
-            raise forms.ValidationError('This field is required when casing specified.');
+            raise forms.ValidationError('This field is required.');
 
     def clean(self):
         cleaned_data = super(ActivitySubmissionSurfaceSealForm, self).clean()
