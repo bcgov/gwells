@@ -755,7 +755,7 @@ class Well(AuditModel):
     ground_elevation_method = models.ForeignKey(GroundElevationMethod, db_column='ground_elevation_method_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Method for Determining Ground Elevation')
     drilling_method = models.ForeignKey(DrillingMethod, db_column='drilling_method_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Drilling Method')
     other_drilling_method = models.CharField(max_length=50, blank=True, verbose_name='Specify Other Drilling Method')
-    orientation_vertical = models.BooleanField(default=True, verbose_name='Well Orientation')
+    orientation_vertical = models.BooleanField(default=True, verbose_name='Well Orientation', choices=((True, 'vertical'), (False, 'horizontal')))
 
     surface_seal_material = models.ForeignKey(SurfaceSealMaterial, db_column='surface_seal_material_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Surface Seal Material')
     surface_seal_depth = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Surface Seal Depth')
@@ -801,7 +801,10 @@ class Well(AuditModel):
     artestian_flow = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Artesian Flow')
     artestian_pressure = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Artesian Pressure')
     well_cap_type = models.CharField(max_length=40, blank=True, verbose_name='Well Cap Type')
-    well_disinfected = models.BooleanField(default=False, verbose_name='Well Disinfected?', choices=((True, 'Yes'), (False, 'No')))
+    well_disinfected = models.BooleanField(default=False, verbose_name='Well Disinfected?', choices=((False, 'No'), (True, 'Yes')))
+
+    comments = models.CharField(max_length=255, blank=True)
+    alternative_specs_submitted = models.BooleanField(default=False, verbose_name='Alternative specs submitted (if required)')
 
 
     well_yield_unit = models.ForeignKey(WellYieldUnit, db_column='well_yield_unit_guid', on_delete=models.CASCADE, blank=True, null=True)
@@ -922,7 +925,10 @@ class ActivitySubmission(AuditModel):
     artestian_flow = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Artesian Flow')
     artestian_pressure = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Artesian Pressure')
     well_cap_type = models.CharField(max_length=40, blank=True, verbose_name='Well Cap Type')
-    well_disinfected = models.BooleanField(default=False, verbose_name='Well Disinfected?', choices=((True, 'Yes'), (False, 'No')))
+    well_disinfected = models.BooleanField(default=False, verbose_name='Well Disinfected?', choices=((False, 'No'), (True, 'Yes')))
+
+    comments = models.CharField(max_length=255, blank=True)
+    alternative_specs_submitted = models.BooleanField(default=False, verbose_name='Alternative specs submitted (if required)')
 
 
     well_yield_unit = models.ForeignKey(WellYieldUnit, db_column='well_yield_unit_guid', on_delete=models.CASCADE, blank=True, null=True)
@@ -1007,6 +1013,8 @@ class ActivitySubmission(AuditModel):
         w.well_cap_type = self.well_cap_type
         w.well_disinfected = self.well_disinfected
 
+        w.comments = self.comments
+        w.alternative_specs_submitted = self.alternative_specs_submitted
         #TODO
 
         return w;
@@ -1089,7 +1097,7 @@ class Casing(AuditModel):
     casing_type = models.ForeignKey(CasingType, db_column='casing_type_guid', on_delete=models.CASCADE, verbose_name='Casing Type')
     casing_material = models.ForeignKey(CasingMaterial, db_column='casing_material_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Casing Material')
     wall_thickness = models.DecimalField(max_digits=6, decimal_places=3, verbose_name='Wall Thickness', blank=True, null=True, validators=[MinValueValidator(Decimal('0.01'))])
-    drive_shoe = models.BooleanField(default=False, verbose_name='Drive Shoe', choices=((True, 'Yes'), (False, 'No')))
+    drive_shoe = models.BooleanField(default=False, verbose_name='Drive Shoe', choices=((False, 'No'), (True, 'Yes')))
     
     class Meta:
         db_table = 'gwells_casing'
@@ -1159,7 +1167,7 @@ class ProductionData(AuditModel):
     yield_estimation_duration = models.DecimalField(max_digits=9, decimal_places=2, verbose_name='Yield Estimation Duration', blank=True, null=True, validators=[MinValueValidator(Decimal('0.01'))])
     static_level = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='SWL Before Test', blank=True, null=True, validators=[MinValueValidator(Decimal('0.0'))])
     drawdown = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, validators=[MinValueValidator(Decimal('0.00'))])
-    hydro_fracturing_performed = models.BooleanField(default=False, verbose_name='Hydro-fracturing Performed?', choices=((True, 'Yes'), (False, 'No')))
+    hydro_fracturing_performed = models.BooleanField(default=False, verbose_name='Hydro-fracturing Performed?', choices=((False, 'No'), (True, 'Yes')))
     hydro_fracturing_yield_increase = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='Well Yield Increase Due to Hydro-fracturing', blank=True, null=True, validators=[MinValueValidator(Decimal('0.00'))])
     
     class Meta:
