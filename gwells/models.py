@@ -982,6 +982,9 @@ class ActivitySubmission(AuditModel):
         w.development_method = self.development_method
         w.development_hours = self.development_hours
         w.development_notes = self.development_notes
+
+        w.water_quality_colour = self.water_quality_colour
+        w.water_quality_odour = self.water_quality_odour
         #TODO
 
         return w;
