@@ -19,7 +19,7 @@ from crispy_forms.bootstrap import FormActions, AppendedText, InlineRadios
 from django.forms.models import inlineformset_factory
 from .search import Search
 from .models import ActivitySubmission, WellActivityType, ProvinceState, DrillingMethod, LithologyDescription, LithologyMoisture, Casing, CasingType, LinerPerforation
-from .models import ScreenIntake, ScreenMaterial, ScreenBottom, Screen, ProductionData
+from .models import ScreenIntake, ScreenMaterial, ScreenBottom, Screen, ProductionData, WaterQualityCharacteristic
 from datetime import date
 
 class SearchForm(forms.Form):
@@ -1049,6 +1049,38 @@ class ProductionDataForm(forms.ModelForm):
         model = ProductionData
         fields = ['yield_estimation_method', 'yield_estimation_rate', 'yield_estimation_duration', 'static_level', 'drawdown', 'hydro_fracturing_performed', 'hydro_fracturing_yield_increase']
         widgets = {'hydro_fracturing_performed': forms.RadioSelect}
+
+
+
+class ActivitySubmissionWaterQualityForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.disable_csrf = True
+        self.helper.layout = Layout(
+            Fieldset(
+                'Water Quality',
+                Div(
+                    Div('water_quality_characteristics', css_class='col-md-3'),
+                    css_class='row',
+                ),
+                Div(
+                    Div('water_quality_colour', css_class='col-md-3'),
+                    css_class='row',
+                ),
+                Div(
+                    Div('water_quality_odour', css_class='col-md-3'),
+                    css_class='row',
+                ),
+            )
+        )
+
+        super(ActivitySubmissionWaterQualityForm, self).__init__(*args, **kwargs)
+
+    class Meta:
+        model = ActivitySubmission
+        fields = ['water_quality_characteristics', 'water_quality_colour', 'water_quality_odour']
+        widgets = {'water_quality_characteristics': forms.CheckboxSelectMultiple}
 
 
 
