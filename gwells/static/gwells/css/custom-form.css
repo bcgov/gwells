@@ -595,7 +595,8 @@ p.help-block {
     margin-top: 3px;
 }
 
-.form-group .controls .radio:first-child {
+.form-group > .controls > .checkbox:first-child,
+.form-group > .controls > .radio:first-child {
     margin-top: 0px;
 }
 

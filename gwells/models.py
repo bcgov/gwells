@@ -698,6 +698,25 @@ class YieldEstimationMethod(AuditModel):
 
 
 
+class WaterQualityCharacteristic(AuditModel):
+    """
+     The characteristic of the well water, e.g. Fresh, Salty, Clear.
+    """
+    water_quality_characteristic_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    code = models.CharField(max_length=10, unique=True)
+    description = models.CharField(max_length=100)
+    is_hidden = models.BooleanField(default=False)
+    sort_order = models.PositiveIntegerField()
+    
+    class Meta:
+        db_table = 'gwells_water_quality_characteristic'
+        ordering = ['sort_order', 'description']
+
+    def __str__(self):
+        return self.description
+
+
+
 class Well(AuditModel):
     """
     Well information.
@@ -769,6 +788,9 @@ class Well(AuditModel):
     development_hours = models.DecimalField(max_digits=9, decimal_places=2, blank=True, null=True, verbose_name='Development Total Duration', validators=[MinValueValidator(Decimal('0.00'))])
     development_notes = models.CharField(max_length=255, blank=True, verbose_name='Development Notes')
 
+    water_quality_characteristics = models.ManyToManyField(WaterQualityCharacteristic, db_table='gwells_well_water_quality', blank=True, verbose_name='Obvious Water Quality Characteristics')
+    water_quality_colour = models.CharField(max_length=60, blank=True, verbose_name='Water Quality Colour')
+    water_quality_odour = models.CharField(max_length=60, blank=True, verbose_name='Water Quality Odour')
 
 
     diameter = models.CharField(max_length=9, blank=True)  #want to be integer in future
@@ -881,6 +903,10 @@ class ActivitySubmission(AuditModel):
     development_method = models.ForeignKey(DevelopmentMethod, db_column='development_method_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Development Method')
     development_hours = models.DecimalField(max_digits=9, decimal_places=2, blank=True, null=True, verbose_name='Development Total Duration', validators=[MinValueValidator(Decimal('0.00'))])
     development_notes = models.CharField(max_length=255, blank=True, verbose_name='Development Notes')
+
+    water_quality_characteristics = models.ManyToManyField(WaterQualityCharacteristic, db_table='gwells_activity_submission_water_quality', blank=True, verbose_name='Obvious Water Quality Characteristics')
+    water_quality_colour = models.CharField(max_length=60, blank=True, verbose_name='Water Quality Colour')
+    water_quality_odour = models.CharField(max_length=60, blank=True, verbose_name='Water Quality Odour')
 
 
     diameter = models.CharField(max_length=9, blank=True)  #want to be integer in future
@@ -1119,7 +1145,6 @@ class ProductionData(AuditModel):
             return 'activity_submission {} {} {}'.format(self.activity_submission, self.yield_estimation_method, self.yield_estimation_rate)
         else:
             return 'well {} {} {}'.format(self.well, self.yield_estimation_method, self.yield_estimation_rate)
-
 
 
 

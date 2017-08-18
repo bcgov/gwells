@@ -15,7 +15,7 @@ from django.contrib import admin
 from .models import ProvinceState, LandDistrict, WellYieldUnit, WellActivityType, WellClass, WellSubclass, IntendedWaterUse, DrillingCompany, Driller, GroundElevationMethod, DrillingMethod
 from .models import SurficialMaterial, BedrockMaterial, BedrockMaterialDescriptor, LithologyStructure, LithologyWeathering, LithologyColour, LithologyHardness, LithologyMoisture
 from .models import CasingType, CasingMaterial, SurfaceSealMaterial, SurfaceSealMethod, LinerMaterial, ScreenIntake, ScreenType, ScreenMaterial, ScreenOpening, ScreenBottom, ScreenAssemblyType
-from .models import FilterPackMaterial, FilterPackMaterialSize, DevelopmentMethod
+from .models import FilterPackMaterial, FilterPackMaterialSize, DevelopmentMethod, YieldEstimationMethod, WaterQualityCharacteristic
 # Register your models here.
 admin.site.register(ProvinceState)
 admin.site.register(LandDistrict)
@@ -50,3 +50,5 @@ admin.site.register(ScreenAssemblyType)
 admin.site.register(FilterPackMaterial)
 admin.site.register(FilterPackMaterialSize)
 admin.site.register(DevelopmentMethod)
+admin.site.register(YieldEstimationMethod)
+admin.site.register(WaterQualityCharacteristic)
