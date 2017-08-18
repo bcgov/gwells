@@ -792,15 +792,20 @@ class Well(AuditModel):
     water_quality_colour = models.CharField(max_length=60, blank=True, verbose_name='Water Quality Colour')
     water_quality_odour = models.CharField(max_length=60, blank=True, verbose_name='Water Quality Odour')
 
+    total_depth_drilled = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Total Depth Drilled')
+    finished_well_depth = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Finished Well Depth')
+    final_casing_stick_up = models.DecimalField(max_digits=5, decimal_places=3, blank=True, null=True, verbose_name='Final Stick Up')
+    bedrock_depth = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Depth to Bedrock')
+    static_water_level = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Static Water Level')
+    well_yield = models.DecimalField(max_digits=8, decimal_places=3, blank=True, null=True, verbose_name='Estimated Well Yield')
+    well_yield_unit = models.ForeignKey(WellYieldUnit, db_column='well_yield_unit_guid', on_delete=models.CASCADE, blank=True, null=True)
+    artestian_flow = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Artesian Flow')
+    artestian_pressure = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Artesian Pressure')
+    well_cap_type = models.CharField(max_length=40, blank=True, verbose_name='Well Cap Type')
+    well_disinfected = models.BooleanField(default=False, verbose_name='Well Disinfected?', choices=((True, 'Yes'), (False, 'No')))
+
 
     diameter = models.CharField(max_length=9, blank=True)  #want to be integer in future
-    #diameter_unit
-    total_depth_drilled = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True)
-    #depth_unit
-    finished_well_depth = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True)
-    #depth_unit
-    well_yield = models.DecimalField(max_digits=8, decimal_places=3, blank=True, null=True)
-    well_yield_unit = models.ForeignKey(WellYieldUnit, db_column='well_yield_unit_guid', on_delete=models.CASCADE, blank=True, null=True)
     
     tracker = FieldTracker()
     
@@ -908,15 +913,20 @@ class ActivitySubmission(AuditModel):
     water_quality_colour = models.CharField(max_length=60, blank=True, verbose_name='Water Quality Colour')
     water_quality_odour = models.CharField(max_length=60, blank=True, verbose_name='Water Quality Odour')
 
+    total_depth_drilled = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Total Depth Drilled')
+    finished_well_depth = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Finished Well Depth')
+    final_casing_stick_up = models.DecimalField(max_digits=5, decimal_places=3, blank=True, null=True, verbose_name='Final Stick Up')
+    bedrock_depth = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Depth to Bedrock')
+    static_water_level = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Static Water Level')
+    well_yield = models.DecimalField(max_digits=8, decimal_places=3, blank=True, null=True, verbose_name='Estimated Well Yield')
+    well_yield_unit = models.ForeignKey(WellYieldUnit, db_column='well_yield_unit_guid', on_delete=models.CASCADE, blank=True, null=True)
+    artestian_flow = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Artesian Flow')
+    artestian_pressure = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Artesian Pressure')
+    well_cap_type = models.CharField(max_length=40, blank=True, verbose_name='Well Cap Type')
+    well_disinfected = models.BooleanField(default=False, verbose_name='Well Disinfected?', choices=((True, 'Yes'), (False, 'No')))
+
 
     diameter = models.CharField(max_length=9, blank=True)  #want to be integer in future
-    #diameter_unit
-    total_depth_drilled = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True)
-    #depth_unit
-    finished_well_depth = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True)
-    #depth_unit
-    well_yield = models.DecimalField(max_digits=8, decimal_places=3, blank=True, null=True)
-    well_yield_unit = models.ForeignKey(WellYieldUnit, db_column='well_yield_unit_guid', on_delete=models.CASCADE, blank=True, null=True)
     
     tracker = FieldTracker()
 
@@ -985,6 +995,19 @@ class ActivitySubmission(AuditModel):
 
         w.water_quality_colour = self.water_quality_colour
         w.water_quality_odour = self.water_quality_odour
+
+        w.total_depth_drilled = self.total_depth_drilled
+        w.finished_well_depth = self.finished_well_depth
+        w.final_casing_stick_up = self.final_casing_stick_up
+        w.bedrock_depth = self.bedrock_depth
+        w.static_water_level = self.static_water_level
+        w.well_yield = self.well_yield
+        w.well_yield_unit = self.well_yield_unit
+        w.artestian_flow = self.artestian_flow
+        w.artestian_pressure = self.artestian_pressure
+        w.well_cap_type = self.well_cap_type
+        w.well_disinfected = self.well_disinfected
+
         #TODO
 
         return w;
