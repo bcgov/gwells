@@ -1,7 +1,6 @@
 /* Delete all rows from Submission Ready tables */
 
 truncate gwells_activity_submission restart identity cascade;
-truncate gwells_backfill_type restart identity cascade;
 truncate gwells_bedrock_material restart identity cascade;
 truncate gwells_bedrock_material_descriptor restart identity cascade;
 truncate gwells_casing restart identity cascade;
@@ -37,6 +36,10 @@ truncate gwells_screen_material           restart identity cascade;
 truncate gwells_liner_material            restart identity cascade;
 truncate gwells_filter_pack_material      restart identity cascade;
 truncate gwells_filter_pack_material_size restart identity cascade;
+
+truncate gwells_screen_assembly_type     restart identity cascade;
+truncate gwells_development_method       restart identity cascade;
+truncate gwells_yield_estimation_method  restart identity cascade;
 
 /* Drop all temporary transformation tables */
 drop table xform_gwells_land_district cascade;

@@ -29,6 +29,9 @@
 \copy gwells_filter_pack_material FROM './gwells_filter_pack_material.csv' HEADER DELIMITER ',' CSV
 \copy gwells_filter_pack_material_size FROM './gwells_filter_pack_material_size.csv' HEADER DELIMITER ',' CSV
 
+\copy gwells_screen_assembly_type    FROM './gwells_screen_assembly_type.csv'    HEADER DELIMITER ',' CSV 
+\copy gwells_development_method      FROM './gwells_development_method.csv'      HEADER DELIMITER ',' CSV
+\copy gwells_yield_estimation_method FROM './gwells_yield_estimation_method.csv' HEADER DELIMITER ',' CSV
 
 /* This will need further transformation to link to existing data */
 CREATE unlogged TABLE IF NOT EXISTS xform_gwells_surface_seal_method (
@@ -252,19 +255,39 @@ INSERT INTO gwells_well (
   filter_pack_from           ,  
   filter_pack_thickness      ,  
   filter_pack_to             ,  
-  other_screen_bottom         ,
-  other_screen_material       ,
+  */
+  other_screen_bottom         ,  
+  other_screen_material       ,   
+  /*
   filter_pack_material_guid   ,    
   filter_pack_material_size_guid,  
   screen_bottom_guid  ,            
   screen_intake_guid  ,            
   screen_opening_guid ,           
-  screen_type_guid           
+  screen_type_guid    ,
+  development_hours   ,
   */    
-  other_screen_bottom,
-  other_screen_material,
   development_notes,
-  where_plate_attached 
+  /*
+  development_notes,
+  */
+  where_plate_attached,
+  /*
+  screen_material_guid     , 
+  */
+  water_quality_colour     , 
+  water_quality_odour      , 
+  /*
+  artestian_flow           , 
+  artestian_pressure       , 
+  bedrock_depth            , 
+  final_casing_stick_up    , 
+  static_water_level       , 
+  */
+  well_cap_type            , 
+  well_disinfected         , 
+  alternative_specs_submitted,
+  comments                   
   )
 SELECT 
 old.well_tag_number              ,
@@ -315,6 +338,12 @@ null, /* seal_material.surface_seal_material_guid   Should match  INSERT 0 11155
 '',
 '',
 '',
+'',
+'',
+'',
+'',
+false,
+false,
 ''
 FROM xform_gwells_well old
 LEFT OUTER JOIN gwells_intended_water_use  use   ON old.WELL_USE_CODE  = use.code
