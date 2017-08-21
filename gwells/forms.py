@@ -1151,6 +1151,33 @@ class WellCompletionForm(forms.ModelForm):
 
 
 
+class ActivitySubmissionCommentForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.disable_csrf = True
+        self.helper.layout = Layout(
+            Fieldset(
+                'General Comments',
+                Div(
+                    Div('comments', css_class='col-md-12'),
+                    css_class='row',
+                ),
+                Div(
+                    Div(HTML('<p style="font-style: italic;">Declaration: By submitting this well construction, alteration or decommission report, as the case may be, I declare that it has been done in accordance with the requirements of the Water Sustainability Act and the Groundwater Protection Regulation.</p>'), css_class='col-md-12'),
+                    css_class='row',
+                ),
+            )
+        )
+        super(ActivitySubmissionCommentForm, self).__init__(*args, **kwargs)
+
+    class Meta:
+        model = ActivitySubmission
+        fields = ['comments']
+        widgets = {'comments': forms.Textarea}
+
+
+
 #WellCompletionDataFormSet = inlineformset_factory(ActivitySubmission, WellCompletionData, max_num=1, can_delete=False)
 ActivitySubmissionLithologyFormSet = inlineformset_factory(ActivitySubmission, LithologyDescription, form=LithologyForm, fk_name='activity_submission', can_delete=False, extra=10)
 ActivitySubmissionCasingFormSet = inlineformset_factory(ActivitySubmission, Casing, form=CasingForm, fk_name='activity_submission', can_delete=False, extra=5)

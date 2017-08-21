@@ -622,3 +622,7 @@ p.help-block {
 thead tr {
     vertical-align: top;
 }
+
+.form-group .textarea {
+    height: 75px;
+}
