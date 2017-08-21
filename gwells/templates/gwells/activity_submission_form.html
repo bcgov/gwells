@@ -272,5 +272,27 @@
     });
 </script>
 
+{% elif wizard.steps.current == 'well_completion' %}
+<script type="text/javascript">
+    $(function () {
+        var capType = ['Well seal'
+            , 'Water tight well cap (pitless adapter style w/rubber gaskets)'
+            , 'Vented water tight well cap (pitless adapter style w/rubber gaskets)'
+            , 'Standard well cap (pitless adapter style w/o rubber gaskets)'
+            , 'Concrete cover (dug well)'
+            , 'Metal cover (dug well)'
+            , 'J-plug (monitoring well)'
+            , 'Locking well cap (monitoring well)'
+            , 'Welded'
+            , 'Plastic cover (bolted with gaskets, dug well)'
+            , 'Hand pump'
+            , 'None'
+        ];
+        $('#id_well_completion-well_cap_type').autocomplete({
+            source: capType
+        });
+    });
+</script>
+
 {% endif %}
 {% endblock %}
