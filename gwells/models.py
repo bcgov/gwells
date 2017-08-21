@@ -803,7 +803,7 @@ class Well(AuditModel):
     well_cap_type = models.CharField(max_length=40, blank=True, verbose_name='Well Cap Type')
     well_disinfected = models.BooleanField(default=False, verbose_name='Well Disinfected?', choices=((False, 'No'), (True, 'Yes')))
 
-    comments = models.CharField(max_length=255, blank=True)
+    comments = models.CharField(max_length=3000, blank=True)
     alternative_specs_submitted = models.BooleanField(default=False, verbose_name='Alternative specs submitted (if required)')
 
 
@@ -927,7 +927,7 @@ class ActivitySubmission(AuditModel):
     well_cap_type = models.CharField(max_length=40, blank=True, verbose_name='Well Cap Type')
     well_disinfected = models.BooleanField(default=False, verbose_name='Well Disinfected?', choices=((False, 'No'), (True, 'Yes')))
 
-    comments = models.CharField(max_length=255, blank=True)
+    comments = models.CharField(max_length=3000, blank=True)
     alternative_specs_submitted = models.BooleanField(default=False, verbose_name='Alternative specs submitted (if required)')
 
 
