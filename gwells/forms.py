@@ -1164,6 +1164,10 @@ class ActivitySubmissionCommentForm(forms.ModelForm):
                     css_class='row',
                 ),
                 Div(
+                    Div('alternative_specs_submitted', css_class='col-md-12'),
+                    css_class='row',
+                ),
+                Div(
                     Div(HTML('<p style="font-style: italic;">Declaration: By submitting this well construction, alteration or decommission report, as the case may be, I declare that it has been done in accordance with the requirements of the Water Sustainability Act and the Groundwater Protection Regulation.</p>'), css_class='col-md-12'),
                     css_class='row',
                 ),
@@ -1173,7 +1177,7 @@ class ActivitySubmissionCommentForm(forms.ModelForm):
 
     class Meta:
         model = ActivitySubmission
-        fields = ['comments']
+        fields = ['comments', 'alternative_specs_submitted']
         widgets = {'comments': forms.Textarea}
 
 
