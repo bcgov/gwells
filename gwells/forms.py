@@ -250,11 +250,22 @@ class ActivitySubmissionTypeAndClassForm(forms.ModelForm):
 
     def clean(self):
         cleaned_data = super(ActivitySubmissionTypeAndClassForm, self).clean()
+        identification_plate_number = cleaned_data.get('identification_plate_number')
+        where_plate_attached = cleaned_data.get('where_plate_attached')
         work_start_date = cleaned_data.get('work_start_date')
         work_end_date = cleaned_data.get('work_end_date')
 
+        errors = []
+
+        if identification_plate_number and not where_plate_attached:
+            errors.append('Where Identification Plate Is Attached is required when specifying Identification Plate Number.')
+
         if work_start_date and work_end_date and work_end_date < work_start_date:
-            raise forms.ValidationError('Work End Date cannot be earlier than Work Start Date.')
+            errors.append('Work End Date cannot be earlier than Work Start Date.')
+
+        if len(errors) > 0:
+            raise forms.ValidationError(errors)
+
         return cleaned_data
 
     class Meta:
