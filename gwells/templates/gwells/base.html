@@ -110,13 +110,12 @@
 
                     <!-- COLLAPSING NAVBAR -->
                     <div id="navbar" class="collapse navbar-collapse" role="navigation">
-<a id="navigation-anchor"></a>
+                        <a id="navigation-anchor"></a>
                         <ul class="nav navbar-nav">
                             <li><a id="navbar-home" href="{% url 'home' %}">Home</a></li>
-                            <li><a href="#">Navigation Link 1</a></li>
-                            <li><a href="#">Navigation Link 2</a></li>
-                            <li><a href="#">Navigation Link 3</a></li>
                             <li><a id="navbar-search" href="{% url 'search' %}">Search</a></li>
+                            <li><a href="#">My Profile</a></li>
+                            <li><a id="navbar-additionalinfo" href="{% url 'additional_information' %}">Additional Information</a></li>
                         </ul>
                     </div>
                     <!-- /COLLAPSING NAVBAR -->
@@ -127,10 +126,9 @@
                     <div class="container">
                         <ul>
                             <li><a id="ribbon-home" href="{% url 'home' %}">Home</a></li>
-                            <li><a href="#">Navigation Link 1</a></li>
-                            <li><a href="#">Navigation Link 2</a></li>
-                            <li><a href="#">Navigation Link 3</a></li>
                             <li><a id="ribbon-search" href="{% url 'search' %}">Search</a></li>
+                            <li><a href="#">My Profile</a></li>
+                            <li><a id="ribbon-additionalinfo" href="{% url 'additional_information' %}">Additional Information</a></li>
                         </ul>
                     </div>
                 </div>
