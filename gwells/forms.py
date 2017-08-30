@@ -442,6 +442,8 @@ class ActivitySubmissionGpsForm(forms.ModelForm):
                         Div(
                             id='attribution'
                         ),
+                        Div(HTML('<br />After the GPS coordinates are entered, the pushpin can be moved by clicking and dragging it on the map. The GPS coordinates will be updated automatically.')
+                        ),
                         css_class='col-md-4',
                     ),
                     css_class='row',
@@ -479,21 +481,13 @@ class ActivitySubmissionGpsForm(forms.ModelForm):
     def clean_latitude(self):
         latitude = self.cleaned_data.get('latitude')
 
-        # latitude is not required in the DB due to historical records, but is required for new records
-        if not latitude:
-            raise forms.ValidationError('This field is required.');
-
         if latitude < 48.204555 or latitude > 60.0223:
-            raise forms.ValidationError('Latitude must be between 48.204556 and 60.0223.')
+            raise forms.ValidationError('Latitude must be between 48.204556 and 60.02230.')
 
         return latitude
 
     def clean_longitude(self):
         longitude = self.cleaned_data.get('longitude') 
-
-        # longitude is not required in the DB due to historical records, but is required for new records
-        if not longitude:
-            raise forms.ValidationError('This field is required.');
 
         if longitude < -139.073671 or longitude > -114.033822:
             raise forms.ValidationError('Longitude must be between -139.073671 and -114.033822.')
