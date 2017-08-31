@@ -22,6 +22,7 @@ from .models import WellActivityType, WellYieldUnit, Well, ActivitySubmission, W
 from .forms import SearchForm, ActivitySubmissionTypeAndClassForm, WellOwnerForm, ActivitySubmissionLocationForm, ActivitySubmissionGpsForm
 from .forms import ActivitySubmissionLithologyFormSet, ActivitySubmissionCasingFormSet, ActivitySubmissionSurfaceSealForm, ActivitySubmissionLinerPerforationFormSet
 from .forms import ActivitySubmissionScreenIntakeForm, ActivitySubmissionScreenFormSet, ActivitySubmissionFilterPackForm, ActivitySubmissionDevelopmentForm, ProductionDataFormSet
+from .forms import ActivitySubmissionWaterQualityForm, WellCompletionForm, ActivitySubmissionCommentForm
 import json
 from django.core.serializers.json import DjangoJSONEncoder
 
@@ -134,6 +135,9 @@ FORMS = [('type_and_class', ActivitySubmissionTypeAndClassForm),
          ('filter_pack', ActivitySubmissionFilterPackForm),
          ('development', ActivitySubmissionDevelopmentForm),
          ('production_data', ProductionDataFormSet),
+         ('water_quality', ActivitySubmissionWaterQualityForm),
+         ('well_completion', WellCompletionForm),
+         ('comments', ActivitySubmissionCommentForm),
         ]
 
 TEMPLATES = {'type_and_class': 'gwells/activity_submission_form.html',
@@ -149,6 +153,9 @@ TEMPLATES = {'type_and_class': 'gwells/activity_submission_form.html',
              'filter_pack': 'gwells/activity_submission_form.html',
              'development': 'gwells/activity_submission_form.html',
              'production_data': 'gwells/activity_submission_form.html',
+             'water_quality': 'gwells/activity_submission_form.html',
+             'well_completion': 'gwells/activity_submission_form.html',
+             'comments': 'gwells/activity_submission_form.html',
             }
 
 
@@ -196,7 +203,7 @@ class ActivitySubmissionWizardView(SessionWizardView):
             form_class.min_num = 0
             if intake_data and intake_data.get('screen_intake'):
                 try:
-                    screen_screen_intake = ScreenIntake.objects.get(code='SCREEN') #TODO
+                    screen_screen_intake = ScreenIntake.objects.get(code='SCREEN')
                 except Exception as e:
                     screen_screen_intake = None
                 if intake_data.get('screen_intake') == screen_screen_intake:
@@ -206,6 +213,8 @@ class ActivitySubmissionWizardView(SessionWizardView):
 
     def done(self, form_list, form_dict, **kwargs):
         submission = self.instance
+        cleaned_data = self.get_all_cleaned_data()
+        characteristics_data = cleaned_data.pop('water_quality_characteristics')
 
         if submission.well_activity_type.code == 'CON' and not submission.well:
             #TODO
@@ -248,6 +257,9 @@ class ActivitySubmissionWizardView(SessionWizardView):
                 production.activity_submission = None
                 production.well = w
                 production.save()
+            for characteristic in characteristics_data:
+                submission.water_quality_characteristics.add(characteristic)
+                w.water_quality_characteristics.add(characteristic)
         else:
             submission.save()
             lithology_list = form_dict['lithology'].save()
@@ -255,5 +267,7 @@ class ActivitySubmissionWizardView(SessionWizardView):
             perforation_list = form_dict['liner_perforation'].save()
             screen_list = form_dict['screen'].save()
             production_list = form_dict['production_data'].save()
+            for characteristic in characteristics_data:
+                submission.water_quality_characteristics.add(characteristic)
 
         return HttpResponseRedirect('/submission/')

@@ -19,7 +19,7 @@ from crispy_forms.bootstrap import FormActions, AppendedText, InlineRadios
 from django.forms.models import inlineformset_factory
 from .search import Search
 from .models import ActivitySubmission, WellActivityType, ProvinceState, DrillingMethod, LithologyDescription, LithologyMoisture, Casing, CasingType, LinerPerforation
-from .models import ScreenIntake, ScreenMaterial, ScreenBottom, Screen, ProductionData
+from .models import ScreenIntake, ScreenMaterial, ScreenBottom, Screen, ProductionData, WaterQualityCharacteristic
 from datetime import date
 
 class SearchForm(forms.Form):
@@ -169,6 +169,9 @@ class WellOwnerForm(forms.ModelForm):
             )
         )
         super(WellOwnerForm, self).__init__(*args, **kwargs)
+        # Make fields required on the form even though they are not required in the DB due to legacy data issues
+        # TODO - check admin or staff user and don't make these fields required
+        self.fields['owner_postal_code'].required = True
 
         # display code instead of the value from __str__ in the model
         self.fields['owner_province_state'].label_from_instance = self.label_from_instance_code
@@ -247,11 +250,22 @@ class ActivitySubmissionTypeAndClassForm(forms.ModelForm):
 
     def clean(self):
         cleaned_data = super(ActivitySubmissionTypeAndClassForm, self).clean()
+        identification_plate_number = cleaned_data.get('identification_plate_number')
+        where_plate_attached = cleaned_data.get('where_plate_attached')
         work_start_date = cleaned_data.get('work_start_date')
         work_end_date = cleaned_data.get('work_end_date')
 
+        errors = []
+
+        if identification_plate_number and not where_plate_attached:
+            errors.append('Where Identification Plate Is Attached is required when specifying Identification Plate Number.')
+
         if work_start_date and work_end_date and work_end_date < work_start_date:
-            raise forms.ValidationError('Work End Date cannot be earlier than Work Start Date.')
+            errors.append('Work End Date cannot be earlier than Work Start Date.')
+
+        if len(errors) > 0:
+            raise forms.ValidationError(errors)
+
         return cleaned_data
 
     class Meta:
@@ -428,6 +442,8 @@ class ActivitySubmissionGpsForm(forms.ModelForm):
                         Div(
                             id='attribution'
                         ),
+                        Div(HTML('<br />After the GPS coordinates are entered, the pushpin can be moved by clicking and dragging it on the map. The GPS coordinates will be updated automatically.')
+                        ),
                         css_class='col-md-4',
                     ),
                     css_class='row',
@@ -465,21 +481,13 @@ class ActivitySubmissionGpsForm(forms.ModelForm):
     def clean_latitude(self):
         latitude = self.cleaned_data.get('latitude')
 
-        # latitude is not required in the DB due to historical records, but is required for new records
-        if not latitude:
-            raise forms.ValidationError('This field is required.');
-
         if latitude < 48.204555 or latitude > 60.0223:
-            raise forms.ValidationError('Latitude must be between 48.204556 and 60.0223.')
+            raise forms.ValidationError('Latitude must be between 48.204556 and 60.02230.')
 
         return latitude
 
     def clean_longitude(self):
         longitude = self.cleaned_data.get('longitude') 
-
-        # longitude is not required in the DB due to historical records, but is required for new records
-        if not longitude:
-            raise forms.ValidationError('This field is required.');
 
         if longitude < -139.073671 or longitude > -114.033822:
             raise forms.ValidationError('Longitude must be between -139.073671 and -114.033822.')
@@ -734,25 +742,25 @@ class ActivitySubmissionSurfaceSealForm(forms.ModelForm):
         surface_seal_material = self.cleaned_data.get('surface_seal_material') 
 
         if self.initial['casing_exists'] and not surface_seal_material:
-            raise forms.ValidationError('This field is required when casing specified.');
+            raise forms.ValidationError('This field is required.');
 
     def clean_surface_seal_depth(self):
         surface_seal_depth = self.cleaned_data.get('surface_seal_depth') 
 
         if self.initial['casing_exists'] and not surface_seal_depth:
-            raise forms.ValidationError('This field is required when casing specified.');
+            raise forms.ValidationError('This field is required.');
 
     def clean_surface_seal_thickness(self):
         surface_seal_thickness = self.cleaned_data.get('surface_seal_thickness') 
 
         if self.initial['casing_exists'] and not surface_seal_thickness:
-            raise forms.ValidationError('This field is required when casing specified.');
+            raise forms.ValidationError('This field is required.');
 
     def clean_surface_seal_method(self):
         surface_seal_method = self.cleaned_data.get('surface_seal_method') 
 
         if self.initial['casing_exists'] and not surface_seal_method:
-            raise forms.ValidationError('This field is required when casing specified.');
+            raise forms.ValidationError('This field is required.');
 
     def clean(self):
         cleaned_data = super(ActivitySubmissionSurfaceSealForm, self).clean()
@@ -1021,7 +1029,7 @@ class ProductionDataForm(forms.ModelForm):
         self.helper.disable_csrf = True
         self.helper.layout = Layout(
             Fieldset(
-                'Well Production',
+                'Well Yield Estimation',
                 Div(
                     Div('yield_estimation_method', css_class='col-md-3'),
                     css_class='row',
@@ -1037,7 +1045,7 @@ class ProductionDataForm(forms.ModelForm):
                     css_class='row',
                 ),
                 Div(
-                    Div('hydro_fracturing_performed', css_class='col-md-3'),
+                    Div(InlineRadios('hydro_fracturing_performed'), css_class='col-md-3'),
                     Div(AppendedText('hydro_fracturing_yield_increase', 'USgpm'), css_class='col-md-3'),
                     css_class='row',
                 ),
@@ -1049,6 +1057,133 @@ class ProductionDataForm(forms.ModelForm):
         model = ProductionData
         fields = ['yield_estimation_method', 'yield_estimation_rate', 'yield_estimation_duration', 'static_level', 'drawdown', 'hydro_fracturing_performed', 'hydro_fracturing_yield_increase']
         widgets = {'hydro_fracturing_performed': forms.RadioSelect}
+
+
+
+class ActivitySubmissionWaterQualityForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.disable_csrf = True
+        self.helper.layout = Layout(
+            Fieldset(
+                'Water Quality',
+                Div(
+                    Div('water_quality_characteristics', css_class='col-md-3'),
+                    css_class='row',
+                ),
+                Div(
+                    Div('water_quality_colour', css_class='col-md-3'),
+                    css_class='row',
+                ),
+                Div(
+                    Div('water_quality_odour', css_class='col-md-3'),
+                    css_class='row',
+                ),
+            )
+        )
+
+        super(ActivitySubmissionWaterQualityForm, self).__init__(*args, **kwargs)
+
+    class Meta:
+        model = ActivitySubmission
+        fields = ['water_quality_characteristics', 'water_quality_colour', 'water_quality_odour']
+        widgets = {'water_quality_characteristics': forms.CheckboxSelectMultiple}
+
+
+
+class WellCompletionForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.disable_csrf = True
+        self.helper.layout = Layout(
+            Fieldset(
+                'Well Completion Details',
+                Div(
+                    Div(AppendedText('total_depth_drilled', 'ft'), css_class='col-md-3'),
+                    Div(AppendedText('finished_well_depth', 'ft (bgl)'), css_class='col-md-3'),
+                    css_class='row',
+                ),
+                Div(
+                    Div(AppendedText('final_casing_stick_up', 'in'), css_class='col-md-3'),
+                    Div(AppendedText('bedrock_depth', 'ft (bgl)'), css_class='col-md-3'),
+                    css_class='row',
+                ),
+                Div(
+                    Div(AppendedText('static_water_level', 'ft (btoc)'), css_class='col-md-3'),
+                    Div(AppendedText('well_yield', 'USgpm'), css_class='col-md-3'),
+                    css_class='row',
+                ),
+                Div(
+                    Div(AppendedText('artestian_flow', 'USgpm'), css_class='col-md-3'),
+                    Div(AppendedText('artestian_pressure', 'ft'), css_class='col-md-3'),
+                    css_class='row',
+                ),
+                Div(
+                    Div('well_cap_type', css_class='col-md-3'),
+                    Div(InlineRadios('well_disinfected'), css_class='col-md-3'),
+                    css_class='row',
+                ),
+            )
+        )
+        super(WellCompletionForm, self).__init__(*args, **kwargs)
+        # Make fields required on the form even though they are not required in the DB due to legacy data issues
+        # TODO - check admin or staff user and don't make these fields required
+        self.fields['total_depth_drilled'].required = True
+        self.fields['finished_well_depth'].required = True
+        self.fields['final_casing_stick_up'].required = True
+
+    def clean(self):
+        cleaned_data = super(WellCompletionForm, self).clean()
+        
+        total_depth_drilled = cleaned_data.get('total_depth_drilled') 
+        finished_well_depth = cleaned_data.get('finished_well_depth') 
+        errors = []
+
+        if total_depth_drilled and finished_well_depth and total_depth_drilled < finished_well_depth:
+            errors.append('Finished Well Depth can\'t be greater than Total Depth Drilled.')
+
+        if len(errors) > 0:
+            raise forms.ValidationError(errors)
+
+        return cleaned_data
+
+    class Meta:
+        model = ActivitySubmission
+        fields = ['total_depth_drilled', 'finished_well_depth', 'final_casing_stick_up', 'bedrock_depth', 'static_water_level', 'well_yield', 'artestian_flow', 'artestian_pressure', 'well_cap_type', 'well_disinfected']
+        widgets = {'well_disinfected': forms.RadioSelect}
+
+
+
+class ActivitySubmissionCommentForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.disable_csrf = True
+        self.helper.layout = Layout(
+            Fieldset(
+                'General Comments',
+                Div(
+                    Div('comments', css_class='col-md-12'),
+                    css_class='row',
+                ),
+                Div(
+                    Div('alternative_specs_submitted', css_class='col-md-12'),
+                    css_class='row',
+                ),
+                Div(
+                    Div(HTML('<p style="font-style: italic;">Declaration: By submitting this well construction, alteration or decommission report, as the case may be, I declare that it has been done in accordance with the requirements of the Water Sustainability Act and the Groundwater Protection Regulation.</p>'), css_class='col-md-12'),
+                    css_class='row',
+                ),
+            )
+        )
+        super(ActivitySubmissionCommentForm, self).__init__(*args, **kwargs)
+
+    class Meta:
+        model = ActivitySubmission
+        fields = ['comments', 'alternative_specs_submitted']
+        widgets = {'comments': forms.Textarea}
 
 
 

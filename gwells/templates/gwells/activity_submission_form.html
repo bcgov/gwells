@@ -272,5 +272,27 @@
     });
 </script>
 
+{% elif wizard.steps.current == 'well_completion' %}
+<script type="text/javascript">
+    $(function () {
+        var capType = ['Well seal'
+            , 'Water tight well cap'
+            , 'Vented water tight well cap'
+            , 'Standard well cap'
+            , 'Concrete cover'
+            , 'Metal cover'
+            , 'J-plug'
+            , 'Locking well cap'
+            , 'Welded'
+            , 'Plastic cover'
+            , 'Hand pump'
+            , 'None'
+        ];
+        $('#id_well_completion-well_cap_type').autocomplete({
+            source: capType
+        });
+    });
+</script>
+
 {% endif %}
 {% endblock %}
