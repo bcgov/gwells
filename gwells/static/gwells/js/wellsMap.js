@@ -689,7 +689,7 @@ function WellsMap(options) {
         var zoomLevel = _leafletMap.getMaxZoom();
         // If the pushpin exists and the movement is substantive, move the pin. Else if
         // the pushpin does not exist, create it and place it at the coordinates.
-        if (_exists(_wellPushpin) && _exists(_wellPushpin.pushpinMarker) && !_wellPushpin.pushpinMarker.getLatLng().equals(latLong)) {
+        if (_exists(_wellPushpin) && _exists(_wellPushpin.pushpinMarker)) {
             _wellPushpin.pushpinMarker.setLatLng(latLong);
             _wellPushpin.wellMarker.setLatLng(latLong);
         } else {
