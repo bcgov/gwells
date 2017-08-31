@@ -595,7 +595,8 @@ p.help-block {
     margin-top: 3px;
 }
 
-.form-group .controls .radio:first-child {
+.form-group > .controls > .checkbox:first-child,
+.form-group > .controls > .radio:first-child {
     margin-top: 0px;
 }
 
@@ -620,4 +621,8 @@ p.help-block {
 
 thead tr {
     vertical-align: top;
+}
+
+.form-group .textarea {
+    height: 75px;
 }

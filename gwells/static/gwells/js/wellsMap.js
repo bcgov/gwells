@@ -84,13 +84,16 @@ function WellsMap(options) {
     // Leaflet style for the _wellMarkers
     var _WELL_MARKER_STYLE = {
           radius: 3, // The radius of the circleMarker
-          color: '#0147b7', // The color of the circleMarker
+          color: "#000", // The color of the circleMarker
+          weight: 1,
+          fillColor: '#0162fe', // The fill color of the circleMarker
           fillOpacity: 1.0 // How transparent the circleMarker's fill is
     };
 
     var _WELL_PUSHPIN_WELL_MARKER_STYLE = {
         radius: 3,
-        fillColor: '#0025a1',
+        weight: 1,
+        fillColor: '#00cc00',
         fillOpacity: 1.0
     };
 
@@ -584,7 +587,7 @@ function WellsMap(options) {
                     },
                     this
                 );
-                container.title = "Click and drag to zoom into an area";
+                container.title = "Click or tap, then drag area of interest on the map.  Map will zoom to that location.";
                 map.rectangleZoomControl = this;
                 return container;
             },
