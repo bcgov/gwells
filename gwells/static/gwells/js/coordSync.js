@@ -40,10 +40,11 @@ var _validationErrorCallback = null;
 // The callback to invoke on validation success after all fields are settled.
 var _validationSuccessCallback = null;
 
-// The precisions of the fields, defaulted to zero for truthy-checking.
+// The precisions of the fields. The values here are defaults, and can be overwritten by the class's caller.
 var _latLongDDPrecision = 6;
 var _latLongDMSSecondPrecision = 2;
-var _utmPrecision = 0;
+var _utmEastingPrecision = 6;
+var _utmNorthingPrecision = 7;
 
 /** JQuery nodes that correspond to the fields that will subscribe to events. */
 
@@ -100,6 +101,28 @@ function _correctPositiveLongDMS () {
     }
     long = long < 0 ? long : -long;
     _longDMSDegreeField.val(long);
+}
+
+// Enforces the precision on the decimal degree fields upon user change. The other precision methods are similar.
+function _correctDDPrecision () {
+    var lat = parseFloat(_latDDField.val()).toFixed(_latLongDDPrecision);
+    var long = parseFloat(_longDDField.val()).toFixed(_latLongDDPrecision);
+    _latDDField.val(isNaN(lat) || lat === 0 ? '' : lat);
+    _longDDField.val(isNaN(long) || long === 0 ? '' : long);
+}
+
+function _correctDMSSecondPrecision () {
+    var latSec = parseFloat(_latDMSSecondField.val()).toFixed(_latLongDMSSecondPrecision);
+    var longSec = parseFloat(_longDMSSecondField.val()).toFixed(_latLongDMSSecondPrecision);
+    _latDMSSecondField.val(isNaN(latSec) || latSec === 0 ? '' : latSec);
+    _longDMSSecondField.val(isNaN(longSec) || longSec === 0 ? '' : longSec);
+}
+
+function _correctUTMPrecision () {
+    var easting = parseFloat(_eastingUTMField.val()).toFixed(_utmEastingPrecision);
+    var northing = parseFloat(_northingUTMField.val()).toFixed(_utmNorthingPrecision);
+    _eastingUTMField.val(isNaN(easting) || easting === 0 ? '' : easting);
+    _northingUTMField.val(isNaN(northing) || northing === 0 ? '' : northing);
 }
 
 // Ensures the latitude and longitude Decimal Degree fields are within the bounding box.
@@ -223,6 +246,7 @@ function _latLongDDFieldOnChange (programmaticallyChanged) {
     // If a user enters DD directly, we accept positive longitudes, but correct them on the fly.
     _correctPositiveLongDD();
     if (_areLatLongDDFieldsValid()) {
+        _correctDDPrecision();
         _setDMSFromDD();
         _setUTMFromDD();
         if (!programmaticallyChanged) {
@@ -238,6 +262,7 @@ function _latLongDDFieldOnChange (programmaticallyChanged) {
 function _latLongDMSFieldOnChange () {
     _correctPositiveLongDMS();
     if(_areLatLongDMSFieldsValid()) {
+        _correctDMSSecondPrecision();
         _setDDFromDMS();
         _setUTMFromDD();
         _validationSuccessCallback();
@@ -250,6 +275,7 @@ function _latLongDMSFieldOnChange () {
 // Dispatches changes to DD and DMS with suitable conversions and validation.
 function _utmFieldOnChange () {
     if(_areUTMFieldsValid()) {
+        _correctUTMPrecision();
         _setDDFromUTM();
         _setDMSFromDD();
         _validationSuccessCallback();
@@ -396,8 +422,8 @@ function _ddToUTM(lat, long) {
 
     // Recompute zone and set the xy array.
     zone = LatLonToUTMXY (DegToRad (lat), DegToRad (long), zone, xy);
-    var easting = xy[0].toFixed(_utmPrecision);
-    var northing = xy[1].toFixed(_utmPrecision);
+    var easting = xy[0].toFixed(_utmEastingPrecision);
+    var northing = xy[1].toFixed(_utmNorthingPrecision);
     return {zone: zone, easting: easting, northing: northing};
 }
 
@@ -903,7 +929,8 @@ function _setValidationObjects (options) {
 function _setFieldPrecisions (options) {
     _latLongDDPrecision = options.latLongDDPrecision;
     _latLongDMSSecondPrecision = options.latLongDMSSecondPrecision;
-    _utmPrecision = options.utmPrecision;
+    _utmEastingPrecision = options.utmEastingPrecision;
+    _utmNorthingPrecision = options.utmNorthingPrecision;
 }
 
 function _subscribeFieldsToChangeEvents (options) {
@@ -949,7 +976,8 @@ function _subscribeFieldsToChangeEvents (options) {
  *    // The precision of the coordinates
  *    latLongDDPrecision: int,
  *    latLongDMSSecondPrecision: int,
- *    utmPrecision: int,
+ *    utmEastingPrecision: int,
+ *    utmNorthingPrecision: int,
  *    validationErrorCallback: function, // Callback for validation errors
  *    validationSuccessCallback: function // Callback to invoke on validation success once all fields are synchronised.
  *  }
