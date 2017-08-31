@@ -201,13 +201,13 @@ function _areLatLongDMSFieldsValid () {
 function _areUTMFieldsValid () {
     var errMsg = '';
     if(_exists(_validationErrorCallback)) {
-        var eastMsg = '';
-        var northMsg = '';
+        var coordMsg = 'UTM coordinates (Easting/Northing) are invalid for BC.';
         var zoneMsg = 'UTM zone must be selected from list.';
 
         // Check the zone first, and only validate easting and northing if the zone has been selected.
         var zone = parseInt(_zoneUTMField.val());
         if (_exists(zone) && !isNaN(zone)) {
+            var hasError = false;
             var easting = parseFloat(_eastingUTMField.val());
             var northing = parseFloat(_northingUTMField.val());
 
@@ -216,17 +216,15 @@ function _areUTMFieldsValid () {
             var lat = latLong.lat;
             var long = latLong.long;            
             if (!_latIsInBox(lat)) {
-                northMsg = 'Invalid northing: ' + northing;
+                hasError = true;
             }
             if (!_longIsInBox(long)) {
-                eastMsg = 'Invalid easting: ' + easting;
+                hasError = true;
             }
 
             // If either or both fields are invalid, prepend errMsg with the global prepend and append appropriately.
-            if (eastMsg && northMsg) {
-                errMsg = _errorPrepend + eastMsg + '. ' + northMsg;
-            } else if (eastMsg || northMsg) {
-                errMsg = _errorPrepend + eastMsg + northMsg;
+            if (hasError) {
+                errMsg = _errorPrepend + coordMsg;
             }
         } else { // If no zone was selected, return zoneMsg to the caller.
             errMsg = zoneMsg;
