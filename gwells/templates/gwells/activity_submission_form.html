@@ -201,7 +201,8 @@
   // The precision of the coordinates
   var latLongDDPrecision = 6;
   var latLongDMSSecondPrecision = 2;
-  var utmPrecision = 0;
+  var utmEastingPrecision = 6;
+  var utmNorthingPrecision = 7;
 
   // The name of the programmatic change event.
   var programmaticChangeEventName = 'programmatic-change';
@@ -239,7 +240,8 @@
       latLongDDBoundingBox: addMapOptions.mapBounds,
       latLongDDPrecision: latLongDDPrecision,
       latLongDMSSecondPrecision: latLongDMSSecondPrecision,
-      utmPrecision: utmPrecision,
+      utmEastingPrecision: utmEastingPrecision,
+      utmNorthingPrecision: utmNorthingPrecision,
       validationErrorCallback: validationErrorCallback,
       validationSuccessCallback: placeWellPushpin      
     };
