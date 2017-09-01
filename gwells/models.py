@@ -337,25 +337,6 @@ class LithologyStructure(AuditModel):
 
 
 
-class LithologyWeathering(AuditModel):
-    """
-    Weathering of the surficial material encountered in lithology
-    """
-    lithology_weathering_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    code = models.CharField(max_length=10, unique=True)
-    description = models.CharField(max_length=100)
-    is_hidden = models.BooleanField(default=False)
-    sort_order = models.PositiveIntegerField()
-    
-    class Meta:
-        db_table = 'gwells_lithology_weathering'
-        ordering = ['sort_order', 'description']
-
-    def __str__(self):
-        return self.description
-
-
-
 class LithologyColour(AuditModel):
     """
     Colour of the lithology
@@ -1062,11 +1043,11 @@ class LithologyDescription(AuditModel):
     well = models.ForeignKey(Well, db_column='well_tag_number', on_delete=models.CASCADE, blank=True, null=True)
     lithology_from = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='From', blank=False, validators=[MinValueValidator(Decimal('0.00'))])
     lithology_to = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='To', blank=False, validators=[MinValueValidator(Decimal('0.01'))])
-    surficial_material = models.ForeignKey(SurficialMaterial, db_column='surficial_material_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Surficial Material')
+    surficial_material = models.ForeignKey(SurficialMaterial, db_column='surficial_material_guid', related_name='surficial_material_set', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Surficial Material')
+    secondary_surficial_material = models.ForeignKey(SurficialMaterial, db_column='secondary_surficial_material_guid', related_name='secondary_surficial_material_set', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Secondary Surficial Material')
     bedrock_material = models.ForeignKey(BedrockMaterial, db_column='bedrock_material_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Bedrock Material')
     bedrock_material_descriptor = models.ForeignKey(BedrockMaterialDescriptor, db_column='bedrock_material_descriptor_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Descriptor')
-    lithology_structure = models.ForeignKey(LithologyStructure, db_column='lithology_structure_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Structure')
-    lithology_weathering = models.ForeignKey(LithologyWeathering, db_column='lithology_weathering_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Weathering')
+    lithology_structure = models.ForeignKey(LithologyStructure, db_column='lithology_structure_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Bedding')
     lithology_colour = models.ForeignKey(LithologyColour, db_column='lithology_colour_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Colour')
     lithology_hardness = models.ForeignKey(LithologyHardness, db_column='lithology_hardness_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Hardness')
     lithology_moisture = models.ForeignKey(LithologyMoisture, db_column='lithology_moisture_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Moisture')
