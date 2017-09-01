@@ -5,5 +5,5 @@ lithology_colour_guid,code,description,is_hidden,sort_order,when_created,when_up
 "510dc7d462a011e7907ba6006ad3dba0","Grey","Grey","N","40","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
 "510dc89c62a011e7907ba6006ad3dba0","Green","Green","N","50","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
 "510dc96462a011e7907ba6006ad3dba0","Red","Red","N","60","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
-"510dca2c62a011e7907ba6006ad3dba0","Tar","Tar","N","70","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
+"510dca2c62a011e7907ba6006ad3dba0","Tan","Tan","N","70","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
 "510dcaf462a011e7907ba6006ad3dba0","Vari","Vari-Coloured","N","80","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
