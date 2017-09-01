@@ -16,7 +16,6 @@ truncate gwells_lithology_colour restart identity cascade;
 truncate gwells_lithology_hardness restart identity cascade;
 truncate gwells_lithology_moisture restart identity cascade;
 truncate gwells_lithology_structure restart identity cascade;
-truncate gwells_lithology_weathering restart identity cascade;
 truncate gwells_ltsa_owner          restart identity cascade;
 truncate gwells_province_state      restart identity cascade;
 truncate gwells_surface_seal_material restart identity cascade;
