@@ -1,43 +1,152 @@
 {% extends 'gwells/base.html' %}
 
-{% block title %}Details{% endblock %}
+{% block title %}Well Summary{% endblock %}
 
-{% block bodyheading_block %}Details{% endblock %}
+{% block bodyheading_block %}Well Summary{% endblock %}
 
 {% block introduction_block %}
 {% endblock %}
 
 {% block body_block %}
+<div class="row">
+    <div class="col-md-4">
+        <label for="well_tag_number">Well Tag Number:</label>
+        <span id="well_tag_number">{{ well.well_tag_number }}</span>
+    </div>
+    <div class="col-md-4">
+        <label for="well_class">Well Class:</label>
+        <span id="well_class">{{ well.well_class }}</span>
+    </div>
+    <div class="col-md-4">
+        <label for="record_reviewed">Record reviewed by Ministry of Environment:</label>
+        No
+</div>
+</div>
+<div class="row">
+    <div class="col-md-4">
+        <label for="identification_plate_number">Well Identification Plate Number:</label>
+        {{ well.identification_plate_number }}
+</div>
+    <div class="col-md-4">
+        <label for="well_subclass">Well Subclass:</label>
+        {{ well.well_subclass }}
+</div>
+    <div class="col-md-4">
+        <label for="date_reviewed">Date Reviewed:</label>
+</div>
+</div>
+<div class="row">
+    <div class="col-md-4">
+        <label for="onwer_full_name">Owner Name:</label>
+        {{ well.owner_full_name }}
+</div>
+    <div class="col-md-4">
+        <label for="intended_water_use">Intended Water Use:</label>
+        {{ well.intended_water_use }}
+</div>
+    <div class="col-md-4">
+        <label for="alternate_specs_submitted">Alternative specifications submitted if required:</label>
+        {{ well.alternative_specs_submitted }}
+</div>
+</div>
+<div class="row">
+    <div class="col-md-4">
+        <label for="obs_well_number">Observation Well Number:</label>
+    </div>
+    <div class="col-md-4">
+        <label for="licensed_status">Licensed Status:</label>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-4">
+        <label for="obs_well_status">Observation Well Status:</label>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-4">
+        <label for="ems_id">Environmental Monitoring System (EMS) ID:</label>
+    </div>
+</div>
+<br />
+
+<fieldset>
+    <legend>Location Information</legend>
+
     <div class="row">
-        <div class="col-lg-7">    
-            <div class="row">
-                <div class="col-md-6">
-                    <label for="well_tag_number">Well Tag Number:</label>
-                    <span id="well_tag_number">{{ well.well_tag_number }}</span>
-                </div>
-                <div class="col-md-6">
-                    <label for="owner">Owner:</label>
-                    <span id="owner">{{ well.owner_full_name }}</span>            
-                </div>
-            </div>
+        <div class="col-md-7">
             <div class="row">
                 <div class="col-md-6">
                     <label for="address">Street Address:</label>
                     <span id="address">{{ well.street_address }}</span>
                 </div>
-                <div class="col-md-6">
-                    <label for="well_drilled_depth">Well Drilled Depth:</label>
-                    <span id="well_drilled_depth">{{ well.well_drilled_depth }}</span>
-                </div>
             </div>
             <div class="row">
                 <div class="col-md-6">
                     <label for="owner">Town/City:</label>
-                    <span id="owner">{{ well.city }}</span>            
+                    <span id="owner">{{ well.city }}</span>
                 </div>
-                <div class="col-md-6">
-                    <label for="finished_well_depth">Finished Well Depth:</label>
-                    <span id="finished_well_depth">{{ well.finished_well_depth }}</span>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <label for="legal">Legal Description</label>
+                    <table id="legal" class="table-tight" border="1">
+                        <tbody>
+                            <tr>
+                                <td><label for="lot">Lot</label></td>
+                                <td><span id="lot">{{ well.legal_lot }}</span></td>
+                            </tr>
+                            <tr>
+                                <td><label for="plan">Plan</label></td>
+                                <td><span id="plan">{{ well.legal_plan }}</span></td>
+                            </tr>
+                            <tr>
+                                <td><label for="district_lot">District Lot</label></td>
+                                <td><span id="district_lot">{{ well.legal_district_lot }}</span></td>
+                            </tr>
+                            <tr>
+                                <td><label for="block">Block</label></td>
+                                <td><span id="block">{{ well.legal_block }}</span></td>
+                            </tr>
+                            <tr>
+                                <td><label for="section">Section</label></td>
+                                <td><span id="section">{{ well.legal_section }}</span></td>
+                            </tr>
+                            <tr>
+                                <td><label for="township">Township</label></td>
+                                <td><span id="township">{{ well.legal_township }}</span></td>
+                            </tr>
+                            <tr>
+                                <td><label for="range">Range</label></td>
+                                <td><span id="range">{{ well.legal_range }}</span></td>
+                            </tr>
+                            <tr>
+                                <td><label for="land_district">Land District</label></td>
+                                <td><span id="land_district">{{ well.legal_land_district }}</span></td>
+                            </tr>
+                            <tr>
+                                <td><label for="pid">Property Identification Description (PID)</label>&nbsp;</td>
+                                <td><span id="pid">{{ well.legal_pid }}</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <label for="location_desc">Description of Well Location:</label>
+                    <span id="location_desc">{{ well.well_location_description }}</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <label for="where_plate_attached">Well Identification Plate Attached:</label>
+                    <span id="where_plate_attached">{{ well.where_plate_attached }}</span>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <label>Geocoordinates - North American Datum (NAD) 83</label>
                 </div>
             </div>
             <div class="row">
@@ -46,79 +155,135 @@
                     <span id="latitude" data-latitude="{{ well.latitude }}">{{ well.latitude }}</span>
                 </div>
                 <div class="col-md-6">
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-6">
                     <label for="longitude">Longitude:</label>
                     <span id="longitude" data-longitude="{{ well.longitude }}">{{ well.longitude }}</span>
                 </div>
-                <div class="col-md-6">
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    &nbsp;
                 </div>
             </div>
         </div>
         <div class="col-md-4">
-            <div aria-label="This map shows the well under consideration as a light blue pushpin, as well as surrounding wells as dark blue circles." id="detail-map"></div>        
+            <div aria-label="This map shows the well under consideration as a light blue pushpin, as well as surrounding wells as dark blue circles." id="detail-map"></div>
             <div id="attribution"></div>
         </div>
         <div id="guid-row" data-well-guid="{{ well.well_guid }}"></div>
     </div>
+</fieldset>
+<fieldset>
+    <legend>Well Activity</legend>
+    <table>
+        <thead>
+            <tr>
+                <th>Filing Number</th>
+                <th>Work Type</th>
+                <th>Date</th>
+                <th>Driller</th>
+                <th>Drilling Company</th>
+                <th>Additional Information</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+</fieldset>
+<fieldset>
+    <legend>Well Completion Data</legend>
+    <div class="row">
+        <div class="col-md-4">
+            <label for="total_depth_drilled">Total Depth Drilled:</label>
+            <span id="total_depth_drilled">{{ well.total_depth_drilled }}</span>
+        </div>
+        <div class="col-md-4">
+            <label for="static_water_level">Static Water Level:</label>
+            <span id="static_water_level">{{ well.static_water_level }}</span>
+        </div>
+        <div class="col-md-4">
+            <label for="well_cap_type">Well Cap Type:</label>
+            <span id="well_cap_type">{{ well.well_cap_type }}</span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <label for="finished_well_depth">Finished Well Depth:</label>
+            <span id="finished_well_depth">{{ well.finished_well_depth }}</span>
+        </div>
+        <div class="col-md-4">
+            <label for="well_yield">Well Yield:</label>
+            <span id="well_yield">{{ well.well_yield }}</span>
+        </div>
+        <div class="col-md-4">
+            <label for="well_disinfected">Well Disinfected:</label>
+            <span id="well_disinfected">{{ well.well_disinfected }}</span>
+        </div>
+    </div>
+</fieldset>
 
     <div>
         <br /><br />
         <a href="https://a100.gov.bc.ca/pub/wells/wellsreport1.do?wellTagNumber={{ well.well_tag_number }}">View Report</a>
     </div>
-{% endblock %}
+    {% endblock %}
 
-{% block jqscript_block %}
-<script>
-    var detailMap = null;
-    // Options for creating the detailMap. This map instance opens with a pushpin over the location of the well
-    // of interest, and (as with all maps with a pushpin) the map issues an AJAX query to show the surrounding wells
-    // within the map's bounding box, which are displayed as circleMarkers. The map also has limited zoom capability, 
-    // so that users can find further surrounding wells. None of the wells (circleMarkers or the pushpin) is interactive.
-    var detailMapOptions = {
-        // The ID of the addMap div.
-        mapNodeId: 'detail-map',
-        // The initial centre of the map
-        initCentre: null, // Will be filled in before call in $(document).ready()
-        // Maximum zoom of the map (i.e., how far it can be zoomed in)
-        maxZoom: 17,
-        // Minimum zoom of the map (i.e., how far it can be zoomed out)
-        minZoom: 10,
-        // All zooms should remain centred
-         centreZoom: true,
-        // The detailMap cannot be panned
-        canPan: false,
-        // ESRI layers associated with the map
-        esriLayers: [
-            {
-                url: 'https://maps.gov.bc.ca/arcserver/rest/services/Province/roads_wm/MapServer'
-            }
-        ],
-        // WMS layers associated with the map
-        wmsLayers: [
-            {
-                rootUrl: 'https://openmaps.gov.bc.ca/geo/pub/WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW/ows?',
-                format: 'image/png',
-                layers: 'pub:WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW',
-                styles: 'PMBC_Parcel_Fabric_Cadastre_Outlined',
-                transparent: true
-            }        
-        ],
-       wellPushpinInit: null, // Will be filled in before call in $(document).ready()
-       externalAttributionNodeId: 'attribution' // The ID of the external node to contain the attribution.
-    };
+    {% block jqscript_block %}
+    <script>
+        var detailMap = null;
+        // Options for creating the detailMap. This map instance opens with a pushpin over the location of the well
+        // of interest, and (as with all maps with a pushpin) the map issues an AJAX query to show the surrounding wells
+        // within the map's bounding box, which are displayed as circleMarkers. The map also has limited zoom capability,
+        // so that users can find further surrounding wells. None of the wells (circleMarkers or the pushpin) is interactive.
+        var detailMapOptions = {
+            // The ID of the addMap div.
+            mapNodeId: 'detail-map',
+            // The initial centre of the map
+            initCentre: null, // Will be filled in before call in $(document).ready()
+            // Maximum zoom of the map (i.e., how far it can be zoomed in)
+            maxZoom: 17,
+            // Minimum zoom of the map (i.e., how far it can be zoomed out)
+            minZoom: 10,
+            // All zooms should remain centred
+            centreZoom: true,
+            // The detailMap cannot be panned
+            canPan: false,
+            // ESRI layers associated with the map
+            esriLayers: [
+                {
+                    url: 'https://maps.gov.bc.ca/arcserver/rest/services/Province/roads_wm/MapServer'
+                }
+            ],
+            // WMS layers associated with the map
+            wmsLayers: [
+                {
+                    rootUrl: 'https://openmaps.gov.bc.ca/geo/pub/WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW/ows?',
+                    format: 'image/png',
+                    layers: 'pub:WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW',
+                    styles: 'PMBC_Parcel_Fabric_Cadastre_Outlined',
+                    transparent: true
+                }
+            ],
+            wellPushpinInit: null, // Will be filled in before call in $(document).ready()
+            externalAttributionNodeId: 'attribution' // The ID of the external node to contain the attribution.
+        };
 
-    $(document).ready(function () {
-        var lat = $("#latitude").data("latitude");
-        var long = $("#longitude").data("longitude");
-        var guid = $("#guid-row").data("well-guid");
-        // The map starts centred on a given point at the lowest zoom level, and that point happens to contain the well of interest.
-        detailMapOptions.initCentre = [lat, long];
-        detailMapOptions.wellPushpinInit = {lat: lat, long: long, wellDetails: { guid: guid }};
-        detailMap = new WellsMap(detailMapOptions);
-    });
+        $(document).ready(function () {
+            var lat = $("#latitude").data("latitude");
+            var long = $("#longitude").data("longitude");
+            var guid = $("#guid-row").data("well-guid");
+            // The map starts centred on a given point at the lowest zoom level, and that point happens to contain the well of interest.
+            detailMapOptions.initCentre = [lat, long];
+            detailMapOptions.wellPushpinInit = { lat: lat, long: long, wellDetails: { guid: guid } };
+            detailMap = new WellsMap(detailMapOptions);
+        });
 
-</script>
-{% endblock %}
+    </script>
+    {% endblock %}
