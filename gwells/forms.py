@@ -484,9 +484,9 @@ class ActivitySubmissionGpsForm(forms.ModelForm):
         if latitude < 48.204555 or latitude > 60.0223:
             raise forms.ValidationError('Latitude must be between 48.204556 and 60.02230.')
 
-        #decimal_places =  max(0,-latitude.as_tuple().exponent)
-        #if decimal_places < 5:
-        #    raise forms.ValidationError('Latitude must be specified to at least 5 decimal places.')
+        decimal_places =  max(0,-latitude.as_tuple().exponent)
+        if decimal_places < 5:
+            raise forms.ValidationError('Latitude must be specified to at least 5 decimal places.')
 
         return latitude
 
@@ -496,9 +496,9 @@ class ActivitySubmissionGpsForm(forms.ModelForm):
         if longitude < -139.073671 or longitude > -114.033822:
             raise forms.ValidationError('Longitude must be between -139.073671 and -114.033822.')
 
-        #decimal_places =  max(0,-longitude.as_tuple().exponent)
-        #if decimal_places < 5:
-        #    raise forms.ValidationError('Longitude must be specified to at least 5 decimal places.')
+        decimal_places =  max(0,-longitude.as_tuple().exponent)
+        if decimal_places < 5:
+            raise forms.ValidationError('Longitude must be specified to at least 5 decimal places.')
 
         return longitude
 
