@@ -13,7 +13,7 @@
 """
 from django.contrib import admin
 from .models import ProvinceState, LandDistrict, WellYieldUnit, WellActivityType, WellClass, WellSubclass, IntendedWaterUse, DrillingCompany, Driller, GroundElevationMethod, DrillingMethod
-from .models import SurficialMaterial, BedrockMaterial, BedrockMaterialDescriptor, LithologyStructure, LithologyWeathering, LithologyColour, LithologyHardness, LithologyMoisture
+from .models import SurficialMaterial, BedrockMaterial, BedrockMaterialDescriptor, LithologyStructure, LithologyColour, LithologyHardness, LithologyMoisture
 from .models import CasingType, CasingMaterial, SurfaceSealMaterial, SurfaceSealMethod, LinerMaterial, ScreenIntake, ScreenType, ScreenMaterial, ScreenOpening, ScreenBottom, ScreenAssemblyType
 from .models import FilterPackMaterial, FilterPackMaterialSize, DevelopmentMethod, YieldEstimationMethod, WaterQualityCharacteristic
 # Register your models here.
@@ -32,7 +32,6 @@ admin.site.register(SurficialMaterial)
 admin.site.register(BedrockMaterial)
 admin.site.register(BedrockMaterialDescriptor)
 admin.site.register(LithologyStructure)
-admin.site.register(LithologyWeathering)
 admin.site.register(LithologyColour)
 admin.site.register(LithologyHardness)
 admin.site.register(LithologyMoisture)

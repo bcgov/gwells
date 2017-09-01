@@ -484,6 +484,10 @@ class ActivitySubmissionGpsForm(forms.ModelForm):
         if latitude < 48.204555 or latitude > 60.0223:
             raise forms.ValidationError('Latitude must be between 48.204556 and 60.02230.')
 
+        #decimal_places =  max(0,-latitude.as_tuple().exponent)
+        #if decimal_places < 5:
+        #    raise forms.ValidationError('Latitude must be specified to at least 5 decimal places.')
+
         return latitude
 
     def clean_longitude(self):
@@ -491,6 +495,10 @@ class ActivitySubmissionGpsForm(forms.ModelForm):
 
         if longitude < -139.073671 or longitude > -114.033822:
             raise forms.ValidationError('Longitude must be between -139.073671 and -114.033822.')
+
+        #decimal_places =  max(0,-longitude.as_tuple().exponent)
+        #if decimal_places < 5:
+        #    raise forms.ValidationError('Longitude must be specified to at least 5 decimal places.')
 
         return longitude
 
@@ -546,6 +554,9 @@ class LithologyForm(forms.ModelForm):
             'surficial_material',
             HTML('</td>'),
             HTML('<td>'),
+            'secondary_surficial_material',
+            HTML('</td>'),
+            HTML('<td>'),
             'bedrock_material',
             HTML('</td>'),
             HTML('<td>'),
@@ -553,9 +564,6 @@ class LithologyForm(forms.ModelForm):
             HTML('</td>'),
             HTML('<td>'),
             'lithology_structure',
-            HTML('</td>'),
-            HTML('<td>'),
-            'lithology_weathering',
             HTML('</td>'),
             HTML('<td>'),
             'lithology_colour',
@@ -607,7 +615,7 @@ class LithologyForm(forms.ModelForm):
 
     class Meta:
         model = LithologyDescription
-        fields = ['lithology_from', 'lithology_to', 'surficial_material', 'bedrock_material', 'bedrock_material_descriptor', 'lithology_structure', 'lithology_weathering', 'lithology_colour', 'lithology_hardness', 'lithology_moisture', 'water_bearing_estimated_flow', 'lithology_observation']
+        fields = ['lithology_from', 'lithology_to', 'surficial_material', 'secondary_surficial_material', 'bedrock_material', 'bedrock_material_descriptor', 'lithology_structure', 'lithology_colour', 'lithology_hardness', 'lithology_moisture', 'water_bearing_estimated_flow', 'lithology_observation']
 
 
 

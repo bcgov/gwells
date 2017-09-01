@@ -14,7 +14,6 @@
 \copy gwells_bedrock_material_descriptor FROM './gwells_bedrock_material_descriptor.csv' HEADER DELIMITER ',' CSV
 \copy gwells_bedrock_material     FROM './gwells_bedrock_material.csv' HEADER DELIMITER ',' CSV
 \copy gwells_lithology_colour     FROM './gwells_lithology_colour.csv' HEADER DELIMITER ',' CSV
-\copy gwells_lithology_weathering FROM './gwells_lithology_weathering.csv' HEADER DELIMITER ',' CSV
 \copy gwells_surficial_material   FROM './gwells_surficial_material.csv'   HEADER DELIMITER ',' CSV
 
 \copy gwells_casing_material FROM './gwells_casing_material.csv' HEADER DELIMITER ',' CSV
