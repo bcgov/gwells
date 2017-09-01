@@ -43,8 +43,8 @@ var _validationSuccessCallback = null;
 // The precisions of the fields. The values here are defaults, and can be overwritten by the class's caller.
 var _latLongDDPrecision = 6;
 var _latLongDMSSecondPrecision = 2;
-var _utmEastingPrecision = 6;
-var _utmNorthingPrecision = 7;
+var _utmEastingPrecision = 0;
+var _utmNorthingPrecision = 0;
 
 /** JQuery nodes that correspond to the fields that will subscribe to events. */
 
