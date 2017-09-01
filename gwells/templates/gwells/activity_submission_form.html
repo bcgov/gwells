@@ -48,11 +48,15 @@
 
 {% block jqscript_block %}
 {% if wizard.steps.current == 'type_and_class' %}
-<script>
-  $(function() {
+<script type="text/javascript">
+  $(function () {
     $('#id_type_and_class-work_start_date').datepicker({ dateFormat: 'yy-mm-dd' });
     $('#id_type_and_class-work_end_date').datepicker({ dateFormat: 'yy-mm-dd' });
     $('#divSubclass').hide();
+    var wherePlateAttached = ['Well Casing', 'Well Cap or Cover', 'Hand Pump', 'Pump House or Vault Wall'];
+    $('#id_type_and_class-where_plate_attached').autocomplete({
+      source: wherePlateAttached
+    });
   });
   $('#id_type_and_class-well_class').on('change', function() {
     if ($('#id_type_and_class-well_class option:selected').val() == '{{ water_supply_well_class_guid }}') {
