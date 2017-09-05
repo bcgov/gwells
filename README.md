@@ -63,9 +63,11 @@ To run this project in your development machine, ensure that Python 3.5 and Post
     ```
 
     Create a virtual environment.
+
     `mkvirtualenv gwells`
 
     Work within your virtual environment.
+    
     `workon gwells`
 
 3. Fork this repo and clone your fork:
