@@ -25,11 +25,11 @@
 <div class="row">
     <div class="col-md-4">
         <label for="identification_plate_number">Well Identification Plate Number:</label>
-        {{ well.identification_plate_number }}
+        {{ well.identification_plate_number|default_if_none:'' }}
 </div>
     <div class="col-md-4">
         <label for="well_subclass">Well Subclass:</label>
-        {{ well.well_subclass }}
+        {{ well.well_subclass|default_if_none:'' }}
 </div>
     <div class="col-md-4">
         <label for="date_reviewed">Date Reviewed:</label>
@@ -42,7 +42,7 @@
 </div>
     <div class="col-md-4">
         <label for="intended_water_use">Intended Water Use:</label>
-        {{ well.intended_water_use }}
+        {{ well.intended_water_use|default_if_none:'' }}
 </div>
     <div class="col-md-4">
         <label for="alternate_specs_submitted">Alternative specifications submitted if required:</label>
@@ -121,11 +121,11 @@
                             </tr>
                             <tr>
                                 <td><label for="land_district">Land District</label></td>
-                                <td><span id="land_district">{{ well.legal_land_district }}</span></td>
+                                <td><span id="land_district">{{ well.legal_land_district|default_if_none:'' }}</span></td>
                             </tr>
                             <tr>
                                 <td><label for="pid">Property Identification Description (PID)</label>&nbsp;</td>
-                                <td><span id="pid">{{ well.legal_pid }}</span></td>
+                                <td><span id="pid">{{ well.legal_pid|default_if_none:'&nbsp;' }}</span></td>
                             </tr>
                         </tbody>
                     </table>
@@ -146,7 +146,7 @@
 
             <div class="row">
                 <div class="col-md-12">
-                    <label>Geocoordinates - North American Datum (NAD) 83</label>
+                    <label>Geographic Coordinates - North American Datum of 1983 (NAD 83)</label>
                 </div>
             </div>
             <div class="row">
@@ -177,23 +177,21 @@
     <table>
         <thead>
             <tr>
-                <th>Filing Number</th>
-                <th>Work Type</th>
-                <th>Date</th>
+                <th>Activity Type</th>
+                <th>Start Date</th>
                 <th>Driller</th>
                 <th>Drilling Company</th>
-                <th>Additional Information</th>
             </tr>
         </thead>
         <tbody>
+            {% for submission in well.activitysubmission_set.all %}
             <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
+                <td><a href="{% url 'activity_submission_detail' submission.filing_number %}">{{ submission.well_activity_type }}</a></td>
+                <td>{{ submission.work_start_date }}</td>
+                <td>{{ submission.driller_responsible }}</td>
+                <td>{{ submission.driller_responsible.drilling_company }}</td>
             </tr>
+            {% endfor %}
         </tbody>
     </table>
 </fieldset>
@@ -206,7 +204,7 @@
         </div>
         <div class="col-md-4">
             <label for="static_water_level">Static Water Level:</label>
-            <span id="static_water_level">{{ well.static_water_level }}</span>
+            <span id="static_water_level">{{ well.static_water_level|default_if_none:'' }}</span>
         </div>
         <div class="col-md-4">
             <label for="well_cap_type">Well Cap Type:</label>
@@ -220,7 +218,7 @@
         </div>
         <div class="col-md-4">
             <label for="well_yield">Well Yield:</label>
-            <span id="well_yield">{{ well.well_yield }}</span>
+            <span id="well_yield">{{ well.well_yield|default_if_none:'' }}</span>
         </div>
         <div class="col-md-4">
             <label for="well_disinfected">Well Disinfected:</label>
