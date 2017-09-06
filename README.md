@@ -40,8 +40,8 @@ To run this project in your development machine, ensure that Python 3.5 and Post
     ```
     psql -U postgres
     
-    create user gwells with createdb
-    create database gwells with owner=gwells
+    create user gwells with createdb;
+    create database gwells with owner=gwells;
     ```
 
 2. Create and activate a [virtualenv](https://virtualenv.pypa.io/) (you may want to use [virtualenvwrapper](http://virtualenvwrapper.readthedocs.org/)).
