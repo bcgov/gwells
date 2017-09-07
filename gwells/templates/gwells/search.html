@@ -1,5 +1,5 @@
 {% extends 'gwells/base.html' %}
-{% load crispy_forms_tags pagination_tags sorting_tags %}
+{% load crispy_forms_tags %}
 
 {% block title %}Search{% endblock %}
 
@@ -48,47 +48,43 @@
 
 
 {% if well_list %}
-    {% autopaginate well_list 25 %}
-<div class="row">
-    {{ page_obj.start_index }}-{{ page_obj.end_index }} of {{ page_obj.paginator.count }} results
-</div>
 
 <div class="table-responsive">
-    <table class="table-striped">
+    <table id="results" class="table table-striped">
         <thead>
-            <tr>
+            <tr style="text-align: left;">
                 <th>
-                    {% anchor well_tag_number "Well Tag #" %}
+                    Well Tag #
                 </th>
                 <th>
-                    {% anchor identification_plate_number "Well ID Plate #" %}
+                    Well ID Plate #
                 </th>
                 <th>
-                    {% anchor owner_full_name "Owner Name" %}
+                    Owner Name
                 </th>
                 <th>
-                    {% anchor street_address "Street Address" %}
+                    Street Address
                 </th>
                 <th>
-                    {% anchor legal_lot "Lot" %}
+                    Lot
                 </th>
                 <th>
-                    {% anchor legal_plan "Plan" %}
+                    Plan
                 </th>
                 <th>
-                    {% anchor legal_district_lot "District Lot" %}
+                    District Lot
                 </th>
                 <th>
-                    {% anchor legal_land_district "Land District" %}
+                    Land District
                 </th>
                 <th>
-                    {% anchor legal_pid "PID" %}
+                    PID
                 </th>
                 <th>
-                    {% anchor diameter "Diameter (in)" %}
+                    Diameter (in)
                 </th>
                 <th>
-                    {% anchor finished_well_depth "Finished Well Depth (ft)" %}
+                    Finished Well Depth (ft)
                 </th>
             </tr>
         </thead>
@@ -134,9 +130,6 @@
     </table>
 </div>
 
-<div class="row">
-    {% paginate using 'gwells/bootstrap_pagination.html' %}
-</div>
 {% endif %}
 
 {% if 'well' in request.GET %}
@@ -226,6 +219,9 @@
         searchMapOptions.initialExtent = latLongBox;
         searchMapOptions.initialWells = wells;
         searchMap = new WellsMap(searchMapOptions);
+        $('#results').DataTable({
+            'searching': false
+        });
     });
 </script>
 {% endblock %}
