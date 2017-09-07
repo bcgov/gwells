@@ -46,8 +46,6 @@ INSTALLED_APPS = (
 	'django.contrib.postgres',
     'gwells',
     'crispy_forms',
-    'dj_pagination',
-    'webstack_django_sorting',
     'formtools',
 )
 
@@ -62,7 +60,6 @@ MIDDLEWARE = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
-    'dj_pagination.middleware.PaginationMiddleware',
 )
 
 ROOT_URLCONF = 'gwells.urls'
