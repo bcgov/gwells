@@ -71,6 +71,7 @@
     <![endif]-->
     
     <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/base/jquery-ui.css" type="text/css" media="all" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/dataTables.bootstrap.min.css" type="text/css" media="all" />
 </head>
 
 <body>
@@ -239,10 +240,12 @@
     <!-- ALTERNATE SCRIPT SOURCE 
         TODO: Settle
         <script src="https://leafletjs-cdn.s3.amazonaws.com/content/leaflet/master/leaflet-src.js"></script>  -->
-    <script src="https://unpkg.com/esri-leaflet@2.0.8"></script>
+    <script src="https://unpkg.com/esri-leaflet@2.0.8/dist/esri-leaflet.js"></script>
     <script src="{% static 'gwells/js/wellsMap.js'%}"></script>
     <script src="{% static 'gwells/js/coordSync.js' %}"></script>
     <script src="{% static 'gwells/js/jquery.formset.js' %}"></script>
+    <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js" type="text/javascript"></script>
+    <script src="https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap.min.js" type="text/javascript"></script>
 
     {% block jqscript_block %}{% endblock %}
 

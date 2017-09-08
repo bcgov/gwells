@@ -5,6 +5,4 @@ psycopg2==2.7.1
 whitenoise==3.3
 django-model-utils==2.6.1
 django-crispy-forms==1.6.1
-dj-pagination==2.2.1
-webstack-django-sorting==1.0.1
 django-formtools==2.0

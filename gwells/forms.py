@@ -84,8 +84,6 @@ class SearchForm(forms.Form):
                 'addr',
                 'legal',
                 'owner',
-                Hidden('sort', 'well_tag_number'),
-                Hidden('dir', 'asc'),
                 # start_lat_long and end_lat_long are programatically generated
                 # based on an identifyWells operation on the client.
                 Hidden('start_lat_long', ''),
