@@ -12,14 +12,14 @@
 {% if too_many_wells %}
 <div class="row">
     <div class="col-md-12 alert alert-warning">
-        <em>{{ too_many_wells }}</em>
+        <em id="em-too-many-wells">{{ too_many_wells }}</em>
     </div>
 </div>
 
 {% elif 'well' in request.GET and not well_list %}
 <div class="row">
     <div class="col-md-12 alert alert-warning">
-        <em>No well records could be found.</em>
+        <em id="em-no-records-found">No well records could be found.</em>
     </div>
 </div>
 
