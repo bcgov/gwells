@@ -1138,7 +1138,10 @@ class WellCompletionForm(forms.ModelForm):
         # TODO - check admin or staff user and don't make these fields required
         self.fields['total_depth_drilled'].required = True
         self.fields['finished_well_depth'].required = True
-        self.fields['final_casing_stick_up'].required = True
+        
+        # Make final casing stick up required for water supply well, injection well, recharge well, etc.
+        if self.initial['well_class_code'] == 'WATR_SPPLY' or self.initial['well_class_code'] == 'INJECTION' or self.initial['well_class_code'] == 'RECHARGE':
+            self.fields['final_casing_stick_up'].required = True
 
     def clean(self):
         cleaned_data = super(WellCompletionForm, self).clean()
