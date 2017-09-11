@@ -208,7 +208,13 @@ class ActivitySubmissionWizardView(SessionWizardView):
                     screen_screen_intake = None
                 if intake_data.get('screen_intake') == screen_screen_intake:
                     form_class.min_num = 1
-                
+        elif step == 'well_completion':
+            # Determine well class to decide which fields are required
+            initial.update({'well_class_code': ''})
+            type_and_class_data = self.get_cleaned_data_for_step('type_and_class')
+            if type_and_class_data and type_and_class_data.get('well_class'):
+                initial.update({'well_class_code': type_and_class_data.get('well_class').code})
+            
         return initial
 
     def done(self, form_list, form_dict, **kwargs):
