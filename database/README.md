@@ -28,6 +28,7 @@ H:\xform_gwells_drilling_company.csv
 H:\xform_gwells_land_district.csv
 H:\xform_gwells_surface_seal_material.csv
 H:\xform_gwells_surface_seal_method.csv
+H:\xform_gwells_surface_seal_type.csv
 H:\xform_gwells_well.csv
 ```
 
