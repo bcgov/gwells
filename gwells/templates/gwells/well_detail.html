@@ -19,52 +19,57 @@
     </div>
     <div class="col-md-4">
         <label for="record_reviewed">Record reviewed by Ministry of Environment:</label>
-        No
+        <span id="record_reviewed">No</span>
 </div>
 </div>
 <div class="row">
     <div class="col-md-4">
         <label for="identification_plate_number">Well Identification Plate Number:</label>
-        {{ well.identification_plate_number|default_if_none:'' }}
+        <span id="identification_plate_number">{{ well.identification_plate_number|default_if_none:'' }}</span>
 </div>
     <div class="col-md-4">
         <label for="well_subclass">Well Subclass:</label>
-        {{ well.well_subclass|default_if_none:'' }}
-</div>
+         <span id="well_subclass">{{ well.well_subclass|default_if_none:'' }}</span>
+    </div>
     <div class="col-md-4">
         <label for="date_reviewed">Date Reviewed:</label>
+        <span id="date_reviewed"></span>
 </div>
 </div>
 <div class="row">
     <div class="col-md-4">
-        <label for="onwer_full_name">Owner Name:</label>
-        {{ well.owner_full_name }}
+        <label for="owner_full_name">Owner Name:</label>
+        <span id="owner_full_name">{{ well.owner_full_name }}</span>
 </div>
     <div class="col-md-4">
         <label for="intended_water_use">Intended Water Use:</label>
-        {{ well.intended_water_use|default_if_none:'' }}
+        <span id="intended_water_use">{{ well.intended_water_use|default_if_none:'' }}</span>
 </div>
     <div class="col-md-4">
         <label for="alternate_specs_submitted">Alternative specifications submitted if required:</label>
-        {{ well.alternative_specs_submitted }}
+        <span id="alternate_specs_submitted">{{ well.alternative_specs_submitted }}</span>
 </div>
 </div>
 <div class="row">
     <div class="col-md-4">
         <label for="obs_well_number">Observation Well Number:</label>
+        <span id="obs_well_number"></span>
     </div>
     <div class="col-md-4">
         <label for="licensed_status">Licensed Status:</label>
+        <span id="licensed_status"></span>
     </div>
 </div>
 <div class="row">
     <div class="col-md-4">
         <label for="obs_well_status">Observation Well Status:</label>
+        <span id="obs_well_status"></span>
     </div>
 </div>
 <div class="row">
     <div class="col-md-4">
         <label for="ems_id">Environmental Monitoring System (EMS) ID:</label>
+        <span id="ems_id"></span>
     </div>
 </div>
 <br />
@@ -82,8 +87,8 @@
             </div>
             <div class="row">
                 <div class="col-md-6">
-                    <label for="owner">Town/City:</label>
-                    <span id="owner">{{ well.city }}</span>
+                    <label for="city">Town/City:</label>
+                    <span id="city">{{ well.city }}</span>
                 </div>
             </div>
             <div class="row">
@@ -186,10 +191,10 @@
         <tbody>
             {% for submission in well.activitysubmission_set.all %}
             <tr>
-                <td><a href="{% url 'activity_submission_detail' submission.filing_number %}">{{ submission.well_activity_type }}</a></td>
-                <td>{{ submission.work_start_date }}</td>
-                <td>{{ submission.driller_responsible }}</td>
-                <td>{{ submission.driller_responsible.drilling_company }}</td>
+                <td><a id="well_activity_type" href="{% url 'activity_submission_detail' submission.filing_number %}">{{ submission.well_activity_type }}</a></td>
+                <td><span id="work_start_date">{{ submission.work_start_date }}</span></td>
+                <td><span id="driller_responsible">{{ submission.driller_responsible }}</span></td>
+                <td><span id="drilling_company">{{ submission.driller_responsible.drilling_company }}</span></td>
             </tr>
             {% endfor %}
         </tbody>
@@ -229,7 +234,7 @@
 
     <div>
         <br /><br />
-        <a href="https://a100.gov.bc.ca/pub/wells/wellsreport1.do?wellTagNumber={{ well.well_tag_number }}">View Report</a>
+        <a id="well_tag_number_link" href="https://a100.gov.bc.ca/pub/wells/wellsreport1.do?wellTagNumber={{ well.well_tag_number }}">View Report</a>
     </div>
     {% endblock %}
 

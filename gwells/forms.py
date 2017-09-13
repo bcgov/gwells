@@ -266,6 +266,15 @@ class ActivitySubmissionTypeAndClassForm(forms.ModelForm):
 
         return cleaned_data
 
+    def save(self, commit=True):
+        instance = super(ActivitySubmissionTypeAndClassForm, self).save(commit=False)
+        # Force subclass to None for closed loop geo-exchange
+        if instance.well_class.code == 'CLS_LP_GEO':
+            instance.well_subclass = None
+        if commit:
+            instance.save()
+        return instance
+    
     class Meta:
         model = ActivitySubmission
         fields = ['well_activity_type', 'well_class', 'well_subclass', 'intended_water_use', 'identification_plate_number', 'where_plate_attached', 'driller_responsible', 'driller_name', 'consultant_name', 'consultant_company', 'work_start_date', 'work_end_date']
@@ -1138,7 +1147,10 @@ class WellCompletionForm(forms.ModelForm):
         # TODO - check admin or staff user and don't make these fields required
         self.fields['total_depth_drilled'].required = True
         self.fields['finished_well_depth'].required = True
-        self.fields['final_casing_stick_up'].required = True
+        
+        # Make final casing stick up required for water supply well, injection well, recharge well, etc.
+        if self.initial['well_class_code'] == 'WATR_SPPLY' or self.initial['well_class_code'] == 'INJECTION' or self.initial['well_class_code'] == 'RECHARGE':
+            self.fields['final_casing_stick_up'].required = True
 
     def clean(self):
         cleaned_data = super(WellCompletionForm, self).clean()
