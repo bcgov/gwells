@@ -1,4 +1,4 @@
-node('maven') {
+node('master') {
     stage('build') {
         echo "Building..."
         openshiftBuild bldCfg: 'gwells', showBuildLogs: 'true'
