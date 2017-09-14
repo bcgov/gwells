@@ -1,3 +1,7 @@
+environment {
+        JAVA_HOME = '/usr'
+    }
+
 node('master') {
     
     stage('checkout for static code analysis') {
