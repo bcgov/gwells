@@ -19,4 +19,14 @@ class SearchPage extends Page {
         results_info { $("div",id:"results_info") }
         results_table { $("#results td")*.text() }
     }
+    boolean CheckResultTable(String addres_to_check) {
+        if(results_table.join(",").indexOf(addres_to_check) >= -1)
+            return true
+        else
+            return false    
+    }
+    String NumberOfEntriesFound() {
+        def str = results_info.text().split(' ')
+        return str[5]
+    }
 }
