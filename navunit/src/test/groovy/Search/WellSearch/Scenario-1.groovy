@@ -40,8 +40,7 @@ class WellSearchS1Spec extends GebReportingSpec {
 				assert waitFor {($("em",id:"em-no-records-found").displayed == false)}
 				assert waitFor { results_info.displayed == true }
 
-				def str = results_info.text().split(' ')
-				assert (str[5] == "$NumberResult") //Total entries found
+				assert (NumberOfEntriesFound() == "$NumberResult") //Total entries found
 
 				//println "Results Table: $results_table"
 
@@ -82,8 +81,7 @@ class WellSearchS1Spec extends GebReportingSpec {
 				assert waitFor {($("em",id:"em-no-records-found").displayed == false)}
 				assert waitFor {($("div",id:"results_info").displayed == true)}
 
-				def str = results_info.text().split(' ')
-				assert (str[5] == "$NumberResult") //Total entries found
+				assert (NumberOfEntriesFound() == "$NumberResult") //Total entries found
 
 				def n = 0
 				def m = 0
@@ -97,7 +95,7 @@ class WellSearchS1Spec extends GebReportingSpec {
             			println results_table[1 + (11 * n)]
 */            			
             			at WellSummaryPage
-						assert waitFor {($("span",id:"well_tag_number").text() == "$WellId")}
+						assert waitFor { well_tag_number.text() == "$WellId" }
             			
             			n="$NumberResult".toInteger()
 					}
@@ -119,25 +117,6 @@ class WellSearchS1Spec extends GebReportingSpec {
 				}
 			}
             		
-            				
-
-
-/*				if ("$TagID" == "tag") {
-					$("a",text:"$WellId").click()
-
-					at WellSummaryPage
-					assert waitFor {($("span",id:"well_tag_number").text() == "$WellId")}
-				}
-				else {
-					$('#results > tbody > tr:nth-child(2) > td:nth-child(1) > a').click()
-					
-					at WellSummaryPage
-					assert waitFor { identification_plate_number.text() == "$WellId" }
-					assert waitFor { well_tag_number.text() == "$SecondID" }
-				}	
-
-			}*/
-
 		and: "And where there are no matching search results the message -No well records could be found.- is displayed"
 			if("$ShowError" == "Yes")
 				assert waitFor { not_found_msg.displayed == true }		
