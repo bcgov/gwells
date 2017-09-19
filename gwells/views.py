@@ -18,7 +18,7 @@ from django.views import generic
 from django.views.generic.edit import FormView
 #from django.utils import timezone
 from formtools.wizard.views import SessionWizardView
-from .models import WellActivityType, WellYieldUnit, Well, ActivitySubmission, WellClass, ScreenIntake
+from .models import WellActivityType, WellYieldUnit, Well, ActivitySubmission, WellClass, ScreenIntake, LandDistrict
 from .forms import SearchForm, ActivitySubmissionTypeAndClassForm, WellOwnerForm, ActivitySubmissionLocationForm, ActivitySubmissionGpsForm
 from .forms import ActivitySubmissionLithologyFormSet, ActivitySubmissionCasingFormSet, ActivitySubmissionSurfaceSealForm, ActivitySubmissionLinerPerforationFormSet
 from .forms import ActivitySubmissionScreenIntakeForm, ActivitySubmissionScreenFormSet, ActivitySubmissionFilterPackForm, ActivitySubmissionDevelopmentForm, ProductionDataFormSet
@@ -70,13 +70,19 @@ def well_search(request):
                 [well.as_dict() for well in well_results],
                 cls=DjangoJSONEncoder)
 
+    # create an object that will be used to render the names for land districts.
+    land_districts = {}
+    all_land_districts = LandDistrict.objects.all()
+    for land_district in all_land_districts:
+        land_districts[land_district.land_district_guid] = land_district.name
+
     return render(request, 'gwells/search.html',
                   {'form': form, 'well_list': well_results,
                    'too_many_wells': well_results_overflow,
                    'wells_json': well_results_json,
-                   'lat_long_box': lat_long_box
+                   'lat_long_box': lat_long_box,
+                   'land_districts' : land_districts
                   })
-
 
 def map_well_search(request):
     well_results = None
