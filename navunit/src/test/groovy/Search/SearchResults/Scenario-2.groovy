@@ -26,25 +26,26 @@ class SearchResultsS2Spec extends GebReportingSpec {
         given: "I have <count> search results"
         to SearchPage
 
-        $("input", id:"id_well").value("$WellId")
-        $("input", id:"id_addr").value("$Address")
-        $("input", id:"id_legal").value("$LegalId")
-        $("input", id:"id_owner").value("$Owner")
-        $("input", id:"submit-id-s").click()
+        well_id.value("$WellId")
+        address.value("$Address")
+        legal_id.value("$LegalId")
+        owner_id.value("$Owner")
+        submit_button.click()
 
         when: "I view all search results"
 
         then: "I should see <count_message> displayed above the search results"
 
         if("$ShowError" == "Yes")
-            assert waitFor {($("em",id:"em-no-records-found").displayed == true)}
+            assert waitFor { not_found_msg.displayed == true }
         else
         {
             assert waitFor {($("em",id:"em-no-records-found").displayed == false)}
             assert waitFor {($("div",id:"results_info").displayed == true)}
 
-            def str = $("div",id:"results_info").text().split(' ')
-            assert (str[1] == "1") //From entry
+            assert waitFor { results_info.displayed == true }
+
+            def str = results_info.text().split(' ')
             if ( "$NumberResult".toInteger() < 10){
                 assert (str[3] == "$NumberResult") // To entry
             }
