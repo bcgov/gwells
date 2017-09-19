@@ -18,6 +18,9 @@ class SearchPage extends Page {
         not_found_msg { $("em",id:"em-no-records-found") }
         results_info { $("div",id:"results_info") }
         results_table { $("#results td")*.text() }
+        page_buttons { $("#results_paginate a")*.text() }
+        next_button { $("li",id:"results_next")}
+        previous_button { $("li",id:"results_previous")}
     }
     boolean CheckResultTable(String addres_to_check) {
         if(results_table.join(",").indexOf(addres_to_check) >= -1)
@@ -25,8 +28,24 @@ class SearchPage extends Page {
         else
             return false    
     }
+
+    boolean CheckPageButton(String page_button_to_check) {
+        if(page_buttons.join(",").indexOf(page_button_to_check) >= -1)
+            return true
+        else
+            return false    
+    }
+    
     String NumberOfEntriesFound() {
         def str = results_info.text().split(' ')
         return str[5]
+    }
+    String NumberEntryFrom() {
+        def str = results_info.text().split(' ')
+        return str[1]
+    }
+    String NumberEntryTo() {
+        def str = results_info.text().split(' ')
+        return str[3]
     }
 }
