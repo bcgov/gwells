@@ -23,11 +23,10 @@ urlpatterns = [
     # url(r'^$', 'project.views.home', name='home'),
     # url(r'^blog/', include('blog.urls')),
 
-    url(r'^$', views.HelloWorldView.as_view(), name='home'),
+    url(r'^$', views.HomeView.as_view(), name='home'),
     url(r'^search$', views.well_search, name='search'),
     #url(r'^(?P<pk>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/$', views.DetailView.as_view(), name='detail'),
     url(r'^submission/$', views.ActivitySubmissionListView.as_view(), name='activity_submission_list'),
-    url(r'^submission/create$', views.ActivitySubmissionWizardView.as_view(views.FORMS), name='activity_submission_create'),
     url(r'^submission/(?P<pk>[0-9]+)$', views.ActivitySubmissionDetailView.as_view(), name='activity_submission_detail'),
     url(r'^well/(?P<pk>[0-9]+)$', views.WellDetailView.as_view(), name='well_detail'),
     url(r'^health$', views.health),
@@ -35,6 +34,11 @@ urlpatterns = [
     url(r'^additional-information', TemplateView.as_view(template_name='gwells/additional_information.html'), name='additional_information'),
     url(r'^ajax/map_well_search/$', views.map_well_search, name='map_well_search'),
 ]
+
+if settings.ENABLE_DATA_ENTRY:
+    urlpatterns = [
+        url(r'^submission/create$', views.ActivitySubmissionWizardView.as_view(views.FORMS), name='activity_submission_create'),
+    ] + urlpatterns
 
 if settings.DEBUG:
     import debug_toolbar
