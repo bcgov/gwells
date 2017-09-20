@@ -120,4 +120,35 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-logging.config.fileConfig('conf/logging.conf')
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse'
+        }
+    },
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+    },
+    'handlers': {
+        'console_handler': {
+            'class': 'logging.StreamHandler',
+            'level':'DEBUG',
+            'formatter':'verbose',
+            'filters': ['require_debug_false']
+        }
+    },
+    'loggers': {
+        'django.request': {
+            'handlers': ['console_handler'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    }
+}
