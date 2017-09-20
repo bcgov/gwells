@@ -11,6 +11,7 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
+from django.conf import settings
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, render
 #from django.urls import reverse
@@ -29,15 +30,17 @@ from django.core.serializers.json import DjangoJSONEncoder
 def health(request):
     return HttpResponse(WellActivityType.objects.count())
 
-class HelloWorldView(generic.ListView):
+class HomeView(generic.TemplateView):
     template_name = 'gwells/index.html'
     context_object_name = 'yield_unit_list'
 
-    def get_queryset(self):
+    def get_context_data(self, **kwargs):
         """
-        Return the well yield units for hello world.
+        Return the context for the home page.
         """
-        return WellYieldUnit.objects.order_by('-sort_order')
+        context = super(HomeView, self).get_context_data(**kwargs) 
+        context['ENABLE_DATA_ENTRY'] = settings.ENABLE_DATA_ENTRY
+        return context
 
 def well_search(request):
     well_results = None
