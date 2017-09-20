@@ -115,7 +115,7 @@ class WellDetailView(generic.DetailView):
         """
         Return the context for the home page.
         """
-        context = super(HomeView, self).get_context_data(**kwargs) 
+        context = super(WellDetailView, self).get_context_data(**kwargs) 
         context['ENABLE_GOOGLE_ANALYTICS'] = settings.ENABLE_GOOGLE_ANALYTICS
         return context
 
@@ -135,7 +135,7 @@ class ActivitySubmissionListView(generic.ListView):
         """
         Return the context for the page.
         """
-        context = super(HomeView, self).get_context_data(**kwargs) 
+        context = super(ActivitySubmissionListView, self).get_context_data(**kwargs) 
         context['ENABLE_GOOGLE_ANALYTICS'] = settings.ENABLE_GOOGLE_ANALYTICS
         return context
 
@@ -149,7 +149,7 @@ class ActivitySubmissionDetailView(generic.DetailView):
         """
         Return the context for the page.
         """
-        context = super(HomeView, self).get_context_data(**kwargs) 
+        context = super(ActivitySubmissionDetailView, self).get_context_data(**kwargs) 
         context['ENABLE_GOOGLE_ANALYTICS'] = settings.ENABLE_GOOGLE_ANALYTICS
         return context
 
@@ -199,7 +199,7 @@ class ActivitySubmissionWizardView(SessionWizardView):
         """
         Return the context for the page.
         """
-        context = super(HomeView, self).get_context_data(**kwargs) 
+        context = super(ActivitySubmissionWizardView, self).get_context_data(**kwargs) 
         context['ENABLE_GOOGLE_ANALYTICS'] = settings.ENABLE_GOOGLE_ANALYTICS
         return context
 
