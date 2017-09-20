@@ -42,8 +42,12 @@ class Search():
 
         if legal:
             pid = legal.lstrip('0')
-            q_list.append(Q(legal_plan__icontains=legal) |
-                          Q(legal_district_lot__icontains=legal) | Q(legal_pid=pid))
+            if pid.isnumeric(): # Need to test for numeric otherwise we server 500 error.
+                q_list.append(Q(legal_plan__icontains=legal) |
+                        Q(legal_district_lot__icontains=legal) | Q(legal_pid=pid))
+            else:
+                q_list.append(Q(legal_plan__icontains=legal) |
+                        Q(legal_district_lot__icontains=legal))
 
         if owner:
             q_list.append(Q(owner_full_name__icontains=owner))
