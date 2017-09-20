@@ -36,10 +36,11 @@ class HomeView(generic.TemplateView):
 
     def get_context_data(self, **kwargs):
         """
-        Return the context for the home page.
+        Return the context for the page.
         """
         context = super(HomeView, self).get_context_data(**kwargs) 
         context['ENABLE_DATA_ENTRY'] = settings.ENABLE_DATA_ENTRY
+        context['ENABLE_GOOGLE_ANALYTICS'] = settings.ENABLE_GOOGLE_ANALYTICS
         return context
 
 def well_search(request):
@@ -84,7 +85,8 @@ def well_search(request):
                    'too_many_wells': well_results_overflow,
                    'wells_json': well_results_json,
                    'lat_long_box': lat_long_box,
-                   'land_districts' : land_districts
+                   'land_districts' : land_districts,
+                   'ENABLE_GOOGLE_ANALYTICS' : settings.ENABLE_GOOGLE_ANALYTICS
                   })
 
 def map_well_search(request):
@@ -109,6 +111,13 @@ class WellDetailView(generic.DetailView):
     model = Well
     context_object_name = 'well'
 
+    def get_context_data(self, **kwargs):
+        """
+        Return the context for the home page.
+        """
+        context = super(HomeView, self).get_context_data(**kwargs) 
+        context['ENABLE_GOOGLE_ANALYTICS'] = settings.ENABLE_GOOGLE_ANALYTICS
+        return context
 
 
 #class DetailView(generic.DetailView):
@@ -122,6 +131,13 @@ class ActivitySubmissionListView(generic.ListView):
     context_object_name = 'activity_submission_list'
     template_name = 'gwells/activity_submission_list.html'
 
+    def get_context_data(self, **kwargs):
+        """
+        Return the context for the page.
+        """
+        context = super(HomeView, self).get_context_data(**kwargs) 
+        context['ENABLE_GOOGLE_ANALYTICS'] = settings.ENABLE_GOOGLE_ANALYTICS
+        return context
 
 
 class ActivitySubmissionDetailView(generic.DetailView):
@@ -129,7 +145,13 @@ class ActivitySubmissionDetailView(generic.DetailView):
     context_object_name = 'activity_submission'
     template_name = 'gwells/activity_submission_detail.html'
 
-
+    def get_context_data(self, **kwargs):
+        """
+        Return the context for the page.
+        """
+        context = super(HomeView, self).get_context_data(**kwargs) 
+        context['ENABLE_GOOGLE_ANALYTICS'] = settings.ENABLE_GOOGLE_ANALYTICS
+        return context
 
 FORMS = [('type_and_class', ActivitySubmissionTypeAndClassForm),
          ('owner', WellOwnerForm),
@@ -171,6 +193,15 @@ TEMPLATES = {'type_and_class': 'gwells/activity_submission_form.html',
 
 class ActivitySubmissionWizardView(SessionWizardView):
     instance = None
+
+    
+    def get_context_data(self, **kwargs):
+        """
+        Return the context for the page.
+        """
+        context = super(HomeView, self).get_context_data(**kwargs) 
+        context['ENABLE_GOOGLE_ANALYTICS'] = settings.ENABLE_GOOGLE_ANALYTICS
+        return context
 
     def get_template_names(self):
         return [TEMPLATES[self.steps.current]]
