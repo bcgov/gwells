@@ -35,6 +35,9 @@ DEBUG = os.getenv('DJANGO_DEBUG', 'True') == 'True'
 # Controls availability of the data entry functionality
 ENABLE_DATA_ENTRY = os.getenv('ENABLE_DATA_ENTRY', 'False') == 'True'
 
+# Controls availability of Google Analytics
+ENABLE_GOOGLE_ANALYTICS = os.getenv('ENABLE_GOOGLE_ANALYTICS', 'False') == 'True'
+
 ALLOWED_HOSTS = ['*']
 
 # Application definition
