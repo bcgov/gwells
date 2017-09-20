@@ -32,6 +32,9 @@ SECRET_KEY = os.getenv(
 #DEBUG = False
 DEBUG = os.getenv('DJANGO_DEBUG', 'True') == 'True'
 
+# Controls availability of the data entry functionality
+ENABLE_DATA_ENTRY = os.getenv('ENABLE_DATA_ENTRY', 'False') == 'True'
+
 ALLOWED_HOSTS = ['*']
 
 # Application definition
