@@ -52,12 +52,9 @@ class SearchTestCase(TestCase):
         w3.longitude = -123.364190
         w3.save()
 
-
-
     def test_well_search_well_number(self):
         wells = Search.well_search('1', '', '', '')
         self.assertEqual(wells.count(), 2)
-
 
 
     def test_well_search_address(self):
@@ -65,11 +62,9 @@ class SearchTestCase(TestCase):
         self.assertEqual(wells.count(), 1)
 
 
-
     def test_well_search_legal(self):
         wells = Search.well_search('', '', '78', '')
         self.assertEqual(wells.count(), 2)
-
 
 
     def test_well_search_legal_pid(self):
@@ -80,17 +75,14 @@ class SearchTestCase(TestCase):
         self.assertEqual(wells.count(), 1)
 
 
-
     def test_well_search_owner(self):
         wells = Search.well_search('', '', '', 'smi')
         self.assertEqual(wells.count(), 2)
 
 
-
     def test_well_search_well_number_owner(self):
         wells = Search.well_search('123', '', '', 'john')
         self.assertEqual(wells.count(), 1)
-
 
 
     def test_well_search_params_named_positional(self):
@@ -99,11 +91,9 @@ class SearchTestCase(TestCase):
         self.assertEqual(named.count(), positional.count())
 
 
-
     def test_well_search_empty_string_params(self):
         wells = Search.well_search('', '', '', '')
         self.assertIsNone(wells)
-
 
 
     def test_well_search_none_params(self):
@@ -111,13 +101,11 @@ class SearchTestCase(TestCase):
         self.assertIsNone(wells)
 
 
-
     def test_well_search_gps(self):
         """ Check that a bounding box can be specified as search criteria """
         lat_long_box = {'start_corner': '48.418466095707046,-123.36755990982056', 'end_corner': '48.41493417062313,-123.36180925369264'}
         wells = Search.well_search('', '', '', '', lat_long_box)
         self.assertEqual(wells.count(), 2)
-
 
 
     def test_well_search_gps_street(self):
