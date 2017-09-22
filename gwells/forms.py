@@ -41,7 +41,7 @@ class SearchForm(forms.Form):
     )
 
     legal = forms.CharField(
-        label=mark_safe('Legal Plan or District Lot or PID <a href="#" data-toggle="popover" data-container="body" data-placement="right" \
+        label=mark_safe('Legal Plan or District Lot or Parcel Identification Number (PID) <a href="#" data-toggle="popover" data-container="body" data-placement="right" \
             data-content="Find the legal plan, district lot, or 9-digit PID (parcel identifier) on the property assessment, property tax notice, or real estate transaction."> \
             <i class="fa fa-question-circle" style="color:blue"></i></a>'),
         max_length=100,
