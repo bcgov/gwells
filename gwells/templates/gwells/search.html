@@ -1,9 +1,9 @@
 {% extends 'gwells/base.html' %}
 {% load crispy_forms_tags %}
 
-{% block title %}Search{% endblock %}
+{% block title %}Groundwater Well Search{% endblock %}
 
-{% block bodyheading_block %}Search{% endblock %}
+{% block bodyheading_block %}Groundwater Well Search{% endblock %}
 
 {% block introduction_block %}
 {% endblock %}
@@ -27,14 +27,11 @@
 
 
 <div class="row">
-    <div class="col-md-4">
-        Search with text or by viewing an area on the map.<br />You must be zoomed into a small area before you can search for wells within that area.<br />For text searching:
-        <ul>
-            <li>Search by well tag or well ID plate number (if known) for the most precise results</li>
-            <li>If not known, try searching with one or more additional fields</li>
-        </ul>
-        Use <a href="#">Advanced Search</a> for additional search options
-        <br /><br />
+    <p>Not all groundwater wells are registered with the province, as registration was voluntary until February 29, 2016. Data quality issues may impact search results.</p>
+    <p>Search by one of the fields below, or zoom to a location on the map and select the "Search Wells in this Area" button.</p>
+</div>
+<div class="row">
+      <div class="col-md-5">
         {% crispy form %}
     </div>
     <div class="col-md-6">
@@ -139,10 +136,6 @@
 </p>
 {% endif %}
 
-<p>
-    We may not have a copy of your well record. Until February 29, 2016, it was voluntary for well drillers to submit well records to the Province.
-    Issues related to data quality may make finding your well record difficult.
-</p>
 {% endblock %}
 
 {% block jqscript_block %}
