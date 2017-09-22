@@ -1,11 +1,10 @@
 import geb.spock.GebReportingSpec
 import pages.app.SearchPage
-import spock.lang.Unroll
+import spock.lang.*
 import geb.Module
 
-
 class SearchResultsS1Spec extends GebReportingSpec {
-
+ 
 // Feature: Search Results
 // In order to view search results as a generic user, I want to be able to see the number of matching search results and have these displayed with minimal scrolling
 
@@ -53,6 +52,9 @@ class SearchResultsS1Spec extends GebReportingSpec {
         "One matching result - Well ID - 107667"					| "107667"			| ""						| ""				| ""				| "No"         | 1
         "One matching result - Address - 21231 16TH"				| ""				| "218 RD"					| ""				| ""				| "No"         | 1
         "One matching result - Legal PID - 026737680"				| ""				| ""						| "026737680"		| ""				| "No"         | 1
+        "One matching result - Legal PID - KAP 69982"               | ""                | ""                        | "KAP 69982"       | ""                | "No"         | 1
+        "One matching result - Legal PID - KAP67303"                | ""                | ""                        | "KAP67303"        | ""                | "No"         | 1
+        "Multiple matching results - Legal PID - KAP67"             | ""                | ""                        | "KAP67"           | ""                | "No"         | 21
         "One matching result - Owner - GARY AKLES"					| ""				| ""						| ""				| "GARY AKLES"		| "No"         | 1
         "One matching result - - All Fields"						| "107667"			| "218 RD"					| "026737680"		| "GARY AKLES"		| "No"         | 1
         "Multiple matching results - Well ID 123"                   | "123"             | ""                        | ""                | ""                | "No"         | 2
