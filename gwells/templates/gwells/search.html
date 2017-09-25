@@ -33,6 +33,11 @@
 <div class="row">
       <div class="col-md-5">
         {% crispy form %}
+        <p>For additional search options, try:</p>
+          <ul>
+              <li><a href="http://maps.gov.bc.ca/ess/sv/wrbc/">B.C. Water Resource Atlas</a></li>
+              <li><a href="http://maps.gov.bc.ca/ess/hm/imap4m/">iMapBC</a></li>
+          </ul>
     </div>
     <div class="col-md-6">
             <div aria-label="A map associated with GWELLS Search. All well information in this map is accessible via the table of well results that opens below the search form when a search succeeds." id="search-map"></div>
@@ -51,10 +56,10 @@
         <thead>
             <tr style="text-align: left;">
                 <th>
-                    Well Tag #
+                    Well Tag Number
                 </th>
                 <th>
-                    Well ID Plate #
+                    Well ID Plate Number
                 </th>
                 <th>
                     Owner Name
@@ -78,10 +83,10 @@
                     PID
                 </th>
                 <th>
-                    Diameter (in)
+                    Diameter (inches)
                 </th>
                 <th>
-                    Finished Well Depth (ft)
+                    Finished Well Depth (feet)
                 </th>
             </tr>
         </thead>
