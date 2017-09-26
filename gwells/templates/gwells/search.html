@@ -3,7 +3,7 @@
 
 {% block title %}Search{% endblock %}
 
-{% block bodyheading_block %}Search{% endblock %}
+{% block bodyheading_block %}Groundwater Well Search{% endblock %}
 
 {% block introduction_block %}
 {% endblock %}
@@ -27,15 +27,17 @@
 
 
 <div class="row">
-    <div class="col-md-4">
-        Search with text or by viewing an area on the map.<br />You must be zoomed into a small area before you can search for wells within that area.<br />For text searching:
-        <ul>
-            <li>Search by well tag or well ID plate number (if known) for the most precise results</li>
-            <li>If not known, try searching with one or more additional fields</li>
-        </ul>
-        Use <a href="#">Advanced Search</a> for additional search options
-        <br /><br />
+    <p>Not all groundwater wells are registered with the province, as registration was voluntary until February 29, 2016. Data quality issues may impact search results.</p>
+    <p>Search by one of the fields below, or zoom to a location on the map and select the "Search Wells in this Area" button.</p>
+</div>
+<div class="row">
+      <div class="col-md-5">
         {% crispy form %}
+        <p>For additional search options, try:</p>
+          <ul>
+              <li><a href="http://maps.gov.bc.ca/ess/sv/wrbc/" id="BCWRAtlas">B.C. Water Resource Atlas</a></li>
+              <li><a href="http://maps.gov.bc.ca/ess/hm/imap4m/" id="iMapBC">iMapBC</a></li>
+          </ul>
     </div>
     <div class="col-md-6">
             <div aria-label="A map associated with GWELLS Search. All well information in this map is accessible via the table of well results that opens below the search form when a search succeeds." id="search-map"></div>
@@ -54,10 +56,10 @@
         <thead>
             <tr style="text-align: left;">
                 <th>
-                    Well Tag #
+                    Well Tag Number
                 </th>
                 <th>
-                    Well ID Plate #
+                    Well ID Plate Number
                 </th>
                 <th>
                     Owner Name
@@ -81,10 +83,10 @@
                     PID
                 </th>
                 <th>
-                    Diameter (in)
+                    Diameter (inches)
                 </th>
                 <th>
-                    Finished Well Depth (ft)
+                    Finished Well Depth (feet)
                 </th>
             </tr>
         </thead>
@@ -114,7 +116,7 @@
                 {{ well.legal_district_lot|default_if_none:'&nbsp;' }}
             </td>
             <td>
-                {{ well.legal_land_district.name|default_if_none:'&nbsp;' }}
+                {{ land_districts.well.legal_land_district.land_district_guid|default_if_none:'&nbsp;' }}
             </td>
             <td>
                 {{ well.legal_pid|stringformat:"09d"|default_if_none:'&nbsp;' }}
@@ -139,10 +141,6 @@
 </p>
 {% endif %}
 
-<p>
-    We may not have a copy of your well record. Until February 29, 2016, it was voluntary for well drillers to submit well records to the Province.
-    Issues related to data quality may make finding your well record difficult.
-</p>
 {% endblock %}
 
 {% block jqscript_block %}
