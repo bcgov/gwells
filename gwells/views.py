@@ -11,6 +11,7 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
+from django.conf import settings
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, render
 #from django.urls import reverse
@@ -18,7 +19,7 @@ from django.views import generic
 from django.views.generic.edit import FormView
 #from django.utils import timezone
 from formtools.wizard.views import SessionWizardView
-from .models import WellActivityType, WellYieldUnit, Well, ActivitySubmission, WellClass, ScreenIntake
+from .models import WellActivityType, WellYieldUnit, Well, ActivitySubmission, WellClass, ScreenIntake, LandDistrict
 from .forms import SearchForm, ActivitySubmissionTypeAndClassForm, WellOwnerForm, ActivitySubmissionLocationForm, ActivitySubmissionGpsForm
 from .forms import ActivitySubmissionLithologyFormSet, ActivitySubmissionCasingFormSet, ActivitySubmissionSurfaceSealForm, ActivitySubmissionLinerPerforationFormSet
 from .forms import ActivitySubmissionScreenIntakeForm, ActivitySubmissionScreenFormSet, ActivitySubmissionFilterPackForm, ActivitySubmissionDevelopmentForm, ProductionDataFormSet
@@ -29,15 +30,18 @@ from django.core.serializers.json import DjangoJSONEncoder
 def health(request):
     return HttpResponse(WellActivityType.objects.count())
 
-class HelloWorldView(generic.ListView):
+class HomeView(generic.TemplateView):
     template_name = 'gwells/index.html'
     context_object_name = 'yield_unit_list'
 
-    def get_queryset(self):
+    def get_context_data(self, **kwargs):
         """
-        Return the well yield units for hello world.
+        Return the context for the page.
         """
-        return WellYieldUnit.objects.order_by('-sort_order')
+        context = super(HomeView, self).get_context_data(**kwargs) 
+        context['ENABLE_DATA_ENTRY'] = settings.ENABLE_DATA_ENTRY
+        context['ENABLE_GOOGLE_ANALYTICS'] = settings.ENABLE_GOOGLE_ANALYTICS
+        return context
 
 def well_search(request):
     well_results = None
@@ -70,13 +74,20 @@ def well_search(request):
                 [well.as_dict() for well in well_results],
                 cls=DjangoJSONEncoder)
 
+    # create an object that will be used to render the names for land districts.
+    land_districts = {}
+    all_land_districts = LandDistrict.objects.all()
+    for land_district in all_land_districts:
+        land_districts[land_district.land_district_guid] = land_district.name
+
     return render(request, 'gwells/search.html',
                   {'form': form, 'well_list': well_results,
                    'too_many_wells': well_results_overflow,
                    'wells_json': well_results_json,
-                   'lat_long_box': lat_long_box
+                   'lat_long_box': lat_long_box,
+                   'land_districts' : land_districts,
+                   'ENABLE_GOOGLE_ANALYTICS' : settings.ENABLE_GOOGLE_ANALYTICS
                   })
-
 
 def map_well_search(request):
     well_results = None
@@ -100,6 +111,13 @@ class WellDetailView(generic.DetailView):
     model = Well
     context_object_name = 'well'
 
+    def get_context_data(self, **kwargs):
+        """
+        Return the context for the home page.
+        """
+        context = super(WellDetailView, self).get_context_data(**kwargs) 
+        context['ENABLE_GOOGLE_ANALYTICS'] = settings.ENABLE_GOOGLE_ANALYTICS
+        return context
 
 
 #class DetailView(generic.DetailView):
@@ -113,6 +131,13 @@ class ActivitySubmissionListView(generic.ListView):
     context_object_name = 'activity_submission_list'
     template_name = 'gwells/activity_submission_list.html'
 
+    def get_context_data(self, **kwargs):
+        """
+        Return the context for the page.
+        """
+        context = super(ActivitySubmissionListView, self).get_context_data(**kwargs) 
+        context['ENABLE_GOOGLE_ANALYTICS'] = settings.ENABLE_GOOGLE_ANALYTICS
+        return context
 
 
 class ActivitySubmissionDetailView(generic.DetailView):
@@ -120,7 +145,13 @@ class ActivitySubmissionDetailView(generic.DetailView):
     context_object_name = 'activity_submission'
     template_name = 'gwells/activity_submission_detail.html'
 
-
+    def get_context_data(self, **kwargs):
+        """
+        Return the context for the page.
+        """
+        context = super(ActivitySubmissionDetailView, self).get_context_data(**kwargs) 
+        context['ENABLE_GOOGLE_ANALYTICS'] = settings.ENABLE_GOOGLE_ANALYTICS
+        return context
 
 FORMS = [('type_and_class', ActivitySubmissionTypeAndClassForm),
          ('owner', WellOwnerForm),
@@ -162,6 +193,15 @@ TEMPLATES = {'type_and_class': 'gwells/activity_submission_form.html',
 
 class ActivitySubmissionWizardView(SessionWizardView):
     instance = None
+
+    
+    def get_context_data(self, **kwargs):
+        """
+        Return the context for the page.
+        """
+        context = super(ActivitySubmissionWizardView, self).get_context_data(**kwargs) 
+        context['ENABLE_GOOGLE_ANALYTICS'] = settings.ENABLE_GOOGLE_ANALYTICS
+        return context
 
     def get_template_names(self):
         return [TEMPLATES[self.steps.current]]
