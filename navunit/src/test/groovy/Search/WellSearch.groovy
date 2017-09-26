@@ -4,7 +4,7 @@ import pages.app.WellSummaryPage
 import spock.lang.Unroll
 
 
-class WellSearchS1Spec extends GebReportingSpec {
+class WellSearchSpec extends GebReportingSpec {
 
 // Feature: Well Search
 // In order to find a well as a generic user, I want to be able to search for a well using search criteria
@@ -27,8 +27,7 @@ class WellSearchS1Spec extends GebReportingSpec {
 			to SearchPage
  
         when: "I enter a valid Well Tag Number or Well Idenification Plate Number in the Well field And click search"
-		   	well_id.value("$WellId")
-			submit_button.click()
+			SearchWell("$WellId", "","","")
 
         then: "I should see the wells matching the entered Well Tag Number OR Well Identification Plate Number displayed in the search results"
 			if("$ShowError" == "Yes")
@@ -146,9 +145,8 @@ class WellSearchS1Spec extends GebReportingSpec {
 			to SearchPage
  
         when: "I enter a complete or partial street address in the Address field"
-		   	address.value("$Address")
 		and: "click search"
-			submit_button.click()
+			SearchWell("", "$Address","","")
 
         then: "I should see wells containing the entered street address information displayed in the search results"
         
@@ -210,9 +208,8 @@ class WellSearchS1Spec extends GebReportingSpec {
 			to SearchPage
  
         when: "I enter a Legal Plan, District Lot or PID information in the Legal Description field"
-        	legal_id.value("$LegalId")
 		and: "click search"
-			submit_button.click()
+			SearchWell("", "","$LegalId","")
 
         then: "I should see wells containing the entered Legal Plan, District Lot or PID information displayed in the search results"
         
@@ -273,9 +270,8 @@ class WellSearchS1Spec extends GebReportingSpec {
 			to SearchPage
  
         when: "I enter a complete or partial owner name in the Owner Name"
-        	owner_id.value("$Owner")
 		and: "click search"
-			submit_button.click()
+			SearchWell("", "","","$Owner")
 
         then: "I should see wells containing the entered owner name information displayed in the search result"
 	
@@ -336,13 +332,13 @@ class WellSearchS1Spec extends GebReportingSpec {
 			to SearchPage
  
         when: "I enter a complete or partial owner name in the Owner Name field"
-        	owner_id.value("$Owner")
+        	//owner_id.value("$Owner")
         
         and: "And I enter a complete or partial street address in the Street Address field"
-            address.value("$Address") 	
+            //address.value("$Address") 	
 		
 		and: "click search"
-			submit_button.click()
+			SearchWell("", "$Address","","$Owner")
 
         then: "I should see wells containing the entered owner name information displayed in the search result"
 	
