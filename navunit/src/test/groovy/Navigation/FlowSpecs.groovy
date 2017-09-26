@@ -22,7 +22,6 @@ class FlowSpecs extends GebReportingSpec {
         then:
 			at assertPage
 		
-		BCWRAtlas
         where:
         startPage                   | clickLink                | clickCount    | timeoutSeconds    || assertPage
         HomePage                    | "ribbon-home"            | 1             | 3                 || HomePage

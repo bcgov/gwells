@@ -19,12 +19,7 @@ class SearchResultsSpec extends GebReportingSpec {
 
         when: "#TestDesc, this will results in 0 found"
         
-        well_id.value("$WellId")
-        address.value("$Address")
-        legal_id.value("$LegalId")
-		owner_id.value("$Owner")
-        submit_button.click()
-
+        SearchWell("$WellId", "$Address","$LegalId","$Owner")
 
         then: "No records message should be shown"
         if("$ShowError" == "Yes")
@@ -111,11 +106,7 @@ class SearchResultsSpec extends GebReportingSpec {
         given: "I have <count> search results"
         to SearchPage
 
-        well_id.value("$WellId")
-        address.value("$Address")
-        legal_id.value("$LegalId")
-        owner_id.value("$Owner")
-        submit_button.click()
+        SearchWell("$WellId", "$Address","$LegalId","$Owner")
 
         when: "I view all search results"
 
