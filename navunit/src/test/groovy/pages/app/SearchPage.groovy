@@ -48,4 +48,12 @@ class SearchPage extends Page {
         def str = results_info.text().split(' ')
         return str[3]
     }
+
+    void SearchWell(String s_well_id, String s_address, String s_legal_id, String s_owner) {        
+        well_id.value(s_well_id)
+        address.value(s_address)
+        legal_id.value(s_legal_id)
+        owner_id.value(s_owner)
+        submit_button.click()
+    }    
 }

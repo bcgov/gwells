@@ -36,12 +36,7 @@ Given I have <count> search results
         given: "I have <count> search result"
 			to SearchPage
 
-			well_id.value("$WellId")
-        	address.value("$Address")
-        	legal_id.value("$LegalId")
-			owner_id.value("$Owner")        
-			
-			submit_button.click()	
+        SearchWell("$WellId", "$Address","$LegalId","$Owner")
 			
 			assert waitFor { results_info.displayed == true }
 	
@@ -84,12 +79,7 @@ Given I have <count> search results
         given: "I have <count> search result"
          to SearchPage
 
-         well_id.value("$WellId")
-         address.value("$Address")
-         legal_id.value("$LegalId")
-         owner_id.value("$Owner")        
-      
-         submit_button.click()  
+         SearchWell("$WellId", "$Address","$LegalId","$Owner") 
       
          assert waitFor { results_info.displayed == true }
   
@@ -148,12 +138,7 @@ Given I have <count> search results
         given: "I have <count> search result"
          to SearchPage
 
-         well_id.value("$WellId")
-         address.value("$Address")
-         legal_id.value("$LegalId")
-         owner_id.value("$Owner")        
-      
-         submit_button.click()  
+         SearchWell("$WellId", "$Address","$LegalId","$Owner")
       
          assert waitFor { results_info.displayed == true }
   
