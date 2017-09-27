@@ -34,9 +34,15 @@ node('maven') {
         }
     }
 	
+    stage('checkout for bdd') {
+        echo "checking out source"
+        echo "Build: ${BUILD_ID}"
+        checkout scm
+    }	
+	
 	stage('validation') {
         dir('navunit') {
-            sh './gradlew phantomJsTest'
+            sh './gradlew --debug --stacktrace phantomJsTest'
         }
     }	
 }
