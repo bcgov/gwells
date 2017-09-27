@@ -33,23 +33,13 @@ node('maven') {
             sh returnStdout: true, script: "./gradlew sonarqube -Dsonar.host.url=${SONARQUBE_URL} -Dsonar.verbose=true --stacktrace --info  -Dsonar.sources=.."
         }
     }
-}
-
-node('master') {
-    
-    stage('checkout for bdd') {
-        echo "checking out source"
-        echo "Build: ${BUILD_ID}"
-        checkout scm
-    }
 	
 	stage('validation') {
         dir('navunit') {
             sh './gradlew phantomJsTest'
         }
-    }
+    }	
 }
-
 
 stage('deploy-test') {
     input "Deploy to test?"
