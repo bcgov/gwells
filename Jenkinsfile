@@ -46,8 +46,11 @@ node('master') {
 	
 	stage('validation') {
         dir('navunit') {
-            sh './gradlew --debug --stacktrace phantomJsTest'
-			archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
+			try {
+				sh './gradlew --debug --stacktrace phantomJsTest'
+			} finally {
+				archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
+			}
         }
     }
 	
