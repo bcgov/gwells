@@ -48,7 +48,7 @@ node('master') {
         dir('navunit') {
 			try {
 				sh './gradlew --debug --stacktrace phantomJsTest'
-			} finally {
+			} finally { 
 				archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
 			}
         }
