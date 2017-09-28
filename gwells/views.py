@@ -43,10 +43,31 @@ class HomeView(generic.TemplateView):
         context['ENABLE_GOOGLE_ANALYTICS'] = settings.ENABLE_GOOGLE_ANALYTICS
         return context
 
+def common_well_search(request):
+    """
+        Returns json and array data for a well search.  Used by both the map and text search.
+    """
+    well_results = None
+    well_results_json = '[]'
+   
+    form = SearchForm(request.GET)
+    if form.is_valid():
+        well_results = form.process()
+
+    if well_results and not len(well_results) > SearchForm.WELL_RESULTS_LIMIT:
+        well_results_json = json.dumps(
+            [well.as_dict() for well in well_results],
+            cls=DjangoJSONEncoder)
+    return form, well_results, well_results_json
+
 def well_search(request):
+    """
+        Text search.
+    """
     well_results = None
     well_results_overflow = None
     well_results_json = '[]'
+    form = None
     lat_long_box = '{}'
 
     if request.method == 'GET' and 'well' in request.GET:
@@ -58,10 +79,7 @@ def well_search(request):
             lat_long_box = json.dumps(
                 {'startCorner': start_lat_long, 'endCorner': end_lat_long}, 
                 cls=DjangoJSONEncoder)
-        form = SearchForm(request.GET)
-        if form.is_valid():
-            # process the data in form.cleaned_data
-            well_results = form.process()
+        form, well_results, well_results_json = common_well_search(request)
     else:
         form = SearchForm()
   
@@ -90,22 +108,16 @@ def well_search(request):
                   })
 
 def map_well_search(request):
+    """
+        Map search.
+    """
     well_results = None
     well_results_json = '[]'
-
+    form = None
     if (request.method == 'GET' and 'start_lat_long' in request.GET
             and 'end_lat_long' in request.GET):
-        well_results = SearchForm(request.GET)
-        if well_results.is_valid():
-            well_results = well_results.process()
-
-    if well_results and not len(well_results) > SearchForm.WELL_RESULTS_LIMIT:
-        well_results_json = json.dumps(
-            [well.as_dict() for well in well_results],
-            cls=DjangoJSONEncoder)
-
+        form, well_results, well_results_json = common_well_search(request)
     return JsonResponse(well_results_json, safe=False)
-
 
 class WellDetailView(generic.DetailView):
     model = Well
