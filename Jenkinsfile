@@ -34,17 +34,23 @@ node('maven') {
         }
     }
 	
+}
+
+node('master') {
+    
     stage('checkout for bdd') {
         echo "checking out source"
         echo "Build: ${BUILD_ID}"
         checkout scm
-    }	
+    }
 	
 	stage('validation') {
         dir('navunit') {
             sh './gradlew --debug --stacktrace phantomJsTest'
+			archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
         }
-    }	
+    }
+	
 }
 
 stage('deploy-test') {
