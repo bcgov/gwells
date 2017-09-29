@@ -5,7 +5,6 @@
 */
 import org.openqa.selenium.Dimension
 import org.openqa.selenium.chrome.ChromeDriver
-import org.openqa.selenium.ie.InternetExplorerDriver
 import org.openqa.selenium.firefox.FirefoxDriver
 import org.openqa.selenium.phantomjs.PhantomJSDriver
 import org.openqa.selenium.remote.DesiredCapabilities
@@ -29,20 +28,6 @@ environments {
 			d.manage().window().maximize();
 			return d
 		}*/
-	}
-	// run via “./gradlew ieTest”
-	ie {
-		
-		def d = new DesiredCapabilities();
-		//d.internetExplorer().setCapability(InternetExplorerDriver.BROWSER_ATTACH_TIMEOUT,1500);
-		d.internetExplorer().setCapability(InternetExplorerDriver.FORCE_CREATE_PROCESS,true);
-		d.internetExplorer().setCapability(InternetExplorerDriver.INITIAL_BROWSER_URL,"https://gwells-dev.pathfinder.gov.bc.ca/");
-		d.internetExplorer().setCapability(InternetExplorerDriver.INTRODUCE_FLAKINESS_BY_IGNORING_SECURITY_DOMAINS,true);
-		d.internetExplorer().setCapability(InternetExplorerDriver.NATIVE_EVENTS,false);
-		//d.internetExplorer().setCapability(InternetExplorerDriver.REQUIRE_WINDOW_FOCUS,true);
-		driver = ie
-		driver = { new InternetExplorerDriver(d) }
-
 	}
 
 	// run via “./gradlew firefoxTest”
