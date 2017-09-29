@@ -7,6 +7,7 @@ import org.openqa.selenium.Dimension
 import org.openqa.selenium.chrome.ChromeDriver
 import org.openqa.selenium.firefox.FirefoxDriver
 import org.openqa.selenium.phantomjs.PhantomJSDriver
+import org.openqa.selenium.remote.DesiredCapabilities
 
 waiting {
 	timeout = 15
@@ -21,6 +22,12 @@ environments {
 	// See: http://code.google.com/p/selenium/wiki/ChromeDriver
 	chrome {
 		driver = { new ChromeDriver() }
+/*	chrome {
+		driver = { def d = new ChromeDriver(new DesiredCapabilities());
+			//d.manage().window().size = new Dimension(1920, 1080);
+			d.manage().window().maximize();
+			return d
+		}*/
 	}
 
 	// run via “./gradlew firefoxTest”
