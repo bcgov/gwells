@@ -624,7 +624,74 @@
     "status": {
         "loadBalancer": {}
     }
-}
+},
+{
+      "kind": "ImageStream",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "openshift-postgresql-oracle-fdw",
+        "annotations": {
+          "description": "Keeps track of changes in the openshift-postgresql-oracle_fdw image"
+        }
+      }
+},
+{
+      "kind": "BuildConfig",
+      "apiVersion": "v1",
+      "metadata":
+      {
+        "name": "openshift-postgresql-oracle-fdw",
+        "creationTimestamp": null,
+        "labels":
+        {
+          "app": "openshift-postgresql-oracle-fdw"
+        }
+      },
+      "spec":
+      {
+        "triggers": [
+          {
+            "type": "ImageChange",
+            "imageChange": {}
+          },
+          {
+            "type": "ConfigChange"
+          }
+        ],
+        "runPolicy": "Serial",
+        "source":
+        {
+          "type": "Git",
+          "git":
+          {
+            "uri": "https://github.com/bcgov/openshift-postgresql-oracle_fdw.git",
+			"ref": "master"
+          },
+          "contextDir": ""
+        },
+        "strategy": {
+					"type": "Docker",
+					"dockerStrategy": {
+						"dockerfilePath" : "Dockerfile.rhel7"
+					}
+		},
+        "output":
+        {
+          "to":
+          {
+            "kind": "ImageStreamTag",
+            "name": "openshift-postgresql-oracle-fdw:latest"
+          }
+        },
+        "resources": {},
+        "postCommit": {},
+        "nodeSelector": null
+      },
+      "status":
+      {
+        "lastVersion": 0
+      }
+    }
   ],
   "parameters": [
     {
