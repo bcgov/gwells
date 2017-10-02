@@ -1,7 +1,15 @@
 import geb.spock.GebReportingSpec
 import pages.app.SearchPage
 import pages.app.WellSummaryPage
+
 import spock.lang.Unroll
+import spock.lang.Ignore
+import spock.lang.Issue
+import spock.lang.Narrative
+//import spock.lang.PendingFeature
+import spock.lang.See
+import spock.lang.Specification
+import spock.lang.Title
 
 class SearchResultsPaginationSpec extends GebReportingSpec {
 
@@ -36,7 +44,7 @@ Given I have <count> search results
         given: "I have <count> search result"
 			to SearchPage
 
-        SearchWell("$WellId", "$Address","$LegalId","$Owner")
+      SearchWell("", "$Address","","")
 			
 			assert waitFor { results_info.displayed == true }
 	
@@ -79,8 +87,8 @@ Given I have <count> search results
         given: "I have <count> search result"
          to SearchPage
 
-         SearchWell("$WellId", "$Address","$LegalId","$Owner") 
-      
+         SearchWell("", "$Address","","")      
+
          assert waitFor { results_info.displayed == true }
   
         when: "I view all search results from page <page>"
@@ -90,11 +98,11 @@ Given I have <count> search results
           def CalcMax = "$NumberResult".toInteger() / "$Page".toInteger()
 
           if ( CalcMax <= 10 ) {
-            $("#results_paginate a[data-dt-idx=\"7\"]").click() 
+            $("#results_paginate a[data-dt-idx=\"7\"]").click()
           }
           else {
             // Last Page shown is always index 7
-            $("#results_paginate a[data-dt-idx=\"$Page\"]").click() 
+            $("#results_paginate a[data-dt-idx=\"$Page\"]").click()
           }
 
         then: "I should see a link \'Next\'"
@@ -138,7 +146,7 @@ Given I have <count> search results
         given: "I have <count> search result"
          to SearchPage
 
-         SearchWell("$WellId", "$Address","$LegalId","$Owner")
+         SearchWell("", "$Address","","")
       
          assert waitFor { results_info.displayed == true }
   
@@ -152,11 +160,11 @@ Given I have <count> search results
           def CalcMax = "$NumberResult".toInteger() / "$Page".toInteger()
 
           if ( CalcMax <= 10 ) {
-            $("#results_paginate a[data-dt-idx=\"7\"]").click() 
+            $("#results_paginate a[data-dt-idx=\"7\"]").click()
           }
           else {
             // Last Page shown is always index 7
-            $("#results_paginate a[data-dt-idx=\"$Page\"]").click() 
+            $("#results_paginate a[data-dt-idx=\"$Page\"]").click()
           }
           
           if ( "$Page" == "1") {
@@ -174,7 +182,7 @@ Given I have <count> search results
           }
 
        when: "I click \'Previous\'"
-          $("#results_paginate a[data-dt-idx=\"0\"]").click() //Always index 0
+           $("#results_paginate a[data-dt-idx=\"0\"]").click() //Always index 0
            def tmpPage = "$Page".toInteger()
            tmpPage = tmpPage - 1
 

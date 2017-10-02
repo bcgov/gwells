@@ -1,10 +1,16 @@
 import geb.spock.GebReportingSpec
 import pages.app.SearchPage
-import spock.lang.*
-import geb.Module
+
+import spock.lang.Ignore
+import spock.lang.Issue
+import spock.lang.Narrative
+import spock.lang.See
+import spock.lang.Specification
+import spock.lang.Title
+import spock.lang.Unroll    
 
 class SearchResultsSpec extends GebReportingSpec {
- 
+
 // Feature: Search Results
 // In order to view search results as a generic user, I want to be able to see the number of matching search results and have these displayed with minimal scrolling
 
@@ -16,6 +22,8 @@ class SearchResultsSpec extends GebReportingSpec {
     def "Scenario 1: #TestDesc"() {
         given:
         to SearchPage
+        
+        InjectLibrary("https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js")
 
         when: "#TestDesc, this will results in 0 found"
         
