@@ -1,14 +1,21 @@
 import geb.spock.GebReportingSpec
 import pages.app.SearchPage
 import pages.app.WellSummaryPage
+
+import spock.lang.Ignore
+import spock.lang.Issue
+import spock.lang.Narrative
+import spock.lang.See
+import spock.lang.Specification
+import spock.lang.Title
 import spock.lang.Unroll
 
 
+@Title("Well Search")
+@Narrative("""
+In order to find a well as a generic user, I want to be able to search for a well using search criteria
+""")
 class WellSearchSpec extends GebReportingSpec {
-
-// Feature: Well Search
-// In order to find a well as a generic user, I want to be able to search for a well using search criteria
-
     @Unroll
 
 /* 	Scenario 1: Well Search by Well Tag Number OR Well Identificaiton Plate Number
@@ -48,18 +55,18 @@ class WellSearchSpec extends GebReportingSpec {
             		if ("$TagID" == "tag") {
 						// assert $("a",text:"$WellId")
 						assert waitFor {($('#results > tbody > tr:nth-child('+ m.toString() +') > td:nth-child(1) > a').text() == "$WellId")}
-/*						println "n: " + n.toString()
+						println "n: " + n.toString()
 						println results_table[0 + (11 * n)]
-            			println results_table[1 + (11 * n)]*/
+            			println results_table[1 + (11 * n)]
             			
             			n="$NumberResult".toInteger()
             			}
 					else {
-/*						println "n: " + n.toString()
+						println "n: " + n.toString()
 						println results_table[0 + (11 * n)]
             			println results_table[1 + (11 * n)] 
 
-*/						def strWellId = $('#results > tbody > tr:nth-child('+ m.toString() +') > td:nth-child(1)').text()
+						def strWellId = $('#results > tbody > tr:nth-child('+ m.toString() +') > td:nth-child(1)').text()
 						if( strWellId == "$SecondID") {
             				assert waitFor {($('#results > tbody > tr:nth-child('+ m.toString() +') > td:nth-child(2)').text() == "$WellId")}
 							assert waitFor {($('#results > tbody > tr:nth-child('+ m.toString() +') > td:nth-child(1) > a').text() == "$SecondID")}
@@ -87,21 +94,21 @@ class WellSearchSpec extends GebReportingSpec {
             		if ("$TagID" == "tag") {
 						$('#results > tbody > tr:nth-child('+ m.toString() +') > td:nth-child(1) > a').click()
 						
-/*						println "n: " + n.toString()
+						println "n: " + n.toString()
 						println results_table[0 + (11 * n)]
             			println results_table[1 + (11 * n)]
-*/            			
+           			
             			at WellSummaryPage
 						assert waitFor { well_tag_number.text() == "$WellId" }
             			
             			n="$NumberResult".toInteger()
 					}
 					else {
-/*						println "n: " + n.toString()
+						println "n: " + n.toString()
 						println results_table[0 + (11 * n)]
             			println results_table[1 + (11 * n)] 
 
-*/						def strWellId = $('#results > tbody > tr:nth-child('+ m.toString() +') > td:nth-child(1)').text()
+						def strWellId = $('#results > tbody > tr:nth-child('+ m.toString() +') > td:nth-child(1)').text()
 						if( strWellId == "$SecondID") {
 							$('#results > tbody > tr:nth-child('+ m.toString() +') > td:nth-child(1) > a').click()
 					
@@ -150,14 +157,15 @@ class WellSearchSpec extends GebReportingSpec {
 
         then: "I should see wells containing the entered street address information displayed in the search results"
         
-        //println "Results Table: $results_table"
+        println "Results Table: $results_table"
 		
 			if("$ShowError" == "Yes")
 				assert waitFor { not_found_msg.displayed == true }
 			else
 			{
 	         	//assert results_table.join(",").indexOf("$Address") >= -1
-	         	assert CheckResultTable("$Address") == true
+	         	assert waitFor {($("div",id:"results_info").displayed == true)}
+	         	assert waitFor { CheckResultTable("$Address") == true }
 	         }	
 
         and: "each search result will include a link to the associated well details page"
@@ -219,7 +227,8 @@ class WellSearchSpec extends GebReportingSpec {
 				assert waitFor { not_found_msg.displayed == true }
 			else
 			{
-	         	assert CheckResultTable("$LegalId") == true
+	         	assert waitFor {($("div",id:"results_info").displayed == true)}
+	         	assert waitFor { CheckResultTable("$LegalId") == true }
 	         }	
 
         and: "each search result will include a link to the associated well details page"
@@ -279,7 +288,8 @@ class WellSearchSpec extends GebReportingSpec {
 				assert waitFor { not_found_msg.displayed == true }
 			else
 			{
-	         	assert CheckResultTable("$Owner") == true
+	         	assert waitFor {($("div",id:"results_info").displayed == true)}
+	         	assert waitFor { CheckResultTable("$Owner") == true }
 	         }	
 
         and: "each search result will include a link to the associated well details page"
@@ -346,8 +356,9 @@ class WellSearchSpec extends GebReportingSpec {
 				assert waitFor { not_found_msg.displayed == true }
 			else
 			{
-	         	assert CheckResultTable("$Address") == true
-	         	assert CheckResultTable("$Owner") == true
+	         	assert waitFor {($("div",id:"results_info").displayed == true)}
+	         	assert waitFor { CheckResultTable("$Address") == true }
+	         	assert waitFor { CheckResultTable("$Owner") == true }
 	         }	
 
         and: "each search result will include a link to the associated well details page"
