@@ -14,7 +14,8 @@ class SearchPage extends Page {
         start_lat_long(wait: true) { $("input", name:"start_lat_long", type:"hidden") }
         end_lat_long(wait: true) { $("input", name:"end_lat_long", type:"hidden") }
         submit_button(wait: true) { $("input", id:"submit-id-s") }
-        not_found_msg { $("em",id:"em-no-records-found") }
+        not_found_msg { $("div",id:"no-records-found") }
+        too_many_found_msg { $("div",id:"too-many-wells") }
         results_info { $("div",id:"results_info") }
         results_table { $("#results td")*.text() }
         page_buttons { $("#results_paginate a")*.text() }
