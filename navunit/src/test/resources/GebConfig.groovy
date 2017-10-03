@@ -48,8 +48,8 @@ environments {
 //
 // phantomJs --> “./gradlew phantomJsTest”   (headless)
 // chrome    --> "./gradlew chromeTest"
-baseUrl = "http://localhost:8000"
-//baseUrl = "http://gwells-dev.pathfinder.gov.bc.ca"
+//baseUrl = "http://localhost:8000"
+baseUrl = "http://gwells-dev.pathfinder.gov.bc.ca"
 
 baseNavigatorWaiting = true
 
