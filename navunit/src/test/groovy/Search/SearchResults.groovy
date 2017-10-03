@@ -9,7 +9,7 @@ import spock.lang.Specification
 import spock.lang.Title
 import spock.lang.Unroll    
 
-class SearchResultsSpec extends GebReportingSpec {
+class SearchResultsSpecs extends GebReportingSpec {
 
 // Feature: Search Results
 // In order to view search results as a generic user, I want to be able to see the number of matching search results and have these displayed with minimal scrolling
@@ -28,13 +28,13 @@ class SearchResultsSpec extends GebReportingSpec {
         when: "#TestDesc, this will results in 0 found"
         
         SearchWell("$WellId", "$Address","$LegalId","$Owner")
+        at SearchPage
 
         then: "No records message should be shown"
         if("$ShowError" == "Yes")
 			assert waitFor { not_found_msg.displayed == true }
 		else
 		{
-			assert waitFor { $("em",id:"em-no-records-found").displayed == false }
 			assert waitFor { results_info.displayed == true }
 
 			def str = results_info.text().split(' ')
@@ -95,7 +95,6 @@ class SearchResultsSpec extends GebReportingSpec {
 
         then: "No error msg is shown"
             //If you expect the element not to be there (no error), you cannot use the static definition from the page class
-            assert waitFor { $("em",id:"em-no-records-found").displayed == false }
             assert waitFor { results_info.displayed == true }
 
             def str = results_info.text().split(' ')
@@ -124,7 +123,6 @@ class SearchResultsSpec extends GebReportingSpec {
             assert waitFor { not_found_msg.displayed == true }
         else
         {
-            assert waitFor {($("em",id:"em-no-records-found").displayed == false)}
             assert waitFor {($("div",id:"results_info").displayed == true)}
 
             assert waitFor { results_info.displayed == true }

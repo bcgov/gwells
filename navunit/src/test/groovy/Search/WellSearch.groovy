@@ -15,10 +15,10 @@ import spock.lang.Unroll
 @Narrative("""
 In order to find a well as a generic user, I want to be able to search for a well using search criteria
 """)
-class WellSearchSpec extends GebReportingSpec {
+class WellSearchSpecs extends GebReportingSpec {
     @Unroll
 
-/* 	Scenario 1: Well Search by Well Tag Number OR Well Identificaiton Plate Number
+/* 	Scenario 1: Well Search by Well Tag Number OR Well Identification Plate Number
 	Given I am a generic user
 		And I want to search for a well by Well Tag Number OR Well Identification Plate Number
 	When I enter a valid Well Tag Number or Well Idenification Plate Number in the Well field 
@@ -41,7 +41,6 @@ class WellSearchSpec extends GebReportingSpec {
 				assert waitFor { not_found_msg.displayed == true }
 			else
 			{
-				assert waitFor {($("em",id:"em-no-records-found").displayed == false)}
 				assert waitFor { results_info.displayed == true }
 
 				assert (NumberOfEntriesFound() == "$NumberResult") //Total entries found
@@ -55,23 +54,22 @@ class WellSearchSpec extends GebReportingSpec {
             		if ("$TagID" == "tag") {
 						// assert $("a",text:"$WellId")
 						assert waitFor {($('#results > tbody > tr:nth-child('+ m.toString() +') > td:nth-child(1) > a').text() == "$WellId")}
-						println "n: " + n.toString()
-						println results_table[0 + (11 * n)]
-            			println results_table[1 + (11 * n)]
+						//println "n: " + n.toString()
+						//println results_table[0 + (11 * n)]
+            			//println results_table[1 + (11 * n)]
             			
             			n="$NumberResult".toInteger()
             			}
 					else {
-						println "n: " + n.toString()
-						println results_table[0 + (11 * n)]
-            			println results_table[1 + (11 * n)] 
+						//println "n: " + n.toString()
+						//println results_table[0 + (11 * n)]
+            			//println results_table[1 + (11 * n)] 
 
 						def strWellId = $('#results > tbody > tr:nth-child('+ m.toString() +') > td:nth-child(1)').text()
 						if( strWellId == "$SecondID") {
             				assert waitFor {($('#results > tbody > tr:nth-child('+ m.toString() +') > td:nth-child(2)').text() == "$WellId")}
 							assert waitFor {($('#results > tbody > tr:nth-child('+ m.toString() +') > td:nth-child(1) > a').text() == "$SecondID")}
-/*							println "yes, did it!"
-*/						}	
+						}	
 					}
             		n++
 				}
@@ -82,7 +80,6 @@ class WellSearchSpec extends GebReportingSpec {
 				assert waitFor { not_found_msg.displayed == true }
 			else
 			{
-				assert waitFor {($("em",id:"em-no-records-found").displayed == false)}
 				assert waitFor {($("div",id:"results_info").displayed == true)}
 
 				assert (NumberOfEntriesFound() == "$NumberResult") //Total entries found
@@ -94,9 +91,9 @@ class WellSearchSpec extends GebReportingSpec {
             		if ("$TagID" == "tag") {
 						$('#results > tbody > tr:nth-child('+ m.toString() +') > td:nth-child(1) > a').click()
 						
-						println "n: " + n.toString()
-						println results_table[0 + (11 * n)]
-            			println results_table[1 + (11 * n)]
+						//println "n: " + n.toString()
+						//println results_table[0 + (11 * n)]
+            			//println results_table[1 + (11 * n)]
            			
             			at WellSummaryPage
 						assert waitFor { well_tag_number.text() == "$WellId" }
@@ -104,9 +101,9 @@ class WellSearchSpec extends GebReportingSpec {
             			n="$NumberResult".toInteger()
 					}
 					else {
-						println "n: " + n.toString()
-						println results_table[0 + (11 * n)]
-            			println results_table[1 + (11 * n)] 
+						//println "n: " + n.toString()
+						//println results_table[0 + (11 * n)]
+            			//println results_table[1 + (11 * n)] 
 
 						def strWellId = $('#results > tbody > tr:nth-child('+ m.toString() +') > td:nth-child(1)').text()
 						if( strWellId == "$SecondID") {
@@ -173,7 +170,6 @@ class WellSearchSpec extends GebReportingSpec {
 				assert waitFor { not_found_msg.displayed == true }
 			else
 			{
-				assert waitFor {($("em",id:"em-no-records-found").displayed == false)}
 				assert waitFor {($("div",id:"results_info").displayed == true)}
 
 				assert (NumberOfEntriesFound() == "$NumberResult") //Total entries found
@@ -236,7 +232,6 @@ class WellSearchSpec extends GebReportingSpec {
 				assert waitFor { not_found_msg.displayed == true }
 			else
 			{
-				assert waitFor {($("em",id:"em-no-records-found").displayed == false)}
 				assert waitFor {($("div",id:"results_info").displayed == true)}
 
 				assert (NumberOfEntriesFound() == "$NumberResult") //Total entries found
@@ -297,7 +292,6 @@ class WellSearchSpec extends GebReportingSpec {
 				assert waitFor { not_found_msg.displayed == true }
 			else
 			{
-				assert waitFor {($("em",id:"em-no-records-found").displayed == false)}
 				assert waitFor {($("div",id:"results_info").displayed == true)}
 
 				assert (NumberOfEntriesFound() == "$NumberResult") //Total entries found
@@ -366,7 +360,6 @@ class WellSearchSpec extends GebReportingSpec {
 				assert waitFor { not_found_msg.displayed == true }
 			else
 			{
-				assert waitFor {($("em",id:"em-no-records-found").displayed == false)}
 				assert waitFor {($("div",id:"results_info").displayed == true)}
 
 				assert (NumberOfEntriesFound() == "$NumberResult") //Total entries found
@@ -391,10 +384,10 @@ class WellSearchSpec extends GebReportingSpec {
         "No matching results - Random Owner/Address"    	| "Random Owner"|"Random Address"		| "Yes"        | 0
         "No matching results - <null>"         				| ""		    |""		| "Yes"        | 0
         "One matching result - Address - 21231 16TH AVE."	|""				| "21231 16TH AVE."| "No"         | 1
-        "Multiple matching results - Address - 123"     	|""| "123"            | "No"         | 139	
-        "Multiple matching results - Address - 16TH"     	|""| "16TH"           | "No"         | 389
-       	"Partial Owner/Address - Gary/201"					| "GARY"	   		  |"201"		| "No"     	   | 3
-        "Full Owner/ partial Address - John Smith/lake"		| "JOHN SMITH"	   	  |"LAKE"		| "No"     	   | 2
-        "Partial Owner/Full Address - Gary/201"				| "GARY"	   		  |"TELEGRAPH RD"		| "No"     	   | 1
+        "Multiple matching results - Address - 123"     	|""| "123"      | "No"         | 139	
+        "Multiple matching results - Address - 16TH"     	|""| "16TH"     | "No"         | 389
+       	"Partial Owner/Address - Gary/201"					| "GARY"	   	|"201"		| "No"     	   | 3
+        "Full Owner/ partial Address - John Smith/lake"		| "JOHN SMITH"	|"LAKE"		| "No"     	   | 2
+        "Partial Owner/Full Address - Gary/201"				| "GARY"	   	|"TELEGRAPH RD"		| "No"     	   | 1
     }             
 }
