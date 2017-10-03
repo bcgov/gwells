@@ -14,7 +14,7 @@ waiting {
 	retryInterval = 1
 }
 
-atCheckWaiting = [15, 1]
+atCheckWaiting = [20, 1]
 
 environments {
 
@@ -39,7 +39,7 @@ environments {
     phantomJs {
 		driver = { def d = new PhantomJSDriver(new DesiredCapabilities());
 			d.manage().window().size = new Dimension(1280, 1024);
-			return d
+    		return d
 		}
     }
 }
@@ -57,4 +57,6 @@ baseNavigatorWaiting = true
 println "BaseURL: ${baseUrl}"
 println "--------------------------"
 reportsDir = "gebReports"
+
+cacheDriverPerThread = true
 quitCachedDriverOnShutdown = true
