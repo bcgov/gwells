@@ -33,6 +33,7 @@ node('maven') {
             sh returnStdout: true, script: "./gradlew sonarqube -Dsonar.host.url=${SONARQUBE_URL} -Dsonar.verbose=true --stacktrace --info  -Dsonar.sources=.."
         }
     }
+	
 }
 
 node('master') {
@@ -45,11 +46,15 @@ node('master') {
 	
 	stage('validation') {
         dir('navunit') {
-            sh './gradlew phantomJsTest'
+			try {
+				sh './gradlew --debug --stacktrace phantomJsTest'
+			} finally { 
+				archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
+			}
         }
     }
+	
 }
-
 
 stage('deploy-test') {
     input "Deploy to test?"

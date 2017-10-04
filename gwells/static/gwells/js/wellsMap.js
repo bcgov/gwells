@@ -622,7 +622,7 @@ function WellsMap(options) {
             $('#' + _errorsNodeId).html('<em>' + msg + '</em>');
             $('#' + _errorsNodeId).show();
         }
-        console.log(error);
+        //console.log(error);
     };
 
     // Performs a final check on geolocation ability before fetching the device's location.
@@ -655,7 +655,7 @@ function WellsMap(options) {
                     },
                     this
                 );
-                container.title = "View my surrounding area";
+                container.title = "Find my area";
                 map.geolocationControl = this;
                 return container;
             },

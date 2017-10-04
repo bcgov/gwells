@@ -1,10 +1,16 @@
 import geb.spock.GebReportingSpec
 import pages.app.SearchPage
-import spock.lang.*
-import geb.Module
 
-class SearchResultsSpec extends GebReportingSpec {
- 
+import spock.lang.Ignore
+import spock.lang.Issue
+import spock.lang.Narrative
+import spock.lang.See
+import spock.lang.Specification
+import spock.lang.Title
+import spock.lang.Unroll    
+
+class SearchResultsSpecs extends GebReportingSpec {
+
 // Feature: Search Results
 // In order to view search results as a generic user, I want to be able to see the number of matching search results and have these displayed with minimal scrolling
 
@@ -16,22 +22,19 @@ class SearchResultsSpec extends GebReportingSpec {
     def "Scenario 1: #TestDesc"() {
         given:
         to SearchPage
+        
+        InjectLibrary("https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js")
 
         when: "#TestDesc, this will results in 0 found"
         
-        well_id.value("$WellId")
-        address.value("$Address")
-        legal_id.value("$LegalId")
-		owner_id.value("$Owner")
-        submit_button.click()
-
+        SearchWell("$WellId", "$Address","$LegalId","$Owner")
+        at SearchPage
 
         then: "No records message should be shown"
         if("$ShowError" == "Yes")
 			assert waitFor { not_found_msg.displayed == true }
 		else
 		{
-			assert waitFor { $("em",id:"em-no-records-found").displayed == false }
 			assert waitFor { results_info.displayed == true }
 
 			def str = results_info.text().split(' ')
@@ -92,7 +95,6 @@ class SearchResultsSpec extends GebReportingSpec {
 
         then: "No error msg is shown"
             //If you expect the element not to be there (no error), you cannot use the static definition from the page class
-            assert waitFor { $("em",id:"em-no-records-found").displayed == false }
             assert waitFor { results_info.displayed == true }
 
             def str = results_info.text().split(' ')
@@ -111,11 +113,7 @@ class SearchResultsSpec extends GebReportingSpec {
         given: "I have <count> search results"
         to SearchPage
 
-        well_id.value("$WellId")
-        address.value("$Address")
-        legal_id.value("$LegalId")
-        owner_id.value("$Owner")
-        submit_button.click()
+        SearchWell("$WellId", "$Address","$LegalId","$Owner")
 
         when: "I view all search results"
 
@@ -125,7 +123,6 @@ class SearchResultsSpec extends GebReportingSpec {
             assert waitFor { not_found_msg.displayed == true }
         else
         {
-            assert waitFor {($("em",id:"em-no-records-found").displayed == false)}
             assert waitFor {($("div",id:"results_info").displayed == true)}
 
             assert waitFor { results_info.displayed == true }
