@@ -17,11 +17,9 @@
     <meta name="security_label" content="Public"/>
     <meta name="security_classification" content="Low"/>
     <meta name="dcterms.subject" content=""/>
-    <meta name="dcterms.subject" content=""/>
     <meta name="dcterms.creator" content=""/>
     <meta name="dcsext.creator" content=""/>
     <meta name="dcterms.language" content="eng"/>
-    <meta name="description" content=""/>
     <meta name="keywords" content="">
     <link rel="apple-touch-icon" sizes="57x57" href="{% static 'gwells/icons/apple-icon-57x57.png' %}"/>
     <link rel="apple-touch-icon" sizes="60x60" href="{% static 'gwells/icons/apple-icon-60x60.png' %}"/>
@@ -44,7 +42,7 @@
 
     <title>Groundwater Wells {% block title %}{% endblock %} - Province of British Columbia</title>
 
-     <!-- BOOTSTRAP CORE CSS v3.3.6 -->
+    <!-- BOOTSTRAP CORE CSS v3.3.6 -->
     <link rel="stylesheet" href="{% static 'gwells/css/bootstrap.min.css' %}"/>
 
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
@@ -87,19 +85,19 @@
                         </div>
                         <div id="access">
                             <ul>
-                                <li aria-label="Keyboard Tab Skip">
+                                <li>
                                     <a accesskey="0" href="#main-content-anchor" aria-label="Skip to main content">Skip to main content</a>
                                 </li>
-                                <li aria-label="Keyboard Tab Skip">
-                                    <a accesskey="0" href="#navigation-anchor" aria-label="Skip to navigation">Skip to navigation</a>
+                                <li>
+                                    <a accesskey="1" href="#navigation-anchor" aria-label="Skip to navigation">Skip to navigation</a>
                                 </li>
-                                <li aria-label="Keyboard Tab Skip">
-                                    <a accesskey="0" href="http://gov.bc.ca/webaccessibility/" aria-label="Accessibility Statement">Accessibility Statement</a>
+                                <li>
+                                    <a accesskey="2" href="http://gov.bc.ca/webaccessibility/" aria-label="Accessibility Statement">Accessibility Statement</a>
                                 </li>
                             </ul>
                         </div>
                         <button type="button" class="navbar-toggle env-button-custom collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="true" aria-label="Burger Navigation">
-                            <img src="{% static 'gwells/images/menu-open-mobile.png' %}" />
+                            <img src="{% static 'gwells/images/menu-open-mobile.png' %}" alt="Open Menu" />
                         </button>
                     </div>
                     <div class="col-sm-8 col-md-8 col-lg-6 hidden-xs">
@@ -163,7 +161,7 @@
 
 
             <div id="main-content" role="main" class="contentPageMainColumn col-sm-12">
-                <a id="main-content-anchor"></a>
+                <div id="main-content-anchor"></div>
                 <h1>{% block bodyheading_block %}{% endblock %}</h1>
 
                 <div id="introduction">
@@ -225,7 +223,7 @@
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="{% static 'gwells/js/bootstrap.min.js' %}"></script>
     <script src="{% static 'gwells/js/misc.js' %}"></script>
@@ -237,9 +235,6 @@
     <script src="https://unpkg.com/leaflet@1.1.0/dist/leaflet.js"
     integrity="sha512-mNqn2Wg7tSToJhvHcqfzLMU6J4mkOImSPTxVZAdo+lcPlk+GhZmYgACEe0x35K7YzW1zJ7XyJV/TT1MrdXvMcA=="
     crossorigin=""></script> 
-    <!-- ALTERNATE SCRIPT SOURCE 
-        TODO: Settle
-        <script src="https://leafletjs-cdn.s3.amazonaws.com/content/leaflet/master/leaflet-src.js"></script>  -->
     <script src="https://unpkg.com/esri-leaflet@2.0.8/dist/esri-leaflet.js"></script>
     <script src="{% static 'gwells/js/wellsMap.js'%}"></script>
     <script src="{% static 'gwells/js/coordSync.js' %}"></script>
