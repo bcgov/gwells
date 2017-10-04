@@ -68,6 +68,22 @@ oc process -f gwells-app-environment.json -v DATABASE_USER=<user> -v DATABASE_PA
 Where APP_DEPLOYMENT_TAG used is dev, test, prod as set up in Jenkins instance.
 The deployment config uses the moe-gwells-tools namespace since that is where the image stream resides.
 
+## ORACLE FDW
+
+This application can make use of the PostgreSQL oracle_fdw extension to fetch data from a legacy Oracle database.  The build template for the project contains a build configuration that can be used to build this container image.  
+
+To use the Oracle FDW image, simply switch the image for a postgresql deployment configuration to be the image for the oracle fdw one, and set the environment variables required by Oracle FDW:
+
+| Name | Purpose | Example |
+| ---- | ------- | ------- |
+| FDW_NAME | The name of the foreign data wrapper | appname_wrapper |
+| FDW_FOREIGN_SCHEMA | Oracle schema to get data from | oracle_schema |
+| FDW_FOREIGN_SERVER | The Oracle server reference |  //servername.domain.name/schemaname |
+| FDW_USER | Oracle username | oracle_username |
+| FDW_PASS | Oracle password (store in a secret if sensitive) | ******** |
+| FDW_SCHEMA | Postgres schema to send data to | oracle_mirror |
+
+More information on Oracle FDW is available at the URL for the related container spec, https://github.com/bcgov/openshift-postgresql-oracle_fdw
 
 # How to access Jenkins for GWELLS
 

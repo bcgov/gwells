@@ -8,9 +8,11 @@ import pages.external.Disclaimer
 import pages.external.Privacy
 import pages.external.BCWaterResourceAtlas
 import pages.external.iMapBC
+
+import spock.lang.Issue
 import spock.lang.Unroll
 
-
+@Issue("tDh83hZ8")
 class FlowSpecs extends GebReportingSpec {
 
     @Unroll
@@ -18,11 +20,10 @@ class FlowSpecs extends GebReportingSpec {
 	    given: "I start on the #startPage"
 			to startPage
         when: "I click on the link #clickLink"
-			$("a", id:"$clickLink").click()
+			waitFor { $("a", id:"$clickLink").click() }
         then:
 			at assertPage
 		
-		BCWRAtlas
         where:
         startPage                   | clickLink                | clickCount    | timeoutSeconds    || assertPage
         HomePage                    | "ribbon-home"            | 1             | 3                 || HomePage
@@ -30,8 +31,8 @@ class FlowSpecs extends GebReportingSpec {
         AdditionalInformationPage   | "ribbon-home"            | 1             | 3                 || HomePage
         HomePage       		        | "ribbon-search"          | 1             | 3                 || SearchPage
         SearchPage    		        | "ribbon-home"            | 1             | 3                 || HomePage
-        SearchPage                  | "BCWRAtlas"              | 1             | 3                 || BCWaterResourceAtlas
-        SearchPage                  | "iMapBC"                 | 1             | 3                 || iMapBC
+        //SearchPage                  | "BCWRAtlas"              | 1             | 3                 || BCWaterResourceAtlas
+        //SearchPage                  | "iMapBC"                 | 1             | 3                 || iMapBC
                 
         //Test Externally Linked Pages
 		HomePage            | "footer-disclaimer"     | 1             | 3                 || Disclaimer

@@ -107,6 +107,8 @@ This can be useful to observe the correct functioning of your application.
 
 ## Special environment variables
 
+Note that environment variables are case sensitive.
+
 ### APP_CONFIG
 
 You can fine tune the gunicorn configuration through the environment variable `APP_CONFIG` that, when set, should point to a config file as documented [here](http://docs.gunicorn.org/en/latest/settings.html).
@@ -115,6 +117,17 @@ You can fine tune the gunicorn configuration through the environment variable `A
 
 When using one of the templates provided in this repository, this environment variable has its value automatically generated. For security purposes, make sure to set this to a random string as documented [here](https://docs.djangoproject.com/en/1.8/ref/settings/#std:setting-SECRET_KEY).
 
+### DJANGO_DEBUG 
+
+Set to `True` to enable debugging.  Recommended value:  `True`
+
+### ENABLE_DATA_ENTRY  
+
+Set to `True` to enable debugging.  Recommended value:  Not set for Production (as the feature is not released); `True` for Development.
+
+### ENABLE_GOOGLE_ANALYTICS
+
+Set to `True` to enable Google Analytics.  Recommended value:  Not set for Development; `True` for Production.
 
 ## One-off command execution
 

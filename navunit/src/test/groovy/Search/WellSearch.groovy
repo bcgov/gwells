@@ -1,17 +1,24 @@
 import geb.spock.GebReportingSpec
 import pages.app.SearchPage
 import pages.app.WellSummaryPage
+
+import spock.lang.Ignore
+import spock.lang.Issue
+import spock.lang.Narrative
+import spock.lang.See
+import spock.lang.Specification
+import spock.lang.Title
 import spock.lang.Unroll
 
 
-class WellSearchS1Spec extends GebReportingSpec {
-
-// Feature: Well Search
-// In order to find a well as a generic user, I want to be able to search for a well using search criteria
-
+@Title("Well Search")
+@Narrative("""
+In order to find a well as a generic user, I want to be able to search for a well using search criteria
+""")
+class WellSearchSpecs extends GebReportingSpec {
     @Unroll
 
-/* 	Scenario 1: Well Search by Well Tag Number OR Well Identificaiton Plate Number
+/* 	Scenario 1: Well Search by Well Tag Number OR Well Identification Plate Number
 	Given I am a generic user
 		And I want to search for a well by Well Tag Number OR Well Identification Plate Number
 	When I enter a valid Well Tag Number or Well Idenification Plate Number in the Well field 
@@ -27,15 +34,13 @@ class WellSearchS1Spec extends GebReportingSpec {
 			to SearchPage
  
         when: "I enter a valid Well Tag Number or Well Idenification Plate Number in the Well field And click search"
-		   	well_id.value("$WellId")
-			submit_button.click()
+			SearchWell("$WellId", "","","")
 
         then: "I should see the wells matching the entered Well Tag Number OR Well Identification Plate Number displayed in the search results"
 			if("$ShowError" == "Yes")
 				assert waitFor { not_found_msg.displayed == true }
 			else
 			{
-				assert waitFor {($("em",id:"em-no-records-found").displayed == false)}
 				assert waitFor { results_info.displayed == true }
 
 				assert (NumberOfEntriesFound() == "$NumberResult") //Total entries found
@@ -49,23 +54,22 @@ class WellSearchS1Spec extends GebReportingSpec {
             		if ("$TagID" == "tag") {
 						// assert $("a",text:"$WellId")
 						assert waitFor {($('#results > tbody > tr:nth-child('+ m.toString() +') > td:nth-child(1) > a').text() == "$WellId")}
-/*						println "n: " + n.toString()
-						println results_table[0 + (11 * n)]
-            			println results_table[1 + (11 * n)]*/
+						//println "n: " + n.toString()
+						//println results_table[0 + (11 * n)]
+            			//println results_table[1 + (11 * n)]
             			
             			n="$NumberResult".toInteger()
             			}
 					else {
-/*						println "n: " + n.toString()
-						println results_table[0 + (11 * n)]
-            			println results_table[1 + (11 * n)] 
+						//println "n: " + n.toString()
+						//println results_table[0 + (11 * n)]
+            			//println results_table[1 + (11 * n)] 
 
-*/						def strWellId = $('#results > tbody > tr:nth-child('+ m.toString() +') > td:nth-child(1)').text()
+						def strWellId = $('#results > tbody > tr:nth-child('+ m.toString() +') > td:nth-child(1)').text()
 						if( strWellId == "$SecondID") {
             				assert waitFor {($('#results > tbody > tr:nth-child('+ m.toString() +') > td:nth-child(2)').text() == "$WellId")}
 							assert waitFor {($('#results > tbody > tr:nth-child('+ m.toString() +') > td:nth-child(1) > a').text() == "$SecondID")}
-/*							println "yes, did it!"
-*/						}	
+						}	
 					}
             		n++
 				}
@@ -76,7 +80,6 @@ class WellSearchS1Spec extends GebReportingSpec {
 				assert waitFor { not_found_msg.displayed == true }
 			else
 			{
-				assert waitFor {($("em",id:"em-no-records-found").displayed == false)}
 				assert waitFor {($("div",id:"results_info").displayed == true)}
 
 				assert (NumberOfEntriesFound() == "$NumberResult") //Total entries found
@@ -88,21 +91,21 @@ class WellSearchS1Spec extends GebReportingSpec {
             		if ("$TagID" == "tag") {
 						$('#results > tbody > tr:nth-child('+ m.toString() +') > td:nth-child(1) > a').click()
 						
-/*						println "n: " + n.toString()
-						println results_table[0 + (11 * n)]
-            			println results_table[1 + (11 * n)]
-*/            			
+						//println "n: " + n.toString()
+						//println results_table[0 + (11 * n)]
+            			//println results_table[1 + (11 * n)]
+           			
             			at WellSummaryPage
 						assert waitFor { well_tag_number.text() == "$WellId" }
             			
             			n="$NumberResult".toInteger()
 					}
 					else {
-/*						println "n: " + n.toString()
-						println results_table[0 + (11 * n)]
-            			println results_table[1 + (11 * n)] 
+						//println "n: " + n.toString()
+						//println results_table[0 + (11 * n)]
+            			//println results_table[1 + (11 * n)] 
 
-*/						def strWellId = $('#results > tbody > tr:nth-child('+ m.toString() +') > td:nth-child(1)').text()
+						def strWellId = $('#results > tbody > tr:nth-child('+ m.toString() +') > td:nth-child(1)').text()
 						if( strWellId == "$SecondID") {
 							$('#results > tbody > tr:nth-child('+ m.toString() +') > td:nth-child(1) > a').click()
 					
@@ -146,20 +149,20 @@ class WellSearchS1Spec extends GebReportingSpec {
 			to SearchPage
  
         when: "I enter a complete or partial street address in the Address field"
-		   	address.value("$Address")
 		and: "click search"
-			submit_button.click()
+			SearchWell("", "$Address","","")
 
         then: "I should see wells containing the entered street address information displayed in the search results"
         
-        //println "Results Table: $results_table"
+        println "Results Table: $results_table"
 		
 			if("$ShowError" == "Yes")
 				assert waitFor { not_found_msg.displayed == true }
 			else
 			{
 	         	//assert results_table.join(",").indexOf("$Address") >= -1
-	         	assert CheckResultTable("$Address") == true
+	         	assert waitFor {($("div",id:"results_info").displayed == true)}
+	         	assert waitFor { CheckResultTable("$Address") == true }
 	         }	
 
         and: "each search result will include a link to the associated well details page"
@@ -167,7 +170,6 @@ class WellSearchS1Spec extends GebReportingSpec {
 				assert waitFor { not_found_msg.displayed == true }
 			else
 			{
-				assert waitFor {($("em",id:"em-no-records-found").displayed == false)}
 				assert waitFor {($("div",id:"results_info").displayed == true)}
 
 				assert (NumberOfEntriesFound() == "$NumberResult") //Total entries found
@@ -210,9 +212,8 @@ class WellSearchS1Spec extends GebReportingSpec {
 			to SearchPage
  
         when: "I enter a Legal Plan, District Lot or PID information in the Legal Description field"
-        	legal_id.value("$LegalId")
 		and: "click search"
-			submit_button.click()
+			SearchWell("", "","$LegalId","")
 
         then: "I should see wells containing the entered Legal Plan, District Lot or PID information displayed in the search results"
         
@@ -222,7 +223,8 @@ class WellSearchS1Spec extends GebReportingSpec {
 				assert waitFor { not_found_msg.displayed == true }
 			else
 			{
-	         	assert CheckResultTable("$LegalId") == true
+	         	assert waitFor {($("div",id:"results_info").displayed == true)}
+	         	assert waitFor { CheckResultTable("$LegalId") == true }
 	         }	
 
         and: "each search result will include a link to the associated well details page"
@@ -230,7 +232,6 @@ class WellSearchS1Spec extends GebReportingSpec {
 				assert waitFor { not_found_msg.displayed == true }
 			else
 			{
-				assert waitFor {($("em",id:"em-no-records-found").displayed == false)}
 				assert waitFor {($("div",id:"results_info").displayed == true)}
 
 				assert (NumberOfEntriesFound() == "$NumberResult") //Total entries found
@@ -273,9 +274,8 @@ class WellSearchS1Spec extends GebReportingSpec {
 			to SearchPage
  
         when: "I enter a complete or partial owner name in the Owner Name"
-        	owner_id.value("$Owner")
 		and: "click search"
-			submit_button.click()
+			SearchWell("", "","","$Owner")
 
         then: "I should see wells containing the entered owner name information displayed in the search result"
 	
@@ -283,7 +283,8 @@ class WellSearchS1Spec extends GebReportingSpec {
 				assert waitFor { not_found_msg.displayed == true }
 			else
 			{
-	         	assert CheckResultTable("$Owner") == true
+	         	assert waitFor {($("div",id:"results_info").displayed == true)}
+	         	assert waitFor { CheckResultTable("$Owner") == true }
 	         }	
 
         and: "each search result will include a link to the associated well details page"
@@ -291,7 +292,6 @@ class WellSearchS1Spec extends GebReportingSpec {
 				assert waitFor { not_found_msg.displayed == true }
 			else
 			{
-				assert waitFor {($("em",id:"em-no-records-found").displayed == false)}
 				assert waitFor {($("div",id:"results_info").displayed == true)}
 
 				assert (NumberOfEntriesFound() == "$NumberResult") //Total entries found
@@ -336,13 +336,13 @@ class WellSearchS1Spec extends GebReportingSpec {
 			to SearchPage
  
         when: "I enter a complete or partial owner name in the Owner Name field"
-        	owner_id.value("$Owner")
+        	//owner_id.value("$Owner")
         
         and: "And I enter a complete or partial street address in the Street Address field"
-            address.value("$Address") 	
+            //address.value("$Address") 	
 		
 		and: "click search"
-			submit_button.click()
+			SearchWell("", "$Address","","$Owner")
 
         then: "I should see wells containing the entered owner name information displayed in the search result"
 	
@@ -350,8 +350,9 @@ class WellSearchS1Spec extends GebReportingSpec {
 				assert waitFor { not_found_msg.displayed == true }
 			else
 			{
-	         	assert CheckResultTable("$Address") == true
-	         	assert CheckResultTable("$Owner") == true
+	         	assert waitFor {($("div",id:"results_info").displayed == true)}
+	         	assert waitFor { CheckResultTable("$Address") == true }
+	         	assert waitFor { CheckResultTable("$Owner") == true }
 	         }	
 
         and: "each search result will include a link to the associated well details page"
@@ -359,7 +360,6 @@ class WellSearchS1Spec extends GebReportingSpec {
 				assert waitFor { not_found_msg.displayed == true }
 			else
 			{
-				assert waitFor {($("em",id:"em-no-records-found").displayed == false)}
 				assert waitFor {($("div",id:"results_info").displayed == true)}
 
 				assert (NumberOfEntriesFound() == "$NumberResult") //Total entries found
@@ -384,10 +384,10 @@ class WellSearchS1Spec extends GebReportingSpec {
         "No matching results - Random Owner/Address"    	| "Random Owner"|"Random Address"		| "Yes"        | 0
         "No matching results - <null>"         				| ""		    |""		| "Yes"        | 0
         "One matching result - Address - 21231 16TH AVE."	|""				| "21231 16TH AVE."| "No"         | 1
-        "Multiple matching results - Address - 123"     	|""| "123"            | "No"         | 139	
-        "Multiple matching results - Address - 16TH"     	|""| "16TH"           | "No"         | 389
-       	"Partial Owner/Address - Gary/201"					| "GARY"	   		  |"201"		| "No"     	   | 3
-        "Full Owner/ partial Address - John Smith/lake"		| "JOHN SMITH"	   	  |"LAKE"		| "No"     	   | 2
-        "Partial Owner/Full Address - Gary/201"				| "GARY"	   		  |"TELEGRAPH RD"		| "No"     	   | 1
+        "Multiple matching results - Address - 123"     	|""| "123"      | "No"         | 139	
+        "Multiple matching results - Address - 16TH"     	|""| "16TH"     | "No"         | 389
+       	"Partial Owner/Address - Gary/201"					| "GARY"	   	|"201"		| "No"     	   | 3
+        "Full Owner/ partial Address - John Smith/lake"		| "JOHN SMITH"	|"LAKE"		| "No"     	   | 2
+        "Partial Owner/Full Address - Gary/201"				| "GARY"	   	|"TELEGRAPH RD"		| "No"     	   | 1
     }             
 }
