@@ -25,16 +25,16 @@ from datetime import date
 class SearchForm(forms.Form):
     well = forms.IntegerField(
         label=mark_safe('Well Tag Number or Well Identification Plate Number <a href="#" data-toggle="popover" data-container="body" data-placement="right" \
-            data-content="Well electronic filing number or physical identification plate number"> \
-            <i class="fa fa-question-circle" style="color:blue"></i></a>'),
+            data-content="Well electronic filing number or physical identification plate number" onfocusin="$(this).trigger(\'mouseover\');" onfocusout="$(this).trigger(\'mouseout\');"> \
+            <em class="fa fa-question-circle" style="color:blue"></em></a>'),
         required=False,
         widget=forms.NumberInput(attrs={'placeholder': 'example: 123456'}),
     )
 
     addr = forms.CharField(
         label=mark_safe('Street Address <a href="#" data-toggle="popover" data-container="body" data-placement="right" \
-            data-content="For best results, try searching using the street name only."> \
-            <i class="fa fa-question-circle" style="color:blue"></i></a>'),
+            data-content="For best results, try searching using the street name only." onfocusin="$(this).trigger(\'mouseover\');" onfocusout="$(this).trigger(\'mouseout\');"> \
+            <em class="fa fa-question-circle" style="color:blue"></em></a>'),
         max_length=100,
         required=False,
         widget=forms.TextInput(attrs={'placeholder': 'example: 123 main'}),
@@ -42,8 +42,8 @@ class SearchForm(forms.Form):
 
     legal = forms.CharField(
         label=mark_safe('Legal Plan or District Lot or Parcel Identification Number (PID) <a href="#" data-toggle="popover" data-container="body" data-placement="right" \
-            data-content="Find the legal plan, district lot, or 9-digit PID (parcel identifier) on the property assessment, property tax notice, or real estate transaction."> \
-            <i class="fa fa-question-circle" style="color:blue"></i></a>'),
+            data-content="Find the legal plan, district lot, or 9-digit PID (parcel identifier) on the property assessment, property tax notice, or real estate transaction." onfocusin="$(this).trigger(\'mouseover\');" onfocusout="$(this).trigger(\'mouseout\');"> \
+            <em class="fa fa-question-circle" style="color:blue"></em></a>'),
         max_length=100,
         required=False,
         widget=forms.TextInput(attrs={'placeholder': 'example: 123a'}),
@@ -51,8 +51,8 @@ class SearchForm(forms.Form):
 
     owner = forms.CharField(
         label=mark_safe('Owner Name <a href="#" data-toggle="popover" data-container="body" data-placement="right" \
-            data-content="The owner name is usually the name of the well owner at time of drilling."> \
-            <i class="fa fa-question-circle" style="color:blue"></i></a>'),
+            data-content="The owner name is usually the name of the well owner at time of drilling." onfocusin="$(this).trigger(\'mouseover\');" onfocusout="$(this).trigger(\'mouseout\');"> \
+            <em class="fa fa-question-circle" style="color:blue"></em></a>'),
         max_length=100,
         required=False,
         widget=forms.TextInput(attrs={'placeholder': 'example: Smith or smi'}),
@@ -90,10 +90,9 @@ class SearchForm(forms.Form):
                 Hidden('end_lat_long', ''),
             ),
             FormActions(
-                Submit('s', 'Search'),
+                Submit('s', 'Search', css_class='formButtons'),
                 HTML('<a class="btn btn-default" href="{% url \'search\' %}">Reset</a>'),
-                css_class='form-group formButtons',
-            )
+                )
         )
 
         return helper
@@ -116,7 +115,7 @@ class SearchForm(forms.Form):
         # If only one of the rectangle's points exist, we cannot perform the query.
         if bool(start_lat_long) != bool(end_lat_long):
             raise forms.ValidationError(
-                "identifyWells operation did not provide sufficient data. "
+                "Identify Wells operation did not provide sufficient data. "
                 "The map may not accurately reflect query results."
             )
         if (not well and not addr and not legal and
