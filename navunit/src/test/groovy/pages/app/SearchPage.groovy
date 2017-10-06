@@ -56,24 +56,30 @@ class SearchPage extends Page {
     }
 
     void SearchWell(String s_well_id, String s_address, String s_legal_id, String s_owner) {        
-        waitFor { well_id.value(s_well_id) }
-        waitFor { address.value(s_address) }
-        waitFor { legal_id.value(s_legal_id) }
-        waitFor { owner_id.value(s_owner) }
+        if ( s_well_id != "") { waitFor { well_id.value(s_well_id) } }
+        if ( s_address != "") { waitFor { address.value(s_address) } }
+        if ( s_legal_id != "") { waitFor { legal_id.value(s_legal_id) } }
+        if ( s_owner != "") { waitFor { owner_id.value(s_owner) } }
         submit_button.click()
     }
 
+    //Use as InjectLibrary('https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js') to inject dependencies
     void InjectLibrary( String library ){
        def ok = browser.driver.executeScript("document.body.appendChild(document.createElement(\'script\')).src=\'$library\'")
     }
-    //InjectLibrary('https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js')
 
+    //Returns the row in the result table based on the wellid or tagnumber supplied.
     int ReturnRow( String s_id ) {
         def n_index = 0
         while ( $('#results > tbody > tr:nth-child('+ n_index.toString() +') > td.sorting_1 > a').text() != s_id  || n_index > 9) {
             n_index++
         }
-
         return (n_index)
+    }
+
+    //Hard wait function, sometimes useful to sync up the application when you cannot use waitFor.
+    void sleepForNSeconds(int n) {
+    def originalMilliseconds = System.currentTimeMillis()
+    waitFor(n + 1, 0.5) { (System.currentTimeMillis() - originalMilliseconds) > (n * 1000) }
     }    
 }
