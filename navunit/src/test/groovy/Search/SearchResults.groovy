@@ -71,7 +71,7 @@ class SearchResultsSpecs extends GebReportingSpec {
         "Multiple matching results - Well ID 123"                   | "123"             | ""                        | ""                | ""                | "No"         | "No"    | 2
         "Too many results - Address 1"                              | ""                | "1"                       | ""                | ""                | "No"         | "Yes"   | 9999
         "Too many results - Legal PID 1"                            | ""                | ""                        | "1"               | ""                | "No"         | "Yes"   | 9999
-        "Too many results - Owner JO"                               | ""                | ""                        | ""                | "JO"              | "No"         | "Yes"   | 9999
+        "Too many results - Owner JOHN"                             | ""                | ""                        | ""                | "JO"              | "No"         | "Yes"   | 9999
     } 
 
     // Searches for Longitude and Latitude - typically through the map.
@@ -167,7 +167,7 @@ class SearchResultsSpecs extends GebReportingSpec {
         "One matching result - - All Fields"                        | 107667            | "218 RD"                  | "026737680"       | "GARY AKLES"      | "No"         | 1
         "Multiple matching results - Well ID 123"                   | 123               | ""                        | ""                | ""                | "No"         | 2
         "Multiple matching results - Address 123"                   | ""                | "123"                     | ""                | ""                | "No"         | 139
-        "Multiple matching results - Owner ROLAND"                  | ""                | ""                        | ""                | "ROLAND"          | "No"         | 22
+        "Multiple matching results - Owner ROLAND"                  | ""                | ""                        | ""                | "ROLAND"          | "No"         | 46
     }     
 
 //  As a general public user I want to be able to begin a new search with an easy way to remove previous search criteria.
