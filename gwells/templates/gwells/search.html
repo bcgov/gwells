@@ -94,8 +94,9 @@
         {% for well in well_list %}
         <tr>
             <td>
-                <a href="{% url 'well_detail' well.well_tag_number %}">{{ well.well_tag_number }}</a>
-            </td>
+                <a href="https://a100.gov.bc.ca/pub/wells/wellsreport1.do?wellTagNumber={{ well.well_tag_number }}">{{ well.well_tag_number }}</a>
+<!--                 <a href="{% url 'well_detail' well.well_tag_number %}">{{ well.well_tag_number }}</a>
+ -->            </td>
             <td>
                 {{ well.identification_plate_number|default_if_none:'&nbsp;' }}
             </td>
@@ -222,4 +223,19 @@
         });
     });
 </script>
+
+<script>
+/*  To help show the popup when putting the focus on the question mark icon with keyboard*/
+    document.getElementById("well_tag_question").addEventListener("focusin", trigger_over);
+    document.getElementById("well_tag_question").addEventListener("focusout", trigger_out);
+    document.getElementById("address_question").addEventListener("focusin", trigger_over);
+    document.getElementById("address_question").addEventListener("focusout", trigger_out);
+    document.getElementById("legal_id_question").addEventListener("focusin", trigger_over);
+    document.getElementById("legal_id_question").addEventListener("focusout", trigger_out);
+    document.getElementById("owner_question").addEventListener("focusin", trigger_over);
+    document.getElementById("owner_question").addEventListener("focusout", trigger_out);
+    function trigger_over(){$(this).trigger('mouseover');}
+    function trigger_out(){$(this).trigger('mouseout');}
+</script>
+
 {% endblock %}
