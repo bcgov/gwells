@@ -167,7 +167,7 @@ class SearchResultsSpecs extends GebReportingSpec {
         "One matching result - - All Fields"                        | 107667            | "218 RD"                  | "026737680"       | "GARY AKLES"      | "No"         | 1
         "Multiple matching results - Well ID 123"                   | 123               | ""                        | ""                | ""                | "No"         | 2
         "Multiple matching results - Address 123"                   | ""                | "123"                     | ""                | ""                | "No"         | 139
-        "Multiple matching results - Owner ROLAND"                  | ""                | ""                        | ""                | "ROLAND"          | "No"         | 46
+        "Multiple matching results - Owner ROLAND"                  | ""                | ""                        | ""                | "ROLAND"          | "No"         | 48
     }     
 
 //  As a general public user I want to be able to begin a new search with an easy way to remove previous search criteria.
