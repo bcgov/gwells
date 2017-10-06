@@ -34,6 +34,11 @@ class SearchPage extends Page {
         else
             return false    
     }
+    int FindResultIndex(String string_to_check) {
+        def nIndex = results_table.join(",").indexOf(string_to_check)
+
+        return nIndex  
+    }
 
     boolean CheckPageButton(String page_button_to_check) {
         if(page_buttons.join(",").indexOf(page_button_to_check) >= -1)
