@@ -67,4 +67,13 @@ class SearchPage extends Page {
        def ok = browser.driver.executeScript("document.body.appendChild(document.createElement(\'script\')).src=\'$library\'")
     }
     //InjectLibrary('https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js')
+
+    int ReturnRow( String s_id ) {
+        def n_index = 0
+        while ( $('#results > tbody > tr:nth-child('+ n_index.toString() +') > td.sorting_1 > a').text() != s_id  || n_index > 9) {
+            n_index++
+        }
+
+        return (n_index)
+    }    
 }
