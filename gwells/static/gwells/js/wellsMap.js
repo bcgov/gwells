@@ -292,7 +292,9 @@ function WellsMap(options) {
         if (!_exists(num) || isNaN(num)) {
             return '';
         }
-        return '<a href="/well/' + num + '">' + num + '</a>';
+        // pointing to the old well details for now
+        //return '<a href="/well/' + num + '">' + num + '</a>';
+        return '<a href="https://a100.gov.bc.ca/pub/wells/wellsreport1.do?wellTagNumber=' + num + '">' + num + '</a>';
     };
 
     // Generates a popup content HTML string for a well marker, based on the data that well has available.
