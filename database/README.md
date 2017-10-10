@@ -5,7 +5,7 @@
 GWELLS uses the PostgreSQL extension oracle-fdw [oracle-fdw](https://github.com/laurenz/oracle_fdw) to read from the
 legacy database (WELLS schema of ENVPROD1.NRS.GOV.BC.CA).
 
-Static code tables are maintained in this [GitHub](/garywong-bc/gwells/tree/master/database/code-tables) repo, while dynamic data is replicated.  There are two stored procedures that support this.
+Static code tables are maintained in this [GitHub](/tree/master/database/code-tables) repo, while dynamic data is replicated.  There are two stored procedures that support this.
 
 1. `gwells_setup_replicate()`
 - owned by GWELLS user
