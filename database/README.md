@@ -5,15 +5,15 @@
 GWELLS uses the PostgreSQL extension oracle-fdw [oracle-fdw](https://github.com/laurenz/oracle_fdw) to read from the
 legacy database (WELLS schema of ENVPROD1.NRS.GOV.BC.CA).
 
-Static code tables are maintained in this [GitHub](/code-tables) repo, while dynamic data is replicated.  There are two stored procedures that support this.
+Static code tables are maintained in this [GitHub](../code-tables) repo, while dynamic data is replicated.  There are two stored procedures that support this.
 
-1. gwells_setup_replicate()
+1. `gwells_setup_replicate()`
 - owned by GWELLS user
 - clears all data tables
 - prepares the ETL table 
 - can be run by GWELLS user or PostgreSQL administrator (e.g. psql -d gwells -U userGN0 -c 'select gwells_setup_replicate();')
 
-2. gwells_replicate()
+2. `gwells_replicate()`
 - owned by GWELLS user
 - "COPY" into static code tables from GitHub repo
 - INSERT into dynamic data tables from Oracle FDW
