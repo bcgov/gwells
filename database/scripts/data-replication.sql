@@ -1,23 +1,38 @@
+--  Run this script as gwells owner (e.g. psql -d gwells -U userGN0)
 DROP FUNCTION IF EXISTS gwells_setup_replicate(); 
--- "select gwells_setup_replicate();"  to invoke
-CREATE OR REPLACE FUNCTION gwells_setup_replicate() RETURNS integer AS $$
+CREATE OR REPLACE FUNCTION gwells_setup_replicate() RETURNS void AS $$
 BEGIN
+	raise notice 'Starting gwells_setup_replicate() procedure...';	
+
 	-- Reset tables
+	raise notice '... clearing gwells_lithology_description data table';
 	delete from gwells_lithology_description;
+	raise notice '... clearing gwells_activity_submission data table';
 	delete from gwells_activity_submission;
+	raise notice '... clearing gwells_well data table';
 	delete from gwells_well;
 
+	raise notice '... clearing gwells_intended_water_use data table';		
 	delete from gwells_intended_water_use;
+	raise notice '... clearing gwells_well_subclass data table';
 	delete from gwells_well_subclass;
+	raise notice '... clearing gwells_well_class data table';
 	delete from gwells_well_class;
 
+	raise notice '... clearing gwells_province_state data table';
 	delete from gwells_province_state;
+	raise notice '... clearing gwells_well_yield_unit data table';
 	delete from gwells_well_yield_unit;
+	raise notice '... clearing gwells_drilling_method data table';
 	delete from gwells_drilling_method;
+	raise notice '... clearing gwells_ground_elevation_method data table';
 	delete from gwells_ground_elevation_method;
+	raise notice '... clearing gwells_land_district data table';
 	delete from gwells_land_district;
+	raise notice '... clearing xform_gwells_well ETL table';
 	delete from xform_gwells_well;
 
+	raise notice '... recreating xform_gwells_well ETL table';
 	CREATE unlogged TABLE IF NOT EXISTS xform_gwells_well (
 	   well_tag_number              integer,
 	   well_guid                    uuid,
@@ -64,26 +79,36 @@ BEGIN
 	);
 
 	-- Setup cron job.
-	return 0;
+	raise notice 'Finished gwells_setup_replicate() procedure.';	
 END;
 $$ LANGUAGE plpgsql;
 
 
 DROP FUNCTION IF EXISTS gwells_replicate();
--- "select gwells_replicate();"  to invoke
--- Must be run as admin due to the 'copy' commands
-CREATE OR REPLACE FUNCTION gwells_replicate() RETURNS integer AS $$
+-- Must be run as PostgreSQL admin due to the 'copy' commands (i.e. psql -d gwells)
+CREATE OR REPLACE FUNCTION gwells_replicate() RETURNS void AS $$
+DECLARE
+	wells_rows integer;
 BEGIN
+	raise notice 'Starting gwells_replicate() procedure...';	
 
 	-- Get static code tables from GitHub
+	raise notice '... importing gwells_intended_water_use code table';	
 	copy gwells_intended_water_use from program 'wget https://raw.githubusercontent.com/bcgov/gwells/master/database/code-tables/gwells_intended_water_use.csv -O - -q' header delimiter ',' CSV ; 
+	raise notice '... importing gwells_well_class code table';	
 	copy gwells_well_class from program 'wget https://raw.githubusercontent.com/bcgov/gwells/master/database/code-tables/gwells_well_class.csv -O - -q' header delimiter ',' CSV ; 
+	raise notice '... importing gwells_well_subclass code table';	
 	copy gwells_well_subclass from program 'wget https://raw.githubusercontent.com/bcgov/gwells/master/database/code-tables/gwells_well_subclass.csv -O - -q' header delimiter ',' CSV ; 
+	raise notice '... importing gwells_province_state code table';	
 	copy gwells_province_state from program 'wget https://raw.githubusercontent.com/bcgov/gwells/master/database/code-tables/gwells_province_state.csv -O - -q' header delimiter ',' CSV ; 
+	raise notice '... importing gwells_well_yield_unit code table';	
 	copy gwells_well_yield_unit from program 'wget https://raw.githubusercontent.com/bcgov/gwells/master/database/code-tables/gwells_well_yield_unit.csv -O - -q' header delimiter ',' CSV ; 
+	raise notice '... importing gwells_drilling_method code table';	
 	copy gwells_drilling_method from program 'wget https://raw.githubusercontent.com/bcgov/gwells/master/database/code-tables/gwells_drilling_method.csv -O - -q' header delimiter ',' CSV ; 
+	raise notice '... importing gwells_ground_elevation_method code table';	
 	copy gwells_ground_elevation_method from program 'wget https://raw.githubusercontent.com/bcgov/gwells/master/database/code-tables/gwells_ground_elevation_method.csv -O - -q' header delimiter ',' CSV ; 
 
+	raise notice '... importing gwells_land_district data table';	
 	INSERT INTO gwells_land_district (
 		land_district_guid,code,name,sort_order,when_created,when_updated,who_created,who_updated) 
 	SELECT 
@@ -92,6 +117,7 @@ BEGIN
 	FROM WELLS.WELLS_LEGAL_LAND_DIST_CODES
 	ORDER BY LEGAL_LAND_DISTRICT_CODE ASC;
 
+	raise notice '... transforming wells data (!= REJECTED) via xform_gwells_well ETL table...';	
 	INSERT INTO xform_gwells_well (
 		well_tag_number                ,
 		well_guid                      ,
@@ -222,8 +248,11 @@ BEGIN
 	  WELLS.WHO_CREATED as who_created,
 	  coalesce(WELLS.WHO_UPDATED,WELLS.WHO_CREATED) as who_updated
 	FROM WELLS.WELLS_WELLS WELLS LEFT OUTER JOIN WELLS.WELLS_OWNERS OWNER
-	  ON OWNER.OWNER_ID=WELLS.OWNER_ID;
+	  ON OWNER.OWNER_ID=WELLS.OWNER_ID
+	WHERE WELLS.ACCEPTANCE_STATUS_CODE != 'REJECTED';
 
+
+	raise notice '... importing ETL into the main "wells" table';	
 	INSERT INTO gwells_well (
 	  well_tag_number             ,
 	  well_guid                   ,
@@ -344,6 +373,8 @@ BEGIN
 	LEFT OUTER JOIN gwells_well_subclass subclass ON xform.SUBCLASS_OF_WELL_CLASSIFIED_BY=subclass.code 
 	AND subclass.well_class_guid = class.well_class_guid ;
 
-	return 0;
+	select count(*) from gwells_well into wells_rows;
+	raise notice '... % rows loaded into the main "wells" table', 	wells_rows;	
+	raise notice 'Finished gwells_replicate() procedure.';	
 END;
 $$ LANGUAGE plpgsql;
