@@ -1,6 +1,5 @@
 import geb.spock.GebReportingSpec
 import pages.app.SearchPage
-//import pages.app.WellSummaryPage
 
 import spock.lang.Ignore
 import spock.lang.Issue
@@ -9,11 +8,6 @@ import spock.lang.See
 import spock.lang.Specification
 import spock.lang.Title
 import spock.lang.Unroll
-
-//#results > tbody > tr:nth-child(1) > td.sorting_1 > a
-//#results > tbody > tr:nth-child(2) > td.sorting_1 > a
-//#results > thead > tr > th.sorting_desc
-
 
 @Title("Well Search")
 @Narrative("""
