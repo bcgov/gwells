@@ -16,3 +16,4 @@ surficial_material_guid,code,description,is_hidden,sort_order,when_created,when_
 "76d4321a633011e7907ba6006ad3dba0","Fill","Fill","N","150","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
 "76d432f6633011e7907ba6006ad3dba0","Top Soil","Top Soil","N","160","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
 "76d43472633011e7907ba6006ad3dba0","Organic","Organic","N","170","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
+"e511397e94ba11e7abc4cec278b6b50a","Till","Till","N","180","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
