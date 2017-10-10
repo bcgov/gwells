@@ -1,5 +1,6 @@
 import geb.spock.GebReportingSpec
 import pages.app.SearchPage
+import geb.Module.*
 
 import spock.lang.Ignore
 import spock.lang.Issue
@@ -233,5 +234,42 @@ class SearchResultsSpecs extends GebReportingSpec {
             assert waitFor { one_search_field_req.displayed == true } 
         and: "a yellow warning label appear under the Groundwater Well Search that states 'No well records could be found'"
             assert waitFor { not_found_msg.displayed == true }    
+    }
+
+    @Unroll
+    //As a general public user I want to be able to choose how many search results to display on one page.
+    def "Scenario 7: Choose Number of search results to be displayed."() {
+        given: "As a general public user I want to be able to choose how many search results to display on one page."
+        to SearchPage
+
+        when: "#TestDesc, this will result in #NumberResult found"
+        
+            SearchWell("$WellId", "$Address","$LegalId","$Owner")
+            at SearchPage
+
+            assert waitFor { results_info }
+            assert waitFor { NumberEntryTo() == "10" }
+            
+/*            println NumberEntryTo()
+            println NumberEntryFrom()
+            println NumberOfEntriesFound()
+*/
+        and: "I select Show 25 entries,"
+            def select = $(name: "results_length").module(geb.module.Select)
+            select.selected = "25"
+           
+            assert select.selected == "25"
+            assert select.selectedText == "25"
+
+        then: "25 entries will be shown"
+            
+            assert waitFor { results_info }
+            assert waitFor { NumberEntryTo() == "25" }
+
+
+        where:
+        TestDesc                                                    | WellId            | Address                   | LegalId           | Owner             | NumberResult
+        "Multiple matching results (139) - Address 123"             | ""                | "123"                     | ""                | ""                | 139
+        "Multiple matching results (430) - Owner GARY"              | ""                | ""                        | ""                | "GARY"            | 430
     }
 }
