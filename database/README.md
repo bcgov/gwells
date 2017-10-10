@@ -11,14 +11,14 @@ Static code tables are maintained in this [GitHub](../../../tree/master/database
 - owned by GWELLS user
 - clears all data tables
 - prepares the ETL table 
-- can be run by GWELLS user or PostgreSQL administrator (e.g. psql -d gwells -U userGN0 -c 'select gwells_setup_replicate();')
+- can be run by GWELLS user or PostgreSQL administrator (e.g. `psql -d gwells -U userGN0 -c 'select gwells_setup_replicate();'`)
 
 2. `gwells_replicate()`
 - owned by GWELLS user
 - "COPY" into static code tables from GitHub repo
 - INSERT into dynamic data tables from Oracle FDW
 - INSERT into the main "wells" PostgreSQL table from the local ETL table
-- must be run by PostgreSQL administrator, due to restricted COPY command (e.g. psql -d gwells -c 'select gwells_replicate();')
+- must be run by PostgreSQL administrator, due to restricted COPY command (e.g.`psql -d gwells -c 'select gwells_replicate();'`)
 
 The logged output includes the number of rows inserted into the main "wells" PostgreSQL database table
 
