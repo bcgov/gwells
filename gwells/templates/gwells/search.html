@@ -55,37 +55,37 @@
     <table id="results" class="table table-striped">
         <thead>
             <tr style="text-align: left;">
-                <th>
-                    Well Tag Number
+                <th class="numeric">
+                    Well Tag<br/>Number
                 </th>
-                <th>
-                    Well ID<br />Plate Number
+                <th class="numeric">
+                    Well ID<br/>Plate Number
                 </th>
-                <th>
+                <th class="html">
                     Owner Name
                 </th>
-                <th>
+                <th class="html">
                     Street Address
                 </th>
-                <th>
+                <th class="html">
                     Lot
                 </th>
-                <th>
+                <th class="html">
                     Plan
                 </th>
-                <th>
-                    District Lot
+                <th class="html">
+                    District<br/>Lot
                 </th>
-                <th>
-                    Land District
+                <th class="html">
+                    Land<br/>District
                 </th>
-                <th>
+                <th class="numeric">
                     PID
                 </th>
-                <th>
-                    Diameter (inches)
+                <th class="numeric">
+                    Diameter<br/>(inches) <!-- TODO: should become a numeric-->
                 </th>
-                <th>
+                <th class="numeric">
                     Finished Well<br />Depth (feet)
                 </th>
             </tr>
@@ -95,10 +95,10 @@
         <tr>
             <td>
                 <a href="https://a100.gov.bc.ca/pub/wells/wellsreport1.do?wellTagNumber={{ well.well_tag_number }}">{{ well.well_tag_number }}</a>
-<!--                 <a href="{% url 'well_detail' well.well_tag_number %}">{{ well.well_tag_number }}</a>
- -->            </td>
+            </td>
+            <!-- <a href="{% url 'well_detail' well.well_tag_number %}">{{ well.well_tag_number }}</a> -->
             <td>
-                {{ well.identification_plate_number|default_if_none:'&nbsp;' }}
+                {{well.identification_plate_number|default:'&nbsp;' }}
             </td>
             <td>
                 {{ well.owner_full_name|default_if_none:'&nbsp;' }}
@@ -186,7 +186,7 @@
                 layers: 'pub:WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW',
                 styles: 'PMBC_Parcel_Fabric_Cadastre_Outlined',
                 transparent: true
-            }        
+            }
         ],
         initialExtent: null,
         externalQueryCallback: searchWellsByExtentCallback,
@@ -218,9 +218,31 @@
         searchMapOptions.initialExtent = latLongBox;
         searchMapOptions.initialWells = wells;
         searchMap = new WellsMap(searchMapOptions);
-        $('#results').DataTable({
-            'searching': false
-        });
+        $('#results').DataTable(
+            {
+                'columnDefs': [ {
+                                  "type":"html-num",
+                                  "targets":"numeric",
+                                  "orderSequence": [ "asc", "desc" ],
+                                  "render": function( data, type, row ) {
+                                      var result = data.trim();
+                                      return result;
+                                  }
+                                },
+                                {
+                                    "type":"html",
+                                    "targets":"html",
+                                    "render": function( data, type, row ) {
+                                        result = data.trim();
+                                        result = data.replace("\r", "").replace("\n", "");
+                                        return result;
+                                    }
+                                }
+                              ],
+                'rowReorder': true,
+                'searching': false
+            }
+        );
     });
 </script>
 
