@@ -30,8 +30,8 @@ body {
 
 /* Leaflet map styles */
 
-#add-map { 
-    height: 360px; 
+#add-map {
+    height: 360px;
 }
 
 #search-map {
@@ -229,7 +229,7 @@ button.env-button-custom {
         margin-right: 0;
         margin-bottom: 0;
     }
-    
+
 }
 
 
@@ -380,6 +380,15 @@ th {
     text-align: left;
 }
 
+/* utility class for sorting */
+.numeric{
+
+}
+
+/* utility class for sorting */
+.html{
+
+}
 
 /* remove bullets from list-group-item <li> items */
 

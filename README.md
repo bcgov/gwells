@@ -46,12 +46,12 @@ To run this project in your development machine, ensure that Python 3.5 and Post
 
 2. Create and activate a [virtualenv](https://virtualenv.pypa.io/) (you may want to use [virtualenvwrapper](http://virtualenvwrapper.readthedocs.org/)).
 
-    If working on Windows install wirtualenvwrapper-win via pip.
+    If working on Windows install virtualenvwrapper-win via pip.
     
     `pip install virtualenvwrapper-win`
 
     If you are developing against a Postgres database you can set environment variables with a postactivate script.
-    When using wirtualenvwrapper-win find the activate.bat script located in %USERPROFILE%\Envs\myenv\Scripts and add the following:
+    When using virtualenvwrapper-win find the activate.bat script located in %USERPROFILE%\Envs\myenv\Scripts and add the following:
 
     ```
     SET DATABASE_SERVICE_NAME=postgresql
