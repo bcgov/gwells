@@ -29,13 +29,13 @@ BEGIN
 	delete from gwells_ground_elevation_method;
 	raise notice '... clearing gwells_land_district data table';
 	delete from gwells_land_district;
-	raise notice '... clearing xform_gwells_well ETL table';
-	delete from xform_gwells_well;
 
 	raise notice '... recreating xform_gwells_well ETL table';
+	DROP TABLE IF EXISTS xform_gwells_well;
 	CREATE unlogged TABLE IF NOT EXISTS xform_gwells_well (
 	   well_tag_number              integer,
 	   well_guid                    uuid,
+	   acceptance_status_code       character varying(10),
 	   owner_full_name              character varying(200),
 	   owner_mailing_address        character varying(100),
 	   owner_city                   character varying(100),
@@ -121,6 +121,7 @@ BEGIN
 	INSERT INTO xform_gwells_well (
 		well_tag_number                ,
 		well_guid                      ,
+		acceptance_status_code         ,
 		owner_full_name                ,
 		owner_mailing_address          ,
 		owner_city                     ,
@@ -164,6 +165,7 @@ BEGIN
 	SELECT
 	  WELLS.WELL_TAG_NUMBER,
 	  null, -- gen_random_uuid()  AS WELL_GUID, 
+	  WELLS.ACCEPTANCE_STATUS_CODE AS acceptance_status_code,
 	  concat_ws(' ', owner.giVEN_NAME,OWNER.SURNAME) AS owner_full_name,
 	  concat_ws(' ',OWNER.STREET_NUMBER,STREET_NAME) AS owner_mailing_address,  
 	  OWNER.CITY AS owner_city,
@@ -250,7 +252,6 @@ BEGIN
 	FROM WELLS.WELLS_WELLS WELLS LEFT OUTER JOIN WELLS.WELLS_OWNERS OWNER
 	  ON OWNER.OWNER_ID=WELLS.OWNER_ID
 	WHERE WELLS.ACCEPTANCE_STATUS_CODE != 'REJECTED';
-
 
 	raise notice '... importing ETL into the main "wells" table';	
 	INSERT INTO gwells_well (
