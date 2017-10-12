@@ -3,7 +3,7 @@
 ## Replicate from the legacy Oracle database
 
 GWELLS uses the PostgreSQL extension oracle-fdw [oracle-fdw](https://github.com/laurenz/oracle_fdw) to read from the
-legacy database (WELLS schema of ENVPROD1.NRS.GOV.BC.CA).  This oracle-fdw extensions connect to the legacy Oracle Database via Environment Variables defined in the [OpenShift Web Console](https://console.pathfinder.gov.bc.ca:8443/console/)  
+legacy database (WELLS schema of ENVPROD1.NRS.GOV.BC.CA).  This oracle-fdw extensions connect to the legacy Oracle Database via Environment Variables defined in the [OpenShift Web Console](https://console.pathfinder.gov.bc.ca:8443/console/):  
 -- Applications > Deployments  
 --- postgresql  
 ---- Environment   
@@ -30,13 +30,13 @@ Note that environment variables are also used for the PostgreSQL database connec
 </table>    
 
 
-Static code tables are maintained in this [GitHub](../../../tree/master/database/code-tables) repo, while dynamic data is replicated.  There are two stored procedures that support the replication.
+Static code tables are maintained in this [GitHub](../../../tree/master/database/code-tables) repo, while dynamic data is replicated.  There are two stored procedures that support the replication, created by running the [data-replication.sql](scripts/data-replication.sql) script.
 
 1. `gwells_setup_replicate()`
 - owned by GWELLS user
 - clears all data tables
 - prepares the ETL table 
-- can be run by GWELLS user or PostgreSQL administrator (e.g. `psql -d gwells -U userGN0 -c 'select gwells_setup_replicate();'`)
+- must be run by GWELLS user (e.g. `psql -d gwells -U userGN0 -c 'select gwells_setup_replicate();'`)
 
 2. `gwells_replicate()`
 - owned by GWELLS user
