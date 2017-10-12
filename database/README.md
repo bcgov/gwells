@@ -24,9 +24,6 @@ Note that environment variables are also used for the PostgreSQL database connec
 <tr><td>POSTGRESQL_USER</td><td><i>username</i></td></tr>
 <tr><td>POSTGRESQL_PASSWORD</td><td><i>password</i></td></tr>
 <tr><td>POSTGRESQL_DATABASE</td><td>gwells</td></tr>
-<tr><td>FDW_NAME</td><td>wells_oradb</td></tr>
-<tr><td>FDW_SCHEMA</td><td>wells</td></tr>
-<tr><td>FDW_FOREIGN_SERVER</td><td>//nrk1-scan.bcgov/envprod1.nrs.bcgov</td></tr>
 </table>    
 
 
