@@ -40,8 +40,8 @@ class AuditModel(models.Model):
 
     class Meta:
         abstract = True
-        
-        
+
+
 class ProvinceState(AuditModel):
     """
     Lookup of Provinces/States.
@@ -53,7 +53,7 @@ class ProvinceState(AuditModel):
     code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
     sort_order = models.PositiveIntegerField()
-    
+
     class Meta:
         db_table = 'gwells_province_state'
         ordering = ['sort_order', 'description']
@@ -71,7 +71,7 @@ class LandDistrict(AuditModel):
     code = models.CharField(max_length=10, unique=True)
     name = models.CharField(max_length=255)
     sort_order = models.PositiveIntegerField()
-    
+
     class Meta:
         db_table = 'gwells_land_district'
         ordering = ['sort_order', 'name']
@@ -89,7 +89,7 @@ class WellYieldUnit(AuditModel):
     code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
     sort_order = models.PositiveIntegerField()
-    
+
     class Meta:
         db_table = 'gwells_well_yield_unit'
         ordering = ['sort_order', 'description']
@@ -108,7 +108,7 @@ class WellActivityType(AuditModel):
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
-    
+
     class Meta:
         db_table = 'gwells_well_activity_type'
         ordering = ['sort_order', 'description']
@@ -127,7 +127,7 @@ class WellClass(AuditModel):
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
-    
+
     class Meta:
         db_table = 'gwells_well_class'
         ordering = ['sort_order', 'description']
@@ -147,7 +147,7 @@ class WellSubclass(AuditModel):
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
-    
+
     class Meta:
         db_table = 'gwells_well_subclass'
         ordering = ['sort_order', 'description']
@@ -166,6 +166,46 @@ class WellSubclass(AuditModel):
 
 
 
+class StatusOfWell(AuditModel):
+    """
+    Status of Well.
+    """
+    status_of_well_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    code = models.CharField(unique=True, max_length=10)
+    description = models.CharField(max_length=255)
+    is_hidden = models.BooleanField(default=False)
+    sort_order = models.PositiveIntegerField()
+
+    class Meta:
+        db_table = 'gwells_status_of_well'
+        ordering = ['sort_order', 'code']
+
+    def save(self, *args, **kwargs):
+        self.validate()
+        super(StatusOfWell, self).save(*args, **kwargs)
+
+
+
+class LicensedStatus(AuditModel):
+    """
+    LicenseStatus of Well.
+    """
+    well_licensed_status_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    code = models.CharField(unique=True, max_length=10)
+    description = models.CharField(max_length=255)
+    is_hidden = models.BooleanField(default=False)
+    sort_order = models.PositiveIntegerField()
+
+    class Meta:
+        db_table = 'gwells_licensed_status'
+        ordering = ['sort_order', 'code']
+
+    def save(self, *args, **kwargs):
+        self.validate()
+        super(LicensedStatus, self).save(*args, **kwargs)
+
+
+
 class IntendedWaterUse(AuditModel):
     """
     Usage of Wells (water supply).
@@ -175,7 +215,7 @@ class IntendedWaterUse(AuditModel):
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
-    
+
     class Meta:
         db_table = 'gwells_intended_water_use'
         ordering = ['sort_order', 'description']
@@ -192,7 +232,7 @@ class DrillingCompany(AuditModel):
     drilling_company_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=200, unique=True)
     is_hidden = models.BooleanField(default=False)
-    
+
     class Meta:
         db_table = 'gwells_drilling_company'
         verbose_name_plural = 'Drilling Companies'
@@ -212,7 +252,7 @@ class Driller(AuditModel):
     surname = models.CharField(max_length=100)
     registration_number = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
-    
+
     class Meta:
         db_table = 'gwells_driller'
 
@@ -232,7 +272,7 @@ class GroundElevationMethod(AuditModel):
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
-    
+
     class Meta:
         db_table = 'gwells_ground_elevation_method'
         ordering = ['sort_order', 'description']
@@ -251,7 +291,7 @@ class DrillingMethod(AuditModel):
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
-    
+
     class Meta:
         db_table = 'gwells_drilling_method'
         ordering = ['sort_order', 'description']
@@ -270,7 +310,7 @@ class SurficialMaterial(AuditModel):
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
-    
+
     class Meta:
         db_table = 'gwells_surficial_material'
         ordering = ['sort_order', 'description']
@@ -289,7 +329,7 @@ class BedrockMaterial(AuditModel):
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
-    
+
     class Meta:
         db_table = 'gwells_bedrock_material'
         ordering = ['sort_order', 'description']
@@ -308,7 +348,7 @@ class BedrockMaterialDescriptor(AuditModel):
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
-    
+
     class Meta:
         db_table = 'gwells_bedrock_material_descriptor'
         ordering = ['sort_order', 'description']
@@ -327,7 +367,7 @@ class LithologyStructure(AuditModel):
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
-    
+
     class Meta:
         db_table = 'gwells_lithology_structure'
         ordering = ['sort_order', 'description']
@@ -346,7 +386,7 @@ class LithologyColour(AuditModel):
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
-    
+
     class Meta:
         db_table = 'gwells_lithology_colour'
         ordering = ['sort_order', 'description']
@@ -365,7 +405,7 @@ class LithologyHardness(AuditModel):
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
-    
+
     class Meta:
         db_table = 'gwells_lithology_hardness'
         ordering = ['sort_order', 'description']
@@ -384,7 +424,7 @@ class LithologyMoisture(AuditModel):
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
-    
+
     class Meta:
         db_table = 'gwells_lithology_moisture'
         ordering = ['sort_order', 'description']
@@ -403,7 +443,7 @@ class CasingType(AuditModel):
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
-    
+
     class Meta:
         db_table = 'gwells_casing_type'
         ordering = ['sort_order', 'description']
@@ -422,7 +462,7 @@ class CasingMaterial(AuditModel):
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
-    
+
     class Meta:
         db_table = 'gwells_casing_material'
         ordering = ['sort_order', 'description']
@@ -441,7 +481,7 @@ class SurfaceSealMaterial(AuditModel):
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
-    
+
     class Meta:
         db_table = 'gwells_surface_seal_material'
         ordering = ['sort_order', 'description']
@@ -460,7 +500,7 @@ class SurfaceSealMethod(AuditModel):
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
-    
+
     class Meta:
         db_table = 'gwells_surface_seal_method'
         ordering = ['sort_order', 'description']
@@ -479,7 +519,7 @@ class LinerMaterial(AuditModel):
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
-    
+
     class Meta:
         db_table = 'gwells_liner_material'
         ordering = ['sort_order', 'description']
@@ -498,7 +538,7 @@ class ScreenIntake(AuditModel):
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
-    
+
     class Meta:
         db_table = 'gwells_screen_intake'
         ordering = ['sort_order', 'description']
@@ -517,7 +557,7 @@ class ScreenType(AuditModel):
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
-    
+
     class Meta:
         db_table = 'gwells_screen_type'
         ordering = ['sort_order', 'description']
@@ -536,7 +576,7 @@ class ScreenMaterial(AuditModel):
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
-    
+
     class Meta:
         db_table = 'gwells_screen_material'
         ordering = ['sort_order', 'description']
@@ -555,7 +595,7 @@ class ScreenOpening(AuditModel):
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
-    
+
     class Meta:
         db_table = 'gwells_screen_opening'
         ordering = ['sort_order', 'description']
@@ -574,7 +614,7 @@ class ScreenBottom(AuditModel):
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
-    
+
     class Meta:
         db_table = 'gwells_screen_bottom'
         ordering = ['sort_order', 'description']
@@ -593,7 +633,7 @@ class ScreenAssemblyType(AuditModel):
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
-    
+
     class Meta:
         db_table = 'gwells_screen_assembly_type'
         ordering = ['sort_order', 'description']
@@ -612,7 +652,7 @@ class FilterPackMaterial(AuditModel):
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
-    
+
     class Meta:
         db_table = 'gwells_filter_pack_material'
         ordering = ['sort_order', 'description']
@@ -631,7 +671,7 @@ class FilterPackMaterialSize(AuditModel):
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
-    
+
     class Meta:
         db_table = 'gwells_filter_pack_material_size'
         ordering = ['sort_order', 'description']
@@ -650,7 +690,7 @@ class DevelopmentMethod(AuditModel):
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
-    
+
     class Meta:
         db_table = 'gwells_development_method'
         ordering = ['sort_order', 'description']
@@ -669,7 +709,7 @@ class YieldEstimationMethod(AuditModel):
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
-    
+
     class Meta:
         db_table = 'gwells_yield_estimation_method'
         ordering = ['sort_order', 'description']
@@ -688,7 +728,7 @@ class WaterQualityCharacteristic(AuditModel):
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
-    
+
     class Meta:
         db_table = 'gwells_water_quality_characteristic'
         ordering = ['sort_order', 'description']
@@ -707,9 +747,11 @@ class Well(AuditModel):
     well_class = models.ForeignKey(WellClass, db_column='well_class_guid', on_delete=models.CASCADE, verbose_name='Well Class')
     well_subclass = models.ForeignKey(WellSubclass, db_column='well_subclass_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Well Subclass')
     intended_water_use = models.ForeignKey(IntendedWaterUse, db_column='intended_water_use_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Water Supply Well Intended Water Use')
+    status_of_well = models.ForeignKey(StatusOfWell, db_column='status_of_well_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Status of Well')
+    licensed_status = models.ForeignKey(LicensedStatus, db_column='licensed_status_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Licensed Status')
 
     owner_full_name = models.CharField(max_length=200, verbose_name='Owner Name')
-    owner_mailing_address = models.CharField(max_length=100, verbose_name='Mailing Address')  
+    owner_mailing_address = models.CharField(max_length=100, verbose_name='Mailing Address')
     owner_city = models.CharField(max_length=100, verbose_name='Town/City')
     owner_province_state = models.ForeignKey(ProvinceState, db_column='province_state_guid', on_delete=models.CASCADE, blank=True, verbose_name='Province')
     owner_postal_code = models.CharField(max_length=10, blank=True, verbose_name='Postal Code')
@@ -790,9 +832,9 @@ class Well(AuditModel):
 
     well_yield_unit = models.ForeignKey(WellYieldUnit, db_column='well_yield_unit_guid', on_delete=models.CASCADE, blank=True, null=True)
     diameter = models.CharField(max_length=9, blank=True)  #want to be integer in future
-    
+
     tracker = FieldTracker()
-    
+
     class Meta:
         db_table = 'gwells_well'
 
@@ -833,7 +875,7 @@ class ActivitySubmission(AuditModel):
     work_end_date = models.DateField(verbose_name='Work End Date')
 
     owner_full_name = models.CharField(max_length=200, verbose_name='Owner Name')
-    owner_mailing_address = models.CharField(max_length=100, verbose_name='Mailing Address')  
+    owner_mailing_address = models.CharField(max_length=100, verbose_name='Mailing Address')
     owner_city = models.CharField(max_length=100, verbose_name='Town/City')
     owner_province_state = models.ForeignKey(ProvinceState, db_column='province_state_guid', on_delete=models.CASCADE, verbose_name='Province')
     owner_postal_code = models.CharField(max_length=10, blank=True, verbose_name='Postal Code')
@@ -914,7 +956,7 @@ class ActivitySubmission(AuditModel):
 
     well_yield_unit = models.ForeignKey(WellYieldUnit, db_column='well_yield_unit_guid', on_delete=models.CASCADE, blank=True, null=True)
     diameter = models.CharField(max_length=9, blank=True)  #want to be integer in future
-    
+
     tracker = FieldTracker()
 
     def create_well(self):
@@ -926,7 +968,7 @@ class ActivitySubmission(AuditModel):
         w.owner_city = self.owner_city
         w.owner_province_state = self.owner_province_state
         w.owner_postal_code = self.owner_postal_code
-    
+
         w.street_address = self.street_address
         w.city = self.city
         w.legal_lot = self.legal_lot
@@ -1019,7 +1061,7 @@ class LtsaOwner(AuditModel):
     well = models.ForeignKey(Well, db_column='well_tag_number', on_delete=models.CASCADE, blank=True, null=True)
     full_name = models.CharField(max_length=200, verbose_name='Owner Name')
     mailing_address = models.CharField(max_length=100, verbose_name='Mailing Address')
-    
+
     city = models.CharField(max_length=100, verbose_name='Town/City')
     province_state = models.ForeignKey(ProvinceState, db_column='province_state_guid', on_delete=models.CASCADE, verbose_name='Province')
     postal_code = models.CharField(max_length=10, blank=True, verbose_name='Postal Code')
@@ -1053,7 +1095,7 @@ class LithologyDescription(AuditModel):
     lithology_moisture = models.ForeignKey(LithologyMoisture, db_column='lithology_moisture_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Moisture')
     water_bearing_estimated_flow = models.DecimalField(max_digits=10, decimal_places=4, blank=True, null=True, verbose_name='Water Bearing Estimated Flow')
     lithology_observation = models.CharField(max_length=250, blank=True, verbose_name='Observations')
-    
+
     class Meta:
         db_table = 'gwells_lithology_description'
 
@@ -1079,7 +1121,7 @@ class Casing(AuditModel):
     casing_material = models.ForeignKey(CasingMaterial, db_column='casing_material_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Casing Material')
     wall_thickness = models.DecimalField(max_digits=6, decimal_places=3, verbose_name='Wall Thickness', blank=True, null=True, validators=[MinValueValidator(Decimal('0.01'))])
     drive_shoe = models.BooleanField(default=False, verbose_name='Drive Shoe', choices=((False, 'No'), (True, 'Yes')))
-    
+
     class Meta:
         db_table = 'gwells_casing'
 
@@ -1100,7 +1142,7 @@ class LinerPerforation(AuditModel):
     well = models.ForeignKey(Well, db_column='well_tag_number', on_delete=models.CASCADE, blank=True, null=True)
     liner_perforation_from = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='Perforated From', blank=False, validators=[MinValueValidator(Decimal('0.00'))])
     liner_perforation_to = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='Perforated To', blank=False, validators=[MinValueValidator(Decimal('0.01'))])
-    
+
     class Meta:
         db_table = 'gwells_liner_perforation'
 
@@ -1124,7 +1166,7 @@ class Screen(AuditModel):
     internal_diameter = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='Diameter', blank=True, null=True, validators=[MinValueValidator(Decimal('0.0'))])
     assembly_type = models.ForeignKey(ScreenAssemblyType, db_column='screen_assembly_type_guid', on_delete=models.CASCADE, blank=True, null=True)
     slot_size = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='Slot Size', blank=True, null=True, validators=[MinValueValidator(Decimal('0.00'))])
-    
+
     class Meta:
         db_table = 'gwells_screen'
 
@@ -1150,7 +1192,7 @@ class ProductionData(AuditModel):
     drawdown = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, validators=[MinValueValidator(Decimal('0.00'))])
     hydro_fracturing_performed = models.BooleanField(default=False, verbose_name='Hydro-fracturing Performed?', choices=((False, 'No'), (True, 'Yes')))
     hydro_fracturing_yield_increase = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='Well Yield Increase Due to Hydro-fracturing', blank=True, null=True, validators=[MinValueValidator(Decimal('0.00'))])
-    
+
     class Meta:
         db_table = 'gwells_production_data'
 
@@ -1159,6 +1201,3 @@ class ProductionData(AuditModel):
             return 'activity_submission {} {} {}'.format(self.activity_submission, self.yield_estimation_method, self.yield_estimation_rate)
         else:
             return 'well {} {} {}'.format(self.well, self.yield_estimation_method, self.yield_estimation_rate)
-
-
-

@@ -11,68 +11,70 @@
 <div class="row">
     <div class="col-md-4">
         <label for="well_tag_number">Well Tag Number:</label>
-        <span id="well_tag_number">{{ well.well_tag_number }}</span>
+        <span id="well_tag_number">{{ well.well_tag_number|default_if_none:'&nbsp;' }}</span>
     </div>
     <div class="col-md-4">
-        <label for="well_class">Well Class:</label>
-        <span id="well_class">{{ well.well_class }}</span>
+        <label for="licensed_status">Licensed Status:</label>
+        <span id="licensed_status">{{ well.licensed_status|default_if_none:'&nbsp;' }}</span>
     </div>
     <div class="col-md-4">
-        <label for="record_reviewed">Record reviewed by Ministry of Environment:</label>
-        <span id="record_reviewed">No</span>
-</div>
+        <label for="obs_well_number">Observation Well Number:</label>
+        <span id="obs_well_number">{{ well.observation_well_number|default_if_none:'&nbsp;' }}</span>
+    </div>
 </div>
 <div class="row">
     <div class="col-md-4">
         <label for="identification_plate_number">Well Identification Plate Number:</label>
-        <span id="identification_plate_number">{{ well.identification_plate_number|default_if_none:'' }}</span>
-</div>
-    <div class="col-md-4">
-        <label for="well_subclass">Well Subclass:</label>
-         <span id="well_subclass">{{ well.well_subclass|default_if_none:'' }}</span>
+        <span id="identification_plate_number">{{ well.identification_plate_number|default_if_none:'&nbsp;' }}</span>
     </div>
     <div class="col-md-4">
-        <label for="date_reviewed">Date Reviewed:</label>
-        <span id="date_reviewed"></span>
-</div>
+        <label for="well_class">Well Class:</label>
+        <span id="well_class">{{ well.well_class|default_if_none:'&nbsp;' }}</span>
+    </div>
+    <div class="col-md-4">
+        <label for="obs_well_status">Observation Well Status:</label>
+        <span id="obs_well_status">{{ well.observation_well_status|default_if_none:'&nbsp;' }}</span>
+    </div>
 </div>
 <div class="row">
     <div class="col-md-4">
         <label for="owner_full_name">Owner Name:</label>
-        <span id="owner_full_name">{{ well.owner_full_name }}</span>
-</div>
-    <div class="col-md-4">
-        <label for="intended_water_use">Intended Water Use:</label>
-        <span id="intended_water_use">{{ well.intended_water_use|default_if_none:'' }}</span>
-</div>
-    <div class="col-md-4">
-        <label for="alternate_specs_submitted">Alternative specifications submitted if required:</label>
-        <span id="alternate_specs_submitted">{{ well.alternative_specs_submitted }}</span>
-</div>
-</div>
-<div class="row">
-    <div class="col-md-4">
-        <label for="obs_well_number">Observation Well Number:</label>
-        <span id="obs_well_number"></span>
+        <span id="owner_full_name">{{ well.owner_full_name|default_if_none:'&nbsp;' }}</span>
     </div>
     <div class="col-md-4">
-        <label for="licensed_status">Licensed Status:</label>
-        <span id="licensed_status"></span>
+        <label for="well_subclass">Well Subclass:</label>
+        <span id="well_subclass">{{ well.well_subclass|default_if_none:'&nbsp;' }}</span>
     </div>
-</div>
-<div class="row">
-    <div class="col-md-4">
-        <label for="obs_well_status">Observation Well Status:</label>
-        <span id="obs_well_status"></span>
-    </div>
-</div>
-<div class="row">
     <div class="col-md-4">
         <label for="ems_id">Environmental Monitoring System (EMS) ID:</label>
-        <span id="ems_id"></span>
+        <span id="ems_id">{{ well.ems|default_if_none:'&nbsp;' }}</span>
     </div>
 </div>
-<br />
+<div class="row">
+    <div class="col-md-4">
+    </div>
+    <div class="col-md-4">
+        <label for="intended_water_use">Intended Water Use:</label>
+        <span id="intended_water_use">{{ well.intended_water_use|default_if_none:'&nbsp;' }}</span>
+    </div>
+
+</div>
+<div class="row">
+    <div class="col-md-4">
+    </div>
+    <div class="col-md-4">
+        <label for="well_status_if_well">Well Status:</label>
+        <span id="well_status_of_well">{{ well.status_of_well.code|default_if_none:'&nbsp;' }}</span>
+    </div>
+    <div class="col-md-4">
+    </div>
+    <div class="col-md-4">
+        <label for="alternate_specs_submitted">Alternative specifications submitted if required:</label>
+        <span id="alternate_specs_submitted">{{ well.alternative_specs_submitted|default_if_none:'&nbsp;' }}</span>
+    </div>
+</div>
+
+<br/>
 
 <fieldset>
     <legend>Location Information</legend>
