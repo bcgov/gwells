@@ -19,8 +19,9 @@
  *  - Display an array of WMS tile layers as overlays.
  * The map is able to pan and zoom by default, but this behaviour can be disabled by passing appropriate booleans. Note that if zooming is allowed,
  * the map will always zoom into and out of the centre of the map, regardless if the zoom event arises from zoom buttons or the mouse wheel. Also,
- * the constructor allows the map to set its zoom levels, as well as the initial centre or a bounding box to fit (precisely one of these is required 
- * for a given instance).
+ * the constructor allows the map to set its zoom levels, as well as the initial centre or a bounding box to fit (precisely one of these is
+ * required for a given instance).
+ *
  * @param options An object conforming to the following scheme (using TS notation):
  * {
  *   mapNodeId: string, // The DOM ID of the div into which the Leaflet map will be placed
@@ -80,10 +81,10 @@ function WellsMap(options) {
 
     // The zoom level beyond which the map presents the external query control, and beneath which removes the control.
     var _EXTERNAL_QUERY_MIN_ZOOM_LEVEL = 10;
-    
+
     // Leaflet style for the _wellMarkers
     var _WELL_MARKER_STYLE = {
-          radius: 3, // The radius of the circleMarker
+          radius: 4, // The radius of the circleMarker
           color: "#000", // The color of the circleMarker
           weight: 1,
           fillColor: '#0162fe', // The fill color of the circleMarker
@@ -194,7 +195,7 @@ function WellsMap(options) {
                 if (esriLayer && esriLayer.url) {
                     L.esri.tiledMapLayer({
                     url: esriLayer.url
-                    }).addTo(_leafletMap);                               
+                    }).addTo(_leafletMap);
                 }
             });
         }
@@ -413,7 +414,7 @@ function WellsMap(options) {
             _searchMinRectangle = L.rectangle(_leafletMap.getBounds(), {
                 fillOpacity: 0,
                 interactive: false
-            }).addTo(_leafletMap);            
+            }).addTo(_leafletMap);
         } else if (_leafletMap.getZoom() > _AJAX_SEARCH_MIN_ZOOM_LEVEL && _exists(_searchMinRectangle)) {
             _leafletMap.removeLayer(_searchMinRectangle);
             _searchMinRectangle = null;
@@ -466,7 +467,7 @@ function WellsMap(options) {
             onAdd: function (map) {
                 L.DomEvent.on(container,
                     'click dblclick',
-                    function (e) { 
+                    function (e) {
                         e.preventDefault();
                         e.stopPropagation();
                         _sendExtentToExternalQuery();
@@ -496,7 +497,7 @@ function WellsMap(options) {
     var _zoomToRectangle = function () {
         // Get the final bounds of the rectangle.
         if (_exists(_zoomRectangle)) {
-            _leafletMap.flyToBounds(_zoomRectangle.getBounds());                
+            _leafletMap.flyToBounds(_zoomRectangle.getBounds());
         }
         _stopRectangleZoom();
     };
@@ -543,7 +544,7 @@ function WellsMap(options) {
         if (_exists(_zoomRectangle)) {
             _leafletMap.removeLayer(_zoomRectangle);
             _zoomRectangle = null;
-            _zoomRectangleAnchor = null;    
+            _zoomRectangleAnchor = null;
         }
         // Unsubscribe to all of the event handlers.
         _leafletMap.off('click', _rectangleZoomSecondClickEvent);
@@ -716,7 +717,7 @@ function WellsMap(options) {
         // If the pin exists, zoomstart should remove the pin's wellMarker, since it's a part of the map itself
         // and so zooming can cause it to dominate the map view temporarily.
         _leafletMap.on('zoomstart', _wellPushpinZoomStartEvent);
-        
+
         // If the pin exists, zoomend should re-centre the pin and replace the pin's wellMarker.
         _leafletMap.on('zoomend', _wellPushpinZoomEndEvent);
 
@@ -768,7 +769,7 @@ function WellsMap(options) {
         var canPan = _exists(options.canPan) ? options.canPan : true;
 
         // Bounds
-        var initialExtentBounds = _exists(options.initialExtent) ? _setInitialExtentBounds(options.initialExtent) : void 0;        
+        var initialExtentBounds = _exists(options.initialExtent) ? _setInitialExtentBounds(options.initialExtent) : void 0;
         _maxBounds = _exists(options.mapBounds) ? _setMaxBounds(options.mapBounds) : void 0;
 
         // Assign the errors node ID. Initially only used for geolocation on the search map, but can be adapted more generically.

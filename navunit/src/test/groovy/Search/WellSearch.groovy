@@ -76,7 +76,7 @@ class WellSearchSpecs extends GebReportingSpec {
         where:
         TestDesc                                                    | WellId           | ShowError    | NumberResult	|TagID 	| SecondID
         "One matching result - Well Tag - 107667"                   | 107667           | "No"         | 1				|"tag"	|""
-        "Multiple matching results - Well Tag 123"                  | 123              | "No"         | 2				|"tag"	|""
+        "Multiple matching results - Well Tag 2"                    | 2                | "No"         | 2				|"tag"	|""
         "Multiple matching results - Well ID 52471"                 | 52471            | "No"         | 2				|"ID"	|113308
         "No matching results - Well ID 999999"                   	| 999999           | "Yes"        | 0				|"tag"	|""
     } 
@@ -323,7 +323,7 @@ class WellSearchSpecs extends GebReportingSpec {
         "Multiple matching results - Address - 123"     	|""| "123"      | "No"         | 139	
         "Multiple matching results - Address - 16TH"     	|""| "16TH"     | "No"         | 390
        	"Partial Owner/Address - Gary/201"					| "GARY"	   	|"201"		| "No"     	   | 3
-        "Full Owner/ partial Address - John Smith/lake"		| "JOHN SMITH"	|"LAKE"		| "No"     	   | 2
+        "Full Owner/ partial Address - Smith/Wolfe"		| "SMITH"	|"WOLFE"		| "No"     	   | 2
         "Partial Owner/Full Address - Gary/201"				| "GARY"	   	|"TELEGRAPH RD"		| "No"     	   | 1
     }         
 }
