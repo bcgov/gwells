@@ -2,7 +2,7 @@ import org.apache.tools.ant.taskdefs.condition.Os
 
 ext {
     // The drivers we want to use
-    drivers = ["firefox", "chrome", "phantomJs"]
+    drivers = ["firefox","chrome", "phantomJs", "ie"]
 
     ext {
         groovyVersion = '2.4.12'
@@ -32,14 +32,26 @@ dependencies {
     // If using JUnit, need to depend on geb-junit (3 or 4)
     testCompile "org.gebish:geb-junit4:$gebVersion"
 
+    testCompile "org.seleniumhq.selenium:selenium-support:$seleniumVersion"
+
     // Drivers
     testCompile "org.seleniumhq.selenium:selenium-chrome-driver:$seleniumVersion"
+    
     testCompile "org.seleniumhq.selenium:selenium-firefox-driver:$seleniumVersion"
+
+    testCompile "org.seleniumhq.selenium:selenium-ie-driver:$seleniumVersion"
+    
     // using a custom version of phantomjs driver for now as the original one does not support WebDriver > 2.43.1
     testCompile("com.codeborne:phantomjsdriver:1.3.0") {
         // phantomjs driver pulls in a different selenium version
         transitive = false
     }
+/*    testCompile( 'com.athaydes:spock-reports:1.3.2' ) {
+        transitive = false // this avoids affecting your version of Groovy/Spock
+    }
+    // if you don't already have slf4j-api and an implementation of it in the classpath, add this!
+    testCompile 'org.slf4j:slf4j-api:1.7.13'
+    testCompile 'org.slf4j:slf4j-simple:1.7.13'*/
 }
 
 drivers.each { driver ->
@@ -69,8 +81,15 @@ chromeTest {
 phantomJsTest {
     dependsOn unzipPhantomJs
 
-    def phantomJsFilename = Os.isFamily(Os.FAMILY_WINDOWS) ? "phantomjs.exe" : "bin/phantomjs"
+    def phantomJsFilename = Os.isFamily(Os.FAMILY_WINDOWS) ? "phantomjs.exe" : "phantomjs"
     systemProperty "phantomjs.binary.path", new File(unzipPhantomJs.outputs.files.singleFile, phantomJsFilename).absolutePath
+}
+
+ieTest {
+    dependsOn unzipIeDriver
+
+    def iedriverFilename = Os.isFamily(Os.FAMILY_WINDOWS) ? "IEDriverServer.exe" : "IEDriverServer"
+    systemProperty "webdriver.ie.driver", new File(unzipIeDriver.outputs.files.singleFile, iedriverFilename).absolutePath
 }
 
 test {
