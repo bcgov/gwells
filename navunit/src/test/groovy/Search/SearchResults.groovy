@@ -1,5 +1,6 @@
 import geb.spock.GebReportingSpec
 import pages.app.SearchPage
+import geb.Module.*
 
 import spock.lang.Ignore
 import spock.lang.Issue
@@ -9,16 +10,13 @@ import spock.lang.Specification
 import spock.lang.Title
 import spock.lang.Unroll    
 
+
+@Narrative('''In order to view search results as a generic user, 
+        I want to be able to see the number of matching search results and have these displayed with minimal scrolling.''')
+@Title('Feature: Search Results')
 class SearchResultsSpecs extends GebReportingSpec {
 
-// Feature: Search Results
-// In order to view search results as a generic user, I want to be able to see the number of matching search results and have these displayed with minimal scrolling
-
-/*    String countTest = "";
-    String[] str;*/
-
-    @Unroll
-
+    @Unroll    
     def "Scenario 1: #TestDesc"() {
         given:
         to SearchPage
@@ -233,5 +231,93 @@ class SearchResultsSpecs extends GebReportingSpec {
             assert waitFor { one_search_field_req.displayed == true } 
         and: "a yellow warning label appear under the Groundwater Well Search that states 'No well records could be found'"
             assert waitFor { not_found_msg.displayed == true }    
+    }
+
+    @Unroll
+    //As a general public user I want to be able to choose how many search results to display on one page.
+    def "Scenario 7: Choose Number of search results to be displayed."() {
+        given: "As a general public user I want to be able to choose how many search results to display on one page."
+        to SearchPage
+
+        when: "#TestDesc, this will result in #NumberResult found"
+        
+            SearchWell("$WellId", "$Address","$LegalId","$Owner")
+            at SearchPage
+
+            assert waitFor { results_info }
+            assert waitFor { NumberEntryTo() == "10" }
+            
+/*            println NumberEntryTo()
+            println NumberEntryFrom()
+            println NumberOfEntriesFound()
+*/
+        and: "I select Show 25 entries,"
+            def select = $(name: "results_length").module(geb.module.Select)
+            select.selected = "25"
+           
+            assert select.selected == "25"
+            assert select.selectedText == "25"
+
+        then: "25 entries will be shown"
+            
+            assert waitFor { results_info }
+            assert waitFor { NumberEntryTo() == "25" }
+
+
+        where:
+        TestDesc                                                    | WellId            | Address                   | LegalId           | Owner             | NumberResult
+        "Multiple matching results (139) - Address 123"             | ""                | "123"                     | ""                | ""                | 139
+        "Multiple matching results (430) - Owner GARY"              | ""                | ""                        | ""                | "GARY"            | 430
+    }
+
+    @Unroll
+    //As a general public user, I want to be able to sort the search results table to be better able 
+    //to organize and see the results of my search in order to help me find my well.
+
+    def "Scenario 8: Sort numeric column"() {
+        given: "I have completed a text search using any criteria."
+                to SearchPage
+                SearchWell("$WellId", "$Address","$LegalId","$Owner")
+            at SearchPage
+        and: "And I have received search results in the table located below the map and text fields"     
+            assert waitFor { results_info }
+
+        when: "I select the sort arrow beside a numeric column name"
+        def original_content = $('#results > tbody > tr:nth-child(1) > td.sorting_1 > a').text().toInteger()
+        $('#results > thead > tr > th:nth-child(1)').click()
+        sleepForNSeconds(2)
+        
+        then: "Then the table should re-sort ascending or descending depending on which column was selected."
+        def new_content = $('#results > tbody > tr:nth-child(1) > td.sorting_1 > a').text().toInteger()
+        assert original_content < new_content
+
+        where:
+        TestDesc                                                    | WellId            | Address                   | LegalId           | Owner             | NumberResult
+        "Multiple matching results (139) - Address 123"             | ""                | "123"                     | ""                | ""                | 139
+        "Multiple matching results (430) - Owner GARY"              | ""                | ""                        | ""                | "GARY"            | 430
+    }
+
+       def "Scenario 9: Sort string column"() {
+        given: "I have completed a text search using any criteria."
+                to SearchPage
+                SearchWell("$WellId", "$Address","$LegalId","$Owner")
+            at SearchPage
+        and: "And I have received search results in the table located below the map and text fields"     
+            assert waitFor { results_info }
+
+        when: "I select the sort arrow beside a numeric column name"
+        def original_content = $('#results > tbody > tr:nth-child(1) > td:nth-child(3)').text()
+        $('#results > thead > tr > th:nth-child(3)').click()
+        sleepForNSeconds(2)
+        
+        then: "Then the table should re-sort ascending or descending depending on which column was selected."
+        def new_content = $('#results > tbody > tr:nth-child(1) > td:nth-child(3)').text()
+
+        assert original_content > new_content
+
+        where:
+        TestDesc                                                    | WellId            | Address                   | LegalId           | Owner             | NumberResult
+        "Multiple matching results (139) - Address 123"             | ""                | "123"                     | ""                | ""                | 139
+        "Multiple matching results (430) - Owner GARY"              | ""                | ""                        | ""                | "GARY"            | 430
     }
 }

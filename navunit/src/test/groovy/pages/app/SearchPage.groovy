@@ -1,6 +1,7 @@
 package pages.app
 
 import geb.Page
+import geb.Module
 
 class SearchPage extends Page {
     static at = { title == "Groundwater Wells Search - Province of British Columbia" }
