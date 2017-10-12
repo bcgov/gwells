@@ -344,7 +344,7 @@ BEGIN
 		xform.longitude                 ,
 		xform.ground_elevation,
 		xform.orientation_vertical      ,
-		xform.other_drilling_method,
+		' ',
 		xform.drilling_method_guid ,
 		xform.ground_elevation_method_guid,
 		xform.when_created              ,
