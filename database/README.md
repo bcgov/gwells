@@ -5,18 +5,11 @@
 GWELLS uses the PostgreSQL extension oracle-fdw [oracle-fdw](https://github.com/laurenz/oracle_fdw) to read from the
 legacy database (WELLS schema of ENVPROD1.NRS.GOV.BC.CA).  This oracle-fdw extensions connect to the legacy Oracle Database via Environment Variables defined in the [OpenShift Web Console](https://console.pathfinder.gov.bc.ca:8443/console/)  
 -- Applications > Deployments  
----postgresql  
----- -> Environment  
-
-Name Value
-FDW_USER proxy_wells_gwells
-FDW_PASS <password>
-FDW_FOREIGN_SCHEMA WELLS
-FDW_NAME wells_oradb
-FDW_SCHEMA wells
-FDW_FOREIGN_SERVER //nrk1-scan.bcgov/envprod1.nrs.bcgov
+--- postgresql  
+---- Environment   
 
 <table>   
+<tr><td>Name</td><td>Value</td></tr>
 <tr><td>FDW_USER</td><td>proxy_wells_gwells</td></tr>
 <tr><td>FDW_PASS</td><td><password></td></tr>
 <tr><td>FDW_FOREIGN_SCHEMA</td><td>WELLS</td></tr>
@@ -24,6 +17,18 @@ FDW_FOREIGN_SERVER //nrk1-scan.bcgov/envprod1.nrs.bcgov
 <tr><td>FDW_SCHEMA</td><td>wells</td></tr>
 <tr><td>FDW_FOREIGN_SERVER</td><td>//nrk1-scan.bcgov/envprod1.nrs.bcgov</td></tr>
 </table>    
+
+Note that environment variables are also used for the PostgreSQL database connection:
+<table>   
+<tr><td>Name</td><td>Value</td></tr>
+<tr><td>POSTGRESQL_USER</td><td><username></td></tr>
+<tr><td>POSTGRESQL_PASSWORD</td><td><password></td></tr>
+<tr><td>POSTGRESQL_DATABASE</td><td>gwells</td></tr>
+<tr><td>FDW_NAME</td><td>wells_oradb</td></tr>
+<tr><td>FDW_SCHEMA</td><td>wells</td></tr>
+<tr><td>FDW_FOREIGN_SERVER</td><td>//nrk1-scan.bcgov/envprod1.nrs.bcgov</td></tr>
+</table>    
+
 
 Static code tables are maintained in this [GitHub](../../../tree/master/database/code-tables) repo, while dynamic data is replicated.  There are two stored procedures that support this.
 
