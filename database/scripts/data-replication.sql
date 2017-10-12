@@ -72,6 +72,11 @@ BEGIN
 	   BKFILL_ABOVE_SRFC_SEAL_DEPTH numeric(7,2), -- backfill_above_surface_seal_depth
 	   backfill_above_surface_seal  character varying(250),
 	   SEALANT_MATERIAL             character varying(100),
+	   status_of_well_code 	          character varying(10),
+	   observation_well_number	      integer,
+	   ministry_observation_well_stat character varying(25),
+	   well_licence_general_status    character varying(20),
+	   alternative_specifications_ind boolean,
 	   when_created                 timestamp with time zone,
 	   when_updated                 timestamp with time zone,
 	   who_created                  character varying(30),
@@ -158,6 +163,11 @@ BEGIN
 		bkfill_above_srfc_seal_depth   ,
 		backfill_above_surface_seal    ,
 		sealant_material               ,
+ 	    status_of_well_code           ,
+	    observation_well_number	      ,
+	    ministry_observation_well_stat,
+	    well_licence_general_status   ,
+	    alternative_specifications_ind,
 		when_created                   ,
 		when_updated                   ,
 		who_created                    ,
@@ -245,6 +255,15 @@ BEGIN
 	  WELLS.BACKFILL_DEPTH AS bkfill_above_srfc_seal_depth,
 	  WELLS.BACKFILL_TYPE  AS backfill_above_surface_seal,
 	  WELLS.SEALANT_MATERIAL AS sealant_material,
+	  WELLS.STATUS_OF_WELL_CODE            AS status_of_well_code 	        ,
+	  WELLS.OBSERVATION_WELL_NUMBER	       AS observation_well_number       ,
+	  WELLS.MINISTRY_OBSERVATION_WELL_STAT AS ministry_observation_well_stat,
+	  WELLS.WELL_LICENCE_GENERAL_STATUS    AS well_licence_general_status   ,
+	  CASE WELLS.ALTERNATIVE_SPECIFICATIONS_IND  
+	     WHEN 'N' THEN false
+	     WHEN 'Y' THEN true
+	     ELSE null
+	  END AS alternative_specifications_ind,
 	  WELLS.WHEN_CREATED AS when_created,
 	  coalesce(WELLS.WHEN_UPDATED,WELLS.WHEN_CREATED) as when_updated,
 	  WELLS.WHO_CREATED as who_created,
