@@ -37,6 +37,25 @@ task unzipChromeDriver(type: Copy) {
 	into(outputDir)
 }
 
+task downloadIeDriver {
+	def outputFile = file("$buildDir/webdriver/IEDriverServer_Win32_2.53.0.zip")
+	inputs.property("IeDriverVersion", chromeDriverVersion)
+	outputs.file(outputFile)
+
+	doLast {
+		FileUtils.copyURLToFile(new URL("http://selenium-release.storage.googleapis.com/2.53/IEDriverServer_Win32_2.53.0.zip"), outputFile)
+	}
+}
+
+task unzipIeDriver(type: Copy) {
+	def outputDir = file("$buildDir/webdriver/iedriver")
+	dependsOn downloadIeDriver
+	outputs.dir(outputDir)
+
+	from(zipTree(downloadIeDriver.outputs.files.singleFile))
+	into(outputDir)
+}
+
 task downloadPhantomJs {
 	def osFilenamePart
 	if (Os.isFamily(Os.FAMILY_WINDOWS)) {
