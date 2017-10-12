@@ -11,7 +11,7 @@ legacy database (WELLS schema of ENVPROD1.NRS.GOV.BC.CA).  This oracle-fdw exten
 <table>   
 <tr><td>Name</td><td>Value</td></tr>
 <tr><td>FDW_USER</td><td>proxy_wells_gwells</td></tr>
-<tr><td>FDW_PASS</td><td><password></td></tr>
+<tr><td>FDW_PASS</td><td><i>password</i></td></tr>
 <tr><td>FDW_FOREIGN_SCHEMA</td><td>WELLS</td></tr>
 <tr><td>FDW_NAME</td><td>wells_oradb</td></tr>
 <tr><td>FDW_SCHEMA</td><td>wells</td></tr>
@@ -21,8 +21,8 @@ legacy database (WELLS schema of ENVPROD1.NRS.GOV.BC.CA).  This oracle-fdw exten
 Note that environment variables are also used for the PostgreSQL database connection:
 <table>   
 <tr><td>Name</td><td>Value</td></tr>
-<tr><td>POSTGRESQL_USER</td><td><username></td></tr>
-<tr><td>POSTGRESQL_PASSWORD</td><td><password></td></tr>
+<tr><td>POSTGRESQL_USER</td><td><i>username</i></td></tr>
+<tr><td>POSTGRESQL_PASSWORD</td><td><i>password</i></td></tr>
 <tr><td>POSTGRESQL_DATABASE</td><td>gwells</td></tr>
 <tr><td>FDW_NAME</td><td>wells_oradb</td></tr>
 <tr><td>FDW_SCHEMA</td><td>wells</td></tr>
@@ -30,7 +30,7 @@ Note that environment variables are also used for the PostgreSQL database connec
 </table>    
 
 
-Static code tables are maintained in this [GitHub](../../../tree/master/database/code-tables) repo, while dynamic data is replicated.  There are two stored procedures that support this.
+Static code tables are maintained in this [GitHub](../../../tree/master/database/code-tables) repo, while dynamic data is replicated.  There are two stored procedures that support the replication.
 
 1. `gwells_setup_replicate()`
 - owned by GWELLS user
@@ -59,7 +59,7 @@ NOTICE:  ... importing gwells_ground_elevation_method code table
 NOTICE:  ... importing gwells_land_district data table
 NOTICE:  ... transforming wells data (!= REJECTED) via xform_gwells_well ETL table...
 NOTICE:  ... importing ETL into the main "wells" table
-NOTICE:  ... 111710 rows loaded into the main "wells" table
+NOTICE:  ... *111710* rows loaded into the main "wells" table
 NOTICE:  Finished gwells_replicate() procedure.
  gwells_replicate 
 ------------------
