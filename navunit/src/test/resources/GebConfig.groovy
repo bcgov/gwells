@@ -6,6 +6,7 @@
 import org.openqa.selenium.Dimension
 import org.openqa.selenium.chrome.ChromeDriver
 import org.openqa.selenium.firefox.FirefoxDriver
+import org.openqa.selenium.ie.InternetExplorerDriver
 import org.openqa.selenium.phantomjs.PhantomJSDriver
 import org.openqa.selenium.remote.DesiredCapabilities
 
@@ -20,20 +21,36 @@ environments {
 
 	// run via “./gradlew chromeTest”
 	// See: http://code.google.com/p/selenium/wiki/ChromeDriver
-	chrome {
-		driver = { new ChromeDriver() }
 /*	chrome {
+		driver = { new ChromeDriver() }*/
+	chrome {
 		driver = { def d = new ChromeDriver(new DesiredCapabilities());
 			//d.manage().window().size = new Dimension(1920, 1080);
 			d.manage().window().maximize();
 			return d
-		}*/
 	}
+}
 
 	// run via “./gradlew firefoxTest”
 	// See: http://code.google.com/p/selenium/wiki/FirefoxDriver
 	firefox {
 		driver = { new FirefoxDriver() }
+	}
+
+	ie {
+		//driver = { new InternetExplorerDriver() }
+/*		driver = { def d = new InternetExplorerDriver(new DesiredCapabilities());
+			//d.setCapability(InternetExplorerDriver.INTRODUCE_FLAKINESS_BY_IGNORING_SECURITY_DOMAINS,true);
+			//d.setCapability(InternetExplorerDriver.IGNORE_ZOOM_SETTING,true);
+			d.setCapability(InternetExplorerDriver.NATIVE_EVENTS,true);
+			return d*/
+			def d = new DesiredCapabilities();
+			d.setCapability(InternetExplorerDriver.INTRODUCE_FLAKINESS_BY_IGNORING_SECURITY_DOMAINS,true);
+			d.setCapability(InternetExplorerDriver.IGNORE_ZOOM_SETTING,true);
+			d.setCapability(InternetExplorerDriver.NATIVE_EVENTS,false);
+			d.setCapability(InternetExplorerDriver.REQUIRE_WINDOW_FOCUS,true);
+		
+		driver = { new InternetExplorerDriver(d) }	
 	}
 
     phantomJs {
