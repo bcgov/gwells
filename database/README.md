@@ -3,7 +3,22 @@
 ## Replicate from the legacy Oracle database
 
 GWELLS uses the PostgreSQL extension oracle-fdw [oracle-fdw](https://github.com/laurenz/oracle_fdw) to read from the
-legacy database (WELLS schema of ENVPROD1.NRS.GOV.BC.CA).
+legacy database (WELLS schema of ENVPROD1.NRS.GOV.BC.CA).  This oracle-fdw extensions connect to the legacy Oracle Database via Environment Variables defined in the [OpenShift Web Console](https://console.pathfinder.gov.bc.ca:8443/console/)
+-- Applications > Deployments
+---postgresql
+---- -> Environment
+
+Name Value
+FDW_USER proxy_wells_gwells
+FDW_PASS <password>
+FDW_FOREIGN_SCHEMA WELLS
+FDW_NAME wells_oradb
+FDW_SCHEMA wells
+FDW_FOREIGN_SERVER //nrk1-scan.bcgov/envprod1.nrs.bcgov
+
+<table>   
+<tr><td>FDW_USER</td><td>proxy_wells_gwells</td></tr>
+</table>    
 
 Static code tables are maintained in this [GitHub](../../../tree/master/database/code-tables) repo, while dynamic data is replicated.  There are two stored procedures that support this.
 
