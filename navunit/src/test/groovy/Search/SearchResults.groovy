@@ -66,7 +66,7 @@ class SearchResultsSpecs extends GebReportingSpec {
         "Multiple matching results - Legal PID - KAP67"             | ""                | ""                        | "KAP67"           | ""                | "No"         | "No"    | 21
         "One matching result - Owner - GARY AKLES"					| ""				| ""						| ""				| "GARY AKLES"		| "No"         | "No"    | 1
         "One matching result - - All Fields"						| "107667"			| "218 RD"					| "026737680"		| "GARY AKLES"		| "No"         | "No"    | 1
-        "Multiple matching results - Well ID 123"                   | "123"             | ""                        | ""                | ""                | "No"         | "No"    | 2
+        "Multiple matching results - Well ID 2"                     | "2"               | ""                        | ""                | ""                | "No"         | "No"    | 2
         "Too many results - Address 1"                              | ""                | "1"                       | ""                | ""                | "No"         | "Yes"   | 9999
         "Too many results - Legal PID 1"                            | ""                | ""                        | "1"               | ""                | "No"         | "Yes"   | 9999
         "Too many results - Owner JOHN"                             | ""                | ""                        | ""                | "JO"              | "No"         | "Yes"   | 9999
@@ -162,8 +162,8 @@ class SearchResultsSpecs extends GebReportingSpec {
         "One matching result - Address - 21231 16TH"                | ""                | "218 RD"                  | ""                | ""                | "No"         | 1
         "One matching result - Legal PID - 026737680"               | ""                | ""                        | "026737680"       | ""                | "No"         | 1
         "One matching result - Owner - GARY AKLES"                  | ""                | ""                        | ""                | "GARY AKLES"      | "No"         | 1
-        "One matching result - - All Fields"                        | 107667            | "218 RD"                  | "026737680"       | "GARY AKLES"      | "No"         | 1
-        "Multiple matching results - Well ID 123"                   | 123               | ""                        | ""                | ""                | "No"         | 2
+        "One matching result - - All Fields"                        | "107667"          | "218 RD"                  | "026737680"       | "GARY AKLES"      | "No"         | 1
+        "Multiple matching results - Well ID 2"                     | "2"               | ""                        | ""                | ""                | "No"         | 2
         "Multiple matching results - Address 123"                   | ""                | "123"                     | ""                | ""                | "No"         | 139
         "Multiple matching results - Owner ROLAND"                  | ""                | ""                        | ""                | "ROLAND"          | "No"         | 48
     }     
