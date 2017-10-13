@@ -29,6 +29,11 @@ BEGIN
 	delete from gwells_ground_elevation_method;
 	raise notice '... clearing gwells_land_district data table';
 	delete from gwells_land_district;
+	raise notice '... clearing gwells_well_status data table';
+	delete from gwells_well_status;
+	raise notice '... clearing gwells_licensed_status data table';
+	delete from gwells_licensed_status;
+
 
 	raise notice '... recreating xform_gwells_well ETL table';
 	DROP TABLE IF EXISTS xform_gwells_well;
@@ -72,6 +77,11 @@ BEGIN
 	   BKFILL_ABOVE_SRFC_SEAL_DEPTH numeric(7,2), -- backfill_above_surface_seal_depth
 	   backfill_above_surface_seal  character varying(250),
 	   SEALANT_MATERIAL             character varying(100),
+	   status_of_well_code 	          character varying(10),
+	   observation_well_number	      integer,
+	   ministry_observation_well_stat character varying(25),
+	   well_licence_general_status    character varying(20),
+	   alternative_specifications_ind boolean,
 	   when_created                 timestamp with time zone,
 	   when_updated                 timestamp with time zone,
 	   who_created                  character varying(30),
@@ -107,6 +117,10 @@ BEGIN
 	copy gwells_drilling_method from program 'wget https://raw.githubusercontent.com/bcgov/gwells/master/database/code-tables/gwells_drilling_method.csv -O - -q' header delimiter ',' CSV ; 
 	raise notice '... importing gwells_ground_elevation_method code table';	
 	copy gwells_ground_elevation_method from program 'wget https://raw.githubusercontent.com/bcgov/gwells/master/database/code-tables/gwells_ground_elevation_method.csv -O - -q' header delimiter ',' CSV ; 
+	raise notice '... importing gwells_well_status code table';	
+	copy gwells_well_status from program 'wget https://raw.githubusercontent.com/bcgov/gwells/master/database/code-tables/gwells_well_status.csv -O - -q' header delimiter ',' CSV ; 
+	raise notice '... importing gwells_licensed_status code table';	
+	copy gwells_licensed_status from program 'wget https://raw.githubusercontent.com/bcgov/gwells/master/database/code-tables/gwells_licensed_status.csv -O - -q' header delimiter ',' CSV ; 
 
 	raise notice '... importing gwells_land_district data table';	
 	INSERT INTO gwells_land_district (
@@ -158,6 +172,11 @@ BEGIN
 		bkfill_above_srfc_seal_depth   ,
 		backfill_above_surface_seal    ,
 		sealant_material               ,
+ 	    status_of_well_code           ,
+	    observation_well_number	      ,
+	    ministry_observation_well_stat,
+	    well_licence_general_status   ,
+	    alternative_specifications_ind,
 		when_created                   ,
 		when_updated                   ,
 		who_created                    ,
@@ -245,6 +264,15 @@ BEGIN
 	  WELLS.BACKFILL_DEPTH AS bkfill_above_srfc_seal_depth,
 	  WELLS.BACKFILL_TYPE  AS backfill_above_surface_seal,
 	  WELLS.SEALANT_MATERIAL AS sealant_material,
+	  WELLS.STATUS_OF_WELL_CODE            AS status_of_well_code 	        ,
+	  WELLS.OBSERVATION_WELL_NUMBER	       AS observation_well_number       ,
+	  WELLS.MINISTRY_OBSERVATION_WELL_STAT AS ministry_observation_well_stat,
+	  WELLS.WELL_LICENCE_GENERAL_STATUS    AS well_licence_general_status   ,
+	  CASE WELLS.ALTERNATIVE_SPECIFICATIONS_IND  
+	     WHEN 'N' THEN false
+	     WHEN 'Y' THEN true
+	     ELSE null
+	  END AS alternative_specifications_ind,
 	  WELLS.WHEN_CREATED AS when_created,
 	  coalesce(WELLS.WHEN_UPDATED,WELLS.WHEN_CREATED) as when_updated,
 	  WELLS.WHO_CREATED as who_created,
