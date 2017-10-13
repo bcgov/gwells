@@ -57,14 +57,13 @@
         <label for="intended_water_use">Intended Water Use:</label>
         <span id="intended_water_use">{{ well.intended_water_use|default_if_none:'&nbsp;' }}</span>
     </div>
-
 </div>
 <div class="row">
     <div class="col-md-4">
     </div>
     <div class="col-md-4">
-        <label for="well_status_if_well">Well Status:</label>
-        <span id="well_status_of_well">{{ well.status_of_well.code|default_if_none:'&nbsp;' }}</span>
+        <label for="well_well_status">Well Status:</label>
+        <span id="well_well_status">{{ well.well_status.code|default_if_none:'&nbsp;' }}</span>
     </div>
     <div class="col-md-4">
     </div>

@@ -76,7 +76,7 @@
             <div class="container">
                 <div id="header-main-row" class="row">
                     <!-- GOV TITLE -->
-                    <div class="col-sm-3 col-md-2 col-lg-2 header-main-left">
+                    <div class="col-sm-3 col-md-2 header-main-left">
                         <div id="logo">
                             <a href="http://gov.bc.ca"><img src="{% static 'images/gov3_bc_logo.png' %}" alt="Province of British Columbia" title="Province of British Columbia logo" /></a>
                         </div>
@@ -97,7 +97,7 @@
                             <img src="{% static 'images/menu-open-mobile.png' %}" />
                         </button>
                     </div>
-                    <div class="col-sm-8 col-md-8 col-lg-6 hidden-xs">
+                    <div class="col-sm-8 col-lg-6 hidden-xs">
                         <div class="bcgov-title">
                             <h1>Gov 2.0 Bootstrap Skeleton</h1>
                         </div>
@@ -105,7 +105,7 @@
                     <!-- /GOV & ENV TITLE -->
 
                     <!-- COLLAPSING NAVBAR -->
-                    <div id="navbar" class="collapse navbar-collapse" role="navigation">
+                    <div id="navbar" class="collapse navbar-collapse col-sm-12" role="navigation">
 <a id="navigation-anchor"></a>
                         <ul class="nav navbar-nav">
                             <li><a href="#">Navigation Link 1</a></li>
@@ -151,13 +151,10 @@
                 </li>
             </ol>
         </div>
-        
+
         <!-- PAGE CONTENT -->
         <div class="row">
-
-
-
-            <div id="main-content" role="main" class="contentPageMainColumn col-sm-12">
+            <div id="main-content" role="main" class="contentPageMainColumn col-sm-12 col-md-12 col-lg-12">
                 <a id="main-content-anchor"></a>
                 <h1>Heading Style 1 Single Column Layout</h1>
 
@@ -187,8 +184,6 @@
                     </ul>
                 </div>
             </div>
-
-
         </div>
         <!-- PAGE CONTENT -->
     </div>
@@ -204,7 +199,8 @@
             <div id="footerAdminSection">
                 <div id="footerAdminLinksContainer" class="container">
                     <div id="footerAdminLinks" class="row">
-                        <ul class="inline">
+                        <div class="col-sm-12">
+                            <ul class="inline">
                             <li>
                                 <a href="#" target="_self">Home</a>
                             </li>
@@ -227,6 +223,7 @@
                                 <a href="#" target="_self">Contact Us</a>
                             </li>
                         </ul>
+                        </div>
                     </div>
                 </div>
             </div>
