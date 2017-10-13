@@ -29,6 +29,11 @@ BEGIN
 	delete from gwells_ground_elevation_method;
 	raise notice '... clearing gwells_land_district data table';
 	delete from gwells_land_district;
+	raise notice '... clearing gwells_well_status data table';
+	delete from gwells_well_status;
+	raise notice '... clearing gwells_licensed_status data table';
+	delete from gwells_licensed_status;
+
 
 	raise notice '... recreating xform_gwells_well ETL table';
 	DROP TABLE IF EXISTS xform_gwells_well;
@@ -112,6 +117,10 @@ BEGIN
 	copy gwells_drilling_method from program 'wget https://raw.githubusercontent.com/bcgov/gwells/master/database/code-tables/gwells_drilling_method.csv -O - -q' header delimiter ',' CSV ; 
 	raise notice '... importing gwells_ground_elevation_method code table';	
 	copy gwells_ground_elevation_method from program 'wget https://raw.githubusercontent.com/bcgov/gwells/master/database/code-tables/gwells_ground_elevation_method.csv -O - -q' header delimiter ',' CSV ; 
+	raise notice '... importing gwells_well_status code table';	
+	copy gwells_well_status from program 'wget https://raw.githubusercontent.com/bcgov/gwells/master/database/code-tables/gwells_well_status.csv -O - -q' header delimiter ',' CSV ; 
+	raise notice '... importing gwells_licensed_status code table';	
+	copy gwells_licensed_status from program 'wget https://raw.githubusercontent.com/bcgov/gwells/master/database/code-tables/gwells_licensed_status.csv -O - -q' header delimiter ',' CSV ; 
 
 	raise notice '... importing gwells_land_district data table';	
 	INSERT INTO gwells_land_district (
