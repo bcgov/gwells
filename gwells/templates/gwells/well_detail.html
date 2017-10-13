@@ -15,7 +15,7 @@
     </div>
     <div class="col-md-4">
         <label for="licensed_status">Licensed Status:</label>
-        <span id="licensed_status">{{ well.licensed_status|default_if_none:'&nbsp;' }}</span>
+        <span id="licensed_status">{{ well.licensed_status.code|default_if_none:'&nbsp;' }}</span>
     </div>
     <div class="col-md-4">
         <label for="obs_well_number">Observation Well Number:</label>
