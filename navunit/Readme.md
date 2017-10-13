@@ -53,7 +53,7 @@ The following steps need to be followed:
 ## Change code/config to pull down the IE WebDriver
 
 **Gebconfig.groovy:**
-'''
+```groovy
 /*
 	This is the Geb configuration file.
 
@@ -133,10 +133,10 @@ reportsDir = "gebReports"
 
 cacheDriverPerThread = true
 quitCachedDriverOnShutdown = true
-''' 
+``` 
 ----
 **osSpecificDownloads.gradle:**
-'''
+```groovy
 import org.apache.tools.ant.taskdefs.condition.Os
 import org.apache.commons.io.FileUtils
 
@@ -228,11 +228,11 @@ task unzipPhantomJs(type: Copy) {
 		fcp.relativePath = new RelativePath(!fcp.directory, *fcp.relativePath.segments[1..-1])
 	}
 }
-'''
+```
 ----
 
 **build.gradle:**
-'''
+```groovy
 import org.apache.tools.ant.taskdefs.condition.Os
 
 ext {
@@ -334,7 +334,7 @@ test {
 
 apply from: "gradle/ci.gradle"
 
-'''
+```
 ----
 
 ### Change IE Settings
