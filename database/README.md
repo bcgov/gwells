@@ -18,6 +18,9 @@ legacy database (WELLS schema of ENVPROD1.NRS.GOV.BC.CA).  This oracle-fdw exten
 <tr><td>FDW_FOREIGN_SERVER</td><td>//nrk1-scan.bcgov/envprod1.nrs.bcgov</td></tr>
 </table>    
 
+The image automatic re-deploys if any Environment Variable values are updated, but the oracle-fdw credentials do NOT get recreated
+unless the lock file is deleted first from the pod (i.e. `rm /var/lib/pgsql/data/userdata/fdw.conf`).
+
 Note that environment variables are also used for the PostgreSQL database connection:
 <table>   
 <tr><td>Name</td><td>Value</td></tr>
