@@ -166,23 +166,23 @@ class WellSubclass(AuditModel):
 
 
 
-class StatusOfWell(AuditModel):
+class WellStatus(AuditModel):
     """
-    Status of Well.
+    Well Status.
     """
-    status_of_well_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    well_status_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     code = models.CharField(unique=True, max_length=10)
     description = models.CharField(max_length=255)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
 
     class Meta:
-        db_table = 'gwells_status_of_well'
+        db_table = 'gwells_well_status'
         ordering = ['sort_order', 'code']
 
     def save(self, *args, **kwargs):
         self.validate()
-        super(StatusOfWell, self).save(*args, **kwargs)
+        super(WellStatus, self).save(*args, **kwargs)
 
 
 
@@ -742,19 +742,24 @@ class Well(AuditModel):
     """
     Well information.
     """
-    well_tag_number = models.AutoField(primary_key=True)
     well_guid = models.UUIDField(primary_key=False, default=uuid.uuid4, editable=False)
-    well_class = models.ForeignKey(WellClass, db_column='well_class_guid', on_delete=models.CASCADE, verbose_name='Well Class')
-    well_subclass = models.ForeignKey(WellSubclass, db_column='well_subclass_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Well Subclass')
-    intended_water_use = models.ForeignKey(IntendedWaterUse, db_column='intended_water_use_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Water Supply Well Intended Water Use')
-    status_of_well = models.ForeignKey(StatusOfWell, db_column='status_of_well_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Status of Well')
-    licensed_status = models.ForeignKey(LicensedStatus, db_column='licensed_status_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Licensed Status')
+    well_tag_number = models.AutoField(primary_key=True)
+    identification_plate_number = models.PositiveIntegerField(unique=True, blank=True, null=True)
 
     owner_full_name = models.CharField(max_length=200, verbose_name='Owner Name')
     owner_mailing_address = models.CharField(max_length=100, verbose_name='Mailing Address')
     owner_city = models.CharField(max_length=100, verbose_name='Town/City')
     owner_province_state = models.ForeignKey(ProvinceState, db_column='province_state_guid', on_delete=models.CASCADE, blank=True, verbose_name='Province')
     owner_postal_code = models.CharField(max_length=10, blank=True, verbose_name='Postal Code')
+
+
+    well_class = models.ForeignKey(WellClass, db_column='well_class_guid', on_delete=models.CASCADE, verbose_name='Well Class')
+    well_subclass = models.ForeignKey(WellSubclass, db_column='well_subclass_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Well Subclass')
+    intended_water_use = models.ForeignKey(IntendedWaterUse, db_column='intended_water_use_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Water Supply Well Intended Water Use')
+    well_status = models.ForeignKey(WellStatus, db_column='well_status_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Well Status')
+    licensed_status = models.ForeignKey(LicensedStatus, db_column='licensed_status_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Licensed Status')
+
+
 
     street_address = models.CharField(max_length=100, blank=True, verbose_name='Street Address')
     city = models.CharField(max_length=50, blank=True, verbose_name='Town/City')
@@ -769,7 +774,7 @@ class Well(AuditModel):
     legal_pid = models.PositiveIntegerField(blank=True, null=True, verbose_name='PID')
     well_location_description = models.CharField(max_length=500, blank=True, verbose_name='Well Location Description')
 
-    identification_plate_number = models.PositiveIntegerField(unique=True, blank=True, null=True)
+
     where_plate_attached = models.CharField(max_length=500, blank=True, verbose_name='Where Identification Plate Is Attached')
 
     latitude = models.DecimalField(max_digits=8, decimal_places=6, blank=True, null=True)
@@ -832,6 +837,10 @@ class Well(AuditModel):
 
     well_yield_unit = models.ForeignKey(WellYieldUnit, db_column='well_yield_unit_guid', on_delete=models.CASCADE, blank=True, null=True)
     diameter = models.CharField(max_length=9, blank=True)  #want to be integer in future
+
+    observation_well_number = models.PositiveIntegerField(blank=True, null=True)
+    observation_well_status = models.CharField(max_length=25, blank=True, null=True)
+    ems = models.PositiveIntegerField(blank=True, null=True)
 
     tracker = FieldTracker()
 
