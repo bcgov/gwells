@@ -23,16 +23,16 @@ urlpatterns = [
     # url(r'^$', 'project.views.home', name='home'),
     # url(r'^blog/', include('blog.urls')),
 
-    url(r'^$', views.HomeView.as_view(), name='home'),
-    url(r'^search$', views.well_search, name='search'),
+    url(r'^groundwater-wells$', views.HomeView.as_view(), name='home'),
+    url(r'^groundwater-wells/search$', views.well_search, name='search'),
     #url(r'^(?P<pk>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/$', views.DetailView.as_view(), name='detail'),
-    url(r'^submission/$', views.ActivitySubmissionListView.as_view(), name='activity_submission_list'),
-    url(r'^submission/(?P<pk>[0-9]+)$', views.ActivitySubmissionDetailView.as_view(), name='activity_submission_detail'),
-    url(r'^well/(?P<pk>[0-9]+)$', views.WellDetailView.as_view(), name='well_detail'),
-    url(r'^health$', views.health),
-    url(r'^admin/', admin.site.urls),
-    url(r'^additional-information', TemplateView.as_view(template_name='gwells/additional_information.html'), name='additional_information'),
-    url(r'^ajax/map_well_search/$', views.map_well_search, name='map_well_search'),
+    url(r'^groundwater-wells/submission/$', views.ActivitySubmissionListView.as_view(), name='activity_submission_list'),
+    url(r'^groundwater-wells/submission/(?P<pk>[0-9]+)$', views.ActivitySubmissionDetailView.as_view(), name='activity_submission_detail'),
+    url(r'^groundwater-wells/well/(?P<pk>[0-9]+)$', views.WellDetailView.as_view(), name='well_detail'),
+    url(r'^groundwater-wells/health$', views.health),
+    url(r'^groundwater-wells/admin/', admin.site.urls),
+    url(r'^groundwater-wells/additional-information', TemplateView.as_view(template_name='gwells/additional_information.html'), name='additional_information'),
+    url(r'^groundwater-wells/ajax/map_well_search/$', views.map_well_search, name='map_well_search'),
 ]
 
 if settings.ENABLE_DATA_ENTRY:
