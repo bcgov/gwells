@@ -1,22 +1,15 @@
 node('maven') {
-    stage('build') {
+    stage('Build') {
         echo "Building..."
         openshiftBuild bldCfg: 'gwells', showBuildLogs: 'true'
         openshiftTag destStream: 'gwells', verbose: 'true', destTag: '$BUILD_ID', srcStream: 'gwells', srcTag: 'latest'
     }
     
-    stage('deploy-dev') {
-        echo "Deploying to dev..."
-        openshiftTag destStream: 'gwells', verbose: 'true', destTag: 'dev', srcStream: 'gwells', srcTag: 'latest'
-    }
-    
-    stage('checkout for static code analysis') {
+    stage('Code Quality Check') {
+		//the checkout is mandatory, otherwise code quality check would fail
         echo "checking out source"
         echo "Build: ${BUILD_ID}"
         checkout scm
-    }
-
-    stage('code quality check') {
         SONARQUBE_PWD = sh (
             script: 'oc env dc/sonarqube --list | awk  -F  "=" \'/SONARQUBE_ADMINPW/{print $2}\'',
             returnStdout: true
@@ -33,18 +26,21 @@ node('maven') {
             sh returnStdout: true, script: "./gradlew sonarqube -Dsonar.host.url=${SONARQUBE_URL} -Dsonar.verbose=true --stacktrace --info  -Dsonar.sources=.."
         }
     }
+
+    stage('Deploy on Dev') {
+        echo "Deploying to dev..."
+        openshiftTag destStream: 'gwells', verbose: 'true', destTag: 'dev', srcStream: 'gwells', srcTag: '$BUILD_ID'
+    }
 	
 }
 
 node('master') {
-    
-    stage('checkout for bdd') {
+	
+	stage('Functional Test') {
+		//the checkout is mandatory, otherwise functional test would fail
         echo "checking out source"
         echo "Build: ${BUILD_ID}"
-        checkout scm
-    }
-	
-	stage('validation') {
+        checkout scm	
         dir('navunit') {
 			try {
 				sh './gradlew --debug --stacktrace phantomJsTest'
@@ -53,8 +49,9 @@ node('master') {
 			}
         }
     }
-	
+
 }
+
 
 stage('deploy-test') {
     input "Deploy to test?"
