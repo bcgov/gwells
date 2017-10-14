@@ -8,10 +8,10 @@ node('maven') {
     stage('Deploy on Dev') {
         echo "Deploying to dev..."
         openshiftTag destStream: 'gwells', verbose: 'true', destTag: 'dev', srcStream: 'gwells', srcTag: '$BUILD_ID'
-		echo "Sleeping for a while to wait deployment completes"
-		out.println(System.currentTimeMillis())
-		Thread.sleep(60000)
-		out.println(System.currentTimeMillis())
+		//echo "Sleeping for a while to wait deployment completes"
+		//out.println(System.currentTimeMillis())
+		//Thread.sleep(60000)
+		//out.println(System.currentTimeMillis())
 	}
     
     stage('Code Quality Check') {
