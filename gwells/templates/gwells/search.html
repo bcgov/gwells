@@ -11,14 +11,14 @@
 {% block body_block %}
 {% if too_many_wells %}
 <div class="row">
-    <div class="col-md-12 alert alert-warning">
+    <div class="col-sm-12 alert alert-warning">
         <div id="too-many-wells" role="alert" aria-atomic="true">{{ too_many_wells }}</div>
     </div>
 </div>
 
 {% elif 'well' in request.GET and not well_list %}
 <div class="row">
-    <div class="col-md-12 alert alert-warning">
+    <div class="class-sm-12 alert alert-warning">
         <div id="no-records-found" role="alert" aria-atomic="true">No well records could be found.</div>
     </div>
 </div>
@@ -27,11 +27,13 @@
 
 
 <div class="row">
-    <p>Not all groundwater wells are registered with the province, as registration was voluntary until February 29, 2016. Data quality issues may impact search results.</p>
-    <p>Search by one of the fields below, or zoom to a location on the map and select the "Search Wells in this Area" button.</p>
+    <div class="col-sm-12">
+        <p>Not all groundwater wells are registered with the province, as registration was voluntary until February 29, 2016. Data quality issues may impact search results.</p>
+        <p>Search by one of the fields below, or zoom to a location on the map and select the "Search Wells in this Area" button.</p>
+    </div>
 </div>
 <div class="row">
-      <div class="col-md-5">
+    <div class="col-md-5">
         {% crispy form %}
         <p>For additional search options, try:</p>
           <ul>
@@ -42,8 +44,8 @@
     <div class="col-md-6">
             <div aria-label="A map associated with GWELLS Search. All well information in this map is accessible via the table of well results that opens below the search form when a search succeeds." id="search-map"></div>
             <div id="attribution"></div>
-            <div id="map-errors" class="col-md-12 alert alert-warning" hidden></div>
     </div>
+    <div id="map-errors" class="col-md-12 alert alert-warning" hidden></div>
  </div>
 <br />
 <div id="wells-json" data-wells-search-json="{{wells_json}}" data-lat-long-box="{{lat_long_box}}"></div>
@@ -90,46 +92,47 @@
                 </th>
             </tr>
         </thead>
-
-        {% for well in well_list %}
-        <tr>
-            <td>
-                <a href="https://a100.gov.bc.ca/pub/wells/wellsreport1.do?wellTagNumber={{ well.well_tag_number }}">{{ well.well_tag_number }}</a>
-            </td>
-            <!-- <a href="{% url 'well_detail' well.well_tag_number %}">{{ well.well_tag_number }}</a> -->
-            <td>
-                {{well.identification_plate_number|default:'&nbsp;' }}
-            </td>
-            <td>
-                {{ well.owner_full_name|default_if_none:'&nbsp;' }}
-            </td>
-            <td>
-                {{ well.street_address|default_if_none:'' }}
-                {{ well.city|default_if_none:'&nbsp;' }}
-            </td>
-            <td>
-                {{ well.legal_lot|default_if_none:'&nbsp;' }}
-            </td>
-            <td>
-                {{ well.legal_plan|default_if_none:'&nbsp;' }}
-            </td>
-            <td>
-                {{ well.legal_district_lot|default_if_none:'&nbsp;' }}
-            </td>
-            <td>
-                {{ land_districts.well.legal_land_district.land_district_guid|default_if_none:'&nbsp;' }}
-            </td>
-            <td>
-                {{ well.legal_pid|stringformat:"09d"|default_if_none:'&nbsp;' }}
-            </td>
-            <td>
-                {{ well.diameter|default_if_none:'&nbsp;' }}
-            </td>
-            <td>
-                {{ well.finished_well_depth|default_if_none:'&nbsp;' }}
-            </td>
-        </tr>
-        {% endfor %}
+        <tbody>
+            {% for well in well_list %}
+            <tr>
+                <td>
+                    <a href="https://a100.gov.bc.ca/pub/wells/wellsreport1.do?wellTagNumber={{ well.well_tag_number }}">{{ well.well_tag_number }}</a>
+                </td>
+                <!-- <a href="{% url 'well_detail' well.well_tag_number %}">{{ well.well_tag_number }}</a> -->
+                <td>
+                    {{well.identification_plate_number|default:'&nbsp;' }}
+                </td>
+                <td>
+                    {{ well.owner_full_name|default_if_none:'&nbsp;' }}
+                </td>
+                <td>
+                    {{ well.street_address|default_if_none:'' }}
+                    {{ well.city|default_if_none:'&nbsp;' }}
+                </td>
+                <td>
+                    {{ well.legal_lot|default_if_none:'&nbsp;' }}
+                </td>
+                <td>
+                    {{ well.legal_plan|default_if_none:'&nbsp;' }}
+                </td>
+                <td>
+                    {{ well.legal_district_lot|default_if_none:'&nbsp;' }}
+                </td>
+                <td>
+                    {{ land_districts.well.legal_land_district.land_district_guid|default_if_none:'&nbsp;' }}
+                </td>
+                <td>
+                    {{ well.legal_pid|stringformat:"09d"|default_if_none:'&nbsp;' }}
+                </td>
+                <td>
+                    {{ well.diameter|default_if_none:'&nbsp;' }}
+                </td>
+                <td>
+                    {{ well.finished_well_depth|default_if_none:'&nbsp;' }}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
     </table>
 </div>
 
@@ -247,7 +250,7 @@
 </script>
 
 <script>
-/*  To help show the popup when putting the focus on the question mark icon with keyboard*/
+    /*  To help show the popup when putting the focus on the question mark icon with keyboard*/
     document.getElementById("well_tag_question").addEventListener("focusin", trigger_over);
     document.getElementById("well_tag_question").addEventListener("focusout", trigger_out);
     document.getElementById("address_question").addEventListener("focusin", trigger_over);
