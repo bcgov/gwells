@@ -31,7 +31,7 @@ urlpatterns = [
     url(r'^well/(?P<pk>[0-9]+)$', views.WellDetailView.as_view(), name='well_detail'),
     url(r'^health$', views.health),
     url(r'^admin/', admin.site.urls),
-    url(r'^additional-information', TemplateView.as_view(template_name='gwells/additional_information.html'), name='additional_information'),
+    url(r'^groundwater-information', TemplateView.as_view(template_name='gwells/groundwater_information.html'), name='groundwater_information'),
     url(r'^ajax/map_well_search/$', views.map_well_search, name='map_well_search'),
 ]
 
