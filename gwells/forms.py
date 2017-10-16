@@ -57,7 +57,7 @@ class SearchForm(forms.Form):
         required=False,
         widget=forms.TextInput(attrs={'placeholder': 'example: Smith or smi'}),
     )
-    
+
     start_lat_long = forms.CharField(
         widget=forms.HiddenInput(),
         required=False
@@ -67,7 +67,7 @@ class SearchForm(forms.Form):
         widget=forms.HiddenInput(),
         required=False
     )
- 
+
     WELL_RESULTS_LIMIT = 1000
 
     @property
@@ -182,7 +182,7 @@ class WellOwnerForm(forms.ModelForm):
     @staticmethod
     def label_from_instance_code(obj):
         return obj.code
-    
+
     class Meta:
         model = ActivitySubmission
         fields = ['owner_full_name', 'owner_mailing_address', 'owner_city', 'owner_province_state', 'owner_postal_code']
@@ -231,7 +231,7 @@ class ActivitySubmissionTypeAndClassForm(forms.ModelForm):
             )
         )
         super(ActivitySubmissionTypeAndClassForm, self).__init__(*args, **kwargs)
-        
+
         try:
             con = WellActivityType.objects.get(code='CON')
             self.initial['well_activity_type'] = con
@@ -273,7 +273,7 @@ class ActivitySubmissionTypeAndClassForm(forms.ModelForm):
         if commit:
             instance.save()
         return instance
-    
+
     class Meta:
         model = ActivitySubmission
         fields = ['well_activity_type', 'well_class', 'well_subclass', 'intended_water_use', 'identification_plate_number', 'where_plate_attached', 'driller_responsible', 'driller_name', 'consultant_name', 'consultant_company', 'work_start_date', 'work_end_date']
@@ -364,11 +364,11 @@ class ActivitySubmissionLocationForm(forms.ModelForm):
             )
         )
         super(ActivitySubmissionLocationForm, self).__init__(*args, **kwargs)
-    
+
     def clean(self):
         cleaned_data = super(ActivitySubmissionLocationForm, self).clean()
-        
-        street_address = cleaned_data.get('street_address') 
+
+        street_address = cleaned_data.get('street_address')
         city = cleaned_data.get('city')
         address_provided = street_address and city
 
@@ -472,7 +472,7 @@ class ActivitySubmissionGpsForm(forms.ModelForm):
                     css_class='row',
                 ),
                 Div(
-                    Div('orientation_vertical', css_class='col-md-3'),
+                    Div('orientation', css_class='col-md-3'),
                     css_class='row',
                 ),
             )
@@ -483,7 +483,7 @@ class ActivitySubmissionGpsForm(forms.ModelForm):
         self.fields['latitude'].required = True
         self.fields['longitude'].required = True
         self.fields['drilling_method'].required = True
-    
+
     def clean_latitude(self):
         latitude = self.cleaned_data.get('latitude')
 
@@ -497,7 +497,7 @@ class ActivitySubmissionGpsForm(forms.ModelForm):
         return latitude
 
     def clean_longitude(self):
-        longitude = self.cleaned_data.get('longitude') 
+        longitude = self.cleaned_data.get('longitude')
 
         if longitude < -139.073671 or longitude > -114.033822:
             raise forms.ValidationError('Longitude must be between -139.073671 and -114.033822.')
@@ -510,7 +510,7 @@ class ActivitySubmissionGpsForm(forms.ModelForm):
 
     def clean(self):
         cleaned_data = super(ActivitySubmissionGpsForm, self).clean()
-        
+
         ground_elevation = cleaned_data.get('ground_elevation')
         ground_elevation_method = cleaned_data.get('ground_elevation_method')
         drilling_method = cleaned_data.get('drilling_method')
@@ -533,8 +533,8 @@ class ActivitySubmissionGpsForm(forms.ModelForm):
 
     class Meta:
         model = ActivitySubmission
-        fields = ['latitude', 'longitude', 'ground_elevation', 'ground_elevation_method', 'drilling_method', 'other_drilling_method', 'orientation_vertical']
-        widgets = {'orientation_vertical': forms.RadioSelect,
+        fields = ['latitude', 'longitude', 'ground_elevation', 'ground_elevation_method', 'drilling_method', 'other_drilling_method', 'orientation']
+        widgets = {'orientation': forms.RadioSelect,
                    'latitude': forms.TextInput(attrs={'type': 'number', 'min': '48.20456', 'max': '60.0222', 'step': 'any'}),
                    'longitude': forms.TextInput(attrs={'type': 'number', 'min': '-139.07367', 'max': '-114.03383', 'step': 'any'})}
 
@@ -592,9 +592,9 @@ class LithologyForm(forms.ModelForm):
 
     def clean(self):
         cleaned_data = super(LithologyForm, self).clean()
-        
-        lithology_from = cleaned_data.get('lithology_from') 
-        lithology_to = cleaned_data.get('lithology_to') 
+
+        lithology_from = cleaned_data.get('lithology_from')
+        lithology_to = cleaned_data.get('lithology_to')
         surficial_material = cleaned_data.get('surficial_material')
         bedrock_material = cleaned_data.get('bedrock_material')
         errors = []
@@ -693,7 +693,7 @@ class CasingForm(forms.ModelForm):
 
 
         if len(errors) > 0:
-            raise forms.ValidationError(errors)        
+            raise forms.ValidationError(errors)
 
         return cleaned_data
 
@@ -753,25 +753,25 @@ class ActivitySubmissionSurfaceSealForm(forms.ModelForm):
         super(ActivitySubmissionSurfaceSealForm, self).__init__(*args, **kwargs)
 
     def clean_surface_seal_material(self):
-        surface_seal_material = self.cleaned_data.get('surface_seal_material') 
+        surface_seal_material = self.cleaned_data.get('surface_seal_material')
 
         if self.initial['casing_exists'] and not surface_seal_material:
             raise forms.ValidationError('This field is required.');
 
     def clean_surface_seal_depth(self):
-        surface_seal_depth = self.cleaned_data.get('surface_seal_depth') 
+        surface_seal_depth = self.cleaned_data.get('surface_seal_depth')
 
         if self.initial['casing_exists'] and not surface_seal_depth:
             raise forms.ValidationError('This field is required.');
 
     def clean_surface_seal_thickness(self):
-        surface_seal_thickness = self.cleaned_data.get('surface_seal_thickness') 
+        surface_seal_thickness = self.cleaned_data.get('surface_seal_thickness')
 
         if self.initial['casing_exists'] and not surface_seal_thickness:
             raise forms.ValidationError('This field is required.');
 
     def clean_surface_seal_method(self):
-        surface_seal_method = self.cleaned_data.get('surface_seal_method') 
+        surface_seal_method = self.cleaned_data.get('surface_seal_method')
 
         if self.initial['casing_exists'] and not surface_seal_method:
             raise forms.ValidationError('This field is required.');
@@ -787,7 +787,7 @@ class ActivitySubmissionSurfaceSealForm(forms.ModelForm):
             errors.append('Liner To must be greater than or equal to From.')
 
         if len(errors) > 0:
-            raise forms.ValidationError(errors)        
+            raise forms.ValidationError(errors)
 
         return cleaned_data
 
@@ -828,7 +828,7 @@ class LinerPerforationForm(forms.ModelForm):
             errors.append('To must be greater than or equal to From.')
 
         if len(errors) > 0:
-            raise forms.ValidationError(errors)        
+            raise forms.ValidationError(errors)
 
         return cleaned_data
 
@@ -884,7 +884,7 @@ class ActivitySubmissionScreenIntakeForm(forms.ModelForm):
             screen_screen_intake = ScreenIntake.objects.get(code='SCREEN')
         except Exception as e:
             errors.append('Configuration error: Screen Intake for Screen does not exist, please contact the administrator.')
-        
+
         if screen_screen_intake:
             if screen_intake == screen_screen_intake and not screen_type:
                 self.add_error('screen_type', 'This field is required if Intake is a Screen.')
@@ -903,7 +903,7 @@ class ActivitySubmissionScreenIntakeForm(forms.ModelForm):
                 self.add_error('other_screen_material', 'This field is required.')
         except Exception as e:
             errors.append('Configuration error: Other Screen Material does not exist, please contact the administrator.')
-        
+
         try:
             if screen_bottom == ScreenBottom.objects.get(code='OTHER') and not other_screen_bottom:
                 self.add_error('other_screen_bottom', 'This field is required.')
@@ -912,7 +912,7 @@ class ActivitySubmissionScreenIntakeForm(forms.ModelForm):
 
 
         if len(errors) > 0:
-            raise forms.ValidationError(errors)        
+            raise forms.ValidationError(errors)
 
         return cleaned_data
 
@@ -962,7 +962,7 @@ class ScreenForm(forms.ModelForm):
             errors.append('To must be greater than or equal to From.')
 
         if len(errors) > 0:
-            raise forms.ValidationError(errors)        
+            raise forms.ValidationError(errors)
 
         return cleaned_data
 
@@ -1029,7 +1029,7 @@ class ActivitySubmissionDevelopmentForm(forms.ModelForm):
             )
         )
         super(ActivitySubmissionDevelopmentForm, self).__init__(*args, **kwargs)
-   
+
     class Meta:
         model = ActivitySubmission
         fields = ['development_method', 'development_hours', 'development_notes']
@@ -1066,7 +1066,7 @@ class ProductionDataForm(forms.ModelForm):
             )
         )
         super(ProductionDataForm, self).__init__(*args, **kwargs)
-   
+
     class Meta:
         model = ProductionData
         fields = ['yield_estimation_method', 'yield_estimation_rate', 'yield_estimation_duration', 'static_level', 'drawdown', 'hydro_fracturing_performed', 'hydro_fracturing_yield_increase']
@@ -1130,8 +1130,8 @@ class WellCompletionForm(forms.ModelForm):
                     css_class='row',
                 ),
                 Div(
-                    Div(AppendedText('artestian_flow', 'USgpm'), css_class='col-md-3'),
-                    Div(AppendedText('artestian_pressure', 'ft'), css_class='col-md-3'),
+                    Div(AppendedText('artesian_flow', 'USgpm'), css_class='col-md-3'),
+                    Div(AppendedText('artesian_pressure', 'ft'), css_class='col-md-3'),
                     css_class='row',
                 ),
                 Div(
@@ -1146,16 +1146,16 @@ class WellCompletionForm(forms.ModelForm):
         # TODO - check admin or staff user and don't make these fields required
         self.fields['total_depth_drilled'].required = True
         self.fields['finished_well_depth'].required = True
-        
+
         # Make final casing stick up required for water supply well, injection well, recharge well, etc.
         if self.initial['well_class_code'] == 'WATR_SPPLY' or self.initial['well_class_code'] == 'INJECTION' or self.initial['well_class_code'] == 'RECHARGE':
-            self.fields['final_casing_stick_up'].required = True
+            self.fields['final_stick_up'].required = True
 
     def clean(self):
         cleaned_data = super(WellCompletionForm, self).clean()
-        
-        total_depth_drilled = cleaned_data.get('total_depth_drilled') 
-        finished_well_depth = cleaned_data.get('finished_well_depth') 
+
+        total_depth_drilled = cleaned_data.get('total_depth_drilled')
+        finished_well_depth = cleaned_data.get('finished_well_depth')
         errors = []
 
         if total_depth_drilled and finished_well_depth and total_depth_drilled < finished_well_depth:
@@ -1168,7 +1168,7 @@ class WellCompletionForm(forms.ModelForm):
 
     class Meta:
         model = ActivitySubmission
-        fields = ['total_depth_drilled', 'finished_well_depth', 'final_casing_stick_up', 'bedrock_depth', 'static_water_level', 'well_yield', 'artestian_flow', 'artestian_pressure', 'well_cap_type', 'well_disinfected']
+        fields = ['total_depth_drilled', 'finished_well_depth', 'final_stick_up', 'bedrock_depth', 'static_water_level', 'well_yield', 'artesian_flow', 'artesian_pressure', 'well_cap_type', 'well_disinfected']
         widgets = {'well_disinfected': forms.RadioSelect}
 
 
