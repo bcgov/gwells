@@ -12,7 +12,7 @@ buildscript {
 
 task downloadChromeDriver {
 	def outputFile = file("$buildDir/webdriver/chromedriver.zip")
-	inputs.property("chromeDriverVersion", chromeDriverVersion)
+	inputs.property("chromeDriverVersion", seleniumVersion)
 	outputs.file(outputFile)
 
 	doLast {
@@ -39,7 +39,7 @@ task unzipChromeDriver(type: Copy) {
 
 task downloadIeDriver {
 	def outputFile = file("$buildDir/webdriver/IEDriverServer_Win32_2.53.0.zip")
-	inputs.property("IeDriverVersion", chromeDriverVersion)
+	inputs.property("IeDriverVersion", seleniumVersion)
 	outputs.file(outputFile)
 
 	doLast {
