@@ -111,7 +111,7 @@
                         <a id="navigation-anchor"></a>
                         <ul class="nav navbar-nav">
                             <li><a id="navbar-search" href="{% url 'search' %}">Search</a></li>
-                            <li><a id="navbar-additionalinfo" href="{% url 'groundwater_information' %}">GroundWater Information</a></li>
+                            <li><a id="navbar-groundwaterinfo" href="{% url 'groundwater_information' %}">GroundWater Information</a></li>
                         </ul>
                     </div>
                     <!-- COLLAPSING NAVBAR -->
@@ -121,10 +121,8 @@
                 <div class="level2Navigation">
                     <div class="container">
                         <ul>
-                            <li><a id="ribbon-home" href="{% url 'home' %}">Home</a></li>
                             <li><a id="ribbon-search" href="{% url 'search' %}">Search</a></li>
-                            <li><a href="#">My Profile</a></li>
-                            <li><a id="ribbon-additionalinfo" href="{% url 'additional_information' %}">Additional Information</a></li>
+                            <li><a id="ribbon-groundwaterinfo" href="{% url 'groundwater_information' %}">Groundwater Information</a></li>
                         </ul>
                     </div>
                 </div>
@@ -184,10 +182,10 @@
                         <div class="col-sm-12">
                             <ul class="inline">
                                 <li>
-                                    <a id="footer-home" href="www.gov.bc.ca" target="_self">Home</a>
+                                    <a id="footer-home" href="https://www.gov.bc.ca" taget="_self">Home</a>
                                 </li>
                                 <li>
-                                    <a href="https://www2.gov.bc.ca/gov/content/about-gov-bc-ca" target="_self">About gov.bc.ca</a>
+                                    <a id="footer-about" href="https://www2.gov.bc.ca/gov/content/about-gov-bc-ca" target="_self">About gov.bc.ca</a>
                                 </li>
                                 <li>
                                     <a id="footer-disclaimer" href="http://gov.bc.ca/disclaimer/" target="_self">Disclaimer</a>
