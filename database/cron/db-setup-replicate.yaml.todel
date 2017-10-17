@@ -11,5 +11,5 @@ spec:
           containers:
           - name: postgresql
             image: moe-gwells-tools/openshift-postgresql-oracle-fdw
-            command: ["psql -d gwells -U userXMW -c 'select gwells_setup_replicate();'"]
+            command: ["/opt/rh/rh-postgresql95/root/usr/bin/psql -d gwells -U userXMW -c 'select gwells_setup_replicate();'"]
           restartPolicy: Never
