@@ -161,12 +161,7 @@
     // the search was driven by drawing a rectangle or by a user manually submitting the form.
     // Wells can be clicked to display a subset of their tabulated information in a popup directly on the map.
     var searchMapOptions = {
-    // Changes the called url dependng on the application context root setting
-    {% if settings.APP_CONTEXT_ROOT %}
-        SEARCH_URL: '/{{ settings.APP_CONTEXT_ROOT }}/ajax/map_well_search/',
-    {% else %}
-        SEARCH_URL: '/ajax/map_well_search/',
-    {% endif %}
+        SEARCH_URL: "{% url 'map_well_search' %}",
         // The ID of the addMap div.
         mapNodeId: searchMapNodeId,
         // Minimum zoom level of the map (i.e., how far it can be zoomed out)

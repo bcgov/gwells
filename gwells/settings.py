@@ -40,9 +40,6 @@ ENABLE_GOOGLE_ANALYTICS = os.getenv('ENABLE_GOOGLE_ANALYTICS', 'False') == 'True
 
 # Controls app context
 APP_CONTEXT_ROOT = os.getenv('APP_CONTEXT_ROOT','')
-SETTINGS_EXPORT = [
-    'APP_CONTEXT_ROOT',
-]
 
 ALLOWED_HOSTS = ['*']
 
@@ -89,7 +86,6 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'django_settings_export.settings_export',
             ],
         },
     },
