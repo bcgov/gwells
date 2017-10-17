@@ -1,9 +1,9 @@
 apiVersion: batch/v2alpha1
 kind: ScheduledJob
 metadata:
-  name: postgresql
+  name: ora-replicate
 spec:
-  schedule: "30 22 * * *"  
+  schedule: "00 22 * * *"  
   jobTemplate:             
     spec:
       template:
@@ -11,6 +11,6 @@ spec:
           containers:
           - name: postgresql
             image: moe-gwells-tools/openshift-postgresql-oracle-fdw
-            command: ["psql -d gwells -c 'select gwells_replicate();'"]
+            command: ["/bin/sh", "-i", "-c",  "psql -h 127.0.0.1 -U ${POSTGRESQL_USER} -q -d ${POSTGRESQL_DATABASE} -c 'select gwells_setup_replicate();';psql -h 127.0.0.1 -d ${POSTGRESQL_DATABASE} -c 'vacuum full;' ; sleep 10s; psql -h 127.0.0.1 -d ${POSTGRESQL_DATABASE} -c 'select gwells_replicate();'; exit 0;"]
           restartPolicy: Never
-          
+          ConcurrencyPolicy: Forbid
