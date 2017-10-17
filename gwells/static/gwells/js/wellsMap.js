@@ -73,8 +73,9 @@ function WellsMap(options) {
     'use strict';
     /** Class constants */
 
-    // The URL used to search for wells.
-    var _SEARCH_URL = '/ajax/map_well_search/';
+    // The URL used to search for wells, now being set dynamically from the webpage.
+    // var _SEARCH_URL = '/ajax/map_well_search/';
+    var _SEARCH_URL = null;
 
     // The zoom level beyond which the map issues AJAX queries for wells, and beneath which removes AJAX-queried wells.
     var _AJAX_SEARCH_MIN_ZOOM_LEVEL = 14;

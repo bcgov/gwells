@@ -4,6 +4,15 @@ node('maven') {
         openshiftBuild bldCfg: 'gwells', showBuildLogs: 'true'
         openshiftTag destStream: 'gwells', verbose: 'true', destTag: '$BUILD_ID', srcStream: 'gwells', srcTag: 'latest'
     }
+
+    stage('Deploy on Dev') {
+        echo "Deploying to dev..."
+        openshiftTag destStream: 'gwells', verbose: 'true', destTag: 'dev', srcStream: 'gwells', srcTag: '$BUILD_ID'
+		//echo "Sleeping for a while to wait deployment completes"
+		//out.println(System.currentTimeMillis())
+		//Thread.sleep(60000)
+		//out.println(System.currentTimeMillis())
+	}
     
     stage('Code Quality Check') {
 		//the checkout is mandatory, otherwise code quality check would fail
@@ -27,10 +36,6 @@ node('maven') {
         }
     }
 
-    stage('Deploy on Dev') {
-        echo "Deploying to dev..."
-        openshiftTag destStream: 'gwells', verbose: 'true', destTag: 'dev', srcStream: 'gwells', srcTag: '$BUILD_ID'
-    }
 	
 }
 
