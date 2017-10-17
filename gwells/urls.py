@@ -18,21 +18,30 @@ from django.contrib import admin
 from . import views
 from django.views.generic import TemplateView
 
+# Creating 2 versions of the app_root. One without and one with trailing slash
+# This will allow for any or no additional app_root context to be provided
+app_root = settings.APP_CONTEXT_ROOT
+if app_root:
+   app_root_slash = app_root + '/'
+else:
+   app_root_slash = app_root
+
 urlpatterns = [
     # Examples:
     # url(r'^$', 'project.views.home', name='home'),
     # url(r'^blog/', include('blog.urls')),
 
-    url(r'^$', views.HomeView.as_view(), name='home'),
-    url(r'^search$', views.well_search, name='search'),
+    url(r'^'+ app_root +'$', views.HomeView.as_view(), name='home'),
+    url(r'^'+ app_root_slash +'search$', views.well_search, name='search'),
     #url(r'^(?P<pk>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/$', views.DetailView.as_view(), name='detail'),
-    url(r'^submission/$', views.ActivitySubmissionListView.as_view(), name='activity_submission_list'),
-    url(r'^submission/(?P<pk>[0-9]+)$', views.ActivitySubmissionDetailView.as_view(), name='activity_submission_detail'),
-    url(r'^well/(?P<pk>[0-9]+)$', views.WellDetailView.as_view(), name='well_detail'),
-    url(r'^health$', views.health),
-    url(r'^admin/', admin.site.urls),
-    url(r'^groundwater-information', TemplateView.as_view(template_name='gwells/groundwater_information.html'), name='groundwater_information'),
-    url(r'^ajax/map_well_search/$', views.map_well_search, name='map_well_search'),
+    
+    url(r'^'+ app_root_slash +'submission/$', views.ActivitySubmissionListView.as_view(), name='activity_submission_list'),
+    url(r'^'+ app_root_slash +'submission/(?P<pk>[0-9]+)$', views.ActivitySubmissionDetailView.as_view(), name='activity_submission_detail'),
+    url(r'^'+ app_root_slash +'well/(?P<pk>[0-9]+)$', views.WellDetailView.as_view(), name='well_detail'),
+    url(r'^'+ app_root_slash +'health$', views.health),
+    url(r'^'+ app_root_slash +'admin/', admin.site.urls),
+    url(r'^'+ app_root_slash +'groundwater-information', TemplateView.as_view(template_name='gwells/groundwater_information.html'), name='groundwater_information'),
+    url(r'^'+ app_root_slash +'ajax/map_well_search/$', views.map_well_search, name='map_well_search'),
 ]
 
 if settings.ENABLE_DATA_ENTRY:
