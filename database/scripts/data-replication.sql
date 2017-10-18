@@ -82,6 +82,7 @@ BEGIN
 	   ministry_observation_well_stat character varying(25),
 	   well_licence_general_status    character varying(20),
 	   alternative_specifications_ind boolean,
+	   chemistry_site_id              character varying(10), 
 	   when_created                 timestamp with time zone,
 	   when_updated                 timestamp with time zone,
 	   who_created                  character varying(30),
@@ -177,6 +178,7 @@ BEGIN
 	    ministry_observation_well_stat,
 	    well_licence_general_status   ,
 	    alternative_specifications_ind,
+	    chemistry_site_id              ,
 		when_created                   ,
 		when_updated                   ,
 		who_created                    ,
@@ -273,6 +275,7 @@ BEGIN
 	     WHEN 'Y' THEN true
 	     ELSE null
 	  END AS alternative_specifications_ind,
+	  WELLS.CHEMISTRY_SITE_ID ,
 	  WELLS.WHEN_CREATED AS when_created,
 	  coalesce(WELLS.WHEN_UPDATED,WELLS.WHEN_CREATED) as when_updated,
 	  WELLS.WHO_CREATED as who_created,
@@ -339,6 +342,7 @@ BEGIN
 	  well_cap_type            , 
 	  well_disinfected         , 
 	  alternative_specs_submitted,
+	  ems,
 	  comments                   
 	  )
 	SELECT 
@@ -398,6 +402,7 @@ BEGIN
 		'',
 		false,
 		false,
+	    null, -- xform.chemistry_site_id until character type
 		''
 	FROM xform_gwells_well xform
 	LEFT OUTER JOIN gwells_intended_water_use use ON xform.WELL_USE_CODE=use.code
