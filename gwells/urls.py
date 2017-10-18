@@ -31,10 +31,10 @@ urlpatterns = [
     # url(r'^$', 'project.views.home', name='home'),
     # url(r'^blog/', include('blog.urls')),
 
-    url(r'^'+ app_root +'$', views.HomeView.as_view(), name='home'),
+    # url(r'^'+ app_root +'$', views.HomeView.as_view(), name='home'),
+    url(r'^'+ app_root_slash +'$', views.well_search, name='home'),
     url(r'^'+ app_root_slash +'search$', views.well_search, name='search'),
     #url(r'^(?P<pk>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/$', views.DetailView.as_view(), name='detail'),
-    
     url(r'^'+ app_root_slash +'submission/$', views.ActivitySubmissionListView.as_view(), name='activity_submission_list'),
     url(r'^'+ app_root_slash +'submission/(?P<pk>[0-9]+)$', views.ActivitySubmissionDetailView.as_view(), name='activity_submission_detail'),
     url(r'^'+ app_root_slash +'well/(?P<pk>[0-9]+)$', views.WellDetailView.as_view(), name='well_detail'),
