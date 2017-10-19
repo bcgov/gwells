@@ -14,6 +14,8 @@
 from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin
+from django.shortcuts import render_to_response
+from django.template import RequestContext
 
 from . import views
 from django.views.generic import TemplateView
@@ -40,13 +42,14 @@ urlpatterns = [
     url(r'^'+ app_root_slash +'well/(?P<pk>[0-9]+)$', views.WellDetailView.as_view(), name='well_detail'),
     url(r'^'+ app_root_slash +'health$', views.health),
     url(r'^'+ app_root_slash +'admin/', admin.site.urls),
-    url(r'^'+ app_root_slash +'groundwater-information', TemplateView.as_view(template_name='gwells/groundwater_information.html'), name='groundwater_information'),
+#    url(r'^'+ app_root_slash +'groundwater-information', TemplateView.as_view(template_name='gwells/groundwater_information.html'), name='groundwater_information'),
+    url(r'^'+ app_root_slash +'groundwater-information', views.groundwater_information.as_view(), name='groundwater_information'),
     url(r'^'+ app_root_slash +'ajax/map_well_search/$', views.map_well_search, name='map_well_search'),
 ]
 
 if settings.ENABLE_DATA_ENTRY:
     urlpatterns = [
-        url(r'^submission/create$', views.ActivitySubmissionWizardView.as_view(views.FORMS), name='activity_submission_create'),
+        url(r'^'+ app_root_slash +'submission/create$', views.ActivitySubmissionWizardView.as_view(views.FORMS), name='activity_submission_create'),
     ] + urlpatterns
 
 if settings.DEBUG:
@@ -54,3 +57,16 @@ if settings.DEBUG:
     urlpatterns = [
         url(r'^__debug__/', include(debug_toolbar.urls)),
     ] + urlpatterns
+
+def handler404(request):
+    response = render_to_response('404.html', {},
+                                  context_instance=RequestContext(request))
+    response.status_code = 404
+    return response
+
+
+def handler500(request):
+    response = render_to_response('500.html', {},
+                                  context_instance=RequestContext(request))
+    response.status_code = 500
+    return response
