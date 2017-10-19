@@ -30,13 +30,13 @@ SECRET_KEY = os.getenv(
 
 # SECURITY WARNING: don't run with debug turned on in production!
 #DEBUG = False
-DEBUG = os.getenv('DJANGO_DEBUG', 'True') == 'True'
+DEBUG = os.getenv('DJANGO_DEBUG', 'False') == 'True'
 
 # Controls availability of the data entry functionality
-ENABLE_DATA_ENTRY = os.getenv('ENABLE_DATA_ENTRY', 'True') == 'True'
+ENABLE_DATA_ENTRY = os.getenv('ENABLE_DATA_ENTRY', 'False') == 'True'
 
 # Controls availability of Google Analytics
-ENABLE_GOOGLE_ANALYTICS = os.getenv('ENABLE_GOOGLE_ANALYTICS', 'True') == 'True'
+ENABLE_GOOGLE_ANALYTICS = os.getenv('ENABLE_GOOGLE_ANALYTICS', 'False') == 'True'
 
 # Controls app context
 APP_CONTEXT_ROOT = os.getenv('APP_CONTEXT_ROOT','')
