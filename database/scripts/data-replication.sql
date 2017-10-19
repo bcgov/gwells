@@ -415,6 +415,12 @@ BEGIN
 
 	select count(*) from gwells_well into wells_rows;
 	raise notice '... % rows loaded into the main "wells" table', 	wells_rows;	
+
+
+	insert into gwells_replication (notes) values ('Stored procedure invocation, successfully replicated ' || to_char(wells_rows) || ' rows.' );
+	raise notice 'Inserted notes into gwells_replication.';	
+
+
 	raise notice 'Finished gwells_replicate() procedure.';	
 END;
 $$ LANGUAGE plpgsql;
