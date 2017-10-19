@@ -46,7 +46,7 @@ urlpatterns = [
 
 if settings.ENABLE_DATA_ENTRY:
     urlpatterns = [
-        url(r'^submission/create$', views.ActivitySubmissionWizardView.as_view(views.FORMS), name='activity_submission_create'),
+        url(r'^'+ app_root_slash +'submission/create$', views.ActivitySubmissionWizardView.as_view(views.FORMS), name='activity_submission_create'),
     ] + urlpatterns
 
 if settings.DEBUG:
@@ -54,3 +54,4 @@ if settings.DEBUG:
     urlpatterns = [
         url(r'^__debug__/', include(debug_toolbar.urls)),
     ] + urlpatterns
+    
