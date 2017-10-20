@@ -59,11 +59,14 @@ class WellSearchSpecs extends GebReportingSpec {
 				assert waitFor { results_info.displayed == true }
 				assert (NumberOfEntriesFound() == "$NumberResult") //Total entries found
 
+           		println "Tag ID: $TagID"
            		if ("$TagID" == "tag") {
+					println "$WellId"
 					println "Well ID: " + $('#results > tbody > tr:nth-child('+ ReturnRow("$WellId").toString() +') > td.sorting_1 > a').text()
 					$('#results > tbody > tr:nth-child('+ ReturnRow("$WellId").toString() +') > td.sorting_1 > a').click()
 					}
 				else {
+					println "$SecondID"
 					println "SecondID: " + $('#results > tbody > tr:nth-child('+ ReturnRow("$SecondID").toString() +') > td.sorting_1 > a').text()
 					$('#results > tbody > tr:nth-child('+ ReturnRow("$SecondID").toString() +') > td.sorting_1 > a').click()
 					}

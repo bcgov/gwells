@@ -29,7 +29,6 @@ SECRET_KEY = os.getenv(
 )
 
 # SECURITY WARNING: don't run with debug turned on in production!
-#DEBUG = False
 DEBUG = os.getenv('DJANGO_DEBUG', 'False') == 'True'
 
 # Controls availability of the data entry functionality
@@ -40,6 +39,14 @@ ENABLE_GOOGLE_ANALYTICS = os.getenv('ENABLE_GOOGLE_ANALYTICS', 'False') == 'True
 
 # Controls app context
 APP_CONTEXT_ROOT = os.getenv('APP_CONTEXT_ROOT','')
+
+# django-settings-export lets us make these variables available in the templates.
+# This eleminate the need for setting the context for each and every view.
+SETTINGS_EXPORT = [
+    'ENABLE_DATA_ENTRY',        # To temporarily disable report submissions
+    'ENABLE_GOOGLE_ANALYTICS',  # This is only enabled for production
+    'APP_CONTEXT_ROOT',         # This allows for moving the app around without code changes
+]
 
 ALLOWED_HOSTS = ['*']
 
@@ -86,6 +93,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django_settings_export.settings_export',
             ],
         },
     },
