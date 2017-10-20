@@ -96,7 +96,8 @@
             {% for well in well_list %}
             <tr>
                 <td>
-                    <a href="https://a100.gov.bc.ca/pub/wells/wellsreport1.do?wellTagNumber={{ well.well_tag_number }}">{{ well.well_tag_number }}</a>
+<!--                     <a href="https://a100.gov.bc.ca/pub/wells/wellsreport1.do?wellTagNumber={{ well.well_tag_number }}">{{ well.well_tag_number }}</a> -->
+    <a href="{% url 'well_detail' well.well_tag_number %}">{{ well.well_tag_number }}</a>
                 </td>
                 <!-- <a href="{% url 'well_detail' well.well_tag_number %}">{{ well.well_tag_number }}</a> -->
                 <td>
