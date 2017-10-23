@@ -5,7 +5,7 @@ import geb.Module
 
 class SearchPage extends Page {
     static at = { title == "Groundwater Wells Search - Province of British Columbia" }
-    static url = "/groundwater-wells/search"
+    static url = "/gwells/search"
 
     static content = {
         well_id(wait: true) { $("input", id:"id_well") } 

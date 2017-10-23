@@ -74,7 +74,6 @@ function WellsMap(options) {
     /** Class constants */
 
     // The URL used to search for wells, now being set dynamically from the webpage.
-    // var _SEARCH_URL = '/ajax/map_well_search/';
     var _SEARCH_URL = null;
 
     // The zoom level beyond which the map issues AJAX queries for wells, and beneath which removes AJAX-queried wells.
@@ -294,9 +293,7 @@ function WellsMap(options) {
         if (!_exists(num) || isNaN(num)) {
             return '';
         }
-        // pointing to the old well details for now
-        //return '<a href="/well/' + num + '">' + num + '</a>';
-        return '<a href="https://a100.gov.bc.ca/pub/wells/wellsreport1.do?wellTagNumber=' + num + '">' + num + '</a>';
+        return '<a href="/gwells/well/' + num + '">' + num + '</a>';
     };
 
     // Generates a popup content HTML string for a well marker, based on the data that well has available.
