@@ -14,7 +14,6 @@
 from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin
-
 from . import views
 from django.views.generic import TemplateView
 
@@ -28,6 +27,7 @@ else:
 
 urlpatterns = [
     # url(r'^'+ app_root +'$', views.HomeView.as_view(), name='home'),
+    url(r'^'+ app_root_slash +'robots\.txt$', TemplateView.as_view(template_name='robots.txt', content_type='text/plain')),
     url(r'^'+ app_root_slash +'$', views.well_search, name='home'),
     url(r'^'+ app_root_slash +'search$', views.well_search, name='search'),
     # url(r'^(?P<pk>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/$', views.DetailView.as_view(), name='detail'),
