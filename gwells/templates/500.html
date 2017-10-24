@@ -69,14 +69,65 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/dataTables.bootstrap.min.css" type="text/css" media="all" />
   </head>
   <body>
-    <div class="row">
-        <div class="col-sm-12 alert alert-warning">
-            <div id="too-many-wells" role="alert" aria-atomic="true">
-              We're sorry, there is a problem with our server. Please try again later,<br>
-              you can also let us know about this problem by emailing nrsenquiries@gov.bc.ca<br>
-              Visit the WELLS database: <a href="https://a100.gov.bc.ca/pub/wells/public/indexreports.jsp">search for well records</a>
+    <!-- BODY CONTENT -->
+    <div id="topicTemplate" class="template container env-container">
+      <div class="row">
+          <div class="col-sm-12 alert alert-warning">
+              <div id="too-many-wells" role="alert" aria-atomic="true">
+                We're sorry, there is a problem with our server. Please try again later,<br>
+                you can also let us know about this problem by emailing nrsenquiries@gov.bc.ca<br>
+                Visit the WELLS database: <a href="https://a100.gov.bc.ca/pub/wells/public/indexreports.jsp">search for well records</a>
+              </div>
+          </div>
+      </div>
+
+      <!-- PAGE CONTENT -->
+      <div class="row">
+          <div id="main-content" role="main" class="contentPageMainColumn col-sm-12">
+              <div id="main-content-anchor"></div>
+          </div>
+      </div>
+      <!-- PAGE CONTENT -->
+    </div>
+    <!-- /BODY CONTENT -->
+
+    <!-- FOOTER -->
+    <div id="footer" role="contentinfo">
+        <img class="back-to-top" src="/gwells/static/gwells/images/back-to-top.png" alt="Back to top" title="Back to top" style="display: inline;">
+        <div id="footerWrapper">
+            <div id="footerAdminSection">
+                <div id="footerAdminLinksContainer" class="container">
+                    <div id="footerAdminLinks" class="row">
+                        <div class="col-sm-12">
+                            <ul class="inline">
+                                <li>
+                                    <a id="footer-home" href="https://www.gov.bc.ca" taget="_self">Home</a>
+                                </li>
+                                <li>
+                                    <a id="footer-about" href="https://www2.gov.bc.ca/gov/content/about-gov-bc-ca" target="_self">About gov.bc.ca</a>
+                                </li>
+                                <li>
+                                    <a id="footer-disclaimer" href="http://gov.bc.ca/disclaimer/" target="_self">Disclaimer</a>
+                                </li>
+                                <li>
+                                    <a id="footer-privacy" href="http://gov.bc.ca/privacy/" target="_self">Privacy</a>
+                                </li>
+                                <li>
+                                    <a id="footer-accessibility" href="http://gov.bc.ca/webaccessibility/" target="_self">Accessibility</a>
+                                </li>
+                                <li>
+                                    <a id="footer-copyright" href="http://gov.bc.ca/copyright" target="_self">Copyright</a>
+                                </li>
+                                <li>
+                                    <a href="https://www2.gov.bc.ca/gov/content/home/contact-us" target="_self">Contact Us</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+    <!-- /FOOTER -->
   </body>
 </html>
