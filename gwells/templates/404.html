@@ -18,42 +18,42 @@
     <meta name="dcsext.creator" content=""/>
     <meta name="dcterms.language" content="eng"/>
     <meta name="keywords" content="">
-    <link rel="apple-touch-icon" sizes="57x57" href="gwells/icons/apple-icon-57x57.png"/>
-    <link rel="apple-touch-icon" sizes="60x60" href="gwells/icons/apple-icon-60x60.png"/>
-    <link rel="apple-touch-icon" sizes="72x72" href="gwells/icons/apple-icon-72x72.png"/>
-    <link rel="apple-touch-icon" sizes="76x76" href="gwells/icons/apple-icon-76x76.png"/>
-    <link rel="apple-touch-icon" sizes="114x114" href="gwells/icons/apple-icon-114x114.png"/>
-    <link rel="apple-touch-icon" sizes="120x120" href="gwells/icons/apple-icon-120x120.png"/>
-    <link rel="apple-touch-icon" sizes="144x144" href="gwells/icons/apple-icon-144x144.png"/>
-    <link rel="apple-touch-icon" sizes="152x152" href="gwells/icons/apple-icon-152x152.png"/>
-    <link rel="apple-touch-icon" sizes="180x180" href="gwells/icons/apple-icon-180x180.png"/>
-    <link rel="icon" type="image/png" sizes="192x192" href="gwells/icons/android-icon-192x192.png"/>
-    <link rel="icon" type="image/png" sizes="32x32" href="gwells/icons/favicon-32x32.png"/>
-    <link rel="icon" type="image/png" sizes="96x96" href="gwells/icons/favicon-96x96.png"/>
-    <link rel="icon" type="image/png" sizes="16x16" href="gwells/icons/favicon-16x16.png"/>
-    <link rel="manifest" href="gwells/icons/manifest.json"/>
-    <link rel="icon" type="image/png" href="gwells/images/favicon.ico"/>
+    <link rel="apple-touch-icon" sizes="57x57" href="/gwells/static/gwells/icons/apple-icon-57x57.png"/>
+    <link rel="apple-touch-icon" sizes="60x60" href="/gwells/static/gwells/icons/apple-icon-60x60.png"/>
+    <link rel="apple-touch-icon" sizes="72x72" href="/gwells/static/gwells/icons/apple-icon-72x72.png"/>
+    <link rel="apple-touch-icon" sizes="76x76" href="/gwells/static/gwells/icons/apple-icon-76x76.png"/>
+    <link rel="apple-touch-icon" sizes="114x114" href="/gwells/static/gwells/icons/apple-icon-114x114.png"/>
+    <link rel="apple-touch-icon" sizes="120x120" href="/gwells/static/gwells/icons/apple-icon-120x120.png"/>
+    <link rel="apple-touch-icon" sizes="144x144" href="/gwells/static/gwells/icons/apple-icon-144x144.png"/>
+    <link rel="apple-touch-icon" sizes="152x152" href="/gwells/static/gwells/icons/apple-icon-152x152.png"/>
+    <link rel="apple-touch-icon" sizes="180x180" href="/gwells/static/gwells/icons/apple-icon-180x180.png"/>
+    <link rel="icon" type="image/png" sizes="192x192" href="/gwells/static/gwells/icons/android-icon-192x192.png"/>
+    <link rel="icon" type="image/png" sizes="32x32" href="/gwells/static/gwells/icons/favicon-32x32.png"/>
+    <link rel="icon" type="image/png" sizes="96x96" href="/gwells/static/gwells/icons/favicon-96x96.png"/>
+    <link rel="icon" type="image/png" sizes="16x16" href="/gwells/static/gwells/icons/favicon-16x16.png"/>
+    <link rel="manifest" href="/gwells/static/gwells/icons/manifest.json"/>
+    <link rel="icon" type="image/png" href="/gwells/static/gwells/images/favicon.ico"/>
     <meta name="msapplication-TileColor" content="#ffffff"/>
-    <meta name="msapplication-TileImage" content="gwells/icons/ms-icon-144x144.png"/>
+    <meta name="msapplication-TileImage" content="/gwells/static/gwells/icons/ms-icon-144x144.png"/>
     <meta name="theme-color" content="#ffffff"/>
 
     <title>Groundwater Wells - Province of British Columbia</title>
 
     <!-- BOOTSTRAP CORE CSS v3.3.6 -->
-    <link rel="stylesheet" href="gwells/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="/gwells/static/gwells/css/bootstrap.min.css"/>
 
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-    <link rel="stylesheet" href="gwells/css/ie10-viewport-bug-workaround.css"/>
+    <link rel="stylesheet" href="/gwells/static/gwells/css/ie10-viewport-bug-workaround.css"/>
 
     <!-- STANDARD CSS -->
-    <link type="text/css" href="gwells/css/main.css" rel="stylesheet"/>
+    <link type="text/css" href="/gwells/static/gwells/css/main.css" rel="stylesheet"/>
 
     <!-- FONTS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css"/>
 
     <!-- CUSTOM CSS -->
-    <link href="gwells/css/custom-main.css" rel="stylesheet"/>
-    <link href="gwells/css/custom-form.css" rel="stylesheet"/>
+    <link href="/gwells/static/gwells/css/custom-main.css" rel="stylesheet"/>
+    <link href="/gwells/static/gwells/css/custom-form.css" rel="stylesheet"/>
 
     <!-- LEAFLET CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.1.0/dist/leaflet.css"
@@ -69,14 +69,122 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/dataTables.bootstrap.min.css" type="text/css" media="all" />
   </head>
   <body>
-    <div class="row">
-        <div class="col-sm-12 alert alert-warning">
-            <div id="too-many-wells" role="alert" aria-atomic="true">
-              404 error text:<br>
-              The page you're looking for can't be found.<br>
-              <a href="https://apps.nrs.gov.bc.ca/gwells">Search for a well</a><br>
+    <!-- HEADER -->
+    <div id="header" role="banner">
+        <div id="header-main" class="navbar navbar-default navbar-fixed-top">
+            <div class="container">
+                <div id="header-main-row" class="row">
+                    <!-- GOV TITLE -->
+                    <div class="col-sm-3 col-md-2 header-main-left">
+                        <div id="logo">
+                            <a href="http://gov.bc.ca"><img src="/gwells/static/gwells/images/gov3_bc_logo.png" alt="Province of British Columbia" title="Province of British Columbia logo" /></a>
+                        </div>
+                        <div id="access">
+                            <ul>
+                                <li>
+                                    <a accesskey="0" href="#main-content-anchor" aria-label="Skip to main content">Skip to main content</a>
+                                </li>
+                                <li>
+                                    <a accesskey="1" href="#navigation-anchor" aria-label="Skip to navigation">Skip to navigation</a>
+                                </li>
+                                <li>
+                                    <a accesskey="2" href="http://gov.bc.ca/webaccessibility/" aria-label="Accessibility Statement">Accessibility Statement</a>
+                                </li>
+                            </ul>
+                        </div>
+                        <button type="button" class="navbar-toggle env-button-custom collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="true" aria-label="Burger Navigation">
+                            <img src="/gwells/static/gwells/images/menu-open-mobile.png" alt="Open Menu" />
+                        </button>
+                    </div>
+                    <div class="col-sm-8 col-lg-6 hidden-xs">
+                        <div class="bcgov-title">
+                            <h1>Groundwater Wells and Aquifers</h1>
+                        </div>
+                    </div>
+                    <!-- /GOV & ENV TITLE -->
+                    <!-- COLLAPSING NAVBAR -->
+                    <div id="navbar" class="collapse navbar-collapse col-sm-8 col-lg-6" role="navigation">
+                        <a id="navigation-anchor"></a>
+                        <ul class="nav navbar-nav">
+                            <li><a id="navbar-search" href="/search">Search</a></li>
+                            <li><a id="navbar-groundwaterinfo" href="/groundwater-information">GroundWater Information</a></li>
+                        </ul>
+                    </div>
+                    <!-- COLLAPSING NAVBAR -->
+                </div>
+            </div>
+            <div class="navigationRibbon">
+                <div class="level2Navigation">
+                    <div class="container">
+                        <ul>
+                            <li><a id="ribbon-search" href="/search">Search</a></li>
+                            <li><a id="ribbon-groundwaterinfo" href="/groundwater-information">Groundwater Information</a></li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+    <!-- /HEADER -->
+    <!-- BODY CONTENT -->
+    <div id="topicTemplate" class="template container env-container">
+      <div class="row">
+          <div class="col-sm-12 alert alert-warning">
+              <div id="too-many-wells" role="alert" aria-atomic="true">
+                404 error text:<br>
+                The page you're looking for can't be found.<br>
+                <a href="/gwells">Search for a well</a><br>
+              </div>
+          </div>
+      </div>
+
+      <!-- PAGE CONTENT -->
+      <div class="row">
+          <div id="main-content" role="main" class="contentPageMainColumn col-sm-12">
+              <div id="main-content-anchor"></div>
+          </div>
+      </div>
+      <!-- PAGE CONTENT -->
+    </div>
+    <!-- /BODY CONTENT -->
+
+    <!-- FOOTER -->
+    <div id="footer" role="contentinfo">
+        <img class="back-to-top" src="/gwells/static/gwells/images/back-to-top.png" alt="Back to top" title="Back to top" style="display: inline;">
+        <div id="footerWrapper">
+            <div id="footerAdminSection">
+                <div id="footerAdminLinksContainer" class="container">
+                    <div id="footerAdminLinks" class="row">
+                        <div class="col-sm-12">
+                            <ul class="inline">
+                                <li>
+                                    <a id="footer-home" href="https://www.gov.bc.ca" taget="_self">Home</a>
+                                </li>
+                                <li>
+                                    <a id="footer-about" href="https://www2.gov.bc.ca/gov/content/about-gov-bc-ca" target="_self">About gov.bc.ca</a>
+                                </li>
+                                <li>
+                                    <a id="footer-disclaimer" href="http://gov.bc.ca/disclaimer/" target="_self">Disclaimer</a>
+                                </li>
+                                <li>
+                                    <a id="footer-privacy" href="http://gov.bc.ca/privacy/" target="_self">Privacy</a>
+                                </li>
+                                <li>
+                                    <a id="footer-accessibility" href="http://gov.bc.ca/webaccessibility/" target="_self">Accessibility</a>
+                                </li>
+                                <li>
+                                    <a id="footer-copyright" href="http://gov.bc.ca/copyright" target="_self">Copyright</a>
+                                </li>
+                                <li>
+                                    <a href="https://www2.gov.bc.ca/gov/content/home/contact-us" target="_self">Contact Us</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /FOOTER -->
   </body>
 </html>
