@@ -1,0 +1,15 @@
+apiVersion: batch/v2alpha1
+kind: ScheduledJob
+metadata:
+  name: postgresql
+spec:
+  schedule: "5 22 * * *"  
+  jobTemplate:             
+    spec:
+      template:
+        spec:
+          containers:
+          - name: postgresql
+            image: moe-gwells-tools/openshift-postgresql-oracle-fdw
+            command: ["psql -d gwells -U userXMW -c 'select gwells_setup_replicate();'"]
+          restartPolicy: Never

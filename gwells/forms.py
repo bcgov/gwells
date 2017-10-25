@@ -472,7 +472,7 @@ class ActivitySubmissionGpsForm(forms.ModelForm):
                     css_class='row',
                 ),
                 Div(
-                    Div('orientation', css_class='col-md-3'),
+                    Div('well_orientation', css_class='col-md-3'),
                     css_class='row',
                 ),
             )
@@ -533,8 +533,8 @@ class ActivitySubmissionGpsForm(forms.ModelForm):
 
     class Meta:
         model = ActivitySubmission
-        fields = ['latitude', 'longitude', 'ground_elevation', 'ground_elevation_method', 'drilling_method', 'other_drilling_method', 'orientation']
-        widgets = {'orientation': forms.RadioSelect,
+        fields = ['latitude', 'longitude', 'ground_elevation', 'ground_elevation_method', 'drilling_method', 'other_drilling_method', 'well_orientation']
+        widgets = {'well_orientation': forms.RadioSelect,
                    'latitude': forms.TextInput(attrs={'type': 'number', 'min': '48.20456', 'max': '60.0222', 'step': 'any'}),
                    'longitude': forms.TextInput(attrs={'type': 'number', 'min': '-139.07367', 'max': '-114.03383', 'step': 'any'})}
 
@@ -1149,7 +1149,7 @@ class WellCompletionForm(forms.ModelForm):
 
         # Make final casing stick up required for water supply well, injection well, recharge well, etc.
         if self.initial['well_class_code'] == 'WATR_SPPLY' or self.initial['well_class_code'] == 'INJECTION' or self.initial['well_class_code'] == 'RECHARGE':
-            self.fields['final_stick_up'].required = True
+            self.fields['final_casing_stick_up'].required = True
 
     def clean(self):
         cleaned_data = super(WellCompletionForm, self).clean()
@@ -1168,7 +1168,7 @@ class WellCompletionForm(forms.ModelForm):
 
     class Meta:
         model = ActivitySubmission
-        fields = ['total_depth_drilled', 'finished_well_depth', 'final_stick_up', 'bedrock_depth', 'static_water_level', 'well_yield', 'artesian_flow', 'artesian_pressure', 'well_cap_type', 'well_disinfected']
+        fields = ['total_depth_drilled', 'finished_well_depth', 'final_casing_stick_up', 'bedrock_depth', 'static_water_level', 'well_yield', 'artesian_flow', 'artesian_pressure', 'well_cap_type', 'well_disinfected']
         widgets = {'well_disinfected': forms.RadioSelect}
 
 

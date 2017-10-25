@@ -60,6 +60,7 @@ To run this project in your development machine, ensure that Python 3.5 and Post
     SET DATABASE_USER=<user>
     SET DATABASE_PASSWORD=<pw>
     SET DJANGO_DEBUG=True
+    SET APP_CONTEXT_ROOT=groundwater-wells
     ```
 
     Create a virtual environment.

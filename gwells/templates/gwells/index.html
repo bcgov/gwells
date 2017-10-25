@@ -8,13 +8,13 @@
                     <p>Welcome Bobby Wellersby.</p>
 {% endblock %}
 
-{% block body_block %} 
+{% block body_block %}
 {% if ENABLE_DATA_ENTRY %}<p>
 <a id="enterNewReport" href="{% url 'activity_submission_create' %}">Enter a new report</a>
 </p>
 {% endif %}
 <p>
-<a href="{% url 'additional_information' %}">Additional Information</a>
+<a href="{% url 'groundwater_information' %}">Groundwater Information</a>
 </p>
 
 <div id="disclaimer">
