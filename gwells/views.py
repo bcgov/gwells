@@ -39,8 +39,6 @@ class HomeView(generic.TemplateView):
         Return the context for the page.
         """
         context = super(HomeView, self).get_context_data(**kwargs) 
-        context['ENABLE_DATA_ENTRY'] = settings.ENABLE_DATA_ENTRY
-        context['ENABLE_GOOGLE_ANALYTICS'] = settings.ENABLE_GOOGLE_ANALYTICS
         return context
 
 def common_well_search(request):
@@ -104,7 +102,6 @@ def well_search(request):
                    'wells_json': well_results_json,
                    'lat_long_box': lat_long_box,
                    'land_districts' : land_districts,
-                   'ENABLE_GOOGLE_ANALYTICS' : settings.ENABLE_GOOGLE_ANALYTICS
                   })
 
 def map_well_search(request):
@@ -128,15 +125,12 @@ class WellDetailView(generic.DetailView):
         Return the context for the home page.
         """
         context = super(WellDetailView, self).get_context_data(**kwargs) 
-        context['ENABLE_GOOGLE_ANALYTICS'] = settings.ENABLE_GOOGLE_ANALYTICS
         return context
 
 
 #class DetailView(generic.DetailView):
 #    model = ActivitySubmission
 #    context_object_name = 'activity_submission'
-
-
 
 class ActivitySubmissionListView(generic.ListView):
     model = ActivitySubmission
@@ -148,7 +142,6 @@ class ActivitySubmissionListView(generic.ListView):
         Return the context for the page.
         """
         context = super(ActivitySubmissionListView, self).get_context_data(**kwargs) 
-        context['ENABLE_GOOGLE_ANALYTICS'] = settings.ENABLE_GOOGLE_ANALYTICS
         return context
 
 
@@ -162,7 +155,6 @@ class ActivitySubmissionDetailView(generic.DetailView):
         Return the context for the page.
         """
         context = super(ActivitySubmissionDetailView, self).get_context_data(**kwargs) 
-        context['ENABLE_GOOGLE_ANALYTICS'] = settings.ENABLE_GOOGLE_ANALYTICS
         return context
 
 FORMS = [('type_and_class', ActivitySubmissionTypeAndClassForm),
@@ -212,7 +204,6 @@ class ActivitySubmissionWizardView(SessionWizardView):
         Return the context for the page.
         """
         context = super(ActivitySubmissionWizardView, self).get_context_data(**kwargs) 
-        context['ENABLE_GOOGLE_ANALYTICS'] = settings.ENABLE_GOOGLE_ANALYTICS
         return context
 
     def get_template_names(self):

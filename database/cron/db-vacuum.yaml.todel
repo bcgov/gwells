@@ -11,5 +11,6 @@ spec:
           containers:
           - name: postgresql
             image: moe-gwells-tools/openshift-postgresql-oracle-fdw
-            command: ["psql -d gwells -c 'vacuum full;' "]
+            command: ["/opt/rh/rh-postgresql95/root/usr/bin/psql -d gwells -c 'vacuum full;' "]
           restartPolicy: Never
+          ConcurrencyPolicy: Forbid

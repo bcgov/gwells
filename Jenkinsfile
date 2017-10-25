@@ -8,10 +8,8 @@ node('maven') {
     stage('Deploy on Dev') {
         echo "Deploying to dev..."
         openshiftTag destStream: 'gwells', verbose: 'true', destTag: 'dev', srcStream: 'gwells', srcTag: '$BUILD_ID'
-		//echo "Sleeping for a while to wait deployment completes"
-		//out.println(System.currentTimeMillis())
-		//Thread.sleep(60000)
-		//out.println(System.currentTimeMillis())
+		//Sleeping for a while to wait deployment completes
+		sh 'sleep 3m'
 	}
     
     stage('Code Quality Check') {
@@ -45,7 +43,7 @@ node('master') {
 		//the checkout is mandatory, otherwise functional test would fail
         echo "checking out source"
         echo "Build: ${BUILD_ID}"
-        checkout scm	
+        checkout scm
         dir('navunit') {
 			try {
 				sh './gradlew --debug --stacktrace phantomJsTest'

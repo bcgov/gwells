@@ -28,9 +28,16 @@ SECRET_KEY = os.getenv(
     '9e4@&tw46$l31)zrqe3wi+-slqm(ruvz&se0^%9#6(_w3ui!c0'
 )
 
+# Security Settings
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SESSION_COOKIE_SECURE = os.getenv('SESSION_COOKIE_SECURE', 'False') == 'True'
+CSRF_COOKIE_SECURE = os.getenv('CSRF_COOKIE_SECURE', 'False') == 'True'
+CSRF_COOKIE_HTTPONLY = True
+SESSION_COOKIE_HTTPONLY = True
+
 # SECURITY WARNING: don't run with debug turned on in production!
-#DEBUG = False
-DEBUG = os.getenv('DJANGO_DEBUG', 'True') == 'True'
+DEBUG = os.getenv('DJANGO_DEBUG', 'False') == 'True'
 
 # Controls availability of the data entry functionality
 ENABLE_DATA_ENTRY = os.getenv('ENABLE_DATA_ENTRY', 'False') == 'True'
@@ -40,6 +47,14 @@ ENABLE_GOOGLE_ANALYTICS = os.getenv('ENABLE_GOOGLE_ANALYTICS', 'False') == 'True
 
 # Controls app context
 APP_CONTEXT_ROOT = os.getenv('APP_CONTEXT_ROOT','')
+
+# django-settings-export lets us make these variables available in the templates.
+# This eleminate the need for setting the context for each and every view.
+SETTINGS_EXPORT = [
+    'ENABLE_DATA_ENTRY',        # To temporarily disable report submissions
+    'ENABLE_GOOGLE_ANALYTICS',  # This is only enabled for production
+    'APP_CONTEXT_ROOT',         # This allows for moving the app around without code changes
+]
 
 ALLOWED_HOSTS = ['*']
 
@@ -60,6 +75,7 @@ INSTALLED_APPS = (
 )
 
 MIDDLEWARE = (
+    'django.middleware.gzip.GZipMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -86,6 +102,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django_settings_export.settings_export',
             ],
         },
     },
@@ -103,6 +120,8 @@ DATABASES = {
     'default': database.config()
 }
 
+# Re-use database connections, leave connection alive for 5 mimutes
+CONN_MAX_AGE=120
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/

@@ -1,16 +1,27 @@
 apiVersion: batch/v2alpha1
 kind: ScheduledJob
 metadata:
-  name: postgresql
+  name: gwells-replicate
 spec:
-  schedule: "30 22 * * *"  
+  schedule: "*/5 * * * *"  
   jobTemplate:             
     spec:
       template:
         spec:
           containers:
           - name: postgresql
-            image: moe-gwells-tools/openshift-postgresql-oracle-fdw
-            command: ["psql -d gwells -c 'select gwells_replicate();'"]
+            image: 172.50.0.2:5000/moe-gwells-tools/openshift-postgresql-oracle-fdw:latest
+            env:
+            - name: POSTGRESQL_USER
+              value: "userGN0"
+            - name: POSTGRESQL_PASSWORD
+              value: "<password>"
+            - name: POSTGRESQL_DATABASE
+              value: "gwells"
+# and FDW ones... 
+#         command: ["/bin/sh", "-i", "-c",  "psql -h 127.0.0.1 -U userGN0 -q -d gwells -c 'select gwells_setup_replicate();';psql -h 127.0.0.1 -d gwells -c 'vacuum full;' ; sleep 30s; psql -h 127.0.0.1 -d gwells -c 'select gwells_replicate();'; exit 0;"]
+          command: ["/bin/sh", "-i", "-c",  "psql -h 127.0.0.1 -U ${POSTGRESQL_USER} -q -d ${POSTGRESQL_DATABASE} -c 'select gwells_setup_replicate();';psql -h 127.0.0.1 -d ${POSTGRESQL_DATABASE} -c 'vacuum full;' ; sleep 30s; psql -h 127.0.0.1 -d ${POSTGRESQL_DATABASE} -c 'select gwells_replicate();'; exit 0;"]
           restartPolicy: Never
-          
+          ConcurrencyPolicy: Forbid
+
+
