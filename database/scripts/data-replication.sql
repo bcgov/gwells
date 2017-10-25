@@ -5,34 +5,34 @@ BEGIN
 	raise notice 'Starting gwells_setup_replicate() procedure...';	
 
 	-- Reset tables
-	raise notice '... clearing gwells_lithology_description data table';
-	delete from gwells_lithology_description;
-	raise notice '... clearing gwells_activity_submission data table';
-	delete from gwells_activity_submission;
-	raise notice '... clearing gwells_well data table';
-	delete from gwells_well;
+	raise notice '... clearing gwells.lithology_description data table';
+	delete from gwells.lithology_description;
+	raise notice '... clearing gwells.activity_submission data table';
+	delete from gwells.activity_submission;
+	raise notice '... clearing gwells.well data table';
+	delete from gwells.well;
 
-	raise notice '... clearing gwells_intended_water_use data table';		
-	delete from gwells_intended_water_use;
-	raise notice '... clearing gwells_well_subclass data table';
-	delete from gwells_well_subclass;
-	raise notice '... clearing gwells_well_class data table';
-	delete from gwells_well_class;
+	raise notice '... clearing gwells.intended_water_use data table';		
+	delete from gwells.intended_water_use;
+	raise notice '... clearing gwells.well_subclass data table';
+	delete from gwells.well_subclass;
+	raise notice '... clearing gwells.well_class data table';
+	delete from gwells.well_class;
 
-	raise notice '... clearing gwells_province_state data table';
-	delete from gwells_province_state;
-	raise notice '... clearing gwells_well_yield_unit data table';
-	delete from gwells_well_yield_unit;
-	raise notice '... clearing gwells_drilling_method data table';
-	delete from gwells_drilling_method;
-	raise notice '... clearing gwells_ground_elevation_method data table';
-	delete from gwells_ground_elevation_method;
-	raise notice '... clearing gwells_land_district data table';
-	delete from gwells_land_district;
-	raise notice '... clearing gwells_well_status data table';
-	delete from gwells_well_status;
-	raise notice '... clearing gwells_licensed_status data table';
-	delete from gwells_licensed_status;
+	raise notice '... clearing gwells.province_state data table';
+	delete from gwells.province_state;
+	raise notice '... clearing gwells.well_yield_unit data table';
+	delete from gwells.well_yield_unit;
+	raise notice '... clearing gwells.drilling_method data table';
+	delete from gwells.drilling_method;
+	raise notice '... clearing gwells.ground_elevation_method data table';
+	delete from gwells.ground_elevation_method;
+	raise notice '... clearing gwells.land_district data table';
+	delete from gwells.land_district;
+	raise notice '... clearing gwells.well_status data table';
+	delete from gwells.well_status;
+	raise notice '... clearing gwells.licensed_status data table';
+	delete from gwells.licensed_status;
 
 
 	raise notice '... recreating xform_gwells_well ETL table';
@@ -104,32 +104,32 @@ BEGIN
 	raise notice 'Starting gwells_replicate() procedure...';	
 
 	-- Get static code tables from GitHub
-	raise notice '... importing gwells_intended_water_use code table';	
-	copy gwells_intended_water_use (intended_water_use_guid,code,description,is_hidden,sort_order,when_created,when_updated,who_created,who_updated) from program 'wget https://raw.githubusercontent.com/bcgov/gwells/master/database/code-tables/gwells_intended_water_use.csv -O - -q' header delimiter ',' CSV ; 
-	raise notice '... importing gwells_well_class code table';	
-	copy gwells_well_class (well_class_guid,code,description,is_hidden,sort_order,when_created,when_updated,who_created,who_updated) from program 'wget https://raw.githubusercontent.com/bcgov/gwells/master/database/code-tables/gwells_well_class.csv -O - -q' header delimiter ',' CSV ; 
-	raise notice '... importing gwells_well_subclass code table';	
-	copy gwells_well_subclass (well_subclass_guid,code,description,is_hidden,sort_order,well_class_guid,when_created,when_updated,who_created,who_updated) from program 'wget https://raw.githubusercontent.com/bcgov/gwells/master/database/code-tables/gwells_well_subclass.csv -O - -q' header delimiter ',' CSV ; 
-	raise notice '... importing gwells_province_state code table';	
-	copy gwells_province_state (province_state_guid,code,description,sort_order,when_created,when_updated,who_created,who_updated) from program 'wget https://raw.githubusercontent.com/bcgov/gwells/master/database/code-tables/gwells_province_state.csv -O - -q' header delimiter ',' CSV ; 
-	raise notice '... importing gwells_well_yield_unit code table';	
-	copy gwells_well_yield_unit (well_yield_unit_guid,code,description,sort_order,when_created,when_updated,who_created,who_updated) from program 'wget https://raw.githubusercontent.com/bcgov/gwells/master/database/code-tables/gwells_well_yield_unit.csv -O - -q' header delimiter ',' CSV ; 
-	raise notice '... importing gwells_drilling_method code table';	
-	copy gwells_drilling_method (drilling_method_guid,code,description,is_hidden,sort_order,when_created,when_updated,who_created,who_updated) from program 'wget https://raw.githubusercontent.com/bcgov/gwells/master/database/code-tables/gwells_drilling_method.csv -O - -q' header delimiter ',' CSV ; 
-	raise notice '... importing gwells_ground_elevation_method code table';	
-	copy gwells_ground_elevation_method (ground_elevation_method_guid,code,description,is_hidden,sort_order,when_created,when_updated,who_created,who_updated) from program 'wget https://raw.githubusercontent.com/bcgov/gwells/master/database/code-tables/gwells_ground_elevation_method.csv -O - -q' header delimiter ',' CSV ; 
-	raise notice '... importing gwells_well_status code table';	
-	copy gwells_well_status (well_status_guid,code,description,is_hidden,sort_order,when_created,when_updated,who_created,who_updated) from program 'wget https://raw.githubusercontent.com/bcgov/gwells/master/database/code-tables/gwells_well_status.csv -O - -q' header delimiter ',' CSV ; 
-	raise notice '... importing gwells_licensed_status code table';	
-	copy gwells_licensed_status (well_licensed_status_guid,code,description,is_hidden,sort_order,when_created,when_updated,who_created,who_updated) from program 'wget https://raw.githubusercontent.com/bcgov/gwells/master/database/code-tables/gwells_licensed_status.csv -O - -q' header delimiter ',' CSV ; 
+	raise notice '... importing gwells.intended_water_use code table';	
+	copy gwells.intended_water_use (intended_water_use_guid,code,description,is_hidden,sort_order,when_created,when_updated,who_created,who_updated) from program 'wget https://raw.githubusercontent.com/bcgov/gwells/master/database/code-tables/gwells_intended_water_use.csv -O - -q' header delimiter ',' CSV ; 
+	raise notice '... importing gwells.well_class code table';	
+	copy gwells.well_class (well_class_guid,code,description,is_hidden,sort_order,when_created,when_updated,who_created,who_updated) from program 'wget https://raw.githubusercontent.com/bcgov/gwells/master/database/code-tables/gwells_well_class.csv -O - -q' header delimiter ',' CSV ; 
+	raise notice '... importing gwells.well_subclass code table';	
+	copy gwells.well_subclass (well_subclass_guid,code,description,is_hidden,sort_order,well_class_guid,when_created,when_updated,who_created,who_updated) from program 'wget https://raw.githubusercontent.com/bcgov/gwells/master/database/code-tables/gwells_well_subclass.csv -O - -q' header delimiter ',' CSV ; 
+	raise notice '... importing gwells.province_state code table';	
+	copy gwells.province_state (province_state_guid,code,description,sort_order,when_created,when_updated,who_created,who_updated) from program 'wget https://raw.githubusercontent.com/bcgov/gwells/master/database/code-tables/gwells_province_state.csv -O - -q' header delimiter ',' CSV ; 
+	raise notice '... importing gwells.well_yield_unit code table';	
+	copy gwells.well_yield_unit (well_yield_unit_guid,code,description,sort_order,when_created,when_updated,who_created,who_updated) from program 'wget https://raw.githubusercontent.com/bcgov/gwells/master/database/code-tables/gwells_well_yield_unit.csv -O - -q' header delimiter ',' CSV ; 
+	raise notice '... importing gwells.drilling_method code table';	
+	copy gwells.drilling_method (drilling_method_guid,code,description,is_hidden,sort_order,when_created,when_updated,who_created,who_updated) from program 'wget https://raw.githubusercontent.com/bcgov/gwells/master/database/code-tables/gwells_drilling_method.csv -O - -q' header delimiter ',' CSV ; 
+	raise notice '... importing gwells.ground_elevation_method code table';	
+	copy gwells.ground_elevation_method (ground_elevation_method_guid,code,description,is_hidden,sort_order,when_created,when_updated,who_created,who_updated) from program 'wget https://raw.githubusercontent.com/bcgov/gwells/master/database/code-tables/gwells_ground_elevation_method.csv -O - -q' header delimiter ',' CSV ; 
+	raise notice '... importing gwells.well_status code table';	
+	copy gwells.well_status (well_status_guid,code,description,is_hidden,sort_order,when_created,when_updated,who_created,who_updated) from program 'wget https://raw.githubusercontent.com/bcgov/gwells/master/database/code-tables/gwells_well_status.csv -O - -q' header delimiter ',' CSV ; 
+	raise notice '... importing gwells.licensed_status code table';	
+	copy gwells.licensed_status (well_licensed_status_guid,code,description,is_hidden,sort_order,when_created,when_updated,who_created,who_updated) from program 'wget https://raw.githubusercontent.com/bcgov/gwells/master/database/code-tables/gwells_licensed_status.csv -O - -q' header delimiter ',' CSV ; 
 
-	raise notice '... importing gwells_land_district data table';	
-	INSERT INTO gwells_land_district (
+	raise notice '... importing gwells.land_district data table';	
+	INSERT INTO gwells.land_district (
 		land_district_guid,code,name,sort_order,when_created,when_updated,who_created,who_updated) 
 	SELECT 
 		gen_random_uuid(),LEGAL_LAND_DISTRICT_CODE,LEGAL_LAND_DISTRICT_NAME,SORT_ORDER,WHEN_CREATED,
 		coalesce(WHEN_UPDATED,WHEN_CREATED),WHO_CREATED ,coalesce(WHO_UPDATED,WHO_CREATED) -- STATUS_FLAG
-	FROM WELLS.WELLS_LEGAL_LAND_DIST_CODES
+	FROM WELLS.LEGAL_LAND_DIST_CODES
 	ORDER BY LEGAL_LAND_DISTRICT_CODE ASC;
 
 	raise notice '... transforming wells data (!= REJECTED) via xform_gwells_well ETL table...';	
@@ -173,12 +173,12 @@ BEGIN
 		bkfill_above_srfc_seal_depth   ,
 		backfill_above_surface_seal    ,
 		sealant_material               ,
- 	    status_of_well_code           ,
-	    observation_well_number	      ,
-	    ministry_observation_well_stat,
-	    well_licence_general_status   ,
-	    alternative_specifications_ind,
-	    chemistry_site_id              ,
+ 	    	status_of_well_code            ,
+	    	observation_well_number	       ,
+	    	ministry_observation_well_stat ,
+	    	well_licence_general_status    ,
+	    	alternative_specifications_ind ,
+		chemistry_site_id	       ,
 		when_created                   ,
 		when_updated                   ,
 		who_created                    ,
@@ -280,12 +280,12 @@ BEGIN
 	  coalesce(WELLS.WHEN_UPDATED,WELLS.WHEN_CREATED) as when_updated,
 	  WELLS.WHO_CREATED as who_created,
 	  coalesce(WELLS.WHO_UPDATED,WELLS.WHO_CREATED) as who_updated
-	FROM WELLS.WELLS_WELLS WELLS LEFT OUTER JOIN WELLS.WELLS_OWNERS OWNER
+	FROM WELLS.WELLS WELLS LEFT OUTER JOIN WELLS.OWNERS OWNER
 	  ON OWNER.OWNER_ID=WELLS.OWNER_ID
 	WHERE WELLS.ACCEPTANCE_STATUS_CODE != 'REJECTED';
 
 	raise notice '... importing ETL into the main "wells" table';	
-	INSERT INTO gwells_well (
+	INSERT INTO gwells.well (
 	  well_tag_number             ,
 	  well_guid                   ,
 	  owner_full_name             ,
@@ -314,106 +314,106 @@ BEGIN
 	  well_class_guid             ,
 	  well_subclass_guid          ,
 	  well_yield_unit_guid        ,
-	  latitude,
-	  longitude,
-	  ground_elevation,
-	  orientation_vertical,
-	  other_drilling_method,
-	  drilling_method_guid,
+	  latitude                    ,
+	  longitude                   ,
+	  ground_elevation            ,
+	  orientation_vertical        ,
+	  other_drilling_method       ,
+	  drilling_method_guid        ,
 	  ground_elevation_method_guid,
 	  when_created                ,
 	  when_updated                ,
 	  who_created                 ,
 	  who_updated                 ,
 	  backfill_above_surface_seal_depth,
-	  surface_seal_depth        ,
-	  surface_seal_thickness    ,
-	  surface_seal_method_guid  ,
-	  backfill_above_surface_seal,
-	 well_status_guid,
-	 licensed_status_guid,
-	  surface_seal_material_guid,
+	  surface_seal_depth          ,
+	  surface_seal_thickness      ,
+	  surface_seal_method_guid    ,
+	  backfill_above_surface_seal ,
+	  well_status_guid            ,
+	  licensed_status_guid        ,
+	  surface_seal_material_guid  ,
 	  other_screen_bottom         ,  
 	  other_screen_material       ,   
-	  development_notes,
-	  where_plate_attached,
-	  water_quality_colour     , 
-	  water_quality_odour      , 
-	  well_cap_type            , 
-	  well_disinfected         , 
-	  alternative_specs_submitted,
-	  ems,
+	  development_notes           ,
+	  where_plate_attached        ,
+	  water_quality_colour        , 
+	  water_quality_odour         , 
+	  well_cap_type               , 
+	  well_disinfected            , 
+	  alternative_specs_submitted ,
+	  ems                         ,
 	  comments                   
 	  )
 	SELECT 
-		xform.well_tag_number              ,
-		gen_random_uuid()                 ,
-		coalesce(xform.owner_full_name,' '),
+		xform.well_tag_number                     ,
+		gen_random_uuid()                         ,
+		coalesce(xform.owner_full_name,' ')       ,
 		coalesce(xform.owner_mailing_address, ' '),
-		coalesce(xform.owner_city, ' '),
-		coalesce(xform.owner_postal_code , ' '),
-		coalesce(xform.street_address    , ' '),
-		coalesce(xform.city              , ' '),
-		coalesce(xform.legal_lot         , ' '),
-		coalesce(xform.legal_plan        , ' '),
-		coalesce(xform.legal_district_lot, ' '),
-		coalesce(xform.legal_block       , ' '),
-		coalesce(xform.legal_section     , ' '),
-		coalesce(xform.legal_township    , ' '),
-		coalesce(xform.legal_range       , ' '),
-		xform.legal_pid,
+		coalesce(xform.owner_city, ' ')           ,
+		coalesce(xform.owner_postal_code , ' ')   ,
+		coalesce(xform.street_address    , ' ')   ,
+		coalesce(xform.city              , ' ')   ,
+		coalesce(xform.legal_lot         , ' ')   ,
+		coalesce(xform.legal_plan        , ' ')   ,
+		coalesce(xform.legal_district_lot, ' ')   ,
+		coalesce(xform.legal_block       , ' ')   ,
+		coalesce(xform.legal_section     , ' ')   ,
+		coalesce(xform.legal_township    , ' ')   ,
+		coalesce(xform.legal_range       , ' ')   ,
+		xform.legal_pid                           ,
 		coalesce(xform.well_location_description,' '),
-		xform.identification_plate_number  ,
-		coalesce(xform.diameter, ' '),
-		xform.total_depth_drilled          ,
-		xform.finished_well_depth          ,
-		xform.well_yield                   ,
-		use.intended_water_use_guid      ,
-		land.land_district_guid          ,
-		xform.province_state_guid          ,
-		class.well_class_guid     ,
-		subclass.well_subclass_guid   ,
-		xform.well_yield_unit_guid      ,
-		xform.latitude                  ,
-		xform.longitude                 ,
-		xform.ground_elevation,
-		xform.orientation_vertical      ,
-		' ',
-		xform.drilling_method_guid ,
-		xform.ground_elevation_method_guid,
-		xform.when_created              ,
-		xform.when_updated,
-		xform.who_created               ,
-		xform.who_updated      ,
-		xform.bkfill_above_srfc_seal_depth,
-		null,
-		null,
-		null,
+		xform.identification_plate_number         ,
+		coalesce(xform.diameter, ' ')             ,
+		xform.total_depth_drilled                 ,
+		xform.finished_well_depth                 ,
+		xform.well_yield                          ,
+		use.intended_water_use_guid               ,
+		land.land_district_guid                   ,
+		xform.province_state_guid                 ,
+		class.well_class_guid                     ,
+		subclass.well_subclass_guid               ,
+		xform.well_yield_unit_guid                ,
+		xform.latitude                            ,
+		xform.longitude                           ,
+		xform.ground_elevation                    ,
+		xform.orientation_vertical                ,
+		' '                                       ,
+		xform.drilling_method_guid                ,
+		xform.ground_elevation_method_guid        ,
+		xform.when_created                        ,
+		xform.when_updated                        ,
+		xform.who_created                         ,
+		xform.who_updated                         ,
+		xform.bkfill_above_srfc_seal_depth        ,
+		null                                      ,
+		null                                      ,
+		null                                      ,
 		coalesce(xform.backfill_above_surface_seal,' '),
-		well_status.well_status_guid,
-		licenced_status.well_licensed_status_guid,
-		null,
-		'',
-		'',
-		'',
-		'',
-		'',
-		'',
-		'',
-		false,
-		false,
-	    null, -- xform.chemistry_site_id until character type
+		well_status.well_status_guid              ,
+		licenced_status.well_licensed_status_guid ,
+		null                                      ,
+		''                                        ,
+		''                                        , 
+		''                                        ,
+		''                                        ,
+		''                                        ,
+		''                                        ,
+		''                                        ,
+		false                                     ,
+		false                                     ,
+	        null                                      , -- xform.chemistry_site_id until character type
 		''
 	FROM xform_gwells_well xform
-	LEFT OUTER JOIN gwells_intended_water_use use ON xform.WELL_USE_CODE=use.code
-	LEFT OUTER JOIN gwells_well_status well_status ON xform.STATUS_OF_WELL_CODE=upper(well_status.code)
-	LEFT OUTER JOIN gwells_licensed_status licenced_status ON xform.WELL_LICENCE_GENERAL_STATUS=upper(licenced_status.code)
-	LEFT OUTER JOIN gwells_land_district     land ON xform.LEGAL_LAND_DISTRICT_CODE=land.code 
-	INNER      JOIN gwells_well_class       class ON xform.CLASS_OF_WELL_CODCLASSIFIED_BY=class.code 
-	LEFT OUTER JOIN gwells_well_subclass subclass ON xform.SUBCLASS_OF_WELL_CLASSIFIED_BY=subclass.code 
+	LEFT OUTER JOIN gwells.intended_water_use use ON xform.WELL_USE_CODE=use.code
+	LEFT OUTER JOIN gwells.well_status well_status ON xform.STATUS_OF_WELL_CODE=upper(well_status.code)
+	LEFT OUTER JOIN gwells.licensed_status licenced_status ON xform.WELL_LICENCE_GENERAL_STATUS=upper(licenced_status.code)
+	LEFT OUTER JOIN gwells.land_district     land ON xform.LEGAL_LAND_DISTRICT_CODE=land.code 
+	INNER      JOIN gwells.well_class       class ON xform.CLASS_OF_WELL_CODCLASSIFIED_BY=class.code 
+	LEFT OUTER JOIN gwells.well_subclass subclass ON xform.SUBCLASS_OF_WELL_CLASSIFIED_BY=subclass.code 
 	AND subclass.well_class_guid = class.well_class_guid ;
 
-	select count(*) from gwells_well into wells_rows;
+	select count(*) from gwells.well into wells_rows;
 	raise notice '... % rows loaded into the main "wells" table', 	wells_rows;	
 
 
