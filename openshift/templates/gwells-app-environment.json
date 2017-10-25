@@ -109,7 +109,7 @@
                   "timeoutSeconds": 3,
                   "initialDelaySeconds": 3,
                   "httpGet": {
-                    "path": "/health",
+                    "path": "/groundwater-wells/health",
                     "port": 8080
                   }
                 },
@@ -117,7 +117,7 @@
                   "timeoutSeconds": 3,
                   "initialDelaySeconds": 30,
                   "httpGet": {
-                    "path": "/health",
+                    "path": "/groundwater-wells/health",
                     "port": 8080
                   }
                 },

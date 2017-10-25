@@ -38,6 +38,9 @@ ENABLE_DATA_ENTRY = os.getenv('ENABLE_DATA_ENTRY', 'False') == 'True'
 # Controls availability of Google Analytics
 ENABLE_GOOGLE_ANALYTICS = os.getenv('ENABLE_GOOGLE_ANALYTICS', 'False') == 'True'
 
+# Controls app context
+APP_CONTEXT_ROOT = os.getenv('APP_CONTEXT_ROOT','')
+
 ALLOWED_HOSTS = ['*']
 
 # Application definition
@@ -118,7 +121,11 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
-STATIC_URL = '/static/'
+if APP_CONTEXT_ROOT:
+   STATIC_URL = '/'+ APP_CONTEXT_ROOT +'/static/'
+else:
+   STATIC_URL = '/static/' 
+
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
