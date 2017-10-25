@@ -13,13 +13,12 @@
 """
 import datetime
 import uuid
+import os
 from django.db import models
 from django.utils import timezone
 from django.core.validators import MinValueValidator
 from decimal import Decimal
 from model_utils import FieldTracker
-
-
 
 
 class AuditModel(models.Model):
@@ -55,7 +54,7 @@ class ProvinceState(AuditModel):
     sort_order = models.PositiveIntegerField()
 
     class Meta:
-        db_table = 'gwells_province_state'
+        db_table = 'province_state'
         ordering = ['sort_order', 'description']
 
     def __str__(self):
@@ -73,7 +72,7 @@ class LandDistrict(AuditModel):
     sort_order = models.PositiveIntegerField()
 
     class Meta:
-        db_table = 'gwells_land_district'
+        db_table = 'land_district'
         ordering = ['sort_order', 'name']
 
     def __str__(self):
@@ -91,7 +90,7 @@ class WellYieldUnit(AuditModel):
     sort_order = models.PositiveIntegerField()
 
     class Meta:
-        db_table = 'gwells_well_yield_unit'
+        db_table = 'well_yield_unit'
         ordering = ['sort_order', 'description']
 
     def __str__(self):
@@ -110,7 +109,7 @@ class WellActivityType(AuditModel):
     sort_order = models.PositiveIntegerField()
 
     class Meta:
-        db_table = 'gwells_well_activity_type'
+        db_table = 'well_activity_type'
         ordering = ['sort_order', 'description']
 
     def __str__(self):
@@ -129,7 +128,7 @@ class WellClass(AuditModel):
     sort_order = models.PositiveIntegerField()
 
     class Meta:
-        db_table = 'gwells_well_class'
+        db_table = 'well_class'
         ordering = ['sort_order', 'description']
 
     def __str__(self):
@@ -149,7 +148,7 @@ class WellSubclass(AuditModel):
     sort_order = models.PositiveIntegerField()
 
     class Meta:
-        db_table = 'gwells_well_subclass'
+        db_table = 'well_subclass'
         ordering = ['sort_order', 'description']
 
     def validate_unique(self, exclude=None):
@@ -177,7 +176,7 @@ class WellStatus(AuditModel):
     sort_order = models.PositiveIntegerField()
 
     class Meta:
-        db_table = 'gwells_well_status'
+        db_table = 'well_status'
         ordering = ['sort_order', 'code']
 
     def save(self, *args, **kwargs):
@@ -197,7 +196,7 @@ class LicensedStatus(AuditModel):
     sort_order = models.PositiveIntegerField()
 
     class Meta:
-        db_table = 'gwells_licensed_status'
+        db_table = 'licensed_status'
         ordering = ['sort_order', 'code']
 
     def save(self, *args, **kwargs):
@@ -217,7 +216,7 @@ class IntendedWaterUse(AuditModel):
     sort_order = models.PositiveIntegerField()
 
     class Meta:
-        db_table = 'gwells_intended_water_use'
+        db_table = 'intended_water_use'
         ordering = ['sort_order', 'description']
 
     def __str__(self):
@@ -234,7 +233,7 @@ class DrillingCompany(AuditModel):
     is_hidden = models.BooleanField(default=False)
 
     class Meta:
-        db_table = 'gwells_drilling_company'
+        db_table = 'drilling_company'
         verbose_name_plural = 'Drilling Companies'
 
     def __str__(self):
@@ -254,7 +253,7 @@ class Driller(AuditModel):
     is_hidden = models.BooleanField(default=False)
 
     class Meta:
-        db_table = 'gwells_driller'
+        db_table = 'driller'
 
     def __str__(self):
         return '%s %s - %s' % (self.first_name, self.surname, self.registration_number)
@@ -274,7 +273,7 @@ class GroundElevationMethod(AuditModel):
     sort_order = models.PositiveIntegerField()
 
     class Meta:
-        db_table = 'gwells_ground_elevation_method'
+        db_table = 'ground_elevation_method'
         ordering = ['sort_order', 'description']
 
     def __str__(self):
@@ -293,7 +292,7 @@ class DrillingMethod(AuditModel):
     sort_order = models.PositiveIntegerField()
 
     class Meta:
-        db_table = 'gwells_drilling_method'
+        db_table = 'drilling_method'
         ordering = ['sort_order', 'description']
 
     def __str__(self):
@@ -312,7 +311,7 @@ class SurficialMaterial(AuditModel):
     sort_order = models.PositiveIntegerField()
 
     class Meta:
-        db_table = 'gwells_surficial_material'
+        db_table = 'surficial_material'
         ordering = ['sort_order', 'description']
 
     def __str__(self):
@@ -331,7 +330,7 @@ class BedrockMaterial(AuditModel):
     sort_order = models.PositiveIntegerField()
 
     class Meta:
-        db_table = 'gwells_bedrock_material'
+        db_table = 'bedrock_material'
         ordering = ['sort_order', 'description']
 
     def __str__(self):
@@ -350,7 +349,7 @@ class BedrockMaterialDescriptor(AuditModel):
     sort_order = models.PositiveIntegerField()
 
     class Meta:
-        db_table = 'gwells_bedrock_material_descriptor'
+        db_table = 'bedrock_material_descriptor'
         ordering = ['sort_order', 'description']
 
     def __str__(self):
@@ -369,7 +368,7 @@ class LithologyStructure(AuditModel):
     sort_order = models.PositiveIntegerField()
 
     class Meta:
-        db_table = 'gwells_lithology_structure'
+        db_table = 'lithology_structure'
         ordering = ['sort_order', 'description']
 
     def __str__(self):
@@ -388,7 +387,7 @@ class LithologyColour(AuditModel):
     sort_order = models.PositiveIntegerField()
 
     class Meta:
-        db_table = 'gwells_lithology_colour'
+        db_table = 'lithology_colour'
         ordering = ['sort_order', 'description']
 
     def __str__(self):
@@ -407,7 +406,7 @@ class LithologyHardness(AuditModel):
     sort_order = models.PositiveIntegerField()
 
     class Meta:
-        db_table = 'gwells_lithology_hardness'
+        db_table = 'lithology_hardness'
         ordering = ['sort_order', 'description']
 
     def __str__(self):
@@ -426,7 +425,7 @@ class LithologyMoisture(AuditModel):
     sort_order = models.PositiveIntegerField()
 
     class Meta:
-        db_table = 'gwells_lithology_moisture'
+        db_table = 'lithology_moisture'
         ordering = ['sort_order', 'description']
 
     def __str__(self):
@@ -445,7 +444,7 @@ class CasingType(AuditModel):
     sort_order = models.PositiveIntegerField()
 
     class Meta:
-        db_table = 'gwells_casing_type'
+        db_table = 'casing_type'
         ordering = ['sort_order', 'description']
 
     def __str__(self):
@@ -464,7 +463,7 @@ class CasingMaterial(AuditModel):
     sort_order = models.PositiveIntegerField()
 
     class Meta:
-        db_table = 'gwells_casing_material'
+        db_table = 'casing_material'
         ordering = ['sort_order', 'description']
 
     def __str__(self):
@@ -483,7 +482,7 @@ class SurfaceSealMaterial(AuditModel):
     sort_order = models.PositiveIntegerField()
 
     class Meta:
-        db_table = 'gwells_surface_seal_material'
+        db_table = 'surface_seal_material'
         ordering = ['sort_order', 'description']
 
     def __str__(self):
@@ -502,7 +501,7 @@ class SurfaceSealMethod(AuditModel):
     sort_order = models.PositiveIntegerField()
 
     class Meta:
-        db_table = 'gwells_surface_seal_method'
+        db_table = 'surface_seal_method'
         ordering = ['sort_order', 'description']
 
     def __str__(self):
@@ -521,7 +520,7 @@ class LinerMaterial(AuditModel):
     sort_order = models.PositiveIntegerField()
 
     class Meta:
-        db_table = 'gwells_liner_material'
+        db_table = 'liner_material'
         ordering = ['sort_order', 'description']
 
     def __str__(self):
@@ -540,7 +539,7 @@ class ScreenIntake(AuditModel):
     sort_order = models.PositiveIntegerField()
 
     class Meta:
-        db_table = 'gwells_screen_intake'
+        db_table = 'screen_intake'
         ordering = ['sort_order', 'description']
 
     def __str__(self):
@@ -559,7 +558,7 @@ class ScreenType(AuditModel):
     sort_order = models.PositiveIntegerField()
 
     class Meta:
-        db_table = 'gwells_screen_type'
+        db_table = 'screen_type'
         ordering = ['sort_order', 'description']
 
     def __str__(self):
@@ -578,7 +577,7 @@ class ScreenMaterial(AuditModel):
     sort_order = models.PositiveIntegerField()
 
     class Meta:
-        db_table = 'gwells_screen_material'
+        db_table = 'screen_material'
         ordering = ['sort_order', 'description']
 
     def __str__(self):
@@ -597,7 +596,7 @@ class ScreenOpening(AuditModel):
     sort_order = models.PositiveIntegerField()
 
     class Meta:
-        db_table = 'gwells_screen_opening'
+        db_table = 'screen_opening'
         ordering = ['sort_order', 'description']
 
     def __str__(self):
@@ -616,7 +615,7 @@ class ScreenBottom(AuditModel):
     sort_order = models.PositiveIntegerField()
 
     class Meta:
-        db_table = 'gwells_screen_bottom'
+        db_table = 'screen_bottom'
         ordering = ['sort_order', 'description']
 
     def __str__(self):
@@ -635,7 +634,7 @@ class ScreenAssemblyType(AuditModel):
     sort_order = models.PositiveIntegerField()
 
     class Meta:
-        db_table = 'gwells_screen_assembly_type'
+        db_table = 'screen_assembly_type'
         ordering = ['sort_order', 'description']
 
     def __str__(self):
@@ -654,7 +653,7 @@ class FilterPackMaterial(AuditModel):
     sort_order = models.PositiveIntegerField()
 
     class Meta:
-        db_table = 'gwells_filter_pack_material'
+        db_table = 'filter_pack_material'
         ordering = ['sort_order', 'description']
 
     def __str__(self):
@@ -673,7 +672,7 @@ class FilterPackMaterialSize(AuditModel):
     sort_order = models.PositiveIntegerField()
 
     class Meta:
-        db_table = 'gwells_filter_pack_material_size'
+        db_table = 'filter_pack_material_size'
         ordering = ['sort_order', 'description']
 
     def __str__(self):
@@ -692,7 +691,7 @@ class DevelopmentMethod(AuditModel):
     sort_order = models.PositiveIntegerField()
 
     class Meta:
-        db_table = 'gwells_development_method'
+        db_table = 'development_method'
         ordering = ['sort_order', 'description']
 
     def __str__(self):
@@ -711,7 +710,7 @@ class YieldEstimationMethod(AuditModel):
     sort_order = models.PositiveIntegerField()
 
     class Meta:
-        db_table = 'gwells_yield_estimation_method'
+        db_table = 'yield_estimation_method'
         ordering = ['sort_order', 'description']
 
     def __str__(self):
@@ -730,7 +729,7 @@ class WaterQualityCharacteristic(AuditModel):
     sort_order = models.PositiveIntegerField()
 
     class Meta:
-        db_table = 'gwells_water_quality_characteristic'
+        db_table = 'water_quality_characteristic'
         ordering = ['sort_order', 'description']
 
     def __str__(self):
@@ -752,14 +751,11 @@ class Well(AuditModel):
     owner_province_state = models.ForeignKey(ProvinceState, db_column='province_state_guid', on_delete=models.CASCADE, blank=True, verbose_name='Province')
     owner_postal_code = models.CharField(max_length=10, blank=True, verbose_name='Postal Code')
 
-
     well_class = models.ForeignKey(WellClass, db_column='well_class_guid', on_delete=models.CASCADE, verbose_name='Well Class')
     well_subclass = models.ForeignKey(WellSubclass, db_column='well_subclass_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Well Subclass')
     intended_water_use = models.ForeignKey(IntendedWaterUse, db_column='intended_water_use_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Water Supply Well Intended Water Use')
     well_status = models.ForeignKey(WellStatus, db_column='well_status_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Well Status')
     licensed_status = models.ForeignKey(LicensedStatus, db_column='licensed_status_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Licensed Status')
-
-
 
     street_address = models.CharField(max_length=100, blank=True, verbose_name='Street Address')
     city = models.CharField(max_length=50, blank=True, verbose_name='Town/City')
@@ -773,7 +769,6 @@ class Well(AuditModel):
     legal_land_district = models.ForeignKey(LandDistrict, db_column='legal_land_district_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Land District')
     legal_pid = models.PositiveIntegerField(blank=True, null=True, verbose_name='PID')
     well_location_description = models.CharField(max_length=500, blank=True, verbose_name='Well Location Description')
-
 
     where_plate_attached = models.CharField(max_length=500, blank=True, verbose_name='Where Identification Plate Is Attached')
 
@@ -816,7 +811,7 @@ class Well(AuditModel):
     development_hours = models.DecimalField(max_digits=9, decimal_places=2, blank=True, null=True, verbose_name='Development Total Duration', validators=[MinValueValidator(Decimal('0.00'))])
     development_notes = models.CharField(max_length=255, blank=True, verbose_name='Development Notes')
 
-    water_quality_characteristics = models.ManyToManyField(WaterQualityCharacteristic, db_table='gwells_well_water_quality', blank=True, verbose_name='Obvious Water Quality Characteristics')
+    water_quality_characteristics = models.ManyToManyField(WaterQualityCharacteristic, db_table='well_water_quality', blank=True, verbose_name='Obvious Water Quality Characteristics')
     water_quality_colour = models.CharField(max_length=60, blank=True, verbose_name='Water Quality Colour')
     water_quality_odour = models.CharField(max_length=60, blank=True, verbose_name='Water Quality Odour')
 
@@ -834,7 +829,6 @@ class Well(AuditModel):
     comments = models.CharField(max_length=3000, blank=True)
     alternative_specs_submitted = models.BooleanField(default=False, verbose_name='Alternative specs submitted (if required)')
 
-
     well_yield_unit = models.ForeignKey(WellYieldUnit, db_column='well_yield_unit_guid', on_delete=models.CASCADE, blank=True, null=True)
     diameter = models.CharField(max_length=9, blank=True)  #want to be integer in future
 
@@ -845,7 +839,7 @@ class Well(AuditModel):
     tracker = FieldTracker()
 
     class Meta:
-        db_table = 'gwells_well'
+        db_table = 'well'
 
     def __str__(self):
         if self.well_tag_number:
@@ -944,7 +938,7 @@ class ActivitySubmission(AuditModel):
     development_hours = models.DecimalField(max_digits=9, decimal_places=2, blank=True, null=True, verbose_name='Development Total Duration', validators=[MinValueValidator(Decimal('0.00'))])
     development_notes = models.CharField(max_length=255, blank=True, verbose_name='Development Notes')
 
-    water_quality_characteristics = models.ManyToManyField(WaterQualityCharacteristic, db_table='gwells_activity_submission_water_quality', blank=True, verbose_name='Obvious Water Quality Characteristics')
+    water_quality_characteristics = models.ManyToManyField(WaterQualityCharacteristic, db_table='activity_submission_water_quality', blank=True, verbose_name='Obvious Water Quality Characteristics')
     water_quality_colour = models.CharField(max_length=60, blank=True, verbose_name='Water Quality Colour')
     water_quality_odour = models.CharField(max_length=60, blank=True, verbose_name='Water Quality Odour')
 
@@ -961,7 +955,6 @@ class ActivitySubmission(AuditModel):
 
     comments = models.CharField(max_length=3000, blank=True)
     alternative_specs_submitted = models.BooleanField(default=False, verbose_name='Alternative specs submitted (if required)')
-
 
     well_yield_unit = models.ForeignKey(WellYieldUnit, db_column='well_yield_unit_guid', on_delete=models.CASCADE, blank=True, null=True)
     diameter = models.CharField(max_length=9, blank=True)  #want to be integer in future
@@ -1052,7 +1045,7 @@ class ActivitySubmission(AuditModel):
         return w;
 
     class Meta:
-        db_table = 'gwells_activity_submission'
+        db_table = 'activity_submission'
 
     def __str__(self):
         if self.filing_number:
@@ -1078,7 +1071,7 @@ class LtsaOwner(AuditModel):
     tracker = FieldTracker()
 
     class Meta:
-        db_table = 'gwells_ltsa_owner'
+        db_table = 'ltsa_owner'
 
     def __str__(self):
         return '%s %s' % (self.full_name, self.mailing_address)
@@ -1106,7 +1099,7 @@ class LithologyDescription(AuditModel):
     lithology_observation = models.CharField(max_length=250, blank=True, verbose_name='Observations')
 
     class Meta:
-        db_table = 'gwells_lithology_description'
+        db_table = 'lithology_description'
 
     def __str__(self):
         if self.activity_submission:
@@ -1132,7 +1125,7 @@ class Casing(AuditModel):
     drive_shoe = models.BooleanField(default=False, verbose_name='Drive Shoe', choices=((False, 'No'), (True, 'Yes')))
 
     class Meta:
-        db_table = 'gwells_casing'
+        db_table = 'casing'
 
     def __str__(self):
         if self.activity_submission:
@@ -1153,7 +1146,7 @@ class LinerPerforation(AuditModel):
     liner_perforation_to = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='Perforated To', blank=False, validators=[MinValueValidator(Decimal('0.01'))])
 
     class Meta:
-        db_table = 'gwells_liner_perforation'
+        db_table = 'liner_perforation'
 
     def __str__(self):
         if self.activity_submission:
@@ -1177,7 +1170,7 @@ class Screen(AuditModel):
     slot_size = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='Slot Size', blank=True, null=True, validators=[MinValueValidator(Decimal('0.00'))])
 
     class Meta:
-        db_table = 'gwells_screen'
+        db_table = 'screen'
 
     def __str__(self):
         if self.activity_submission:
@@ -1203,7 +1196,7 @@ class ProductionData(AuditModel):
     hydro_fracturing_yield_increase = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='Well Yield Increase Due to Hydro-fracturing', blank=True, null=True, validators=[MinValueValidator(Decimal('0.00'))])
 
     class Meta:
-        db_table = 'gwells_production_data'
+        db_table = 'production_data'
 
     def __str__(self):
         if self.activity_submission:
