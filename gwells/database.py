@@ -34,7 +34,7 @@ def config():
         name = os.path.join(settings.BASE_DIR, 'db.sqlite3')
     return {
         'ENGINE': engine,
-        'OPTIONS': {'options':'-c search_path=' + os.getenv('DATABASE_SCHEMA')},
+#        'OPTIONS': {'options':'-c search_path=' + os.getenv('DATABASE_SCHEMA')},
         'NAME': name,
         'USER': os.getenv('DATABASE_USER'),
         'PASSWORD': os.getenv('DATABASE_PASSWORD'),
