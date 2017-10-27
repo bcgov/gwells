@@ -2,6 +2,10 @@ DROP FUNCTION IF EXISTS populate_xform_gwells_well();
 -- Must be run as PostgreSQL admin due to the 'copy' commands (i.e. psql -d gwells)
 CREATE OR REPLACE FUNCTION populate_xform_gwells_well() RETURNS void AS $$
 
+DECLARE
+
+xform_rows integer;
+
 BEGIN
   raise notice 'Starting populate_xform_gwells_well() procedure...';
   raise notice '... transforming wells data (!= REJECTED) via xform_gwells_well ETL table...';
@@ -46,18 +50,18 @@ BEGIN
     bkfill_above_srfc_seal_depth   ,
     backfill_above_surface_seal    ,
     sealant_material               ,
-          status_of_well_code            ,
-          observation_well_number        ,
-          ministry_observation_well_stat ,
-          well_licence_general_status    ,
-          alternative_specifications_ind ,
+    status_of_well_code            ,
+    observation_well_number        ,
+    ministry_observation_well_stat ,
+    well_licence_general_status    ,
+    alternative_specifications_ind ,
     construction_start_date        ,
     construction_end_date          ,
     alteration_start_date          ,
     alteration_end_date            ,
     decommission_start_date        ,
     decommission_end_date          ,
-    drilling_company_guid           ,
+    /*drilling_company_guid          ,*/
     when_created                   ,
     when_updated                   ,
     who_created                    ,
@@ -158,17 +162,24 @@ BEGIN
     WELLS.CONSTRUCTION_END_DATE AT TIME ZONE 'GMT'                         ,
     WELLS.ALTERATION_START_DATE AT TIME ZONE 'GMT'                         ,
     WELLS.ALTERATION_END_DATE AT TIME ZONE 'GMT'                           ,
-          WELLS.CLOSURE_START_DATE AT TIME ZONE 'GMT'                            ,
+    WELLS.CLOSURE_START_DATE AT TIME ZONE 'GMT'                            ,
     WELLS.CLOSURE_END_DATE AT TIME ZONE 'GMT'                              ,
-    DRILLING_COMPANY.DRILLING_COMPANY_GUID                                 ,
+    /*DRILLING_COMPANY.DRILLING_COMPANY_GUID                                 ,*/
     WELLS.WHEN_CREATED AS when_created                                     ,
     coalesce(WELLS.WHEN_UPDATED,WELLS.WHEN_CREATED) as when_updated        ,
     WELLS.WHO_CREATED as who_created                                       ,
     coalesce(WELLS.WHO_UPDATED,WELLS.WHO_CREATED) as who_updated
   FROM WELLS.WELLS WELLS LEFT OUTER JOIN WELLS.OWNERS OWNER ON OWNER.OWNER_ID=WELLS.OWNER_ID
-                                    JOIN GWELLS.DRILLING_COMPANY DRILLING_COMPANY ON WELLS.DRILLER_COMPANY_CODE=DRILLING_COMPANY.DRILLING_COMPANY_CODE
-  WHERE WELLS.ACCEPTANCE_STATUS_CODE != 'REJECTED';
+                                    /*JOIN GWELLS.DRILLING_COMPANY DRILLING_COMPANY ON WELLS.DRILLER_COMPANY_CODE=DRILLING_COMPANY.DRILLING_COMPANY_CODE*/
+  WHERE WELLS.ACCEPTANCE_STATUS_CODE != 'REJECTED'
+  LIMIT 5000;
+
+  raise notice 'Preparing ETL report ...';
+
+  SELECT count(*) from xform_gwells_well into xform_rows;
+  raise notice '... % rows loaded into the xform_gwells_well table', 	xform_rows;
 
   raise notice 'Finished populate_xform_gwells_well() procedure.';
+
 END;
 $$ LANGUAGE plpgsql;
