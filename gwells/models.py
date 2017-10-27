@@ -229,6 +229,7 @@ class DrillingCompany(AuditModel):
     Companies who perform drilling.
     """
     drilling_company_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    drilling_company_code = models.CharField(max_length=10, blank=True, null=True)
     name = models.CharField(max_length=200, unique=True)
     is_hidden = models.BooleanField(default=False)
 
@@ -770,14 +771,16 @@ class Well(AuditModel):
     legal_pid = models.PositiveIntegerField(blank=True, null=True, verbose_name='PID')
     well_location_description = models.CharField(max_length=500, blank=True, verbose_name='Well Location Description')
 
-    construction_start_date = models.DateField(null=True, verbose_name="Construction Start Date")
-    construction_end_date = models.DateField(null=True, verbose_name="Construction End Date")
+    construction_start_date = models.DateTimeField(null=True, verbose_name="Construction Start Date")
+    construction_end_date = models.DateTimeField(null=True, verbose_name="Construction End Date")
 
-    alteration_start_date = models.DateField(null=True, verbose_name="Alteration Start Date")
-    alteration_end_date = models.DateField(null=True, verbose_name="Alteration End Date")
+    alteration_start_date = models.DateTimeField(null=True, verbose_name="Alteration Start Date")
+    alteration_end_date = models.DateTimeField(null=True, verbose_name="Alteration End Date")
 
-    decommission_start_date = models.DateField(null=True, verbose_name="Decommission Start Date")
-    decommission_end_date = models.DateField(null=True, verbose_name="Decommission End Date")
+    decommission_start_date = models.DateTimeField(null=True, verbose_name="Decommission Start Date")
+    decommission_end_date = models.DateTimeField(null=True, verbose_name="Decommission End Date")
+
+    drilling_company = models.ForeignKey(DrillingCompany, db_column='drilling_company_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Drilling Company')
 
     where_plate_attached = models.CharField(max_length=500, blank=True, verbose_name='Where Identification Plate Is Attached')
 
