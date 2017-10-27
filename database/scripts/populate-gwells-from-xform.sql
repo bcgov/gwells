@@ -2,6 +2,10 @@ DROP FUNCTION IF EXISTS populate_gwells_from_xform();
 
 CREATE OR REPLACE FUNCTION populate_gwells_from_xform() RETURNS void AS $$
 
+DECLARE
+
+wells_rows integer;
+
 BEGIN
   raise notice 'Starting populate_gwells_from_xform procedure...';
 	raise notice '... importing ETL into the main "wells" table';
@@ -68,8 +72,8 @@ BEGIN
 	  alteration_start_date            ,
 	  alteration_end_date              ,
 	  decommission_start_date          ,
-	  decommission_end_date            ,
-	  drilling_company_guid
+	  decommission_end_date            /*,
+	  drilling_company_guid*/
 	  )
 	SELECT
 		xform.well_tag_number                          ,
@@ -134,8 +138,8 @@ BEGIN
 		xform.alteration_start_date                    ,
 		xform.alteration_end_date                      ,
 		xform.decommission_start_date                  ,
-		xform.decommission_end_date                    ,
-		drilling_company.drilling_company_guid
+		xform.decommission_end_date                    /*,
+		drilling_company.drilling_company_guid*/
 	FROM xform_gwells_well xform
 	LEFT OUTER JOIN gwells.intended_water_use use ON xform.WELL_USE_CODE=use.code
 	LEFT OUTER JOIN gwells.well_status well_status ON xform.STATUS_OF_WELL_CODE=upper(well_status.code)
@@ -144,6 +148,9 @@ BEGIN
 	INNER      JOIN gwells.well_class       class ON xform.CLASS_OF_WELL_CODCLASSIFIED_BY=class.code
 	LEFT OUTER JOIN gwells.well_subclass subclass ON xform.SUBCLASS_OF_WELL_CLASSIFIED_BY=subclass.code AND subclass.well_class_guid = class.well_class_guid ;
 
-  raise notice 'Finished populate_gwells_from_xform() procedure.';
+  raise notice 'Preparing ETL report ...';
+
+  SELECT count(*) from gwells.well into wells_rows;
+  raise notice '... % rows loaded into the wells table', 	wells_rows;
 END;
 $$ LANGUAGE plpgsql;
