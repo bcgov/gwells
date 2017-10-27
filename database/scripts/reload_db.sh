@@ -39,7 +39,13 @@ EOF
 #add replication functions to the public schema
 psql --dbname postgresql://${DATABASE_USER}:$password@127.0.0.1:5432/${DATABASE_NAME} <<EOF
 ALTER USER ${DATABASE_USER} SET search_path TO public;
-\include data-replication.sql
+\include clear-tables.sql
+\include create-xform-gwells-well-ETL-table.sql
+\include copy-remote-code-tables.sql
+\include populate-xform-gwells-well.sql
+\include populate-gwells-from-xform.sql
+\include setup-replicate.sql
+\include replicate.sql
 EOF
 
 #restore the legacy data - superuser necessary because of ownership issues
@@ -52,7 +58,7 @@ CREATE SCHEMA ${LEGACY_DATABASE_SCHEMA};
 EOF
 
 #clean up permissions just in case
-psql --dbname postgresql://$superuser:$superuser_password@127.0.0.1:5432/${DATABASE_NAME} <<EOF 
+psql --dbname postgresql://$superuser:$superuser_password@127.0.0.1:5432/${DATABASE_NAME} <<EOF
 REVOKE ALL ON SCHEMA public FROM ${DATABASE_USER};
 GRANT ALL ON SCHEMA public TO ${DATABASE_USER};
 REVOKE ALL ON SCHEMA ${DATABASE_SCHEMA} FROM ${DATABASE_USER};
@@ -62,6 +68,7 @@ GRANT ALL ON SCHEMA ${LEGACY_DATABASE_SCHEMA} TO ${DATABASE_USER};
 EOF
 
 #adjust the tablenames
+#adjust schemas
 gwellsRegex="^gw_"
 wellsRegex="^wells_"
 adjustTableNamesSql=""
@@ -85,13 +92,14 @@ done < <(psql --dbname postgresql://fmason:$password@127.0.0.1:5432/${DATABASE_N
 psql --dbname postgresql://fmason:$password@127.0.0.1:5432/${DATABASE_NAME} --command "$adjustTableNamesSql"
 
 #create the structure for the gwells tables
+python ../../manage.py makemigrations
 python ../../manage.py migrate
 
 #replicate structure
 #install crypto extension to support UUID creation
 #replicate data
 psql --dbname postgresql://$superuser:$superuser_password@127.0.0.1:5432/${DATABASE_NAME}<<EOF
-SELECT public.gwells_setup_replicate();
+SELECT public.setup_replicate();
 DROP EXTENSION IF EXISTS pgcrypto; CREATE EXTENSION pgcrypto;
-SELECT public.gwells_replicate();
+SELECT public.replicate();
 EOF

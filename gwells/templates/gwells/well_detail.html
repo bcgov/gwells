@@ -183,27 +183,27 @@
     <table>
         <thead>
             <tr>
-                <th>Construction Date</th>
-                <th>Alteration Date</th>
-                <th>Decommission Date</th>
+                <th>Construction End Date</th>
+                <th>Alteration End Date</th>
+                <th>Decommission End Date</th>
                 <th>Drilling Company</th>
             </tr>
         </thead>
         <tbody>
-            {% for submission in well.activitysubmission_set.all %}
+            {# for submission in well.activitysubmission_set.all #}
             <tr>
                 <td>
-                  <span id="construction_date" data-construction-date="{{ well.construction_date }}">{{ well.construction_date|default_if_none:'&nbsp;' }}</span>
+                  <span id="construction_date" data-construction-date="{{ well.construction_end_date }}">{{ well.construction_end_date|default_if_none:'&nbsp;' }}</span>
                 </td>
                 <td>
-                  <span id="alteration_date" data-alteration-date="{{ well.alteration_date }}">{{ well.alteration_date|default_if_none:'&nbsp;' }}</span>
+                  <span id="alteration_date" data-alteration-date="{{ well.alteration_end_date }}">{{ well.alteration_end_date|default_if_none:'&nbsp;' }}</span>
                 </td>
                 <td>
-                  <span id="decommission_date" data-decommission-date="{{ well.decommission_date }}">{{ well.decommission_date|default_if_none:'&nbsp;' }}</span>
+                  <span id="decommission_date" data-decommission-date="{{ well.decommission_end_date }}">{{ well.decommission_end_date|default_if_none:'&nbsp;' }}</span>
                 </td>
-                <td><span id="drilling_company" data-drilling-company>{{submission.driller_responsible.drilling_company|default_if_none:'&nbsp;'}}</span></td>
+                <td><span id="drilling_company" data-drilling-company>{{ wells.drilling_company.name|default_if_none:'&nbsp;'}}</span></td>
             </tr>
-            {% endfor %}
+            {# endfor #}
         </tbody>
     </table>
 </fieldset>
