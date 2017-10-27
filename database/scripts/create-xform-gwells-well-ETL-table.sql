@@ -1,6 +1,6 @@
-DROP FUNCTION IF EXISTS create_xform_well_well_ETL_table();
+DROP FUNCTION IF EXISTS create_xform_well_gwells_ETL_table();
 
-CREATE OR REPLACE FUNCTION create_xform_well_well_ETL_table() RETURNS void AS $$
+CREATE OR REPLACE FUNCTION create_xform_well_gwells_ETL_table() RETURNS void AS $$
 BEGIN
 
 raise notice 'Starting clear_tables() procedure...';
