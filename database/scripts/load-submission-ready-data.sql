@@ -1,36 +1,36 @@
 \encoding windows-1251
-\copy gwells_well_yield_unit 	  FROM './gwells_well_yield_unit.csv'   HEADER DELIMITER ',' CSV
-\copy gwells_province_state  	  FROM './gwells_province_state.csv' 	   HEADER DELIMITER ',' CSV
-\copy gwells_well_activity_type (well_activity_type_guid,code,description,is_hidden,sort_order,who_created,when_created,who_updated,when_updated) FROM './gwells_well_activity_type.csv' HEADER DELIMITER ',' CSV
+\copy well_yield_unit 	  FROM './gwells_well_yield_unit.csv'   HEADER DELIMITER ',' CSV
+\copy province_state  	  FROM './gwells_province_state.csv' 	   HEADER DELIMITER ',' CSV
+\copy well_activity_type (well_activity_type_guid,code,description,is_hidden,sort_order,who_created,when_created,who_updated,when_updated) FROM './gwells_well_activity_type.csv' HEADER DELIMITER ',' CSV
 
-\copy gwells_intended_water_use	FROM './gwells_intended_water_use.csv' HEADER DELIMITER ',' CSV
-\copy gwells_well_class  	    	FROM './gwells_well_class.csv'  	   	HEADER DELIMITER ',' CSV
-\copy gwells_well_subclass    	FROM './gwells_well_subclass.csv'     HEADER DELIMITER ',' CSV
-\copy gwells_drilling_method    FROM './gwells_drilling_method.csv'    HEADER DELIMITER ',' CSV
-\copy gwells_ground_elevation_method FROM './gwells_ground_elevation_method.csv' HEADER DELIMITER ',' CSV
-\copy gwells_lithology_structure FROM './gwells_lithology_structure.csv' HEADER DELIMITER ',' CSV
-\copy gwells_lithology_moisture  FROM './gwells_lithology_moisture.csv'  HEADER DELIMITER ',' CSV
-\copy gwells_lithology_hardness  FROM './gwells_lithology_hardness.csv'  HEADER DELIMITER ',' CSV
-\copy gwells_bedrock_material_descriptor FROM './gwells_bedrock_material_descriptor.csv' HEADER DELIMITER ',' CSV
-\copy gwells_bedrock_material     FROM './gwells_bedrock_material.csv' HEADER DELIMITER ',' CSV
-\copy gwells_lithology_colour     FROM './gwells_lithology_colour.csv' HEADER DELIMITER ',' CSV
-\copy gwells_surficial_material   FROM './gwells_surficial_material.csv'   HEADER DELIMITER ',' CSV
+\copy intended_water_use	FROM './gwells_intended_water_use.csv' HEADER DELIMITER ',' CSV
+\copy well_class  	    	FROM './gwells_well_class.csv'  	   	HEADER DELIMITER ',' CSV
+\copy well_subclass    	FROM './gwells_well_subclass.csv'     HEADER DELIMITER ',' CSV
+\copy drilling_method    FROM './gwells_drilling_method.csv'    HEADER DELIMITER ',' CSV
+\copy ground_elevation_method FROM './gwells_ground_elevation_method.csv' HEADER DELIMITER ',' CSV
+\copy lithology_structure FROM './gwells_lithology_structure.csv' HEADER DELIMITER ',' CSV
+\copy lithology_moisture  FROM './gwells_lithology_moisture.csv'  HEADER DELIMITER ',' CSV
+\copy lithology_hardness  FROM './gwells_lithology_hardness.csv'  HEADER DELIMITER ',' CSV
+\copy bedrock_material_descriptor FROM './gwells_bedrock_material_descriptor.csv' HEADER DELIMITER ',' CSV
+\copy bedrock_material     FROM './gwells_bedrock_material.csv' HEADER DELIMITER ',' CSV
+\copy lithology_colour     FROM './gwells_lithology_colour.csv' HEADER DELIMITER ',' CSV
+\copy surficial_material   FROM './gwells_surficial_material.csv'   HEADER DELIMITER ',' CSV
 
-\copy gwells_casing_material FROM './gwells_casing_material.csv' HEADER DELIMITER ',' CSV
-\copy gwells_casing_type     FROM './gwells_casing_type.csv'     HEADER DELIMITER ',' CSV
+\copy casing_material FROM './gwells_casing_material.csv' HEADER DELIMITER ',' CSV
+\copy casing_type     FROM './gwells_casing_type.csv'     HEADER DELIMITER ',' CSV
 
-\copy gwells_screen_type     FROM './gwells_screen_type.csv'     HEADER DELIMITER ',' CSV
-\copy gwells_screen_intake   FROM './gwells_screen_intake.csv'   HEADER DELIMITER ',' CSV
-\copy gwells_screen_opening  FROM './gwells_screen_opening.csv'  HEADER DELIMITER ',' CSV
-\copy gwells_screen_bottom   FROM './gwells_screen_bottom.csv'   HEADER DELIMITER ',' CSV
-\copy gwells_screen_material FROM './gwells_screen_material.csv' HEADER DELIMITER ',' CSV
-\copy gwells_liner_material FROM './gwells_liner_material.csv' HEADER DELIMITER ',' CSV
-\copy gwells_filter_pack_material FROM './gwells_filter_pack_material.csv' HEADER DELIMITER ',' CSV
-\copy gwells_filter_pack_material_size FROM './gwells_filter_pack_material_size.csv' HEADER DELIMITER ',' CSV
+\copy screen_type     FROM './gwells_screen_type.csv'     HEADER DELIMITER ',' CSV
+\copy screen_intake   FROM './gwells_screen_intake.csv'   HEADER DELIMITER ',' CSV
+\copy screen_opening  FROM './gwells_screen_opening.csv'  HEADER DELIMITER ',' CSV
+\copy screen_bottom   FROM './gwells_screen_bottom.csv'   HEADER DELIMITER ',' CSV
+\copy screen_material FROM './gwells_screen_material.csv' HEADER DELIMITER ',' CSV
+\copy liner_material FROM './gwells_liner_material.csv' HEADER DELIMITER ',' CSV
+\copy filter_pack_material FROM './gwells_filter_pack_material.csv' HEADER DELIMITER ',' CSV
+\copy filter_pack_material_size FROM './gwells_filter_pack_material_size.csv' HEADER DELIMITER ',' CSV
 
-\copy gwells_screen_assembly_type    FROM './gwells_screen_assembly_type.csv'    HEADER DELIMITER ',' CSV 
-\copy gwells_development_method      FROM './gwells_development_method.csv'      HEADER DELIMITER ',' CSV
-\copy gwells_yield_estimation_method FROM './gwells_yield_estimation_method.csv' HEADER DELIMITER ',' CSV
+\copy screen_assembly_type    FROM './gwells_screen_assembly_type.csv'    HEADER DELIMITER ',' CSV 
+\copy development_method      FROM './gwells_development_method.csv'      HEADER DELIMITER ',' CSV
+\copy yield_estimation_method FROM './gwells_yield_estimation_method.csv' HEADER DELIMITER ',' CSV
 
 /* This will need further transformation to link to existing data */
 CREATE unlogged TABLE IF NOT EXISTS xform_gwells_surface_seal_method (
@@ -151,7 +151,7 @@ CREATE unlogged TABLE IF NOT EXISTS xform_gwells_driller (
 \copy xform_gwells_surface_seal_method FROM './xform_gwells_surface_seal_method.csv' HEADER DELIMITER ',' CSV
 
 
-INSERT INTO gwells_surface_seal_material (who_created,when_created,who_updated,when_updated,
+INSERT INTO surface_seal_material (who_created,when_created,who_updated,when_updated,
     surface_seal_material_guid,code,description,is_hidden,sort_order)
 SELECT who_created,when_created,who_updated,when_updated,
   surface_seal_material_guid, code,description,is_hidden,sort_order
@@ -163,25 +163,25 @@ AND  code not in
   group by code
   having count(*) > 1);
 
-INSERT INTO gwells_surface_seal_method (who_created,when_created,who_updated,when_updated,
+INSERT INTO surface_seal_method (who_created,when_created,who_updated,when_updated,
     surface_seal_method_guid,code,description,is_hidden,sort_order)
 SELECT who_created,when_created,who_updated,when_updated,
   surface_seal_method_guid, code,description,is_hidden,sort_order
 FROM xform_gwells_surface_seal_method;
 
 
-INSERT INTO gwells_land_district (land_district_guid, code, name, sort_order,
+INSERT INTO land_district (land_district_guid, code, name, sort_order,
   when_created, when_updated, who_created, who_updated)
 SELECT land_district_guid, code, name, sort_order,when_created, when_updated, who_created, who_updated
 FROM xform_gwells_land_district;
 
-INSERT INTO gwells_drilling_company (drilling_company_guid, name, is_hidden,
+INSERT INTO drilling_company (drilling_company_guid, name, is_hidden,
    when_created, when_updated, who_created , who_updated /* , driller_company_code */)
 SELECT drilling_company_guid, name, is_hidden,
   when_created, when_updated, who_created , who_updated /* driller_company_code */
 FROM xform_gwells_drilling_company;
 
-INSERT INTO GWELLS_DRILLING_COMPANY (drilling_company_guid, name, is_hidden,
+INSERT INTO DRILLING_COMPANY (drilling_company_guid, name, is_hidden,
    when_created, when_updated, who_created , who_updated /* , driller_company_code */)
 VALUES ('018d4c1047cb11e7a91992ebcb67fe33',
         'Data Conversion Drilling Compnay',
@@ -192,14 +192,14 @@ VALUES ('018d4c1047cb11e7a91992ebcb67fe33',
         'ETL_USER'
 );
 
-INSERT INTO gwells_driller (driller_guid, first_name, surname, registration_number, is_hidden, drilling_company_guid,
+INSERT INTO driller (driller_guid, first_name, surname, registration_number, is_hidden, drilling_company_guid,
   when_created, when_updated, who_created, who_updated)
 SELECT dr.driller_guid, dr.first_name, dr.surname, dr.registration_number, dr.is_hidden, 
 co.drilling_company_guid, dr.when_created, dr.when_updated, dr.who_created, dr.who_updated
 FROM  xform_gwells_driller dr, xform_gwells_drilling_company co
 WHERE dr.DRILLER_COMPANY_CODE = co.DRILLER_COMPANY_CODE;
 
-INSERT INTO gwells_well (
+INSERT INTO well (
   well_tag_number             ,
   well_guid                   ,
   owner_full_name             ,
@@ -345,10 +345,10 @@ false,
 false,
 ''
 FROM xform_gwells_well old
-LEFT OUTER JOIN gwells_intended_water_use  use   ON old.WELL_USE_CODE  = use.code
+LEFT OUTER JOIN intended_water_use  use   ON old.WELL_USE_CODE  = use.code
 LEFT OUTER JOIN xform_gwells_land_district land  ON old.LEGAL_LAND_DISTRICT_CODE = land.code 
-INNER      JOIN gwells_well_class          class ON old.CLASS_OF_WELL_CODCLASSIFIED_BY = class.code 
-LEFT OUTER JOIN gwells_well_subclass   subclass  ON old.SUBCLASS_OF_WELL_CLASSIFIED_BY = subclass.code 
+INNER      JOIN well_class          class ON old.CLASS_OF_WELL_CODCLASSIFIED_BY = class.code 
+LEFT OUTER JOIN well_subclass   subclass  ON old.SUBCLASS_OF_WELL_CLASSIFIED_BY = subclass.code 
                 AND subclass.well_class_guid = class.well_class_guid
 /*
 LEFT OUTER JOIN xform_gwells_surface_seal_material seal_material 
