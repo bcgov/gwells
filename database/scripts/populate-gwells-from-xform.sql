@@ -8,8 +8,8 @@ wells_rows integer;
 
 BEGIN
   raise notice 'Starting populate_gwells_from_xform procedure...';
-	raise notice '... importing ETL into the main "wells" table';
-	INSERT INTO gwells.well (
+	raise notice '... importing ETL into the gwells_well table';
+	INSERT INTO gwells_well (
 	  well_tag_number                  ,
 	  well_guid                        ,
 	  owner_full_name                  ,
@@ -72,8 +72,10 @@ BEGIN
 	  alteration_start_date            ,
 	  alteration_end_date              ,
 	  decommission_start_date          ,
-	  decommission_end_date            /*,
-	  drilling_company_guid*/
+	  decommission_end_date            ,
+	  /*drilling_company_guid*/
+    final_casing_stick_up            ,
+    artesian_flow
 	  )
 	SELECT
 		xform.well_tag_number                          ,
@@ -138,19 +140,21 @@ BEGIN
 		xform.alteration_start_date                    ,
 		xform.alteration_end_date                      ,
 		xform.decommission_start_date                  ,
-		xform.decommission_end_date                    /*,
-		drilling_company.drilling_company_guid*/
+		xform.decommission_end_date                    ,
+		/*drilling_company.drilling_company_guid*/
+    xform.final_casing_stick_up                    ,
+    xform.artesian_flow
 	FROM xform_gwells_well xform
-	LEFT OUTER JOIN gwells.intended_water_use use ON xform.WELL_USE_CODE=use.code
-	LEFT OUTER JOIN gwells.well_status well_status ON xform.STATUS_OF_WELL_CODE=upper(well_status.code)
-	LEFT OUTER JOIN gwells.licensed_status licenced_status ON xform.WELL_LICENCE_GENERAL_STATUS=upper(licenced_status.code)
-	LEFT OUTER JOIN gwells.land_district     land ON xform.LEGAL_LAND_DISTRICT_CODE=land.code
-	INNER      JOIN gwells.well_class       class ON xform.CLASS_OF_WELL_CODCLASSIFIED_BY=class.code
-	LEFT OUTER JOIN gwells.well_subclass subclass ON xform.SUBCLASS_OF_WELL_CLASSIFIED_BY=subclass.code AND subclass.well_class_guid = class.well_class_guid ;
+	LEFT OUTER JOIN gwells_intended_water_use use ON xform.WELL_USE_CODE=use.code
+	LEFT OUTER JOIN gwells_well_status well_status ON xform.STATUS_OF_WELL_CODE=upper(well_status.code)
+	LEFT OUTER JOIN gwells_licensed_status licenced_status ON xform.WELL_LICENCE_GENERAL_STATUS=upper(licenced_status.code)
+	LEFT OUTER JOIN gwells_land_district     land ON xform.LEGAL_LAND_DISTRICT_CODE=land.code
+	INNER      JOIN gwells_well_class       class ON xform.CLASS_OF_WELL_CODCLASSIFIED_BY=class.code
+	LEFT OUTER JOIN gwells_well_subclass subclass ON xform.SUBCLASS_OF_WELL_CLASSIFIED_BY=subclass.code AND subclass.well_class_guid = class.well_class_guid ;
 
   raise notice 'Preparing ETL report ...';
 
-  SELECT count(*) from gwells.well into wells_rows;
-  raise notice '... % rows loaded into the wells table', 	wells_rows;
+  SELECT count(*) from gwells_well into wells_rows;
+  raise notice '... % rows loaded into the gwells_well table', 	wells_rows;
 END;
 $$ LANGUAGE plpgsql;

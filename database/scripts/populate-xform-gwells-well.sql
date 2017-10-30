@@ -62,6 +62,8 @@ BEGIN
     decommission_start_date        ,
     decommission_end_date          ,
     /*drilling_company_guid          ,*/
+    final_casing_stick_up          ,
+    artesian_flow            ,
     when_created                   ,
     when_updated                   ,
     who_created                    ,
@@ -165,11 +167,13 @@ BEGIN
     WELLS.CLOSURE_START_DATE AT TIME ZONE 'GMT'                            ,
     WELLS.CLOSURE_END_DATE AT TIME ZONE 'GMT'                              ,
     /*DRILLING_COMPANY.DRILLING_COMPANY_GUID                                 ,*/
+    WELLS.FINAL_CASING_STICK_UP                                            ,
+    WELLS.ARTESIAN_FLOW_VALUE                                              ,
     WELLS.WHEN_CREATED AS when_created                                     ,
     coalesce(WELLS.WHEN_UPDATED,WELLS.WHEN_CREATED) as when_updated        ,
     WELLS.WHO_CREATED as who_created                                       ,
     coalesce(WELLS.WHO_UPDATED,WELLS.WHO_CREATED) as who_updated
-  FROM WELLS.WELLS WELLS LEFT OUTER JOIN WELLS.OWNERS OWNER ON OWNER.OWNER_ID=WELLS.OWNER_ID
+  FROM WELLS.WELLS_WELLS WELLS LEFT OUTER JOIN WELLS.WELLS_OWNERS OWNER ON OWNER.OWNER_ID=WELLS.OWNER_ID
                                     /*JOIN GWELLS.DRILLING_COMPANY DRILLING_COMPANY ON WELLS.DRILLER_COMPANY_CODE=DRILLING_COMPANY.DRILLING_COMPANY_CODE*/
   WHERE WELLS.ACCEPTANCE_STATUS_CODE != 'REJECTED';
 
