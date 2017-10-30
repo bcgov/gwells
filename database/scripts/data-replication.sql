@@ -417,7 +417,7 @@ BEGIN
 	raise notice '... % rows loaded into the main "wells" table', 	wells_rows;	
 
 
-	insert into gwells_replication (notes) values ('Stored procedure invocation, successfully replicated ' || to_char(wells_rows) || ' rows.' );
+	insert into gwells_replication (notes) values ('Stored procedure invocation, successfully replicated ' || wells_rows || ' rows.' );
 	raise notice 'Inserted notes into gwells_replication.';	
 
 
