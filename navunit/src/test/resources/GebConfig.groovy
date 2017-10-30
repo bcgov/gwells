@@ -66,12 +66,10 @@ environments {
 // phantomJs --> “./gradlew phantomJsTest”   (headless)
 // chrome    --> "./gradlew chromeTest"
 //baseUrl = "http://localhost:8000"
-baseUrl = "http://gwells-dev.pathfinder.gov.bc.ca"
-//baseUrl = "https://dlvrapps.nrs.gov.bc.ca" //Dev
-//baseUrl = "https://testapps.nrs.gov.bc.ca" //Test
-//baseUrl = "https://apps.nrs.gov.bc.ca" //Prod
-
-
+baseUrl = "http://gwells-dev.pathfinder.gov.bc.ca/"
+//baseUrl = "https://dlvrapps.nrs.gov.bc.ca/" //Dev
+//baseUrl = "https://testapps.nrs.gov.bc.ca/" //Test
+//baseUrl = "https://apps.nrs.gov.bc.ca/" //Prod
 
 baseNavigatorWaiting = true
 
