@@ -3,7 +3,7 @@ DROP FUNCTION IF EXISTS create_xform_well_gwells_ETL_table();
 CREATE OR REPLACE FUNCTION create_xform_well_gwells_ETL_table() RETURNS void AS $$
 BEGIN
 
-raise notice 'Starting clear_tables() procedure...';
+raise notice 'Starting create_xform_well_gwells_ETL_table() procedure...';
 raise notice '...creating xform_gwells_well ETL table';
 
 DROP TABLE IF EXISTS xform_gwells_well;
@@ -48,7 +48,7 @@ CREATE unlogged TABLE IF NOT EXISTS xform_gwells_well (
    backfill_above_surface_seal    character varying(250),
    SEALANT_MATERIAL               character varying(100),
    status_of_well_code 	          character varying(10),
-   observation_well_number	      integer,
+   observation_well_number	       integer,
    ministry_observation_well_stat character varying(25),
    well_licence_general_status    character varying(20),
    alternative_specifications_ind boolean,
@@ -59,6 +59,8 @@ CREATE unlogged TABLE IF NOT EXISTS xform_gwells_well (
    decommission_start_date        timestamp with time zone,
    decommission_end_date          timestamp with time zone,
    drilling_company_guid          uuid,
+   final_casing_stick_up          integer,
+   artesian_flow                  numeric(7,2),
    when_created                   timestamp with time zone,
    when_updated                   timestamp with time zone,
    who_created                    character varying(30),

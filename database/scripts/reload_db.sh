@@ -9,7 +9,6 @@
 #get name of Superuser who will run the replication
 # -p is for prompt
 read -p "Superuser that will run the replication: " superuser &&
-#newline
 
 #get the password for the Superuser who will run the replication
 # -p is for prompt
@@ -51,9 +50,8 @@ EOF
 #restore the legacy data - superuser necessary because of ownership issues
 pg_restore --dbname postgresql://$superuser:$superuser_password@127.0.0.1:5432/${DATABASE_NAME} --no-owner $wellsdump &&
 
-#create ${DATABASE_SCHEMA} and ${LEGACY_DATABASE_SCHEMA}
+#create ${LEGACY_DATABASE_SCHEMA}
 psql --dbname postgresql://${DATABASE_USER}:$password@127.0.0.1:5432/${DATABASE_NAME} <<EOF
-CREATE SCHEMA ${DATABASE_SCHEMA};
 CREATE SCHEMA ${LEGACY_DATABASE_SCHEMA};
 EOF
 
@@ -61,35 +59,23 @@ EOF
 psql --dbname postgresql://$superuser:$superuser_password@127.0.0.1:5432/${DATABASE_NAME} <<EOF
 REVOKE ALL ON SCHEMA public FROM ${DATABASE_USER};
 GRANT ALL ON SCHEMA public TO ${DATABASE_USER};
-REVOKE ALL ON SCHEMA ${DATABASE_SCHEMA} FROM ${DATABASE_USER};
-GRANT ALL ON SCHEMA ${DATABASE_SCHEMA} TO ${DATABASE_USER};
-REVOKE ALL ON SCHEMA ${LEGACY_DATABASE_SCHEMA} FROM ${DATABASE_USER};
-GRANT ALL ON SCHEMA ${LEGACY_DATABASE_SCHEMA} TO ${DATABASE_USER};
 EOF
 
-#adjust the tablenames
-#adjust schemas
-gwellsRegex="^gw_"
-wellsRegex="^wells_"
 adjustTableNamesSql=""
+adjustTableSchemaSql=""
 
 #build the sql so that you only need one connection
 #don't use a pipe because that creates a subshell and you'll lose your variable value
+#-t for tuples only --- gets rid of header and footer
+#-sed trims empty last line
 while read -r tablename; do
-	if [[ ${tablename} =~ $gwellsRegex ]]; then
-                adjustTableNamesSql+="ALTER TABLE ${tablename} OWNER TO ${DATABASE_USER};"
-                adjustTableNamesSql+="ALTER TABLE ${tablename} SET SCHEMA ${DATABASE_SCHEMA};"
-                adjustTableNamesSql+="ALTER TABLE ${DATABASE_SCHEMA}.${tablename} RENAME TO ${tablename:3};"
-	fi
-	if [[ ${tablename} =~ $wellsRegex ]]; then
-                adjustTableNamesSql+="ALTER TABLE ${tablename} OWNER TO ${DATABASE_USER};"
-                adjustTableNamesSql+="ALTER TABLE ${tablename} SET SCHEMA ${LEGACY_DATABASE_SCHEMA};"
-                adjustTableNamesSql+="ALTER TABLE ${LEGACY_DATABASE_SCHEMA}.${tablename} RENAME TO ${tablename:6};"
-	fi
-done < <(psql --dbname postgresql://fmason:$password@127.0.0.1:5432/${DATABASE_NAME} -c "select tablename from pg_tables where schemaname = 'public';")
+	adjustTableNamesSql+="ALTER TABLE ${tablename} OWNER TO ${DATABASE_USER};"
+	adjustTableSchemaSql+="ALTER TABLE ${tablename} SET SCHEMA ${LEGACY_DATABASE_SCHEMA};"
+done < <(psql --dbname postgresql://fmason:$password@127.0.0.1:5432/${DATABASE_NAME} -t -c "select tablename from pg_tables where schemaname = 'public';" | sed -e '$d' )
 
-#adjust make the changes
+#make the changes
 psql --dbname postgresql://fmason:$password@127.0.0.1:5432/${DATABASE_NAME} --command "$adjustTableNamesSql"
+psql --dbname postgresql://fmason:$password@127.0.0.1:5432/${DATABASE_NAME} --command "$adjustTableSchemaSql"
 
 #create the structure for the gwells tables
 python ../../manage.py makemigrations
