@@ -265,7 +265,7 @@
       </div>
       <div class="col-md-4">
         <label for="orientation">Orientation of Well:</label>
-        <span id="orientation">{{ well.rientation|default_if_none:'&nbsp;' }}</span>
+        <span id="orientation2">{{ well.get_well_orientation_display|default_if_none:'&nbsp;' }}</span>
       </div>
     </div>
 
