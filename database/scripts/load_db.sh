@@ -83,9 +83,15 @@ python ../../manage.py migrate
 
 #replicate structure
 #install crypto extension to support UUID creation
+#vacuum because you can't do that in the stored procedures
 #replicate data
 psql --dbname postgresql://$superuser:$superuser_password@127.0.0.1:5432/${DATABASE_NAME}<<EOF
 SELECT public.setup_replicate();
 DROP EXTENSION IF EXISTS pgcrypto; CREATE EXTENSION pgcrypto;
+VACUUM FULL;
+EOF
+
+# make sure the vacuum worked
+psql --dbname postgresql://$superuser:$superuser_password@127.0.0.1:5432/${DATABASE_NAME}<<EOF
 SELECT public.replicate();
 EOF
