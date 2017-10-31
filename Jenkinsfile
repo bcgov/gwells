@@ -37,7 +37,7 @@ node('maven') {
 	
 }
 
-node('master') {
+node('maven') {
 	
 	stage('Functional Test') {
 		//the checkout is mandatory, otherwise functional test would fail
