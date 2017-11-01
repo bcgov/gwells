@@ -77,7 +77,9 @@ BEGIN
     final_casing_stick_up              ,
     artesian_flow                      ,
     artesian_pressure                  ,
-    bedrock_depth
+    bedrock_depth                      ,
+    water_supply_system_name           ,
+    water_supply_system_well_name
 	  )
 	SELECT
 		xform.well_tag_number                          ,
@@ -147,8 +149,9 @@ BEGIN
     xform.final_casing_stick_up                    ,
     xform.artesian_flow                            ,
     xform.artesian_pressure                        ,
-    xform.bedrock_depth
-
+    xform.bedrock_depth                            ,
+    xform.water_supply_system_name                 ,
+    xform.water_supply_system_well_name
 	FROM xform_gwells_well xform
 	LEFT OUTER JOIN gwells_intended_water_use use ON xform.WELL_USE_CODE=use.code
 	LEFT OUTER JOIN gwells_well_status well_status ON xform.STATUS_OF_WELL_CODE=upper(well_status.code)
