@@ -1,6 +1,9 @@
 #!/bin/bash
 # Add -x beside  #!/bin/bash to debug. It will print out the executed commands.
 
+# to make conventient use of this script in ##development## edit your pg_hba.conf file to set users to be trusted locally
+# https://www.postgresql.org/docs/9.1/static/auth-pg-hba-conf.html
+
 # using the && runs the second command only if the first succeeded
 #https://askubuntu.com/questions/334994/which-one-is-better-using-or-to-execute-multiple-commands-in-one-line
 
@@ -12,16 +15,16 @@ read -p "Superuser that will run the replication: " superuser &&
 
 #get the password for the Superuser who will run the replication
 # -p is for prompt
-read -s -p "Enter the password for DB Superuser - $superuser: " superuser_password &&
+#read -s -p "Enter the password for DB Superuser - $superuser: " superuser_password &&
 #newline
-echo -e ""
+#echo -e ""
 
 #get the password for the owner of ${DATABASE_NAME}
 # -p is for prompt
 # -s to hide password as it is entered
-read -s -p "Password for DB User - ${DATABASE_USER}: " password &&
+#read -s -p "Password for DB User - ${DATABASE_USER}: " password &&
 #newline
-echo -e ""
+#echo -e ""
 
 #get path to legacy data .dmp
 # -p is for prompt

@@ -64,6 +64,8 @@ CREATE unlogged TABLE IF NOT EXISTS xform_gwells_well (
    artesian_pressure                  numeric(5,2),
    bedrock_depth                      numeric(7,2),
    well_identification_plate_attached character varying(500),
+   water_supply_system_name           character varying(80),
+   water_supply_system_well_name      character varying(80),
    when_created                       timestamp with time zone,
    when_updated                       timestamp with time zone,
    who_created                        character varying(30),
