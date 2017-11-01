@@ -1,9 +1,10 @@
 User-Agent: *
-Disallow: 
 Disallow: /health
 Disallow: /admin
 Disallow: /submission
 Disallow: /ajax
+Allow:	
 Allow: /search
 Allow: /well
 Allow: /groundwater-information
+Allow: /static
