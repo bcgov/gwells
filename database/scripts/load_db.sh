@@ -9,7 +9,7 @@
 
 #collect authentication credentials for process
 
-#get name of Superuser who will run the replication
+#get name of Superuser who will run the replication -- a superuser is necessary to install the extension which is used to create guids
 # -p is for prompt
 read -p "Superuser that will run the replication: " superuser &&
 
@@ -34,8 +34,9 @@ eval wellsdump=${BACKUP_LOCATION}
 
 #recreate the database
 psql --dbname postgresql://${DATABASE_USER}:$password@127.0.0.1:5432/postgres <<EOF
-DROP DATABASE IF EXISTS gwells;
-CREATE DATABASE gwells WITH owner=${DATABASE_USER};
+DROP DATABASE IF EXISTS ${DATABASE_NAME};
+DROP SCHEMA IF EXISTS ${LEGACY_DATABASE_SCHEMA};
+CREATE DATABASE ${DATABASE_NAME} WITH owner=${DATABASE_USER};
 EOF
 
 #set search_path
@@ -52,50 +53,31 @@ ALTER USER ${DATABASE_USER} SET search_path TO public;
 EOF
 
 #restore the legacy data - superuser necessary because of ownership issues
-pg_restore --dbname postgresql://$superuser:$superuser_password@127.0.0.1:5432/${DATABASE_NAME} --no-owner $wellsdump &&
-
-#create ${LEGACY_DATABASE_SCHEMA}
-psql --dbname postgresql://${DATABASE_USER}:$password@127.0.0.1:5432/${DATABASE_NAME} <<EOF
-CREATE SCHEMA ${LEGACY_DATABASE_SCHEMA};
-EOF
+pg_restore --dbname postgresql://${DATABASE_USER}:${DATABASE_USER}@127.0.0.1:5432/${DATABASE_NAME} --no-owner $wellsdump
 
 #clean up permissions just in case
-psql --dbname postgresql://$superuser:$superuser_password@127.0.0.1:5432/${DATABASE_NAME} <<EOF
+psql --dbname postgresql://${DATABASE_USER}:${DATABASE_USER}@127.0.0.1:5432/${DATABASE_NAME} <<EOF
 REVOKE ALL ON SCHEMA public FROM ${DATABASE_USER};
 GRANT ALL ON SCHEMA public TO ${DATABASE_USER};
+REVOKE ALL ON SCHEMA public FROM ${LEGACY_DATABASE_SCHEMA};
+GRANT ALL ON SCHEMA public TO ${LEGACY_DATABASE_SCHEMA};
 EOF
-
-adjustTableNamesSql=""
-adjustTableSchemaSql=""
-
-#build the sql so that you only need one connection
-#don't use a pipe because that creates a subshell and you'll lose your variable value
-#-t for tuples only --- gets rid of header and footer
-#-sed trims empty last line
-while read -r tablename; do
-	adjustTableNamesSql+="ALTER TABLE ${tablename} OWNER TO ${DATABASE_USER};"
-	adjustTableSchemaSql+="ALTER TABLE ${tablename} SET SCHEMA ${LEGACY_DATABASE_SCHEMA};"
-done < <(psql --dbname postgresql://fmason:$password@127.0.0.1:5432/${DATABASE_NAME} -t -c "select tablename from pg_tables where schemaname = 'public';" | sed -e '$d' )
-
-#make the changes
-psql --dbname postgresql://fmason:$password@127.0.0.1:5432/${DATABASE_NAME} --command "$adjustTableNamesSql"
-psql --dbname postgresql://fmason:$password@127.0.0.1:5432/${DATABASE_NAME} --command "$adjustTableSchemaSql"
 
 #create the structure for the gwells tables
 python ../../manage.py makemigrations
 python ../../manage.py migrate
 
-#replicate structure
+
 #install crypto extension to support UUID creation
-#vacuum because you can't do that in the stored procedures
-#replicate data
-psql --dbname postgresql://$superuser:$superuser_password@127.0.0.1:5432/${DATABASE_NAME}<<EOF
+#setup replication -- superuser must setup replication because it uses the COPY command
+psql --dbname postgresql://$superuser:$superuser}@127.0.0.1:5432/${DATABASE_NAME}<<EOF
+DROP EXTENSION IF EXISTS pgcrypto;
+CREATE EXTENSION pgcrypto;
 SELECT public.setup_replicate();
-DROP EXTENSION IF EXISTS pgcrypto; CREATE EXTENSION pgcrypto;
-VACUUM FULL;
 EOF
 
-# make sure the vacuum worked
-psql --dbname postgresql://$superuser:$superuser_password@127.0.0.1:5432/${DATABASE_NAME}<<EOF
+#setup replication
+#replicate
+psql --dbname postgresql://${DATABASE_USER}:${DATABASE_USER}@127.0.0.1:5432/${DATABASE_NAME}<<EOF
 SELECT public.replicate();
 EOF
