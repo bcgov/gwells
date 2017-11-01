@@ -11,6 +11,9 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
+
+""" licenced_status_guid """
+
 import datetime
 import uuid
 import os
@@ -185,23 +188,23 @@ class WellStatus(AuditModel):
 
 
 
-class LicensedStatus(AuditModel):
+class LicencedStatus(AuditModel):
     """
-    LicenseStatus of Well.
+    LicenceStatus of Well.
     """
-    well_licensed_status_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    well_licenced_status_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     code = models.CharField(unique=True, max_length=10)
     description = models.CharField(max_length=255)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
 
     class Meta:
-        db_table = 'gwells_licensed_status'
+        db_table = 'gwells_licenced_status'
         ordering = ['sort_order', 'code']
 
     def save(self, *args, **kwargs):
         self.validate()
-        super(LicensedStatus, self).save(*args, **kwargs)
+        super(LicencedStatus, self).save(*args, **kwargs)
 
 
 
@@ -756,7 +759,7 @@ class Well(AuditModel):
     well_subclass = models.ForeignKey(WellSubclass, db_column='well_subclass_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Well Subclass')
     intended_water_use = models.ForeignKey(IntendedWaterUse, db_column='intended_water_use_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Water Supply Well Intended Water Use')
     well_status = models.ForeignKey(WellStatus, db_column='well_status_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Well Status')
-    licensed_status = models.ForeignKey(LicensedStatus, db_column='licensed_status_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Licensed Status')
+    licenced_status_guid = models.ForeignKey(LicencedStatus, db_column='licenced_status_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Licenced Status')
 
     street_address = models.CharField(max_length=100, blank=True, verbose_name='Street Address')
     city = models.CharField(max_length=50, blank=True, verbose_name='Town/City')
@@ -831,6 +834,8 @@ class Well(AuditModel):
     finished_well_depth = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Finished Well Depth')
     final_casing_stick_up = models.DecimalField(max_digits=6, decimal_places=3, blank=True, null=True, verbose_name='Final Stick Up')
     bedrock_depth = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Depth to Bedrock')
+    water_supply_system_name = models.CharField(max_length=80, blank=True, null=True, verbose_name='Water Supply System Name')
+    water_supply_system_well_name = models.CharField(max_length=80, blank=True, null=True, verbose_name='Water Supply System Well Name')
     static_water_level = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Static Water Level')
     well_yield = models.DecimalField(max_digits=8, decimal_places=3, blank=True, null=True, verbose_name='Estimated Well Yield')
     artesian_flow = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Artesian Flow')
@@ -846,7 +851,7 @@ class Well(AuditModel):
 
     observation_well_number = models.PositiveIntegerField(blank=True, null=True)
     observation_well_status = models.CharField(max_length=25, blank=True, null=True)
-    ems = models.PositiveIntegerField(blank=True, null=True)
+    ems = models.CharField(max_length=10, blank=True, null=True)
 
     tracker = FieldTracker()
 

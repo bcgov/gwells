@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 # Add -x beside  #!/bin/bash to debug. It will print out the executed commands.
 
 # to make conventient use of this script in ##development## edit your pg_hba.conf file to set users to be trusted locally
@@ -28,8 +28,9 @@ read -p "Superuser that will run the replication: " superuser &&
 
 #get path to legacy data .dmp
 # -p is for prompt
-read -p "path to wells dump: " wellsdump &&
-eval wellsdump=$wellsdump &&
+#read -p "path to wells dump: " wellsdump &&
+#eval wellsdump=$wellsdump &&
+eval wellsdump=${BACKUP_LOCATION}
 
 #recreate the database
 psql --dbname postgresql://${DATABASE_USER}:$password@127.0.0.1:5432/postgres <<EOF

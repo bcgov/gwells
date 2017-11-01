@@ -30,8 +30,8 @@ copy gwells_ground_elevation_method (ground_elevation_method_guid,code,descripti
 raise notice '... importing gwells_well_status code table';
 copy gwells_well_status (well_status_guid,code,description,is_hidden,sort_order,when_created,when_updated,who_created,who_updated) from program 'wget https://raw.githubusercontent.com/bcgov/gwells/master/database/code-tables/gwells_well_status.csv -O - -q' header delimiter ',' CSV ;
 
-raise notice '... importing gwells_licensed_status code table';
-copy gwells_licensed_status (well_licensed_status_guid,code,description,is_hidden,sort_order,when_created,when_updated,who_created,who_updated) from program 'wget https://raw.githubusercontent.com/bcgov/gwells/master/database/code-tables/gwells_licensed_status.csv -O - -q' header delimiter ',' CSV ;
+raise notice '... importing gwells_licenced_status code table';
+copy gwells_licenced_status (well_licenced_status_guid,code,description,is_hidden,sort_order,when_created,when_updated,who_created,who_updated) from program 'wget https://raw.githubusercontent.com/bcgov/gwells/master/database/code-tables/gwells_licensed_status.csv -O - -q' header delimiter ',' CSV ;
 
 raise notice '... importing gwells_land_district data table';
 INSERT INTO gwells_land_district (

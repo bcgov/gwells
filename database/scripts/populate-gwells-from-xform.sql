@@ -55,7 +55,9 @@ BEGIN
 	  surface_seal_method_guid           ,
 	  backfill_above_surface_seal        ,
 	  well_status_guid                   ,
-	  licensed_status_guid               ,
+    observation_well_number            ,
+    observation_well_status            ,
+	  licenced_status_guid               ,
 	  surface_seal_material_guid         ,
 	  other_screen_bottom                ,
 	  other_screen_material              ,
@@ -79,7 +81,8 @@ BEGIN
     artesian_pressure                  ,
     bedrock_depth                      ,
     water_supply_system_name           ,
-    water_supply_system_well_name
+    water_supply_system_well_name      ,
+    ems
 	  )
 	SELECT
 		xform.well_tag_number                          ,
@@ -127,7 +130,9 @@ BEGIN
 		null                                           ,
 		coalesce(xform.backfill_above_surface_seal,' '),
 		well_status.well_status_guid                   ,
-		licenced_status.well_licensed_status_guid      ,
+    xform.observation_well_number                  ,
+    xform.observation_well_status                  ,
+		licenced_status.well_licenced_status_guid      ,
 		null                                           ,
 		''                                             ,
 		''                                             ,
@@ -151,11 +156,12 @@ BEGIN
     xform.artesian_pressure                        ,
     xform.bedrock_depth                            ,
     xform.water_supply_system_name                 ,
-    xform.water_supply_system_well_name
+    xform.water_supply_system_well_name            ,
+    xform.ems
 	FROM xform_gwells_well xform
 	LEFT OUTER JOIN gwells_intended_water_use use ON xform.WELL_USE_CODE=use.code
-	LEFT OUTER JOIN gwells_well_status well_status ON xform.STATUS_OF_WELL_CODE=upper(well_status.code)
-	LEFT OUTER JOIN gwells_licensed_status licenced_status ON xform.WELL_LICENCE_GENERAL_STATUS=upper(licenced_status.code)
+	LEFT OUTER JOIN gwells_well_status well_status ON xform.STATUS_OF_WELL_GUID=upper(well_status.code)
+	LEFT OUTER JOIN gwells_licenced_status licenced_status ON xform.LICENCED_STATUS=upper(licenced_status.code)
 	LEFT OUTER JOIN gwells_land_district     land ON xform.LEGAL_LAND_DISTRICT_CODE=land.code
 	INNER      JOIN gwells_well_class       class ON xform.CLASS_OF_WELL_CODCLASSIFIED_BY=class.code
 	LEFT OUTER JOIN gwells_well_subclass subclass ON xform.SUBCLASS_OF_WELL_CLASSIFIED_BY=subclass.code AND subclass.well_class_guid = class.well_class_guid ;
