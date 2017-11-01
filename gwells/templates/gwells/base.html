@@ -59,17 +59,16 @@
     <link href="{% static 'gwells/css/custom-form.css' %}" rel="stylesheet"/>
 
     <!-- LEAFLET CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css"
-   integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ=="
-   crossorigin=""/>
+    <link type="text/css" href="{% static 'gwells/css/leaflet.css' %}" rel="stylesheet"/>
+
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
       <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 
-    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/base/jquery-ui.css" type="text/css" media="all" />
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/dataTables.bootstrap.min.css" type="text/css" media="all" />
+    <link type="text/css" href="{% static 'gwells/css/jquery-ui.css' %}" rel="stylesheet" media="all"/>
+    <link type="text/css" href="{% static 'gwells/css/dataTables.bootstrap.min.css' %}" rel="stylesheet" media="all"/>
 </head>
 
 <body>
@@ -221,24 +220,23 @@
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
-    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="{% static 'gwells/js/jquery.min.js' %}"></script>
     <script src="{% static 'gwells/js/bootstrap.min.js' %}"></script>
     <script src="{% static 'gwells/js/misc.js' %}"></script>
     <script src="{% static 'gwells/js/navMenu.js' %}"></script>
+    
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <script src="{% static 'gwells/js/ie10-viewport-bug-workaround.js' %}"></script>
+   
    <!-- Leaflet imports and custom Leaflet-based library -->
-    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"    integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log==" crossorigin=""></script>
-    <script src="https://unpkg.com/esri-leaflet@2.1.1/dist/esri-leaflet.js"
-    integrity="sha512-ECQqaYZke9cSdqlFG08zSkudgrdF6I1d8ViSa7I3VIszJyVqw4ng1G8sehEXlumdMnFYfzY0tMgdQa4WCs9IUw=="
-    crossorigin=""></script>
-    <!-- <script src="https://unpkg.com/esri-leaflet@2.0.8/dist/esri-leaflet.js"></script> -->
+    <script src="{% static 'gwells/js/leaflet.js' %}"></script>
+    <script src="{% static 'gwells/js/esri-leaflet.js' %}"></script>
     <script src="{% static 'gwells/js/wellsMap.js'%}"></script>
     <script src="{% static 'gwells/js/coordSync.js' %}"></script>
+    
     <script src="{% static 'gwells/js/jquery.formset.js' %}"></script>
-    <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js" type="text/javascript"></script>
-    <script src="https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap.min.js" type="text/javascript"></script>
+    <script src="{% static 'gwells/js/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'gwells/js/dataTables.bootstrap.min.js' %}"></script>
 
     {% if settings.ENABLE_GOOGLE_ANALYTICS %}    
     <script>
