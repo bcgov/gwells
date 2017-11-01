@@ -11,10 +11,11 @@ import spock.lang.See
 import spock.lang.Specification
 import spock.lang.Title
 
+@Title("Search Results Pagination")
+@Narrative("""
+In order to view search results as a generic user, I want search results to be paginated when there more than 25 results
+""")
 class SearchResultsPaginationSpecs extends GebReportingSpec {
-
-// Feature: Search Results Pagination
-// In order to view search results as a generic user, I want search results to be paginated when there more than 25 results
 
     @Unroll
 
