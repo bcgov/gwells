@@ -33,19 +33,20 @@ Note that environment variables are also used for the PostgreSQL database connec
 Static code tables are maintained in this [GitHub](../../../tree/master/database/code-tables) repo, while dynamic data is replicated.  There are two stored procedures that support the replication, created by running the [data-replication.sql](scripts/data-replication.sql) script.
 
 1. `gwells_setup_replicate()`
-- owned by GWELLS user
+- owned and run by GWELLS user (e.g. `psql  -d $POSTGRESQL_DATABASE -U $POSTGRESQL_USER  -c 'select gwells_setup_replicate();'`)
 - clears all data tables
 - prepares the ETL table 
-- must be run by GWELLS user (e.g. `psql -d gwells -U userGN0 -c 'select gwells_setup_replicate();'`)
 
 2. `gwells_replicate()`
-- owned by GWELLS user
-- "COPY" into static code tables from GitHub repo
+- owned and run by GWELLS user (e.g. `psql  -d $POSTGRESQL_DATABASE -U $POSTGRESQL_USER  -c 'select gwells_replicate();'`)
 - INSERT into dynamic data tables from Oracle FDW
 - INSERT into the main "wells" PostgreSQL table from the local ETL table
-- must be run by PostgreSQL administrator, due to restricted COPY command (e.g.`psql -d gwells -c 'select gwells_replicate();'`)
 
-The logged output includes the number of rows inserted into the main "wells" PostgreSQL database table
+There is also an SQL script `data-load-static-codes.sql`
+- "COPY" into static code tables from deployed CSV files  
+- run on the gwells pod (which has all CSV files under `$VIRTUAL_ENV/src/database/code-tables/`)
+
+The logged output includes the number of rows inserted into the main "gwells_wells" PostgreSQL database table
 
 ```ssh-4.2$ psql -d gwells -c 'select gwells_replicate();' 
 NOTICE:  Starting gwells_replicate() procedure...
