@@ -1,5 +1,6 @@
 import geb.spock.GebReportingSpec
 import pages.app.SearchPage
+import pages.app.WellSummaryPage
 
 import spock.lang.Ignore
 import spock.lang.Issue
@@ -59,13 +60,20 @@ class WellSearchSpecs extends GebReportingSpec {
 				assert waitFor { results_info.displayed == true }
 				assert (NumberOfEntriesFound() == "$NumberResult") //Total entries found
 
+           		println "Tag ID: $TagID"
            		if ("$TagID" == "tag") {
+					println "$WellId"
 					println "Well ID: " + $('#results > tbody > tr:nth-child('+ ReturnRow("$WellId").toString() +') > td.sorting_1 > a').text()
 					$('#results > tbody > tr:nth-child('+ ReturnRow("$WellId").toString() +') > td.sorting_1 > a').click()
+       				at WellSummaryPage
+						assert waitFor { ($("span",id:"well_tag_number").text() == "$WellId") }
 					}
 				else {
+					println "$SecondID"
 					println "SecondID: " + $('#results > tbody > tr:nth-child('+ ReturnRow("$SecondID").toString() +') > td.sorting_1 > a').text()
 					$('#results > tbody > tr:nth-child('+ ReturnRow("$SecondID").toString() +') > td.sorting_1 > a').click()
+       				at WellSummaryPage
+						assert waitFor { ($("span",id:"well_tag_number").text() == "$SecondID") }
 					}
 			}
             		
@@ -120,11 +128,11 @@ class WellSearchSpecs extends GebReportingSpec {
 			{
 				assert waitFor { results_info.displayed == true }
 				assert (NumberOfEntriesFound() == "$NumberResult") //Total entries found
+				def value = $('#results > tbody > tr:nth-child(1) > td.sorting_1 > a').text()
 				$('#results > tbody > tr:nth-child(1) > td.sorting_1 > a').click()
-
- /*        		at WellSummaryPage
-				assert waitFor {($("span",id:"well_tag_number").text() == $('#results > tbody > tr:nth-child(1) > td.sorting_1 > a').text())}
-*/			
+       			at WellSummaryPage
+					assert waitFor { ( $('#well_tag_number').text() == value ) }
+		
 			}
   		
 		and: "And where there are no matching search results the message -No well records could be found.- is displayed"
@@ -179,11 +187,11 @@ class WellSearchSpecs extends GebReportingSpec {
 			{
 				assert waitFor { results_info.displayed == true }
 				assert (NumberOfEntriesFound() == "$NumberResult") //Total entries found
+				def value = $('#results > tbody > tr:nth-child(1) > td.sorting_1 > a').text()
 				$('#results > tbody > tr:nth-child(1) > td.sorting_1 > a').click()
-			         		
- /*        		at WellSummaryPage
-				assert waitFor {($("span",id:"well_tag_number").text() == $('#results > tbody > tr:nth-child(1) > td.sorting_1 > a').text())}
-*/			}
+       			at WellSummaryPage
+					assert waitFor { ($("span",id:"well_tag_number").text() == value) }
+			}
 		
 		and: "And where there are no matching search results the message -No well records could be found.- is displayed"
 			if("$ShowError" == "Yes")
@@ -236,11 +244,11 @@ class WellSearchSpecs extends GebReportingSpec {
 			{
 				assert waitFor { results_info.displayed == true }
 				assert (NumberOfEntriesFound() == "$NumberResult") //Total entries found
+ 				def value = $('#results > tbody > tr:nth-child(1) > td.sorting_1 > a').text()
 				$('#results > tbody > tr:nth-child(1) > td.sorting_1 > a').click()
-			         		
- /*        		at WellSummaryPage
-				assert waitFor {($("span",id:"well_tag_number").text() == $('#results > tbody > tr:nth-child(1) > td.sorting_1 > a').text())}
-*/			}
+       			at WellSummaryPage
+					assert waitFor {($("span",id:"well_tag_number").text() == value) }
+			}
 		
 		and: "And where there are no matching search results the message -No well records could be found.- is displayed"
 			if("$ShowError" == "Yes")
@@ -301,11 +309,11 @@ class WellSearchSpecs extends GebReportingSpec {
 			{
 				assert waitFor { results_info.displayed == true }
 				assert (NumberOfEntriesFound() == "$NumberResult") //Total entries found
+				def value = $('#results > tbody > tr:nth-child(1) > td.sorting_1 > a').text()
 				$('#results > tbody > tr:nth-child(1) > td.sorting_1 > a').click()
-			         		
- /*        		at WellSummaryPage
-				assert waitFor {($("span",id:"well_tag_number").text() == $('#results > tbody > tr:nth-child(1) > td.sorting_1 > a').text())}
-*/			}
+       			at WellSummaryPage
+					assert waitFor {($("span",id:"well_tag_number").text() == value) }
+			}
 		
 		and: "And where there are no matching search results the message -No well records could be found.- is displayed"
 			if("$ShowError" == "Yes")

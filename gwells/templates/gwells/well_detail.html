@@ -326,6 +326,7 @@
         // within the map's bounding box, which are displayed as circleMarkers. The map also has limited zoom capability,
         // so that users can find further surrounding wells. None of the wells (circleMarkers or the pushpin) is interactive.
         var detailMapOptions = {
+            SEARCH_URL: "{% url 'map_well_search' %}",
             // The ID of the addMap div.
             mapNodeId: 'detail-map',
             // The initial centre of the map
@@ -370,3 +371,4 @@
 
     </script>
     {% endblock %}
+
