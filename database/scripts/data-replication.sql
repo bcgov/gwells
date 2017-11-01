@@ -1,39 +1,38 @@
---  Run this script as gwells owner (e.g. psql -d gwells -U userGN0)
+--  Run this script as gwells owner (e.g. psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER)
 DROP FUNCTION IF EXISTS gwells_setup_replicate(); 
 CREATE OR REPLACE FUNCTION gwells_setup_replicate() RETURNS void AS $$
 BEGIN
 	raise notice 'Starting gwells_setup_replicate() procedure...';	
 
 	-- Reset tables
-	raise notice '... clearing gwells.lithology_description data table';
-	delete from gwells.lithology_description;
-	raise notice '... clearing gwells.activity_submission data table';
-	delete from gwells.activity_submission;
-	raise notice '... clearing gwells.well data table';
-	delete from gwells.well;
+	raise notice '... clearing gwells_lithology_description data table';
+	delete from gwells_lithology_description;
+	raise notice '... clearing gwells_activity_submission data table';
+	delete from gwells_activity_submission;
+	raise notice '... clearing gwells_well data table';
+	delete from gwells_well;
 
-	raise notice '... clearing gwells.intended_water_use data table';		
-	delete from gwells.intended_water_use;
-	raise notice '... clearing gwells.well_subclass data table';
-	delete from gwells.well_subclass;
-	raise notice '... clearing gwells.well_class data table';
-	delete from gwells.well_class;
+	raise notice '... clearing gwells_intended_water_use data table';		
+	delete from gwells_intended_water_use;
+	raise notice '... clearing gwells_well_subclass data table';
+	delete from gwells_well_subclass;
+	raise notice '... clearing gwells_well_class data table';
+	delete from gwells_well_class;
 
-	raise notice '... clearing gwells.province_state data table';
-	delete from gwells.province_state;
-	raise notice '... clearing gwells.well_yield_unit data table';
-	delete from gwells.well_yield_unit;
-	raise notice '... clearing gwells.drilling_method data table';
-	delete from gwells.drilling_method;
-	raise notice '... clearing gwells.ground_elevation_method data table';
-	delete from gwells.ground_elevation_method;
-	raise notice '... clearing gwells.land_district data table';
-	delete from gwells.land_district;
-	raise notice '... clearing gwells.well_status data table';
-	delete from gwells.well_status;
-	raise notice '... clearing gwells.licensed_status data table';
-	delete from gwells.licensed_status;
-
+	raise notice '... clearing gwells_province_state data table';
+	delete from gwells_province_state;
+	raise notice '... clearing gwells_well_yield_unit data table';
+	delete from gwells_well_yield_unit;
+	raise notice '... clearing gwells_drilling_method data table';
+	delete from gwells_drilling_method;
+	raise notice '... clearing gwells_ground_elevation_method data table';
+	delete from gwells_ground_elevation_method;
+	raise notice '... clearing gwells_land_district data table';
+	delete from gwells_land_district;
+	raise notice '... clearing gwells_well_status data table';
+	delete from gwells_well_status;
+	raise notice '... clearing gwells_licensed_status data table';
+	delete from gwells_licensed_status;
 
 	raise notice '... recreating xform_gwells_well ETL table';
 	DROP TABLE IF EXISTS xform_gwells_well;
@@ -103,33 +102,13 @@ DECLARE
 BEGIN
 	raise notice 'Starting gwells_replicate() procedure...';	
 
-	-- Get static code tables from GitHub
-	raise notice '... importing gwells.intended_water_use code table';	
-	copy gwells.intended_water_use (intended_water_use_guid,code,description,is_hidden,sort_order,when_created,when_updated,who_created,who_updated) from program 'wget https://raw.githubusercontent.com/bcgov/gwells/master/database/code-tables/gwells_intended_water_use.csv -O - -q' header delimiter ',' CSV ; 
-	raise notice '... importing gwells.well_class code table';	
-	copy gwells.well_class (well_class_guid,code,description,is_hidden,sort_order,when_created,when_updated,who_created,who_updated) from program 'wget https://raw.githubusercontent.com/bcgov/gwells/master/database/code-tables/gwells_well_class.csv -O - -q' header delimiter ',' CSV ; 
-	raise notice '... importing gwells.well_subclass code table';	
-	copy gwells.well_subclass (well_subclass_guid,code,description,is_hidden,sort_order,well_class_guid,when_created,when_updated,who_created,who_updated) from program 'wget https://raw.githubusercontent.com/bcgov/gwells/master/database/code-tables/gwells_well_subclass.csv -O - -q' header delimiter ',' CSV ; 
-	raise notice '... importing gwells.province_state code table';	
-	copy gwells.province_state (province_state_guid,code,description,sort_order,when_created,when_updated,who_created,who_updated) from program 'wget https://raw.githubusercontent.com/bcgov/gwells/master/database/code-tables/gwells_province_state.csv -O - -q' header delimiter ',' CSV ; 
-	raise notice '... importing gwells.well_yield_unit code table';	
-	copy gwells.well_yield_unit (well_yield_unit_guid,code,description,sort_order,when_created,when_updated,who_created,who_updated) from program 'wget https://raw.githubusercontent.com/bcgov/gwells/master/database/code-tables/gwells_well_yield_unit.csv -O - -q' header delimiter ',' CSV ; 
-	raise notice '... importing gwells.drilling_method code table';	
-	copy gwells.drilling_method (drilling_method_guid,code,description,is_hidden,sort_order,when_created,when_updated,who_created,who_updated) from program 'wget https://raw.githubusercontent.com/bcgov/gwells/master/database/code-tables/gwells_drilling_method.csv -O - -q' header delimiter ',' CSV ; 
-	raise notice '... importing gwells.ground_elevation_method code table';	
-	copy gwells.ground_elevation_method (ground_elevation_method_guid,code,description,is_hidden,sort_order,when_created,when_updated,who_created,who_updated) from program 'wget https://raw.githubusercontent.com/bcgov/gwells/master/database/code-tables/gwells_ground_elevation_method.csv -O - -q' header delimiter ',' CSV ; 
-	raise notice '... importing gwells.well_status code table';	
-	copy gwells.well_status (well_status_guid,code,description,is_hidden,sort_order,when_created,when_updated,who_created,who_updated) from program 'wget https://raw.githubusercontent.com/bcgov/gwells/master/database/code-tables/gwells_well_status.csv -O - -q' header delimiter ',' CSV ; 
-	raise notice '... importing gwells.licensed_status code table';	
-	copy gwells.licensed_status (well_licensed_status_guid,code,description,is_hidden,sort_order,when_created,when_updated,who_created,who_updated) from program 'wget https://raw.githubusercontent.com/bcgov/gwells/master/database/code-tables/gwells_licensed_status.csv -O - -q' header delimiter ',' CSV ; 
-
-	raise notice '... importing gwells.land_district data table';	
-	INSERT INTO gwells.land_district (
+	raise notice '... importing land_district data table';	
+	INSERT INTO gwells_land_district (
 		land_district_guid,code,name,sort_order,when_created,when_updated,who_created,who_updated) 
 	SELECT 
 		gen_random_uuid(),LEGAL_LAND_DISTRICT_CODE,LEGAL_LAND_DISTRICT_NAME,SORT_ORDER,WHEN_CREATED,
 		coalesce(WHEN_UPDATED,WHEN_CREATED),WHO_CREATED ,coalesce(WHO_UPDATED,WHO_CREATED) -- STATUS_FLAG
-	FROM WELLS.LEGAL_LAND_DIST_CODES
+	FROM WELLS.WELLS_LEGAL_LAND_DIST_CODES 
 	ORDER BY LEGAL_LAND_DISTRICT_CODE ASC;
 
 	raise notice '... transforming wells data (!= REJECTED) via xform_gwells_well ETL table...';	
@@ -280,12 +259,12 @@ BEGIN
 	  coalesce(WELLS.WHEN_UPDATED,WELLS.WHEN_CREATED) as when_updated,
 	  WELLS.WHO_CREATED as who_created,
 	  coalesce(WELLS.WHO_UPDATED,WELLS.WHO_CREATED) as who_updated
-	FROM WELLS.WELLS WELLS LEFT OUTER JOIN WELLS.OWNERS OWNER
+	FROM WELLS.WELLS_WELLS WELLS LEFT OUTER JOIN WELLS.WELLS_OWNERS OWNER
 	  ON OWNER.OWNER_ID=WELLS.OWNER_ID
 	WHERE WELLS.ACCEPTANCE_STATUS_CODE != 'REJECTED';
 
-	raise notice '... importing ETL into the main "wells" table';	
-	INSERT INTO gwells.well (
+	raise notice '... importing ETL into the main "gwells_wells" table';	
+	INSERT INTO gwells_well (
 	  well_tag_number             ,
 	  well_guid                   ,
 	  owner_full_name             ,
@@ -346,7 +325,7 @@ BEGIN
 	  comments                   
 	  )
 	SELECT 
-		xform.well_tag_number                     ,
+	    xform.well_tag_number                  ,
 		gen_random_uuid()                         ,
 		coalesce(xform.owner_full_name,' ')       ,
 		coalesce(xform.owner_mailing_address, ' '),
@@ -402,24 +381,22 @@ BEGIN
 		''                                        ,
 		false                                     ,
 		false                                     ,
-	        null                                      , -- xform.chemistry_site_id until character type
+	    null                                      , -- xform.chemistry_site_id until character type
 		''
 	FROM xform_gwells_well xform
-	LEFT OUTER JOIN gwells.intended_water_use use ON xform.WELL_USE_CODE=use.code
-	LEFT OUTER JOIN gwells.well_status well_status ON xform.STATUS_OF_WELL_CODE=upper(well_status.code)
-	LEFT OUTER JOIN gwells.licensed_status licenced_status ON xform.WELL_LICENCE_GENERAL_STATUS=upper(licenced_status.code)
-	LEFT OUTER JOIN gwells.land_district     land ON xform.LEGAL_LAND_DISTRICT_CODE=land.code 
-	INNER      JOIN gwells.well_class       class ON xform.CLASS_OF_WELL_CODCLASSIFIED_BY=class.code 
-	LEFT OUTER JOIN gwells.well_subclass subclass ON xform.SUBCLASS_OF_WELL_CLASSIFIED_BY=subclass.code 
+	LEFT OUTER JOIN gwells_intended_water_use use ON xform.WELL_USE_CODE=use.code
+	LEFT OUTER JOIN gwells_well_status well_status ON xform.STATUS_OF_WELL_CODE=upper(well_status.code)
+	LEFT OUTER JOIN gwells_licensed_status licenced_status ON xform.WELL_LICENCE_GENERAL_STATUS=upper(licenced_status.code)
+	LEFT OUTER JOIN gwells_land_district     land ON xform.LEGAL_LAND_DISTRICT_CODE=land.code 
+	INNER      JOIN gwells_well_class       class ON xform.CLASS_OF_WELL_CODCLASSIFIED_BY=class.code 
+	LEFT OUTER JOIN gwells_well_subclass subclass ON xform.SUBCLASS_OF_WELL_CLASSIFIED_BY=subclass.code 
 	AND subclass.well_class_guid = class.well_class_guid ;
 
-	select count(*) from gwells.well into wells_rows;
-	raise notice '... % rows loaded into the main "wells" table', 	wells_rows;	
-
+	select count(*) from gwells_well into wells_rows;
+	raise notice '... % rows loaded into the main "gwells_wells" table', 	wells_rows;	
 
 	insert into gwells_replication (notes) values ('Stored procedure invocation, successfully replicated ' || wells_rows || ' rows.' );
 	raise notice 'Inserted notes into gwells_replication.';	
-
 
 	raise notice 'Finished gwells_replicate() procedure.';	
 END;
