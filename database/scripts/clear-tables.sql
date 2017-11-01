@@ -42,8 +42,8 @@ DELETE FROM gwells_land_district;
 raise notice '... clearing gwells_well_status data table';
 DELETE FROM gwells_well_status;
 
-raise notice '... clearing gwells_licensed_status data table';
-DELETE FROM gwells_licensed_status;
+raise notice '... clearing gwells_licenced_status data table';
+DELETE FROM gwells_licenced_status;
 
 raise notice 'Finished clear_tables() procedure.';
 END;
