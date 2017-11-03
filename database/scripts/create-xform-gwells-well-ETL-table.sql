@@ -67,6 +67,7 @@ CREATE unlogged TABLE IF NOT EXISTS xform_gwells_well (
    water_supply_system_name           character varying(80),
    water_supply_system_well_name      character varying(80),
    ems                                character varying(10),
+   utm_zone_code                      character varying(10),
    when_created                       timestamp with time zone,
    when_updated                       timestamp with time zone,
    who_created                        character varying(30),
