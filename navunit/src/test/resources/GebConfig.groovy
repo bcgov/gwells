@@ -28,8 +28,8 @@ environments {
 			//d.manage().window().size = new Dimension(1920, 1080);
 			d.manage().window().maximize();
 			return d
+		}
 	}
-}
 
 	// run via “./gradlew firefoxTest”
 	// See: http://code.google.com/p/selenium/wiki/FirefoxDriver
