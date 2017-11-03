@@ -46,7 +46,7 @@ node('master') {
         checkout scm
         dir('navunit') {
 			try {
-				sh './gradlew --debug --stacktrace phantomJsTest'
+				sh './gradlew --debug --stacktrace phantomjsTest'
 			} finally { 
 				archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
 			}
