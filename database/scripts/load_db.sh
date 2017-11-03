@@ -1,5 +1,8 @@
-#!/bin/bash
+#!/bin/bash -x
 # Add -x beside  #!/bin/bash to debug. It will print out the executed commands.
+
+# to make conventient use of this script in ##development## edit your pg_hba.conf file to set users to be trusted locally
+# https://www.postgresql.org/docs/9.1/static/auth-pg-hba-conf.html
 
 # using the && runs the second command only if the first succeeded
 #https://askubuntu.com/questions/334994/which-one-is-better-using-or-to-execute-multiple-commands-in-one-line
@@ -9,25 +12,25 @@
 #get name of Superuser who will run the replication
 # -p is for prompt
 read -p "Superuser that will run the replication: " superuser &&
-#newline
 
 #get the password for the Superuser who will run the replication
 # -p is for prompt
-read -s -p "Enter the password for DB Superuser - $superuser: " superuser_password &&
+#read -s -p "Enter the password for DB Superuser - $superuser: " superuser_password &&
 #newline
-echo -e ""
+#echo -e ""
 
 #get the password for the owner of ${DATABASE_NAME}
 # -p is for prompt
 # -s to hide password as it is entered
-read -s -p "Password for DB User - ${DATABASE_USER}: " password &&
+#read -s -p "Password for DB User - ${DATABASE_USER}: " password &&
 #newline
-echo -e ""
+#echo -e ""
 
 #get path to legacy data .dmp
 # -p is for prompt
-read -p "path to wells dump: " wellsdump &&
-eval wellsdump=$wellsdump &&
+#read -p "path to wells dump: " wellsdump &&
+#eval wellsdump=$wellsdump &&
+eval wellsdump=${BACKUP_LOCATION}
 
 #recreate the database
 psql --dbname postgresql://${DATABASE_USER}:$password@127.0.0.1:5432/postgres <<EOF
@@ -39,59 +42,60 @@ EOF
 #add replication functions to the public schema
 psql --dbname postgresql://${DATABASE_USER}:$password@127.0.0.1:5432/${DATABASE_NAME} <<EOF
 ALTER USER ${DATABASE_USER} SET search_path TO public;
-\include data-replication.sql
+\include clear-tables.sql
+\include create-xform-gwells-well-ETL-table.sql
+\include copy-remote-code-tables.sql
+\include populate-xform-gwells-well.sql
+\include populate-gwells-from-xform.sql
+\include setup-replicate.sql
+\include replicate.sql
 EOF
 
 #restore the legacy data - superuser necessary because of ownership issues
 pg_restore --dbname postgresql://$superuser:$superuser_password@127.0.0.1:5432/${DATABASE_NAME} --no-owner $wellsdump &&
 
-#create ${DATABASE_SCHEMA} and ${LEGACY_DATABASE_SCHEMA}
+#create ${LEGACY_DATABASE_SCHEMA}
 psql --dbname postgresql://${DATABASE_USER}:$password@127.0.0.1:5432/${DATABASE_NAME} <<EOF
-CREATE SCHEMA ${DATABASE_SCHEMA};
 CREATE SCHEMA ${LEGACY_DATABASE_SCHEMA};
 EOF
 
 #clean up permissions just in case
-psql --dbname postgresql://$superuser:$superuser_password@127.0.0.1:5432/${DATABASE_NAME} <<EOF 
+psql --dbname postgresql://$superuser:$superuser_password@127.0.0.1:5432/${DATABASE_NAME} <<EOF
 REVOKE ALL ON SCHEMA public FROM ${DATABASE_USER};
 GRANT ALL ON SCHEMA public TO ${DATABASE_USER};
-REVOKE ALL ON SCHEMA ${DATABASE_SCHEMA} FROM ${DATABASE_USER};
-GRANT ALL ON SCHEMA ${DATABASE_SCHEMA} TO ${DATABASE_USER};
-REVOKE ALL ON SCHEMA ${LEGACY_DATABASE_SCHEMA} FROM ${DATABASE_USER};
-GRANT ALL ON SCHEMA ${LEGACY_DATABASE_SCHEMA} TO ${DATABASE_USER};
 EOF
 
-#adjust the tablenames
-gwellsRegex="^gw_"
-wellsRegex="^wells_"
 adjustTableNamesSql=""
+adjustTableSchemaSql=""
 
 #build the sql so that you only need one connection
 #don't use a pipe because that creates a subshell and you'll lose your variable value
+#-t for tuples only --- gets rid of header and footer
+#-sed trims empty last line
 while read -r tablename; do
-	if [[ ${tablename} =~ $gwellsRegex ]]; then
-                adjustTableNamesSql+="ALTER TABLE ${tablename} OWNER TO ${DATABASE_USER};"
-                adjustTableNamesSql+="ALTER TABLE ${tablename} SET SCHEMA ${DATABASE_SCHEMA};"
-                adjustTableNamesSql+="ALTER TABLE ${DATABASE_SCHEMA}.${tablename} RENAME TO ${tablename:3};"
-	fi
-	if [[ ${tablename} =~ $wellsRegex ]]; then
-                adjustTableNamesSql+="ALTER TABLE ${tablename} OWNER TO ${DATABASE_USER};"
-                adjustTableNamesSql+="ALTER TABLE ${tablename} SET SCHEMA ${LEGACY_DATABASE_SCHEMA};"
-                adjustTableNamesSql+="ALTER TABLE ${LEGACY_DATABASE_SCHEMA}.${tablename} RENAME TO ${tablename:6};"
-	fi
-done < <(psql --dbname postgresql://fmason:$password@127.0.0.1:5432/${DATABASE_NAME} -c "select tablename from pg_tables where schemaname = 'public';")
+	adjustTableNamesSql+="ALTER TABLE ${tablename} OWNER TO ${DATABASE_USER};"
+	adjustTableSchemaSql+="ALTER TABLE ${tablename} SET SCHEMA ${LEGACY_DATABASE_SCHEMA};"
+done < <(psql --dbname postgresql://fmason:$password@127.0.0.1:5432/${DATABASE_NAME} -t -c "select tablename from pg_tables where schemaname = 'public';" | sed -e '$d' )
 
-#adjust make the changes
+#make the changes
 psql --dbname postgresql://fmason:$password@127.0.0.1:5432/${DATABASE_NAME} --command "$adjustTableNamesSql"
+psql --dbname postgresql://fmason:$password@127.0.0.1:5432/${DATABASE_NAME} --command "$adjustTableSchemaSql"
 
 #create the structure for the gwells tables
+python ../../manage.py makemigrations
 python ../../manage.py migrate
 
 #replicate structure
 #install crypto extension to support UUID creation
+#vacuum because you can't do that in the stored procedures
 #replicate data
 psql --dbname postgresql://$superuser:$superuser_password@127.0.0.1:5432/${DATABASE_NAME}<<EOF
-SELECT public.gwells_setup_replicate();
+SELECT public.setup_replicate();
 DROP EXTENSION IF EXISTS pgcrypto; CREATE EXTENSION pgcrypto;
-SELECT public.gwells_replicate();
+VACUUM FULL;
+EOF
+
+# make sure the vacuum worked
+psql --dbname postgresql://$superuser:$superuser_password@127.0.0.1:5432/${DATABASE_NAME}<<EOF
+SELECT public.replicate();
 EOF
