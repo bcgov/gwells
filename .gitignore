@@ -74,3 +74,6 @@ activate
 
 #migration
 gwells/migrations
+
+#virtual env
+/deactivate
