@@ -746,8 +746,8 @@ class Well(AuditModel):
     Well information.
     """
     well_guid = models.UUIDField(primary_key=False, default=uuid.uuid4, editable=False)
-    well_tag_number = models.AutoField(primary_key=True)
-    identification_plate_number = models.PositiveIntegerField(unique=True, blank=True, null=True)
+    well_tag_number = models.AutoField(primary_key=True, verbose_name='Well Tag Number')
+    identification_plate_number = models.PositiveIntegerField(unique=True, blank=True, null=True, verbose_name="Identification Plate Number")
 
     owner_full_name = models.CharField(max_length=200, verbose_name='Owner Name')
     owner_mailing_address = models.CharField(max_length=100, verbose_name='Mailing Address')
@@ -757,7 +757,7 @@ class Well(AuditModel):
 
     well_class = models.ForeignKey(WellClass, db_column='well_class_guid', on_delete=models.CASCADE, verbose_name='Well Class')
     well_subclass = models.ForeignKey(WellSubclass, db_column='well_subclass_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Well Subclass')
-    intended_water_use = models.ForeignKey(IntendedWaterUse, db_column='intended_water_use_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Water Supply Well Intended Water Use')
+    intended_water_use = models.ForeignKey(IntendedWaterUse, db_column='intended_water_use_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Intended Water Use')
     well_status = models.ForeignKey(WellStatus, db_column='well_status_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Well Status')
     licenced_status_guid = models.ForeignKey(LicencedStatus, db_column='licenced_status_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Licenced Status')
 
@@ -771,8 +771,8 @@ class Well(AuditModel):
     legal_township = models.CharField(max_length=20, blank=True, verbose_name='Township')
     legal_range = models.CharField(max_length=10, blank=True, verbose_name='Range')
     legal_land_district = models.ForeignKey(LandDistrict, db_column='legal_land_district_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Land District')
-    legal_pid = models.PositiveIntegerField(blank=True, null=True, verbose_name='PID')
-    well_location_description = models.CharField(max_length=500, blank=True, verbose_name='Well Location Description')
+    legal_pid = models.PositiveIntegerField(blank=True, null=True, verbose_name='Property Identification Description (PID)')
+    well_location_description = models.CharField(max_length=500, blank=True, verbose_name='Description of Well Location')
 
     construction_start_date = models.DateTimeField(null=True, verbose_name="Construction Start Date")
     construction_end_date = models.DateTimeField(null=True, verbose_name="Construction End Date")
@@ -787,13 +787,13 @@ class Well(AuditModel):
 
     well_identification_plate_attached = models.CharField(max_length=500, blank=True, null=True, verbose_name='Where Identification Plate Is Attached')
 
-    latitude = models.DecimalField(max_digits=8, decimal_places=6, blank=True, null=True)
-    longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
+    latitude = models.DecimalField(max_digits=8, decimal_places=6, blank=True, null=True, verbose_name='Latitude')
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True, verbose_name='Longitude')
     ground_elevation = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True, verbose_name='Ground Elevation')
     ground_elevation_method = models.ForeignKey(GroundElevationMethod, db_column='ground_elevation_method_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Method for Determining Ground Elevation')
     drilling_method = models.ForeignKey(DrillingMethod, db_column='drilling_method_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Drilling Method')
     other_drilling_method = models.CharField(max_length=50, blank=True, verbose_name='Specify Other Drilling Method')
-    well_orientation = models.BooleanField(default=True, verbose_name='Well Orientation', choices=((True, 'vertical'), (False, 'horizontal')))
+    well_orientation = models.BooleanField(default=True, verbose_name='Orientation of Well', choices=((True, 'vertical'), (False, 'horizontal')))
 
     surface_seal_material = models.ForeignKey(SurfaceSealMaterial, db_column='surface_seal_material_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Surface Seal Material')
     surface_seal_depth = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Surface Seal Depth')
@@ -832,7 +832,7 @@ class Well(AuditModel):
 
     total_depth_drilled = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Total Depth Drilled')
     finished_well_depth = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Finished Well Depth')
-    final_casing_stick_up = models.DecimalField(max_digits=6, decimal_places=3, blank=True, null=True, verbose_name='Final Stick Up')
+    final_casing_stick_up = models.DecimalField(max_digits=6, decimal_places=3, blank=True, null=True, verbose_name='Final Casing Stick Up')
     bedrock_depth = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Depth to Bedrock')
     water_supply_system_name = models.CharField(max_length=80, blank=True, null=True, verbose_name='Water Supply System Name')
     water_supply_system_well_name = models.CharField(max_length=80, blank=True, null=True, verbose_name='Water Supply System Well Name')
@@ -841,7 +841,7 @@ class Well(AuditModel):
     artesian_flow = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Artesian Flow')
     artesian_pressure = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Artesian Pressure')
     well_cap_type = models.CharField(max_length=40, blank=True, verbose_name='Well Cap')
-    well_disinfected = models.BooleanField(default=False, verbose_name='Well Disinfected?', choices=((False, 'No'), (True, 'Yes')))
+    well_disinfected = models.BooleanField(default=False, verbose_name='Well Disinfected', choices=((False, 'No'), (True, 'Yes')))
 
     comments = models.CharField(max_length=3000, blank=True)
     alternative_specs_submitted = models.BooleanField(default=False, verbose_name='Alternative specs submitted (if required)')
@@ -849,9 +849,9 @@ class Well(AuditModel):
     well_yield_unit = models.ForeignKey(WellYieldUnit, db_column='well_yield_unit_guid', on_delete=models.CASCADE, blank=True, null=True)
     diameter = models.CharField(max_length=9, blank=True)  #want to be integer in future
 
-    observation_well_number = models.PositiveIntegerField(blank=True, null=True)
-    observation_well_status = models.CharField(max_length=25, blank=True, null=True)
-    ems = models.CharField(max_length=10, blank=True, null=True)
+    observation_well_number = models.PositiveIntegerField(blank=True, null=True, verbose_name="Observation Well Number")
+    observation_well_status = models.CharField(max_length=25, blank=True, null=True, verbose_name="Observation Well Status")
+    ems = models.CharField(max_length=10, blank=True, null=True, verbose_name="Environmental Monitoring System (EMS) ID")
 
     tracker = FieldTracker()
 
@@ -886,7 +886,7 @@ class ActivitySubmission(AuditModel):
     well_activity_type = models.ForeignKey(WellActivityType, db_column='well_activity_type_guid', on_delete=models.CASCADE, verbose_name='Type of Work')
     well_class = models.ForeignKey(WellClass, db_column='well_class_guid', on_delete=models.CASCADE, verbose_name='Well Class')
     well_subclass = models.ForeignKey(WellSubclass, db_column='well_subclass_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Well Subclass')
-    intended_water_use = models.ForeignKey(IntendedWaterUse, db_column='intended_water_use_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Water Supply Well Intended Water Use')
+    intended_water_use = models.ForeignKey(IntendedWaterUse, db_column='intended_water_use_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Intended Water Use')
     driller_responsible = models.ForeignKey(Driller, db_column='driller_responsible_guid', on_delete=models.CASCADE, verbose_name='Person Responsible for Drilling')
     driller_name = models.CharField(max_length=200, blank=True, verbose_name='Name of Person Who Did the Work')
     consultant_name = models.CharField(max_length=200, blank=True, verbose_name='Consultant Name')
@@ -922,7 +922,7 @@ class ActivitySubmission(AuditModel):
     ground_elevation_method = models.ForeignKey(GroundElevationMethod, db_column='ground_elevation_method_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Method for Determining Ground Elevation')
     drilling_method = models.ForeignKey(DrillingMethod, db_column='drilling_method_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Drilling Method')
     other_drilling_method = models.CharField(max_length=50, blank=True, verbose_name='Specify Other Drilling Method')
-    well_orientation = models.BooleanField(default=True, verbose_name='Well Orientation', choices=((True, 'vertical'), (False, 'horizontal')))
+    well_orientation = models.BooleanField(default=True, verbose_name='Orientation of Well', choices=((True, 'vertical'), (False, 'horizontal')))
     water_supply_system_name = models.CharField(max_length=50, blank=True, verbose_name='Water Supply System Name')
     water_supply_system_well_name = models.CharField(max_length=50, blank=True, verbose_name='Water Supply System Well Name')
 
@@ -963,7 +963,7 @@ class ActivitySubmission(AuditModel):
 
     total_depth_drilled = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Total Depth Drilled')
     finished_well_depth = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Finished Well Depth')
-    final_casing_stick_up = models.DecimalField(max_digits=5, decimal_places=3, blank=True, null=True, verbose_name='Final Stick Up')
+    final_casing_stick_up = models.DecimalField(max_digits=5, decimal_places=3, blank=True, null=True, verbose_name='Final Casing Stick Up')
     bedrock_depth = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Depth to Bedrock')
     static_water_level = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Static Water Level')
     well_yield = models.DecimalField(max_digits=8, decimal_places=3, blank=True, null=True, verbose_name='Estimated Well Yield')
