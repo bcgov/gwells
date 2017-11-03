@@ -43,7 +43,6 @@ class AuditModel(models.Model):
     class Meta:
         abstract = True
 
-
 class ProvinceState(AuditModel):
     """
     Lookup of Provinces/States.
@@ -63,8 +62,6 @@ class ProvinceState(AuditModel):
     def __str__(self):
         return self.description
 
-
-
 class LandDistrict(AuditModel):
     """
     Lookup of Land Districts.
@@ -81,8 +78,6 @@ class LandDistrict(AuditModel):
     def __str__(self):
         return self.name
 
-
-
 class WellYieldUnit(AuditModel):
     """
     Units of Well Yield.
@@ -98,8 +93,6 @@ class WellYieldUnit(AuditModel):
 
     def __str__(self):
         return self.description
-
-
 
 class WellActivityType(AuditModel):
     """
@@ -118,8 +111,6 @@ class WellActivityType(AuditModel):
     def __str__(self):
         return self.description
 
-
-
 class WellClass(AuditModel):
     """
     Class of Well type.
@@ -136,8 +127,6 @@ class WellClass(AuditModel):
 
     def __str__(self):
         return self.description
-
-
 
 class WellSubclass(AuditModel):
     """
@@ -166,8 +155,6 @@ class WellSubclass(AuditModel):
     def __str__(self):
         return self.description
 
-
-
 class WellStatus(AuditModel):
     """
     Well Status.
@@ -185,8 +172,6 @@ class WellStatus(AuditModel):
     def save(self, *args, **kwargs):
         self.validate()
         super(WellStatus, self).save(*args, **kwargs)
-
-
 
 class LicencedStatus(AuditModel):
     """
@@ -206,8 +191,6 @@ class LicencedStatus(AuditModel):
         self.validate()
         super(LicencedStatus, self).save(*args, **kwargs)
 
-
-
 class IntendedWaterUse(AuditModel):
     """
     Usage of Wells (water supply).
@@ -225,8 +208,6 @@ class IntendedWaterUse(AuditModel):
     def __str__(self):
         return self.description
 
-
-
 class DrillingCompany(AuditModel):
     """
     Companies who perform drilling.
@@ -242,8 +223,6 @@ class DrillingCompany(AuditModel):
 
     def __str__(self):
         return self.name
-
-
 
 class Driller(AuditModel):
     """
@@ -261,8 +240,6 @@ class Driller(AuditModel):
 
     def __str__(self):
         return '%s %s - %s' % (self.first_name, self.surname, self.registration_number)
-
-
 
 class GroundElevationMethod(AuditModel):
     """
@@ -283,8 +260,6 @@ class GroundElevationMethod(AuditModel):
     def __str__(self):
         return self.description
 
-
-
 class DrillingMethod(AuditModel):
     """
     The method used to drill a well. For example, air rotary, dual rotary, cable tool, excavating, other.
@@ -301,8 +276,6 @@ class DrillingMethod(AuditModel):
 
     def __str__(self):
         return self.description
-
-
 
 class SurficialMaterial(AuditModel):
     """
@@ -321,8 +294,6 @@ class SurficialMaterial(AuditModel):
     def __str__(self):
         return self.description
 
-
-
 class BedrockMaterial(AuditModel):
     """
     The bedrock material encountered in lithology
@@ -339,8 +310,6 @@ class BedrockMaterial(AuditModel):
 
     def __str__(self):
         return self.description
-
-
 
 class BedrockMaterialDescriptor(AuditModel):
     """
@@ -359,8 +328,6 @@ class BedrockMaterialDescriptor(AuditModel):
     def __str__(self):
         return self.description
 
-
-
 class LithologyStructure(AuditModel):
     """
     Structure of the lithology
@@ -377,8 +344,6 @@ class LithologyStructure(AuditModel):
 
     def __str__(self):
         return self.description
-
-
 
 class LithologyColour(AuditModel):
     """
@@ -397,8 +362,6 @@ class LithologyColour(AuditModel):
     def __str__(self):
         return self.description
 
-
-
 class LithologyHardness(AuditModel):
     """
     Hardness of the lithology
@@ -415,8 +378,6 @@ class LithologyHardness(AuditModel):
 
     def __str__(self):
         return self.description
-
-
 
 class LithologyMoisture(AuditModel):
     """
@@ -435,8 +396,6 @@ class LithologyMoisture(AuditModel):
     def __str__(self):
         return self.description
 
-
-
 class CasingType(AuditModel):
     """
     Type of Casing used on a well
@@ -453,8 +412,6 @@ class CasingType(AuditModel):
 
     def __str__(self):
         return self.description
-
-
 
 class CasingMaterial(AuditModel):
     """
@@ -473,8 +430,6 @@ class CasingMaterial(AuditModel):
     def __str__(self):
         return self.description
 
-
-
 class SurfaceSealMaterial(AuditModel):
     """
      Sealant material used that is installed in the annular space around the outside of the outermost casing and between multiple casings of a well.
@@ -491,8 +446,6 @@ class SurfaceSealMaterial(AuditModel):
 
     def __str__(self):
         return self.description
-
-
 
 class SurfaceSealMethod(AuditModel):
     """
@@ -511,8 +464,6 @@ class SurfaceSealMethod(AuditModel):
     def __str__(self):
         return self.description
 
-
-
 class LinerMaterial(AuditModel):
     """
      Liner material installed in a well to protect the well pump or other works in the well from damage.
@@ -529,8 +480,6 @@ class LinerMaterial(AuditModel):
 
     def __str__(self):
         return self.description
-
-
 
 class ScreenIntake(AuditModel):
     """
@@ -549,8 +498,6 @@ class ScreenIntake(AuditModel):
     def __str__(self):
         return self.description
 
-
-
 class ScreenType(AuditModel):
     """
      The possible types of well screens, i.e. Telescope, Pipe Size.
@@ -567,8 +514,6 @@ class ScreenType(AuditModel):
 
     def __str__(self):
         return self.description
-
-
 
 class ScreenMaterial(AuditModel):
     """
@@ -587,8 +532,6 @@ class ScreenMaterial(AuditModel):
     def __str__(self):
         return self.description
 
-
-
 class ScreenOpening(AuditModel):
     """
      The type of opening on a well screen, i.e. Continuous Slot, Slotted, Perforated Pipe.
@@ -605,8 +548,6 @@ class ScreenOpening(AuditModel):
 
     def __str__(self):
         return self.description
-
-
 
 class ScreenBottom(AuditModel):
     """
@@ -625,8 +566,6 @@ class ScreenBottom(AuditModel):
     def __str__(self):
         return self.description
 
-
-
 class ScreenAssemblyType(AuditModel):
     """
      The category of screen assembly, i.e. K-Packer & Riser, K-Packer, Lead Packer, Riser Pipe, Screen, Screen Blank, Tail Pipe.
@@ -643,8 +582,6 @@ class ScreenAssemblyType(AuditModel):
 
     def __str__(self):
         return self.description
-
-
 
 class FilterPackMaterial(AuditModel):
     """
@@ -663,8 +600,6 @@ class FilterPackMaterial(AuditModel):
     def __str__(self):
         return self.description
 
-
-
 class FilterPackMaterialSize(AuditModel):
     """
      The size of material used to pack a well filter, e.g. 1.0 - 2.0 mm, 2.0 - 4.0 mm, 4.0 - 8.0 mm.
@@ -681,8 +616,6 @@ class FilterPackMaterialSize(AuditModel):
 
     def __str__(self):
         return self.description
-
-
 
 class DevelopmentMethod(AuditModel):
     """
@@ -701,8 +634,6 @@ class DevelopmentMethod(AuditModel):
     def __str__(self):
         return self.description
 
-
-
 class YieldEstimationMethod(AuditModel):
     """
      The method used to estimate the yield of a well, e.g. Air Lifting, Bailing, Pumping.
@@ -720,8 +651,6 @@ class YieldEstimationMethod(AuditModel):
     def __str__(self):
         return self.description
 
-
-
 class WaterQualityCharacteristic(AuditModel):
     """
      The characteristic of the well water, e.g. Fresh, Salty, Clear.
@@ -738,8 +667,6 @@ class WaterQualityCharacteristic(AuditModel):
 
     def __str__(self):
         return self.description
-
-
 
 class Well(AuditModel):
     """
@@ -853,6 +780,7 @@ class Well(AuditModel):
     observation_well_status = models.CharField(max_length=25, blank=True, null=True)
     ems = models.CharField(max_length=10, blank=True, null=True)
 
+    utm_zone_code = models.CharField(max_length=10, blank=True, null=True)
     tracker = FieldTracker()
 
     class Meta:
@@ -874,7 +802,6 @@ class Well(AuditModel):
             "street_address": self.street_address,
             "well_tag_number": self.well_tag_number
         }
-
 
 class ActivitySubmission(AuditModel):
     """
@@ -1072,8 +999,6 @@ class ActivitySubmission(AuditModel):
         else:
             return '%s %s' % (self.activity_submission_guid, self.street_address)
 
-
-
 class LtsaOwner(AuditModel):
     """
     Well owner information.
@@ -1094,8 +1019,6 @@ class LtsaOwner(AuditModel):
 
     def __str__(self):
         return '%s %s' % (self.full_name, self.mailing_address)
-
-
 
 class LithologyDescription(AuditModel):
     """
@@ -1126,8 +1049,6 @@ class LithologyDescription(AuditModel):
         else:
             return 'well {} {} {}'.format(self.well, self.lithology_from, self.lithology_to)
 
-
-
 class Casing(AuditModel):
     """
     Casing information
@@ -1152,8 +1073,6 @@ class Casing(AuditModel):
         else:
             return 'well {} {} {}'.format(self.well, self.casing_from, self.casing_to)
 
-
-
 class LinerPerforation(AuditModel):
     """
     Perforation in a well liner
@@ -1172,8 +1091,6 @@ class LinerPerforation(AuditModel):
             return 'activity_submission {} {} {}'.format(self.activity_submission, self.liner_perforation_from, self.liner_perforation_to)
         else:
             return 'well {} {} {}'.format(self.well, self.liner_perforation_from, self.liner_perforation_to)
-
-
 
 class Screen(AuditModel):
     """
@@ -1196,8 +1113,6 @@ class Screen(AuditModel):
             return 'activity_submission {} {} {}'.format(self.activity_submission, self.screen_from, self.screen_to)
         else:
             return 'well {} {} {}'.format(self.well, self.screen_from, self.screen_to)
-
-
 
 class ProductionData(AuditModel):
     """
