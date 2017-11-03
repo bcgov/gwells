@@ -61,7 +61,7 @@ BEGIN
     alteration_end_date                ,
     decommission_start_date            ,
     decommission_end_date              ,
-    /*drilling_company_guid          ,*/
+    drilling_company_guid              ,
     final_casing_stick_up              ,
     artesian_flow                      ,
     artesian_pressure                  ,
@@ -172,7 +172,7 @@ BEGIN
     WELLS.ALTERATION_END_DATE AT TIME ZONE 'GMT'                           ,
     WELLS.CLOSURE_START_DATE AT TIME ZONE 'GMT'                            ,
     WELLS.CLOSURE_END_DATE AT TIME ZONE 'GMT'                              ,
-    /*DRILLING_COMPANY.DRILLING_COMPANY_GUID                                 ,*/
+    DRILLING_COMPANY.DRILLING_COMPANY_GUID                                 ,
     WELLS.FINAL_CASING_STICK_UP                                            ,
     WELLS.ARTESIAN_FLOW_VALUE                                              ,
     WELLS.ARTESIAN_PRESSURE                                                ,
@@ -186,7 +186,7 @@ BEGIN
     WELLS.WHO_CREATED as who_created                                       ,
     coalesce(WELLS.WHO_UPDATED,WELLS.WHO_CREATED) as who_updated
   FROM WELLS.WELLS_WELLS WELLS LEFT OUTER JOIN WELLS.WELLS_OWNERS OWNER ON OWNER.OWNER_ID=WELLS.OWNER_ID
-                                    /*JOIN GWELLS.DRILLING_COMPANY DRILLING_COMPANY ON WELLS.DRILLER_COMPANY_CODE=DRILLING_COMPANY.DRILLING_COMPANY_CODE*/
+                               LEFT OUTER JOIN GWELLS_DRILLING_COMPANY DRILLING_COMPANY ON WELLS.DRILLER_COMPANY_CODE=DRILLING_COMPANY.DRILLING_COMPANY_CODE
   WHERE WELLS.ACCEPTANCE_STATUS_CODE != 'REJECTED';
 
   raise notice 'Preparing ETL report ...';

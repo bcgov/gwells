@@ -42,6 +42,32 @@ SELECT
 FROM WELLS.WELLS_LEGAL_LAND_DIST_CODES
 ORDER BY LEGAL_LAND_DISTRICT_CODE ASC;
 
+raise notice '... importing gwells_drilling_company data table';
+INSERT INTO gwells_drilling_company (
+  drilling_company_guid,
+  drilling_company_code,
+  name,
+  is_hidden,
+  who_created,
+  when_created,
+  who_updated,
+  when_updated
+)
+SELECT
+  gen_random_uuid(),
+  driller_company_code,
+  driller_company_name,
+  CASE status_flag
+    WHEN 'Y' THEN TRUE::boolean
+    WHEN 'N' THEN FALSE::boolean
+  END AS status_flag,
+  who_created,
+  when_created,
+  who_updated,
+  when_updated
+FROM
+  wells.wells_driller_codes;--> no WHERE restrictions
+
 
 raise notice 'Finished copy_remote_code_tables() procedure.';
 END;

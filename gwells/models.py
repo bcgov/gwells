@@ -30,7 +30,7 @@ class AuditModel(models.Model):
     """
     who_created = models.CharField(max_length=30)
     when_created = models.DateTimeField(blank=True, null=True)
-    who_updated = models.CharField(max_length=30)
+    who_updated = models.CharField(max_length=30, null=True)
     when_updated = models.DateTimeField(blank=True, null=True)
 
     def save(self, *args, **kwargs):
