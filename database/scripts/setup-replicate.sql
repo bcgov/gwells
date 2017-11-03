@@ -7,7 +7,7 @@ CREATE OR REPLACE FUNCTION setup_replicate() RETURNS void AS $$
 BEGIN
 	raise notice 'Starting setup_replicate() procedure...';
 	PERFORM public.clear_tables();
-	PERFORM public.create_xform_well_gwells_ETL_table();
+	PERFORM public.copy_remote_code_tables();
 	raise notice 'Finished setup_replicate() procedure.';
 END;
 $$ LANGUAGE plpgsql;

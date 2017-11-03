@@ -6,7 +6,8 @@ BEGIN
 	raise notice 'Starting replicate() procedure...';
 
 	raise notice '...replicating...';
-	PERFORM public.copy_remote_code_tables();
+
+	PERFORM public.create_xform_gwells_well_ETL_table();
 	PERFORM public.populate_xform_gwells_well();
 	PERFORM public.populate_gwells_from_xform();
 
