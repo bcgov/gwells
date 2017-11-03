@@ -69,7 +69,8 @@ GRANT ALL ON SCHEMA public TO ${DATABASE_USER};
 \include create-xform-gwells-well-ETL-table.sql
 \include copy-remote-code-tables.sql
 \include populate-xform-gwells-well.sql
-\include populate-gwells-from-xform.sql
+\include populate-gwells-well-from-xform.sql
+
 \include setup-replicate.sql
 \include replicate.sql
 

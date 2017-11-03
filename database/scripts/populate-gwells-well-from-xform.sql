@@ -75,7 +75,7 @@ BEGIN
 	  alteration_end_date                ,
 	  decommission_start_date            ,
 	  decommission_end_date              ,
-	  /*drilling_company_guid*/
+	  drilling_company_guid              ,
     final_casing_stick_up              ,
     artesian_flow                      ,
     artesian_pressure                  ,
@@ -150,7 +150,7 @@ BEGIN
 		xform.alteration_end_date                      ,
 		xform.decommission_start_date                  ,
 		xform.decommission_end_date                    ,
-		/*drilling_company.drilling_company_guid*/
+		xform.drilling_company_guid                    ,
     xform.final_casing_stick_up                    ,
     xform.artesian_flow                            ,
     xform.artesian_pressure                        ,
@@ -164,7 +164,7 @@ BEGIN
 	LEFT OUTER JOIN gwells_licenced_status licenced_status ON xform.LICENCED_STATUS=upper(licenced_status.code)
 	LEFT OUTER JOIN gwells_land_district     land ON xform.LEGAL_LAND_DISTRICT_CODE=land.code
 	INNER      JOIN gwells_well_class       class ON xform.CLASS_OF_WELL_CODCLASSIFIED_BY=class.code
-	LEFT OUTER JOIN gwells_well_subclass subclass ON xform.SUBCLASS_OF_WELL_CLASSIFIED_BY=subclass.code AND subclass.well_class_guid = class.well_class_guid ;
+	LEFT OUTER JOIN gwells_well_subclass subclass ON xform.SUBCLASS_OF_WELL_CLASSIFIED_BY=subclass.code AND subclass.well_class_guid = class.well_class_guid;
 
   raise notice 'Preparing ETL report ...';
 

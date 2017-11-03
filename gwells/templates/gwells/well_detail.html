@@ -201,7 +201,9 @@
                 <td>
                   <span id="decommission_date" data-decommission-date="{{ well.decommission_end_date }}">{{ well.decommission_end_date|default_if_none:'&nbsp;' }}</span>
                 </td>
-                <td><span id="drilling_company" data-drilling-company>{{ wells.drilling_company.name|default_if_none:'&nbsp;'}}</span></td>
+                <td>
+                  <span id="drilling_company" data-drilling-company="{{ well.drilling_company }}">{{ well.drilling_company.name|default_if_none:'&nbsp;'}}</span>
+                </td>
             </tr>
             {# endfor #}
         </tbody>
@@ -371,4 +373,3 @@
 
     </script>
     {% endblock %}
-
