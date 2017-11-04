@@ -83,7 +83,11 @@ BEGIN
     water_supply_system_name           ,
     water_supply_system_well_name      ,
     ems                                ,
-    utm_zone_code
+    utm_zone_code                      ,
+    utm_northing                       ,
+    utm_easting                        ,
+    utm_accuracy_code                  ,
+		bcgs_id
 	  )
 	SELECT
 		xform.well_tag_number                          ,
@@ -159,7 +163,11 @@ BEGIN
     xform.water_supply_system_name                 ,
     xform.water_supply_system_well_name            ,
     xform.ems                                      ,
-    xform.utm_zone_code
+    xform.utm_zone_code                            ,
+    xform.utm_northing                             ,
+    xform.utm_easting                              ,
+    xform.utm_accuracy_code                        ,
+		xform.bcgs_id
 	FROM xform_gwells_well xform
 	LEFT OUTER JOIN gwells_intended_water_use use ON xform.WELL_USE_CODE=use.code
 	LEFT OUTER JOIN gwells_well_status well_status ON xform.STATUS_OF_WELL_GUID=upper(well_status.code)
