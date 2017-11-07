@@ -214,7 +214,7 @@ class DrillingCompany(AuditModel):
     """
     drilling_company_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     drilling_company_code = models.CharField(max_length=10, blank=True, null=True)
-    name = models.CharField(max_length=200, unique=True)
+    name = models.CharField(max_length=200)
     is_hidden = models.BooleanField(default=False)
 
     class Meta:
@@ -669,6 +669,17 @@ class WaterQualityCharacteristic(AuditModel):
     def __str__(self):
         return self.description
 
+class BCGS_Numbers(AuditModel):
+    bcgs_id = models.BigIntegerField(primary_key=True, default=uuid.uuid4, editable=False)
+    bcgs_number = models.CharField(max_length=20, verbose_name="BCGS Mapsheet Number")
+
+    class Meta:
+        db_table = 'gwells_bcgs_numbers'
+        ordering = ['bcgs_number']
+
+    def __str__(self):
+        return self.description
+
 class Well(AuditModel):
     """
     Well information.
@@ -781,6 +792,12 @@ class Well(AuditModel):
     observation_well_status = models.CharField(max_length=25, blank=True, null=True, verbose_name="Observation Well Status")
     ems = models.CharField(max_length=10, blank=True, null=True, verbose_name="Environmental Monitoring System (EMS) ID")
 
+    utm_zone_code = models.CharField(max_length=10, blank=True, null=True, verbose_name="Zone")
+    utm_northing = models.IntegerField(blank=True, null=True, verbose_name="UTM Northing")
+    utm_easting = models.IntegerField(blank=True, null=True, verbose_name="UTM Easting")
+    utm_accuracy_code = models.CharField(max_length=10, blank=True, null=True, verbose_name="Location Accuracy Code")
+    bcgs_id = models.ForeignKey(BCGS_Numbers, db_column='bcgs_id', on_delete=models.CASCADE, blank=True, null=True, verbose_name="BCGS Mapsheet Number")
+    models.BigIntegerField(blank=True, null=True, verbose_name="BCGS Mapsheet Number")
     tracker = FieldTracker()
 
     class Meta:
