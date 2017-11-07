@@ -19,6 +19,6 @@ screens.screen_from                           ,
 screens.screen_to                             ,
 screens.screen_internal_diameter              ,
 screen_assembly_type.screen_assembly_type_guid,
-screens.slot_size                             
+screens.slot_size
 FROM wells.screens screens
      LEFT OUTER JOIN gwells_screen_assembly_type screen_assembly_type ON screens.screen_assembly_code=screen_assembly_type.screen_assembly_code
