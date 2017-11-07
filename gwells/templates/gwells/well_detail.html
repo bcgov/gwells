@@ -158,18 +158,39 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <label for="latitude">{% verbose_name well "latitude" %}:</label>
                     <span id="latitude" data-latitude="{{ well.latitude }}">{{ well.latitude|default_if_none:'&nbsp;' }}</span>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <label for="longitude">{% verbose_name well "longitude" %}:</label>
                     <span id="longitude" data-longitude="{{ well.longitude }}">{{ well.longitude|default_if_none:'&nbsp;' }}</span>
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-12">
-                    &nbsp;
+              <div class="col-md-4">
+                  <label for="utm_zone_code">{% verbose_name well "utm_zone_code" %}:</label>
+                  <span id="utm_zone_code" data-utm-zone-code="{{ well.longitude }}">{{ well.utm_zone_code|default_if_none:'&nbsp;' }}</span>
+              </div>
+              <div class="col-md-4">
+                  <label for="utm_northing">{% verbose_name well "utm_northing" %}:</label>
+                  <span id="utm_northing" data-utm-northing="{{ well.utm_northing }}">{{ well.utm_northing|default_if_none:'&nbsp;' }}</span>
+              </div>
+              <div class="col-md-4">
+                  <label for="utm_easting">{% verbose_name well "utm_easting" %}:</label>
+                  <span id="utm_easting" data-utm-easting="{{ well.utm_easting }}">{{ well.utm_easting|default_if_none:'&nbsp;' }}</span>
+              </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                  <label for="utm_accuracy_code">{% verbose_name well "utm_accuracy_code" %}:</label>
+                  <span id="utm_accuracy_code" data-utm-accuracy-code="{{ well.utm_accuracy_code }}">{{ well.utm_accuracy_code|default_if_none:'&nbsp;' }}</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                  <label for="bcgs_mapsheet_number">{% verbose_name well "bcgs_id" %}:</label>
+                  <span id="bcgs_mapsheet_number" data-bcgs-mapsheet-number="{{ well.bcgs_id.bcgs_mapsheet_number }}">{{ well.bcgs_id.bcgs_number|default_if_none:'&nbsp;' }}</span>
                 </div>
             </div>
         </div>
