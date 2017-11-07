@@ -17,8 +17,8 @@
 \copy gwells_ground_elevation_method (ground_elevation_method_guid,code,description,is_hidden,sort_order,when_created,when_updated,who_created,who_updated) from 'gwells_ground_elevation_method.csv' with header delimiter ',' CSV ;
 \echo '... loading gwells_well_status code table'
 \copy gwells_well_status (well_status_guid,code,description,is_hidden,sort_order,when_created,when_updated,who_created,who_updated) from 'gwells_well_status.csv' with header delimiter ',' CSV ;
-\echo '... loading gwells_licensed_status code table'
-\copy gwells_licenced_status (well_licenced_status_guid,code,description,is_hidden,sort_order,when_created,when_updated,who_created,who_updated) from 'gwells_licensed_status.csv' with header delimiter ',' CSV ;
+\echo '... loading gwells_licenced_status code table'
+\copy gwells_licenced_status (well_licenced_status_guid,code,description,is_hidden,sort_order,when_created,when_updated,who_created,who_updated) from 'gwells_licenced_status.csv' with header delimiter ',' CSV ;
 \echo '... loading gwells_drilling_company code table'
 \copy gwells_drilling_company (who_created,when_created,who_updated,when_updated,drilling_company_guid,drilling_company_code,name,is_hidden) from 'gwells_drilling_company.csv' with header delimiter ',' CSV ;
 \echo '... loading gwells_screen_intake_method code table'
