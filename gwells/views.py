@@ -19,7 +19,7 @@ from django.views import generic
 from django.views.generic.edit import FormView
 #from django.utils import timezone
 from formtools.wizard.views import SessionWizardView
-from .models import WellActivityType, WellYieldUnit, Well, ActivitySubmission, WellClass, ScreenIntake, LandDistrict
+from .models import WellActivityType, WellYieldUnit, Well, ActivitySubmission, WellClass, ScreenIntakeMethod, LandDistrict
 from .forms import SearchForm, ActivitySubmissionTypeAndClassForm, WellOwnerForm, ActivitySubmissionLocationForm, ActivitySubmissionGpsForm
 from .forms import ActivitySubmissionLithologyFormSet, ActivitySubmissionCasingFormSet, ActivitySubmissionSurfaceSealForm, ActivitySubmissionLinerPerforationFormSet
 from .forms import ActivitySubmissionScreenIntakeForm, ActivitySubmissionScreenFormSet, ActivitySubmissionFilterPackForm, ActivitySubmissionDevelopmentForm, ProductionDataFormSet
@@ -38,7 +38,7 @@ class HomeView(generic.TemplateView):
         """
         Return the context for the page.
         """
-        context = super(HomeView, self).get_context_data(**kwargs) 
+        context = super(HomeView, self).get_context_data(**kwargs)
         return context
 
 def common_well_search(request):
@@ -47,7 +47,7 @@ def common_well_search(request):
     """
     well_results = None
     well_results_json = '[]'
-   
+
     form = SearchForm(request.GET)
     if form.is_valid():
         well_results = form.process()
@@ -75,12 +75,12 @@ def well_search(request):
             start_lat_long = request.GET['start_lat_long']
             end_lat_long = request.GET['end_lat_long']
             lat_long_box = json.dumps(
-                {'startCorner': start_lat_long, 'endCorner': end_lat_long}, 
+                {'startCorner': start_lat_long, 'endCorner': end_lat_long},
                 cls=DjangoJSONEncoder)
         form, well_results, well_results_json = common_well_search(request)
     else:
         form = SearchForm()
-  
+
     if well_results:
         if len(well_results) > SearchForm.WELL_RESULTS_LIMIT:
             well_results_overflow = ('Query returned more than %d wells. Please refine your search or select a smaller area to look for wells in.' % SearchForm.WELL_RESULTS_LIMIT)
@@ -124,7 +124,7 @@ class WellDetailView(generic.DetailView):
         """
         Return the context for the home page.
         """
-        context = super(WellDetailView, self).get_context_data(**kwargs) 
+        context = super(WellDetailView, self).get_context_data(**kwargs)
         return context
 
 
@@ -141,7 +141,7 @@ class ActivitySubmissionListView(generic.ListView):
         """
         Return the context for the page.
         """
-        context = super(ActivitySubmissionListView, self).get_context_data(**kwargs) 
+        context = super(ActivitySubmissionListView, self).get_context_data(**kwargs)
         return context
 
 
@@ -154,7 +154,7 @@ class ActivitySubmissionDetailView(generic.DetailView):
         """
         Return the context for the page.
         """
-        context = super(ActivitySubmissionDetailView, self).get_context_data(**kwargs) 
+        context = super(ActivitySubmissionDetailView, self).get_context_data(**kwargs)
         return context
 
 FORMS = [('type_and_class', ActivitySubmissionTypeAndClassForm),
@@ -198,12 +198,12 @@ TEMPLATES = {'type_and_class': 'gwells/activity_submission_form.html',
 class ActivitySubmissionWizardView(SessionWizardView):
     instance = None
 
-    
+
     def get_context_data(self, **kwargs):
         """
         Return the context for the page.
         """
-        context = super(ActivitySubmissionWizardView, self).get_context_data(**kwargs) 
+        context = super(ActivitySubmissionWizardView, self).get_context_data(**kwargs)
         return context
 
     def get_template_names(self):
@@ -226,7 +226,7 @@ class ActivitySubmissionWizardView(SessionWizardView):
         if self.instance is None:
             self.instance = ActivitySubmission()
         return self.instance
-    
+
     def get_form_initial(self, step):
         initial = {}
 
@@ -257,7 +257,7 @@ class ActivitySubmissionWizardView(SessionWizardView):
             type_and_class_data = self.get_cleaned_data_for_step('type_and_class')
             if type_and_class_data and type_and_class_data.get('well_class'):
                 initial.update({'well_class_code': type_and_class_data.get('well_class').code})
-            
+
         return initial
 
     def done(self, form_list, form_dict, **kwargs):

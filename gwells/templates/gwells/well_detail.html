@@ -316,62 +316,96 @@
     </div>
 </fieldset>
 
-    <div>
-        <br /><br />
-        <a id="well_tag_number_link" href="https://a100.gov.bc.ca/pub/wells/wellsreport1.do?wellTagNumber={{ well.well_tag_number }}">View Report</a>
+<fieldset>
+    <legend>Screen Details</legend>
+    <div class="row">
+        <div class="col-md-6">
+            <label for="intake_method">{% verbose_name well "screen_intake_method" %}:</label>
+            <span id="water_supply_system_well_name">{{ well.screen_intake_method.description|default_if_none:'&nbsp;' }}</span>
+        </div>
     </div>
-    {% endblock %}
+    <div class="row">
+        <div class="col-md-6">
+            <label for="screen_type">{% verbose_name well "screen_type" %}:</label>
+            <span id="screen_type">{{ well.screen_type.description|default_if_none:'&nbsp;' }}</span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <label for="screen_material">{% verbose_name well "screen_material" %}:</label>
+            <span id="screen_material">{{ well.screen_material.description|default_if_none:'&nbsp;' }}</span>
+        </div>
+    </div>
+    <div class="row">
+    <div class="col-md-6">
+        <label for="screen_opening">{% verbose_name well "screen_opening" %}:</label>
+        <span id="screen_opening">{{ well.screen_opening.description|default_if_none:'&nbsp;' }}</span>
+    </div>
+    <div class="row">
+    <div class="col-md-6">
+        <label for="screen_bottom_type">{% verbose_name well "screen_bottom" %}:</label>
+        <span id="screen_bottom_type">{{ well.screen_bottom.description|default_if_none:'&nbsp;' }}</span>
+    </div>
+</div>
+</div>
+</fieldset>
 
-    {% block jqscript_block %}
-    <script>
-        var detailMap = null;
-        // Options for creating the detailMap. This map instance opens with a pushpin over the location of the well
-        // of interest, and (as with all maps with a pushpin) the map issues an AJAX query to show the surrounding wells
-        // within the map's bounding box, which are displayed as circleMarkers. The map also has limited zoom capability,
-        // so that users can find further surrounding wells. None of the wells (circleMarkers or the pushpin) is interactive.
-        var detailMapOptions = {
-            SEARCH_URL: "{% url 'map_well_search' %}",
-            // The ID of the addMap div.
-            mapNodeId: 'detail-map',
-            // The initial centre of the map
-            initCentre: null, // Will be filled in before call in $(document).ready()
-            // Maximum zoom of the map (i.e., how far it can be zoomed in)
-            maxZoom: 17,
-            // Minimum zoom of the map (i.e., how far it can be zoomed out)
-            minZoom: 10,
-            // All zooms should remain centred
-            centreZoom: true,
-            // The detailMap cannot be panned
-            canPan: false,
-            // ESRI layers associated with the map
-            esriLayers: [
-                {
-                    url: 'https://maps.gov.bc.ca/arcserver/rest/services/Province/roads_wm/MapServer'
-                }
-            ],
-            // WMS layers associated with the map
-            wmsLayers: [
-                {
-                    rootUrl: 'https://openmaps.gov.bc.ca/geo/pub/WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW/ows?',
-                    format: 'image/png',
-                    layers: 'pub:WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW',
-                    styles: 'PMBC_Parcel_Fabric_Cadastre_Outlined',
-                    transparent: true
-                }
-            ],
-            wellPushpinInit: null, // Will be filled in before call in $(document).ready()
-            externalAttributionNodeId: 'attribution' // The ID of the external node to contain the attribution.
-        };
+<div>
+    <br /><br />
+    <a id="well_tag_number_link" href="https://a100.gov.bc.ca/pub/wells/wellsreport1.do?wellTagNumber={{ well.well_tag_number }}">View Report</a>
+</div>
+{% endblock %}
 
-        $(document).ready(function () {
-            var lat = $("#latitude").data("latitude");
-            var long = $("#longitude").data("longitude");
-            var guid = $("#guid-row").data("well-guid");
-            // The map starts centred on a given point at the lowest zoom level, and that point happens to contain the well of interest.
-            detailMapOptions.initCentre = [lat, long];
-            detailMapOptions.wellPushpinInit = { lat: lat, long: long, wellDetails: { guid: guid } };
-            detailMap = new WellsMap(detailMapOptions);
-        });
+{% block jqscript_block %}
+<script>
+    var detailMap = null;
+    // Options for creating the detailMap. This map instance opens with a pushpin over the location of the well
+    // of interest, and (as with all maps with a pushpin) the map issues an AJAX query to show the surrounding wells
+    // within the map's bounding box, which are displayed as circleMarkers. The map also has limited zoom capability,
+    // so that users can find further surrounding wells. None of the wells (circleMarkers or the pushpin) is interactive.
+    var detailMapOptions = {
+        SEARCH_URL: "{% url 'map_well_search' %}",
+        // The ID of the addMap div.
+        mapNodeId: 'detail-map',
+        // The initial centre of the map
+        initCentre: null, // Will be filled in before call in $(document).ready()
+        // Maximum zoom of the map (i.e., how far it can be zoomed in)
+        maxZoom: 17,
+        // Minimum zoom of the map (i.e., how far it can be zoomed out)
+        minZoom: 10,
+        // All zooms should remain centred
+        centreZoom: true,
+        // The detailMap cannot be panned
+        canPan: false,
+        // ESRI layers associated with the map
+        esriLayers: [
+            {
+                url: 'https://maps.gov.bc.ca/arcserver/rest/services/Province/roads_wm/MapServer'
+            }
+        ],
+        // WMS layers associated with the map
+        wmsLayers: [
+            {
+                rootUrl: 'https://openmaps.gov.bc.ca/geo/pub/WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW/ows?',
+                format: 'image/png',
+                layers: 'pub:WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW',
+                styles: 'PMBC_Parcel_Fabric_Cadastre_Outlined',
+                transparent: true
+            }
+        ],
+        wellPushpinInit: null, // Will be filled in before call in $(document).ready()
+        externalAttributionNodeId: 'attribution' // The ID of the external node to contain the attribution.
+    };
 
-    </script>
-    {% endblock %}
+    $(document).ready(function () {
+        var lat = $("#latitude").data("latitude");
+        var long = $("#longitude").data("longitude");
+        var guid = $("#guid-row").data("well-guid");
+        // The map starts centred on a given point at the lowest zoom level, and that point happens to contain the well of interest.
+        detailMapOptions.initCentre = [lat, long];
+        detailMapOptions.wellPushpinInit = { lat: lat, long: long, wellDetails: { guid: guid } };
+        detailMap = new WellsMap(detailMapOptions);
+    });
+
+</script>
+{% endblock %}

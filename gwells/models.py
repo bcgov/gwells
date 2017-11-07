@@ -43,7 +43,6 @@ class AuditModel(models.Model):
     class Meta:
         abstract = True
 
-
 class ProvinceState(AuditModel):
     """
     Lookup of Provinces/States.
@@ -63,8 +62,6 @@ class ProvinceState(AuditModel):
     def __str__(self):
         return self.description
 
-
-
 class LandDistrict(AuditModel):
     """
     Lookup of Land Districts.
@@ -81,8 +78,6 @@ class LandDistrict(AuditModel):
     def __str__(self):
         return self.name
 
-
-
 class WellYieldUnit(AuditModel):
     """
     Units of Well Yield.
@@ -98,8 +93,6 @@ class WellYieldUnit(AuditModel):
 
     def __str__(self):
         return self.description
-
-
 
 class WellActivityType(AuditModel):
     """
@@ -118,8 +111,6 @@ class WellActivityType(AuditModel):
     def __str__(self):
         return self.description
 
-
-
 class WellClass(AuditModel):
     """
     Class of Well type.
@@ -136,8 +127,6 @@ class WellClass(AuditModel):
 
     def __str__(self):
         return self.description
-
-
 
 class WellSubclass(AuditModel):
     """
@@ -166,8 +155,6 @@ class WellSubclass(AuditModel):
     def __str__(self):
         return self.description
 
-
-
 class WellStatus(AuditModel):
     """
     Well Status.
@@ -185,8 +172,6 @@ class WellStatus(AuditModel):
     def save(self, *args, **kwargs):
         self.validate()
         super(WellStatus, self).save(*args, **kwargs)
-
-
 
 class LicencedStatus(AuditModel):
     """
@@ -206,8 +191,6 @@ class LicencedStatus(AuditModel):
         self.validate()
         super(LicencedStatus, self).save(*args, **kwargs)
 
-
-
 class IntendedWaterUse(AuditModel):
     """
     Usage of Wells (water supply).
@@ -225,8 +208,6 @@ class IntendedWaterUse(AuditModel):
     def __str__(self):
         return self.description
 
-
-
 class DrillingCompany(AuditModel):
     """
     Companies who perform drilling.
@@ -242,8 +223,6 @@ class DrillingCompany(AuditModel):
 
     def __str__(self):
         return self.name
-
-
 
 class Driller(AuditModel):
     """
@@ -261,8 +240,6 @@ class Driller(AuditModel):
 
     def __str__(self):
         return '%s %s - %s' % (self.first_name, self.surname, self.registration_number)
-
-
 
 class GroundElevationMethod(AuditModel):
     """
@@ -283,8 +260,6 @@ class GroundElevationMethod(AuditModel):
     def __str__(self):
         return self.description
 
-
-
 class DrillingMethod(AuditModel):
     """
     The method used to drill a well. For example, air rotary, dual rotary, cable tool, excavating, other.
@@ -301,8 +276,6 @@ class DrillingMethod(AuditModel):
 
     def __str__(self):
         return self.description
-
-
 
 class SurficialMaterial(AuditModel):
     """
@@ -321,8 +294,6 @@ class SurficialMaterial(AuditModel):
     def __str__(self):
         return self.description
 
-
-
 class BedrockMaterial(AuditModel):
     """
     The bedrock material encountered in lithology
@@ -339,8 +310,6 @@ class BedrockMaterial(AuditModel):
 
     def __str__(self):
         return self.description
-
-
 
 class BedrockMaterialDescriptor(AuditModel):
     """
@@ -359,8 +328,6 @@ class BedrockMaterialDescriptor(AuditModel):
     def __str__(self):
         return self.description
 
-
-
 class LithologyStructure(AuditModel):
     """
     Structure of the lithology
@@ -377,8 +344,6 @@ class LithologyStructure(AuditModel):
 
     def __str__(self):
         return self.description
-
-
 
 class LithologyColour(AuditModel):
     """
@@ -397,8 +362,6 @@ class LithologyColour(AuditModel):
     def __str__(self):
         return self.description
 
-
-
 class LithologyHardness(AuditModel):
     """
     Hardness of the lithology
@@ -415,8 +378,6 @@ class LithologyHardness(AuditModel):
 
     def __str__(self):
         return self.description
-
-
 
 class LithologyMoisture(AuditModel):
     """
@@ -435,8 +396,6 @@ class LithologyMoisture(AuditModel):
     def __str__(self):
         return self.description
 
-
-
 class CasingType(AuditModel):
     """
     Type of Casing used on a well
@@ -453,8 +412,6 @@ class CasingType(AuditModel):
 
     def __str__(self):
         return self.description
-
-
 
 class CasingMaterial(AuditModel):
     """
@@ -473,8 +430,6 @@ class CasingMaterial(AuditModel):
     def __str__(self):
         return self.description
 
-
-
 class SurfaceSealMaterial(AuditModel):
     """
      Sealant material used that is installed in the annular space around the outside of the outermost casing and between multiple casings of a well.
@@ -491,8 +446,6 @@ class SurfaceSealMaterial(AuditModel):
 
     def __str__(self):
         return self.description
-
-
 
 class SurfaceSealMethod(AuditModel):
     """
@@ -511,8 +464,6 @@ class SurfaceSealMethod(AuditModel):
     def __str__(self):
         return self.description
 
-
-
 class LinerMaterial(AuditModel):
     """
      Liner material installed in a well to protect the well pump or other works in the well from damage.
@@ -530,33 +481,30 @@ class LinerMaterial(AuditModel):
     def __str__(self):
         return self.description
 
-
-
-class ScreenIntake(AuditModel):
+class ScreenIntakeMethod(AuditModel):
     """
      Refers to the type of intake mechanism for a well screen, i.e. Screen, Open Bottom, Uncased Hole.
     """
-    screen_intake_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    code = models.CharField(max_length=10, unique=True)
+    screen_intake_method_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    screen_intake_code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
+    status_flag = models.BooleanField(default=False, choices=((False, 'N'), (True, 'Y')))
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
 
     class Meta:
-        db_table = 'gwells_screen_intake'
+        db_table = 'gwells_screen_intake_method'
         ordering = ['sort_order', 'description']
 
     def __str__(self):
         return self.description
-
-
 
 class ScreenType(AuditModel):
     """
      The possible types of well screens, i.e. Telescope, Pipe Size.
     """
     screen_type_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    code = models.CharField(max_length=10, unique=True)
+    screen_type_code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
@@ -568,14 +516,12 @@ class ScreenType(AuditModel):
     def __str__(self):
         return self.description
 
-
-
 class ScreenMaterial(AuditModel):
     """
      The material used to construct a well screen, i.e. Plastic, Stainless Steel, Other.
     """
     screen_material_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    code = models.CharField(max_length=10, unique=True)
+    screen_material_code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
@@ -587,14 +533,12 @@ class ScreenMaterial(AuditModel):
     def __str__(self):
         return self.description
 
-
-
 class ScreenOpening(AuditModel):
     """
      The type of opening on a well screen, i.e. Continuous Slot, Slotted, Perforated Pipe.
     """
     screen_opening_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    code = models.CharField(max_length=10, unique=True)
+    screen_opening_code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
@@ -606,14 +550,12 @@ class ScreenOpening(AuditModel):
     def __str__(self):
         return self.description
 
-
-
 class ScreenBottom(AuditModel):
     """
      The type of bottom on a well screen, i.e. Bail, Plate, Plug, Other.
     """
     screen_bottom_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    code = models.CharField(max_length=10, unique=True)
+    screen_bottom_code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
@@ -624,8 +566,6 @@ class ScreenBottom(AuditModel):
 
     def __str__(self):
         return self.description
-
-
 
 class ScreenAssemblyType(AuditModel):
     """
@@ -644,8 +584,6 @@ class ScreenAssemblyType(AuditModel):
     def __str__(self):
         return self.description
 
-
-
 class FilterPackMaterial(AuditModel):
     """
      The material used to pack a well filter, e.g. Very coarse sand, Very fine gravel, Fine gravel.
@@ -662,8 +600,6 @@ class FilterPackMaterial(AuditModel):
 
     def __str__(self):
         return self.description
-
-
 
 class FilterPackMaterialSize(AuditModel):
     """
@@ -682,8 +618,6 @@ class FilterPackMaterialSize(AuditModel):
     def __str__(self):
         return self.description
 
-
-
 class DevelopmentMethod(AuditModel):
     """
      How the well was developed in order to remove the fine sediment and other organic or inorganic material that immediately surrounds the well screen, the drill hole or the intake area at the bottom of the well, e.g. air lifting, pumping, bailing.
@@ -700,8 +634,6 @@ class DevelopmentMethod(AuditModel):
 
     def __str__(self):
         return self.description
-
-
 
 class YieldEstimationMethod(AuditModel):
     """
@@ -720,8 +652,6 @@ class YieldEstimationMethod(AuditModel):
     def __str__(self):
         return self.description
 
-
-
 class WaterQualityCharacteristic(AuditModel):
     """
      The characteristic of the well water, e.g. Fresh, Salty, Clear.
@@ -738,8 +668,6 @@ class WaterQualityCharacteristic(AuditModel):
 
     def __str__(self):
         return self.description
-
-
 
 class Well(AuditModel):
     """
@@ -808,7 +736,7 @@ class Well(AuditModel):
     liner_from = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Liner From', validators=[MinValueValidator(Decimal('0.00'))])
     liner_to = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Liner To', validators=[MinValueValidator(Decimal('0.01'))])
 
-    screen_intake = models.ForeignKey(ScreenIntake, db_column='screen_intake_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Intake')
+    screen_intake_method = models.ForeignKey(ScreenIntakeMethod, db_column='screen_intake_method_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Screen Intake Method')
     screen_type = models.ForeignKey(ScreenType, db_column='screen_type_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Screen Type')
     screen_material = models.ForeignKey(ScreenMaterial, db_column='screen_material_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Screen Material')
     other_screen_material = models.CharField(max_length=50, blank=True, verbose_name='Specify Other Screen Material')
@@ -875,7 +803,6 @@ class Well(AuditModel):
             "well_tag_number": self.well_tag_number
         }
 
-
 class ActivitySubmission(AuditModel):
     """
     Activity information on a Well submitted by a user.
@@ -939,7 +866,7 @@ class ActivitySubmission(AuditModel):
     liner_from = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Liner From', validators=[MinValueValidator(Decimal('0.00'))])
     liner_to = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Liner To', validators=[MinValueValidator(Decimal('0.01'))])
 
-    screen_intake = models.ForeignKey(ScreenIntake, db_column='screen_intake_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Intake')
+    screen_intake_method = models.ForeignKey(ScreenIntakeMethod, db_column='screen_intake_method_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Intake')
     screen_type = models.ForeignKey(ScreenType, db_column='screen_type_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Screen Type')
     screen_material = models.ForeignKey(ScreenMaterial, db_column='screen_material_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Screen Material')
     other_screen_material = models.CharField(max_length=50, blank=True, verbose_name='Specify Other Screen Material')
@@ -1072,8 +999,6 @@ class ActivitySubmission(AuditModel):
         else:
             return '%s %s' % (self.activity_submission_guid, self.street_address)
 
-
-
 class LtsaOwner(AuditModel):
     """
     Well owner information.
@@ -1094,8 +1019,6 @@ class LtsaOwner(AuditModel):
 
     def __str__(self):
         return '%s %s' % (self.full_name, self.mailing_address)
-
-
 
 class LithologyDescription(AuditModel):
     """
@@ -1126,8 +1049,6 @@ class LithologyDescription(AuditModel):
         else:
             return 'well {} {} {}'.format(self.well, self.lithology_from, self.lithology_to)
 
-
-
 class Casing(AuditModel):
     """
     Casing information
@@ -1152,8 +1073,6 @@ class Casing(AuditModel):
         else:
             return 'well {} {} {}'.format(self.well, self.casing_from, self.casing_to)
 
-
-
 class LinerPerforation(AuditModel):
     """
     Perforation in a well liner
@@ -1172,8 +1091,6 @@ class LinerPerforation(AuditModel):
             return 'activity_submission {} {} {}'.format(self.activity_submission, self.liner_perforation_from, self.liner_perforation_to)
         else:
             return 'well {} {} {}'.format(self.well, self.liner_perforation_from, self.liner_perforation_to)
-
-
 
 class Screen(AuditModel):
     """
@@ -1196,8 +1113,6 @@ class Screen(AuditModel):
             return 'activity_submission {} {} {}'.format(self.activity_submission, self.screen_from, self.screen_to)
         else:
             return 'well {} {} {}'.format(self.well, self.screen_from, self.screen_to)
-
-
 
 class ProductionData(AuditModel):
     """

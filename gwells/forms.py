@@ -19,7 +19,7 @@ from crispy_forms.bootstrap import FormActions, AppendedText, InlineRadios
 from django.forms.models import inlineformset_factory
 from .search import Search
 from .models import ActivitySubmission, WellActivityType, ProvinceState, DrillingMethod, LithologyDescription, LithologyMoisture, Casing, CasingType, LinerPerforation
-from .models import ScreenIntake, ScreenMaterial, ScreenBottom, Screen, ProductionData, WaterQualityCharacteristic
+from .models import ScreenIntakeMethod, ScreenMaterial, ScreenBottom, Screen, ProductionData, WaterQualityCharacteristic
 from datetime import date
 
 class SearchForm(forms.Form):
@@ -848,7 +848,7 @@ class ActivitySubmissionScreenIntakeForm(forms.ModelForm):
             Fieldset(
                 'Screen Information',
                 Div(
-                    Div('screen_intake', css_class='col-md-2'),
+                    Div('screen_intake_method', css_class='col-md-2'),
                     css_class='row',
                 ),
                 Div(
@@ -870,7 +870,7 @@ class ActivitySubmissionScreenIntakeForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super(ActivitySubmissionScreenIntakeForm, self).clean()
 
-        screen_intake = cleaned_data.get('screen_intake')
+        screen_intake_method = cleaned_data.get('screen_intake_method')
         screen_type = cleaned_data.get('screen_type')
         screen_material = cleaned_data.get('screen_material')
         other_screen_material = cleaned_data.get('other_screen_material')
@@ -879,23 +879,23 @@ class ActivitySubmissionScreenIntakeForm(forms.ModelForm):
         other_screen_bottom = cleaned_data.get('other_screen_bottom')
         errors = []
 
-        screen_screen_intake = None
+        screen_intake_method = None
         try:
-            screen_screen_intake = ScreenIntake.objects.get(code='SCREEN')
+            screen_intake_method = ScreenIntakeMethod.objects.get(code='SCREEN')
         except Exception as e:
-            errors.append('Configuration error: Screen Intake for Screen does not exist, please contact the administrator.')
+            errors.append('Configuration error: Intake Method for Screen does not exist, please contact the administrator.')
 
-        if screen_screen_intake:
-            if screen_intake == screen_screen_intake and not screen_type:
+        if screen_intake_method:
+            if screen_intake_method == screen_intake_method and not screen_type:
                 self.add_error('screen_type', 'This field is required if Intake is a Screen.')
 
-            if screen_intake == screen_screen_intake and not screen_material:
+            if screen_intake_method == screen_intake_method and not screen_material:
                 self.add_error('screen_material', 'This field is required if Intake is a Screen.')
 
-            if screen_intake == screen_screen_intake and not screen_opening:
+            if screen_intake_method == screen_intake_method and not screen_opening:
                 self.add_error('screen_opening', 'This field is required if Intake is a Screen.')
 
-            if screen_intake == screen_screen_intake and not screen_bottom:
+            if screen_intake_method == screen_intake_method and not screen_bottom:
                 self.add_error('screen_bottom', 'This field is required if Intake is a Screen.')
 
         try:
@@ -918,7 +918,7 @@ class ActivitySubmissionScreenIntakeForm(forms.ModelForm):
 
     class Meta:
         model = ActivitySubmission
-        fields = ['screen_intake', 'screen_type', 'screen_material', 'other_screen_material', 'screen_opening', 'screen_bottom', 'other_screen_bottom']
+        fields = ['screen_intake_method', 'screen_type', 'screen_material', 'other_screen_material', 'screen_opening', 'screen_bottom', 'other_screen_bottom']
 
 
 
