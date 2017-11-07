@@ -72,8 +72,5 @@ navunit/gebReports/
 # Custom GW
 activate
 
-#migration
-gwells/migrations
-
 #virtual env
 /deactivate

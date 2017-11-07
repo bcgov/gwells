@@ -68,6 +68,25 @@ SELECT
 FROM
   wells.wells_driller_codes;--> no WHERE restrictions
 
+raise notice '... importing gwells_bcgs_numbers';
+
+INSERT INTO gwells_bcgs_numbers (
+  bcgs_id,
+  bcgs_number,
+  who_created,
+  when_created,
+  who_updated,
+  when_updated
+)
+SELECT
+  bcgs_id,
+  bcgs_number,
+  who_created,
+  when_created,
+  who_updated,
+  when_updated
+FROM
+  wells.wells_bcgs_numbers;
 
 raise notice 'Finished copy_remote_code_tables() procedure.';
 END;
