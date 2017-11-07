@@ -70,6 +70,11 @@ BEGIN
     water_supply_system_name           ,
     water_supply_system_well_name      ,
     ems                                ,
+    screen_intake_method_guid          ,
+    screen_type_guid                   ,
+    screen_material_guid               ,
+    screen_opening_guid                ,
+    screen_bottom_guid                 ,
     when_created                       ,
     when_updated                       ,
     who_created                        ,
@@ -180,13 +185,23 @@ BEGIN
     WELLS.WHERE_PLATE_ATTACHED                                             ,
     WELLS.WATER_SUPPLY_SYSTEM_NAME                                         ,
     WELLS.WATER_SUPPLY_WELL_NAME                                           ,
-    WELLS.CHEMISTRY_SITE_ID                                                 ,
+    WELLS.CHEMISTRY_SITE_ID                                                ,
+    SCREEN_INTAKE_METHOD.SCREEN_INTAKE_METHOD_GUID                         ,
+    SCREEN_TYPE.SCREEN_TYPE_GUID                                           ,
+    SCREEN_MATERIAL.SCREEN_MATERIAL_GUID                                   ,
+    SCREEN_OPENING.SCREEN_OPENING_GUID                                     ,
+    SCREEN_BOTTOM.SCREEN_BOTTOM_GUID                                       ,
     WELLS.WHEN_CREATED AS when_created                                     ,
     coalesce(WELLS.WHEN_UPDATED,WELLS.WHEN_CREATED) as when_updated        ,
     WELLS.WHO_CREATED as who_created                                       ,
     coalesce(WELLS.WHO_UPDATED,WELLS.WHO_CREATED) as who_updated
   FROM WELLS.WELLS_WELLS WELLS LEFT OUTER JOIN WELLS.WELLS_OWNERS OWNER ON OWNER.OWNER_ID=WELLS.OWNER_ID
                                LEFT OUTER JOIN GWELLS_DRILLING_COMPANY DRILLING_COMPANY ON WELLS.DRILLER_COMPANY_CODE=DRILLING_COMPANY.DRILLING_COMPANY_CODE
+                               LEFT OUTER JOIN GWELLS_SCREEN_INTAKE_METHOD SCREEN_INTAKE_METHOD ON WELLS.SCREEN_INTAKE_CODE=SCREEN_INTAKE_METHOD.SCREEN_INTAKE_CODE
+                               LEFT OUTER JOIN GWELLS_SCREEN_TYPE SCREEN_TYPE ON WELLS.SCREEN_TYPE_CODE=SCREEN_TYPE.SCREEN_TYPE_CODE
+                               LEFT OUTER JOIN GWELLS_SCREEN_MATERIAL SCREEN_MATERIAL ON WELLS.SCREEN_MATERIAL_CODE=SCREEN_MATERIAL.SCREEN_MATERIAL_CODE
+                               LEFT OUTER JOIN GWELLS_SCREEN_OPENING SCREEN_OPENING ON WELLS.SCREEN_OPENING_CODE=SCREEN_OPENING.SCREEN_OPENING_CODE
+                               LEFT OUTER JOIN GWELLS_SCREEN_BOTTOM SCREEN_BOTTOM ON WELLS.SCREEN_BOTTOM_CODE=SCREEN_BOTTOM.SCREEN_BOTTOM_CODE
   WHERE WELLS.ACCEPTANCE_STATUS_CODE != 'REJECTED';
 
   raise notice 'Preparing ETL report ...';
