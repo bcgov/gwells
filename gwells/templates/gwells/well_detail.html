@@ -343,50 +343,69 @@
     <table>
         <thead>
             <tr>
-                <th>{% verbose_name well "screen_intake_method" %}:</th>
-                <th>{% verbose_name well "screen_type" %}:</th>
-                <th>{% verbose_name well "screen_material" %}:</th>
-                <th>{% verbose_name well "screen_opening" %}:</th>
-                <th>{% verbose_name well "screen_bottom" %}:</th>
+                <th>{% verbose_name well "screen_intake_method" %}</th>
+                <th>{% verbose_name well "screen_type" %}</th>
+                <th>{% verbose_name well "screen_material" %}</th>
+                <th>{% verbose_name well "screen_opening" %}</th>
+                <th>{% verbose_name well "screen_bottom" %}</th>
+                <th>From</th>
+                <th>To</th>
+                <th>Internal Diameter</th>
+                <th>Slot Size</th>
             </tr>
         </thead>
         <tbody>
-            {# for screen in well.screen_set.all #}
-            <div class="row">
-                <div class="col-md-2">
-                    <label for="intake_method"></label>
-                    <span id="water_supply_system_well_name">{{ well.screen_intake_method.description|default_if_none:'&nbsp;' }}</span>
-                </div>
-                <div class="col-md-2">
-                    <label for="screen_type">{% verbose_name well "screen_type" %}:</label>
-                    <span id="screen_type">{{ well.screen_type.description|default_if_none:'&nbsp;' }}</span>
-                </div>
-                <div class="col-md-2">
-                    <label for="screen_material">{% verbose_name well "screen_material" %}:</label>
-                    <span id="screen_material">{{ well.screen_material.description|default_if_none:'&nbsp;' }}</span>
-                </div>
-                <div class="col-md-2">
-                    <label for="screen_opening">{% verbose_name well "screen_opening" %}:</label>
-                    <span id="screen_opening">{{ well.screen_opening.description|default_if_none:'&nbsp;' }}</span>
-                </div>
-                <div class="col-md-2">
-                    <label for="screen_bottom_type">{% verbose_name well "screen_bottom" %}:</label>
-                    <span id="screen_bottom_type">{{ well.screen_bottom.description|default_if_none:'&nbsp;' }}</span>
-                </div>
-                <div class="col-md-2">
-                    <label for="screen_from{{ screen.screen_guid}}">{% verbose_name screen "screen_from" %}:</label>
-                    <span id="screen_from{{ screen.screen_guid}}">{{ screen.from|default_if_none:'&nbsp;' }}</span>
-                </div>
-                <div class="col-md-2">
-                    <label for="screen_to{{ screen.screen_guid}}">{% verbose_name screen "screen_to" %}:</label>
-                    <span id="screen_to{{ screen.screen_guid}}">{{ screen.to|default_if_none:'&nbsp;' }}</span>
-                </div>
-                <div class="col-md-2">
-                    <label for="internal_diameter{{ screen.screen_guid}}">{% verbose_name screen "internal_diameter" %}:</label>
-                    <span id="internal_diameter{{ screen.screen_guid}}">{{ screen.internal_diameter|default_if_none:'&nbsp;' }}</span>
-                </div>
-            </div>
+            {% for screen in well.screen_set.all %}
+            <tr>
+                <td>
+                    <div class="col-md-2">
+                        <span id="intake_method{{ screen.screen_guid}}">{{ well.screen_intake_method|default_if_none:'&nbsp;' }}</span>
+                    </div>
+                </td>
+                <td>
+                    <div class="col-md-2">
+                        <span id="screen_type{{ screen.screen_guid}}">{{ well.screen_type.description|default_if_none:'&nbsp;' }}</span>
+                    </div>
+                </td>
+                <td>
+                    <div class="col-md-2">
+                        <span id="screen_material{{ screen.screen_guid}}">{{ well.screen_material.description|default_if_none:'&nbsp;' }}</span>
+                    </div>
+                </td>
+                <td>
+                    <div class="col-md-2">
+                        <span id="screen_opening{{ screen.screen_guid}}">{{ well.screen_opening.description|default_if_none:'&nbsp;' }}</span>
+                    </div>
+                </td>
+                <td>
+                    <div class="col-md-2">
+                        <span id="screen_bottom_type{{ screen.screen_guid}}">{{ well.screen_bottom.description|default_if_none:'&nbsp;' }}</span>
+                    </div>
+                </td>
+                <td>
+                    <div class="col-md-2">
+                        <span id="screen_from{{ screen.screen_guid}}">{{ screen.screen_from|default_if_none:'&nbsp;' }}</span>
+                    </div>
+                </td>
+                <td>
+                    <div class="col-md-2">
+                        <span id="screen_to{{ screen.screen_guid}}">{{ screen.screen_to|default_if_none:'&nbsp;' }}</span>
+                    </div>
+                </td>
+                <td>
+                    <div class="col-md-2">
+                        <span id="internal_diameter{{ screen.screen_guid}}">{{ screen.internal_diameter|default_if_none:'&nbsp;' }}</span>
+                    </div>
+                </td>
+                <td>
+                    <div class="col-md-2">
+                        <span id="slot_size{{ screen.screen_guid}}">{{ screen.slot_size|default_if_none:'&nbsp;' }}</span>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
         </tbody>
+    </table>
 </fieldset>
 
 <div>

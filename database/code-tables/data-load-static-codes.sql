@@ -29,6 +29,8 @@
 \copy gwells_screen_material (who_created,when_created,who_updated,when_updated,screen_material_guid,screen_material_code,description,is_hidden,sort_order) from 'gwells_screen_material.csv' with header delimiter ',' CSV ;
 \echo '... loading gwells_screen_opening code table'
 \copy gwells_screen_opening (who_created,when_created,who_updated,when_updated,screen_opening_guid,screen_opening_code,description,is_hidden,sort_order) from 'gwells_screen_opening.csv' with header delimiter ',' CSV ;
-\echo '... loading gwells_screen_bottom code table'
-\copy gwells_screen_bottom (who_created,when_created,who_updated,when_updated,screen_bottom_guid,screen_bottom_code,description,is_hidden,sort_order) from 'gwells_screen_bottom.csv' with header delimiter ',' CSV ;
+\echo '... loading gwells_screen_assembly_type code table'
+\copy gwells_screen_assembly_type (who_created,when_created,who_updated,when_updated,screen_assembly_type_guid,screen_assembly_type_code,description,is_hidden,sort_order) from 'gwells_screen_assembly_type.csv' with header delimiter ',' CSV ;
+\echo '... loading gwells_bcgs_number code table'
+\copy gwells_bcgs_number (who_created,when_created,who_updated,when_updated,bcgs_id,bcgs_number) from 'gwells_bcgs_number.csv' with header delimiter ',' CSV ;
 \echo 'Finshed copy of static code tables.'
