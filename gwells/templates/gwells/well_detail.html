@@ -340,48 +340,50 @@
 <fieldset>
     <legend>Screen Details</legend>
 
+    <div class="row">
+        <div class="col-md-6">
+            <label for="intake_method">{% verbose_name well "screen_intake_method" %}:</label>
+            <span id="intake_method">{{ well.screen_intake_method|default_if_none:'&nbsp;' }}</span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <label for="screen_type">{% verbose_name well "screen_type" %}:</label>
+            <span id="screen_type">{{ well.screen_type.description|default_if_none:'&nbsp;' }}</span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <label for="screen_material">{% verbose_name well "screen_material" %}:</label>
+            <span id="screen_material">{{ well.screen_material.description|default_if_none:'&nbsp;' }}</span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <label for="screen_material">{% verbose_name well "screen_opening" %}:</label>
+            <span id="screen_opening">{{ well.screen_opening.description|default_if_none:'&nbsp;' }}</span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <label for="screen_bottom">{% verbose_name well "screen_bottom" %}:</label>
+            <span id="screen_bottom">{{ well.screen_bottom.description|default_if_none:'&nbsp;' }}</span>
+        </div>
+    </div>
     <table>
         <thead>
             <tr>
-                <th>{% verbose_name well "screen_intake_method" %}</th>
-                <th>{% verbose_name well "screen_type" %}</th>
-                <th>{% verbose_name well "screen_material" %}</th>
-                <th>{% verbose_name well "screen_opening" %}</th>
-                <th>{% verbose_name well "screen_bottom" %}</th>
                 <th>From</th>
                 <th>To</th>
                 <th>Internal Diameter</th>
                 <th>Slot Size</th>
+                <th>Assembly Type</th>
             </tr>
         </thead>
         <tbody>
             {% for screen in well.screen_set.all %}
             <tr>
-                <td>
-                    <div class="col-md-2">
-                        <span id="intake_method{{ screen.screen_guid}}">{{ well.screen_intake_method|default_if_none:'&nbsp;' }}</span>
-                    </div>
-                </td>
-                <td>
-                    <div class="col-md-2">
-                        <span id="screen_type{{ screen.screen_guid}}">{{ well.screen_type.description|default_if_none:'&nbsp;' }}</span>
-                    </div>
-                </td>
-                <td>
-                    <div class="col-md-2">
-                        <span id="screen_material{{ screen.screen_guid}}">{{ well.screen_material.description|default_if_none:'&nbsp;' }}</span>
-                    </div>
-                </td>
-                <td>
-                    <div class="col-md-2">
-                        <span id="screen_opening{{ screen.screen_guid}}">{{ well.screen_opening.description|default_if_none:'&nbsp;' }}</span>
-                    </div>
-                </td>
-                <td>
-                    <div class="col-md-2">
-                        <span id="screen_bottom_type{{ screen.screen_guid}}">{{ well.screen_bottom.description|default_if_none:'&nbsp;' }}</span>
-                    </div>
-                </td>
+
                 <td>
                     <div class="col-md-2">
                         <span id="screen_from{{ screen.screen_guid}}">{{ screen.screen_from|default_if_none:'&nbsp;' }}</span>
@@ -400,6 +402,11 @@
                 <td>
                     <div class="col-md-2">
                         <span id="slot_size{{ screen.screen_guid}}">{{ screen.slot_size|default_if_none:'&nbsp;' }}</span>
+                    </div>
+                </td>
+                <td>
+                    <div class="col-md-2">
+                        <span id="assembly_type{{ screen.screen_guid}}">{{ screen.assembly_type|default_if_none:'&nbsp;' }}</span>
                     </div>
                 </td>
             </tr>
