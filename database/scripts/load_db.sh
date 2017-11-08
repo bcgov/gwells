@@ -59,4 +59,5 @@ cd ../scripts
 #replicate
 psql --dbname postgresql://${DATABASE_USER}:${DATABASE_USER_PASSWORD}@127.0.0.1:5432/${DATABASE_NAME} <<EOF
 SELECT public.replicate();
+\i migrate_screens.sql
 EOF

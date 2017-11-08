@@ -25,6 +25,10 @@ screens.when_updated                          ,
 screens.who_created                           ,
 screens.who_updated
 FROM wells.wells_screens screens
-     LEFT OUTER JOIN gwells_screen_assembly_type screen_assembly_type ON screens.screen_assembly_type_code=screen_assembly_type.screen_assembly_type_code
+     LEFT OUTER JOIN gwells_screen_assembly_type screen_assembly_type ON
+     ( screens.screen_assembly_type_code=screen_assembly_type.screen_assembly_type_code OR
+       screens.screen_assembly_type_code='L' AND screen_assembly_type.screen_assembly_type_code='LEAD' OR
+       screens.screen_assembly_type_code='K  & Riser' AND screen_assembly_type.screen_assembly_type_code='K_RISER'
+     )
      INNER JOIN wells.wells_wells wells ON wells.well_tag_number=screens.well_id
 WHERE WELLS.ACCEPTANCE_STATUS_CODE != 'REJECTED';
