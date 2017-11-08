@@ -572,7 +572,7 @@ class ScreenAssemblyType(AuditModel):
      The category of screen assembly, i.e. K-Packer & Riser, K-Packer, Lead Packer, Riser Pipe, Screen, Screen Blank, Tail Pipe.
     """
     screen_assembly_type_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    screen_assembly_code = models.CharField(max_length=10, unique=True)
+    screen_assembly_type_code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
@@ -674,7 +674,7 @@ class BCGS_Numbers(AuditModel):
     bcgs_number = models.CharField(max_length=20, verbose_name="BCGS Mapsheet Number")
 
     class Meta:
-        db_table = 'gwells_bcgs_numbers'
+        db_table = 'gwells_bcgs_number'
         ordering = ['bcgs_number']
 
     def __str__(self):
@@ -1116,8 +1116,8 @@ class Screen(AuditModel):
     screen_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     activity_submission = models.ForeignKey(ActivitySubmission, db_column='filing_number', on_delete=models.CASCADE, blank=True, null=True)
     well = models.ForeignKey(Well, db_column='well_tag_number', on_delete=models.CASCADE, blank=True, null=True)
-    screen_from = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='From', blank=False, validators=[MinValueValidator(Decimal('0.00'))])
-    screen_to = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='To', blank=False, validators=[MinValueValidator(Decimal('0.01'))])
+    screen_from = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='From', blank=True, null=True, validators=[MinValueValidator(Decimal('0.00'))])
+    screen_to = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='To', blank=False, null=True, validators=[MinValueValidator(Decimal('0.01'))])
     internal_diameter = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='Diameter', blank=True, null=True, validators=[MinValueValidator(Decimal('0.0'))])
     assembly_type = models.ForeignKey(ScreenAssemblyType, db_column='screen_assembly_type_guid', on_delete=models.CASCADE, blank=True, null=True)
     slot_size = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='Slot Size', blank=True, null=True, validators=[MinValueValidator(Decimal('0.00'))])

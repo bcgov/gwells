@@ -58,4 +58,10 @@ DELETE FROM gwells_screen_opening;
 \echo '... clearing gwells_screen_bottom'
 DELETE FROM gwells_screen_bottom;
 
+\echo '... clearing gwells_screen_assembly_type'
+DELETE FROM gwells_screen_assembly_type;
+
+\echo '... clearing gwells_bcgs_number'
+DELETE FROM gwells_bcgs_number;
+
 \echo 'Finished clear_tables() procedure.'
