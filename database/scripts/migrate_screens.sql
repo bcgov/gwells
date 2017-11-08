@@ -1,3 +1,4 @@
+\echo '...importing wells_screens data'
 INSERT INTO gwells_screen(
 screen_guid                                   , -->PK
 filing_number                                 , -->FK
@@ -32,3 +33,9 @@ FROM wells.wells_screens screens
      )
      INNER JOIN wells.wells_wells wells ON wells.well_tag_number=screens.well_id
 WHERE WELLS.ACCEPTANCE_STATUS_CODE != 'REJECTED';
+
+\echo 'wells_screens data imported'
+
+\t
+SELECT count(*) || ' rows loaded into the gwells_screen table' from gwells_screen;
+\t

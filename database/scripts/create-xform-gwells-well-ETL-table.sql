@@ -1,10 +1,4 @@
-DROP FUNCTION IF EXISTS create_xform_gwells_well_ETL_table();
-
-CREATE OR REPLACE FUNCTION create_xform_gwells_well_ETL_table() RETURNS void AS $$
-BEGIN
-
-raise notice 'Starting create_xform_gwells_well_ETL_table() procedure...';
-raise notice '...creating xform_gwells_well ETL table';
+\echo '...creating xform_gwells_well ETL table';
 
 DROP TABLE IF EXISTS xform_gwells_well;
 CREATE unlogged TABLE IF NOT EXISTS xform_gwells_well (
@@ -83,6 +77,4 @@ CREATE unlogged TABLE IF NOT EXISTS xform_gwells_well (
    who_updated                        character varying(30)
 );
 
-raise notice 'Finished create_xform_gwells_well_ETL_table() procedure.';
-END;
-$$ LANGUAGE plpgsql;
+\echo 'Created xform_gwells_well ETL table';
