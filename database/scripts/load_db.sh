@@ -19,10 +19,6 @@ CREATE SCHEMA ${LEGACY_DATABASE_SCHEMA};
 REVOKE ALL ON SCHEMA ${LEGACY_DATABASE_SCHEMA} FROM ${DATABASE_USER};
 GRANT ALL ON SCHEMA ${LEGACY_DATABASE_SCHEMA} TO ${DATABASE_USER};
 
-\include create-xform-gwells-well-ETL-table.sql
-\include populate-xform-gwells-well.sql
-\include populate-gwells-well-from-xform.sql
-
 \include setup-replicate.sql
 \include replicate.sql
 EOF
@@ -58,6 +54,10 @@ cd ../scripts
 
 #replicate
 psql --dbname postgresql://${DATABASE_USER}:${DATABASE_USER_PASSWORD}@127.0.0.1:5432/${DATABASE_NAME} <<EOF
-SELECT public.replicate();
-\i migrate_screens.sql
+
+\include create-xform-gwells-well-ETL-table.sql
+\include populate-xform-gwells-well.sql
+\include populate-gwells-well-from-xform.sql
+\include migrate_screens.sql
+
 EOF
