@@ -481,18 +481,19 @@ class LinerMaterial(AuditModel):
     def __str__(self):
         return self.description
 
-class ScreenIntake(AuditModel):
+class ScreenIntakeMethod(AuditModel):
     """
      Refers to the type of intake mechanism for a well screen, i.e. Screen, Open Bottom, Uncased Hole.
     """
-    screen_intake_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    code = models.CharField(max_length=10, unique=True)
+    screen_intake_method_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    screen_intake_code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
+    status_flag = models.BooleanField(default=False, choices=((False, 'N'), (True, 'Y')))
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
 
     class Meta:
-        db_table = 'gwells_screen_intake'
+        db_table = 'gwells_screen_intake_method'
         ordering = ['sort_order', 'description']
 
     def __str__(self):
@@ -503,7 +504,7 @@ class ScreenType(AuditModel):
      The possible types of well screens, i.e. Telescope, Pipe Size.
     """
     screen_type_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    code = models.CharField(max_length=10, unique=True)
+    screen_type_code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
@@ -520,7 +521,7 @@ class ScreenMaterial(AuditModel):
      The material used to construct a well screen, i.e. Plastic, Stainless Steel, Other.
     """
     screen_material_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    code = models.CharField(max_length=10, unique=True)
+    screen_material_code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
@@ -537,7 +538,7 @@ class ScreenOpening(AuditModel):
      The type of opening on a well screen, i.e. Continuous Slot, Slotted, Perforated Pipe.
     """
     screen_opening_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    code = models.CharField(max_length=10, unique=True)
+    screen_opening_code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
@@ -554,7 +555,7 @@ class ScreenBottom(AuditModel):
      The type of bottom on a well screen, i.e. Bail, Plate, Plug, Other.
     """
     screen_bottom_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    code = models.CharField(max_length=10, unique=True)
+    screen_bottom_code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
@@ -571,7 +572,7 @@ class ScreenAssemblyType(AuditModel):
      The category of screen assembly, i.e. K-Packer & Riser, K-Packer, Lead Packer, Riser Pipe, Screen, Screen Blank, Tail Pipe.
     """
     screen_assembly_type_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    code = models.CharField(max_length=10, unique=True)
+    screen_assembly_type_code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
@@ -673,7 +674,7 @@ class BCGS_Numbers(AuditModel):
     bcgs_number = models.CharField(max_length=20, verbose_name="BCGS Mapsheet Number")
 
     class Meta:
-        db_table = 'gwells_bcgs_numbers'
+        db_table = 'gwells_bcgs_number'
         ordering = ['bcgs_number']
 
     def __str__(self):
@@ -746,7 +747,7 @@ class Well(AuditModel):
     liner_from = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Liner From', validators=[MinValueValidator(Decimal('0.00'))])
     liner_to = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Liner To', validators=[MinValueValidator(Decimal('0.01'))])
 
-    screen_intake = models.ForeignKey(ScreenIntake, db_column='screen_intake_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Intake')
+    screen_intake_method = models.ForeignKey(ScreenIntakeMethod, db_column='screen_intake_method_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Screen Intake Method')
     screen_type = models.ForeignKey(ScreenType, db_column='screen_type_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Screen Type')
     screen_material = models.ForeignKey(ScreenMaterial, db_column='screen_material_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Screen Material')
     other_screen_material = models.CharField(max_length=50, blank=True, verbose_name='Specify Other Screen Material')
@@ -882,7 +883,7 @@ class ActivitySubmission(AuditModel):
     liner_from = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Liner From', validators=[MinValueValidator(Decimal('0.00'))])
     liner_to = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Liner To', validators=[MinValueValidator(Decimal('0.01'))])
 
-    screen_intake = models.ForeignKey(ScreenIntake, db_column='screen_intake_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Intake')
+    screen_intake_method = models.ForeignKey(ScreenIntakeMethod, db_column='screen_intake_method_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Intake')
     screen_type = models.ForeignKey(ScreenType, db_column='screen_type_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Screen Type')
     screen_material = models.ForeignKey(ScreenMaterial, db_column='screen_material_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Screen Material')
     other_screen_material = models.CharField(max_length=50, blank=True, verbose_name='Specify Other Screen Material')
@@ -900,7 +901,7 @@ class ActivitySubmission(AuditModel):
     development_hours = models.DecimalField(max_digits=9, decimal_places=2, blank=True, null=True, verbose_name='Development Total Duration', validators=[MinValueValidator(Decimal('0.00'))])
     development_notes = models.CharField(max_length=255, blank=True, verbose_name='Development Notes')
 
-    water_quality_characteristics = models.ManyToManyField(WaterQualityCharacteristic, db_table='activity_submission_water_quality', blank=True, verbose_name='Obvious Water Quality Characteristics')
+    water_quality_characteristics = models.ManyToManyField(WaterQualityCharacteristic, db_table='gwells_activity_submission_water_quality', blank=True, verbose_name='Obvious Water Quality Characteristics')
     water_quality_colour = models.CharField(max_length=60, blank=True, verbose_name='Water Quality Colour')
     water_quality_odour = models.CharField(max_length=60, blank=True, verbose_name='Water Quality Odour')
 
@@ -1115,8 +1116,8 @@ class Screen(AuditModel):
     screen_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     activity_submission = models.ForeignKey(ActivitySubmission, db_column='filing_number', on_delete=models.CASCADE, blank=True, null=True)
     well = models.ForeignKey(Well, db_column='well_tag_number', on_delete=models.CASCADE, blank=True, null=True)
-    screen_from = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='From', blank=False, validators=[MinValueValidator(Decimal('0.00'))])
-    screen_to = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='To', blank=False, validators=[MinValueValidator(Decimal('0.01'))])
+    screen_from = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='From', blank=True, null=True, validators=[MinValueValidator(Decimal('0.00'))])
+    screen_to = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='To', blank=False, null=True, validators=[MinValueValidator(Decimal('0.01'))])
     internal_diameter = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='Diameter', blank=True, null=True, validators=[MinValueValidator(Decimal('0.0'))])
     assembly_type = models.ForeignKey(ScreenAssemblyType, db_column='screen_assembly_type_guid', on_delete=models.CASCADE, blank=True, null=True)
     slot_size = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='Slot Size', blank=True, null=True, validators=[MinValueValidator(Decimal('0.00'))])
