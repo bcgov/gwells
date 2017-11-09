@@ -62,15 +62,15 @@ class WellSearchSpecs extends GebReportingSpec {
 
            		println "Tag ID: $TagID"
            		if ("$TagID" == "tag") {
-					println "$WellId"
-					println "Well ID: " + $('#results > tbody > tr:nth-child('+ ReturnRow("$WellId").toString() +') > td.sorting_1 > a').text()
+					//println "$WellId"
+					//println "Well ID: " + $('#results > tbody > tr:nth-child('+ ReturnRow("$WellId").toString() +') > td.sorting_1 > a').text()
 					$('#results > tbody > tr:nth-child('+ ReturnRow("$WellId").toString() +') > td.sorting_1 > a').click()
        				at WellSummaryPage
 						assert waitFor { ($("span",id:"well_tag_number").text() == "$WellId") }
 					}
 				else {
-					println "$SecondID"
-					println "SecondID: " + $('#results > tbody > tr:nth-child('+ ReturnRow("$SecondID").toString() +') > td.sorting_1 > a').text()
+					//println "$SecondID"
+					//println "SecondID: " + $('#results > tbody > tr:nth-child('+ ReturnRow("$SecondID").toString() +') > td.sorting_1 > a').text()
 					$('#results > tbody > tr:nth-child('+ ReturnRow("$SecondID").toString() +') > td.sorting_1 > a').click()
        				at WellSummaryPage
 						assert waitFor { ($("span",id:"well_tag_number").text() == "$SecondID") }
