@@ -70,4 +70,12 @@
 \echo '... loading gwells_bcgs_number code table'
 \copy gwells_bcgs_number (who_created,when_created,who_updated,when_updated,bcgs_id,bcgs_number) from 'gwells_bcgs_number.csv' with header delimiter ',' CSV ;
 
+--DEVELOPMENT METHOD
+\echo '... loading gwells_development_method code table'
+\copy gwells_development_method (who_created,when_created,who_updated,when_updated,development_method_guid,development_method_code,description,is_hidden,sort_order ) from 'gwells_development_method.csv' with header delimiter ',' CSV ;
+
+--ESTIMATION METHOD
+\echo '... loading gwells_yield_estimation_method code table'
+\copy gwells_yield_estimation_method (who_created,when_created,who_updated,when_updated,yield_estimation_method_guid,yield_estimation_method_code,description,is_hidden,sort_order) from 'gwells_yield_estimation_method.csv' with header delimiter ',' CSV ;
+
 \echo 'Finshed copy of static code tables.'
