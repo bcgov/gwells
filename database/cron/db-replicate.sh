@@ -11,7 +11,16 @@
 #
 export PGPASSWORD=$DATABASE_PASSWORD           
 cd /opt/app-root/src/database/code-tables/ 
-psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER  -c 'select gwells_setup_replicate();'               
+
+psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER  -f clear-tables.sql
 psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER  -c 'vacuum;'               
-psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER  -f data-load-static-codes.sql
-psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER  -c 'select gwells_replicate();'              
+psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER  -f  data-load-static-codes.sql
+
+cd /opt/app-root/src/database/scripts/ 
+
+psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER  -f create-xform-gwells-well-ETL-table.sql
+psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER  -f populate-xform-gwells-well.sql
+psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER  -f populate-gwells-well-from-xform.sql
+psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER  -f migrate_screens.sql
+
+exit 0
