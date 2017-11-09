@@ -441,11 +441,11 @@
               <th>Estimation Duration</th>
             </thead>
             <tbody>
-              {% for production_data in well.production_data_set.all %}
+              {% for production_data in well.productiondata_set.all %}
               <tr>
                 <td>
-                  <div class="col-md-6">
-                      <span id="estimated-by{{production_data.production_data_guid}}">{{ production_data.estimation_method.description|default_if_none:'&nbsp;' }}</span>
+                  <div class="col-md-10">
+                      <span id="estimated-by{{production_data.production_data_guid}}">{{ production_data.yield_estimation_method.description|default_if_none:'&nbsp;' }}</span>
                   </div>
                 </td>
                 <td>
