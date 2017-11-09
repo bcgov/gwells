@@ -1,10 +1,4 @@
-DROP FUNCTION IF EXISTS create_xform_gwells_well_ETL_table();
-
-CREATE OR REPLACE FUNCTION create_xform_gwells_well_ETL_table() RETURNS void AS $$
-BEGIN
-
-raise notice 'Starting create_xform_gwells_well_ETL_table() procedure...';
-raise notice '...creating xform_gwells_well ETL table';
+\echo '...creating xform_gwells_well ETL table';
 
 DROP TABLE IF EXISTS xform_gwells_well;
 CREATE unlogged TABLE IF NOT EXISTS xform_gwells_well (
@@ -67,12 +61,20 @@ CREATE unlogged TABLE IF NOT EXISTS xform_gwells_well (
    water_supply_system_name           character varying(80),
    water_supply_system_well_name      character varying(80),
    ems                                character varying(10),
+   screen_intake_method_guid          uuid,
+   screen_type_guid                   uuid,
+   screen_material_guid               uuid,
+   screen_opening_guid                uuid,
+   screen_bottom_guid                 uuid,
+   utm_zone_code                      character varying(10),
+   utm_northing                       integer,
+   utm_easting                        integer,
+   utm_accuracy_code                  character varying(10),
+   bcgs_id                            bigint,
    when_created                       timestamp with time zone,
    when_updated                       timestamp with time zone,
    who_created                        character varying(30),
    who_updated                        character varying(30)
 );
 
-raise notice 'Finished create_xform_gwells_well_ETL_table() procedure.';
-END;
-$$ LANGUAGE plpgsql;
+\echo 'Created xform_gwells_well ETL table';
