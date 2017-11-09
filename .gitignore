@@ -71,3 +71,6 @@ navunit/gebReports/
 
 # Custom GW
 activate
+
+#virtual env
+/deactivate
