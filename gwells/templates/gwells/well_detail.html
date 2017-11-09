@@ -415,6 +415,55 @@
     </table>
 </fieldset>
 
+<fieldset>
+    <legend>Well Development and Well Yield Estimation</legend>
+    <fieldset>
+      <legend>Well Development</legend>
+      <div class="row">
+          <div class="col-md-6">
+              <label for="devloped-by">{% verbose_name well "development_method" %}:</label>
+              <span id="developed-by">{{ well.development_method.description|default_if_none:'&nbsp;' }}</span>
+          </div>
+          <div class="col-md-6">
+              <label for="devlopment-total-duration">{% verbose_name well "development_hours" %}:</label>
+              <span id="devlopment-total-duration">{{ well.development_hours|default_if_none:'&nbsp;' }}</span>
+          </div>
+      </div>
+    </fieldset>
+    <fieldset>
+      <legend>Well Yield</legend>
+      <div class="row">
+
+          <table>
+            <thead>
+              <th>Estimation Method</th>
+              <th>Estimation Rate</th>
+              <th>Estimation Duration</th>
+            </thead>
+            <tbody>
+              {% for production_data in well.production_data_set.all %}
+              <tr>
+                <td>
+                  <div class="col-md-6">
+                      <span id="estimated-by{{production_data.production_data_guid}}">{{ production_data.estimation_method.description|default_if_none:'&nbsp;' }}</span>
+                  </div>
+                </td>
+                <td>
+                    <!-- estimation rate -->
+                    <span id="estimation-rate{{production_data.production_data_guid}}">{{ production_data.yield_estimation_rate|default_if_none:'&nbsp;' }}</span>
+                </td>
+                <td>
+                    <!-- estimation duration -->
+                    <span id="estimation-duration{{production_data.production_data_guid}}">{{ production_data.yield_estimation_duration|default_if_none:'&nbsp;' }}</span>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+      </div>
+    </fieldset>
+</fieldset>
+
 <div>
     <br /><br />
     <a id="well_tag_number_link" href="https://a100.gov.bc.ca/pub/wells/wellsreport1.do?wellTagNumber={{ well.well_tag_number }}">View Report</a>

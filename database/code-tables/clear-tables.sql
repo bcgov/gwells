@@ -24,7 +24,7 @@ TRUNCATE TABLE gwells_intended_water_use CASCADE;
 TRUNCATE TABLE gwells_well_class CASCADE;
 
 \echo '... clearing gwells_well_subclass data table'
-TRUNCATE TABLE gwells_well_subclass;
+TRUNCATE TABLE gwells_well_subclass CASCADE;
 
 \echo '... clearing gwells_province_state data table'
 TRUNCATE TABLE gwells_province_state CASCADE;
@@ -70,5 +70,14 @@ TRUNCATE TABLE gwells_screen_assembly_type CASCADE;
 
 \echo '... clearing gwells_bcgs_number'
 TRUNCATE TABLE gwells_bcgs_number CASCADE;
+
+\echo '... clearing gwells_development_method'
+TRUNCATE TABLE gwells_development_method CASCADE;
+
+\echo '... clearing gwells_yield_estimation_method'
+TRUNCATE TABLE gwells_yield_estimation_method CASCADE;
+
+\echo '... clearing gwells_production_data'
+TRUNCATE TABLE gwells_production_data CASCADE;
 
 \echo 'Finished clear_tables() procedure.'

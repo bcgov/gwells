@@ -70,6 +70,8 @@ INSERT INTO xform_gwells_well (
   utm_easting                        ,
   utm_accuracy_code                  ,
   bcgs_id                            ,
+  development_method_guid            ,
+  development_duration               ,
   when_created                       ,
   when_updated                       ,
   who_created                        ,
@@ -191,6 +193,9 @@ SELECT
   WELLS.UTM_EAST                                                         ,
   WELLS.UTM_ACCURACY_CODE                                                ,
   WELLS.BCGS_ID                                                          ,
+  DEVELOPMENT_METHOD.DEVELOPMENT_METHOD_GUID                             ,
+  WELLS.DEVELOPMENT_HOURS                                                ,
+
   WELLS.WHEN_CREATED AS when_created                                     ,
   coalesce(WELLS.WHEN_UPDATED,WELLS.WHEN_CREATED) as when_updated        ,
   WELLS.WHO_CREATED as who_created                                       ,
@@ -202,6 +207,7 @@ FROM WELLS.WELLS_WELLS WELLS LEFT OUTER JOIN WELLS.WELLS_OWNERS OWNER ON OWNER.O
                              LEFT OUTER JOIN GWELLS_SCREEN_MATERIAL SCREEN_MATERIAL ON WELLS.SCREEN_MATERIAL_CODE=SCREEN_MATERIAL.SCREEN_MATERIAL_CODE
                              LEFT OUTER JOIN GWELLS_SCREEN_OPENING SCREEN_OPENING ON WELLS.SCREEN_OPENING_CODE=SCREEN_OPENING.SCREEN_OPENING_CODE
                              LEFT OUTER JOIN GWELLS_SCREEN_BOTTOM SCREEN_BOTTOM ON WELLS.SCREEN_BOTTOM_CODE=SCREEN_BOTTOM.SCREEN_BOTTOM_CODE
+                             LEFT OUTER JOIN GWELLS_DEVELOPMENT_METHOD DEVELOPMENT_METHOD ON WELLS.DEVELOPMENT_METHOD_CODE=DEVELOPMENT_METHOD.DEVELOPMENT_METHOD_CODE
 WHERE WELLS.ACCEPTANCE_STATUS_CODE != 'REJECTED';
 
 \echo 'wells data (!= REJECTED) transformed via xform_gwells_well ETL table';
