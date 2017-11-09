@@ -21,8 +21,6 @@ class SearchResultsSpecs extends GebReportingSpec {
         given:
         to SearchPage
         
-        InjectLibrary("https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js")
-
         when: "#TestDesc, this will results in #NumberResult found"
         
         SearchWell("$WellId", "$Address","$LegalId","$Owner")
@@ -63,7 +61,7 @@ class SearchResultsSpecs extends GebReportingSpec {
         "One matching result - Legal PID - 026737680"				| ""				| ""						| "026737680"		| ""				| "No"         | "No"    | 1
         "One matching result - Legal PID - KAP 69982"               | ""                | ""                        | "KAP 69982"       | ""                | "No"         | "No"    | 1
         "One matching result - Legal PID - KAP67303"                | ""                | ""                        | "KAP67303"        | ""                | "No"         | "No"    | 1
-        "Multiple matching results - Legal PID - KAP67"             | ""                | ""                        | "KAP67"           | ""                | "No"         | "No"    | 21
+        "Multiple matching results - Legal PID - KAP67"             | ""                | ""                        | "KAP67"           | ""                | "No"         | "No"    | 23
         "One matching result - Owner - GARY AKLES"					| ""				| ""						| ""				| "GARY AKLES"		| "No"         | "No"    | 1
         "One matching result - - All Fields"						| "107667"			| "218 RD"					| "026737680"		| "GARY AKLES"		| "No"         | "No"    | 1
         "Multiple matching results - Well ID 2"                     | "2"               | ""                        | ""                | ""                | "No"         | "No"    | 2
