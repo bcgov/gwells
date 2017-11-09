@@ -1,0 +1,74 @@
+\echo 'Starting clear_tables() procedure...'
+
+-- Reset tables
+
+\echo '... clearing gwells_screen data table'
+TRUNCATE TABLE gwells_screen CASCADE;
+
+\echo '... clearing gwells_activity_submission data table'
+TRUNCATE TABLE gwells_activity_submission CASCADE;
+
+\echo '... clearing gwells_well data table'
+TRUNCATE TABLE gwells_well CASCADE;
+
+\echo '... clearing gwells_casing data table'
+TRUNCATE TABLE gwells_casing;
+
+\echo '... clearing gwells_lithology_description data table'
+TRUNCATE TABLE gwells_lithology_description;
+
+\echo '... clearing gwells_intended_water_use data table'
+TRUNCATE TABLE gwells_intended_water_use CASCADE;
+
+\echo '... clearing gwells_well_class data table'
+TRUNCATE TABLE gwells_well_class CASCADE;
+
+\echo '... clearing gwells_well_subclass data table'
+TRUNCATE TABLE gwells_well_subclass;
+
+\echo '... clearing gwells_province_state data table'
+TRUNCATE TABLE gwells_province_state CASCADE;
+
+\echo '... clearing gwells_well_yield_unit data table'
+TRUNCATE TABLE gwells_well_yield_unit CASCADE;
+
+\echo '... clearing gwells_drilling_method data table'
+TRUNCATE TABLE gwells_drilling_method CASCADE;
+
+\echo '... clearing gwells_ground_elevation_method data table'
+TRUNCATE TABLE gwells_ground_elevation_method CASCADE;
+
+\echo '... clearing gwells_land_district data table'
+TRUNCATE TABLE gwells_land_district CASCADE;
+
+\echo '... clearing gwells_well_status data table'
+TRUNCATE TABLE gwells_well_status CASCADE;
+
+\echo '... clearing gwells_licenced_status data table'
+TRUNCATE TABLE gwells_licenced_status CASCADE;
+
+\echo '... clearing gwells_drilling_company data table'
+TRUNCATE TABLE gwells_drilling_company CASCADE;
+
+\echo '... clearing gwells_screen_intake_method'
+TRUNCATE TABLE gwells_screen_intake_method CASCADE;
+
+\echo '... clearing gwells_screen_type'
+TRUNCATE TABLE gwells_screen_type CASCADE;
+
+\echo '... clearing gwells_screen_material'
+TRUNCATE TABLE gwells_screen_material CASCADE;
+
+\echo '... clearing gwells_screen_opening'
+TRUNCATE TABLE gwells_screen_opening CASCADE;
+
+\echo '... clearing gwells_screen_bottom'
+TRUNCATE TABLE gwells_screen_bottom CASCADE;
+
+\echo '... clearing gwells_screen_assembly_type'
+TRUNCATE TABLE gwells_screen_assembly_type CASCADE;
+
+\echo '... clearing gwells_bcgs_number'
+TRUNCATE TABLE gwells_bcgs_number CASCADE;
+
+\echo 'Finished clear_tables() procedure.'
