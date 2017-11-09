@@ -26,4 +26,5 @@ psql --dbname postgresql://${DATABASE_USER}:${DATABASE_USER_PASSWORD}@127.0.0.1:
 \include populate-xform-gwells-well.sql
 \include populate-gwells-well-from-xform.sql
 \include migrate_screens.sql
+\include migrate_production_data.sql
 EOF
