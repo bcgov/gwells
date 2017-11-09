@@ -200,7 +200,7 @@ class WellSearchSpecs extends GebReportingSpec {
         where:
         TestDesc                        					| LegalId	       | ShowError    | NumberResult
         "Plan - 14313"										| "14313"		   | "No"    	  | 11
-        "Lot - 123"     									| "123"            | "No"         | 796	
+        "Lot - 123"     									| "123"            | "No"         | 798	
         "PID - 008710902"     								| "008710902"      | "No"         | 1
         "No matching results - Legal ID - 999999"         	| "999999"         | "Yes"        | 0
         "No matching results - Legal ID - <null>"         	| ""		       | "Yes"        | 0
@@ -256,7 +256,7 @@ class WellSearchSpecs extends GebReportingSpec {
 
         where:
         TestDesc                        		| Owner	       	| ShowError    | NumberResult
-        "Multiple Results - Gary"				| "GARY"	   	| "No"     	   | 430
+        "Multiple Results - Gary"				| "GARY"	   	| "No"     	   | 431
         "Single Result - Gary Akles"     		| "GARY AKLES" 	| "No"         | 1	
         "No matching results - Random Owner"    | "Random Owner"| "Yes"        | 0
         "No matching results - <null>"         	| ""		    | "Yes"        | 0
@@ -321,7 +321,7 @@ class WellSearchSpecs extends GebReportingSpec {
 
         where:
         TestDesc                        					| Owner	       	|Address| ShowError    | NumberResult
-        "Multiple Results - Gary"							| "GARY"	   	|""		| "No"     	   | 430
+        "Multiple Results - Gary"							| "GARY"	   	|""		| "No"     	   | 431
         "Single Result - Gary Akles"     					| "GARY AKLES" 	|""		| "No"         | 1	
         "No matching results - Random Owner"    			| "Random Owner"|""		| "Yes"        | 0
         "No matching results - Random Address"    			| ""			|"Random Address"		| "Yes"        | 0
