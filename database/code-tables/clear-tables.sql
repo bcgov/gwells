@@ -80,4 +80,10 @@ TRUNCATE TABLE gwells_yield_estimation_method CASCADE;
 \echo '... clearing gwells_production_data'
 TRUNCATE TABLE gwells_production_data CASCADE;
 
+\echo '... clearing gwells_casing_material'
+TRUNCATE TABLE gwells_casing_material CASCADE;
+
+\echo '... clearing gwells_casing'
+TRUNCATE TABLE gwells_casing CASCADE;
+
 \echo 'Finished clear_tables() procedure.'

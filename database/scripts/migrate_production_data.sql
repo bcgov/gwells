@@ -36,3 +36,9 @@ FROM WELLS.WELLS_PRODUCTION_DATA PRODUCTION_DATA
      INNER      JOIN GWELLS_WELL GWELLS ON WELLS.WELL_ID=GWELLS.WELL_TAG_NUMBER -->we exclude wells which were filtered out earlier in the tx pipeline
 
 WHERE WELLS.ACCEPTANCE_STATUS_CODE != 'REJECTED';
+
+\echo 'wells_production_data data imported'
+
+\t
+SELECT count(*) || ' rows loaded into the gwells_production_data table' from gwells_production_data;
+\t
