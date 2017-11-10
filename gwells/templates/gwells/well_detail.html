@@ -97,7 +97,7 @@
             <div class="row">
                 <div class="col-md-12">
                     <label for="legal">Legal Description</label>
-                    <table id="legal" class="table-tight" border="1">
+                    <table id="legal" class="table table-condensed table-bordered">
                         <tbody>
                             <tr>
                                 <td><label for="lot">{% verbose_name well "legal_lot" %}:</label></td>
@@ -203,7 +203,7 @@
 </fieldset>
 <fieldset>
     <legend>Well Activity</legend>
-    <table>
+    <table id="activities" class="table">
         <thead>
             <tr>
                 <th>{% verbose_name well "construction_end_date" %}:</th>
@@ -213,7 +213,7 @@
             </tr>
         </thead>
         <tbody>
-            {# for submission in well.activitysubmission_set.all #}
+            {% for submission in well.activitysubmission_set.all %}
             <tr>
                 <td>
                   <span id="construction_date" data-construction-date="{{ well.construction_end_date }}">{{ well.construction_end_date|default_if_none:'&nbsp;' }}</span>
@@ -228,7 +228,7 @@
                   <span id="drilling_company" data-drilling-company="{{ well.drilling_company }}">{{ well.drilling_company.name|default_if_none:'&nbsp;'}}</span>
                 </td>
             </tr>
-            {# endfor #}
+            {% endfor %}
         </tbody>
     </table>
 </fieldset>
@@ -370,7 +370,7 @@
             <span id="screen_bottom">{{ well.screen_bottom.description|default_if_none:'&nbsp;' }}</span>
         </div>
     </div>
-    <table>
+    <table id="screens" clas="table">
         <thead>
             <tr>
                 <th>From</th>
@@ -386,27 +386,27 @@
 
                 <td>
                     <div class="col-md-2">
-                        <span id="screen_from{{ screen.screen_guid}}">{{ screen.screen_from|default_if_none:'&nbsp;' }}</span>
+                        <span>{{ screen.screen_from|default_if_none:'&nbsp;' }}</span>
                     </div>
                 </td>
                 <td>
                     <div class="col-md-2">
-                        <span id="screen_to{{ screen.screen_guid}}">{{ screen.screen_to|default_if_none:'&nbsp;' }}</span>
+                        <span>{{ screen.screen_to|default_if_none:'&nbsp;' }}</span>
                     </div>
                 </td>
                 <td>
                     <div class="col-md-2">
-                        <span id="internal_diameter{{ screen.screen_guid}}">{{ screen.internal_diameter|default_if_none:'&nbsp;' }}</span>
+                        <span>{{ screen.internal_diameter|default_if_none:'&nbsp;' }}</span>
                     </div>
                 </td>
                 <td>
                     <div class="col-md-2">
-                        <span id="slot_size{{ screen.screen_guid}}">{{ screen.slot_size|default_if_none:'&nbsp;' }}</span>
+                        <span>{{ screen.slot_size|default_if_none:'&nbsp;' }}</span>
                     </div>
                 </td>
                 <td>
                     <div class="col-md-2">
-                        <span id="assembly_type{{ screen.screen_guid}}">{{ screen.assembly_type|default_if_none:'&nbsp;' }}</span>
+                        <span>{{ screen.assembly_type|default_if_none:'&nbsp;' }}</span>
                     </div>
                 </td>
             </tr>
@@ -434,7 +434,7 @@
       <legend>Well Yield</legend>
       <div class="row">
 
-          <table>
+          <table id="yields" class="table">
             <thead>
               <th>Estimation Method</th>
               <th>Estimation Rate</th>
@@ -445,16 +445,16 @@
               <tr>
                 <td>
                   <div class="col-md-10">
-                      <span id="estimated-by{{production_data.production_data_guid}}">{{ productiondata.yield_estimation_method.description|default_if_none:'&nbsp;' }}</span>
+                      <span>{{ productiondata.yield_estimation_method.description|default_if_none:'&nbsp;' }}</span>
                   </div>
                 </td>
                 <td>
                     <!-- estimation rate -->
-                    <span id="estimation-rate{{production_data.production_data_guid}}">{{ productiondata.yield_estimation_rate|default_if_none:'&nbsp;' }}</span>
+                    <span>{{ productiondata.yield_estimation_rate|default_if_none:'&nbsp;' }}</span>
                 </td>
                 <td>
                     <!-- estimation duration -->
-                    <span id="estimation-duration{{production_data.production_data_guid}}">{{ productiondata.yield_estimation_duration|default_if_none:'&nbsp;' }}</span>
+                    <span>{{ productiondata.yield_estimation_duration|default_if_none:'&nbsp;' }}</span>
                 </td>
               </tr>
               {% endfor %}
