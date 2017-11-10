@@ -216,16 +216,16 @@
             {# for submission in well.activitysubmission_set.all #}
             <tr>
                 <td>
-                  <span data-construction-date="{{ well.construction_end_date }}">{{ well.construction_end_date|date:"Y-m-d"|default_if_none:'&nbsp;' }}</span>
+                  <span id="construction_end_date" data-construction-date="{{ well.construction_end_date }}">{{ well.construction_end_date|date:"Y-m-d"|default_if_none:'&nbsp;' }}</span>
                 </td>
                 <td>
-                  <span data-alteration-date="{{ well.alteration_end_date }}">{{ well.alteration_end_date|date:"Y-m-d"|default_if_none:'&nbsp;' }}</span>
+                  <span id="alteration_end_date" data-alteration-date="{{ well.alteration_end_date }}">{{ well.alteration_end_date|date:"Y-m-d"|default_if_none:'&nbsp;' }}</span>
                 </td>
                 <td>
-                  <span data-decommission-date="{{ well.decommission_end_date }}">{{ well.decommission_end_date|date:"Y-m-d"|default_if_none:'&nbsp;' }}</span>
+                  <span id="decommission_end_date" data-decommission-date="{{ well.decommission_end_date }}">{{ well.decommission_end_date|date:"Y-m-d"|default_if_none:'&nbsp;' }}</span>
                 </td>
                 <td>
-                  <span data-drilling-company="{{ well.drilling_company }}">{{ well.drilling_company.name|default_if_none:'&nbsp;'}}</span>
+                  <span id="drilling_company" data-drilling-company="{{ well.drilling_company }}">{{ well.drilling_company.name|default_if_none:'&nbsp;'}}</span>
                 </td>
             </tr>
             {# endfor #}
