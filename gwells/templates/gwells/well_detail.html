@@ -441,20 +441,20 @@
               <th>Estimation Duration</th>
             </thead>
             <tbody>
-              {% for production_data in well.productiondata_set.all %}
+              {% for productiondata in well.productiondata_set.all %}
               <tr>
                 <td>
                   <div class="col-md-10">
-                      <span id="estimated-by{{production_data.production_data_guid}}">{{ production_data.yield_estimation_method.description|default_if_none:'&nbsp;' }}</span>
+                      <span id="estimated-by{{production_data.production_data_guid}}">{{ productiondata.yield_estimation_method.description|default_if_none:'&nbsp;' }}</span>
                   </div>
                 </td>
                 <td>
                     <!-- estimation rate -->
-                    <span id="estimation-rate{{production_data.production_data_guid}}">{{ production_data.yield_estimation_rate|default_if_none:'&nbsp;' }}</span>
+                    <span id="estimation-rate{{production_data.production_data_guid}}">{{ productiondata.yield_estimation_rate|default_if_none:'&nbsp;' }}</span>
                 </td>
                 <td>
                     <!-- estimation duration -->
-                    <span id="estimation-duration{{production_data.production_data_guid}}">{{ production_data.yield_estimation_duration|default_if_none:'&nbsp;' }}</span>
+                    <span id="estimation-duration{{production_data.production_data_guid}}">{{ productiondata.yield_estimation_duration|default_if_none:'&nbsp;' }}</span>
                 </td>
               </tr>
               {% endfor %}
@@ -464,6 +464,68 @@
     </fieldset>
 </fieldset>
 
+<fieldset>
+  <legend>Casing, Surface Seal and Liner Details</legend>
+  <table id="casings">
+    <thead>
+      <th>From (feet)</th>
+      <th>To (feet)</th>
+      <th>Diameter (inches)</th>
+      <th>Casing Material</th>
+      <th>Wall Thickness</th>
+      <th>Drive Shoe</th>
+    </thead>
+    <tbody>
+      {% for casing in well.casing_set.all %}
+      <tr>
+        <td>
+          <div class="col-md-2">
+              <span>{{ casing.casing_from|default_if_none:'&nbsp;' }}</span>
+          </div>
+        </td>
+        <td>
+          <div class="col-md-2">
+              <span>{{ casing.casing_to|default_if_none:'&nbsp;' }}</span>
+          </div>
+        </td>
+        <td>
+          <div class="col-md-2">
+              <span>{{ casing.internal_diameter|default_if_none:'&nbsp;' }}</span>
+          </div>
+        </td>
+        <td>
+          <div class="col-md-2">
+              <span>{{ casing.casing_material.description|default_if_none:'&nbsp;' }}</span>
+          </div>
+        </td>
+        <td>
+          <div class="col-md-2">
+              <span>{{ casing.wall_thickness|default_if_none:'&nbsp;' }}</span>
+          </div>
+        </td>
+        <td>
+          <div class="col-md-2">
+              <span>{{ casing.get_drive_shoe_display|default_if_none:'&nbsp;' }}</span>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <!-- casing surface seal material -->
+  <!-- casing surface seal thickness -->
+  <!-- casing surface seal length -->
+  <!-- casing backfill type -->
+  <!-- casing backfill depth -->
+  <!-- casing liner material -->
+  <!-- casing liner diameter -->
+  <!-- casing liner thickness -->
+  <!-- casing liner from -->
+  <!-- casing liner to -->
+  <!-- casing liner perforated from -->
+  <!-- casing liner perforated to -->
+</fieldset>
 <div>
     <br /><br />
     <a id="well_tag_number_link" href="https://a100.gov.bc.ca/pub/wells/wellsreport1.do?wellTagNumber={{ well.well_tag_number }}">View Report</a>
