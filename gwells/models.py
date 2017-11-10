@@ -418,7 +418,7 @@ class CasingMaterial(AuditModel):
      The material used for casing a well, e.g., Cement, Plastic, Steel.
     """
     casing_material_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    code = models.CharField(max_length=10, unique=True)
+    casing_material_code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
@@ -1072,14 +1072,14 @@ class Casing(AuditModel):
     """
     casing_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     activity_submission = models.ForeignKey(ActivitySubmission, db_column='filing_number', on_delete=models.CASCADE, blank=True, null=True)
-    well = models.ForeignKey(Well, db_column='well_tag_number', on_delete=models.CASCADE, blank=True, null=True)
-    casing_from = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='From', blank=False, validators=[MinValueValidator(Decimal('0.00'))])
-    casing_to = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='To', blank=False, validators=[MinValueValidator(Decimal('0.01'))])
-    internal_diameter = models.DecimalField(max_digits=8, decimal_places=3, verbose_name='Diameter', blank=False, validators=[MinValueValidator(Decimal('0.5'))])
-    casing_type = models.ForeignKey(CasingType, db_column='casing_type_guid', on_delete=models.CASCADE, verbose_name='Casing Type')
+    well_tag_number = models.ForeignKey(Well, db_column='well_tag_number', on_delete=models.CASCADE, blank=True, null=True)
+    casing_from = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='From', null=True, blank=True, validators=[MinValueValidator(Decimal('0.00'))])
+    casing_to = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='To', null=True, blank=True, validators=[MinValueValidator(Decimal('0.01'))])
+    internal_diameter = models.DecimalField(max_digits=8, decimal_places=3, verbose_name='Diameter', null=True, blank=True, validators=[MinValueValidator(Decimal('0.5'))])
+    casing_type = models.ForeignKey(CasingType, db_column='casing_type_guid', on_delete=models.CASCADE, verbose_name='Casing Type', null=True)
     casing_material = models.ForeignKey(CasingMaterial, db_column='casing_material_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Casing Material')
     wall_thickness = models.DecimalField(max_digits=6, decimal_places=3, verbose_name='Wall Thickness', blank=True, null=True, validators=[MinValueValidator(Decimal('0.01'))])
-    drive_shoe = models.BooleanField(default=False, verbose_name='Drive Shoe', choices=((False, 'No'), (True, 'Yes')))
+    drive_shoe = models.NullBooleanField(default=False, null=True, verbose_name='Drive Shoe', choices=((False, 'No'), (True, 'Yes')))
 
     class Meta:
         db_table = 'gwells_casing'
