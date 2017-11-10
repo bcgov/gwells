@@ -78,4 +78,8 @@
 \echo '... loading gwells_yield_estimation_method code table'
 \copy gwells_yield_estimation_method (who_created,when_created,who_updated,when_updated,yield_estimation_method_guid,yield_estimation_method_code,description,is_hidden,sort_order) from 'gwells_yield_estimation_method.csv' with header delimiter ',' CSV ;
 
+--CASING MATERIAL
+\echo '... loading gwells_casing_material code table'
+\copy gwells_casing_material (who_created,when_created,who_updated,when_updated,casing_material_guid,casing_material_code,description,is_hidden,sort_order ) from 'gwells_casing_material.csv' with header delimiter ',' CSV ;
+
 \echo 'Finshed copy of static code tables.'
