@@ -37,9 +37,6 @@ INSERT INTO xform_gwells_well (
   other_drilling_method              ,
   drilling_method_guid               ,
   ground_elevation_method_guid       ,
-  bkfill_above_srfc_seal_depth       ,
-  backfill_above_surface_seal        ,
-  sealant_material                   ,
   status_of_well_guid                ,
   observation_well_number            ,
   observation_well_status            ,
@@ -72,6 +69,13 @@ INSERT INTO xform_gwells_well (
   bcgs_id                            ,
   development_method_guid            ,
   development_duration               ,
+  surface_seal_method_guid           ,
+  surface_seal_material_guid         ,
+  surface_seal_length                ,
+  surface_seal_thickness             ,
+  backfill_type                      ,
+  backfill_depth                     ,
+  liner_material_guid                ,
   when_created                       ,
   when_updated                       ,
   who_created                        ,
@@ -156,9 +160,6 @@ SELECT
     WHEN 'LEVEL'  THEN '523ad79277ad11e7b5a5be2e44b06b34'::uuid
     ELSE null::uuid
   END AS ground_elevation_method_guid                                    ,
-  WELLS.BACKFILL_DEPTH AS bkfill_above_srfc_seal_depth                   ,
-  WELLS.BACKFILL_TYPE  AS backfill_above_surface_seal                    ,
-  WELLS.SEALANT_MATERIAL AS sealant_material                             ,
   WELLS.STATUS_OF_WELL_CODE            AS status_of_well_guid 	         ,
   WELLS.OBSERVATION_WELL_NUMBER	       AS observation_well_number        ,
   WELLS.MINISTRY_OBSERVATION_WELL_STAT AS observation_well_status        ,
@@ -193,9 +194,15 @@ SELECT
   WELLS.UTM_EAST                                                         ,
   WELLS.UTM_ACCURACY_CODE                                                ,
   WELLS.BCGS_ID                                                          ,
-  DEVELOPMENT_METHOD.DEVELOPMENT_METHOD_GUID                             ,
+  DEVELOPMENT_METHOD.development_method_guid                             ,
   WELLS.DEVELOPMENT_HOURS                                                ,
-
+  SURFACE_SEAL_METHOD.surface_seal_method_guid                           ,
+  SURFACE_SEAL_MATERIAL.surface_seal_material_guid                       ,
+  WELLS.surface_seal_depth                                               ,
+  WELLS.surface_seal_thickness                                           ,
+  WELLS.backfill_type                                                    ,
+  WELLS.backfill_depth                                                   ,
+  LINER_MATERIAL.liner_material_guid                                     ,
   WELLS.WHEN_CREATED AS when_created                                     ,
   coalesce(WELLS.WHEN_UPDATED,WELLS.WHEN_CREATED) as when_updated        ,
   WELLS.WHO_CREATED as who_created                                       ,
@@ -208,6 +215,12 @@ FROM WELLS.WELLS_WELLS WELLS LEFT OUTER JOIN WELLS.WELLS_OWNERS OWNER ON OWNER.O
                              LEFT OUTER JOIN GWELLS_SCREEN_OPENING SCREEN_OPENING ON WELLS.SCREEN_OPENING_CODE=SCREEN_OPENING.SCREEN_OPENING_CODE
                              LEFT OUTER JOIN GWELLS_SCREEN_BOTTOM SCREEN_BOTTOM ON WELLS.SCREEN_BOTTOM_CODE=SCREEN_BOTTOM.SCREEN_BOTTOM_CODE
                              LEFT OUTER JOIN GWELLS_DEVELOPMENT_METHOD DEVELOPMENT_METHOD ON WELLS.DEVELOPMENT_METHOD_CODE=DEVELOPMENT_METHOD.DEVELOPMENT_METHOD_CODE
+                             LEFT OUTER JOIN GWELLS_SURFACE_SEAL_METHOD SURFACE_SEAL_METHOD ON
+                             WELLS.SURFACE_SEAL_METHOD_CODE=SURFACE_SEAL_METHOD.SURFACE_SEAL_METHOD_CODE
+                             LEFT OUTER JOIN GWELLS_SURFACE_SEAL_MATERIAL SURFACE_SEAL_MATERIAL ON
+                             WELLS.SURFACE_SEAL_METHOD_CODE=SURFACE_SEAL_MATERIAL.SURFACE_SEAL_MATERIAL_CODE
+                             LEFT OUTER JOIN GWELLS_LINER_MATERIAL LINER_MATERIAL ON
+                             WELLS.LINER_MATERIAL_CODE=LINER_MATERIAL.LINER_MATERIAL_CODE
 WHERE WELLS.ACCEPTANCE_STATUS_CODE != 'REJECTED';
 
 \echo 'wells data (!= REJECTED) transformed via xform_gwells_well ETL table';

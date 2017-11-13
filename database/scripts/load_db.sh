@@ -28,4 +28,5 @@ psql --dbname postgresql://${DATABASE_USER}:${DATABASE_USER_PASSWORD}@127.0.0.1:
 \include migrate_screens.sql
 \include migrate_production_data.sql
 \include migrate_casings.sql
+\include migrate_perforations.sql
 EOF
