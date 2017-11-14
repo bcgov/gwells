@@ -1,4 +1,4 @@
-\echo 'Starting clear_tables() procedure...'
+\echo 'Starting to clear tables procedure...'
 
 -- Reset tables
 
@@ -86,4 +86,16 @@ TRUNCATE TABLE gwells_casing_material CASCADE;
 \echo '... clearing gwells_casing'
 TRUNCATE TABLE gwells_casing CASCADE;
 
-\echo 'Finished clear_tables() procedure.'
+\echo '...clearing gwells_surface_seal_method'
+TRUNCATE TABLE gwells_surface_seal_method CASCADE;
+
+\echo '...clearing gwells_surface_seal_material'
+TRUNCATE TABLE gwells_surface_seal_material CASCADE;
+
+\echo '...clearing gwells_liner_material'
+TRUNCATE TABLE gwells_liner_material CASCADE;
+
+\echo '...clearing gwells_perforation'
+TRUNCATE TABLE gwells_perforation CASCADE;
+
+\echo 'Finished clearing tables.'

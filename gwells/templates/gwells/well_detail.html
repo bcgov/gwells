@@ -145,12 +145,6 @@
                     <span id="location_desc">{{ well.well_location_description|default_if_none:'&nbsp;' }}</span>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-md-12">
-                    <label for="where_plate_attached">{% verbose_name well "well_identification_plate_attached" %}:</label>
-                    <span id="where_plate_attached">{{ well.well_identification_plate_attached|default_if_none:'&nbsp;' }}</span>
-                </div>
-            </div>
 
             <div class="row">
                 <div class="col-md-12">
@@ -194,6 +188,7 @@
                 </div>
             </div>
         </div>
+
         <div class="col-md-6">
             <div aria-label="This map shows the well under consideration as a light blue pushpin, as well as surrounding wells as dark blue circles." id="detail-map"></div>
             <div id="attribution"></div>
@@ -330,10 +325,12 @@
     </div>
 
     <div class="row">
-        <div class="col-md-6">
-          <label for="well_identification_plate_attached">{% verbose_name well "well_identification_plate_attached" %}:</label>
-          <span id="well_identification_plate_attached">{{ well.well_identification_plate_attached|default_if_none:'&nbsp;' }}</span>
-        </div>
+      <div class="row">
+          <div class="col-md-12">
+              <label for="where_plate_attached">{% verbose_name well "where_identification_plate_attached" %}:</label>
+              <span id="where_plate_attached">{{ well.where_identification_plate_attached|default_if_none:'&nbsp;' }}</span>
+          </div>
+      </div>
     </div>
 </fieldset>
 
@@ -464,8 +461,8 @@
     </fieldset>
 </fieldset>
 
-<fieldset>
-  <legend>Casing, Surface Seal and Liner Details</legend>
+<fieldset id="casing_field_set">
+  <legend>Casing</legend>
   <table id="casings">
     <thead>
       <th>From (feet)</th>
@@ -494,7 +491,7 @@
           </div>
         </td>
         <td>
-          <div class="col-md-2">
+          <div class="col-md-12">
               <span>{{ casing.casing_material.description|default_if_none:'&nbsp;' }}</span>
           </div>
         </td>
@@ -513,19 +510,71 @@
     </tbody>
   </table>
 
-  <!-- casing surface seal material -->
-  <!-- casing surface seal thickness -->
-  <!-- casing surface seal length -->
-  <!-- casing backfill type -->
-  <!-- casing backfill depth -->
-  <!-- casing liner material -->
-  <!-- casing liner diameter -->
-  <!-- casing liner thickness -->
-  <!-- casing liner from -->
-  <!-- casing liner to -->
-  <!-- casing liner perforated from -->
-  <!-- casing liner perforated to -->
 </fieldset>
+
+<fieldset id="surface_seal_fieldset">
+    <legend>Surface Seal</legend>
+    <div class="row">
+      <div class="col-md-3">
+          <label for="surface_seal_method">{% verbose_name well "surface_seal_method" %}:</label>
+          <span id="surface_seal_method">{{ well.surface_seal_method|default_if_none:'&nbsp;' }}</span>
+      </div>
+      <div class="col-md-3">
+          <label for="surface_seal_material">{% verbose_name well "surface_seal_material" %}:</label>
+          <span id="surface_seal_material">{{ well.surface_seal_material|default_if_none:'&nbsp;' }}</span>
+      </div>
+
+    </div>
+    <div class="row">
+      <div class="col-md-3">
+          <label for="surface_seal_thickness">{% verbose_name well "surface_seal_thickness" %}:</label>
+          <span id="surface_seal_thickness">{{ well.surface_seal_thickness|default_if_none:'&nbsp;' }}</span>
+      </div>
+      <div class="col-md-3">
+          <label for="surface_seal_length">{% verbose_name well "surface_seal_length" %}:</label>
+          <span id="surface_seal_length">{{ well.surface_seal_length|default_if_none:'&nbsp;' }}</span>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-3">
+          <label for="backfill_type">{% verbose_name well "backfill_type" %}:</label>
+          <span id="surface_seal_thickness">{{ well.backfill_type|default_if_none:'&nbsp;' }}</span>
+      </div>
+      <div class="col-md-3">
+          <label for="backfill_depth">{% verbose_name well "backfill_depth" %}:</label>
+          <span id="surface_seal_length">{{ well.backfill_depth|default_if_none:'&nbsp;' }}</span>
+      </div>
+    </div>
+</fieldset>
+
+<fieldset id="perforations_fieldset">
+    <legend>Liner Details</legend>
+    <table id="liner_details">
+        <thead>
+            <th>Liner Material</th>
+            <th>Liner Diameter</th>
+            <th>Liner Thickness</th>
+            <th>Liner From</th>
+            <th>Liner To</th>
+            <th>Liner Perforated From</th>
+            <th>Liner Perforated To</th>
+        </thead>
+        <tbody>
+            {% for perforation in well.perforation_set.all %}
+            <tr>
+              <td>{{well.liner_material.description|default_if_none:'&nbsp;'}}</td>
+              <td>{{perforation.liner_diameter|default_if_none:'&nbsp;'}}</td>
+              <td>{{perforation.liner_thickness|default_if_none:'&nbsp;'}}</td>
+              <td>{{perforation.liner_from|default_if_none:'&nbsp;'}}</td>
+              <td>{{perforation.liner_to|default_if_none:'&nbsp;'}}</td>
+              <td>{{perforation.liner_perforation_from|default_if_none:'&nbsp;'}}</td>
+              <td>{{perforation.liner_perforation_to|default_if_none:'&nbsp;'}}<td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</fieldset>
+
 <div>
     <br /><br />
     <a id="well_tag_number_link" href="https://a100.gov.bc.ca/pub/wells/wellsreport1.do?wellTagNumber={{ well.well_tag_number }}">View Report</a>
