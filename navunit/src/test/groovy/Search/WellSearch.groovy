@@ -256,7 +256,7 @@ class WellSearchSpecs extends GebReportingSpec {
 
         where:
         TestDesc                        		| Owner	       	| ShowError    | NumberResult
-        "Multiple Results - Gary"				| "GARY"	   	| "No"     	   | 431
+        "Multiple Results - Gary"				| "GARY"	   	| "No"     	   | 437
         "Single Result - Gary Akles"     		| "GARY AKLES" 	| "No"         | 1	
         "No matching results - Random Owner"    | "Random Owner"| "Yes"        | 0
         "No matching results - <null>"         	| ""		    | "Yes"        | 0
@@ -277,7 +277,7 @@ class WellSearchSpecs extends GebReportingSpec {
 ** Does this need to be enhanced to describe the use of boolean logic (AND vs. OR)?
  */
 
-    def "Scenario 4: Well Search by Owner Name - #TestDesc"() {
+    def "Scenario 5: Well Search by Owner Name and street address - #TestDesc"() {
         given: "I am a generic user"
 		and: "I want to search for a well by Owner Name AND Street Address"
 			to SearchPage
@@ -321,7 +321,7 @@ class WellSearchSpecs extends GebReportingSpec {
 
         where:
         TestDesc                        					| Owner	       	|Address| ShowError    | NumberResult
-        "Multiple Results - Gary"							| "GARY"	   	|""		| "No"     	   | 431
+        "Multiple Results - Gary"							| "GARY"	   	|""		| "No"     	   | 437
         "Single Result - Gary Akles"     					| "GARY AKLES" 	|""		| "No"         | 1	
         "No matching results - Random Owner"    			| "Random Owner"|""		| "Yes"        | 0
         "No matching results - Random Address"    			| ""			|"Random Address"		| "Yes"        | 0
