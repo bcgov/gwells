@@ -145,12 +145,6 @@
                     <span id="location_desc">{{ well.well_location_description|default_if_none:'&nbsp;' }}</span>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-md-12">
-                    <label for="where_plate_attached">{% verbose_name well "well_identification_plate_attached" %}:</label>
-                    <span id="where_plate_attached">{{ well.well_identification_plate_attached|default_if_none:'&nbsp;' }}</span>
-                </div>
-            </div>
 
             <div class="row">
                 <div class="col-md-12">
@@ -194,6 +188,7 @@
                 </div>
             </div>
         </div>
+
         <div class="col-md-6">
             <div aria-label="This map shows the well under consideration as a light blue pushpin, as well as surrounding wells as dark blue circles." id="detail-map"></div>
             <div id="attribution"></div>
@@ -330,10 +325,12 @@
     </div>
 
     <div class="row">
-        <div class="col-md-6">
-          <label for="well_identification_plate_attached">{% verbose_name well "well_identification_plate_attached" %}:</label>
-          <span id="well_identification_plate_attached">{{ well.well_identification_plate_attached|default_if_none:'&nbsp;' }}</span>
-        </div>
+      <div class="row">
+          <div class="col-md-12">
+              <label for="where_plate_attached">{% verbose_name well "where_identification_plate_attached" %}:</label>
+              <span id="where_plate_attached">{{ well.where_identification_plate_attached|default_if_none:'&nbsp;' }}</span>
+          </div>
+      </div>
     </div>
 </fieldset>
 

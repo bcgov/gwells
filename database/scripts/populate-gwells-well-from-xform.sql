@@ -53,7 +53,6 @@ INSERT INTO gwells_well (
   other_screen_bottom                ,
   other_screen_material              ,
   development_notes                  ,
-  well_identification_plate_attached ,
   water_quality_colour               ,
   water_quality_odour                ,
   well_cap_type                      ,
@@ -73,6 +72,7 @@ INSERT INTO gwells_well (
   bedrock_depth                      ,
   water_supply_system_name           ,
   water_supply_system_well_name      ,
+  where_identification_plate_attached,
   ems                                ,
   screen_intake_method_guid          ,
   screen_type_guid                   ,
@@ -141,7 +141,6 @@ SELECT
 	''                                             ,
 	''                                             ,
 	''                                             ,
-  xform.well_identification_plate_attached       ,
 	''                                             ,
 	''                                             ,
 	''                                             ,
@@ -161,6 +160,7 @@ SELECT
   xform.bedrock_depth                            ,
   xform.water_supply_system_name                 ,
   xform.water_supply_system_well_name            ,
+  xform.where_identification_plate_attached      ,
   xform.ems                                      ,
   xform.screen_intake_method_guid                ,
   xform.screen_type_guid                         ,
@@ -187,3 +187,5 @@ LEFT OUTER JOIN gwells_well_subclass subclass ON xform.SUBCLASS_OF_WELL_CLASSIFI
 \t
 SELECT count(*) || ' rows loaded into the gwells_well table' from gwells_well;
 \t
+
+DROP TABLE IF EXISTS xform_gwells_well;
