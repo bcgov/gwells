@@ -435,7 +435,7 @@ class SurfaceSealMaterial(AuditModel):
      Sealant material used that is installed in the annular space around the outside of the outermost casing and between multiple casings of a well.
     """
     surface_seal_material_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    code = models.CharField(max_length=10, unique=True)
+    surface_seal_material_code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
@@ -452,7 +452,7 @@ class SurfaceSealMethod(AuditModel):
      Method used to install the surface seal in the annular space around the outside of the outermost casing and between mulitple casings of a well.
     """
     surface_seal_method_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    code = models.CharField(max_length=10, unique=True)
+    surface_seal_method_code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
@@ -469,7 +469,7 @@ class LinerMaterial(AuditModel):
      Liner material installed in a well to protect the well pump or other works in the well from damage.
     """
     liner_material_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    code = models.CharField(max_length=10, unique=True)
+    liner_material_code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
@@ -724,28 +724,32 @@ class Well(AuditModel):
 
     drilling_company = models.ForeignKey(DrillingCompany, db_column='drilling_company_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Drilling Company')
 
-    well_identification_plate_attached = models.CharField(max_length=500, blank=True, null=True, verbose_name='Where Identification Plate Is Attached')
+    where_identification_plate_attached = models.CharField(max_length=500, blank=True, null=True, verbose_name='Where Identification Plate Is Attached')
 
     latitude = models.DecimalField(max_digits=8, decimal_places=6, blank=True, null=True, verbose_name='Latitude')
     longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True, verbose_name='Longitude')
     ground_elevation = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True, verbose_name='Ground Elevation')
     ground_elevation_method = models.ForeignKey(GroundElevationMethod, db_column='ground_elevation_method_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Method for Determining Ground Elevation')
     drilling_method = models.ForeignKey(DrillingMethod, db_column='drilling_method_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Drilling Method')
-    other_drilling_method = models.CharField(max_length=50, blank=True, verbose_name='Specify Other Drilling Method')
+    other_drilling_method = models.CharField(max_length=50, blank=True, null=True, verbose_name='Specify Other Drilling Method')
     well_orientation = models.BooleanField(default=True, verbose_name='Orientation of Well', choices=((True, 'vertical'), (False, 'horizontal')))
 
     surface_seal_material = models.ForeignKey(SurfaceSealMaterial, db_column='surface_seal_material_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Surface Seal Material')
-    surface_seal_depth = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Surface Seal Depth')
+    surface_seal_length = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Surface Seal Length')
     surface_seal_thickness = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Surface Seal Thickness')
     surface_seal_method = models.ForeignKey(SurfaceSealMethod, db_column='surface_seal_method_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Surface Seal Installation Method')
-    backfill_above_surface_seal = models.CharField(max_length=250, blank=True, verbose_name='Backfill Material Above Surface Seal')
-    backfill_above_surface_seal_depth = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Backfill Depth')
+    backfill_type = models.CharField(max_length=250, blank=True, null=True, verbose_name="Backfill Type")
+    backfill_depth = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Backfill Depth')
+
+
 
     liner_material = models.ForeignKey(LinerMaterial, db_column='liner_material_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Liner Material')
     liner_diameter = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Liner Diameter', validators=[MinValueValidator(Decimal('0.00'))])
     liner_thickness = models.DecimalField(max_digits=5, decimal_places=3, blank=True, null=True, verbose_name='Liner Thickness', validators=[MinValueValidator(Decimal('0.00'))])
     liner_from = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Liner From', validators=[MinValueValidator(Decimal('0.00'))])
     liner_to = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Liner To', validators=[MinValueValidator(Decimal('0.01'))])
+
+
 
     screen_intake_method = models.ForeignKey(ScreenIntakeMethod, db_column='screen_intake_method_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Screen Intake Method')
     screen_type = models.ForeignKey(ScreenType, db_column='screen_type_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Screen Type')
@@ -820,13 +824,33 @@ class Well(AuditModel):
             "well_tag_number": self.well_tag_number
         }
 
+class Perforation(AuditModel):
+    """
+    Liner Details
+    """
+    perforation_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    well_tag_number = models.ForeignKey(Well, db_column='well_tag_number', on_delete=models.CASCADE, blank=True, null=True)
+    liner_thickness = models.DecimalField(max_digits=5, decimal_places=3, blank=True, null=True, verbose_name='Liner Thickness')
+    liner_diameter = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Liner Diameter')
+    liner_from = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Liner From')
+    liner_to = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Liner To')
+    liner_perforation_from = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Perforation From')
+    liner_perforation_to = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Perforation To')
+
+    class Meta:
+        db_table = 'gwells_perforation'
+        ordering = ['perforation_guid']
+
+    def __str__(self):
+        return self.description
+
 class ActivitySubmission(AuditModel):
     """
     Activity information on a Well submitted by a user.
     """
     filing_number = models.AutoField(primary_key=True)
     activity_submission_guid = models.UUIDField(primary_key=False, default=uuid.uuid4, editable=False)
-    well = models.ForeignKey(Well, db_column='well_tag_number', on_delete=models.CASCADE, blank=True, null=True)
+    well_tag_number = models.ForeignKey(Well, db_column='well_tag_number', on_delete=models.CASCADE, blank=True, null=True)
     well_activity_type = models.ForeignKey(WellActivityType, db_column='well_activity_type_guid', on_delete=models.CASCADE, verbose_name='Type of Work')
     well_class = models.ForeignKey(WellClass, db_column='well_class_guid', on_delete=models.CASCADE, verbose_name='Well Class')
     well_subclass = models.ForeignKey(WellSubclass, db_column='well_subclass_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Well Subclass')
