@@ -1161,7 +1161,7 @@ class ProductionData(AuditModel):
     """
     production_data_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     activity_submission = models.ForeignKey(ActivitySubmission, db_column='filing_number', on_delete=models.CASCADE, blank=True, null=True)
-    well_tag_number = models.ForeignKey(Well, db_column='well_tag_number', on_delete=models.CASCADE, blank=True, null=True)
+    well = models.ForeignKey(Well, db_column='well_tag_number', on_delete=models.CASCADE, blank=True, null=True)
     yield_estimation_method = models.ForeignKey(YieldEstimationMethod, db_column='yield_estimation_method_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Yield Estimation Method')
     yield_estimation_rate = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='Yield Estimation Rate', blank=True, null=True, validators=[MinValueValidator(Decimal('0.00'))])
     yield_estimation_duration = models.DecimalField(max_digits=9, decimal_places=2, verbose_name='Yield Estimation Duration', blank=True, null=True, validators=[MinValueValidator(Decimal('0.01'))])
