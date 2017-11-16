@@ -221,9 +221,9 @@ FROM WELLS.WELLS_WELLS WELLS LEFT OUTER JOIN WELLS.WELLS_OWNERS OWNER ON OWNER.O
                              WELLS.SURFACE_SEAL_METHOD_CODE=SURFACE_SEAL_MATERIAL.SURFACE_SEAL_MATERIAL_CODE
                              LEFT OUTER JOIN GWELLS_LINER_MATERIAL LINER_MATERIAL ON
                              WELLS.LINER_MATERIAL_CODE=LINER_MATERIAL.LINER_MATERIAL_CODE
-WHERE WELLS.ACCEPTANCE_STATUS_CODE != 'REJECTED';
+WHERE WELLS.ACCEPTANCE_STATUS_CODE = 'ACCEPTED';
 
-\echo 'wells data (!= REJECTED) transformed via xform_gwells_well ETL table';
+\echo 'wells data (= ACCEPTED) transformed via xform_gwells_well ETL table';
 
 \t
 SELECT count(*) || ' rows loaded into the xform_gwells_well table' from xform_gwells_well;

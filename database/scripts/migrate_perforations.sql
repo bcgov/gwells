@@ -14,7 +14,7 @@ INSERT INTO gwells_perforation(
   when_updated
 ) SELECT
   gen_random_uuid()                  ,
-  perforations.well_id               ,
+  wells.well_tag_number              ,
   perforations.liner_thickness       ,
   perforations.liner_diameter        ,
   perforations.liner_from            ,
@@ -27,7 +27,8 @@ INSERT INTO gwells_perforation(
   perforations.when_updated
 
 FROM wells.wells_perforations perforations
-     INNER JOIN gwells_well well ON well.well_tag_number = perforations.well_id;
+     INNER JOIN gwells_well well ON well.well_tag_number = perforations.well_id
+     INNER JOIN wells.wells_wells wells on perforations.well_id=wells.well_id;
 
 \echo 'wells_perforations data imported'
 
