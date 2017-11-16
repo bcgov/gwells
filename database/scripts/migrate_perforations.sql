@@ -28,7 +28,8 @@ INSERT INTO gwells_perforation(
 
 FROM wells.wells_perforations perforations
      INNER JOIN gwells_well well ON well.well_tag_number = perforations.well_id
-     INNER JOIN wells.wells_wells wells on perforations.well_id=wells.well_id;
+     INNER JOIN wells.wells_wells wells on perforations.well_id=wells.well_id
+WHERE WELLS.ACCEPTANCE_STATUS_CODE NOT IN ('PENDING', 'REJECTED', 'NEW');
 
 \echo 'wells_perforations data imported'
 
