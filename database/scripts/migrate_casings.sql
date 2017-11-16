@@ -35,7 +35,7 @@ FROM wells.wells_casings casings
      LEFT OUTER JOIN gwells_casing_material casing_material ON casings.casing_material_code=casing_material.casing_material_code
      INNER JOIN wells.wells_wells wells ON wells.well_tag_number=casings.well_id --> exclude casings that refer to wells that were excluded earlier in the pipeline.
 
-WHERE WELLS.ACCEPTANCE_STATUS_CODE = 'ACCEPTED';
+WHERE WELLS.ACCEPTANCE_STATUS_CODE NOT IN ('PENDING', 'REJECTED', 'NEW');
 
 \echo 'wells_casings data imported'
 
