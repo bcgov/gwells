@@ -101,7 +101,11 @@
             {% for well in well_list %}
             <tr>
                 <td>
+                {% if settings.ENABLE_OLD_WELL_DETAIL %}
+                    <a href="{% url 'well_detailold' well.well_tag_number %}">{{ well.well_tag_number }}</a>
+                {% else %}
                     <a href="{% url 'well_detail' well.well_tag_number %}">{{ well.well_tag_number }}</a>
+                {% endif %}
                 </td>
                 <td>
                     {{well.identification_plate_number|default:'&nbsp;' }}
