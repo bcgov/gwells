@@ -1,4 +1,4 @@
-\echo '... transforming wells data (!= REJECTED) via xform_gwells_well ETL table...';
+\echo '... transforming wells data (= ACCEPTED) via xform_gwells_well ETL table...';
 
 INSERT INTO xform_gwells_well (
   well_tag_number                    ,
