@@ -119,6 +119,10 @@ def map_well_search(request):
 class WellDetailView(generic.DetailView):
     model = Well
     context_object_name = 'well'
+    if settings.ENABLE_OLD_WELL_DETAIL:
+        template_name = 'gwells/well_detailold.html'
+    else:    
+        template_name = 'gwells/well_detail.html'
 
     def get_context_data(self, **kwargs):
         """
