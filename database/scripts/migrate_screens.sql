@@ -32,7 +32,7 @@ FROM wells.wells_screens screens
        screens.screen_assembly_type_code='K  & Riser' AND screen_assembly_type.screen_assembly_type_code='K_RISER'
      )
      INNER JOIN wells.wells_wells wells ON wells.well_tag_number=screens.well_id
-WHERE WELLS.ACCEPTANCE_STATUS_CODE != 'REJECTED';
+WHERE WELLS.ACCEPTANCE_STATUS_CODE = 'ACCEPTED';
 
 \echo 'wells_screens data imported'
 
