@@ -391,11 +391,11 @@
 <fieldset>
     <legend>Well Development</legend>
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-3">
             <label for="devloped-by">{% verbose_name well "development_method" %}:</label>
             <span id="developed-by">{{ well.development_method.description|default_if_none:'&nbsp;' }}</span>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-4">
             <label for="devlopment-total-duration">{% verbose_name well "development_hours" %}:</label>
             <span id="devlopment-total-duration">{{ well.development_hours|default_if_none:'&nbsp;' }} hours</span>
         </div>
