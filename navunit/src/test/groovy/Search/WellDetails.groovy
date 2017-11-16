@@ -46,7 +46,7 @@ class WellDetailsSpecs extends GebReportingSpec {
 			assert land_district 
 			assert latitude 
 			assert legalTable 
-			assert licensed_status 
+			assert licenced_status 
 			assert location_desc 
 			assert longitude 
 			assert lot 
@@ -71,7 +71,7 @@ class WellDetailsSpecs extends GebReportingSpec {
 			assert where_plate_attached 
 			assert yieldsTable 
         where:
-        TestDesc                              | WellId           
+        TestDesc                          | WellId           
         "Well Tag - 21265"                    | 21265
     } 
 }
