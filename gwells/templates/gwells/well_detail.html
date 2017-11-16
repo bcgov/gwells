@@ -339,6 +339,7 @@
 
     <div class="row">
         <div class="col-md-3">
+            &nbsp;
             <div class="row">
               <label for="intake_method">{% verbose_name well "screen_intake_method" %}:</label>
               <span id="intake_method">{{ well.screen_intake_method|default_if_none:'&nbsp;' }}</span>
@@ -360,13 +361,13 @@
               <span id="screen_bottom">{{ well.screen_bottom.description|default_if_none:'&nbsp;' }}</span>
             </div>
         </div>
-        <div class="col-md-9">
-            <table id="screens" class="table">
+        <div class="col-md-9 table-responsive">
+            <table id="screens" class="table table-condensed">
                 <thead>
                     <tr>
-                        <th>From</th>
-                        <th>To</th>
-                        <th>Internal Diameter</th>
+                        <th>From (feet)</th>
+                        <th>To (feet)</th>
+                        <th>Internal Diameter (inches)</th>
                         <th>Screen Assembly Type</th>
                         <th>Slot Size</th>
                     </tr>
@@ -374,11 +375,11 @@
                 <tbody>
                     {% for screen in well.screen_set.all %}
                     <tr>
-                        <td><span>{{ screen.screen_from|default_if_none:'&nbsp;' }}</span></td>
-                        <td><span>{{ screen.screen_to|default_if_none:'&nbsp;' }}</span></td>
-                        <td><span>{{ screen.internal_diameter|default_if_none:'&nbsp;' }}</span></td>
+                        <td><span class="pull-right">{{ screen.screen_from|default_if_none:'&nbsp;' }}</span></td>
+                        <td><span class="pull-right">{{ screen.screen_to|default_if_none:'&nbsp;' }}</span></td>
+                        <td><span class="pull-right">{{ screen.internal_diameter|default_if_none:'&nbsp;' }}</span></td>
                         <td><span>{{ screen.assembly_type|default_if_none:'&nbsp;' }}</span></td>
-                        <td><span>{{ screen.slot_size|default_if_none:'&nbsp;' }}</span></td>
+                        <td><span class="pull-right">{{ screen.slot_size|default_if_none:'&nbsp;' }}</span></td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -403,8 +404,7 @@
     <fieldset>
       <legend>Well Yield</legend>
       <div class="row">
-        {% for productiondata in well.productiondata_set.all|dictsortreversed:"when_updated"|slice:"1" %}
-        <div class="col-md-12">
+          {% for productiondata in well.productiondata_set.all|dictsortreversed:"when_updated"|slice:"1" %}
           <div class="col-md-12">
               <label for="yield-estimation-method">{% verbose_name productiondata "yield_estimation_method" %}:</label>
               <span id="yield-estimation-method">{{ productiondata.yield_estimation_method.description|default_if_none:'&nbsp;' }}</span>
@@ -413,29 +413,15 @@
               <label for="devlopment-total-duration">{% verbose_name productiondata "yield_estimation_method" %}:</label>
               <span>{{ productiondata.yield_estimation_method.description|default_if_none:'&nbsp;' }}</span>
           </div>
-          <span>{{ productiondata.yield_estimation_rate|default_if_none:'&nbsp;' }}</span>
-
-          <th>Estimation Duration</th>
-        </thead>
-          <table id="yields" class="table">
-
-            <tbody>
-
-              <tr>
-                <td>
-
-                </td>
-                <td>
-
-                </td>
-                <td>
-                    <span>{{ productiondata.yield_estimation_duration|default_if_none:'&nbsp;' }}</span>
-                </td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-      </div>
+          <div class="col-md-12">
+              <label for="devlopment-total-duration">{% verbose_name productiondata "yield_estimation_rate" %}:</label>
+              <span>{{ productiondata.yield_estimation_rate|default_if_none:'&nbsp;' }}</span>
+          </div>
+          <div class="col-md-12">
+              <label for="devlopment-total-duration">{% verbose_name productiondata "yield_estimation_duration" %}:</label>
+              <span>{{ productiondata.yield_estimation_duration|default_if_none:'&nbsp;' }}</span>
+          </div>
+          {% endfor %}
     </fieldset>
 </fieldset>
 
