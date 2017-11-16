@@ -25,7 +25,7 @@ class WellSummaryPage extends Page {
 			land_district { $("span", id:"land_district") }
 			latitude { $("span", id:"latitude") }
 			legalTable { $("table", id:"legal") }
-			licensed_status { $("span", id:"licensed_status") }
+			licenced_status { $("span", id:"licenced_status") }
 			location_desc { $("span", id:"location_desc") }
 			longitude { $("span", id:"longitude") }
 			lot { $("span", id:"lot") }
