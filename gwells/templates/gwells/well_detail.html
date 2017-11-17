@@ -18,8 +18,6 @@
     <div class="col-md-4">
         <label for="licenced_status">{% verbose_name well "licenced_status" %}:</label>
         <span id="licenced_status">{{ well.licenced_status.code|default_if_none:'&nbsp;' }}</span>
-        <!-- 31e3ee60-b052-11e7-abc4-cec278b6b50a | Licensed   | Licensed
-             31e3f1f8-b052-11e7-abc4-cec278b6b50a | Unlicensed | Unlicensed-->
     </div>
     <div class="col-md-4">
         <label for="obs_well_number">{% verbose_name well "observation_well_number" %}:</label>
