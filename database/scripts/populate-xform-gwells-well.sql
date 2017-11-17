@@ -82,7 +82,7 @@ INSERT INTO xform_gwells_well (
   who_updated)
 SELECT
   WELLS.WELL_TAG_NUMBER                                                  ,
-  null                                                                   , -- gen_random_uuid()  AS WELL_GUID,
+  gen_random_uuid()                                                      ,
   WELLS.ACCEPTANCE_STATUS_CODE AS acceptance_status_code                 ,
   concat_ws(' ', owner.giVEN_NAME,OWNER.SURNAME) AS owner_full_name      ,
   concat_ws(' ',OWNER.STREET_NUMBER,STREET_NAME) AS owner_mailing_address,
@@ -203,10 +203,10 @@ SELECT
   WELLS.backfill_type                                                    ,
   WELLS.backfill_depth                                                   ,
   LINER_MATERIAL.liner_material_guid                                     ,
-  WELLS.WHEN_CREATED AS when_created                                     ,
-  coalesce(WELLS.WHEN_UPDATED,WELLS.WHEN_CREATED) as when_updated        ,
-  WELLS.WHO_CREATED as who_created                                       ,
-  coalesce(WELLS.WHO_UPDATED,WELLS.WHO_CREATED) as who_updated
+  WELLS.WHEN_CREATED                                                     ,
+  coalesce(WELLS.WHEN_UPDATED,WELLS.WHEN_CREATED)                        ,
+  WELLS.WHO_CREATED                                                      ,
+  coalesce(WELLS.WHO_UPDATED,WELLS.WHO_CREATED)
 FROM WELLS.WELLS_WELLS WELLS LEFT OUTER JOIN WELLS.WELLS_OWNERS OWNER ON OWNER.OWNER_ID=WELLS.OWNER_ID
                              LEFT OUTER JOIN GWELLS_DRILLING_COMPANY DRILLING_COMPANY ON WELLS.DRILLER_COMPANY_CODE=DRILLING_COMPANY.DRILLING_COMPANY_CODE
                              LEFT OUTER JOIN GWELLS_SCREEN_INTAKE_METHOD SCREEN_INTAKE_METHOD ON WELLS.SCREEN_INTAKE_CODE=SCREEN_INTAKE_METHOD.SCREEN_INTAKE_CODE
