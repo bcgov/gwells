@@ -69,7 +69,7 @@ class WellDetailsSpecs extends GebReportingSpec {
 			assert well_well_status 
 			assert well_yield 
 			assert where_plate_attached 
-			assert yieldsTable 
+			//assert yieldsTable 
         where:
         TestDesc                          | WellId           
         "Well Tag - 21265"                    | 21265
