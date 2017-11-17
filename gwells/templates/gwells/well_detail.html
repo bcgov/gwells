@@ -10,73 +10,68 @@
 {% endblock %}
 
 {% block body_block %}
-<div class="row">
+<fieldset id="summary_information">
     <div class="col-md-4">
-        <label for="well_tag_number">{% verbose_name well "well_tag_number" %}:</label>
-        <span id="well_tag_number">{{ well.well_tag_number|default_if_none:'&nbsp;' }}</span>
+        <div class="row">
+          <label for="well_tag_number">{% verbose_name well "well_tag_number" %}:</label>
+          <span id="well_tag_number">{{ well.well_tag_number|default_if_none:'&nbsp;' }}</span>
+        </div>
+        <div class="row">
+          <label for="identification_plate_number">{% verbose_name well "identification_plate_number" %}:</label>
+          <span id="identification_plate_number">{{ well.identification_plate_number|default_if_none:'&nbsp;' }}</span>
+        </div>
+        <div class="row">
+          <label for="owner_full_name">{% verbose_name well "owner_full_name" %}:</label>
+          <span id="owner_full_name">{{ well.owner_full_name|default_if_none:'&nbsp;' }}</span>
+        </div>
     </div>
     <div class="col-md-4">
-        <label for="licenced_status">{% verbose_name well "licenced_status" %}:</label>
-        <span id="licenced_status">{{ well.licenced_status.code|default_if_none:'&nbsp;' }}</span>
+        <div class="row">
+          <label for="well_class">{% verbose_name well "well_class" %}:</label>
+          <span id="well_class">{{ well.well_class|default_if_none:'&nbsp;' }}</span>
+        </div>
+        <div class="row">
+          <label for="well_subclass">{% verbose_name well "well_subclass" %}:</label>
+          <span id="well_subclass">{{ well.well_subclass|default_if_none:'&nbsp;' }}</span>
+        </div>
+        <div class="row">
+            <label for="intended_water_use">{% verbose_name well "intended_water_use" %}:</label>
+            <span id="intended_water_use">{{ well.intended_water_use|default_if_none:'&nbsp;' }}</span>
+        </div>
+        <div class="row">
+            <label for="well_well_status">{% verbose_name well "well_status" %}:</label>
+            <span id="well_well_status">{{ well.well_status.code|default_if_none:'&nbsp;' }}</span>
+        </div>
+        <div class="row">
+            <label for="licenced_status">{% verbose_name well "licenced_status" %}:</label>
+            <span id="licenced_status">{{ well.licenced_status.code|default_if_none:'&nbsp;' }}</span>
+        </div>
+        <div class="row">
+          <!-- add aquifer number -->
+        </div>
     </div>
     <div class="col-md-4">
-        <label for="obs_well_number">{% verbose_name well "observation_well_number" %}:</label>
-        <span id="obs_well_number">{{ well.observation_well_number|default_if_none:'&nbsp;' }}</span>
+        <div class="row">
+            <label for="obs_well_number">{% verbose_name well "observation_well_number" %}:</label>
+            <span id="obs_well_number">{{ well.observation_well_number|default_if_none:'&nbsp;' }}</span>
+        </div>
+        <div class="row">
+            <label for="obs_well_status">{% verbose_name well "observation_well_status" %}:</label>
+            <span id="obs_well_status">{{ well.observation_well_status|default_if_none:'&nbsp;' }}</span>
+        </div>
+        <div class="row">
+            <label for="ems_id">{% verbose_name well "ems" %}:</label>
+            <span id="ems_id">{{ well.ems|default_if_none:'&nbsp;' }}</span>
+        </div>
+        <div class="row">
+            &nbsp;
+        </div>
+        <div class="row">
+            <label for="alternate_specs_submitted">{% verbose_name well "alternative_specs_submitted" %}:</label>
+            <span id="alternate_specs_submitted">{{ well.alternative_specs_submitted|default_if_none:'&nbsp;' }}</span>
+        </div>
     </div>
-</div>
-<div class="row">
-    <div class="col-md-4">
-        <label for="identification_plate_number">{% verbose_name well "identification_plate_number" %}:</label>
-        <span id="identification_plate_number">{{ well.identification_plate_number|default_if_none:'&nbsp;' }}</span>
-    </div>
-    <div class="col-md-4">
-        <label for="well_class">{% verbose_name well "well_class" %}:</label>
-        <span id="well_class">{{ well.well_class|default_if_none:'&nbsp;' }}</span>
-    </div>
-    <div class="col-md-4">
-        <label for="obs_well_status">{% verbose_name well "observation_well_status" %}:</label>
-        <span id="obs_well_status">{{ well.observation_well_status|default_if_none:'&nbsp;' }}</span>
-    </div>
-</div>
-<div class="row">
-    <div class="col-md-4">
-        <label for="owner_full_name">{% verbose_name well "owner_full_name" %}:</label>
-        <span id="owner_full_name">{{ well.owner_full_name|default_if_none:'&nbsp;' }}</span>
-    </div>
-    <div class="col-md-4">
-        <label for="well_subclass">{% verbose_name well "well_subclass" %}:</label>
-        <span id="well_subclass">{{ well.well_subclass|default_if_none:'&nbsp;' }}</span>
-    </div>
-    <div class="col-md-4">
-        <label for="ems_id">{% verbose_name well "ems" %}:</label>
-        <span id="ems_id">{{ well.ems|default_if_none:'&nbsp;' }}</span>
-    </div>
-</div>
-<div class="row">
-    <div class="col-md-4">
-    </div>
-    <div class="col-md-4">
-        <label for="intended_water_use">{% verbose_name well "intended_water_use" %}:</label>
-        <span id="intended_water_use">{{ well.intended_water_use|default_if_none:'&nbsp;' }}</span>
-    </div>
-</div>
-<div class="row">
-    <div class="col-md-4">
-    </div>
-    <div class="col-md-4">
-        <label for="well_well_status">{% verbose_name well "well_status" %}:</label>
-        <span id="well_well_status">{{ well.well_status.code|default_if_none:'&nbsp;' }}</span>
-    </div>
-    <div class="col-md-4">
-    </div>
-    <div class="col-md-4">
-        <label for="alternate_specs_submitted">{% verbose_name well "alternative_specs_submitted" %}:</label>
-        <span id="alternate_specs_submitted">{{ well.alternative_specs_submitted|default_if_none:'&nbsp;' }}</span>
-    </div>
-</div>
-
-<br/>
-
+</fieldset>
 <fieldset>
     <legend>Location Information</legend>
 

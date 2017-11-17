@@ -699,6 +699,7 @@ class Well(AuditModel):
     intended_water_use = models.ForeignKey(IntendedWaterUse, db_column='intended_water_use_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Intended Water Use')
     well_status = models.ForeignKey(WellStatus, db_column='well_status_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Well Status')
     licenced_status = models.ForeignKey(LicencedStatus, db_column='licenced_status_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Licenced Status')
+    aquifer = models.ForeignKey(Aquifer, db_column='aquifer_guid', on_delete=models.CASCADE, blank=True, null=True)
 
     street_address = models.CharField(max_length=100, blank=True, verbose_name='Street Address')
     city = models.CharField(max_length=50, blank=True, verbose_name='Town/City')
@@ -1179,3 +1180,15 @@ class ProductionData(AuditModel):
             return 'activity_submission {} {} {}'.format(self.activity_submission, self.yield_estimation_method, self.yield_estimation_rate)
         else:
             return 'well {} {} {}'.format(self.well, self.yield_estimation_method, self.yield_estimation_rate)
+
+class Aquifer(AuditModel):
+    """
+    Well Aquifer
+    """
+
+    aquifer_well_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    aquifer_well_guid = models.IntegerField()
+    well_id = models.BigIntegerField()
+
+    class Meta:
+        db_table = 'gwells_aquifer'
