@@ -686,7 +686,7 @@ class Well(AuditModel):
     """
     well_guid = models.UUIDField(primary_key=False, default=uuid.uuid4, editable=False)
     well_tag_number = models.AutoField(primary_key=True, verbose_name='Well Tag Number')
-    identification_plate_number = models.PositiveIntegerField(unique=True, blank=True, null=True, verbose_name="Identification Plate Number")
+    identification_plate_number = models.PositiveIntegerField(unique=True, blank=True, null=True, verbose_name="Well Identification Plate Number")
 
     owner_full_name = models.CharField(max_length=200, verbose_name='Owner Name')
     owner_mailing_address = models.CharField(max_length=100, verbose_name='Mailing Address')
@@ -699,7 +699,6 @@ class Well(AuditModel):
     intended_water_use = models.ForeignKey(IntendedWaterUse, db_column='intended_water_use_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Intended Water Use')
     well_status = models.ForeignKey(WellStatus, db_column='well_status_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Well Status')
     licenced_status = models.ForeignKey(LicencedStatus, db_column='licenced_status_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Licenced Status')
-    aquifer = models.ForeignKey(Aquifer, db_column='aquifer_guid', on_delete=models.CASCADE, blank=True, null=True)
 
     street_address = models.CharField(max_length=100, blank=True, verbose_name='Street Address')
     city = models.CharField(max_length=50, blank=True, verbose_name='Town/City')
@@ -1192,4 +1191,4 @@ class AquiferWell(AuditModel):
     well_tag_number = models.ForeignKey(Well, db_column='well_tag_number', to_field='well_tag_number', on_delete=models.CASCADE, blank=False, null=False)#speficying to_field in advance of transition to natural primary key for well table
 
     class Meta:
-        db_table = 'gwells_aquifer'
+        db_table = 'gwells_aquifer_well'
