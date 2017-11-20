@@ -1,4 +1,4 @@
-\echo '... transforming wells data (!= REJECTED) via xform_gwells_well ETL table...';
+\echo '... transforming wells data (= ACCEPTED) via xform_gwells_well ETL table...';
 
 INSERT INTO xform_gwells_well (
   well_tag_number                    ,
@@ -82,7 +82,7 @@ INSERT INTO xform_gwells_well (
   who_updated)
 SELECT
   WELLS.WELL_TAG_NUMBER                                                  ,
-  null                                                                   , -- gen_random_uuid()  AS WELL_GUID,
+  gen_random_uuid()                                                      ,
   WELLS.ACCEPTANCE_STATUS_CODE AS acceptance_status_code                 ,
   concat_ws(' ', owner.giVEN_NAME,OWNER.SURNAME) AS owner_full_name      ,
   concat_ws(' ',OWNER.STREET_NUMBER,STREET_NAME) AS owner_mailing_address,
@@ -203,10 +203,10 @@ SELECT
   WELLS.backfill_type                                                    ,
   WELLS.backfill_depth                                                   ,
   LINER_MATERIAL.liner_material_guid                                     ,
-  WELLS.WHEN_CREATED AS when_created                                     ,
-  coalesce(WELLS.WHEN_UPDATED,WELLS.WHEN_CREATED) as when_updated        ,
-  WELLS.WHO_CREATED as who_created                                       ,
-  coalesce(WELLS.WHO_UPDATED,WELLS.WHO_CREATED) as who_updated
+  WELLS.WHEN_CREATED                                                     ,
+  coalesce(WELLS.WHEN_UPDATED,WELLS.WHEN_CREATED)                        ,
+  WELLS.WHO_CREATED                                                      ,
+  coalesce(WELLS.WHO_UPDATED,WELLS.WHO_CREATED)
 FROM WELLS.WELLS_WELLS WELLS LEFT OUTER JOIN WELLS.WELLS_OWNERS OWNER ON OWNER.OWNER_ID=WELLS.OWNER_ID
                              LEFT OUTER JOIN GWELLS_DRILLING_COMPANY DRILLING_COMPANY ON WELLS.DRILLER_COMPANY_CODE=DRILLING_COMPANY.DRILLING_COMPANY_CODE
                              LEFT OUTER JOIN GWELLS_SCREEN_INTAKE_METHOD SCREEN_INTAKE_METHOD ON WELLS.SCREEN_INTAKE_CODE=SCREEN_INTAKE_METHOD.SCREEN_INTAKE_CODE
@@ -215,15 +215,12 @@ FROM WELLS.WELLS_WELLS WELLS LEFT OUTER JOIN WELLS.WELLS_OWNERS OWNER ON OWNER.O
                              LEFT OUTER JOIN GWELLS_SCREEN_OPENING SCREEN_OPENING ON WELLS.SCREEN_OPENING_CODE=SCREEN_OPENING.SCREEN_OPENING_CODE
                              LEFT OUTER JOIN GWELLS_SCREEN_BOTTOM SCREEN_BOTTOM ON WELLS.SCREEN_BOTTOM_CODE=SCREEN_BOTTOM.SCREEN_BOTTOM_CODE
                              LEFT OUTER JOIN GWELLS_DEVELOPMENT_METHOD DEVELOPMENT_METHOD ON WELLS.DEVELOPMENT_METHOD_CODE=DEVELOPMENT_METHOD.DEVELOPMENT_METHOD_CODE
-                             LEFT OUTER JOIN GWELLS_SURFACE_SEAL_METHOD SURFACE_SEAL_METHOD ON
-                             WELLS.SURFACE_SEAL_METHOD_CODE=SURFACE_SEAL_METHOD.SURFACE_SEAL_METHOD_CODE
-                             LEFT OUTER JOIN GWELLS_SURFACE_SEAL_MATERIAL SURFACE_SEAL_MATERIAL ON
-                             WELLS.SURFACE_SEAL_METHOD_CODE=SURFACE_SEAL_MATERIAL.SURFACE_SEAL_MATERIAL_CODE
-                             LEFT OUTER JOIN GWELLS_LINER_MATERIAL LINER_MATERIAL ON
-                             WELLS.LINER_MATERIAL_CODE=LINER_MATERIAL.LINER_MATERIAL_CODE
-WHERE WELLS.ACCEPTANCE_STATUS_CODE != 'REJECTED';
+                             LEFT OUTER JOIN GWELLS_SURFACE_SEAL_METHOD SURFACE_SEAL_METHOD ON WELLS.SURFACE_SEAL_METHOD_CODE=SURFACE_SEAL_METHOD.SURFACE_SEAL_METHOD_CODE
+                             LEFT OUTER JOIN GWELLS_SURFACE_SEAL_MATERIAL SURFACE_SEAL_MATERIAL ON WELLS.SURFACE_SEAL_METHOD_CODE=SURFACE_SEAL_MATERIAL.SURFACE_SEAL_MATERIAL_CODE
+                             LEFT OUTER JOIN GWELLS_LINER_MATERIAL LINER_MATERIAL ON WELLS.LINER_MATERIAL_CODE=LINER_MATERIAL.LINER_MATERIAL_CODE
+WHERE WELLS.ACCEPTANCE_STATUS_CODE NOT IN ('PENDING', 'REJECTED', 'NEW');
 
-\echo 'wells data (!= REJECTED) transformed via xform_gwells_well ETL table';
+\echo 'wells data (= ACCEPTED) transformed via xform_gwells_well ETL table';
 
 \t
 SELECT count(*) || ' rows loaded into the xform_gwells_well table' from xform_gwells_well;
