@@ -47,7 +47,14 @@
             <span id="licenced_status">{{ well.licenced_status.code|default_if_none:'&nbsp;' }}</span>
         </div>
         <div class="row">
-          <!-- add aquifer number -->
+          <div class="row">
+              <label for="aquifer_number">Aquifer Number:</label>
+              <span id="aquifer_number">
+                {% for aquifer_well in well.aquiferwell_set.all %}
+                  {{ aquifer_well.aquifer_id }}&nbsp;
+                {% endfor %}
+              </span>
+          </div>
         </div>
     </div>
     <div class="col-md-4">
