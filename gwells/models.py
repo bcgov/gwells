@@ -1181,14 +1181,15 @@ class ProductionData(AuditModel):
         else:
             return 'well {} {} {}'.format(self.well, self.yield_estimation_method, self.yield_estimation_rate)
 
-class Aquifer(AuditModel):
+class AquiferWell(AuditModel):
     """
-    Well Aquifer
+    AquiferWell
     """
 
     aquifer_well_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    aquifer_well_guid = models.IntegerField()
-    well_id = models.BigIntegerField()
+    aquifer_id = models.PositiveIntegerField(verbose_name="Aquifer Number", blank=True, null=True)
+    #well = models.ForeignKey(Well, db_column='well_guid', on_delete=models.CASCADE, blank=True, null=True) #transition to this later
+    well_tag_number = models.ForeignKey(Well, db_column='well_tag_number', to_field='well_tag_number', on_delete=models.CASCADE, blank=False, null=False)#speficying to_field in advance of transition to natural primary key for well table
 
     class Meta:
         db_table = 'gwells_aquifer'
