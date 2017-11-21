@@ -33,6 +33,7 @@ The following commands will launch the tests with the individual browsers:
     ./gradlew chromeTest
     ./gradlew firefoxTest (Make sure you install FireFox version 46 or older, newer version will not work.)
     ./gradlew phantomJsTest
+	./gradlew ieTest
     
 NOTE: ***Use phantomjsTest when configuring the OpenShift Pipeline***
 ----   

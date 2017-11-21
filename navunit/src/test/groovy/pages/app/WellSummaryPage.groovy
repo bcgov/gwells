@@ -11,6 +11,7 @@ class WellSummaryPage extends Page {
 			address { $("span", id:"address") }
 			alternate_specs_submitted { $("span", id:"alternate_specs_submitted") }
 			alteration_end_date { $("span", id:"alteration_end_date") }
+			aquifer_number { $("span", id:"aquifer_number") }
 			block { $("span", id:"block") }
 			casingsTable { $("table", id:"casings") }
 			city { $("span", id:"city") }
