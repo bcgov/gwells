@@ -79,6 +79,7 @@
         </div>
     </div>
 </fieldset>
+&nbsp;
 <fieldset>
     <legend>Location Information</legend>
 
@@ -198,6 +199,7 @@
         <div id="guid-row" data-well-guid="{{ well.well_guid }}"></div>
     </div>
 </fieldset>
+&nbsp;
 <fieldset>
     <legend>Well Activity</legend>
     <table id="activities" class="table">
@@ -229,6 +231,7 @@
         </tbody>
     </table>
 </fieldset>
+
 <fieldset>
     <legend>Well Completion Data</legend>
     <div class="row">
@@ -335,7 +338,7 @@
       </div>
     </div>
 </fieldset>
-
+&nbsp;
 <fieldset>
     <legend>Screen Details</legend>
 
@@ -389,7 +392,7 @@
         </div>
     </div>
 </fieldset>
-
+&nbsp;
 <fieldset>
     <legend>Well Development</legend>
     <div class="row">
@@ -399,34 +402,32 @@
         </div>
         <div class="col-md-4">
             <label for="devlopment-total-duration">{% verbose_name well "development_hours" %}:</label>
-            <span id="devlopment-total-duration">{{ well.development_hours|default_if_none:'&nbsp;' }} hours</span>
+            <span id="devlopment-total-duration">{{ well.development_hours|default_if_none:'&nbsp;' }}</span>
         </div>
     </div>
-    </fieldset>
-    <fieldset>
-      <legend>Well Yield</legend>
-      <div class="row">
-          {% for productiondata in well.productiondata_set.all|dictsortreversed:"when_updated"|slice:"1" %}
-          <div class="col-md-12">
-              <label for="yield-estimation-method">{% verbose_name productiondata "yield_estimation_method" %}:</label>
-              <span id="yield-estimation-method">{{ productiondata.yield_estimation_method.description|default_if_none:'&nbsp;' }}</span>
-          </div>
-          <div class="col-md-12">
-              <label for="devlopment-total-duration">{% verbose_name productiondata "yield_estimation_method" %}:</label>
-              <span>{{ productiondata.yield_estimation_method.description|default_if_none:'&nbsp;' }}</span>
-          </div>
-          <div class="col-md-12">
-              <label for="devlopment-total-duration">{% verbose_name productiondata "yield_estimation_rate" %}:</label>
-              <span>{{ productiondata.yield_estimation_rate|default_if_none:'&nbsp;' }}</span>
-          </div>
-          <div class="col-md-12">
-              <label for="devlopment-total-duration">{% verbose_name productiondata "yield_estimation_duration" %}:</label>
-              <span>{{ productiondata.yield_estimation_duration|default_if_none:'&nbsp;' }}</span>
-          </div>
-          {% endfor %}
-    </fieldset>
 </fieldset>
-
+&nbsp;
+<fieldset>
+  <legend>Well Yield</legend>
+  <div class="row">
+      {% for productiondata in well.productiondata_set.all|dictsortreversed:"when_updated"|slice:"1" %}
+      <div class="col-md-4">
+          <label for="yield-estimation-method">{% verbose_name productiondata "yield_estimation_method" %}:</label>
+          <span id="yield-estimation-method">{{ productiondata.yield_estimation_method.description|default_if_none:'&nbsp;' }}</span>
+      </div>
+      <div class="col-md-4">
+          <label for="devlopment-total-duration">{% verbose_name productiondata "yield_estimation_rate" %}:</label>
+          <span>
+            {{ productiondata.yield_estimation_rate|default_if_none:'&nbsp;' }}{% if productiondata.yield_estimation_rate %}&nbsp;{{productiondata.well_yield_unit.code}}{% endif %}
+          </span>
+      </div>
+      <div class="col-md-4">
+          <label for="devlopment-total-duration">{% verbose_name productiondata "yield_estimation_duration" %}:</label>
+          <span>{{ productiondata.yield_estimation_duration|default_if_none:'&nbsp;' }}</span>
+      </div>
+      {% endfor %}
+</fieldset>
+&nbsp;
 <fieldset id="casing_field_set">
   <legend>Casing</legend>
   <table id="casings">
@@ -512,7 +513,7 @@
       </div>
     </div>
 </fieldset>
-
+&nbsp;
 <fieldset id="perforations_fieldset">
     <legend>Liner Details</legend>
     <table id="liner_details">
