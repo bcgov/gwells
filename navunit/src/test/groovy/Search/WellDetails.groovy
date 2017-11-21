@@ -32,6 +32,7 @@ class WellDetailsSpecs extends GebReportingSpec {
 			assert address 
 			assert alteration_end_date
 			assert alternate_specs_submitted 
+			assert aquifer_number
 			assert block 
 			assert casingsTable 
 			assert city 
