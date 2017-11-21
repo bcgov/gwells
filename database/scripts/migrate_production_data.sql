@@ -6,7 +6,7 @@ INSERT INTO gwells_production_data(
   yield_estimation_method_guid   ,
   yield_estimation_rate          ,
   yield_estimation_duration      ,
-  yield_estimation_units         ,
+  well_yield_unit_guid           ,
   static_level                   ,
   drawdown                       ,
   hydro_fracturing_performed     ,
@@ -18,23 +18,24 @@ INSERT INTO gwells_production_data(
 SELECT
   gen_random_uuid()                                                      ,
   null                                                                   ,
-  WELL.WELL_TAG_NUMBER                                                   ,
-  YIELD_ESTIMATION_METHOD.yield_estimation_method_guid                   ,
-  PRODUCTION_DATA.test_rate                                              ,
-  PRODUCTION_DATA.test_duration                                          ,
-  PRODUCTION_DATA.test_rate_units_code                                   ,
-  PRODUCTION_DATA.static_level                                           ,
-  PRODUCTION_DATA.net_drawdown                                           ,
-  FALSE                                                                  ,
-  PRODUCTION_DATA.who_created                                            ,
-  PRODUCTION_DATA.when_created                                           ,
-  coalesce(PRODUCTION_DATA.WHO_UPDATED,PRODUCTION_DATA.WHO_CREATED)      ,
-  coalesce(PRODUCTION_DATA.WHEN_UPDATED,PRODUCTION_DATA.WHEN_CREATED)
-FROM WELLS.WELLS_PRODUCTION_DATA PRODUCTION_DATA
-     LEFT OUTER JOIN GWELLS_YIELD_ESTIMATION_METHOD YIELD_ESTIMATION_METHOD ON PRODUCTION_DATA.YIELD_ESTIMATED_METHOD_CODE=YIELD_ESTIMATION_METHOD.YIELD_ESTIMATION_METHOD_CODE
-     INNER JOIN WELLS.WELLS_WELLS WELLS ON PRODUCTION_DATA.WELL_ID=WELLS.WELL_ID
-     INNER JOIN GWELLS_WELL WELL ON WELLS.WELL_TAG_NUMBER = WELL.WELL_TAG_NUMBER
-WHERE WELLS.ACCEPTANCE_STATUS_CODE NOT IN ('PENDING', 'REJECTED', 'NEW');
+  well.well_tag_number                                                   ,
+  yield_estimation_method.yield_estimation_method_guid                   ,
+  production_data.test_rate                                              ,
+  production_data.test_duration                                          ,
+  well_yield_unit.well_yield_unit_guid                                   ,
+  production_data.static_level                                           ,
+  production_data.net_drawdown                                           ,
+  false                                                                  ,
+  production_data.who_created                                            ,
+  production_data.when_created                                           ,
+  COALESCE(production_data.who_updated,production_data.who_created)      ,
+  COALESCE(production_data.when_updated,production_data.when_created)
+FROM wells.wells_production_data production_data
+     LEFT OUTER JOIN gwells_yield_estimation_method yield_estimation_method ON production_data.yield_estimated_method_code=yield_estimation_method.yield_estimation_method_code
+     LEFT OUTER JOIN gwells_well_yield_unit well_yield_unit ON production_data.test_rate_units_code=well_yield_unit.code
+     INNER JOIN wells.wells_wells wells ON production_data.well_id=wells.well_id
+     INNER JOIN gwells_well well ON wells.well_tag_number = well.well_tag_number
+WHERE wells.acceptance_status_code NOT IN ('PENDING', 'REJECTED', 'NEW');
 
 \echo 'wells_production_data data imported'
 

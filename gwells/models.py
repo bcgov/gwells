@@ -766,7 +766,7 @@ class Well(AuditModel):
     filter_pack_material_size = models.ForeignKey(FilterPackMaterialSize, db_column='filter_pack_material_size_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Filter Pack Material Size')
 
     development_method = models.ForeignKey(DevelopmentMethod, db_column='development_method_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Developed By')
-    development_hours = models.DecimalField(max_digits=9, decimal_places=2, blank=True, null=True, verbose_name='Development Total Duration', validators=[MinValueValidator(Decimal('0.00'))])
+    development_hours = models.DecimalField(max_digits=9, decimal_places=2, blank=True, null=True, verbose_name='Development Total Duration (hours)', validators=[MinValueValidator(Decimal('0.00'))])
     development_notes = models.CharField(max_length=255, blank=True, verbose_name='Development Notes')
 
     water_quality_characteristics = models.ManyToManyField(WaterQualityCharacteristic, db_table='gwells_well_water_quality', blank=True, verbose_name='Obvious Water Quality Characteristics')
@@ -1165,7 +1165,7 @@ class ProductionData(AuditModel):
     yield_estimation_method = models.ForeignKey(YieldEstimationMethod, db_column='yield_estimation_method_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Yield Estimation Method')
     yield_estimation_rate = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='Yield Estimation Rate', blank=True, null=True, validators=[MinValueValidator(Decimal('0.00'))])
     yield_estimation_duration = models.DecimalField(max_digits=9, decimal_places=2, verbose_name='Yield Estimation Duration', blank=True, null=True, validators=[MinValueValidator(Decimal('0.01'))])
-    yield_estimation_units = models.CharField(max_length=10, blank=True, null=True)
+    well_yield_unit = models.ForeignKey(WellYieldUnit, db_column='well_yield_unit_guid', blank=True, null=True)
     static_level = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='SWL Before Test', blank=True, null=True, validators=[MinValueValidator(Decimal('0.0'))])
     drawdown = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, validators=[MinValueValidator(Decimal('0.00'))])
     hydro_fracturing_performed = models.BooleanField(default=False, verbose_name='Hydro-fracturing Performed?', choices=((False, 'No'), (True, 'Yes')))
