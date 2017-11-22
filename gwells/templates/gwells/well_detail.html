@@ -375,13 +375,15 @@
           </span>
       </div>
     </div>
-    <div class="row">&nbsp;</div>
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-2">
           <label for="ground_elevation_method">{% verbose_name well "ground_elevation_method" %}:</label>
-          <span id="ground_elevation_method">{{ well.ground_elevation_method|default_if_none:'&nbsp;' }}</span>
+        </div>
+        <div class="col-md-2">
+            <span id="ground_elevation_method">{{ well.ground_elevation_method|default_if_none:'&nbsp;' }}</span>
         </div>
     </div>
+    <div class="row">&nbsp;</div>
     <div class="row">
         <div class="col-md-6">
             <label for="well_plate_attached">{% verbose_name well "well_identification_plate_attached" %}:</label>
