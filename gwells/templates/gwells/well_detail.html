@@ -497,8 +497,8 @@
 </fieldset>
 &nbsp;
 <fieldset id="casing_field_set">
-  <legend>Casing</legend>
-  <table id="casings">
+  <legend>Casing Details</legend>
+  <table id="casings" class="table table-condensed table-bordered table-striped">
     <thead>
       <th>From (feet)</th>
       <th>To (feet)</th>
@@ -511,34 +511,22 @@
       {% for casing in well.casing_set.all %}
       <tr>
         <td>
-          <div class="col-md-2">
-              <span>{{ casing.casing_from|default_if_none:'&nbsp;' }}</span>
-          </div>
+          <span>{{ casing.casing_from|default_if_none:'&nbsp;' }}</span>
         </td>
         <td>
-          <div class="col-md-2">
-              <span>{{ casing.casing_to|default_if_none:'&nbsp;' }}</span>
-          </div>
+          <span>{{ casing.casing_to|default_if_none:'&nbsp;' }}</span>
         </td>
         <td>
-          <div class="col-md-2">
-              <span>{{ casing.internal_diameter|default_if_none:'&nbsp;' }}</span>
-          </div>
+          <span>{{ casing.internal_diameter|default_if_none:'&nbsp;' }}</span>
         </td>
         <td>
-          <div class="col-md-12">
-              <span>{{ casing.casing_material.description|default_if_none:'&nbsp;' }}</span>
-          </div>
+          <span>{{ casing.casing_material.description|default_if_none:'&nbsp;' }}</span>
         </td>
         <td>
-          <div class="col-md-2">
-              <span>{{ casing.wall_thickness|default_if_none:'&nbsp;' }}</span>
-          </div>
+          <span>{{ casing.wall_thickness|default_if_none:'&nbsp;' }}</span>
         </td>
         <td>
-          <div class="col-md-2">
-              <span>{{ casing.get_drive_shoe_display|default_if_none:'&nbsp;' }}</span>
-          </div>
+          <span>{{ casing.get_drive_shoe_display|default_if_none:'&nbsp;' }}</span>
         </td>
       </tr>
       {% endfor %}
@@ -573,18 +561,18 @@
     <div class="row">
       <div class="col-md-3">
           <label for="backfill_type">{% verbose_name well "backfill_type" %}:</label>
-          <span id="surface_seal_thickness">{{ well.backfill_type|default_if_none:'&nbsp;' }}</span>
+          <span id="backfill_type">{{ well.backfill_type|default_if_none:'&nbsp;' }}</span>
       </div>
       <div class="col-md-3">
           <label for="backfill_depth">{% verbose_name well "backfill_depth" %}:</label>
-          <span id="surface_seal_length">{{ well.backfill_depth|default_if_none:'&nbsp;' }}</span>
+          <span id="backfill_depth">{{ well.backfill_depth|default_if_none:'&nbsp;' }}</span>
       </div>
     </div>
 </fieldset>
 &nbsp;
 <fieldset id="perforations_fieldset">
     <legend>Liner Details</legend>
-    <table id="liner_details">
+    <table id="liner_details" class="table table-condensed table-bordered table-striped">
         <thead>
             <th>Liner Material</th>
             <th>Liner Diameter</th>
