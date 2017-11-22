@@ -724,7 +724,7 @@ class Well(AuditModel):
 
     drilling_company = models.ForeignKey(DrillingCompany, db_column='drilling_company_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Drilling Company')
 
-    where_identification_plate_attached = models.CharField(max_length=500, blank=True, null=True, verbose_name='Where Identification Plate Is Attached')
+    well_identification_plate_attached = models.CharField(max_length=500, blank=True, null=True, verbose_name='Well Identification Plate Is Attached')
 
     latitude = models.DecimalField(max_digits=8, decimal_places=6, blank=True, null=True, verbose_name='Latitude')
     longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True, verbose_name='Longitude')
@@ -766,7 +766,7 @@ class Well(AuditModel):
     filter_pack_material_size = models.ForeignKey(FilterPackMaterialSize, db_column='filter_pack_material_size_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Filter Pack Material Size')
 
     development_method = models.ForeignKey(DevelopmentMethod, db_column='development_method_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Developed By')
-    development_hours = models.DecimalField(max_digits=9, decimal_places=2, blank=True, null=True, verbose_name='Development Total Duration (hours)', validators=[MinValueValidator(Decimal('0.00'))])
+    development_hours = models.DecimalField(max_digits=9, decimal_places=2, blank=True, null=True, verbose_name='Development Total Duration', validators=[MinValueValidator(Decimal('0.00'))])
     development_notes = models.CharField(max_length=255, blank=True, verbose_name='Development Notes')
 
     water_quality_characteristics = models.ManyToManyField(WaterQualityCharacteristic, db_table='gwells_well_water_quality', blank=True, verbose_name='Obvious Water Quality Characteristics')
@@ -783,7 +783,7 @@ class Well(AuditModel):
     well_yield = models.DecimalField(max_digits=8, decimal_places=3, blank=True, null=True, verbose_name='Estimated Well Yield')
     artesian_flow = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Artesian Flow')
     artesian_pressure = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Artesian Pressure')
-    well_cap_type = models.CharField(max_length=40, blank=True, verbose_name='Well Cap')
+    well_cap_type = models.CharField(max_length=40, blank=True, null=True, verbose_name='Well Cap')
     well_disinfected = models.BooleanField(default=False, verbose_name='Well Disinfected', choices=((False, 'No'), (True, 'Yes')))
 
     comments = models.CharField(max_length=3000, blank=True)
@@ -882,7 +882,7 @@ class ActivitySubmission(AuditModel):
     well_location_description = models.CharField(max_length=500, blank=True, verbose_name='Well Location Description')
 
     identification_plate_number = models.PositiveIntegerField(blank=True, null=True, verbose_name='Identification Plate Number')
-    where_plate_attached = models.CharField(max_length=500, blank=True, verbose_name='Where Identification Plate Is Attached')
+    well_plate_attached = models.CharField(max_length=500, blank=True, verbose_name='Well Identification Plate Is Attached')
 
     latitude = models.DecimalField(max_digits=8, decimal_places=6, blank=True, null=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
