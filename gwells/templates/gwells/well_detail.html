@@ -232,11 +232,21 @@
     <div class="row">
         <div class="col-md-4">
             <label for="total_depth_drilled">{% verbose_name well "total_depth_drilled" %}:</label>
-            <span id="total_depth_drilled">{{ well.total_depth_drilled|default_if_none:'&nbsp;' }}</span>
+            <span id="total_depth_drilled">
+                {% if  well.total_depth_drilled > 0 %}
+                {{well.total_depth_drilled}} feet
+                {% else                             %} &nbsp;
+                {% endif                            %}
+            </span>
         </div>
         <div class="col-md-4">
             <label for="static_water_level">{% verbose_name well "static_water_level" %}:</label>
-            <span id="static_water_level">{{ well.static_water_level|default_if_none:'&nbsp;' }}</span>
+            <span id="static_water_level">
+                {% if  well.static_water_level > 0 %}
+                {{well.static_water_level}} feet
+                {% else                             %} &nbsp;
+                {% endif                            %}
+            </span>
         </div>
         <div class="col-md-4">
             <label for="well_cap_type">{% verbose_name well "well_cap_type" %}:</label>
