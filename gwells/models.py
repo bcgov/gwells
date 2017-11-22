@@ -766,7 +766,7 @@ class Well(AuditModel):
     filter_pack_material_size = models.ForeignKey(FilterPackMaterialSize, db_column='filter_pack_material_size_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Filter Pack Material Size')
 
     development_method = models.ForeignKey(DevelopmentMethod, db_column='development_method_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Developed By')
-    development_hours = models.DecimalField(max_digits=9, decimal_places=2, blank=True, null=True, verbose_name='Development Total Duration (hours)', validators=[MinValueValidator(Decimal('0.00'))])
+    development_hours = models.DecimalField(max_digits=9, decimal_places=2, blank=True, null=True, verbose_name='Development Total Duration', validators=[MinValueValidator(Decimal('0.00'))])
     development_notes = models.CharField(max_length=255, blank=True, verbose_name='Development Notes')
 
     water_quality_characteristics = models.ManyToManyField(WaterQualityCharacteristic, db_table='gwells_well_water_quality', blank=True, verbose_name='Obvious Water Quality Characteristics')
