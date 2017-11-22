@@ -24,6 +24,8 @@ CREATE unlogged TABLE IF NOT EXISTS xform_gwells_well (
    diameter                            character varying(9),
    total_depth_drilled                 numeric(7,2),
    finished_well_depth                 numeric(7,2),
+   static_water_level                  numeric(7,2),
+   well_cap_type                       character varying(40),
    well_yield                          numeric(8,3),
    WELL_USE_CODE                       character varying(10),
    LEGAL_LAND_DISTRICT_CODE            character varying(10),

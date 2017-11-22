@@ -783,7 +783,7 @@ class Well(AuditModel):
     well_yield = models.DecimalField(max_digits=8, decimal_places=3, blank=True, null=True, verbose_name='Estimated Well Yield')
     artesian_flow = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Artesian Flow')
     artesian_pressure = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Artesian Pressure')
-    well_cap_type = models.CharField(max_length=40, blank=True, verbose_name='Well Cap')
+    well_cap_type = models.CharField(max_length=40, blank=True, null=True, verbose_name='Well Cap')
     well_disinfected = models.BooleanField(default=False, verbose_name='Well Disinfected', choices=((False, 'No'), (True, 'Yes')))
 
     comments = models.CharField(max_length=3000, blank=True)
