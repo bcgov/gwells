@@ -109,7 +109,7 @@
                   "timeoutSeconds": 3,
                   "initialDelaySeconds": 3,
                   "httpGet": {
-                    "path": "/health",
+                    "path": "/groundwater-wells/health",
                     "port": 8080
                   }
                 },
@@ -117,7 +117,7 @@
                   "timeoutSeconds": 3,
                   "initialDelaySeconds": 30,
                   "httpGet": {
-                    "path": "/health",
+                    "path": "/groundwater-wells/health",
                     "port": 8080
                   }
                 },
@@ -145,6 +145,14 @@
                   {
                     "name": "APP_CONFIG",
                     "value": "${APP_CONFIG}"
+                  },
+                  {
+                    "name": "DJANGO_SECRET_KEY",
+                    "value": "${DJANGO_SECRET_KEY}"
+                  },
+                  {
+                    "name": "DJANGO_DEBUG",
+                    "value": "${DJANGO_DEBUG}"
                   }
                 ],
                 "resources": {
@@ -157,7 +165,151 @@
           }
         }
       }
-    }
+    },
+    {
+      "kind": "Service",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "${SCHEMASPY_NAME}",
+        "annotations": {
+          "description": "Exposes and load balances the schema spy pods"
+        }
+      },
+      "spec": {
+        "ports": [
+          {
+            "name": "web",
+      "protocol": "TCP",
+            "port": 8080,
+            "targetPort": 8080
+          }
+        ],
+        "selector": {
+          "name": "${SCHEMASPY_NAME}"
+        }
+      }
+    },
+    {
+      "kind": "Route",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "${SCHEMASPY_NAME}"
+      },
+      "spec": {
+        "host": "${SCHEMASPY_NAME}-${APPLICATION_DOMAIN}",
+        "to": {
+          "kind": "Service",
+          "name": "${SCHEMASPY_NAME}"
+        }
+      }
+    },
+    {
+      "kind": "DeploymentConfig",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "${SCHEMASPY_NAME}",
+        "annotations": {
+          "description": "Defines how to deploy the frontend server"
+        }
+      },
+      "spec": {
+        "strategy": {
+          "type": "Rolling",
+      "rollingParams": {
+                "updatePeriodSeconds": 1,
+                "intervalSeconds": 1,
+                "timeoutSeconds": 600,
+                "maxUnavailable": "25%",
+                "maxSurge": "25%"
+            },
+            "resources": {}
+        },
+        "triggers": [   
+          {
+            "type": "ConfigChange"
+          },
+          {
+            "type": "ImageChange",
+            "imageChangeParams": {
+              "automatic": true,
+              "containerNames": [
+                "${SCHEMASPY_NAME}"
+              ],
+              "from": {
+                "kind": "ImageStreamTag",
+                "namespace": "${APP_IMAGE_NAMESPACE}",
+                "name": "${SCHEMASPY_NAME}:latest"
+              }
+            }
+          }
+        ],
+        "replicas": 1,
+        "selector": {
+          "name": "${SCHEMASPY_NAME}"
+        },
+        "template": {
+          "metadata": {
+            "name": "${SCHEMASPY_NAME}",
+            "labels": {
+              "name": "${SCHEMASPY_NAME}"
+            }
+          },
+          "spec": {
+            "containers": [
+              {
+                "name": "${SCHEMASPY_NAME}",
+                "image": " ",
+                "ports": [
+                  {
+                    "containerPort": 8080,
+                    "protocol": "TCP"
+                  }
+                ],
+                "env": [
+                  {
+                    "name": "DATABASE_SERVICE_NAME",
+                    "value": "${DATABASE_SERVICE_NAME}"
+                  },
+                  {
+                    "name": "POSTGRESQL_USER",
+                    "value": "${DATABASE_USER}"
+                  },
+                  {
+                    "name": "POSTGRESQL_PASSWORD",
+                    "value": "${DATABASE_PASSWORD}"
+                  },
+                  {
+                    "name": "POSTGRESQL_DATABASE",
+                    "value": "${DATABASE_NAME}"
+                  }
+                ],                
+                "readinessProbe": {
+                  "timeoutSeconds": 3000,
+                  "initialDelaySeconds": 3,
+                  "httpGet": {
+                    "path": "/",
+                    "port": 8080
+                  }
+                },
+                "livenessProbe": {
+                  "timeoutSeconds": 3000,
+                  "initialDelaySeconds": 30,
+                  "httpGet": {
+                    "path": "/",
+                    "port": 8080
+                  }
+                },
+                "resources": {
+                  "limits": {
+                    "memory": "${MEMORY_LIMIT}"
+                  }
+                }                
+              }
+            ]            
+          }
+        }
+      }
+    } 
   ],
   "parameters": [
     {
@@ -258,10 +410,24 @@
       "description": "Relative path to Gunicorn configuration file (optional)."
     },
     {
+      "name": "DJANGO_SECRET_KEY",
+      "displayName": "Django Secret Key",
+      "description": "Set this to a long random string.",
+      "generate": "expression",
+      "from": "[\\w]{50}"
+    },
+    {
       "name": "PIP_INDEX_URL",
       "displayName": "Custom PyPi Index URL",
       "description": "The custom PyPi index URL",
       "value": ""
+    },
+    {
+      "name": "DJANGO_DEBUG",
+      "displayName": "Django Debug",
+      "description": "If Django is in debug mode",
+      "required": true,
+      "value": "False"
     },
     {
       "name": "APP_DEPLOYMENT_TAG",
@@ -269,6 +435,13 @@
       "description": "Image tag to watch for changes and trigger deployment.",
       "value": "dev",
       "required": true
-    }
+    },
+    {
+      "name": "SCHEMASPY_NAME",
+      "displayName": "Schema Spy Name",
+      "description": "The name assigned to all of the schema spy objects defined in this template.",
+      "required": true,
+      "value": "schema-spy"
+    } 
   ]
 }

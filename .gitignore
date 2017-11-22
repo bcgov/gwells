@@ -59,3 +59,18 @@ docs/_build/
 
 # PyBuilder
 target/
+
+# Visual Studio files
+gwells.sln
+gwells.pyproj
+.vs/
+
+#NavUnit
+navunit/.gradle/
+navunit/gebReports/
+
+# Custom GW
+activate
+
+#virtual env
+/deactivate

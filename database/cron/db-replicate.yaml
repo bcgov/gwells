@@ -1,0 +1,36 @@
+apiVersion: batch/v2alpha1
+kind: ScheduledJob
+metadata:
+  name: gwells-replicate
+spec:
+  schedule: "*/5 * * * *"  
+#  schedule: "*/15 * * * *"  
+  jobTemplate:             
+    spec:
+      template:
+        spec:
+          containers:
+          - name: postgresql
+            image: 172.50.0.2:5000/moe-gwells-tools/openshift-postgresql-oracle-fdw:latest
+# Images
+#
+# openshift/python:3.5 from parameter Namespace
+# django-psql-example:latest from parameter Name
+# postgresql:9.5
+            env:
+            - name: POSTGRESQL_HOST
+              value: "172.50.28.28"
+            - name: POSTGRESQL_DATABASE
+              value: "gwells"
+            - name: POSTGRESQL_USER
+              value: "userGN0"
+            - name: PGPASSWORD
+              value: "EG47IxlbVC3IkH6b"
+#            - name: POSTGRESQL_PASSWORD
+#              value: "EG47IxlbVC3IkH6b"
+#         command: ["/bin/sh", "-i", "-c",  "psql -h 127.0.0.1 -U userGN0 -q -d gwells -c 'select gwells_setup_replicate();';psql -h 127.0.0.1 -d gwells -c 'vacuum full;' ; sleep 30s; psql -h 127.0.0.1 -d gwells -c 'select gwells_replicate();'; exit 0;"]
+#          command: ["/bin/sh", "-i", "-c",  "psql -h $POSTGRESQL_HOST -U $POSTGRESQL_USER -d $POSTGRESQL_DATABASE -c 'select gwells_setup_replicate();';psql -h $POSTGRESQL_HOST -d $POSTGRESQL_DATABASE -c 'vacuum full;' ; sleep 30s; psql -h $POSTGRESQL_HOST -d $POSTGRESQL_DATABASE -c 'select gwells_replicate();'; exit 0;"]
+#          command: ["/bin/sh", "-i", "-c",  "echo xxx; exit 0;"]
+          command: ["/bin/sh", "-i", "-c",  "export POSTGRESQL_USER='userGN0'; exit 0;"]
+          restartPolicy: Never
+          ConcurrencyPolicy: Forbid

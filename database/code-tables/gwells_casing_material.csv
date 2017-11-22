@@ -1,0 +1,6 @@
+who_created,when_created,who_updated,when_updated,casing_material_guid,code,description,is_hidden,sort_order 
+"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","6815ce226c1411e7907ba6006ad3dba0","STEEL","Steel","N","10"
+"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","6815d0ca6c1411e7907ba6006ad3dba0","STL_PUL_OT","Steel Pulled Out","N","20"
+"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","6815d5f26c1411e7907ba6006ad3dba0","PLASTIC","Plastic","N","30"
+"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","6815d7a06c1411e7907ba6006ad3dba0","CEMENT","Cement","N","40"
+"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","6815d8906c1411e7907ba6006ad3dba0","OTHER","Other","N","50"

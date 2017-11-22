@@ -1,0 +1,27 @@
+{% extends 'gwells/base.html' %}
+
+{% block title %}Activity Submission List{% endblock %}
+
+{% block bodyheading_block %}Activity Submission List{% endblock %}
+
+{% block introduction_block %}
+                    <p>All activity on a particular well....currently all activity for all wells</p>
+{% endblock %}
+
+{% block body_block %} 
+
+{% if activity_submission_list %}
+    <ul>
+    {% for activity_submission in activity_submission_list %}
+        <li><a href="{% url 'activity_submission_detail' activity_submission.filing_number %}">{{ activity_submission.well_activity_type.description }}</a> - {{ activity_submission.work_start_date }} - {{ activity_submission.street_address }} - {{ activity_submission.driller_responsible }}</li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No records could be found.</p>
+{% endif %}
+
+<p>
+<a href="{% url 'activity_submission_create' %}">Enter a new report</a>
+</p>
+
+{% endblock %}
