@@ -57,7 +57,7 @@ INSERT INTO xform_gwells_well (
   bedrock_depth                      ,
   water_supply_system_name           ,
   water_supply_system_well_name      ,
-  where_identification_plate_attached,
+  well_identification_plate_attached,
   ems                                ,
   screen_intake_method_guid          ,
   screen_type_guid                   ,
