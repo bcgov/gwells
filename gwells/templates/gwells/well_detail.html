@@ -414,7 +414,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for screen in well.screen_set.all %}
+                    {% for screen in well.screen_set.all|dictsort:"screen_from" %}
                     <tr>
                         <td><span class="pull-right">{{ screen.screen_from|default_if_none:'&nbsp;' }}</span></td>
                         <td><span class="pull-right">{{ screen.screen_to|default_if_none:'&nbsp;' }}</span></td>
@@ -458,14 +458,20 @@
           <span id="yield-estimation-method">{{ productiondata.yield_estimation_method.description|default_if_none:'&nbsp;' }}</span>
       </div>
       <div class="col-md-4">
-          <label for="devlopment-total-duration">{% verbose_name productiondata "yield_estimation_rate" %}:</label>
+          <label for="yield_estimation_rate">{% verbose_name productiondata "yield_estimation_rate" %}:</label>
           <span>
-            {{ productiondata.yield_estimation_rate|default_if_none:'&nbsp;' }}{% if productiondata.yield_estimation_rate %}&nbsp;{{productiondata.well_yield_unit.code}}{% endif %}
-          </span>
+            {% if productiondata.yield_estimation_rate > 0 %}
+                {{ productiondata.yield_estimation_rate }} &nbsp; {{productiondata.well_yield_unit.code}}
+            {% endif %}
+        </span id="yield_estimation_rate">
       </div>
       <div class="col-md-4">
-          <label for="devlopment-total-duration">{% verbose_name productiondata "yield_estimation_duration" %}:</label>
-          <span>{{ productiondata.yield_estimation_duration|default_if_none:'&nbsp;' }}</span>
+          <label for="yield_estimation_duration">{% verbose_name productiondata "yield_estimation_duration" %}:</label>
+          <span id="yield_estimation_duration">
+              {% if productiondata.yield_estimation_duration > 0 %}
+                  {{ productiondata.yield_estimation_duration }} &nbsp; hours
+              {% endif %}
+          </span>
       </div>
       {% endfor %}
 </fieldset>
