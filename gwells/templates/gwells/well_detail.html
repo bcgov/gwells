@@ -73,6 +73,17 @@
             <span id="alternate_specs_submitted">{{ well.get_alternative_specs_submitted_display |default_if_none:'&nbsp;' }}</span>
         </div>
     </div>
+    &nbsp;
+    <div class="col-md-12">
+        <div class="row">
+          <label for="water_supply_system_name">{% verbose_name well "water_supply_system_name" %}:</label>
+          <span id="water_supply_system_name">{{ well.water_supply_system_name|default_if_none:'&nbsp;' }}</span>
+        </div>
+        <div class="row">
+          <label for="water_supply_system_well_name">{% verbose_name well "water_supply_system_well_name" %}:</label>
+          <span id="water_supply_system_well_name">{{ well.water_supply_system_well_name|default_if_none:'&nbsp;' }}</span>
+        </div>
+    </div>
 </fieldset>
 &nbsp;
 <fieldset>
@@ -333,23 +344,24 @@
     </div>
 
     <div class="row">
-      <!-- spacer row -->
-        <div class="col-md-12">
-            &nbsp;
-        </div>
-    </div>
+      <div class="col-md-4">
+          <label for="ground_elevation">{% verbose_name well "ground_elevation" %}:</label>
+          <span id="ground_elevation">
+              {% if  well.ground_elevation > 0 %}
+              {{well.ground_elevation}} feet
+              {% else                             %}
+              &nbsp;
+              {% endif                            %}
+          </span>
+      </div>
+      <div class="col-md-4">
+          <!-- spacer column -->
+      </div>
+      <div class="col-md-4">
+          <label for="well_plate_attached">{% verbose_name well "well_identification_plate_attached" %}:</label>
+          <span id="well_plate_attached">{{ well.well_identification_plate_attached|default_if_none:'&nbsp;' }}</span>
+      </div>
 
-    <div class="row">
-        <div class="col-md-4">
-            <label for="ground_elevation">{% verbose_name well "ground_elevation" %}:</label>
-            <span id="ground_elevation">
-                {% if  well.ground_elevation > 0 %}
-                {{well.ground_elevation}} feet
-                {% else                             %}
-                &nbsp;
-                {% endif                            %}
-            </span>
-        </div>
     </div>
 
     <div class="row">
@@ -359,28 +371,8 @@
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-md-6">
-          <label for="water_supply_system_name">{% verbose_name well "water_supply_system_name" %}:</label>
-          <span id="water_supply_system_name">{{ well.water_supply_system_name|default_if_none:'&nbsp;' }}</span>
-        </div>
-    </div>
+    &nbsp;
 
-    <div class="row">
-        <div class="col-md-6">
-          <label for="water_supply_system_well_name">{% verbose_name well "water_supply_system_well_name" %}:</label>
-          <span id="water_supply_system_well_name">{{ well.water_supply_system_well_name|default_if_none:'&nbsp;' }}</span>
-        </div>
-    </div>
-
-    <div class="row">
-      <div class="row">
-          <div class="col-md-12">
-              <label for="well_plate_attached">{% verbose_name well "well_identification_plate_attached" %}:</label>
-              <span id="well_plate_attached">{{ well.well_identification_plate_attached|default_if_none:'&nbsp;' }}</span>
-          </div>
-      </div>
-    </div>
 </fieldset>
 &nbsp;
 <fieldset>
@@ -411,7 +403,7 @@
             </div>
         </div>
         <div class="col-md-6 table-responsive">
-            <table id="screens" class="table table-condensed">
+            <table id="screens" class="table table-condensed table-bordered table-striped">
                 <thead>
                     <tr>
                         <th><span class="pull-right">From (feet)</span></th>
