@@ -1,0 +1,651 @@
+{% extends 'gwells/base.html' %}
+
+{% load verbose_name %}
+
+{% block title %}Well Summary{% endblock %}
+
+{% block bodyheading_block %}Well Summary{% endblock %}
+
+{% block introduction_block %}
+{% endblock %}
+
+{% block body_block %}
+<fieldset id="summary_information">
+    <div class="col-md-4">
+        <div class="row">
+          <label for="well_tag_number">{% verbose_name well "well_tag_number" %}:</label>
+          <span id="well_tag_number">{{ well.well_tag_number|default_if_none:'&nbsp;' }}</span>
+        </div>
+        <div class="row">
+          <label for="identification_plate_number">{% verbose_name well "identification_plate_number" %}:</label>
+          <span id="identification_plate_number">{{ well.identification_plate_number|default_if_none:'&nbsp;' }}</span>
+        </div>
+        <div class="row">
+          <label for="owner_full_name">{% verbose_name well "owner_full_name" %}:</label>
+          <span id="owner_full_name">{{ well.owner_full_name|default_if_none:'&nbsp;' }}</span>
+        </div>
+        <div class="row">
+            <label for="licenced_status">{% verbose_name well "licenced_status" %}:</label>
+            <span id="licenced_status">{{ well.licenced_status.code|default_if_none:'&nbsp;' }}</span>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="row">
+            <label for="well_well_status">{% verbose_name well "well_status" %}:</label>
+            <span id="well_well_status">{{ well.well_status.code|default_if_none:'&nbsp;' }}</span>
+        </div>
+        <div class="row">
+          <label for="well_class">{% verbose_name well "well_class" %}:</label>
+          <span id="well_class">{{ well.well_class|default_if_none:'&nbsp;' }}</span>
+        </div>
+        <div class="row">
+          <label for="well_subclass">{% verbose_name well "well_subclass" %}:</label>
+          <span id="well_subclass">{{ well.well_subclass|default_if_none:'&nbsp;' }}</span>
+        </div>
+        <div class="row">
+            <label for="intended_water_use">{% verbose_name well "intended_water_use" %}:</label>
+            <span id="intended_water_use">{{ well.intended_water_use|default_if_none:'&nbsp;' }}</span>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="row">
+            <label for="obs_well_number">{% verbose_name well "observation_well_number" %}:</label>
+            <span id="obs_well_number">{{ well.observation_well_number|default_if_none:'&nbsp;' }}</span>
+        </div>
+        <div class="row">
+            <label for="obs_well_status">{% verbose_name well "observation_well_status" %}:</label>
+            <span id="obs_well_status">{{ well.observation_well_status|default_if_none:'&nbsp;' }}</span>
+        </div>
+        <div class="row">
+            <label for="ems_id">{% verbose_name well "ems" %}:</label>
+            <span id="ems_id">{{ well.ems|default_if_none:'&nbsp;' }}</span>
+        </div>
+        <div class="row">
+            <label for="aquifer_number">Aquifer Number:</label>
+            <span id="aquifer_number">
+              {% for aquifer_well in well.aquiferwell_set.all %}
+                {{ aquifer_well.aquifer_id }}&nbsp;
+              {% endfor %}
+            </span>
+        </div>
+        <div class="row">
+            <label for="alternate_specs_submitted">{% verbose_name well "alternative_specs_submitted" %}:</label>
+            <span id="alternate_specs_submitted">{{ well.get_alternative_specs_submitted_display |default_if_none:'&nbsp;' }}</span>
+        </div>
+    </div>
+    &nbsp;
+    <div class="col-md-12">
+        <div class="row">
+          <label for="water_supply_system_name">{% verbose_name well "water_supply_system_name" %}:</label>
+          <span id="water_supply_system_name">{{ well.water_supply_system_name|default_if_none:'&nbsp;' }}</span>
+        </div>
+        <div class="row">
+          <label for="water_supply_system_well_name">{% verbose_name well "water_supply_system_well_name" %}:</label>
+          <span id="water_supply_system_well_name">{{ well.water_supply_system_well_name|default_if_none:'&nbsp;' }}</span>
+        </div>
+    </div>
+</fieldset>
+&nbsp;
+<fieldset>
+    <legend>Location Information</legend>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="address">{% verbose_name well "street_address" %}:</label>
+                    <span id="address">{{ well.street_address|default_if_none:'&nbsp;' }}</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="city">{% verbose_name well "city" %}:</label>
+                    <span id="city">{{ well.city|default_if_none:'&nbsp;' }}</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <label for="legal">Legal Description</label>
+                    <table id="legal" class="table table-condensed table-bordered table-striped">
+                        <tbody>
+                            <tr>
+                                <td><label for="lot">{% verbose_name well "legal_lot" %}:</label></td>
+                                <td><span id="lot">{{ well.legal_lot|default_if_none:'&nbsp;' }}</span></td>
+                            </tr>
+                            <tr>
+                                <td><label for="plan">{% verbose_name well "legal_plan" %}:</label></td>
+                                <td><span id="plan">{{ well.legal_plan|default_if_none:'&nbsp;' }}</span></td>
+                            </tr>
+                            <tr>
+                                <td><label for="district_lot">{% verbose_name well "legal_district_lot" %}:</label></td>
+                                <td><span id="district_lot">{{ well.legal_district_lot|default_if_none:'&nbsp;' }}</span></td>
+                            </tr>
+                            <tr>
+                                <td><label for="block">{% verbose_name well "legal_block" %}:</label></td>
+                                <td><span id="block">{{ well.legal_block|default_if_none:'&nbsp;' }}</span></td>
+                            </tr>
+                            <tr>
+                                <td><label for="section">{% verbose_name well "legal_section" %}:</label></td>
+                                <td><span id="section">{{ well.legal_section|default_if_none:'&nbsp;' }}</span></td>
+                            </tr>
+                            <tr>
+                                <td><label for="township">{% verbose_name well "legal_township" %}:</label></td>
+                                <td><span id="township">{{ well.legal_township|default_if_none:'&nbsp;' }}</span></td>
+                            </tr>
+                            <tr>
+                                <td><label for="range">{% verbose_name well "legal_range" %}:</label></td>
+                                <td><span id="range">{{ well.legal_range|default_if_none:'&nbsp;' }}</span></td>
+                            </tr>
+                            <tr>
+                                <td><label for="land_district">{% verbose_name well "legal_land_district" %}:</label></td>
+                                <td><span id="land_district">{{ well.legal_land_district|default_if_none:'' }}</span></td>
+                            </tr>
+                            <tr>
+                                <td><label for="pid">{% verbose_name well "legal_pid" %}:</label>&nbsp;</td>
+                                <td><span id="pid">{{ well.legal_pid|default_if_none:'&nbsp;' }}</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <label for="location_desc">{% verbose_name well "well_location_description" %}:</label>
+                    <span id="location_desc">{{ well.well_location_description|default_if_none:'&nbsp;' }}</span>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <label>Geographic Coordinates - North American Datum of 1983 (NAD 83)</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <label for="latitude">{% verbose_name well "latitude" %}:</label>
+                    <span id="latitude" data-latitude="{{ well.latitude }}">{{ well.latitude|default_if_none:'&nbsp;' }}</span>
+                </div>
+                <div class="col-md-4">
+                    <label for="longitude">{% verbose_name well "longitude" %}:</label>
+                    <span id="longitude" data-longitude="{{ well.longitude }}">{{ well.longitude|default_if_none:'&nbsp;' }}</span>
+                </div>
+            </div>
+            <div class="row">
+              <div class="col-md-4">
+                  <label for="utm_zone_code">{% verbose_name well "utm_zone_code" %}:</label>
+                  <span id="utm_zone_code" data-utm-zone-code="{{ well.longitude }}">{{ well.utm_zone_code|default_if_none:'&nbsp;' }}</span>
+              </div>
+              <div class="col-md-4">
+                  <label for="utm_northing">{% verbose_name well "utm_northing" %}:</label>
+                  <span id="utm_northing" data-utm-northing="{{ well.utm_northing }}">{{ well.utm_northing|default_if_none:'&nbsp;' }}</span>
+              </div>
+              <div class="col-md-4">
+                  <label for="utm_easting">{% verbose_name well "utm_easting" %}:</label>
+                  <span id="utm_easting" data-utm-easting="{{ well.utm_easting }}">{{ well.utm_easting|default_if_none:'&nbsp;' }}</span>
+              </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                  <label for="utm_accuracy_code">{% verbose_name well "utm_accuracy_code" %}:</label>
+                  <span id="utm_accuracy_code" data-utm-accuracy-code="{{ well.utm_accuracy_code }}">{{ well.utm_accuracy_code|default_if_none:'&nbsp;' }}</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                  <label for="bcgs_mapsheet_number">{% verbose_name well "bcgs_id" %}:</label>
+                  <span id="bcgs_mapsheet_number" data-bcgs-mapsheet-number="{{ well.bcgs_id.bcgs_mapsheet_number }}">{{ well.bcgs_id.bcgs_number|default_if_none:'&nbsp;' }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div aria-label="This map shows the well under consideration as a light blue pushpin, as well as surrounding wells as dark blue circles." id="detail-map"></div>
+            <div id="attribution"></div>
+        </div>
+        <div id="guid-row" data-well-guid="{{ well.well_guid }}"></div>
+    </div>
+</fieldset>
+&nbsp;
+<fieldset>
+    <legend>Well Activity</legend>
+    <table id="activities" class="table">
+        <thead>
+            <tr>
+                <th>{% verbose_name well "construction_end_date" %}:</th>
+                <th>{% verbose_name well "alteration_end_date" %}:</th>
+                <th>{% verbose_name well "decommission_end_date" %}:</th>
+                <th>{% verbose_name well "drilling_company" %}:</th>
+            </tr>
+        </thead>
+        <tbody>
+            {# for submission in well.activitysubmission_set.all #}
+            <tr>
+                <td>
+                  <span id="construction_end_date" data-construction-date="{{ well.construction_end_date }}">{{ well.construction_end_date|date:"Y-m-d"|default_if_none:'&nbsp;' }}</span>
+                </td>
+                <td>
+                  <span id="alteration_end_date" data-alteration-date="{{ well.alteration_end_date }}">{{ well.alteration_end_date|date:"Y-m-d"|default_if_none:'&nbsp;' }}</span>
+                </td>
+                <td>
+                  <span id="decommission_end_date" data-decommission-date="{{ well.decommission_end_date }}">{{ well.decommission_end_date|date:"Y-m-d"|default_if_none:'&nbsp;' }}</span>
+                </td>
+                <td>
+                  <span id="drilling_company" data-drilling-company="{{ well.drilling_company }}">{{ well.drilling_company.name|default_if_none:'&nbsp;'}}</span>
+                </td>
+            </tr>
+            {# endfor #}
+        </tbody>
+    </table>
+</fieldset>
+
+<fieldset>
+    <legend>Well Completion Data</legend>
+    <div class="row">
+        <div class="col-md-4">
+            <label for="total_depth_drilled">{% verbose_name well "total_depth_drilled" %}:</label>
+            <span id="total_depth_drilled">
+                {% if  well.total_depth_drilled > 0 %}
+                {{well.total_depth_drilled}} feet
+                {% else                             %}
+                &nbsp;
+                {% endif                            %}
+            </span>
+        </div>
+        <div class="col-md-4">
+            <label for="static_water_level">{% verbose_name well "static_water_level" %}:</label>
+            <span id="static_water_level">
+                {% if  well.static_water_level > 0  %}
+                {{well.static_water_level}} feet
+                {% else                             %}
+                &nbsp;
+                {% endif                            %}
+            </span>
+        </div>
+        <div class="col-md-4">
+            <label for="well_cap_type">{% verbose_name well "well_cap_type" %}:</label>
+            <span id="well_cap_type">{{ well.well_cap_type|default_if_none:'&nbsp;' }}</span>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <label for="finished_well_depth">{% verbose_name well "finished_well_depth" %}:</label>
+            <span id="finished_well_depth">
+              {% if  well.finished_well_depth > 0 %}
+              {{well.finished_well_depth}} feet
+              {% else                             %}
+              &nbsp;
+              {% endif                            %}
+            </span>
+        </div>
+        <div class="col-md-4">
+            <label for="well_yield">{% verbose_name well "well_yield" %}:</label>
+            <span id="well_yield">
+              {% if  well.well_yield > 0 %}
+              {{well.well_yield}} {{well.well_yield_unit.code|default_if_none:"no unit provided"}}
+              {% else                             %}
+              &nbsp;
+              {% endif                            %}
+            </span>
+        </div>
+        <div class="col-md-4">
+            <label for="well_disinfected">{% verbose_name well "well_disinfected" %}:</label>
+            <span id="well_disinfected">{{ well.well_disinfected|default_if_none:'&nbsp;' }}</span>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <label for="final_casing_stickup">{% verbose_name well "final_casing_stick_up" %}:</label>
+            <span id="final_casing_stickup">
+                {% if  well.final_casing_stick_up > 0 %}
+                {{well.finished_well_depth}} in
+                {% else                               %}
+                &nbsp;
+                {% endif                              %}
+            </span>
+        </div>
+        <div class="col-md-4">
+          <label for="artesian_flow">{% verbose_name well "artesian_flow" %}:</label>
+          <span id="artesian_flow">{{ well.artesian_flow|default_if_none:'&nbsp;' }}</span>
+        </div>
+        <div class="col-md-4">
+          <label for="drilling_method">{% verbose_name well "drilling_method" %}:</label>
+          <span id="drilling_method">{{ well.drilling_method.code|default_if_none:'&nbsp;' }}</span>
+        </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-4">
+        <label for="bedrock_depth">{% verbose_name well "bedrock_depth" %}:</label>
+        <span id="bedrock_depth">
+            {% if  well.bedrock_depth > 0       %}
+            {{well.bedrock_depth}} feet
+            {% else                             %}
+            &nbsp;
+            {% endif                            %}
+        </span>
+      </div>
+      <div class="col-md-4">
+        <label for="artesian_pressure">{% verbose_name well "artesian_pressure" %}:</label>
+        <span id="artesian_pressure">
+            {% if  well.artesian_pressure > 0       %}
+            {{well.artesian_pressure}} in
+            {% else                             %}
+            &nbsp;
+            {% endif                            %}
+
+        </span>
+      </div>
+      <div class="col-md-4">
+        <label for="orientation">{% verbose_name well "well_orientation" %}:</label>
+        <span id="orientation2">{{ well.get_well_orientation_display|default_if_none:'&nbsp;' }}</span>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-4">
+          <label for="ground_elevation">{% verbose_name well "ground_elevation" %}:</label>
+          <span id="ground_elevation">
+              {% if  well.ground_elevation > 0 %}
+              {{well.ground_elevation}} feet
+              {% else                             %}
+              &nbsp;
+              {% endif                            %}
+          </span>
+      </div>
+      <div class="col-md-4">
+          <!-- spacer column -->
+      </div>
+      <div class="col-md-4">
+          <label for="well_plate_attached">{% verbose_name well "well_identification_plate_attached" %}:</label>
+          <span id="well_plate_attached">{{ well.well_identification_plate_attached|default_if_none:'&nbsp;' }}</span>
+      </div>
+
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+          <label for="ground_elevation_method">{% verbose_name well "ground_elevation_method" %}:</label>
+          <span id="ground_elevation_method">{{ well.ground_elevation_method|default_if_none:'&nbsp;' }}</span>
+        </div>
+    </div>
+
+    &nbsp;
+
+</fieldset>
+&nbsp;
+<fieldset>
+    <legend>Screen Details</legend>
+
+    <div class="row">
+        <div class="col-md-3">
+            &nbsp;
+            <div class="row">
+              <label for="intake_method">{% verbose_name well "screen_intake_method" %}:</label>
+              <span id="intake_method">{{ well.screen_intake_method|default_if_none:'&nbsp;' }}</span>
+            </div>
+            <div class="row">
+                <label for="screen_type">{% verbose_name well "screen_type" %}:</label>
+                <span id="screen_type">{{ well.screen_type.description|default_if_none:'&nbsp;' }}</span>
+            </div>
+            <div class="row">
+              <label for="screen_material">{% verbose_name well "screen_material" %}:</label>
+              <span id="screen_material">{{ well.screen_material.description|default_if_none:'&nbsp;' }}</span>
+            </div>
+            <div class="row">
+              <label for="screen_material">{% verbose_name well "screen_opening" %}:</label>
+              <span id="screen_opening">{{ well.screen_opening.description|default_if_none:'&nbsp;' }}</span>
+            </div>
+            <div class="row">
+              <label for="screen_bottom">{% verbose_name well "screen_bottom" %}:</label>
+              <span id="screen_bottom">{{ well.screen_bottom.description|default_if_none:'&nbsp;' }}</span>
+            </div>
+        </div>
+        <div class="col-md-6 table-responsive">
+            <table id="screens" class="table table-condensed table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th><span class="pull-right">From (feet)</span></th>
+                        <th><span class="pull-right">To (feet)</span></th>
+                        <th><span class="pull-right">Diameter (inches)</span></th>
+                        <th>Screen Assembly Type</th>
+                        <th><span class="pull-right">Slot Size</span></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for screen in well.screen_set.all|dictsort:"screen_from" %}
+                    <tr>
+                        <td><span class="pull-right">{{ screen.screen_from|default_if_none:'&nbsp;' }}</span></td>
+                        <td><span class="pull-right">{{ screen.screen_to|default_if_none:'&nbsp;' }}</span></td>
+                        <td><span class="pull-right">{{ screen.internal_diameter|default_if_none:'&nbsp;' }}</span></td>
+                        <td><span>{{ screen.assembly_type|default_if_none:'&nbsp;' }}</span></td>
+                        <td><span class="pull-right">{{ screen.slot_size|default_if_none:'&nbsp;' }}</span></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</fieldset>
+&nbsp;
+<fieldset>
+    <legend>Well Development</legend>
+    <div class="row">
+        <div class="col-md-3">
+            <label for="devloped-by">{% verbose_name well "development_method" %}:</label>
+            <span id="developed-by">{{ well.development_method.description|default_if_none:'&nbsp;' }}</span>
+        </div>
+        <div class="col-md-4">
+            <label for="devlopment-total-duration">{% verbose_name well "development_hours" %}:</label>
+            <span id="devlopment-total-duration">
+              {% if  well.development_hours > 0 %}
+              {{well.development_hours}} hours
+              {% else                             %}
+              &nbsp;
+              {% endif                            %}
+            </span>
+        </div>
+    </div>
+</fieldset>
+&nbsp;
+<fieldset>
+  <legend>Well Yield</legend>
+  <div class="row">
+      {% for productiondata in well.productiondata_set.all|dictsortreversed:"when_updated"|slice:"1" %}
+      <div class="col-md-4">
+          <label for="yield-estimation-method">{% verbose_name productiondata "yield_estimation_method" %}:</label>
+          <span id="yield-estimation-method">{{ productiondata.yield_estimation_method.description|default_if_none:'&nbsp;' }}</span>
+      </div>
+      <div class="col-md-4">
+          <label for="yield_estimation_rate">{% verbose_name productiondata "yield_estimation_rate" %}:</label>
+          <span>
+            {% if productiondata.yield_estimation_rate > 0 %}
+                {{ productiondata.yield_estimation_rate }} &nbsp; {{productiondata.well_yield_unit.code}}
+            {% endif %}
+        </span id="yield_estimation_rate">
+      </div>
+      <div class="col-md-4">
+          <label for="yield_estimation_duration">{% verbose_name productiondata "yield_estimation_duration" %}:</label>
+          <span id="yield_estimation_duration">
+              {% if productiondata.yield_estimation_duration > 0 %}
+                  {{ productiondata.yield_estimation_duration }} &nbsp; hours
+              {% endif %}
+          </span>
+      </div>
+      {% endfor %}
+</fieldset>
+&nbsp;
+<fieldset id="casing_field_set">
+  <legend>Casing</legend>
+  <table id="casings">
+    <thead>
+      <th>From (feet)</th>
+      <th>To (feet)</th>
+      <th>Diameter (inches)</th>
+      <th>Casing Material</th>
+      <th>Wall Thickness</th>
+      <th>Drive Shoe</th>
+    </thead>
+    <tbody>
+      {% for casing in well.casing_set.all %}
+      <tr>
+        <td>
+          <div class="col-md-2">
+              <span>{{ casing.casing_from|default_if_none:'&nbsp;' }}</span>
+          </div>
+        </td>
+        <td>
+          <div class="col-md-2">
+              <span>{{ casing.casing_to|default_if_none:'&nbsp;' }}</span>
+          </div>
+        </td>
+        <td>
+          <div class="col-md-2">
+              <span>{{ casing.internal_diameter|default_if_none:'&nbsp;' }}</span>
+          </div>
+        </td>
+        <td>
+          <div class="col-md-12">
+              <span>{{ casing.casing_material.description|default_if_none:'&nbsp;' }}</span>
+          </div>
+        </td>
+        <td>
+          <div class="col-md-2">
+              <span>{{ casing.wall_thickness|default_if_none:'&nbsp;' }}</span>
+          </div>
+        </td>
+        <td>
+          <div class="col-md-2">
+              <span>{{ casing.get_drive_shoe_display|default_if_none:'&nbsp;' }}</span>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+</fieldset>
+
+<fieldset id="surface_seal_fieldset">
+    <legend>Surface Seal</legend>
+    <div class="row">
+      <div class="col-md-3">
+          <label for="surface_seal_method">{% verbose_name well "surface_seal_method" %}:</label>
+          <span id="surface_seal_method">{{ well.surface_seal_method|default_if_none:'&nbsp;' }}</span>
+      </div>
+      <div class="col-md-3">
+          <label for="surface_seal_material">{% verbose_name well "surface_seal_material" %}:</label>
+          <span id="surface_seal_material">{{ well.surface_seal_material|default_if_none:'&nbsp;' }}</span>
+      </div>
+
+    </div>
+    <div class="row">
+      <div class="col-md-3">
+          <label for="surface_seal_thickness">{% verbose_name well "surface_seal_thickness" %}:</label>
+          <span id="surface_seal_thickness">{{ well.surface_seal_thickness|default_if_none:'&nbsp;' }}</span>
+      </div>
+      <div class="col-md-3">
+          <label for="surface_seal_length">{% verbose_name well "surface_seal_length" %}:</label>
+          <span id="surface_seal_length">{{ well.surface_seal_length|default_if_none:'&nbsp;' }}</span>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-3">
+          <label for="backfill_type">{% verbose_name well "backfill_type" %}:</label>
+          <span id="surface_seal_thickness">{{ well.backfill_type|default_if_none:'&nbsp;' }}</span>
+      </div>
+      <div class="col-md-3">
+          <label for="backfill_depth">{% verbose_name well "backfill_depth" %}:</label>
+          <span id="surface_seal_length">{{ well.backfill_depth|default_if_none:'&nbsp;' }}</span>
+      </div>
+    </div>
+</fieldset>
+&nbsp;
+<fieldset id="perforations_fieldset">
+    <legend>Liner Details</legend>
+    <table id="liner_details">
+        <thead>
+            <th>Liner Material</th>
+            <th>Liner Diameter</th>
+            <th>Liner Thickness</th>
+            <th>Liner From</th>
+            <th>Liner To</th>
+            <th>Liner Perforated From</th>
+            <th>Liner Perforated To</th>
+        </thead>
+        <tbody>
+            {% for perforation in well.perforation_set.all %}
+            <tr>
+              <td>{{well.liner_material.description|default_if_none:'&nbsp;'}}</td>
+              <td>{{perforation.liner_diameter|default_if_none:'&nbsp;'}}</td>
+              <td>{{perforation.liner_thickness|default_if_none:'&nbsp;'}}</td>
+              <td>{{perforation.liner_from|default_if_none:'&nbsp;'}}</td>
+              <td>{{perforation.liner_to|default_if_none:'&nbsp;'}}</td>
+              <td>{{perforation.liner_perforation_from|default_if_none:'&nbsp;'}}</td>
+              <td>{{perforation.liner_perforation_to|default_if_none:'&nbsp;'}}<td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</fieldset>
+
+<div>
+    <br /><br />
+    <a id="well_tag_number_link" href="https://a100.gov.bc.ca/pub/wells/wellsreport1.do?wellTagNumber={{ well.well_tag_number }}">View Report</a>
+</div>
+{% endblock %}
+
+{% block jqscript_block %}
+<script>
+    var detailMap = null;
+    // Options for creating the detailMap. This map instance opens with a pushpin over the location of the well
+    // of interest, and (as with all maps with a pushpin) the map issues an AJAX query to show the surrounding wells
+    // within the map's bounding box, which are displayed as circleMarkers. The map also has limited zoom capability,
+    // so that users can find further surrounding wells. None of the wells (circleMarkers or the pushpin) is interactive.
+    var detailMapOptions = {
+        SEARCH_URL: "{% url 'map_well_search' %}",
+        // The ID of the addMap div.
+        mapNodeId: 'detail-map',
+        // The initial centre of the map
+        initCentre: null, // Will be filled in before call in $(document).ready()
+        // Maximum zoom of the map (i.e., how far it can be zoomed in)
+        maxZoom: 17,
+        // Minimum zoom of the map (i.e., how far it can be zoomed out)
+        minZoom: 10,
+        // All zooms should remain centred
+        centreZoom: true,
+        // The detailMap cannot be panned
+        canPan: false,
+        // ESRI layers associated with the map
+        esriLayers: [
+            {
+                url: 'https://maps.gov.bc.ca/arcserver/rest/services/Province/roads_wm/MapServer'
+            }
+        ],
+        // WMS layers associated with the map
+        wmsLayers: [
+            {
+                rootUrl: 'https://openmaps.gov.bc.ca/geo/pub/WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW/ows?',
+                format: 'image/png',
+                layers: 'pub:WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW',
+                styles: 'PMBC_Parcel_Fabric_Cadastre_Outlined',
+                transparent: true
+            }
+        ],
+        wellPushpinInit: null, // Will be filled in before call in $(document).ready()
+        externalAttributionNodeId: 'attribution' // The ID of the external node to contain the attribution.
+    };
+
+    $(document).ready(function () {
+        var lat = $("#latitude").data("latitude");
+        var long = $("#longitude").data("longitude");
+        var guid = $("#guid-row").data("well-guid");
+        // The map starts centred on a given point at the lowest zoom level, and that point happens to contain the well of interest.
+        detailMapOptions.initCentre = [lat, long];
+        detailMapOptions.wellPushpinInit = { lat: lat, long: long, wellDetails: { guid: guid } };
+        detailMap = new WellsMap(detailMapOptions);
+    });
+
+</script>
+{% endblock %}

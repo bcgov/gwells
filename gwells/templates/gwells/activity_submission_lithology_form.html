@@ -1,0 +1,84 @@
+{% extends 'gwells/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Activity Submission{% endblock %}
+
+{% block bodyheading_block %}Submit Activity{% endblock %}
+
+{% block introduction_block %}
+{% if wizard.steps.current == 'type_and_class' %}
+    Submit activity on a well that does not exist in the system. Try a <a href="{% url 'search' %}">search</a> to see if the well exists in the system before submitting a report.
+{% else %}
+    {{ wizard_data.well_activity_type }} - {{ wizard_data.well_class }} - {{ wizard_data.work_start_date }}
+{% endif %}
+     <br /><br />
+{% endblock %}
+
+{% block body_block %}
+
+<h4 class="stepheading">Step {{ wizard.steps.step1 }} of {{ wizard.steps.count }}</h4>
+		<form id="lithologyForm" action="" method="post">
+            {% csrf_token %}
+            {{ wizard.management_form }}
+            <fieldset>
+                <legend>Lithology</legend>
+                <div class="table-responsive">
+                    <table class="table-tight">
+                        <thead>
+                            <tr>
+                                <th>From*<br />ft (bgl)</th>
+                                <th>To*<br />ft (bgl)</th>
+                                <th>Primary<br />Surficial Material</th>
+                                <th>Secondary<br />Surficial Material</th>
+                                <th>Bedrock</th>
+                                <th>Descriptor</th>
+                                <th>Bedding</th>
+                                <th>Colour</th>
+                                <th>Hardness</th>
+                                <th>Moisture</th>
+                                <th>Water Bearing<br />Est. Flow<br />USgpm</th>
+                                <th>Observations</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            {% if wizard.form.forms %}
+                            {{ wizard.form.management_form }}
+                            {% for form in wizard.form.forms %}
+                            {% crispy form %}
+                            {% endfor %}
+                            {% else %}
+                            {% crispy wizard.form %}
+                            {% endif %}
+
+                        </tbody>
+                    </table>
+                </div>
+            </fieldset>
+                <div class="form-group formButtons">
+                    <div class="controls">
+                        {% if wizard.steps.prev %}
+                        <a class="btn btn-default" id="previous_button" href="javascript:history.go(-1);">Previous Step</a>
+                        {% endif %}
+                        {% if wizard.steps.next %}
+                        <input type="submit" value="Next Step" class="btn btn-primary" id="submit-id-next" />
+                        {% else %}
+                        <input type="submit" value="Submit Report" class="btn btn-primary" id="submit-id-s" />
+                        {% endif %}
+                    </div>
+                </div>
+</form>    
+
+{% endblock %}
+
+{% block jqscript_block %}
+<script type="text/javascript">
+    $(function () {
+        $('#lithologyForm tbody tr').formset({
+            prefix: '{{ wizard.form.prefix }}'
+            ,addText: 'add another row'
+        });
+    })
+</script>
+{% endblock %}
