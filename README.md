@@ -44,7 +44,7 @@ To run this project in your development machine, ensure that Python 3.5 and Post
     create database gwells with owner=gwells;
     ```
 
-2. Create and activate a [virtualenv](https://virtualenv.pypa.io/) (you may want to use [virtualenvwrapper](http://virtualenvwrapper.readthedocs.org/)).
+2. Create and activate a [virtualenv](https://virtualenv.pypa.io/) (you may want to use [virtualenvwrapper](5http://virtualenvwrapper.readthedocs.org/)).
 
     If working on Windows install virtualenvwrapper-win via pip.
     
@@ -75,19 +75,23 @@ To run this project in your development machine, ensure that Python 3.5 and Post
 
     `git clone https://github.com/<github-user>/gwells.git`
 
-4. Install dependencies:
+4. Add remote (upstream) origin:
+
+    `git remote add origin https://github.com/bcgov/gwells.git`
+    
+5. Install dependencies:
 
     `pip install -r requirements.txt`
-
-5. Create a development database:
+    
+6. Create a development database:
 
     `python manage.py migrate`
 
-6. If everything is alright, you should be able to start the Django development server:
+7. If everything is alright, you should be able to start the Django development server:
 
     `python manage.py runserver`
 
-7. Open your browser and go to http://127.0.0.1:8000, you will be greeted with a welcome page.
+8. Open your browser and go to http://127.0.0.1:8000, you will be greeted with a welcome page.
 
 
 ## Deploying to OpenShift
