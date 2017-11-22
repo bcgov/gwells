@@ -23,6 +23,8 @@ INSERT INTO xform_gwells_well (
   diameter                           ,
   total_depth_drilled                ,
   finished_well_depth                ,
+  static_water_level                 ,
+  well_cap_type                      ,
   well_yield                         ,
   well_use_code                      ,
   legal_land_district_code           ,
@@ -55,7 +57,7 @@ INSERT INTO xform_gwells_well (
   bedrock_depth                      ,
   water_supply_system_name           ,
   water_supply_system_well_name      ,
-  where_identification_plate_attached,
+  well_identification_plate_attached,
   ems                                ,
   screen_intake_method_guid          ,
   screen_type_guid                   ,
@@ -103,6 +105,8 @@ SELECT
   WELLS.DIAMETER AS diameter                                             ,
   WELLS.TOTAL_DEPTH_DRILLED AS total_depth_drilled                       ,
   WELLS.DEPTH_WELL_DRILLED AS finished_well_depth                        ,
+  WELLS.WATER_DEPTH                                                      ,
+  WELLS.TYPE_OF_WELL_CAP                                                 ,
   WELLS.YIELD_VALUE AS well_yield                                        ,
   WELLS.WELL_USE_CODE                                                    , -- -> intended_water_use_guid
   WELLS.LEGAL_LAND_DISTRICT_CODE                                         , -- -> legal_land_district_guid
