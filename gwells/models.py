@@ -751,12 +751,12 @@ class Well(AuditModel):
 
 
 
-    screen_intake_method = models.ForeignKey(ScreenIntakeMethod, db_column='screen_intake_method_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Screen Intake Method')
-    screen_type = models.ForeignKey(ScreenType, db_column='screen_type_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Screen Type')
-    screen_material = models.ForeignKey(ScreenMaterial, db_column='screen_material_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Screen Material')
+    screen_intake_method = models.ForeignKey(ScreenIntakeMethod, db_column='screen_intake_method_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Intake Method')
+    screen_type = models.ForeignKey(ScreenType, db_column='screen_type_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Type')
+    screen_material = models.ForeignKey(ScreenMaterial, db_column='screen_material_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Material')
     other_screen_material = models.CharField(max_length=50, blank=True, verbose_name='Specify Other Screen Material')
-    screen_opening = models.ForeignKey(ScreenOpening, db_column='screen_opening_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Screen Opening')
-    screen_bottom = models.ForeignKey(ScreenBottom, db_column='screen_bottom_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Screen Bottom')
+    screen_opening = models.ForeignKey(ScreenOpening, db_column='screen_opening_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Opening')
+    screen_bottom = models.ForeignKey(ScreenBottom, db_column='screen_bottom_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Bottom')
     other_screen_bottom = models.CharField(max_length=50, blank=True, verbose_name='Specify Other Screen Bottom')
 
     filter_pack_from = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Filter Pack From', validators=[MinValueValidator(Decimal('0.00'))])
@@ -908,11 +908,11 @@ class ActivitySubmission(AuditModel):
     liner_to = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Liner To', validators=[MinValueValidator(Decimal('0.01'))])
 
     screen_intake_method = models.ForeignKey(ScreenIntakeMethod, db_column='screen_intake_method_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Intake')
-    screen_type = models.ForeignKey(ScreenType, db_column='screen_type_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Screen Type')
-    screen_material = models.ForeignKey(ScreenMaterial, db_column='screen_material_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Screen Material')
+    screen_type = models.ForeignKey(ScreenType, db_column='screen_type_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Type')
+    screen_material = models.ForeignKey(ScreenMaterial, db_column='screen_material_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Material')
     other_screen_material = models.CharField(max_length=50, blank=True, verbose_name='Specify Other Screen Material')
-    screen_opening = models.ForeignKey(ScreenOpening, db_column='screen_opening_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Screen Opening')
-    screen_bottom = models.ForeignKey(ScreenBottom, db_column='screen_bottom_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Screen Bottom')
+    screen_opening = models.ForeignKey(ScreenOpening, db_column='screen_opening_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Opening')
+    screen_bottom = models.ForeignKey(ScreenBottom, db_column='screen_bottom_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Bottom')
     other_screen_bottom = models.CharField(max_length=50, blank=True, verbose_name='Specify Other Screen Bottom')
 
     filter_pack_from = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Filter Pack From', validators=[MinValueValidator(Decimal('0.00'))])
