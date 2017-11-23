@@ -321,7 +321,11 @@
           <label for="artesian_flow">{% verbose_name well "artesian_flow" %}:</label>
         </div>
         <div class="col-md-2">
-            <span id="artesian_flow">{{well.artesian_flow|default_if_none:'&nbsp;' }}&nbsp;{{well.well_yield_unit.code|default_if_none:"no unit provided"}}</span>
+            <span id="artesian_flow">
+              {% if well.artesian_flow > 0             %}
+                {{well.artesian_flow}}&nbsp;{{well.well_yield_unit.code|default_if_none:"no unit provided"}}
+              {% endif                                 %}
+            </span>
         </div>
         <div class="col-md-4">
           <label for="drilling_method">{% verbose_name well "drilling_method" %}:</label>
