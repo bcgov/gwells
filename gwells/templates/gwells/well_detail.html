@@ -208,29 +208,48 @@
 &nbsp;
 <fieldset>
     <legend>Well Activity</legend>
-    <table id="activities" class="table">
+    <table id="activities" class="table table-condensed table-bordered table-striped">
         <thead>
             <tr>
-                <th>{% verbose_name well "construction_end_date" %}:</th>
-                <th>{% verbose_name well "alteration_end_date" %}:</th>
-                <th>{% verbose_name well "decommission_end_date" %}:</th>
-                <th>{% verbose_name well "drilling_company" %}:</th>
+                <th>{% verbose_name well "construction_end_date" %}</th>
+                <th>{% verbose_name well "alteration_end_date" %}</th>
+                <th>{% verbose_name well "decommission_end_date" %}</th>
+                <th>{% verbose_name well "drilling_company" %}</th>
             </tr>
         </thead>
         <tbody>
             {# for submission in well.activitysubmission_set.all #}
+            <!-- TODO: pull from activity sumbission when that is implemented. -->
             <tr>
-                <td>
-                  <span id="construction_end_date" data-construction-date="{{well.construction_end_date }}">{{well.construction_end_date|date:"Y-m-d"|default_if_none:'&nbsp;' }}</span>
+                 <td>
+                    {% if well.construction_end_date %}
+                    {{well.construction_end_date|date:"Y-m-d"}}
+                    {% elif well.construction_start_date%}
+                    {{well.construction_start_date|date:"Y-m-d"}}
+                    {% else %}
+                    &nbsp;
+                    {% endif %}
                 </td>
                 <td>
-                  <span id="alteration_end_date" data-alteration-date="{{well.alteration_end_date }}">{{well.alteration_end_date|date:"Y-m-d"|default_if_none:'&nbsp;' }}</span>
+                    {% if well.alteration_end_date %}
+                      {{well.alteration_end_date|date:"Y-m-d"}}
+                    {% elif well.alteration_start_date%}
+                      {{well.alteration_start_date|date:"Y-m-d"}}
+                    {% else %}
+                      &nbsp;
+                    {% endif %}
                 </td>
                 <td>
-                  <span id="decommission_end_date" data-decommission-date="{{well.decommission_end_date }}">{{well.decommission_end_date|date:"Y-m-d"|default_if_none:'&nbsp;' }}</span>
+                    {% if well.decommission_end_date %}
+                    {{well.decommission_end_date|date:"Y-m-d"}}
+                    {% elif well.decommission_start_date%}
+                    {{well.decommission_start_date|date:"Y-m-d"}}
+                    {% else %}
+                    &nbsp;
+                    {% endif %}
                 </td>
                 <td>
-                  <span id="drilling_company" data-drilling-company="{{well.drilling_company }}">{{well.drilling_company.name|default_if_none:'&nbsp;'}}</span>
+                  {{well.drilling_company.name|default_if_none:'&nbsp;'}}
                 </td>
             </tr>
             {# endfor #}
