@@ -28,11 +28,13 @@ class WellDetailsSpecs extends GebReportingSpec {
 			assert  (well_tag_number.text() == "$WellId")
         then: "Then I see all available information related to the well"
         	at WellSummaryPage
-         	assert activitiesTable
+			assert activitiesTable
 			assert address 
 			assert alteration_end_date
 			assert alternate_specs_submitted 
 			assert aquifer_number
+			assert backfill_depth
+			assert backfill_type
 			assert block 
 			assert casingsTable 
 			assert city 
@@ -57,20 +59,30 @@ class WellDetailsSpecs extends GebReportingSpec {
 			assert pid 
 			assert plan 
 			assert range 
+			assert screen_bottom
+			assert screen_material
+			assert screen_opening
+			assert screen_type
 			assert screensTable 
 			assert section 
-			assert static_water_level 
+			assert static_water_level
+			assert surface_seal_material
+			assert surface_seal_thickness 
 			assert total_depth_drilled 
-			assert township 
+			assert township
+			assert water_supply_system_name 
+			assert water_supply_system_well_name 
 			assert well_cap_type 
 			assert well_class 
 			assert well_disinfected 
+			assert well_plate_attached 
 			assert well_subclass 
 			assert well_tag_number
 			assert well_well_status 
 			assert well_yield 
-			assert where_plate_attached 
-			//assert yieldsTable 
+			assert yield_estimation_duration 
+			assert yield_estimation_method
+			assert yield_estimation_rate
         where:
         TestDesc                          | WellId           
         "Well Tag - 21265"                    | 21265
