@@ -714,13 +714,13 @@ class Well(AuditModel):
     well_location_description = models.CharField(max_length=500, blank=True, verbose_name='Description of Well Location')
 
     construction_start_date = models.DateTimeField(null=True, verbose_name="Construction Start Date")
-    construction_end_date = models.DateTimeField(null=True, verbose_name="Construction End Date")
+    construction_end_date = models.DateTimeField(null=True, verbose_name="Construction Date")
 
     alteration_start_date = models.DateTimeField(null=True, verbose_name="Alteration Start Date")
-    alteration_end_date = models.DateTimeField(null=True, verbose_name="Alteration End Date")
+    alteration_end_date = models.DateTimeField(null=True, verbose_name="Alteration Date")
 
     decommission_start_date = models.DateTimeField(null=True, verbose_name="Decommission Start Date")
-    decommission_end_date = models.DateTimeField(null=True, verbose_name="Decommission End Date")
+    decommission_end_date = models.DateTimeField(null=True, verbose_name="Decommission Date")
 
     drilling_company = models.ForeignKey(DrillingCompany, db_column='drilling_company_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Drilling Company')
 
