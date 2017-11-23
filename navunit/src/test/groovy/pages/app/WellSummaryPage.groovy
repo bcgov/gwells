@@ -12,6 +12,8 @@ class WellSummaryPage extends Page {
 			alteration_end_date { $("span", id:"alteration_end_date") }
 			alternate_specs_submitted { $("span", id:"alternate_specs_submitted") }
 			aquifer_number { $("span", id:"aquifer_number") }
+			backfill_depth { $("span", id:"backfill_depth") }
+			backfill_type { $("span", id:"backfill_type") }
 			block { $("span", id:"block") }
 			casingsTable { $("table", id:"casings") }
 			city { $("span", id:"city") }
@@ -43,8 +45,12 @@ class WellSummaryPage extends Page {
 			screensTable { $("table", id:"screens") }
 			section { $("span", id:"section") }
 			static_water_level { $("span", id:"static_water_level") }
+			surface_seal_material { $("span", id:"screen_type") }
+			surface_seal_thickness { $("span", id:"screen_type") }
 			total_depth_drilled { $("span", id:"total_depth_drilled") }
 			township { $("span", id:"township") }
+			water_supply_system_name { $("span", id:"water_supply_system_name") }
+			water_supply_system_well_name { $("span", id:"water_supply_system_well_name") }
 			well_cap_type { $("span", id:"well_cap_type") }
 			well_class { $("span", id:"well_class") }
 			well_disinfected { $("span", id:"well_disinfected") }

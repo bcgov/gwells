@@ -33,6 +33,8 @@ class WellDetailsSpecs extends GebReportingSpec {
 			assert alteration_end_date
 			assert alternate_specs_submitted 
 			assert aquifer_number
+			assert backfill_depth
+			assert backfill_type
 			assert block 
 			assert casingsTable 
 			assert city 
@@ -63,9 +65,13 @@ class WellDetailsSpecs extends GebReportingSpec {
 			assert screen_type
 			assert screensTable 
 			assert section 
-			assert static_water_level 
+			assert static_water_level
+			assert surface_seal_material
+			assert surface_seal_thickness 
 			assert total_depth_drilled 
-			assert township 
+			assert township
+			assert water_supply_system_name 
+			assert water_supply_system_well_name 
 			assert well_cap_type 
 			assert well_class 
 			assert well_disinfected 
