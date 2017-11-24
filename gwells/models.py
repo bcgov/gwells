@@ -714,13 +714,13 @@ class Well(AuditModel):
     well_location_description = models.CharField(max_length=500, blank=True, verbose_name='Description of Well Location')
 
     construction_start_date = models.DateTimeField(null=True, verbose_name="Construction Start Date")
-    construction_end_date = models.DateTimeField(null=True, verbose_name="Construction End Date")
+    construction_end_date = models.DateTimeField(null=True, verbose_name="Construction Date")
 
     alteration_start_date = models.DateTimeField(null=True, verbose_name="Alteration Start Date")
-    alteration_end_date = models.DateTimeField(null=True, verbose_name="Alteration End Date")
+    alteration_end_date = models.DateTimeField(null=True, verbose_name="Alteration Date")
 
     decommission_start_date = models.DateTimeField(null=True, verbose_name="Decommission Start Date")
-    decommission_end_date = models.DateTimeField(null=True, verbose_name="Decommission End Date")
+    decommission_end_date = models.DateTimeField(null=True, verbose_name="Decommission Date")
 
     drilling_company = models.ForeignKey(DrillingCompany, db_column='drilling_company_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Drilling Company')
 
@@ -1187,8 +1187,7 @@ class AquiferWell(AuditModel):
 
     aquifer_well_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     aquifer_id = models.PositiveIntegerField(verbose_name="Aquifer Number", blank=True, null=True)
-    #well = models.ForeignKey(Well, db_column='well_guid', on_delete=models.CASCADE, blank=True, null=True) #transition to this later
-    well_tag_number = models.ForeignKey(Well, db_column='well_tag_number', to_field='well_tag_number', on_delete=models.CASCADE, blank=False, null=False)#speficying to_field in advance of transition to natural primary key for well table
+    well_tag_number = models.ForeignKey(Well, db_column='well_tag_number', to_field='well_tag_number', on_delete=models.CASCADE, blank=False, null=False)
 
     class Meta:
         db_table = 'gwells_aquifer_well'
