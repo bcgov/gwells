@@ -66,7 +66,7 @@ class WellDetailsSpecs extends GebReportingSpec {
 			assert bcgs_mapsheet_number
 
 			assert activities
-			assert construction_end_date
+ 			assert construction_end_date
 			assert alteration_end_date
 			assert decommission_end_date
 			assert drilling_company
@@ -93,6 +93,11 @@ class WellDetailsSpecs extends GebReportingSpec {
 			assert screen_opening
 			assert screen_bottom
 			assert screens
+			assert screen_from 
+			assert screen_to
+			assert internal_diameter
+			assert assembly_type
+			assert slot_size
 
 			assert developed_by
 			assert devlopment_total_duration
@@ -191,13 +196,18 @@ class WellDetailsSpecs extends GebReportingSpec {
 		//"screen_material"	 | "" 	 | 
 		//"screen_opening"	 | "" 	 | 
 		//"screen_bottom"	 | "" 	 | 
+		"screen_from" 	 | "92.02" 	 | 110749
+		"screen_to"	 | "92.06" 	 | 110749
+		"internal_diameter"	 | "5.00" | 110749
+		"assembly_type"	 | "K-packer" 	 | 110749
+		"slot_size"	 | "0.04" 	 | 110752
 		"developed_by"	 | "Bailing" 	 | 110749
 		"devlopment_total_duration"	 | "3.00 hours" 	 | 110749
 		//"yield_estimation_method"	 | "" 	 | 
 		"yield_estimation_rate"	 | "15.00   USGM" 	 | 110749
 		"yield_estimation_duration"	 | "12.00   hours" 	 | 110749
 		//"surface_seal_fieldset"	 | "" 	 | 
-		//"surface_seal_method"	 | "" 	 | 
+		//surface_seal_method"	 | "" 	 | 
 		//"surface_seal_material"	 | "" 	 | 
 		//"surface_seal_thickness"	 | "" 	 | 
 		"surface_seal_length"	 | "15.00" 	 | 110749
