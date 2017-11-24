@@ -130,7 +130,7 @@ class WellDetailsSpecs extends GebReportingSpec {
         then: "Then I see the expected information for the #TestDesc"
 			at WellSummaryPage
 			println "$TestDesc: " +  page."$TestDesc".text().trim()
-			assert page."$TestDesc".text().trim() == "$WellFieldContent"
+			assert page."$TestDesc".text().trim() == "$WellFieldContent".trim()
 		where:	
         TestDesc                          | WellFieldContent 	| WellId           
 		"well_tag_number"				  | "48084" 			| 48084
@@ -141,9 +141,9 @@ class WellDetailsSpecs extends GebReportingSpec {
 		"well_class"	 | "Water Supply" 	 | 48084
 		"well_subclass"	 | "Domestic" 	 | 48084
 		"intended_water_use"	 | "Water Supply System" 	 | 48084
-		/* "obs_well_number"	 | "" 	 | 
-		"obs_well_status"	 | "" 	 |  
-		"ems_id"	 | "" 	 | */
+		"obs_well_number"	 | "2" 	 | 26787
+		"obs_well_status"	 | "Active" 	 |  26787
+		"ems_id"	 | "1401057" 	 | 26787
 		"aquifer_number"	 | "207" 	 | 48084
 		"alternate_specs_submitted"	 | "No" 	 | 48084
 		"water_supply_system_name"	 | "LA POMMERAI: MERRIDALE CIDERWORKS" 	 | 48084
@@ -152,14 +152,14 @@ class WellDetailsSpecs extends GebReportingSpec {
 		"city"	 | "COBBLE HILL" 	 | 48084
 		"lot"	 | "B" 	 | 48084
 		"plan"	 | "220658" 	 | 48084
-		//"district_lot"	 | "" 	 | 
-		//"block"	 | "" 	 | 
+		"district_lot"	 | "405" 	 | 110749
+		"block"	 | "9" 	 | 18624
 		"section"	 | "5" 	 | 48084
-		//"township"	 | "" 	 | 
+		"township"	 | "16" 	 | 26787
 		"range"	 | "6" 	 | 48084
 		//"land_district"	 | "" 	 | 
-		//"pid"	 | "" 	 | 
-		//"location_desc"	 | "" 	 | 
+		"pid"	 | "8048142" 	 | 110749
+		"location_desc"	 | "PREVIOUS LEGAL PLAN: 14144" 	 | 110749
 		"latitude"	 | "48.663734" 	 | 48084
 		"longitude"	 | "-123.585250" 	 | 48084
 		"utm_zone_code"	 | "10" 	 | 48084
@@ -167,9 +167,9 @@ class WellDetailsSpecs extends GebReportingSpec {
 		"utm_easting"	 | "456906" 	 | 48084
 		"utm_accuracy_code"	 | "H" 	 | 48084
 		"bcgs_mapsheet_number"	 | "092B063313" 	 | 48084
-		//"construction_end_date"	 | "" 	 | 
-		//"alteration_end_date"	 | "" 	 | 
-		//"decommission_end_date"	 | "" 	 | 
+		"construction_end_date"	 | "1976-01-29" 	 | 110749
+		"alteration_end_date"	 | "2014-11-23" 	 | 110749
+		"decommission_end_date"	 | "2014-11-23" 	 | 110749
 		"drilling_company"	 | "A. D. Baker Drilling" 	 | 48084
 		"total_depth_drilled"	 | "275.00 feet" 	 | 48084
 		//"static_water_level"	 | "" 	 | 
@@ -178,30 +178,30 @@ class WellDetailsSpecs extends GebReportingSpec {
 		"well_yield"	 | "40.000 GPM" 	 | 48084
 		"well_disinfected"	 | "False" 	 | 48084
 		//"final_casing_stickup"	 | "" 	 | 
-		"artesian_flow"	 | "" 	 | 48084
+		"artesian_flow"	 | "15.00 USGM" 	 | 110749
 		"drilling_method"	 | "AIR_ROTARY" 	 | 48084
 		"bedrock_depth"	 | "43.00 feet" 	 | 48084
 		//"artesian_pressure"	 | "" 	 | 
 		"orientation_direction"	 | "vertical" 	 | 48084
-		//"ground_elevation"	 | "" 	 | 
-		//"ground_elevation_method"	 | "" 	 | 
+		"ground_elevation"	 | "193.10 feet" 	 | 26787
+		"ground_elevation_method"	 | "Differential GPS" 	 | 26787
 		"well_plate_attached"	 | "CASING" 	 | 48084
-		/* "intake_method"	 | "" 	 | 
-		"screen_type"	 | "" 	 | 
-		"screen_material"	 | "" 	 | 
-		"screen_opening"	 | "" 	 | 
-		"screen_bottom"	 | "" 	 | 
-		"developed_by"	 | "" 	 | 
-		"devlopment_total_duration"	 | "" 	 | 
-		"yield_estimation_method"	 | "" 	 | 
-		"yield_estimation_rate"	 | "" 	 | 
-		"yield_estimation_duration"	 | "" 	 | 
-		"surface_seal_fieldset"	 | "" 	 | 
-		"surface_seal_method"	 | "" 	 | 
-		"surface_seal_material"	 | "" 	 | 
-		"surface_seal_thickness"	 | "" 	 | 
-		"surface_seal_length"	 | "" 	 | 
-		"backfill_type"	 | "" 	 | 
-		"backfill_depth"	 | "" 	 |  */
+		"intake_method"	 | "Open Bottom" 	 | 110749
+		//"screen_type"	 | "" 	 | 
+		//"screen_material"	 | "" 	 | 
+		//"screen_opening"	 | "" 	 | 
+		//"screen_bottom"	 | "" 	 | 
+		"developed_by"	 | "Bailing" 	 | 110749
+		"devlopment_total_duration"	 | "3.00 hours" 	 | 110749
+		//"yield_estimation_method"	 | "" 	 | 
+		"yield_estimation_rate"	 | "15.00   USGM" 	 | 110749
+		"yield_estimation_duration"	 | "12.00   hours" 	 | 110749
+		//"surface_seal_fieldset"	 | "" 	 | 
+		//"surface_seal_method"	 | "" 	 | 
+		//"surface_seal_material"	 | "" 	 | 
+		//"surface_seal_thickness"	 | "" 	 | 
+		"surface_seal_length"	 | "15.00" 	 | 110749
+		//"backfill_type"	 | "" 	 | 
+		//"backfill_depth"	 | "" 	 |  
     } 	
 }
