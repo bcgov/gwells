@@ -81,7 +81,7 @@ def well_search(request):
 
     if well_results:
         if len(well_results) > SearchForm.WELL_RESULTS_LIMIT:
-            well_results_overflow = ('Query returned more than %d wells. Please refine your search or select a smaller area to look for wells in.' % SearchForm.WELL_RESULTS_LIMIT)
+            well_results_overflow = 'Query returned more than %d wells. Please refine your search or select a smaller area to look for wells in.' % SearchForm.WELL_RESULTS_LIMIT
             well_results = None
         else:
             well_results_json = json.dumps(
@@ -128,11 +128,6 @@ class WellDetailView(generic.DetailView):
         """
         context = super(WellDetailView, self).get_context_data(**kwargs)
         return context
-
-
-#class DetailView(generic.DetailView):
-#    model = ActivitySubmission
-#    context_object_name = 'activity_submission'
 
 class ActivitySubmissionListView(generic.ListView):
     model = ActivitySubmission
