@@ -889,7 +889,7 @@ class ActivitySubmissionScreenIntakeForm(forms.ModelForm):
             if screen_intake_method == screen_screen_intake and not screen_type:
                 self.add_error('screen_type', 'This field is required if Intake is a Screen.')
 
-            if screen_intake_method == screen__screen_intake and not screen_material:
+            if screen_intake_method == screen_screen_intake and not screen_material:
                 self.add_error('screen_material', 'This field is required if Intake is a Screen.')
 
             if screen_intake_method == screen_screen_intake and not screen_opening:
