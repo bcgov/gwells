@@ -48,10 +48,10 @@ class WellSummaryPage extends Page {
 
 		activities { $( "table", id:"activities") }
 		activities_table { $("#activities td")*.text() }
-		construction_end_date { $( "span", id:"construction_end_date") }
-		alteration_end_date { $( "span", id:"alteration_end_date") }
-		decommission_end_date { $( "span", id:"decommission_end_date") }
-		drilling_company { $( "span", id:"drilling_company") }
+		construction_end_date { $("#activities td",0) }
+		alteration_end_date { $("#activities td",1) }
+		decommission_end_date { $("#activities td",2) }
+		drilling_company { $("#activities td",3) }
 
 		total_depth_drilled { $( "span", id:"total_depth_drilled") }
 		static_water_level { $( "span", id:"static_water_level") }
@@ -75,6 +75,12 @@ class WellSummaryPage extends Page {
 		screen_opening { $( "span", id:"screen_opening") }
 		screen_bottom { $( "span", id:"screen_bottom") }
 		screens { $( "table", id:"screens") }
+		screens_table { $( "#screens td")*.text() }
+		screen_from { $("#screens > tbody > tr:nth-child(1) > td:nth-child(1)") }
+        screen_to {  $("#screens > tbody > tr:nth-child(1) > td:nth-child(2)") }
+        internal_diameter {  $("#screens > tbody > tr:nth-child(1) > td:nth-child(3)") }
+        assembly_type {  $("#screens > tbody > tr:nth-child(1) > td:nth-child(4)") }
+        slot_size {  $("#screens > tbody > tr:nth-child(1) > td:nth-child(5)") }
 
 		developed_by { $( "span", id:"developed-by") }
 		devlopment_total_duration { $( "span", id:"devlopment-total-duration") }
