@@ -24,9 +24,10 @@ html {
 
 body {
     color: #494949;
-    font-family: Myriad-Pro, Calibri, Arial, "sans serif";
+    font-family: Myriad-Pro, Calibri, Arial, sans-serif;
     font-size: 13px;
 }
+
 
 /* Leaflet map styles */
 
@@ -78,6 +79,7 @@ div .leaflet-geolocation:hover {
     opacity: 0.8;
 }
 
+
 /* logo whitespace */
 
 #header .bcgov-title h1 {
@@ -104,7 +106,7 @@ div .leaflet-geolocation:hover {
     margin-top: 16px;
 }
 
-.header-main-right > label {
+.header-main-right>label {
     color: #fff;
     padding-right: 20px;
 }
@@ -124,7 +126,8 @@ a.env-pmt-list {
 
 a label.env-username {
     font-style: normal;
-    text-decoration: wavy !important;
+    text-decoration-style: wavy !important;
+    text-decoration: underline;
     color: #fff;
     margin-right: 15px;
     cursor: pointer;
@@ -197,15 +200,15 @@ button.env-button-custom {
 
 /* accurate colours for navbar links */
 
-#navbar > ul.nav > li > a {
+#navbar>ul.nav>li>a {
     color: #fff;
 }
 
-#navbar > ul.nav > li.active > a {
+#navbar>ul.nav>li.active>a {
     color: #1a5a96;
 }
 
-#navbar > ul.nav > li:hover {
+#navbar>ul.nav>li:hover {
     background-color: rgba(255, 255, 255, 0.2);
     color: #1a5a96;
 }
@@ -229,7 +232,6 @@ button.env-button-custom {
         margin-right: 0;
         margin-bottom: 0;
     }
-
 }
 
 
@@ -260,7 +262,7 @@ button.env-button-custom {
 
 /* remove block image for dropdown menu <li> items */
 
-ul.dropdown-menu > li {
+ul.dropdown-menu>li {
     background-image: none !important;
     padding-left: 0 !important;
 }
@@ -336,15 +338,16 @@ h4.modal-title {
     border-color: #003366;
 }
 
-.modal-header > button {
+.modal-header>button {
     color: #fff;
     margin-top: 0 !important;
     opacity: initial;
     text-shadow: initial;
 }
 
-.close:focus, .close:hover {
-    color:#fcba19;
+.close:focus,
+.close:hover {
+    color: #fcba19;
     opacity: initial;
     text-decoration: underline;
 }
@@ -360,12 +363,12 @@ h4.modal-title {
 
 /* Remove bullets from Datatable pagination control <li> items */
 
-div#bs-datatables_paginate > ul > li,
-ul.nav.nav-tabs > li,
-ul.nav.nav-pills > li,
-ul.pagination > li,
-ul.pager > li,
-ul.breadcrumb > li {
+div#bs-datatables_paginate>ul>li,
+ul.nav.nav-tabs>li,
+ul.nav.nav-pills>li,
+ul.pagination>li,
+ul.pager>li,
+ul.breadcrumb>li {
     list-style-type: none !important;
     list-style-image: none !important;
     background-image: none !important;
@@ -380,19 +383,20 @@ th {
     text-align: left;
 }
 
-/* utility class for sorting */
-.numeric{
-
-}
 
 /* utility class for sorting */
-.html{
 
-}
+.numeric {}
+
+
+/* utility class for sorting */
+
+.html {}
+
 
 /* remove bullets from list-group-item <li> items */
 
-ul.list-group > li.list-group-item {
+ul.list-group>li.list-group-item {
     list-style-type: none !important;
     list-style-image: none !important;
     background-image: none !important;
@@ -403,7 +407,7 @@ ul.list-group > li.list-group-item {
 
 /* tweak nav tab spacing */
 
-.nav-tabs > li {
+.nav-tabs>li {
     margin-bottom: -1px !important;
 }
 
@@ -420,68 +424,68 @@ ul.list-group > li.list-group-item {
     border-radius: 0 0 5px 5px;
 }
 
-.panel-env > .panel-footer {
+.panel-env>.panel-footer {
     box-shadow: 0 1px 1px rgba(0, 0, 0, 0.4) inset;
     border: 0px solid #335c85;
     border-radius: 0 0 5px 5px;
     background-color: #ebebeb;
 }
 
-.panel-env > .panel-heading {
+.panel-env>.panel-heading {
     color: #ffffff;
     background-color: #335c85;
     border-color: #335c85;
 }
 
-.panel-env > .panel-body {
+.panel-env>.panel-body {
     background-color: #f1f1f2;
 }
 
-.panel-primary > .panel-heading {
+.panel-primary>.panel-heading {
     color: #ffffff;
     background-color: #003366;
     border-color: #003366;
 }
 
-.panel-success > .panel-heading {
+.panel-success>.panel-heading {
     color: #3c763d;
     background-color: #dff0d8;
     border-color: #d6e9c6;
 }
 
-.panel-warning > .panel-heading {
+.panel-warning>.panel-heading {
     color: #8a6d3b;
     background-color: #fcf8e3;
     border-color: #faebcc;
 }
 
-.panel-danger > .panel-heading {
+.panel-danger>.panel-heading {
     color: #a94442;
     background-color: #f2dede;
     border-color: #ebccd1;
 }
 
-.panel-info > .panel-heading {
+.panel-info>.panel-heading {
     color: #31708f;
     background-color: #d9edf7;
     border-color: #bce8f1;
 }
 
-.panel-info > .panel-body {
+.panel-info>.panel-body {
     background-color: #f1f1f2;
 }
 
-.panel-default > .panel-heading {
+.panel-default>.panel-heading {
     color: #fff;
     background-color: #666;
     border-color: #222;
 }
 
-.panel-default > .panel-body {
+.panel-default>.panel-body {
     background-color: #f1f1f2;
 }
 
-.panel > .env-payment-list > .dataTables_wrapper {
+.panel>.env-payment-list>.dataTables_wrapper {
     padding-top: 10px;
     border-top: solid 1px #ddd;
 }
@@ -523,10 +527,10 @@ h3.panel-title small {
     color: #fff;
 }
 
-.panel > .panel-body + .table,
-.panel > .panel-body + .table-responsive,
-.panel > .table + .panel-body,
-.panel > .table-responsive + .panel-body {
+.panel>.panel-body+.table,
+.panel>.panel-body+.table-responsive,
+.panel>.table+.panel-body,
+.panel>.table-responsive+.panel-body {
     border-top: none;
 }
 
@@ -568,12 +572,12 @@ label {
     font-weight: bold;
 }
 
-.alert > p,
-.alert > ul {
+.alert>p,
+.alert>ul {
     margin-bottom: 0;
 }
 
-.alert > p + p {
+.alert>p+p {
     margin-top: 5px;
 }
 
@@ -690,6 +694,7 @@ input[type="number"]::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
 }
+
 input[type="number"] {
     -moz-appearance: textfield;
 }
