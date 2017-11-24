@@ -33,7 +33,7 @@ requirements.txt    - list of dependencies
 
 ## Local development
 
-To run this project in your development machine, ensure that Python 3.5 and PostgreSQL 9.5 is installed, then follow these steps:
+To run this project in your development machine, ensure that Git, Python 3.5 and PostgreSQL 9.5 is installed. When installing Python, ensure 'install for everyone' and 'PATH' options are enabled. Ensure you run all shell windows in ADMIN mode. Follow these steps:
 
 1. Use the psql command line tool to create a database user and empty database.
 
@@ -44,11 +44,19 @@ To run this project in your development machine, ensure that Python 3.5 and Post
     create database gwells with owner=gwells;
     ```
 
-2. Create and activate a [virtualenv](https://virtualenv.pypa.io/) (you may want to use [virtualenvwrapper](5http://virtualenvwrapper.readthedocs.org/)).
+2. Create and activate a [virtualenv](https://virtualenv.pypa.io/) (you may want to use [virtualenvwrapper](http://virtualenvwrapper.readthedocs.org/)).
 
     If working on Windows install virtualenvwrapper-win via pip.
     
     `pip install virtualenvwrapper-win`
+
+    Create a virtual environment.
+
+    `mkvirtualenv gwells`
+
+    Work within your virtual environment.
+    
+    `workon gwells`
 
     If you are developing against a Postgres database you can set environment variables with a postactivate script.
     When using virtualenvwrapper-win find the activate.bat script located in %USERPROFILE%\Envs\myenv\Scripts and add the following:
@@ -63,19 +71,11 @@ To run this project in your development machine, ensure that Python 3.5 and Post
     SET APP_CONTEXT_ROOT=gwells
     ```
 
-    Create a virtual environment.
-
-    `mkvirtualenv gwells`
-
-    Work within your virtual environment.
-    
-    `workon gwells`
-
 3. Fork this repo and clone your fork:
 
     `git clone https://github.com/<github-user>/gwells.git`
 
-4. Add remote (upstream) origin:
+4. Change directory to gwells (cd gwells), then add remote (upstream) origin:
 
     `git remote add origin https://github.com/bcgov/gwells.git`
     
@@ -83,7 +83,7 @@ To run this project in your development machine, ensure that Python 3.5 and Post
 
     `pip install -r requirements.txt`
     
-6. Create a development database:
+6. Create a development database. You may first have to assign the gwells user a password:
 
     `python manage.py migrate`
 
@@ -91,7 +91,7 @@ To run this project in your development machine, ensure that Python 3.5 and Post
 
     `python manage.py runserver`
 
-8. Open your browser and go to http://127.0.0.1:8000, you will be greeted with a welcome page.
+8. Open your browser and go to http://127.0.0.1:8000/gwells, you will be greeted with a welcome page.
 
 
 ## Deploying to OpenShift
