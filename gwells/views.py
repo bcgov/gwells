@@ -14,10 +14,8 @@
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, render
-#from django.urls import reverse
 from django.views import generic
 from django.views.generic.edit import FormView
-#from django.utils import timezone
 from formtools.wizard.views import SessionWizardView
 from .models import WellActivityType, WellYieldUnit, Well, ActivitySubmission, WellClass, ScreenIntakeMethod, LandDistrict
 from .forms import SearchForm, ActivitySubmissionTypeAndClassForm, WellOwnerForm, ActivitySubmissionLocationForm, ActivitySubmissionGpsForm
@@ -121,7 +119,7 @@ class WellDetailView(generic.DetailView):
     context_object_name = 'well'
     if settings.ENABLE_OLD_WELL_DETAIL:
         template_name = 'gwells/well_detailold.html'
-    else:    
+    else:
         template_name = 'gwells/well_detail.html'
 
     def get_context_data(self, **kwargs):
