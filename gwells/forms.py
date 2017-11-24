@@ -886,16 +886,16 @@ class ActivitySubmissionScreenIntakeForm(forms.ModelForm):
             errors.append('Configuration error: Intake Method for Screen does not exist, please contact the administrator.')
 
         if screen_intake_method:
-            if screen_intake_method == screen_intake_method and not screen_type:
+            if screen_intake_method == screen_screen_intake and not screen_type:
                 self.add_error('screen_type', 'This field is required if Intake is a Screen.')
 
-            if screen_intake_method == screen_intake_method and not screen_material:
+            if screen_intake_method == screen__screen_intake and not screen_material:
                 self.add_error('screen_material', 'This field is required if Intake is a Screen.')
 
-            if screen_intake_method == screen_intake_method and not screen_opening:
+            if screen_intake_method == screen_screen_intake and not screen_opening:
                 self.add_error('screen_opening', 'This field is required if Intake is a Screen.')
 
-            if screen_intake_method == screen_intake_method and not screen_bottom:
+            if screen_intake_method == screen_screen_intake and not screen_bottom:
                 self.add_error('screen_bottom', 'This field is required if Intake is a Screen.')
 
         try:
