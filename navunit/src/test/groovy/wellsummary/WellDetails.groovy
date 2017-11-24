@@ -18,7 +18,7 @@ through Search,  and see relevant information related to my well of interest.
 class WellDetailsSpecs extends GebReportingSpec {
     @Unroll
 
-    def "Basic Field availability checking: #TestDesc"() {
+    def "Basic Field availability checking: #TestDesc #WellId"() {
         given: "Given that I have found my well"
 			go "gwells/well/$WellId"
  		when: "I accessed the Well Summary Page"	
@@ -123,7 +123,7 @@ class WellDetailsSpecs extends GebReportingSpec {
 			assert well_tag_number_link
         where:
         TestDesc                          | WellId           
-        "Well Tag - 21265"                    | 21265
+        "Well Tag - "                    | 110749
     } 
     @Unroll
 
