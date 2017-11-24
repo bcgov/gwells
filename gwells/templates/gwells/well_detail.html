@@ -143,40 +143,40 @@
                     <table id="legal" class="table table-condensed table-bordered table-striped">
                         <tbody>
                             <tr>
-                                <th><label for="lot">{% verbose_name well "legal_lot" %}:</label></th>
-                                <td><span id="lot">{{well.legal_lot|default_if_none:'&nbsp;' }}</span></td>
+                                <th scope="row">{% verbose_name well "legal_lot" %}:</th>
+                                <td><span id="lot">{{well.legal_lot|default_if_none:'&nbsp;'}}</span></td>
                             </tr>
                             <tr>
-                                <th><label for="plan">{% verbose_name well "legal_plan" %}:</label></th>
-                                <td><span id="plan">{{well.legal_plan|default_if_none:'&nbsp;' }}</span></td>
+                                <th scope="row"><label for="plan">{% verbose_name well "legal_plan" %}:</label></th>
+                                <td><span id="plan">{{well.legal_plan|default_if_none:'&nbsp;'}}</span></td>
                             </tr>
                             <tr>
-                                <th><label for="district_lot">{% verbose_name well "legal_district_lot" %}:</label></th>
-                                <td><span id="district_lot">{{well.legal_district_lot|default_if_none:'&nbsp;' }}</span></td>
+                                <th scope="row">{% verbose_name well "legal_district_lot" %}:</th>
+                                <td><span id="district_lot">{{well.legal_district_lot|default_if_none:'&nbsp;'}}</span></td>
                             </tr>
                             <tr>
-                                <th><label for="block">{% verbose_name well "legal_block" %}:</label></th>
-                                <td><span id="block">{{well.legal_block|default_if_none:'&nbsp;' }}</span></td>
+                                <th scope="row">{% verbose_name well "legal_block" %}:</th>
+                                <td><span id="block">{{well.legal_block|default_if_none:'&nbsp;'}}</span></td>
                             </tr>
                             <tr>
-                                <th><label for="section">{% verbose_name well "legal_section" %}:</label></th>
-                                <td><span id="section">{{well.legal_section|default_if_none:'&nbsp;' }}</span></td>
+                                <th scope="row">{% verbose_name well "legal_section" %}:</th>
+                                <td><span id="section">{{well.legal_section|default_if_none:'&nbsp;'}}</span></td>
                             </tr>
                             <tr>
-                                <th><label for="township">{% verbose_name well "legal_township" %}:</label></th>
-                                <td><span id="township">{{well.legal_township|default_if_none:'&nbsp;' }}</span></td>
+                                <th scope="row">{% verbose_name well "legal_township" %}:</th>
+                                <td><span id="township">{{well.legal_township|default_if_none:'&nbsp;'}}</span></td>
                             </tr>
                             <tr>
-                                <th><label for="range">{% verbose_name well "legal_range" %}:</label></th>
-                                <td><span id="range">{{well.legal_range|default_if_none:'&nbsp;' }}</span></td>
+                                <th scope="row">{% verbose_name well "legal_range" %}:</th>
+                                <td><span id="range">{{well.legal_range|default_if_none:'&nbsp;'}}</span></td>
                             </tr>
                             <tr>
-                                <th><label for="land_district">{% verbose_name well "legal_land_district" %}:</label></th>
-                                <td><span id="land_district">{{well.legal_land_district|default_if_none:'' }}</span></td>
+                                <th scope="row">{% verbose_name well "legal_land_district" %}:</th>
+                                <td><span id="land_district">{{well.legal_land_district|default_if_none:'&nbsp;'}}</span></td>
                             </tr>
                             <tr>
-                                <th><label for="pid">{% verbose_name well "legal_pid" %}:</label>&nbsp;</th>
-                                <td><span id="pid">{{well.legal_pid|default_if_none:'&nbsp;' }}</span></td>
+                                <th scope="row">{% verbose_name well "legal_pid" %}:</th>
+                                <td><span id="pid">{{well.legal_pid|default_if_none:'&nbsp;'}}</span></td>
                             </tr>
                         </tbody>
                     </table>
@@ -186,42 +186,6 @@
                 <div class="col-md-12">
                     <label for="location_desc">{% verbose_name well "well_location_description" %}:</label>
                     <span id="location_desc">{{well.well_location_description|default_if_none:'&nbsp;' }}</span>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-md-12">
-                    <label>Geographic Coordinates - North American Datum of 1983 (NAD 83)</label>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-6">
-                    <label for="latitude">{% verbose_name well "latitude" %}:</label>
-                    <span id="latitude" data-latitude="{{well.latitude }}">{{well.latitude|default_if_none:'&nbsp;' }}</span>
-                </div>
-                <div class="col-md-6">
-                    <label for="longitude">{% verbose_name well "longitude" %}:</label>
-                    <span id="longitude" data-longitude="{{well.longitude }}">{{well.longitude|default_if_none:'&nbsp;' }}</span>
-                </div>
-            </div>
-            <div class="row">
-              <div class="col-md-4">
-                  <label for="utm_zone_code">{% verbose_name well "utm_zone_code" %}:</label>
-                  <span id="utm_zone_code" data-utm-zone-code="{{well.longitude }}">{{well.utm_zone_code|default_if_none:'&nbsp;' }}</span>
-              </div>
-              <div class="col-md-4">
-                  <label for="utm_northing">{% verbose_name well "utm_northing" %}:</label>
-                  <span id="utm_northing" data-utm-northing="{{well.utm_northing }}">{{well.utm_northing|default_if_none:'&nbsp;' }}</span>
-              </div>
-              <div class="col-md-4">
-                  <label for="utm_easting">{% verbose_name well "utm_easting" %}:</label>
-                  <span id="utm_easting" data-utm-easting="{{well.utm_easting }}">{{well.utm_easting|default_if_none:'&nbsp;' }}</span>
-              </div>
-            </div>
-            <div class="row">
-                <div class="col-md-12">
-                  <label for="utm_accuracy_code">{% verbose_name well "utm_accuracy_code" %}:</label>
-                  <span id="utm_accuracy_code" data-utm-accuracy-code="{{well.utm_accuracy_code }}">{{well.utm_accuracy_code|default_if_none:'&nbsp;' }}</span>
                 </div>
             </div>
             <div class="row">
@@ -235,6 +199,51 @@
         <div class="col-md-6">
             <div aria-label="This map shows the well under consideration as a light blue pushpin, as well as surrounding wells as dark blue circles." id="detail-map"></div>
             <div id="attribution"></div>
+        </div>
+
+        <div class="col-md-6">
+            &nbsp;
+            <div class="row">
+                <div class="col-md-12">
+                    <label>Geographic Coordinates - North American Datum of 1983 (NAD 83)</label>
+                </div>
+            </div>
+            &nbsp;
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="latitude">{% verbose_name well "latitude" %}:</label>
+                    <span id="latitude" data-latitude="{{well.latitude }}">{{well.latitude|default_if_none:'&nbsp;' }}</span>
+                </div>
+                <div class="col-md-6">
+                    <label for="longitude">{% verbose_name well "longitude" %}:</label>
+                    <span id="longitude" data-longitude="{{well.longitude }}">{{well.longitude|default_if_none:'&nbsp;' }}</span>
+                </div>
+            </div>
+            <!--<div class="row">
+                <div class="col-md-12">
+                    <label>Universal Transverse Mercator (UTM)</label>
+                </div>
+            </div>-->
+            <div class="row">
+              <div class="col-md-6">
+                  <label for="utm_northing">{% verbose_name well "utm_northing" %}:</label>
+                  <span id="utm_northing" data-utm-northing="{{well.utm_northing }}">{{well.utm_northing|default_if_none:'&nbsp;' }}</span>
+              </div>
+              <div class="col-md-6">
+                  <label for="utm_easting">{% verbose_name well "utm_easting" %}:</label>
+                  <span id="utm_easting" data-utm-easting="{{well.utm_easting }}">{{well.utm_easting|default_if_none:'&nbsp;' }}</span>
+              </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="utm_zone_code">{% verbose_name well "utm_zone_code" %}:</label>
+                    <span id="utm_zone_code" data-utm-zone-code="{{well.longitude }}">{{well.utm_zone_code|default_if_none:'&nbsp;' }}</span>
+                </div>
+                <div class="col-md-6">
+                  <label for="utm_accuracy_code">{% verbose_name well "utm_accuracy_code" %}:</label>
+                  <span id="utm_accuracy_code" data-utm-accuracy-code="{{well.utm_accuracy_code }}">{{well.utm_accuracy_code|default_if_none:'&nbsp;' }}</span>
+                </div>
+            </div>
         </div>
     </div>
 </fieldset>
