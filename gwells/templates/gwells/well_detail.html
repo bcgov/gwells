@@ -584,11 +584,11 @@
       <th>To (feet)</th>
       <th>Diameter (inches)</th>
       <th>Casing Material</th>
-      <th>Wall Thickness</th>
+      <th>Wall Thickness (inches)</th>
       <th>Drive Shoe</th>
     </thead>
     <tbody>
-      {% for casing in well.casing_set.all %}
+      {% for casing in well.casing_set.all %} <!--|dictsort:"casing_from"-->
       <tr>
         <td>
           <span>{{casing.casing_from|default_if_none:'&nbsp;' }}</span>
@@ -615,36 +615,71 @@
 </fieldset>
 
 <fieldset id="surface_seal_fieldset">
-    <legend>Surface Seal</legend>
     <div class="row">
-      <div class="col-md-4">
-          <label for="surface_seal_method">{% verbose_name well "surface_seal_method" %}:</label>
-          <span id="surface_seal_method">{{well.surface_seal_method|default_if_none:'&nbsp;' }}</span>
-      </div>
-      <div class="col-md-4">
-          <label for="surface_seal_material">{% verbose_name well "surface_seal_material" %}:</label>
-          <span id="surface_seal_material">{{well.surface_seal_material|default_if_none:'&nbsp;' }}</span>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-md-4">
-          <label for="surface_seal_thickness">{% verbose_name well "surface_seal_thickness" %}:</label>
-          <span id="surface_seal_thickness">{{well.surface_seal_thickness|default_if_none:'&nbsp;' }}</span>
-      </div>
-      <div class="col-md-4">
-          <label for="surface_seal_length">{% verbose_name well "surface_seal_length" %}:</label>
-          <span id="surface_seal_length">{{well.surface_seal_length|default_if_none:'&nbsp;' }}</span>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-md-4">
-          <label for="backfill_type">{% verbose_name well "backfill_type" %}:</label>
-          <span id="backfill_type">{{well.backfill_type|default_if_none:'&nbsp;' }}</span>
-      </div>
-      <div class="col-md-4">
-          <label for="backfill_depth">{% verbose_name well "backfill_depth" %}:</label>
-          <span id="backfill_depth">{{well.backfill_depth|default_if_none:'&nbsp;' }}</span>
-      </div>
+        <div class="col-md-6">
+            <div class="row">
+                <div class="col-md-12">
+                    <h3>Surface Seal Details</h3>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <label for="surface_seal_material">{% verbose_name well "surface_seal_material" %}:</label>
+                    <span id="surface_seal_material">{{well.surface_seal_material|default_if_none:'&nbsp;' }}</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <label for="surface_seal_method">{% verbose_name well "surface_seal_method" %}:</label>
+                    <span id="surface_seal_method">{{well.surface_seal_method|default_if_none:'&nbsp;' }}</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <label for="surface_seal_thickness">{% verbose_name well "surface_seal_thickness" %}:</label>
+                    <span id="surface_seal_thickness">
+                      {% if well.surface_seal_thickness %}
+                        {{well.surface_seal_thickness}} inches
+                      {% else %}
+                          &nbsp;
+                      {% endif %}</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <label for="surface_seal_length">{% verbose_name well "surface_seal_length" %}:</label>
+                    <span id="surface_seal_length">
+                    {% if well.surface_seal_length %}
+                      {{well.surface_seal_length}} feet
+                    {% else %}
+                      &nbsp;
+                    {% endif %}</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="row">
+                <div class="col-md-12">
+                    <h3>Backfill Details</h3>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <label for="backfill_type">{% verbose_name well "backfill_type" %}:</label>
+                    <span id="backfill_type">{{well.backfill_type|default_if_none:'&nbsp;' }}</span>
+                </div>
+                <div class="col-md-6">
+                    <label for="backfill_depth">{% verbose_name well "backfill_depth" %}:</label>
+                    <span id="backfill_depth">
+                      {% if well.backfill_depth %}
+                        {{well.backfill_depth}} feet
+                      {% else %}
+                          &nbsp;
+                      {% endif %}
+                    </span>
+                </div>
+            </div>
+        </div>
     </div>
 </fieldset>
 &nbsp;
@@ -663,7 +698,7 @@
         <tbody>
             {% for perforation in well.perforation_set.all %}
             <tr>
-              <td>{{well.liner_material.description|default_if_none:'&nbsp;'}}</td>
+              <td>{{well.liner_material.liner_material_code|default_if_none:'&nbsp;'}}</td>
               <td>{{perforation.liner_diameter|default_if_none:'&nbsp;'}}</td>
               <td>{{perforation.liner_thickness|default_if_none:'&nbsp;'}}</td>
               <td>{{perforation.liner_from|default_if_none:'&nbsp;'}}</td>
