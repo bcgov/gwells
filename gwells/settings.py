@@ -93,7 +93,7 @@ MIDDLEWARE = (
 )
 
 ROOT_URLCONF = 'gwells.urls'
-INTERNAL_IPS = ('127.0.0.1')
+INTERNAL_IPS = '127.0.0.1'
 
 TEMPLATES = [
     {
@@ -147,7 +147,7 @@ USE_TZ = True
 if APP_CONTEXT_ROOT:
    STATIC_URL = '/'+ APP_CONTEXT_ROOT +'/static/'
 else:
-   STATIC_URL = '/static/' 
+   STATIC_URL = '/static/'
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 

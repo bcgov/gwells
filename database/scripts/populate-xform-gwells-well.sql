@@ -23,6 +23,9 @@ INSERT INTO xform_gwells_well (
   diameter                           ,
   total_depth_drilled                ,
   finished_well_depth                ,
+  static_water_level                 ,
+  well_cap_type                      ,
+  well_disinfected                   ,
   well_yield                         ,
   well_use_code                      ,
   legal_land_district_code           ,
@@ -55,7 +58,7 @@ INSERT INTO xform_gwells_well (
   bedrock_depth                      ,
   water_supply_system_name           ,
   water_supply_system_well_name      ,
-  where_identification_plate_attached,
+  well_identification_plate_attached ,
   ems                                ,
   screen_intake_method_guid          ,
   screen_type_guid                   ,
@@ -81,40 +84,47 @@ INSERT INTO xform_gwells_well (
   who_created                        ,
   who_updated)
 SELECT
-  WELLS.WELL_TAG_NUMBER                                                  ,
+  wells.well_tag_number                                                  ,
   gen_random_uuid()                                                      ,
-  WELLS.ACCEPTANCE_STATUS_CODE AS acceptance_status_code                 ,
+  wells.acceptance_status_code AS acceptance_status_code                 ,
   concat_ws(' ', owner.giVEN_NAME,OWNER.SURNAME) AS owner_full_name      ,
   concat_ws(' ',OWNER.STREET_NUMBER,STREET_NAME) AS owner_mailing_address,
-  OWNER.CITY AS owner_city                                               ,
-  OWNER.POSTAL_CODE AS owner_postal_code                                 ,
-  WELLS.SITE_STREET AS street_address                                    ,
-  WELLS.SITE_AREA AS city                                                ,
-  WELLS.LOT_NUMBER AS legal_lot                                          ,
-  WELLS.LEGAL_PLAN AS legal_plan                                         ,
-  WELLS.LEGAL_DISTRICT_LOT AS legal_district_lot                         ,
-  WELLS.LEGAL_BLOCK AS legal_block                                       ,
-  WELLS.LEGAL_SECTION AS legal_section                                   ,
-  WELLS.LEGAL_TOWNSHIP AS legal_township                                 ,
-  WELLS.LEGAL_RANGE AS legal_range                                       ,
-  WELLS.PID AS legal_pid                                                 ,
-  WELLS.WELL_LOCATION AS well_location_description                       ,
-  WELLS.WELL_IDENTIFICATION_PLATE_NO AS identification_plate_number      ,
-  WELLS.DIAMETER AS diameter                                             ,
-  WELLS.TOTAL_DEPTH_DRILLED AS total_depth_drilled                       ,
-  WELLS.DEPTH_WELL_DRILLED AS finished_well_depth                        ,
-  WELLS.YIELD_VALUE AS well_yield                                        ,
-  WELLS.WELL_USE_CODE                                                    , -- -> intended_water_use_guid
-  WELLS.LEGAL_LAND_DISTRICT_CODE                                         , -- -> legal_land_district_guid
-  CASE OWNER.PROVINCE_STATE_CODE
+  owner.city AS owner_city                                               ,
+  owner.postal_code AS owner_postal_code                                 ,
+  wells.site_street AS street_address                                    ,
+  wells.site_area AS city                                                ,
+  wells.lot_number AS legal_lot                                          ,
+  wells.legal_plan AS legal_plan                                         ,
+  wells.legal_district_lot AS legal_district_lot                         ,
+  wells.legal_block AS legal_block                                       ,
+  wells.legal_section AS legal_section                                   ,
+  wells.legal_township AS legal_township                                 ,
+  wells.legal_range AS legal_range                                       ,
+  wells.pid AS legal_pid                                                 ,
+  wells.well_location AS well_location_description                       ,
+  wells.well_identification_plate_no AS identification_plate_number      ,
+  wells.diameter AS diameter                                             ,
+  wells.total_depth_drilled AS total_depth_drilled                       ,
+  wells.depth_well_drilled AS finished_well_depth                        ,
+  wells.water_depth                                                      ,
+  wells.type_of_well_cap                                                 ,
+  CASE wells.well_disinfected_ind
+    WHEN 'Y' THEN TRUE
+    WHEN 'N' THEN FALSE
+    ELSE FALSE
+  END AS well_disinfected                                                ,
+  wells.yield_value AS well_yield                                        ,
+  wells.well_use_code                                                    , -- -> intended_water_use_guid
+  wells.legal_land_district_code                                         , -- -> legal_land_district_guid
+  CASE owner.province_state_code
     WHEN 'BC' THEN 'f46b70b647d411e7a91992ebcb67fe33'::uuid
     WHEN 'AB' THEN 'f46b742647d411e7a91992ebcb67fe33'::uuid
     WHEN 'WASH_STATE' THEN 'f46b77b447d411e7a91992ebcb67fe33'::uuid
     ELSE 'f46b7b1a47d411e7a91992ebcb67fe33'::uuid
   END AS province_state_guid                                             ,
-  coalesce (WELLS.CLASS_OF_WELL_CODCLASSIFIED_BY,'LEGACY')               ,
-  WELLS.SUBCLASS_OF_WELL_CLASSIFIED_BY                                   , -- -> well_subclass_guid
-  CASE WELLS.YIELD_UNIT_CODE
+  coalesce (wells.class_of_well_codclassified_by,'LEGACY')               ,
+  wells.subclass_of_well_classified_by                                   , -- -> well_subclass_guid
+  CASE wells.yield_unit_code
     WHEN 'GPM'  THEN 'c4634ef447c311e7a91992ebcb67fe33'::uuid
     WHEN 'IGM'  THEN 'c4634ff847c311e7a91992ebcb67fe33'::uuid
     WHEN 'DRY'  THEN 'c46347b047c311e7a91992ebcb67fe33'::uuid
@@ -124,18 +134,18 @@ SELECT
     WHEN 'UNK'  THEN 'c463518847c311e7a91992ebcb67fe33'::uuid
     ELSE 'c463518847c311e7a91992ebcb67fe33'::uuid -- As PostGres didn't like "" as guid value
   END AS well_yield_unit_guid                                            ,
-  WELLS.LATITUDE                                                         ,
+  wells.latitude                                                         ,
   CASE
-    WHEN WELLS.LONGITUDE > 0 THEN WELLS.LONGITUDE * -1
-    ELSE WELLS.LONGITUDE
+    WHEN wells.longitude > 0 THEN wells.longitude * -1
+    ELSE wells.longitude
   END AS longitude                                                       ,
-  WELLS.ELEVATION AS ground_elevation                                    ,
-  CASE WELLS.ORIENTATION_OF_WELL_CODE
+  wells.elevation AS ground_elevation                                    ,
+  CASE wells.orientation_of_well_code
      WHEN 'HORIZ' THEN false
      ELSE true
   END AS well_orientation                                                ,
   null AS other_drilling_method, -- placeholder as it's brand new content
-  CASE WELLS.DRILLING_METHOD_CODE  -- supersedes CONSTRUCTION_METHOD_CODE
+  CASE wells.drilling_method_code  -- supersedes CONSTRUCTION_METHOD_CODE
     WHEN 'AIR_ROTARY' THEN '262aca1e5db211e7907ba6006ad3dba0'::uuid
     WHEN 'AUGER'      THEN '262ace565db211e7907ba6006ad3dba0'::uuid
     WHEN 'CABLE_TOOL' THEN '262ad3d85db211e7907ba6006ad3dba0'::uuid
@@ -149,7 +159,7 @@ SELECT
     WHEN 'UNK'        THEN '262addb05db211e7907ba6006ad3dba0'::uuid
     ELSE null::uuid
   END AS drilling_method_guid                                            ,
-  CASE WELLS.GROUND_ELEVATION_METHOD_CODE
+  CASE wells.ground_elevation_method_code
     WHEN '5K_MAP'  THEN '523ac3ba77ad11e7b5a5be2e44b06b34'::uuid
     WHEN '10K_MAP'  THEN '523ac81077ad11e7b5a5be2e44b06b34'::uuid
     WHEN '20K_MAP'  THEN '523aca0477ad11e7b5a5be2e44b06b34'::uuid
@@ -160,68 +170,68 @@ SELECT
     WHEN 'LEVEL'  THEN '523ad79277ad11e7b5a5be2e44b06b34'::uuid
     ELSE null::uuid
   END AS ground_elevation_method_guid                                    ,
-  WELLS.STATUS_OF_WELL_CODE            AS status_of_well_guid 	         ,
-  WELLS.OBSERVATION_WELL_NUMBER	       AS observation_well_number        ,
-  WELLS.MINISTRY_OBSERVATION_WELL_STAT AS observation_well_status        ,
-  WELLS.WELL_LICENCE_GENERAL_STATUS    AS licenced_status                ,
-  CASE WELLS.ALTERNATIVE_SPECIFICATIONS_IND
+  wells.status_of_well_code            AS status_of_well_guid 	         ,
+  wells.observation_well_number	       AS observation_well_number        ,
+  wells.ministry_observation_well_stat AS observation_well_status        ,
+  wells.well_licence_general_status    AS licenced_status                ,
+  CASE wells.alternative_specifications_ind
      WHEN 'N' THEN false
      WHEN 'Y' THEN true
      ELSE null
   END AS alternative_specifications_ind                                  ,
-  WELLS.CONSTRUCTION_START_DATE AT TIME ZONE 'GMT'                       ,
-  WELLS.CONSTRUCTION_END_DATE AT TIME ZONE 'GMT'                         ,
-  WELLS.ALTERATION_START_DATE AT TIME ZONE 'GMT'                         ,
-  WELLS.ALTERATION_END_DATE AT TIME ZONE 'GMT'                           ,
-  WELLS.CLOSURE_START_DATE AT TIME ZONE 'GMT'                            ,
-  WELLS.CLOSURE_END_DATE AT TIME ZONE 'GMT'                              ,
-  DRILLING_COMPANY.DRILLING_COMPANY_GUID                                 ,
-  WELLS.FINAL_CASING_STICK_UP                                            ,
-  WELLS.ARTESIAN_FLOW_VALUE                                              ,
-  WELLS.ARTESIAN_PRESSURE                                                ,
-  WELLS.BEDROCK_DEPTH                                                    ,
-  WELLS.WATER_SUPPLY_SYSTEM_NAME                                         ,
-  WELLS.WATER_SUPPLY_WELL_NAME                                           ,
-  WELLS.WHERE_PLATE_ATTACHED                                             ,
-  WELLS.CHEMISTRY_SITE_ID                                                ,
-  SCREEN_INTAKE_METHOD.SCREEN_INTAKE_METHOD_GUID                         ,
-  SCREEN_TYPE.SCREEN_TYPE_GUID                                           ,
-  SCREEN_MATERIAL.SCREEN_MATERIAL_GUID                                   ,
-  SCREEN_OPENING.SCREEN_OPENING_GUID                                     ,
-  SCREEN_BOTTOM.SCREEN_BOTTOM_GUID                                       ,
-  WELLS.UTM_ZONE_CODE                                                    ,
-  WELLS.UTM_NORTH                                                        ,
-  WELLS.UTM_EAST                                                         ,
-  WELLS.UTM_ACCURACY_CODE                                                ,
-  WELLS.BCGS_ID                                                          ,
-  DEVELOPMENT_METHOD.development_method_guid                             ,
-  WELLS.DEVELOPMENT_HOURS                                                ,
-  SURFACE_SEAL_METHOD.surface_seal_method_guid                           ,
-  SURFACE_SEAL_MATERIAL.surface_seal_material_guid                       ,
-  WELLS.surface_seal_depth                                               ,
-  WELLS.surface_seal_thickness                                           ,
-  WELLS.backfill_type                                                    ,
-  WELLS.backfill_depth                                                   ,
-  LINER_MATERIAL.liner_material_guid                                     ,
-  WELLS.WHEN_CREATED                                                     ,
-  coalesce(WELLS.WHEN_UPDATED,WELLS.WHEN_CREATED)                        ,
-  WELLS.WHO_CREATED                                                      ,
-  coalesce(WELLS.WHO_UPDATED,WELLS.WHO_CREATED)
-FROM WELLS.WELLS_WELLS WELLS LEFT OUTER JOIN WELLS.WELLS_OWNERS OWNER ON OWNER.OWNER_ID=WELLS.OWNER_ID
-                             LEFT OUTER JOIN GWELLS_DRILLING_COMPANY DRILLING_COMPANY ON WELLS.DRILLER_COMPANY_CODE=DRILLING_COMPANY.DRILLING_COMPANY_CODE
-                             LEFT OUTER JOIN GWELLS_SCREEN_INTAKE_METHOD SCREEN_INTAKE_METHOD ON WELLS.SCREEN_INTAKE_CODE=SCREEN_INTAKE_METHOD.SCREEN_INTAKE_CODE
-                             LEFT OUTER JOIN GWELLS_SCREEN_TYPE SCREEN_TYPE ON WELLS.SCREEN_TYPE_CODE=SCREEN_TYPE.SCREEN_TYPE_CODE
-                             LEFT OUTER JOIN GWELLS_SCREEN_MATERIAL SCREEN_MATERIAL ON WELLS.SCREEN_MATERIAL_CODE=SCREEN_MATERIAL.SCREEN_MATERIAL_CODE
-                             LEFT OUTER JOIN GWELLS_SCREEN_OPENING SCREEN_OPENING ON WELLS.SCREEN_OPENING_CODE=SCREEN_OPENING.SCREEN_OPENING_CODE
-                             LEFT OUTER JOIN GWELLS_SCREEN_BOTTOM SCREEN_BOTTOM ON WELLS.SCREEN_BOTTOM_CODE=SCREEN_BOTTOM.SCREEN_BOTTOM_CODE
-                             LEFT OUTER JOIN GWELLS_DEVELOPMENT_METHOD DEVELOPMENT_METHOD ON WELLS.DEVELOPMENT_METHOD_CODE=DEVELOPMENT_METHOD.DEVELOPMENT_METHOD_CODE
-                             LEFT OUTER JOIN GWELLS_SURFACE_SEAL_METHOD SURFACE_SEAL_METHOD ON WELLS.SURFACE_SEAL_METHOD_CODE=SURFACE_SEAL_METHOD.SURFACE_SEAL_METHOD_CODE
-                             LEFT OUTER JOIN GWELLS_SURFACE_SEAL_MATERIAL SURFACE_SEAL_MATERIAL ON WELLS.SURFACE_SEAL_METHOD_CODE=SURFACE_SEAL_MATERIAL.SURFACE_SEAL_MATERIAL_CODE
-                             LEFT OUTER JOIN GWELLS_LINER_MATERIAL LINER_MATERIAL ON WELLS.LINER_MATERIAL_CODE=LINER_MATERIAL.LINER_MATERIAL_CODE
-WHERE WELLS.ACCEPTANCE_STATUS_CODE NOT IN ('PENDING', 'REJECTED', 'NEW');
+  wells.construction_start_date AT TIME ZONE 'GMT'                       ,
+  wells.construction_end_date AT TIME ZONE 'GMT'                         ,
+  wells.alteration_start_date AT TIME ZONE 'GMT'                         ,
+  wells.alteration_end_date AT TIME ZONE 'GMT'                           ,
+  wells.closure_start_date AT TIME ZONE 'GMT'                            ,
+  wells.closure_end_date AT TIME ZONE 'GMT'                              ,
+  drilling_company.drilling_company_guid                                 ,
+  wells.final_casing_stick_up                                            ,
+  wells.artesian_flow_value                                              ,
+  wells.artesian_pressure                                                ,
+  wells.bedrock_depth                                                    ,
+  wells.water_supply_system_name                                         ,
+  wells.water_supply_well_name                                           ,
+  wells.where_plate_attached                                             ,
+  wells.chemistry_site_id                                                ,
+  screen_intake_method.screen_intake_method_guid                         ,
+  screen_type.screen_type_guid                                           ,
+  screen_material.screen_material_guid                                   ,
+  screen_opening.screen_opening_guid                                     ,
+  screen_bottom.screen_bottom_guid                                       ,
+  wells.utm_zone_code                                                    ,
+  wells.utm_north                                                        ,
+  wells.utm_east                                                         ,
+  wells.utm_accuracy_code                                                ,
+  wells.bcgs_id                                                          ,
+  development_method.development_method_guid                             ,
+  wells.development_hours                                                ,
+  surface_seal_method.surface_seal_method_guid                           ,
+  surface_seal_material.surface_seal_material_guid                       ,
+  wells.surface_seal_depth                                               ,
+  wells.surface_seal_thickness                                           ,
+  wells.backfill_type                                                    ,
+  wells.backfill_depth                                                   ,
+  liner_material.liner_material_guid                                     ,
+  wells.when_created                                                     ,
+  COALESCE(wells.when_updated,wells.when_created)                        ,
+  wells.who_created                                                      ,
+  COALESCE(wells.who_updated,wells.who_created)
+FROM wells.wells_wells wells LEFT OUTER JOIN wells.wells_owners owner ON Owner.owner_id=wells.owner_id
+                             LEFT OUTER JOIN gwells_drilling_company drilling_company ON Wells.driller_company_code=drilling_company.drilling_company_code
+                             LEFT OUTER JOIN gwells_screen_intake_method screen_intake_method ON wells.screen_intake_code=screen_intake_method.screen_intake_code
+                             LEFT OUTER JOIN gwells_screen_type screen_type ON wells.screen_type_code=screen_type.screen_type_code
+                             LEFT OUTER JOIN gwells_screen_material screen_material ON wells.screen_material_code=screen_material.screen_material_code
+                             LEFT OUTER JOIN gwells_screen_opening screen_opening ON wells.screen_opening_code=screen_opening.screen_opening_code
+                             LEFT OUTER JOIN gwells_screen_bottom screen_bottom ON wells.screen_bottom_code=screen_bottom.screen_bottom_code
+                             LEFT OUTER JOIN gwells_development_method development_method ON wells.development_method_code=development_method.development_method_code
+                             LEFT OUTER JOIN gwells_surface_seal_method surface_seal_method ON wells.surface_seal_method_code=surface_seal_method.surface_seal_method_code
+                             LEFT OUTER JOIN gwells_surface_seal_material surface_seal_material ON wells.surface_seal_material_code=surface_seal_material.surface_seal_material_code
+                             LEFT OUTER JOIN gwells_liner_material liner_material ON wells.liner_material_code=liner_material.liner_material_code
+WHERE wells.acceptance_status_code NOT IN ('PENDING', 'REJECTED', 'NEW');
 
 \echo 'wells data (= ACCEPTED) transformed via xform_gwells_well ETL table';
 
 \t
-SELECT count(*) || ' rows loaded into the xform_gwells_well table' from xform_gwells_well;
+SELECT count(*) || ' rows loaded into the xform_gwells_well table' FROM xform_gwells_well;
 \t

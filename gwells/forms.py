@@ -209,7 +209,7 @@ class ActivitySubmissionTypeAndClassForm(forms.ModelForm):
                 ),
                 Div(
                     Div('identification_plate_number', css_class='col-md-4'),
-                    Div('where_plate_attached', css_class='col-md-4'),
+                    Div('well_plate_attached', css_class='col-md-4'),
                     css_class='row',
                 ),
                 Div(
@@ -248,14 +248,14 @@ class ActivitySubmissionTypeAndClassForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super(ActivitySubmissionTypeAndClassForm, self).clean()
         identification_plate_number = cleaned_data.get('identification_plate_number')
-        where_plate_attached = cleaned_data.get('where_plate_attached')
+        well = cleaned_data.get('well_plate_attached')
         work_start_date = cleaned_data.get('work_start_date')
         work_end_date = cleaned_data.get('work_end_date')
 
         errors = []
 
-        if identification_plate_number and not where_plate_attached:
-            errors.append('Where Identification Plate Is Attached is required when specifying Identification Plate Number.')
+        if identification_plate_number and not well:
+            errors.append('Well Identification Plate Is Attached is required when specifying Identification Plate Number.')
 
         if work_start_date and work_end_date and work_end_date < work_start_date:
             errors.append('Work End Date cannot be earlier than Work Start Date.')
@@ -276,7 +276,7 @@ class ActivitySubmissionTypeAndClassForm(forms.ModelForm):
 
     class Meta:
         model = ActivitySubmission
-        fields = ['well_activity_type', 'well_class', 'well_subclass', 'intended_water_use', 'identification_plate_number', 'where_plate_attached', 'driller_responsible', 'driller_name', 'consultant_name', 'consultant_company', 'work_start_date', 'work_end_date']
+        fields = ['well_activity_type', 'well_class', 'well_subclass', 'intended_water_use', 'identification_plate_number', 'well_plate_attached', 'driller_responsible', 'driller_name', 'consultant_name', 'consultant_company', 'work_start_date', 'work_end_date']
         help_texts = {'work_start_date': "yyyy-mm-dd", 'work_end_date': "yyyy-mm-dd",}
         widgets = {'well_activity_type': forms.RadioSelect}
 
@@ -886,16 +886,16 @@ class ActivitySubmissionScreenIntakeForm(forms.ModelForm):
             errors.append('Configuration error: Intake Method for Screen does not exist, please contact the administrator.')
 
         if screen_intake_method:
-            if screen_intake_method == screen_intake_method and not screen_type:
+            if screen_intake_method == screen_screen_intake and not screen_type:
                 self.add_error('screen_type', 'This field is required if Intake is a Screen.')
 
-            if screen_intake_method == screen_intake_method and not screen_material:
+            if screen_intake_method == screen_screen_intake and not screen_material:
                 self.add_error('screen_material', 'This field is required if Intake is a Screen.')
 
-            if screen_intake_method == screen_intake_method and not screen_opening:
+            if screen_intake_method == screen_screen_intake and not screen_opening:
                 self.add_error('screen_opening', 'This field is required if Intake is a Screen.')
 
-            if screen_intake_method == screen_intake_method and not screen_bottom:
+            if screen_intake_method == screen_screen_intake and not screen_bottom:
                 self.add_error('screen_bottom', 'This field is required if Intake is a Screen.')
 
         try:
@@ -1202,9 +1202,6 @@ class ActivitySubmissionCommentForm(forms.ModelForm):
         fields = ['comments', 'alternative_specs_submitted']
         widgets = {'comments': forms.Textarea}
 
-
-
-#WellCompletionDataFormSet = inlineformset_factory(ActivitySubmission, WellCompletionData, max_num=1, can_delete=False)
 ActivitySubmissionLithologyFormSet = inlineformset_factory(ActivitySubmission, LithologyDescription, form=LithologyForm, fk_name='activity_submission', can_delete=False, extra=10)
 ActivitySubmissionCasingFormSet = inlineformset_factory(ActivitySubmission, Casing, form=CasingForm, fk_name='activity_submission', can_delete=False, extra=5)
 ActivitySubmissionLinerPerforationFormSet = inlineformset_factory(ActivitySubmission, LinerPerforation, form=LinerPerforationForm, fk_name='activity_submission', can_delete=False, extra=5)
