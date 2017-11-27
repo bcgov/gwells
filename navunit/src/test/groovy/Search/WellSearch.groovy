@@ -143,7 +143,7 @@ class WellSearchSpecs extends GebReportingSpec {
         TestDesc                        					| Address          | ShowError    | NumberResult
         "One matching result - Address - 21231 16TH AVE."	| "21231 16TH AVE."| "No"         | 1
         "Multiple matching results - Address - 123"     	| "123"            | "No"         | 139	
-        "Multiple matching results - Address - 16TH"     	| "16TH"           | "No"         | 390
+        "Multiple matching results - Address - 16TH"     	| "16TH"           | "No"         | 389
         "No matching results - Address - 999999"         	| "999999"         | "Yes"        | 0
         "No matching results - Address - <null>"         	| ""		       | "Yes"        | 0
     }
@@ -200,7 +200,7 @@ class WellSearchSpecs extends GebReportingSpec {
         where:
         TestDesc                        					| LegalId	       | ShowError    | NumberResult
         "Plan - 14313"										| "14313"		   | "No"    	  | 11
-        "Lot - 123"     									| "123"            | "No"         | 798	
+        "Lot - 123"     									| "123"            | "No"         | 791
         "PID - 008710902"     								| "008710902"      | "No"         | 1
         "No matching results - Legal ID - 999999"         	| "999999"         | "Yes"        | 0
         "No matching results - Legal ID - <null>"         	| ""		       | "Yes"        | 0
@@ -256,8 +256,8 @@ class WellSearchSpecs extends GebReportingSpec {
 
         where:
         TestDesc                        		| Owner	       	| ShowError    | NumberResult
-        "Multiple Results - Gary"				| "GARY"	   	| "No"     	   | 437
-        "Single Result - Gary Akles"     		| "GARY AKLES" 	| "No"         | 1	
+        "Multiple Results - Gary"				| "GARY"	   	| "No"     	   | 434
+		"Single Result - Gary Akles"     		| "GARY AKLES" 	| "No"         | 1	
         "No matching results - Random Owner"    | "Random Owner"| "Yes"        | 0
         "No matching results - <null>"         	| ""		    | "Yes"        | 0
     } 
@@ -321,7 +321,7 @@ class WellSearchSpecs extends GebReportingSpec {
 
         where:
         TestDesc                        					| Owner	       	|Address| ShowError    | NumberResult
-        "Multiple Results - Gary"							| "GARY"	   	|""		| "No"     	   | 437
+        "Multiple Results - Gary"							| "GARY"	   	|""		| "No"     	   | 434
         "Single Result - Gary Akles"     					| "GARY AKLES" 	|""		| "No"         | 1	
         "No matching results - Random Owner"    			| "Random Owner"|""		| "Yes"        | 0
         "No matching results - Random Address"    			| ""			|"Random Address"		| "Yes"        | 0
@@ -329,7 +329,7 @@ class WellSearchSpecs extends GebReportingSpec {
         "No matching results - <null>"         				| ""		    |""		| "Yes"        | 0
         "One matching result - Address - 21231 16TH AVE."	|""				| "21231 16TH AVE."| "No"         | 1
         "Multiple matching results - Address - 123"     	|""| "123"      | "No"         | 139	
-        "Multiple matching results - Address - 16TH"     	|""| "16TH"     | "No"         | 390
+        "Multiple matching results - Address - 16TH"     	|""| "16TH"     | "No"         | 389
        	"Partial Owner/Address - Gary/201"					| "GARY"	   	|"201"		| "No"     	   | 3
         "Full Owner/ partial Address - Smith/Wolfe"		| "SMITH"	|"WOLFE"		| "No"     	   | 2
         "Partial Owner/Full Address - Gary/201"				| "GARY"	   	|"TELEGRAPH RD"		| "No"     	   | 1

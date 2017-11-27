@@ -33,7 +33,7 @@ requirements.txt    - list of dependencies
 
 ## Local development
 
-To run this project in your development machine, ensure that Python 3.5 and PostgreSQL 9.5 is installed, then follow these steps:
+To run this project in your development machine, ensure that Git, Python 3.5 and PostgreSQL 9.5 is installed. When installing Python, ensure 'install for everyone' and 'PATH' options are enabled. Ensure you run all shell windows in ADMIN mode. Follow these steps:
 
 1. Use the psql command line tool to create a database user and empty database.
 
@@ -50,6 +50,14 @@ To run this project in your development machine, ensure that Python 3.5 and Post
     
     `pip install virtualenvwrapper-win`
 
+    Create a virtual environment.
+
+    `mkvirtualenv gwells`
+
+    Work within your virtual environment.
+    
+    `workon gwells`
+
     If you are developing against a Postgres database you can set environment variables with a postactivate script.
     When using virtualenvwrapper-win find the activate.bat script located in %USERPROFILE%\Envs\myenv\Scripts and add the following:
 
@@ -60,34 +68,30 @@ To run this project in your development machine, ensure that Python 3.5 and Post
     SET DATABASE_USER=<user>
     SET DATABASE_PASSWORD=<pw>
     SET DJANGO_DEBUG=True
-    SET APP_CONTEXT_ROOT=groundwater-wells
+    SET APP_CONTEXT_ROOT=gwells
     ```
-
-    Create a virtual environment.
-
-    `mkvirtualenv gwells`
-
-    Work within your virtual environment.
-    
-    `workon gwells`
 
 3. Fork this repo and clone your fork:
 
     `git clone https://github.com/<github-user>/gwells.git`
 
-4. Install dependencies:
+4. Change directory to gwells (cd gwells), then add remote (upstream) origin:
+
+    `git remote add origin https://github.com/bcgov/gwells.git`
+    
+5. Install dependencies:
 
     `pip install -r requirements.txt`
-
-5. Create a development database:
+    
+6. Create a development database. You may first have to assign the gwells user a password:
 
     `python manage.py migrate`
 
-6. If everything is alright, you should be able to start the Django development server:
+7. If everything is alright, you should be able to start the Django development server:
 
     `python manage.py runserver`
 
-7. Open your browser and go to http://127.0.0.1:8000, you will be greeted with a welcome page.
+8. Open your browser and go to http://127.0.0.1:8000/gwells, you will be greeted with a welcome page.
 
 
 ## Deploying to OpenShift
