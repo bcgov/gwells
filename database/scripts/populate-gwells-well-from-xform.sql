@@ -91,29 +91,29 @@ INSERT INTO gwells_well (
 SELECT
 	xform.well_tag_number                          ,
 	gen_random_uuid()                              ,
-	coalesce(xform.owner_full_name,' ')            ,
-	coalesce(xform.owner_mailing_address, ' ')     ,
-	coalesce(xform.owner_city, ' ')                ,
-	coalesce(xform.owner_postal_code , ' ')        ,
-	coalesce(xform.street_address    , ' ')        ,
-	coalesce(xform.city              , ' ')        ,
-	coalesce(xform.legal_lot         , ' ')        ,
-	coalesce(xform.legal_plan        , ' ')        ,
-	coalesce(xform.legal_district_lot, ' ')        ,
-	coalesce(xform.legal_block       , ' ')        ,
-	coalesce(xform.legal_section     , ' ')        ,
-	coalesce(xform.legal_township    , ' ')        ,
-	coalesce(xform.legal_range       , ' ')        ,
+	COALESCE(xform.owner_full_name,' ')            ,
+	COALESCE(xform.owner_mailing_address, ' ')     ,
+	COALESCE(xform.owner_city, ' ')                ,
+	COALESCE(xform.owner_postal_code , ' ')        ,
+	COALESCE(xform.street_address    , ' ')        ,
+	COALESCE(xform.city              , ' ')        ,
+	COALESCE(xform.legal_lot         , ' ')        ,
+	COALESCE(xform.legal_plan        , ' ')        ,
+	COALESCE(xform.legal_district_lot, ' ')        ,
+	COALESCE(xform.legal_block       , ' ')        ,
+	COALESCE(xform.legal_section     , ' ')        ,
+	COALESCE(xform.legal_township    , ' ')        ,
+	COALESCE(xform.legal_range       , ' ')        ,
 	xform.legal_pid                                ,
-	coalesce(xform.well_location_description,' ')  ,
+	COALESCE(xform.well_location_description,' ')  ,
 	xform.identification_plate_number              ,
-	coalesce(xform.diameter, ' ')                  ,
+	COALESCE(xform.diameter, ' ')                  ,
 	xform.total_depth_drilled                      ,
 	xform.finished_well_depth                      ,
   xform.static_water_level                       ,
   xform.well_cap_type                            ,
 	xform.well_yield                               ,
-	use.intended_water_use_guid                    ,
+	USE.intended_water_use_guid                    ,
 	land.land_district_guid                        ,
 	xform.province_state_guid                      ,
 	class.well_class_guid                          ,
@@ -123,7 +123,7 @@ SELECT
 	xform.longitude                                ,
 	xform.ground_elevation                         ,
 	xform.well_orientation                         ,
-	null                                           ,
+	NULL                                           ,
 	xform.drilling_method_guid                     ,
 	xform.ground_elevation_method_guid             ,
 	xform.when_created                             ,
@@ -177,17 +177,17 @@ SELECT
   xform.development_method_guid                  ,
   xform.development_duration
 FROM xform_gwells_well xform
-LEFT OUTER JOIN gwells_intended_water_use use ON xform.WELL_USE_CODE=use.code
-LEFT OUTER JOIN gwells_well_status well_status ON xform.STATUS_OF_WELL_GUID=upper(well_status.code)
-LEFT OUTER JOIN gwells_licenced_status licenced_status ON xform.LICENCED_STATUS=upper(licenced_status.code)
-LEFT OUTER JOIN gwells_land_district     land ON xform.LEGAL_LAND_DISTRICT_CODE=land.code
-INNER      JOIN gwells_well_class       class ON xform.CLASS_OF_WELL_CODCLASSIFIED_BY=class.code
-LEFT OUTER JOIN gwells_well_subclass subclass ON xform.SUBCLASS_OF_WELL_CLASSIFIED_BY=subclass.code AND subclass.well_class_guid = class.well_class_guid;
+LEFT OUTER JOIN gwells_intended_water_use USE ON xform.well_use_code=use.code
+LEFT OUTER JOIN gwells_well_status well_status ON xform.status_of_well_guid=upper(well_status.code)
+LEFT OUTER JOIN gwells_licenced_status licenced_status ON xform.licenced_status=upper(licenced_status.code)
+LEFT OUTER JOIN gwells_land_district     land ON xform.legal_land_district_code=land.code
+INNER      JOIN gwells_well_class       class ON xform.class_of_well_codclassified_by=class.code
+LEFT OUTER JOIN gwells_well_subclass subclass ON xform.subclass_of_well_classified_by=subclass.code AND subclass.well_class_guid = class.well_class_guid;
 
 \echo 'xform data imported into the gwells_well table';
 
 \t
-SELECT count(*) || ' rows loaded into the gwells_well table' from gwells_well;
+SELECT count(*) || ' rows loaded into the gwells_well table' FROM gwells_well;
 \t
 
 DROP TABLE IF EXISTS xform_gwells_well;
