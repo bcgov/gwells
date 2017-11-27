@@ -513,7 +513,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for screen in well.screen_set.all|dictsort:"screen_from" %}
+                    {% for screen in well.screen_set.all %}
                     <tr>
                         <td><span class="pull-right">{{screen.screen_from|default_if_none:'&nbsp;' }}</span></td>
                         <td><span class="pull-right">{{screen.screen_to|default_if_none:'&nbsp;' }}</span></td>

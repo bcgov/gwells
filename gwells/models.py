@@ -1161,7 +1161,7 @@ class Screen(AuditModel):
 
     class Meta:
         db_table = 'gwells_screen'
-
+        ordering = ['screen_from', 'screen_to']
     def __str__(self):
         if self.activity_submission:
             return 'activity_submission {} {} {}'.format(self.activity_submission, self.screen_from, self.screen_to)
