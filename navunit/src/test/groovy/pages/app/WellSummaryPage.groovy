@@ -92,6 +92,12 @@ class WellSummaryPage extends Page {
 		casing_field_set { $( "fieldset", id:"casing_field_set") }
 		casings { $( "table", id:"casings") }
 		casings_table { $("#casings td")*.text() }
+		casings_from { $("#casings > tbody > tr:nth-child(1) > td:nth-child(1)") }
+		casings_to { $("#casings > tbody > tr:nth-child(0) > td:nth-child(2)") }
+		casings_diameter { $("#casings > tbody > tr:nth-child(1) > td:nth-child(3)") }
+		casings_material { $("#casings > tbody > tr:nth-child(1) > td:nth-child(4)") }
+		casings_thickness { $("#casings > tbody > tr:nth-child(0) > td:nth-child(5)") }
+		casings_driveshoe { $("#casings > tbody > tr:nth-child(1) > td:nth-child(6)") }
 
 		surface_seal_fieldset { $( "fieldset", id:"surface_seal_fieldset") }
 		surface_seal_method { $( "span", id:"surface_seal_method") }
@@ -104,6 +110,13 @@ class WellSummaryPage extends Page {
 		perforations_fieldset { $( "fieldset", id:"perforations_fieldset") }
 		liner_details { $( "table", id:"liner_details") }
 		liner_details_table { $("#liner_details td")*.text() }
+		liner_material { $("#liner_details > tbody > tr:nth-child(1) > td:nth-child(1)") }
+		liner_diameter { $("#liner_details > tbody > tr:nth-child(1) > td:nth-child(2)") }
+		liner_thickness { $("#liner_details > tbody > tr:nth-child(1) > td:nth-child(3)") }
+		liner_from { $("#liner_details > tbody > tr:nth-child(1) > td:nth-child(4)") }
+		liner_to { $("#liner_details > tbody > tr:nth-child(1) > td:nth-child(5)") }
+		liner_perffrom  { $("#liner_details > tbody > tr:nth-child(1) > td:nth-child(6)") }
+		liner_perfto { $("#liner_details > tbody > tr:nth-child(1) > td:nth-child(7)") }
 
 		well_tag_number_link { $( "a", id:"well_tag_number_link") }
 	}

@@ -182,20 +182,20 @@ class WellDetailsSpecs extends GebReportingSpec {
 		"finished_well_depth"	 | "275.00 feet" 	 | 48084
 		"well_yield"	 | "40.000 GPM" 	 | 48084
 		"well_disinfected"	 | "False" 	 | 48084
-		//"final_casing_stickup"	 | "" 	 | 
+		"final_casing_stickup"	 | "125.00 inches" 	 | 96503
 		"artesian_flow"	 | "15.00 USGM" 	 | 110749
 		"drilling_method"	 | "AIR_ROTARY" 	 | 48084
 		"bedrock_depth"	 | "43.00 feet" 	 | 48084
-		//"artesian_pressure"	 | "" 	 | 
+		"artesian_pressure"	 | "12.00 inches" 	 | 113552
 		"orientation_direction"	 | "vertical" 	 | 48084
 		"ground_elevation"	 | "193.10 feet" 	 | 26787
 		"ground_elevation_method"	 | "Differential GPS" 	 | 26787
 		"well_plate_attached"	 | "CASING" 	 | 48084
 		"intake_method"	 | "Open Bottom" 	 | 110749
-		//"screen_type"	 | "" 	 | 
-		//"screen_material"	 | "" 	 | 
-		//"screen_opening"	 | "" 	 | 
-		//"screen_bottom"	 | "" 	 | 
+		"screen_type"	 | "Pipe size" 	 | 102666
+		"screen_material"	 | "Plastic" 	 | 102666
+		"screen_opening"	 | "Perforated Pipe" 	 | 102666
+		"screen_bottom"	 | "Other" 	 | 107072
 		"screen_from" 	 | "92.02" 	 | 110749
 		"screen_to"	 | "92.06" 	 | 110749
 		"internal_diameter"	 | "5.00" | 110749
@@ -203,15 +203,27 @@ class WellDetailsSpecs extends GebReportingSpec {
 		"slot_size"	 | "0.04" 	 | 110752
 		"developed_by"	 | "Bailing" 	 | 110749
 		"devlopment_total_duration"	 | "3.00 hours" 	 | 110749
-		//"yield_estimation_method"	 | "" 	 | 
+		"yield_estimation_method"	 | "Air Lifting" 	 | 107072
 		"yield_estimation_rate"	 | "15.00   USGM" 	 | 110749
 		"yield_estimation_duration"	 | "12.00   hours" 	 | 110749
-		//"surface_seal_fieldset"	 | "" 	 | 
-		//surface_seal_method"	 | "" 	 | 
+		"casings_from"	 | "0.00" 	 | 113503
+		"casings_to"	 | "94.00" 	 | 113503
+		"casings_diameter"	 | "6.000" 	 | 113173
+		"casings_material"	 | "Steel Pulled Out" 	 | 113503
+		"casings_thickness"	 | "0.219" 	 | 113503
+		"casings_driveshoe"	 | "No" 	 | 113503	
+		//"surface_seal_method"	 | "" 	 | 
 		//"surface_seal_material"	 | "" 	 | 
-		//"surface_seal_thickness"	 | "" 	 | 
-		"surface_seal_length"	 | "15.00" 	 | 110749
-		//"backfill_type"	 | "" 	 | 
-		//"backfill_depth"	 | "" 	 |  
+		"surface_seal_thickness"	 | "2.00 inches" 	 | 105417
+		"surface_seal_length"	 | "18.00 feet" 	 | 105417
+		"backfill_type"	 | "CEMENT & BENTONITE CHIPS" 	 | 105417
+		"backfill_depth"	 | "18.00 feet" 	 |  105417
+		"liner_material"	 | "PVC" 	 |  111752 
+		"liner_diameter"	 | "4.00" 	 |  111752 
+		"liner_thickness"	 | "0.250" 	 |  111752 
+		"liner_from"	 | "8.00" 	 |  111752 
+		"liner_to"	 | "280.00" 	 |  111752 
+		"liner_perffrom"	 | "120.00" 	 |  111752 
+		"liner_perfto"	 | "140.00" 	 |  111752 
     } 	
 }
