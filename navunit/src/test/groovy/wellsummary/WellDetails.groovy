@@ -177,8 +177,8 @@ class WellDetailsSpecs extends GebReportingSpec {
 		"decommission_end_date"	 | "2014-11-23" 	 | 110749
 		"drilling_company"	 | "A. D. Baker Drilling" 	 | 48084
 		"total_depth_drilled"	 | "275.00 feet" 	 | 48084
-		//"static_water_level"	 | "" 	 | 
-		//"well_cap_type"	 | "" 	 | 
+		"static_water_level"	 | "96.70 feet" 	 | 113795
+		"well_cap_type"	 | "RODENT FREE" 	 | 113795
 		"finished_well_depth"	 | "275.00 feet" 	 | 48084
 		"well_yield"	 | "40.000 GPM" 	 | 48084
 		"well_disinfected"	 | "False" 	 | 48084
@@ -212,8 +212,8 @@ class WellDetailsSpecs extends GebReportingSpec {
 		"casings_material"	 | "Steel Pulled Out" 	 | 113503
 		"casings_thickness"	 | "0.219" 	 | 113503
 		"casings_driveshoe"	 | "No" 	 | 113503	
-		//"surface_seal_method"	 | "" 	 | 
-		//"surface_seal_material"	 | "" 	 | 
+		"surface_seal_method"	 | "Poured" 	 | 110627
+		"surface_seal_material"	 | "Bentonite clay" 	 | 110627
 		"surface_seal_thickness"	 | "2.00 inches" 	 | 105417
 		"surface_seal_length"	 | "18.00 feet" 	 | 105417
 		"backfill_type"	 | "CEMENT & BENTONITE CHIPS" 	 | 105417
