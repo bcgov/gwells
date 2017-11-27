@@ -25,6 +25,7 @@ INSERT INTO xform_gwells_well (
   finished_well_depth                ,
   static_water_level                 ,
   well_cap_type                      ,
+  well_disinfected                   ,
   well_yield                         ,
   well_use_code                      ,
   legal_land_district_code           ,
@@ -57,7 +58,7 @@ INSERT INTO xform_gwells_well (
   bedrock_depth                      ,
   water_supply_system_name           ,
   water_supply_system_well_name      ,
-  well_identification_plate_attached,
+  well_identification_plate_attached ,
   ems                                ,
   screen_intake_method_guid          ,
   screen_type_guid                   ,
@@ -107,6 +108,11 @@ SELECT
   wells.depth_well_drilled AS finished_well_depth                        ,
   wells.water_depth                                                      ,
   wells.type_of_well_cap                                                 ,
+  CASE wells.well_disinfected_ind
+    WHEN 'Y' THEN TRUE
+    WHEN 'N' THEN FALSE
+    ELSE FALSE
+  END AS well_disinfected                                                ,
   wells.yield_value AS well_yield                                        ,
   wells.well_use_code                                                    , -- -> intended_water_use_guid
   wells.legal_land_district_code                                         , -- -> legal_land_district_guid
