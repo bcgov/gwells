@@ -839,7 +839,7 @@ class Perforation(AuditModel):
 
     class Meta:
         db_table = 'gwells_perforation'
-        ordering = ['perforation_guid']
+        ordering = ['liner_from', 'liner_to', 'liner_perforation_from', 'liner_perforation_to', 'perforation_guid']
 
     def __str__(self):
         return self.description
@@ -1106,7 +1106,9 @@ class Casing(AuditModel):
     drive_shoe = models.NullBooleanField(default=False, null=True, verbose_name='Drive Shoe', choices=((False, 'No'), (True, 'Yes')))
 
     class Meta:
+        ordering = ["casing_from", "casing_to"]
         db_table = 'gwells_casing'
+
 
     def __str__(self):
         if self.activity_submission:
@@ -1114,6 +1116,17 @@ class Casing(AuditModel):
         else:
             return 'well {} {} {}'.format(self.well, self.casing_from, self.casing_to)
 
+    def as_dict(self):
+        return {
+            "casing_from": self.casing_from,
+            "casing_to": self.casing_to,
+            "casing_guid": self.casing_guid,
+            "well_tag_number": self.well_tag_number,
+            "internal_diameter": self.internal_diameter,
+            "wall_thickness": self.wall_thickness,
+            "casing_material": self.casing_material,
+            "drive_shoe": self.drive_shoe
+        }
 class LinerPerforation(AuditModel):
     """
     Perforation in a well liner
