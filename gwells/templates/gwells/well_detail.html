@@ -578,7 +578,9 @@
 &nbsp;
 <fieldset id="casing_field_set">
   <legend>Casing Details</legend>
-  <table id="casings" class="table table-condensed table-bordered table-striped">
+  <div class="row">
+    <div class="col-md-12">
+      <table id="casings" class="table table-condensed table-bordered table-striped">
     <thead>
       <th>From (feet)</th>
       <th>To (feet)</th>
@@ -612,6 +614,8 @@
       {% endfor %}
     </tbody>
   </table>
+    </div>
+  </div>
 </fieldset>
 
 <fieldset id="surface_seal_fieldset">
@@ -685,7 +689,9 @@
 &nbsp;
 <fieldset id="perforations_fieldset">
     <legend>Liner Details</legend>
-    <table id="liner_details" class="table table-condensed table-bordered table-striped">
+    <div class="row">
+        <div class="col-md-12">
+            <table id="liner_details" class="table table-condensed table-bordered table-striped">
         <thead>
             <th>Liner Material</th>
             <th>Liner Diameter</th>
@@ -709,6 +715,8 @@
             {% endfor %}
         </tbody>
     </table>
+        </div>
+    </div>
 </fieldset>
 
 <div>
