@@ -177,7 +177,7 @@ class LicencedStatus(AuditModel):
     """
     LicenceStatus of Well.
     """
-    well_licenced_status_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    licenced_status_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     code = models.CharField(unique=True, max_length=10)
     description = models.CharField(max_length=255)
     is_hidden = models.BooleanField(default=False)
