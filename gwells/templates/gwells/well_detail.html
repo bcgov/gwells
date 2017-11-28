@@ -359,7 +359,7 @@
         </div>
         <div class="col-md-4">
             <label for="well_disinfected">{% verbose_name well "well_disinfected" %}:</label>
-            <span id="well_disinfected">{{well.well_disinfected|default_if_none:'&nbsp;' }}</span>
+            <span id="well_disinfected">{{well.get_well_disinfected_display|default_if_none:'&nbsp;' }}</span>
         </div>
     </div>
 
