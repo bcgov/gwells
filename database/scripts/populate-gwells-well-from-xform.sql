@@ -138,7 +138,7 @@ SELECT
   xform.backfill_type                            ,
   xform.backfill_depth                           ,
   xform.liner_material_guid                      ,
-	well_status.well_status_guid                   ,
+	xform.well_status_guid                         ,
   xform.observation_well_number                  ,
   xform.observation_well_status                  ,
 	licenced_status.well_licenced_status_guid      ,
@@ -178,7 +178,6 @@ SELECT
   xform.development_duration
 FROM xform_gwells_well xform
 LEFT OUTER JOIN gwells_intended_water_use gwiwu ON xform.well_use_code=gwiwu.code
-LEFT OUTER JOIN gwells_well_status well_status ON xform.status_of_well_guid=upper(well_status.code)
 LEFT OUTER JOIN gwells_licenced_status licenced_status ON xform.licenced_status=upper(licenced_status.code)
 LEFT OUTER JOIN gwells_well_class class ON xform.class_of_well_codclassified_by=class.code
 LEFT OUTER JOIN gwells_well_subclass subclass ON xform.subclass_of_well_classified_by=subclass.code AND subclass.well_class_guid = class.well_class_guid;
