@@ -14,10 +14,8 @@
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, render
-#from django.urls import reverse
 from django.views import generic
 from django.views.generic.edit import FormView
-#from django.utils import timezone
 from formtools.wizard.views import SessionWizardView
 from .models import WellActivityType, WellYieldUnit, Well, ActivitySubmission, WellClass, ScreenIntakeMethod, LandDistrict
 from .forms import SearchForm, ActivitySubmissionTypeAndClassForm, WellOwnerForm, ActivitySubmissionLocationForm, ActivitySubmissionGpsForm
@@ -83,7 +81,7 @@ def well_search(request):
 
     if well_results:
         if len(well_results) > SearchForm.WELL_RESULTS_LIMIT:
-            well_results_overflow = ('Query returned more than %d wells. Please refine your search or select a smaller area to look for wells in.' % SearchForm.WELL_RESULTS_LIMIT)
+            well_results_overflow = 'Query returned more than %d wells. Please refine your search or select a smaller area to look for wells in.' % SearchForm.WELL_RESULTS_LIMIT
             well_results = None
         else:
             well_results_json = json.dumps(
@@ -121,7 +119,7 @@ class WellDetailView(generic.DetailView):
     context_object_name = 'well'
     if settings.ENABLE_OLD_WELL_DETAIL:
         template_name = 'gwells/well_detailold.html'
-    else:    
+    else:
         template_name = 'gwells/well_detail.html'
 
     def get_context_data(self, **kwargs):
@@ -130,11 +128,6 @@ class WellDetailView(generic.DetailView):
         """
         context = super(WellDetailView, self).get_context_data(**kwargs)
         return context
-
-
-#class DetailView(generic.DetailView):
-#    model = ActivitySubmission
-#    context_object_name = 'activity_submission'
 
 class ActivitySubmissionListView(generic.ListView):
     model = ActivitySubmission
