@@ -17,6 +17,12 @@ TRUNCATE TABLE gwells_casing;
 \echo '... clearing gwells_lithology_description data table'
 TRUNCATE TABLE gwells_lithology_description;
 
+\echo '... clearing gwells_lithology_colour data table'
+TRUNCATE TABLE gwells_lithology_colour;
+
+\echo '... clearing gwells_lithology_hardness data table'
+TRUNCATE TABLE gwells_lithology_hardness;
+
 \echo '... clearing gwells_intended_water_use data table'
 TRUNCATE TABLE gwells_intended_water_use CASCADE;
 

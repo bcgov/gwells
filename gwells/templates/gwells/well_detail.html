@@ -719,6 +719,35 @@
     </div>
 </fieldset>
 
+<fieldset id="lithology_fieldset">
+    <legend>Lithology</legend>
+    <table id="lithology" class="table table-condensed table-bordered table-striped">
+        <thead>
+            <th>From (feet)</th>
+            <th>To (feet)</th>
+            <th>Raw Data</th>
+            <th>Description</th>
+            <!--<th>Material Description</th>-->
+            <th>Relative Hardness</th>
+            <th>Colour</th>
+            <th>Water-Bearing Estimated Flow</th>
+            <th>Observations</th>
+        </thead>
+        <tbody>
+          {%for lithology in wells.lithology_set.all}
+          <td>{{lithology.from}}</td>
+          <td>{{lithology.to}}</td>
+          <td>{{lithology.raw_data}}</td>
+          <td>{{lithology.description}}</td>
+          <!--<td>{#lithology.material_description#}</td>-->
+          <td>{{lithology.relative_hardness}}</td>
+          <td>{{lithology.colour}}</td>
+          <td>{{lithology.estimated_flow}}&nbsp;{{lithology.water_bearing_estimated_flow_units}}</td>
+          <td>{{lithology.observations}}</td>
+          {%endfor}
+        </tbody>
+    </table>
+</fieldset>
 <div>
     <br /><br />
     <a id="well_tag_number_link" href="https://a100.gov.bc.ca/pub/wells/wellsreport1.do?wellTagNumber={{well.well_tag_number }}">View Report</a>
