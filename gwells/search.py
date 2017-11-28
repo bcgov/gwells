@@ -25,7 +25,7 @@ class Search():
         :param addr: part of the street address or site area of the well
         :param legal: part of the legal plan, legal district lot or pid
         :param owner: part of the owner's full name
-        :param lat_long_box: an object including 'start_corner' and 'end_corner', 
+        :param lat_long_box: an object including 'start_corner' and 'end_corner',
             each a latitude-longitude pair describing extreme corners of an extent rectangle
             from within which the wells are to be selected
         :param query_limit: the number of wells the caller will display
@@ -79,6 +79,6 @@ class Search():
         if q_list:
             # If there are too many results, we return one plus the query limit to engage post-query logic in views.py
             well_results = Well.objects.only('well_tag_number', 'identification_plate_number', 'owner_full_name','street_address','legal_lot','legal_plan','legal_district_lot','legal_land_district','legal_pid','diameter','finished_well_depth','well_guid','latitude','longitude','city').filter(
-                reduce(operator.and_, q_list)).order_by('well_tag_number', 'when_created')[:(query_limit+1)]
+                reduce(operator.and_, q_list)).order_by('well_tag_number', 'when_created')[:query_limit+1]
 
         return well_results

@@ -714,13 +714,13 @@ class Well(AuditModel):
     well_location_description = models.CharField(max_length=500, blank=True, verbose_name='Description of Well Location')
 
     construction_start_date = models.DateTimeField(null=True, verbose_name="Construction Start Date")
-    construction_end_date = models.DateTimeField(null=True, verbose_name="Construction End Date")
+    construction_end_date = models.DateTimeField(null=True, verbose_name="Construction Date")
 
     alteration_start_date = models.DateTimeField(null=True, verbose_name="Alteration Start Date")
-    alteration_end_date = models.DateTimeField(null=True, verbose_name="Alteration End Date")
+    alteration_end_date = models.DateTimeField(null=True, verbose_name="Alteration Date")
 
     decommission_start_date = models.DateTimeField(null=True, verbose_name="Decommission Start Date")
-    decommission_end_date = models.DateTimeField(null=True, verbose_name="Decommission End Date")
+    decommission_end_date = models.DateTimeField(null=True, verbose_name="Decommission Date")
 
     drilling_company = models.ForeignKey(DrillingCompany, db_column='drilling_company_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Drilling Company')
 
@@ -839,7 +839,7 @@ class Perforation(AuditModel):
 
     class Meta:
         db_table = 'gwells_perforation'
-        ordering = ['perforation_guid']
+        ordering = ['liner_from', 'liner_to', 'liner_perforation_from', 'liner_perforation_to', 'perforation_guid']
 
     def __str__(self):
         return self.description
@@ -1106,7 +1106,9 @@ class Casing(AuditModel):
     drive_shoe = models.NullBooleanField(default=False, null=True, verbose_name='Drive Shoe', choices=((False, 'No'), (True, 'Yes')))
 
     class Meta:
+        ordering = ["casing_from", "casing_to"]
         db_table = 'gwells_casing'
+
 
     def __str__(self):
         if self.activity_submission:
@@ -1114,6 +1116,17 @@ class Casing(AuditModel):
         else:
             return 'well {} {} {}'.format(self.well, self.casing_from, self.casing_to)
 
+    def as_dict(self):
+        return {
+            "casing_from": self.casing_from,
+            "casing_to": self.casing_to,
+            "casing_guid": self.casing_guid,
+            "well_tag_number": self.well_tag_number,
+            "internal_diameter": self.internal_diameter,
+            "wall_thickness": self.wall_thickness,
+            "casing_material": self.casing_material,
+            "drive_shoe": self.drive_shoe
+        }
 class LinerPerforation(AuditModel):
     """
     Perforation in a well liner
@@ -1187,8 +1200,7 @@ class AquiferWell(AuditModel):
 
     aquifer_well_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     aquifer_id = models.PositiveIntegerField(verbose_name="Aquifer Number", blank=True, null=True)
-    #well = models.ForeignKey(Well, db_column='well_guid', on_delete=models.CASCADE, blank=True, null=True) #transition to this later
-    well_tag_number = models.ForeignKey(Well, db_column='well_tag_number', to_field='well_tag_number', on_delete=models.CASCADE, blank=False, null=False)#speficying to_field in advance of transition to natural primary key for well table
+    well_tag_number = models.ForeignKey(Well, db_column='well_tag_number', to_field='well_tag_number', on_delete=models.CASCADE, blank=False, null=False)
 
     class Meta:
         db_table = 'gwells_aquifer_well'
