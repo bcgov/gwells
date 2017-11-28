@@ -200,7 +200,7 @@ class WellSearchSpecs extends GebReportingSpec {
         where:
         TestDesc                        					| LegalId	       | ShowError    | NumberResult
         "Plan - 14313"										| "14313"		   | "No"    	  | 11
-        "Lot - 123"     									| "123"            | "No"         | 791
+        "Lot - 123"     									| "123"            | "No"         | 793
         "PID - 008710902"     								| "008710902"      | "No"         | 1
         "No matching results - Legal ID - 999999"         	| "999999"         | "Yes"        | 0
         "No matching results - Legal ID - <null>"         	| ""		       | "Yes"        | 0
