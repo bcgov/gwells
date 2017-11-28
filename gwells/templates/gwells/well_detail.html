@@ -171,8 +171,8 @@
                                 <td><span id="range">{{well.legal_range|default_if_none:'&nbsp;'}}</span></td>
                             </tr>
                             <tr>
-                                <th scope="row">{% verbose_name well "legal_land_district" %}:</th>
-                                <td><span id="land_district">{{well.legal_land_district|default_if_none:'&nbsp;'}}</span></td>
+                                <th scope="row">{% verbose_name well "land_district" %}:</th>
+                                <td><span id="land_district">{{well.land_district.code|default_if_none:'&nbsp;'}}&nbsp;{{well.land_district.name|default_if_none:'&nbsp;'}}</span></td>
                             </tr>
                             <tr>
                                 <th scope="row">{% verbose_name well "legal_pid" %}:</th>
