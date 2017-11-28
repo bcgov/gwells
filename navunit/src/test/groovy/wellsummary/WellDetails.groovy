@@ -93,11 +93,6 @@ class WellDetailsSpecs extends GebReportingSpec {
 			assert screen_opening
 			assert screen_bottom
 			assert screens
-			assert screen_from 
-			assert screen_to
-			assert internal_diameter
-			assert assembly_type
-			assert slot_size
 
 			assert developed_by
 			assert devlopment_total_duration
@@ -182,11 +177,11 @@ class WellDetailsSpecs extends GebReportingSpec {
 		"finished_well_depth"	 | "275.00 feet" 	 | 48084
 		"well_yield"	 | "40.000 GPM" 	 | 48084
 		"well_disinfected"	 | "False" 	 | 48084
-		"final_casing_stickup"	 | "125.00 inches" 	 | 96503
+		"final_casing_stickup"	 | "24.000 inches" 	 | 96503
 		"artesian_flow"	 | "15.00 USGM" 	 | 110749
 		"drilling_method"	 | "AIR_ROTARY" 	 | 48084
 		"bedrock_depth"	 | "43.00 feet" 	 | 48084
-		"artesian_pressure"	 | "12.00 inches" 	 | 113552
+		"artesian_pressure"	 | "10.00 inches" 	 | 113552
 		"orientation_direction"	 | "vertical" 	 | 48084
 		"ground_elevation"	 | "193.10 feet" 	 | 26787
 		"ground_elevation_method"	 | "Differential GPS" 	 | 26787
@@ -196,22 +191,22 @@ class WellDetailsSpecs extends GebReportingSpec {
 		"screen_material"	 | "Plastic" 	 | 102666
 		"screen_opening"	 | "Perforated Pipe" 	 | 102666
 		"screen_bottom"	 | "Other" 	 | 107072
-		"screen_from" 	 | "92.02" 	 | 110749
-		"screen_to"	 | "92.06" 	 | 110749
-		"internal_diameter"	 | "5.00" | 110749
-		"assembly_type"	 | "K-packer" 	 | 110749
-		"slot_size"	 | "0.04" 	 | 110752
+		"screen_from" 	 | "105.00" 	 | 105508
+		"screen_to"	 | "109.00" 	 | 105508
+		"internal_diameter"	 | "6.00" | 105508
+		"assembly_type"	 | "Screen" 	 | 105508
+		"slot_size"	 | "15.00" 	 | 105508
 		"developed_by"	 | "Bailing" 	 | 110749
 		"devlopment_total_duration"	 | "3.00 hours" 	 | 110749
 		"yield_estimation_method"	 | "Air Lifting" 	 | 107072
 		"yield_estimation_rate"	 | "15.00   USGM" 	 | 110749
 		"yield_estimation_duration"	 | "12.00   hours" 	 | 110749
 		"casings_from"	 | "0.00" 	 | 113503
-		"casings_to"	 | "94.00" 	 | 113503
-		"casings_diameter"	 | "6.000" 	 | 113173
-		"casings_material"	 | "Steel Pulled Out" 	 | 113503
+		"casings_to"	 | "63.00" 	 | 113503
+		"casings_diameter"	 | "6.000" 	 | 113395
+		"casings_material"	 | "Steel" 	 | 113503
 		"casings_thickness"	 | "0.219" 	 | 113503
-		"casings_driveshoe"	 | "No" 	 | 113503	
+		"casings_driveshoe"	 | "Yes" 	 | 113503	
 		"surface_seal_method"	 | "Poured" 	 | 110627
 		"surface_seal_material"	 | "Bentonite clay" 	 | 110627
 		"surface_seal_thickness"	 | "2.00 inches" 	 | 105417
