@@ -1,7 +1,7 @@
 \echo '...importing wells_lithology_description data'
 INSERT INTO gwells_lithology_description(
   lithology_description_guid        ,
-  activity_submission_guid          ,
+  filing_number                     ,
   well_tag_number                   ,
   lithology_from                    ,
   lithology_to                      ,

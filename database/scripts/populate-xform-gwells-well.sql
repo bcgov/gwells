@@ -40,7 +40,7 @@ INSERT INTO xform_gwells_well (
   other_drilling_method              ,
   drilling_method_guid               ,
   ground_elevation_method_guid       ,
-  status_of_well_guid                ,
+  well_status_guid                   ,
   observation_well_number            ,
   observation_well_status            ,
   licenced_status                    ,
@@ -170,7 +170,7 @@ SELECT
     WHEN 'LEVEL'  THEN '523ad79277ad11e7b5a5be2e44b06b34'::uuid
     ELSE null::uuid
   END AS ground_elevation_method_guid                                    ,
-  wells.status_of_well_code            AS status_of_well_guid 	         ,
+  well_status.well_status_guid                                           ,
   wells.observation_well_number	       AS observation_well_number        ,
   wells.ministry_observation_well_stat AS observation_well_status        ,
   wells.well_licence_general_status    AS licenced_status                ,
@@ -217,18 +217,19 @@ SELECT
   COALESCE(wells.when_updated,wells.when_created)                        ,
   wells.who_created                                                      ,
   COALESCE(wells.who_updated,wells.who_created)
-FROM wells.wells_wells wells LEFT OUTER JOIN wells.wells_owners owner ON Owner.owner_id=wells.owner_id
-                             LEFT OUTER JOIN gwells_drilling_company drilling_company ON Wells.driller_company_code=drilling_company.drilling_company_code
-                             LEFT OUTER JOIN gwells_screen_intake_method screen_intake_method ON wells.screen_intake_code=screen_intake_method.screen_intake_code
-                             LEFT OUTER JOIN gwells_screen_type screen_type ON wells.screen_type_code=screen_type.screen_type_code
-                             LEFT OUTER JOIN gwells_screen_material screen_material ON wells.screen_material_code=screen_material.screen_material_code
-                             LEFT OUTER JOIN gwells_screen_opening screen_opening ON wells.screen_opening_code=screen_opening.screen_opening_code
-                             LEFT OUTER JOIN gwells_screen_bottom screen_bottom ON wells.screen_bottom_code=screen_bottom.screen_bottom_code
-                             LEFT OUTER JOIN gwells_development_method development_method ON wells.development_method_code=development_method.development_method_code
-                             LEFT OUTER JOIN gwells_surface_seal_method surface_seal_method ON wells.surface_seal_method_code=surface_seal_method.surface_seal_method_code
-                             LEFT OUTER JOIN gwells_surface_seal_material surface_seal_material ON wells.surface_seal_material_code=surface_seal_material.surface_seal_material_code
-                             LEFT OUTER JOIN gwells_liner_material liner_material ON wells.liner_material_code=liner_material.liner_material_code
-                             LEFT OUTER JOIN gwells_land_district gld ON wells.legal_land_district_code = gld.code
+FROM wells.wells_wells wells LEFT OUTER JOIN wells.wells_owners owner ON owner.owner_id=wells.owner_id
+                             LEFT OUTER JOIN gwells_drilling_company drilling_company ON UPPER(wells.driller_company_code)=UPPER(drilling_company.drilling_company_code)
+                             LEFT OUTER JOIN gwells_screen_intake_method screen_intake_method ON UPPER(wells.screen_intake_code)=UPPER(screen_intake_method.screen_intake_code)
+                             LEFT OUTER JOIN gwells_screen_type screen_type ON UPPER(wells.screen_type_code)=UPPER(screen_type.screen_type_code)
+                             LEFT OUTER JOIN gwells_screen_material screen_material ON UPPER(wells.screen_material_code)=UPPER(screen_material.screen_material_code)
+                             LEFT OUTER JOIN gwells_screen_opening screen_opening ON UPPER(wells.screen_opening_code)=UPPER(screen_opening.screen_opening_code)
+                             LEFT OUTER JOIN gwells_screen_bottom screen_bottom ON UPPER(wells.screen_bottom_code)=UPPER(screen_bottom.screen_bottom_code)
+                             LEFT OUTER JOIN gwells_development_method development_method ON UPPER(wells.development_method_code)=UPPER(development_method.development_method_code)
+                             LEFT OUTER JOIN gwells_surface_seal_method surface_seal_method ON UPPER(wells.surface_seal_method_code)=UPPER(surface_seal_method.surface_seal_method_code)
+                             LEFT OUTER JOIN gwells_surface_seal_material surface_seal_material ON UPPER(wells.surface_seal_material_code)=UPPER(surface_seal_material.surface_seal_material_code)
+                             LEFT OUTER JOIN gwells_liner_material liner_material ON UPPER(wells.liner_material_code)=UPPER(liner_material.liner_material_code)
+                             LEFT OUTER JOIN gwells_land_district gld ON UPPER(wells.legal_land_district_code)=UPPER(gld.code)
+                             LEFT OUTER JOIN gwells_well_status well_status ON UPPER(wells.status_of_well_code)=UPPER(well_status.code)
 WHERE wells.acceptance_status_code NOT IN ('PENDING', 'REJECTED', 'NEW');
 
 \echo 'wells data (= ACCEPTED) transformed via xform_gwells_well ETL table';
