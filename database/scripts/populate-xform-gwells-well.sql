@@ -43,7 +43,7 @@ INSERT INTO xform_gwells_well (
   well_status_guid                   ,
   observation_well_number            ,
   observation_well_status            ,
-  licenced_status                    ,
+  licenced_status_guid               ,
   alternative_specifications_ind     ,
   construction_start_date            ,
   construction_end_date              ,
@@ -173,7 +173,7 @@ SELECT
   well_status.well_status_guid                                           ,
   wells.observation_well_number	       AS observation_well_number        ,
   wells.ministry_observation_well_stat AS observation_well_status        ,
-  wells.well_licence_general_status    AS licenced_status                ,
+  licenced_status.licenced_status_guid                                   ,
   CASE wells.alternative_specifications_ind
      WHEN 'N' THEN false
      WHEN 'Y' THEN true
@@ -230,6 +230,7 @@ FROM wells.wells_wells wells LEFT OUTER JOIN wells.wells_owners owner ON owner.o
                              LEFT OUTER JOIN gwells_liner_material liner_material ON UPPER(wells.liner_material_code)=UPPER(liner_material.liner_material_code)
                              LEFT OUTER JOIN gwells_land_district gld ON UPPER(wells.legal_land_district_code)=UPPER(gld.code)
                              LEFT OUTER JOIN gwells_well_status well_status ON UPPER(wells.status_of_well_code)=UPPER(well_status.code)
+                             LEFT OUTER JOIN gwells_licenced_status licenced_status ON UPPER(wells.well_licence_general_status)=UPPER(licenced_status.code)
 WHERE wells.acceptance_status_code NOT IN ('PENDING', 'REJECTED', 'NEW');
 
 \echo 'wells data (= ACCEPTED) transformed via xform_gwells_well ETL table';

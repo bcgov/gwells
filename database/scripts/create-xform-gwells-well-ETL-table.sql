@@ -44,7 +44,7 @@ CREATE unlogged TABLE IF NOT EXISTS xform_gwells_well (
    well_status_guid 	                  uuid,
    observation_well_number	            integer,
    observation_well_status             character varying(25),
-   licenced_status                     character varying(20),
+   licenced_status_guid                uuid,
    alternative_specifications_ind      boolean,
    construction_start_date             timestamp with time zone,
    construction_end_date               timestamp with time zone,
