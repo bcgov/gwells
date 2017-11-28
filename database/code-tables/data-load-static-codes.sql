@@ -95,15 +95,15 @@
 \copy gwells_liner_material (who_created,when_created,who_updated,when_updated,liner_material_guid,liner_material_code,description,is_hidden,sort_order) from 'gwells_liner_material.csv' with header delimiter ',' CSV ;
 
 --LITHOLOGY COLOUR
-\echo '... loading gwells_lithology_hardness code table'
-\copy gwells_lithology_colour
-(who_created,when_created,who_updated,when_updated,lithology_colour_guid,code,description,is_hidden,sort_order) from
-'gwells_lithology_colour.csv' with header delimiter ',' CSV ;
+\echo '... loading gwells_lithology_colour code table'
+\copy gwells_lithology_colour (who_created,when_created,who_updated,when_updated,lithology_colour_guid,code,description,is_hidden,sort_order) from 'gwells_lithology_colour.csv' with header delimiter ',' CSV ;
 
 --LITHOLOGY HARDNESS
-\echo '... loading gwells_lithology_colour code table'
-\copy gwells_lithology_hardness
-(lithology_hardness_guid,code,description,is_hidden,sort_order,when_created,when_updated,who_created,who_updated)
-'gwells_lithology_hardness.csv' with header delimiter ',' CSV ;
+\echo '... loading gwells_lithology_hardness code table'
+\copy gwells_lithology_hardness (lithology_hardness_guid,code,description,is_hidden,sort_order,when_created,when_updated,who_created,who_updated) from 'gwells_lithology_hardness.csv' with header delimiter ',' CSV ;
+
+--LAND DISTRICT
+\echo '... loading gwells_land_district code table'
+\copy gwells_land_district (who_created,when_created,who_updated,when_updated,land_district_guid,code,name,sort_order) from 'gwells_land_district.csv' with header delimiter ',' CSV ;
 
 \echo 'Finshed copy of static code tables.'

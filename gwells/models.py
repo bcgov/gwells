@@ -709,7 +709,7 @@ class Well(AuditModel):
     legal_section = models.CharField(max_length=10, blank=True, verbose_name='Section')
     legal_township = models.CharField(max_length=20, blank=True, verbose_name='Township')
     legal_range = models.CharField(max_length=10, blank=True, verbose_name='Range')
-    legal_land_district = models.ForeignKey(LandDistrict, db_column='legal_land_district_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Land District')
+    land_district = models.ForeignKey(LandDistrict, db_column='land_district_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Land District')
     legal_pid = models.PositiveIntegerField(blank=True, null=True, verbose_name='Property Identification Description (PID)')
     well_location_description = models.CharField(max_length=500, blank=True, verbose_name='Description of Well Location')
 

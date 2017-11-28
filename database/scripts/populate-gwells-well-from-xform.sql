@@ -15,6 +15,7 @@ INSERT INTO gwells_well (
   legal_section                      ,
   legal_township                     ,
   legal_range                        ,
+  land_district_guid                 ,
   legal_pid                          ,
   well_location_description          ,
   identification_plate_number        ,
@@ -26,7 +27,6 @@ INSERT INTO gwells_well (
   well_disinfected                   ,
   well_yield                         ,
   intended_water_use_guid            ,
-  legal_land_district_guid           ,
   province_state_guid                ,
   well_class_guid                    ,
   well_subclass_guid                 ,
@@ -104,6 +104,7 @@ SELECT
 	COALESCE(xform.legal_section     , ' ')        ,
 	COALESCE(xform.legal_township    , ' ')        ,
 	COALESCE(xform.legal_range       , ' ')        ,
+  xform.land_district_guid                       ,
 	xform.legal_pid                                ,
 	COALESCE(xform.well_location_description,' ')  ,
 	xform.identification_plate_number              ,
@@ -114,8 +115,7 @@ SELECT
   xform.well_cap_type                            ,
   xform.well_disinfected                         ,
 	xform.well_yield                               ,
-	USE.intended_water_use_guid                    ,
-	land.land_district_guid                        ,
+	gwiwu.intended_water_use_guid                  ,
 	xform.province_state_guid                      ,
 	class.well_class_guid                          ,
 	subclass.well_subclass_guid                    ,
@@ -177,11 +177,10 @@ SELECT
   xform.development_method_guid                  ,
   xform.development_duration
 FROM xform_gwells_well xform
-LEFT OUTER JOIN gwells_intended_water_use USE ON xform.well_use_code=use.code
+LEFT OUTER JOIN gwells_intended_water_use gwiwu ON xform.well_use_code=gwiwu.code
 LEFT OUTER JOIN gwells_well_status well_status ON xform.status_of_well_guid=upper(well_status.code)
 LEFT OUTER JOIN gwells_licenced_status licenced_status ON xform.licenced_status=upper(licenced_status.code)
-LEFT OUTER JOIN gwells_land_district     land ON xform.legal_land_district_code=land.code
-INNER      JOIN gwells_well_class       class ON xform.class_of_well_codclassified_by=class.code
+INNER      JOIN gwells_well_class class ON xform.class_of_well_codclassified_by=class.code
 LEFT OUTER JOIN gwells_well_subclass subclass ON xform.subclass_of_well_classified_by=subclass.code AND subclass.well_class_guid = class.well_class_guid;
 
 \echo 'xform data imported into the gwells_well table';

@@ -29,7 +29,7 @@ CREATE unlogged TABLE IF NOT EXISTS xform_gwells_well (
    well_disinfected                    boolean,
    well_yield                          numeric(8,3),
    WELL_USE_CODE                       character varying(10),
-   LEGAL_LAND_DISTRICT_CODE            character varying(10),
+   land_district_guid            uuid,
    province_state_guid                 uuid,
    CLASS_OF_WELL_CODCLASSIFIED_BY      character varying(10),
    SUBCLASS_OF_WELL_CLASSIFIED_BY      character varying(10),
