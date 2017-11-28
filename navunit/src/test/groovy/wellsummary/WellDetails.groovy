@@ -176,7 +176,7 @@ class WellDetailsSpecs extends GebReportingSpec {
 		"well_cap_type"	 | "RODENT FREE" 	 | 113795
 		"finished_well_depth"	 | "275.00 feet" 	 | 48084
 		"well_yield"	 | "40.000 GPM" 	 | 48084
-		"well_disinfected"	 | "False" 	 | 48084
+		"well_disinfected"	 | "No" 	 | 48084
 		"final_casing_stickup"	 | "24.000 inches" 	 | 96503
 		"artesian_flow"	 | "15.00 USGM" 	 | 110749
 		"drilling_method"	 | "AIR_ROTARY" 	 | 48084
