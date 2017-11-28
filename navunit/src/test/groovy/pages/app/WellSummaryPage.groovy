@@ -76,11 +76,11 @@ class WellSummaryPage extends Page {
 		screen_bottom { $( "span", id:"screen_bottom") }
 		screens { $( "table", id:"screens") }
 		screens_table { $( "#screens td")*.text() }
-		screen_from { $("#screens > tbody > tr:nth-child(1) > td:nth-child(1)") }
-        screen_to {  $("#screens > tbody > tr:nth-child(1) > td:nth-child(2)") }
-        internal_diameter {  $("#screens > tbody > tr:nth-child(1) > td:nth-child(3)") }
-        assembly_type {  $("#screens > tbody > tr:nth-child(1) > td:nth-child(4)") }
-        slot_size {  $("#screens > tbody > tr:nth-child(1) > td:nth-child(5)") }
+		screen_from { $("#screens > tbody > tr:nth-child(2) > td:nth-child(1)") }
+        screen_to {  $("#screens > tbody > tr:nth-child(2) > td:nth-child(2)") }
+        internal_diameter {  $("#screens > tbody > tr:nth-child(2) > td:nth-child(3)") }
+        assembly_type {  $("#screens > tbody > tr:nth-child(2) > td:nth-child(4)") }
+        slot_size {  $("#screens > tbody > tr:nth-child(2) > td:nth-child(5)") }
 
 		developed_by { $( "span", id:"developed-by") }
 		devlopment_total_duration { $( "span", id:"devlopment-total-duration") }
@@ -93,10 +93,10 @@ class WellSummaryPage extends Page {
 		casings { $( "table", id:"casings") }
 		casings_table { $("#casings td")*.text() }
 		casings_from { $("#casings > tbody > tr:nth-child(1) > td:nth-child(1)") }
-		casings_to { $("#casings > tbody > tr:nth-child(0) > td:nth-child(2)") }
+		casings_to { $("#casings > tbody > tr:nth-child(1) > td:nth-child(2)") }
 		casings_diameter { $("#casings > tbody > tr:nth-child(1) > td:nth-child(3)") }
 		casings_material { $("#casings > tbody > tr:nth-child(1) > td:nth-child(4)") }
-		casings_thickness { $("#casings > tbody > tr:nth-child(0) > td:nth-child(5)") }
+		casings_thickness { $("#casings > tbody > tr:nth-child(1) > td:nth-child(5)") }
 		casings_driveshoe { $("#casings > tbody > tr:nth-child(1) > td:nth-child(6)") }
 
 		surface_seal_fieldset { $( "fieldset", id:"surface_seal_fieldset") }
