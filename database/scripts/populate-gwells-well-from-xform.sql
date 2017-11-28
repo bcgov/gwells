@@ -115,7 +115,7 @@ SELECT
   xform.well_cap_type                            ,
   xform.well_disinfected                         ,
 	xform.well_yield                               ,
-	gwiwu.intended_water_use_guid                  ,
+	xform.intended_water_use_guid                  ,
 	xform.province_state_guid                      ,
 	class.well_class_guid                          ,
 	subclass.well_subclass_guid                    ,
@@ -177,7 +177,6 @@ SELECT
   xform.development_method_guid                  ,
   xform.development_duration
 FROM xform_gwells_well xform
-LEFT OUTER JOIN gwells_intended_water_use gwiwu ON xform.well_use_code=gwiwu.code
 LEFT OUTER JOIN gwells_well_class class ON xform.class_of_well_codclassified_by=class.code
 LEFT OUTER JOIN gwells_well_subclass subclass ON xform.subclass_of_well_classified_by=subclass.code AND subclass.well_class_guid = class.well_class_guid;
 

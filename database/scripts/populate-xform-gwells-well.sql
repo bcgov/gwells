@@ -27,7 +27,7 @@ INSERT INTO xform_gwells_well (
   well_cap_type                      ,
   well_disinfected                   ,
   well_yield                         ,
-  well_use_code                      ,
+  intended_water_use_guid            ,
   land_district_guid                 ,
   province_state_guid                ,
   class_of_well_codclassified_by     ,
@@ -114,7 +114,7 @@ SELECT
     ELSE FALSE
   END AS well_disinfected                                                ,
   wells.yield_value AS well_yield                                        ,
-  wells.well_use_code                                                    , -- -> intended_water_use_guid
+  intended_water_use.intended_water_use_guid                             ,
   gld.land_district_guid                                                 ,
   CASE owner.province_state_code
     WHEN 'BC' THEN 'f46b70b647d411e7a91992ebcb67fe33'::uuid
@@ -231,6 +231,7 @@ FROM wells.wells_wells wells LEFT OUTER JOIN wells.wells_owners owner ON owner.o
                              LEFT OUTER JOIN gwells_land_district gld ON UPPER(wells.legal_land_district_code)=UPPER(gld.code)
                              LEFT OUTER JOIN gwells_well_status well_status ON UPPER(wells.status_of_well_code)=UPPER(well_status.code)
                              LEFT OUTER JOIN gwells_licenced_status licenced_status ON UPPER(wells.well_licence_general_status)=UPPER(licenced_status.code)
+                             LEFT OUTER JOIN gwells_intended_water_use intended_water_use ON UPPER(wells.well_use_code)=UPPER(intended_water_use.code)
 WHERE wells.acceptance_status_code NOT IN ('PENDING', 'REJECTED', 'NEW');
 
 \echo 'wells data (= ACCEPTED) transformed via xform_gwells_well ETL table';
