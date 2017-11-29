@@ -13,3 +13,9 @@
 export PGPASSWORD=$DATABASE_PASSWORD
 cd /opt/app-root/src/database/scripts/
 psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER  -f post-deploy.sql
+
+if [ "$ENABLE_DB_REPLICATION" = "True" ]
+then
+  cd /opt/app-root/src/database/cron/
+  ./db-replicate.sh
+fi 
