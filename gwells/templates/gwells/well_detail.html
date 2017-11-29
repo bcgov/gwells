@@ -219,11 +219,6 @@
                     <span id="longitude" data-longitude="{{well.longitude }}">{{well.longitude|default_if_none:'&nbsp;' }}</span>
                 </div>
             </div>
-            <!--<div class="row">
-                <div class="col-md-12">
-                    <label>Universal Transverse Mercator (UTM)</label>
-                </div>
-            </div>-->
             <div class="row">
               <div class="col-md-6">
                   <label for="utm_northing">{% verbose_name well "utm_northing" %}:</label>
@@ -248,7 +243,7 @@
     </div>
 </fieldset>
 &nbsp;
-<fieldset>
+<fieldset id="well_activity">
     <legend>Well Activity</legend>
     <table id="activities" class="table table-condensed table-bordered table-striped">
         <thead>
@@ -298,8 +293,8 @@
         </tbody>
     </table>
 </fieldset>
-
-<fieldset>
+&nbsp;
+<fieldset id="well_completion_data">
     <legend>Well Completion Data</legend>
     <div class="row">
         <div class="col-md-2">
@@ -465,7 +460,7 @@
 
 </fieldset>
 &nbsp;
-<fieldset>
+<fieldset id="screen_details">
     <legend>Screen Details</legend>
     <div class="row">
         <div class="col-md-3">
@@ -528,7 +523,7 @@
     </div>
 </fieldset>
 &nbsp;
-<fieldset>
+<fieldset id="well_development">
     <legend>Well Development</legend>
     <div class="row">
         <div class="col-md-3">
@@ -548,7 +543,7 @@
     </div>
 </fieldset>
 &nbsp;
-<fieldset>
+<fieldset id="well_yield">
     <legend>Well Yield</legend>
     <div class="row">
         {% for productiondata in well.productiondata_set.all|dictsortreversed:"when_updated"|slice:"1" %}
@@ -617,7 +612,7 @@
     </div>
   </div>
 </fieldset>
-
+&nbsp;
 <fieldset id="surface_seal_fieldset">
     <div class="row">
         <div class="col-md-6">
@@ -718,7 +713,7 @@
         </div>
     </div>
 </fieldset>
-
+&nbsp;
 <fieldset id="lithology_fieldset">
     <legend>Lithology</legend>
     <table id="lithology" class="table table-condensed table-bordered table-striped">
@@ -748,6 +743,7 @@
         </tbody>
     </table>
 </fieldset>
+
 <div>
     <br /><br />
     <a id="well_tag_number_link" href="https://a100.gov.bc.ca/pub/wells/wellsreport1.do?wellTagNumber={{well.well_tag_number }}">View Report</a>
