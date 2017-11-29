@@ -743,7 +743,44 @@
         </tbody>
     </table>
 </fieldset>
-
+&nbsp;
+<fieldset id="well_decommissioning">
+    <legend>Well Decommissioning</legend>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="row">
+                <div class="col-md-12">
+                    <label for="reason_for_decommission">{% verbose_name well "reason_for_decommission" %}:
+                    <span id="reason_for_decommission">{{well.reason_for_decommission}}</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <label for="method_of_closure">{% verbose_name well "method_of_closure" %}:
+                    <span id="method_of_closure">{{well.method_of_closure.code}}</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <label for="sealant_material">{% verbose_name well "sealant_material" %}:
+                    <span id="sealant_material">{{well.sealant_material.code}}</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <label for="backfill_material">{% verbose_name well "backfill_material" %}:
+                    <span id="sealant_material">{{well.backfill_material.code}}</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <label for="decommission_details">{% verbose_name well "decommission_details" %}:
+                    <span id="decommission_details">{{well.decommission_details}}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</fieldset>
 <div>
     <br /><br />
     <a id="well_tag_number_link" href="https://a100.gov.bc.ca/pub/wells/wellsreport1.do?wellTagNumber={{well.well_tag_number }}">View Report</a>
