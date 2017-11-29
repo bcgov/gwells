@@ -117,8 +117,8 @@ SELECT
 	xform.well_yield                               ,
 	xform.intended_water_use_guid                  ,
 	xform.province_state_guid                      ,
-	class.well_class_guid                          ,
-	subclass.well_subclass_guid                    ,
+	xform.well_class_guid                          ,
+	xform.well_subclass_guid                       ,
 	xform.well_yield_unit_guid                     ,
 	xform.latitude                                 ,
 	xform.longitude                                ,
@@ -176,9 +176,8 @@ SELECT
 	xform.bcgs_id                                  ,
   xform.development_method_guid                  ,
   xform.development_duration
-FROM xform_gwells_well xform
-LEFT OUTER JOIN gwells_well_class class ON xform.class_of_well_codclassified_by=class.code
-LEFT OUTER JOIN gwells_well_subclass subclass ON xform.subclass_of_well_classified_by=subclass.code AND subclass.well_class_guid = class.well_class_guid;
+FROM xform_gwells_well xform;
+
 
 \echo 'xform data imported into the gwells_well table';
 

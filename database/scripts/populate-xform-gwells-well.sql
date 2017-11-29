@@ -30,8 +30,8 @@ INSERT INTO xform_gwells_well (
   intended_water_use_guid            ,
   land_district_guid                 ,
   province_state_guid                ,
-  class_of_well_codclassified_by     ,
-  subclass_of_well_classified_by     ,
+  well_class_guid                    ,
+  well_subclass_guid                 ,
   well_yield_unit_guid               ,
   latitude                           ,
   longitude                          ,
@@ -122,8 +122,8 @@ SELECT
     WHEN 'WASH_STATE' THEN 'f46b77b447d411e7a91992ebcb67fe33'::uuid
     ELSE 'f46b7b1a47d411e7a91992ebcb67fe33'::uuid
   END AS province_state_guid                                             ,
-  coalesce (wells.class_of_well_codclassified_by,'LEGACY')               ,
-  wells.subclass_of_well_classified_by                                   , -- -> well_subclass_guid
+  COALESCE (class.well_class_guid,'ecdc4de647e011e7a91992ebcb67fe33')    , --> LEGACY
+  subclass.well_subclass_guid                                            ,
   CASE wells.yield_unit_code
     WHEN 'GPM'  THEN 'c4634ef447c311e7a91992ebcb67fe33'::uuid
     WHEN 'IGM'  THEN 'c4634ff847c311e7a91992ebcb67fe33'::uuid
@@ -232,6 +232,8 @@ FROM wells.wells_wells wells LEFT OUTER JOIN wells.wells_owners owner ON owner.o
                              LEFT OUTER JOIN gwells_well_status well_status ON UPPER(wells.status_of_well_code)=UPPER(well_status.code)
                              LEFT OUTER JOIN gwells_licenced_status licenced_status ON UPPER(wells.well_licence_general_status)=UPPER(licenced_status.code)
                              LEFT OUTER JOIN gwells_intended_water_use intended_water_use ON UPPER(wells.well_use_code)=UPPER(intended_water_use.code)
+                             LEFT OUTER JOIN gwells_well_class class ON UPPER(wells.class_of_well_codclassified_by)=UPPER(class.code)
+                             LEFT OUTER JOIN gwells_well_subclass subclass ON UPPER(wells.subclass_of_well_classified_by)=UPPER(subclass.code) AND subclass.well_class_guid = class.well_class_guid
 WHERE wells.acceptance_status_code NOT IN ('PENDING', 'REJECTED', 'NEW');
 
 \echo 'wells data (= ACCEPTED) transformed via xform_gwells_well ETL table';
