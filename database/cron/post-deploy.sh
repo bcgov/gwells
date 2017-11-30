@@ -10,12 +10,19 @@
 #
 #   Example: oc exec gwells-97-69b7z /opt/app-root/src/database/cron/post-deploy.sh
 #
+echo "Running Post-Deploy tasks..."
 export PGPASSWORD=$DATABASE_PASSWORD
 cd /opt/app-root/src/database/scripts/
+echo ". Creating additional DB objects (e.g. spatial indices)"
 psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER  -f post-deploy.sql
 
 if [ "$ENABLE_DB_REPLICATION" = "True" ]
 then
+  echo ". Running DB Replication from Legacy Database, as per ENABLE_DB_REPLICATION flag"
   cd /opt/app-root/src/database/cron/
   ./db-replicate.sh
+else
+  echo ". Skipping DB Replication from Legacy Database, as per ENABLE_DB_REPLICATION flag"
 fi 
+
+echo "Completed Post-Deploy tasks."
