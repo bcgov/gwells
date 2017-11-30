@@ -79,6 +79,11 @@ INSERT INTO xform_gwells_well (
   backfill_type                      ,
   backfill_depth                     ,
   liner_material_guid                ,
+  decommission_reason                ,
+  decommission_method_guid           ,
+  sealant_material                   ,
+  backfill_material                  ,
+  decommission_details               ,
   when_created                       ,
   when_updated                       ,
   who_created                        ,
@@ -213,6 +218,11 @@ SELECT
   wells.backfill_type                                                    ,
   wells.backfill_depth                                                   ,
   liner_material.liner_material_guid                                     ,
+  wells.closure_reason                                                   ,
+  decommission_method.decommission_method_guid                           ,
+  wells.sealant_material                                                 ,
+  wells.backfill_material                                                ,
+  wells.closure_details                                                  ,
   wells.when_created                                                     ,
   COALESCE(wells.when_updated,wells.when_created)                        ,
   wells.who_created                                                      ,
@@ -234,6 +244,7 @@ FROM wells.wells_wells wells LEFT OUTER JOIN wells.wells_owners owner ON owner.o
                              LEFT OUTER JOIN gwells_intended_water_use intended_water_use ON UPPER(wells.well_use_code)=UPPER(intended_water_use.code)
                              LEFT OUTER JOIN gwells_well_class class ON UPPER(wells.class_of_well_codclassified_by)=UPPER(class.code)
                              LEFT OUTER JOIN gwells_well_subclass subclass ON UPPER(wells.subclass_of_well_classified_by)=UPPER(subclass.code) AND subclass.well_class_guid = class.well_class_guid
+                             LEFT OUTER JOIN gwells_decommission_method decommission_method ON UPPER(wells.closure_method_code)=UPPER(decommission_method.code)
 WHERE wells.acceptance_status_code NOT IN ('PENDING', 'REJECTED', 'NEW');
 
 \echo 'wells data (= ACCEPTED) transformed via xform_gwells_well ETL table';

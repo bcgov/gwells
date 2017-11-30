@@ -73,7 +73,7 @@ INSERT INTO gwells_well (
   bedrock_depth                      ,
   water_supply_system_name           ,
   water_supply_system_well_name      ,
-  well_identification_plate_attached,
+  well_identification_plate_attached ,
   ems                                ,
   screen_intake_method_guid          ,
   screen_type_guid                   ,
@@ -86,7 +86,12 @@ INSERT INTO gwells_well (
   utm_accuracy_code                  ,
   bcgs_id                            ,
   development_method_guid            ,
-  development_hours
+  development_hours                  ,
+  decommission_reason                ,
+  decommission_method_guid           ,
+  sealant_material                   ,
+  backfill_material                  ,
+  decommission_details
   )
 SELECT
 	xform.well_tag_number                          ,
@@ -162,7 +167,7 @@ SELECT
   xform.bedrock_depth                            ,
   xform.water_supply_system_name                 ,
   xform.water_supply_system_well_name            ,
-  xform.well_identification_plate_attached      ,
+  xform.well_identification_plate_attached       ,
   xform.ems                                      ,
   xform.screen_intake_method_guid                ,
   xform.screen_type_guid                         ,
@@ -175,7 +180,12 @@ SELECT
   xform.utm_accuracy_code                        ,
 	xform.bcgs_id                                  ,
   xform.development_method_guid                  ,
-  xform.development_duration
+  xform.development_duration                     ,
+  xform.decommission_reason                      ,
+  xform.decommission_method_guid                 ,
+  xform.sealant_material                         ,
+  xform.backfill_material                        ,
+  xform.decommission_details
 FROM xform_gwells_well xform;
 
 

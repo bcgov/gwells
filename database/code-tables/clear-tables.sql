@@ -110,4 +110,13 @@ TRUNCATE TABLE gwells_surface_seal_material CASCADE;
 \echo '...clearing gwells_surface_seal_method'
 TRUNCATE TABLE gwells_surface_seal_method CASCADE;
 
+\echo '...clearing gwells_lithology_material'
+TRUNCATE TABLE gwells_lithology_material CASCADE;
+
+\echo '...clearing gwells_lithology_description_code'
+TRUNCATE TABLE gwells_lithology_description_code CASCADE;
+
+\echo '...clearing gwells_decommission_method'
+TRUNCATE TABLE gwells_decommission_method CASCADE;
+
 \echo 'Finished clearing tables.'
