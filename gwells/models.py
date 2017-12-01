@@ -64,7 +64,7 @@ class ProvinceState(AuditModel):
 
 class LandDistrict(AuditModel):
     """
-    Lookup of Land Districts.
+    Lookup of Legal Land Districts.
     """
     land_district_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     code = models.CharField(max_length=10, unique=True)
@@ -893,7 +893,7 @@ class ActivitySubmission(AuditModel):
     legal_section = models.CharField(max_length=10, blank=True, verbose_name='Section')
     legal_township = models.CharField(max_length=20, blank=True, verbose_name='Township')
     legal_range = models.CharField(max_length=10, blank=True, verbose_name='Range')
-    legal_land_district = models.ForeignKey(LandDistrict, db_column='legal_land_district_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Land District')
+    land_district = models.ForeignKey(LandDistrict, db_column='land_district_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Land District')
     legal_pid = models.PositiveIntegerField(blank=True, null=True, verbose_name='PID')
     well_location_description = models.CharField(max_length=500, blank=True, verbose_name='Well Location Description')
 
@@ -983,7 +983,7 @@ class ActivitySubmission(AuditModel):
         w.legal_section = self.legal_section
         w.legal_township = self.legal_township
         w.legal_range = self.legal_range
-        w.legal_land_district = self.legal_land_district
+        w.land_district = self.land_district
         w.legal_pid = self.legal_pid
         w.well_location_description = self.well_location_description
 
