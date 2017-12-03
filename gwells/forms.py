@@ -330,7 +330,7 @@ class ActivitySubmissionLocationForm(forms.ModelForm):
                     Div('legal_section', css_class='col-md-2 city'),
                     Div('legal_township', css_class='col-md-2 city'),
                     Div('legal_range', css_class='col-md-2 city'),
-                    Div('legal_land_district', css_class='col-md-2 city'),
+                    Div('land_district', css_class='col-md-2 city'),
                     css_class='row',
                 ),
                 Div(
@@ -374,8 +374,8 @@ class ActivitySubmissionLocationForm(forms.ModelForm):
 
         legal_lot = cleaned_data.get('legal_lot')
         legal_plan = cleaned_data.get('legal_plan')
-        legal_land_district = cleaned_data.get('legal_land_district')
-        legal_provided = legal_lot and legal_plan and legal_land_district
+        land_district = cleaned_data.get('land_district')
+        legal_provided = legal_lot and legal_plan and land_district
 
         if not address_provided and not legal_provided and not cleaned_data.get('legal_pid'):
             raise forms.ValidationError('At least 1 of Civic Address, Legal Description (Lot, Plan and Land District) or Parcel Identifier must be provided.')
@@ -383,7 +383,7 @@ class ActivitySubmissionLocationForm(forms.ModelForm):
 
     class Meta:
         model = ActivitySubmission
-        fields = ['street_address', 'city', 'legal_lot', 'legal_plan', 'legal_district_lot', 'legal_block', 'legal_section', 'legal_township', 'legal_range', 'legal_land_district', 'legal_pid', 'well_location_description']
+        fields = ['street_address', 'city', 'legal_lot', 'legal_plan', 'legal_district_lot', 'legal_block', 'legal_section', 'legal_township', 'legal_range', 'land_district', 'legal_pid', 'well_location_description']
         help_texts = {'well_location_description': "Provide any additional well location details, such as physical landmarks",}
 
 
