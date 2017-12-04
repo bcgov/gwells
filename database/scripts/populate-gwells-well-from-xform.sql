@@ -59,7 +59,6 @@ INSERT INTO gwells_well (
   water_quality_colour               ,
   water_quality_odour                ,
   alternative_specs_submitted        ,
-  comments                           ,
   construction_start_date            ,
   construction_end_date              ,
   alteration_start_date              ,
@@ -91,7 +90,8 @@ INSERT INTO gwells_well (
   decommission_method_guid           ,
   sealant_material                   ,
   backfill_material                  ,
-  decommission_details
+  decommission_details               ,
+  comments
   )
 SELECT
 	xform.well_tag_number                          ,
@@ -153,7 +153,6 @@ SELECT
 	''                                             ,
 	''                                             ,
 	false                                          ,
-	''                                             ,
 	xform.construction_start_date                  ,
 	xform.construction_end_date                    ,
 	xform.alteration_start_date                    ,
@@ -185,7 +184,8 @@ SELECT
   xform.decommission_method_guid                 ,
   xform.sealant_material                         ,
   xform.backfill_material                        ,
-  xform.decommission_details
+  xform.decommission_details                     ,
+  xform.comments
 FROM xform_gwells_well xform;
 
 
