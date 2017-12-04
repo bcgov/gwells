@@ -21,14 +21,14 @@ environments {
 
 	// run via “./gradlew chromeTest”
 	// See: http://code.google.com/p/selenium/wiki/ChromeDriver
-/*	chrome {
-		driver = { new ChromeDriver() }*/
 	chrome {
+		driver = { new ChromeDriver() }
+/* 	chrome {
 		driver = { def d = new ChromeDriver(new DesiredCapabilities());
 			//d.manage().window().size = new Dimension(1920, 1080);
 			d.manage().window().maximize();
 			return d
-		}
+		} */
 	}
 
 	// run via “./gradlew firefoxTest”
