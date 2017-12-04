@@ -330,7 +330,7 @@ class ActivitySubmissionLocationForm(forms.ModelForm):
                     Div('legal_section', css_class='col-md-2 city'),
                     Div('legal_township', css_class='col-md-2 city'),
                     Div('legal_range', css_class='col-md-2 city'),
-                    Div('legal_land_district', css_class='col-md-2 city'),
+                    Div('land_district', css_class='col-md-2 city'),
                     css_class='row',
                 ),
                 Div(
@@ -374,8 +374,8 @@ class ActivitySubmissionLocationForm(forms.ModelForm):
 
         legal_lot = cleaned_data.get('legal_lot')
         legal_plan = cleaned_data.get('legal_plan')
-        legal_land_district = cleaned_data.get('legal_land_district')
-        legal_provided = legal_lot and legal_plan and legal_land_district
+        land_district = cleaned_data.get('land_district')
+        legal_provided = legal_lot and legal_plan and land_district
 
         if not address_provided and not legal_provided and not cleaned_data.get('legal_pid'):
             raise forms.ValidationError('At least 1 of Civic Address, Legal Description (Lot, Plan and Land District) or Parcel Identifier must be provided.')
@@ -383,7 +383,7 @@ class ActivitySubmissionLocationForm(forms.ModelForm):
 
     class Meta:
         model = ActivitySubmission
-        fields = ['street_address', 'city', 'legal_lot', 'legal_plan', 'legal_district_lot', 'legal_block', 'legal_section', 'legal_township', 'legal_range', 'legal_land_district', 'legal_pid', 'well_location_description']
+        fields = ['street_address', 'city', 'legal_lot', 'legal_plan', 'legal_district_lot', 'legal_block', 'legal_section', 'legal_township', 'legal_range', 'land_district', 'legal_pid', 'well_location_description']
         help_texts = {'well_location_description': "Provide any additional well location details, such as physical landmarks",}
 
 
@@ -886,16 +886,16 @@ class ActivitySubmissionScreenIntakeForm(forms.ModelForm):
             errors.append('Configuration error: Intake Method for Screen does not exist, please contact the administrator.')
 
         if screen_intake_method:
-            if screen_intake_method == screen_intake_method and not screen_type:
+            if screen_intake_method == screen_screen_intake and not screen_type:
                 self.add_error('screen_type', 'This field is required if Intake is a Screen.')
 
-            if screen_intake_method == screen_intake_method and not screen_material:
+            if screen_intake_method == screen_screen_intake and not screen_material:
                 self.add_error('screen_material', 'This field is required if Intake is a Screen.')
 
-            if screen_intake_method == screen_intake_method and not screen_opening:
+            if screen_intake_method == screen_screen_intake and not screen_opening:
                 self.add_error('screen_opening', 'This field is required if Intake is a Screen.')
 
-            if screen_intake_method == screen_intake_method and not screen_bottom:
+            if screen_intake_method == screen_screen_intake and not screen_bottom:
                 self.add_error('screen_bottom', 'This field is required if Intake is a Screen.')
 
         try:
@@ -1202,9 +1202,6 @@ class ActivitySubmissionCommentForm(forms.ModelForm):
         fields = ['comments', 'alternative_specs_submitted']
         widgets = {'comments': forms.Textarea}
 
-
-
-#WellCompletionDataFormSet = inlineformset_factory(ActivitySubmission, WellCompletionData, max_num=1, can_delete=False)
 ActivitySubmissionLithologyFormSet = inlineformset_factory(ActivitySubmission, LithologyDescription, form=LithologyForm, fk_name='activity_submission', can_delete=False, extra=10)
 ActivitySubmissionCasingFormSet = inlineformset_factory(ActivitySubmission, Casing, form=CasingForm, fk_name='activity_submission', can_delete=False, extra=5)
 ActivitySubmissionLinerPerforationFormSet = inlineformset_factory(ActivitySubmission, LinerPerforation, form=LinerPerforationForm, fk_name='activity_submission', can_delete=False, extra=5)

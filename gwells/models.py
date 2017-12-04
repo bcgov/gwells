@@ -64,7 +64,7 @@ class ProvinceState(AuditModel):
 
 class LandDistrict(AuditModel):
     """
-    Lookup of Land Districts.
+    Lookup of Legal Land Districts.
     """
     land_district_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     code = models.CharField(max_length=10, unique=True)
@@ -177,7 +177,7 @@ class LicencedStatus(AuditModel):
     """
     LicenceStatus of Well.
     """
-    well_licenced_status_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    licenced_status_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     code = models.CharField(unique=True, max_length=10)
     description = models.CharField(max_length=255)
     is_hidden = models.BooleanField(default=False)
@@ -680,6 +680,20 @@ class BCGS_Numbers(AuditModel):
     def __str__(self):
         return self.description
 
+class DecommissionMethod(AuditModel):
+    decommission_method_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    code = models.CharField(max_length=10, verbose_name="Code")
+    description = models.CharField(max_length=255, verbose_name="Description")
+    status_flag = models.BooleanField(default=False, choices=((False, 'N'), (True, 'Y')))
+    sort_order = models.PositiveIntegerField()
+
+    class Meta:
+        db_table = 'gwells_decommission_method'
+        ordering = ['sort_order']
+
+    def __str__(self):
+        return self.description
+
 class Well(AuditModel):
     """
     Well information.
@@ -709,18 +723,18 @@ class Well(AuditModel):
     legal_section = models.CharField(max_length=10, blank=True, verbose_name='Section')
     legal_township = models.CharField(max_length=20, blank=True, verbose_name='Township')
     legal_range = models.CharField(max_length=10, blank=True, verbose_name='Range')
-    legal_land_district = models.ForeignKey(LandDistrict, db_column='legal_land_district_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Land District')
+    land_district = models.ForeignKey(LandDistrict, db_column='land_district_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Land District')
     legal_pid = models.PositiveIntegerField(blank=True, null=True, verbose_name='Property Identification Description (PID)')
     well_location_description = models.CharField(max_length=500, blank=True, verbose_name='Description of Well Location')
 
     construction_start_date = models.DateTimeField(null=True, verbose_name="Construction Start Date")
-    construction_end_date = models.DateTimeField(null=True, verbose_name="Construction End Date")
+    construction_end_date = models.DateTimeField(null=True, verbose_name="Construction Date")
 
     alteration_start_date = models.DateTimeField(null=True, verbose_name="Alteration Start Date")
-    alteration_end_date = models.DateTimeField(null=True, verbose_name="Alteration End Date")
+    alteration_end_date = models.DateTimeField(null=True, verbose_name="Alteration Date")
 
     decommission_start_date = models.DateTimeField(null=True, verbose_name="Decommission Start Date")
-    decommission_end_date = models.DateTimeField(null=True, verbose_name="Decommission End Date")
+    decommission_end_date = models.DateTimeField(null=True, verbose_name="Decommission Date")
 
     drilling_company = models.ForeignKey(DrillingCompany, db_column='drilling_company_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Drilling Company')
 
@@ -741,15 +755,11 @@ class Well(AuditModel):
     backfill_type = models.CharField(max_length=250, blank=True, null=True, verbose_name="Backfill Type")
     backfill_depth = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Backfill Depth')
 
-
-
     liner_material = models.ForeignKey(LinerMaterial, db_column='liner_material_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Liner Material')
     liner_diameter = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Liner Diameter', validators=[MinValueValidator(Decimal('0.00'))])
     liner_thickness = models.DecimalField(max_digits=5, decimal_places=3, blank=True, null=True, verbose_name='Liner Thickness', validators=[MinValueValidator(Decimal('0.00'))])
     liner_from = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Liner From', validators=[MinValueValidator(Decimal('0.00'))])
     liner_to = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Liner To', validators=[MinValueValidator(Decimal('0.01'))])
-
-
 
     screen_intake_method = models.ForeignKey(ScreenIntakeMethod, db_column='screen_intake_method_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Intake Method')
     screen_type = models.ForeignKey(ScreenType, db_column='screen_type_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Type')
@@ -801,7 +811,13 @@ class Well(AuditModel):
     utm_easting = models.IntegerField(blank=True, null=True, verbose_name="UTM Easting")
     utm_accuracy_code = models.CharField(max_length=10, blank=True, null=True, verbose_name="Location Accuracy Code")
     bcgs_id = models.ForeignKey(BCGS_Numbers, db_column='bcgs_id', on_delete=models.CASCADE, blank=True, null=True, verbose_name="BCGS Mapsheet Number")
-    models.BigIntegerField(blank=True, null=True, verbose_name="BCGS Mapsheet Number")
+
+    decommission_reason = models.CharField(max_length=250, blank=True, null=True, verbose_name="Reason for Decomission")
+    decommission_method = models.ForeignKey(DecommissionMethod, db_column='decommission_method_guid', blank=True, null="True", verbose_name="Method of Decommission")
+    sealant_material = models.CharField(max_length=100, blank=True, null=True, verbose_name="Sealant Material")
+    backfill_material = models.CharField(max_length=100, blank=True, null=True, verbose_name="Backfill Material")
+    decommission_details = models.CharField(max_length=250, blank=True, null=True, verbose_name="Decomission Details")
+
     tracker = FieldTracker()
 
     class Meta:
@@ -839,7 +855,7 @@ class Perforation(AuditModel):
 
     class Meta:
         db_table = 'gwells_perforation'
-        ordering = ['perforation_guid']
+        ordering = ['liner_from', 'liner_to', 'liner_perforation_from', 'liner_perforation_to', 'perforation_guid']
 
     def __str__(self):
         return self.description
@@ -877,7 +893,7 @@ class ActivitySubmission(AuditModel):
     legal_section = models.CharField(max_length=10, blank=True, verbose_name='Section')
     legal_township = models.CharField(max_length=20, blank=True, verbose_name='Township')
     legal_range = models.CharField(max_length=10, blank=True, verbose_name='Range')
-    legal_land_district = models.ForeignKey(LandDistrict, db_column='legal_land_district_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Land District')
+    land_district = models.ForeignKey(LandDistrict, db_column='land_district_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Land District')
     legal_pid = models.PositiveIntegerField(blank=True, null=True, verbose_name='PID')
     well_location_description = models.CharField(max_length=500, blank=True, verbose_name='Well Location Description')
 
@@ -967,7 +983,7 @@ class ActivitySubmission(AuditModel):
         w.legal_section = self.legal_section
         w.legal_township = self.legal_township
         w.legal_range = self.legal_range
-        w.legal_land_district = self.legal_land_district
+        w.land_district = self.land_district
         w.legal_pid = self.legal_pid
         w.well_location_description = self.well_location_description
 
@@ -1061,29 +1077,63 @@ class LtsaOwner(AuditModel):
     def __str__(self):
         return '%s %s' % (self.full_name, self.mailing_address)
 
+class LithologyMaterial(AuditModel):
+    lithology_material_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    code = models.CharField(max_length=10, verbose_name='Code')
+    description = models.CharField(max_length=255, verbose_name='Description')
+    sort_order = models.PositiveIntegerField()
+    status_flag = models.BooleanField()
+
+    class Meta:
+        db_table = 'gwells_lithology_material'
+        ordering=['sort_order']
+    def __str__(self):
+        return 'lithology_material {} {}'.format(self.code, self.description)
+
+class LithologyDescriptionCode(AuditModel):
+    lithology_description_code_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    code = models.CharField(max_length=10, verbose_name='Code')
+    description = models.CharField(max_length=255, verbose_name='Description')
+    sort_order = models.PositiveIntegerField()
+
+    class Meta:
+        db_table = 'gwells_lithology_description_code'
+        ordering=['sort_order']
+    def __str__(self):
+        return 'lithology_description_code {} {}'.format(self.code, self.description)
+
 class LithologyDescription(AuditModel):
     """
     Lithology information details
     """
     lithology_description_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     activity_submission = models.ForeignKey(ActivitySubmission, db_column='filing_number', on_delete=models.CASCADE, blank=True, null=True)
-    well = models.ForeignKey(Well, db_column='well_tag_number', on_delete=models.CASCADE, blank=True, null=True)
-    lithology_from = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='From', blank=False, validators=[MinValueValidator(Decimal('0.00'))])
-    lithology_to = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='To', blank=False, validators=[MinValueValidator(Decimal('0.01'))])
-    surficial_material = models.ForeignKey(SurficialMaterial, db_column='surficial_material_guid', related_name='surficial_material_set', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Surficial Material')
-    secondary_surficial_material = models.ForeignKey(SurficialMaterial, db_column='secondary_surficial_material_guid', related_name='secondary_surficial_material_set', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Secondary Surficial Material')
+    well_tag_number = models.ForeignKey(Well, db_column='well_tag_number', on_delete=models.CASCADE, blank=True, null=True)
+    lithology_from = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='From', blank=True, null=True, validators=[MinValueValidator(Decimal('0.00'))])
+    lithology_to = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='To', blank=True, null=True, validators=[MinValueValidator(Decimal('0.01'))])
+    lithology_raw_data = models.CharField(max_length=250, blank=True, null=True, verbose_name='Raw Data')
+
+    lithology_description = models.ForeignKey(LithologyDescriptionCode, db_column='lithology_description_code_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name="Description")
+    lithology_colour = models.ForeignKey(LithologyColour, db_column='lithology_colour_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Colour')
+    lithology_hardness = models.ForeignKey(LithologyHardness, db_column='lithology_hardness_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Hardness')
+    lithology_material = models.ForeignKey(LithologyMaterial, db_column='lithology_material_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name="Material")
+
+    water_bearing_estimated_flow = models.DecimalField(max_digits=10, decimal_places=4, blank=True, null=True, verbose_name='Water Bearing Estimated Flow')
+    water_bearing_estimated_flow_units = models.ForeignKey(WellYieldUnit, db_column='well_yield_unit_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Units')
+    lithology_observation = models.CharField(max_length=250, blank=True, null=True, verbose_name='Observations')
+
     bedrock_material = models.ForeignKey(BedrockMaterial, db_column='bedrock_material_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Bedrock Material')
     bedrock_material_descriptor = models.ForeignKey(BedrockMaterialDescriptor, db_column='bedrock_material_descriptor_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Descriptor')
     lithology_structure = models.ForeignKey(LithologyStructure, db_column='lithology_structure_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Bedding')
-    lithology_colour = models.ForeignKey(LithologyColour, db_column='lithology_colour_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Colour')
-    lithology_hardness = models.ForeignKey(LithologyHardness, db_column='lithology_hardness_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Hardness')
     lithology_moisture = models.ForeignKey(LithologyMoisture, db_column='lithology_moisture_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Moisture')
-    water_bearing_estimated_flow = models.DecimalField(max_digits=10, decimal_places=4, blank=True, null=True, verbose_name='Water Bearing Estimated Flow')
-    lithology_observation = models.CharField(max_length=250, blank=True, verbose_name='Observations')
+    surficial_material = models.ForeignKey(SurficialMaterial, db_column='surficial_material_guid', related_name='surficial_material_set', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Surficial Material')
+    secondary_surficial_material = models.ForeignKey(SurficialMaterial, db_column='secondary_surficial_material_guid', related_name='secondary_surficial_material_set', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Secondary Surficial Material')
+
+    lithology_sequence_number = models.BigIntegerField(blank=True, null=True)
 
     class Meta:
         db_table = 'gwells_lithology_description'
-
+        ordering=["lithology_sequence_number"]
     def __str__(self):
         if self.activity_submission:
             return 'activity_submission {} {} {}'.format(self.activity_submission, self.lithology_from, self.lithology_to)
@@ -1106,7 +1156,9 @@ class Casing(AuditModel):
     drive_shoe = models.NullBooleanField(default=False, null=True, verbose_name='Drive Shoe', choices=((False, 'No'), (True, 'Yes')))
 
     class Meta:
+        ordering = ["casing_from", "casing_to"]
         db_table = 'gwells_casing'
+
 
     def __str__(self):
         if self.activity_submission:
@@ -1114,6 +1166,17 @@ class Casing(AuditModel):
         else:
             return 'well {} {} {}'.format(self.well, self.casing_from, self.casing_to)
 
+    def as_dict(self):
+        return {
+            "casing_from": self.casing_from,
+            "casing_to": self.casing_to,
+            "casing_guid": self.casing_guid,
+            "well_tag_number": self.well_tag_number,
+            "internal_diameter": self.internal_diameter,
+            "wall_thickness": self.wall_thickness,
+            "casing_material": self.casing_material,
+            "drive_shoe": self.drive_shoe
+        }
 class LinerPerforation(AuditModel):
     """
     Perforation in a well liner
@@ -1148,7 +1211,7 @@ class Screen(AuditModel):
 
     class Meta:
         db_table = 'gwells_screen'
-
+        ordering = ['screen_from', 'screen_to']
     def __str__(self):
         if self.activity_submission:
             return 'activity_submission {} {} {}'.format(self.activity_submission, self.screen_from, self.screen_to)
@@ -1187,8 +1250,7 @@ class AquiferWell(AuditModel):
 
     aquifer_well_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     aquifer_id = models.PositiveIntegerField(verbose_name="Aquifer Number", blank=True, null=True)
-    #well = models.ForeignKey(Well, db_column='well_guid', on_delete=models.CASCADE, blank=True, null=True) #transition to this later
-    well_tag_number = models.ForeignKey(Well, db_column='well_tag_number', to_field='well_tag_number', on_delete=models.CASCADE, blank=False, null=False)#speficying to_field in advance of transition to natural primary key for well table
+    well_tag_number = models.ForeignKey(Well, db_column='well_tag_number', to_field='well_tag_number', on_delete=models.CASCADE, blank=False, null=False)
 
     class Meta:
         db_table = 'gwells_aquifer_well'

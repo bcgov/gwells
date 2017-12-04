@@ -35,7 +35,7 @@
 
 --LICENCE
 \echo '... loading gwells_licenced_status code table'
-\copy gwells_licenced_status (well_licenced_status_guid,code,description,is_hidden,sort_order,when_created,when_updated,who_created,who_updated) from 'gwells_licenced_status.csv' with header delimiter ',' CSV ;
+\copy gwells_licenced_status (licenced_status_guid,code,description,is_hidden,sort_order,when_created,when_updated,who_created,who_updated) from 'gwells_licenced_status.csv' with header delimiter ',' CSV ;
 
 --DRILLING COMPANY
 \echo '... loading gwells_drilling_company code table'
@@ -82,16 +82,41 @@
 \echo '... loading gwells_casing_material code table'
 \copy gwells_casing_material (who_created,when_created,who_updated,when_updated,casing_material_guid,casing_material_code,description,is_hidden,sort_order ) from 'gwells_casing_material.csv' with header delimiter ',' CSV ;
 
---SURFACE SEAL METHOD -- code table not available
---\echo '... loading gwells_surface_seal_method code table'
---\copy gwells_surface_seal_method (who_created,when_created,who_updated,when_updated,surface_seal_method_guid,surface_seal_method_code,description,is_hidden,sort_order ) from 'gwells_surface_seal_method.csv' with header delimiter ',' CSV ;
+--SURFACE SEAL METHOD
+\echo '... loading gwells_surface_seal_method code table'
+\copy gwells_surface_seal_method (who_created,when_created,who_updated,when_updated,surface_seal_method_guid,surface_seal_method_code,description,is_hidden,sort_order ) from 'gwells_surface_seal_method.csv' with header delimiter ',' CSV ;
 
---SURFACE SEAL MATERIAL -- code table not complete
---\echo '... loading gwells_surface_seal_method code table'
---\copy gwells_surface_seal_material (who_created,when_created,who_updated,when_updated,surface_seal_material_guid,surface_seal_material_code,description,is_hidden,sort_order ) from 'gwells_surface_seal_material.csv' with header delimiter ',' CSV ;
+--SURFACE SEAL MATERIAL
+\echo '... loading gwells_surface_seal_material table'
+\copy gwells_surface_seal_material (who_created,when_created,who_updated,when_updated,surface_seal_material_guid,surface_seal_material_code,description,is_hidden,sort_order ) from 'gwells_surface_seal_material.csv' with header delimiter ',' CSV ;
 
 --LINER MATERIAL
 \echo '... loading gwells_liner_material code table'
 \copy gwells_liner_material (who_created,when_created,who_updated,when_updated,liner_material_guid,liner_material_code,description,is_hidden,sort_order) from 'gwells_liner_material.csv' with header delimiter ',' CSV ;
+
+--LITHOLOGY COLOUR
+\echo '... loading gwells_lithology_colour code table'
+\copy gwells_lithology_colour (who_created,when_created,who_updated,when_updated,lithology_colour_guid,code,description,is_hidden,sort_order) from 'gwells_lithology_colour.csv' with header delimiter ',' CSV ;
+
+--LITHOLOGY HARDNESS
+\echo '... loading gwells_lithology_hardness code table'
+\copy gwells_lithology_hardness (lithology_hardness_guid,code,description,is_hidden,sort_order,when_created,when_updated,who_created,who_updated) from 'gwells_lithology_hardness.csv' with header delimiter ',' CSV ;
+
+--LAND DISTRICT
+\echo '... loading gwells_land_district code table'
+\copy gwells_land_district (who_created,when_created,who_updated,when_updated,land_district_guid,code,name,sort_order) from 'gwells_land_district.csv' with header delimiter ',' CSV ;
+
+--LITHOLOGY MATERIAL
+\echo '... loading gwells_lithology_material code table'
+\copy gwells_lithology_material (who_created,when_created,who_updated,when_updated,lithology_material_guid,code,description,sort_order,status_flag) from 'gwells_lithology_material.csv' with header delimiter ',' CSV ;
+
+--LITHOLOGY DESCRIPTION
+\echo '... loading gwells_lithology_description_code code table'
+\copy gwells_lithology_description_code (who_created,when_created,who_updated,when_updated,lithology_description_code_guid,code,description,sort_order) from 'gwells_lithology_description_code.csv' with header delimiter ',' CSV ;
+
+--DECOMMISSION METHOD
+\echo '... loading gwells_decommission_method code table'
+\copy gwells_decommission_method (who_created,when_created,who_updated,when_updated,code,description,status_flag,sort_order,decommission_method_guid) from 'gwells_decommission_method.csv' with header delimiter ',' CSV ;
+
 
 \echo 'Finshed copy of static code tables.'
