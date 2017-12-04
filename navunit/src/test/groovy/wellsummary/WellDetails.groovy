@@ -115,6 +115,16 @@ class WellDetailsSpecs extends GebReportingSpec {
 			assert perforations_fieldset
 			assert liner_details
 
+			assert lithology_fieldset
+			assert lithology
+
+			assert well_decommissioning
+        	assert reason_for_decommission
+        	assert method_of_closure
+        	// assert sealant_material
+        	//"backfill_material"
+        	assert decommission_details 
+
 			assert well_tag_number_link
         where:
         TestDesc                          | WellId           
@@ -220,5 +230,19 @@ class WellDetailsSpecs extends GebReportingSpec {
 		"liner_to"	 | "280.00" 	 |  111752 
 		"liner_perffrom"	 | "120.00" 	 |  111752 
 		"liner_perfto"	 | "140.00" 	 |  111752 
+		"lithology_from"	 | "0.00" 	 |  110000 
+        "lithology_to"	 | "2.00" 	 |  110000 
+        "lithology_raw_data"	 | "None" 	 |  110000 
+        "lithology_description"	 | "cemented" 	 |  110000 
+        "lithology_material_description"	 | "soil" 	 |  110000 
+        "lithology_relative_hardness"	 | "None" 	 |  110000 
+        "lithology_colour" 	 | "dark" 	 |  110000 
+        //"lithology_waterbearing_estimated_flow"	 | "" 	 |  110000 
+        "lithology_observations" 	 | "Water-bearing" 	 |  110000 
+        "reason_for_decommission" 	 | "None" 	 |  110000 
+        "method_of_closure" 	 | "" 	 |  110000 
+        //"sealant_material" 	 | "None" 	 |  110000 
+        //"backfill_material" 	 | "None" 	 |  110000 
+        "decommission_details"  	 | "None" 	 |  110000 
     } 	
 }
