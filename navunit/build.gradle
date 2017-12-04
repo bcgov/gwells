@@ -5,10 +5,10 @@ ext {
     drivers = ["firefox","chrome", "phantomJs", "ie"]
 
     ext {
-        groovyVersion = '2.4.12'
+		groovyVersion = '2.4.8'
         gebVersion = '1.1.1'
         seleniumVersion = '2.53.0'
-        chromeDriverVersion = '2.30'
+        chromeDriverVersion = '2.24'
         phantomJsVersion = '2.1.1'
     }
 }
