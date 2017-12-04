@@ -139,45 +139,45 @@
             </div>
             <div class="row">
                 <div class="col-md-12">
-                    <label for="legal">Legal Description</label>
+                    <label for="legal">Legal Description:</label>
                     <div class="row">
                         <div class="col-md-12 table-responsive">
                             <table id="legal" class="table table-condensed table-bordered table-striped">
                                 <tbody>
                                     <tr>
-                                        <th scope="row">{% verbose_name well "legal_lot" %}:</th>
+                                        <th scope="row">{% verbose_name well "legal_lot" %}</th>
                                         <td><span id="lot">{{well.legal_lot|default_if_none:'&nbsp;'}}</span></td>
                                     </tr>
                                     <tr>
-                                        <th scope="row"><label for="plan">{% verbose_name well "legal_plan" %}:</label></th>
+                                        <th scope="row"><label for="plan">{% verbose_name well "legal_plan" %}</label></th>
                                         <td><span id="plan">{{well.legal_plan|default_if_none:'&nbsp;'}}</span></td>
                                     </tr>
                                     <tr>
-                                        <th scope="row">{% verbose_name well "legal_district_lot" %}:</th>
+                                        <th scope="row">{% verbose_name well "legal_district_lot" %}</th>
                                         <td><span id="district_lot">{{well.legal_district_lot|default_if_none:'&nbsp;'}}</span></td>
                                     </tr>
                                     <tr>
-                                        <th scope="row">{% verbose_name well "legal_block" %}:</th>
+                                        <th scope="row">{% verbose_name well "legal_block" %}</th>
                                         <td><span id="block">{{well.legal_block|default_if_none:'&nbsp;'}}</span></td>
                                     </tr>
                                     <tr>
-                                        <th scope="row">{% verbose_name well "legal_section" %}:</th>
+                                        <th scope="row">{% verbose_name well "legal_section" %}</th>
                                         <td><span id="section">{{well.legal_section|default_if_none:'&nbsp;'}}</span></td>
                                     </tr>
                                     <tr>
-                                        <th scope="row">{% verbose_name well "legal_township" %}:</th>
+                                        <th scope="row">{% verbose_name well "legal_township" %}</th>
                                         <td><span id="township">{{well.legal_township|default_if_none:'&nbsp;'}}</span></td>
                                     </tr>
                                     <tr>
-                                        <th scope="row">{% verbose_name well "legal_range" %}:</th>
+                                        <th scope="row">{% verbose_name well "legal_range" %}</th>
                                         <td><span id="range">{{well.legal_range|default_if_none:'&nbsp;'}}</span></td>
                                     </tr>
                                     <tr>
-                                        <th scope="row">{% verbose_name well "land_district" %}:</th>
+                                        <th scope="row">{% verbose_name well "land_district" %}</th>
                                         <td><span id="land_district">{{well.land_district.code|default_if_none:'&nbsp;'}}&nbsp;{{well.land_district.name|default_if_none:'&nbsp;'}}</span></td>
                                     </tr>
                                     <tr>
-                                        <th scope="row">{% verbose_name well "legal_pid" %}:</th>
+                                        <th scope="row" style="width:240px;">{% verbose_name well "legal_pid" %}</th>
                                         <td><span id="pid">{{well.legal_pid|default_if_none:'&nbsp;'}}</span></td>
                                     </tr>
                                 </tbody>
