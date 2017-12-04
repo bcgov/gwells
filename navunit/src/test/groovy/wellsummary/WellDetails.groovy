@@ -237,12 +237,12 @@ class WellDetailsSpecs extends GebReportingSpec {
         "lithology_material_description"	 | "soil" 	 |  110000 
         "lithology_relative_hardness"	 | "None" 	 |  110000 
         "lithology_colour" 	 | "dark" 	 |  110000 
-        //"lithology_waterbearing_estimated_flow"	 | "" 	 |  110000 
+        "lithology_waterbearing_estimated_flow"	 | "200.0000 U.S. Gallons per Minute" 	 |  104533 
         "lithology_observations" 	 | "Water-bearing" 	 |  110000 
-        "reason_for_decommission" 	 | "None" 	 |  110000 
-        "method_of_closure" 	 | "" 	 |  110000 
-        //"sealant_material" 	 | "None" 	 |  110000 
-        //"backfill_material" 	 | "None" 	 |  110000 
-        "decommission_details"  	 | "None" 	 |  110000 
+        "reason_for_decommission" 	 | "SITE DEVELOPMENT" 	 |  110749 
+        "method_of_closure" 	 | "PUMPED" 	 |  110749 
+        "sealant_material" 	 | "CONCRETE" 	 |  110749 
+        "backfill_material" 	 | "None" 	 |  110749 
+        "decommission_details"  	 | "NO ISSUES WITH CLOSURE. ONLY SLIGHT ARTESIAN FLOW IN NOV. 2014. CASING LEFT IN PLACE, PUMP PULLED." 	 |  110749 
     } 	
 }
