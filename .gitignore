@@ -69,6 +69,11 @@ gwells.pyproj
 navunit/.gradle/
 navunit/gebReports/
 
+#functional-tests
+functional-tests/.gradle/
+functional-tests/gebReports/
+functional-tests/build
+
 # Custom GW
 activate
 
