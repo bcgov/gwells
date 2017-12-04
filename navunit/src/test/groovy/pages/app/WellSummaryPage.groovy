@@ -129,14 +129,14 @@ class WellSummaryPage extends Page {
         lithology_material_description { $("#lithology > tbody > tr:nth-child(1) > td:nth-child(5)") }
         lithology_relative_hardness { $("#lithology > tbody > tr:nth-child(1) > td:nth-child(6)") }
         lithology_colour { $("#lithology > tbody > tr:nth-child(1) > td:nth-child(7)") }
-        lithology_waterbearing_estimated_flow { $("#lithology > tbody > tr:nth-child(1) > td:nth-child(8)") }
+        lithology_waterbearing_estimated_flow { $("#lithology > tbody > tr:nth-child(3) > td:nth-child(8)") }
         lithology_observations { $("#lithology > tbody > tr:nth-child(7) > td:nth-child(9)") }
 
 		well_decommissioning { $( "fieldset", id:"well_decommissioning") }
         reason_for_decommission { $( "span", id:"reason_for_decommission") }
         method_of_closure { $( "span", id:"method_of_closure") }
         sealant_material { $( "span", id:"sealant_material") }
-        //"backfill_material" { $( "span", id:"backfill_material") }
+        backfill_material { $( "span", id:"backfill_material") }
         decommission_details { $( "span", id:"decommission_details") }
 
 		well_tag_number_link { $( "a", id:"well_tag_number_link") }
