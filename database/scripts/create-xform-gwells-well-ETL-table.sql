@@ -86,6 +86,7 @@ CREATE unlogged TABLE IF NOT EXISTS xform_gwells_well (
    sealant_material                    character varying(100),
    backfill_material                   character varying(100),
    decommission_details                character varying(250),
+   comments                            character varying(255),
    when_created                        timestamp with time zone,
    when_updated                        timestamp with time zone,
    who_created                         character varying(30),
