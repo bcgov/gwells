@@ -46,7 +46,9 @@ node('bddstack') {
         checkout scm
         dir('functional-tests') {
 			try {
-				sh './gradlew --debug --stacktrace chromeHeadlessTest'
+				sh 'export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.144-0.b01.el7_4.x86_64/jre'
+                sh 'env'
+                sh './gradlew --debug --stacktrace chromeHeadlessTest'
 			} finally { 
 				archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
 			}
