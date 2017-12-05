@@ -106,7 +106,7 @@ SELECT
   wells.legal_section AS legal_section                                   ,
   wells.legal_township AS legal_township                                 ,
   wells.legal_range AS legal_range                                       ,
-  wells.pid AS legal_pid                                                 ,
+  to_char(wells.pid,'fm000000000') AS legal_pid                          ,
   wells.well_location AS well_location_description                       ,
   wells.well_identification_plate_no AS identification_plate_number      ,
   wells.diameter AS diameter                                             ,
