@@ -139,6 +139,8 @@ class WellSummaryPage extends Page {
         backfill_material { $( "span", id:"backfill_material") }
         decommission_details { $( "span", id:"decommission_details") }
 
+		comments { $("span", id:"comments") }
+
 		well_tag_number_link { $( "a", id:"well_tag_number_link") }
 	}
 }
