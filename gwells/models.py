@@ -796,7 +796,7 @@ class Well(AuditModel):
     well_cap_type = models.CharField(max_length=40, blank=True, null=True, verbose_name='Well Cap')
     well_disinfected = models.BooleanField(default=False, verbose_name='Well Disinfected', choices=((False, 'No'), (True, 'Yes')))
 
-    comments = models.CharField(max_length=3000, blank=True)
+    comments = models.CharField(max_length=3000, blank=True, null=True)
     alternative_specs_submitted = models.BooleanField(default=False, verbose_name='Alternative specs submitted (if required)', choices=((False, 'No'), (True, 'Yes')))
 
     well_yield_unit = models.ForeignKey(WellYieldUnit, db_column='well_yield_unit_guid', on_delete=models.CASCADE, blank=True, null=True)
