@@ -37,16 +37,16 @@ node('maven') {
 	
 }
 
-node('master') {
+node('bddstack') {
 	
 	stage('Functional Test') {
 		//the checkout is mandatory, otherwise functional test would fail
         echo "checking out source"
         echo "Build: ${BUILD_ID}"
         checkout scm
-        dir('navunit') {
+        dir('functional-tests') {
 			try {
-				sh './gradlew --debug --stacktrace phantomjsTest'
+				sh './gradlew --debug --stacktrace chromeHeadlessTest'
 			} finally { 
 				archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
 			}

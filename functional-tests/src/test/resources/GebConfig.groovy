@@ -76,14 +76,22 @@ environments {
 // To run the tests with all browsers just run “./gradlew test”
 
 baseNavigatorWaiting = true
-//baseUrl = "http://localhost:8000/"
-baseUrl = "http://gwells-dev.pathfinder.gov.bc.ca/"
-//baseUrl = "https://dlvrapps.nrs.gov.bc.ca/" //Dev
-//baseUrl = "https://testapps.nrs.gov.bc.ca/" //Test
-//baseUrl = "https://apps.nrs.gov.bc.ca/" //Prod
+
+// Allows for setting you baseurl in an environment variable.
+// This is particularly handy for development and the pipeline
+def env = System.getenv()
+baseUrl = env['BASEURL']
+if (!baseUrl) {
+	//baseUrl = "http://localhost:8000/"
+	baseUrl = "http://gwells-dev.pathfinder.gov.bc.ca/"
+	//baseUrl = "https://dlvrapps.nrs.gov.bc.ca/" //Dev
+	//baseUrl = "https://testapps.nrs.gov.bc.ca/" //Test
+	//baseUrl = "https://apps.nrs.gov.bc.ca/" //Prod
+}
 
 println "BaseURL: ${baseUrl}"
 println "--------------------------"
 
 cacheDriverPerThread = true
 quitCachedDriverOnShutdown = true
+
