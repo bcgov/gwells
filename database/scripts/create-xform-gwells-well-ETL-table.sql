@@ -18,7 +18,7 @@ CREATE unlogged TABLE IF NOT EXISTS xform_gwells_well (
    legal_section                       character varying(10),
    legal_township                      character varying(20),
    legal_range                         character varying(10),
-   legal_pid                           integer,
+   legal_pid                           character varying(9),
    well_location_description           character varying(500),
    identification_plate_number         integer,
    diameter                            character varying(9),
