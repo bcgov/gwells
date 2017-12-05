@@ -247,7 +247,9 @@ FROM wells.wells_wells wells LEFT OUTER JOIN wells.wells_owners owner ON owner.o
                              LEFT OUTER JOIN gwells_well_class class ON UPPER(wells.class_of_well_codclassified_by)=UPPER(class.code)
                              LEFT OUTER JOIN gwells_well_subclass subclass ON UPPER(wells.subclass_of_well_classified_by)=UPPER(subclass.code) AND subclass.well_class_guid = class.well_class_guid
                              LEFT OUTER JOIN gwells_decommission_method decommission_method ON UPPER(wells.closure_method_code)=UPPER(decommission_method.code)
-WHERE wells.acceptance_status_code NOT IN ('PENDING', 'REJECTED', 'NEW');
+WHERE wells.acceptance_status_code NOT IN ('PENDING', 'REJECTED', 'NEW') AND
+      wells.well_tag_number>100000 AND
+      COALESCE(wells.when_created, wells.when_updated) < '20171013';
 
 \echo 'wells data (= ACCEPTED) transformed via xform_gwells_well ETL table';
 
