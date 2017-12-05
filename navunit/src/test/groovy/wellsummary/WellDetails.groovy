@@ -243,6 +243,7 @@ class WellDetailsSpecs extends GebReportingSpec {
         "method_of_closure" 	 | "PUMPED" 	 |  110749 
         "sealant_material" 	 | "CONCRETE" 	 |  110749 
         "backfill_material" 	 | "None" 	 |  110749 
-        "decommission_details"  	 | "NO ISSUES WITH CLOSURE. ONLY SLIGHT ARTESIAN FLOW IN NOV. 2014. CASING LEFT IN PLACE, PUMP PULLED." 	 |  110749 
+        "decommission_details"  	 | "NO ISSUES WITH CLOSURE. ONLY SLIGHT ARTESIAN FLOW IN NOV. 2014. CASING LEFT IN PLACE, PUMP PULLED." 	 |  110749
+		"comments" | "NOT RESPONSIBLE FOR QUALITY OR QUANTITY" | 110750
     } 	
 }
