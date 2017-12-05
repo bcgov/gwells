@@ -13,7 +13,9 @@ export PGPASSWORD=$DATABASE_PASSWORD
 cd /opt/app-root/src/database/code-tables/
 
 psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER -f clear-tables.sql
-psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER -c 'vacuum;'
+
+psql -U postgres -c "VACUUM"
+
 psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER -f  data-load-static-codes.sql
 
 cd /opt/app-root/src/database/scripts/
