@@ -18,9 +18,9 @@ for table in $(psql -U postgres --tuples-only -c "SELECT schemaname || '.'
 || tablename FROM pg_tables WHERE tablename NOT IN ('pg_tablespace', 'pg_auth_members', 'pg_pltemplate', 'pg_shdescription', 'pg_shdescription', 'pg_replication_origin', 'pg_db_role_setting', 'pg_db_role_setting', 'pg_authid', 'pg_database', 'pg_shdepend', 'pg_shseclabel')") ;
 do psql -U postgres -c "VACUUM ANALYZE $table"; done &&
 
-psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER -f  data-load-static-codes.sql &&
-
 sleep 30 &&
+
+psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER -f  data-load-static-codes.sql &&
 
 cd /opt/app-root/src/database/scripts/ &&
 
