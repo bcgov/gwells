@@ -33,8 +33,6 @@ node('maven') {
             sh returnStdout: true, script: "./gradlew sonarqube -Dsonar.host.url=${SONARQUBE_URL} -Dsonar.verbose=true --stacktrace --info  -Dsonar.sources=.."
         }
     }
-
-	
 }
 
 node('bddstack') {
@@ -46,9 +44,7 @@ node('bddstack') {
         checkout scm
         dir('functional-tests') {
 			try {
-				sh 'export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.144-0.b01.el7_4.x86_64/jre'
-                sh 'env'
-                sh './gradlew --debug --stacktrace chromeHeadlessTest'
+                sh 'export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.151-1.b12.el7_4.x86_64/jre; ./gradlew --debug --stacktrace chromeHeadlessTest'
 			} finally { 
 				archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
 			}
