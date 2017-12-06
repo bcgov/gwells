@@ -33,20 +33,18 @@ node('maven') {
             sh returnStdout: true, script: "./gradlew sonarqube -Dsonar.host.url=${SONARQUBE_URL} -Dsonar.verbose=true --stacktrace --info  -Dsonar.sources=.."
         }
     }
-
-	
 }
 
-node('master') {
+node('bddstack') {
 	
 	stage('Functional Test') {
 		//the checkout is mandatory, otherwise functional test would fail
         echo "checking out source"
         echo "Build: ${BUILD_ID}"
         checkout scm
-        dir('navunit') {
+        dir('functional-tests') {
 			try {
-				sh './gradlew --debug --stacktrace phantomjsTest'
+                sh 'export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.151-1.b12.el7_4.x86_64/jre; ./gradlew --debug --stacktrace chromeHeadlessTest'
 			} finally { 
 				archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
 			}
