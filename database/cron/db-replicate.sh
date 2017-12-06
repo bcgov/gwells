@@ -12,21 +12,24 @@
 export PGPASSWORD=$DATABASE_PASSWORD
 cd /opt/app-root/src/database/code-tables/
 
-psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER -f clear-tables.sql
-
-psql -U postgres -c "VACUUM"
-
-psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER -f  data-load-static-codes.sql
+psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER  << EOF
+\i clear-tables.sql
+vacuum;
+\i data-load-static-codes.sql
+EOF
 
 cd /opt/app-root/src/database/scripts/
 
-psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER -f create-xform-gwells-well-ETL-table.sql
-psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER -f populate-xform-gwells-well.sql
-psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER -f populate-gwells-well-from-xform.sql
-psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER -f migrate_screens.sql
-psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER -f migrate_production_data.sql
-psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER -f migrate_casings.sql
-psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER -f migrate_perforations.sql
-psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER -f migrate_aquifer_wells.sql
-psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER -f migrate_lithology_descriptions.sql
+psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER  << EOF
+\i create-xform-gwells-well-ETL-table.sql
+\i populate-xform-gwells-well.sql
+\i populate-gwells-well-from-xform.sql
+\i migrate_screens.sql
+\i migrate_production_data.sql
+\i migrate_casings.sql
+\i migrate_perforations.sql
+\i migrate_aquifer_wells.sql
+\i migrate_lithology_descriptions.sql
+EOF
+
 exit 0
