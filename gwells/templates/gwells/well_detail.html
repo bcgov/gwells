@@ -584,46 +584,46 @@
   <div class="row">
     <div class="col-md-12 table-responsive">
       <table id="casings" class="table table-condensed table-bordered table-striped">
-    <thead>
-      <th>From (feet)</th>
-      <th>To (feet)</th>
-      <th>Diameter (inches)</th>
-      <th>Casing Material</th>
-      <th>Wall Thickness (inches)</th>
-      <th>Drive Shoe</th>
-    </thead>
-    <tbody>
-      {% for casing in well.casing_set.all %} <!--|dictsort:"casing_from"-->
-      <tr>
-        <td>
-          <span>{{casing.casing_from|default_if_none:'&nbsp;' }}</span>
-        </td>
-        <td>
-          <span>{{casing.casing_to|default_if_none:'&nbsp;' }}</span>
-        </td>
-        <td>
-          <span>{{casing.internal_diameter|default_if_none:'&nbsp;' }}</span>
-        </td>
-        <td>
-          <span>{{casing.casing_material.description|default_if_none:'&nbsp;' }}</span>
-        </td>
-        <td>
-          <span>{{casing.wall_thickness|default_if_none:'&nbsp;' }}</span>
-        </td>
-        <td>
-          <span>{{casing.get_drive_shoe_display|default_if_none:'&nbsp;' }}</span>
-        </td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+        <thead>
+          <th>From (feet)</th>
+          <th>To (feet)</th>
+          <th>Diameter (inches)</th>
+          <th>Casing Material</th>
+          <th>Wall Thickness (inches)</th>
+          <th>Drive Shoe</th>
+        </thead>
+        <tbody>
+          {% for casing in well.casing_set.all %} <!--|dictsort:"casing_from"-->
+          <tr>
+            <td>
+              <span>{{casing.casing_from|default_if_none:'&nbsp;' }}</span>
+            </td>
+            <td>
+              <span>{{casing.casing_to|default_if_none:'&nbsp;' }}</span>
+            </td>
+            <td>
+              <span>{{casing.internal_diameter|default_if_none:'&nbsp;' }}</span>
+            </td>
+            <td>
+              <span>{{casing.casing_material.description|default_if_none:'&nbsp;' }}</span>
+            </td>
+            <td>
+              <span>{{casing.wall_thickness|default_if_none:'&nbsp;' }}</span>
+            </td>
+            <td>
+              <span>{{casing.get_drive_shoe_display|default_if_none:'&nbsp;' }}</span>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
   </div>
 </fieldset>
 &nbsp;
 <fieldset id="surface_seal_fieldset">
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-4">
             <div class="row">
                 <div class="col-md-12">
                     <h3>Surface Seal Details</h3>
@@ -664,7 +664,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-4">
             <div class="row">
                 <div class="col-md-12">
                     <h3>Backfill Details</h3>
@@ -746,7 +746,7 @@
                         <td>{{lithology.lithology_raw_data}}</td>
                         <td>{{lithology.lithology_description.description}}</td>
                         <td>{{lithology.lithology_material.description}}</td>
-                        <td>{{lithology.lithology_hardness}}</td>
+                        <td>{{lithology.lithology_hardness|default_if_none:'Null'}}</td>
                         <td>{{lithology.lithology_colour}}</td>
                         <td>
                           {% if lithology.water_bearing_estimated_flow %}
@@ -768,31 +768,31 @@
         <div class="col-md-12">
             <div class="row">
                 <div class="col-md-12">
-                    <label for="reason_for_decommission">{% verbose_name well "decommission_reason" %}:
+                    <label for="reason_for_decommission">{% verbose_name well "decommission_reason" %}:</label>
                     <span id="reason_for_decommission">{{well.decommission_reason}}</span>
                 </div>
             </div>
             <div class="row">
                 <div class="col-md-12">
-                    <label for="method_of_closure">{% verbose_name well "decommission_method" %}:
+                    <label for="method_of_closure">{% verbose_name well "decommission_method" %}:</label>
                     <span id="method_of_closure">{{well.decommission_method.code}}</span>
                 </div>
             </div>
             <div class="row">
                 <div class="col-md-12">
-                    <label for="sealant_material">{% verbose_name well "sealant_material" %}:
+                    <label for="sealant_material">{% verbose_name well "sealant_material" %}:</label>
                     <span id="sealant_material">{{well.sealant_material}}</span>
                 </div>
             </div>
             <div class="row">
                 <div class="col-md-12">
-                    <label for="backfill_material">{% verbose_name well "backfill_material" %}:
+                    <label for="backfill_material">{% verbose_name well "backfill_material" %}:</label>
                     <span id="backfill_material">{{well.backfill_material}}</span>
                 </div>
             </div>
             <div class="row">
                 <div class="col-md-12">
-                    <label for="decommission_details">{% verbose_name well "decommission_details" %}:
+                    <label for="decommission_details">{% verbose_name well "decommission_details" %}:</label>
                     <span id="decommission_details">{{well.decommission_details}}</span>
                 </div>
             </div>
