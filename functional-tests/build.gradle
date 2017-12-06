@@ -48,6 +48,12 @@ dependencies {
     testCompile "org.seleniumhq.selenium:selenium-ie-driver:$seleniumVersion"
     testCompile "org.seleniumhq.selenium:selenium-edge-driver:$seleniumVersion"
 
+    // Spock reports
+    testCompile( 'com.athaydes:spock-reports:1.3.2' ) {
+        transitive = false // this avoids affecting your version of Groovy/Spock
+    }
+    testCompile 'org.slf4j:slf4j-api:1.7.13'
+    testCompile 'org.slf4j:slf4j-simple:1.7.13'
 }
 
 webdriverBinaries {
@@ -92,8 +98,10 @@ tasks.withType(Test) {
     testLogging {
         exceptionFormat = 'full'
     }
+    systemProperty 'com.athaydes.spockframework.report.outputDir', 'build/reports/spock'
 }
 
 tasks.withType(GroovyCompile) {
     groovyOptions.forkOptions.memoryMaximumSize = '256m'
 }
+
