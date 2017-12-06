@@ -741,19 +741,19 @@
                 <tbody>
                     {% for lithology in well.lithologydescription_set.all %}
                     <tr>
-                        <td>{{lithology.lithology_from}}</td>
-                        <td>{{lithology.lithology_to}}</td>
-                        <td>{{lithology.lithology_raw_data}}</td>
-                        <td>{{lithology.lithology_description.description}}</td>
-                        <td>{{lithology.lithology_material.description}}</td>
-                        <td>{{lithology.lithology_hardness|default_if_none:'Null'}}</td>
-                        <td>{{lithology.lithology_colour}}</td>
+                        <td>{{lithology.lithology_from|default_if_none:'&nbsp;'}}</td>
+                        <td>{{lithology.lithology_to|default_if_none:'&nbsp;'}}</td>
+                        <td>{{lithology.lithology_raw_data|default_if_none:'&nbsp;'}}</td>
+                        <td>{{lithology.lithology_description.description|default_if_none:'&nbsp;'}}</td>
+                        <td>{{lithology.lithology_material.description|default_if_none:'&nbsp;'}}</td>
+                        <td>{{lithology.lithology_hardness|default_if_none:'&nbsp;'}}</td>
+                        <td>{{lithology.lithology_colour|default_if_none:'&nbsp;'}}</td>
                         <td>
                           {% if lithology.water_bearing_estimated_flow %}
                             {{lithology.water_bearing_estimated_flow}}&nbsp;{{lithology.water_bearing_estimated_flow_units}}
                           {% endif %}
                         </td>
-                        <td>{{lithology.lithology_observation}}</td>
+                        <td>{{lithology.lithology_observation|default_if_none:'&nbsp;'}}</td>
                     </tr>
                   {% endfor %}
                 </tbody>
@@ -769,31 +769,31 @@
             <div class="row">
                 <div class="col-md-12">
                     <label for="reason_for_decommission">{% verbose_name well "decommission_reason" %}:</label>
-                    <span id="reason_for_decommission">{{well.decommission_reason}}</span>
+                    <span id="reason_for_decommission">{{well.decommission_reason|default_if_none:'&nbsp;'}}</span>
                 </div>
             </div>
             <div class="row">
                 <div class="col-md-12">
                     <label for="method_of_closure">{% verbose_name well "decommission_method" %}:</label>
-                    <span id="method_of_closure">{{well.decommission_method.code}}</span>
+                    <span id="method_of_closure">{{well.decommission_method.code|default_if_none:'&nbsp;'}}</span>
                 </div>
             </div>
             <div class="row">
                 <div class="col-md-12">
                     <label for="sealant_material">{% verbose_name well "sealant_material" %}:</label>
-                    <span id="sealant_material">{{well.sealant_material}}</span>
+                    <span id="sealant_material">{{well.sealant_material|default_if_none:'&nbsp;'}}</span>
                 </div>
             </div>
             <div class="row">
                 <div class="col-md-12">
                     <label for="backfill_material">{% verbose_name well "backfill_material" %}:</label>
-                    <span id="backfill_material">{{well.backfill_material}}</span>
+                    <span id="backfill_material">{{well.backfill_material|default_if_none:'&nbsp;'}}</span>
                 </div>
             </div>
             <div class="row">
                 <div class="col-md-12">
                     <label for="decommission_details">{% verbose_name well "decommission_details" %}:</label>
-                    <span id="decommission_details">{{well.decommission_details}}</span>
+                    <span id="decommission_details">{{well.decommission_details|default_if_none:'&nbsp;'}}</span>
                 </div>
             </div>
         </div>
@@ -802,7 +802,7 @@
 &nbsp;
 <fieldset id="well_comments">
   <legend>Comments</legend>
-  <span id="comments">{{well.comments}}</span>
+  <span id="comments">{{well.comments|default_if_none:'&nbsp;'}}</span>
 </fieldset>
 <div>
     <br /><br />
