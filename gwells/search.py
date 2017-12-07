@@ -41,13 +41,9 @@ class Search():
             q_list.append(Q(street_address__icontains=addr) | Q(city__icontains=addr))
 
         if legal:
-            pid = legal.lstrip('0')
-            if pid.isnumeric(): # Need to test for numeric otherwise we server 500 error.
-                q_list.append(Q(legal_plan__icontains=legal) |
-                        Q(legal_district_lot__icontains=legal) | Q(legal_pid=pid))
-            else:
-                q_list.append(Q(legal_plan__icontains=legal) |
-                        Q(legal_district_lot__icontains=legal))
+            q_list.append(Q(legal_plan__icontains=legal) |
+                  Q(legal_district_lot__icontains=legal) |
+                  Q(legal_pid=legal))
 
         if owner:
             q_list.append(Q(owner_full_name__icontains=owner))
@@ -76,6 +72,7 @@ class Search():
 
             q_list.append(Q(latitude__gt=min_lat) & Q(latitude__lt=max_lat)
                           & Q(longitude__gt=min_long) & Q(longitude__lt=max_long))
+
         if q_list:
             # If there are too many results, we return one plus the query limit to engage post-query logic in views.py
             well_results = Well.objects.only('well_tag_number', 'identification_plate_number', 'owner_full_name','street_address','legal_lot','legal_plan','legal_district_lot','land_district','legal_pid','diameter','finished_well_depth','well_guid','latitude','longitude','city').filter(
