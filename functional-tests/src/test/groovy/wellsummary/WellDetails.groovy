@@ -143,107 +143,107 @@ class WellDetailsSpecs extends GebReportingSpec {
 			assert page."$TestDesc".text().trim() == "$WellFieldContent".trim()
 		where:	
         TestDesc                          | WellFieldContent 	| WellId           
-		"well_tag_number"				  | "48084" 			| 48084
-		"identification_plate_number"     | "13297" 			| 48084
-		"owner_full_name"				  | "RICK PIPES"		| 48084
-		"licenced_status"				  | "Unlicensed"		| 48084
-		"well_well_status"				  | "New"				| 48084
-		"well_class"	 | "Water Supply" 	 | 48084
-		"well_subclass"	 | "Domestic" 	 | 48084
-		"intended_water_use"	 | "Water Supply System" 	 | 48084
-		"obs_well_number"	 | "2" 	 | 26787
-		"obs_well_status"	 | "Active" 	 |  26787
-		"ems_id"	 | "1401057" 	 | 26787
-		"aquifer_number"	 | "207" 	 | 48084
-		"alternate_specs_submitted"	 | "No" 	 | 48084
-		"water_supply_system_name"	 | "LA POMMERAI: MERRIDALE CIDERWORKS" 	 | 48084
-		"water_supply_system_well_name"	 | "PRODUCTION WELL" 	 | 48084
-		"address"	 | "1230 MERRIDALE ROAD" 	 | 48084
-		"city"	 | "COBBLE HILL" 	 | 48084
-		"lot"	 | "B" 	 | 48084
-		"plan"	 | "220658" 	 | 48084
-		"district_lot"	 | "405" 	 | 110749
-		"block"	 | "9" 	 | 18624
-		"section"	 | "5" 	 | 48084
-		"township"	 | "16" 	 | 26787
-		"range"	 | "6" 	 | 48084
-		//"land_district"	 | "" 	 | 
-		"pid"	 | "8048142" 	 | 110749
-		"location_desc"	 | "PREVIOUS LEGAL PLAN: 14144" 	 | 110749
-		"latitude"	 | "48.663734" 	 | 48084
-		"longitude"	 | "-123.585250" 	 | 48084
-		"utm_zone_code"	 | "10" 	 | 48084
-		"utm_northing"	 | "5390241" 	 | 48084
-		"utm_easting"	 | "456906" 	 | 48084
-		"utm_accuracy_code"	 | "H" 	 | 48084
-		"bcgs_mapsheet_number"	 | "092B063313" 	 | 48084
-		"construction_end_date"	 | "1976-01-29" 	 | 110749
-		"alteration_end_date"	 | "2014-11-23" 	 | 110749
-		"decommission_end_date"	 | "2014-11-23" 	 | 110749
-		"drilling_company"	 | "A. D. Baker Drilling" 	 | 48084
-		"total_depth_drilled"	 | "275.00 feet" 	 | 48084
-		"static_water_level"	 | "96.70 feet" 	 | 113795
-		"well_cap_type"	 | "RODENT FREE" 	 | 113795
-		"finished_well_depth"	 | "275.00 feet" 	 | 48084
-		"well_yield"	 | "40.000 GPM" 	 | 48084
-		"well_disinfected"	 | "No" 	 | 48084
-		"final_casing_stickup"	 | "24.000 inches" 	 | 96503
-		"artesian_flow"	 | "15.00 USGM" 	 | 110749
-		"drilling_method"	 | "AIR_ROTARY" 	 | 48084
-		"bedrock_depth"	 | "43.00 feet" 	 | 48084
-		"artesian_pressure"	 | "10.00 inches" 	 | 113552
-		"orientation_direction"	 | "vertical" 	 | 48084
-		"ground_elevation"	 | "193.10 feet" 	 | 26787
-		"ground_elevation_method"	 | "Differential GPS" 	 | 26787
-		"well_plate_attached"	 | "CASING" 	 | 48084
-		"intake_method"	 | "Open Bottom" 	 | 110749
-		"screen_type"	 | "Pipe size" 	 | 102666
-		"screen_material"	 | "Plastic" 	 | 102666
-		"screen_opening"	 | "Perforated Pipe" 	 | 102666
-		"screen_bottom"	 | "Other" 	 | 107072
-		"screen_from" 	 | "105.00" 	 | 105508
-		"screen_to"	 | "109.00" 	 | 105508
-		"internal_diameter"	 | "6.00" | 105508
-		"assembly_type"	 | "Screen" 	 | 105508
-		"slot_size"	 | "15.00" 	 | 105508
-		"developed_by"	 | "Bailing" 	 | 110749
-		"devlopment_total_duration"	 | "3.00 hours" 	 | 110749
-		"yield_estimation_method"	 | "Air Lifting" 	 | 107072
-		"yield_estimation_rate"	 | "15.00   USGM" 	 | 110749
-		"yield_estimation_duration"	 | "12.00   hours" 	 | 110749
-		"casings_from"	 | "0.00" 	 | 113503
-		"casings_to"	 | "63.00" 	 | 113503
-		"casings_diameter"	 | "6.000" 	 | 113395
-		"casings_material"	 | "Steel" 	 | 113503
-		"casings_thickness"	 | "0.219" 	 | 113503
-		"casings_driveshoe"	 | "Yes" 	 | 113503	
-		"surface_seal_method"	 | "Poured" 	 | 110627
-		"surface_seal_material"	 | "Bentonite clay" 	 | 110627
-		"surface_seal_thickness"	 | "2.00 inches" 	 | 105417
-		"surface_seal_length"	 | "18.00 feet" 	 | 105417
-		"backfill_type"	 | "CEMENT & BENTONITE CHIPS" 	 | 105417
-		"backfill_depth"	 | "18.00 feet" 	 |  105417
-		"liner_material"	 | "PVC" 	 |  111752 
-		"liner_diameter"	 | "4.00" 	 |  111752 
-		"liner_thickness"	 | "0.250" 	 |  111752 
-		"liner_from"	 | "8.00" 	 |  111752 
-		"liner_to"	 | "280.00" 	 |  111752 
-		"liner_perffrom"	 | "120.00" 	 |  111752 
-		"liner_perfto"	 | "140.00" 	 |  111752 
-		"lithology_from"	 | "0.00" 	 |  110000 
-        "lithology_to"	 | "2.00" 	 |  110000 
-        "lithology_raw_data"	 | "None" 	 |  110000 
-        "lithology_description"	 | "cemented" 	 |  110000 
-        "lithology_material_description"	 | "soil" 	 |  110000 
-        "lithology_relative_hardness"	 | "None" 	 |  110000 
-        "lithology_colour" 	 | "dark" 	 |  110000 
+		"well_tag_number"				  | "110749" 			| 110749
+		"identification_plate_number"     | "47948" 			| 110750
+		"owner_full_name"				  | "ROYAL CANADIAN MOUNTED POLICE"		| 110749
+		"licenced_status"				  | "Unlicensed"		| 110749
+		"well_well_status"				  | "Closure"			| 110749
+		"well_class"	 				  | "Water Supply" 	 | 110749
+		"well_subclass"	 				  | "Domestic" 	 | 110749
+		"intended_water_use"	 		  | "Water Supply System" 	 | 110749
+		"obs_well_number"	 			  | "402" 	 | 102364
+		"obs_well_status"	    		  | "Active" 	 |  102364
+		"ems_id"	 					  | "E283990" 	 | 102364
+		"aquifer_number"	 			  | "936" 	 | 102364
+		"alternate_specs_submitted"	 	  | "No" 	 | 110749
+		"water_supply_system_name"	 	  | "CHETWYND PULP MILL" 	 | 102406
+		"water_supply_system_well_name"	  | "EAST WELL" 	 | 102406
+		"address"	 					  | "6647 CHRISTENSEN ROAD" 	 | 110749
+		"city"	 						  | "ANAHIM LAKE" 	 | 110749
+		"lot"							  | "A" 	 | 110749
+		"plan"							  | "25014" 	 | 110749
+		"district_lot"	 				  | "405" 	 | 110749
+		"block"	 						  | "19" 	 | 100127
+		"section"	 					  | "28" 	 | 100542
+		"township"	 					  | "21" 	 | 100500
+		"range"	 						  | "3" 	 | 110749
+		"land_district"	 				  | "26 KOOTENAY" 	 | 110750
+		"pid"	 						  | "008048142" 	 | 110749
+		"location_desc"	 				  | "PREVIOUS LEGAL PLAN: 14144" 	 | 110749
+		"latitude"	 					  | "52.465449" 	 | 110749
+		"longitude"	 					  | "-125.300830" 	 | 110749
+		"utm_zone_code"	 				  | "10" 	 | 110749
+		"utm_northing"	 				  | "5815298" 	 | 110749
+		"utm_easting"	             	  | "343701" 	 | 110749
+		"utm_accuracy_code"	 			  | "H" 	 | 110749
+		"bcgs_mapsheet_number"	 		  | "093C044324" 	 | 110749
+		"construction_end_date"	          | "1976-01-29" 	 | 110749
+		"alteration_end_date"	 		  | "2014-11-23" 	 | 110749
+		"decommission_end_date"	 		  | "2014-11-23" 	 | 110749
+		"drilling_company"	  			  | "Industrial Drillers" 	 | 110749
+		"total_depth_drilled"	 		  | "285.00 feet" 	 | 110749
+		"static_water_level"	 		  | "128.00 feet" 	 | 106648
+		"well_cap_type"	   				  | "VENT CAST" 	 | 106648
+		"finished_well_depth"	 		  | "100.00 feet" 	 | 105747
+		"well_yield"	 				  | "15.000 USGM" 	 | 110749
+		"well_disinfected"	 			  | "No" 	 | 110749
+		"final_casing_stickup"	 		  | "12.000 inches" 	 | 106648
+		"artesian_flow"	 				  | "15.00 USGM" 	 | 110749
+		"drilling_method"	 			  | "AIR_ROTARY" 	 | 100501
+		"bedrock_depth"	 				  | "60.00 feet" 	 | 110749
+		"artesian_pressure"	    		  | "10.00 inches" 	 | 113552
+		"orientation_direction"	 		  | "vertical" 	 | 110749
+		"ground_elevation"	 			  | "378.00 feet" 	 | 106648
+		"ground_elevation_method"	 	  | "1:10,000 Scale Map" 	 | 104636
+		"well_plate_attached"	 		  | "CASING" 	 | 106648
+		"intake_method"	 				  | "Open Bottom" 	 | 110749
+		"screen_type"	 				  | "Pipe size" 	 | 102666
+		"screen_material"	 			  | "Plastic" 	 | 102666
+		"screen_opening"	              | "Perforated Pipe" 	 | 102666
+		"screen_bottom"	 				  | "Other" 	 | 107072
+		"screen_from" 	 				  | "105.00" 	 | 105508
+		"screen_to"	 					  | "109.00" 	 | 105508
+		"internal_diameter"	 			  | "6.00" | 105508
+		"assembly_type"	 				  | "Screen" 	 | 105508
+		"slot_size"	 					  | "15.00" 	 | 105508
+		"developed_by"	 				  | "Bailing" 	 | 110749
+		"devlopment_total_duration"	 	  | "3.00 hours" 	 | 110749
+		"yield_estimation_method"	      | "Air Lifting" 	 | 107072
+		"yield_estimation_rate"			  | "15.00   USGM" 	 | 110749
+		"yield_estimation_duration"	 	  | "12.00   hours" 	 | 110749
+		"casings_from"	 				  | "0.00" 	 | 113503
+		"casings_to"	 				  | "63.00" 	 | 113503
+		"casings_diameter"	 			  | "6.000" 	 | 113395
+		"casings_material"	 			  | "Steel" 	 | 113503
+		"casings_thickness"	 			  | "0.219" 	 | 113503
+		"casings_driveshoe"	 			  | "Yes" 	 | 113503	
+		"surface_seal_method"	 		  | "Poured" 	 | 110627
+		"surface_seal_material"	 		  | "Bentonite clay" 	 | 110627
+		"surface_seal_thickness"	 	  | "2.00 inches" 	 | 105417
+		"surface_seal_length"	 		  | "18.00 feet" 	 | 105417
+		"backfill_type"	 				  | "CEMENT & BENTONITE CHIPS" 	 | 105417
+		"backfill_depth"	 			  | "18.00 feet" 	 |  105417
+		"liner_material"	 			  | "PVC" 	 |  111752 
+		"liner_diameter"	 			  | "4.00" 	 |  111752 
+		"liner_thickness"	 			  | "0.250" 	 |  111752 
+		"liner_from"	 				  | "8.00" 	 |  111752 
+		"liner_to"	 	  				  | "280.00" 	 |  111752 
+		"liner_perffrom"	 			  | "120.00" 	 |  111752 
+		"liner_perfto"	 				  | "140.00" 	 |  111752 
+		"lithology_from"	 			  | "0.00" 	 |  110000 
+        "lithology_to"	 				  | "2.00" 	 |  110000 
+        "lithology_raw_data"		      | "TOPSOIL, BROWN" 	 |  100001 
+        "lithology_description"	 		  | "cemented" 	 |  110000
+        "lithology_material_description"  | "soil" 	 |  110000 
+        "lithology_relative_hardness"	  | "Stiff" 	 |  112152 
+        "lithology_colour" 	 			  | "dark" 	 |  110000 
         "lithology_waterbearing_estimated_flow"	 | "200.0000 U.S. Gallons per Minute" 	 |  104533 
-        "lithology_observations" 	 | "Water-bearing" 	 |  110000 
-        "reason_for_decommission" 	 | "SITE DEVELOPMENT" 	 |  110749 
-        "method_of_closure" 	 | "PUMPED" 	 |  110749 
-        "sealant_material" 	 | "CONCRETE" 	 |  110749 
-        "backfill_material" 	 | "None" 	 |  110749 
-        "decommission_details"  	 | "NO ISSUES WITH CLOSURE. ONLY SLIGHT ARTESIAN FLOW IN NOV. 2014. CASING LEFT IN PLACE, PUMP PULLED." 	 |  110749
-		"comments" | "NOT RESPONSIBLE FOR QUALITY OR QUANTITY" | 110750
+        "lithology_observations" 	 	  | "Water-bearing" 	 |  110000 
+        "reason_for_decommission" 	 	  | "SITE DEVELOPMENT" 	 |  110749 
+        "method_of_closure" 	 		  | "PUMPED" 	 |  110749 
+        "sealant_material" 	 			  | "CONCRETE" 	 |  110749 
+        "backfill_material" 	 		  | "BENTONITE AND GRAVEL" 	 |  100200 
+        "decommission_details"  	 	  | "NO ISSUES WITH CLOSURE. ONLY SLIGHT ARTESIAN FLOW IN NOV. 2014. CASING LEFT IN PLACE, PUMP PULLED." 	 |  110749
+		"comments" 						  | "NOT RESPONSIBLE FOR QUALITY OR QUANTITY" | 110750
     } 	
 }
