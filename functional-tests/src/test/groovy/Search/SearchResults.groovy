@@ -21,7 +21,7 @@ class SearchResultsSpecs extends GebReportingSpec {
         given:
         to SearchPage
         
-        when: "#TestDesc, this will results in #NumberResult found"
+        when: "#TestDesc, this will result in #NumberResult found"
         
         SearchWell("$WellId", "$Address","$LegalId","$Owner")
         at SearchPage
@@ -57,17 +57,16 @@ class SearchResultsSpecs extends GebReportingSpec {
         "No (zero) matching results - Owner - Random Owner"			| ""				| ""						| ""				| "Random Owner"	| "Yes"        | "No"    | 0
         "No (zero) matching results - All Fields"					| "9999999"			| "Random Address"			| "9999999"			| "Random Owner"	| "Yes"        | "No"    | 0
         "One matching result - Well ID - 107667"					| "107667"			| ""						| ""				| ""				| "No"         | "No"    | 1
-        "One matching result - Address - 21231 16TH"				| ""				| "218 RD"					| ""				| ""				| "No"         | "No"    | 1
-        "One matching result - Legal PID - 026737680"				| ""				| ""						| "026737680"		| ""				| "No"         | "No"    | 1
-        "One matching result - Legal PID - KAP 69982"               | ""                | ""                        | "KAP 69982"       | ""                | "No"         | "No"    | 1
-        "One matching result - Legal PID - KAP67303"                | ""                | ""                        | "KAP67303"        | ""                | "No"         | "No"    | 1
-        "Multiple matching results - Legal PID - KAP67"             | ""                | ""                        | "KAP67"           | ""                | "No"         | "No"    | 23
+        "One matching result - Address - 218 RD"	     			| ""				| "218 RD"					| ""				| ""				| "No"         | "No"    | 1
+        "One matching result - Legal PID - 005337879"				| ""				| ""						| "005337879"		| ""				| "No"         | "No"    | 1
+        "One matching result - Legal PID - KAP 55997"               | ""                | ""                        | "KAP 55997"       | ""                | "No"         | "No"    | 1
+        "One matching result - Legal PID - KAP61460"                | ""                | ""                        | "KAP61460"        | ""                | "No"         | "No"    | 1
+        "Multiple matching results - Legal PID - KAP61"             | ""                | ""                        | "KAP61"           | ""                | "No"         | "No"    | 5
         "One matching result - Owner - GARY AKLES"					| ""				| ""						| ""				| "GARY AKLES"		| "No"         | "No"    | 1
-        "One matching result - - All Fields"						| "107667"			| "218 RD"					| "026737680"		| "GARY AKLES"		| "No"         | "No"    | 1
-        "Multiple matching results - Well ID 2"                     | "2"               | ""                        | ""                | ""                | "No"         | "No"    | 2
+        "One matching result - - All Fields"						| "107667"			| "218 RD"					| "BCP21690"		| "GARY AKLES"		| "No"         | "No"    | 1
+        "Multiple matching results - Well ID 110000"                | "110000"          | ""                        | ""                | ""                | "No"         | "No"    | 1
         "Too many results - Address 1"                              | ""                | "1"                       | ""                | ""                | "No"         | "Yes"   | 9999
         "Too many results - Legal PID 1"                            | ""                | ""                        | "1"               | ""                | "No"         | "Yes"   | 9999
-        "Too many results - Owner JOHN"                             | ""                | ""                        | ""                | "JO"              | "No"         | "Yes"   | 9999
     } 
 
     // Searches for Longitude and Latitude - typically through the map.
@@ -90,12 +89,10 @@ class SearchResultsSpecs extends GebReportingSpec {
         to SearchPage
 
         when: "The selection will results in multiple found"
-        //go "/ajax/map_well_search/?start_lat_long=48.69073375613481%2C-123.46036434173585&end_lat_long=48.679400715963894%2C-123.43783378601076"
-        //go "/search?well=&addr=&legal=&owner=&start_lat_long=48.69073375613481%2C-123.46036434173585&end_lat_long=48.679400715963894%2C-123.43783378601076"
 
         // Need to use jquery.val here because webdriver does not allow you put values in a hidden field
-        start_lat_long.jquery.val("48.69073375613481,-123.46036434173585")
-        end_lat_long.jquery.val("48.679400715963894,-123.43783378601076")
+        start_lat_long.jquery.val("48.69566283264445,-123.47697257995607")
+        end_lat_long.jquery.val("48.67299642073175,-123.43191146850587")
         submit_button.click()
 
         then: "No error msg is shown"
@@ -157,13 +154,12 @@ class SearchResultsSpecs extends GebReportingSpec {
         where:
         TestDesc                                                    | WellId            | Address                   | LegalId           | Owner             | ShowError    | NumberResult
         "One matching result - Well ID - 107667"                    | 107667            | ""                        | ""                | ""                | "No"         | 1
-        "One matching result - Address - 21231 16TH"                | ""                | "218 RD"                  | ""                | ""                | "No"         | 1
-        "One matching result - Legal PID - 026737680"               | ""                | ""                        | "026737680"       | ""                | "No"         | 1
+        "One matching result - Address - 218 RD"                    | ""                | "218 RD"                  | ""                | ""                | "No"         | 1
+        "One matching result - Legal PID - 005337879"               | ""                | ""                        | "005337879"       | ""                | "No"         | 1
         "One matching result - Owner - GARY AKLES"                  | ""                | ""                        | ""                | "GARY AKLES"      | "No"         | 1
-        "One matching result - - All Fields"                        | "107667"          | "218 RD"                  | "026737680"       | "GARY AKLES"      | "No"         | 1
-        "Multiple matching results - Well ID 2"                     | "2"               | ""                        | ""                | ""                | "No"         | 2
-        "Multiple matching results - Address 123"                   | ""                | "123"                     | ""                | ""                | "No"         | 139
-        "Multiple matching results - Owner ROLAND"                  | ""                | ""                        | ""                | "ROLAND"          | "No"         | 48
+        "One matching result - - All Fields"                        | "107667"          | "218 RD"                  | "BCP21690"       | "GARY AKLES"      | "No"         | 1
+        "Multiple matching results - Address 12"                    | ""                | "12"                     | ""                | ""                | "No"         | 361
+        "Multiple matching results - Owner ROLAND"                  | ""                | ""                        | ""                | "ROLAND"          | "No"         | 12
     }     
 
 //  As a general public user I want to be able to begin a new search with an easy way to remove previous search criteria.
@@ -245,10 +241,6 @@ class SearchResultsSpecs extends GebReportingSpec {
             assert waitFor { results_info }
             assert waitFor { NumberEntryTo() == "10" }
             
-/*            println NumberEntryTo()
-            println NumberEntryFrom()
-            println NumberOfEntriesFound()
-*/
         and: "I select Show 25 entries,"
             def select = $(name: "results_length").module(geb.module.Select)
             select.selected = "25"
@@ -264,8 +256,8 @@ class SearchResultsSpecs extends GebReportingSpec {
 
         where:
         TestDesc                                                    | WellId            | Address                   | LegalId           | Owner             | NumberResult
-        "Multiple matching results (139) - Address 123"             | ""                | "123"                     | ""                | ""                | 139
-        "Multiple matching results (430) - Owner GARY"              | ""                | ""                        | ""                | "GARY"            | 430
+        "Multiple matching results (139) - Address 12"             | ""                | "12"                     | ""                | ""                | 361
+        "Multiple matching results (430) - Owner GARY"              | ""                | ""                        | ""                | "GARY"            | 55
     }
 
     @Unroll
@@ -291,31 +283,31 @@ class SearchResultsSpecs extends GebReportingSpec {
 
         where:
         TestDesc                                                    | WellId            | Address                   | LegalId           | Owner             | NumberResult
-        "Multiple matching results (139) - Address 123"             | ""                | "123"                     | ""                | ""                | 139
-        "Multiple matching results (430) - Owner GARY"              | ""                | ""                        | ""                | "GARY"            | 430
+        "Multiple matching results (139) - Address 12"             | ""                | "12"                     | ""                | ""                | 361
+        "Multiple matching results (430) - Owner GARY"              | ""                | ""                        | ""                | "GARY"            | 55
     }
 
        def "Scenario 9: Sort string column"() {
         given: "I have completed a text search using any criteria."
                 to SearchPage
-                SearchWell("$WellId", "$Address","$LegalId","$Owner")
+                SearchWell("", "$Address","","$Owner")
             at SearchPage
         and: "And I have received search results in the table located below the map and text fields"     
             assert waitFor { results_info }
 
         when: "I select the sort arrow beside a numeric column name"
-        def original_content = $('#results > tbody > tr:nth-child(1) > td:nth-child(3)').text()
-        $('#results > thead > tr > th:nth-child(3)').click()
+        def original_content = $('#results > tbody > tr:nth-child(1) > td:nth-child(1)').text()
+        $('#results > thead > tr > th:nth-child(1)').click()
         sleepForNSeconds(2)
         
         then: "Then the table should re-sort ascending or descending depending on which column was selected."
-        def new_content = $('#results > tbody > tr:nth-child(1) > td:nth-child(3)').text()
+        def new_content = $('#results > tbody > tr:nth-child(1) > td:nth-child(1)').text()
 
-        assert original_content > new_content
+        assert original_content.toInteger() <= new_content.toInteger()
 
         where:
         TestDesc                                                    | WellId            | Address                   | LegalId           | Owner             | NumberResult
-        "Multiple matching results (139) - Address 123"             | ""                | "123"                     | ""                | ""                | 139
-        "Multiple matching results (430) - Owner GARY"              | ""                | ""                        | ""                | "GARY"            | 430
+        "Multiple matching results (361) - Address 12"             | ""                | "12"                     | ""                | ""                | 361
+        "Multiple matching results (55) - Owner GARY"              | ""                | ""                        | ""                | "GARY"            | 55
     }
 }
