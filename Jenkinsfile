@@ -47,6 +47,7 @@ node('bddstack') {
                 sh './gradlew --debug --stacktrace chromeHeadlessTest'
 			} finally { 
 				archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
+                archiveArtifacts allowEmptyArchive: true, artifacts: 'build/test-results/**/*'
 			}
         }
     }
