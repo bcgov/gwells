@@ -10,17 +10,27 @@
 #   Example: oc exec gwells-97-69b7z /opt/app-root/src/database/cron/db-replicate.sh
 #
 export PGPASSWORD=$DATABASE_PASSWORD
-cd /opt/app-root/src/database/code-tables/
 
+cd /opt/app-root/src/database/code-tables/
 psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER  << EOF
 \i clear-tables.sql
 vacuum;
 \i data-load-static-codes.sql
 EOF
 
-cd /opt/app-root/src/database/scripts/
+# FILTER is applied in /opt/app-root/src/database/scripts/populate-xform-gwells-well.sql
+# at the end of the SQL WHERE clause
+if [ "$LIMIT_ROWS_DB_REPLICATION" = "True" ]
+then
+  echo ". Limiting rows replicated from Legacy Database, per LIMIT_ROWS_DB_REPLICATION flag"
+  FILTER="AND wells.well_tag_number>100000 AND COALESCE(wells.when_created, wells.when_updated) < '20171013' "
+else
+  echo ". All rows replicated from Legacy Database"
+  FILTER=""
+fi
 
-psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER  << EOF
+cd /opt/app-root/src/database/scripts/
+psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER -v xform_filter="$FILTER" << EOF
 \i create-xform-gwells-well-ETL-table.sql
 \i populate-xform-gwells-well.sql
 \i populate-gwells-well-from-xform.sql
