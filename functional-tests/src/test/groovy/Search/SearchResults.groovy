@@ -158,7 +158,7 @@ class SearchResultsSpecs extends GebReportingSpec {
         "One matching result - Legal PID - 005337879"               | ""                | ""                        | "005337879"       | ""                | "No"         | 1
         "One matching result - Owner - GARY AKLES"                  | ""                | ""                        | ""                | "GARY AKLES"      | "No"         | 1
         "One matching result - - All Fields"                        | "107667"          | "218 RD"                  | "BCP21690"       | "GARY AKLES"      | "No"         | 1
-        "Multiple matching results - Address 12"                    | ""                | "12"                     | ""                | ""                | "No"         | 361
+        "Multiple matching results - Address 12"                    | ""                | "12"                     | ""                | ""                | "No"         | 362
         "Multiple matching results - Owner ROLAND"                  | ""                | ""                        | ""                | "ROLAND"          | "No"         | 12
     }     
 
@@ -256,8 +256,8 @@ class SearchResultsSpecs extends GebReportingSpec {
 
         where:
         TestDesc                                                    | WellId            | Address                   | LegalId           | Owner             | NumberResult
-        "Multiple matching results (139) - Address 12"             | ""                | "12"                     | ""                | ""                | 361
-        "Multiple matching results (430) - Owner GARY"              | ""                | ""                        | ""                | "GARY"            | 55
+        "Multiple matching results - Address 12"             | ""                | "12"                     | ""                | ""                | 362
+        "Multiple matching results - Owner GARY"              | ""                | ""                        | ""                | "GARY"            | 55
     }
 
     @Unroll
@@ -283,8 +283,8 @@ class SearchResultsSpecs extends GebReportingSpec {
 
         where:
         TestDesc                                                    | WellId            | Address                   | LegalId           | Owner             | NumberResult
-        "Multiple matching results (139) - Address 12"             | ""                | "12"                     | ""                | ""                | 361
-        "Multiple matching results (430) - Owner GARY"              | ""                | ""                        | ""                | "GARY"            | 55
+        "Multiple matching results - Address 12"             | ""                | "12"                     | ""                | ""                | 362
+        "Multiple matching results - Owner GARY"              | ""                | ""                        | ""                | "GARY"            | 55
     }
 
        def "Scenario 9: Sort string column"() {
@@ -307,7 +307,7 @@ class SearchResultsSpecs extends GebReportingSpec {
 
         where:
         TestDesc                                                    | WellId            | Address                   | LegalId           | Owner             | NumberResult
-        "Multiple matching results (361) - Address 12"             | ""                | "12"                     | ""                | ""                | 361
-        "Multiple matching results (55) - Owner GARY"              | ""                | ""                        | ""                | "GARY"            | 55
+        "Multiple matching results - Address 12"             | ""                | "12"                     | ""                | ""                | 362
+        "Multiple matching results - Owner GARY"              | ""                | ""                        | ""                | "GARY"            | 55
     }
 }

@@ -76,12 +76,12 @@ Given I have <count> search results
 
         where:
 		    TestDesc 													                          | WellId          | Address                  	| LegalId   		    | Owner    			    | Page    |TargetPage | NumberResult
-        "Multiple matching results - Address 12 - 1 to Max"        | ""             	| "12"                     | ""                | ""                | 1    	  |3    	    | 361    
-        "Multiple matching results - Address 12 - 1 to 2"          | ""             	| "12"                     | ""                | ""                | 1    	  |2    	    | 361   
-        "Multiple matching results - Address 12 - 2 to 3"          | ""             	| "12"                     | ""                | ""                | 2    	  |3    	    | 361   
-        "Multiple matching results - Address 12 - 1 to 3"          | ""             	| "12"                     | ""                | ""                | 1    	  |3    	    | 361   
-        "Multiple matching results - Address 12 - 3 to 1"          | ""             	| "12"                     | ""                | ""                | 3    	  |1    	    | 361   
-        "Multiple matching results - Address 12 - 3 to 2"          | ""             	| "12"                     | ""                | ""                | 3    	  |2    	    | 361   
+        "Multiple matching results - Address 12 - 1 to Max"        | ""             	| "12"                     | ""                | ""                | 1    	  |3    	    | 362    
+        "Multiple matching results - Address 12 - 1 to 2"          | ""             	| "12"                     | ""                | ""                | 1    	  |2    	    | 362   
+        "Multiple matching results - Address 12 - 2 to 3"          | ""             	| "12"                     | ""                | ""                | 2    	  |3    	    | 362   
+        "Multiple matching results - Address 12 - 1 to 3"          | ""             	| "12"                     | ""                | ""                | 1    	  |3    	    | 362   
+        "Multiple matching results - Address 12 - 3 to 1"          | ""             	| "12"                     | ""                | ""                | 3    	  |1    	    | 362   
+        "Multiple matching results - Address 12 - 3 to 2"          | ""             	| "12"                     | ""                | ""                | 3    	  |2    	    | 362   
     } 
         @Unroll
         def "Scenario 2: Next Page links: #TestDesc"() {
@@ -138,8 +138,8 @@ Given I have <count> search results
 
         where:
         TestDesc                                                      | WellId | Address | LegalId | Owner | Page | NumberResult
-        "Multiple matching results - Address 12 - Next is disabled"  | ""     | "12"   | ""      | ""    | 3    | 361    
-        "Multiple matching results - Address 12 - Next button shows" | ""     | "12"   | ""      | ""    | 1    | 361    
+        "Multiple matching results - Address 12 - Next is disabled"  | ""     | "12"   | ""      | ""    | 3    | 362    
+        "Multiple matching results - Address 12 - Next button shows" | ""     | "12"   | ""      | ""    | 1    | 362    
     } 
 
     @Unroll
@@ -202,7 +202,7 @@ Given I have <count> search results
 
         where:
         TestDesc                                                          | WellId | Address | LegalId | Owner | Page | NumberResult
-        "Multiple matching results - Address 123 - previous is disabled"  | ""     | "12"   | ""      | ""    | 1    | 361    
-        "Multiple matching results - Address 123 - Previous button shows" | ""     | "12"   | ""      | ""    | 3   | 361    
+        "Multiple matching results - Address 123 - previous is disabled"  | ""     | "12"   | ""      | ""    | 1    | 362    
+        "Multiple matching results - Address 123 - Previous button shows" | ""     | "12"   | ""      | ""    | 3   | 362    
     } 
 }
