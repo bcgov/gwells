@@ -42,21 +42,21 @@ Given I have <count> search results
  */
 
     def "Scenario 1: Page links: #TestDesc"() {
-        given: "I have <count> search result"
-			to SearchPage
+        given: "I have #NumberResult wells search result"
+          to SearchPage
 
-      SearchWell("", "$Address","","")
-			
-			assert waitFor { results_info.displayed == true }
-	
-        when: "I view all search results from page <page>"
-			assert (NumberOfEntriesFound() == "$NumberResult") //Total entries found
-			assert waitFor {(CheckPageButton("$Page") == true)}
+          SearchWell("", "$Address","","")
+          
+          assert waitFor { results_info.displayed == true }
+      
+        when: "I view all search results from page #Page"
+          assert (NumberOfEntriesFound() == "$NumberResult") //Total entries found
+          assert waitFor {(CheckPageButton("$Page") == true)}
 
-			$("#results_paginate a[data-dt-idx=\"$Page\"]").click()
-			assert waitFor {(NumberEntryFrom().toInteger() == ("$Page".toInteger() - 1) * 10 + 1 )}
+          $("#results_paginate a[data-dt-idx=\"$Page\"]").click()
+          assert waitFor {(NumberEntryFrom().toInteger() == ("$Page".toInteger() - 1) * 10 + 1 )}
 
-        then: "I should see a link to page <target_page>"
+        then: "I should see a link to page #TargetPage"
         	assert waitFor {(CheckPageButton("$TargetPage") == true)}
 
         	def CalcMax = "$NumberResult".toInteger() / "$TargetPage".toInteger()
@@ -76,16 +76,16 @@ Given I have <count> search results
 
         where:
 		    TestDesc 													                          | WellId          | Address                  	| LegalId   		    | Owner    			    | Page    |TargetPage | NumberResult
-        "Multiple matching results - Address 123 - 1 to Max"        | ""             	| "123"                     | ""                | ""                | 1    	  |14    	    | 139    
-        "Multiple matching results - Address 123 - 1 to 2"          | ""             	| "123"                     | ""                | ""                | 1    	  |2    	    | 139    
-        "Multiple matching results - Address 123 - 2 to 3"          | ""             	| "123"                     | ""                | ""                | 2    	  |3    	    | 139    
-        "Multiple matching results - Address 123 - 1 to 3"          | ""             	| "123"                     | ""                | ""                | 1    	  |3    	    | 139    
-        "Multiple matching results - Address 123 - 3 to 1"          | ""             	| "123"                     | ""                | ""                | 3    	  |1    	    | 139    
-        "Multiple matching results - Address 123 - 3 to 2"          | ""             	| "123"                     | ""                | ""                | 3    	  |2    	    | 139    
+        "Multiple matching results - Address 12 - 1 to Max"        | ""             	| "12"                     | ""                | ""                | 1    	  |3    	    | 361    
+        "Multiple matching results - Address 12 - 1 to 2"          | ""             	| "12"                     | ""                | ""                | 1    	  |2    	    | 361   
+        "Multiple matching results - Address 12 - 2 to 3"          | ""             	| "12"                     | ""                | ""                | 2    	  |3    	    | 361   
+        "Multiple matching results - Address 12 - 1 to 3"          | ""             	| "12"                     | ""                | ""                | 1    	  |3    	    | 361   
+        "Multiple matching results - Address 12 - 3 to 1"          | ""             	| "12"                     | ""                | ""                | 3    	  |1    	    | 361   
+        "Multiple matching results - Address 12 - 3 to 2"          | ""             	| "12"                     | ""                | ""                | 3    	  |2    	    | 361   
     } 
         @Unroll
         def "Scenario 2: Next Page links: #TestDesc"() {
-        given: "I have <count> search result"
+        given: "I have #NumberResult wells search result"
          to SearchPage
 
          SearchWell("", "$Address","","")      
@@ -122,7 +122,7 @@ Given I have <count> search results
        when: "I click \'Next\'"
           $("#results_paginate a[data-dt-idx=\"7\"]").click()
 
-        then: "I should be on page <next_page>"
+        then: "I should be on page #Page"
           assert waitFor {(next_button.displayed == true)}
           
           // Test to see if we are at the end of the list....
@@ -138,13 +138,13 @@ Given I have <count> search results
 
         where:
         TestDesc                                                      | WellId | Address | LegalId | Owner | Page | NumberResult
-        "Multiple matching results - Address 123 - Next is disabled"  | ""     | "123"   | ""      | ""    | 14   | 139    
-        "Multiple matching results - Address 123 - Next button shows" | ""     | "123"   | ""      | ""    | 1    | 139    
+        "Multiple matching results - Address 12 - Next is disabled"  | ""     | "12"   | ""      | ""    | 3    | 361    
+        "Multiple matching results - Address 12 - Next button shows" | ""     | "12"   | ""      | ""    | 1    | 361    
     } 
 
     @Unroll
     def "Scenario 3: Previous Page links: #TestDesc"() {
-        given: "I have <count> search result"
+        given: "I have NumberResult wells search result"
          to SearchPage
 
          SearchWell("", "$Address","","")
@@ -187,7 +187,7 @@ Given I have <count> search results
            def tmpPage = "$Page".toInteger()
            tmpPage = tmpPage - 1
 
-        then: "I should be on page <next_page>"
+        then: "I should be on page #Page"
           assert waitFor {(previous_button.displayed == true)}
           
           if ( tmpPage <= 1) {
@@ -202,7 +202,7 @@ Given I have <count> search results
 
         where:
         TestDesc                                                          | WellId | Address | LegalId | Owner | Page | NumberResult
-        "Multiple matching results - Address 123 - previous is disabled"  | ""     | "123"   | ""      | ""    | 1    | 139    
-        "Multiple matching results - Address 123 - Previous button shows" | ""     | "123"   | ""      | ""    | 14   | 139    
+        "Multiple matching results - Address 123 - previous is disabled"  | ""     | "12"   | ""      | ""    | 1    | 361    
+        "Multiple matching results - Address 123 - Previous button shows" | ""     | "12"   | ""      | ""    | 3   | 361    
     } 
 }
