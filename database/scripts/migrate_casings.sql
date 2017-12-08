@@ -16,10 +16,10 @@ who_updated)
 SELECT
     gen_random_uuid()                             ,
     null                                          ,
-    wells.well_tag_number                          ,
+    wells.well_tag_number                         ,
     casings.casing_from                           ,
     casings.casing_to                             ,
-    casings.casing_internal_diameter              ,
+    casings.casing_size                           ,
     casing_material.casing_material_guid          ,
     casings.casing_wall                           ,
     CASE casings.casing_drive_shoe_ind
