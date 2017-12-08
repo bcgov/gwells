@@ -48,6 +48,7 @@ node('bddstack') {
 			} finally { 
 				archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
                 archiveArtifacts allowEmptyArchive: true, artifacts: 'build/test-results/**/*'
+                junit 'build/test-results/**/*.xml'
 			}
         }
     }
