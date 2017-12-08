@@ -642,7 +642,7 @@ class CasingForm(forms.ModelForm):
             'casing_to',
             HTML('</td>'),
             HTML('<td width="10%">'),
-            'internal_diameter',
+            'diameter',
             HTML('</td>'),
             HTML('<td>'),
             'casing_type',
@@ -699,7 +699,7 @@ class CasingForm(forms.ModelForm):
 
     class Meta:
         model = Casing
-        fields = ['casing_from', 'casing_to', 'internal_diameter', 'casing_type', 'casing_material', 'wall_thickness', 'drive_shoe']
+        fields = ['casing_from', 'casing_to', 'diameter', 'casing_type', 'casing_material', 'wall_thickness', 'drive_shoe']
 
 
 
