@@ -213,7 +213,7 @@ class WellDetailsSpecs extends GebReportingSpec {
 		"yield_estimation_duration"	 	  | "12.00   hours" 	 | 110749
 		"casings_from"	 				  | "0.00" 	 | 113503
 		"casings_to"	 				  | "63.00" 	 | 113503
-		"casings_diameter"	 			  | "6.000" 	 | 113395
+		"casings_diameter"	 			  | "12.25" 	 | 112366
 		"casings_material"	 			  | "Steel" 	 | 113503
 		"casings_thickness"	 			  | "0.219" 	 | 113503
 		"casings_driveshoe"	 			  | "Yes" 	 | 113503	
