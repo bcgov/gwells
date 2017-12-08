@@ -84,8 +84,7 @@ class WellSearchSpecs extends GebReportingSpec {
         where:
         TestDesc                                                    | WellId           | ShowError    | NumberResult	|TagID 	| SecondID
         "One matching result - Well Tag - 107667"                   | 107667           | "No"         | 1				|"tag"	|""
-        "Multiple matching results - Well Tag 2"                    | 2                | "No"         | 2				|"tag"	|""
-        "Multiple matching results - Well ID 52471"                 | 52471            | "No"         | 2				|"ID"	|113308
+        "One matching result - Well ID 52471"         		        | 52471            | "No"         | 1				|"ID"	|"113308"
         "No matching results - Well ID 999999"                   	| 999999           | "Yes"        | 0				|"tag"	|""
     } 
             @Unroll
@@ -141,9 +140,9 @@ class WellSearchSpecs extends GebReportingSpec {
 
         where:
         TestDesc                        					| Address          | ShowError    | NumberResult
-        "One matching result - Address - 21231 16TH AVE."	| "21231 16TH AVE."| "No"         | 1
-        "Multiple matching results - Address - 123"     	| "123"            | "No"         | 139	
-        "Multiple matching results - Address - 16TH"     	| "16TH"           | "No"         | 389
+        "One matching result - Address - 4123 WRIGHT STREET "	| "4123 WRIGHT STREET "| "No"         | 1
+        "Multiple matching results - Address - 123"     	| "123"            | "No"         | 29	
+        "Multiple matching results - Address - 16TH"     	| "16TH"           | "No"         | 18
         "No matching results - Address - 999999"         	| "999999"         | "Yes"        | 0
         "No matching results - Address - <null>"         	| ""		       | "Yes"        | 0
     }
@@ -199,9 +198,9 @@ class WellSearchSpecs extends GebReportingSpec {
 
         where:
         TestDesc                        					| LegalId	       | ShowError    | NumberResult
-        "Plan - 14313"										| "14313"		   | "No"    	  | 11
-        "Lot - 123"     									| "123"            | "No"         | 793
-        "PID - 008710902"     								| "008710902"      | "No"         | 1
+        "Plan - 54433"										| "54433"		   | "No"    	  | 1
+        "Lot - 123"     									| "123"            | "No"         | 116
+        //"PID - 008710902"     								| "008710902"      | "No"         | 1
         "No matching results - Legal ID - 999999"         	| "999999"         | "Yes"        | 0
         "No matching results - Legal ID - <null>"         	| ""		       | "Yes"        | 0
     } 
@@ -256,7 +255,7 @@ class WellSearchSpecs extends GebReportingSpec {
 
         where:
         TestDesc                        		| Owner	       	| ShowError    | NumberResult
-        "Multiple Results - Gary"				| "GARY"	   	| "No"     	   | 434
+        "Multiple Results - Gary"				| "GARY"	   	| "No"     	   | 55
 		"Single Result - Gary Akles"     		| "GARY AKLES" 	| "No"         | 1	
         "No matching results - Random Owner"    | "Random Owner"| "Yes"        | 0
         "No matching results - <null>"         	| ""		    | "Yes"        | 0
@@ -321,17 +320,17 @@ class WellSearchSpecs extends GebReportingSpec {
 
         where:
         TestDesc                        					| Owner	       	|Address| ShowError    | NumberResult
-        "Multiple Results - Gary"							| "GARY"	   	|""		| "No"     	   | 434
+        "Multiple Results - Gary"							| "GARY"	   	|""		| "No"     	   | 55
         "Single Result - Gary Akles"     					| "GARY AKLES" 	|""		| "No"         | 1	
         "No matching results - Random Owner"    			| "Random Owner"|""		| "Yes"        | 0
         "No matching results - Random Address"    			| ""			|"Random Address"		| "Yes"        | 0
         "No matching results - Random Owner/Address"    	| "Random Owner"|"Random Address"		| "Yes"        | 0
         "No matching results - <null>"         				| ""		    |""		| "Yes"        | 0
-        "One matching result - Address - 21231 16TH AVE."	|""				| "21231 16TH AVE."| "No"         | 1
-        "Multiple matching results - Address - 123"     	|""| "123"      | "No"         | 139	
-        "Multiple matching results - Address - 16TH"     	|""| "16TH"     | "No"         | 389
-       	"Partial Owner/Address - Gary/201"					| "GARY"	   	|"201"		| "No"     	   | 3
-        "Full Owner/ partial Address - Smith/Wolfe"		| "SMITH"	|"WOLFE"		| "No"     	   | 2
-        "Partial Owner/Full Address - Gary/201"				| "GARY"	   	|"TELEGRAPH RD"		| "No"     	   | 1
+        "One matching result - Address - 1229 LAKE ROAD "	|""				| "1229 LAKE ROAD "| "No"         | 1
+        "Multiple matching results - Address - 123"     	|""| "123"      | "No"         | 29	
+        "Multiple matching results - Address - 16TH"     	|""| "16TH"     | "No"         | 18
+       	"Partial Owner/Address - Gary/7239"					| "GARY"	   	|"7239"		| "No"     	   | 1
+        "Full Owner/ partial Address - Smith/Wolfe"		| "RONALD"	|"MALAHAT"		| "No"     	   | 1
+        "Partial Owner/Full Address - Gary/PILGRIM "				| "GARY"	   	|"PILGRIM "		| "No"     	   | 1
     }         
 }
