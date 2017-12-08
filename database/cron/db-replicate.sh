@@ -34,6 +34,10 @@ psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER -v xform_filt
 \i create-xform-gwells-well-ETL-table.sql
 \i populate-xform-gwells-well.sql
 \i populate-gwells-well-from-xform.sql
+EOF
+
+# Separating into two steps, to avoid DB error
+psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER << EOF
 \i migrate_screens.sql
 \i migrate_production_data.sql
 \i migrate_casings.sql
@@ -41,5 +45,6 @@ psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER -v xform_filt
 \i migrate_aquifer_wells.sql
 \i migrate_lithology_descriptions.sql
 EOF
+
 
 exit 0
