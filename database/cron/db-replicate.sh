@@ -29,6 +29,7 @@ else
   FILTER=""
 fi
 
+# Separating into three steps, to avoid DB error
 cd /opt/app-root/src/database/scripts/
 psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER -v xform_filter="$FILTER" << EOF
 \set AUTOCOMMIT off
@@ -38,7 +39,6 @@ psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER -v xform_filt
 COMMIT;
 EOF
 
-# Separating into two steps, to avoid DB error
 psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER << EOF
 \set AUTOCOMMIT off
 \i migrate_screens.sql
@@ -46,9 +46,13 @@ psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER << EOF
 \i migrate_casings.sql
 \i migrate_perforations.sql
 \i migrate_aquifer_wells.sql
-\i migrate_lithology_descriptions.sql
 COMMIT;
 EOF
 
+psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER << EOF
+\set AUTOCOMMIT off
+\i migrate_lithology_descriptions.sql
+COMMIT;
+EOF
 
 exit 0
