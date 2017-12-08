@@ -31,19 +31,23 @@ fi
 
 cd /opt/app-root/src/database/scripts/
 psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER -v xform_filter="$FILTER" << EOF
+\set AUTOCOMMIT off
 \i create-xform-gwells-well-ETL-table.sql
 \i populate-xform-gwells-well.sql
 \i populate-gwells-well-from-xform.sql
+COMMIT;
 EOF
 
 # Separating into two steps, to avoid DB error
 psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER << EOF
+\set AUTOCOMMIT off
 \i migrate_screens.sql
 \i migrate_production_data.sql
 \i migrate_casings.sql
 \i migrate_perforations.sql
 \i migrate_aquifer_wells.sql
 \i migrate_lithology_descriptions.sql
+COMMIT;
 EOF
 
 
