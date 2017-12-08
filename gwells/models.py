@@ -1149,7 +1149,7 @@ class Casing(AuditModel):
     well_tag_number = models.ForeignKey(Well, db_column='well_tag_number', on_delete=models.CASCADE, blank=True, null=True)
     casing_from = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='From', null=True, blank=True, validators=[MinValueValidator(Decimal('0.00'))])
     casing_to = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='To', null=True, blank=True, validators=[MinValueValidator(Decimal('0.01'))])
-    internal_diameter = models.DecimalField(max_digits=8, decimal_places=3, verbose_name='Diameter', null=True, blank=True, validators=[MinValueValidator(Decimal('0.5'))])
+    diameter = models.DecimalField(max_digits=8, decimal_places=3, verbose_name='Diameter', null=True, blank=True, validators=[MinValueValidator(Decimal('0.5'))])
     casing_type = models.ForeignKey(CasingType, db_column='casing_type_guid', on_delete=models.CASCADE, verbose_name='Casing Type', null=True)
     casing_material = models.ForeignKey(CasingMaterial, db_column='casing_material_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Casing Material')
     wall_thickness = models.DecimalField(max_digits=6, decimal_places=3, verbose_name='Wall Thickness', blank=True, null=True, validators=[MinValueValidator(Decimal('0.01'))])
@@ -1172,7 +1172,7 @@ class Casing(AuditModel):
             "casing_to": self.casing_to,
             "casing_guid": self.casing_guid,
             "well_tag_number": self.well_tag_number,
-            "internal_diameter": self.internal_diameter,
+            "diameter": self.diameter,
             "wall_thickness": self.wall_thickness,
             "casing_material": self.casing_material,
             "drive_shoe": self.drive_shoe
