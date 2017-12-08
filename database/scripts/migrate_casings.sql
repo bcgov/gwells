@@ -5,7 +5,7 @@ filing_number                                 , -->FK
 well_tag_number                               , -->FK
 casing_from                                   ,
 casing_to                                     ,
-internal_diameter                             ,
+diameter                                      ,
 casing_material_guid                          , -->FK
 wall_thickness                                ,
 drive_shoe                                    ,
