@@ -305,162 +305,199 @@
 <fieldset id="well_completion_data">
     <legend>Well Completion Data</legend>
     <div class="row">
-        <div class="col-md-2">
-            <label for="total_depth_drilled">{% verbose_name well "total_depth_drilled" %}:</label>
-        </div>
-        <div class="col-md-2">
-            <span id="total_depth_drilled">
-                {% if  well.total_depth_drilled > 0 %}
-                {{well.total_depth_drilled}} feet
-                {% else                             %}
-                &nbsp;
-                {% endif                            %}
-            </span>
-        </div>
-        <div class="col-md-2">
-            <label for="static_water_level">{% verbose_name well "static_water_level" %}:</label>
-        </div>
-        <div class="col-md-2">
-            <span id="static_water_level">
-                {% if  well.static_water_level > 0  %}
-                {{well.static_water_level}} feet
-                {% else                             %}
-                &nbsp;
-                {% endif                            %}
-            </span>
+        <div class="col-md-4">
+            <div class="row">
+                <div class="col-md-7">
+                    <label for="total_depth_drilled">{% verbose_name well "total_depth_drilled" %}:</label>
+                </div>
+                <div class="col-md-5">
+                    <span id="total_depth_drilled">
+                        {% if  well.total_depth_drilled > 0 %}
+                        {{well.total_depth_drilled}} feet
+                        {% else                             %}
+                        &nbsp;
+                        {% endif                            %}
+                    </span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-7">
+                    <label for="finished_well_depth">{% verbose_name well "finished_well_depth" %}:</label>
+                </div>
+                <div class="col-md-5">
+                    <span id="finished_well_depth">
+                            {% if  well.finished_well_depth > 0 %}
+                                {{well.finished_well_depth}} feet
+                            {% else                             %}
+                                &nbsp;
+                            {% endif                            %}
+                    </span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-7">
+                    <label for="final_casing_stickup">{% verbose_name well "final_casing_stick_up" %}:</label>
+                </div>
+                <div class="col-md-5">
+                    <span id="final_casing_stickup">
+                        {% if  well.final_casing_stick_up > 0 %}
+                          {{well.final_casing_stick_up}} inches
+                        {% else                               %}
+                          &nbsp;
+                        {% endif                              %}
+                    </span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-7">
+                  <label for="bedrock_depth">{% verbose_name well "bedrock_depth" %}:</label>
+                </div>
+                <div class="col-md-5">
+                    <span id="bedrock_depth">
+                        {% if  well.bedrock_depth > 0       %}
+                        {{well.bedrock_depth}} feet
+                        {% else                             %}
+                        &nbsp;
+                        {% endif                            %}
+                    </span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-7">
+                    <label for="ground_elevation">{% verbose_name well "ground_elevation" %}:</label>
+                </div>
+                <div class="col-md-5">
+                    <span id="ground_elevation">
+                        {% if  well.ground_elevation > 0 %}
+                        {{well.ground_elevation}} feet
+                        {% else                             %}
+                        &nbsp;
+                        {% endif                            %}
+                    </span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-7">
+                  <label for="ground_elevation_method">{% verbose_name well "ground_elevation_method" %}:</label>
+                </div>
+                <div class="col-md-5">
+                    <span id="ground_elevation_method">{{well.ground_elevation_method|default_if_none:'&nbsp;' }}</span>
+                </div>
+            </div>
         </div>
         <div class="col-md-4">
-            <label for="well_cap_type">{% verbose_name well "well_cap_type" %}:</label>
-            <span id="well_cap_type">{{well.well_cap_type|default_if_none:'&nbsp;'}}</span>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-md-2">
-            <label for="finished_well_depth">{% verbose_name well "finished_well_depth" %}:</label>
-        </div>
-        <div class="col-md-2">
-            <span id="finished_well_depth">
-              {% if  well.finished_well_depth > 0 %}
-              {{well.finished_well_depth}} feet
-              {% else                             %}
-              &nbsp;
-              {% endif                            %}
-            </span>
-        </div>
-        <div class="col-md-2">
-            <label for="well_yield">{% verbose_name well "well_yield" %}:</label>
-        </div>
-        <div class="col-md-2">
-            <span id="well_yield">
-              {% if  well.well_yield > 0 %}
-              {{well.well_yield}} {{well.well_yield_unit.code|default_if_none:"no unit provided"}}
-              {% else                             %}
-              &nbsp;
-              {% endif                            %}
-            </span>
-        </div>
-        <div class="col-md-4">
-            <label for="well_disinfected">{% verbose_name well "well_disinfected" %}:</label>
-            <span id="well_disinfected">{{well.get_well_disinfected_display|default_if_none:'&nbsp;' }}</span>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-md-2">
-            <label for="final_casing_stickup">{% verbose_name well "final_casing_stick_up" %}:</label>
-        </div>
-        <div class="col-md-2">
-            <span id="final_casing_stickup">
-                {% if  well.final_casing_stick_up > 0 %}
-                  {{well.final_casing_stick_up}} inches
-                {% else                               %}
-                  &nbsp;
-                {% endif                              %}
-            </span>
-        </div>
-        <div class="col-md-2">
-          <label for="artesian_flow">{% verbose_name well "artesian_flow" %}:</label>
-        </div>
-        <div class="col-md-2">
-            <span id="artesian_flow">
-              {% if well.artesian_flow > 0             %}
-                {{well.artesian_flow}}&nbsp;{{well.well_yield_unit.code|default_if_none:"no unit provided"}}
-              {% endif                                 %}
-            </span>
+            <div class="row">
+                <div class="col-md-7">
+                    <label for="static_water_level">{% verbose_name well "static_water_level" %}:</label>
+                </div>
+                <div class="col-md-5">
+                    <span id="static_water_level">
+                        {% if  well.static_water_level > 0  %}
+                        {{well.static_water_level}} feet
+                        {% else                             %}
+                        &nbsp;
+                        {% endif                            %}
+                    </span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-7">
+                    <label for="well_yield">{% verbose_name well "well_yield" %}:</label>
+                </div>
+                <div class="col-md-5">
+                    <span id="well_yield">
+                      {% if  well.well_yield > 0 %}
+                      {{well.well_yield}} {{well.well_yield_unit.code|default_if_none:"no unit provided"}}
+                      {% else                             %}
+                      &nbsp;
+                      {% endif                            %}
+                    </span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-7">
+                  <label for="artesian_flow">{% verbose_name well "artesian_flow" %}:</label>
+                </div>
+                <div class="col-md-5">
+                    <span id="artesian_flow">
+                      {% if well.artesian_flow > 0             %}
+                        {{well.artesian_flow}}&nbsp;{{well.well_yield_unit.code|default_if_none:"no unit provided"}}
+                      {% endif                                 %}
+                    </span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-7">
+                  <label for="artesian_pressure">{% verbose_name well "artesian_pressure" %}:</label>
+                </div>
+                <div class="col-md-5">
+                    <span id="artesian_pressure">
+                        {% if  well.artesian_pressure > 0       %}
+                        {{well.artesian_pressure}} inches
+                        {% else                             %}
+                        &nbsp;
+                        {% endif                            %}
+                    </span>
+                </div>
+            </div>
         </div>
         <div class="col-md-4">
-          <label for="drilling_method">{% verbose_name well "drilling_method" %}:</label>
-          <span id="drilling_method">{{well.drilling_method.code|default_if_none:'&nbsp;' }}</span>
-        </div>
-    </div>
-
-    <div class="row">
-      <div class="col-md-2">
-        <label for="bedrock_depth">{% verbose_name well "bedrock_depth" %}:</label>
-      </div>
-      <div class="col-md-2">
-          <span id="bedrock_depth">
-              {% if  well.bedrock_depth > 0       %}
-              {{well.bedrock_depth}} feet
-              {% else                             %}
-              &nbsp;
-              {% endif                            %}
-          </span>
-      </div>
-      <div class="col-md-2">
-        <label for="artesian_pressure">{% verbose_name well "artesian_pressure" %}:</label>
-      </div>
-      <div class="col-md-2">
-          <span id="artesian_pressure">
-              {% if  well.artesian_pressure > 0       %}
-              {{well.artesian_pressure}} inches
-              {% else                             %}
-              &nbsp;
-              {% endif                            %}
-
-          </span>
-      </div>
-      <div class="col-md-4">
-        <label for="orientation">{% verbose_name well "well_orientation" %}:</label>
-        <span id="orientation2">{{well.get_well_orientation_display|default_if_none:'&nbsp;' }}</span>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-md-2">
-          <label for="ground_elevation">{% verbose_name well "ground_elevation" %}:</label>
-      </div>
-      <div class="col-md-2">
-          <span id="ground_elevation">
-              {% if  well.ground_elevation > 0 %}
-              {{well.ground_elevation}} feet
-              {% else                             %}
-              &nbsp;
-              {% endif                            %}
-          </span>
-      </div>
-    </div>
-
-    <div class="row">
-        <div class="col-md-2">
-          <label for="ground_elevation_method">{% verbose_name well "ground_elevation_method" %}:</label>
-        </div>
-        <div class="col-md-2">
-            <span id="ground_elevation_method">{{well.ground_elevation_method|default_if_none:'&nbsp;' }}</span>
+            <div class="row">
+                <div class="col-md-7">
+                    <label for="well_cap_type">{% verbose_name well "well_cap_type" %}:</label>
+                </div>
+                <div class="col-md-5">
+                    <span id="well_cap_type">{{well.well_cap_type|default_if_none:'&nbsp;'}}</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-7">
+                    <label for="well_disinfected">{% verbose_name well "well_disinfected" %}:</label>
+                </div>
+                <div class="col-md-5">
+                    <span id="well_disinfected">{{well.get_well_disinfected_display|default_if_none:'&nbsp;' }}</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-7">
+                    <label for="drilling_method">{% verbose_name well "drilling_method" %}:</label>
+                </div>
+                <div class="col-md-5">
+                    <span id="drilling_method">{{well.drilling_method.code|default_if_none:'&nbsp;' }}</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-7">
+                    <label for="orientation">{% verbose_name well "well_orientation" %}:</label>
+                </div>
+                <div class="col-md-5">
+                    <span id="orientation2">{{well.get_well_orientation_display|default_if_none:'&nbsp;' }}</span>
+                </div>
+            </div>
         </div>
     </div>
 
     <div class="row">
         <div class="col-md-12">
-            &nbsp;
+            &nbsp;<!-- spacer row -->
         </div>
     </div>
 
     <div class="row">
-        <div class="col-md-12">
-            <label for="well_plate_attached">{% verbose_name well "well_identification_plate_attached" %}:</label>
-            <span id="well_plate_attached">{{well.well_identification_plate_attached|default_if_none:'&nbsp;' }}</span>
+        <div class="col-md-4">
+            <div class="row">
+                <div class="col-md-12">
+                    <label for="well_plate_attached">{% verbose_name well "well_identification_plate_attached" %}:</label>
+                </div>
+
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="row">
+                <div class="col-md-12">
+                    <span id="well_plate_attached">{{well.well_identification_plate_attached|default_if_none:'&nbsp;' }}</span>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -534,19 +571,27 @@
 <fieldset id="well_development">
     <legend>Well Development</legend>
     <div class="row">
-        <div class="col-md-3">
-            <label for="devloped-by">{% verbose_name well "development_method" %}:</label>
-            <span id="developed-by">{{well.development_method.description|default_if_none:'&nbsp;' }}</span>
+        <div class="col-md-4">
+            <div class="row">
+                <div class="col-md-12">
+                    <label for="devloped-by">{% verbose_name well "development_method" %}:</label>
+                    <span id="developed-by">{{well.development_method.description|default_if_none:'&nbsp;' }}</span>
+                </div>
+            </div>
         </div>
         <div class="col-md-4">
-            <label for="devlopment-total-duration">{% verbose_name well "development_hours" %}:</label>
-            <span id="devlopment-total-duration">
-              {% if  well.development_hours > 0 %}
-              {{well.development_hours}} hours
-              {% else                             %}
-              &nbsp;
-              {% endif                            %}
-            </span>
+            <div class="row">
+                <div class="col-md-12">
+                    <label for="devlopment-total-duration">{% verbose_name well "development_hours" %}:</label>
+                    <span id="devlopment-total-duration">
+                      {% if  well.development_hours > 0 %}
+                      {{well.development_hours}} hours
+                      {% else                             %}
+                      &nbsp;
+                      {% endif                            %}
+                    </span>
+                </div>
+            </div>
         </div>
     </div>
 </fieldset>
@@ -556,24 +601,36 @@
     <div class="row">
         {% for productiondata in well.productiondata_set.all|dictsortreversed:"when_updated"|slice:"1" %}
         <div class="col-md-4">
-          <label for="yield-estimation-method">{% verbose_name productiondata "yield_estimation_method" %}:</label>
-          <span id="yield-estimation-method">{{productiondata.yield_estimation_method.description|default_if_none:'&nbsp;' }}</span>
+          <div class="row">
+              <div class="col-md-12">
+                <label for="yield-estimation-method">{% verbose_name productiondata "yield_estimation_method" %}:</label>
+                <span id="yield-estimation-method">{{productiondata.yield_estimation_method.description|default_if_none:'&nbsp;' }}</span>
+              </div>
+          </div>
         </div>
         <div class="col-md-4">
-          <label for="yield_estimation_rate">{% verbose_name productiondata "yield_estimation_rate" %}:</label>
-          <span id="yield_estimation_rate">
-            {% if productiondata.yield_estimation_rate > 0 %}
-                {{productiondata.yield_estimation_rate }} &nbsp; {{productiondata.well_yield_unit.code}}
-            {% endif %}
-        </span>
+            <div class="row">
+                <div class="col-md-12">
+                  <label for="yield_estimation_rate">{% verbose_name productiondata "yield_estimation_rate" %}:</label>
+                  <span id="yield_estimation_rate">
+                    {% if productiondata.yield_estimation_rate > 0 %}
+                        {{productiondata.yield_estimation_rate }} &nbsp; {{productiondata.well_yield_unit.code}}
+                    {% endif %}
+                  </span>
+              </div>
+          </div>
         </div>
         <div class="col-md-4">
-          <label for="yield_estimation_duration">{% verbose_name productiondata "yield_estimation_duration" %}:</label>
-          <span id="yield_estimation_duration">
-              {% if productiondata.yield_estimation_duration > 0 %}
-                  {{productiondata.yield_estimation_duration }} &nbsp; hours
-              {% endif %}
-          </span>
+            <div class="row">
+                <div class="col-md-12">
+                  <label for="yield_estimation_duration">{% verbose_name productiondata "yield_estimation_duration" %}:</label>
+                  <span id="yield_estimation_duration">
+                      {% if productiondata.yield_estimation_duration > 0 %}
+                          {{productiondata.yield_estimation_duration }} &nbsp; hours
+                      {% endif %}
+                  </span>
+                </div>
+            </div>
         </div>
         {% endfor %}
     </div>
@@ -622,13 +679,9 @@
 </fieldset>
 &nbsp;
 <fieldset id="surface_seal_fieldset">
+    <legend>Surface Seal and Backfill Details</legend>
     <div class="row">
         <div class="col-md-4">
-            <div class="row">
-                <div class="col-md-12">
-                    <h3>Surface Seal Details</h3>
-                </div>
-            </div>
             <div class="row">
                 <div class="col-md-12">
                     <label for="surface_seal_material">{% verbose_name well "surface_seal_material" %}:</label>
@@ -664,12 +717,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="row">
-                <div class="col-md-12">
-                    <h3>Backfill Details</h3>
-                </div>
-            </div>
+        <div class="col-md-8">
             <div class="row">
                 <div class="col-md-12">
                     <label for="backfill_type">{% verbose_name well "backfill_type" %}:</label>
