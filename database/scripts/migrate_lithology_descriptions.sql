@@ -45,20 +45,8 @@ FROM wells.wells_lithology_descriptions wld INNER JOIN wells.wells_wells wells O
                                            LEFT OUTER JOIN gwells_well_yield_unit well_yield_unit ON UPPER(wld.water_bearing_est_flw_unt_cd)=UPPER(well_yield_unit.code)
                                            LEFT OUTER JOIN gwells_lithology_material lithology_material ON UPPER(wld.lithology_material_code)=UPPER(lithology_material.code)
                                            LEFT OUTER JOIN gwells_lithology_description_code lithology_description_code ON UPPER(wld.lithology_code)=UPPER(lithology_description_code.code)
-WHERE wells.acceptance_status_code NOT IN ('PENDING', 'REJECTED', 'NEW') AND
-      (lithology_description_id != 257638 AND wells.well_id != 54374)  AND
-      (lithology_description_id != 252021 AND wells.well_id != 55879)  AND
-      (lithology_description_id != 239976 AND wells.well_id != 8622)   AND
-      (lithology_description_id != 67414  AND wells.well_id != 59726 )  AND
-      (lithology_description_id != 67415  AND wells.well_id != 59726 )  AND
-      (lithology_description_id != 67090  AND wells.well_id != 21728 )  AND
-      (lithology_description_id != 67119  AND wells.well_id != 21732 )  AND
-      (lithology_description_id != 628025 AND wells.well_id != 113892) AND
-      (lithology_description_id != 628026 AND wells.well_id != 113892) AND
-      (lithology_description_id != 628027 AND wells.well_id != 113893) AND
-      (lithology_description_id != 628028 AND wells.well_id != 113894) AND
-      (lithology_description_id != 628029 AND wells.well_id != 113895) AND
-      (lithology_description_id != 631336 AND wells.well_id != 114455);
+WHERE wells.acceptance_status_code NOT IN ('PENDING', 'REJECTED', 'NEW')
+;
 
 \echo 'wells_lithology_descriptions data imported'
 
