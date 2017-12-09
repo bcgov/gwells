@@ -34,8 +34,9 @@ SELECT
 FROM wells.wells_casings casings
      LEFT OUTER JOIN gwells_casing_material casing_material ON casings.casing_material_code=casing_material.casing_material_code
      INNER JOIN wells.wells_wells wells ON wells.well_id=casings.well_id
-     INNER JOIN gwells_well well ON well.well_tag_number = wells.well_tag_number
-WHERE wells.acceptance_status_code NOT IN ('PENDING', 'REJECTED', 'NEW');
+WHERE wells.acceptance_status_code NOT IN ('PENDING', 'REJECTED', 'NEW')
+:xform_filter
+;
 
 \echo 'wells_casings data imported'
 

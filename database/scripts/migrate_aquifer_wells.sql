@@ -18,8 +18,9 @@ SELECT
   coalesce(aws.when_updated, aws.when_created)
 FROM
   wells.gw_aquifer_wells aws LEFT OUTER JOIN wells.wells_wells wells ON aws.well_id = wells.well_id
-                            INNER JOIN gwells_well well ON well.well_tag_number = wells.well_tag_number
-WHERE wells.acceptance_status_code NOT IN ('PENDING', 'REJECTED', 'NEW');
+WHERE wells.acceptance_status_code NOT IN ('PENDING', 'REJECTED', 'NEW')
+:xform_filter
+;
 
 \echo 'gw_aquifer_well data imported'
 
