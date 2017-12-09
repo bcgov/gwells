@@ -32,8 +32,9 @@ FROM wells.wells_screens screens
        screens.screen_assembly_type_code='K  & Riser' AND screen_assembly_type.screen_assembly_type_code='K_RISER'
      )
      INNER JOIN wells.wells_wells wells ON wells.well_id=screens.well_id
-     INNER JOIN gwells_well well ON well.well_tag_number = wells.well_tag_number
-WHERE WELLS.ACCEPTANCE_STATUS_CODE NOT IN ('PENDING', 'REJECTED', 'NEW');
+WHERE WELLS.ACCEPTANCE_STATUS_CODE NOT IN ('PENDING', 'REJECTED', 'NEW')
+:xform_filter
+;
 
 \echo 'wells_screens data imported'
 
