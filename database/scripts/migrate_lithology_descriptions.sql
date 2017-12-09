@@ -39,13 +39,13 @@ SELECT
   COALESCE(wld.who_updated, wld.who_created)                ,
   COALESCE(wld.when_updated, wld.when_created)
 FROM wells.wells_lithology_descriptions wld INNER JOIN wells.wells_wells wells ON wells.well_id=wld.well_id
-                                           INNER JOIN gwells_well well ON well.well_tag_number = wells.well_tag_number
                                            LEFT OUTER JOIN gwells_lithology_hardness lithology_hardness ON UPPER(wld.relative_hardness_code)=UPPER(lithology_hardness.code)
                                            LEFT OUTER JOIN gwells_lithology_colour lithology_colour ON UPPER(wld.lithology_colour_code)=UPPER(lithology_colour.code)
                                            LEFT OUTER JOIN gwells_well_yield_unit well_yield_unit ON UPPER(wld.water_bearing_est_flw_unt_cd)=UPPER(well_yield_unit.code)
                                            LEFT OUTER JOIN gwells_lithology_material lithology_material ON UPPER(wld.lithology_material_code)=UPPER(lithology_material.code)
                                            LEFT OUTER JOIN gwells_lithology_description_code lithology_description_code ON UPPER(wld.lithology_code)=UPPER(lithology_description_code.code)
 WHERE wells.acceptance_status_code NOT IN ('PENDING', 'REJECTED', 'NEW')
+:xform_filter
 ;
 
 \echo 'wells_lithology_descriptions data imported'

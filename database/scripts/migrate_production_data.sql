@@ -18,7 +18,7 @@ INSERT INTO gwells_production_data(
 SELECT
   gen_random_uuid()                                                      ,
   null                                                                   ,
-  well.well_tag_number                                                   ,
+  wells.well_tag_number                                                   ,
   yield_estimation_method.yield_estimation_method_guid                   ,
   production_data.test_rate                                              ,
   production_data.test_duration                                          ,
@@ -34,8 +34,9 @@ FROM wells.wells_production_data production_data
      LEFT OUTER JOIN gwells_yield_estimation_method yield_estimation_method ON production_data.yield_estimated_method_code=yield_estimation_method.yield_estimation_method_code
      LEFT OUTER JOIN gwells_well_yield_unit well_yield_unit ON production_data.test_rate_units_code=well_yield_unit.code
      INNER JOIN wells.wells_wells wells ON production_data.well_id=wells.well_id
-     INNER JOIN gwells_well well ON wells.well_tag_number = well.well_tag_number
-WHERE wells.acceptance_status_code NOT IN ('PENDING', 'REJECTED', 'NEW');
+WHERE wells.acceptance_status_code NOT IN ('PENDING', 'REJECTED', 'NEW')
+:xform_filter
+;
 
 \echo 'wells_production_data data imported'
 
