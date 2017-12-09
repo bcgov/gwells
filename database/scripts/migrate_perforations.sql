@@ -25,11 +25,11 @@ INSERT INTO gwells_perforation(
   perforations.when_created          ,
   perforations.who_updated           ,
   perforations.when_updated
-
 FROM wells.wells_perforations perforations
      INNER JOIN wells.wells_wells wells ON perforations.well_id=wells.well_id
-     INNER JOIN gwells_well well ON wells.well_tag_number = well.well_tag_number
-WHERE WELLS.ACCEPTANCE_STATUS_CODE NOT IN ('PENDING', 'REJECTED', 'NEW');
+WHERE WELLS.ACCEPTANCE_STATUS_CODE NOT IN ('PENDING', 'REJECTED', 'NEW')
+:xform_filter
+;
 
 \echo 'wells_perforations data imported'
 
