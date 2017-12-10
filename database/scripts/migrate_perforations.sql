@@ -14,7 +14,7 @@ INSERT INTO gwells_perforation(
   when_updated
 ) SELECT
   gen_random_uuid()                  ,
-  wells.well_tag_number              ,
+  xform.well_tag_number              ,
   perforations.liner_thickness       ,
   perforations.liner_diameter        ,
   perforations.liner_from            ,
@@ -26,10 +26,7 @@ INSERT INTO gwells_perforation(
   perforations.who_updated           ,
   perforations.when_updated
 FROM wells.wells_perforations perforations
-     INNER JOIN wells.wells_wells wells ON perforations.well_id=wells.well_id
-WHERE WELLS.ACCEPTANCE_STATUS_CODE NOT IN ('PENDING', 'REJECTED', 'NEW')
-:xform_filter
-;
+INNER JOIN xform_gwells_well xform ON perforations.well_id=xform.well_id;
 
 \echo 'wells_perforations data imported'
 
