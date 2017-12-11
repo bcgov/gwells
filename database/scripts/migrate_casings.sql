@@ -16,7 +16,7 @@ who_updated)
 SELECT
     gen_random_uuid()                             ,
     null                                          ,
-    wells.well_tag_number                         ,
+    xform.well_tag_number                         ,
     casings.casing_from                           ,
     casings.casing_to                             ,
     casings.casing_size                           ,
@@ -32,11 +32,9 @@ SELECT
     casings.who_created                           ,
     casings.who_updated
 FROM wells.wells_casings casings
-     LEFT OUTER JOIN gwells_casing_material casing_material ON casings.casing_material_code=casing_material.casing_material_code
-     INNER JOIN wells.wells_wells wells ON wells.well_id=casings.well_id
-WHERE wells.acceptance_status_code NOT IN ('PENDING', 'REJECTED', 'NEW')
-:xform_filter
-;
+    INNER JOIN xform_gwells_well xform ON xform.well_id=casings.well_id
+    LEFT OUTER JOIN gwells_casing_material casing_material ON casings.casing_material_code=casing_material.casing_material_code;
+     
 
 \echo 'wells_casings data imported'
 

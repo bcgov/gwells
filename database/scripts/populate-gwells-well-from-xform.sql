@@ -188,11 +188,8 @@ SELECT
   xform.comments
 FROM xform_gwells_well xform;
 
-
 \echo 'xform data imported into the gwells_well table';
 
 \t
 SELECT count(*) || ' rows loaded into the gwells_well table' FROM gwells_well;
 \t
-
-DROP TABLE IF EXISTS xform_gwells_well;

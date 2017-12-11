@@ -2,6 +2,7 @@
 
 INSERT INTO xform_gwells_well (
   well_tag_number                    ,
+  well_id                            ,
   well_guid                          ,
   acceptance_status_code             ,
   owner_full_name                    ,
@@ -90,7 +91,8 @@ INSERT INTO xform_gwells_well (
   who_created                        ,
   who_updated)
 SELECT
-  wells.well_tag_number                                                  ,
+  wells.well_tag_number   , 
+  wells.well_id           ,
   gen_random_uuid()                                                      ,
   wells.acceptance_status_code AS acceptance_status_code                 ,
   concat_ws(' ', owner.giVEN_NAME,OWNER.SURNAME) AS owner_full_name      ,
