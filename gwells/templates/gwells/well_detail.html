@@ -4,13 +4,12 @@
 
 {% block title %}Well Summary{% endblock %}
 
-{% block bodyheading_block %}Well Summary{% endblock %}
-
 {% block introduction_block %}
 {% endblock %}
 
 {% block body_block %}
 <fieldset id="summary_information">
+    <legend>Well Summary</legend>
     <div class="row">
         <div class="col-md-4">
             <div class="row">
@@ -254,9 +253,9 @@
             <table id="activities" class="table table-condensed table-bordered table-striped">
                 <thead>
                     <tr>
-                        <th>{% verbose_name well "construction_end_date" %}</th>
-                        <th>{% verbose_name well "alteration_end_date" %}</th>
-                        <th>{% verbose_name well "decommission_end_date" %}</th>
+                        <th>{% verbose_name well "construction_end_date" %}<br>(YYYY-MM-DD)</th>
+                        <th>{% verbose_name well "alteration_end_date" %}<br>(YYYY-MM-DD)</th>
+                        <th>{% verbose_name well "decommission_end_date" %}<br>(YYYY-MM-DD)</th>
                         <th>{% verbose_name well "drilling_company" %}</th>
                     </tr>
                 </thead>
@@ -504,6 +503,46 @@
     &nbsp;
 
 </fieldset>
+&nbsp;
+<fieldset id="lithology_fieldset">
+    <legend>Lithology</legend>
+    <div class="row">
+        <div class="col-md-12 table-responsive">
+            <table id="lithology" class="table table-condensed table-bordered table-striped">
+                <thead>
+                    <th>From (feet)</th>
+                    <th>To (feet)</th>
+                    <th>Lithology Raw Data</th>
+                    <th>Description</th>
+                    <th>Material Description</th>
+                    <th>Relative Hardness</th>
+                    <th>Colour</th>
+                    <th>Water-Bearing<br>Estimated Flow</th>
+                    <th>Observations</th>
+                </thead>
+                <tbody>
+                    {% for lithology in well.lithologydescription_set.all %}
+                    <tr>
+                        <td>{{lithology.lithology_from|default_if_none:'&nbsp;'}}</td>
+                        <td>{{lithology.lithology_to|default_if_none:'&nbsp;'}}</td>
+                        <td>{{lithology.lithology_raw_data|default_if_none:'&nbsp;'}}</td>
+                        <td>{{lithology.lithology_description.description|default_if_none:'&nbsp;'}}</td>
+                        <td>{{lithology.lithology_material.description|default_if_none:'&nbsp;'}}</td>
+                        <td>{{lithology.lithology_hardness|default_if_none:'&nbsp;'}}</td>
+                        <td>{{lithology.lithology_colour|default_if_none:'&nbsp;'}}</td>
+                        <td>
+                          {% if lithology.water_bearing_estimated_flow %}
+                            {{lithology.water_bearing_estimated_flow}}&nbsp;{{lithology.water_bearing_estimated_flow_units}}
+                          {% endif %}
+                        </td>
+                        <td>{{lithology.lithology_observation|default_if_none:'&nbsp;'}}</td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    </fieldset>
 &nbsp;
 <fieldset id="screen_details">
     <legend>Screen Details</legend>
@@ -770,46 +809,6 @@
     </div>
 </fieldset>
 &nbsp;
-<fieldset id="lithology_fieldset">
-    <legend>Lithology</legend>
-    <div class="row">
-        <div class="col-md-12 table-responsive">
-            <table id="lithology" class="table table-condensed table-bordered table-striped">
-                <thead>
-                    <th>From (feet)</th>
-                    <th>To (feet)</th>
-                    <th>Raw Data</th>
-                    <th>Description</th>
-                    <th>Material Description</th>
-                    <th>Relative Hardness</th>
-                    <th>Colour</th>
-                    <th>Water-Bearing Estimated Flow</th>
-                    <th>Observations</th>
-                </thead>
-                <tbody>
-                    {% for lithology in well.lithologydescription_set.all %}
-                    <tr>
-                        <td>{{lithology.lithology_from|default_if_none:'&nbsp;'}}</td>
-                        <td>{{lithology.lithology_to|default_if_none:'&nbsp;'}}</td>
-                        <td>{{lithology.lithology_raw_data|default_if_none:'&nbsp;'}}</td>
-                        <td>{{lithology.lithology_description.description|default_if_none:'&nbsp;'}}</td>
-                        <td>{{lithology.lithology_material.description|default_if_none:'&nbsp;'}}</td>
-                        <td>{{lithology.lithology_hardness|default_if_none:'&nbsp;'}}</td>
-                        <td>{{lithology.lithology_colour|default_if_none:'&nbsp;'}}</td>
-                        <td>
-                          {% if lithology.water_bearing_estimated_flow %}
-                            {{lithology.water_bearing_estimated_flow}}&nbsp;{{lithology.water_bearing_estimated_flow_units}}
-                          {% endif %}
-                        </td>
-                        <td>{{lithology.lithology_observation|default_if_none:'&nbsp;'}}</td>
-                    </tr>
-                  {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
-    </fieldset>
-&nbsp;
 <fieldset id="well_decommissioning">
     <legend>Well Decommissioning</legend>
     <div class="row">
@@ -852,10 +851,6 @@
   <legend>Comments</legend>
   <span id="comments">{{well.comments|default_if_none:'&nbsp;'}}</span>
 </fieldset>
-<div>
-    <br /><br />
-    <a id="well_tag_number_link" href="https://a100.gov.bc.ca/pub/wells/wellsreport1.do?wellTagNumber={{well.well_tag_number }}">View Report</a>
-</div>
 {% endblock %}
 
 {% block jqscript_block %}
