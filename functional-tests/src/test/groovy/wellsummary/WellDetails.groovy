@@ -125,7 +125,6 @@ class WellDetailsSpecs extends GebReportingSpec {
         	//"backfill_material"
         	assert decommission_details 
 
-			assert well_tag_number_link
         where:
         TestDesc                          | WellId           
         "Well Tag - "                    | 110749
