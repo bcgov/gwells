@@ -39,7 +39,7 @@ psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER -v xform_filt
 COMMIT;
 EOF
 
-psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER -v xform_filter="$FILTER" << EOF
+psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER << EOF
 \set AUTOCOMMIT off
 \i migrate_screens.sql
 \i migrate_production_data.sql
@@ -49,9 +49,10 @@ psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER -v xform_filt
 COMMIT;
 EOF
 
-psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER -v xform_filter="$FILTER" << EOF
+psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER << EOF
 \set AUTOCOMMIT off
 \i migrate_lithology_descriptions.sql
+-- DROP TABLE IF EXISTS xform_gwells_well;
 COMMIT;
 EOF
 
