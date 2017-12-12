@@ -141,6 +141,5 @@ class WellSummaryPage extends Page {
 
 		comments { $("span", id:"comments") }
 
-		well_tag_number_link { $( "a", id:"well_tag_number_link") }
 	}
 }
