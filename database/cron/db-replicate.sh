@@ -35,6 +35,7 @@ psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER -v xform_filt
 \set AUTOCOMMIT off
 \i create-xform-gwells-well-ETL-table.sql
 \i populate-xform-gwells-well.sql
+\i migrate_bcgs.sql
 \i populate-gwells-well-from-xform.sql
 COMMIT;
 EOF
@@ -52,7 +53,7 @@ EOF
 psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER << EOF
 \set AUTOCOMMIT off
 \i migrate_lithology_descriptions.sql
--- DROP TABLE IF EXISTS xform_gwells_well;
+DROP TABLE IF EXISTS xform_gwells_well;
 COMMIT;
 EOF
 
