@@ -66,10 +66,6 @@
 \echo '... loading gwells_screen_assembly_type code table'
 \copy gwells_screen_assembly_type (who_created,when_created,who_updated,when_updated,screen_assembly_type_guid,screen_assembly_type_code,description,is_hidden,sort_order) from 'gwells_screen_assembly_type.csv' with header delimiter ',' CSV ;
 
---BCGS NUMBER
-\echo '... loading gwells_bcgs_number code table'
-\copy gwells_bcgs_number (who_created,when_created,who_updated,when_updated,bcgs_id,bcgs_number) from 'gwells_bcgs_number.csv' with header delimiter ',' CSV ;
-
 --DEVELOPMENT METHOD
 \echo '... loading gwells_development_method code table'
 \copy gwells_development_method (who_created,when_created,who_updated,when_updated,development_method_guid,development_method_code,description,is_hidden,sort_order ) from 'gwells_development_method.csv' with header delimiter ',' CSV ;
