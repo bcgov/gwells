@@ -812,11 +812,11 @@ class Well(AuditModel):
     utm_accuracy_code = models.CharField(max_length=10, blank=True, null=True, verbose_name="Location Accuracy Code")
     bcgs_id = models.ForeignKey(BCGS_Numbers, db_column='bcgs_id', on_delete=models.CASCADE, blank=True, null=True, verbose_name="BCGS Mapsheet Number")
 
-    decommission_reason = models.CharField(max_length=250, blank=True, null=True, verbose_name="Reason for Decomission")
+    decommission_reason = models.CharField(max_length=250, blank=True, null=True, verbose_name="Reason for Decommission")
     decommission_method = models.ForeignKey(DecommissionMethod, db_column='decommission_method_guid', blank=True, null="True", verbose_name="Method of Decommission")
     sealant_material = models.CharField(max_length=100, blank=True, null=True, verbose_name="Sealant Material")
     backfill_material = models.CharField(max_length=100, blank=True, null=True, verbose_name="Backfill Material")
-    decommission_details = models.CharField(max_length=250, blank=True, null=True, verbose_name="Decomission Details")
+    decommission_details = models.CharField(max_length=250, blank=True, null=True, verbose_name="Decommission Details")
 
     tracker = FieldTracker()
 
