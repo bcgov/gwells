@@ -40,28 +40,34 @@ node('maven') {
 
 node('master') {
 	
-	stage('Functional Test') {
+	stage('Functional Test for Dev') {
 		//the checkout is mandatory, otherwise functional test would fail
         echo "checking out source"
         echo "Build: ${BUILD_ID}"
         checkout scm
         dir('navunit') {
-			try {
-				sh './gradlew --debug --stacktrace phantomjsTest'
-			} finally { 
-				archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
-			}
+		try {
+			sh './gradlew --debug --stacktrace phantomjsTest'
+		} finally { 
+			archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
+		}
         }
     }
 
 }
 
 
-stage('deploy-test') {
+stage('Deploy on Test') {
     input "Deploy to test?"
-  
     node('maven') {
         openshiftTag destStream: 'gwells', verbose: 'true', destTag: 'test', srcStream: 'gwells', srcTag: '$BUILD_ID'
+    }
+    sh 'sleep 3m'
+}
+
+node('master') {
+    stage('Functional Test for Test (TBD)') {
+        sh 'sleep 5s'
     }
 }
 
