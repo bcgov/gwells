@@ -9,6 +9,7 @@ node('maven') {
 
 
 stage('Deploy on Test') {
+    input "Deploy to Test?"
     node('maven') {
         openshiftTag destStream: 'gwells', verbose: 'true', destTag: 'test', srcStream: 'gwells', srcTag: '$BUILD_ID'
     }
