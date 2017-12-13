@@ -16,7 +16,7 @@ stage('Deploy on Test') {
 
 node('bddstack') {
 	
-	stage('Functional Test on Test (TBD)') {
+	stage('FT on Test (TBD)') {
 		//the checkout is mandatory, otherwise functional test would fail
 //        echo "checking out source"
 //        echo "Build: ${BUILD_ID}"
@@ -44,7 +44,7 @@ stage('Deploy on Prod') {
 }
 
 node('bddstack') {
-    stage('Smoke Test on Prod (TBD)') {
+    stage('ST on Prod (TBD)') {
         sh 'sleep 5s'
     }
 }
