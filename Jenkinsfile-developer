@@ -67,18 +67,7 @@ stage('Deploy on Test') {
 
 
 node('bddstack') {
-	stage('FT on Test (TBD)') {
-	  //the checkout is mandatory, otherwise functional test would fail
-//        echo "checking out source"
-//        echo "Build: ${BUILD_ID}"
-//        checkout scm
-//        dir('navunit') {
-//		try {
-//			sh './gradlew --debug --stacktrace phantomjsTest'
-//		} finally { 
-//			archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
-//		}
-//        }
+      stage('FT on Test (TBD)') {
+          sh 'sleep 5s'
       }
-      sh 'sleep 5s'
 }
