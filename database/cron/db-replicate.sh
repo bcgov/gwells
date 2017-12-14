@@ -10,21 +10,51 @@
 #   Example: oc exec gwells-97-69b7z /opt/app-root/src/database/cron/db-replicate.sh
 #
 export PGPASSWORD=$DATABASE_PASSWORD
+
 cd /opt/app-root/src/database/code-tables/
+psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER  << EOF
+\i clear-tables.sql
+vacuum;
+\i data-load-static-codes.sql
+EOF
 
-psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER -f clear-tables.sql
-psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER -c 'vacuum;'
-psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER -f  data-load-static-codes.sql
+# FILTER is applied in /opt/app-root/src/database/scripts/populate-xform-gwells-well.sql
+# at the end of the SQL WHERE clause
+if [ "$LIMIT_ROWS_DB_REPLICATION" = "True" ]
+then
+  echo ". Limiting rows replicated from Legacy Database, per LIMIT_ROWS_DB_REPLICATION flag"
+  FILTER="AND wells.well_tag_number>100000 AND COALESCE(wells.when_created, wells.when_updated) < '20171013' "
+else
+  echo ". All rows replicated from Legacy Database"
+  FILTER=""
+fi
 
+# Separating into three steps, to avoid DB error
 cd /opt/app-root/src/database/scripts/
+psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER -v xform_filter="$FILTER" << EOF
+\set AUTOCOMMIT off
+\i create-xform-gwells-well-ETL-table.sql
+\i populate-xform-gwells-well.sql
+\i migrate_bcgs.sql
+\i populate-gwells-well-from-xform.sql
+COMMIT;
+EOF
 
-psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER -f create-xform-gwells-well-ETL-table.sql
-psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER -f populate-xform-gwells-well.sql
-psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER -f populate-gwells-well-from-xform.sql
-psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER -f migrate_screens.sql
-psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER -f migrate_production_data.sql
-psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER -f migrate_casings.sql
-psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER -f migrate_perforations.sql
-psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER -f migrate_aquifer_wells.sql
+psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER << EOF
+\set AUTOCOMMIT off
+\i migrate_screens.sql
+\i migrate_production_data.sql
+\i migrate_casings.sql
+\i migrate_perforations.sql
+\i migrate_aquifer_wells.sql
+COMMIT;
+EOF
+
+psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER << EOF
+\set AUTOCOMMIT off
+\i migrate_lithology_descriptions.sql
+DROP TABLE IF EXISTS xform_gwells_well;
+COMMIT;
+EOF
 
 exit 0

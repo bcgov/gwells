@@ -15,7 +15,7 @@ INSERT INTO gwells_screen(
 SELECT
   gen_random_uuid()                             ,
   null                                          ,
-  wells.well_tag_number                         ,
+  xform.well_tag_number                         ,
   screens.screen_from                           ,
   screens.screen_to                             ,
   screens.screen_internal_diameter              ,
@@ -26,13 +26,12 @@ SELECT
   screens.who_created                           ,
   screens.who_updated
 FROM wells.wells_screens screens
+     INNER JOIN xform_gwells_well xform ON xform.well_id=screens.well_id
      LEFT OUTER JOIN gwells_screen_assembly_type screen_assembly_type ON
      ( screens.screen_assembly_type_code=screen_assembly_type.screen_assembly_type_code OR
        screens.screen_assembly_type_code='L' AND screen_assembly_type.screen_assembly_type_code='LEAD' OR
        screens.screen_assembly_type_code='K  & Riser' AND screen_assembly_type.screen_assembly_type_code='K_RISER'
-     )
-     INNER JOIN wells.wells_wells wells ON wells.well_id=screens.well_id
-WHERE WELLS.ACCEPTANCE_STATUS_CODE NOT IN ('PENDING', 'REJECTED', 'NEW');
+     );
 
 \echo 'wells_screens data imported'
 
