@@ -2,6 +2,7 @@
 
 INSERT INTO xform_gwells_well (
   well_tag_number                    ,
+  well_id                            ,
   well_guid                          ,
   acceptance_status_code             ,
   owner_full_name                    ,
@@ -27,11 +28,11 @@ INSERT INTO xform_gwells_well (
   well_cap_type                      ,
   well_disinfected                   ,
   well_yield                         ,
-  well_use_code                      ,
-  legal_land_district_code           ,
+  intended_water_use_guid            ,
+  land_district_guid                 ,
   province_state_guid                ,
-  class_of_well_codclassified_by     ,
-  subclass_of_well_classified_by     ,
+  well_class_guid                    ,
+  well_subclass_guid                 ,
   well_yield_unit_guid               ,
   latitude                           ,
   longitude                          ,
@@ -40,10 +41,10 @@ INSERT INTO xform_gwells_well (
   other_drilling_method              ,
   drilling_method_guid               ,
   ground_elevation_method_guid       ,
-  status_of_well_guid                ,
+  well_status_guid                   ,
   observation_well_number            ,
   observation_well_status            ,
-  licenced_status                    ,
+  licenced_status_guid               ,
   alternative_specifications_ind     ,
   construction_start_date            ,
   construction_end_date              ,
@@ -79,12 +80,19 @@ INSERT INTO xform_gwells_well (
   backfill_type                      ,
   backfill_depth                     ,
   liner_material_guid                ,
+  decommission_reason                ,
+  decommission_method_guid           ,
+  sealant_material                   ,
+  backfill_material                  ,
+  decommission_details               ,
+  comments                           ,
   when_created                       ,
   when_updated                       ,
   who_created                        ,
   who_updated)
 SELECT
-  wells.well_tag_number                                                  ,
+  wells.well_tag_number   , 
+  wells.well_id           ,
   gen_random_uuid()                                                      ,
   wells.acceptance_status_code AS acceptance_status_code                 ,
   concat_ws(' ', owner.giVEN_NAME,OWNER.SURNAME) AS owner_full_name      ,
@@ -100,7 +108,7 @@ SELECT
   wells.legal_section AS legal_section                                   ,
   wells.legal_township AS legal_township                                 ,
   wells.legal_range AS legal_range                                       ,
-  wells.pid AS legal_pid                                                 ,
+  to_char(wells.pid,'fm000000000') AS legal_pid                          ,
   wells.well_location AS well_location_description                       ,
   wells.well_identification_plate_no AS identification_plate_number      ,
   wells.diameter AS diameter                                             ,
@@ -114,16 +122,16 @@ SELECT
     ELSE FALSE
   END AS well_disinfected                                                ,
   wells.yield_value AS well_yield                                        ,
-  wells.well_use_code                                                    , -- -> intended_water_use_guid
-  wells.legal_land_district_code                                         , -- -> legal_land_district_guid
+  intended_water_use.intended_water_use_guid                             ,
+  gld.land_district_guid                                                 ,
   CASE owner.province_state_code
     WHEN 'BC' THEN 'f46b70b647d411e7a91992ebcb67fe33'::uuid
     WHEN 'AB' THEN 'f46b742647d411e7a91992ebcb67fe33'::uuid
     WHEN 'WASH_STATE' THEN 'f46b77b447d411e7a91992ebcb67fe33'::uuid
     ELSE 'f46b7b1a47d411e7a91992ebcb67fe33'::uuid
   END AS province_state_guid                                             ,
-  coalesce (wells.class_of_well_codclassified_by,'LEGACY')               ,
-  wells.subclass_of_well_classified_by                                   , -- -> well_subclass_guid
+  COALESCE (class.well_class_guid,'ecdc4de647e011e7a91992ebcb67fe33')    , --> LEGACY
+  subclass.well_subclass_guid                                            ,
   CASE wells.yield_unit_code
     WHEN 'GPM'  THEN 'c4634ef447c311e7a91992ebcb67fe33'::uuid
     WHEN 'IGM'  THEN 'c4634ff847c311e7a91992ebcb67fe33'::uuid
@@ -170,10 +178,10 @@ SELECT
     WHEN 'LEVEL'  THEN '523ad79277ad11e7b5a5be2e44b06b34'::uuid
     ELSE null::uuid
   END AS ground_elevation_method_guid                                    ,
-  wells.status_of_well_code            AS status_of_well_guid 	         ,
+  well_status.well_status_guid                                           ,
   wells.observation_well_number	       AS observation_well_number        ,
   wells.ministry_observation_well_stat AS observation_well_status        ,
-  wells.well_licence_general_status    AS licenced_status                ,
+  licenced_status.licenced_status_guid                                   ,
   CASE wells.alternative_specifications_ind
      WHEN 'N' THEN false
      WHEN 'Y' THEN true
@@ -213,22 +221,37 @@ SELECT
   wells.backfill_type                                                    ,
   wells.backfill_depth                                                   ,
   liner_material.liner_material_guid                                     ,
+  wells.closure_reason                                                   ,
+  decommission_method.decommission_method_guid                           ,
+  wells.sealant_material                                                 ,
+  wells.backfill_material                                                ,
+  wells.closure_details                                                  ,
+  wells.general_remarks                                                  ,
   wells.when_created                                                     ,
   COALESCE(wells.when_updated,wells.when_created)                        ,
   wells.who_created                                                      ,
   COALESCE(wells.who_updated,wells.who_created)
-FROM wells.wells_wells wells LEFT OUTER JOIN wells.wells_owners owner ON Owner.owner_id=wells.owner_id
-                             LEFT OUTER JOIN gwells_drilling_company drilling_company ON Wells.driller_company_code=drilling_company.drilling_company_code
-                             LEFT OUTER JOIN gwells_screen_intake_method screen_intake_method ON wells.screen_intake_code=screen_intake_method.screen_intake_code
-                             LEFT OUTER JOIN gwells_screen_type screen_type ON wells.screen_type_code=screen_type.screen_type_code
-                             LEFT OUTER JOIN gwells_screen_material screen_material ON wells.screen_material_code=screen_material.screen_material_code
-                             LEFT OUTER JOIN gwells_screen_opening screen_opening ON wells.screen_opening_code=screen_opening.screen_opening_code
-                             LEFT OUTER JOIN gwells_screen_bottom screen_bottom ON wells.screen_bottom_code=screen_bottom.screen_bottom_code
-                             LEFT OUTER JOIN gwells_development_method development_method ON wells.development_method_code=development_method.development_method_code
-                             LEFT OUTER JOIN gwells_surface_seal_method surface_seal_method ON wells.surface_seal_method_code=surface_seal_method.surface_seal_method_code
-                             LEFT OUTER JOIN gwells_surface_seal_material surface_seal_material ON wells.surface_seal_material_code=surface_seal_material.surface_seal_material_code
-                             LEFT OUTER JOIN gwells_liner_material liner_material ON wells.liner_material_code=liner_material.liner_material_code
-WHERE wells.acceptance_status_code NOT IN ('PENDING', 'REJECTED', 'NEW');
+FROM wells.wells_wells wells LEFT OUTER JOIN wells.wells_owners owner ON owner.owner_id=wells.owner_id
+                             LEFT OUTER JOIN gwells_drilling_company drilling_company ON UPPER(wells.driller_company_code)=UPPER(drilling_company.drilling_company_code)
+                             LEFT OUTER JOIN gwells_screen_intake_method screen_intake_method ON UPPER(wells.screen_intake_code)=UPPER(screen_intake_method.screen_intake_code)
+                             LEFT OUTER JOIN gwells_screen_type screen_type ON UPPER(wells.screen_type_code)=UPPER(screen_type.screen_type_code)
+                             LEFT OUTER JOIN gwells_screen_material screen_material ON UPPER(wells.screen_material_code)=UPPER(screen_material.screen_material_code)
+                             LEFT OUTER JOIN gwells_screen_opening screen_opening ON UPPER(wells.screen_opening_code)=UPPER(screen_opening.screen_opening_code)
+                             LEFT OUTER JOIN gwells_screen_bottom screen_bottom ON UPPER(wells.screen_bottom_code)=UPPER(screen_bottom.screen_bottom_code)
+                             LEFT OUTER JOIN gwells_development_method development_method ON UPPER(wells.development_method_code)=UPPER(development_method.development_method_code)
+                             LEFT OUTER JOIN gwells_surface_seal_method surface_seal_method ON UPPER(wells.surface_seal_method_code)=UPPER(surface_seal_method.surface_seal_method_code)
+                             LEFT OUTER JOIN gwells_surface_seal_material surface_seal_material ON UPPER(wells.surface_seal_material_code)=UPPER(surface_seal_material.surface_seal_material_code)
+                             LEFT OUTER JOIN gwells_liner_material liner_material ON UPPER(wells.liner_material_code)=UPPER(liner_material.liner_material_code)
+                             LEFT OUTER JOIN gwells_land_district gld ON UPPER(wells.legal_land_district_code)=UPPER(gld.code)
+                             LEFT OUTER JOIN gwells_well_status well_status ON UPPER(wells.status_of_well_code)=UPPER(well_status.code)
+                             LEFT OUTER JOIN gwells_licenced_status licenced_status ON UPPER(wells.well_licence_general_status)=UPPER(licenced_status.code)
+                             LEFT OUTER JOIN gwells_intended_water_use intended_water_use ON UPPER(wells.well_use_code)=UPPER(intended_water_use.code)
+                             LEFT OUTER JOIN gwells_well_class class ON UPPER(wells.class_of_well_codclassified_by)=UPPER(class.code)
+                             LEFT OUTER JOIN gwells_well_subclass subclass ON UPPER(wells.subclass_of_well_classified_by)=UPPER(subclass.code) AND subclass.well_class_guid = class.well_class_guid
+                             LEFT OUTER JOIN gwells_decommission_method decommission_method ON UPPER(wells.closure_method_code)=UPPER(decommission_method.code)
+WHERE wells.acceptance_status_code NOT IN ('PENDING', 'REJECTED', 'NEW')
+:xform_filter
+;
 
 \echo 'wells data (= ACCEPTED) transformed via xform_gwells_well ETL table';
 

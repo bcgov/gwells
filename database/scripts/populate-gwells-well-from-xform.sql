@@ -15,6 +15,7 @@ INSERT INTO gwells_well (
   legal_section                      ,
   legal_township                     ,
   legal_range                        ,
+  land_district_guid                 ,
   legal_pid                          ,
   well_location_description          ,
   identification_plate_number        ,
@@ -26,7 +27,6 @@ INSERT INTO gwells_well (
   well_disinfected                   ,
   well_yield                         ,
   intended_water_use_guid            ,
-  legal_land_district_guid           ,
   province_state_guid                ,
   well_class_guid                    ,
   well_subclass_guid                 ,
@@ -59,7 +59,6 @@ INSERT INTO gwells_well (
   water_quality_colour               ,
   water_quality_odour                ,
   alternative_specs_submitted        ,
-  comments                           ,
   construction_start_date            ,
   construction_end_date              ,
   alteration_start_date              ,
@@ -73,7 +72,7 @@ INSERT INTO gwells_well (
   bedrock_depth                      ,
   water_supply_system_name           ,
   water_supply_system_well_name      ,
-  well_identification_plate_attached,
+  well_identification_plate_attached ,
   ems                                ,
   screen_intake_method_guid          ,
   screen_type_guid                   ,
@@ -86,7 +85,13 @@ INSERT INTO gwells_well (
   utm_accuracy_code                  ,
   bcgs_id                            ,
   development_method_guid            ,
-  development_hours
+  development_hours                  ,
+  decommission_reason                ,
+  decommission_method_guid           ,
+  sealant_material                   ,
+  backfill_material                  ,
+  decommission_details               ,
+  comments
   )
 SELECT
 	xform.well_tag_number                          ,
@@ -104,6 +109,7 @@ SELECT
 	COALESCE(xform.legal_section     , ' ')        ,
 	COALESCE(xform.legal_township    , ' ')        ,
 	COALESCE(xform.legal_range       , ' ')        ,
+  xform.land_district_guid                       ,
 	xform.legal_pid                                ,
 	COALESCE(xform.well_location_description,' ')  ,
 	xform.identification_plate_number              ,
@@ -114,11 +120,10 @@ SELECT
   xform.well_cap_type                            ,
   xform.well_disinfected                         ,
 	xform.well_yield                               ,
-	USE.intended_water_use_guid                    ,
-	land.land_district_guid                        ,
+	xform.intended_water_use_guid                  ,
 	xform.province_state_guid                      ,
-	class.well_class_guid                          ,
-	subclass.well_subclass_guid                    ,
+	xform.well_class_guid                          ,
+	xform.well_subclass_guid                       ,
 	xform.well_yield_unit_guid                     ,
 	xform.latitude                                 ,
 	xform.longitude                                ,
@@ -138,17 +143,16 @@ SELECT
   xform.backfill_type                            ,
   xform.backfill_depth                           ,
   xform.liner_material_guid                      ,
-	well_status.well_status_guid                   ,
+	xform.well_status_guid                         ,
   xform.observation_well_number                  ,
   xform.observation_well_status                  ,
-	licenced_status.well_licenced_status_guid      ,
+	xform.licenced_status_guid                     ,
 	''                                             ,
 	''                                             ,
 	''                                             ,
 	''                                             ,
 	''                                             ,
 	false                                          ,
-	''                                             ,
 	xform.construction_start_date                  ,
 	xform.construction_end_date                    ,
 	xform.alteration_start_date                    ,
@@ -162,7 +166,7 @@ SELECT
   xform.bedrock_depth                            ,
   xform.water_supply_system_name                 ,
   xform.water_supply_system_well_name            ,
-  xform.well_identification_plate_attached      ,
+  xform.well_identification_plate_attached       ,
   xform.ems                                      ,
   xform.screen_intake_method_guid                ,
   xform.screen_type_guid                         ,
@@ -175,19 +179,17 @@ SELECT
   xform.utm_accuracy_code                        ,
 	xform.bcgs_id                                  ,
   xform.development_method_guid                  ,
-  xform.development_duration
-FROM xform_gwells_well xform
-LEFT OUTER JOIN gwells_intended_water_use USE ON xform.well_use_code=use.code
-LEFT OUTER JOIN gwells_well_status well_status ON xform.status_of_well_guid=upper(well_status.code)
-LEFT OUTER JOIN gwells_licenced_status licenced_status ON xform.licenced_status=upper(licenced_status.code)
-LEFT OUTER JOIN gwells_land_district     land ON xform.legal_land_district_code=land.code
-INNER      JOIN gwells_well_class       class ON xform.class_of_well_codclassified_by=class.code
-LEFT OUTER JOIN gwells_well_subclass subclass ON xform.subclass_of_well_classified_by=subclass.code AND subclass.well_class_guid = class.well_class_guid;
+  xform.development_duration                     ,
+  xform.decommission_reason                      ,
+  xform.decommission_method_guid                 ,
+  xform.sealant_material                         ,
+  xform.backfill_material                        ,
+  xform.decommission_details                     ,
+  xform.comments
+FROM xform_gwells_well xform;
 
 \echo 'xform data imported into the gwells_well table';
 
 \t
 SELECT count(*) || ' rows loaded into the gwells_well table' FROM gwells_well;
 \t
-
-DROP TABLE IF EXISTS xform_gwells_well;

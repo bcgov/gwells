@@ -11,15 +11,14 @@ INSERT INTO gwells_aquifer_well(
 SELECT
   gen_random_uuid()                             ,
   aws.aquifer_id                                ,
-  wells.well_tag_number                         ,
+  xform.well_tag_number                         ,
   aws.who_created                               ,
   aws.when_created                              ,
   coalesce(aws.who_updated, aws.who_created)    ,
   coalesce(aws.when_updated, aws.when_created)
-FROM
-  wells.gw_aquifer_wells aws LEFT OUTER JOIN wells.wells_wells wells ON aws.well_id = wells.well_id
-                            INNER JOIN gwells_well well ON well.well_tag_number = wells.well_tag_number
-WHERE wells.acceptance_status_code NOT IN ('PENDING', 'REJECTED', 'NEW');
+-- GW Sat Dec  9 19:31:02 2017 changed LEFT OUTER JOIN to INNER JOIN
+--        As those aquifers are for WELLS that are one of ('PENDING', 'REJECTED', 'NEW')  
+FROM wells.gw_aquifer_wells aws INNER JOIN xform_gwells_well xform ON aws.well_id = xform.well_id;
 
 \echo 'gw_aquifer_well data imported'
 

@@ -7,11 +7,13 @@
 {% block bodyheading_block %}Groundwater Well Search{% endblock %}
 
 {% block introduction_block %}
-<div class="row">
+
+<!--<div class="row">
     <div class="col-sm-12 alert alert-info">
         <div id="survey-msg" role="alert" aria-atomic="true">Please take a moment to complete a <a href="https://www.surveymonkey.com/r/LTZNZYR" target=_blank>short survey</a> to let us know about your search experience.</div>
     </div>
-</div>
+</div>-->
+
 {% endblock %}
 
 {% block body_block %}
@@ -128,7 +130,7 @@
                     {{ well.legal_district_lot|default_if_none:'&nbsp;' }}
                 </td>
                 <td>
-                    {{ land_districts.well.legal_land_district.land_district_guid|default_if_none:'&nbsp;' }}
+                    {{ land_districts.well.land_district.land_district_guid|default_if_none:'&nbsp;' }}
                 </td>
                 <td>
                     {{ well.legal_pid|stringformat:"09d"|default_if_none:'&nbsp;' }}
@@ -234,7 +236,7 @@
         searchMapOptions.initialExtent = latLongBox;
         searchMapOptions.initialWells = wells;
         searchMap = new WellsMap(searchMapOptions);
-        
+
         // Definition for results table
         $('#results').DataTable(
             {

@@ -5,7 +5,7 @@ filing_number                                 , -->FK
 well_tag_number                               , -->FK
 casing_from                                   ,
 casing_to                                     ,
-internal_diameter                             ,
+diameter                                      ,
 casing_material_guid                          , -->FK
 wall_thickness                                ,
 drive_shoe                                    ,
@@ -16,10 +16,10 @@ who_updated)
 SELECT
     gen_random_uuid()                             ,
     null                                          ,
-    wells.well_tag_number                          ,
+    xform.well_tag_number                         ,
     casings.casing_from                           ,
     casings.casing_to                             ,
-    casings.casing_internal_diameter              ,
+    casings.casing_size                           ,
     casing_material.casing_material_guid          ,
     casings.casing_wall                           ,
     CASE casings.casing_drive_shoe_ind
@@ -32,10 +32,9 @@ SELECT
     casings.who_created                           ,
     casings.who_updated
 FROM wells.wells_casings casings
-     LEFT OUTER JOIN gwells_casing_material casing_material ON casings.casing_material_code=casing_material.casing_material_code
-     INNER JOIN wells.wells_wells wells ON wells.well_id=casings.well_id --> exclude casings that refer to wells that were excluded earlier in the pipeline.
-
-WHERE WELLS.ACCEPTANCE_STATUS_CODE NOT IN ('PENDING', 'REJECTED', 'NEW');
+    INNER JOIN xform_gwells_well xform ON xform.well_id=casings.well_id
+    LEFT OUTER JOIN gwells_casing_material casing_material ON casings.casing_material_code=casing_material.casing_material_code;
+     
 
 \echo 'wells_casings data imported'
 
