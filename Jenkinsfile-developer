@@ -39,7 +39,7 @@ node('maven') {
 
 node('bddstack') {
 	
-	stage('FT on Test (TBD)') {
+	stage('FT on Test') {
 		//the checkout is mandatory, otherwise functional test would fail
         echo "checking out source"
         echo "Build: ${BUILD_ID}"
