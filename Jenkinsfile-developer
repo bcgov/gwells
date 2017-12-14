@@ -5,13 +5,6 @@ node('maven') {
         openshiftBuild bldCfg: 'gwells-developer', showBuildLogs: 'true'
         openshiftTag destStream: 'gwells', verbose: 'true', destTag: '$BUILD_ID', srcStream: 'gwells', srcTag: 'latest'
     }
-
-    stage('Deploy on Dev') {
-        echo "Deploying to dev..."
-        openshiftTag destStream: 'gwells', verbose: 'true', destTag: 'dev', srcStream: 'gwells', srcTag: '$BUILD_ID'
-	//Sleeping for a while to wait deployment completes
-	sh 'sleep 3m'
-    }
     
     stage('Code Quality Check') {
 	//the checkout is mandatory, otherwise code quality check would fail
@@ -34,7 +27,13 @@ node('maven') {
             sh returnStdout: true, script: "./gradlew sonarqube -Dsonar.host.url=${SONARQUBE_URL} -Dsonar.verbose=true --stacktrace --info  -Dsonar.sources=.."
         }
     }
-
+    
+    stage('Deploy on Dev') {
+        echo "Deploying to dev..."
+        openshiftTag destStream: 'gwells', verbose: 'true', destTag: 'dev', srcStream: 'gwells', srcTag: '$BUILD_ID'
+	//Sleeping for a while to wait deployment completes
+	sh 'sleep 3m'
+    }
 	
 }
 
