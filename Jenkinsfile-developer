@@ -39,21 +39,22 @@ node('maven') {
 
 node('bddstack') {
 	
-	stage('FT on Dev') {
+	stage('FT on Test (TBD)') {
 		//the checkout is mandatory, otherwise functional test would fail
         echo "checking out source"
         echo "Build: ${BUILD_ID}"
         checkout scm
-        dir('navunit') {
-		try {
-			sh './gradlew --debug --stacktrace phantomjsTest'
-		} finally { 
-			archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
-		}
+        dir('functional-tests') {
+	    try {
+                sh './gradlew --debug --stacktrace chromeHeadlessTest'
+	    } finally { 
+		archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
+                archiveArtifacts allowEmptyArchive: true, artifacts: 'build/test-results/**/*'
+                junit 'build/test-results/**/*.xml'
+	    }
         }
+	sh 'sleep 5s'
     }
-
-}
 
 
 stage('Deploy on Test') {
