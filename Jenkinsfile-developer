@@ -46,8 +46,7 @@ node('bddstack') {
         checkout scm
         dir('navunit') {
 		try {
-			//sh './gradlew --debug --stacktrace phantomjsTest'
-			sh 'sleep 5s'
+			sh './gradlew --debug --stacktrace phantomjsTest'
 		} finally { 
 			archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
 		}
