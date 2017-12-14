@@ -60,9 +60,12 @@ node('bddstack') {
 
 stage('Deploy on Test') {
     input "Deploy to test?"
-    openshiftTag destStream: 'gwells', verbose: 'true', destTag: 'test', srcStream: 'gwells', srcTag: '$BUILD_ID'
+    node('maven') {
+        openshiftTag destStream: 'gwells', verbose: 'true', destTag: 'test', srcStream: 'gwells', srcTag: '$BUILD_ID'
+    }
     sh 'sleep 3m'
 }
+
 
 node('bddstack') {
 	stage('FT on Test (TBD)') {
