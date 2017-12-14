@@ -55,7 +55,7 @@ node('bddstack') {
         }
 	sh 'sleep 5s'
     }
-
+}
 
 stage('Deploy on Test') {
     input "Deploy to test?"
