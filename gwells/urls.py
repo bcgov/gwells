@@ -31,21 +31,13 @@ urlpatterns = [
     url(r'^'+ app_root_slash +'$', views.well_search, name='home'),
     url(r'^'+ app_root_slash +'search$', views.well_search, name='search'),
     # url(r'^(?P<pk>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/$', views.DetailView.as_view(), name='detail'),
+    url(r'^'+ app_root_slash +'well/(?P<pk>[0-9]+)$', views.WellDetailView.as_view(), name='well_detail'),
     url(r'^'+ app_root_slash +'submission/(?P<pk>[0-9]+)$', views.ActivitySubmissionDetailView.as_view(), name='activity_submission_detail'),
     url(r'^'+ app_root_slash +'health$', views.health),
     url(r'^'+ app_root_slash +'admin/', admin.site.urls),
     url(r'^'+ app_root_slash +'groundwater-information', TemplateView.as_view(template_name='gwells/groundwater_information.html'), name='groundwater_information'),
     url(r'^'+ app_root_slash +'ajax/map_well_search/$', views.map_well_search, name='map_well_search'),
 ]
-
-if settings.ENABLE_OLD_WELL_DETAIL:
-    urlpatterns = [
-        url(r'^'+ app_root_slash +'well/(?P<pk>[0-9]+)$', views.WellDetailView.as_view(), name='well_detailold'),
-    ] + urlpatterns
-else:   
-    urlpatterns = [
-        url(r'^'+ app_root_slash +'well/(?P<pk>[0-9]+)$', views.WellDetailView.as_view(), name='well_detail'),
-    ] + urlpatterns 
 
 if settings.ENABLE_DATA_ENTRY:
     urlpatterns = [
