@@ -34,7 +34,6 @@ urlpatterns = [
     url(r'^'+ app_root_slash +'well/(?P<pk>[0-9]+)$', views.WellDetailView.as_view(), name='well_detail'),
     url(r'^'+ app_root_slash +'submission/(?P<pk>[0-9]+)$', views.ActivitySubmissionDetailView.as_view(), name='activity_submission_detail'),
     url(r'^'+ app_root_slash +'health$', views.health),
-    url(r'^'+ app_root_slash +'admin/', admin.site.urls),
     url(r'^'+ app_root_slash +'groundwater-information', TemplateView.as_view(template_name='gwells/groundwater_information.html'), name='groundwater_information'),
     url(r'^'+ app_root_slash +'ajax/map_well_search/$', views.map_well_search, name='map_well_search'),
 ]
@@ -49,5 +48,6 @@ if settings.DEBUG:
     import debug_toolbar
     urlpatterns = [
         url(r'^__debug__/', include(debug_toolbar.urls)),
+        url(r'^'+ app_root_slash +'admin/', admin.site.urls),
     ] + urlpatterns
     
