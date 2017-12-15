@@ -42,9 +42,6 @@ DEBUG = os.getenv('DJANGO_DEBUG', 'False') == 'True'
 # Controls availability of the data entry functionality
 ENABLE_DATA_ENTRY = os.getenv('ENABLE_DATA_ENTRY', 'False') == 'True'
 
-# Controls availability of the old well summary functionality
-ENABLE_OLD_WELL_DETAIL = os.getenv('ENABLE_OLD_WELL_DETAIL', 'False') == 'True'
-
 # Controls availability of Google Analytics
 ENABLE_GOOGLE_ANALYTICS = os.getenv('ENABLE_GOOGLE_ANALYTICS', 'False') == 'True'
 
@@ -57,7 +54,6 @@ SETTINGS_EXPORT = [
     'ENABLE_DATA_ENTRY',        # To temporarily disable report submissions
     'ENABLE_GOOGLE_ANALYTICS',  # This is only enabled for production
     'APP_CONTEXT_ROOT',         # This allows for moving the app around without code changes
-    'ENABLE_OLD_WELL_DETAIL',   # This allows for showing the old Well Summary
 ]
 
 ALLOWED_HOSTS = ['*']
