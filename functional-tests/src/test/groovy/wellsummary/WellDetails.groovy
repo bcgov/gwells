@@ -19,7 +19,6 @@ through Search,  and see relevant information related to my well of interest.
 """)
 class WellDetailsSpecs extends GebReportingSpec {
     @Unroll
-	@Ignore
     def "Basic Field availability checking: #TestDesc #WellId"() {
         given: "Given that I have found my well"
 			go "gwells/well/$WellId"
@@ -132,7 +131,6 @@ class WellDetailsSpecs extends GebReportingSpec {
         "Well Tag - "                    | 110749
     } 
     @Unroll
-	@Ignore
     def "Field content checking: #TestDesc - #WellId - #WellFieldContent"() {
         given: "Given that I have found my well"
 			go "gwells/well/$WellId" 
