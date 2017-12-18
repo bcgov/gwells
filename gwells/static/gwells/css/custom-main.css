@@ -8,26 +8,37 @@
 
 /* background image */
 
-body,
-html {
+html, body {
+    font-size: 10px !important;
     background-color: #f1f1f1;
     color: #494949;
+    font-family: Myriad-Pro, Calibri, Arial, sans-serif;
+
+}
+
+body {
+    font-size: 10px !important;
+}
+
+th {
+    white-space: nowrap;
+    vertical-align: top !important;
+    text-align: left;
+}
+
+fieldset {
+  page-break-inside: avoid;
+  page-break-after: avoid;
+  padding-bottom: 8px;
+}
+
+.template {
+    font-size: 10px !important;
 }
 
 #footer {
     margin-top: -44px;
 }
-
-.template {
-    background-color: #fff;
-}
-
-body {
-    color: #494949;
-    font-family: Myriad-Pro, Calibri, Arial, sans-serif;
-    font-size: 13px;
-}
-
 
 /* Leaflet map styles */
 
@@ -78,9 +89,6 @@ div .leaflet-geolocation {
 div .leaflet-geolocation:hover {
     opacity: 0.8;
 }
-
-
-/* logo whitespace */
 
 #header .bcgov-title h1 {
     color: #fff;
@@ -157,7 +165,7 @@ a label.env-username {
         padding-top: 10px !important;
         position: relative;
     }
-    #header #logo img {
+    #header #screen-logo img {
         width: 95%;
         height: 95%;
         padding-left: 15px;
@@ -184,6 +192,84 @@ a label.env-username {
     }
 }
 
+@media print {
+  table {
+    margin:0px;
+    margin-top:0px;
+    margin-bottom:0px !important;
+    padding-top:0px;
+    padding-bottom:0px;
+  }
+  legend {
+    margin-bottom:5px;
+  }
+
+  .show-for-print {
+    display: block !important;
+  }
+
+  .hide-for-print {
+    display: none;
+  }
+
+  .shift-up-navbar-height {
+    top:-40px;
+  }
+
+  /* need to override this because of a dependency on a media size block in a parent*/
+  .hidden-xs {
+    display:block !important;
+  }
+
+  #header-main {
+      position: relative;
+      border-bottom: none;
+      margin-bottom: 0;
+  }
+
+  .left {
+      position: relative;
+      left: -60px;
+  }
+
+  .print-no-break {
+      page-break-inside: avoid;
+      page-break-after: avoid;
+  }
+
+  .col-print-1 {width:8%;  float:left;}
+  .col-print-2 {width:16%; float:left;}
+  .col-print-3 {width:25%; float:left;}
+  .col-print-4 {width:33%; float:left;}
+  .col-print-5 {width:42%; float:left;}
+  .col-print-6 {width:50%; float:left;}
+  .col-print-7 {width:58%; float:left;}
+  .col-print-8 {width:66%; float:left;}
+  .col-print-9 {width:75%; float:left;}
+  .col-print-10{width:83%; float:left;}
+  .col-print-11{width:92%; float:left;}
+  .col-print-12{width:100%; float:left;}
+
+  .margin-left{
+    margin-left:60px;
+  }
+
+  .row{
+    padding-right:0px !important;
+    padding-left:0px !important;
+    padding-bottom:0px !important;
+    padding-top:0px !important;
+  }
+
+  .print-compressed{
+      padding-left:0px !important;
+      padding-right:0px !important;
+  }
+}
+
+.hide-for-screen {
+  display: none;
+}
 
 /* fix navbar button to resemble standard button toggle control */
 
@@ -377,12 +463,6 @@ ul.breadcrumb>li {
 
 
 /* disable wrapping and left-align table header content for prettier responsive tables */
-
-th {
-    white-space: nowrap;
-    text-align: left;
-}
-
 
 /* utility class for sorting */
 
