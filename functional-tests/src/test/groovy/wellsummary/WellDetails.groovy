@@ -246,7 +246,7 @@ class WellDetailsSpecs extends GebReportingSpec {
 		"comments" 						  | "NOT RESPONSIBLE FOR QUALITY OR QUANTITY" | 110750
     } 
 
-	@Issue("https://trello.com/c/mi3lnU5k")
+/* 	@Issue("https://trello.com/c/mi3lnU5k")
 	def "Find Aquifer Info"() {
 		given: "I am a public user"
 			go "gwells/well/102364"
@@ -262,5 +262,5 @@ class WellDetailsSpecs extends GebReportingSpec {
 			assert aquifer_number.text().trim() == "936"		
 
 
-	}
+	} */
 }
