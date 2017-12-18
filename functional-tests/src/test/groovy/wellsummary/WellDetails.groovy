@@ -262,5 +262,5 @@ class WellDetailsSpecs extends GebReportingSpec {
 			assert aquifer_number.text().trim() == "936"		
 
 
-	} */
+	} */ 
 }
