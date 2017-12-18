@@ -58,7 +58,9 @@
             <div class="row print-compressed">
                 <div class="col-md-12 col-print-12 print-compressed">
                     <label for="obs_well_number">{% verbose_name well "observation_well_number" %}:</label>
-                    <span id="obs_well_number">{{well.observation_well_number|default_if_none:'&nbsp;' }}</span>
+                    {% if well.observation_well_number %}
+                    <a id="obs_well_number" href="https://governmentofbc.maps.arcgis.com/apps/webappviewer/index.html?id=b53cb0bf3f6848e79d66ffd09b74f00d&find=OBS%20WELL%20{{well.observation_well_number|default_if_none:'&nbsp;' }}">{{well.observation_well_number|default_if_none:'&nbsp;' }}</a>
+                    {% endif %}
                 </div>
             </div>
             <div class="row print-compressed">
@@ -195,7 +197,7 @@
         </div>
     </div>
     <div class="row print-compressed">
-        <div class="col-md-offset-6 col-print-offset-6 print-compressed top-margin-8">
+        <div class="col-md-6 col-md-offset-6 col-print-offset-6 print-compressed top-margin-8">
             <div class="row print-compressed">
                 <div class="col-md-12 col-print-12 print-compressed">
                     <label>Geographic Coordinates - North American Datum of 1983 (NAD 83)</label>
@@ -515,137 +517,6 @@
     </div>
 </fieldset>
 
-<fieldset id="screen_details">
-    <legend>Screen Details</legend>
-    <div class="row print-compressed">
-        <div class="col-md-4 col-print-4 print-compressed">
-            &nbsp;
-            <div class="row print-compressed">
-                <div class="col-md-12 col-print-12 print-compressed">
-                    <label for="intake_method">{% verbose_name well "screen_intake_method" %}:</label>
-                    <span id="intake_method">{{well.screen_intake_method|default_if_none:'&nbsp;' }}</span>
-                </div>
-            </div>
-            <div class="row print-compressed">
-                <div class="col-md-12 col-print-12 print-compressed">
-                    <label for="screen_type">{% verbose_name well "screen_type" %}:</label>
-                    <span id="screen_type">{{well.screen_type.description|default_if_none:'&nbsp;' }}</span>
-                </div>
-            </div>
-            <div class="row print-compressed">
-                <div class="col-md-12 col-print-12 print-compressed">
-                    <label for="screen_material">{% verbose_name well "screen_material" %}:</label>
-                    <span id="screen_material">{{well.screen_material.description|default_if_none:'&nbsp;' }}</span>
-                </div>
-            </div>
-            <div class="row print-compressed">
-                <div class="col-md-12 col-print-12 print-compressed">
-                    <label for="screen_opening">{% verbose_name well "screen_opening" %}:</label>
-                    <span id="screen_opening">{{well.screen_opening.description|default_if_none:'&nbsp;' }}</span>
-                </div>
-            </div>
-            <div class="row print-compressed">
-                <div class="col-md-12 col-print-12 print-compressed">
-                    <label for="screen_bottom">{% verbose_name well "screen_bottom" %}:</label>
-                    <span id="screen_bottom">{{well.screen_bottom.description|default_if_none:'&nbsp;' }}</span>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-8 col-print-8 table-responsive print-compressed">
-            <table id="screens" class="table table-condensed table-bordered table-striped">
-                <thead>
-                    <tr>
-                        <th><span class="pull-right">From (feet)</span></th>
-                        <th><span class="pull-right">To (feet)</span></th>
-                        <th><span class="pull-right">Diameter (inches)</span></th>
-                        <th>Screen Assembly Type</th>
-                        <th><span class="pull-right">Slot Size</span></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for screen in well.screen_set.all %}
-                    <tr>
-                        <td><span class="pull-right">{{screen.screen_from|default_if_none:'&nbsp;' }}</span></td>
-                        <td><span class="pull-right">{{screen.screen_to|default_if_none:'&nbsp;' }}</span></td>
-                        <td><span class="pull-right">{{screen.internal_diameter|default_if_none:'&nbsp;' }}</span></td>
-                        <td><span>{{screen.assembly_type|default_if_none:'&nbsp;' }}</span></td>
-                        <td><span class="pull-right">{{screen.slot_size|default_if_none:'&nbsp;' }}</span></td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
-</fieldset>
-
-<fieldset id="well_development">
-    <legend>Well Development</legend>
-    <div class="row print-compressed">
-        <div class="col-md-4 col-print-4 print-compressed">
-            <div class="row print-compressed">
-                <div class="col-md-12 col-print-12 print-compressed">
-                    <label for="devloped-by">{% verbose_name well "development_method" %}:</label>
-                    <span id="developed-by">{{well.development_method.description|default_if_none:'&nbsp;' }}</span>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4 col-print-4 print-compressed">
-            <div class="row print-compressed">
-                <div class="col-md-12 col-print-12 print-compressed">
-                    <label for="devlopment-total-duration">{% verbose_name well "development_hours" %}:</label>
-                    <span id="devlopment-total-duration">
-                      {% if  well.development_hours > 0 %}
-                      {{well.development_hours}} hours
-                      {% else                             %}
-                      &nbsp;
-                      {% endif                            %}
-                    </span>
-                </div>
-            </div>
-        </div>
-    </div>
-</fieldset>
-
-<fieldset id="well_yield">
-    <legend>Well Yield</legend>
-    <div class="row print-compressed">
-        {% for productiondata in well.productiondata_set.all|dictsortreversed:"when_updated"|slice:"1" %}
-        <div class="col-md-4 col-print-4 print-compressed">
-            <div class="row print-compressed">
-                <div class="col-md-12 col-print-12 print-compressed">
-                    <label for="yield-estimation-method">{% verbose_name productiondata "yield_estimation_method" %}:</label>
-                    <span id="yield-estimation-method">{{productiondata.yield_estimation_method.description|default_if_none:'&nbsp;' }}</span>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4 col-print-4 print-compressed">
-            <div class="row print-compressed">
-                <div class="col-md-12 print-col-12 print-compressed">
-                    <label for="yield_estimation_rate">{% verbose_name productiondata "yield_estimation_rate" %}:</label>
-                    <span id="yield_estimation_rate">
-                    {% if productiondata.yield_estimation_rate > 0 %}
-                        {{productiondata.yield_estimation_rate }} &nbsp; {{productiondata.well_yield_unit.code}}
-                    {% endif %}
-                  </span>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4 col-print-12 print-compressed">
-            <div class="row print-compressed">
-                <div class="col-md-12 col-print-12 print-compressed">
-                    <label for="yield_estimation_duration">{% verbose_name productiondata "yield_estimation_duration" %}:</label>
-                    <span id="yield_estimation_duration">
-                      {% if productiondata.yield_estimation_duration > 0 %}
-                          {{productiondata.yield_estimation_duration }} &nbsp; hours
-                      {% endif %}
-                  </span>
-                </div>
-            </div>
-        </div>
-        {% endfor %}
-    </div>
-</fieldset>
-
 <fieldset id="casing_field_set">
     <legend>Casing Details</legend>
     <div class="row print-compressed">
@@ -783,6 +654,137 @@
     </div>
 </fieldset>
 
+<fieldset id="screen_details">
+    <legend>Screen Details</legend>
+    <div class="row print-compressed">
+        <div class="col-md-4 col-print-4 print-compressed">
+            &nbsp;
+            <div class="row print-compressed">
+                <div class="col-md-12 col-print-12 print-compressed">
+                    <label for="intake_method">{% verbose_name well "screen_intake_method" %}:</label>
+                    <span id="intake_method">{{well.screen_intake_method|default_if_none:'&nbsp;' }}</span>
+                </div>
+            </div>
+            <div class="row print-compressed">
+                <div class="col-md-12 col-print-12 print-compressed">
+                    <label for="screen_type">{% verbose_name well "screen_type" %}:</label>
+                    <span id="screen_type">{{well.screen_type.description|default_if_none:'&nbsp;' }}</span>
+                </div>
+            </div>
+            <div class="row print-compressed">
+                <div class="col-md-12 col-print-12 print-compressed">
+                    <label for="screen_material">{% verbose_name well "screen_material" %}:</label>
+                    <span id="screen_material">{{well.screen_material.description|default_if_none:'&nbsp;' }}</span>
+                </div>
+            </div>
+            <div class="row print-compressed">
+                <div class="col-md-12 col-print-12 print-compressed">
+                    <label for="screen_opening">{% verbose_name well "screen_opening" %}:</label>
+                    <span id="screen_opening">{{well.screen_opening.description|default_if_none:'&nbsp;' }}</span>
+                </div>
+            </div>
+            <div class="row print-compressed">
+                <div class="col-md-12 col-print-12 print-compressed">
+                    <label for="screen_bottom">{% verbose_name well "screen_bottom" %}:</label>
+                    <span id="screen_bottom">{{well.screen_bottom.description|default_if_none:'&nbsp;' }}</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8 col-print-8 table-responsive print-compressed">
+            <table id="screens" class="table table-condensed table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th><span class="pull-right">From (feet)</span></th>
+                        <th><span class="pull-right">To (feet)</span></th>
+                        <th><span class="pull-right">Diameter (inches)</span></th>
+                        <th>Screen Assembly Type</th>
+                        <th><span class="pull-right">Slot Size</span></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for screen in well.screen_set.all %}
+                    <tr>
+                        <td><span class="pull-right">{{screen.screen_from|default_if_none:'&nbsp;' }}</span></td>
+                        <td><span class="pull-right">{{screen.screen_to|default_if_none:'&nbsp;' }}</span></td>
+                        <td><span class="pull-right">{{screen.internal_diameter|default_if_none:'&nbsp;' }}</span></td>
+                        <td><span>{{screen.assembly_type|default_if_none:'&nbsp;' }}</span></td>
+                        <td><span class="pull-right">{{screen.slot_size|default_if_none:'&nbsp;' }}</span></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</fieldset>
+
+<fieldset id="well_development">
+    <legend>Well Development</legend>
+    <div class="row print-compressed">
+        <div class="col-md-4 col-print-4 print-compressed">
+            <div class="row print-compressed">
+                <div class="col-md-12 col-print-12 print-compressed">
+                    <label for="devloped-by">{% verbose_name well "development_method" %}:</label>
+                    <span id="developed-by">{{well.development_method.description|default_if_none:'&nbsp;' }}</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 col-print-4 print-compressed">
+            <div class="row print-compressed">
+                <div class="col-md-12 col-print-12 print-compressed">
+                    <label for="devlopment-total-duration">{% verbose_name well "development_hours" %}:</label>
+                    <span id="devlopment-total-duration">
+                      {% if  well.development_hours > 0 %}
+                      {{well.development_hours}} hours
+                      {% else                             %}
+                      &nbsp;
+                      {% endif                            %}
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</fieldset>
+
+<fieldset id="well_yield">
+    <legend>Well Yield</legend>
+    <div class="row print-compressed">
+        {% for productiondata in well.productiondata_set.all|dictsortreversed:"when_updated"|slice:"1" %}
+        <div class="col-md-4 col-print-4 print-compressed">
+            <div class="row print-compressed">
+                <div class="col-md-12 col-print-12 print-compressed">
+                    <label for="yield-estimation-method">{% verbose_name productiondata "yield_estimation_method" %}:</label>
+                    <span id="yield-estimation-method">{{productiondata.yield_estimation_method.description|default_if_none:'&nbsp;' }}</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 col-print-4 print-compressed">
+            <div class="row print-compressed">
+                <div class="col-md-12 print-col-12 print-compressed">
+                    <label for="yield_estimation_rate">{% verbose_name productiondata "yield_estimation_rate" %}:</label>
+                    <span id="yield_estimation_rate">
+                    {% if productiondata.yield_estimation_rate > 0 %}
+                        {{productiondata.yield_estimation_rate }} &nbsp; {{productiondata.well_yield_unit.code}}
+                    {% endif %}
+                  </span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 col-print-12 print-compressed">
+            <div class="row print-compressed">
+                <div class="col-md-12 col-print-12 print-compressed">
+                    <label for="yield_estimation_duration">{% verbose_name productiondata "yield_estimation_duration" %}:</label>
+                    <span id="yield_estimation_duration">
+                      {% if productiondata.yield_estimation_duration > 0 %}
+                          {{productiondata.yield_estimation_duration }} &nbsp; hours
+                      {% endif %}
+                  </span>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</fieldset>
+
 <fieldset id="well_decommissioning">
     <legend>Well Decommissioning</legend>
     <div class="row print-compressed">
@@ -834,6 +836,7 @@
     The information provided should not be used as a basis for making financial or any other commitments. The Government of British Columbia accepts no liability for the accuracy, availability, suitability, reliability, usability, completeness or timeliness of the data or graphical depictions rendered from the data.
   </span>
 </fieldset>
+
 {% endblock %} {% block jqscript_block %}
 <script>
     var detailMap = null;
