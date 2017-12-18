@@ -9,7 +9,7 @@
 /* background image */
 
 html, body {
-    font-size: 10px !important;
+    font-size: 13px !important;
     background-color: #f1f1f1;
     color: #494949;
     font-family: Myriad-Pro, Calibri, Arial, sans-serif;
@@ -17,7 +17,7 @@ html, body {
 }
 
 body {
-    font-size: 10px !important;
+    font-size: 13px !important;
 }
 
 th {
@@ -33,7 +33,7 @@ fieldset {
 }
 
 .template {
-    font-size: 10px !important;
+    font-size: 13px;
 }
 
 #footer {
@@ -160,6 +160,10 @@ a label.env-username {
     white-space: nowrap;
 }
 
+.top-margin-8 {
+  margin-top: 8px;
+}
+
 @media (max-width: 767px) {
     .env-container {
         padding-top: 10px !important;
@@ -204,6 +208,9 @@ a label.env-username {
     margin-bottom:5px;
   }
 
+  .template {
+      font-size: 10px !important;
+  }
   .show-for-print {
     display: block !important;
   }
@@ -243,6 +250,7 @@ a label.env-username {
   .col-print-4 {width:33%; float:left;}
   .col-print-5 {width:42%; float:left;}
   .col-print-6 {width:50%; float:left;}
+  .col-print-offset-6{margin-left:50%; width:50%; float:left;}
   .col-print-7 {width:58%; float:left;}
   .col-print-8 {width:66%; float:left;}
   .col-print-9 {width:75%; float:left;}
