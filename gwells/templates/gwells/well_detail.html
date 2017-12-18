@@ -189,27 +189,19 @@
                 </div>
             </div>
         </div>
-
         <div class="col-md-6 col-print-6 print-compressed">
             <div aria-label="This map shows the well under consideration as a light blue pushpin, as well as surrounding wells as dark blue circles." id="detail-map"></div>
             <div id="attribution"></div>
         </div>
     </div>
     <div class="row print-compressed">
-        <div class="col-md-6 col-print-6 print-compressed">
-            <!-- spacer column -->
-            &nbsp;
-        </div>
-        <div class="col-md-6 col-print-6 print-compressed">
-            &nbsp;
+        <div class="col-md-offset-6 col-print-offset-6 print-compressed top-margin-8">
             <div class="row print-compressed">
                 <div class="col-md-12 col-print-12 print-compressed">
                     <label>Geographic Coordinates - North American Datum of 1983 (NAD 83)</label>
                 </div>
             </div>
-            &nbsp;
-
-            <div class="row print-compressed">
+            <div class="row print-compressed top-margin-8">
                 <div class="col-md-6 col-print-6 print-compressed">
                     <label for="latitude">{% verbose_name well "latitude" %}:</label>
                     <span id="latitude" data-latitude="{{well.latitude }}">{{well.latitude|default_if_none:'&nbsp;' }}</span>
@@ -239,7 +231,6 @@
                     <span id="utm_accuracy_code" data-utm-accuracy-code="{{well.utm_accuracy_code }}">{{well.utm_accuracy_code|default_if_none:'&nbsp;' }}</span>
                 </div>
             </div>
-
         </div>
     </div>
 </fieldset>
