@@ -3,7 +3,7 @@
 DROP TABLE IF EXISTS xform_gwells_well;
 CREATE unlogged TABLE IF NOT EXISTS xform_gwells_well (
    well_tag_number                     integer,
-   well_id                             bigint,    
+   well_id                             bigint,
    well_guid                           uuid,
    acceptance_status_code              character varying(10),
    owner_full_name                     character varying(200),
@@ -43,7 +43,7 @@ CREATE unlogged TABLE IF NOT EXISTS xform_gwells_well (
    drilling_method_guid                uuid,
    ground_elevation_method_guid        uuid,
    well_status_guid 	                  uuid,
-   observation_well_number	            integer,
+   observation_well_number	            character varying(3),
    observation_well_status             character varying(25),
    licenced_status_guid                uuid,
    alternative_specifications_ind      boolean,
