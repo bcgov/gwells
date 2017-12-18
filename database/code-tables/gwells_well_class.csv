@@ -8,4 +8,3 @@ well_class_guid,code,description,is_hidden,sort_order,when_created,when_updated,
 "ecdc453a47e011e7a91992ebcb67fe33","REMEDIATE","Remediation","N","14","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
 "ecdc46b647e011e7a91992ebcb67fe33","CLS_LP_GEO","Closed Loop Geo","N","16","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
 "ecdc485a47e011e7a91992ebcb67fe33","DRAINAGE","Drainage","N","18","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
-"ecdc4de647e011e7a91992ebcb67fe33","LEGACY","Legacy (null)","N","20","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"

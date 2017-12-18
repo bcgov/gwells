@@ -91,7 +91,7 @@ INSERT INTO xform_gwells_well (
   who_created                        ,
   who_updated)
 SELECT
-  wells.well_tag_number   , 
+  wells.well_tag_number   ,
   wells.well_id           ,
   gen_random_uuid()                                                      ,
   wells.acceptance_status_code AS acceptance_status_code                 ,
@@ -130,7 +130,7 @@ SELECT
     WHEN 'WASH_STATE' THEN 'f46b77b447d411e7a91992ebcb67fe33'::uuid
     ELSE 'f46b7b1a47d411e7a91992ebcb67fe33'::uuid
   END AS province_state_guid                                             ,
-  COALESCE (class.well_class_guid,'ecdc4de647e011e7a91992ebcb67fe33')    , --> LEGACY
+  class.well_class_guid                                                  ,
   subclass.well_subclass_guid                                            ,
   CASE wells.yield_unit_code
     WHEN 'GPM'  THEN 'c4634ef447c311e7a91992ebcb67fe33'::uuid
