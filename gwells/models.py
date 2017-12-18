@@ -802,7 +802,7 @@ class Well(AuditModel):
     well_yield_unit = models.ForeignKey(WellYieldUnit, db_column='well_yield_unit_guid', on_delete=models.CASCADE, blank=True, null=True)
     diameter = models.CharField(max_length=9, blank=True)  #want to be integer in future
 
-    observation_well_number = models.PositiveIntegerField(blank=True, null=True, verbose_name="Observation Well Number")
+    observation_well_number = models.CharField(max_length=3, blank=True, null=True, verbose_name="Observation Well Number")
     observation_well_status = models.CharField(max_length=25, blank=True, null=True, verbose_name="Observation Well Status")
     ems = models.CharField(max_length=10, blank=True, null=True, verbose_name="Environmental Monitoring System (EMS) ID")
 
