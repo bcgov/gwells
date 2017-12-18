@@ -129,9 +129,9 @@ SELECT
     WHEN 'AB' THEN 'f46b742647d411e7a91992ebcb67fe33'::uuid
     WHEN 'WASH_STATE' THEN 'f46b77b447d411e7a91992ebcb67fe33'::uuid
     ELSE 'f46b7b1a47d411e7a91992ebcb67fe33'::uuid
-  END AS province_state_guid                                               ,
-  COALESCE (class.well_class_guid,'ecdc4de647e011e7a91992ebcb67fe33')      , --> LEGACY
-  subclass.well_subclass_guid                                              ,
+  END AS province_state_guid                                             ,
+  class.well_class_guid                                                  ,
+  subclass.well_subclass_guid                                            ,
   CASE wells.yield_unit_code
     WHEN 'GPM'  THEN 'c4634ef447c311e7a91992ebcb67fe33'::uuid
     WHEN 'IGM'  THEN 'c4634ff847c311e7a91992ebcb67fe33'::uuid
