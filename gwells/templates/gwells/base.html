@@ -89,14 +89,18 @@
 <body>
     <!-- HEADER -->
     <div id="header" role="banner">
-        <div id="header-main" class="navbar navbar-default navbar-fixed-top">
+        <div id="header-main" class="navbar navbar-default navbar-fixed-top show-for-print">
             <div class="container">
                 <div id="header-main-row" class="row">
                     <!-- GOV TITLE -->
-                    <div class="col-sm-3 col-md-2 header-main-left">
-                        <div id="logo">
+                    <div class="col-sm-3 col-md-2 col-print-4 header-main-left">
+                        <div id="screen-logo" class="hide-for-print show-for-screen">
                             <a href="http://gov.bc.ca"><img src="{% static 'gwells/images/gov3_bc_logo.png' %}" width="155" height="52"  alt="Province of British Columbia" longdesc="Province of British Columbia"/></a>
                         </div>
+                        <div id="print-logo" class="hide-for-screen show-for-print">
+                            <a href="http://gov.bc.ca"><img src="{% static 'gwells/images/BCID_H_rgb_pos.png' %}" width="155" height="52" alt="Province of British Columbia" longdesc="Province of British Columbia"/></a>
+                        </div>
+
                         <div id="access">
                             <ul>
                                 <li>
@@ -110,18 +114,22 @@
                                 </li>
                             </ul>
                         </div>
-                        <button type="submit" class="navbar-toggle env-button-custom collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="true" aria-label="Burger Navigation">
-                            <img src="{% static 'gwells/images/menu-open-mobile.png' %}" alt="Open Menu" longdesc="Open Menu" width="34" height="25" />
+
+                        <button type="submit" class="navbar-toggle env-button-custom collapsed hide-for-print" data-toggle="collapse" data-target="#navbar" aria-expanded="true" aria-label="Burger Navigation">
+                            <img src="{% static 'gwells/images/menu-open-mobile.png' %}" alt="Open Menu" longdesc="Open Menu" width="34" height="25" class="hide-for-print"/>
                         </button>
+
                     </div>
-                    <div class="col-sm-8 col-lg-6 hidden-xs">
+
+                    <div class="col-sm-8 col-lg-6 col-print-8 show-for-print">
                         <div class="bcgov-title">
                             <h1>Groundwater Wells and Aquifers</h1>
                         </div>
                     </div>
+
                     <!-- /GOV & ENV TITLE -->
                     <!-- COLLAPSING NAVBAR -->
-                    <div id="navbar" class="collapse navbar-collapse col-sm-8 col-lg-6" role="navigation">
+                    <div id="navbar" class="collapse navbar-collapse col-sm-8 col-lg-6 hide-for-print" role="navigation">
                         <a id="navigation-anchor"></a>
                         <ul class="nav navbar-nav">
                             <li><a id="navbar-search" href="{% url 'search' %}">Search</a></li>
@@ -134,7 +142,7 @@
                     <!-- COLLAPSING NAVBAR -->
                 </div>
             </div>
-            <div class="navigationRibbon">
+            <div class="navigationRibbon hide-for-print">
                 <div class="level2Navigation">
                     <div class="container">
                         <ul>
@@ -152,23 +160,6 @@
     <!-- /HEADER -->
     <!-- BODY CONTENT -->
     <div id="topicTemplate" class="template container env-container">
-        <!--<div id="breadcrumbContainer">
-            <ol class="breadcrumb">
-
-                <li>
-                    <a href="#">Home</a>
-                </li>
-                <li>
-                    <a href="#">Breadcrumb Link</a>
-                </li>
-                <li>
-                    <a href="#">Breadcrumb Link</a>
-                </li>
-                <li>
-                    <a href="#">Breadcrumb Link</a>
-                </li>
-            </ol>
-        </div>-->
 
         <!-- PAGE CONTENT -->
         <div class="row">
