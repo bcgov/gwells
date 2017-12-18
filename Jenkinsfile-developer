@@ -47,16 +47,12 @@ node('bddstack') {
         dir('functional-tests') {
 	    try {
                 sh './gradlew --debug --stacktrace chromeHeadlessTest'
-	    } catch(Throwable t) {
-          mail (to: 'roland.stens@gmail.com,fieranmason@gmail.com,Gary.T.Wong@gov.bc.ca,Kuan.Fan@gov.bc.ca', subject: "FYI: GWELLS Job '${env.JOB_NAME}' (${env.BUILD_NUMBER}) functional test needs attention", body: "See ${env.BUILD_URL} for details. ");
-      }
-      finally {
+	    } finally {
 		archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
                 archiveArtifacts allowEmptyArchive: true, artifacts: 'build/test-results/**/*'
                 junit 'build/test-results/**/*.xml'
 	    }
         }
-	sh 'sleep 5s'
     }
 }
 
