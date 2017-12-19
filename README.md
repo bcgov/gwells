@@ -77,7 +77,7 @@ To run this project in your development machine, ensure that Git, Python 3.5 and
 
 4. Change directory to gwells (cd gwells), then add remote (upstream) origin:
 
-    `git remote add origin https://github.com/bcgov/gwells.git`
+    `git remote add upstream https://github.com/bcgov/gwells.git`
     
 5. Install dependencies:
 
