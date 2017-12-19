@@ -837,6 +837,23 @@
   </span>
 </fieldset>
 
+<fieldset id="documents" class="hid-for-print">
+  <legend>Additional Documentation</legend>
+  <div class="row">
+    <div class="col-md-12">
+      <table class="table table-condensed table-bordered table-striped">
+        <thead>
+          <th>Document Link</th>
+        </thead>
+        <tbody>
+          {% for document in documents %}
+          <td><a href="{{document}}">{{document}}</a></td>
+          {% endfor %}
+        </tbody>
+      </table>
+  <div>
+</fieldset>
+
 {% endblock %} {% block jqscript_block %}
 <script>
     var detailMap = null;
