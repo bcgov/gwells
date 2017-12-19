@@ -184,10 +184,10 @@ class WellDetailsSpecs extends GebReportingSpec {
 		"static_water_level"	 		  | "128.00 feet" 	 | 106648
 		"well_cap_type"	   				  | "VENT CAST" 	 | 106648
 		"finished_well_depth"	 		  | "100.00 feet" 	 | 105747
-		"well_yield"	 				  | "15.000 USGM" 	 | 110749
+		"well_yield"	 				  | "15.000 USGPM" 	 | 110749
 		"well_disinfected"	 			  | "No" 	 | 110749
 		"final_casing_stickup"	 		  | "12.000 inches" 	 | 106648
-		"artesian_flow"	 				  | "15.00 USGM" 	 | 110749
+		"artesian_flow"	 				  | "15.00 USGPM" 	 | 110749
 		"drilling_method"	 			  | "AIR_ROTARY" 	 | 100501
 		"bedrock_depth"	 				  | "60.00 feet" 	 | 110749
 		"artesian_pressure"	    		  | "10.00 inches" 	 | 113552
@@ -208,7 +208,7 @@ class WellDetailsSpecs extends GebReportingSpec {
 		"developed_by"	 				  | "Bailing" 	 | 110749
 		"devlopment_total_duration"	 	  | "3.00 hours" 	 | 110749
 		"yield_estimation_method"	      | "Air Lifting" 	 | 107072
-		"yield_estimation_rate"			  | "15.00   USGM" 	 | 110749
+		"yield_estimation_rate"			  | "15.00   USGPM" 	 | 110749
 		"yield_estimation_duration"	 	  | "12.00   hours" 	 | 110749
 		"casings_from"	 				  | "0.00" 	 | 113503
 		"casings_to"	 				  | "63.00" 	 | 113503
