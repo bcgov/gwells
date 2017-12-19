@@ -262,16 +262,21 @@ a label.env-username {
     margin-left:60px;
   }
 
-  .row{
-    padding-right:0px !important;
-    padding-left:0px !important;
-    padding-bottom:0px !important;
-    padding-top:0px !important;
+  .print-compressed{
+      padding-left:0px;
+      padding-right:0px;
+      padding-top:0px;
+      padding-bottom:0px;
   }
 
-  .print-compressed{
-      padding-left:0px !important;
-      padding-right:0px !important;
+  .print-pad5-right {
+    padding-right:5px !important;
+    padding-left:0px !important;
+  }
+
+  .print-pad5-left {
+    padding-left:5px !important;
+    padding-right:0px !important;
   }
 }
 
