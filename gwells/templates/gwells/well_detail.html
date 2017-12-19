@@ -506,7 +506,7 @@
                         <td>{{lithology.lithology_hardness|default_if_none:'&nbsp;'}}</td>
                         <td>{{lithology.lithology_colour|default_if_none:'&nbsp;'}}</td>
                         <td>
-                            {% if lithology.water_bearing_estimated_flow %} {{lithology.water_bearing_estimated_flow}}&nbsp;{{lithology.water_bearing_estimated_flow_units}} {% endif %}
+                            {% if lithology.water_bearing_estimated_flow %} {{lithology.water_bearing_estimated_flow}}&nbsp;{{lithology.water_bearing_estimated_flow_units.code}} {% endif %}
                         </td>
                         <td>{{lithology.lithology_observation|default_if_none:'&nbsp;'}}</td>
                     </tr>
