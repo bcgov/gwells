@@ -18,11 +18,20 @@ INSERT INTO gwells_production_data(
 SELECT
   gen_random_uuid()                                                      ,
   null                                                                   ,
-  xform.well_tag_number                                                   ,
+  xform.well_tag_number                                                  ,
   yield_estimation_method.yield_estimation_method_guid                   ,
   production_data.test_rate                                              ,
   production_data.test_duration                                          ,
-  well_yield_unit.well_yield_unit_guid                                   ,
+  CASE production_data.test_rate_units_code
+    WHEN 'GPM'  THEN 'c4634ef447c311e7a91992ebcb67fe33'::uuid
+    WHEN 'IGM'  THEN 'c4634ff847c311e7a91992ebcb67fe33'::uuid
+    WHEN 'DRY'  THEN 'c46347b047c311e7a91992ebcb67fe33'::uuid
+    WHEN 'LPS'  THEN 'c46350c047c311e7a91992ebcb67fe33'::uuid
+    WHEN 'USGM' THEN 'c463525047c311e7a91992ebcb67fe33'::uuid
+    WHEN 'GPH'  THEN 'c4634b4847c311e7a91992ebcb67fe33'::uuid
+    WHEN 'UNK'  THEN 'c463518847c311e7a91992ebcb67fe33'::uuid
+    ELSE 'c463518847c311e7a91992ebcb67fe33'::uuid -- As PostGres didn't like "" as guid value
+  END AS well_yield_unit_guid                                            ,
   production_data.static_level                                           ,
   production_data.net_drawdown                                           ,
   false                                                                  ,
@@ -32,9 +41,8 @@ SELECT
   COALESCE(production_data.when_updated,production_data.when_created)
 FROM wells.wells_production_data production_data
      INNER JOIN xform_gwells_well xform ON production_data.well_id=xform.well_id
-     LEFT OUTER JOIN gwells_yield_estimation_method yield_estimation_method ON production_data.yield_estimated_method_code=yield_estimation_method.yield_estimation_method_code
-     LEFT OUTER JOIN gwells_well_yield_unit well_yield_unit ON production_data.test_rate_units_code=well_yield_unit.code;
-     
+     LEFT OUTER JOIN gwells_yield_estimation_method yield_estimation_method ON production_data.yield_estimated_method_code=yield_estimation_method.yield_estimation_method_code;
+
 
 \echo 'wells_production_data data imported'
 
