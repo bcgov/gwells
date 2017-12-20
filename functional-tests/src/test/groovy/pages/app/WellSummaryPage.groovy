@@ -7,7 +7,7 @@ class WellSummaryPage extends Page {
 //    static url = "/well"
 
     static content = {
-		summary_information { $( "fieldset", id:"summary_information") }
+		summary_information { $( "fieldset", id:"summary_information_fieldset") }
 		well_tag_number { $( "span", id:"well_tag_number") }
 		identification_plate_number { $( "span", id:"identification_plate_number") }
 		owner_full_name { $( "span", id:"owner_full_name") }
