@@ -91,46 +91,46 @@ INSERT INTO xform_gwells_well (
   who_created                        ,
   who_updated)
 SELECT
-  wells.well_tag_number   , 
-  wells.well_id           ,
-  gen_random_uuid()                                                      ,
-  wells.acceptance_status_code AS acceptance_status_code                 ,
-  concat_ws(' ', owner.giVEN_NAME,OWNER.SURNAME) AS owner_full_name      ,
-  concat_ws(' ',OWNER.STREET_NUMBER,STREET_NAME) AS owner_mailing_address,
-  owner.city AS owner_city                                               ,
-  owner.postal_code AS owner_postal_code                                 ,
-  wells.site_street AS street_address                                    ,
-  wells.site_area AS city                                                ,
-  wells.lot_number AS legal_lot                                          ,
-  wells.legal_plan AS legal_plan                                         ,
-  wells.legal_district_lot AS legal_district_lot                         ,
-  wells.legal_block AS legal_block                                       ,
-  wells.legal_section AS legal_section                                   ,
-  wells.legal_township AS legal_township                                 ,
-  wells.legal_range AS legal_range                                       ,
-  to_char(wells.pid,'fm000000000') AS legal_pid                          ,
-  wells.well_location AS well_location_description                       ,
-  wells.well_identification_plate_no AS identification_plate_number      ,
-  wells.diameter AS diameter                                             ,
-  wells.total_depth_drilled AS total_depth_drilled                       ,
-  wells.depth_well_drilled AS finished_well_depth                        ,
-  wells.water_depth                                                      ,
-  wells.type_of_well_cap                                                 ,
+  wells.well_tag_number                                                    ,
+  wells.well_id                                                            ,
+  gen_random_uuid()                                                        ,
+  wells.acceptance_status_code AS acceptance_status_code                   ,
+  concat_ws(' ', owner.giVEN_NAME,OWNER.SURNAME) AS owner_full_name        ,
+  concat_ws(' ',OWNER.STREET_NUMBER,STREET_NAME) AS owner_mailing_address  ,
+  owner.city AS owner_city                                                 ,
+  owner.postal_code AS owner_postal_code                                   ,
+  wells.site_street AS street_address                                      ,
+  wells.site_area AS city                                                  ,
+  wells.lot_number AS legal_lot                                            ,
+  wells.legal_plan AS legal_plan                                           ,
+  wells.legal_district_lot AS legal_district_lot                           ,
+  wells.legal_block AS legal_block                                         ,
+  wells.legal_section AS legal_section                                     ,
+  wells.legal_township AS legal_township                                   ,
+  wells.legal_range AS legal_range                                         ,
+  to_char(wells.pid,'fm000000000') AS legal_pid                            ,
+  wells.well_location AS well_location_description                         ,
+  wells.well_identification_plate_no AS identification_plate_number        ,
+  wells.diameter AS diameter                                               ,
+  wells.total_depth_drilled AS total_depth_drilled                         ,
+  wells.depth_well_drilled AS finished_well_depth                          ,
+  wells.water_depth                                                        ,
+  wells.type_of_well_cap                                                   ,
   CASE wells.well_disinfected_ind
     WHEN 'Y' THEN TRUE
     WHEN 'N' THEN FALSE
     ELSE FALSE
-  END AS well_disinfected                                                ,
-  wells.yield_value AS well_yield                                        ,
-  intended_water_use.intended_water_use_guid                             ,
-  gld.land_district_guid                                                 ,
+  END AS well_disinfected                                                  ,
+  wells.yield_value AS well_yield                                          ,
+  intended_water_use.intended_water_use_guid                               ,
+  gld.land_district_guid                                                   ,
   CASE owner.province_state_code
     WHEN 'BC' THEN 'f46b70b647d411e7a91992ebcb67fe33'::uuid
     WHEN 'AB' THEN 'f46b742647d411e7a91992ebcb67fe33'::uuid
     WHEN 'WASH_STATE' THEN 'f46b77b447d411e7a91992ebcb67fe33'::uuid
     ELSE 'f46b7b1a47d411e7a91992ebcb67fe33'::uuid
   END AS province_state_guid                                             ,
-  COALESCE (class.well_class_guid,'ecdc4de647e011e7a91992ebcb67fe33')    , --> LEGACY
+  class.well_class_guid                                                  ,
   subclass.well_subclass_guid                                            ,
   CASE wells.yield_unit_code
     WHEN 'GPM'  THEN 'c4634ef447c311e7a91992ebcb67fe33'::uuid
@@ -141,17 +141,17 @@ SELECT
     WHEN 'GPH'  THEN 'c4634b4847c311e7a91992ebcb67fe33'::uuid
     WHEN 'UNK'  THEN 'c463518847c311e7a91992ebcb67fe33'::uuid
     ELSE 'c463518847c311e7a91992ebcb67fe33'::uuid -- As PostGres didn't like "" as guid value
-  END AS well_yield_unit_guid                                            ,
-  wells.latitude                                                         ,
+  END AS well_yield_unit_guid                                              ,
+  wells.latitude                                                           ,
   CASE
     WHEN wells.longitude > 0 THEN wells.longitude * -1
     ELSE wells.longitude
-  END AS longitude                                                       ,
-  wells.elevation AS ground_elevation                                    ,
+  END AS longitude                                                         ,
+  wells.elevation AS ground_elevation                                      ,
   CASE wells.orientation_of_well_code
      WHEN 'HORIZ' THEN false
      ELSE true
-  END AS well_orientation                                                ,
+  END AS well_orientation                                                  ,
   null AS other_drilling_method, -- placeholder as it's brand new content
   CASE wells.drilling_method_code  -- supersedes CONSTRUCTION_METHOD_CODE
     WHEN 'AIR_ROTARY' THEN '262aca1e5db211e7907ba6006ad3dba0'::uuid
@@ -166,7 +166,7 @@ SELECT
     WHEN 'OTHER'      THEN '262adcf25db211e7907ba6006ad3dba0'::uuid
     WHEN 'UNK'        THEN '262addb05db211e7907ba6006ad3dba0'::uuid
     ELSE null::uuid
-  END AS drilling_method_guid                                            ,
+  END AS drilling_method_guid                                              ,
   CASE wells.ground_elevation_method_code
     WHEN '5K_MAP'  THEN '523ac3ba77ad11e7b5a5be2e44b06b34'::uuid
     WHEN '10K_MAP'  THEN '523ac81077ad11e7b5a5be2e44b06b34'::uuid
@@ -177,59 +177,59 @@ SELECT
     WHEN 'GPS'  THEN '523ad60277ad11e7b5a5be2e44b06b34'::uuid
     WHEN 'LEVEL'  THEN '523ad79277ad11e7b5a5be2e44b06b34'::uuid
     ELSE null::uuid
-  END AS ground_elevation_method_guid                                    ,
-  well_status.well_status_guid                                           ,
-  wells.observation_well_number	       AS observation_well_number        ,
-  wells.ministry_observation_well_stat AS observation_well_status        ,
-  licenced_status.licenced_status_guid                                   ,
+  END AS ground_elevation_method_guid                                      ,
+  well_status.well_status_guid                                             ,
+  to_char(wells.observation_well_number,'fm000') AS observation_well_number,
+  wells.ministry_observation_well_stat AS observation_well_status          ,
+  licenced_status.licenced_status_guid                                     ,
   CASE wells.alternative_specifications_ind
      WHEN 'N' THEN false
      WHEN 'Y' THEN true
      ELSE null
-  END AS alternative_specifications_ind                                  ,
-  wells.construction_start_date AT TIME ZONE 'GMT'                       ,
-  wells.construction_end_date AT TIME ZONE 'GMT'                         ,
-  wells.alteration_start_date AT TIME ZONE 'GMT'                         ,
-  wells.alteration_end_date AT TIME ZONE 'GMT'                           ,
-  wells.closure_start_date AT TIME ZONE 'GMT'                            ,
-  wells.closure_end_date AT TIME ZONE 'GMT'                              ,
-  drilling_company.drilling_company_guid                                 ,
-  wells.final_casing_stick_up                                            ,
-  wells.artesian_flow_value                                              ,
-  wells.artesian_pressure                                                ,
-  wells.bedrock_depth                                                    ,
-  wells.water_supply_system_name                                         ,
-  wells.water_supply_well_name                                           ,
-  wells.where_plate_attached                                             ,
-  wells.chemistry_site_id                                                ,
-  screen_intake_method.screen_intake_method_guid                         ,
-  screen_type.screen_type_guid                                           ,
-  screen_material.screen_material_guid                                   ,
-  screen_opening.screen_opening_guid                                     ,
-  screen_bottom.screen_bottom_guid                                       ,
-  wells.utm_zone_code                                                    ,
-  wells.utm_north                                                        ,
-  wells.utm_east                                                         ,
-  wells.utm_accuracy_code                                                ,
-  wells.bcgs_id                                                          ,
-  development_method.development_method_guid                             ,
-  wells.development_hours                                                ,
-  surface_seal_method.surface_seal_method_guid                           ,
-  surface_seal_material.surface_seal_material_guid                       ,
-  wells.surface_seal_depth                                               ,
-  wells.surface_seal_thickness                                           ,
-  wells.backfill_type                                                    ,
-  wells.backfill_depth                                                   ,
-  liner_material.liner_material_guid                                     ,
-  wells.closure_reason                                                   ,
-  decommission_method.decommission_method_guid                           ,
-  wells.sealant_material                                                 ,
-  wells.backfill_material                                                ,
-  wells.closure_details                                                  ,
-  wells.general_remarks                                                  ,
-  wells.when_created                                                     ,
-  COALESCE(wells.when_updated,wells.when_created)                        ,
-  wells.who_created                                                      ,
+  END AS alternative_specifications_ind                                    ,
+  wells.construction_start_date AT TIME ZONE 'GMT'                         ,
+  wells.construction_end_date AT TIME ZONE 'GMT'                           ,
+  wells.alteration_start_date AT TIME ZONE 'GMT'                           ,
+  wells.alteration_end_date AT TIME ZONE 'GMT'                             ,
+  wells.closure_start_date AT TIME ZONE 'GMT'                              ,
+  wells.closure_end_date AT TIME ZONE 'GMT'                                ,
+  drilling_company.drilling_company_guid                                   ,
+  wells.final_casing_stick_up                                              ,
+  wells.artesian_flow_value                                                ,
+  wells.artesian_pressure                                                  ,
+  wells.bedrock_depth                                                      ,
+  wells.water_supply_system_name                                           ,
+  wells.water_supply_well_name                                             ,
+  wells.where_plate_attached                                               ,
+  wells.chemistry_site_id                                                  ,
+  screen_intake_method.screen_intake_method_guid                           ,
+  screen_type.screen_type_guid                                             ,
+  screen_material.screen_material_guid                                     ,
+  screen_opening.screen_opening_guid                                       ,
+  screen_bottom.screen_bottom_guid                                         ,
+  wells.utm_zone_code                                                      ,
+  wells.utm_north                                                          ,
+  wells.utm_east                                                           ,
+  wells.utm_accuracy_code                                                  ,
+  wells.bcgs_id                                                            ,
+  development_method.development_method_guid                               ,
+  wells.development_hours                                                  ,
+  surface_seal_method.surface_seal_method_guid                             ,
+  surface_seal_material.surface_seal_material_guid                         ,
+  wells.surface_seal_depth                                                 ,
+  wells.surface_seal_thickness                                             ,
+  wells.backfill_type                                                      ,
+  wells.backfill_depth                                                     ,
+  liner_material.liner_material_guid                                       ,
+  wells.closure_reason                                                     ,
+  decommission_method.decommission_method_guid                             ,
+  wells.sealant_material                                                   ,
+  wells.backfill_material                                                  ,
+  wells.closure_details                                                    ,
+  wells.general_remarks                                                    ,
+  wells.when_created                                                       ,
+  COALESCE(wells.when_updated,wells.when_created)                          ,
+  wells.who_created                                                        ,
   COALESCE(wells.who_updated,wells.who_created)
 FROM wells.wells_wells wells LEFT OUTER JOIN wells.wells_owners owner ON owner.owner_id=wells.owner_id
                              LEFT OUTER JOIN gwells_drilling_company drilling_company ON UPPER(wells.driller_company_code)=UPPER(drilling_company.drilling_company_code)

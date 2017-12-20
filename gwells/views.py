@@ -17,11 +17,16 @@ from django.shortcuts import get_object_or_404, render
 from django.views import generic
 from django.views.generic.edit import FormView
 from formtools.wizard.views import SessionWizardView
+
 from .models import WellActivityType, WellYieldUnit, Well, ActivitySubmission, WellClass, ScreenIntakeMethod, LandDistrict
+
 from .forms import SearchForm, ActivitySubmissionTypeAndClassForm, WellOwnerForm, ActivitySubmissionLocationForm, ActivitySubmissionGpsForm
 from .forms import ActivitySubmissionLithologyFormSet, ActivitySubmissionCasingFormSet, ActivitySubmissionSurfaceSealForm, ActivitySubmissionLinerPerforationFormSet
 from .forms import ActivitySubmissionScreenIntakeForm, ActivitySubmissionScreenFormSet, ActivitySubmissionFilterPackForm, ActivitySubmissionDevelopmentForm, ProductionDataFormSet
 from .forms import ActivitySubmissionWaterQualityForm, WellCompletionForm, ActivitySubmissionCommentForm
+
+"""from .minioClient import MinioClient"""
+
 import json
 from django.core.serializers.json import DjangoJSONEncoder
 
@@ -117,16 +122,19 @@ def map_well_search(request):
 class WellDetailView(generic.DetailView):
     model = Well
     context_object_name = 'well'
-    if settings.ENABLE_OLD_WELL_DETAIL:
-        template_name = 'gwells/well_detailold.html'
-    else:
-        template_name = 'gwells/well_detail.html'
+    template_name = 'gwells/well_detail.html'
 
     def get_context_data(self, **kwargs):
         """
-        Return the context for the home page.
+        Return the context for the well details page.
         """
+
         context = super(WellDetailView, self).get_context_data(**kwargs)
+
+        """minioClient = MinioClient()
+
+        context['documents'] = minioClient.getDocuments(context['well'].well_tag_number)
+        context['documents'].sort(key=str.lower)"""
         return context
 
 class ActivitySubmissionListView(generic.ListView):
