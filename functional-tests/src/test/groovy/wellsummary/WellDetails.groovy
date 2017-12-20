@@ -236,7 +236,7 @@ class WellDetailsSpecs extends GebReportingSpec {
         "lithology_material_description"  | "soil" 	 |  110000 
         "lithology_relative_hardness"	  | "Stiff" 	 |  112152 
         "lithology_colour" 	 			  | "dark" 	 |  110000 
-        "lithology_waterbearing_estimated_flow"	 | "200.0000 U.S. Gallons per Minute" 	 |  104533 
+        "lithology_waterbearing_estimated_flow"	 | "200.0000 USGPM" 	 |  104533 
         "lithology_observations" 	 	  | "Water-bearing" 	 |  110000 
         "reason_for_decommission" 	 	  | "SITE DEVELOPMENT" 	 |  110749 
         "method_of_closure" 	 		  | "PUMPED" 	 |  110749 
