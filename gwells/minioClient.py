@@ -1,4 +1,5 @@
 
+"""
 import os
 from minio import Minio
 from minio.error import ResponseError
@@ -30,3 +31,4 @@ class MinioClient():
             documents.append('https://' + self.link_host + '/' + obj.bucket_name + '/' + obj.object_name)
 
         return documents
+"""
