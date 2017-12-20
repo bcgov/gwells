@@ -133,7 +133,7 @@ class WellSubclass(AuditModel):
     Subclass of Well type.
     """
     well_subclass_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    well_class = models.ForeignKey(WellClass, db_column='well_class_guid', on_delete=models.CASCADE, blank=True)
+    well_class = models.ForeignKey(WellClass, null=True, db_column='well_class_guid', on_delete=models.CASCADE, blank=True)
     code = models.CharField(max_length=10)
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
