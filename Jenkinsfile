@@ -40,8 +40,8 @@ stage('Deploy on Prod') {
     input "Deploy to Prod?"
     node('maven') {
         openshiftTag destStream: 'gwells', verbose: 'true', destTag: 'prod', srcStream: 'gwells', srcTag: '$BUILD_ID'
+	sh 'sleep 3m'
     }
-    sh 'sleep 3m'
 }
 
 node('bddstack') {
