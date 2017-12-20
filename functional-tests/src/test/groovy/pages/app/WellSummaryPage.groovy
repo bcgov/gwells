@@ -89,7 +89,7 @@ class WellSummaryPage extends Page {
 		yield_estimation_rate { $( "span", id:"yield_estimation_rate") }
 		yield_estimation_duration { $( "span", id:"yield_estimation_duration") }
 
-		casing_field_set { $( "fieldset", id:"casing_field_set") }
+		casing_field_set { $( "fieldset", id:"casing_fieldset") }
 		casings { $( "table", id:"casings") }
 		casings_table { $("#casings td")*.text() }
 		casings_from { $("#casings > tbody > tr:nth-child(1) > td:nth-child(1)") }
@@ -132,7 +132,7 @@ class WellSummaryPage extends Page {
         lithology_waterbearing_estimated_flow { $("#lithology > tbody > tr:nth-child(3) > td:nth-child(8)") }
         lithology_observations { $("#lithology > tbody > tr:nth-child(7) > td:nth-child(9)") }
 
-		well_decommissioning { $( "fieldset", id:"well_decommissioning") }
+		well_decommissioning { $( "fieldset", id:"well_decommissioning_fieldset") }
         reason_for_decommission { $( "span", id:"reason_for_decommission") }
         method_of_closure { $( "span", id:"method_of_closure") }
         sealant_material { $( "span", id:"sealant_material") }
