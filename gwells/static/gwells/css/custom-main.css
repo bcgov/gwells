@@ -8,12 +8,12 @@
 
 /* background image */
 
-html, body {
+html,
+body {
     font-size: 13px !important;
     background-color: #f1f1f1;
     color: #494949;
     font-family: Myriad-Pro, Calibri, Arial, sans-serif;
-
 }
 
 body {
@@ -27,9 +27,9 @@ th {
 }
 
 fieldset {
-  page-break-inside: avoid;
-  page-break-after: avoid;
-  padding-bottom: 8px;
+    page-break-inside: avoid;
+    page-break-after: avoid;
+    padding-bottom: 8px;
 }
 
 .template {
@@ -39,6 +39,7 @@ fieldset {
 #footer {
     margin-top: -44px;
 }
+
 
 /* Leaflet map styles */
 
@@ -161,10 +162,10 @@ a label.env-username {
 }
 
 .top-margin-8 {
-  margin-top: 8px;
+    margin-top: 8px;
 }
 
-@media (max-width: 767px) {
+@media screen (max-width: 767px) {
     .env-container {
         padding-top: 10px !important;
         position: relative;
@@ -180,13 +181,13 @@ a label.env-username {
     }
 }
 
-@media (max-width:1200px) {
+@media screen (max-width:1200px) {
     .bcgov-title {
         margin-left: 0px;
     }
 }
 
-@media (min-width: 768px) {
+@media screen (min-width: 768px) {
     .env-container {
         padding-top: 150px !important;
         position: relative;
@@ -197,92 +198,127 @@ a label.env-username {
 }
 
 @media print {
-  table {
-    margin:0px;
-    margin-top:0px;
-    margin-bottom:0px !important;
-    padding-top:0px;
-    padding-bottom:0px;
-  }
-  legend {
-    margin-bottom:5px;
-  }
-
-  .template {
-      font-size: 10px !important;
-  }
-  .show-for-print {
-    display: block !important;
-  }
-
-  .hide-for-print {
-    display: none;
-  }
-
-  .shift-up-navbar-height {
-    top:-40px;
-  }
-
-  /* need to override this because of a dependency on a media size block in a parent*/
-  .hidden-xs {
-    display:block !important;
-  }
-
-  #header-main {
-      position: relative;
-      border-bottom: none;
-      margin-bottom: 0;
-  }
-
-  .left {
-      position: relative;
-      left: -60px;
-  }
-
-  .print-no-break {
-      page-break-inside: avoid;
-      page-break-after: avoid;
-  }
-
-  .col-print-1 {width:8%;  float:left;}
-  .col-print-2 {width:16%; float:left;}
-  .col-print-3 {width:25%; float:left;}
-  .col-print-4 {width:33%; float:left;}
-  .col-print-5 {width:42%; float:left;}
-  .col-print-6 {width:50%; float:left;}
-  .col-print-offset-6{margin-left:50%; width:50%; float:left;}
-  .col-print-7 {width:58%; float:left;}
-  .col-print-8 {width:66%; float:left;}
-  .col-print-9 {width:75%; float:left;}
-  .col-print-10{width:83%; float:left;}
-  .col-print-11{width:92%; float:left;}
-  .col-print-12{width:100%; float:left;}
-
-  .margin-left{
-    margin-left:60px;
-  }
-
-  .print-compressed{
-      padding-left:0px;
-      padding-right:0px;
-      padding-top:0px;
-      padding-bottom:0px;
-  }
-
-  .print-pad5-right {
-    padding-right:5px !important;
-    padding-left:0px !important;
-  }
-
-  .print-pad5-left {
-    padding-left:5px !important;
-    padding-right:0px !important;
-  }
+    fieldset {
+        page-break-after: avoid;
+        page-break-before: avoid;
+        page-break-inside: avoid;
+    }
+    table {
+        margin: 0px;
+        margin-top: 0px;
+        margin-bottom: 0px !important;
+        padding-top: 0px;
+        padding-bottom: 0px;
+    }
+    legend {
+        margin-bottom: 5px;
+    }
+    .template {
+        font-size: 10px !important;
+    }
+    .show-for-print {
+        display: block !important;
+    }
+    .hide-for-print {
+        display: none;
+    }
+    .shift-up-navbar-height {
+        top: -40px;
+    }
+    /* need to override this because of a dependency on a media size block in a parent*/
+    .hidden-xs {
+        display: block !important;
+    }
+    #header-main {
+        position: relative;
+        border-bottom: none;
+        margin-bottom: 0;
+    }
+    .left {
+        position: relative;
+        left: -60px;
+    }
+    .print-no-break {
+        page-break-after: avoid;
+        page-break-before: avoid;
+        page-break-inside: avoid;
+    }
+    .col-print-1 {
+        width: 8%;
+        float: left;
+    }
+    .col-print-2 {
+        width: 16%;
+        float: left;
+    }
+    .col-print-3 {
+        width: 25%;
+        float: left;
+    }
+    .col-print-4 {
+        width: 33%;
+        float: left;
+    }
+    .col-print-5 {
+        width: 42%;
+        float: left;
+    }
+    .col-print-6 {
+        width: 50%;
+        float: left;
+    }
+    .col-print-offset-6 {
+        margin-left: 50%;
+        width: 50%;
+        float: left;
+    }
+    .col-print-7 {
+        width: 58%;
+        float: left;
+    }
+    .col-print-8 {
+        width: 66%;
+        float: left;
+    }
+    .col-print-9 {
+        width: 75%;
+        float: left;
+    }
+    .col-print-10 {
+        width: 83%;
+        float: left;
+    }
+    .col-print-11 {
+        width: 92%;
+        float: left;
+    }
+    .col-print-12 {
+        width: 100%;
+        float: left;
+    }
+    .margin-left {
+        margin-left: 60px;
+    }
+    .print-compressed {
+        padding-left: 0px;
+        padding-right: 0px;
+        padding-top: 0px;
+        padding-bottom: 0px;
+    }
+    .print-pad5-right {
+        padding-right: 5px !important;
+        padding-left: 0px !important;
+    }
+    .print-pad5-left {
+        padding-left: 5px !important;
+        padding-right: 0px !important;
+    }
 }
 
 .hide-for-screen {
-  display: none;
+    display: none;
 }
+
 
 /* fix navbar button to resemble standard button toggle control */
 
@@ -476,6 +512,7 @@ ul.breadcrumb>li {
 
 
 /* disable wrapping and left-align table header content for prettier responsive tables */
+
 
 /* utility class for sorting */
 
