@@ -31,14 +31,25 @@ SELECT
   lithology_hardness.lithology_hardness_guid                ,
   lithology_colour.lithology_colour_guid                    ,
   wld.water_bearing_estimated_flow                          ,
-  well_yield_unit.well_yield_unit_guid                      ,
+  CASE wells.yield_unit_code
+    WHEN 'GPM'  THEN 'c4634ef447c311e7a91992ebcb67fe33'::uuid
+    WHEN 'IGM'  THEN 'c4634ff847c311e7a91992ebcb67fe33'::uuid
+    WHEN 'DRY'  THEN 'c46347b047c311e7a91992ebcb67fe33'::uuid
+    WHEN 'LPS'  THEN 'c46350c047c311e7a91992ebcb67fe33'::uuid
+    WHEN 'USGM' THEN 'c463525047c311e7a91992ebcb67fe33'::uuid
+    WHEN 'GPH'  THEN 'c4634b4847c311e7a91992ebcb67fe33'::uuid
+    WHEN 'UNK'  THEN 'c463518847c311e7a91992ebcb67fe33'::uuid
+    ELSE 'c463518847c311e7a91992ebcb67fe33'::uuid -- As PostGres didn't like "" as guid value
+  END AS well_yield_unit_guid                               ,
   wld.lithology_observation                                 ,
   wld.lithology_sequence_number                             ,
   wld.who_created                                           ,
   wld.when_created                                          ,
   COALESCE(wld.who_updated, wld.who_created)                ,
   COALESCE(wld.when_updated, wld.when_created)
-FROM wells.wells_lithology_descriptions wld INNER JOIN xform_gwells_well xform ON xform.well_id=wld.well_id
+FROM wells.wells_lithology_descriptions wld
+INNER JOIN xform_gwells_well xform ON xform.well_id=wld.well_id
+INNER JOIN wells.wells_wells wells ON wells.well_id=wld.well_id
 LEFT OUTER JOIN gwells_lithology_hardness lithology_hardness ON UPPER(wld.relative_hardness_code)=UPPER(lithology_hardness.code)
 LEFT OUTER JOIN gwells_lithology_colour lithology_colour ON UPPER(wld.lithology_colour_code)=UPPER(lithology_colour.code)
 LEFT OUTER JOIN gwells_well_yield_unit well_yield_unit ON UPPER(wld.water_bearing_est_flw_unt_cd)=UPPER(well_yield_unit.code)

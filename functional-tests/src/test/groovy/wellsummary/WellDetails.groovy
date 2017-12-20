@@ -1,6 +1,8 @@
 import geb.spock.GebReportingSpec
+import geb.Browser
 import pages.app.SearchPage
 import pages.app.WellSummaryPage
+import pages.external.AquiferReport
 
 import spock.lang.Ignore
 import spock.lang.Issue
@@ -17,7 +19,6 @@ through Search,  and see relevant information related to my well of interest.
 """)
 class WellDetailsSpecs extends GebReportingSpec {
     @Unroll
-
     def "Basic Field availability checking: #TestDesc #WellId"() {
         given: "Given that I have found my well"
 			go "gwells/well/$WellId"
@@ -130,13 +131,12 @@ class WellDetailsSpecs extends GebReportingSpec {
         "Well Tag - "                    | 110749
     } 
     @Unroll
-
     def "Field content checking: #TestDesc - #WellId - #WellFieldContent"() {
         given: "Given that I have found my well"
 			go "gwells/well/$WellId" 
  	 	when: "I accessed the Well Summary Page"	
 			at WellSummaryPage
-        then: "Then I see the expected information for the #TestDesc"
+        then: "Then I see the expected information(#WellFieldContent) for the #TestDesc field"
 			at WellSummaryPage
 			println "$TestDesc: " +  page."$TestDesc".text().trim()
 			assert page."$TestDesc".text().trim() == "$WellFieldContent".trim()
@@ -184,10 +184,10 @@ class WellDetailsSpecs extends GebReportingSpec {
 		"static_water_level"	 		  | "128.00 feet" 	 | 106648
 		"well_cap_type"	   				  | "VENT CAST" 	 | 106648
 		"finished_well_depth"	 		  | "100.00 feet" 	 | 105747
-		"well_yield"	 				  | "15.000 USGM" 	 | 110749
+		"well_yield"	 				  | "15.000 USGPM" 	 | 110749
 		"well_disinfected"	 			  | "No" 	 | 110749
 		"final_casing_stickup"	 		  | "12.000 inches" 	 | 106648
-		"artesian_flow"	 				  | "15.00 USGM" 	 | 110749
+		"artesian_flow"	 				  | "15.00 USGPM" 	 | 110749
 		"drilling_method"	 			  | "AIR_ROTARY" 	 | 100501
 		"bedrock_depth"	 				  | "60.00 feet" 	 | 110749
 		"artesian_pressure"	    		  | "10.00 inches" 	 | 113552
@@ -208,7 +208,7 @@ class WellDetailsSpecs extends GebReportingSpec {
 		"developed_by"	 				  | "Bailing" 	 | 110749
 		"devlopment_total_duration"	 	  | "3.00 hours" 	 | 110749
 		"yield_estimation_method"	      | "Air Lifting" 	 | 107072
-		"yield_estimation_rate"			  | "15.00   USGM" 	 | 110749
+		"yield_estimation_rate"			  | "15.00   USGPM" 	 | 110749
 		"yield_estimation_duration"	 	  | "12.00   hours" 	 | 110749
 		"casings_from"	 				  | "0.00" 	 | 113503
 		"casings_to"	 				  | "63.00" 	 | 113503
@@ -236,7 +236,7 @@ class WellDetailsSpecs extends GebReportingSpec {
         "lithology_material_description"  | "soil" 	 |  110000 
         "lithology_relative_hardness"	  | "Stiff" 	 |  112152 
         "lithology_colour" 	 			  | "dark" 	 |  110000 
-        "lithology_waterbearing_estimated_flow"	 | "200.0000 U.S. Gallons per Minute" 	 |  104533 
+        "lithology_waterbearing_estimated_flow"	 | "200.0000 USGPM" 	 |  104533 
         "lithology_observations" 	 	  | "Water-bearing" 	 |  110000 
         "reason_for_decommission" 	 	  | "SITE DEVELOPMENT" 	 |  110749 
         "method_of_closure" 	 		  | "PUMPED" 	 |  110749 
@@ -244,5 +244,23 @@ class WellDetailsSpecs extends GebReportingSpec {
         "backfill_material" 	 		  | "BENTONITE AND GRAVEL" 	 |  100200 
         "decommission_details"  	 	  | "NO ISSUES WITH CLOSURE. ONLY SLIGHT ARTESIAN FLOW IN NOV. 2014. CASING LEFT IN PLACE, PUMP PULLED." 	 |  110749
 		"comments" 						  | "NOT RESPONSIBLE FOR QUALITY OR QUANTITY" | 110750
-    } 	
+    } 
+
+/* 	@Issue("https://trello.com/c/mi3lnU5k")
+	def "Find Aquifer Info"() {
+		given: "I am a public user"
+			go "gwells/well/102364"
+		and: "that I want find out information about the aquifer my well is located in"
+			at WellSummaryPage
+			assert aquifer_number.text().trim() == "936"
+			AquiferReport.aquiferNumber = "936"
+		when: "I select the aquifer number from the Well Summary Page"
+			withNewWindow ({ aquifer_number.click() }, page: AquiferReport, wait: true, close: false) {
+		 		at AquiferReport
+				}
+		then: "a new window in my browser appears displaying the aquifer classification worksheet associated to that aquifer number."
+			assert aquifer_number.text().trim() == "936"		
+
+
+	} */ 
 }
