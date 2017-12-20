@@ -1,5 +1,5 @@
 {% extends 'gwells/base.html' %} {% load verbose_name %} {% block title %}Well Summary{% endblock %} {% block introduction_block %} {% endblock %} {% block body_block %}
-<fieldset id="summary_information">
+<fieldset id="summary_information_fieldset">
     <legend>Well Summary</legend>
     <div class="row print-compressed">
         <div class="col-md-4 col-print-4 print-compressed">
@@ -115,10 +115,10 @@
     </div>
 </fieldset>
 
-<fieldset id="location_information">
+<fieldset id="location_information_fieldset">
     <legend>Location Information</legend>
     <div class="row print-compressed">
-        <div class="col-md-6 col-print-6 print-compressed">
+        <div class="col-md-6 col-print-6 print-compressed print-pad5-right">
             <div class="row print-compressed">
                 <div class="col-md-12 col-print-12 print-compressed">
                     <label for="address">{% verbose_name well "street_address" %}:</label>
@@ -181,7 +181,7 @@
                 </div>
             </div>
             <div class="row print-compressed">
-                <div class="col-md-12 print-col-12 print-compressed">
+                <div class="col-md-12 print-col-12 print-compressed top-margin-8">
                     <label for="location_desc">{% verbose_name well "well_location_description" %}:</label>
                     <span id="location_desc">{{well.well_location_description|default_if_none:'&nbsp;' }}</span>
                 </div>
@@ -193,7 +193,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-6 col-print-6 print-compressed">
+        <div class="col-md-6 col-print-6 print-compressed print-pad5-left">
             <div aria-label="This map shows the well under consideration as a light blue pushpin, as well as surrounding wells as dark blue circles." id="detail-map"></div>
             <div id="attribution"></div>
         </div>
@@ -240,7 +240,7 @@
     </div>
 </fieldset>
 
-<fieldset id="well_activity">
+<fieldset id="well_activity_fieldset">
     <legend>Well Activity</legend>
     <div class="row print-compressed">
         <div class="col-md-12 col-print-12 table-responsive print-compressed">
@@ -277,7 +277,7 @@
     </div>
 </fieldset>
 
-<fieldset id="well_completion_data">
+<fieldset id="well_completion_data_fieldset">
     <legend>Well Completion Data</legend>
     <div class="row print-compressed">
         <div class="col-md-4 col-print-4 print-compressed">
@@ -451,21 +451,18 @@
             </div>
         </div>
     </div>
-
     <div class="row print-compressed">
         <div class="col-md-12 col-print-12 print-compressed">
             &nbsp;
             <!-- spacer row -->
         </div>
     </div>
-
     <div class="row print-compressed">
         <div class="col-md-4 col-print-4 print-compressed">
             <div class="row print-compressed">
                 <div class="col-md-12 col-print-12 print-compressed">
                     <label for="well_plate_attached">{% verbose_name well "well_identification_plate_attached" %}:</label>
                 </div>
-
             </div>
         </div>
         <div class="col-md-4 col-print-4 print-compressed">
@@ -476,9 +473,6 @@
             </div>
         </div>
     </div>
-
-    &nbsp;
-
 </fieldset>
 
 <fieldset id="lithology_fieldset">
@@ -508,7 +502,7 @@
                         <td>{{lithology.lithology_hardness|default_if_none:'&nbsp;'}}</td>
                         <td>{{lithology.lithology_colour|default_if_none:'&nbsp;'}}</td>
                         <td>
-                            {% if lithology.water_bearing_estimated_flow %} {{lithology.water_bearing_estimated_flow}}&nbsp;{{lithology.water_bearing_estimated_flow_units}} {% endif %}
+                            {% if lithology.water_bearing_estimated_flow %} {{lithology.water_bearing_estimated_flow}}&nbsp;{{lithology.water_bearing_estimated_flow_units.code}} {% endif %}
                         </td>
                         <td>{{lithology.lithology_observation|default_if_none:'&nbsp;'}}</td>
                     </tr>
@@ -519,7 +513,7 @@
     </div>
 </fieldset>
 
-<fieldset id="casing_field_set">
+<fieldset id="casing_fieldset">
     <legend>Casing Details</legend>
     <div class="row print-compressed">
         <div class="col-md-12 col-print-12 table-responsive print-compressed">
@@ -656,7 +650,7 @@
     </div>
 </fieldset>
 
-<fieldset id="screen_details">
+<fieldset id="screen_details_fieldset">
     <legend>Screen Details</legend>
     <div class="row print-compressed">
         <div class="col-md-4 col-print-4 print-compressed">
@@ -719,7 +713,7 @@
     </div>
 </fieldset>
 
-<fieldset id="well_development">
+<fieldset id="well_development_fieldset">
     <legend>Well Development</legend>
     <div class="row print-compressed">
         <div class="col-md-4 col-print-4 print-compressed">
@@ -747,7 +741,7 @@
     </div>
 </fieldset>
 
-<fieldset id="well_yield">
+<fieldset id="well_yield_fieldset">
     <legend>Well Yield</legend>
     <div class="row print-compressed">
         {% for productiondata in well.productiondata_set.all|dictsortreversed:"when_updated"|slice:"1" %}
@@ -787,7 +781,7 @@
     </div>
 </fieldset>
 
-<fieldset id="well_decommissioning">
+<fieldset id="well_decommissioning_fieldset">
     <legend>Well Decommissioning</legend>
     <div class="row print-compressed">
         <div class="col-md-6 col-print-6 print-compressed">
@@ -827,18 +821,36 @@
     </div>
 </fieldset>
 
-<fieldset id="well_comments">
+<fieldset id="well_comments_fieldset">
     <legend>Comments</legend>
     <span id="comments">{{well.comments|default_if_none:'&nbsp;'}}</span>
 </fieldset>
 
-<fieldset id="disclainer_header">
+<fieldset id="disclaimer_fieldset">
     <legend>Disclaimer</legend>
     <span id="disclaimer">
     The information provided should not be used as a basis for making financial or any other commitments. The Government of British Columbia accepts no liability for the accuracy, availability, suitability, reliability, usability, completeness or timeliness of the data or graphical depictions rendered from the data.
   </span>
 </fieldset>
 
+<!--
+<fieldset id="documents_fieldset" class="hid-for-print">
+  <legend>Additional Documentation</legend>
+  <div class="row">
+    <div class="col-md-12">
+      <table class="table table-condensed table-bordered table-striped">
+        <thead>
+          <th>Document Link</th>
+        </thead>
+        <tbody>
+          {% for document in documents %}
+          <td><a href="{{document}}">{{document}}</a></td>
+          {% endfor %}
+        </tbody>
+      </table>
+  <div>
+</fieldset>
+-->
 {% endblock %} {% block jqscript_block %}
 <script>
     var detailMap = null;
