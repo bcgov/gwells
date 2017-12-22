@@ -43,11 +43,17 @@ psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER << EOF
 \set AUTOCOMMIT off
 \ir ../scripts/migrate_screens.sql
 \ir ../scripts/migrate_production_data.sql
+COMMIT;
+EOF
+
+psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER << EOF
+\set AUTOCOMMIT off
 \ir ../scripts/migrate_casings.sql
 \ir ../scripts/migrate_perforations.sql
 \ir ../scripts/migrate_aquifer_wells.sql
 COMMIT;
 EOF
+
 
 psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER << EOF
 \set AUTOCOMMIT off
