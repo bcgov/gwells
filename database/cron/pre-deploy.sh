@@ -9,9 +9,9 @@
 #   Example: oc exec gwells-97-69b7z /opt/app-root/src/database/cron/pre-deploy.sh
 #
 echo "Running Pre-Deploy tasks..."
-echo ". Disabling DB connections"
-export PGPASSWORD=$POSTGRESQL_ADMIN_PASSWORD
-psql -h $DATABASE_SERVICE_NAME -U postgres -c "ALTER DATABASE $DATABASE_NAME WITH ALLOW_CONNECTIONS false;"
-sleep 5
+echo ". NOP for now until we figure out how to prevent data corruption during python migrations."
 
+#echo ". Disabling DB connections"
+# export PGPASSWORD=$POSTGRESQL_ADMIN_PASSWORD
+# psql -h $DATABASE_SERVICE_NAME -U postgres -c "ALTER DATABASE $DATABASE_NAME WITH ALLOW_CONNECTIONS false;"
 echo "Completed Pre-Deploy tasks."
