@@ -23,7 +23,7 @@ EOF
 if [ "$LIMIT_ROWS_DB_REPLICATION" = "True" ]
 then
   echo ". Limiting rows replicated from Legacy Database, per LIMIT_ROWS_DB_REPLICATION flag"
-  FILTER="AND where wells.well_tag_number between 100001 and 113567 " 
+  FILTER="AND wells.well_tag_number between 100001 and 113567 " 
 else
   echo ". All rows replicated from Legacy Database"
   FILTER=""
