@@ -25,9 +25,4 @@ else
   echo ". Skipping DB Replication from Legacy Database, as per ENABLE_DB_REPLICATION flag"
 fi 
 
-echo ". Re-enabling DB connections"
-export PGPASSWORD=$POSTGRESQL_ADMIN_PASSWORD
-psql -h $DATABASE_SERVICE_NAME -U postgres -c "ALTER DATABASE $DATABASE_NAME WITH ALLOW_CONNECTIONS true;"
-sleep 10s
-
 echo "Completed Post-Deploy tasks."
