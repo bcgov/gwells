@@ -23,36 +23,35 @@ EOF
 if [ "$LIMIT_ROWS_DB_REPLICATION" = "True" ]
 then
   echo ". Limiting rows replicated from Legacy Database, per LIMIT_ROWS_DB_REPLICATION flag"
-  FILTER="AND wells.well_tag_number>100000 AND COALESCE(wells.when_created, wells.when_updated) < '20171013' "
+  FILTER="AND where wells.well_tag_number between 100001 and 113567 " 
 else
   echo ". All rows replicated from Legacy Database"
   FILTER=""
 fi
 
 # Separating into three steps, to avoid DB error
-cd /opt/app-root/src/database/scripts/
 psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER -v xform_filter="$FILTER" << EOF
 \set AUTOCOMMIT off
-\i create-xform-gwells-well-ETL-table.sql
-\i populate-xform-gwells-well.sql
-\i migrate_bcgs.sql
-\i populate-gwells-well-from-xform.sql
+\ir ../scripts/create-xform-gwells-well-ETL-table.sql
+\ir ../scripts/populate-xform-gwells-well.sql
+\ir ../scripts/migrate_bcgs.sql
+\ir ../scripts/populate-gwells-well-from-xform.sql
 COMMIT;
 EOF
 
 psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER << EOF
 \set AUTOCOMMIT off
-\i migrate_screens.sql
-\i migrate_production_data.sql
-\i migrate_casings.sql
-\i migrate_perforations.sql
-\i migrate_aquifer_wells.sql
+\ir ../scripts/migrate_screens.sql
+\ir ../scripts/migrate_production_data.sql
+\ir ../scripts/migrate_casings.sql
+\ir ../scripts/migrate_perforations.sql
+\ir ../scripts/migrate_aquifer_wells.sql
 COMMIT;
 EOF
 
 psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER << EOF
 \set AUTOCOMMIT off
-\i migrate_lithology_descriptions.sql
+\ir ../scripts/migrate_lithology_descriptions.sql
 DROP TABLE IF EXISTS xform_gwells_well;
 COMMIT;
 EOF
