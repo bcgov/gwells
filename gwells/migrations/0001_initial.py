@@ -1161,8 +1161,4 @@ class Migration(migrations.Migration):
             name='well_yield_unit',
             field=models.ForeignKey(blank=True, db_column='well_yield_unit_guid', null=True, on_delete=django.db.models.deletion.CASCADE, to='gwells.WellYieldUnit'),
         ),
-        migrations.RunSQL( # Index on lat/long until PostGIS implementation
-            "CREATE INDEX gwells_well_latlong ON gwells_well (latitude, longitude)",
-            "DROP INDEX IF EXISTS gwells_well_latlong CASCADE"
-        )
     ]
