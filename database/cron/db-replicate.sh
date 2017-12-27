@@ -20,9 +20,10 @@ EOF
 
 # FILTER is applied in /opt/app-root/src/database/scripts/populate-xform-gwells-well.sql
 # at the end of the SQL WHERE clause
-if [ "$LIMIT_ROWS_DB_REPLICATION" = "True" ]
+
+if [ "$DB_REPLICATE" = "Subset" ]
 then
-  echo ". Limiting rows replicated from Legacy Database, per LIMIT_ROWS_DB_REPLICATION flag"
+  echo ". Limiting replication to a subset of Legacy Database, per DB_REPLICATE flag"
   FILTER="AND wells.well_tag_number between 100001 and 113567 " 
 else
   echo ". All rows replicated from Legacy Database"
