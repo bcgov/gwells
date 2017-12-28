@@ -63,9 +63,9 @@ BEGIN
   LEFT OUTER JOIN gwells_lithology_material lithology_material ON UPPER(wld.lithology_material_code)=UPPER(lithology_material.code)
   LEFT OUTER JOIN gwells_lithology_description_code lithology_description_code ON UPPER(wld.lithology_code)=UPPER(lithology_description_code.code);
 
-  raise notice 'wells_lithology_descriptions data imported';
+  raise notice '...wells_lithology_descriptions data imported';
   SELECT count(*) from gwells_lithology_description into row_count;
-  raise notice '... % rows loaded into the gwells_lithology_description table',  row_count;
+  raise notice '% rows loaded into the gwells_lithology_description table',  row_count;
 END;
 $$ LANGUAGE plpgsql;
 

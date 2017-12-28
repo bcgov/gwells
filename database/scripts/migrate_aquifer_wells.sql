@@ -22,13 +22,11 @@ BEGIN
     aws.when_created                              ,
     coalesce(aws.who_updated, aws.who_created)    ,
     coalesce(aws.when_updated, aws.when_created)
-  -- GW Sat Dec  9 19:31:02 2017 changed LEFT OUTER JOIN to INNER JOIN
-  --        As those aquifers are for WELLS that are one of ('PENDING', 'REJECTED', 'NEW')  
   FROM wells.gw_aquifer_wells aws INNER JOIN xform_gwells_well xform ON aws.well_id = xform.well_id;
 
-  raise notice 'gw_aquifer_well data imported';
+  raise notice '...gw_aquifer_well data imported';
   SELECT count(*) from gwells_aquifer_well into row_count;
-  raise notice '... % rows loaded into the gwells_aquifer_well table',  row_count;
+  raise notice '% rows loaded into the gwells_aquifer_well table',  row_count;
 END;
 $$ LANGUAGE plpgsql;
 

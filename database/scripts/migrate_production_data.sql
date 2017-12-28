@@ -50,9 +50,9 @@ BEGIN
        LEFT OUTER JOIN gwells_yield_estimation_method yield_estimation_method ON production_data.yield_estimated_method_code=yield_estimation_method.yield_estimation_method_code;
 
 
-  raise notice 'wells_production_data data imported';
+  raise notice '...wells_production_data data imported';
   SELECT count(*) from gwells_production_data into row_count;
-  raise notice '... % rows loaded into the gwells_production_data table',  row_count;
+  raise notice '% rows loaded into the gwells_production_data table',  row_count;
 END;
 $$ LANGUAGE plpgsql;
 

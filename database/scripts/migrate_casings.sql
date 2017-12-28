@@ -43,9 +43,9 @@ BEGIN
         LEFT OUTER JOIN gwells_casing_material casing_material ON casings.casing_material_code=casing_material.casing_material_code;
      
 
-  raise notice 'wells_casings data imported';
+  raise notice '...wells_casings data imported';
   SELECT count(*) from gwells_casing into row_count;
-  raise notice '... % rows loaded into the gwells_casing table',  row_count;
+  raise notice '% rows loaded into the gwells_casing table',  row_count;
 END;
 $$ LANGUAGE plpgsql;
 

@@ -40,9 +40,9 @@ BEGIN
          screens.screen_assembly_type_code='K  & Riser' AND screen_assembly_type.screen_assembly_type_code='K_RISER'
        );
 
-  raise notice 'wells_screens data imported';
+  raise notice '...wells_screens data imported';
   SELECT count(*) from gwells_screen into row_count;
-  raise notice '... % rows loaded into the gwells_screen table',  row_count;
+  raise notice '% rows loaded into the gwells_screen table',  row_count;
 END;
 $$ LANGUAGE plpgsql;
 
