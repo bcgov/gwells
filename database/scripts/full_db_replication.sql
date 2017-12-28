@@ -6,7 +6,13 @@ DROP FUNCTION IF EXISTS gwells_full_replicate();
 
 		   Therefore, there is a dependency on having all code tables populated, including BCGS numbers.
 
+	On the Postgres DB Pod:
 	psql -d $POSTGRESQL_DATABASE -U $POSTGRESQL_USER -c 'SELECT gwells_full_replicate();'
+
+	As a remote task:
+	oc exec postgresql-80-04n7h -- /bin/bash -c 'psql -d $POSTGRESQL_DATABASE -U $POSTGRESQL_USER -c "SELECT gwells_full_replicate();"' 
+
+
 
  ***/
 CREATE OR REPLACE FUNCTION gwells_full_replicate() RETURNS void AS $$
