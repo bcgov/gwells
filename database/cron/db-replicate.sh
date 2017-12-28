@@ -31,6 +31,8 @@ psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER << EOF
 EOF
 
 # Breaking out the long transaction into parts for performance reasons
+# Thu Dec 28 15:17:55 2017 GW Until we merge into one DB stored function gwells_replicate(boolean), add
+#                             new migrates here and to ./database/scripts/full_db_replication.sql
 psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER << EOF
 	\set AUTOCOMMIT off
 	SELECT gwells_populate_well();	
@@ -40,8 +42,6 @@ psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER << EOF
 	SELECT gwells_migrate_perforations();
 	SELECT gwells_migrate_aquifers();
 	SELECT gwells_migrate_lithology();
-	# Thu Dec 28 15:17:55 2017 GW Until we merge into one DB stored function gwells_replicate(boolean), add
-	#                             new migrates here and to ./database/scripts/full_db_replication.sql
 	DROP TABLE IF EXISTS xform_gwells_well;
 	COMMIT;
 EOF
