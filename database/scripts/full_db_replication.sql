@@ -6,8 +6,7 @@ DROP FUNCTION IF EXISTS gwells_full_replicate();
 
 		   Therefore, there is a dependency on having all code tables populated, including BCGS numbers.
 
-	export PGPASSWORD=$DATABASE_PASSWORD
-	psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER -c 'SELECT gwells_full_replicate();'
+	psql -d $POSTGRESQL_DATABASE -U $POSTGRESQL_USER -c 'SELECT gwells_full_replicate();'
 
  ***/
 CREATE OR REPLACE FUNCTION gwells_full_replicate() RETURNS void AS $$
