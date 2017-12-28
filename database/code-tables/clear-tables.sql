@@ -3,10 +3,6 @@
 -- Reset tables
 \echo '... clearing gwells_well data table'
 TRUNCATE TABLE gwells_well CASCADE;
-\echo '... clearing gwells_activity_submission data table'
-TRUNCATE TABLE gwells_activity_submission CASCADE;
-\echo '... clearing gwells_screen data table'
-TRUNCATE TABLE gwells_screen CASCADE;
 \echo '... clearing gwells_intended_water_use data table'
 TRUNCATE TABLE gwells_intended_water_use CASCADE;
 \echo '... clearing gwells_well_class data table'
@@ -17,8 +13,6 @@ TRUNCATE TABLE gwells_province_state CASCADE;
 TRUNCATE TABLE gwells_drilling_method CASCADE;
 \echo '...clearing gwells_decommission_method'
 TRUNCATE TABLE gwells_decommission_method CASCADE;
-\echo '... clearing gwells_lithology_description data table'
-TRUNCATE TABLE gwells_lithology_description;
 \echo '... clearing gwells_lithology_colour data table'
 TRUNCATE TABLE gwells_lithology_colour CASCADE;
 \echo '... clearing gwells_lithology_hardness data table'
@@ -72,6 +66,12 @@ TRUNCATE TABLE gwells_screen_opening CASCADE;
 TRUNCATE TABLE gwells_screen_bottom CASCADE;
 
 /*
+\echo '... clearing gwells_activity_submission data table'
+TRUNCATE TABLE gwells_activity_submission CASCADE;
+\echo '... clearing gwells_screen data table'
+TRUNCATE TABLE gwells_screen CASCADE;
+\echo '... clearing gwells_lithology_description data table'
+TRUNCATE TABLE gwells_lithology_description;
 \echo '... clearing gwells_casing data table'
 TRUNCATE TABLE gwells_casing;
 \echo '... clearing gwells_well_subclass data table'
@@ -82,7 +82,6 @@ TRUNCATE TABLE gwells_production_data CASCADE;
 TRUNCATE TABLE gwells_casing CASCADE;
 \echo '...clearing gwells_perforation'
 TRUNCATE TABLE gwells_perforation CASCADE;
-
 */
 
 \echo 'Finished clearing tables.'

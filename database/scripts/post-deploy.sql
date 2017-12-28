@@ -55,5 +55,3 @@ COMMENT ON TABLE gwells_well_water_quality                IS 'Placeholder table 
 COMMENT ON TABLE gwells_well_yield_unit                   IS 'Placeholder table comment.';
 COMMENT ON TABLE gwells_yield_estimation_method           IS 'Placeholder table comment.';
 
-
-/* COMMENT ON FUNCTION my_function (timestamp) IS 'Returns Roman Numeral'; */
