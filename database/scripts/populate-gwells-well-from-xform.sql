@@ -195,9 +195,9 @@ BEGIN
     xform.comments
   FROM xform_gwells_well xform;
 
-  raise notice 'xform data imported into the gwells_well table';
+  raise notice '...xform data imported into the gwells_well table';
   SELECT count(*) from gwells_well into row_count;
-  raise notice '... % rows loaded into the gwells_well table',  row_count;
+  raise notice '% rows loaded into the gwells_well table',  row_count;
 END;
 $$ LANGUAGE plpgsql;
 

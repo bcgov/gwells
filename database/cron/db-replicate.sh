@@ -13,49 +13,26 @@ export PGPASSWORD=$DATABASE_PASSWORD
 
 if [ "$DB_REPLICATE" = "Subset" ]
 then
-	echo ". Limiting replication to a subset of Legacy Database, per DB_REPLICATE flag"
-
-	psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER << EOF
-	\set AUTOCOMMIT off
-	SELECT gwells_populate_xform(true) ;
-	SELECT gwells_migrate_bcgs();
-	SELECT gwells_populate_well();
-	COMMIT;
-EOF
-
+	echo "... Limiting replication to a subset of Legacy Database, per DB_REPLICATE flag"
+	psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER -c 'SELECT gwells_populate_xform(true);'
 elif [ "$DB_REPLICATE" = "Full" ]
 then
-  	echo ". All rows replicated from Legacy Database"
-
-	psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER << EOF
-	\set AUTOCOMMIT off
-	SELECT gwells_populate_xform(false) ;
-	SELECT gwells_migrate_bcgs();
-	SELECT gwells_populate_well();
-	COMMIT;
-EOF
+  	echo "... All rows replicated from Legacy Database"
+	psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER -c 'SELECT gwells_populate_xform(false);'
 else 	
-  	echo ". ERROR Unrecognized DB_REPLICATE option - XFORM table is empty."
+  	echo "... ERROR Unrecognized DB_REPLICATE option - XFORM table is empty."
   	exit 1
 fi
 
 psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER << EOF
 	\set AUTOCOMMIT off
+	SELECT gwells_migrate_bcgs();
+	SELECT gwells_populate_well();	
 	SELECT gwells_migrate_screens();
 	SELECT gwells_migrate_production();
-	COMMIT;
-EOF
-
-psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER << EOF
-	\set AUTOCOMMIT off
 	SELECT gwells_migrate_casings();
 	SELECT gwells_migrate_perforations();
 	SELECT gwells_migrate_aquifers();
-	COMMIT;
-EOF
-
-psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER << EOF
-	\set AUTOCOMMIT off
 	SELECT gwells_migrate_lithology();
 	DROP TABLE IF EXISTS xform_gwells_well;
 	COMMIT;

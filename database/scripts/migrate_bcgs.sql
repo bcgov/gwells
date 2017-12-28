@@ -24,9 +24,9 @@ BEGIN
 	FROM WELLS.WELLS_BCGS_NUMBERS
 	ORDER BY BCGS_NUMBER;
 
-	raise notice 'BCGS data imported into the gwells_bcgs_number table';
+	raise notice '...BCGS data imported into the gwells_bcgs_number table';
 	SELECT count(*) from gwells_bcgs_number into row_count;
-	raise notice '... % rows loaded into the gwells_bcgs_number table',  row_count;
+	raise notice '% rows loaded into the gwells_bcgs_number table',  row_count;
 END;
 $$ LANGUAGE plpgsql;
 

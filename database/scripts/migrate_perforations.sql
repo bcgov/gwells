@@ -35,9 +35,9 @@ BEGIN
   INNER JOIN xform_gwells_well xform ON perforations.well_id=xform.well_id;
 
 
-  raise notice 'wells_perforations data imported';
+  raise notice '...wells_perforations data imported';
   SELECT count(*) from gwells_perforation into row_count;
-  raise notice '... % rows loaded into the gwells_perforation table',  row_count;
+  raise notice '% rows loaded into the gwells_perforation table',  row_count;
 END;
 $$ LANGUAGE plpgsql;
 
