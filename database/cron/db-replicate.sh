@@ -24,9 +24,16 @@ else
   	exit 1
 fi
 
+
 psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER << EOF
 	\set AUTOCOMMIT off
 	SELECT gwells_migrate_bcgs();
+	COMMIT;	
+EOF
+
+# Breaking out the long transaction into parts for performance reasons
+psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER << EOF
+	\set AUTOCOMMIT off
 	SELECT gwells_populate_well();	
 	SELECT gwells_migrate_screens();
 	SELECT gwells_migrate_production();
