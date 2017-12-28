@@ -11,56 +11,54 @@
 #
 export PGPASSWORD=$DATABASE_PASSWORD
 
-cd /opt/app-root/src/database/code-tables/
-psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER  << EOF
-\i clear-tables.sql
-vacuum;
-\i data-load-static-codes.sql
-EOF
-
-# FILTER is applied in /opt/app-root/src/database/scripts/populate-xform-gwells-well.sql
-# at the end of the SQL WHERE clause
-
 if [ "$DB_REPLICATE" = "Subset" ]
 then
-  echo ". Limiting replication to a subset of Legacy Database, per DB_REPLICATE flag"
-  FILTER="AND wells.well_tag_number between 100001 and 113567 " 
-else
-  echo ". All rows replicated from Legacy Database"
-  FILTER=""
+	echo ". Limiting replication to a subset of Legacy Database, per DB_REPLICATE flag"
+
+	psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER << EOF
+	\set AUTOCOMMIT off
+	SELECT gwells_populate_xform(true) ;
+	SELECT gwells_migrate_bcgs();
+	SELECT gwells_populate_well();
+	COMMIT;
+EOF
+
+elif [ "$DB_REPLICATE" = "Full" ]
+then
+  	echo ". All rows replicated from Legacy Database"
+
+	psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER << EOF
+	\set AUTOCOMMIT off
+	SELECT gwells_populate_xform(false) ;
+	SELECT gwells_migrate_bcgs();
+	SELECT gwells_populate_well();
+	COMMIT;
+EOF
+else 	
+  	echo ". ERROR Unrecognized DB_REPLICATE option - XFORM table is empty."
+  	exit 1
 fi
 
-# Separating into three steps, to avoid DB error
-psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER -v xform_filter="$FILTER" << EOF
-\set AUTOCOMMIT off
-\ir ../scripts/create-xform-gwells-well-ETL-table.sql
-\ir ../scripts/populate-xform-gwells-well.sql
-\ir ../scripts/migrate_bcgs.sql
-\ir ../scripts/populate-gwells-well-from-xform.sql
-COMMIT;
+psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER << EOF
+	\set AUTOCOMMIT off
+	SELECT gwells_migrate_screens();
+	SELECT gwells_migrate_production();
+	COMMIT;
 EOF
 
 psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER << EOF
-\set AUTOCOMMIT off
-\ir ../scripts/migrate_screens.sql
-\ir ../scripts/migrate_production_data.sql
-COMMIT;
+	\set AUTOCOMMIT off
+	SELECT gwells_migrate_casings();
+	SELECT gwells_migrate_perforations();
+	SELECT gwells_migrate_aquifers();
+	COMMIT;
 EOF
 
 psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER << EOF
-\set AUTOCOMMIT off
-\ir ../scripts/migrate_casings.sql
-\ir ../scripts/migrate_perforations.sql
-\ir ../scripts/migrate_aquifer_wells.sql
-COMMIT;
-EOF
-
-
-psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER << EOF
-\set AUTOCOMMIT off
-\ir ../scripts/migrate_lithology_descriptions.sql
-DROP TABLE IF EXISTS xform_gwells_well;
-COMMIT;
+	\set AUTOCOMMIT off
+	SELECT gwells_migrate_lithology();
+	DROP TABLE IF EXISTS xform_gwells_well;
+	COMMIT;
 EOF
 
 exit 0
