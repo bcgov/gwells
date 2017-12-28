@@ -1,4 +1,4 @@
-DROP FUNCTION IF EXISTS gwells_populate_xform();
+DROP FUNCTION IF EXISTS gwells_populate_xform(boolean);
 
 CREATE OR REPLACE FUNCTION gwells_populate_xform(
   subset_ind boolean DEFAULT true) RETURNS void AS $$
