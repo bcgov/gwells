@@ -131,9 +131,9 @@ class WellDetailView(generic.DetailView):
 
         context = super(WellDetailView, self).get_context_data(**kwargs)
 
-        minioClient = MinioClient()
+        minio_client = MinioClient()
 
-        context['documents'] = minioClient.getDocuments(context['well'].well_tag_number)
+        context['documents'] = minio_client.get_documents(context['well'].well_tag_number)
         context['documents'].sort(key=str.lower)
         return context
 

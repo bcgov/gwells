@@ -15,14 +15,14 @@ class MinioClient():
         self.minio_secret_key = os.getenv('MINIO_SECRET_KEY')
         self.host = os.getenv('AWS_HOST')
         self.link_host = os.getenv('AWS_LINK_HOST')
-        self.minioClient = Minio(self.host, access_key=self.minio_access_key, secret_key=self.minio_secret_key)
+        self.minio_client = Minio(self.host, access_key=self.minio_access_key, secret_key=self.minio_secret_key)
         self.top_bucket = os.getenv('AWS_TOP_BUCKET')
 
-    def getDocuments(self, well_tag_number):
+    def get_documents(self, well_tag_number):
 
         prefix = str('{:0<6}'.format('{:0>2}'.format(well_tag_number//10000))) + '/WTN ' + str(well_tag_number)
 
-        objects = self.minioClient.list_objects(self.top_bucket, prefix=prefix, recursive=True)
+        objects = self.minio_client.list_objects(self.top_bucket, prefix=prefix, recursive=True)
         documents =[]
 
         for obj in objects:
