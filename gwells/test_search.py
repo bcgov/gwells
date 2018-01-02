@@ -18,7 +18,7 @@ from .search import Search
 class SearchTestCase(TestCase):
 
     @classmethod
-    def set_up_test_data(cls):
+    def setUpTestData(cls):
         prov = ProvinceState.objects.create(sort_order=1)
         prov.save()
 
