@@ -11,50 +11,39 @@
 #
 export PGPASSWORD=$DATABASE_PASSWORD
 
-cd /opt/app-root/src/database/code-tables/
-psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER  << EOF
-\i clear-tables.sql
-vacuum;
-\i data-load-static-codes.sql
-EOF
-
-# FILTER is applied in /opt/app-root/src/database/scripts/populate-xform-gwells-well.sql
-# at the end of the SQL WHERE clause
-if [ "$LIMIT_ROWS_DB_REPLICATION" = "True" ]
+if [ "$DB_REPLICATE" = "Subset" ]
 then
-  echo ". Limiting rows replicated from Legacy Database, per LIMIT_ROWS_DB_REPLICATION flag"
-  FILTER="AND wells.well_tag_number>100000 AND COALESCE(wells.when_created, wells.when_updated) < '20171013' "
-else
-  echo ". All rows replicated from Legacy Database"
-  FILTER=""
+	echo "... Limiting replication to a subset of Legacy Database, per DB_REPLICATE flag"
+	psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER -c 'SELECT gwells_populate_xform(true);'
+elif [ "$DB_REPLICATE" = "Full" ]
+then
+  	echo "... All rows replicated from Legacy Database"
+	psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER -c 'SELECT gwells_populate_xform(false);'
+else 	
+  	echo "... ERROR Unrecognized DB_REPLICATE option - XFORM table is empty."
+  	exit 1
 fi
 
-# Separating into three steps, to avoid DB error
-cd /opt/app-root/src/database/scripts/
-psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER -v xform_filter="$FILTER" << EOF
-\set AUTOCOMMIT off
-\i create-xform-gwells-well-ETL-table.sql
-\i populate-xform-gwells-well.sql
-\i migrate_bcgs.sql
-\i populate-gwells-well-from-xform.sql
-COMMIT;
+psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER << EOF
+	\set AUTOCOMMIT off
+	SELECT gwells_migrate_bcgs();
+	COMMIT;	
 EOF
 
+# Breaking out the long transaction into parts for performance reasons
+# Thu Dec 28 15:17:55 2017 GW Until we merge into one DB stored function gwells_replicate(boolean), add
+#                             new migrates here and to ./database/scripts/full_db_replication.sql
 psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER << EOF
-\set AUTOCOMMIT off
-\i migrate_screens.sql
-\i migrate_production_data.sql
-\i migrate_casings.sql
-\i migrate_perforations.sql
-\i migrate_aquifer_wells.sql
-COMMIT;
-EOF
-
-psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER << EOF
-\set AUTOCOMMIT off
-\i migrate_lithology_descriptions.sql
-DROP TABLE IF EXISTS xform_gwells_well;
-COMMIT;
+	\set AUTOCOMMIT off
+	SELECT gwells_populate_well();	
+	SELECT gwells_migrate_screens();
+	SELECT gwells_migrate_production();
+	SELECT gwells_migrate_casings();
+	SELECT gwells_migrate_perforations();
+	SELECT gwells_migrate_aquifers();
+	SELECT gwells_migrate_lithology();
+	DROP TABLE IF EXISTS xform_gwells_well;
+	COMMIT;
 EOF
 
 exit 0
