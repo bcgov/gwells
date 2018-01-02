@@ -25,7 +25,7 @@ from .forms import ActivitySubmissionLithologyFormSet, ActivitySubmissionCasingF
 from .forms import ActivitySubmissionScreenIntakeForm, ActivitySubmissionScreenFormSet, ActivitySubmissionFilterPackForm, ActivitySubmissionDevelopmentForm, ProductionDataFormSet
 from .forms import ActivitySubmissionWaterQualityForm, WellCompletionForm, ActivitySubmissionCommentForm
 
-"""from .minioClient import MinioClient"""
+from .minioClient import MinioClient
 
 import json
 from django.core.serializers.json import DjangoJSONEncoder
@@ -131,10 +131,10 @@ class WellDetailView(generic.DetailView):
 
         context = super(WellDetailView, self).get_context_data(**kwargs)
 
-        """minioClient = MinioClient()
+        minioClient = MinioClient()
 
         context['documents'] = minioClient.getDocuments(context['well'].well_tag_number)
-        context['documents'].sort(key=str.lower)"""
+        context['documents'].sort(key=str.lower)
         return context
 
 class ActivitySubmissionListView(generic.ListView):
