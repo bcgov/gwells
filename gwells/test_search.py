@@ -16,9 +16,9 @@ from .models import ProvinceState, Well, WellActivityType, WellClass, DrillingCo
 from .search import Search
 
 class SearchTestCase(TestCase):
-    
+
     @classmethod
-    def setUpTestData(cls):
+    def set_up_test_data(cls):
         prov = ProvinceState.objects.create(sort_order=1)
         prov.save()
 
@@ -66,15 +66,6 @@ class SearchTestCase(TestCase):
         wells = Search.well_search('', '', '78', '')
         self.assertEqual(wells.count(), 2)
 
-
-    #def test_well_search_legal_pid(self):
-    #    """ Check that pid can be found when searching with leading zeros
-    #        even though field is stored as an integer
-    #    """
-    #    wells = Search.well_search('', '', '000054321', '')
-    #    self.assertEqual(wells.count(), 1)
-
-
     def test_well_search_owner(self):
         wells = Search.well_search('', '', '', 'smi')
         self.assertEqual(wells.count(), 2)
@@ -113,5 +104,3 @@ class SearchTestCase(TestCase):
         lat_long_box = {'start_corner': '48.418466095707046,-123.36755990982056', 'end_corner': '48.41493417062313,-123.36180925369264'}
         wells = Search.well_search('', 'government', '', '', lat_long_box)
         self.assertEqual(wells.count(), 1)
-
-
