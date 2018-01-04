@@ -131,10 +131,14 @@ class WellDetailView(generic.DetailView):
 
         context = super(WellDetailView, self).get_context_data(**kwargs)
 
-        minio_client = MinioClient()
+        #Generic error Handling for now
+        try:
+            minio_client = MinioClient()
+            context['documents'] = minio_client.get_documents(context['well'].well_tag_number)
+            context['documents'].sort(key=str.lower)
+        except Exception as exception:
+            context['file_client_error'] = 'Error retrieving documents.'
 
-        context['documents'] = minio_client.get_documents(context['well'].well_tag_number)
-        context['documents'].sort(key=str.lower)
         return context
 
 class ActivitySubmissionListView(generic.ListView):
