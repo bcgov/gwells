@@ -854,7 +854,7 @@
 
 <fieldset id="documents_fieldset" class="hide-for-print">
   <legend>Additional Documentation</legend>
-  <div class="row">
+
     {% if file_client_error %}
     <div class="row hide-for-print show-for-screen">
         <div class="col-sm-12 alert alert-danger">
@@ -862,17 +862,19 @@
         </div>
     </div>
     {% elif documents %}
-    <div class="col-md-12">
-      <table class="table table-condensed table-bordered table-striped">
-        <thead>
-          <th>Document Link</th>
-        </thead>
-        <tbody>
-          {% for document in documents %}
-          <td><a href="{{document}}">{{document}}</a></td>
-          {% endfor %}
-        </tbody>
-      </table>
+    <div class="row">
+        <div class="col-md-12">
+          <table class="table table-condensed table-bordered table-striped">
+            <thead>
+              <th>Document Link</th>
+            </thead>
+            <tbody>
+              {% for document in documents %}
+              <td><a href="{{document}}">{{document}}</a></td>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
     </div>
     {% else %}
     <div class="row hide-for-print show-for-screen">
