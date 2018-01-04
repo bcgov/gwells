@@ -78,8 +78,10 @@
                 <div class="col-md-12 col-print-12 print-compressed">
                     <label for="obs_well_number">{% verbose_name well "observation_well_number" %}:</label>
                     <span id="obs_well_number">
-                        {% if well.observation_well_number %}
-                        <a href="https://governmentofbc.maps.arcgis.com/apps/webappviewer/index.html?id=b53cb0bf3f6848e79d66ffd09b74f00d&find=OBS%20WELL%20{{well.observation_well_number|default_if_none:'&nbsp;' }}">{{well.observation_well_number|default_if_none:'&nbsp;' }}</a>
+                        {% if well.observation_well_number and well.observation_well_in_map_hub %}
+                        <a href="https://governmentofbc.maps.arcgis.com/apps/webappviewer/index.html?id=b53cb0bf3f6848e79d66ffd09b74f00d&find=OBS%20WELL%20{{well.observation_well_number|default_if_none:'&nbsp;' }}" target="_blank">{{well.observation_well_number|default_if_none:'&nbsp;' }}</a>
+                        {% else %}
+                        <span title="Not currently available on the ground water level data map.">{{well.observation_well_number|default_if_none:'&nbsp;' }}</span>
                         {% endif %}
                     </span>
                 </div>
