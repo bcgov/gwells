@@ -24,6 +24,8 @@ class SearchPage extends Page {
         page_buttons { $("#results_paginate a")*.text() }
         next_button { $("li",id:"results_next")}
         previous_button { $("li",id:"results_previous")}
+        next_button_click { $("li",id:"results_next").$("a")}
+        previous_button_click { $("li",id:"results_previous").$("a")}
         map_zoomlevel { $("div", class: "leaflet-control-scale-line") }
         zoom_in { $("a", class: "leaflet-control-zoom-in") }
         zoom_out { $("a", class: "leaflet-control-zoom-out") }
