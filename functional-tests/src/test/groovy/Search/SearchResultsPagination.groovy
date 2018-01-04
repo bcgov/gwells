@@ -71,8 +71,6 @@ Given I have <count> search results
 
 
         	//$("#results_paginate a[data-dt-idx=\"$TargetPage\"]").click()
-        	
-
         where:
 		    TestDesc 													                          | WellId          | Address                  	| LegalId   		    | Owner    			    | Page    |TargetPage | NumberResult
         "Multiple matching results - Address 12 - 1 to Max"        | ""             	| "12"                     | ""                | ""                | 1    	  |3    	    | 362    
@@ -91,12 +89,12 @@ Given I have <count> search results
 
          assert waitFor { results_info.displayed == true }
   
-        when: "I view all search results from page <page>"
+        when: "I view all search results from page #Page"
           assert (NumberOfEntriesFound() == "$NumberResult") //Total entries found
           assert waitFor {(CheckPageButton("$Page") == true)}
           $("#results_paginate a[data-dt-idx=\"$Page\"]").click()
 
-        then: "I should see a link \'Next\' is " + "$Testresult."
+        then: "I should see \'Next\' is #Testresult"
           assert waitFor {(next_button.displayed == true)}
           
           if ( "$Testresult" == "enabled" )
@@ -114,7 +112,7 @@ Given I have <count> search results
     } 
 
     @Unroll
-    def "Scenario 3: Previous Page links: #TestDesc#TestResult"() {
+    def "Scenario 3: Previous Page links: #TestDesc#Testresult"() {
         given: "I have NumberResult wells search result"
          to SearchPage
 
@@ -122,12 +120,12 @@ Given I have <count> search results
       
          assert waitFor { results_info.displayed == true }
   
-        when: "I view all search results from page <page>"
+        when: "I view all search results from page #Page"
           assert (NumberOfEntriesFound() == "$NumberResult") //Total entries found
           assert waitFor {(CheckPageButton("$Page") == true)}
           $("#results_paginate a[data-dt-idx=\"$Page\"]").click()
 
-        then: "I should see \'Previous\' is " + "$Testresult."
+        then: "I should see \'Previous\' is #Testresult."
           assert waitFor {(previous_button.displayed == true)}  
         if ( "$Testresult" == "enabled" )
           {
