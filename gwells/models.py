@@ -804,6 +804,8 @@ class Well(AuditModel):
 
     observation_well_number = models.CharField(max_length=3, blank=True, null=True, verbose_name="Observation Well Number")
     observation_well_status = models.CharField(max_length=25, blank=True, null=True, verbose_name="Observation Well Status")
+    observation_well_in_map_hub = models.NullBooleanField(default="False", null=True, verbose_name="Available in Map Hub", choices=((False, 'No'), (True, 'Yes')))
+
     ems = models.CharField(max_length=10, blank=True, null=True, verbose_name="Environmental Monitoring System (EMS) ID")
 
     utm_zone_code = models.CharField(max_length=10, blank=True, null=True, verbose_name="Zone")
