@@ -1253,6 +1253,7 @@ class AquiferWell(AuditModel):
     aquifer_well_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     aquifer_id = models.PositiveIntegerField(verbose_name="Aquifer Number", blank=True, null=True)
     well_tag_number = models.ForeignKey(Well, db_column='well_tag_number', to_field='well_tag_number', on_delete=models.CASCADE, blank=False, null=False)
+    aquifer_has_report = models.NullBooleanField(default="False", null=True, verbose_name="Available in Map Hub", choices=((False, 'No'), (True, 'Yes')))
 
     class Meta:
         db_table = 'gwells_aquifer_well'
