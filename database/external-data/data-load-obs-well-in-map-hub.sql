@@ -12,4 +12,8 @@ SET observation_well_in_map_hub = True
 FROM gwells_available_obswell
 WHERE observation_well_number = obswellcode;
 
+UPDATE gwells_well
+SET observation_well_in_map_hub = False
+WHERE observation_well_in_map_hub IS NULL;
+
 DROP TABLE IF EXISTS gwells_available_obswell;
