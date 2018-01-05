@@ -28,6 +28,9 @@ from .forms import ActivitySubmissionWaterQualityForm, WellCompletionForm, Activ
 from .minioClient import MinioClient
 
 import json
+
+import os
+
 from django.core.serializers.json import DjangoJSONEncoder
 
 def health(request):
@@ -133,9 +136,22 @@ class WellDetailView(generic.DetailView):
 
         #Generic error Handling for now
         try:
+
             minio_client = MinioClient()
-            context['documents'] = minio_client.get_documents(context['well'].well_tag_number)
-            context['documents'].sort(key=str.lower)
+
+            context['link_host'] = minio_client.link_host;
+            context['documents'] = [];
+
+            documents = minio_client.get_documents(context['well'].well_tag_number)
+
+            for doc in documents :
+                document = {}
+                document['bucket_name'] = doc.bucket_name
+                object_name = doc.object_name;
+                document['object_name'] = object_name.replace(' ', '+')
+                document['display_name'] = object_name[ object_name.find('/')+1 : object_name.find('/') + 1 + len(object_name)]
+                context['documents'].append(document)
+                context['documents'] = sorted(context['documents'], key=lambda k: k['display_name'])
         except Exception as exception:
             context['file_client_error'] = 'Error retrieving documents.'
 
