@@ -45,10 +45,12 @@ EOF
     ./db-replicate.sh
 
 		# \copy statements in data-load-obs-well-in-map-hub.sql required to be in this directory
+		# \copy statements in data-load-aquifer-with-report.sql required to be in this directory
 		cd /opt/app-root/src/database/external-data/
 
 	psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER  << EOF
 	\i data-load-obs-well-in-map-hub.sql
+	\i data-load-aquifer-with-report.sql
 EOF
 
 else

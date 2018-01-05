@@ -103,8 +103,12 @@
                     <label for="aquifer_number">Aquifer Number:</label>
                     <span id="aquifer_number">
                       {% for aquifer_well in well.aquiferwell_set.all %}
+                        {% if aquifer_well.aquifer_has_report %}
                         <a href="http://a100.gov.bc.ca/pub/wells/aquiferDetail.do?aquiferNumber={{aquifer_well.aquifer_id }}&docType=adr"
                             target="_blank">{{aquifer_well.aquifer_id }}</a>&nbsp;
+                        {% else %}
+                        <span title="No report available for this aquifer">{{aquifer_well.aquifer_id }}</span>
+                        {% endif %}
                       {% endfor %}
                     </span>
                 </div>
@@ -847,13 +851,6 @@
     <span id="comments">{{well.comments|default_if_none:'&nbsp;'}}</span>
 </fieldset>
 
-<fieldset id="disclaimer_fieldset">
-    <legend>Disclaimer</legend>
-    <span id="disclaimer">
-    The information provided should not be used as a basis for making financial or any other commitments. The Government of British Columbia accepts no liability for the accuracy, availability, suitability, reliability, usability, completeness or timeliness of the data or graphical depictions rendered from the data.
-  </span>
-</fieldset>
-
 <fieldset id="documents_fieldset" class="hide-for-print">
   <legend>Additional Documentation</legend>
 
@@ -866,13 +863,15 @@
     {% elif documents %}
     <div class="row">
         <div class="col-md-12">
-          <table class="table table-condensed table-bordered table-striped">
+          <table id="additional_documentation_table" class="table table-condensed table-bordered table-striped">
             <thead>
               <th>Document Link</th>
             </thead>
             <tbody>
               {% for document in documents %}
-              <td><a href="{{document}}">{{document}}</a></td>
+              <td>
+                <a href="https://{{link_host}}/{{document.bucket_name}}/{{document.object_name}}" target="_blank">{{document.display_name}}</a>
+              </td>
               {% endfor %}
             </tbody>
           </table>
@@ -887,6 +886,12 @@
     {% endif %}
 </fieldset>
 
+<fieldset id="disclaimer_fieldset">
+    <legend>Disclaimer</legend>
+    <span id="disclaimer">
+    The information provided should not be used as a basis for making financial or any other commitments. The Government of British Columbia accepts no liability for the accuracy, availability, suitability, reliability, usability, completeness or timeliness of the data or graphical depictions rendered from the data.
+  </span>
+</fieldset>
 {% endblock %} {% block jqscript_block %}
 <script>
     var detailMap = null;

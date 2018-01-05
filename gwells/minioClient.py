@@ -22,10 +22,5 @@ class MinioClient():
         prefix = str('{:0<6}'.format('{:0>2}'.format(well_tag_number//10000))) + '/WTN ' + str(well_tag_number)
 
         objects = self.minio_client.list_objects(self.top_bucket, prefix=prefix, recursive=True)
-        documents =[]
 
-        for obj in objects:
-
-            documents.append('https://' + self.link_host + '/' +  obj.bucket_name + '/' + obj.object_name.replace(' ', '+'))
-
-        return documents
+        return objects
