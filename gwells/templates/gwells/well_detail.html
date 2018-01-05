@@ -103,8 +103,12 @@
                     <label for="aquifer_number">Aquifer Number:</label>
                     <span id="aquifer_number">
                       {% for aquifer_well in well.aquiferwell_set.all %}
+                        {% if aquifer_well.aquifer_has_report %}
                         <a href="http://a100.gov.bc.ca/pub/wells/aquiferDetail.do?aquiferNumber={{aquifer_well.aquifer_id }}&docType=adr"
                             target="_blank">{{aquifer_well.aquifer_id }}</a>&nbsp;
+                        {% else %}
+                        <span title="No report available for this aquifer">{{aquifer_well.aquifer_id }}</span>
+                        {% endif %}
                       {% endfor %}
                     </span>
                 </div>
@@ -872,7 +876,9 @@
             </thead>
             <tbody>
               {% for document in documents %}
-              <td><a href="{{document}}">{{document}}</a></td>
+              <td>
+                <a href="https://{{link_host}}/{{document.bucket_name}}/{{document.object_name}}" target="_blank">{{document.display_name}}</a>
+              </td>
               {% endfor %}
             </tbody>
           </table>
