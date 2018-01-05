@@ -141,5 +141,8 @@ class WellSummaryPage extends Page {
 
 		comments { $("span", id:"comments") }
 
+		no_document_msg { $("#documents_fieldset > div > div > div") }
+		documentlink { $("#additional_documentation_table > tbody > tr > td > a") }
+
 	}
 }
