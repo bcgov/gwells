@@ -122,9 +122,10 @@ class WellDetailsSpecs extends GebReportingSpec {
 			assert well_decommissioning
         	assert reason_for_decommission
         	assert method_of_closure
-        	// assert sealant_material
-        	//"backfill_material"
         	assert decommission_details 
+
+			assert comments
+			assert no_document_msg
 
         where:
         TestDesc                          | WellId           
@@ -151,9 +152,11 @@ class WellDetailsSpecs extends GebReportingSpec {
 		"well_subclass"	 				  | "Domestic" 	 | 110749
 		"intended_water_use"	 		  | "Water Supply System" 	 | 110749
 		"obs_well_number"	 			  | "402" 	 | 102364
+		//"obs_well_number"	 			  | "179" 	 | 4980 //no link
 		"obs_well_status"	    		  | "Active" 	 |  102364
 		"ems_id"	 					  | "E283990" 	 | 102364
 		"aquifer_number"	 			  | "936" 	 | 102364
+		//"aquifer_number"	 			  | "464" 	 | 4980 //no link
 		"alternate_specs_submitted"	 	  | "No" 	 | 110749
 		"water_supply_system_name"	 	  | "CHETWYND PULP MILL" 	 | 102406
 		"water_supply_system_well_name"	  | "EAST WELL" 	 | 102406
@@ -244,6 +247,8 @@ class WellDetailsSpecs extends GebReportingSpec {
         "backfill_material" 	 		  | "BENTONITE AND GRAVEL" 	 |  100200 
         "decommission_details"  	 	  | "NO ISSUES WITH CLOSURE. ONLY SLIGHT ARTESIAN FLOW IN NOV. 2014. CASING LEFT IN PLACE, PUMP PULLED." 	 |  110749
 		"comments" 						  | "NOT RESPONSIBLE FOR QUALITY OR QUANTITY" | 110750
+		"documentlink"					  | "WTN 109912_Well Construction.pdf" | 109912
+		"no_document_msg"				  | "No additional documentation currently available for this well." | 100100
     } 
 
 /* 	@Issue("https://trello.com/c/mi3lnU5k")
