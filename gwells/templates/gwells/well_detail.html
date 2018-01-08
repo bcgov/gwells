@@ -1,6 +1,4 @@
-{% extends 'gwells/base.html' %} {% load verbose_name %} {% block title %}Well Summary{% endblock %}
-
-{% block introduction_block %}
+{% extends 'gwells/base.html' %} {% load verbose_name %} {% block title %}Well Summary{% endblock %} {% block introduction_block %}
 <div class="row hide-for-print show-for-screen">
     <div class="col-sm-12 alert alert-info">
         <div id="survey-msg" role="alert" aria-atomic="true">Please take a moment to complete a <a href="https://www.surveymonkey.com/r/VMWH39N" target=_blank>short survey</a> to let us know about your well summary page experience.</div>
@@ -13,11 +11,7 @@
         <div id="file-client-error-msg-heading" role="alert" aria-atomic="true">{{file_client_error}}</div>
     </div>
 </div>
-{% endif %}
-
-{% endblock %}
-
-{% block body_block %}
+{% endif %} {% endblock %} {% block body_block %}
 <fieldset id="summary_information_fieldset">
     <legend>Well Summary</legend>
     <div class="row print-compressed">
@@ -81,8 +75,7 @@
                         {% if well.observation_well_number and well.observation_well_in_map_hub %}
                         <a href="https://governmentofbc.maps.arcgis.com/apps/webappviewer/index.html?id=b53cb0bf3f6848e79d66ffd09b74f00d&find=OBS%20WELL%20{{well.observation_well_number|default_if_none:'&nbsp;' }}" target="_blank">{{well.observation_well_number|default_if_none:'&nbsp;' }}</a>
                         {% else %}
-                        <span title="Not currently available on the ground water level data map.">{{well.observation_well_number|default_if_none:'&nbsp;' }}</span>
-                        {% endif %}
+                        <span title="Not currently available on the ground water level data map.">{{well.observation_well_number|default_if_none:'&nbsp;' }}</span> {% endif %}
                     </span>
                 </div>
             </div>
@@ -107,9 +100,7 @@
                         <a href="http://a100.gov.bc.ca/pub/wells/aquiferDetail.do?aquiferNumber={{aquifer_well.aquifer_id }}&docType=adr"
                             target="_blank">{{aquifer_well.aquifer_id }}</a>&nbsp;
                         {% else %}
-                        <span title="No report available for this aquifer">{{aquifer_well.aquifer_id }}</span>
-                        {% endif %}
-                      {% endfor %}
+                        <span title="No report available for this aquifer">{{aquifer_well.aquifer_id }}</span> {% endif %} {% endfor %}
                     </span>
                 </div>
             </div>
@@ -852,7 +843,7 @@
 </fieldset>
 
 <fieldset id="documents_fieldset" class="hide-for-print">
-  <legend>Additional Documentation</legend>
+    <legend>Additional Documentation</legend>
 
     {% if file_client_error %}
     <div class="row hide-for-print show-for-screen">
@@ -863,24 +854,24 @@
     {% elif documents %}
     <div class="row">
         <div class="col-md-12">
-          <table id="additional_documentation_table" class="table table-condensed table-bordered table-striped">
-            <thead>
-              <th>Document Link</th>
-            </thead>
-            <tbody>
-              {% for document in documents %}
-              <td>
-                <a href="https://{{link_host}}/{{document.bucket_name}}/{{document.object_name}}" target="_blank">{{document.display_name}}</a>
-              </td>
-              {% endfor %}
-            </tbody>
-          </table>
+            <table id="additional_documentation_table" class="table table-condensed table-bordered table-striped">
+                <thead>
+                    <th>Document Link</th>
+                </thead>
+                <tbody>
+                    {% for document in documents %}
+                    <td>
+                        <a href="https://{{link_host}}/{{document.bucket_name}}/{{document.object_name}}" target="_blank">{{document.display_name}}</a>
+                    </td>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
     {% else %}
     <div class="row hide-for-print show-for-screen">
         <div class="col-sm-12 alert alert-info">
-            <div id="" role="alert" aria-atomic="true">No additional documentation currently available for this well.</div>
+            <div id="no_documentation_msg" role="alert" aria-atomic="true">No additional documentation currently available for this well.</div>
         </div>
     </div>
     {% endif %}
