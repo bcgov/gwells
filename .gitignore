@@ -62,8 +62,10 @@ target/
 
 # Visual Studio files
 gwells.sln
-gwells.pyproj
+gwells.pyproj*
 .vs/
+/obj/
+/bin/
 
 #NavUnit
 navunit/.gradle/
