@@ -5,7 +5,7 @@ CREATE OR REPLACE FUNCTION gwells_populate_xform(
 DECLARE
   xform_rows integer;
   sql_stmt text;
-  subset_clause text := 'AND wells.well_tag_number between 100001 and 113567'; 
+  subset_clause text := 'AND wells.well_tag_number between 100001 and 113567';
   insert_sql    text := 'INSERT INTO xform_gwells_well (
     well_tag_number                    ,
     well_id                            ,
@@ -49,7 +49,7 @@ DECLARE
     ground_elevation_method_guid       ,
     well_status_guid                   ,
     observation_well_number            ,
-    observation_well_status            ,
+    observation_well_status_guid       ,
     licenced_status_guid               ,
     alternative_specifications_ind     ,
     construction_start_date            ,
@@ -186,7 +186,11 @@ DECLARE
     END AS ground_elevation_method_guid                                      ,
     well_status.well_status_guid                                             ,
     to_char(wells.observation_well_number,''fm000'') AS observation_well_number,
-    wells.ministry_observation_well_stat AS observation_well_status          ,
+    CASE wells.ministry_observation_well_stat
+      WHEN ''Inactive'' THEN ''b703a326-8ecc-48e4-89dd-d2fbd58834a9''::uuid
+      WHEN ''Active'' THEN ''1af7ba78-1ab6-4992-b4f6-f105e519d2a6''::uuid
+      ELSE null::uuid
+    END AS observation_well_status_guid                                      ,
     licenced_status.licenced_status_guid                                     ,
     CASE wells.alternative_specifications_ind
        WHEN ''N'' THEN false
@@ -302,9 +306,9 @@ BEGIN
      other_drilling_method               character varying(50),
      drilling_method_guid                uuid,
      ground_elevation_method_guid        uuid,
-     well_status_guid                     uuid,
-     observation_well_number              character varying(3),
-     observation_well_status             character varying(25),
+     well_status_guid                    uuid,
+     observation_well_number             character varying(3),
+     observation_well_status_guid        uuid,
      licenced_status_guid                uuid,
      alternative_specifications_ind      boolean,
      construction_start_date             timestamp with time zone,
@@ -372,5 +376,4 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-COMMENT ON FUNCTION gwells_populate_xform (boolean) IS 'Load ETL Transform Table from legacy Oracle Database using Foreign Data Wrapper.'; 
-
+COMMENT ON FUNCTION gwells_populate_xform (boolean) IS 'Load ETL Transform Table from legacy Oracle Database using Foreign Data Wrapper.';

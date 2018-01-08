@@ -72,10 +72,7 @@
                 <div class="col-md-12 col-print-12 print-compressed">
                     <label for="obs_well_number">{% verbose_name well "observation_well_number" %}:</label>
                     <span id="obs_well_number">
-                        {% if well.observation_well_number and well.observation_well_in_map_hub %}
                         <a href="https://governmentofbc.maps.arcgis.com/apps/webappviewer/index.html?id=b53cb0bf3f6848e79d66ffd09b74f00d&find=OBS%20WELL%20{{well.observation_well_number|default_if_none:'&nbsp;' }}" target="_blank">{{well.observation_well_number|default_if_none:'&nbsp;' }}</a>
-                        {% else %}
-                        <span title="Not currently available on the ground water level data map.">{{well.observation_well_number|default_if_none:'&nbsp;' }}</span> {% endif %}
                     </span>
                 </div>
             </div>
@@ -96,11 +93,9 @@
                     <label for="aquifer_number">Aquifer Number:</label>
                     <span id="aquifer_number">
                       {% for aquifer_well in well.aquiferwell_set.all %}
-                        {% if aquifer_well.aquifer_has_report %}
                         <a href="http://a100.gov.bc.ca/pub/wells/aquiferDetail.do?aquiferNumber={{aquifer_well.aquifer_id }}&docType=adr"
                             target="_blank">{{aquifer_well.aquifer_id }}</a>&nbsp;
-                        {% else %}
-                        <span title="No report available for this aquifer">{{aquifer_well.aquifer_id }}</span> {% endif %} {% endfor %}
+                      {% endfor %}
                     </span>
                 </div>
             </div>
@@ -870,8 +865,8 @@
     </div>
     {% else %}
     <div class="row hide-for-print show-for-screen">
-        <div class="col-sm-12 alert alert-info">
-            <div id="no_documentation_msg" role="alert" aria-atomic="true">No additional documentation currently available for this well.</div>
+        <div class="col-sm-12">
+            <div id="no_documentation_msg">No additional documentation currently available for this well.</div>
         </div>
     </div>
     {% endif %}
