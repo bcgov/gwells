@@ -136,11 +136,11 @@ class WellDetailsSpecs extends GebReportingSpec {
         given: "Given that I have found my well"
 			go "gwells/well/$WellId" 
  	 	when: "I accessed the Well Summary Page"	
-			waitFor { at WellSummaryPage }
+			at WellSummaryPage
         then: "Then I see the expected information(#WellFieldContent) for the #TestDesc field"
-			waitFor { at WellSummaryPage }
+			at WellSummaryPage
 			println "$TestDesc: " +  page."$TestDesc".text().trim()
-			waitFor { assert page."$TestDesc".text().trim() == "$WellFieldContent".trim() }
+			assert page."$TestDesc".text().trim() == "$WellFieldContent".trim()
 		where:	
         TestDesc                          | WellFieldContent 	| WellId           
 		"well_tag_number"				  | "110749" 			| 110749
