@@ -122,6 +122,9 @@ def map_well_search(request):
         form, well_results, well_results_json = common_well_search(request)
     return JsonResponse(well_results_json, safe=False)
 
+def registry(request):
+    return render(request, 'gwells/registry.html')
+
 class WellDetailView(generic.DetailView):
     model = Well
     context_object_name = 'well'
@@ -168,7 +171,6 @@ class ActivitySubmissionListView(generic.ListView):
         """
         context = super(ActivitySubmissionListView, self).get_context_data(**kwargs)
         return context
-
 
 class ActivitySubmissionDetailView(generic.DetailView):
     model = ActivitySubmission
@@ -217,8 +219,6 @@ TEMPLATES = {'type_and_class': 'gwells/activity_submission_form.html',
              'well_completion': 'gwells/activity_submission_form.html',
              'comments': 'gwells/activity_submission_form.html',
             }
-
-
 
 class ActivitySubmissionWizardView(SessionWizardView):
     instance = None
