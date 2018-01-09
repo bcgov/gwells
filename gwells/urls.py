@@ -32,6 +32,7 @@ urlpatterns = [
     url(r'^'+ app_root_slash +'search$', views.well_search, name='search'),
     # url(r'^(?P<pk>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/$', views.DetailView.as_view(), name='detail'),
     url(r'^'+ app_root_slash +'well/(?P<pk>[0-9]+)$', views.WellDetailView.as_view(), name='well_detail'),
+    url(r'^'+ app_root_slash +'registry$', views.registry, name='registry'),
     url(r'^'+ app_root_slash +'submission/(?P<pk>[0-9]+)$', views.ActivitySubmissionDetailView.as_view(), name='activity_submission_detail'),
     url(r'^'+ app_root_slash +'health$', views.health),
     url(r'^'+ app_root_slash +'groundwater-information', TemplateView.as_view(template_name='gwells/groundwater_information.html'), name='groundwater_information'),
@@ -50,4 +51,3 @@ if settings.DEBUG:
         url(r'^__debug__/', include(debug_toolbar.urls)),
         url(r'^'+ app_root_slash +'admin/', admin.site.urls),
     ] + urlpatterns
-    
