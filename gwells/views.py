@@ -122,9 +122,13 @@ def map_well_search(request):
         form, well_results, well_results_json = common_well_search(request)
     return JsonResponse(well_results_json, safe=False)
 
+def test_500_view(request):
+    # Return an "Internal Server Error" 500 response code.
+    return render(request, 'gwells/500.html',status=500)
+HttpResponse(status=500)
+
 def registry(request):
     return render(request, 'gwells/registry.html')
-
 class WellDetailView(generic.DetailView):
     model = Well
     context_object_name = 'well'
