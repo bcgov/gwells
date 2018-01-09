@@ -39,8 +39,6 @@ TRUNCATE TABLE gwells_casing_material CASCADE;
 TRUNCATE TABLE gwells_yield_estimation_method CASCADE;
 \echo '... clearing gwells_screen_assembly_type'
 TRUNCATE TABLE gwells_screen_assembly_type CASCADE;
-\echo '... clearing gwells_bcgs_number'
-TRUNCATE TABLE gwells_bcgs_number CASCADE;
 \echo '... clearing gwells_development_method'
 TRUNCATE TABLE gwells_development_method CASCADE;
 
@@ -64,8 +62,6 @@ TRUNCATE TABLE gwells_screen_material CASCADE;
 TRUNCATE TABLE gwells_screen_opening CASCADE;
 \echo '... clearing gwells_screen_bottom'
 TRUNCATE TABLE gwells_screen_bottom CASCADE;
-\echo '... clearing gwells_observation_well_status'
-TRUNCATE TABLE gwells_observation_well_status CASCADE;
 
 /*
 \echo '... clearing gwells_activity_submission data table'
