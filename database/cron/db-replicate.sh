@@ -26,6 +26,8 @@ fi
 
 psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER << EOF
 	\set AUTOCOMMIT off
+	\echo '... clearing gwells_bcgs_number'
+	TRUNCATE TABLE gwells_bcgs_number CASCADE;	
 	SELECT gwells_migrate_bcgs();
 	COMMIT;	
 EOF
