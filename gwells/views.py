@@ -127,6 +127,8 @@ def test_500_view(request):
     return render(request, 'gwells/500.html',status=500)
 HttpResponse(status=500)
 
+def registry(request):
+    return render(request, 'gwells/registry.html')
 class WellDetailView(generic.DetailView):
     model = Well
     context_object_name = 'well'
@@ -175,7 +177,6 @@ class ActivitySubmissionListView(generic.ListView):
         context = super(ActivitySubmissionListView, self).get_context_data(**kwargs)
         return context
 
-
 class ActivitySubmissionDetailView(generic.DetailView):
     model = ActivitySubmission
     context_object_name = 'activity_submission'
@@ -223,8 +224,6 @@ TEMPLATES = {'type_and_class': 'gwells/activity_submission_form.html',
              'well_completion': 'gwells/activity_submission_form.html',
              'comments': 'gwells/activity_submission_form.html',
             }
-
-
 
 class ActivitySubmissionWizardView(SessionWizardView):
     instance = None
