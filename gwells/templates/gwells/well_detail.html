@@ -841,6 +841,7 @@
     <span id="comments">{{well.comments|default_if_none:'&nbsp;'}}</span>
 </fieldset>
 
+{% if settings.ENABLE_ADDITIONAL_DOCUMENTS %}
 <fieldset id="documents_fieldset" class="hide-for-print">
     <legend>Additional Documentation</legend>
 
@@ -875,6 +876,7 @@
     </div>
     {% endif %}
 </fieldset>
+{% endif %}
 
 <fieldset id="disclaimer_fieldset">
     <legend>Disclaimer</legend>
