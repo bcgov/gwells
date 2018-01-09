@@ -91,7 +91,7 @@ To run this project in your development machine, ensure that Git, Python 3.5 and
 
     `python manage.py runserver`
 
-8. Open your browser and go to http://127.0.0.1:8000/gwells, you will be greeted with a welcome page.
+8. Open your browser and go to http://127.0.0.1:8000, you will be greeted with the Groundwater Well Search page.
 
 
 ## Deploying to OpenShift
