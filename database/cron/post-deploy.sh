@@ -17,14 +17,14 @@ echo ". Creating additional DB objects (e.g. spatial indices, stored functions)"
 psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER << EOF
 	\i post-deploy.sql
 	\i populate-xform-gwells-well.sql
-	\i migrate_bcgs.sql
+	\i replicate_bcgs.sql
 	\i populate-gwells-well-from-xform.sql
-	\i migrate_screens.sql
-	\i migrate_production_data.sql
-	\i migrate_casings.sql
-	\i migrate_perforations.sql
-	\i migrate_aquifer_wells.sql
-	\i migrate_lithology_descriptions.sql
+	\i replicate_screens.sql
+	\i replicate_production_data.sql
+	\i replicate_casings.sql
+	\i replicate_perforations.sql
+	\i replicate_aquifer_wells.sql
+	\i replicate_lithology_descriptions.sql
 	\i full_db_replication.sql
 EOF
 
