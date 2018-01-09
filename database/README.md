@@ -29,18 +29,27 @@ Note that environment variables are also used for the PostgreSQL database connec
 <tr><td>POSTGRESQL_DATABASE</td><td>gwells</td></tr>
 </table>    
 
+The data replication is controlled by the environment variable<table>   
+<tr><td>Name</td><td>Value</td></tr>
+<tr><td>DB_REPLICATE</td><td><i>None | Subset | Full</i></td></tr>
+</table>    
 
-Static code tables are maintained in this [GitHub](../../../tree/master/database/code-tables) repo, while dynamic data is replicated.  There are two stored procedures that support the replication, created by running the [data-replication.sql](scripts/data-replication.sql) script.
+`None`  : No replication  
+`Subset`: Only a subset of data (i.e. `AND wells.well_tag_number between 100001 and 113567`)  
+`Full`  : Full data replication  
 
-1. `gwells_setup_replicate()`
-- owned and run by GWELLS user (e.g. `psql  -d $POSTGRESQL_DATABASE -U $POSTGRESQL_USER  -c 'select gwells_setup_replicate();'`)
-- clears all data tables
-- prepares the ETL table 
+Static code tables are maintained in this [GitHub](../../../tree/master/database/code-tables) repo, while dynamic data is replicated.  There are a stored DB procedures that acts as a 'driver' script [full_db_replication.sql](scripts/full_db_replication.sql) that runs these stored procedures:
 
-2. `gwells_replicate()`
-- owned and run by GWELLS user (e.g. `psql  -d $POSTGRESQL_DATABASE -U $POSTGRESQL_USER  -c 'select gwells_replicate();'`)
-- INSERT into dynamic data tables from Oracle FDW
-- INSERT into the main "wells" PostgreSQL table from the local ETL table
+```
+PERFORM gwells_populate_xform(false);  
+PERFORM gwells_populate_well();   
+PERFORM gwells_migrate_screens();  
+PERFORM gwells_migrate_production();  
+PERFORM gwells_migrate_casings();  
+PERFORM gwells_migrate_perforations();  
+PERFORM gwells_migrate_aquifers();  
+PERFORM gwells_migrate_lithology();  
+```
 
 There is also an SQL script `data-load-static-codes.sql`
 - "COPY" into static code tables from deployed CSV files  
@@ -48,7 +57,8 @@ There is also an SQL script `data-load-static-codes.sql`
 
 The logged output includes the number of rows inserted into the main "gwells_wells" PostgreSQL database table
 
-```ssh-4.2$ psql -d gwells -c 'select gwells_replicate();' 
+```
+ssh-4.2$ psql -d gwells -c 'select gwells_replicate();' 
 NOTICE:  Starting gwells_replicate() procedure...
 NOTICE:  ... importing gwells_intended_water_use code table
 NOTICE:  ... importing gwells_well_class code table
