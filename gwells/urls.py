@@ -36,6 +36,7 @@ urlpatterns = [
     url(r'^'+ app_root_slash +'health$', views.health),
     url(r'^'+ app_root_slash +'groundwater-information', TemplateView.as_view(template_name='gwells/groundwater_information.html'), name='groundwater_information'),
     url(r'^'+ app_root_slash +'ajax/map_well_search/$', views.map_well_search, name='map_well_search'),
+    url(r'^'+ app_root_slash +'500/$', views.test_500_view),
 ]
 
 if settings.ENABLE_DATA_ENTRY:
@@ -50,4 +51,3 @@ if settings.DEBUG:
         url(r'^__debug__/', include(debug_toolbar.urls)),
         url(r'^'+ app_root_slash +'admin/', admin.site.urls),
     ] + urlpatterns
-    
