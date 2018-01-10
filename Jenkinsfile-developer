@@ -1,21 +1,14 @@
-
 node('maven') {
     stage('Build') {
         echo "Building..."
         openshiftBuild bldCfg: 'gwells-developer', showBuildLogs: 'true'
-        echo ">>> Get Image Hash"
-        IMAGE_HASH = sh (
-          script: 'oc get istag gwells:latest -o template --template="{{.image.dockerImageReference}}"|awk -F ":" \'{print $3}\'',
- 	           returnStdout: true).trim()
-        echo ">> IMAGE_HASH: $IMAGE_HASH"
-        // Temporarily removed this next line as it's to be done in the Deployments...
-        // openshiftTag destStream: 'gwells', verbose: 'true', destTag: '$BUILD_ID', srcStream: 'gwells', srcTag: 'latest'
+        openshiftTag destStream: 'gwells', verbose: 'true', destTag: '$BUILD_ID', srcStream: 'gwells', srcTag: 'latest'
     }
 
     stage('Code Quality Check') {
 	//the checkout is mandatory, otherwise code quality check would fail
         echo "checking out source"
-        echo "Image ID: ${IMAGE_HASH}"
+        echo "Build: ${BUILD_ID}"
         checkout scm
         SONARQUBE_PWD = sh (
             script: 'oc env dc/sonarqube --list | awk  -F  "=" \'/SONARQUBE_ADMINPW/{print $2}\'',
@@ -36,16 +29,9 @@ node('maven') {
 
     stage('Deploy on Dev') {
         echo "Deploying to dev..."
-
-	// GW - following is to prepare for move to IMAGE_HASH 
-	echo "Deploy on Dev >> IMAGE_HASH: $IMAGE_HASH"
-	openshiftTag destStream: 'gwells', verbose: 'true', destTag: 'devblue', srcStream: 'gwells', srcTag: 'dev'
-	openshiftTag destStream: 'gwells', verbose: 'true', destTag: 'dev', srcStream: 'gwells', srcTag: "${IMAGE_HASH}"
-	
-	// GW Will remove this next line once prior 3 lines have been tested
-        // openshiftTag destStream: 'gwells', verbose: 'true', destTag: 'dev', srcStream: 'gwells', srcTag: '$BUILD_ID'
-
-	openshiftVerifyDeployment depCfg: 'gwells', namespace: 'moe-gwells-dev', replicaCount: 1, verbose: 'false', verifyReplicaCount: 'false'		
+        openshiftTag destStream: 'gwells', verbose: 'true', destTag: 'dev', srcStream: 'gwells', srcTag: '$BUILD_ID'
+	//Sleeping for a while to wait deployment completes
+	sh 'sleep 3m'
     }
 
 }
@@ -55,7 +41,7 @@ node('bddstack') {
 	stage('FT on Dev') {
 		//the checkout is mandatory, otherwise functional test would fail
         echo "checking out source"
-        echo "Image ID: ${IMAGE_HASH}"
+        echo "Build: ${BUILD_ID}"
         checkout scm
         dir('functional-tests') {
 	    try {
@@ -72,14 +58,8 @@ node('bddstack') {
 stage('Deploy on Test') {
     input "Deploy to test?"
     node('maven') {
-	// GW - following is to prepare for move to IMAGE_HASH 
-	echo "Deploy on Test >> IMAGE_HASH: $IMAGE_HASH"
-	openshiftTag destStream: 'gwells', verbose: 'true', destTag: 'testblue', srcStream: 'gwells', srcTag: 'test'
-	openshiftTag destStream: 'gwells', verbose: 'true', destTag: 'test', srcStream: 'gwells', srcTag: "${IMAGE_HASH}"	
-	// GW Will remove this next line once prior 3 lines have been tested
-        // openshiftTag destStream: 'gwells', verbose: 'true', destTag: 'test', srcStream: 'gwells', srcTag: '$BUILD_ID'
-	
-	openshiftVerifyDeployment depCfg: 'gwells', namespace: 'moe-gwells-test', replicaCount: 1, verbose: 'false', verifyReplicaCount: 'false'			
+        openshiftTag destStream: 'gwells', verbose: 'true', destTag: 'test', srcStream: 'gwells', srcTag: '$BUILD_ID'
+	sh 'sleep 3m'
     }
 }
 
