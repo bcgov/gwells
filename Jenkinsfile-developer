@@ -1,14 +1,16 @@
-
 node('maven') {
     stage('Build') {
         echo "Building..."
         openshiftBuild bldCfg: 'gwells-developer', showBuildLogs: 'true'
+<<<<<<< HEAD
         echo ">>> Get Image Hash"
         IMAGE_HASH = sh (
           script: 'oc get istag gwells:latest -o template --template="{{.image.dockerImageReference}}"|awk -F ":" \'{print $3}\'',
  	           returnStdout: true).trim()
         echo ">> IMAGE_HASH: $IMAGE_HASH"
         // About to remove this next line as it'll be done in the Deployments...
+=======
+>>>>>>> f1f8b7a735c63a150b707cacc37e2e9e4f9e45ce
         openshiftTag destStream: 'gwells', verbose: 'true', destTag: '$BUILD_ID', srcStream: 'gwells', srcTag: 'latest'
     }
 
@@ -36,6 +38,7 @@ node('maven') {
 
     stage('Deploy on Dev') {
         echo "Deploying to dev..."
+<<<<<<< HEAD
 
 	// GW - following is to prepare for move to IMAGE_HASH 
 	echo "Deploy on Dev >> IMAGE_HASH: $IMAGE_HASH"
@@ -45,6 +48,11 @@ node('maven') {
         openshiftTag destStream: 'gwells', verbose: 'true', destTag: 'dev', srcStream: 'gwells', srcTag: '$BUILD_ID'
 	
 	openshiftVerifyDeployment depCfg: 'gwells', namespace: 'moe-gwells-dev', replicaCount: 1, verbose: 'false', verifyReplicaCount: 'false'		
+=======
+        openshiftTag destStream: 'gwells', verbose: 'true', destTag: 'dev', srcStream: 'gwells', srcTag: '$BUILD_ID'
+	//Sleeping for a while to wait deployment completes
+	sh 'sleep 3m'
+>>>>>>> f1f8b7a735c63a150b707cacc37e2e9e4f9e45ce
     }
 
 }
@@ -71,6 +79,7 @@ node('bddstack') {
 stage('Deploy on Test') {
     input "Deploy to test?"
     node('maven') {
+<<<<<<< HEAD
 	// GW - following is to prepare for move to IMAGE_HASH 
 	echo "Deploy on Test >> IMAGE_HASH: $IMAGE_HASH"
 	// openshiftTag destStream: 'gwells', verbose: 'true', destTag: 'testblue', srcStream: 'gwells', srcTag: 'test'
@@ -79,6 +88,10 @@ stage('Deploy on Test') {
         openshiftTag destStream: 'gwells', verbose: 'true', destTag: 'test', srcStream: 'gwells', srcTag: '$BUILD_ID'
 	
 	openshiftVerifyDeployment depCfg: 'gwells', namespace: 'moe-gwells-test', replicaCount: 1, verbose: 'false', verifyReplicaCount: 'false'			
+=======
+        openshiftTag destStream: 'gwells', verbose: 'true', destTag: 'test', srcStream: 'gwells', srcTag: '$BUILD_ID'
+	sh 'sleep 3m'
+>>>>>>> f1f8b7a735c63a150b707cacc37e2e9e4f9e45ce
     }
 }
 
