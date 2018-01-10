@@ -124,8 +124,11 @@ def map_well_search(request):
 
 def test_500_view(request):
     # Return an "Internal Server Error" 500 response code.
-    return render(request, 'gwells/500.html',status=500)
-HttpResponse(status=500)
+    return render(request, '500.html',status=500)
+
+def test_404_view(request):
+    # Return an "Internal Server Error" 500 response code.
+    return render(request, '404.html',status=404)
 
 def registry(request):
     return render(request, 'gwells/registry.html')
