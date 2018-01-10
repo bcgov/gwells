@@ -2,6 +2,7 @@ import geb.spock.GebReportingSpec
 import pages.app.HomePage
 import pages.app.SearchPage
 import pages.app.AdditionalInformationPage
+import pages.app.WellDrillerPage
 import pages.external.Accessibility
 import pages.external.Copyright
 import pages.external.Disclaimer
@@ -33,6 +34,7 @@ class FlowSpecs extends GebReportingSpec {
         SearchPage    		        | "ribbon-search"          | 1             | 3                 || SearchPage
         SearchPage                  | "BCWRAtlas"              | 1             | 3                 || BCWaterResourceAtlas
         SearchPage                  | "iMapBC"                 | 1             | 3                 || iMapBC
+        SearchPage                  | "ribbon-registry"        | 1             | 3                 || WellDrillerPage
                 
         //Test Externally Linked Pages
 		SearchPage           | "footer-disclaimer"     | 1             | 3                 || Disclaimer
