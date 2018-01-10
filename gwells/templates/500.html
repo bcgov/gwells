@@ -87,64 +87,62 @@
 </head>
 
 <body>
+  <!-- HEADER -->
+  <div id="header" role="banner">
+      <div id="header-main" class="navbar navbar-default navbar-fixed-top show-for-print">
+          <div class="container">
+              <div id="header-main-row" class="row">
+                  <!-- GOV TITLE -->
+                  <div class="col-sm-3 col-md-2 col-print-4 header-main-left">
+                      <div id="screen-logo" class="hide-for-print show-for-screen">
+                          <a href="http://gov.bc.ca"><img src="/gwells/static/gwells/images/gov3_bc_logo.1452ec1ddcdf.png" width="155" height="52"  alt="Province of British Columbia" longdesc="Province of British Columbia"/></a>
+                      </div>
+                      <div id="print-logo" class="hide-for-screen show-for-print">
+                          <a href="http://gov.bc.ca"><img src="/gwells/static/gwells/images/BCID_H_rgb_pos.f44a7ed867b8.png" width="155" height="52" alt="Province of British Columbia" longdesc="Province of British Columbia"/></a>
+                      </div>
+
+                      <div id="access">
+                          <ul>
+                              <li>
+                                  <a accesskey="0" href="#main-content-anchor" aria-label="Skip to main content">Skip to main content</a>
+                              </li>
+                              <li>
+                                  <a accesskey="1" href="#navigation-anchor" aria-label="Skip to navigation">Skip to navigation</a>
+                              </li>
+                              <li>
+                                  <a accesskey="2" href="http://gov.bc.ca/webaccessibility/" aria-label="Accessibility Statement">Accessibility Statement</a>
+                              </li>
+                          </ul>
+                      </div>
+
+                      <button type="submit" class="navbar-toggle env-button-custom collapsed hide-for-print" data-toggle="collapse" data-target="#navbar" aria-expanded="true" aria-label="Burger Navigation">
+                          <img src="/gwells/static/gwells/images/menu-open-mobile.7def9d182788.png" alt="Open Menu" longdesc="Open Menu" width="34" height="25" class="hide-for-print"/>
+                      </button>
+
+                  </div>
+
+                  <div class="col-sm-8 col-lg-6 col-print-8 show-for-print">
+                      <div class="bcgov-title">
+                          <h1>Groundwater Wells and Aquifers</h1>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+  <!-- /HEADER -->
     <!-- BODY CONTENT -->
-    <div id="topicTemplate" class="template container env-container">
+    <div id="topicTemplate" class="template container env-container" style="padding-top: 111px; background-position: right 111px;">
         <div class="row">
             <div class="col-sm-12 alert alert-warning">
-                <div id="too-many-wells" role="alert" aria-atomic="true">
+                <div id="error-msg" role="alert" aria-atomic="true">
                     We're sorry, there is a problem with our server. Please try again later,<br> you can also let us know about this problem by emailing <a href="mailto:nrsenquiries@gov.bc.ca?Subject=GWELLS%20Server%20Error" target="_top">nrsenquiries@gov.bc.ca</a><br>                    Visit the WELLS database: <a href="https://a100.gov.bc.ca/pub/wells/public/indexreports.jsp">search for well records</a>
                 </div>
             </div>
         </div>
-
-        <!-- PAGE CONTENT -->
-        <div class="row">
-            <div id="main-content" role="main" class="contentPageMainColumn col-sm-12">
-                <div id="main-content-anchor"></div>
-            </div>
-        </div>
-        <!-- PAGE CONTENT -->
     </div>
     <!-- /BODY CONTENT -->
 
-    <!-- FOOTER -->
-    <div id="footer" role="contentinfo">
-        <img class="back-to-top" src="/gwells/static/gwells/images/back-to-top.png" alt="Back to top" title="Back to top" style="display: inline;">
-        <div id="footerWrapper">
-            <div id="footerAdminSection">
-                <div id="footerAdminLinksContainer" class="container">
-                    <div id="footerAdminLinks" class="row">
-                        <div class="col-sm-12">
-                            <ul class="inline">
-                                <li>
-                                    <a id="footer-home" href="https://www.gov.bc.ca" taget="_self">Home</a>
-                                </li>
-                                <li>
-                                    <a id="footer-about" href="https://www2.gov.bc.ca/gov/content/about-gov-bc-ca" target="_self">About gov.bc.ca</a>
-                                </li>
-                                <li>
-                                    <a id="footer-disclaimer" href="http://gov.bc.ca/disclaimer/" target="_self">Disclaimer</a>
-                                </li>
-                                <li>
-                                    <a id="footer-privacy" href="http://gov.bc.ca/privacy/" target="_self">Privacy</a>
-                                </li>
-                                <li>
-                                    <a id="footer-accessibility" href="http://gov.bc.ca/webaccessibility/" target="_self">Accessibility</a>
-                                </li>
-                                <li>
-                                    <a id="footer-copyright" href="http://gov.bc.ca/copyright" target="_self">Copyright</a>
-                                </li>
-                                <li>
-                                    <a href="https://www2.gov.bc.ca/gov/content/home/contact-us" target="_self">Contact Us</a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- /FOOTER -->
 </body>
 
 </html>
