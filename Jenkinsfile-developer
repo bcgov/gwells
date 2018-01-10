@@ -8,8 +8,8 @@ node('maven') {
           script: 'oc get istag gwells:latest -o template --template="{{.image.dockerImageReference}}"|awk -F ":" \'{print $3}\'',
  	           returnStdout: true).trim()
         echo ">> IMAGE_HASH: $IMAGE_HASH"
-        // Temporarily removed this next line as it's to be done in the Deployments...
-        // openshiftTag destStream: 'gwells', verbose: 'true', destTag: '$BUILD_ID', srcStream: 'gwells', srcTag: 'latest'
+        // About to remove this next line as it'll be done in the Deployments...
+        openshiftTag destStream: 'gwells', verbose: 'true', destTag: '$BUILD_ID', srcStream: 'gwells', srcTag: 'latest'
     }
 
     stage('Code Quality Check') {
@@ -39,12 +39,11 @@ node('maven') {
 
 	// GW - following is to prepare for move to IMAGE_HASH 
 	echo "Deploy on Dev >> IMAGE_HASH: $IMAGE_HASH"
-	openshiftTag destStream: 'gwells', verbose: 'true', destTag: 'devblue', srcStream: 'gwells', srcTag: 'dev'
-	openshiftTag destStream: 'gwells', verbose: 'true', destTag: 'dev', srcStream: 'gwells', srcTag: "${IMAGE_HASH}"
+	// openshiftTag destStream: 'gwells', verbose: 'true', destTag: 'devblue', srcStream: 'gwells', srcTag: 'dev'
+	// openshiftTag destStream: 'gwells', verbose: 'true', destTag: 'dev', srcStream: 'gwells', srcTag: "${IMAGE_HASH}"	
+	// GW Will remove this next line once IMAGE_HASH is ready
+        openshiftTag destStream: 'gwells', verbose: 'true', destTag: 'dev', srcStream: 'gwells', srcTag: '$BUILD_ID'
 	
-	// GW Will remove this next line once prior 3 lines have been tested
-        // openshiftTag destStream: 'gwells', verbose: 'true', destTag: 'dev', srcStream: 'gwells', srcTag: '$BUILD_ID'
-
 	openshiftVerifyDeployment depCfg: 'gwells', namespace: 'moe-gwells-dev', replicaCount: 1, verbose: 'false', verifyReplicaCount: 'false'		
     }
 
@@ -74,10 +73,10 @@ stage('Deploy on Test') {
     node('maven') {
 	// GW - following is to prepare for move to IMAGE_HASH 
 	echo "Deploy on Test >> IMAGE_HASH: $IMAGE_HASH"
-	openshiftTag destStream: 'gwells', verbose: 'true', destTag: 'testblue', srcStream: 'gwells', srcTag: 'test'
-	openshiftTag destStream: 'gwells', verbose: 'true', destTag: 'test', srcStream: 'gwells', srcTag: "${IMAGE_HASH}"	
-	// GW Will remove this next line once prior 3 lines have been tested
-        // openshiftTag destStream: 'gwells', verbose: 'true', destTag: 'test', srcStream: 'gwells', srcTag: '$BUILD_ID'
+	// openshiftTag destStream: 'gwells', verbose: 'true', destTag: 'testblue', srcStream: 'gwells', srcTag: 'test'
+	// openshiftTag destStream: 'gwells', verbose: 'true', destTag: 'test', srcStream: 'gwells', srcTag: "${IMAGE_HASH}"	
+	// GW Will remove this next line once IMAGE_HASH is ready
+        openshiftTag destStream: 'gwells', verbose: 'true', destTag: 'test', srcStream: 'gwells', srcTag: '$BUILD_ID'
 	
 	openshiftVerifyDeployment depCfg: 'gwells', namespace: 'moe-gwells-test', replicaCount: 1, verbose: 'false', verifyReplicaCount: 'false'			
     }
