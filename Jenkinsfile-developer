@@ -15,7 +15,7 @@ node('maven') {
     stage('Code Quality Check') {
 	//the checkout is mandatory, otherwise code quality check would fail
         echo "checking out source"
-        echo "Build: ${BUILD_ID}"
+        echo "Image ID: ${IMAGE_HASH}"
         checkout scm
         SONARQUBE_PWD = sh (
             script: 'oc env dc/sonarqube --list | awk  -F  "=" \'/SONARQUBE_ADMINPW/{print $2}\'',
@@ -55,7 +55,7 @@ node('bddstack') {
 	stage('FT on Dev') {
 		//the checkout is mandatory, otherwise functional test would fail
         echo "checking out source"
-        echo "Build: ${BUILD_ID}"
+        echo "Image ID: ${IMAGE_HASH}"
         checkout scm
         dir('functional-tests') {
 	    try {
