@@ -25,9 +25,12 @@ from .forms import ActivitySubmissionLithologyFormSet, ActivitySubmissionCasingF
 from .forms import ActivitySubmissionScreenIntakeForm, ActivitySubmissionScreenFormSet, ActivitySubmissionFilterPackForm, ActivitySubmissionDevelopmentForm, ProductionDataFormSet
 from .forms import ActivitySubmissionWaterQualityForm, WellCompletionForm, ActivitySubmissionCommentForm
 
-"""from .minioClient import MinioClient"""
+from .minioClient import MinioClient
 
 import json
+
+import os
+
 from django.core.serializers.json import DjangoJSONEncoder
 
 def health(request):
@@ -119,6 +122,16 @@ def map_well_search(request):
         form, well_results, well_results_json = common_well_search(request)
     return JsonResponse(well_results_json, safe=False)
 
+def test_500_view(request):
+    # Return an "Internal Server Error" 500 response code.
+    return render(request, '500.html',status=500)
+
+def test_404_view(request):
+    # Return an "Internal Server Error" 500 response code.
+    return render(request, '404.html',status=404)
+
+def registry(request):
+    return render(request, 'gwells/registry.html')
 class WellDetailView(generic.DetailView):
     model = Well
     context_object_name = 'well'
@@ -131,10 +144,28 @@ class WellDetailView(generic.DetailView):
 
         context = super(WellDetailView, self).get_context_data(**kwargs)
 
-        """minioClient = MinioClient()
+        if settings.ENABLE_ADDITIONAL_DOCUMENTS:
+            #Generic error Handling for now
+            try:
 
-        context['documents'] = minioClient.getDocuments(context['well'].well_tag_number)
-        context['documents'].sort(key=str.lower)"""
+                minio_client = MinioClient()
+
+                context['link_host'] = minio_client.link_host;
+                context['documents'] = [];
+
+                documents = minio_client.get_documents(context['well'].well_tag_number)
+
+                for doc in documents :
+                    document = {}
+                    document['bucket_name'] = doc.bucket_name
+                    object_name = doc.object_name;
+                    document['object_name'] = object_name.replace(' ', '+')
+                    document['display_name'] = object_name[ object_name.find('/')+1 : object_name.find('/') + 1 + len(object_name)]
+                    context['documents'].append(document)
+                    context['documents'] = sorted(context['documents'], key=lambda k: k['display_name'])
+            except Exception as exception:
+                context['file_client_error'] = 'Error retrieving documents.'
+
         return context
 
 class ActivitySubmissionListView(generic.ListView):
@@ -148,7 +179,6 @@ class ActivitySubmissionListView(generic.ListView):
         """
         context = super(ActivitySubmissionListView, self).get_context_data(**kwargs)
         return context
-
 
 class ActivitySubmissionDetailView(generic.DetailView):
     model = ActivitySubmission
@@ -197,8 +227,6 @@ TEMPLATES = {'type_and_class': 'gwells/activity_submission_form.html',
              'well_completion': 'gwells/activity_submission_form.html',
              'comments': 'gwells/activity_submission_form.html',
             }
-
-
 
 class ActivitySubmissionWizardView(SessionWizardView):
     instance = None

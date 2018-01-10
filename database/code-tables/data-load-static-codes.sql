@@ -114,5 +114,8 @@
 \echo '... loading gwells_decommission_method code table'
 \copy gwells_decommission_method (who_created,when_created,who_updated,when_updated,code,description,status_flag,sort_order,decommission_method_guid) from 'gwells_decommission_method.csv' with header delimiter ',' CSV ;
 
+--OBSERVATION WELL STATUS
+\echo '... loading gwells_observation_well_status code table'
+\copy gwells_observation_well_status (who_created,when_created,who_updated,when_updated,observation_well_status_guid,code,description,is_hidden,sort_order) from 'gwells_observation_well_status.csv' with header delimiter ',' CSV ;
 
 \echo 'Finshed copy of static code tables.'

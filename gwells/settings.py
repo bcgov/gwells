@@ -45,15 +45,19 @@ ENABLE_DATA_ENTRY = os.getenv('ENABLE_DATA_ENTRY', 'False') == 'True'
 # Controls availability of Google Analytics
 ENABLE_GOOGLE_ANALYTICS = os.getenv('ENABLE_GOOGLE_ANALYTICS', 'False') == 'True'
 
+# Additional Documents Feature Flag
+ENABLE_ADDITIONAL_DOCUMENTS = os.getenv('ENABLE_ADDITIONAL_DOCUMENTS', 'False') == 'True'
+
 # Controls app context
 APP_CONTEXT_ROOT = os.getenv('APP_CONTEXT_ROOT','')
 
 # django-settings-export lets us make these variables available in the templates.
 # This eleminate the need for setting the context for each and every view.
 SETTINGS_EXPORT = [
-    'ENABLE_DATA_ENTRY',        # To temporarily disable report submissions
-    'ENABLE_GOOGLE_ANALYTICS',  # This is only enabled for production
-    'APP_CONTEXT_ROOT',         # This allows for moving the app around without code changes
+    'ENABLE_DATA_ENTRY',           # To temporarily disable report submissions
+    'ENABLE_GOOGLE_ANALYTICS',     # This is only enabled for production
+    'ENABLE_ADDITIONAL_DOCUMENTS', # To temporarily disable additional documents feature
+    'APP_CONTEXT_ROOT',            # This allows for moving the app around without code changes
 ]
 
 ALLOWED_HOSTS = ['*']

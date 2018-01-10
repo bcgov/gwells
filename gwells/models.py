@@ -173,6 +173,24 @@ class WellStatus(AuditModel):
         self.validate()
         super(WellStatus, self).save(*args, **kwargs)
 
+class ObservationWellStatus(AuditModel):
+    """
+    Observation Well Status.
+    """
+    observation_well_status_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    code = models.CharField(unique=True, max_length=10)
+    description = models.CharField(max_length=255)
+    is_hidden = models.BooleanField(default=False)
+    sort_order = models.PositiveIntegerField()
+
+    class Meta:
+        db_table = 'gwells_observation_well_status'
+        ordering = ['sort_order', 'code']
+
+    def save(self, *args, **kwargs):
+        self.validate()
+        super(WellStatus, self).save(*args, **kwargs)
+
 class LicencedStatus(AuditModel):
     """
     LicenceStatus of Well.
@@ -803,7 +821,9 @@ class Well(AuditModel):
     diameter = models.CharField(max_length=9, blank=True)  #want to be integer in future
 
     observation_well_number = models.CharField(max_length=3, blank=True, null=True, verbose_name="Observation Well Number")
-    observation_well_status = models.CharField(max_length=25, blank=True, null=True, verbose_name="Observation Well Status")
+
+    observation_well_status = models.ForeignKey(ObservationWellStatus, db_column='observation_well_status_guid', blank=True, null="True", verbose_name="Observation Well Status")
+
     ems = models.CharField(max_length=10, blank=True, null=True, verbose_name="Environmental Monitoring System (EMS) ID")
 
     utm_zone_code = models.CharField(max_length=10, blank=True, null=True, verbose_name="Zone")
