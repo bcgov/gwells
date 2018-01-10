@@ -58,7 +58,7 @@ BEGIN
     liner_material_guid                ,
     well_status_guid                   ,
     observation_well_number            ,
-    observation_well_status            ,
+    observation_well_status_guid       ,
     licenced_status_guid               ,
     other_screen_bottom                ,
     other_screen_material              ,
@@ -152,7 +152,7 @@ BEGIN
     xform.liner_material_guid                      ,
   	xform.well_status_guid                         ,
     xform.observation_well_number                  ,
-    xform.observation_well_status                  ,
+    xform.observation_well_status_guid             ,
   	xform.licenced_status_guid                     ,
   	''                                             ,
   	''                                             ,
@@ -201,4 +201,4 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-COMMENT ON FUNCTION gwells_populate_well () IS 'Transfer from local XFORM ETL table into gwells_well.'; 
+COMMENT ON FUNCTION gwells_populate_well () IS 'Transfer from local XFORM ETL table into gwells_well.';

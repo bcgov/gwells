@@ -62,6 +62,8 @@ TRUNCATE TABLE gwells_screen_material CASCADE;
 TRUNCATE TABLE gwells_screen_opening CASCADE;
 \echo '... clearing gwells_screen_bottom'
 TRUNCATE TABLE gwells_screen_bottom CASCADE;
+\echo '... clearing gwells_observation_well_status'
+TRUNCATE TABLE gwells_observation_well_status CASCADE;
 
 /*
 \echo '... clearing gwells_activity_submission data table'
