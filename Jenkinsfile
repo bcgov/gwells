@@ -2,16 +2,31 @@ node('maven') {
     stage('Build') {
         echo "Building..."
         openshiftBuild bldCfg: 'gwells', showBuildLogs: 'true'
-        openshiftTag destStream: 'gwells', verbose: 'true', destTag: '$BUILD_ID', srcStream: 'gwells', srcTag: 'latest'
+
+        // Temporarily removed this next line as it's to be done in the Deployments...
+        // openshiftTag destStream: 'gwells', verbose: 'true', destTag: '$BUILD_ID', srcStream: 'gwells', srcTag: 'latest'
+
+        echo ">>> Get Image Hash"
+        IMAGE_HASH = sh (
+          script: 'oc get istag gwells:latest -o template --template="{{.image.dockerImageReference}}"|awk -F ":" \'{print $3}\'',
+ 	           returnStdout: true).trim()
+        echo ">> IMAGE_HASH: $IMAGE_HASH"
     }
-	
 }
 
 
 stage('Deploy on Test') {
     input "Deploy to Test?"
     node('maven') {
-        openshiftTag destStream: 'gwells', verbose: 'true', destTag: 'test', srcStream: 'gwells', srcTag: '$BUILD_ID'
+		// GW - following is to prepare for move to IMAGE_HASH 
+		echo "Deploy on Test >> IMAGE_HASH: $IMAGE_HASH"
+		openshiftTag destStream: 'gwells', verbose: 'true', destTag: 'master-testblue', srcStream: 'gwells', srcTag: 'test'
+		openshiftTag destStream: 'gwells', verbose: 'true', destTag: 'master-test', srcStream: 'gwells', srcTag: "${IMAGE_HASH}"
+
+		// GW Will remove this next line once prior 3 lines have been tested
+        // openshiftTag destStream: 'gwells', verbose: 'true', destTag: 'test', srcStream: 'gwells', srcTag: '$BUILD_ID'
+
+		openshiftVerifyDeployment depCfg: 'gwells', namespace: 'moe-gwells-test', replicaCount: 1, verbose: 'false', verifyReplicaCount: 'false'			
     }
 }
 
@@ -39,8 +54,18 @@ node('bddstack') {
 stage('Deploy on Prod') {
     input "Deploy to Prod?"
     node('maven') {
-        openshiftTag destStream: 'gwells', verbose: 'true', destTag: 'prod', srcStream: 'gwells', srcTag: '$BUILD_ID'
-	sh 'sleep 3m'
+		// GW - following is to prepare for move to IMAGE_HASH 
+		echo "Deploy on Prod >> IMAGE_HASH: $IMAGE_HASH"
+		openshiftTag destStream: 'gwells', verbose: 'true', destTag: 'master-prodblue', srcStream: 'gwells', srcTag: 'prod'
+		openshiftTag destStream: 'gwells', verbose: 'true', destTag: 'master-prod', srcStream: 'gwells', srcTag: "${IMAGE_HASH}"
+
+	    // GW Will remove this next line once prior 3 lines have been tested
+        // openshiftTag destStream: 'gwells', verbose: 'true', destTag: 'prod', srcStream: 'gwells', srcTag: '$BUILD_ID'
+
+		openshiftVerifyDeployment depCfg: 'gwells', namespace: 'moe-gwells-prod', replicaCount: 1, verbose: 'false', verifyReplicaCount: 'false'			
+
+	// GW no longer needed as we have openshiftVerifyDeployment
+	// sh 'sleep 3m'
     }
 }
 
