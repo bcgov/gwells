@@ -10,9 +10,16 @@
 #
 #   Example: oc exec gwells-97-69b7z /opt/app-root/src/database/cron/post-deploy.sh
 #
+#   If run on local Developer workstation, ensure that you have Environment variables set
+#   for $DATABASE_SERVICE_NAME, $DATABASE_PASSWORD, $DATABASE_NAME, $DATABASE_USER
+#
+#   Optionally, set $DB_REPLICATE (None|Subset|Full).
+#
+#   Example: ./post-deploy.sh
+#    
 echo "Running Post-Deploy tasks..."
 export PGPASSWORD=$DATABASE_PASSWORD
-cd /opt/app-root/src/database/scripts/
+cd ../scripts/
 echo ". Creating additional DB objects (e.g. spatial indices, stored functions)"
 psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER << EOF
 	\i post-deploy.sql
@@ -41,7 +48,7 @@ EOF
 if [ "$DB_REPLICATE" = "Subset" -o "$DB_REPLICATE" = "Full" ]
 then
 	# \copy statements in data-load-static-codes.sql required to be in this directory
-	cd /opt/app-root/src/database/code-tables/
+	cd ../code-tables/
 
 	# Refresh Code lookup tables, including the gwells_well table
 	psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER  << EOF
@@ -50,7 +57,7 @@ then
 EOF
 
 	echo ". Running DB Replication from Legacy Database, as per DB_REPLICATION flag"
-    cd /opt/app-root/src/database/cron/
+    cd ../cron/
     ./db-replicate.sh
 
 else
