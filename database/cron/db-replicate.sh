@@ -34,9 +34,10 @@ EOF
 
 # Breaking out the long transaction into parts for performance reasons
 # Thu Dec 28 15:17:55 2017 GW Until we merge into one DB stored function gwells_replicate(boolean), add
-#                             new migrates here and to ./database/scripts/full_db_replication.sql
+#                             new migrates here and to ./database/scripts/db_replicate.sql
 psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER << EOF
 	\set AUTOCOMMIT off
+	TRUNCATE TABLE gwells_well CASCADE;
 	SELECT gwells_populate_well();	
 	SELECT gwells_migrate_screens();
 	SELECT gwells_migrate_production();
