@@ -18,6 +18,9 @@ DROP FUNCTION IF EXISTS gwells_db_replicate(boolean);
 	As a remote task:
 	oc exec postgresql-80-04n7h -- /bin/bash -c 'psql -d $POSTGRESQL_DATABASE -U $POSTGRESQL_USER -c "SELECT gwells_db_replicate(false);"' 
 
+    If run on local Developer workstation, ensure that you have Environment variables set
+    for $POSTGRESQL_DATABASE, $POSTGRESQL_USER
+
  ***/
 CREATE OR REPLACE FUNCTION gwells_db_replicate(_subset_ind boolean default true) RETURNS void AS $$
 BEGIN
