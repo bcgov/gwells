@@ -15,6 +15,8 @@
 from .forms import *
 from django.test import TestCase
 
+#TODO split tests into one file per class
+
 class FormsTestCase(TestCase):
 
     def test_activity_submission_comment_form_instantiation(self):
