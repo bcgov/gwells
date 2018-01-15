@@ -3,6 +3,7 @@ from .ActivitySubmission import ActivitySubmission
 from .AquiferWell import AquiferWell
 from .BCGS_Numbers import BCGS_Numbers
 from .BedrockMaterial import BedrockMaterial
+from .BedrockMaterialDescriptor import BedrockMaterialDescriptor
 from .Casing import Casing
 from .CasingMaterial import CasingMaterial
 from .CasingType import CasingType
@@ -56,6 +57,7 @@ __all__ = [
 'AuditModel',
 'BCGS_Numbers',
 'BedrockMaterial',
+'BedrockMaterialDescriptor',
 'Casing',
 'CasingMaterial',
 'CasingType',
