@@ -18,7 +18,7 @@ from django.views import generic
 from django.views.generic.edit import FormView
 from formtools.wizard.views import SessionWizardView
 
-from .models import WellActivityType, WellYieldUnit, Well, ActivitySubmission, WellClass, ScreenIntakeMethod, LandDistrict
+from .models import *
 
 from .forms import SearchForm, ActivitySubmissionTypeAndClassForm, WellOwnerForm, ActivitySubmissionLocationForm, ActivitySubmissionGpsForm
 from .forms import ActivitySubmissionLithologyFormSet, ActivitySubmissionCasingFormSet, ActivitySubmissionSurfaceSealForm, ActivitySubmissionLinerPerforationFormSet
@@ -132,6 +132,7 @@ def test_404_view(request):
 
 def registry(request):
     return render(request, 'gwells/registry.html')
+
 class WellDetailView(generic.DetailView):
     model = Well
     context_object_name = 'well'
@@ -165,7 +166,7 @@ class WellDetailView(generic.DetailView):
                     context['documents'] = sorted(context['documents'], key=lambda k: k['display_name'])
             except Exception as exception:
                 context['file_client_error'] = 'Error retrieving documents.'
-
+                print("Document access exception: " + str(exception))
         return context
 
 class ActivitySubmissionListView(generic.ListView):
@@ -230,7 +231,6 @@ TEMPLATES = {'type_and_class': 'gwells/activity_submission_form.html',
 
 class ActivitySubmissionWizardView(SessionWizardView):
     instance = None
-
 
     def get_context_data(self, **kwargs):
         """
