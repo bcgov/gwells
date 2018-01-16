@@ -1,7 +1,6 @@
 from django import template
 register = template.Library()
 
-@register.filter
 @register.simple_tag
 def verbose_name(instance, field_name):
     """
