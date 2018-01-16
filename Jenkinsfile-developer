@@ -6,7 +6,7 @@ node('maven') {
     }
 
     stage('Code Quality Check') {
-	//the checkout is mandatory, otherwise code quality check would fail
+    //the checkout is mandatory, otherwise code quality check would fail
         echo "checking out source"
         echo "Build: ${BUILD_ID}"
         checkout scm
@@ -30,27 +30,27 @@ node('maven') {
     stage('Deploy on Dev') {
         echo "Deploying to dev..."
         openshiftTag destStream: 'gwells', verbose: 'true', destTag: 'dev', srcStream: 'gwells', srcTag: '$BUILD_ID'
-	//Sleeping for a while to wait deployment completes
-	sh 'sleep 3m'
+    //Sleeping for a while to wait deployment completes
+    sh 'sleep 3m'
     }
 
 }
 
 node('bddstack') {
 
-	stage('FT on Dev') {
-		//the checkout is mandatory, otherwise functional test would fail
+    stage('FT on Dev') {
+        //the checkout is mandatory, otherwise functional test would fail
         echo "checking out source"
         echo "Build: ${BUILD_ID}"
         checkout scm
         dir('functional-tests') {
-	    try {
+        try {
                 sh './gradlew --debug --stacktrace chromeHeadlessTest'
-	    } finally {
-		archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
+        } finally {
+        archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
                 archiveArtifacts allowEmptyArchive: true, artifacts: 'build/test-results/**/*'
                 junit 'build/test-results/**/*.xml'
-	    }
+        }
         }
     }
 }
@@ -59,7 +59,7 @@ stage('Deploy on Test') {
     input "Deploy to test?"
     node('maven') {
         openshiftTag destStream: 'gwells', verbose: 'true', destTag: 'test', srcStream: 'gwells', srcTag: '$BUILD_ID'
-	sh 'sleep 3m'
+    sh 'sleep 3m'
     }
 }
 
