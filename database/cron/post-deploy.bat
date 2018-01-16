@@ -19,7 +19,7 @@
 #    
 echo "Running Post-Deploy tasks..."
 export PGPASSWORD=$DATABASE_PASSWORD
-cd /opt/app-root/src/database/scripts/
+cd ../scripts/
 echo ". Creating additional DB objects (e.g. spatial indices, stored functions)"
 psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER << EOF
 	\i post-deploy.sql
@@ -48,7 +48,7 @@ EOF
 if [ "$DB_REPLICATE" = "Subset" -o "$DB_REPLICATE" = "Full" ]
 then
 	# \copy statements in data-load-static-codes.sql required to be in this directory
-	cd /opt/app-root/src/database/code-tables/
+	cd ../code-tables/
 
 	# Refresh Code lookup tables, including the gwells_well table
 	psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER  << EOF
@@ -57,7 +57,7 @@ then
 EOF
 
 	echo ". Running DB Replication from Legacy Database, as per DB_REPLICATION flag"
-    cd /opt/app-root/src/database/cron/
+    cd ../cron/
     ./db-replicate.sh
 
 else

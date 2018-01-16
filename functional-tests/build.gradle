@@ -49,7 +49,7 @@ dependencies {
     testCompile "org.seleniumhq.selenium:selenium-edge-driver:$seleniumVersion"
 
     // Spock reports
-    testCompile( 'com.athaydes:spock-reports:1.3.2' ) {
+    testCompile( 'com.athaydes:spock-reports:1.4.0' ) {
         transitive = false // this avoids affecting your version of Groovy/Spock
     }
     testCompile 'org.slf4j:slf4j-api:1.7.13'
@@ -98,7 +98,10 @@ tasks.withType(Test) {
     testLogging {
         exceptionFormat = 'full'
     }
+    // Spock Report settings
     systemProperty 'com.athaydes.spockframework.report.outputDir', 'build/reports/spock'
+    systemProperty 'com.athaydes.spockframework.report.internal.HtmlReportCreator.inlineCss', false
+    systemProperty 'com.athaydes.spockframework.report.projectName',"GWELLS"
 }
 
 tasks.withType(GroovyCompile) {

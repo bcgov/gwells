@@ -183,19 +183,19 @@ class WellDetailsSpecs extends GebReportingSpec {
 		"alteration_end_date"	 		  | "2014-11-23" 	 | 110749
 		"decommission_end_date"	 		  | "2014-11-23" 	 | 110749
 		"drilling_company"	  			  | "Industrial Drillers" 	 | 110749
-		"total_depth_drilled"	 		  | "285.00 feet" 	 | 110749
-		"static_water_level"	 		  | "128.00 feet" 	 | 106648
+		"total_depth_drilled"	 		  | "285 feet" 	 | 110749
+		"static_water_level"	 		  | "128 feet" 	 | 106648
 		"well_cap_type"	   				  | "VENT CAST" 	 | 106648
-		"finished_well_depth"	 		  | "100.00 feet" 	 | 105747
-		"well_yield"	 				  | "15.000 USGPM" 	 | 110749
+		"finished_well_depth"	 		  | "100 feet" 	 | 105747
+		"well_yield"	 				  | "15 USGPM" 	 | 110749
 		"well_disinfected"	 			  | "No" 	 | 110749
-		"final_casing_stickup"	 		  | "12.000 inches" 	 | 106648
-		"artesian_flow"	 				  | "15.00 USGPM" 	 | 110749
+		"final_casing_stickup"	 		  | "12 inches" 	 | 106648
+		"artesian_flow"	 				  | "15 USGPM" 	 | 110749
 		"drilling_method"	 			  | "AIR_ROTARY" 	 | 100501
-		"bedrock_depth"	 				  | "60.00 feet" 	 | 110749
-		"artesian_pressure"	    		  | "10.00 inches" 	 | 113552
+		"bedrock_depth"	 				  | "60 feet" 	 | 110749
+		"artesian_pressure"	    		  | "10 inches" 	 | 113552
 		"orientation_direction"	 		  | "vertical" 	 | 110749
-		"ground_elevation"	 			  | "378.00 feet" 	 | 106648
+		"ground_elevation"	 			  | "378 feet" 	 | 106648
 		"ground_elevation_method"	 	  | "1:10,000 Scale Map" 	 | 104636
 		"well_plate_attached"	 		  | "CASING" 	 | 106648
 		"intake_method"	 				  | "Open Bottom" 	 | 110749
@@ -203,43 +203,43 @@ class WellDetailsSpecs extends GebReportingSpec {
 		"screen_material"	 			  | "Plastic" 	 | 102666
 		"screen_opening"	              | "Perforated Pipe" 	 | 102666
 		"screen_bottom"	 				  | "Other" 	 | 107072
-		"screen_from" 	 				  | "105.00" 	 | 105508
-		"screen_to"	 					  | "109.00" 	 | 105508
-		"internal_diameter"	 			  | "6.00" | 105508
+		"screen_from" 	 				  | "105" 	 | 105508
+		"screen_to"	 					  | "109" 	 | 105508
+		"internal_diameter"	 			  | "6" | 105508
 		"assembly_type"	 				  | "Screen" 	 | 105508
-		"slot_size"	 					  | "15.00" 	 | 105508
+		"slot_size"	 					  | "15" 	 | 105508
 		"developed_by"	 				  | "Bailing" 	 | 110749
-		"devlopment_total_duration"	 	  | "3.00 hours" 	 | 110749
+		"devlopment_total_duration"	 	  | "3 hours" 	 | 110749
 		"yield_estimation_method"	      | "Air Lifting" 	 | 107072
-		"yield_estimation_rate"			  | "15.00   USGPM" 	 | 110749
-		"yield_estimation_duration"	 	  | "12.00   hours" 	 | 110749
-		"casings_from"	 				  | "0.00" 	 | 113503
-		"casings_to"	 				  | "63.00" 	 | 113503
+		"yield_estimation_rate"			  | "15   USGPM" 	 | 110749
+		"yield_estimation_duration"	 	  | "12   hours" 	 | 110749
+		"casings_from"	 				  | "0" 	 | 113503
+		"casings_to"	 				  | "63" 	 | 113503
 		"casings_diameter"	 			  | "12.250" 	 | 112366
 		"casings_material"	 			  | "Steel" 	 | 113503
 		"casings_thickness"	 			  | "0.219" 	 | 113503
 		"casings_driveshoe"	 			  | "Yes" 	 | 113503	
 		"surface_seal_method"	 		  | "Poured" 	 | 110627
 		"surface_seal_material"	 		  | "Bentonite clay" 	 | 110627
-		"surface_seal_thickness"	 	  | "2.00 inches" 	 | 105417
-		"surface_seal_length"	 		  | "18.00 feet" 	 | 105417
+		"surface_seal_thickness"	 	  | "2 inches" 	 | 105417
+		"surface_seal_length"	 		  | "18 feet" 	 | 105417
 		"backfill_type"	 				  | "CEMENT & BENTONITE CHIPS" 	 | 105417
-		"backfill_depth"	 			  | "18.00 feet" 	 |  105417
+		"backfill_depth"	 			  | "18 feet" 	 |  105417
 		"liner_material"	 			  | "PVC" 	 |  111752 
-		"liner_diameter"	 			  | "4.00" 	 |  111752 
+		"liner_diameter"	 			  | "4" 	 |  111752 
 		"liner_thickness"	 			  | "0.250" 	 |  111752 
-		"liner_from"	 				  | "8.00" 	 |  111752 
-		"liner_to"	 	  				  | "280.00" 	 |  111752 
-		"liner_perffrom"	 			  | "120.00" 	 |  111752 
-		"liner_perfto"	 				  | "140.00" 	 |  111752 
-		"lithology_from"	 			  | "0.00" 	 |  110000 
-        "lithology_to"	 				  | "2.00" 	 |  110000 
+		"liner_from"	 				  | "8" 	 |  111752 
+		"liner_to"	 	  				  | "280" 	 |  111752 
+		"liner_perffrom"	 			  | "120" 	 |  111752 
+		"liner_perfto"	 				  | "140" 	 |  111752 
+		"lithology_from"	 			  | "0" 	 |  110000 
+        "lithology_to"	 				  | "2" 	 |  110000 
         "lithology_raw_data"		      | "TOPSOIL, BROWN" 	 |  100001 
         "lithology_description"	 		  | "cemented" 	 |  110000
         "lithology_material_description"  | "soil" 	 |  110000 
         "lithology_relative_hardness"	  | "Stiff" 	 |  112152 
         "lithology_colour" 	 			  | "dark" 	 |  110000 
-        "lithology_waterbearing_estimated_flow"	 | "200.0000 USGPM" 	 |  104533 
+        "lithology_waterbearing_estimated_flow"	 | "200 USGPM" 	 |  104533 
         "lithology_observations" 	 	  | "Water-bearing" 	 |  110000 
         "reason_for_decommission" 	 	  | "SITE DEVELOPMENT" 	 |  110749 
         "method_of_closure" 	 		  | "PUMPED" 	 |  110749 
