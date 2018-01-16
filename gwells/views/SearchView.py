@@ -13,6 +13,12 @@
 """
 
 from django.views import generic
+from django.core.serializers.json import DjangoJSONEncoder
+from django.shortcuts import render
+
+import json
+from ..forms import SearchForm
+from ..models import LandDistrict
 
 class SearchView(generic.DetailView):
 
@@ -52,7 +58,7 @@ class SearchView(generic.DetailView):
                 lat_long_box = json.dumps(
                     {'startCorner': start_lat_long, 'endCorner': end_lat_long},
                     cls=DjangoJSONEncoder)
-            form, well_results, well_results_json = common_well_search(request)
+            form, well_results, well_results_json = SearchView.common_well_search(request)
         else:
             form = SearchForm()
 
@@ -88,5 +94,5 @@ class SearchView(generic.DetailView):
         form = None
         if (request.method == 'GET' and 'start_lat_long' in request.GET
                 and 'end_lat_long' in request.GET):
-            form, well_results, well_results_json = common_well_search(request)
+            form, well_results, well_results_json = SearchView.common_well_search(request)
         return JsonResponse(well_results_json, safe=False)
