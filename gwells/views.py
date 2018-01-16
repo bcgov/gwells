@@ -19,11 +19,9 @@ from django.views.generic.edit import FormView
 from formtools.wizard.views import SessionWizardView
 
 from .models import *
+from .forms import *
 
-from .forms import SearchForm, ActivitySubmissionTypeAndClassForm, WellOwnerForm, ActivitySubmissionLocationForm, ActivitySubmissionGpsForm
-from .forms import ActivitySubmissionLithologyFormSet, ActivitySubmissionCasingFormSet, ActivitySubmissionSurfaceSealForm, ActivitySubmissionLinerPerforationFormSet
-from .forms import ActivitySubmissionScreenIntakeForm, ActivitySubmissionScreenFormSet, ActivitySubmissionFilterPackForm, ActivitySubmissionDevelopmentForm, ProductionDataFormSet
-from .forms import ActivitySubmissionWaterQualityForm, WellCompletionForm, ActivitySubmissionCommentForm
+from .forms import ActivitySubmissionLithologyFormSet, ActivitySubmissionCasingFormSet, ActivitySubmissionLinerPerforationFormSet, ActivitySubmissionScreenFormSet, ProductionDataFormSet
 
 from .minioClient import MinioClient
 
@@ -47,128 +45,6 @@ class HomeView(generic.TemplateView):
         context = super(HomeView, self).get_context_data(**kwargs)
         return context
 
-def common_well_search(request):
-    """
-        Returns json and array data for a well search.  Used by both the map and text search.
-    """
-    well_results = None
-    well_results_json = '[]'
-
-    form = SearchForm(request.GET)
-    if form.is_valid():
-        well_results = form.process()
-
-    if well_results and not len(well_results) > SearchForm.WELL_RESULTS_LIMIT:
-        well_results_json = json.dumps(
-            [well.as_dict() for well in well_results],
-            cls=DjangoJSONEncoder)
-    return form, well_results, well_results_json
-
-def well_search(request):
-    """
-        Text search.
-    """
-    well_results = None
-    well_results_overflow = None
-    well_results_json = '[]'
-    form = None
-    lat_long_box = '{}'
-
-    if request.method == 'GET' and 'well' in request.GET:
-        # The lat_long_box is returned as a JSON string regardless of the validity of the form,
-        # provided the request has both a start_lat_long and an end_lat_long
-        if 'start_lat_long' in request.GET and 'end_lat_long' in request.GET:
-            start_lat_long = request.GET['start_lat_long']
-            end_lat_long = request.GET['end_lat_long']
-            lat_long_box = json.dumps(
-                {'startCorner': start_lat_long, 'endCorner': end_lat_long},
-                cls=DjangoJSONEncoder)
-        form, well_results, well_results_json = common_well_search(request)
-    else:
-        form = SearchForm()
-
-    if well_results:
-        if len(well_results) > SearchForm.WELL_RESULTS_LIMIT:
-            well_results_overflow = 'Query returned more than %d wells. Please refine your search or select a smaller area to look for wells in.' % SearchForm.WELL_RESULTS_LIMIT
-            well_results = None
-        else:
-            well_results_json = json.dumps(
-                [well.as_dict() for well in well_results],
-                cls=DjangoJSONEncoder)
-
-    # create an object that will be used to render the names for land districts.
-    land_districts = {}
-    all_land_districts = LandDistrict.objects.all()
-    for land_district in all_land_districts:
-        land_districts[land_district.land_district_guid] = land_district.name
-
-    return render(request, 'gwells/search.html',
-                  {'form': form, 'well_list': well_results,
-                   'too_many_wells': well_results_overflow,
-                   'wells_json': well_results_json,
-                   'lat_long_box': lat_long_box,
-                   'land_districts' : land_districts,
-                  })
-
-def map_well_search(request):
-    """
-        Map search.
-    """
-    well_results = None
-    well_results_json = '[]'
-    form = None
-    if (request.method == 'GET' and 'start_lat_long' in request.GET
-            and 'end_lat_long' in request.GET):
-        form, well_results, well_results_json = common_well_search(request)
-    return JsonResponse(well_results_json, safe=False)
-
-def test_500_view(request):
-    # Return an "Internal Server Error" 500 response code.
-    return render(request, '500.html',status=500)
-
-def test_404_view(request):
-    # Return an "Internal Server Error" 500 response code.
-    return render(request, '404.html',status=404)
-
-def registry(request):
-    return render(request, 'gwells/registry.html')
-
-class WellDetailView(generic.DetailView):
-    model = Well
-    context_object_name = 'well'
-    template_name = 'gwells/well_detail.html'
-
-    def get_context_data(self, **kwargs):
-        """
-        Return the context for the well details page.
-        """
-
-        context = super(WellDetailView, self).get_context_data(**kwargs)
-
-        if settings.ENABLE_ADDITIONAL_DOCUMENTS:
-            #Generic error Handling for now
-            try:
-
-                minio_client = MinioClient()
-
-                context['link_host'] = minio_client.link_host;
-                context['documents'] = [];
-
-                documents = minio_client.get_documents(context['well'].well_tag_number)
-
-                for doc in documents :
-                    document = {}
-                    document['bucket_name'] = doc.bucket_name
-                    object_name = doc.object_name;
-                    document['object_name'] = object_name.replace(' ', '+')
-                    document['display_name'] = object_name[ object_name.find('/')+1 : object_name.find('/') + 1 + len(object_name)]
-                    context['documents'].append(document)
-                    context['documents'] = sorted(context['documents'], key=lambda k: k['display_name'])
-            except Exception as exception:
-                context['file_client_error'] = 'Error retrieving documents.'
-                print("Document access exception: " + str(exception))
-        return context
-
 class ActivitySubmissionListView(generic.ListView):
     model = ActivitySubmission
     context_object_name = 'activity_submission_list'
@@ -180,54 +56,6 @@ class ActivitySubmissionListView(generic.ListView):
         """
         context = super(ActivitySubmissionListView, self).get_context_data(**kwargs)
         return context
-
-class ActivitySubmissionDetailView(generic.DetailView):
-    model = ActivitySubmission
-    context_object_name = 'activity_submission'
-    template_name = 'gwells/activity_submission_detail.html'
-
-    def get_context_data(self, **kwargs):
-        """
-        Return the context for the page.
-        """
-        context = super(ActivitySubmissionDetailView, self).get_context_data(**kwargs)
-        return context
-
-FORMS = [('type_and_class', ActivitySubmissionTypeAndClassForm),
-         ('owner', WellOwnerForm),
-         ('location', ActivitySubmissionLocationForm),
-         ('gps', ActivitySubmissionGpsForm),
-         ('lithology', ActivitySubmissionLithologyFormSet),
-         ('casing', ActivitySubmissionCasingFormSet),
-         ('surface_seal', ActivitySubmissionSurfaceSealForm),
-         ('liner_perforation', ActivitySubmissionLinerPerforationFormSet),
-         ('screen_intake', ActivitySubmissionScreenIntakeForm),
-         ('screen', ActivitySubmissionScreenFormSet),
-         ('filter_pack', ActivitySubmissionFilterPackForm),
-         ('development', ActivitySubmissionDevelopmentForm),
-         ('production_data', ProductionDataFormSet),
-         ('water_quality', ActivitySubmissionWaterQualityForm),
-         ('well_completion', WellCompletionForm),
-         ('comments', ActivitySubmissionCommentForm),
-        ]
-
-TEMPLATES = {'type_and_class': 'gwells/activity_submission_form.html',
-             'owner': 'gwells/activity_submission_form.html',
-             'location': 'gwells/activity_submission_form.html',
-             'gps': 'gwells/activity_submission_form.html',
-             'lithology': 'gwells/activity_submission_lithology_form.html',
-             'casing': 'gwells/activity_submission_casing_form.html',
-             'surface_seal': 'gwells/activity_submission_form.html',
-             'liner_perforation': 'gwells/activity_submission_liner_perforation_form.html',
-             'screen_intake': 'gwells/activity_submission_form.html',
-             'screen': 'gwells/activity_submission_screen_form.html',
-             'filter_pack': 'gwells/activity_submission_form.html',
-             'development': 'gwells/activity_submission_form.html',
-             'production_data': 'gwells/activity_submission_form.html',
-             'water_quality': 'gwells/activity_submission_form.html',
-             'well_completion': 'gwells/activity_submission_form.html',
-             'comments': 'gwells/activity_submission_form.html',
-            }
 
 class ActivitySubmissionWizardView(SessionWizardView):
     instance = None
