@@ -45,8 +45,8 @@ urlpatterns = [
 
 if settings.ENABLE_DATA_ENTRY:
     urlpatterns = [
-        url(r'^'+ app_root_slash +'submission/$', views.ActivitySubmissionListView.as_view(), name='activity_submission_list'),
-        url(r'^'+ app_root_slash +'submission/create$', views.ActivitySubmissionWizardView.as_view(views.FORMS), name='activity_submission_create'),
+        url(r'^'+ app_root_slash +'submission/$', ActivitySubmissionListView.as_view(), name='activity_submission_list'),
+        url(r'^'+ app_root_slash +'submission/create$', ActivitySubmissionWizardView.as_view(views.FORMS), name='activity_submission_create'),
     ] + urlpatterns
 
 if settings.DEBUG:
