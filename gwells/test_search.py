@@ -11,8 +11,9 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
+
+from .models import *
 from django.test import TestCase
-from .models import ProvinceState, Well, WellActivityType, WellClass, DrillingCompany, Driller
 from .search import Search
 
 class SearchTestCase(TestCase):
