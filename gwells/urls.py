@@ -15,6 +15,8 @@ from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin
 from . import views
+from .views import *
+from .views_test import *
 from django.views.generic import TemplateView
 
 # Creating 2 versions of the app_root. One without and one with trailing slash
@@ -28,23 +30,23 @@ else:
 urlpatterns = [
     # url(r'^'+ app_root +'$', views.HomeView.as_view(), name='home'),
     url(r'^'+ app_root_slash +'robots\.txt$', TemplateView.as_view(template_name='robots.txt', content_type='text/plain')),
-    url(r'^'+ app_root_slash +'$', views.well_search, name='home'),
-    url(r'^'+ app_root_slash +'search$', views.well_search, name='search'),
+    url(r'^'+ app_root_slash +'$', SearchView.well_search, name='home'),
+    url(r'^'+ app_root_slash +'search$', SearchView.well_search, name='search'),
     # url(r'^(?P<pk>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/$', views.DetailView.as_view(), name='detail'),
-    url(r'^'+ app_root_slash +'well/(?P<pk>[0-9]+)$', views.WellDetailView.as_view(), name='well_detail'),
-    url(r'^'+ app_root_slash +'registry$', views.registry, name='registry'),
-    url(r'^'+ app_root_slash +'submission/(?P<pk>[0-9]+)$', views.ActivitySubmissionDetailView.as_view(), name='activity_submission_detail'),
-    url(r'^'+ app_root_slash +'health$', views.health),
+    url(r'^'+ app_root_slash +'well/(?P<pk>[0-9]+)$', WellDetailView.as_view(), name='well_detail'),
+    url(r'^'+ app_root_slash +'registry$', RegistryView.as_view(), name='registry'),
+    url(r'^'+ app_root_slash +'submission/(?P<pk>[0-9]+)$', ActivitySubmissionDetailView.as_view(), name='activity_submission_detail'),
+    url(r'^'+ app_root_slash +'health$', HealthView.as_view()),
     url(r'^'+ app_root_slash +'groundwater-information', TemplateView.as_view(template_name='gwells/groundwater_information.html'), name='groundwater_information'),
-    url(r'^'+ app_root_slash +'ajax/map_well_search/$', views.map_well_search, name='map_well_search'),
-    url(r'^'+ app_root_slash +'500.html$', views.test_500_view),
-    url(r'^'+ app_root_slash +'404.html$', views.test_500_view),
+    url(r'^'+ app_root_slash +'ajax/map_well_search/$', SearchView.map_well_search, name='map_well_search'),
+    url(r'^'+ app_root_slash +'500.html$', TestErrorsView.test_500_view),
+    url(r'^'+ app_root_slash +'404.html$', TestErrorsView.test_500_view),
 ]
 
 if settings.ENABLE_DATA_ENTRY:
     urlpatterns = [
-        url(r'^'+ app_root_slash +'submission/$', views.ActivitySubmissionListView.as_view(), name='activity_submission_list'),
-        url(r'^'+ app_root_slash +'submission/create$', views.ActivitySubmissionWizardView.as_view(views.FORMS), name='activity_submission_create'),
+        url(r'^'+ app_root_slash +'submission/$', ActivitySubmissionListView.as_view(), name='activity_submission_list'),
+        url(r'^'+ app_root_slash +'submission/create$', ActivitySubmissionWizardView.as_view(views.FORMS), name='activity_submission_create'),
     ] + urlpatterns
 
 if settings.DEBUG:
