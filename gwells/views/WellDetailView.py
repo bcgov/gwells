@@ -2,6 +2,10 @@ from django.views import generic
 
 from ..models import *
 
+from ..settings import *
+
+from ..minioClient import MinioClient
+
 class WellDetailView(generic.DetailView):
     model = Well
     context_object_name = 'well'
@@ -14,7 +18,7 @@ class WellDetailView(generic.DetailView):
 
         context = super(WellDetailView, self).get_context_data(**kwargs)
 
-        if settings.ENABLE_ADDITIONAL_DOCUMENTS:
+        if ENABLE_ADDITIONAL_DOCUMENTS:
             #Generic error Handling for now
             try:
 
