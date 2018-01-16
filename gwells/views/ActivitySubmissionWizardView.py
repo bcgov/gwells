@@ -11,51 +11,10 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
-from django.conf import settings
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
-from django.shortcuts import get_object_or_404, render
-from django.views import generic
-from django.views.generic.edit import FormView
+
 from formtools.wizard.views import SessionWizardView
 
-from .models import *
-from .forms import *
-
-from .forms import ActivitySubmissionLithologyFormSet, ActivitySubmissionCasingFormSet, ActivitySubmissionLinerPerforationFormSet, ActivitySubmissionScreenFormSet, ProductionDataFormSet
-
-from .minioClient import MinioClient
-
-import json
-
-import os
-
-from django.core.serializers.json import DjangoJSONEncoder
-
-def health(request):
-    return HttpResponse(WellActivityType.objects.count())
-
-class HomeView(generic.TemplateView):
-    template_name = 'gwells/index.html'
-    context_object_name = 'yield_unit_list'
-
-    def get_context_data(self, **kwargs):
-        """
-        Return the context for the page.
-        """
-        context = super(HomeView, self).get_context_data(**kwargs)
-        return context
-
-class ActivitySubmissionListView(generic.ListView):
-    model = ActivitySubmission
-    context_object_name = 'activity_submission_list'
-    template_name = 'gwells/activity_submission_list.html'
-
-    def get_context_data(self, **kwargs):
-        """
-        Return the context for the page.
-        """
-        context = super(ActivitySubmissionListView, self).get_context_data(**kwargs)
-        return context
+from ..models import *
 
 class ActivitySubmissionWizardView(SessionWizardView):
     instance = None
