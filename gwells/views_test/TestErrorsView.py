@@ -1,4 +1,5 @@
 from django.views import generic
+from django.shortcuts import render
 
 class TestErrorsView(generic.TemplateView):
     def test_500_view(request):

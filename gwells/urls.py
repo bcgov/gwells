@@ -29,18 +29,18 @@ else:
 
 urlpatterns = [
     # url(r'^'+ app_root +'$', views.HomeView.as_view(), name='home'),
-    url(r'^'+ app_root_slash +'robots\.txt$', TemplateView.as_view(template_name='robots.txt', content_type='text/plain')),
+    url(r'^'+ app_root_slash +'robots\.txt$', TemplateView.as_view(template_name='robots.txt', content_type='text/plain'), name='robots'),
     url(r'^'+ app_root_slash +'$', SearchView.well_search, name='home'),
     url(r'^'+ app_root_slash +'search$', SearchView.well_search, name='search'),
     # url(r'^(?P<pk>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/$', views.DetailView.as_view(), name='detail'),
     url(r'^'+ app_root_slash +'well/(?P<pk>[0-9]+)$', WellDetailView.as_view(), name='well_detail'),
     url(r'^'+ app_root_slash +'registry$', RegistryView.as_view(), name='registry'),
     url(r'^'+ app_root_slash +'submission/(?P<pk>[0-9]+)$', ActivitySubmissionDetailView.as_view(), name='activity_submission_detail'),
-    url(r'^'+ app_root_slash +'health$', HealthView.as_view()),
+    url(r'^'+ app_root_slash +'health$', HealthView.health, name='health'),
     url(r'^'+ app_root_slash +'groundwater-information', TemplateView.as_view(template_name='gwells/groundwater_information.html'), name='groundwater_information'),
     url(r'^'+ app_root_slash +'ajax/map_well_search/$', SearchView.map_well_search, name='map_well_search'),
-    url(r'^'+ app_root_slash +'500.html$', TestErrorsView.test_500_view),
-    url(r'^'+ app_root_slash +'404.html$', TestErrorsView.test_500_view),
+    url(r'^'+ app_root_slash +'500.html$', TestErrorsView.test_500_view, name='test_500'),
+    url(r'^'+ app_root_slash +'404.html$', TestErrorsView.test_404_view, name='test_404'),
 ]
 
 if settings.ENABLE_DATA_ENTRY:
@@ -53,5 +53,5 @@ if settings.DEBUG:
     import debug_toolbar
     urlpatterns = [
         url(r'^__debug__/', include(debug_toolbar.urls)),
-        url(r'^'+ app_root_slash +'admin/', admin.site.urls),
+        url(r'^'+ app_root_slash +'admin/', include(admin.site.urls)),
     ] + urlpatterns
