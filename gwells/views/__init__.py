@@ -12,14 +12,7 @@
     limitations under the License.
 """
 
-from .ActivitySubmissionDetailView import ActivitySubmissionDetailView
-from .HealthView import HealthView
-from .RegistryView import RegistryView
-from .SearchView import SearchView
-from .WellDetailView import WellDetailView
 from ..forms import *
-
-__all__ = ['ActivitySubmissionDetailView', 'FORMS', 'HealthView', 'RegistryView', 'SearchView', 'TEMPLATES', 'WellDetailView']
 
 FORMS = [('type_and_class', ActivitySubmissionTypeAndClassForm),
          ('owner', WellOwnerForm),
@@ -56,3 +49,16 @@ TEMPLATES = {'type_and_class': 'gwells/activity_submission_form.html',
              'well_completion': 'gwells/activity_submission_form.html',
              'comments': 'gwells/activity_submission_form.html',
             }
+
+from .ActivitySubmissionDetailView import ActivitySubmissionDetailView
+from .ActivitySubmissionListView import ActivitySubmissionListView
+from .ActivitySubmissionWizardView import ActivitySubmissionWizardView
+from .HealthView import HealthView
+from .RegistryView import RegistryView
+from .SearchView import SearchView
+from .WellDetailView import WellDetailView
+
+
+
+
+__all__ = ['ActivitySubmissionDetailView', 'ActivitySubmissionListView', 'ActivitySubmissionWizardView', 'FORMS', 'HealthView', 'RegistryView', 'SearchView', 'TEMPLATES', 'WellDetailView']

@@ -15,6 +15,8 @@
 from formtools.wizard.views import SessionWizardView
 
 from ..models import *
+from ..views import ActivitySubmissionDetailView
+from ..views import TEMPLATES
 
 class ActivitySubmissionWizardView(SessionWizardView):
     instance = None

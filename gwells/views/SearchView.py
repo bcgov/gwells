@@ -15,7 +15,7 @@
 from django.views import generic
 from django.core.serializers.json import DjangoJSONEncoder
 from django.shortcuts import render
-
+from django.http import JsonResponse
 import json
 from ..forms import SearchForm
 from ..models import LandDistrict
