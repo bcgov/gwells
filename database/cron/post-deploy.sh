@@ -10,6 +10,13 @@
 #
 #   Example: oc exec gwells-97-69b7z /opt/app-root/src/database/cron/post-deploy.sh
 #
+#   If run on local Developer workstation, ensure that you have Environment variables set
+#   for $DATABASE_SERVICE_NAME, $DATABASE_PASSWORD, $DATABASE_NAME, $DATABASE_USER
+#
+#   Optionally, set $DB_REPLICATE (None|Subset|Full).
+#
+#   Example: ./post-deploy.sh
+#    
 echo "Running Post-Deploy tasks..."
 export PGPASSWORD=$DATABASE_PASSWORD
 cd /opt/app-root/src/database/scripts/
@@ -26,7 +33,16 @@ psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER << EOF
 	\i replicate_aquifer_wells.sql
 	\i replicate_lithology_descriptions.sql
 	\i full_db_replication.sql
+	\i db_replicate.sql
 EOF
+# TODO delete the "\i full_db_replication.sql" once db_replicate.sql is tested
+# and the Jenkins job is reconfigured from:
+# 'psql -d $POSTGRESQL_DATABASE -U $POSTGRESQL_USER -c "SELECT gwells_full_replicate();"'
+#
+# to:
+# 'psql -d $POSTGRESQL_DATABASE -U $POSTGRESQL_USER -c "SELECT gwells_db_replicate(false);"'
+#
+# https://jenkins-moe-gwells-tools.pathfinder.gov.bc.ca/job/gwells-prod-db-scripts/configure
 
 # $DB_REPLICATE can be one of "None" | "Subset" | "Full"
 if [ "$DB_REPLICATE" = "Subset" -o "$DB_REPLICATE" = "Full" ]

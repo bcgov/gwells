@@ -1,7 +1,7 @@
 DROP FUNCTION IF EXISTS gwells_populate_xform(boolean);
 
 CREATE OR REPLACE FUNCTION gwells_populate_xform(
-  subset_ind boolean DEFAULT true) RETURNS void AS $$
+  _subset_ind boolean DEFAULT true) RETURNS void AS $$
 DECLARE
   xform_rows integer;
   sql_stmt text;
@@ -360,7 +360,7 @@ BEGIN
 
   raise notice 'Created xform_gwells_well ETL table';
 
-  IF subset_ind THEN
+  IF _subset_ind THEN
     sql_stmt := insert_sql || ' ' || subset_clause;
   ELSE
     sql_stmt := insert_sql;
