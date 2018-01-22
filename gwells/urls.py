@@ -34,7 +34,7 @@ urlpatterns = [
     url(r'^'+ app_root_slash +'search$', SearchView.well_search, name='search'),
     # url(r'^(?P<pk>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/$', views.DetailView.as_view(), name='detail'),
     url(r'^'+ app_root_slash +'well/(?P<pk>[0-9]+)$', WellDetailView.as_view(), name='well_detail'),
-    url(r'^'+ app_root_slash +'registry$', RegistryView.as_view(), name='registry'),
+    url(r'^'+ app_root_slash +'registry-legacy$', RegistryView.as_view(), name='registry-legacy'),
     url(r'^'+ app_root_slash +'submission/(?P<pk>[0-9]+)$', ActivitySubmissionDetailView.as_view(), name='activity_submission_detail'),
     url(r'^'+ app_root_slash +'health$', HealthView.health, name='health'),
     url(r'^'+ app_root_slash +'groundwater-information', TemplateView.as_view(template_name='gwells/groundwater_information.html'), name='groundwater_information'),
