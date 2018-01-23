@@ -15,6 +15,7 @@ from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin
 from . import views
+from gwells.views.LogOutView import LogOutView
 from .views import *
 from .views_test import *
 from registry.views import RegistryHomeView
@@ -36,15 +37,18 @@ urlpatterns = [
     # url(r'^(?P<pk>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/$', views.DetailView.as_view(), name='detail'),
     url(r'^'+ app_root_slash +'well/(?P<pk>[0-9]+)$', WellDetailView.as_view(), name='well_detail'),
     url(r'^'+ app_root_slash +'registry-legacy$', RegistryView.as_view(), name='registry-legacy'),
-
-    url(r'^'+ app_root_slash +'registry$', RegistryHomeView.as_view(), name='registry'),
-
     url(r'^'+ app_root_slash +'submission/(?P<pk>[0-9]+)$', ActivitySubmissionDetailView.as_view(), name='activity_submission_detail'),
     url(r'^'+ app_root_slash +'health$', HealthView.health, name='health'),
     url(r'^'+ app_root_slash +'groundwater-information', TemplateView.as_view(template_name='gwells/groundwater_information.html'), name='groundwater_information'),
     url(r'^'+ app_root_slash +'ajax/map_well_search/$', SearchView.map_well_search, name='map_well_search'),
     url(r'^'+ app_root_slash +'500.html$', TestErrorsView.test_500_view, name='test_500'),
     url(r'^'+ app_root_slash +'404.html$', TestErrorsView.test_404_view, name='test_404'),
+
+    url(r'^'+ app_root_slash +'registry/', include('registry.urls')),
+    #url(r'^'+ app_root_slash +'registry$', RegistryHomeView.as_view(), name='registry'),
+
+    url(r'^'+ app_root_slash +'logout', LogOutView.as_view(), name="logout_view"),
+    url(r'openid/', include('djangooidc.urls')),
 ]
 
 if settings.ENABLE_DATA_ENTRY:

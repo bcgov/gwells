@@ -1,0 +1,50 @@
+[
+  {
+    "model": "gwells.provincestate",
+    "pk": "f46b70b6-47d4-11e7-a919-92ebcb67fe33",
+    "fields":
+    {
+      "who_created": "ETL_USER",
+      "when_created": "2017-07-01T08:00:00Z",
+      "who_updated": "ETL_USER",
+      "when_updated": "2017-07-01T08:00:00Z",
+      "code": "BC",
+      "description": "British Colmubia",
+      "sort_order": 1
+    }
+  },
+  {
+       "model": "gwells.wellclass",
+       "pk": "ecdc3392-47e0-11e7-a919-92ebcb67fe33",
+       "fields":
+       {
+          "who_created": "ETL_USER",
+          "when_created": "2017-07-01T08:00:00Z",
+          "who_updated": "ETL_USER",
+          "when_updated": "2017-07-01T08:00:00Z",
+          "code": "WATR_SPPLY",
+          "description": "Water Supply",
+          "is_hidden": false,
+          "sort_order": 2
+       }
+  },
+  {
+    "model": "gwells.well",
+    "pk":"100001",
+    "fields":
+    {
+      "who_created": "ETL_USER",
+      "when_created": "2017-07-01T08:00:00Z",
+      "who_updated": "ETL_USER",
+      "owner_province_state": "f46b70b6-47d4-11e7-a919-92ebcb67fe33",
+      "when_updated": "2017-07-01T08:00:00Z",
+      "identification_plate_number":123,
+      "well_tag_number":123,
+      "street_address": "123 Main St.",
+      "legal_plan": "7789",
+      "owner_full_name": "John Smith",
+      "latitude": 48.413551,
+      "longitude": -123.359973
+    }
+  }
+]

@@ -74,10 +74,26 @@ INSTALLED_APPS = (
     'debug_toolbar',
 	'django.contrib.postgres',
     'gwells',
-    'registry',
     'crispy_forms',
     'formtools',
+    'registry',
+    'bossoidc',
+    'djangooidc',
 )
+
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'bossoidc.backend.OpenIdConnectBackend',
+)
+
+auth_uri = "https://dev-sso.pathfinder.gov.bc.ca/auth/realms/gwells/"
+client_id = "webapp"
+public_uri = "http://localhost:8000"
+
+scope = ['openid', 'profile', 'email'] # NOTE: This is the default scope if one is not provided
+
+from bossoidc.settings import *
+configure_oidc(auth_uri, client_id, public_uri)
 
 MIDDLEWARE = (
     'django.middleware.gzip.GZipMiddleware',

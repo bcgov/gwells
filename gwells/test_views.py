@@ -24,26 +24,13 @@ from .views import *
 
 class ViewsTestCase(TestCase):
 
+    fixtures = ['views_test_case']
+
     well_tag_number = 123
 
     @classmethod
     def setUpTestData(cls):
-        #setup
-        prov = ProvinceState.objects.create(sort_order=1)
-        prov.save()
-
-        well_class = WellClass.objects.create(sort_order=1)
-        well_class.save()
-
-        w = Well.objects.create(well_class=well_class, owner_province_state=prov)
-        w.identification_plate_number = 123
-        w.well_tag_number = ViewsTestCase.well_tag_number
-        w.street_address = '123 Main St.'
-        w.legal_plan = '7789'
-        w.owner_full_name = 'John Smith'
-        w.latitude = 48.413551
-        w.longitude = -123.359973
-        w.save()
+        pass
 
     def setUp(self):
         pass
@@ -101,6 +88,13 @@ class ViewsTestCase(TestCase):
 
     def test_404_not_ok(self):
         self.not_ok('test_404', HTTPStatus.NOT_FOUND)
+
+    def test_auth_enforced_no_access(self):
+        response = self.client.get(reverse('logout_view')) #logout
+        response = self.client.get(reverse('activity_submission_create'))
+        print('response.url: ', response.url)
+        self.assertNotEqual(response.url, '/gwells/submission/create') #not passed through to create form
+        self.assertEqual(response.url, '/openid/openid/KeyCloak?next=/gwells/submission/create') #redirected to login
 
 #    def test_activity_submission_list_ok(self):
 #        self.ok('activity_submission_list')
