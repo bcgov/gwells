@@ -12,7 +12,7 @@ class MinioClient():
         self.minio_secret_key = os.getenv('MINIO_SECRET_KEY')
         self.host = os.getenv('S3_HOST')
         self.link_host = os.getenv('S3_LINK_HOST')
-        self.minio_client = Minio(self.host, access_key=self.minio_access_key, secret_key=self.minio_secret_key, secure=True)
+        self.minio_client = Minio(self.link_host, access_key=self.minio_access_key, secret_key=self.minio_secret_key, secure=True)
         self.top_bucket = os.getenv('S3_ROOT_BUCKET')
 
     def get_documents(self, well_tag_number):
