@@ -85,10 +85,7 @@ class ViewsTestCase(TestCase):
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_registry_ok(self):
-        self.ok('registry')
-
-    def test_activity_activity_submission(self):
-        self.ok('activity_submission_list')
+        self.ok('registry-legacy')
 
     def test_health_ok(self):
         self.ok('health')
@@ -105,8 +102,8 @@ class ViewsTestCase(TestCase):
     def test_404_not_ok(self):
         self.not_ok('test_404', HTTPStatus.NOT_FOUND)
 
-    def test_activity_submission_list_ok(self):
-        self.ok('activity_submission_list')
+#    def test_activity_submission_list_ok(self):
+#        self.ok('activity_submission_list')
 
-    def test_activity_submission_create_ok(self):
-        self.ok('activity_submission_create')
+#    def test_activity_submission_create_ok(self):
+#        self.ok('activity_submission_create')
