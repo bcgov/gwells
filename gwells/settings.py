@@ -74,6 +74,7 @@ INSTALLED_APPS = (
     'debug_toolbar',
 	'django.contrib.postgres',
     'gwells',
+    'registry',
     'crispy_forms',
     'formtools',
 )
