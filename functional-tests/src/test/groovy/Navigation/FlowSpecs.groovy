@@ -25,7 +25,7 @@ class FlowSpecs extends GebReportingSpec {
 			waitFor { $("a", id:"$clickLink").click() }
         then:
 			at assertPage
-		
+
         where:
         startPage                   | clickLink                | clickCount    | timeoutSeconds    || assertPage
         SearchPage                  | "ribbon-groundwaterinfo" | 1             | 3                 || AdditionalInformationPage
@@ -33,8 +33,8 @@ class FlowSpecs extends GebReportingSpec {
         SearchPage    		        | "ribbon-search"          | 1             | 3                 || SearchPage
         SearchPage                  | "BCWRAtlas"              | 1             | 3                 || BCWaterResourceAtlas
         SearchPage                  | "iMapBC"                 | 1             | 3                 || iMapBC
-        SearchPage                  | "ribbon-registry"        | 1             | 3                 || WellDrillerPage
-                
+        SearchPage                  | "ribbon-registry-legacy"        | 1             | 3                 || WellDrillerPage
+
         //Test Externally Linked Pages
 		SearchPage           | "footer-disclaimer"     | 1             | 3                 || Disclaimer
         SearchPage           | "footer-privacy"        | 1             | 3                 || Privacy
