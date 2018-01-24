@@ -7,6 +7,7 @@ plugins {
 
 sonarqube {
     properties {
+        //property "sonar.host.url", "http://localhost:9000"        
         property "sonar.projectName", "GWells"
         property "sonar.projectKey", "org.sonarqube:bcgov-gwells"
         property "sonar.projectBaseDir", "../"
@@ -23,7 +24,11 @@ sonarqube {
 }
 
 allprojects {
-  ext.baseVersion = "0.1"
+  def env = System.getenv()
+  TimeZone.getTimeZone('UTC')
+  Date date= new Date()
+  String newdate=date.format("YYYYMMDD")
+  ext.baseVersion = newdate + "." + env['BUILD_NUMBER']
   ext.snapshotVersion = false
 
   group = "org.sonarqube"
