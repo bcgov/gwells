@@ -15,8 +15,10 @@ from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin
 from . import views
+from gwells.views.LogOutView import LogOutView
 from .views import *
 from .views_test import *
+from registry.views import RegistryHomeView
 from django.views.generic import TemplateView
 
 # Creating 2 versions of the app_root. One without and one with trailing slash
@@ -41,7 +43,12 @@ urlpatterns = [
     url(r'^'+ app_root_slash +'ajax/map_well_search/$', SearchView.map_well_search, name='map_well_search'),
     url(r'^'+ app_root_slash +'500.html$', TestErrorsView.test_500_view, name='test_500'),
     url(r'^'+ app_root_slash +'404.html$', TestErrorsView.test_404_view, name='test_404'),
-    url(r'^'+ app_root_slash +'registry/', include('registry.urls')),        
+
+    url(r'^'+ app_root_slash +'registry/', include('registry.urls')),
+    #url(r'^'+ app_root_slash +'registry$', RegistryHomeView.as_view(), name='registry'),
+
+    url(r'^'+ app_root_slash +'logout', LogOutView.as_view(), name="logout_view"),
+    url(r'openid/', include('djangooidc.urls')),
 ]
 
 if settings.ENABLE_DATA_ENTRY:

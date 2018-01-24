@@ -97,4 +97,3 @@ class Application(AuditModel):
             ,self.person_id.first_name
             ,self.person_id.surname
             ,self.appl_type)
-

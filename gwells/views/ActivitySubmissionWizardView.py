@@ -14,11 +14,12 @@
 
 from formtools.wizard.views import SessionWizardView
 
-from ..models import *
-from ..views import ActivitySubmissionDetailView
-from ..views import TEMPLATES
+from gwells.models import *
+from gwells.views import ActivitySubmissionDetailView
+from gwells.views import TEMPLATES
+from django.contrib.auth.mixins import LoginRequiredMixin
 
-class ActivitySubmissionWizardView(SessionWizardView):
+class ActivitySubmissionWizardView(LoginRequiredMixin, SessionWizardView):#TODO: remove mixin when submission goes live - this is here to demonstrate how to restrict views
     instance = None
 
     def get_context_data(self, **kwargs):
