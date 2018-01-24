@@ -20,6 +20,7 @@ Apart from the regular files created by Django (`project/*`, `welcome/*`, `manag
 ```
 database/           - Database-specific files
 └── code-tables     - Static code table sql scripts
+└── cron            - Shell scripts
 └── scripts         - PostgrSQL psql scripts
   └── sql-developer - SQL Developer Oracle SQL scripts
 
@@ -109,14 +110,38 @@ You can look at the combined stdout and stderr of a given pod with this command:
 
 This can be useful to observe the correct functioning of your application.
 
-
 ## Special environment variables
-
 Note that environment variables are case sensitive.
 
 ### APP_CONFIG
 
 You can fine tune the gunicorn configuration through the environment variable `APP_CONFIG` that, when set, should point to a config file as documented [here](http://docs.gunicorn.org/en/latest/settings.html).
+
+### DB_REPLICATE 
+
+Until legacy WELLS is shutdown and all works done on GWELLS, there is a nightly replication of WELLS records to GWELLS Production.   This variable controlls the behavior during deploys (to DEV/TEST/PROD) and is one of None, Subset, or Full.  
+
+Recommended value on DEV:  `Subset` (otherwise the Functional Tests will fail)  
+Recommended value on TEST: `Subset` or `Full`  
+Recommended value on PROD: `Full`  
+
+### MINIO_ACCESS_KEY 
+
+Access key acting as a user ID that uniquely identifies the account.  Set as part of `gwells-minio` deployment but then used in `gwells` deployment to connect to the internal (private) Minio Server.
+
+
+### MINIO_SECRET_KEY 
+
+Secret key acting as the password to the account.  Set as part of `gwells-minio` deployment but then used in `gwells` deployment to connect to the internal (private) Minio Server.
+
+
+### S3_HOST 
+
+Secure (as we use `secure=true`) endpoint the public S3 Server (e.g. `s3.ca-central-1.amazonaws.com`)
+
+### S3_ROOT_BUCKET 
+
+Top-level S3 bucket that organizes all publicly viewable documentes (e.g. `gwells-docs`)
 
 ### DJANGO_SECRET_KEY
 
