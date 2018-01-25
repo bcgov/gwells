@@ -24,7 +24,7 @@ class WellDetailView(generic.DetailView):
 
                 minio_client = MinioClient()
 
-                context['link_host'] = minio_client.link_host;
+                context['host'] = minio_client.host;
                 context['documents'] = [];
 
                 documents = minio_client.get_documents(context['well'].well_tag_number)
