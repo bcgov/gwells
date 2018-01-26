@@ -248,7 +248,7 @@ class WellDetailsSpecs extends GebReportingSpec {
         "decommission_details"  	 	  | "NO ISSUES WITH CLOSURE. ONLY SLIGHT ARTESIAN FLOW IN NOV. 2014. CASING LEFT IN PLACE, PUMP PULLED." 	 |  110749
 		"comments" 						  | "NOT RESPONSIBLE FOR QUALITY OR QUANTITY" | 110750
 		"documentlink"					  | "WTN 109912_Well Construction.pdf" | 109912
-		"no_document_msg"				  | "No additional documentation currently available for this well." | 100100
+		"no_document_msg"				  | "No additional documentation currently available for this well." | 100001
     } 
 
 /* 	@Issue("https://trello.com/c/mi3lnU5k")
