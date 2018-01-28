@@ -1,4 +1,4 @@
-registry_appl_type_guid,code,subcode,description,is_hidden,sort_order,when_created,when_updated,who_created,who_updated
+registry_activity_type_guid,code,subcode,description,is_hidden,sort_order,when_created,when_updated,who_created,who_updated
 "1f6c2aaa018c11e8ba890ed5f89f718b","DRILL","WATER","Water Well Driller","N","2","2018-01-01 00:00:00-08","2018-01-01 00:00:00-08","DATALOAD_USER","DATALOAD_USER"
 "1f6c30c2018c11e8ba890ed5f89f718b","DRILL","GEOTECH","Geotechnical/Environmental Driller","N","4","2018-01-01 00:00:00-08","2018-01-01 00:00:00-08","DATALOAD_USER","DATALOAD_USER"
 "1f6c3202018c11e8ba890ed5f89f718b","DRILL","GEOXCHG","Geoexchange Driller","N","6","2018-01-01 00:00:00-08","2018-01-01 00:00:00-08","DATALOAD_USER","DATALOAD_USER"

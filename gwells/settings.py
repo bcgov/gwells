@@ -76,7 +76,7 @@ INSTALLED_APPS = (
     'gwells',
     'crispy_forms',
     'formtools',
-#     'registry',    
+    'registry',    
 )
 
 MIDDLEWARE = (
