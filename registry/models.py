@@ -81,7 +81,7 @@ class ActivityType(AuditModel):
     class Meta:
         db_table = 'registry_activity_type'
         ordering = ['sort_order', 'description']
-        verbose_name_plural = 'Type of restricted activity'
+        verbose_name_plural = 'Possible types of restricted activity, related to well drilling and pump installing'
 
     def __str__(self):
         return self.description
@@ -100,7 +100,7 @@ class ActivitySubtype(AuditModel):
     class Meta:
         db_table = 'registry_activity_subtype'
         ordering = ['sort_order', 'description']
-        verbose_name_plural = 'Subtype of restricted activity, under a given Activity Type'
+        verbose_name_plural = 'Possible subtypes of restricted activity, under a given Activity Type'
 
     def __str__(self):
         return self.description
@@ -120,7 +120,7 @@ class QualificationType(AuditModel):
     class Meta:
         db_table = 'registry_qualification'
         ordering = ['sort_order', 'description']
-        verbose_name_plural = 'Qualification under a given Activity Type and Subtype'
+        verbose_name_plural = 'Possible qualifications, under a given Activity Type and Subtype'
 
     def __str__(self):
         return '%s (%s)' % (self.description
@@ -184,7 +184,25 @@ class RegistryStatusCode(AuditModel):
     class Meta:
         db_table = 'registry_status_code'
         ordering = ['sort_order', 'description']
-        verbose_name_plural = 'Status Code of Registry Entries'
+        verbose_name_plural = 'Possible Status Codes of Registry Entries'
+
+    def __str__(self):
+        return self.description
+
+class RegistryRemovalReason(AuditModel):
+    """
+    Possible Reasons for Removal from the Registry
+    """
+    registry_removal_reason_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    code = models.CharField(max_length=10, unique=True)
+    description = models.CharField(max_length=100)
+    is_hidden = models.BooleanField(default=False)
+    sort_order = models.PositiveIntegerField()
+
+    class Meta:
+        db_table = 'registry_removal_reason_code'
+        ordering = ['sort_order', 'description']
+        verbose_name_plural = 'Possible reasons for removal from the Registry'
 
     def __str__(self):
         return self.description
@@ -200,7 +218,9 @@ class Registry(AuditModel):
     registration_no = models.CharField(max_length=15,blank=True, null=True)    
     registry_status = models.ForeignKey(RegistryStatusCode, db_column='registry_status_code_guid', on_delete=models.CASCADE, verbose_name="Registration Entry Status")
     registration_date = models.DateField(blank=True, null=True)
-    registration_removal_date = models.DateField(blank=True, null=True)
+
+    registry_removal_reason = models.ForeignKey(RegistryRemovalReason, db_column='registry_removal_reason_guid', on_delete=models.CASCADE, blank=True, null=True,verbose_name="Removal Reason")
+    registration_removal_date = models.DateField(blank=True, null=True,verbose_name="Date of Removal from Registry")
 
     class Meta:
         db_table = 'registry'
@@ -231,7 +251,7 @@ class ApplicationStatusCode(AuditModel):
     class Meta:
         db_table = 'registry_application_status_code'
         ordering = ['sort_order', 'description']
-        verbose_name_plural = 'Status of Applications'
+        verbose_name_plural = 'Possible statuses of Applications'
 
     def __str__(self):
         return self.description
