@@ -21,6 +21,11 @@
 \echo '... loading registry_application_status_code code table'
 \copy registry_application_status_code (registry_application_status_code_guid,code,description,is_hidden,sort_order,when_created,when_updated,who_created,who_updated) from 'registry_application_status_code.csv' with header delimiter ',' CSV ;
 
+--Registry Removal Reasons Code
+\echo '... loading registry_removal_reason_code code table'
+\copy registry_removal_reason_code (registry_removal_reason_guid,code,description,is_hidden,sort_order,when_created,when_updated,who_created,who_updated) from 'registration_removal_reason_code.csv' with header delimiter ',' CSV ;
+
+
 \echo 'Registry - Finshed copy of static code tables.'
 
 -- To clear the above tables:
@@ -29,4 +34,5 @@
 -- truncate registry_qualification cascade;
 -- truncate registry_status_code cascade;
 -- truncate registry_application_status_code cascade;
+-- truncate registry_removal_reason_code cascade;
 --
