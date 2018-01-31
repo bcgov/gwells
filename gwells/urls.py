@@ -41,7 +41,7 @@ urlpatterns = [
     url(r'^'+ app_root_slash +'ajax/map_well_search/$', SearchView.map_well_search, name='map_well_search'),
     url(r'^'+ app_root_slash +'500.html$', TestErrorsView.test_500_view, name='test_500'),
     url(r'^'+ app_root_slash +'404.html$', TestErrorsView.test_404_view, name='test_404'),
-    url(r'^'+ app_root_slash +'registry/', include('registry.urls')),        
+    url(r'^'+ app_root_slash +'registries/', include('registries.urls')),        
 ]
 
 if settings.ENABLE_DATA_ENTRY:
