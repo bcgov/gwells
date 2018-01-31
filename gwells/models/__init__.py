@@ -42,6 +42,7 @@ from .ScreenType import ScreenType
 from .SurfaceSealMaterial import SurfaceSealMaterial
 from .SurfaceSealMethod import SurfaceSealMethod
 from .SurficialMaterial import SurficialMaterial
+from .User import User
 from .WaterQualityCharacteristic import WaterQualityCharacteristic
 from .Well import Well
 from .WellActivityType import WellActivityType
@@ -96,6 +97,7 @@ __all__ = [
 'SurfaceSealMaterial',
 'SurfaceSealMethod',
 'SurficialMaterial',
+'User',
 'WaterQualityCharacteristic',
 'Well',
 'WellActivityType',
