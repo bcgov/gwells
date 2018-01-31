@@ -76,7 +76,7 @@ INSTALLED_APPS = (
     'gwells',
     'crispy_forms',
     'formtools',
-    'registries',    
+    'registries',
 )
 
 MIDDLEWARE = (
@@ -186,3 +186,5 @@ LOGGING = {
         },
     }
 }
+
+AUTH_USER_MODEL='gwells.User'
