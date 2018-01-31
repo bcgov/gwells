@@ -15,7 +15,7 @@ from django.contrib import admin
 from django.apps import apps
 
 # Import all models
-from .models import *
+from gwells.models import *
 
 # Register your models here.
 app = apps.get_app_config('gwells')
