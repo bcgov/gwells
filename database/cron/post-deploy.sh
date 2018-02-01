@@ -56,6 +56,19 @@ then
 	\i data-load-static-codes.sql
 EOF
 
+	# \copy statements in data-load-static-codes.sql required to be in this directory
+	cd registries/
+
+	# @Registries
+	# Temporary setup of Registries (Well Driller only) as part of Code With Us
+	# ,including Test Data loaded into the Registries (Driller) tables
+	psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER  << EOF
+	\i clear-tables.sql
+	\ir ../../scripts/registries/populate-xforms-registries.sql
+	\i data-load-static-codes.sql
+EOF
+
+
 	echo ". Running DB Replication from Legacy Database, as per DB_REPLICATION flag"
     cd /opt/app-root/src/database/cron/
     ./db-replicate.sh
