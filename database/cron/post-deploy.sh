@@ -54,6 +54,10 @@ then
 	psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER  << EOF
 	\i clear-tables.sql
 	\i data-load-static-codes.sql
+
+	# Registries app: load lookup and test data
+	\ir registries\clear-tables.sql
+	\ir registries\data-load-static-codes.sql
 EOF
 
 	echo ". Running DB Replication from Legacy Database, as per DB_REPLICATION flag"
