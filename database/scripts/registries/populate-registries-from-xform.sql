@@ -1,7 +1,44 @@
 
+-- truncate registries_organization cascade;
+-- truncate registries_person cascade;
+-- truncate registries_contact_at cascade;
+-- truncate registries_application cascade;
 
 
-                                  ,
+-- Preload with known organizations that act as Certificate Authorities
+INSERT INTO registries_organization (              
+ name                  
+,street_address        
+,city                  
+,postal_code           
+,main_tel              
+,fax_tel               
+,website_url           
+,certificate_authority 
+,province_state_guid
+,org_guid   
+,who_created  
+,when_created 
+,who_updated  
+,when_updated 
+) SELECT
+ 'CGWA'
+,null
+,null
+,null
+,null
+,null
+,'https://www.bcgwa.org/'
+,true
+,prov.province_state_guid
+,gen_random_uuid()
+,'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'
+,'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'
+from gwells_province_state prov
+where prov.code = 'BC'
+limit 1;
 
 INSERT INTO registries_organization (              
  name                  
@@ -14,22 +51,162 @@ INSERT INTO registries_organization (
 ,certificate_authority 
 ,province_state_guid
 ,org_guid   
-) AS SELECT
- distinct on (companyname) companyname
-,companyaddress
-,companycity
-,companypostalcode
-,companyphone
-,companyfax
+,who_created  
+,when_created 
+,who_updated  
+,when_updated 
+) SELECT
+ 'Province of B.C.'
+,null
+,null
+,null
+,null
+,null
+,'https://www2.gov.bc.ca/gov/content/environment/air-land-water/water/laws-rules/groundwater-protection-regulation'
+,true
+,prov.province_state_guid
+,gen_random_uuid()
+,'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'
+,'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'
+from gwells_province_state prov
+where prov.code = 'BC'
+limit 1;
+
+INSERT INTO registries_organization (              
+ name                  
+,street_address        
+,city                  
+,postal_code           
+,main_tel              
+,fax_tel               
+,website_url           
+,certificate_authority 
+,province_state_guid
+,org_guid   
+,who_created  
+,when_created 
+,who_updated  
+,when_updated 
+) SELECT
+ distinct on (trim (both from companyname)) companyname
+,trim (both from companyaddress)
+,trim (both from companycity)
+,trim (both from companypostalcode)
+,trim (both from companyphone)
+,trim (both from companyfax)
 ,null
 ,false
 ,prov.province_state_guid
-,gen_random_uuid()
+,xform.org_guid
+,'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'
+,'DATALOAD_USER'
+,'2018-01-01 00:00:00-08' 
 from xform_registries_drillers_reg xform
     ,gwells_province_state prov
 where companyname is not null
 and   prov.code = xform.companyprov
-order by companyname;
+order by trim (both from companyname);
+
+
+-- May need distinct on (first_name || surname )
+SELECT COUNT(*), firstname, lastname
+FROM   xform_registries_drillers_reg xform
+group by firstname, lastname
+having count(*) > 1;
+
+INSERT INTO registries_person (              
+ first_name                  
+,surname        
+,person_guid                             
+,who_created  
+,when_created 
+,who_updated  
+,when_updated 
+)
+SELECT 
+ trim (both from firstname)
+,trim (both from lastname)
+,xform.person_guid
+,'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'
+,'DATALOAD_USER'
+,'2018-01-01 00:00:00-08' 
+from xform_registries_drillers_reg xform
+order by firstname, lastname;
+
+
+INSERT INTO registries_contact_at (              
+ contact_tel    
+,contact_email  
+,effective_date 
+,expired_date   
+,org_guid       
+,person_guid                               
+,contact_at_guid
+,who_created  
+,when_created 
+,who_updated  
+,when_updated 
+)
+SELECT trim (both from xform.companyphone)
+,trim (both from xform.companyemail)
+,'1900-01-01 00:00:00-08' 
+,null
+,org.org_guid
+,per.person_guid
+,gen_random_uuid()
+,'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'
+,'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'
+from xform_registries_drillers_reg xform
+inner join registries_person per
+  on per.person_guid = xform.person_guid
+inner join registries_organization org
+  on org.org_guid = xform.org_guid;
+
+
+INSERT INTO registries_application (              
+ file_no         
+,over19_ind      
+,registrar_notes 
+,reason_denied   
+,person_guid     
+,application_guid 
+,who_created  
+,when_created 
+,who_updated  
+,when_updated 
+)
+SELECT
+ null
+,true
+,trim (both from xform_trk.comments)
+,null
+,xform_reg.person_guid
+,gen_random_uuid()
+,'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'
+,'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'
+from xform_registries_action_tracking_driller xform_trk
+inner join xform_registries_drillers_reg xform_reg
+  on xform_reg.name = xform_trk.name;
+
+
+create registries_application_status 
+  (multi rows)
+  - for xform_registries_action_tracking_driller.Registered = Removed
+  - for xform_registries_action_tracking_driller.Registered = Yes 
+  - for xform_registries_action_tracking_driller.Registered = No 
+
+
+create registries_register (type DRILL)
+  - for xform_registries_action_tracking_driller.Registered = Removed
+  - for xform_registries_action_tracking_driller.Registered = Yes 
 
 
 /*

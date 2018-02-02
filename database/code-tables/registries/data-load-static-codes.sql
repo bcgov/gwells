@@ -32,12 +32,12 @@
 \echo 'Registries - Loading test data, based upon January 2018 Well Driller Register'
 
 \echo '... loading Registration Action Tracking_Driller'
-\copy xform_registries_action_tracking_driller from 'Registration Action Tracking_Driller.sanitized.csv' with header delimiter ',' CSV ;
+\copy xform_registries_action_tracking_driller (id,registered_ind,date_app_received,company_name,name,town_region, date_gone_for_review,app_approval_date,date_approval_letter_card_sent,app_denial_date,comments,date_denial_letter_sent,date_removed_from_register) from 'Registration Action Tracking_Driller.sanitized.csv' with header delimiter ',' CSV ;
 
 \echo '... loading well_drillers_reg'
-\copy xform_registries_drillers_reg from 'well_drillers_reg.sanitized.csv' with header delimiter ',' CSV ;
+\copy xform_registries_drillers_reg (name,lastname,firstname,birthdate,welldrillerregno,registrationdate,companyname,companyaddress,companycity,companyprov,companypostalcode,companyphone,companyfax,companyemail,classofwelldriller,typeofcertificate,classofwell,typeofdrillrig,moeregion, file_number) from 'well_drillers_reg.sanitized.csv' with header delimiter ',' CSV ;
 
 \echo '... loading Removed From Registry'
-\copy xform_registries_removed_from from 'Removed From Registry.sanitized.csv' with header delimiter ',' CSV ;
+\copy xform_registries_removed_from (name,lastname,firstname,birthdate,registrationnumber,registrationdate,companyname,companyaddress,companycity,companyprov,companypostalcode,companyphone,companyfax,companyemail,classofwelldriller,reason,removed_from_registry) from 'Removed From Registry.sanitized.csv' with header delimiter ',' CSV ;
 
 \echo 'Registries - Finshed loading of test data.'
