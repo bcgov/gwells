@@ -3,9 +3,11 @@
 -- Registries app (Well Driller, Pump Installer)
 --   
 
+\echo 'Creating Registries app tables...'
+
 DROP TABLE IF EXISTS xform_registries_action_tracking_driller;
 CREATE unlogged TABLE IF NOT EXISTS xform_registries_action_tracking_driller (
- guid uuid DEFAULT gen_random_uuid()
+ trk_guid uuid DEFAULT gen_random_uuid()
 ,id integer
 ,registered_ind character varying(20)
 ,date_app_received date
@@ -23,9 +25,7 @@ CREATE unlogged TABLE IF NOT EXISTS xform_registries_action_tracking_driller (
 
 DROP TABLE IF EXISTS xform_registries_drillers_reg;
 CREATE unlogged TABLE IF NOT EXISTS xform_registries_drillers_reg ( 
- person_guid uuid DEFAULT gen_random_uuid()
-,org_guid uuid DEFAULT gen_random_uuid()
-,Name character varying(100)
+ Name character varying(100)
 ,LastName character varying(20)
 ,FirstName character varying(20)
 ,BirthDate character varying(20)
@@ -39,18 +39,24 @@ CREATE unlogged TABLE IF NOT EXISTS xform_registries_drillers_reg (
 ,CompanyPhone  character varying(20)
 ,CompanyFax character varying(50)
 ,CompanyEmail  character varying(50)
-,ClassofWellDriller  character varying(50)
+,ClassofWellDriller  character varying(50) -- IGNORE for now
 ,TypeofCertificate  character varying(50)
+--gwells=> select typeofcertificate, count(*) from public.xform_registries_drillers_reg group by typeofcertificate;
+--           typeofcertificate            | count 
+----------------------------------------+-------
+-- n/a                                    |    96
+-- Ground Water Drilling Technician, CGWA |     2
+-- Water Well Driller, Prov. Of BC        |    29
+--(3 rows)
 ,ClassofWell  character varying(50)
-,TypeofDrillRig  character varying(20)
-,MoERegion  character varying(40)
+,TypeofDrillRig  character varying(20) -- IGNORE no data
+,MoERegion  character varying(40) -- IGNORE obsolete
 ,File_Number  character varying(20)
  );  
 
 DROP TABLE IF EXISTS xform_registries_removed_from;
 CREATE unlogged TABLE IF NOT EXISTS xform_registries_removed_from ( 
-guid uuid DEFAULT gen_random_uuid()
-,Name character varying(100)
+ Name character varying(100)
 ,LastName character varying(20)
 ,FirstName character varying(20)
 ,BirthDate character varying(20)
@@ -68,3 +74,6 @@ guid uuid DEFAULT gen_random_uuid()
 ,Reason character varying(50)
 ,Removed_from_Registry date
  );  
+
+\echo 'Finished creating Registries app tables...'
+
