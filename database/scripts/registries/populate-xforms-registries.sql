@@ -25,7 +25,8 @@ CREATE unlogged TABLE IF NOT EXISTS xform_registries_action_tracking_driller (
 
 DROP TABLE IF EXISTS xform_registries_drillers_reg;
 CREATE unlogged TABLE IF NOT EXISTS xform_registries_drillers_reg ( 
- Name character varying(100)
+ reg_guid uuid DEFAULT gen_random_uuid()
+,Name character varying(100)
 ,LastName character varying(20)
 ,FirstName character varying(20)
 ,BirthDate character varying(20)
@@ -56,7 +57,8 @@ CREATE unlogged TABLE IF NOT EXISTS xform_registries_drillers_reg (
 
 DROP TABLE IF EXISTS xform_registries_removed_from;
 CREATE unlogged TABLE IF NOT EXISTS xform_registries_removed_from ( 
- Name character varying(100)
+ removed_guid uuid DEFAULT gen_random_uuid()
+,Name character varying(100)
 ,LastName character varying(20)
 ,FirstName character varying(20)
 ,BirthDate character varying(20)
