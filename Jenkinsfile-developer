@@ -16,6 +16,7 @@ node('python') {
         } 
         finally {
             stash includes: 'nosetests.xml,coverage.xml', name: 'coverage'
+            junit 'nosetests.xml'
         }
     }
 }    
@@ -40,8 +41,9 @@ node('maven') {
 
         dir('sonar-runner') {
             unstash 'coverage'
-            sh returnStdout: true, script: "./gradlew sonarqube -Dsonar.host.url=${SONARQUBE_URL} -Dsonar.verbose=true --stacktrace --info  -Dsonar.sources=.."
-        }
+            try {
+                sh returnStdout: true, script: "./gradlew sonarqube -Dsonar.host.url=${SONARQUBE_URL} -Dsonar.verbose=true --stacktrace --info  -Dsonar.sources=.."
+            } finally { }
     }
 
     stage('Deploy on Dev') {
