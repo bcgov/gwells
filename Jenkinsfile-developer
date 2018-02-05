@@ -11,7 +11,7 @@ node('python') {
         checkout scm
         try {
             sh 'pip install --upgrade pip && pip install -r requirements.txt'
-            sh 'python manage.py migrate && python manage.py test -c nose.cfg'
+            sh 'python manage.py migrate && python manage.py runserver&& python manage.py test -c nose.cfg'
         } 
         finally {
             stash includes: 'nosetests.xml,coverage.xml', name: 'coverage'
