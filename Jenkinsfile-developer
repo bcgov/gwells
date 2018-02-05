@@ -13,7 +13,7 @@ node('python') {
             sh 'pip install --upgrade pip && pip install -r requirements.txt'
             sh 'python manage.py test -c nose.cfg'
         } 
-        } finally {
+        finally {
             stash includes: 'nosetests.xml,coverage.xml', name: 'coverage'
         }
     }
