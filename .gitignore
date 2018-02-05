@@ -82,3 +82,4 @@ activate
 
 #virtual env
 /deactivate
+.vscode/settings.json
