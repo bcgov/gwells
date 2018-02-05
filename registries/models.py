@@ -25,11 +25,11 @@ class Organization(AuditModel):
     name = models.CharField(max_length=200)
     street_address = models.CharField(max_length=100, blank=True, null=True, verbose_name='Street Address')
     city = models.CharField(max_length=50, blank=True, null=True, verbose_name='Town/City')
-    province_state = models.ForeignKey(ProvinceState, db_column='province_state_guid', on_delete=models.CASCADE, verbose_name='Province/State')
+    province_state = models.ForeignKey(ProvinceState, db_column='province_state_guid', on_delete=models.CASCADE, null=True, verbose_name='Province/State')
     postal_code = models.CharField(max_length=10, blank=True, null=True, verbose_name='Postal Code')
 
-    main_tel = models.CharField(blank=True, null=True,max_length=12,verbose_name="Company main telephone number")
-    fax_tel = models.CharField(blank=True, null=True,max_length=12,verbose_name="Facsimile telephone number")
+    main_tel = models.CharField(blank=True, null=True,max_length=15,verbose_name="Company main telephone number")
+    fax_tel = models.CharField(blank=True, null=True,max_length=15,verbose_name="Facsimile telephone number")
     website_url = models.URLField(blank=True, null=True,verbose_name="Orgnization's Website")
     certificate_authority = models.BooleanField(default=False, verbose_name='Certifying Authority for Registries Activities', choices=((False, 'No'), (True, 'Yes')))
 
@@ -44,12 +44,12 @@ class Organization(AuditModel):
 class ContactAt(AuditModel):
     contact_at_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False,
     	verbose_name="Contact At UUID, hidden from users")
-    person = models.ForeignKey(Person, db_column='person_guid', on_delete=models.CASCADE, blank=True, null=True, 
+    person = models.ForeignKey(Person, db_column='person_guid', on_delete=models.CASCADE, null=True, 
     	verbose_name="Person Reference")
-    org = models.ForeignKey(Organization, db_column='org_guid', on_delete=models.CASCADE, blank=True, null=True, 
+    org = models.ForeignKey(Organization, db_column='org_guid', on_delete=models.CASCADE, null=True, 
     	verbose_name="Company Reference")
 
-    contact_tel = models.CharField(blank=True, null=True,max_length=12,verbose_name="Contact telephone number")
+    contact_tel = models.CharField(blank=True, null=True,max_length=15,verbose_name="Contact telephone number")
     contact_email = models.EmailField(blank=True, null=True,verbose_name="Email adddress")
 
     # TODO - GW Replace defaults with save() method, see
@@ -73,7 +73,7 @@ class ActivityCode(AuditModel):
     Restricted Activity related to drilling wells and installing well pumps.
     """
     registries_activity_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    code = models.CharField(max_length=10)
+    code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
@@ -156,7 +156,7 @@ class ClassificationAppliedFor(AuditModel):
     registries_application = models.ForeignKey(RegistriesApplication, db_column='application_guid', on_delete=models.CASCADE, verbose_name="Application Reference")
     registries_subactivity = models.ForeignKey(SubactivityCode, null=True, db_column='registries_subactivity_guid', on_delete=models.CASCADE)
 
-    primary_certificate_authority = models.ForeignKey(Organization, db_column='org_guid', on_delete=models.CASCADE, limit_choices_to={'certificate_authority': True}
+    primary_certificate_authority = models.ForeignKey(Organization, null=True, db_column='certifying_org_guid', on_delete=models.CASCADE, limit_choices_to={'certificate_authority': True}
         ,verbose_name="Certifying Organization")
     primary_certificate_no = models.CharField(max_length=50)
 
