@@ -4,7 +4,22 @@ node('maven') {
         openshiftBuild bldCfg: 'gwells-developer', showBuildLogs: 'true'
         openshiftTag destStream: 'gwells', verbose: 'true', destTag: '$BUILD_ID', srcStream: 'gwells', srcTag: 'latest'
     }
+}
 
+node('python') {
+    stage('Unit/Coverage Test') {
+        checkout scm
+        try {
+            sh 'pip install --upgrade pip && pip install -r requirements.txt'
+            sh 'python manage.py test -c nose.cfg'
+        } 
+        } finally {
+            stash includes: 'nosetests.xml,coverage.xml', name: 'coverage'
+        }
+    }
+}    
+
+node('maven') {
     stage('Code Quality Check') {
 	//the checkout is mandatory, otherwise code quality check would fail
         echo "checking out source"
@@ -23,6 +38,7 @@ node('maven') {
         echo "SONARQUBE_URL: ${SONARQUBE_URL}"
 
         dir('sonar-runner') {
+            unstash 'coverage'
             sh returnStdout: true, script: "./gradlew sonarqube -Dsonar.host.url=${SONARQUBE_URL} -Dsonar.verbose=true --stacktrace --info  -Dsonar.sources=.."
         }
     }
