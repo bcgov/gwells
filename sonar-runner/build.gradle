@@ -7,16 +7,16 @@ plugins {
 
 sonarqube {
     properties {
-        //property "sonar.host.url", "http://localhost:9000"        
+        //property "sonar.host.url", "https://sonarqube-moe-gwells-tools.pathfinder.gov.bc.ca"        
         property "sonar.projectName", "GWells"
         property "sonar.projectKey", "org.sonarqube:bcgov-gwells"
         property "sonar.projectBaseDir", "../"
         property "sonar.sources", "./gwells"
         property "sonar.lanuage", "py"
-        //property "sonar.tests", "test"
+        //property "sonar.tests", "gwells/test*.py"
         property "sourceEncoding", "UTF-8"
-        //property "sonar.python.xunit.reportPath","nosetests.xml"
-        //property "sonar.python.coverage.reportPath","coverage.xml"
+        property "sonar.python.xunit.reportPath","nosetests.xml"
+        property "sonar.python.coverage.reportPath","coverage.xml"
         property "sonar.python.coveragePlugin","cobertura"
         property "sonar.jacoco.reportPath", "${project.buildDir}/jacoco/test.exec"
 

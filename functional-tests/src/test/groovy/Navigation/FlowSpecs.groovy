@@ -11,10 +11,10 @@ import pages.external.BCWaterResourceAtlas
 import pages.external.iMapBC
 import pages.external.AboutGov
 import pages.external.GovHome
+import spock.lang.*
 
-import spock.lang.Issue
-import spock.lang.Unroll
-
+@Title("Basic Navigational Tests")
+@Narrative("""As a user I expect all links in the GWELLS application to work.""")
 class FlowSpecs extends GebReportingSpec {
 
     @Unroll

@@ -75,10 +75,11 @@ functional-tests/.project
 functional-tests/.settings/org.eclipse.buildship.core.prefs
 functional-tests/.classpath
 functional-tests/bin
+functional-tests/src/test/groovy/testtamplet.txt
 
 # Custom GW
 activate
 
 #virtual env
 /deactivate
-
+.vscode/settings.json

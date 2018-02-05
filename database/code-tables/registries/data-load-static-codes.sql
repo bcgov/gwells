@@ -1,3 +1,4 @@
+--  @Registries
 --  Run this script as gwells owner (e.g. psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER -f data-load-static-codes.sql)
 \echo 'Registry - Copying static code tables from deployed image CSV files'
 
@@ -25,14 +26,18 @@
 \echo '... loading registry_removal_reason_code code table'
 \copy registries_removal_reason_code (registries_removal_reason_guid,code,description,is_hidden,sort_order,when_created,when_updated,who_created,who_updated) from 'registries_removal_reason_code.csv' with header delimiter ',' CSV ;
 
-
 \echo 'Registry - Finshed copy of static code tables.'
 
--- To clear the above tables:
--- 
--- truncate registries_activity_code cascade;
--- truncate registries_qualification_code cascade;
--- truncate registries_status_code cascade;
--- truncate registries_application_status_code cascade;
--- truncate registries_removal_reason_code cascade;
---
+--Registries Test Data 
+\echo 'Registries - Loading test data, based upon January 2018 Well Driller Register'
+
+\echo '... loading Registration Action Tracking_Driller'
+\copy xform_registries_action_tracking_driller (id,registered_ind,date_app_received,company_name,name,town_region, date_gone_for_review,app_approval_date,date_approval_letter_card_sent,app_denial_date,comments,date_denial_letter_sent,date_removed_from_register) from 'Registration Action Tracking_Driller.sanitized.csv' with header delimiter ',' CSV ;
+
+\echo '... loading well_drillers_reg'
+\copy xform_registries_drillers_reg (name,lastname,firstname,birthdate,welldrillerregno,registrationdate,companyname,companyaddress,companycity,companyprov,companypostalcode,companyphone,companyfax,companyemail,classofwelldriller,typeofcertificate,classofwell,typeofdrillrig,moeregion, file_number) from 'well_drillers_reg.sanitized.csv' with header delimiter ',' CSV ;
+
+\echo '... loading Removed From Registry'
+\copy xform_registries_removed_from (name,lastname,firstname,birthdate,registrationnumber,registrationdate,companyname,companyaddress,companycity,companyprov,companypostalcode,companyphone,companyfax,companyemail,classofwelldriller,reason,removed_from_registry) from 'Removed From Registry.sanitized.csv' with header delimiter ',' CSV ;
+
+\echo 'Registries - Finshed loading of test data.'
