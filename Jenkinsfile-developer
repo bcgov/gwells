@@ -11,7 +11,7 @@ node('python') {
         checkout scm
         try {
             sh 'pip install --upgrade pip && pip install -r requirements.txt'
-            sh 'python manage.py collectstatic && python manage.py migrate && python manage.py runserver &'
+            sh 'python manage.py collectstatic && python manage.py migrate'
             sh 'python manage.py test -c nose.cfg'
         } 
         finally {
