@@ -21,7 +21,7 @@ NOTE: Related files are under the gwells project folder, with the other files bu
 - [database/code-tables/registries/](../database/code-tables/registries/)
 - [database/scripts/registries/](../database/scripts/registries/)
 
-The [post-deploy.sh](../database/cron/postdeploy.sh) step now automatically includes the setup of the registries app code tables and data tables.
+The [post-deploy.sh](../database/cron/post-deploy.sh) step now automatically includes the setup of the registries app code tables and data tables.
 ```
 cd registries/
 
