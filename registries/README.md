@@ -18,8 +18,16 @@ Sub-folders follow the standard Django setup.
 ```
 
 NOTE: Related files are under the gwells project folder:
-- [database/code-tables/registries](/database/code-tables/registries)
+- [database/code-tables/registries](/gwells/database/registries/)
 - [database/scripts/registries](../../database/scripts/registries)
+
+Got.. 
+https://github.com/garywong-bc/gwells/blob/developer/gwells/tree/developer/registries
+
+Want
+https://github.com/garywong-bc/gwells/tree/developer/registries
+
+your-project-name/tree/master/your-subfolde
 
 
 
