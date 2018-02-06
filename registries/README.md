@@ -5,12 +5,14 @@
 This is a distinct app under the GWELLS project, created using the Django command:
 `python manage.py startapp registries`, and included under this entry in the [settings.py](../gwells/settings.py) file:
 
-```INSTALLED_APPS = (
+```
+INSTALLED_APPS = (
 ..    'gwells',
 ..```
 
 Sub-folders follow the standard Django setup.
-```-- __pycache__
+```
+-- __pycache__
 -- migrations```
 
 NOTE: Related files are under the gwells project folder:
@@ -18,7 +20,8 @@ NOTE: Related files are under the gwells project folder:
 - [database/scripts/registries](../gwells/database/scripts/registries)
 
 The [post-deploy.sh](../gwells/database/cron/postdeploy.sh) step now automatically includes the setup of the registries app code tables and data tables.
-```cd registries/
+```
+cd registries/
 
 # @Registries
 # Temporary setup of Registries (Well Driller only) as part of Code With Us
