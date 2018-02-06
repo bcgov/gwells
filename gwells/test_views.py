@@ -19,6 +19,7 @@ from http import HTTPStatus
 from .models import *
 from .search import Search
 from .views import *
+import logging
 
 #TODO split tests into one file per view
 
@@ -99,8 +100,10 @@ class ViewsTestCase(TestCase):
 #    def test_500_not_ok(self):
 #        self.not_ok('test_500', HTTPStatus.INTERNAL_SERVER_ERROR)
 
-#    def test_404_not_ok(self):
-#        self.not_ok('test_404', HTTPStatus.NOT_FOUND)
+    @prevent_request_warnings
+    def test_404_not_ok(self):
+        response = self.client.get("http://localhost:8000/gwells/well/-2")
+        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
 
 #    def test_activity_submission_list_ok(self):
 #        self.ok('activity_submission_list')
