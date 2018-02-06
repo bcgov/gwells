@@ -15,8 +15,7 @@ from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin
 from . import views
-from .views import *
-from .views_test import *
+from gwells.views import *
 from django.views.generic import TemplateView
 
 # Creating 2 versions of the app_root. One without and one with trailing slash
@@ -39,8 +38,6 @@ urlpatterns = [
     url(r'^'+ app_root_slash +'health$', HealthView.health, name='health'),
     url(r'^'+ app_root_slash +'groundwater-information', TemplateView.as_view(template_name='gwells/groundwater_information.html'), name='groundwater_information'),
     url(r'^'+ app_root_slash +'ajax/map_well_search/$', SearchView.map_well_search, name='map_well_search'),
-    #url(r'^'+ app_root_slash +'500.html$', TestErrorsView.test_500_view, name='test_500'),
-    #url(r'^'+ app_root_slash +'404.html$', TestErrorsView.test_404_view, name='test_404'),
     url(r'^'+ app_root_slash +'registries/', include('registries.urls')),
 ]
 
