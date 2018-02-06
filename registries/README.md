@@ -19,23 +19,9 @@ Sub-folders follow the standard Django setup.
 
 NOTE: Related files are under the gwells project folder, with the other files but in the a `registries` subfolder:
 - [database/code-tables/registries/](../database/code-tables/registries/)
-- [database/scripts/registries/](/gwells/database/scripts/registries/)
+- [database/scripts/registries/](../database/scripts/registries/)
 
-- [database/code-tables/registries](/gwells/tree/developer/registries)
-- [database/code-tables/registries](../../database/code-tables/registries)
-- [database/scripts/registries](../../database/scripts/registries)
-
-- [database/code-tables/registries/](/gwells/tree/developer/registries/)
-- [database/code-tables/registries/](../../database/code-tables/registries/)
-- [database/scripts/registries/](../../database/scripts/registries/)
-
-Want:
-https://github.com/garywong-bc/gwells/tree/developer/registries
-
-
-
-
-The [post-deploy.sh](/gwells/database/cron/postdeploy.sh) step now automatically includes the setup of the registries app code tables and data tables.
+The [post-deploy.sh](../database/cron/postdeploy.sh) step now automatically includes the setup of the registries app code tables and data tables.
 ```
 cd registries/
 
@@ -48,14 +34,14 @@ psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER  << EOF
 \i data-load-static-codes.sql
 ```
 
-Please note that the [populate-registries-from-xform.sql](../gwells/database/scripts/registries/populate-registries-from-xform.sql) is *not* automatically called as part of any deployment.  Instead, it is meant to be run locally from the developer's workstation, and that workstation must have the files:
+Please note that the [populate-registries-from-xform.sql](../database/scripts/registries/populate-registries-from-xform.sql) is *not* automatically called as part of any deployment.  Instead, it is meant to be run locally from the developer's workstation, and that workstation must have the files:
 - Registration Action Tracking_Driller.sanitized.csv
 - Registry.sanitized.csv
 - well_drillers_reg.sanitized.csv
 
 We do not wish these files up on github, so please email the Architect Owner (gary.t.wong@gov.bc.ca) if you require them.  Alternatively, request the .json export of the data, using them as fixtures.  
 
-Please note that there is a dependency on the ProvinceState model of gwells, so any exports of registries will need this as well, such as:
+Please note that there is a dependency on the ProvinceState model of gwells, so any exports of registries will need this as well, for example:
 ```
 python manage.py dumpdata registries gwells.ProvinceState
 ```
