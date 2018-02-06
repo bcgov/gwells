@@ -8,16 +8,19 @@ This is a distinct app under the GWELLS project, created using the Django comman
 ```
 INSTALLED_APPS = (
 ..    'gwells',
-..```
+..
+```
 
 Sub-folders follow the standard Django setup.
 ```
 -- __pycache__
--- migrations```
+-- migrations
+```
 
 NOTE: Related files are under the gwells project folder:
-- [database/code-tables/registries](../gwells/database/code-tables/registries)
-- [database/scripts/registries](../gwells/database/scripts/registries)
+- [database/code-tables/registries](../../database/code-tables/registries)
+- [database/scripts/registries](../../database/scripts/registries)
+
 
 The [post-deploy.sh](../gwells/database/cron/postdeploy.sh) step now automatically includes the setup of the registries app code tables and data tables.
 ```
@@ -29,7 +32,8 @@ cd registries/
 psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER  << EOF
 \i clear-tables.sql
 \ir ../../scripts/registries/populate-xforms-registries.sql
-\i data-load-static-codes.sql```
+\i data-load-static-codes.sql
+```
 
 Please note that the [populate-registries-from-xform.sql](../gwells/database/scripts/registries/populate-registries-from-xform.sql) is *not* automatically called as part of any deployment.  Instead, it is meant to be run locally from the developer's workstation, and that workstation must have the files:
 - Registration Action Tracking_Driller.sanitized.csv
