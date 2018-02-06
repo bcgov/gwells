@@ -17,21 +17,21 @@ Sub-folders follow the standard Django setup.
 -- migrations
 ```
 
-NOTE: Related files are under the gwells project folder:
-- [database/code-tables/registries](/gwells/database/registries/)
+NOTE: Related files are under the gwells project folder, with the other files but in the a `registries` subfolder:
+- [database/code-tables/registries/](/gwells/database/code-tables/registries/)
+- [database/scripts/registries/](/gwells/database/scripts/registries/)
+
+- [database/code-tables/registries](/gwells/tree/developer/registries)
+- [database/code-tables/registries](../../database/code-tables/registries)
 - [database/scripts/registries](../../database/scripts/registries)
 
-Got.. 
-https://github.com/garywong-bc/gwells/blob/developer/gwells/tree/developer/registries
-
-Want
-https://github.com/garywong-bc/gwells/tree/developer/registries
-
-your-project-name/tree/master/your-subfolde
+- [database/code-tables/registries/](/gwells/tree/developer/registries/)
+- [database/code-tables/registries/](../../database/code-tables/registries/)
+- [database/scripts/registries/](../../database/scripts/registries/)
 
 
 
-The [post-deploy.sh](../gwells/database/cron/postdeploy.sh) step now automatically includes the setup of the registries app code tables and data tables.
+The [post-deploy.sh](/gwells/database/cron/postdeploy.sh) step now automatically includes the setup of the registries app code tables and data tables.
 ```
 cd registries/
 
