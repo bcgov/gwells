@@ -39,9 +39,9 @@ urlpatterns = [
     url(r'^'+ app_root_slash +'health$', HealthView.health, name='health'),
     url(r'^'+ app_root_slash +'groundwater-information', TemplateView.as_view(template_name='gwells/groundwater_information.html'), name='groundwater_information'),
     url(r'^'+ app_root_slash +'ajax/map_well_search/$', SearchView.map_well_search, name='map_well_search'),
-    url(r'^'+ app_root_slash +'500.html$', TestErrorsView.test_500_view, name='test_500'),
-    url(r'^'+ app_root_slash +'404.html$', TestErrorsView.test_404_view, name='test_404'),
-    url(r'^'+ app_root_slash +'registries/', include('registries.urls')),        
+    #url(r'^'+ app_root_slash +'500.html$', TestErrorsView.test_500_view, name='test_500'),
+    #url(r'^'+ app_root_slash +'404.html$', TestErrorsView.test_404_view, name='test_404'),
+    url(r'^'+ app_root_slash +'registries/', include('registries.urls')),
 ]
 
 if settings.ENABLE_DATA_ENTRY:
