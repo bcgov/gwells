@@ -16,5 +16,6 @@ from django.conf.urls import url
 from . import views
 
 urlpatterns = [
+    url(r'^drillers$', views.APIDrillerListView.as_view(), name='driller-list'),
     url(r'^$', views.index, name='index'),
 ]
