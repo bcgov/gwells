@@ -100,3 +100,7 @@ class ViewsTestCase(TestCase):
     def test_404_not_ok(self):
         response = self.client.get("http://localhost:8000/gwells/well/-2")
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
+
+    def test_admin_ok(self):
+        response = self.client.get("http://localhost:8000/gwells/admin/")
+        self.assertEqual(response.status_code, HTTPStatus.OK)
