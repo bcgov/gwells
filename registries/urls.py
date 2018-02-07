@@ -17,6 +17,6 @@ from . import views
 
 urlpatterns = [
     url(r'^drillers/(?P<org_guid>[-\w]+)', views.APIDrillerDetailView.as_view(), name='driller-detail'),
-    url(r'^drillers$', views.APIDrillerListView.as_view(), name='driller-list'),
+    url(r'^drillers/$', views.APIDrillerListCreateView.as_view(), name='driller-list'),
     url(r'^$', views.index, name='index'),
 ]
