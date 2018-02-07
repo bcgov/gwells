@@ -5,6 +5,14 @@ from registries.models import Organization
 from registries.serializers import DrillerListSerializer, DrillerSerializer
 
 class APIDrillerListCreateView(ListCreateAPIView):
+    """
+    get:
+    Return a list of all registered drilling organizations
+
+    post:
+    Create a new drilling organization instance
+    """
+    
     queryset = Organization.objects.all().select_related('province_state')
     serializer_class = DrillerSerializer
 
@@ -15,6 +23,17 @@ class APIDrillerListCreateView(ListCreateAPIView):
 
 
 class APIDrillerRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
+    """
+    get:
+    Return the specified drilling organization
+
+    patch:
+    Updates the specified drilling organization with the fields/values provided in the request body
+
+    delete:
+    Removes the specified drilling organization record
+    """
+
     queryset = Organization.objects.all()
     lookup_field = "org_guid"
     serializer_class = DrillerSerializer
