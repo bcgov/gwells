@@ -6,7 +6,7 @@ from registries.models import Organization
 from registries.serializers import DrillerListSerializer
 
 class APIDrillerListView(ListAPIView):
-    queryset = Organization.objects.all()
+    queryset = Organization.objects.all().select_related('province_state')
     serializer_class = DrillerListSerializer
 
 # Create your views here.
