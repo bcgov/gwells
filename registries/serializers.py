@@ -30,9 +30,9 @@ class DrillerListSerializer(serializers.ModelSerializer):
         )
 
 
-class DrillerDetailSerializer(serializers.ModelSerializer):
+class DrillerSerializer(serializers.ModelSerializer):
     """
-    Serializes Driller model fields for "detail" view
+    Serializes Driller model fields
     """
 
     province_state = serializers.ReadOnlyField(source="province_state.code")
