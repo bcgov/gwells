@@ -7,12 +7,12 @@ from registries.serializers import DrillerListSerializer, DrillerSerializer
 class APIDrillerListCreateView(ListCreateAPIView):
     """
     get:
-    Return a list of all registered drilling organizations
+    Returns a list of all registered drilling organizations
 
     post:
-    Create a new drilling organization instance
+    Creates a new drilling organization record
     """
-    
+
     queryset = Organization.objects.all().select_related('province_state')
     serializer_class = DrillerSerializer
 
@@ -25,10 +25,13 @@ class APIDrillerListCreateView(ListCreateAPIView):
 class APIDrillerRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
     """
     get:
-    Return the specified drilling organization
+    Returns the specified drilling organization
+
+    put:
+    Replaces the specified record with a new one
 
     patch:
-    Updates the specified drilling organization with the fields/values provided in the request body
+    Updates a drilling organization with the fields/values provided in the request body
 
     delete:
     Removes the specified drilling organization record
