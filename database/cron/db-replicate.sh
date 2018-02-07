@@ -18,6 +18,8 @@
 #    
 export PGPASSWORD=$DATABASE_PASSWORD
 
+
+# TODO GW - replace below, leveraging new IN boolean parameter for gwells_db_replicate()
 if [ "$DB_REPLICATE" = "Subset" ]
 then
 	echo "... Limiting replication to a subset of Legacy Database, per DB_REPLICATE flag"
