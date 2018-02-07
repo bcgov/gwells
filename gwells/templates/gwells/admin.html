@@ -1,0 +1,13 @@
+{% extends 'gwells/base.html' %}
+
+{% block title %}{% endblock %}
+
+{% block bodyheading_block %}GWells Administration{% endblock %}
+
+{% block introduction_block %}
+<p>Welcome {{request.user}}</p>
+{% endblock %}
+
+{% block body_block %}
+<a id="add_survey" html="{% url 'add_survey' %}">{% url 'add_survey' %}</a>
+{% endblock %}
