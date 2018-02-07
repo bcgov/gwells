@@ -1,7 +1,5 @@
 from rest_framework import serializers
 from registries.models import Organization
-from gwells.models import ProvinceState
-
 
 class DrillerListSerializer(serializers.ModelSerializer):
     """
