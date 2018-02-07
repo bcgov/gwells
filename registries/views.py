@@ -1,5 +1,3 @@
-from django.shortcuts import render
-from django.conf import settings
 from django.http import HttpResponse
 from rest_framework.generics import ListAPIView
 from registries.models import Organization
