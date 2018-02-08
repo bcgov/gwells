@@ -15,7 +15,7 @@
 from django.views import generic
 
 class AdminView(generic.TemplateView):
-    template_name = 'gwells/admin.html'
+    template_name = 'gwells/site_admin.html'
 
     def get_context_data(self, **kwargs):
         """

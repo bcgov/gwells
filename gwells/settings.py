@@ -80,6 +80,11 @@ INSTALLED_APPS = (
     'django_nose',
 )
 
+MIGRATION_MODULES = {
+    'gwells':'gwells.migrations.gwells',
+    'registries':'gwells.migrations.registries'
+}
+
 MIDDLEWARE = (
     'django.middleware.gzip.GZipMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
