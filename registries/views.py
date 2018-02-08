@@ -2,9 +2,9 @@ from django.http import HttpResponse
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.response import Response
 from registries.models import Organization
-from registries.serializers import DrillerListSerializer, DrillerSerializer
+from registries.serializers import OrganizationListSerializer, OrganizationSerializer
 
-class APIDrillerListCreateView(ListCreateAPIView):
+class APIOrganizationListCreateView(ListCreateAPIView):
     """
     get:
     Returns a list of all registered drilling organizations
@@ -14,15 +14,15 @@ class APIDrillerListCreateView(ListCreateAPIView):
     """
 
     queryset = Organization.objects.all().select_related('province_state')
-    serializer_class = DrillerSerializer
+    serializer_class = OrganizationSerializer
 
     def list(self, request):
         queryset = self.get_queryset()
-        serializer = DrillerListSerializer(queryset, many=True)
+        serializer = OrganizationListSerializer(queryset, many=True)
         return Response(serializer.data)
 
 
-class APIDrillerRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
+class APIOrganizationRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
     """
     get:
     Returns the specified drilling organization
@@ -39,7 +39,7 @@ class APIDrillerRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
 
     queryset = Organization.objects.all()
     lookup_field = "org_guid"
-    serializer_class = DrillerSerializer
+    serializer_class = OrganizationSerializer
 
 
 # Create your views here.
