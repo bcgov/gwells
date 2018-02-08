@@ -47,7 +47,7 @@ class ContactAt(AuditModel):
     person = models.ForeignKey(Person, db_column='person_guid', on_delete=models.CASCADE, null=True, 
     	verbose_name="Person Reference")
     org = models.ForeignKey(Organization, db_column='org_guid', on_delete=models.CASCADE, null=True, 
-    	verbose_name="Company Reference")
+    	verbose_name="Company Reference", related_name="contacts")
 
     contact_tel = models.CharField(blank=True, null=True,max_length=15,verbose_name="Contact telephone number")
     contact_email = models.EmailField(blank=True, null=True,verbose_name="Email adddress")
