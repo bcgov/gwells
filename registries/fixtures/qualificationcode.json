@@ -1,0 +1,167 @@
+[
+  {
+    "model": "registries.qualificationcode",
+    "pk": "1f6c3324-018c-11e8-ba89-0ed5f89f718b",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_subactivity": "1f6c2aaa-018c-11e8-ba89-0ed5f89f718b",
+      "code": "WAT",
+      "description": "Water supply well",
+      "is_hidden": false,
+      "sort_order": 2
+    }
+  },
+  {
+    "model": "registries.qualificationcode",
+    "pk": "1f6c34aa-018c-11e8-ba89-0ed5f89f718b",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_subactivity": "1f6c30c2-018c-11e8-ba89-0ed5f89f718b",
+      "code": "MON",
+      "description": "Monitoring well",
+      "is_hidden": false,
+      "sort_order": 2
+    }
+  },
+  {
+    "model": "registries.qualificationcode",
+    "pk": "1f6c35e0-018c-11e8-ba89-0ed5f89f718b",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_subactivity": "1f6c2aaa-018c-11e8-ba89-0ed5f89f718b",
+      "code": "RECH",
+      "description": "Recharge/Injection well",
+      "is_hidden": false,
+      "sort_order": 2
+    }
+  },
+  {
+    "model": "registries.qualificationcode",
+    "pk": "1f6c372a-018c-11e8-ba89-0ed5f89f718b",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_subactivity": "1f6c2aaa-018c-11e8-ba89-0ed5f89f718b",
+      "code": "DEWAT",
+      "description": "Dewatering well",
+      "is_hidden": false,
+      "sort_order": 2
+    }
+  },
+  {
+    "model": "registries.qualificationcode",
+    "pk": "1f6c3860-018c-11e8-ba89-0ed5f89f718b",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_subactivity": "1f6c2aaa-018c-11e8-ba89-0ed5f89f718b",
+      "code": "REM",
+      "description": "Remediatation well",
+      "is_hidden": false,
+      "sort_order": 2
+    }
+  },
+  {
+    "model": "registries.qualificationcode",
+    "pk": "1f6c3bbc-018c-11e8-ba89-0ed5f89f718b",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_subactivity": "1f6c2aaa-018c-11e8-ba89-0ed5f89f718b",
+      "code": "GEO",
+      "description": "Geotechnical well",
+      "is_hidden": false,
+      "sort_order": 2
+    }
+  },
+  {
+    "model": "registries.qualificationcode",
+    "pk": "1f6c3cde-018c-11e8-ba89-0ed5f89f718b",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_subactivity": "1f6c3202-018c-11e8-ba89-0ed5f89f718b",
+      "code": "CLOS",
+      "description": "Closed loop geoexchange well",
+      "is_hidden": false,
+      "sort_order": 2
+    }
+  },
+  {
+    "model": "registries.qualificationcode",
+    "pk": "1f6c3e46-018c-11e8-ba89-0ed5f89f718b",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_subactivity": "1f6c2aaa-018c-11e8-ba89-0ed5f89f718b",
+      "code": "MON",
+      "description": "Water supply well",
+      "is_hidden": false,
+      "sort_order": 2
+    }
+  },
+  {
+    "model": "registries.qualificationcode",
+    "pk": "1f6c3f7c-018c-11e8-ba89-0ed5f89f718b",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_subactivity": "1f6c30c2-018c-11e8-ba89-0ed5f89f718b",
+      "code": "REM",
+      "description": "Remediatation well",
+      "is_hidden": false,
+      "sort_order": 2
+    }
+  },
+  {
+    "model": "registries.qualificationcode",
+    "pk": "1f6c4094-018c-11e8-ba89-0ed5f89f718b",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_subactivity": "1f6c30c2-018c-11e8-ba89-0ed5f89f718b",
+      "code": "GEO",
+      "description": "Geotechnical well",
+      "is_hidden": false,
+      "sort_order": 2
+    }
+  },
+  {
+    "model": "registries.qualificationcode",
+    "pk": "1f6c41ac-018c-11e8-ba89-0ed5f89f718b",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_subactivity": "1f6c2d0c-018c-11e8-ba89-0ed5f89f718b",
+      "code": "PUMP",
+      "description": "Install pump in Water supply, Recharge/Injection, or Dewatering well",
+      "is_hidden": false,
+      "sort_order": 2
+    }
+  }
+]

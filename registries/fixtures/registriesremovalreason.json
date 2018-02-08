@@ -1,0 +1,44 @@
+[
+  {
+    "model": "registries.registriesremovalreason",
+    "pk": "81726e3d-eb2b-4725-acfd-39dd3f582f57",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "code": "NLACT",
+      "description": "No longer active",
+      "is_hidden": false,
+      "sort_order": 2
+    }
+  },
+  {
+    "model": "registries.registriesremovalreason",
+    "pk": "9f34701f-ffc0-4a70-acb5-d47d7c16127b",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "code": "NMEET",
+      "description": "Did not meet the requirement of registration",
+      "is_hidden": false,
+      "sort_order": 6
+    }
+  },
+  {
+    "model": "registries.registriesremovalreason",
+    "pk": "ec3c1fb9-413e-47c1-a2ec-ab665d36d3c6",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "code": "FAILTM",
+      "description": "Failed to maintain requirement of registration",
+      "is_hidden": false,
+      "sort_order": 4
+    }
+  }
+]
