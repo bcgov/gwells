@@ -17,6 +17,8 @@ from django.utils import timezone
 from django.core.validators import MinValueValidator
 from decimal import Decimal
 from model_utils import FieldTracker
+from django.core import serializers
+import json
 
 class AuditModel(models.Model):
     """
@@ -33,6 +35,11 @@ class AuditModel(models.Model):
             self.when_created = timezone.now()
         self.when_updated = timezone.now()
         return super(AuditModel, self).save(*args, **kwargs)
+
+    def serialize(self):
+        data = serializers.serialize('json', [self, ])
+        struct = json.loads(data)
+        return json.dumps(struct[0])
 
     class Meta:
         abstract = True
