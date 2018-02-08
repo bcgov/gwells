@@ -1,17 +1,19 @@
 {% extends 'gwells/base.html' %}
 {% load verbose_name %}
 
-{% block title %}Survey Form{% endblock %}
-
-{% block bodyheading_block %}GWells Survey Form{% endblock %}
-
-{% block introduction_block %}
-<p>Welcome {{request.user}}</p>
-{% endblock %}
+{% block title %}Survey Details{% endblock %}
 
 {% block body_block %}
-<fieldset id="summary_information_fieldset">
-  <span id="survey_name_label">{% verbose_name survey "survey_name" %}:</span>
-  <span id="survey_name">{{survey.survey_name}}</span>
-</fieldset>
+<form id="survey_details">
+  <fieldset class="form-group">
+    <legend>Survey Details</legend>
+    <div class="row">
+      <div class="col-sm-6 col-md-3">
+        <label for="survey_name">{% verbose_name survey "survey_name" %}:</label>
+      </div>
+      <div class"col-sm-6 col-md-3">
+      <input type="text" class="form-control form-control-plaintext" id="survey_name" value="{{survey.survey_name}}" readonly>
+    </div>
+  </fieldset>
+</form>
 {% endblock %}
