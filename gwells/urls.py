@@ -40,8 +40,9 @@ urlpatterns = [
     url(r'^'+ app_root_slash +'groundwater-information', TemplateView.as_view(template_name='gwells/groundwater_information.html'), name='groundwater_information'),
     url(r'^'+ app_root_slash +'ajax/map_well_search/$', SearchView.map_well_search, name='map_well_search'),
     url(r'^'+ app_root_slash +'registries/', include('registries.urls')),
-    url(r'^'+ app_root_slash +'admin/', AdminView.as_view(), name='site_admin'),
+    url(r'^'+ app_root_slash +'site_admin', AdminView.as_view(), name='site_admin'),
     url(r'^'+ app_root_slash +'admin/add_survey', AddSurveyView.as_view(), name='add_survey'),
+    url(r'^'+ app_root_slash +'admin/survey_detail/(?P<pk>[\w-]+)$', SurveyDetailView.as_view(), name='survey_detail'),
 ]
 
 if settings.ENABLE_DATA_ENTRY:
