@@ -16,8 +16,8 @@ from rest_framework_swagger.views import get_swagger_view
 from . import views
 
 urlpatterns = [
-    url(r'^drillers/(?P<org_guid>[-\w]+)/$', views.APIDrillerRetrieveUpdateDestroyView.as_view(), name='driller-detail'),
-    url(r'^drillers/$', views.APIDrillerListCreateView.as_view(), name='driller-list'),
+    url(r'^organizations/(?P<org_guid>[-\w]+)/$', views.APIOrganizationRetrieveUpdateDestroyView.as_view(), name='organization-detail'),
+    url(r'^organizations/$', views.APIOrganizationListCreateView.as_view(), name='organization-list'),
     url(r'^docs/$', get_swagger_view(title='GWELLS Driller registry'), name='api-docs'),
     url(r'^$', views.index, name='index'),
 ]

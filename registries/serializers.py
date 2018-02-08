@@ -1,9 +1,9 @@
 from rest_framework import serializers
 from registries.models import Organization
 
-class DrillerListSerializer(serializers.ModelSerializer):
+class OrganizationListSerializer(serializers.ModelSerializer):
     """
-    Serializes Driller model fields for "list" view.
+    Serializes Organization model fields for "list" view.
     """
 
     province_state = serializers.ReadOnlyField(source="province_state.code")
@@ -30,9 +30,9 @@ class DrillerListSerializer(serializers.ModelSerializer):
         )
 
 
-class DrillerSerializer(serializers.ModelSerializer):
+class OrganizationSerializer(serializers.ModelSerializer):
     """
-    Serializes Driller model fields
+    Serializes Organization model fields
     """
 
     province_state = serializers.ReadOnlyField(source="province_state.code")
