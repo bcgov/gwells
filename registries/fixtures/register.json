@@ -1,0 +1,1107 @@
+[
+  {
+    "model": "registries.register",
+    "pk": "0237bc2d-9663-4670-8764-e509890d1b1b",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_activity": "9ecb8fbb-428f-45e1-9a3f-e0ce05c563e2",
+      "registries_application": "ff0c39b3-7fc9-485c-a607-7435dc208c1b",
+      "registration_no": "WD 05918707",
+      "status": "dc37da91-e36e-49fa-b180-e2c968988f13",
+      "registration_date": "2005-03-16",
+      "register_removal_reason": null,
+      "register_removal_date": null
+    }
+  },
+  {
+    "model": "registries.register",
+    "pk": "03013a36-8b0b-4517-8fa8-cdcd3a69df01",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_activity": "9ecb8fbb-428f-45e1-9a3f-e0ce05c563e2",
+      "registries_application": "715402a2-fe8c-4e70-b163-b07e9ea21a3a",
+      "registration_no": "WD 03297252",
+      "status": "dc37da91-e36e-49fa-b180-e2c968988f13",
+      "registration_date": "2005-01-12",
+      "register_removal_reason": null,
+      "register_removal_date": null
+    }
+  },
+  {
+    "model": "registries.register",
+    "pk": "03f7068c-3432-4f45-9b8c-2cefada80afa",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_activity": "9ecb8fbb-428f-45e1-9a3f-e0ce05c563e2",
+      "registries_application": "481e5711-f491-4c91-a216-c07c474ccf18",
+      "registration_no": "WD 04187177",
+      "status": "dc37da91-e36e-49fa-b180-e2c968988f13",
+      "registration_date": "2005-06-01",
+      "register_removal_reason": null,
+      "register_removal_date": null
+    }
+  },
+  {
+    "model": "registries.register",
+    "pk": "04c45f10-68d7-47cc-bcc0-7315b27be8b4",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_activity": "9ecb8fbb-428f-45e1-9a3f-e0ce05c563e2",
+      "registries_application": "38520969-57e4-443b-a37e-d70894a9c90c",
+      "registration_no": "WD 06136299",
+      "status": "dc37da91-e36e-49fa-b180-e2c968988f13",
+      "registration_date": "2004-08-02",
+      "register_removal_reason": null,
+      "register_removal_date": null
+    }
+  },
+  {
+    "model": "registries.register",
+    "pk": "0c349fda-83b0-45da-bdb9-e5b51f1292e7",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_activity": "9ecb8fbb-428f-45e1-9a3f-e0ce05c563e2",
+      "registries_application": "40750215-2302-40aa-b468-53980a798525",
+      "registration_no": "WD 05670329",
+      "status": "dc37da91-e36e-49fa-b180-e2c968988f13",
+      "registration_date": "2004-08-27",
+      "register_removal_reason": null,
+      "register_removal_date": null
+    }
+  },
+  {
+    "model": "registries.register",
+    "pk": "12117b28-e7c5-48f8-b943-c8b146c5aebb",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_activity": "9ecb8fbb-428f-45e1-9a3f-e0ce05c563e2",
+      "registries_application": "a99d0fe7-3466-4660-98b3-ceff65606377",
+      "registration_no": "WD 06606322",
+      "status": "dc37da91-e36e-49fa-b180-e2c968988f13",
+      "registration_date": "2005-01-01",
+      "register_removal_reason": null,
+      "register_removal_date": null
+    }
+  },
+  {
+    "model": "registries.register",
+    "pk": "147e7ece-1b13-465d-869e-cff1153bf8b7",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_activity": "9ecb8fbb-428f-45e1-9a3f-e0ce05c563e2",
+      "registries_application": "589de054-c4f3-481f-b000-b7cf606325b3",
+      "registration_no": "WD 08973886",
+      "status": "dc37da91-e36e-49fa-b180-e2c968988f13",
+      "registration_date": "2004-12-18",
+      "register_removal_reason": null,
+      "register_removal_date": null
+    }
+  },
+  {
+    "model": "registries.register",
+    "pk": "15a8e603-a386-4669-ae66-19795ff2e83f",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_activity": "9ecb8fbb-428f-45e1-9a3f-e0ce05c563e2",
+      "registries_application": "a37f4166-1454-4153-86a3-c2fc6effcc69",
+      "registration_no": "WD 05543749",
+      "status": "dc37da91-e36e-49fa-b180-e2c968988f13",
+      "registration_date": "2004-06-17",
+      "register_removal_reason": null,
+      "register_removal_date": null
+    }
+  },
+  {
+    "model": "registries.register",
+    "pk": "16206591-7c15-45a5-8d05-73d4985184f8",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_activity": "9ecb8fbb-428f-45e1-9a3f-e0ce05c563e2",
+      "registries_application": "eee77d64-b100-4768-a0bf-90e4e01ad68a",
+      "registration_no": "WD 03717199",
+      "status": "dc37da91-e36e-49fa-b180-e2c968988f13",
+      "registration_date": "2004-03-20",
+      "register_removal_reason": null,
+      "register_removal_date": null
+    }
+  },
+  {
+    "model": "registries.register",
+    "pk": "17acd9f8-1121-47c2-816f-b410132f43a8",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_activity": "9ecb8fbb-428f-45e1-9a3f-e0ce05c563e2",
+      "registries_application": "d763a4ce-0c04-4511-b515-3c7f336dcb61",
+      "registration_no": "WD 03872741",
+      "status": "dc37da91-e36e-49fa-b180-e2c968988f13",
+      "registration_date": "2005-05-02",
+      "register_removal_reason": null,
+      "register_removal_date": null
+    }
+  },
+  {
+    "model": "registries.register",
+    "pk": "17ea4138-0f50-4632-9bac-5cc82b0d6d5b",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_activity": "9ecb8fbb-428f-45e1-9a3f-e0ce05c563e2",
+      "registries_application": "de32ebb3-6d7f-4e82-bb13-52066dbe66d7",
+      "registration_no": "WD 07693769",
+      "status": "dc37da91-e36e-49fa-b180-e2c968988f13",
+      "registration_date": "2004-05-01",
+      "register_removal_reason": null,
+      "register_removal_date": null
+    }
+  },
+  {
+    "model": "registries.register",
+    "pk": "3306fd7d-6537-4d89-84fc-c55134e53e6b",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_activity": "9ecb8fbb-428f-45e1-9a3f-e0ce05c563e2",
+      "registries_application": "97f859d6-cb74-4822-9bc7-d7ceff34f5f8",
+      "registration_no": "WD 07690923",
+      "status": "dc37da91-e36e-49fa-b180-e2c968988f13",
+      "registration_date": "2004-06-17",
+      "register_removal_reason": null,
+      "register_removal_date": null
+    }
+  },
+  {
+    "model": "registries.register",
+    "pk": "3ec3d49f-2c5f-4089-a6f9-a789817a5884",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_activity": "9ecb8fbb-428f-45e1-9a3f-e0ce05c563e2",
+      "registries_application": "771983d4-4c69-4c65-a164-db2c00fb9967",
+      "registration_no": "WD 04895076",
+      "status": "dc37da91-e36e-49fa-b180-e2c968988f13",
+      "registration_date": "2004-06-02",
+      "register_removal_reason": null,
+      "register_removal_date": null
+    }
+  },
+  {
+    "model": "registries.register",
+    "pk": "433fb548-5424-49c8-8d24-b3ab39dbe040",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_activity": "9ecb8fbb-428f-45e1-9a3f-e0ce05c563e2",
+      "registries_application": "4f3fd22a-7237-4885-81bb-1bfeadc72ac1",
+      "registration_no": "WD 06557468",
+      "status": "dc37da91-e36e-49fa-b180-e2c968988f13",
+      "registration_date": "2004-10-20",
+      "register_removal_reason": null,
+      "register_removal_date": null
+    }
+  },
+  {
+    "model": "registries.register",
+    "pk": "45dcf285-4757-479f-8faf-7e4d7f329d2a",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_activity": "9ecb8fbb-428f-45e1-9a3f-e0ce05c563e2",
+      "registries_application": "ba9c700d-ac0b-4266-abfd-b96ee3da1b45",
+      "registration_no": "WD 05078987",
+      "status": "dc37da91-e36e-49fa-b180-e2c968988f13",
+      "registration_date": "2004-06-17",
+      "register_removal_reason": null,
+      "register_removal_date": null
+    }
+  },
+  {
+    "model": "registries.register",
+    "pk": "4ca80256-001a-4611-8c2c-86c039d087ad",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_activity": "9ecb8fbb-428f-45e1-9a3f-e0ce05c563e2",
+      "registries_application": "319ce245-90ab-42e3-acb8-c3b7b752d5f9",
+      "registration_no": "WD 07184220",
+      "status": "dc37da91-e36e-49fa-b180-e2c968988f13",
+      "registration_date": "2004-06-19",
+      "register_removal_reason": null,
+      "register_removal_date": null
+    }
+  },
+  {
+    "model": "registries.register",
+    "pk": "51221f0e-4eaf-4a11-8040-b613b8ec7e7d",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_activity": "9ecb8fbb-428f-45e1-9a3f-e0ce05c563e2",
+      "registries_application": "bdf27d34-3a81-4adc-b30c-d5809deed06b",
+      "registration_no": "WD 08425936",
+      "status": "dc37da91-e36e-49fa-b180-e2c968988f13",
+      "registration_date": "2005-03-18",
+      "register_removal_reason": null,
+      "register_removal_date": null
+    }
+  },
+  {
+    "model": "registries.register",
+    "pk": "52ccc181-92ca-4360-bc15-2ddb2c68c878",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_activity": "9ecb8fbb-428f-45e1-9a3f-e0ce05c563e2",
+      "registries_application": "a3e24a6d-a0ea-4325-96b4-51f865b19304",
+      "registration_no": "WD 07140294",
+      "status": "dc37da91-e36e-49fa-b180-e2c968988f13",
+      "registration_date": "2004-09-14",
+      "register_removal_reason": null,
+      "register_removal_date": null
+    }
+  },
+  {
+    "model": "registries.register",
+    "pk": "6112f92a-dbe0-4388-bb43-46bc123a5b54",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_activity": "9ecb8fbb-428f-45e1-9a3f-e0ce05c563e2",
+      "registries_application": "d6978ad8-32a8-4cd1-8b12-de6e6757d8ba",
+      "registration_no": "WD 06019346",
+      "status": "dc37da91-e36e-49fa-b180-e2c968988f13",
+      "registration_date": "2005-05-02",
+      "register_removal_reason": null,
+      "register_removal_date": null
+    }
+  },
+  {
+    "model": "registries.register",
+    "pk": "6309cc63-84c8-4dd0-a707-96223cad553b",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_activity": "9ecb8fbb-428f-45e1-9a3f-e0ce05c563e2",
+      "registries_application": "6513a990-1358-475f-8bd0-7c07f473aab7",
+      "registration_no": "WD 06145401",
+      "status": "dc37da91-e36e-49fa-b180-e2c968988f13",
+      "registration_date": "2004-08-02",
+      "register_removal_reason": null,
+      "register_removal_date": null
+    }
+  },
+  {
+    "model": "registries.register",
+    "pk": "6a1b0e1f-16e8-4dae-a32d-bc5b1b0f347f",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_activity": "9ecb8fbb-428f-45e1-9a3f-e0ce05c563e2",
+      "registries_application": "7d5e9b92-0a88-48f5-9ec8-978d5977a472",
+      "registration_no": "WD 05475583",
+      "status": "dc37da91-e36e-49fa-b180-e2c968988f13",
+      "registration_date": "2005-01-21",
+      "register_removal_reason": null,
+      "register_removal_date": null
+    }
+  },
+  {
+    "model": "registries.register",
+    "pk": "6d5849e8-2727-4a9e-85f2-09c46c9ec056",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_activity": "9ecb8fbb-428f-45e1-9a3f-e0ce05c563e2",
+      "registries_application": "5afb1169-a421-471c-9af9-e00cb326e885",
+      "registration_no": "WD 04585892",
+      "status": "dc37da91-e36e-49fa-b180-e2c968988f13",
+      "registration_date": "2004-07-23",
+      "register_removal_reason": null,
+      "register_removal_date": null
+    }
+  },
+  {
+    "model": "registries.register",
+    "pk": "6dce44e5-bf75-4157-a7f1-d54732680d51",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_activity": "9ecb8fbb-428f-45e1-9a3f-e0ce05c563e2",
+      "registries_application": "51f315b7-a4ab-408e-8d97-a120120c26a7",
+      "registration_no": "WD 08410870",
+      "status": "dc37da91-e36e-49fa-b180-e2c968988f13",
+      "registration_date": "2005-01-12",
+      "register_removal_reason": null,
+      "register_removal_date": null
+    }
+  },
+  {
+    "model": "registries.register",
+    "pk": "71c77f58-605c-4789-a1dd-86f5d3c2415d",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_activity": "9ecb8fbb-428f-45e1-9a3f-e0ce05c563e2",
+      "registries_application": "94d7ca19-2a6f-44a3-b06d-3e4912329ff5",
+      "registration_no": "WD 08053171",
+      "status": "dc37da91-e36e-49fa-b180-e2c968988f13",
+      "registration_date": "2004-01-08",
+      "register_removal_reason": null,
+      "register_removal_date": null
+    }
+  },
+  {
+    "model": "registries.register",
+    "pk": "7291c8b9-da02-49f1-9597-90ddf15e4530",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_activity": "9ecb8fbb-428f-45e1-9a3f-e0ce05c563e2",
+      "registries_application": "052c6e14-1e80-4f40-beb5-b09676085197",
+      "registration_no": "WD 06930997",
+      "status": "dc37da91-e36e-49fa-b180-e2c968988f13",
+      "registration_date": "2005-05-02",
+      "register_removal_reason": null,
+      "register_removal_date": null
+    }
+  },
+  {
+    "model": "registries.register",
+    "pk": "72ce65d4-6224-4035-a940-3b6fa9692a64",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_activity": "9ecb8fbb-428f-45e1-9a3f-e0ce05c563e2",
+      "registries_application": "12a074d5-f7ad-4722-a672-935640b4b7d9",
+      "registration_no": "WD 07894529",
+      "status": "dc37da91-e36e-49fa-b180-e2c968988f13",
+      "registration_date": "2004-10-12",
+      "register_removal_reason": null,
+      "register_removal_date": null
+    }
+  },
+  {
+    "model": "registries.register",
+    "pk": "739195ae-0b43-4cb1-a899-4af2e5e44766",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_activity": "9ecb8fbb-428f-45e1-9a3f-e0ce05c563e2",
+      "registries_application": "f203735c-7caa-4fae-8618-e8400ec50ef2",
+      "registration_no": "WD 05307934",
+      "status": "dc37da91-e36e-49fa-b180-e2c968988f13",
+      "registration_date": "2004-05-12",
+      "register_removal_reason": null,
+      "register_removal_date": null
+    }
+  },
+  {
+    "model": "registries.register",
+    "pk": "75b8078e-313c-4bd4-97de-2945181d8a01",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_activity": "9ecb8fbb-428f-45e1-9a3f-e0ce05c563e2",
+      "registries_application": "0efc0c46-4d32-412e-979d-960769bb565b",
+      "registration_no": "WD 07914786",
+      "status": "dc37da91-e36e-49fa-b180-e2c968988f13",
+      "registration_date": "2004-06-03",
+      "register_removal_reason": null,
+      "register_removal_date": null
+    }
+  },
+  {
+    "model": "registries.register",
+    "pk": "76639218-5746-4158-b653-0f2153b30c98",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_activity": "9ecb8fbb-428f-45e1-9a3f-e0ce05c563e2",
+      "registries_application": "33e980c5-076a-4466-9088-b021e52aeedd",
+      "registration_no": "WD 08575754",
+      "status": "dc37da91-e36e-49fa-b180-e2c968988f13",
+      "registration_date": "2004-10-12",
+      "register_removal_reason": null,
+      "register_removal_date": null
+    }
+  },
+  {
+    "model": "registries.register",
+    "pk": "79f268e3-1f4f-4bdd-a60b-8842d2c96bbf",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_activity": "9ecb8fbb-428f-45e1-9a3f-e0ce05c563e2",
+      "registries_application": "08330fe6-e7d6-4641-aa40-6a5210db1757",
+      "registration_no": "WD 03951879",
+      "status": "dc37da91-e36e-49fa-b180-e2c968988f13",
+      "registration_date": "2004-01-20",
+      "register_removal_reason": null,
+      "register_removal_date": null
+    }
+  },
+  {
+    "model": "registries.register",
+    "pk": "7b97743f-7430-4d98-a7ff-c03783eb1765",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_activity": "9ecb8fbb-428f-45e1-9a3f-e0ce05c563e2",
+      "registries_application": "5429bf88-8f18-407b-bee0-4fef157b9ae2",
+      "registration_no": "WD 04144257",
+      "status": "dc37da91-e36e-49fa-b180-e2c968988f13",
+      "registration_date": "2004-10-26",
+      "register_removal_reason": null,
+      "register_removal_date": null
+    }
+  },
+  {
+    "model": "registries.register",
+    "pk": "7c0d7ec0-603f-4da9-867a-f5e8c5ea0d70",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_activity": "9ecb8fbb-428f-45e1-9a3f-e0ce05c563e2",
+      "registries_application": "51d6b50e-c458-44c2-a749-a8a91b9ae0d5",
+      "registration_no": "WD 07708529",
+      "status": "dc37da91-e36e-49fa-b180-e2c968988f13",
+      "registration_date": "2004-12-15",
+      "register_removal_reason": null,
+      "register_removal_date": null
+    }
+  },
+  {
+    "model": "registries.register",
+    "pk": "7ef7a097-a942-42fd-bcde-a3b9e0e89644",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_activity": "9ecb8fbb-428f-45e1-9a3f-e0ce05c563e2",
+      "registries_application": "4bd54b64-0e3c-4969-a9fb-aeb40d41e456",
+      "registration_no": "WD 07110513",
+      "status": "dc37da91-e36e-49fa-b180-e2c968988f13",
+      "registration_date": "2004-03-20",
+      "register_removal_reason": null,
+      "register_removal_date": null
+    }
+  },
+  {
+    "model": "registries.register",
+    "pk": "8c68a8fc-e160-4a7b-9f83-a7f51a33b0df",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_activity": "9ecb8fbb-428f-45e1-9a3f-e0ce05c563e2",
+      "registries_application": "98e93d04-6c42-47fa-b2a2-8b6bc45ea7a6",
+      "registration_no": "WD 06439910",
+      "status": "dc37da91-e36e-49fa-b180-e2c968988f13",
+      "registration_date": "2004-04-27",
+      "register_removal_reason": null,
+      "register_removal_date": null
+    }
+  },
+  {
+    "model": "registries.register",
+    "pk": "90d8f51e-bc63-47f8-9e7f-2425b42049a4",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_activity": "9ecb8fbb-428f-45e1-9a3f-e0ce05c563e2",
+      "registries_application": "75b174ab-0869-4299-a52c-a7bcf9d69816",
+      "registration_no": "WD 03964859",
+      "status": "dc37da91-e36e-49fa-b180-e2c968988f13",
+      "registration_date": "2004-10-19",
+      "register_removal_reason": null,
+      "register_removal_date": null
+    }
+  },
+  {
+    "model": "registries.register",
+    "pk": "91609ba0-ea1c-4a89-a01a-5a670d396377",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_activity": "9ecb8fbb-428f-45e1-9a3f-e0ce05c563e2",
+      "registries_application": "43a9c9c1-f3b4-4f71-aaf1-b90cb5838c21",
+      "registration_no": "WD 05433729",
+      "status": "dc37da91-e36e-49fa-b180-e2c968988f13",
+      "registration_date": "2005-05-10",
+      "register_removal_reason": null,
+      "register_removal_date": null
+    }
+  },
+  {
+    "model": "registries.register",
+    "pk": "956425bb-8ee6-4f08-9912-2e4232ce53ef",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_activity": "9ecb8fbb-428f-45e1-9a3f-e0ce05c563e2",
+      "registries_application": "9696880f-a984-4d1a-a7e3-52722b5f97f6",
+      "registration_no": "WD 07442875",
+      "status": "dc37da91-e36e-49fa-b180-e2c968988f13",
+      "registration_date": "2004-08-02",
+      "register_removal_reason": null,
+      "register_removal_date": null
+    }
+  },
+  {
+    "model": "registries.register",
+    "pk": "a16cdbbb-f384-429d-a748-5c085b80cc85",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_activity": "9ecb8fbb-428f-45e1-9a3f-e0ce05c563e2",
+      "registries_application": "9e5acea0-bc12-4087-9cd9-fd20ff7a0d3c",
+      "registration_no": "WD 08262083",
+      "status": "dc37da91-e36e-49fa-b180-e2c968988f13",
+      "registration_date": "2005-05-02",
+      "register_removal_reason": null,
+      "register_removal_date": null
+    }
+  },
+  {
+    "model": "registries.register",
+    "pk": "a5d0a978-1c56-4c53-aae0-c91106172dc7",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_activity": "9ecb8fbb-428f-45e1-9a3f-e0ce05c563e2",
+      "registries_application": "4bbd2fab-7000-4f13-8603-e8fa15aa1e02",
+      "registration_no": "WD 06644280",
+      "status": "dc37da91-e36e-49fa-b180-e2c968988f13",
+      "registration_date": "2004-01-21",
+      "register_removal_reason": null,
+      "register_removal_date": null
+    }
+  },
+  {
+    "model": "registries.register",
+    "pk": "aa56e567-979f-4916-a12a-6049afc99cb3",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_activity": "9ecb8fbb-428f-45e1-9a3f-e0ce05c563e2",
+      "registries_application": "401bbd7d-9794-441e-9723-55082083df96",
+      "registration_no": "WD 07967906",
+      "status": "dc37da91-e36e-49fa-b180-e2c968988f13",
+      "registration_date": "2005-01-21",
+      "register_removal_reason": null,
+      "register_removal_date": null
+    }
+  },
+  {
+    "model": "registries.register",
+    "pk": "b6b84ba9-2fa5-4e52-82ae-feb25613b750",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_activity": "9ecb8fbb-428f-45e1-9a3f-e0ce05c563e2",
+      "registries_application": "784f95ef-ee43-49d8-a15e-752c3c853d95",
+      "registration_no": "WD 07255420",
+      "status": "dc37da91-e36e-49fa-b180-e2c968988f13",
+      "registration_date": "2004-12-15",
+      "register_removal_reason": null,
+      "register_removal_date": null
+    }
+  },
+  {
+    "model": "registries.register",
+    "pk": "ba933e51-5b6c-46ad-8233-8ef13b281c13",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_activity": "9ecb8fbb-428f-45e1-9a3f-e0ce05c563e2",
+      "registries_application": "cd2b140c-6d55-4d71-9ee0-ff5567207a3c",
+      "registration_no": "WD 08781111",
+      "status": "dc37da91-e36e-49fa-b180-e2c968988f13",
+      "registration_date": "2004-12-09",
+      "register_removal_reason": null,
+      "register_removal_date": null
+    }
+  },
+  {
+    "model": "registries.register",
+    "pk": "c2570738-24e4-4f47-af8b-06b3ee3ca25a",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_activity": "9ecb8fbb-428f-45e1-9a3f-e0ce05c563e2",
+      "registries_application": "0c3fcd58-28b5-483d-ac69-e4d57cf43d0a",
+      "registration_no": "WD 06179496",
+      "status": "dc37da91-e36e-49fa-b180-e2c968988f13",
+      "registration_date": "2004-06-19",
+      "register_removal_reason": null,
+      "register_removal_date": null
+    }
+  },
+  {
+    "model": "registries.register",
+    "pk": "c4473182-b9cb-4c6f-bfa9-f453f8023aaf",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_activity": "9ecb8fbb-428f-45e1-9a3f-e0ce05c563e2",
+      "registries_application": "b9897748-216c-4949-8b1c-4606fce5da72",
+      "registration_no": "WD 04580473",
+      "status": "dc37da91-e36e-49fa-b180-e2c968988f13",
+      "registration_date": "2004-02-18",
+      "register_removal_reason": null,
+      "register_removal_date": null
+    }
+  },
+  {
+    "model": "registries.register",
+    "pk": "c4805ff9-a2d8-4fa2-89f2-d34088de3608",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_activity": "9ecb8fbb-428f-45e1-9a3f-e0ce05c563e2",
+      "registries_application": "0a1337f8-f0f1-4d98-acc6-768a2447afc4",
+      "registration_no": "WD 04230588",
+      "status": "dc37da91-e36e-49fa-b180-e2c968988f13",
+      "registration_date": "2004-06-17",
+      "register_removal_reason": null,
+      "register_removal_date": null
+    }
+  },
+  {
+    "model": "registries.register",
+    "pk": "c95b1fbb-0e66-4ea0-9837-708b1a22e255",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_activity": "9ecb8fbb-428f-45e1-9a3f-e0ce05c563e2",
+      "registries_application": "775f5a80-6428-4bbb-b11c-e397aeffab91",
+      "registration_no": "WD 07469085",
+      "status": "dc37da91-e36e-49fa-b180-e2c968988f13",
+      "registration_date": "2004-08-02",
+      "register_removal_reason": null,
+      "register_removal_date": null
+    }
+  },
+  {
+    "model": "registries.register",
+    "pk": "ca182aec-64c2-464a-b614-5b937f90625c",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_activity": "9ecb8fbb-428f-45e1-9a3f-e0ce05c563e2",
+      "registries_application": "0cd3e66e-bfd2-48b6-b7f2-8681dbee4abe",
+      "registration_no": "WD 06388302",
+      "status": "dc37da91-e36e-49fa-b180-e2c968988f13",
+      "registration_date": "2004-06-02",
+      "register_removal_reason": null,
+      "register_removal_date": null
+    }
+  },
+  {
+    "model": "registries.register",
+    "pk": "ccead11b-b731-490c-bb9d-a3f58312febc",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_activity": "9ecb8fbb-428f-45e1-9a3f-e0ce05c563e2",
+      "registries_application": "c5584db7-c3c7-413b-b171-cc5e7db5b310",
+      "registration_no": "WD 04197868",
+      "status": "dc37da91-e36e-49fa-b180-e2c968988f13",
+      "registration_date": "2004-04-20",
+      "register_removal_reason": null,
+      "register_removal_date": null
+    }
+  },
+  {
+    "model": "registries.register",
+    "pk": "ce34e8de-efb3-4402-86e4-a098381a057c",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_activity": "9ecb8fbb-428f-45e1-9a3f-e0ce05c563e2",
+      "registries_application": "62678b5b-ab68-481c-9c7c-cf54bd25c4c5",
+      "registration_no": "WD 03059578",
+      "status": "dc37da91-e36e-49fa-b180-e2c968988f13",
+      "registration_date": "2004-04-15",
+      "register_removal_reason": null,
+      "register_removal_date": null
+    }
+  },
+  {
+    "model": "registries.register",
+    "pk": "ce8c816c-2859-45ee-baab-ef1ded518f32",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_activity": "9ecb8fbb-428f-45e1-9a3f-e0ce05c563e2",
+      "registries_application": "c2040315-10e7-46cb-ad51-ed4aad981674",
+      "registration_no": "WD 04747019",
+      "status": "dc37da91-e36e-49fa-b180-e2c968988f13",
+      "registration_date": "2004-02-21",
+      "register_removal_reason": null,
+      "register_removal_date": null
+    }
+  },
+  {
+    "model": "registries.register",
+    "pk": "cecd5434-77df-40f0-b277-be821d3d7cb4",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_activity": "9ecb8fbb-428f-45e1-9a3f-e0ce05c563e2",
+      "registries_application": "f497c189-c74e-4d29-803d-ee4c7f1e5bb0",
+      "registration_no": "WD 06117130",
+      "status": "dc37da91-e36e-49fa-b180-e2c968988f13",
+      "registration_date": "2005-01-21",
+      "register_removal_reason": null,
+      "register_removal_date": null
+    }
+  },
+  {
+    "model": "registries.register",
+    "pk": "cfa09ffb-72ce-4373-b6da-92044b42ef67",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_activity": "9ecb8fbb-428f-45e1-9a3f-e0ce05c563e2",
+      "registries_application": "0c4d348c-f13a-451b-b0cf-2b2188453afa",
+      "registration_no": "WD 04181380",
+      "status": "dc37da91-e36e-49fa-b180-e2c968988f13",
+      "registration_date": "2004-02-18",
+      "register_removal_reason": null,
+      "register_removal_date": null
+    }
+  },
+  {
+    "model": "registries.register",
+    "pk": "d05abd42-abc3-4415-837e-02774fb43f26",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_activity": "9ecb8fbb-428f-45e1-9a3f-e0ce05c563e2",
+      "registries_application": "a8f38c95-6165-4225-8bb2-c6eb31c2c039",
+      "registration_no": "WD 07854214",
+      "status": "dc37da91-e36e-49fa-b180-e2c968988f13",
+      "registration_date": "2005-02-05",
+      "register_removal_reason": null,
+      "register_removal_date": null
+    }
+  },
+  {
+    "model": "registries.register",
+    "pk": "d06bb0e5-7f6c-4cf5-9c9d-2a715069c947",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_activity": "9ecb8fbb-428f-45e1-9a3f-e0ce05c563e2",
+      "registries_application": "ea5d2670-34fe-43f6-940e-a5033081b9a0",
+      "registration_no": "WD 04773341",
+      "status": "dc37da91-e36e-49fa-b180-e2c968988f13",
+      "registration_date": "2004-12-09",
+      "register_removal_reason": null,
+      "register_removal_date": null
+    }
+  },
+  {
+    "model": "registries.register",
+    "pk": "d655cf8b-20aa-4862-a4c4-d13425e926a2",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_activity": "9ecb8fbb-428f-45e1-9a3f-e0ce05c563e2",
+      "registries_application": "938b4c9c-24e5-4b2e-ba95-8c2680b0d538",
+      "registration_no": "WD 07588681",
+      "status": "dc37da91-e36e-49fa-b180-e2c968988f13",
+      "registration_date": "2004-06-10",
+      "register_removal_reason": null,
+      "register_removal_date": null
+    }
+  },
+  {
+    "model": "registries.register",
+    "pk": "d65e73b2-dbc4-4b3e-ab17-6ac4ab76e967",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_activity": "9ecb8fbb-428f-45e1-9a3f-e0ce05c563e2",
+      "registries_application": "02e7f427-53ab-4054-8c8c-bd1c726439dc",
+      "registration_no": "WD 07403396",
+      "status": "dc37da91-e36e-49fa-b180-e2c968988f13",
+      "registration_date": "2005-01-12",
+      "register_removal_reason": null,
+      "register_removal_date": null
+    }
+  },
+  {
+    "model": "registries.register",
+    "pk": "dc1d9fa7-5aeb-499a-b16d-5970ad6c480a",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_activity": "9ecb8fbb-428f-45e1-9a3f-e0ce05c563e2",
+      "registries_application": "447c7ef2-4420-43b9-8177-be077c023881",
+      "registration_no": "WD 06151520",
+      "status": "dc37da91-e36e-49fa-b180-e2c968988f13",
+      "registration_date": "2005-03-31",
+      "register_removal_reason": null,
+      "register_removal_date": null
+    }
+  },
+  {
+    "model": "registries.register",
+    "pk": "e2dfd327-830e-44ac-a3df-10692b145802",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_activity": "9ecb8fbb-428f-45e1-9a3f-e0ce05c563e2",
+      "registries_application": "56e5dc6f-e04c-4633-90e9-0f06709fd1c7",
+      "registration_no": "WD 08275666",
+      "status": "dc37da91-e36e-49fa-b180-e2c968988f13",
+      "registration_date": "2004-06-02",
+      "register_removal_reason": null,
+      "register_removal_date": null
+    }
+  },
+  {
+    "model": "registries.register",
+    "pk": "e9b1826c-384d-427f-8ab4-76289f7a6673",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_activity": "9ecb8fbb-428f-45e1-9a3f-e0ce05c563e2",
+      "registries_application": "05a1c64d-c043-4cb3-a803-4460a37b133c",
+      "registration_no": "WD 03552773",
+      "status": "dc37da91-e36e-49fa-b180-e2c968988f13",
+      "registration_date": "2004-11-11",
+      "register_removal_reason": null,
+      "register_removal_date": null
+    }
+  },
+  {
+    "model": "registries.register",
+    "pk": "ec80e21d-1d1d-478f-a8ad-53c33d150542",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_activity": "9ecb8fbb-428f-45e1-9a3f-e0ce05c563e2",
+      "registries_application": "86bd3599-b750-4d54-a85f-8964a15a285e",
+      "registration_no": "WD 06028629",
+      "status": "dc37da91-e36e-49fa-b180-e2c968988f13",
+      "registration_date": "2005-01-06",
+      "register_removal_reason": null,
+      "register_removal_date": null
+    }
+  },
+  {
+    "model": "registries.register",
+    "pk": "ee8f5b71-3e37-4990-80a3-9d49a0b74efc",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_activity": "9ecb8fbb-428f-45e1-9a3f-e0ce05c563e2",
+      "registries_application": "11c39c54-e4fb-49cd-9518-d7187fa12612",
+      "registration_no": "WD 06112340",
+      "status": "dc37da91-e36e-49fa-b180-e2c968988f13",
+      "registration_date": "2004-12-21",
+      "register_removal_reason": null,
+      "register_removal_date": null
+    }
+  },
+  {
+    "model": "registries.register",
+    "pk": "f6f842bb-cd55-4a22-9e74-200f286ecc24",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_activity": "9ecb8fbb-428f-45e1-9a3f-e0ce05c563e2",
+      "registries_application": "6dbcb3ce-ea71-428e-bda7-77e7aba8bc32",
+      "registration_no": "WD 07545670",
+      "status": "dc37da91-e36e-49fa-b180-e2c968988f13",
+      "registration_date": "2004-06-19",
+      "register_removal_reason": null,
+      "register_removal_date": null
+    }
+  },
+  {
+    "model": "registries.register",
+    "pk": "f8bd675b-b90c-4842-93f4-c8b32d4a769d",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_activity": "9ecb8fbb-428f-45e1-9a3f-e0ce05c563e2",
+      "registries_application": "24ee252a-d880-4fd5-a9a2-58eda5dc07e5",
+      "registration_no": "WD 07493484",
+      "status": "dc37da91-e36e-49fa-b180-e2c968988f13",
+      "registration_date": "2004-06-02",
+      "register_removal_reason": null,
+      "register_removal_date": null
+    }
+  },
+  {
+    "model": "registries.register",
+    "pk": "fa383cfa-2d5f-4268-95c2-40ac2ddffd89",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_activity": "9ecb8fbb-428f-45e1-9a3f-e0ce05c563e2",
+      "registries_application": "e290362c-8d93-4f08-8aa0-ba762302a1ee",
+      "registration_no": "WD 08315530",
+      "status": "dc37da91-e36e-49fa-b180-e2c968988f13",
+      "registration_date": "2005-03-16",
+      "register_removal_reason": null,
+      "register_removal_date": null
+    }
+  },
+  {
+    "model": "registries.register",
+    "pk": "fbf63ac5-5aa1-4579-a016-6e86d7adf6d4",
+    "fields": {
+      "who_created": "DATALOAD_USER",
+      "when_created": "2018-01-01T08:00:00Z",
+      "who_updated": "DATALOAD_USER",
+      "when_updated": "2018-01-01T08:00:00Z",
+      "registries_activity": "9ecb8fbb-428f-45e1-9a3f-e0ce05c563e2",
+      "registries_application": "b2bb7af1-c642-4eae-b6e6-48b047ab63cd",
+      "registration_no": "WD 05657157",
+      "status": "dc37da91-e36e-49fa-b180-e2c968988f13",
+      "registration_date": "2005-01-27",
+      "register_removal_reason": null,
+      "register_removal_date": null
+    }
+  }
+]
