@@ -1,5 +1,200 @@
 [
   {
+    "model": "gwells.provincestate",
+    "pk": "19e0f351-d8e3-4d29-8615-ce4073f2ae22",
+    "fields": {
+      "who_created": "ETL_USER",
+      "when_created": "2017-07-01T08:00:00Z",
+      "who_updated": "ETL_USER",
+      "when_updated": "2017-07-01T08:00:00Z",
+      "code": "PE",
+      "description": "Prince Edward Island",
+      "sort_order": 20
+    }
+  },
+  {
+    "model": "gwells.provincestate",
+    "pk": "2a882632-53dd-4112-b62e-8b9c37bf0e20",
+    "fields": {
+      "who_created": "ETL_USER",
+      "when_created": "2017-07-01T08:00:00Z",
+      "who_updated": "ETL_USER",
+      "when_updated": "2017-07-01T08:00:00Z",
+      "code": "QC",
+      "description": "Quebec",
+      "sort_order": 22
+    }
+  },
+  {
+    "model": "gwells.provincestate",
+    "pk": "3d104532-d5b4-4889-aad8-4637dff5d67e",
+    "fields": {
+      "who_created": "ETL_USER",
+      "when_created": "2017-07-01T08:00:00Z",
+      "who_updated": "ETL_USER",
+      "when_updated": "2017-07-01T08:00:00Z",
+      "code": "SK",
+      "description": "Saskatchewan",
+      "sort_order": 24
+    }
+  },
+  {
+    "model": "gwells.provincestate",
+    "pk": "86f7cd75-1d5a-45d7-a58f-f8cd7aa427e1",
+    "fields": {
+      "who_created": "ETL_USER",
+      "when_created": "2017-07-01T08:00:00Z",
+      "who_updated": "ETL_USER",
+      "when_updated": "2017-07-01T08:00:00Z",
+      "code": "NU",
+      "description": "Nunavut",
+      "sort_order": 18
+    }
+  },
+  {
+    "model": "gwells.provincestate",
+    "pk": "8b51f479-f3b6-4464-858b-e3388a015e05",
+    "fields": {
+      "who_created": "ETL_USER",
+      "when_created": "2017-07-01T08:00:00Z",
+      "who_updated": "ETL_USER",
+      "when_updated": "2017-07-01T08:00:00Z",
+      "code": "YT",
+      "description": "Yukon",
+      "sort_order": 26
+    }
+  },
+  {
+    "model": "gwells.provincestate",
+    "pk": "8d623221-cb16-45bc-ab12-b35c990e03d0",
+    "fields": {
+      "who_created": "ETL_USER",
+      "when_created": "2017-07-01T08:00:00Z",
+      "who_updated": "ETL_USER",
+      "when_updated": "2017-07-01T08:00:00Z",
+      "code": "NS",
+      "description": "Nova Scotia",
+      "sort_order": 14
+    }
+  },
+  {
+    "model": "gwells.provincestate",
+    "pk": "90526734-5f9e-4b89-a6c7-15031b46ce50",
+    "fields": {
+      "who_created": "ETL_USER",
+      "when_created": "2017-07-01T08:00:00Z",
+      "who_updated": "ETL_USER",
+      "when_updated": "2017-07-01T08:00:00Z",
+      "code": "NB",
+      "description": "New Brunswick",
+      "sort_order": 10
+    }
+  },
+  {
+    "model": "gwells.provincestate",
+    "pk": "95438226-b51b-4979-82bd-d8dbbc153b03",
+    "fields": {
+      "who_created": "ETL_USER",
+      "when_created": "2017-07-01T08:00:00Z",
+      "who_updated": "ETL_USER",
+      "when_updated": "2017-07-01T08:00:00Z",
+      "code": "ON",
+      "description": "Ontario",
+      "sort_order": 6
+    }
+  },
+  {
+    "model": "gwells.provincestate",
+    "pk": "eaf0598a-6536-4338-8661-978c8f3dbe0c",
+    "fields": {
+      "who_created": "ETL_USER",
+      "when_created": "2017-07-01T08:00:00Z",
+      "who_updated": "ETL_USER",
+      "when_updated": "2017-07-01T08:00:00Z",
+      "code": "MB",
+      "description": "Manitoba",
+      "sort_order": 8
+    }
+  },
+  {
+    "model": "gwells.provincestate",
+    "pk": "eb994201-f277-488e-b13c-4893cfcfadb5",
+    "fields": {
+      "who_created": "ETL_USER",
+      "when_created": "2017-07-01T08:00:00Z",
+      "who_updated": "ETL_USER",
+      "when_updated": "2017-07-01T08:00:00Z",
+      "code": "NT",
+      "description": "Northwest Territories",
+      "sort_order": 16
+    }
+  },
+  {
+    "model": "gwells.provincestate",
+    "pk": "ef2cbb78-b617-4c12-9d28-5199161b9107",
+    "fields": {
+      "who_created": "ETL_USER",
+      "when_created": "2017-07-01T08:00:00Z",
+      "who_updated": "ETL_USER",
+      "when_updated": "2017-07-01T08:00:00Z",
+      "code": "NL",
+      "description": "Newfoundland and Labrador",
+      "sort_order": 12
+    }
+  },
+  {
+    "model": "gwells.provincestate",
+    "pk": "f46b70b6-47d4-11e7-a919-92ebcb67fe33",
+    "fields": {
+      "who_created": "ETL_USER",
+      "when_created": "2017-07-01T08:00:00Z",
+      "who_updated": "ETL_USER",
+      "when_updated": "2017-07-01T08:00:00Z",
+      "code": "BC",
+      "description": "British Colmubia",
+      "sort_order": 2
+    }
+  },
+  {
+    "model": "gwells.provincestate",
+    "pk": "f46b7426-47d4-11e7-a919-92ebcb67fe33",
+    "fields": {
+      "who_created": "ETL_USER",
+      "when_created": "2017-07-01T08:00:00Z",
+      "who_updated": "ETL_USER",
+      "when_updated": "2017-07-01T08:00:00Z",
+      "code": "AB",
+      "description": "Alberta",
+      "sort_order": 4
+    }
+  },
+  {
+    "model": "gwells.provincestate",
+    "pk": "f46b77b4-47d4-11e7-a919-92ebcb67fe33",
+    "fields": {
+      "who_created": "ETL_USER",
+      "when_created": "2017-07-01T08:00:00Z",
+      "who_updated": "ETL_USER",
+      "when_updated": "2017-07-01T08:00:00Z",
+      "code": "WA",
+      "description": "Never Never Land",
+      "sort_order": 30
+    }
+  },
+  {
+    "model": "gwells.provincestate",
+    "pk": "f46b7b1a-47d4-11e7-a919-92ebcb67fe33",
+    "fields": {
+      "who_created": "ETL_USER",
+      "when_created": "2017-07-01T08:00:00Z",
+      "who_updated": "ETL_USER",
+      "when_updated": "2017-07-01T08:00:00Z",
+      "code": "OTHER",
+      "description": "Other",
+      "sort_order": 90
+    }
+  },
+  {
     "model": "registries.activitycode",
     "pk": "9ecb8fbb-428f-45e1-9a3f-e0ce05c563e2",
     "fields": {
@@ -27,7 +222,6 @@
       "sort_order": 4
     }
   },
-
   {
     "model": "registries.applicationstatuscode",
     "pk": "13b711fb-d5b1-4e45-8938-998a3469ccaf",
@@ -19109,7 +19303,6 @@
       "expired_date": "2006-10-30"
     }
   },
-
   {
     "model": "registries.registriesremovalreason",
     "pk": "81726e3d-eb2b-4725-acfd-39dd3f582f57",
@@ -19152,7 +19345,6 @@
       "sort_order": 4
     }
   },
-
   {
     "model": "registries.registriesstatuscode",
     "pk": "4730ae4f-1e88-42e1-80fd-6fa65bbf858a",
@@ -19181,7 +19373,6 @@
       "sort_order": 2
     }
   },
-
   {
     "model": "registries.subactivitycode",
     "pk": "1f6c2aaa-018c-11e8-ba89-0ed5f89f718b",
