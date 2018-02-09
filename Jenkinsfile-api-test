@@ -7,6 +7,7 @@ node('nodejs') {
         checkout scm
         dir('api-tests') {
 	    try {
+                sh 'npm install -g newman'
                 sh './runapitest.sh'
 	    } finally {
                 junit 'newman/*.xml'
