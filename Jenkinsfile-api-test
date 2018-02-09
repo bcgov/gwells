@@ -8,8 +8,10 @@ node('nodejs') {
         dir('api-tests') {
 	    try {
                 sh 'npm install -g newman'
-                sh 'newman run apitest.json -r cli,junit,html'
-                sh 'mv newman/*.html newman/index.html'
+                sh 'newman run apitest.json -r cli,junit,html;'
+                sh 'cd newman'
+                sh 'mv *.html index.html'
+                sh 'cd ..'
 	    } finally {
                 junit 'newman/*.xml'
                 publishHTML (target: [
