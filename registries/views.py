@@ -1,12 +1,36 @@
 from django.http import HttpResponse
 from django.utils import timezone
-from django.views.generic import base
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.response import Response
+from rest_framework.mixins import CreateModelMixin, UpdateModelMixin
 from registries.models import Organization, Person, ContactAt
 from registries.serializers import OrganizationListSerializer, OrganizationSerializer, PersonSerializer, PersonListSerializer
 
-class APIOrganizationListCreateView(ListCreateAPIView):
+class AuditCreateMixin(CreateModelMixin):
+    """
+    Adds who_created and when_created fields when instances are created
+    """
+
+    def perform_create(self, serializer):
+        serializer.save(
+            who_created=self.request.user,
+            when_created=timezone.now()
+            )
+
+
+class AuditUpdateMixin(UpdateModelMixin):
+    """
+    Adds who_updated and when_updated fields when instances are updated
+    """
+
+    def perform_update(self, serializer):
+        serializer.save(
+            who_updated=self.request.user,
+            when_updated=timezone.now()
+        )
+
+
+class APIOrganizationListCreateView(AuditCreateMixin, ListCreateAPIView):
     """
     get:
     Returns a list of all registered drilling organizations
@@ -24,14 +48,8 @@ class APIOrganizationListCreateView(ListCreateAPIView):
         serializer = OrganizationListSerializer(queryset, many=True)
         return Response(serializer.data)
 
-    def perform_create(self, serializer):
-        serializer.save(
-            who_created=self.request.user,
-            when_created=timezone.now()
-            )
 
-
-class APIOrganizationRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
+class APIOrganizationRetrieveUpdateDestroyView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
     """
     get:
     Returns the specified drilling organization
@@ -50,14 +68,8 @@ class APIOrganizationRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
     lookup_field = "org_guid"
     serializer_class = OrganizationSerializer
 
-    def perform_update(self, serializer):
-        serializer.save(
-            who_updated=self.request.user,
-            when_updated=timezone.now()
-        )
 
-
-class APIPersonListCreateView(ListCreateAPIView):
+class APIPersonListCreateView(AuditCreateMixin, ListCreateAPIView):
     """
     get:
     Returns a list of all person records
@@ -73,15 +85,9 @@ class APIPersonListCreateView(ListCreateAPIView):
         queryset = self.get_queryset()
         serializer = PersonListSerializer(queryset, many=True)
         return Response(serializer.data)
-    
-    def perform_create(self, serializer):
-        serializer.save(
-            who_created=self.request.user,
-            when_created=timezone.now()
-            )
 
 
-class APIPersonRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
+class APIPersonRetrieveUpdateDestroyView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
     """
     get:
     Returns the specified person
