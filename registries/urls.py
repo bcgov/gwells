@@ -18,6 +18,8 @@ from . import views
 urlpatterns = [
     url(r'^organizations/(?P<org_guid>[-\w]+)/$', views.APIOrganizationRetrieveUpdateDestroyView.as_view(), name='organization-detail'),
     url(r'^organizations/$', views.APIOrganizationListCreateView.as_view(), name='organization-list'),
+    url(r'^drillers/(?P<person_guid>[-\w]+)/$', views.APIPersonRetrieveUpdateDestroyView.as_view(), name='person-detail'),
+    url(r'^drillers/$', views.APIPersonListCreateView.as_view(), name='person-list'),
     url(r'^docs/$', get_swagger_view(title='GWELLS Driller registry'), name='api-docs'),
     url(r'^$', views.index, name='index'),
 ]
