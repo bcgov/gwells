@@ -1,6 +1,5 @@
-node('nodejs') {
-
-	stage('API Test') {
+stage('API Test') {
+    node('nodejs') {
 		//the checkout is mandatory, otherwise functional test would fail
         echo "checking out source"
         echo "Build: ${BUILD_ID}"
@@ -19,7 +18,7 @@ node('nodejs') {
                             reportFiles: 'newman*.html',
                             reportName: "API Test Report"
                         ])
-	    }
+	            }
         }
     }
 }
