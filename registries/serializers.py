@@ -5,7 +5,18 @@ from registries.models import (
     Person
 )
 
-class ContactAtSerializer(serializers.ModelSerializer):
+class AuditModelSerializer(serializers.ModelSerializer):
+    """
+    Serializes AuditModel fields.
+    Can be inherited into serializers for models that inherit from AuditModel
+    """
+    who_created = serializers.StringRelatedField()
+    when_created = serializers.ReadOnlyField()
+    who_updated = serializers.StringRelatedField()
+    when_updated = serializers.ReadOnlyField()
+
+
+class ContactAtSerializer(AuditModelSerializer):
     """
     Serializes ContactAt model fields.
     """
@@ -24,7 +35,7 @@ class ContactAtSerializer(serializers.ModelSerializer):
             'contact_email'
         )
 
-class OrganizationListSerializer(serializers.ModelSerializer):
+class OrganizationListSerializer(AuditModelSerializer):
     """
     Serializes Organization model fields for "list" view.
     """
@@ -47,13 +58,14 @@ class OrganizationListSerializer(serializers.ModelSerializer):
             'province_state',
             'postal_code',
             'main_tel',
+            'who_created'
             #'fax_tel',
             #'website_url',
             #'certificate_authority',
         )
 
 
-class OrganizationSerializer(serializers.ModelSerializer):
+class OrganizationSerializer(AuditModelSerializer):
     """
     Serializes Organization model fields (public fields list)
     """
@@ -82,7 +94,7 @@ class OrganizationSerializer(serializers.ModelSerializer):
         )
 
 
-class PersonSerializer(serializers.ModelSerializer):
+class PersonSerializer(AuditModelSerializer):
     """
     Serializes the Person model
     """
@@ -103,7 +115,7 @@ class PersonSerializer(serializers.ModelSerializer):
         )
 
 
-class PersonListSerializer(serializers.ModelSerializer):
+class PersonListSerializer(AuditModelSerializer):
     """
     Serializes the Person model for a list view (fewer fields than detail view)
     """
