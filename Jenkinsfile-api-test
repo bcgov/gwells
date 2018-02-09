@@ -9,9 +9,6 @@ node('nodejs') {
 	    try {
                 sh 'npm install -g newman'
                 sh 'newman run apitest.json -r cli,junit,html;'
-                sh 'cd newman'
-                sh 'mv *.html index.html'
-                sh 'cd ..'
 	    } finally {
                 junit 'newman/*.xml'
                 publishHTML (target: [
@@ -19,7 +16,7 @@ node('nodejs') {
                             alwaysLinkToLastBuild: false,
                             keepAll: true,
                             reportDir: 'newman',
-                            reportFiles: 'index.html',
+                            reportFiles: 'newman*.html',
                             reportName: "API Test Report"
                         ])
 	    }

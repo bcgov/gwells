@@ -13,7 +13,6 @@
                 "script": {
                     "type": "text/javascript",
                     "exec": [
-                        "tests[\"Response time is less than 200ms\"] = responseTime < 200;",
                         "tests[\"Successful GET request\"] = responseCode.code === 200;"
                     ]
                 }
