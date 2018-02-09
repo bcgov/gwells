@@ -45,7 +45,7 @@ class ContactAt(AuditModel):
     contact_at_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False,
     	verbose_name="Contact At UUID, hidden from users")
     person = models.ForeignKey(Person, db_column='person_guid', on_delete=models.CASCADE, null=True, 
-    	verbose_name="Person Reference")
+    	verbose_name="Person Reference", related_name="companies")
     org = models.ForeignKey(Organization, db_column='org_guid', on_delete=models.CASCADE, null=True, 
     	verbose_name="Company Reference", related_name="contacts")
 

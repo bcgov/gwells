@@ -1,5 +1,9 @@
 from rest_framework import serializers
-from registries.models import Organization, ContactAt
+from registries.models import (
+    Organization,
+    ContactAt,
+    Person
+)
 
 class ContactAtSerializer(serializers.ModelSerializer):
     """
@@ -51,7 +55,7 @@ class OrganizationListSerializer(serializers.ModelSerializer):
 
 class OrganizationSerializer(serializers.ModelSerializer):
     """
-    Serializes Organization model fields
+    Serializes Organization model fields (public fields list)
     """
 
     province_state = serializers.ReadOnlyField(source="province_state.code")
@@ -75,4 +79,46 @@ class OrganizationSerializer(serializers.ModelSerializer):
             'website_url',
             'certificate_authority',
             'contacts',
+        )
+
+
+class PersonSerializer(serializers.ModelSerializer):
+    """
+    Serializes the Person model
+    """
+
+    companies = ContactAtSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Person
+        fields = (
+            'who_created',
+            'when_created',
+            'who_updated',
+            'when_updated',
+            'person_guid',
+            'first_name',
+            'surname',
+            'companies',
+        )
+
+
+class PersonListSerializer(serializers.ModelSerializer):
+    """
+    Serializes the Person model for a list view (fewer fields than detail view)
+    """
+
+    companies = ContactAtSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Person
+        fields = (
+            # 'who_created',
+            # 'when_created',
+            # 'who_updated',
+            # 'when_updated',
+            'person_guid',
+            'first_name',
+            'surname',
+            'companies',
         )
