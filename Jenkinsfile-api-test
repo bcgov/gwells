@@ -1,0 +1,24 @@
+node('nodejs') {
+
+	stage('API Test') {
+		//the checkout is mandatory, otherwise functional test would fail
+        echo "checking out source"
+        echo "Build: ${BUILD_ID}"
+        checkout scm
+        dir('api-tests') {
+	    try {
+                sh './runapitest.sh'
+	    } finally {
+                junit 'newman/*.xml'
+                publishHTML (target: [
+                            allowMissing: false,
+                            alwaysLinkToLastBuild: false,
+                            keepAll: true,
+                            reportDir: 'newman',
+                            reportFiles: '*.html',
+                            reportName: "BDD Spock Report"
+                        ])
+	    }
+        }
+    }
+}
