@@ -15,8 +15,8 @@ node('nodejs') {
                             alwaysLinkToLastBuild: false,
                             keepAll: true,
                             reportDir: 'newman',
-                            reportFiles: '*.html',
-                            reportName: "BDD Spock Report"
+                            reportFiles: 'index.html',
+                            reportName: "API Test Report"
                         ])
 	    }
         }
