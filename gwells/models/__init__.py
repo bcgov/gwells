@@ -8,7 +8,7 @@ from .Casing import Casing
 from .CasingMaterial import CasingMaterial
 from .CasingCode import CasingCode
 from .DecommissionMethodCode import DecommissionMethodCode
-from .DevelopmentMethod import DevelopmentMethod
+from .DevelopmentMethodCode import DevelopmentMethodCode
 from .Driller import Driller
 from .DrillingCompany import DrillingCompany
 from .DrillingMethod import DrillingMethod
@@ -63,7 +63,7 @@ __all__ = [
 'CasingMaterial',
 'CasingCode',
 'DecommissionMethodCode',
-'DevelopmentMethod',
+'DevelopmentMethodCode',
 'Driller',
 'DrillingCompany',
 'DrillingMethod',

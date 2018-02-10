@@ -27,7 +27,7 @@
  drop table if exists gwells_casing_material                   cascade;
  drop table if exists casing_code                       cascade;
  drop table if exists decommission_method_code               cascade;
- drop table if exists gwells_development_method                cascade;
+ drop table if exists development_method_code                cascade;
  drop table if exists gwells_driller                           cascade;
  drop table if exists gwells_drilling_company                  cascade;
  drop table if exists gwells_drilling_method                   cascade;

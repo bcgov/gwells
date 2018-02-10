@@ -29,7 +29,7 @@
 \copy filter_pack_material_size FROM './gwells_filter_pack_material_size.csv' HEADER DELIMITER ',' CSV
 
 \copy screen_assembly_type    FROM './gwells_screen_assembly_type.csv'    HEADER DELIMITER ',' CSV 
-\copy development_method      FROM './gwells_development_method.csv'      HEADER DELIMITER ',' CSV
+\copy development_method      FROM './development_method_code.csv'      HEADER DELIMITER ',' CSV
 \copy yield_estimation_method FROM './gwells_yield_estimation_method.csv' HEADER DELIMITER ',' CSV
 
 /* This will need further transformation to link to existing data */
