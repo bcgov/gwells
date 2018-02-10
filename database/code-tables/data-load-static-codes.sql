@@ -111,8 +111,8 @@
 \copy gwells_lithology_description_code (create_user,create_date,update_user,update_date,lithology_description_code_guid,code,description,sort_order) from 'gwells_lithology_description_code.csv' with header delimiter ',' CSV ;
 
 --DECOMMISSION METHOD
-\echo '... loading gwells_decommission_method code table'
-\copy gwells_decommission_method (create_user,create_date,update_user,update_date,code,description,status_flag,sort_order,decommission_method_guid) from 'gwells_decommission_method.csv' with header delimiter ',' CSV ;
+\echo '... loading decommission_method_code code table'
+\copy decommission_method_code (create_user,create_date,update_user,update_date,code,description,status_flag,sort_order,decommission_method_guid) from 'decommission_method_code.csv' with header delimiter ',' CSV ;
 
 --OBSERVATION WELL STATUS
 \echo '... loading gwells_observation_well_status code table'

@@ -16,7 +16,7 @@ from .AuditModel import AuditModel
 from django.db import models
 import uuid
 
-class DecommissionMethod(AuditModel):
+class DecommissionMethodCode(AuditModel):
     decommission_method_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     code = models.CharField(max_length=10, verbose_name="Code")
     description = models.CharField(max_length=255, verbose_name="Description")
@@ -24,7 +24,7 @@ class DecommissionMethod(AuditModel):
     sort_order = models.PositiveIntegerField()
 
     class Meta:
-        db_table = 'gwells_decommission_method'
+        db_table = 'decommission_method_code'
         ordering = ['sort_order']
 
     def __str__(self):

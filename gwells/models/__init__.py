@@ -7,7 +7,7 @@ from .BedrockMaterialDescriptor import BedrockMaterialDescriptor
 from .Casing import Casing
 from .CasingMaterial import CasingMaterial
 from .CasingCode import CasingCode
-from .DecommissionMethod import DecommissionMethod
+from .DecommissionMethodCode import DecommissionMethodCode
 from .DevelopmentMethod import DevelopmentMethod
 from .Driller import Driller
 from .DrillingCompany import DrillingCompany
@@ -62,7 +62,7 @@ __all__ = [
 'Casing',
 'CasingMaterial',
 'CasingCode',
-'DecommissionMethod',
+'DecommissionMethodCode',
 'DevelopmentMethod',
 'Driller',
 'DrillingCompany',

@@ -38,7 +38,7 @@ from .WaterQualityCharacteristic import WaterQualityCharacteristic
 from .WellYieldUnit import WellYieldUnit
 from .ObservationWellStatus import ObservationWellStatus
 from .BCGS_Numbers import BCGS_Numbers
-from .DecommissionMethod import DecommissionMethod
+from .DecommissionMethodCode import DecommissionMethodCode
 
 from model_utils import FieldTracker
 
@@ -168,7 +168,7 @@ class Well(AuditModel):
     bcgs_id = models.ForeignKey(BCGS_Numbers, db_column='bcgs_id', on_delete=models.CASCADE, blank=True, null=True, verbose_name="BCGS Mapsheet Number")
 
     decommission_reason = models.CharField(max_length=250, blank=True, null=True, verbose_name="Reason for Decommission")
-    decommission_method = models.ForeignKey(DecommissionMethod, db_column='decommission_method_guid', blank=True, null="True", verbose_name="Method of Decommission")
+    decommission_method = models.ForeignKey(DecommissionMethodCode, db_column='decommission_method_guid', blank=True, null="True", verbose_name="Method of Decommission")
     sealant_material = models.CharField(max_length=100, blank=True, null=True, verbose_name="Sealant Material")
     backfill_material = models.CharField(max_length=100, blank=True, null=True, verbose_name="Backfill Material")
     decommission_details = models.CharField(max_length=250, blank=True, null=True, verbose_name="Decommission Details")
