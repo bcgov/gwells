@@ -20,8 +20,8 @@ from .LithologyColour import LithologyColour
 from .LithologyHardness import LithologyHardness
 from .LithologyMaterial import LithologyMaterial
 from .WellYieldUnit import WellYieldUnit
-from .BedrockMaterial import BedrockMaterial
-from .BedrockMaterialDescriptor import BedrockMaterialDescriptor
+from .BedrockMaterialCode import BedrockMaterialCode
+from .BedrockMaterialDescriptorCode import BedrockMaterialDescriptorCode
 from .LithologyStructure import LithologyStructure
 from .LithologyMoisture import LithologyMoisture
 from .SurficialMaterial import SurficialMaterial
@@ -51,8 +51,8 @@ class LithologyDescription(AuditModel):
     water_bearing_estimated_flow_units = models.ForeignKey(WellYieldUnit, db_column='well_yield_unit_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Units')
     lithology_observation = models.CharField(max_length=250, blank=True, null=True, verbose_name='Observations')
 
-    bedrock_material = models.ForeignKey(BedrockMaterial, db_column='bedrock_material_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Bedrock Material')
-    bedrock_material_descriptor = models.ForeignKey(BedrockMaterialDescriptor, db_column='bedrock_material_descriptor_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Descriptor')
+    bedrock_material = models.ForeignKey(BedrockMaterialCode, db_column='bedrock_material_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Bedrock Material')
+    bedrock_material_descriptor = models.ForeignKey(BedrockMaterialDescriptorCode, db_column='bedrock_material_descriptor_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Descriptor')
     lithology_structure = models.ForeignKey(LithologyStructure, db_column='lithology_structure_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Bedding')
     lithology_moisture = models.ForeignKey(LithologyMoisture, db_column='lithology_moisture_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Moisture')
     surficial_material = models.ForeignKey(SurficialMaterial, db_column='surficial_material_guid', related_name='surficial_material_set', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Surficial Material')

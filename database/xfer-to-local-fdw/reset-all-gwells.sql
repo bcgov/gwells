@@ -21,8 +21,8 @@
  drop table if exists gwells_activity_submission_water_quality cascade;
  drop table if exists gwells_aquifer_well                      cascade;
  drop table if exists gwells_bcgs_number                       cascade;
- drop table if exists gwells_bedrock_material                  cascade;
- drop table if exists gwells_bedrock_material_descriptor       cascade;
+ drop table if exists bedrock_material_code                  cascade;
+ drop table if exists bedrock_material_descriptor_code       cascade;
  drop table if exists gwells_casing                            cascade;
  drop table if exists gwells_casing_material                   cascade;
  drop table if exists casing_code                       cascade;

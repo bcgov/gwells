@@ -34,12 +34,12 @@ class ModelsTestCase(TestCase):
         self.assertIsInstance(bcgs_numbers, BCGS_Numbers)
 
     def test_bedrock_material_instantiation(self):
-        bedrock_material= BedrockMaterial()
-        self.assertIsInstance(bedrock_material, BedrockMaterial)
+        bedrock_material= BedrockMaterialCode()
+        self.assertIsInstance(bedrock_material, BedrockMaterialCode)
 
     def test_bedrock_material_descriptor_instantiation(self):
-        bedrock_material_descriptor = BedrockMaterialDescriptor()
-        self.assertIsInstance(bedrock_material_descriptor, BedrockMaterialDescriptor)
+        bedrock_material_descriptor = BedrockMaterialDescriptorCode()
+        self.assertIsInstance(bedrock_material_descriptor, BedrockMaterialDescriptorCode)
 
     def test_casing_instantiation(self):
         casing = Casing()

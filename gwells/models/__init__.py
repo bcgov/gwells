@@ -2,8 +2,8 @@ from .AuditModel import AuditModel
 from .ActivitySubmission import ActivitySubmission
 from .AquiferWell import AquiferWell
 from .BCGS_Numbers import BCGS_Numbers
-from .BedrockMaterial import BedrockMaterial
-from .BedrockMaterialDescriptor import BedrockMaterialDescriptor
+from .BedrockMaterialCode import BedrockMaterialCode
+from .BedrockMaterialDescriptorCode import BedrockMaterialDescriptorCode
 from .Casing import Casing
 from .CasingMaterial import CasingMaterial
 from .CasingCode import CasingCode
@@ -57,8 +57,8 @@ __all__ = [
 'AquiferWell',
 'AuditModel',
 'BCGS_Numbers',
-'BedrockMaterial',
-'BedrockMaterialDescriptor',
+'BedrockMaterialCode',
+'BedrockMaterialDescriptorCode',
 'Casing',
 'CasingMaterial',
 'CasingCode',

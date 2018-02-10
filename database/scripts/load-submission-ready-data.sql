@@ -11,8 +11,8 @@
 \copy lithology_structure FROM './gwells_lithology_structure.csv' HEADER DELIMITER ',' CSV
 \copy lithology_moisture  FROM './gwells_lithology_moisture.csv'  HEADER DELIMITER ',' CSV
 \copy lithology_hardness  FROM './gwells_lithology_hardness.csv'  HEADER DELIMITER ',' CSV
-\copy bedrock_material_descriptor FROM './gwells_bedrock_material_descriptor.csv' HEADER DELIMITER ',' CSV
-\copy bedrock_material     FROM './gwells_bedrock_material.csv' HEADER DELIMITER ',' CSV
+\copy bedrock_material_descriptor FROM './bedrock_material_descriptor_code.csv' HEADER DELIMITER ',' CSV
+\copy bedrock_material     FROM './bedrock_material_code.csv' HEADER DELIMITER ',' CSV
 \copy lithology_colour     FROM './gwells_lithology_colour.csv' HEADER DELIMITER ',' CSV
 \copy surficial_material   FROM './gwells_surficial_material.csv'   HEADER DELIMITER ',' CSV
 
