@@ -1,12 +1,15 @@
 stage('ZAP Security Scan') {
     node('zap') {
         stage('Scan Web Application') {
-            dir('/zap') {
-                def retVal = sh returnStatus: true, script: '/zap/zap-full-scan.py -r index.html -x result.xml -t https://testapps.nrs.gov.bc.ca/gwells/'
-                junit 'result.xml'
+            //the checkout is mandatory, otherwise functional test would fail
+            echo "checking out source"
+            echo "Build: ${BUILD_ID}"
+            checkout scm
+            dir('zap') {
+                def retVal = sh returnStatus: true, script: './runzap.sh'
                 publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: true, reportDir: '/zap/wrk', reportFiles: 'index.html', reportName: 'ZAP Full Scan', reportTitles: 'ZAP Full Scan'])
                 echo "Return value is: ${retVal}"
-            }
+                }
         }
     }
 }
