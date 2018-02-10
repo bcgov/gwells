@@ -16,7 +16,7 @@ from .AuditModel import AuditModel
 from django.db import models
 import uuid
 
-class BedrockMaterial(AuditModel):
+class BedrockMaterialCode(AuditModel):
     """
     The bedrock material encountered in lithology
     """
@@ -27,7 +27,7 @@ class BedrockMaterial(AuditModel):
     sort_order = models.PositiveIntegerField()
 
     class Meta:
-        db_table = 'gwells_bedrock_material'
+        db_table = 'bedrock_material_code'
         ordering = ['sort_order', 'description']
 
     def __str__(self):

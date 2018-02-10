@@ -6,8 +6,8 @@ COMMENT ON TABLE gwells_activity_submission               IS 'Placeholder table 
 COMMENT ON TABLE gwells_activity_submission_water_quality IS 'Placeholder table comment.';
 COMMENT ON TABLE gwells_aquifer_well                      IS 'Placeholder table comment.';
 COMMENT ON TABLE gwells_bcgs_number                       IS 'Placeholder table comment.';
-COMMENT ON TABLE gwells_bedrock_material                  IS 'Placeholder table comment.';
-COMMENT ON TABLE gwells_bedrock_material_descriptor       IS 'Placeholder table comment.';
+COMMENT ON TABLE bedrock_material_code                  IS 'Placeholder table comment.';
+COMMENT ON TABLE bedrock_material_descriptor_code       IS 'Placeholder table comment.';
 COMMENT ON TABLE gwells_casing                            IS 'Placeholder table comment.';
 COMMENT ON TABLE gwells_casing_material                   IS 'Placeholder table comment.';
 COMMENT ON TABLE casing_code                       IS 'Placeholder table comment.';
