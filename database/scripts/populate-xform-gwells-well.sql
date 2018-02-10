@@ -92,10 +92,10 @@ DECLARE
     backfill_material                  ,
     decommission_details               ,
     comments                           ,
-    when_created                       ,
-    when_updated                       ,
-    who_created                        ,
-    who_updated)
+    create_date                       ,
+    update_date                       ,
+    create_user                        ,
+    update_user)
   SELECT
     wells.well_tag_number                                                    ,
     wells.well_id                                                            ,
@@ -352,10 +352,10 @@ BEGIN
      backfill_material                   character varying(100),
      decommission_details                character varying(250),
      comments                            character varying(255),
-     when_created                        timestamp with time zone,
-     when_updated                        timestamp with time zone,
-     who_created                         character varying(30),
-     who_updated                         character varying(30)
+     create_date                        timestamp with time zone,
+     update_date                        timestamp with time zone,
+     create_user                         character varying(30),
+     update_user                         character varying(30)
   );
 
   raise notice 'Created xform_gwells_well ETL table';

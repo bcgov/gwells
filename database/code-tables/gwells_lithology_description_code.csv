@@ -1,4 +1,4 @@
-who_created,when_created,who_updated,when_updated,lithology_description_code_guid,code,description,sort_order
+create_user,create_date,update_user,update_date,lithology_description_code_guid,code,description,sort_order
 PROXY_WELLS,2008-01-07 12:32:11-08,PROXY_WELLS,2008-01-10 16:46:59-08,c19d1788-5150-431a-9925-d0ab8c30766c,48,cemented,100
 PROXY_WELLS,2008-01-07 12:32:55-08,PROXY_WELLS,2008-01-10 16:47:12-08,d41e5e82-2c6e-4b05-8c9d-735d82a49557,49,clean,100
 PROXY_WELLS,2008-01-07 12:33:42-08,PROXY_WELLS,2008-01-10 16:47:23-08,aad56991-3ef7-4a02-b212-7c55e2959603,50,coarse-grained,100

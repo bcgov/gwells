@@ -88,10 +88,10 @@ CREATE unlogged TABLE IF NOT EXISTS xform_gwells_well (
    backfill_material                   character varying(100),
    decommission_details                character varying(250),
    comments                            character varying(255),
-   when_created                        timestamp with time zone,
-   when_updated                        timestamp with time zone,
-   who_created                         character varying(30),
-   who_updated                         character varying(30)
+   create_date                        timestamp with time zone,
+   update_date                        timestamp with time zone,
+   create_user                         character varying(30),
+   update_user                         character varying(30)
 );
 
 \echo 'Created xform_gwells_well ETL table';

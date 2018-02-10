@@ -16,10 +16,10 @@ BEGIN
     casing_material_guid                          , -->FK
     wall_thickness                                ,
     drive_shoe                                    ,
-    when_created                                  ,
-    when_updated                                  ,
-    who_created                                   ,
-    who_updated)
+    create_date                                  ,
+    update_date                                  ,
+    create_user                                   ,
+    update_user)
     SELECT
         gen_random_uuid()                             ,
         null                                          ,

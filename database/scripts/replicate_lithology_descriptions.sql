@@ -21,10 +21,10 @@ BEGIN
     well_yield_unit_guid                   ,
     lithology_observation                  ,
     lithology_sequence_number              ,
-    who_created                            ,
-    when_created                           ,
-    who_updated                            ,
-    when_updated
+    create_user                            ,
+    create_date                           ,
+    update_user                            ,
+    update_date
   )
   SELECT
     gen_random_uuid()                                         ,

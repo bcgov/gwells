@@ -14,10 +14,10 @@ BEGIN
     liner_to                           ,
     liner_perforation_from             ,
     liner_perforation_to               ,
-    who_created                        ,
-    when_created                       ,
-    who_updated                        ,
-    when_updated
+    create_user                        ,
+    create_date                       ,
+    update_user                        ,
+    update_date
   ) SELECT
     gen_random_uuid()                  ,
     xform.well_tag_number              ,

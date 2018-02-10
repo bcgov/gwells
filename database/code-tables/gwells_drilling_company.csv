@@ -1,4 +1,4 @@
-who_created,when_created,who_updated,when_updated,drilling_company_guid,drilling_company_code,name,is_hidden
+create_user,create_date,update_user,update_date,drilling_company_guid,drilling_company_code,name,is_hidden
 PROXY_WELLS,2008-08-05 12:00:07-07,,,62409874-977b-4088-9588-6956de819c66,493,Newgrowth Capital Corp,t
 PROXY_WELLS,2008-09-23 10:59:26-07,,,1fce8293-1fb6-4867-91aa-752a3601d430,498,Corley Drilling,t
 PROXY_WELLS,2010-06-15 09:08:30-07,,,ab35b2ea-4afc-41b1-9c95-d3ef1986f5ae,510,Wisharts Water Well,t

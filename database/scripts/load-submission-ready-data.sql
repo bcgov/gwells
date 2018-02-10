@@ -1,7 +1,7 @@
 \encoding windows-1251
 \copy well_yield_unit 	  FROM './gwells_well_yield_unit.csv'   HEADER DELIMITER ',' CSV
 \copy province_state  	  FROM './gwells_province_state.csv' 	   HEADER DELIMITER ',' CSV
-\copy well_activity_type (well_activity_type_guid,code,description,is_hidden,sort_order,who_created,when_created,who_updated,when_updated) FROM './gwells_well_activity_type.csv' HEADER DELIMITER ',' CSV
+\copy well_activity_type (well_activity_type_guid,code,description,is_hidden,sort_order,create_user,create_date,update_user,update_date) FROM './gwells_well_activity_type.csv' HEADER DELIMITER ',' CSV
 
 \copy intended_water_use	FROM './gwells_intended_water_use.csv' HEADER DELIMITER ',' CSV
 \copy well_class  	    	FROM './gwells_well_class.csv'  	   	HEADER DELIMITER ',' CSV
@@ -17,7 +17,7 @@
 \copy surficial_material   FROM './gwells_surficial_material.csv'   HEADER DELIMITER ',' CSV
 
 \copy casing_material FROM './gwells_casing_material.csv' HEADER DELIMITER ',' CSV
-\copy casing_type     FROM './gwells_casing_type.csv'     HEADER DELIMITER ',' CSV
+\copy casing_code     FROM './casing_code.csv'     HEADER DELIMITER ',' CSV
 
 \copy screen_type     FROM './gwells_screen_type.csv'     HEADER DELIMITER ',' CSV
 \copy screen_intake   FROM './gwells_screen_intake.csv'   HEADER DELIMITER ',' CSV
@@ -34,10 +34,10 @@
 
 /* This will need further transformation to link to existing data */
 CREATE unlogged TABLE IF NOT EXISTS xform_gwells_surface_seal_method (
-  who_created              character varying(30)   ,
-  when_created             timestamp with time zone,
-  who_updated              character varying(30)   ,
-  when_updated             timestamp with time zone,
+  create_user              character varying(30)   ,
+  create_date             timestamp with time zone,
+  update_user              character varying(30)   ,
+  update_date             timestamp with time zone,
   surface_seal_method_guid uuid                    ,
   code                     character varying(10)   ,
   description              character varying(100)  ,
@@ -47,10 +47,10 @@ CREATE unlogged TABLE IF NOT EXISTS xform_gwells_surface_seal_method (
 
 /* This will need further transformation to link to existing data */
 CREATE unlogged TABLE IF NOT EXISTS xform_gwells_surface_seal_material (
-  who_created                 character varying(30)   ,
-  when_created                timestamp with time zone,
-  who_updated                 character varying(30)   ,
-  when_updated                timestamp with time zone,
+  create_user                 character varying(30)   ,
+  create_date                timestamp with time zone,
+  update_user                 character varying(30)   ,
+  update_date                timestamp with time zone,
   surface_seal_material_guid  uuid                    ,
   code                        character varying(100)   ,
   description                 character varying(100)  ,
@@ -65,10 +65,10 @@ CREATE unlogged TABLE IF NOT EXISTS xform_gwells_land_district (
   code               character varying(10),
   name               character varying(255),
   sort_order         integer,
-  when_created       timestamp with time zone,
-  when_updated       timestamp with time zone,
-  who_created        character varying(30)   ,
-  who_updated        character varying(30) 
+  create_date       timestamp with time zone,
+  update_date       timestamp with time zone,
+  create_user        character varying(30)   ,
+  update_user        character varying(30) 
 );
 
 CREATE unlogged TABLE IF NOT EXISTS xform_gwells_well (
@@ -110,20 +110,20 @@ CREATE unlogged TABLE IF NOT EXISTS xform_gwells_well (
    BKFILL_ABOVE_SRFC_SEAL_DEPTH numeric(7,2), /* backfill_above_surface_seal_depth */
    backfill_above_surface_seal  character varying(250),
    SEALANT_MATERIAL             character varying(100) ,
-   when_created                 timestamp with time zone,
-   when_updated                 timestamp with time zone,
-   who_created                  character varying(30)   ,
-   who_updated                  character varying(30)    
+   create_date                 timestamp with time zone,
+   update_date                 timestamp with time zone,
+   create_user                  character varying(30)   ,
+   update_user                  character varying(30)    
 );
 
 CREATE unlogged TABLE IF NOT EXISTS xform_gwells_drilling_company (
  drilling_company_guid uuid                   ,
  name                  character varying(200) ,
  is_hidden             boolean,
- when_created          timestamp with time zone,
- when_updated          timestamp with time zone,
- who_created           character varying(30)   ,
- who_updated           character varying(30)   ,  
+ create_date          timestamp with time zone,
+ update_date          timestamp with time zone,
+ create_user           character varying(30)   ,
+ update_user           character varying(30)   ,  
  DRILLER_COMPANY_CODE  character varying(30)             
 );
 
@@ -133,10 +133,10 @@ CREATE unlogged TABLE IF NOT EXISTS xform_gwells_driller (
   surname               character varying(100) ,
   registration_number   character varying(100) ,
   is_hidden             boolean                ,
-  when_created          timestamp with time zone,
-  when_updated          timestamp with time zone,
-  who_created           character varying(30)   ,
-  who_updated           character varying(30)   ,    
+  create_date          timestamp with time zone,
+  update_date          timestamp with time zone,
+  create_user           character varying(30)   ,
+  update_user           character varying(30)   ,    
   DRILLER_COMPANY_CODE  character varying(30)            
 );
 
@@ -145,15 +145,15 @@ CREATE unlogged TABLE IF NOT EXISTS xform_gwells_driller (
 \copy xform_gwells_land_district    FROM './xform_gwells_land_district.csv'    HEADER DELIMITER ',' CSV
 \copy xform_gwells_drilling_company FROM './xform_gwells_drilling_company.csv' HEADER DELIMITER ',' CSV
 \copy xform_gwells_driller          FROM './xform_gwells_driller.csv'          HEADER DELIMITER ',' CSV
-\copy xform_gwells_well             FROM './xform_gwells_well.csv'  WITH (HEADER, DELIMITER ',' , FORMAT CSV, FORCE_NULL(when_updated,drilling_method_guid,ground_elevation_method_guid));
+\copy xform_gwells_well             FROM './xform_gwells_well.csv'  WITH (HEADER, DELIMITER ',' , FORMAT CSV, FORCE_NULL(update_date,drilling_method_guid,ground_elevation_method_guid));
 
 \copy xform_gwells_surface_seal_material FROM './xform_gwells_surface_seal_material.csv' HEADER DELIMITER ',' CSV
 \copy xform_gwells_surface_seal_method FROM './xform_gwells_surface_seal_method.csv' HEADER DELIMITER ',' CSV
 
 
-INSERT INTO surface_seal_material (who_created,when_created,who_updated,when_updated,
+INSERT INTO surface_seal_material (create_user,create_date,update_user,update_date,
     surface_seal_material_guid,code,description,is_hidden,sort_order)
-SELECT who_created,when_created,who_updated,when_updated,
+SELECT create_user,create_date,update_user,update_date,
   surface_seal_material_guid, code,description,is_hidden,sort_order
 FROM xform_gwells_surface_seal_material
 WHERE length(code) < 11
@@ -163,26 +163,26 @@ AND  code not in
   group by code
   having count(*) > 1);
 
-INSERT INTO surface_seal_method (who_created,when_created,who_updated,when_updated,
+INSERT INTO surface_seal_method (create_user,create_date,update_user,update_date,
     surface_seal_method_guid,code,description,is_hidden,sort_order)
-SELECT who_created,when_created,who_updated,when_updated,
+SELECT create_user,create_date,update_user,update_date,
   surface_seal_method_guid, code,description,is_hidden,sort_order
 FROM xform_gwells_surface_seal_method;
 
 
 INSERT INTO land_district (land_district_guid, code, name, sort_order,
-  when_created, when_updated, who_created, who_updated)
-SELECT land_district_guid, code, name, sort_order,when_created, when_updated, who_created, who_updated
+  create_date, update_date, create_user, update_user)
+SELECT land_district_guid, code, name, sort_order,create_date, update_date, create_user, update_user
 FROM xform_gwells_land_district;
 
 INSERT INTO drilling_company (drilling_company_guid, name, is_hidden,
-   when_created, when_updated, who_created , who_updated /* , driller_company_code */)
+   create_date, update_date, create_user , update_user /* , driller_company_code */)
 SELECT drilling_company_guid, name, is_hidden,
-  when_created, when_updated, who_created , who_updated /* driller_company_code */
+  create_date, update_date, create_user , update_user /* driller_company_code */
 FROM xform_gwells_drilling_company;
 
 INSERT INTO DRILLING_COMPANY (drilling_company_guid, name, is_hidden,
-   when_created, when_updated, who_created , who_updated /* , driller_company_code */)
+   create_date, update_date, create_user , update_user /* , driller_company_code */)
 VALUES ('018d4c1047cb11e7a91992ebcb67fe33',
         'Data Conversion Drilling Compnay',
         true,
@@ -193,9 +193,9 @@ VALUES ('018d4c1047cb11e7a91992ebcb67fe33',
 );
 
 INSERT INTO driller (driller_guid, first_name, surname, registration_number, is_hidden, drilling_company_guid,
-  when_created, when_updated, who_created, who_updated)
+  create_date, update_date, create_user, update_user)
 SELECT dr.driller_guid, dr.first_name, dr.surname, dr.registration_number, dr.is_hidden, 
-co.drilling_company_guid, dr.when_created, dr.when_updated, dr.who_created, dr.who_updated
+co.drilling_company_guid, dr.create_date, dr.update_date, dr.create_user, dr.update_user
 FROM  xform_gwells_driller dr, xform_gwells_drilling_company co
 WHERE dr.DRILLER_COMPANY_CODE = co.DRILLER_COMPANY_CODE;
 
@@ -235,10 +235,10 @@ INSERT INTO well (
   other_drilling_method,
   drilling_method_guid,
   ground_elevation_method_guid,
-  when_created                ,
-  when_updated                ,
-  who_created                 ,
-  who_updated                 ,
+  create_date                ,
+  update_date                ,
+  create_user                 ,
+  update_user                 ,
   backfill_above_surface_seal_depth,
   surface_seal_depth        ,
   surface_seal_thickness    ,
@@ -324,10 +324,10 @@ old.orientation_vertical      ,
 old.other_drilling_method,
 old.drilling_method_guid ,
 old.ground_elevation_method_guid,
-old.when_created              ,
-coalesce(old.when_updated,old.when_created),
-old.who_created               ,
-old.who_updated      ,
+old.create_date              ,
+coalesce(old.update_date,old.create_date),
+old.create_user               ,
+old.update_user      ,
 old.bkfill_above_srfc_seal_depth,
 null,
 null,

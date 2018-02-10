@@ -1,4 +1,4 @@
-who_created,when_created,who_updated,when_updated,screen_assembly_type_guid,code,description,is_hidden,sort_order 
+create_user,create_date,update_user,update_date,screen_assembly_type_guid,code,description,is_hidden,sort_order 
 "ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","50fb68ea86c811e7bb31be2e44b06b34","K_PACKER","K-packer","N","10"
 "ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","50fb6b9c86c811e7bb31be2e44b06b34","RISER_PIPE","Riser Pipe","N","20"
 "ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","50fb6ca086c811e7bb31be2e44b06b34","SCREEN","Screen","N","30"
