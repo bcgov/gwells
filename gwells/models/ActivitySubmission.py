@@ -40,7 +40,7 @@ from .WaterQualityCharacteristic import WaterQualityCharacteristic
 from .WellYieldUnit import WellYieldUnit
 from .ObservationWellStatus import ObservationWellStatus
 from .BCGS_Numbers import BCGS_Numbers
-from .DecommissionMethod import DecommissionMethod
+from .DecommissionMethodCode import DecommissionMethodCode
 from .Driller import Driller
 
 from model_utils import FieldTracker

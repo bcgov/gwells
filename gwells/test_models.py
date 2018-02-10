@@ -54,8 +54,8 @@ class ModelsTestCase(TestCase):
         self.assertIsInstance(casing_code, CasingCode)
 
     def test_decommission_method_instantiation(self):
-        decommission_method = DecommissionMethod()
-        self.assertIsInstance(decommission_method, DecommissionMethod)
+        decommission_method = DecommissionMethodCode()
+        self.assertIsInstance(decommission_method, DecommissionMethodCode)
 
     def test_development_method_instantiation(self):
         development_method = DevelopmentMethod()

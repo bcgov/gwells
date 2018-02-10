@@ -23,6 +23,7 @@ class AuditModel(models.Model):
     An abstract base class model that provides audit fields.
     """
     create_user = models.CharField(max_length=30)
+    # Fri  9 Feb 20:40:38 2018 GW note to remove null=True from next three..
     create_date = models.DateTimeField(blank=True, null=True)
     update_user = models.CharField(max_length=30, null=True)
     update_date = models.DateTimeField(blank=True, null=True)
