@@ -13,9 +13,11 @@ Please see the [original repository](https://github.com/rht-labs/owasp-zap-opens
 Common options for the baseline scan are:
 
 **Usage:** zap-baseline.py -t <target> [options]
+    
     -t target         target URL including the protocol, eg https://www.example.com
 
 **Options:**
+    
     -c config_file    config file to use to INFO, IGNORE or FAIL warnings
     -u config_url     URL of config file to use to INFO, IGNORE or FAIL warnings
     -g gen_file       generate default config file (all rules set to WARN)
