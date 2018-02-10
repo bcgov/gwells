@@ -16,10 +16,10 @@ BEGIN
     static_level                   ,
     drawdown                       ,
     hydro_fracturing_performed     ,
-    who_created                    ,
-    when_created                   ,
-    who_updated                    ,
-    when_updated
+    create_user                    ,
+    create_date                   ,
+    update_user                    ,
+    update_date
   )
   SELECT
     gen_random_uuid()                                                      ,

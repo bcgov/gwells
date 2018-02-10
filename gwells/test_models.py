@@ -49,9 +49,9 @@ class ModelsTestCase(TestCase):
         casing_material = CasingMaterial()
         self.assertIsInstance(casing_material, CasingMaterial)
 
-    def test_casing_type_instantiation(self):
-        casing_type = CasingType()
-        self.assertIsInstance(casing_type, CasingType)
+    def test_casing_code_instantiation(self):
+        casing_code = CasingCode()
+        self.assertIsInstance(casing_code, CasingCode)
 
     def test_decommission_method_instantiation(self):
         decommission_method = DecommissionMethod()

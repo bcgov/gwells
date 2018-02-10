@@ -16,18 +16,18 @@ from .AuditModel import AuditModel
 from django.db import models
 import uuid
 
-class CasingType(AuditModel):
+class CasingCode(AuditModel):
     """
     Type of Casing used on a well
     """
-    casing_type_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    casing_code_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
 
     class Meta:
-        db_table = 'gwells_casing_type'
+        db_table = 'casing_code'
         ordering = ['sort_order', 'description']
 
     def __str__(self):

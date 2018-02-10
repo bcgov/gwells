@@ -1,4 +1,4 @@
-surficial_material_guid,code,description,is_hidden,sort_order,when_created,when_updated,who_created,who_updated
+surficial_material_guid,code,description,is_hidden,sort_order,create_date,update_date,create_user,update_user
 "76d41820633011e7907ba6006ad3dba0","Clay","Clay","N","10","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
 "76d41d02633011e7907ba6006ad3dba0","Silt","Silt","N","20","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
 "76d41e2e633011e7907ba6006ad3dba0","Sand","Sand","N","30","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
