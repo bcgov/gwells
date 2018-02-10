@@ -67,8 +67,8 @@
 \copy gwells_screen_assembly_type (create_user,create_date,update_user,update_date,screen_assembly_type_guid,screen_assembly_type_code,description,is_hidden,sort_order) from 'gwells_screen_assembly_type.csv' with header delimiter ',' CSV ;
 
 --DEVELOPMENT METHOD
-\echo '... loading gwells_development_method code table'
-\copy gwells_development_method (create_user,create_date,update_user,update_date,development_method_guid,development_method_code,description,is_hidden,sort_order ) from 'gwells_development_method.csv' with header delimiter ',' CSV ;
+\echo '... loading development_method_code code table'
+\copy development_method_code (create_user,create_date,update_user,update_date,development_method_guid,development_method_code,description,is_hidden,sort_order ) from 'development_method_code.csv' with header delimiter ',' CSV ;
 
 --ESTIMATION METHOD
 \echo '... loading gwells_yield_estimation_method code table'

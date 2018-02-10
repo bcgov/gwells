@@ -58,8 +58,8 @@ class ModelsTestCase(TestCase):
         self.assertIsInstance(decommission_method, DecommissionMethodCode)
 
     def test_development_method_instantiation(self):
-        development_method = DevelopmentMethod()
-        self.assertIsInstance(development_method, DevelopmentMethod)
+        development_method = DevelopmentMethodCode()
+        self.assertIsInstance(development_method, DevelopmentMethodCode)
 
     def test_driller_instantiation(self):
         driller = Driller()

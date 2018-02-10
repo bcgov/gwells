@@ -248,7 +248,7 @@ DECLARE
               LEFT OUTER JOIN gwells_screen_material screen_material ON UPPER(wells.screen_material_code)=UPPER(screen_material.screen_material_code)
               LEFT OUTER JOIN gwells_screen_opening screen_opening ON UPPER(wells.screen_opening_code)=UPPER(screen_opening.screen_opening_code)
               LEFT OUTER JOIN gwells_screen_bottom screen_bottom ON UPPER(wells.screen_bottom_code)=UPPER(screen_bottom.screen_bottom_code)
-              LEFT OUTER JOIN gwells_development_method development_method ON UPPER(wells.development_method_code)=UPPER(development_method.development_method_code)
+              LEFT OUTER JOIN development_method_code development_method ON UPPER(wells.development_method_code)=UPPER(development_method.development_method_code)
               LEFT OUTER JOIN gwells_surface_seal_method surface_seal_method ON UPPER(wells.surface_seal_method_code)=UPPER(surface_seal_method.surface_seal_method_code)
               LEFT OUTER JOIN gwells_surface_seal_material surface_seal_material ON UPPER(wells.surface_seal_material_code)=UPPER(surface_seal_material.surface_seal_material_code)
               LEFT OUTER JOIN gwells_liner_material liner_material ON UPPER(wells.liner_material_code)=UPPER(liner_material.liner_material_code)

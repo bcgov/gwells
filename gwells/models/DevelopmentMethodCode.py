@@ -16,7 +16,7 @@ from .AuditModel import AuditModel
 from django.db import models
 import uuid
 
-class DevelopmentMethod(AuditModel):
+class DevelopmentMethodCode(AuditModel):
     """
      How the well was developed in order to remove the fine sediment and other organic or inorganic material that immediately surrounds the well screen, the drill hole or the intake area at the bottom of the well, e.g. air lifting, pumping, bailing.
     """
@@ -27,7 +27,7 @@ class DevelopmentMethod(AuditModel):
     sort_order = models.PositiveIntegerField()
 
     class Meta:
-        db_table = 'gwells_development_method'
+        db_table = 'development_method_code'
         ordering = ['sort_order', 'description']
 
     def __str__(self):
