@@ -90,8 +90,8 @@ class ModelsTestCase(TestCase):
         self.assertIsInstance(intended_water_use, IntendedWaterUseCode)
 
     def test_land_district_instantiation(self):
-        land_district = LandDistrict()
-        self.assertIsInstance(land_district, LandDistrict)
+        land_district = LandDistrictCode()
+        self.assertIsInstance(land_district, LandDistrictCode)
 
     def test_licenced_status_instantiation(self):
         licenced_status = LicencedStatus()

@@ -41,7 +41,7 @@ TRUNCATE development_method       RESTART IDENTITY CASCADE;
 TRUNCATE yield_estimation_method  RESTART IDENTITY CASCADE;
 
 /* Drop all temporary transformation tables */
-DROP TABLE IF EXISTS xform_gwells_land_district         CASCADE;
+DROP TABLE IF EXISTS xform_land_district_code         CASCADE;
 DROP TABLE IF EXISTS xform_gwells_well                  CASCADE;
 DROP TABLE IF EXISTS xform_gwells_driller               CASCADE;
 DROP TABLE IF EXISTS xform_gwells_drilling_company      CASCADE;

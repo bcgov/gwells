@@ -99,8 +99,8 @@
 \copy gwells_lithology_hardness (lithology_hardness_guid,code,description,is_hidden,sort_order,create_date,update_date,create_user,update_user) from 'gwells_lithology_hardness.csv' with header delimiter ',' CSV ;
 
 --LAND DISTRICT
-\echo '... loading gwells_land_district code table'
-\copy gwells_land_district (create_user,create_date,update_user,update_date,land_district_guid,code,name,sort_order) from 'gwells_land_district.csv' with header delimiter ',' CSV ;
+\echo '... loading land_district_code code table'
+\copy land_district_code (create_user,create_date,update_user,update_date,land_district_guid,code,name,sort_order) from 'land_district_code.csv' with header delimiter ',' CSV ;
 
 --LITHOLOGY MATERIAL
 \echo '... loading gwells_lithology_material code table'
