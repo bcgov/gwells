@@ -1,6 +1,6 @@
 \encoding windows-1251
 \copy well_yield_unit 	  FROM './gwells_well_yield_unit.csv'   HEADER DELIMITER ',' CSV
-\copy province_state  	  FROM './gwells_province_state.csv' 	   HEADER DELIMITER ',' CSV
+\copy province_state  	  FROM './province_state_code.csv' 	   HEADER DELIMITER ',' CSV
 \copy well_activity_type (well_activity_type_guid,code,description,is_hidden,sort_order,create_user,create_date,update_user,update_date) FROM './gwells_well_activity_type.csv' HEADER DELIMITER ',' CSV
 
 \copy intended_water_use	FROM './gwells_intended_water_use.csv' HEADER DELIMITER ',' CSV

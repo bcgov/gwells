@@ -150,8 +150,8 @@ class ModelsTestCase(TestCase):
         self.assertIsInstance(production_data, ProductionData)
 
     def test_province_state_instantiation(self):
-        province_state = ProvinceState()
-        self.assertIsInstance(province_state, ProvinceState)
+        province_state = ProvinceStateCode()
+        self.assertIsInstance(province_state, ProvinceStateCode)
 
     def test_screen_instantiation(self):
         screen = Screen()

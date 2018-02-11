@@ -16,7 +16,7 @@ from .AuditModel import AuditModel
 from django.db import models
 import uuid
 
-class ProvinceState(AuditModel):
+class ProvinceStateCode(AuditModel):
     """
     Lookup of Provinces/States.
     Used to specify valid provinces or states for the address of the owner of a well.
@@ -29,7 +29,7 @@ class ProvinceState(AuditModel):
     sort_order = models.PositiveIntegerField()
 
     class Meta:
-        db_table = 'gwells_province_state'
+        db_table = 'province_state_code'
         ordering = ['sort_order', 'description']
 
     def __str__(self):

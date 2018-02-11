@@ -30,7 +30,7 @@ class ViewsTestCase(TestCase):
     @classmethod
     def setUpTestData(cls):
         #setup
-        prov = ProvinceState.objects.create(sort_order=1)
+        prov = ProvinceStateCode.objects.create(sort_order=1)
         prov.save()
 
         well_class = WellClass.objects.create(sort_order=1)

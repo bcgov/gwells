@@ -53,7 +53,7 @@ class WellOwnerForm(forms.ModelForm):
         # display code instead of the value from __str__ in the model
         self.fields['owner_province_state'].label_from_instance = self.label_from_instance_code
         try:
-            bc = ProvinceState.objects.get(code='BC')
+            bc = ProvinceStateCode.objects.get(code='BC')
             self.initial['owner_province_state'] = bc
             self.fields['owner_province_state'].empty_label = None
         except Exception as e:

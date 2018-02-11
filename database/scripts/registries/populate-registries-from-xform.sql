@@ -29,7 +29,7 @@ INSERT INTO registries_organization (
 ,null
 ,'https://www.bcgwa.org/'
 ,true
-,(select prov.province_state_guid from gwells_province_state prov where prov.code = 'BC')
+,(select prov.province_state_guid from province_state_code prov where prov.code = 'BC')
 ,'d76775a3-650d-44cb-a3b7-5faf8558f29d'::uuid
 ,'DATALOAD_USER'
 ,'2018-01-01 00:00:00-08'
@@ -61,7 +61,7 @@ INSERT INTO registries_organization (
 ,null
 ,'https://www2.gov.bc.ca/gov/content/environment/air-land-water/water/laws-rules/groundwater-protection-regulation'
 ,true
-,(select prov.province_state_guid from gwells_province_state prov where prov.code = 'BC')
+,(select prov.province_state_guid from province_state_code prov where prov.code = 'BC')
 ,'d3dfedd0-59b3-41cd-a40c-6e35b236a3d6'::uuid
 ,'DATALOAD_USER'
 ,'2018-01-01 00:00:00-08'
@@ -105,7 +105,7 @@ UPDATE registries_organization org SET
 ,companyfax
 ,prov.province_state_guid
 from xform_registries_drillers_reg xform
-    ,gwells_province_state prov
+    ,province_state_code prov
 where xform.companyname = org.name
 and   prov.code = xform.companyprov
 LIMIT 1
@@ -646,7 +646,7 @@ INSERT INTO registries_organization (
 ,'DATALOAD_USER'
 ,'2018-01-01 00:00:00-08' 
 from xform_registries_drillers_reg xform_reg
-left join gwells_province_state prov
+left join province_state_code prov
 on prov.code = xform_reg.companyprov
 where xform_reg.companyname is not null
 and not exists (

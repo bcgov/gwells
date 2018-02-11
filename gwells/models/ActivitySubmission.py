@@ -15,7 +15,7 @@
 from .AuditModel import AuditModel
 from .Well import Well
 from .WellActivityType import WellActivityType
-from .ProvinceState import ProvinceState
+from .ProvinceStateCode import ProvinceStateCode
 from .WellClass import WellClass
 from .WellSubclass import WellSubclass
 from .WellStatus import WellStatus
@@ -71,7 +71,7 @@ class ActivitySubmission(AuditModel):
     owner_full_name = models.CharField(max_length=200, verbose_name='Owner Name')
     owner_mailing_address = models.CharField(max_length=100, verbose_name='Mailing Address')
     owner_city = models.CharField(max_length=100, verbose_name='Town/City')
-    owner_province_state = models.ForeignKey(ProvinceState, db_column='province_state_guid', on_delete=models.CASCADE, verbose_name='Province')
+    owner_province_state = models.ForeignKey(ProvinceStateCode, db_column='province_state_guid', on_delete=models.CASCADE, verbose_name='Province')
     owner_postal_code = models.CharField(max_length=10, blank=True, verbose_name='Postal Code')
 
     street_address = models.CharField(max_length=100, blank=True, verbose_name='Street Address')

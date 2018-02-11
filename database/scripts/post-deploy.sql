@@ -34,7 +34,7 @@ COMMENT ON TABLE gwells_lithology_structure               IS 'Placeholder table 
 COMMENT ON TABLE gwells_ltsa_owner                        IS 'Placeholder table comment.';
 COMMENT ON TABLE gwells_perforation                       IS 'Placeholder table comment.';
 COMMENT ON TABLE gwells_production_data                   IS 'Placeholder table comment.';
-COMMENT ON TABLE gwells_province_state                    IS 'Placeholder table comment.';
+COMMENT ON TABLE province_state_code                    IS 'Placeholder table comment.';
 COMMENT ON TABLE gwells_screen                            IS 'Placeholder table comment.';
 COMMENT ON TABLE gwells_screen_assembly_type              IS 'Placeholder table comment.';
 COMMENT ON TABLE gwells_screen_bottom                     IS 'Placeholder table comment.';
