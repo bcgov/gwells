@@ -16,7 +16,7 @@ from .AuditModel import AuditModel
 from django.db import models
 import uuid
 
-class DrillingMethod(AuditModel):
+class DrillingMethodCode(AuditModel):
     """
     The method used to drill a well. For example, air rotary, dual rotary, cable tool, excavating, other.
     """
@@ -27,7 +27,7 @@ class DrillingMethod(AuditModel):
     sort_order = models.PositiveIntegerField()
 
     class Meta:
-        db_table = 'gwells_drilling_method'
+        db_table = 'drilling_method_code'
         ordering = ['sort_order', 'description']
 
     def __str__(self):

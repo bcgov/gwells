@@ -6,7 +6,7 @@
 \copy intended_water_use	FROM './gwells_intended_water_use.csv' HEADER DELIMITER ',' CSV
 \copy well_class  	    	FROM './gwells_well_class.csv'  	   	HEADER DELIMITER ',' CSV
 \copy well_subclass    	FROM './gwells_well_subclass.csv'     HEADER DELIMITER ',' CSV
-\copy drilling_method    FROM './gwells_drilling_method.csv'    HEADER DELIMITER ',' CSV
+\copy drilling_method    FROM './drilling_method_code.csv'    HEADER DELIMITER ',' CSV
 \copy ground_elevation_method FROM './gwells_ground_elevation_method.csv' HEADER DELIMITER ',' CSV
 \copy lithology_structure FROM './gwells_lithology_structure.csv' HEADER DELIMITER ',' CSV
 \copy lithology_moisture  FROM './gwells_lithology_moisture.csv'  HEADER DELIMITER ',' CSV

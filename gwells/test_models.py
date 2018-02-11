@@ -70,8 +70,8 @@ class ModelsTestCase(TestCase):
         self.assertIsInstance(drilling_company, DrillingCompany)
 
     def test_drilling_method_instantiation(self):
-        drilling_method = DrillingMethod()
-        self.assertIsInstance(drilling_method, DrillingMethod)
+        drilling_method = DrillingMethodCode()
+        self.assertIsInstance(drilling_method, DrillingMethodCode)
 
     def test_filter_pack_material_instantiation(self):
         filter_pack_material = FilterPackMaterial()

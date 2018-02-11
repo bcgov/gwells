@@ -11,7 +11,7 @@ from .DecommissionMethodCode import DecommissionMethodCode
 from .DevelopmentMethodCode import DevelopmentMethodCode
 from .Driller import Driller
 from .DrillingCompany import DrillingCompany
-from .DrillingMethod import DrillingMethod
+from .DrillingMethodCode import DrillingMethodCode
 from .FilterPackMaterial import FilterPackMaterial
 from .FilterPackMaterialSize import FilterPackMaterialSize
 from .GroundElevationMethod import GroundElevationMethod
@@ -66,7 +66,7 @@ __all__ = [
 'DevelopmentMethodCode',
 'Driller',
 'DrillingCompany',
-'DrillingMethod',
+'DrillingMethodCode',
 'FilterPackMaterial',
 'FilterPackMaterialSize',
 'GroundElevationMethod',
