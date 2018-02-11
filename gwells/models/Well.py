@@ -21,7 +21,7 @@ from .IntendedWaterUse import IntendedWaterUse
 from .LicencedStatus import LicencedStatus
 from .LandDistrict import LandDistrict
 from .DrillingCompany import DrillingCompany
-from .DrillingMethod import DrillingMethod
+from .DrillingMethodCode import DrillingMethodCode
 from .GroundElevationMethod import GroundElevationMethod
 from .SurfaceSealMaterial import SurfaceSealMaterial
 from .SurfaceSealMethod import SurfaceSealMethod
@@ -97,7 +97,7 @@ class Well(AuditModel):
     longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True, verbose_name='Longitude')
     ground_elevation = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True, verbose_name='Ground Elevation')
     ground_elevation_method = models.ForeignKey(GroundElevationMethod, db_column='ground_elevation_method_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Elevation Determined By')
-    drilling_method = models.ForeignKey(DrillingMethod, db_column='drilling_method_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Drilling Method')
+    drilling_method = models.ForeignKey(DrillingMethodCode, db_column='drilling_method_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Drilling Method')
     other_drilling_method = models.CharField(max_length=50, blank=True, null=True, verbose_name='Specify Other Drilling Method')
     well_orientation = models.BooleanField(default=True, verbose_name='Orientation of Well', choices=((True, 'vertical'), (False, 'horizontal')))
 

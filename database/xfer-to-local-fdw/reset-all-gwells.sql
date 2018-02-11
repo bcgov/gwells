@@ -30,7 +30,7 @@
  drop table if exists development_method_code                cascade;
  drop table if exists gwells_driller                           cascade;
  drop table if exists drilling_company                  cascade;
- drop table if exists gwells_drilling_method                   cascade;
+ drop table if exists drilling_method_code                   cascade;
  drop table if exists gwells_filter_pack_material              cascade;
  drop table if exists gwells_filter_pack_material_size         cascade;
  drop table if exists gwells_ground_elevation_method           cascade;

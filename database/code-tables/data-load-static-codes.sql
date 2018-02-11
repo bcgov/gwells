@@ -22,8 +22,8 @@
 \copy gwells_well_yield_unit (well_yield_unit_guid,code,description,sort_order,create_date,update_date,create_user,update_user) from 'gwells_well_yield_unit.csv' with header delimiter ',' CSV ;
 
 --DRILLING METHOD
-\echo '... loading gwells_gwells_drilling_method code table'
-\copy gwells_drilling_method (drilling_method_guid,code,description,is_hidden,sort_order,create_date,update_date,create_user,update_user) from 'gwells_drilling_method.csv' with header delimiter ',' CSV ;
+\echo '... loading gwells_drilling_method_code code table'
+\copy drilling_method_code (drilling_method_guid,code,description,is_hidden,sort_order,create_date,update_date,create_user,update_user) from 'drilling_method_code.csv' with header delimiter ',' CSV ;
 
 --GROUND ELEVATION
 \echo '... loading gwells_gwells_ground_elevation_method code table'
