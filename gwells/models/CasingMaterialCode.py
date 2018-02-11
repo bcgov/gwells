@@ -17,7 +17,7 @@ from .AuditModel import AuditModel
 from django.db import models
 import uuid
 
-class CasingMaterial(AuditModel):
+class CasingMaterialCode(AuditModel):
     """
      The material used for casing a well, e.g., Cement, Plastic, Steel.
     """
@@ -28,7 +28,7 @@ class CasingMaterial(AuditModel):
     sort_order = models.PositiveIntegerField()
 
     class Meta:
-        db_table = 'gwells_casing_material'
+        db_table = 'casing_material_code'
         ordering = ['sort_order', 'description']
 
     def __str__(self):

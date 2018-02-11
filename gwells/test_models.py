@@ -46,8 +46,8 @@ class ModelsTestCase(TestCase):
         self.assertIsInstance(casing, Casing)
 
     def test_casing_material_instantiation(self):
-        casing_material = CasingMaterial()
-        self.assertIsInstance(casing_material, CasingMaterial)
+        casing_material = CasingMaterialCode()
+        self.assertIsInstance(casing_material, CasingMaterialCode)
 
     def test_casing_code_instantiation(self):
         casing_code = CasingCode()
