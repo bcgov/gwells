@@ -25,8 +25,8 @@
 \copy screen_bottom   FROM './gwells_screen_bottom.csv'   HEADER DELIMITER ',' CSV
 \copy screen_material FROM './gwells_screen_material.csv' HEADER DELIMITER ',' CSV
 \copy liner_material FROM './gwells_liner_material.csv' HEADER DELIMITER ',' CSV
-\copy filter_pack_material FROM './gwells_filter_pack_material.csv' HEADER DELIMITER ',' CSV
-\copy filter_pack_material_size FROM './gwells_filter_pack_material_size.csv' HEADER DELIMITER ',' CSV
+\copy filter_pack_material FROM './filter_pack_material_code.csv' HEADER DELIMITER ',' CSV
+\copy filter_pack_material_size FROM './filter_pack_material_size_code.csv' HEADER DELIMITER ',' CSV
 
 \copy screen_assembly_type    FROM './gwells_screen_assembly_type.csv'    HEADER DELIMITER ',' CSV 
 \copy development_method      FROM './development_method_code.csv'      HEADER DELIMITER ',' CSV

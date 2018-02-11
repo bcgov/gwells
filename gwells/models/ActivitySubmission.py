@@ -33,8 +33,8 @@ from .ScreenType import ScreenType
 from .ScreenMaterial import ScreenMaterial
 from .ScreenOpening import ScreenOpening
 from .ScreenBottom import ScreenBottom
-from .FilterPackMaterial import FilterPackMaterial
-from .FilterPackMaterialSize import FilterPackMaterialSize
+from .FilterPackMaterialCode import FilterPackMaterialCode
+from .FilterPackMaterialSizeCode import FilterPackMaterialSizeCode
 from .DevelopmentMethodCode import DevelopmentMethodCode
 from .WaterQualityCharacteristic import WaterQualityCharacteristic
 from .WellYieldUnit import WellYieldUnit
@@ -124,8 +124,8 @@ class ActivitySubmission(AuditModel):
     filter_pack_from = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Filter Pack From', validators=[MinValueValidator(Decimal('0.00'))])
     filter_pack_to = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Filter Pack To', validators=[MinValueValidator(Decimal('0.01'))])
     filter_pack_thickness = models.DecimalField(max_digits=5, decimal_places=3, blank=True, null=True, verbose_name='Filter Pack Thickness', validators=[MinValueValidator(Decimal('0.00'))])
-    filter_pack_material = models.ForeignKey(FilterPackMaterial, db_column='filter_pack_material_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Filter Pack Material')
-    filter_pack_material_size = models.ForeignKey(FilterPackMaterialSize, db_column='filter_pack_material_size_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Filter Pack Material Size')
+    filter_pack_material = models.ForeignKey(FilterPackMaterialCode, db_column='filter_pack_material_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Filter Pack Material')
+    filter_pack_material_size = models.ForeignKey(FilterPackMaterialSizeCode, db_column='filter_pack_material_size_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Filter Pack Material Size')
 
     development_method = models.ForeignKey(DevelopmentMethodCode, db_column='development_method_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Development Method')
     development_hours = models.DecimalField(max_digits=9, decimal_places=2, blank=True, null=True, verbose_name='Development Total Duration', validators=[MinValueValidator(Decimal('0.00'))])
