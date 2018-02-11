@@ -24,12 +24,12 @@
  drop table if exists bedrock_material_code                  cascade;
  drop table if exists bedrock_material_descriptor_code       cascade;
  drop table if exists gwells_casing                            cascade;
- drop table if exists gwells_casing_material                   cascade;
+ drop table if exists casing_material_code                   cascade;
  drop table if exists casing_code                       cascade;
  drop table if exists decommission_method_code               cascade;
  drop table if exists development_method_code                cascade;
  drop table if exists gwells_driller                           cascade;
- drop table if exists gwells_drilling_company                  cascade;
+ drop table if exists drilling_company                  cascade;
  drop table if exists gwells_drilling_method                   cascade;
  drop table if exists gwells_filter_pack_material              cascade;
  drop table if exists gwells_filter_pack_material_size         cascade;

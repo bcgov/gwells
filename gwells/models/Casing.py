@@ -16,7 +16,7 @@ from .AuditModel import AuditModel
 from .ActivitySubmission import ActivitySubmission
 from .Well import Well
 from .CasingCode import CasingCode
-from .CasingMaterial import CasingMaterial
+from .CasingMaterialCode import CasingMaterialCode
 
 from django.db import models
 from django.core.validators import MinValueValidator
@@ -34,7 +34,7 @@ class Casing(AuditModel):
     casing_to = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='To', null=True, blank=True, validators=[MinValueValidator(Decimal('0.01'))])
     diameter = models.DecimalField(max_digits=8, decimal_places=3, verbose_name='Diameter', null=True, blank=True, validators=[MinValueValidator(Decimal('0.5'))])
     casing_code = models.ForeignKey(CasingCode, db_column='casing_code_guid', on_delete=models.CASCADE, verbose_name='Casing Code', null=True)
-    casing_material = models.ForeignKey(CasingMaterial, db_column='casing_material_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Casing Material')
+    casing_material = models.ForeignKey(CasingMaterialCode, db_column='casing_material_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Casing Material Code')
     wall_thickness = models.DecimalField(max_digits=6, decimal_places=3, verbose_name='Wall Thickness', blank=True, null=True, validators=[MinValueValidator(Decimal('0.01'))])
     drive_shoe = models.NullBooleanField(default=False, null=True, verbose_name='Drive Shoe', choices=((False, 'No'), (True, 'Yes')))
 

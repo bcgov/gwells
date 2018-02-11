@@ -40,7 +40,7 @@ BEGIN
         casings.who_updated
     FROM wells.wells_casings casings
         INNER JOIN xform_gwells_well xform ON xform.well_id=casings.well_id
-        LEFT OUTER JOIN gwells_casing_material casing_material ON casings.casing_material_code=casing_material.casing_material_code;
+        LEFT OUTER JOIN casing_material_code casing_material ON casings.casing_material_code=casing_material.casing_material_code;
      
 
   raise notice '...wells_casings data imported';

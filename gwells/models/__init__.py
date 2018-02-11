@@ -5,7 +5,7 @@ from .BCGS_Numbers import BCGS_Numbers
 from .BedrockMaterialCode import BedrockMaterialCode
 from .BedrockMaterialDescriptorCode import BedrockMaterialDescriptorCode
 from .Casing import Casing
-from .CasingMaterial import CasingMaterial
+from .CasingMaterialCode import CasingMaterialCode
 from .CasingCode import CasingCode
 from .DecommissionMethodCode import DecommissionMethodCode
 from .DevelopmentMethodCode import DevelopmentMethodCode
@@ -60,7 +60,7 @@ __all__ = [
 'BedrockMaterialCode',
 'BedrockMaterialDescriptorCode',
 'Casing',
-'CasingMaterial',
+'CasingMaterialCode',
 'CasingCode',
 'DecommissionMethodCode',
 'DevelopmentMethodCode',

@@ -16,7 +16,7 @@
 \copy lithology_colour     FROM './gwells_lithology_colour.csv' HEADER DELIMITER ',' CSV
 \copy surficial_material   FROM './gwells_surficial_material.csv'   HEADER DELIMITER ',' CSV
 
-\copy casing_material FROM './gwells_casing_material.csv' HEADER DELIMITER ',' CSV
+\copy casing_material FROM './casing_material_code.csv' HEADER DELIMITER ',' CSV
 \copy casing_code     FROM './casing_code.csv'     HEADER DELIMITER ',' CSV
 
 \copy screen_type     FROM './gwells_screen_type.csv'     HEADER DELIMITER ',' CSV
@@ -116,7 +116,7 @@ CREATE unlogged TABLE IF NOT EXISTS xform_gwells_well (
    update_user                  character varying(30)    
 );
 
-CREATE unlogged TABLE IF NOT EXISTS xform_gwells_drilling_company (
+CREATE unlogged TABLE IF NOT EXISTS xform_drilling_company (
  drilling_company_guid uuid                   ,
  name                  character varying(200) ,
  is_hidden             boolean,
@@ -143,7 +143,7 @@ CREATE unlogged TABLE IF NOT EXISTS xform_gwells_driller (
 
 \encoding windows-1251
 \copy xform_gwells_land_district    FROM './xform_gwells_land_district.csv'    HEADER DELIMITER ',' CSV
-\copy xform_gwells_drilling_company FROM './xform_gwells_drilling_company.csv' HEADER DELIMITER ',' CSV
+\copy xform_drilling_company FROM './xform_drilling_company.csv' HEADER DELIMITER ',' CSV
 \copy xform_gwells_driller          FROM './xform_gwells_driller.csv'          HEADER DELIMITER ',' CSV
 \copy xform_gwells_well             FROM './xform_gwells_well.csv'  WITH (HEADER, DELIMITER ',' , FORMAT CSV, FORCE_NULL(update_date,drilling_method_guid,ground_elevation_method_guid));
 
@@ -179,7 +179,7 @@ INSERT INTO drilling_company (drilling_company_guid, name, is_hidden,
    create_date, update_date, create_user , update_user /* , driller_company_code */)
 SELECT drilling_company_guid, name, is_hidden,
   create_date, update_date, create_user , update_user /* driller_company_code */
-FROM xform_gwells_drilling_company;
+FROM xform_drilling_company;
 
 INSERT INTO DRILLING_COMPANY (drilling_company_guid, name, is_hidden,
    create_date, update_date, create_user , update_user /* , driller_company_code */)
@@ -196,7 +196,7 @@ INSERT INTO driller (driller_guid, first_name, surname, registration_number, is_
   create_date, update_date, create_user, update_user)
 SELECT dr.driller_guid, dr.first_name, dr.surname, dr.registration_number, dr.is_hidden, 
 co.drilling_company_guid, dr.create_date, dr.update_date, dr.create_user, dr.update_user
-FROM  xform_gwells_driller dr, xform_gwells_drilling_company co
+FROM  xform_gwells_driller dr, xform_drilling_company co
 WHERE dr.DRILLER_COMPANY_CODE = co.DRILLER_COMPANY_CODE;
 
 INSERT INTO well (

@@ -9,12 +9,12 @@ COMMENT ON TABLE gwells_bcgs_number                       IS 'Placeholder table 
 COMMENT ON TABLE bedrock_material_code                  IS 'Placeholder table comment.';
 COMMENT ON TABLE bedrock_material_descriptor_code       IS 'Placeholder table comment.';
 COMMENT ON TABLE gwells_casing                            IS 'Placeholder table comment.';
-COMMENT ON TABLE gwells_casing_material                   IS 'Placeholder table comment.';
+COMMENT ON TABLE casing_material_code                   IS 'Placeholder table comment.';
 COMMENT ON TABLE casing_code                       IS 'Placeholder table comment.';
 COMMENT ON TABLE decommission_method_code               IS 'Placeholder table comment.';
 COMMENT ON TABLE development_method_code                IS 'Placeholder table comment.';
 COMMENT ON TABLE gwells_driller                           IS 'Placeholder table comment.';
-COMMENT ON TABLE gwells_drilling_company                  IS 'Placeholder table comment.';
+COMMENT ON TABLE drilling_company                  IS 'Placeholder table comment.';
 COMMENT ON TABLE gwells_drilling_method                   IS 'Placeholder table comment.';
 COMMENT ON TABLE gwells_filter_pack_material              IS 'Placeholder table comment.';
 COMMENT ON TABLE gwells_filter_pack_material_size         IS 'Placeholder table comment.';

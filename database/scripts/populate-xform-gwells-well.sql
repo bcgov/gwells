@@ -242,7 +242,7 @@ DECLARE
     wells.who_created                                                        ,
     COALESCE(wells.who_updated,wells.who_created)
   FROM wells.wells_wells wells LEFT OUTER JOIN wells.wells_owners owner ON owner.owner_id=wells.owner_id
-              LEFT OUTER JOIN gwells_drilling_company drilling_company ON UPPER(wells.driller_company_code)=UPPER(drilling_company.drilling_company_code)
+              LEFT OUTER JOIN drilling_company drilling_company ON UPPER(wells.driller_company_code)=UPPER(drilling_company.drilling_company_code)
               LEFT OUTER JOIN gwells_screen_intake_method screen_intake_method ON UPPER(wells.screen_intake_code)=UPPER(screen_intake_method.screen_intake_code)
               LEFT OUTER JOIN gwells_screen_type screen_type ON UPPER(wells.screen_type_code)=UPPER(screen_type.screen_type_code)
               LEFT OUTER JOIN gwells_screen_material screen_material ON UPPER(wells.screen_material_code)=UPPER(screen_material.screen_material_code)

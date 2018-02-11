@@ -44,7 +44,7 @@ TRUNCATE yield_estimation_method  RESTART IDENTITY CASCADE;
 DROP TABLE IF EXISTS xform_gwells_land_district         CASCADE;
 DROP TABLE IF EXISTS xform_gwells_well                  CASCADE;
 DROP TABLE IF EXISTS xform_gwells_driller               CASCADE;
-DROP TABLE IF EXISTS xform_drilling_company      CASCADE;
+DROP TABLE IF EXISTS xform_gwells_drilling_company      CASCADE;
 DROP TABLE IF EXISTS xform_gwells_surface_seal_material CASCADE;
 DROP TABLE IF EXISTS xform_gwells_surface_seal_method   CASCADE;
 /* drop table xform_gwells_backfill_type cascade; */

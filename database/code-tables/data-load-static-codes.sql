@@ -38,8 +38,8 @@
 \copy gwells_licenced_status (licenced_status_guid,code,description,is_hidden,sort_order,create_date,update_date,create_user,update_user) from 'gwells_licenced_status.csv' with header delimiter ',' CSV ;
 
 --DRILLING COMPANY
-\echo '... loading gwells_drilling_company code table'
-\copy gwells_drilling_company (create_user,create_date,update_user,update_date,drilling_company_guid,drilling_company_code,name,is_hidden) from 'gwells_drilling_company.csv' with header delimiter ',' CSV ;
+\echo '... loading drilling_company code table'
+\copy drilling_company (create_user,create_date,update_user,update_date,drilling_company_guid,drilling_company_code,name,is_hidden) from 'drilling_company.csv' with header delimiter ',' CSV ;
 
 --SCREEN INTAKE METHOD
 \echo '... loading gwells_screen_intake_method code table'
@@ -75,8 +75,8 @@
 \copy gwells_yield_estimation_method (create_user,create_date,update_user,update_date,yield_estimation_method_guid,yield_estimation_method_code,description,is_hidden,sort_order) from 'gwells_yield_estimation_method.csv' with header delimiter ',' CSV ;
 
 --CASING MATERIAL
-\echo '... loading gwells_casing_material code table'
-\copy gwells_casing_material (create_user,create_date,update_user,update_date,casing_material_guid,casing_material_code,description,is_hidden,sort_order ) from 'gwells_casing_material.csv' with header delimiter ',' CSV ;
+\echo '... loading casing_material_code code table'
+\copy casing_material_code (create_user,create_date,update_user,update_date,casing_material_guid,casing_material_code,description,is_hidden,sort_order ) from 'casing_material_code.csv' with header delimiter ',' CSV ;
 
 --SURFACE SEAL METHOD
 \echo '... loading gwells_surface_seal_method code table'
