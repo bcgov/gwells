@@ -31,7 +31,7 @@ from .LtsaOwner import LtsaOwner
 from .ObservationWellStatus import ObservationWellStatus
 from .Perforation import Perforation
 from .ProductionData import ProductionData
-from .ProvinceState import ProvinceState
+from .ProvinceStateCode import ProvinceStateCode
 from .Screen import Screen
 from .ScreenAssemblyType import ScreenAssemblyType
 from .ScreenBottom import ScreenBottom
@@ -86,7 +86,7 @@ __all__ = [
 'ObservationWellStatus',
 'Perforation',
 'ProductionData',
-'ProvinceState',
+'ProvinceStateCode',
 'Screen',
 'ScreenAssemblyType',
 'ScreenBottom',

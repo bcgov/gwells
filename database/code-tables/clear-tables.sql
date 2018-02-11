@@ -2,7 +2,7 @@
 
 -- Reset tables
 TRUNCATE TABLE gwells_well,gwells_intended_water_use,gwells_well_class,
-  gwells_province_state,gwells_drilling_method,decommission_method_code,
+  province_state_code,gwells_drilling_method,decommission_method_code,
   gwells_lithology_colour,gwells_lithology_hardness,gwells_land_district,
   gwells_lithology_material,gwells_lithology_description_code,
   gwells_liner_material,gwells_surface_seal_material,gwells_surface_seal_method,

@@ -50,7 +50,7 @@
  drop table if exists gwells_observation_well_status           cascade;
  drop table if exists gwells_perforation                       cascade;
  drop table if exists gwells_production_data                   cascade;
- drop table if exists gwells_province_state                    cascade;
+ drop table if exists province_state_code                    cascade;
  drop table if exists gwells_screen                            cascade;
  drop table if exists gwells_screen_assembly_type              cascade;
  drop table if exists gwells_screen_bottom                     cascade;

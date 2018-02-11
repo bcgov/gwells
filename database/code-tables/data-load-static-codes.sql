@@ -14,8 +14,8 @@
 \copy gwells_well_subclass (well_subclass_guid,code,description,is_hidden,sort_order,well_class_guid,create_date,update_date,create_user,update_user) from 'gwells_well_subclass.csv' with header delimiter ',' CSV ;
 
 --PROVINCE_STATE
-\echo '... loading gwells_gwells_province_state code table'
-\copy gwells_province_state (province_state_guid,code,description,sort_order,create_date,update_date,create_user,update_user) from 'gwells_province_state.csv' with header delimiter ',' CSV ;
+\echo '... loading gwells_province_state_code code table'
+\copy province_state_code (province_state_guid,code,description,sort_order,create_date,update_date,create_user,update_user) from 'province_state_code.csv' with header delimiter ',' CSV ;
 
 --YIELD UNIT
 \echo '... loading gwells_gwells_well_yield_unit code table'
