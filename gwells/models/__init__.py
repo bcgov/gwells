@@ -14,8 +14,8 @@ from .DrillingCompany import DrillingCompany
 from .DrillingMethodCode import DrillingMethodCode
 from .FilterPackMaterialCode import FilterPackMaterialCode
 from .FilterPackMaterialSizeCode import FilterPackMaterialSizeCode
-from .GroundElevationMethod import GroundElevationMethod
-from .IntendedWaterUse import IntendedWaterUse
+from .GroundElevationMethodCode import GroundElevationMethodCode
+from .IntendedWaterUseCode import IntendedWaterUseCode
 from .LandDistrict import LandDistrict
 from .LicencedStatus import LicencedStatus
 from .LinerMaterial import LinerMaterial
@@ -69,8 +69,8 @@ __all__ = [
 'DrillingMethodCode',
 'FilterPackMaterialCode',
 'FilterPackMaterialSizeCode',
-'GroundElevationMethod',
-'IntendedWaterUse',
+'GroundElevationMethodCode',
+'IntendedWaterUseCode',
 'LandDistrict',
 'LicencedStatus',
 'LinerMaterial',

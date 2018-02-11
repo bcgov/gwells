@@ -36,7 +36,7 @@ class ActivitySubmissionTypeAndClassForm(forms.ModelForm):
                 ),
                 Div(
                     Div('well_class', css_class='col-md-4'),
-                    Div(Div('well_subclass', id='divSubclass'), Div('intended_water_use', id='divIntendedWaterUse'), css_class='col-md-4'),
+                    Div(Div('well_subclass', id='divSubclass'), Div('intended_water_use', id='divIntendedWaterUseCode'), css_class='col-md-4'),
                     css_class='row',
                 ),
                 Div(

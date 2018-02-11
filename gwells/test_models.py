@@ -82,12 +82,12 @@ class ModelsTestCase(TestCase):
         self.assertIsInstance(filter_pack_material_size, FilterPackMaterialSizeCode)
 
     def test_ground_elevation_method_instantiation(self):
-        ground_elevation_method = GroundElevationMethod()
-        self.assertIsInstance(ground_elevation_method, GroundElevationMethod)
+        ground_elevation_method = GroundElevationMethodCode()
+        self.assertIsInstance(ground_elevation_method, GroundElevationMethodCode)
 
     def test_intended_water_use_instantiation(self):
-        intended_water_use = IntendedWaterUse()
-        self.assertIsInstance(intended_water_use, IntendedWaterUse)
+        intended_water_use = IntendedWaterUseCode()
+        self.assertIsInstance(intended_water_use, IntendedWaterUseCode)
 
     def test_land_district_instantiation(self):
         land_district = LandDistrict()

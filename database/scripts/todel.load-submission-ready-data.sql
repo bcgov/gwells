@@ -3,11 +3,11 @@
 \copy province_state  	  FROM './province_state_code.csv' 	   HEADER DELIMITER ',' CSV
 \copy well_activity_type (well_activity_type_guid,code,description,is_hidden,sort_order,create_user,create_date,update_user,update_date) FROM './gwells_well_activity_type.csv' HEADER DELIMITER ',' CSV
 
-\copy intended_water_use	FROM './gwells_intended_water_use.csv' HEADER DELIMITER ',' CSV
+\copy intended_water_use	FROM './intended_water_use_code.csv' HEADER DELIMITER ',' CSV
 \copy well_class  	    	FROM './gwells_well_class.csv'  	   	HEADER DELIMITER ',' CSV
 \copy well_subclass    	FROM './gwells_well_subclass.csv'     HEADER DELIMITER ',' CSV
 \copy drilling_method    FROM './drilling_method_code.csv'    HEADER DELIMITER ',' CSV
-\copy ground_elevation_method FROM './gwells_ground_elevation_method.csv' HEADER DELIMITER ',' CSV
+\copy ground_elevation_method FROM './ground_elevation_method_code.csv' HEADER DELIMITER ',' CSV
 \copy lithology_structure FROM './gwells_lithology_structure.csv' HEADER DELIMITER ',' CSV
 \copy lithology_moisture  FROM './gwells_lithology_moisture.csv'  HEADER DELIMITER ',' CSV
 \copy lithology_hardness  FROM './gwells_lithology_hardness.csv'  HEADER DELIMITER ',' CSV

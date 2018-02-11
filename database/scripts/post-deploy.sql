@@ -18,8 +18,8 @@ COMMENT ON TABLE drilling_company                  IS 'Placeholder table comment
 COMMENT ON TABLE drilling_method_code                   IS 'Placeholder table comment.';
 COMMENT ON TABLE filter_pack_material_code              IS 'Placeholder table comment.';
 COMMENT ON TABLE filter_pack_material_size_code         IS 'Placeholder table comment.';
-COMMENT ON TABLE gwells_ground_elevation_method           IS 'Placeholder table comment.';
-COMMENT ON TABLE gwells_intended_water_use                IS 'Placeholder table comment.';
+COMMENT ON TABLE ground_elevation_method_code           IS 'Placeholder table comment.';
+COMMENT ON TABLE intended_water_use_code                IS 'Placeholder table comment.';
 COMMENT ON TABLE gwells_land_district                     IS 'Placeholder table comment.';
 COMMENT ON TABLE gwells_licenced_status                   IS 'Placeholder table comment.';
 COMMENT ON TABLE gwells_liner_material                    IS 'Placeholder table comment.';
