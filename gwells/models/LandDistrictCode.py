@@ -15,8 +15,7 @@
 from .AuditModel import AuditModel
 from django.db import models
 import uuid
-
-class LandDistrict(AuditModel):
+class LandDistrictCode(AuditModel):
     """
     Lookup of Legal Land Districts.
     """
@@ -26,7 +25,7 @@ class LandDistrict(AuditModel):
     sort_order = models.PositiveIntegerField()
 
     class Meta:
-        db_table = 'gwells_land_district'
+        db_table = 'land_district_code'
         ordering = ['sort_order', 'name']
 
     def __str__(self):

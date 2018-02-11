@@ -21,7 +21,7 @@ from .WellSubclass import WellSubclass
 from .WellStatus import WellStatus
 from .IntendedWaterUseCode import IntendedWaterUseCode
 from .LicencedStatus import LicencedStatus
-from .LandDistrict import LandDistrict
+from .LandDistrictCode import LandDistrictCode
 from .DrillingCompany import DrillingCompany
 from .DrillingMethodCode import DrillingMethodCode
 from .GroundElevationMethodCode import GroundElevationMethodCode
@@ -83,7 +83,7 @@ class ActivitySubmission(AuditModel):
     legal_section = models.CharField(max_length=10, blank=True, verbose_name='Section')
     legal_township = models.CharField(max_length=20, blank=True, verbose_name='Township')
     legal_range = models.CharField(max_length=10, blank=True, verbose_name='Range')
-    land_district = models.ForeignKey(LandDistrict, db_column='land_district_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Land District')
+    land_district = models.ForeignKey(LandDistrictCode, db_column='land_district_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Land District')
     legal_pid = models.PositiveIntegerField(blank=True, null=True, verbose_name='PID')
     well_location_description = models.CharField(max_length=500, blank=True, verbose_name='Well Location Description')
 

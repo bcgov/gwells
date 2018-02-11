@@ -60,7 +60,7 @@ CREATE unlogged TABLE IF NOT EXISTS xform_gwells_surface_seal_material (
 );
 /* - make distinct on CODE */ 
 
-CREATE unlogged TABLE IF NOT EXISTS xform_gwells_land_district (
+CREATE unlogged TABLE IF NOT EXISTS xform_land_district_code (
   land_district_guid uuid,
   code               character varying(10),
   name               character varying(255),
@@ -142,7 +142,7 @@ CREATE unlogged TABLE IF NOT EXISTS xform_gwells_driller (
 
 
 \encoding windows-1251
-\copy xform_gwells_land_district    FROM './xform_gwells_land_district.csv'    HEADER DELIMITER ',' CSV
+\copy xform_land_district_code    FROM './xform_land_district_code.csv'    HEADER DELIMITER ',' CSV
 \copy xform_drilling_company FROM './xform_drilling_company.csv' HEADER DELIMITER ',' CSV
 \copy xform_gwells_driller          FROM './xform_gwells_driller.csv'          HEADER DELIMITER ',' CSV
 \copy xform_gwells_well             FROM './xform_gwells_well.csv'  WITH (HEADER, DELIMITER ',' , FORMAT CSV, FORCE_NULL(update_date,drilling_method_guid,ground_elevation_method_guid));
@@ -173,7 +173,7 @@ FROM xform_gwells_surface_seal_method;
 INSERT INTO land_district (land_district_guid, code, name, sort_order,
   create_date, update_date, create_user, update_user)
 SELECT land_district_guid, code, name, sort_order,create_date, update_date, create_user, update_user
-FROM xform_gwells_land_district;
+FROM xform_land_district_code;
 
 INSERT INTO drilling_company (drilling_company_guid, name, is_hidden,
    create_date, update_date, create_user , update_user /* , driller_company_code */)
@@ -346,7 +346,7 @@ false,
 ''
 FROM xform_gwells_well old
 LEFT OUTER JOIN intended_water_use  use   ON old.WELL_USE_CODE  = use.code
-LEFT OUTER JOIN xform_gwells_land_district land  ON old.LEGAL_LAND_DISTRICT_CODE = land.code 
+LEFT OUTER JOIN xform_land_district_code land  ON old.LEGAL_LAND_DISTRICT_CODE = land.code 
 INNER      JOIN well_class          class ON old.CLASS_OF_WELL_CODCLASSIFIED_BY = class.code 
 LEFT OUTER JOIN well_subclass   subclass  ON old.SUBCLASS_OF_WELL_CLASSIFIED_BY = subclass.code 
                 AND subclass.well_class_guid = class.well_class_guid

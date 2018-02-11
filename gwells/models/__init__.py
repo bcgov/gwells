@@ -16,7 +16,7 @@ from .FilterPackMaterialCode import FilterPackMaterialCode
 from .FilterPackMaterialSizeCode import FilterPackMaterialSizeCode
 from .GroundElevationMethodCode import GroundElevationMethodCode
 from .IntendedWaterUseCode import IntendedWaterUseCode
-from .LandDistrict import LandDistrict
+from .LandDistrictCode import LandDistrictCode
 from .LicencedStatus import LicencedStatus
 from .LinerMaterial import LinerMaterial
 from .LinerPerforation import LinerPerforation
@@ -71,7 +71,7 @@ __all__ = [
 'FilterPackMaterialSizeCode',
 'GroundElevationMethodCode',
 'IntendedWaterUseCode',
-'LandDistrict',
+'LandDistrictCode',
 'LicencedStatus',
 'LinerMaterial',
 'LinerPerforation',
