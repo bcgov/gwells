@@ -2,8 +2,8 @@
 \echo 'Copying static code tables from deployed image CSV files'
 
 --INTENDED USE
-\echo '... loading gwells_intended_water_use code table'
-\copy gwells_intended_water_use (intended_water_use_guid,code,description,is_hidden,sort_order,create_date,update_date,create_user,update_user) from 'gwells_intended_water_use.csv' with header delimiter ',' CSV ;
+\echo '... loading intended_water_use_code code table'
+\copy intended_water_use_code (intended_water_use_guid,code,description,is_hidden,sort_order,create_date,update_date,create_user,update_user) from 'intended_water_use_code.csv' with header delimiter ',' CSV ;
 
 --CLASS
 \echo '... loading gwells_gwells_well_class code table'
@@ -26,8 +26,8 @@
 \copy drilling_method_code (drilling_method_guid,code,description,is_hidden,sort_order,create_date,update_date,create_user,update_user) from 'drilling_method_code.csv' with header delimiter ',' CSV ;
 
 --GROUND ELEVATION
-\echo '... loading gwells_gwells_ground_elevation_method code table'
-\copy gwells_ground_elevation_method (ground_elevation_method_guid,code,description,is_hidden,sort_order,create_date,update_date,create_user,update_user) from 'gwells_ground_elevation_method.csv' with header delimiter ',' CSV ;
+\echo '... loading gwells_ground_elevation_method_code code table'
+\copy ground_elevation_method_code (ground_elevation_method_guid,code,description,is_hidden,sort_order,create_date,update_date,create_user,update_user) from 'ground_elevation_method_code.csv' with header delimiter ',' CSV ;
 
 --STATUS
 \echo '... loading gwells_well_status code table'

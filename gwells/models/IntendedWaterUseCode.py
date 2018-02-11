@@ -16,7 +16,7 @@ from .AuditModel import AuditModel
 from django.db import models
 import uuid
 
-class IntendedWaterUse(AuditModel):
+class IntendedWaterUseCode(AuditModel):
     """
     Usage of Wells (water supply).
     """
@@ -27,7 +27,7 @@ class IntendedWaterUse(AuditModel):
     sort_order = models.PositiveIntegerField()
 
     class Meta:
-        db_table = 'gwells_intended_water_use'
+        db_table = 'intended_water_use_code'
         ordering = ['sort_order', 'description']
 
     def __str__(self):

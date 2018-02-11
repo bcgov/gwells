@@ -19,12 +19,12 @@ from .ProvinceStateCode import ProvinceStateCode
 from .WellClass import WellClass
 from .WellSubclass import WellSubclass
 from .WellStatus import WellStatus
-from .IntendedWaterUse import IntendedWaterUse
+from .IntendedWaterUseCode import IntendedWaterUseCode
 from .LicencedStatus import LicencedStatus
 from .LandDistrict import LandDistrict
 from .DrillingCompany import DrillingCompany
 from .DrillingMethodCode import DrillingMethodCode
-from .GroundElevationMethod import GroundElevationMethod
+from .GroundElevationMethodCode import GroundElevationMethodCode
 from .SurfaceSealMaterial import SurfaceSealMaterial
 from .SurfaceSealMethod import SurfaceSealMethod
 from .LinerMaterial import LinerMaterial
@@ -60,7 +60,7 @@ class ActivitySubmission(AuditModel):
     well_activity_type = models.ForeignKey(WellActivityType, db_column='well_activity_type_guid', on_delete=models.CASCADE, verbose_name='Type of Work')
     well_class = models.ForeignKey(WellClass, null=True, db_column='well_class_guid', on_delete=models.CASCADE, verbose_name='Well Class')
     well_subclass = models.ForeignKey(WellSubclass, db_column='well_subclass_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Well Subclass')
-    intended_water_use = models.ForeignKey(IntendedWaterUse, db_column='intended_water_use_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Intended Water Use')
+    intended_water_use = models.ForeignKey(IntendedWaterUseCode, db_column='intended_water_use_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Intended Water Use')
     driller_responsible = models.ForeignKey(Driller, db_column='driller_responsible_guid', on_delete=models.CASCADE, verbose_name='Person Responsible for Drilling')
     driller_name = models.CharField(max_length=200, blank=True, verbose_name='Name of Person Who Did the Work')
     consultant_name = models.CharField(max_length=200, blank=True, verbose_name='Consultant Name')
@@ -93,7 +93,7 @@ class ActivitySubmission(AuditModel):
     latitude = models.DecimalField(max_digits=8, decimal_places=6, blank=True, null=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
     ground_elevation = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True, verbose_name='Ground Elevation')
-    ground_elevation_method = models.ForeignKey(GroundElevationMethod, db_column='ground_elevation_method_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Elevation Determined By')
+    ground_elevation_method = models.ForeignKey(GroundElevationMethodCode, db_column='ground_elevation_method_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Elevation Determined By')
     drilling_method = models.ForeignKey(DrillingMethodCode, db_column='drilling_method_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Drilling Method')
     other_drilling_method = models.CharField(max_length=50, blank=True, verbose_name='Specify Other Drilling Method')
     well_orientation = models.BooleanField(default=True, verbose_name='Orientation of Well', choices=((True, 'vertical'), (False, 'horizontal')))
