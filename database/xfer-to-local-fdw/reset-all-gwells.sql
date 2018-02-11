@@ -31,8 +31,8 @@
  drop table if exists gwells_driller                           cascade;
  drop table if exists drilling_company                  cascade;
  drop table if exists drilling_method_code                   cascade;
- drop table if exists gwells_filter_pack_material              cascade;
- drop table if exists gwells_filter_pack_material_size         cascade;
+ drop table if exists filter_pack_material_code              cascade;
+ drop table if exists filter_pack_material_size_code         cascade;
  drop table if exists gwells_ground_elevation_method           cascade;
  drop table if exists gwells_intended_water_use                cascade;
  drop table if exists gwells_land_district                     cascade;

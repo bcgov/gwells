@@ -12,8 +12,8 @@ from .DevelopmentMethodCode import DevelopmentMethodCode
 from .Driller import Driller
 from .DrillingCompany import DrillingCompany
 from .DrillingMethodCode import DrillingMethodCode
-from .FilterPackMaterial import FilterPackMaterial
-from .FilterPackMaterialSize import FilterPackMaterialSize
+from .FilterPackMaterialCode import FilterPackMaterialCode
+from .FilterPackMaterialSizeCode import FilterPackMaterialSizeCode
 from .GroundElevationMethod import GroundElevationMethod
 from .IntendedWaterUse import IntendedWaterUse
 from .LandDistrict import LandDistrict
@@ -67,8 +67,8 @@ __all__ = [
 'Driller',
 'DrillingCompany',
 'DrillingMethodCode',
-'FilterPackMaterial',
-'FilterPackMaterialSize',
+'FilterPackMaterialCode',
+'FilterPackMaterialSizeCode',
 'GroundElevationMethod',
 'IntendedWaterUse',
 'LandDistrict',

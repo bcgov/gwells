@@ -16,18 +16,18 @@ from .AuditModel import AuditModel
 from django.db import models
 import uuid
 
-class FilterPackMaterialSize(AuditModel):
+class FilterPackMaterialCode(AuditModel):
     """
-     The size of material used to pack a well filter, e.g. 1.0 - 2.0 mm, 2.0 - 4.0 mm, 4.0 - 8.0 mm.
+     The material used to pack a well filter, e.g. Very coarse sand, Very fine gravel, Fine gravel.
     """
-    filter_pack_material_size_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    filter_pack_material_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
 
     class Meta:
-        db_table = 'gwells_filter_pack_material_size'
+        db_table = 'filter_pack_material_code'
         ordering = ['sort_order', 'description']
 
     def __str__(self):

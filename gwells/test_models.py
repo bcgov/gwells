@@ -74,12 +74,12 @@ class ModelsTestCase(TestCase):
         self.assertIsInstance(drilling_method, DrillingMethodCode)
 
     def test_filter_pack_material_instantiation(self):
-        filter_pack_material = FilterPackMaterial()
-        self.assertIsInstance(filter_pack_material, FilterPackMaterial)
+        filter_pack_material = FilterPackMaterialCode()
+        self.assertIsInstance(filter_pack_material, FilterPackMaterialCode)
 
     def test_filter_pack_material_size_instantiation(self):
-        filter_pack_material_size = FilterPackMaterialSize()
-        self.assertIsInstance(filter_pack_material_size, FilterPackMaterialSize)
+        filter_pack_material_size = FilterPackMaterialSizeCode()
+        self.assertIsInstance(filter_pack_material_size, FilterPackMaterialSizeCode)
 
     def test_ground_elevation_method_instantiation(self):
         ground_elevation_method = GroundElevationMethod()
