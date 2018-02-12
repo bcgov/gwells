@@ -34,8 +34,8 @@
 \copy gwells_well_status (well_status_guid,code,description,is_hidden,sort_order,create_date,update_date,create_user,update_user) from 'gwells_well_status.csv' with header delimiter ',' CSV ;
 
 --LICENCE
-\echo '... loading gwells_licenced_status code table'
-\copy gwells_licenced_status (licenced_status_guid,code,description,is_hidden,sort_order,create_date,update_date,create_user,update_user) from 'gwells_licenced_status.csv' with header delimiter ',' CSV ;
+\echo '... loading licenced_status_code code table'
+\copy licenced_status_code (licenced_status_guid,code,description,is_hidden,sort_order,create_date,update_date,create_user,update_user) from 'licenced_status_code.csv' with header delimiter ',' CSV ;
 
 --DRILLING COMPANY
 \echo '... loading drilling_company code table'

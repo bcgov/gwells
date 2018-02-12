@@ -17,7 +17,7 @@ from .FilterPackMaterialSizeCode import FilterPackMaterialSizeCode
 from .GroundElevationMethodCode import GroundElevationMethodCode
 from .IntendedWaterUseCode import IntendedWaterUseCode
 from .LandDistrictCode import LandDistrictCode
-from .LicencedStatus import LicencedStatus
+from .LicencedStatusCode import LicencedStatusCode
 from .LinerMaterial import LinerMaterial
 from .LinerPerforation import LinerPerforation
 from .LithologyColour import LithologyColour
@@ -72,7 +72,7 @@ __all__ = [
 'GroundElevationMethodCode',
 'IntendedWaterUseCode',
 'LandDistrictCode',
-'LicencedStatus',
+'LicencedStatusCode',
 'LinerMaterial',
 'LinerPerforation',
 'LithologyColour',

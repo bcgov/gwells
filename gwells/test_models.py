@@ -94,8 +94,8 @@ class ModelsTestCase(TestCase):
         self.assertIsInstance(land_district, LandDistrictCode)
 
     def test_licenced_status_instantiation(self):
-        licenced_status = LicencedStatus()
-        self.assertIsInstance(licenced_status, LicencedStatus)
+        licenced_status = LicencedStatusCode()
+        self.assertIsInstance(licenced_status, LicencedStatusCode)
 
     def test_liner_material_instantiation(self):
         liner_material = LinerMaterial()

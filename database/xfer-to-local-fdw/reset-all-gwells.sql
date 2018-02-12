@@ -36,7 +36,7 @@
  drop table if exists ground_elevation_method_code           cascade;
  drop table if exists intended_water_use_code                cascade;
  drop table if exists land_district_code                     cascade;
- drop table if exists gwells_licenced_status                   cascade;
+ drop table if exists licenced_status_code                   cascade;
  drop table if exists gwells_liner_material                    cascade;
  drop table if exists gwells_liner_perforation                 cascade;
  drop table if exists gwells_lithology_colour                  cascade;

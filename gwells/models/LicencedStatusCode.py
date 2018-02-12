@@ -16,9 +16,9 @@ from .AuditModel import AuditModel
 from django.db import models
 import uuid
 
-class LicencedStatus(AuditModel):
+class LicencedStatusCode(AuditModel):
     """
-    LicenceStatus of Well.
+    LicencedStatusCode of Well.
     """
     licenced_status_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     code = models.CharField(unique=True, max_length=10)
@@ -27,9 +27,9 @@ class LicencedStatus(AuditModel):
     sort_order = models.PositiveIntegerField()
 
     class Meta:
-        db_table = 'gwells_licenced_status'
+        db_table = 'licenced_status_code'
         ordering = ['sort_order', 'code']
 
     def save(self, *args, **kwargs):
         self.validate()
-        super(LicencedStatus, self).save(*args, **kwargs)
+        super(LicencedStatusCode, self).save(*args, **kwargs)
