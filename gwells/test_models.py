@@ -98,16 +98,16 @@ class ModelsTestCase(TestCase):
         self.assertIsInstance(licenced_status, LicencedStatusCode)
 
     def test_liner_material_instantiation(self):
-        liner_material = LinerMaterial()
-        self.assertIsInstance(liner_material, LinerMaterial)
+        liner_material = LinerMaterialCode()
+        self.assertIsInstance(liner_material, LinerMaterialCode)
 
     def test_liner_perforation_instantiation(self):
         liner_perforation = LinerPerforation()
         self.assertIsInstance(liner_perforation, LinerPerforation)
 
     def test_lithology_colour_instantiation(self):
-        lithology_colour = LithologyColour()
-        self.assertIsInstance(lithology_colour, LithologyColour)
+        lithology_colour = LithologyColourCode()
+        self.assertIsInstance(lithology_colour, LithologyColourCode)
 
     def test_lithology_description_instantiation(self):
         lithology_description = LithologyDescription()

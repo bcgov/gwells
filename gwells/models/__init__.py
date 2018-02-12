@@ -18,9 +18,9 @@ from .GroundElevationMethodCode import GroundElevationMethodCode
 from .IntendedWaterUseCode import IntendedWaterUseCode
 from .LandDistrictCode import LandDistrictCode
 from .LicencedStatusCode import LicencedStatusCode
-from .LinerMaterial import LinerMaterial
+from .LinerMaterialCode import LinerMaterialCode
 from .LinerPerforation import LinerPerforation
-from .LithologyColour import LithologyColour
+from .LithologyColourCode import LithologyColourCode
 from .LithologyDescription import LithologyDescription
 from .LithologyDescriptionCode import LithologyDescriptionCode
 from .LithologyHardness import LithologyHardness
@@ -73,9 +73,9 @@ __all__ = [
 'IntendedWaterUseCode',
 'LandDistrictCode',
 'LicencedStatusCode',
-'LinerMaterial',
+'LinerMaterialCode',
 'LinerPerforation',
-'LithologyColour',
+'LithologyColourCode',
 'LithologyDescription',
 'LithologyDescriptionCode',
 'LithologyHardness',

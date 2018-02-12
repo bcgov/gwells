@@ -58,7 +58,7 @@ BEGIN
   INNER JOIN xform_gwells_well xform ON xform.well_id=wld.well_id
   INNER JOIN wells.wells_wells wells ON wells.well_id=wld.well_id
   LEFT OUTER JOIN gwells_lithology_hardness lithology_hardness ON UPPER(wld.relative_hardness_code)=UPPER(lithology_hardness.code)
-  LEFT OUTER JOIN gwells_lithology_colour lithology_colour ON UPPER(wld.lithology_colour_code)=UPPER(lithology_colour.code)
+  LEFT OUTER JOIN lithology_colour_code lithology_colour ON UPPER(wld.lithology_colour_code)=UPPER(lithology_colour.code)
   LEFT OUTER JOIN gwells_well_yield_unit well_yield_unit ON UPPER(wld.water_bearing_est_flw_unt_cd)=UPPER(well_yield_unit.code)
   LEFT OUTER JOIN gwells_lithology_material lithology_material ON UPPER(wld.lithology_material_code)=UPPER(lithology_material.code)
   LEFT OUTER JOIN gwells_lithology_description_code lithology_description_code ON UPPER(wld.lithology_code)=UPPER(lithology_description_code.code);

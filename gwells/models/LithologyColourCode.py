@@ -16,18 +16,18 @@ from .AuditModel import AuditModel
 from django.db import models
 import uuid
 
-class LinerMaterial(AuditModel):
+class LithologyColourCode(AuditModel):
     """
-     Liner material installed in a well to protect the well pump or other works in the well from damage.
+    Colour of the lithology
     """
-    liner_material_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    liner_material_code = models.CharField(max_length=10, unique=True)
+    lithology_colour_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
 
     class Meta:
-        db_table = 'gwells_liner_material'
+        db_table = 'lithology_colour_code'
         ordering = ['sort_order', 'description']
 
     def __str__(self):
