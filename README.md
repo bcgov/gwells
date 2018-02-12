@@ -1,3 +1,5 @@
+[![Quality Gate](https://sonarqube-moe-gwells-tools.pathfinder.gov.bc.ca/api/badges/gate?key=org.sonarqube:bcgov-gwells)](https://sonarqube-moe-gwells-tools.pathfinder.gov.bc.ca/dashboard?id=org.sonarqube%3Abcgov-gwells)
+
 # Groundwater Wells
 
 ## Introduction
