@@ -21,7 +21,7 @@ COMMENT ON TABLE filter_pack_material_size_code         IS 'Placeholder table co
 COMMENT ON TABLE ground_elevation_method_code           IS 'Placeholder table comment.';
 COMMENT ON TABLE intended_water_use_code                IS 'Placeholder table comment.';
 COMMENT ON TABLE land_district_code                     IS 'Placeholder table comment.';
-COMMENT ON TABLE gwells_licenced_status                   IS 'Placeholder table comment.';
+COMMENT ON TABLE licenced_status_code                   IS 'Placeholder table comment.';
 COMMENT ON TABLE gwells_liner_material                    IS 'Placeholder table comment.';
 COMMENT ON TABLE gwells_liner_perforation                 IS 'Placeholder table comment.';
 COMMENT ON TABLE gwells_lithology_colour                  IS 'Placeholder table comment.';

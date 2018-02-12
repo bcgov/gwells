@@ -20,7 +20,7 @@ from .WellClass import WellClass
 from .WellSubclass import WellSubclass
 from .WellStatus import WellStatus
 from .IntendedWaterUseCode import IntendedWaterUseCode
-from .LicencedStatus import LicencedStatus
+from .LicencedStatusCode import LicencedStatusCode
 from .LandDistrictCode import LandDistrictCode
 from .DrillingCompany import DrillingCompany
 from .DrillingMethodCode import DrillingMethodCode
