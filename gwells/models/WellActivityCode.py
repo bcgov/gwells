@@ -13,33 +13,22 @@
 """
 
 from .AuditModel import AuditModel
-from .WellClass import WellClass
 from django.db import models
 import uuid
 
-class WellSubclass(AuditModel):
+class WellActivityCode(AuditModel):
     """
-    Subclass of Well type.
+    Types of Well Activity.
     """
-    well_subclass_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    well_class = models.ForeignKey(WellClass, null=True, db_column='well_class_guid', on_delete=models.CASCADE, blank=True)
-    code = models.CharField(max_length=10)
+    well_activity_type_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
 
     class Meta:
-        db_table = 'gwells_well_subclass'
+        db_table = 'well_activity_code'
         ordering = ['sort_order', 'description']
-
-    def validate_unique(self, exclude=None):
-        qs = Room.objects.filter(name=self.code)
-        if qs.filter(well_class__code=self.well_class__code).exists():
-            raise ValidationError('Code must be unique per Well Class')
-
-    def save(self, *args, **kwargs):
-        self.validate_unique()
-        super(WellSubclass, self).save(*args, **kwargs)
 
     def __str__(self):
         return self.description

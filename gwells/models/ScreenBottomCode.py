@@ -16,18 +16,18 @@ from .AuditModel import AuditModel
 from django.db import models
 import uuid
 
-class WellActivityType(AuditModel):
+class ScreenBottomCode(AuditModel):
     """
-    Types of Well Activity.
+     The type of bottom on a well screen, i.e. Bail, Plate, Plug, Other.
     """
-    well_activity_type_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    code = models.CharField(max_length=10, unique=True)
+    screen_bottom_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    screen_bottom_code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
 
     class Meta:
-        db_table = 'gwells_well_activity_type'
+        db_table = 'screen_bottom_code'
         ordering = ['sort_order', 'description']
 
     def __str__(self):

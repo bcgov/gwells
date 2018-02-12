@@ -6,12 +6,12 @@
 \copy intended_water_use_code (intended_water_use_guid,code,description,is_hidden,sort_order,create_date,update_date,create_user,update_user) from 'intended_water_use_code.csv' with header delimiter ',' CSV ;
 
 --CLASS
-\echo '... loading gwells_gwells_well_class code table'
-\copy gwells_well_class (well_class_guid,code,description,is_hidden,sort_order,create_date,update_date,create_user,update_user) from 'gwells_well_class.csv' with header delimiter ',' CSV ;
+\echo '... loading gwells_well_class_code code table'
+\copy well_class_code (well_class_guid,code,description,is_hidden,sort_order,create_date,update_date,create_user,update_user) from 'well_class_code.csv' with header delimiter ',' CSV ;
 
 --SUBCLASS
-\echo '... loading gwells_gwells_well_subclass code table'
-\copy gwells_well_subclass (well_subclass_guid,code,description,is_hidden,sort_order,well_class_guid,create_date,update_date,create_user,update_user) from 'gwells_well_subclass.csv' with header delimiter ',' CSV ;
+\echo '... loading gwells_well_subclass_code code table'
+\copy well_subclass_code (well_subclass_guid,code,description,is_hidden,sort_order,well_class_guid,create_date,update_date,create_user,update_user) from 'well_subclass_code.csv' with header delimiter ',' CSV ;
 
 --PROVINCE_STATE
 \echo '... loading gwells_province_state_code code table'
@@ -42,29 +42,29 @@
 \copy drilling_company (create_user,create_date,update_user,update_date,drilling_company_guid,drilling_company_code,name,is_hidden) from 'drilling_company.csv' with header delimiter ',' CSV ;
 
 --SCREEN INTAKE METHOD
-\echo '... loading gwells_screen_intake_method code table'
-\copy gwells_screen_intake_method (create_user,create_date,update_user,update_date,screen_intake_method_guid,screen_intake_code,description,status_flag,is_hidden,sort_order) from 'gwells_screen_intake_method.csv' with header delimiter ',' CSV ;
+\echo '... loading screen_intake_method_code code table'
+\copy screen_intake_method_code (create_user,create_date,update_user,update_date,screen_intake_method_guid,screen_intake_code,description,status_flag,is_hidden,sort_order) from 'screen_intake_method_code.csv' with header delimiter ',' CSV ;
 
 --SCREEN TYPE
-\echo '... loading gwells_screen_type code table'
-\copy gwells_screen_type (create_user,create_date,update_user,update_date,screen_type_guid,screen_type_code,description,is_hidden,sort_order) from 'gwells_screen_type.csv' with header delimiter ',' CSV ;
+\echo '... loading screen_type_code code table'
+\copy screen_type_code (create_user,create_date,update_user,update_date,screen_type_guid,screen_type_code,description,is_hidden,sort_order) from 'screen_type_code.csv' with header delimiter ',' CSV ;
 
 
 --SCREEN MATERIAL
-\echo '... loading gwells_screen_material code table'
-\copy gwells_screen_material (create_user,create_date,update_user,update_date,screen_material_guid,screen_material_code,description,is_hidden,sort_order) from 'gwells_screen_material.csv' with header delimiter ',' CSV ;
+\echo '... loading screen_material_code code table'
+\copy screen_material_code (create_user,create_date,update_user,update_date,screen_material_guid,screen_material_code,description,is_hidden,sort_order) from 'screen_material_code.csv' with header delimiter ',' CSV ;
 
 --SCREEN OPENING
-\echo '... loading gwells_screen_opening code table'
-\copy gwells_screen_opening (create_user,create_date,update_user,update_date,screen_opening_guid,screen_opening_code,description,is_hidden,sort_order) from 'gwells_screen_opening.csv' with header delimiter ',' CSV ;
+\echo '... loading screen_opening_code code table'
+\copy screen_opening_code (create_user,create_date,update_user,update_date,screen_opening_guid,screen_opening_code,description,is_hidden,sort_order) from 'screen_opening_code.csv' with header delimiter ',' CSV ;
 
 --SCREEN BOTTOM
-\echo '... loading gwells_screen_bottom code table'
-\copy gwells_screen_bottom (create_user,create_date,update_user,update_date,screen_bottom_guid,screen_bottom_code,description,is_hidden,sort_order) from 'gwells_screen_bottom.csv' with header delimiter ',' CSV ;
+\echo '... loading screen_bottom_code code table'
+\copy screen_bottom_code (create_user,create_date,update_user,update_date,screen_bottom_guid,screen_bottom_code,description,is_hidden,sort_order) from 'screen_bottom_code.csv' with header delimiter ',' CSV ;
 
 --SCREEN ASSEMBLY
-\echo '... loading gwells_screen_assembly_type code table'
-\copy gwells_screen_assembly_type (create_user,create_date,update_user,update_date,screen_assembly_type_guid,screen_assembly_type_code,description,is_hidden,sort_order) from 'gwells_screen_assembly_type.csv' with header delimiter ',' CSV ;
+\echo '... loading screen_assembly_type_code code table'
+\copy screen_assembly_type_code (create_user,create_date,update_user,update_date,screen_assembly_type_guid,screen_assembly_type_code,description,is_hidden,sort_order) from 'screen_assembly_type_code.csv' with header delimiter ',' CSV ;
 
 --DEVELOPMENT METHOD
 \echo '... loading development_method_code code table'
@@ -79,12 +79,12 @@
 \copy casing_material_code (create_user,create_date,update_user,update_date,casing_material_guid,casing_material_code,description,is_hidden,sort_order ) from 'casing_material_code.csv' with header delimiter ',' CSV ;
 
 --SURFACE SEAL METHOD
-\echo '... loading gwells_surface_seal_method code table'
-\copy gwells_surface_seal_method (create_user,create_date,update_user,update_date,surface_seal_method_guid,surface_seal_method_code,description,is_hidden,sort_order ) from 'gwells_surface_seal_method.csv' with header delimiter ',' CSV ;
+\echo '... loading surface_seal_method_code code table'
+\copy surface_seal_method_code (create_user,create_date,update_user,update_date,surface_seal_method_guid,surface_seal_method_code,description,is_hidden,sort_order ) from 'surface_seal_method_code.csv' with header delimiter ',' CSV ;
 
 --SURFACE SEAL MATERIAL
-\echo '... loading gwells_surface_seal_material table'
-\copy gwells_surface_seal_material (create_user,create_date,update_user,update_date,surface_seal_material_guid,surface_seal_material_code,description,is_hidden,sort_order ) from 'gwells_surface_seal_material.csv' with header delimiter ',' CSV ;
+\echo '... loading surface_seal_material_code table'
+\copy surface_seal_material_code (create_user,create_date,update_user,update_date,surface_seal_material_guid,surface_seal_material_code,description,is_hidden,sort_order ) from 'surface_seal_material_code.csv' with header delimiter ',' CSV ;
 
 --LINER MATERIAL
 \echo '... loading liner_material_code code table'
@@ -115,7 +115,7 @@
 \copy decommission_method_code (create_user,create_date,update_user,update_date,code,description,status_flag,sort_order,decommission_method_guid) from 'decommission_method_code.csv' with header delimiter ',' CSV ;
 
 --OBSERVATION WELL STATUS
-\echo '... loading gwells_observation_well_status code table'
-\copy gwells_observation_well_status (create_user,create_date,update_user,update_date,observation_well_status_guid,code,description,is_hidden,sort_order) from 'gwells_observation_well_status.csv' with header delimiter ',' CSV ;
+\echo '... loading obs_well_status_code code table'
+\copy obs_well_status_code (create_user,create_date,update_user,update_date,obs_well_status_guid,code,description,is_hidden,sort_order) from 'obs_well_status_code.csv' with header delimiter ',' CSV ;
 
 \echo 'Finshed copy of static code tables.'

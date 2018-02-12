@@ -33,7 +33,7 @@ class ViewsTestCase(TestCase):
         prov = ProvinceStateCode.objects.create(sort_order=1)
         prov.save()
 
-        well_class = WellClass.objects.create(sort_order=1)
+        well_class = WellClassCode.objects.create(sort_order=1)
         well_class.save()
 
         w = Well.objects.create(well_class=well_class, owner_province_state=prov)

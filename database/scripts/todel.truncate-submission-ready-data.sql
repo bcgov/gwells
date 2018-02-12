@@ -45,6 +45,6 @@ DROP TABLE IF EXISTS xform_land_district_code         CASCADE;
 DROP TABLE IF EXISTS xform_gwells_well                  CASCADE;
 DROP TABLE IF EXISTS xform_gwells_driller               CASCADE;
 DROP TABLE IF EXISTS xform_gwells_drilling_company      CASCADE;
-DROP TABLE IF EXISTS xform_gwells_surface_seal_material CASCADE;
-DROP TABLE IF EXISTS xform_gwells_surface_seal_method   CASCADE;
+DROP TABLE IF EXISTS xform_surface_seal_material_code CASCADE;
+DROP TABLE IF EXISTS xform_surface_seal_method_code   CASCADE;
 /* drop table xform_gwells_backfill_type cascade; */

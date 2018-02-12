@@ -14,8 +14,8 @@
 
 from .AuditModel import AuditModel
 from .ProvinceStateCode import ProvinceStateCode
-from .WellClass import WellClass
-from .WellSubclass import WellSubclass
+from .WellClassCode import WellClassCode
+from .WellSubclassCode import WellSubclassCode
 from .WellStatus import WellStatus
 from .IntendedWaterUseCode import IntendedWaterUseCode
 from .LicencedStatusCode import LicencedStatusCode
@@ -23,20 +23,20 @@ from .LandDistrictCode import LandDistrictCode
 from .DrillingCompany import DrillingCompany
 from .DrillingMethodCode import DrillingMethodCode
 from .GroundElevationMethodCode import GroundElevationMethodCode
-from .SurfaceSealMaterial import SurfaceSealMaterial
-from .SurfaceSealMethod import SurfaceSealMethod
+from .SurfaceSealMaterialCode import SurfaceSealMaterialCode
+from .SurfaceSealMethodCode import SurfaceSealMethodCode
 from .LinerMaterialCode import LinerMaterialCode
-from .ScreenIntakeMethod import ScreenIntakeMethod
-from .ScreenType import ScreenType
-from .ScreenMaterial import ScreenMaterial
-from .ScreenOpening import ScreenOpening
-from .ScreenBottom import ScreenBottom
+from .ScreenIntakeMethodCode import ScreenIntakeMethodCode
+from .ScreenTypeCode import ScreenTypeCode
+from .ScreenMaterialCode import ScreenMaterialCode
+from .ScreenOpeningCode import ScreenOpeningCode
+from .ScreenBottomCode import ScreenBottomCode
 from .FilterPackMaterialCode import FilterPackMaterialCode
 from .FilterPackMaterialSizeCode import FilterPackMaterialSizeCode
 from .DevelopmentMethodCode import DevelopmentMethodCode
 from .WaterQualityCharacteristic import WaterQualityCharacteristic
 from .WellYieldUnit import WellYieldUnit
-from .ObservationWellStatus import ObservationWellStatus
+from .ObsWellStatusCode import ObsWellStatusCode
 from .BCGS_Numbers import BCGS_Numbers
 from .DecommissionMethodCode import DecommissionMethodCode
 
@@ -61,8 +61,8 @@ class Well(AuditModel):
     owner_province_state = models.ForeignKey(ProvinceStateCode, db_column='province_state_guid', on_delete=models.CASCADE, blank=True, verbose_name='Province')
     owner_postal_code = models.CharField(max_length=10, blank=True, verbose_name='Postal Code')
 
-    well_class = models.ForeignKey(WellClass, null=True, db_column='well_class_guid', on_delete=models.CASCADE, verbose_name='Well Class')
-    well_subclass = models.ForeignKey(WellSubclass, db_column='well_subclass_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Well Subclass')
+    well_class = models.ForeignKey(WellClassCode, null=True, db_column='well_class_guid', on_delete=models.CASCADE, verbose_name='Well Class')
+    well_subclass = models.ForeignKey(WellSubclassCode, db_column='well_subclass_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Well Subclass')
     intended_water_use = models.ForeignKey(IntendedWaterUseCode, db_column='intended_water_use_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Intended Water Use')
     well_status = models.ForeignKey(WellStatus, db_column='well_status_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Well Status')
     licenced_status = models.ForeignKey(LicencedStatusCode, db_column='licenced_status_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Licenced Status')
@@ -101,10 +101,10 @@ class Well(AuditModel):
     other_drilling_method = models.CharField(max_length=50, blank=True, null=True, verbose_name='Specify Other Drilling Method')
     well_orientation = models.BooleanField(default=True, verbose_name='Orientation of Well', choices=((True, 'vertical'), (False, 'horizontal')))
 
-    surface_seal_material = models.ForeignKey(SurfaceSealMaterial, db_column='surface_seal_material_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Surface Seal Material')
+    surface_seal_material = models.ForeignKey(SurfaceSealMaterialCode, db_column='surface_seal_material_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Surface Seal Material')
     surface_seal_length = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Surface Seal Length')
     surface_seal_thickness = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Surface Seal Thickness')
-    surface_seal_method = models.ForeignKey(SurfaceSealMethod, db_column='surface_seal_method_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Surface Seal Installation Method')
+    surface_seal_method = models.ForeignKey(SurfaceSealMethodCode, db_column='surface_seal_method_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Surface Seal Installation Method')
     backfill_type = models.CharField(max_length=250, blank=True, null=True, verbose_name="Backfill Material Above Surface Seal")
     backfill_depth = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Backfill Depth')
 
@@ -114,12 +114,12 @@ class Well(AuditModel):
     liner_from = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Liner From', validators=[MinValueValidator(Decimal('0.00'))])
     liner_to = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Liner To', validators=[MinValueValidator(Decimal('0.01'))])
 
-    screen_intake_method = models.ForeignKey(ScreenIntakeMethod, db_column='screen_intake_method_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Intake Method')
-    screen_type = models.ForeignKey(ScreenType, db_column='screen_type_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Type')
-    screen_material = models.ForeignKey(ScreenMaterial, db_column='screen_material_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Material')
+    screen_intake_method = models.ForeignKey(ScreenIntakeMethodCode, db_column='screen_intake_method_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Intake Method')
+    screen_type = models.ForeignKey(ScreenTypeCode, db_column='screen_type_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Type')
+    screen_material = models.ForeignKey(ScreenMaterialCode, db_column='screen_material_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Material')
     other_screen_material = models.CharField(max_length=50, blank=True, verbose_name='Specify Other Screen Material')
-    screen_opening = models.ForeignKey(ScreenOpening, db_column='screen_opening_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Opening')
-    screen_bottom = models.ForeignKey(ScreenBottom, db_column='screen_bottom_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Bottom')
+    screen_opening = models.ForeignKey(ScreenOpeningCode, db_column='screen_opening_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Opening')
+    screen_bottom = models.ForeignKey(ScreenBottomCode, db_column='screen_bottom_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Bottom')
     other_screen_bottom = models.CharField(max_length=50, blank=True, verbose_name='Specify Other Screen Bottom')
 
     filter_pack_from = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Filter Pack From', validators=[MinValueValidator(Decimal('0.00'))])
@@ -157,7 +157,7 @@ class Well(AuditModel):
 
     observation_well_number = models.CharField(max_length=3, blank=True, null=True, verbose_name="Observation Well Number")
 
-    observation_well_status = models.ForeignKey(ObservationWellStatus, db_column='observation_well_status_guid', blank=True, null="True", verbose_name="Observation Well Status")
+    observation_well_status = models.ForeignKey(ObsWellStatusCode, db_column='obs_well_status_guid', blank=True, null="True", verbose_name="Observation Well Status")
 
     ems = models.CharField(max_length=10, blank=True, null=True, verbose_name="Environmental Monitoring System (EMS) ID")
 

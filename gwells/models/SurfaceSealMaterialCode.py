@@ -16,18 +16,18 @@ from .AuditModel import AuditModel
 from django.db import models
 import uuid
 
-class SurficialMaterial(AuditModel):
+class SurfaceSealMaterialCode(AuditModel):
     """
-    The surficial material encountered in lithology
+     Sealant material used that is installed in the annular space around the outside of the outermost casing and between multiple casings of a well.
     """
-    surficial_material_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    code = models.CharField(max_length=10, unique=True)
+    surface_seal_material_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    surface_seal_material_code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
 
     class Meta:
-        db_table = 'gwells_surficial_material'
+        db_table = 'surface_seal_material_code'
         ordering = ['sort_order', 'description']
 
     def __str__(self):

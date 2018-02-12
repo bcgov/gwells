@@ -28,27 +28,27 @@ from .LithologyMaterialCode import LithologyMaterialCode
 from .LithologyMoistureCode import LithologyMoistureCode
 from .LithologyStructureCode import LithologyStructureCode
 from .LtsaOwner import LtsaOwner
-from .ObservationWellStatus import ObservationWellStatus
+from .ObsWellStatusCode import ObsWellStatusCode
 from .Perforation import Perforation
 from .ProductionData import ProductionData
 from .ProvinceStateCode import ProvinceStateCode
 from .Screen import Screen
-from .ScreenAssemblyType import ScreenAssemblyType
-from .ScreenBottom import ScreenBottom
-from .ScreenIntakeMethod import ScreenIntakeMethod
-from .ScreenMaterial import ScreenMaterial
-from .ScreenOpening import ScreenOpening
-from .ScreenType import ScreenType
-from .SurfaceSealMaterial import SurfaceSealMaterial
-from .SurfaceSealMethod import SurfaceSealMethod
-from .SurficialMaterial import SurficialMaterial
+from .ScreenAssemblyTypeCode import ScreenAssemblyTypeCode
+from .ScreenBottomCode import ScreenBottomCode
+from .ScreenIntakeMethodCode import ScreenIntakeMethodCode
+from .ScreenMaterialCode import ScreenMaterialCode
+from .ScreenOpeningCode import ScreenOpeningCode
+from .ScreenTypeCode import ScreenTypeCode
+from .SurfaceSealMaterialCode import SurfaceSealMaterialCode
+from .SurfaceSealMethodCode import SurfaceSealMethodCode
+from .SurficialMaterialCode import SurficialMaterialCode
 from .User import User
 from .WaterQualityCharacteristic import WaterQualityCharacteristic
 from .Well import Well
-from .WellActivityType import WellActivityType
-from .WellClass import WellClass
+from .WellActivityCode import WellActivityCode
+from .WellClassCode import WellClassCode
 from .WellStatus import WellStatus
-from .WellSubclass import WellSubclass
+from .WellSubclassCode import WellSubclassCode
 from .WellYieldUnit import WellYieldUnit
 from .YieldEstimationMethod import YieldEstimationMethod
 
@@ -83,26 +83,26 @@ __all__ = [
 'LithologyMoistureCode',
 'LithologyStructureCode',
 'LtsaOwner',
-'ObservationWellStatus',
+'ObsWellStatusCode',
 'Perforation',
 'ProductionData',
 'ProvinceStateCode',
 'Screen',
-'ScreenAssemblyType',
-'ScreenBottom',
-'ScreenIntakeMethod',
-'ScreenMaterial',
-'ScreenOpening',
-'ScreenType',
-'SurfaceSealMaterial',
-'SurfaceSealMethod',
-'SurficialMaterial',
+'ScreenAssemblyTypeCode',
+'ScreenBottomCode',
+'ScreenIntakeMethodCode',
+'ScreenMaterialCode',
+'ScreenOpeningCode',
+'ScreenTypeCode',
+'SurfaceSealMaterialCode',
+'SurfaceSealMethodCode',
+'SurficialMaterialCode',
 'User',
 'WaterQualityCharacteristic',
 'Well',
-'WellActivityType',
-'WellClass',
+'WellActivityCode',
+'WellClassCode',
 'WellStatus',
-'WellSubclass',
+'WellSubclassCode',
 'WellYieldUnit',
 'YieldEstimationMethod']

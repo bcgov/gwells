@@ -1,7 +1,7 @@
 from django.views import generic
 from django.http import HttpResponse
-from ..models import WellActivityType
+from ..models import WellActivityCode
 
 class HealthView(generic.TemplateView):
     def health(request):
-        return HttpResponse(WellActivityType.objects.count())
+        return HttpResponse(WellActivityCode.objects.count())

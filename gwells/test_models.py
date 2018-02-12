@@ -138,8 +138,8 @@ class ModelsTestCase(TestCase):
         self.assertIsInstance(ltsa_owner, LtsaOwner)
 
     def test_observation_well_status_instantiation(self):
-        observation_well_status = ObservationWellStatus()
-        self.assertIsInstance(observation_well_status, ObservationWellStatus)
+        observation_well_status = ObsWellStatusCode()
+        self.assertIsInstance(observation_well_status, ObsWellStatusCode)
 
     def test_perforation_instantiation(self):
         perforation = Perforation()
@@ -158,40 +158,40 @@ class ModelsTestCase(TestCase):
         self.assertIsInstance(screen, Screen)
 
     def test_screen_assembly_type_instantiation(self):
-        screen_assembly_type = ScreenAssemblyType()
-        self.assertIsInstance(screen_assembly_type, ScreenAssemblyType)
+        screen_assembly_type = ScreenAssemblyTypeCode()
+        self.assertIsInstance(screen_assembly_type, ScreenAssemblyTypeCode)
 
     def test_screen_bottom_instantiation(self):
-        screen_bottom = ScreenBottom()
-        self.assertIsInstance(screen_bottom, ScreenBottom)
+        screen_bottom = ScreenBottomCode()
+        self.assertIsInstance(screen_bottom, ScreenBottomCode)
 
     def test_screen_intake_method_instantiation(self):
-        screen_intake_method = ScreenIntakeMethod()
-        self.assertIsInstance(screen_intake_method, ScreenIntakeMethod)
+        screen_intake_method = ScreenIntakeMethodCode()
+        self.assertIsInstance(screen_intake_method, ScreenIntakeMethodCode)
 
     def test_screen_material_instantiation(self):
-        screen_material = ScreenMaterial()
-        self.assertIsInstance(screen_material, ScreenMaterial)
+        screen_material = ScreenMaterialCode()
+        self.assertIsInstance(screen_material, ScreenMaterialCode)
 
     def test_screen_opening_instantiation(self):
-        screen_opening = ScreenOpening()
-        self.assertIsInstance(screen_opening, ScreenOpening)
+        screen_opening = ScreenOpeningCode()
+        self.assertIsInstance(screen_opening, ScreenOpeningCode)
 
     def test_screen_type_instantiation(self):
-        screen_type = ScreenType()
-        self.assertIsInstance(screen_type, ScreenType)
+        screen_type = ScreenTypeCode()
+        self.assertIsInstance(screen_type, ScreenTypeCode)
 
     def test_surface_seal_material_instantiation(self):
-        surface_seal_material = SurfaceSealMaterial()
-        self.assertIsInstance(surface_seal_material, SurfaceSealMaterial)
+        surface_seal_material = SurfaceSealMaterialCode()
+        self.assertIsInstance(surface_seal_material, SurfaceSealMaterialCode)
 
     def test_surface_seal_method_instantiation(self):
-        surface_seal_method = SurfaceSealMethod()
-        self.assertIsInstance(surface_seal_method, SurfaceSealMethod)
+        surface_seal_method = SurfaceSealMethodCode()
+        self.assertIsInstance(surface_seal_method, SurfaceSealMethodCode)
 
     def test_surficial_material_instantiation(self):
-        surficial_material = SurficialMaterial()
-        self.assertIsInstance(surficial_material, SurficialMaterial)
+        surficial_material = SurficialMaterialCode()
+        self.assertIsInstance(surficial_material, SurficialMaterialCode)
 
     def test_water_quality_characteristic_instantiation(self):
         water_quality_characteristic = WaterQualityCharacteristic()
@@ -202,20 +202,20 @@ class ModelsTestCase(TestCase):
         self.assertIsInstance(well, Well)
 
     def test_well_activity_type_instantiation(self):
-        well_activity_type = WellActivityType()
-        self.assertIsInstance(well_activity_type, WellActivityType)
+        well_activity_type = WellActivityCode()
+        self.assertIsInstance(well_activity_type, WellActivityCode)
 
     def test_well_class_instantiation(self):
-        well_class = WellClass()
-        self.assertIsInstance(well_class, WellClass)
+        well_class = WellClassCode()
+        self.assertIsInstance(well_class, WellClassCode)
 
     def test_well_status_instantiation(self):
         well_status = WellStatus()
         self.assertIsInstance(well_status, WellStatus)
 
     def test_well_subclass_instantiation(self):
-        well_subclass = WellSubclass()
-        self.assertIsInstance(well_subclass, WellSubclass)
+        well_subclass = WellSubclassCode()
+        self.assertIsInstance(well_subclass, WellSubclassCode)
 
     def test_well_yield_unit_instantiation(self):
         well_yield_unit = WellYieldUnit()
