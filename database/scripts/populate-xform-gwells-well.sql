@@ -251,7 +251,7 @@ DECLARE
               LEFT OUTER JOIN development_method_code development_method ON UPPER(wells.development_method_code)=UPPER(development_method.development_method_code)
               LEFT OUTER JOIN gwells_surface_seal_method surface_seal_method ON UPPER(wells.surface_seal_method_code)=UPPER(surface_seal_method.surface_seal_method_code)
               LEFT OUTER JOIN gwells_surface_seal_material surface_seal_material ON UPPER(wells.surface_seal_material_code)=UPPER(surface_seal_material.surface_seal_material_code)
-              LEFT OUTER JOIN gwells_liner_material liner_material ON UPPER(wells.liner_material_code)=UPPER(liner_material.liner_material_code)
+              LEFT OUTER JOIN liner_material_code liner_material ON UPPER(wells.liner_material_code)=UPPER(liner_material.liner_material_code)
               LEFT OUTER JOIN land_district_code gld ON UPPER(wells.legal_land_district_code)=UPPER(gld.code)
               LEFT OUTER JOIN gwells_well_status well_status ON UPPER(wells.status_of_well_code)=UPPER(well_status.code)
               LEFT OUTER JOIN licenced_status_code licenced_status ON UPPER(wells.well_licence_general_status)=UPPER(licenced_status.code)

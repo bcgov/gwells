@@ -13,7 +13,7 @@
 \copy lithology_hardness  FROM './gwells_lithology_hardness.csv'  HEADER DELIMITER ',' CSV
 \copy bedrock_material_descriptor FROM './bedrock_material_descriptor_code.csv' HEADER DELIMITER ',' CSV
 \copy bedrock_material     FROM './bedrock_material_code.csv' HEADER DELIMITER ',' CSV
-\copy lithology_colour     FROM './gwells_lithology_colour.csv' HEADER DELIMITER ',' CSV
+\copy lithology_colour     FROM './lithology_colour_code.csv' HEADER DELIMITER ',' CSV
 \copy surficial_material   FROM './gwells_surficial_material.csv'   HEADER DELIMITER ',' CSV
 
 \copy casing_material FROM './casing_material_code.csv' HEADER DELIMITER ',' CSV
@@ -24,7 +24,7 @@
 \copy screen_opening  FROM './gwells_screen_opening.csv'  HEADER DELIMITER ',' CSV
 \copy screen_bottom   FROM './gwells_screen_bottom.csv'   HEADER DELIMITER ',' CSV
 \copy screen_material FROM './gwells_screen_material.csv' HEADER DELIMITER ',' CSV
-\copy liner_material FROM './gwells_liner_material.csv' HEADER DELIMITER ',' CSV
+\copy liner_material FROM './liner_material_code.csv' HEADER DELIMITER ',' CSV
 \copy filter_pack_material FROM './filter_pack_material_code.csv' HEADER DELIMITER ',' CSV
 \copy filter_pack_material_size FROM './filter_pack_material_size_code.csv' HEADER DELIMITER ',' CSV
 

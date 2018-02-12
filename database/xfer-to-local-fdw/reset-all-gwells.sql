@@ -37,9 +37,9 @@
  drop table if exists intended_water_use_code                cascade;
  drop table if exists land_district_code                     cascade;
  drop table if exists licenced_status_code                   cascade;
- drop table if exists gwells_liner_material                    cascade;
+ drop table if exists liner_material_code                    cascade;
  drop table if exists gwells_liner_perforation                 cascade;
- drop table if exists gwells_lithology_colour                  cascade;
+ drop table if exists lithology_colour_code                  cascade;
  drop table if exists gwells_lithology_description             cascade;
  drop table if exists gwells_lithology_description_code        cascade;
  drop table if exists gwells_lithology_hardness                cascade;

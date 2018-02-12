@@ -87,12 +87,12 @@
 \copy gwells_surface_seal_material (create_user,create_date,update_user,update_date,surface_seal_material_guid,surface_seal_material_code,description,is_hidden,sort_order ) from 'gwells_surface_seal_material.csv' with header delimiter ',' CSV ;
 
 --LINER MATERIAL
-\echo '... loading gwells_liner_material code table'
-\copy gwells_liner_material (create_user,create_date,update_user,update_date,liner_material_guid,liner_material_code,description,is_hidden,sort_order) from 'gwells_liner_material.csv' with header delimiter ',' CSV ;
+\echo '... loading liner_material_code code table'
+\copy liner_material_code (create_user,create_date,update_user,update_date,liner_material_guid,liner_material_code,description,is_hidden,sort_order) from 'liner_material_code.csv' with header delimiter ',' CSV ;
 
 --LITHOLOGY COLOUR
-\echo '... loading gwells_lithology_colour code table'
-\copy gwells_lithology_colour (create_user,create_date,update_user,update_date,lithology_colour_guid,code,description,is_hidden,sort_order) from 'gwells_lithology_colour.csv' with header delimiter ',' CSV ;
+\echo '... loading lithology_colour_code code table'
+\copy lithology_colour_code (create_user,create_date,update_user,update_date,lithology_colour_guid,code,description,is_hidden,sort_order) from 'lithology_colour_code.csv' with header delimiter ',' CSV ;
 
 --LITHOLOGY HARDNESS
 \echo '... loading gwells_lithology_hardness code table'

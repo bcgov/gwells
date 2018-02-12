@@ -16,7 +16,7 @@ from .AuditModel import AuditModel
 from .ActivitySubmission import ActivitySubmission
 from .Well import Well
 from .LithologyDescriptionCode import LithologyDescriptionCode
-from .LithologyColour import LithologyColour
+from .LithologyColourCode import LithologyColourCode
 from .LithologyHardness import LithologyHardness
 from .LithologyMaterial import LithologyMaterial
 from .WellYieldUnit import WellYieldUnit
@@ -43,7 +43,7 @@ class LithologyDescription(AuditModel):
     lithology_raw_data = models.CharField(max_length=250, blank=True, null=True, verbose_name='Raw Data')
 
     lithology_description = models.ForeignKey(LithologyDescriptionCode, db_column='lithology_description_code_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name="Description")
-    lithology_colour = models.ForeignKey(LithologyColour, db_column='lithology_colour_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Colour')
+    lithology_colour = models.ForeignKey(LithologyColourCode, db_column='lithology_colour_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Colour')
     lithology_hardness = models.ForeignKey(LithologyHardness, db_column='lithology_hardness_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Hardness')
     lithology_material = models.ForeignKey(LithologyMaterial, db_column='lithology_material_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name="Material")
 

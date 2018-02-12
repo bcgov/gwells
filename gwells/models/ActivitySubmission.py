@@ -27,7 +27,7 @@ from .DrillingMethodCode import DrillingMethodCode
 from .GroundElevationMethodCode import GroundElevationMethodCode
 from .SurfaceSealMaterial import SurfaceSealMaterial
 from .SurfaceSealMethod import SurfaceSealMethod
-from .LinerMaterial import LinerMaterial
+from .LinerMaterialCode import LinerMaterialCode
 from .ScreenIntakeMethod import ScreenIntakeMethod
 from .ScreenType import ScreenType
 from .ScreenMaterial import ScreenMaterial
@@ -107,7 +107,7 @@ class ActivitySubmission(AuditModel):
     backfill_above_surface_seal = models.CharField(max_length=250, blank=True, verbose_name='Backfill Material Above Surface Seal')
     backfill_above_surface_seal_depth = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Backfill Depth')
 
-    liner_material = models.ForeignKey(LinerMaterial, db_column='liner_material_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Liner Material')
+    liner_material = models.ForeignKey(LinerMaterialCode, db_column='liner_material_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Liner Material')
     liner_diameter = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Liner Diameter', validators=[MinValueValidator(Decimal('0.00'))])
     liner_thickness = models.DecimalField(max_digits=5, decimal_places=3, blank=True, null=True, verbose_name='Liner Thickness', validators=[MinValueValidator(Decimal('0.00'))])
     liner_from = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Liner From', validators=[MinValueValidator(Decimal('0.00'))])
