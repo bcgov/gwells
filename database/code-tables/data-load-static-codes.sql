@@ -103,8 +103,8 @@
 \copy land_district_code (create_user,create_date,update_user,update_date,land_district_guid,code,name,sort_order) from 'land_district_code.csv' with header delimiter ',' CSV ;
 
 --LITHOLOGY MATERIAL
-\echo '... loading gwells_lithology_material code table'
-\copy gwells_lithology_material (create_user,create_date,update_user,update_date,lithology_material_guid,code,description,sort_order,status_flag) from 'gwells_lithology_material.csv' with header delimiter ',' CSV ;
+\echo '... loading lithology_material_code code table'
+\copy lithology_material_code (create_user,create_date,update_user,update_date,lithology_material_guid,code,description,sort_order,status_flag) from 'lithology_material_code.csv' with header delimiter ',' CSV ;
 
 --LITHOLOGY DESCRIPTION
 \echo '... loading gwells_lithology_description_code code table'

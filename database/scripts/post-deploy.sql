@@ -28,9 +28,9 @@ COMMENT ON TABLE lithology_colour_code                  IS 'Placeholder table co
 COMMENT ON TABLE gwells_lithology_description             IS 'Placeholder table comment.';
 COMMENT ON TABLE gwells_lithology_description_code        IS 'Placeholder table comment.';
 COMMENT ON TABLE lithology_hardness_code                IS 'Placeholder table comment.';
-COMMENT ON TABLE gwells_lithology_material                IS 'Placeholder table comment.';
-COMMENT ON TABLE gwells_lithology_moisture                IS 'Placeholder table comment.';
-COMMENT ON TABLE gwells_lithology_structure               IS 'Placeholder table comment.';
+COMMENT ON TABLE lithology_material_code                IS 'Placeholder table comment.';
+COMMENT ON TABLE lithology_moisture_code                IS 'Placeholder table comment.';
+COMMENT ON TABLE lithology_structure_code               IS 'Placeholder table comment.';
 COMMENT ON TABLE gwells_ltsa_owner                        IS 'Placeholder table comment.';
 COMMENT ON TABLE gwells_perforation                       IS 'Placeholder table comment.';
 COMMENT ON TABLE gwells_production_data                   IS 'Placeholder table comment.';

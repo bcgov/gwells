@@ -18,12 +18,12 @@ from .Well import Well
 from .LithologyDescriptionCode import LithologyDescriptionCode
 from .LithologyColourCode import LithologyColourCode
 from .LithologyHardnessCode import LithologyHardnessCode
-from .LithologyMaterial import LithologyMaterial
+from .LithologyMaterialCode import LithologyMaterialCode
 from .WellYieldUnit import WellYieldUnit
 from .BedrockMaterialCode import BedrockMaterialCode
 from .BedrockMaterialDescriptorCode import BedrockMaterialDescriptorCode
-from .LithologyStructure import LithologyStructure
-from .LithologyMoisture import LithologyMoisture
+from .LithologyStructureCode import LithologyStructureCode
+from .LithologyMoistureCode import LithologyMoistureCode
 from .SurficialMaterial import SurficialMaterial
 
 from django.db import models
@@ -45,7 +45,7 @@ class LithologyDescription(AuditModel):
     lithology_description = models.ForeignKey(LithologyDescriptionCode, db_column='lithology_description_code_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name="Description")
     lithology_colour = models.ForeignKey(LithologyColourCode, db_column='lithology_colour_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Colour')
     lithology_hardness = models.ForeignKey(LithologyHardnessCode, db_column='lithology_hardness_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Hardness')
-    lithology_material = models.ForeignKey(LithologyMaterial, db_column='lithology_material_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name="Material")
+    lithology_material = models.ForeignKey(LithologyMaterialCode, db_column='lithology_material_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name="Material")
 
     water_bearing_estimated_flow = models.DecimalField(max_digits=10, decimal_places=4, blank=True, null=True, verbose_name='Water Bearing Estimated Flow')
     water_bearing_estimated_flow_units = models.ForeignKey(WellYieldUnit, db_column='well_yield_unit_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Units')
@@ -53,8 +53,8 @@ class LithologyDescription(AuditModel):
 
     bedrock_material = models.ForeignKey(BedrockMaterialCode, db_column='bedrock_material_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Bedrock Material')
     bedrock_material_descriptor = models.ForeignKey(BedrockMaterialDescriptorCode, db_column='bedrock_material_descriptor_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Descriptor')
-    lithology_structure = models.ForeignKey(LithologyStructure, db_column='lithology_structure_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Bedding')
-    lithology_moisture = models.ForeignKey(LithologyMoisture, db_column='lithology_moisture_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Moisture')
+    lithology_structure = models.ForeignKey(LithologyStructureCode, db_column='lithology_structure_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Bedding')
+    lithology_moisture = models.ForeignKey(LithologyMoistureCode, db_column='lithology_moisture_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Moisture')
     surficial_material = models.ForeignKey(SurficialMaterial, db_column='surficial_material_guid', related_name='surficial_material_set', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Surficial Material')
     secondary_surficial_material = models.ForeignKey(SurficialMaterial, db_column='secondary_surficial_material_guid', related_name='secondary_surficial_material_set', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Secondary Surficial Material')
 
