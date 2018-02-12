@@ -210,16 +210,16 @@ class ModelsTestCase(TestCase):
         self.assertIsInstance(well_class, WellClassCode)
 
     def test_well_status_instantiation(self):
-        well_status = WellStatus()
-        self.assertIsInstance(well_status, WellStatus)
+        well_status = WellStatusCode()
+        self.assertIsInstance(well_status, WellStatusCode)
 
     def test_well_subclass_instantiation(self):
         well_subclass = WellSubclassCode()
         self.assertIsInstance(well_subclass, WellSubclassCode)
 
     def test_well_yield_unit_instantiation(self):
-        well_yield_unit = WellYieldUnit()
-        self.assertIsInstance(well_yield_unit, WellYieldUnit)
+        well_yield_unit = WellYieldUnitCode()
+        self.assertIsInstance(well_yield_unit, WellYieldUnitCode)
 
     def test_yield_estimation_method_instantiation(self):
         yield_estimation_method = YieldEstimationMethod()

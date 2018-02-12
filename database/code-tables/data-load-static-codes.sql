@@ -18,8 +18,8 @@
 \copy province_state_code (province_state_guid,code,description,sort_order,create_date,update_date,create_user,update_user) from 'province_state_code.csv' with header delimiter ',' CSV ;
 
 --YIELD UNIT
-\echo '... loading gwells_gwells_well_yield_unit code table'
-\copy gwells_well_yield_unit (well_yield_unit_guid,code,description,sort_order,create_date,update_date,create_user,update_user) from 'gwells_well_yield_unit.csv' with header delimiter ',' CSV ;
+\echo '... loading gwells_well_yield_unit_code code table'
+\copy well_yield_unit_code (well_yield_unit_guid,code,description,sort_order,create_date,update_date,create_user,update_user) from 'well_yield_unit_code.csv' with header delimiter ',' CSV ;
 
 --DRILLING METHOD
 \echo '... loading gwells_drilling_method_code code table'
@@ -30,8 +30,8 @@
 \copy ground_elevation_method_code (ground_elevation_method_guid,code,description,is_hidden,sort_order,create_date,update_date,create_user,update_user) from 'ground_elevation_method_code.csv' with header delimiter ',' CSV ;
 
 --STATUS
-\echo '... loading gwells_well_status code table'
-\copy gwells_well_status (well_status_guid,code,description,is_hidden,sort_order,create_date,update_date,create_user,update_user) from 'gwells_well_status.csv' with header delimiter ',' CSV ;
+\echo '... loading well_status_code code table'
+\copy well_status_code (well_status_guid,code,description,is_hidden,sort_order,create_date,update_date,create_user,update_user) from 'well_status_code.csv' with header delimiter ',' CSV ;
 
 --LICENCE
 \echo '... loading licenced_status_code code table'

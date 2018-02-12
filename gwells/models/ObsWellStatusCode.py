@@ -32,4 +32,4 @@ class ObsWellStatusCode(AuditModel):
 
     def save(self, *args, **kwargs):
         self.validate()
-        super(WellStatus, self).save(*args, **kwargs)
+        super(WellStatusCode, self).save(*args, **kwargs)

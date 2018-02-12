@@ -253,7 +253,7 @@ DECLARE
               LEFT OUTER JOIN surface_seal_material_code surface_seal_material ON UPPER(wells.surface_seal_material_code)=UPPER(surface_seal_material.surface_seal_material_code)
               LEFT OUTER JOIN liner_material_code liner_material ON UPPER(wells.liner_material_code)=UPPER(liner_material.liner_material_code)
               LEFT OUTER JOIN land_district_code gld ON UPPER(wells.legal_land_district_code)=UPPER(gld.code)
-              LEFT OUTER JOIN gwells_well_status well_status ON UPPER(wells.status_of_well_code)=UPPER(well_status.code)
+              LEFT OUTER JOIN well_status_code well_status ON UPPER(wells.status_of_well_code)=UPPER(well_status.code)
               LEFT OUTER JOIN licenced_status_code licenced_status ON UPPER(wells.well_licence_general_status)=UPPER(licenced_status.code)
               LEFT OUTER JOIN intended_water_use_code intended_water_use ON UPPER(wells.well_use_code)=UPPER(intended_water_use.code)
               LEFT OUTER JOIN well_class_code class ON UPPER(wells.class_of_well_codclassified_by)=UPPER(class.code)

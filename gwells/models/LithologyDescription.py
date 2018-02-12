@@ -19,7 +19,7 @@ from .LithologyDescriptionCode import LithologyDescriptionCode
 from .LithologyColourCode import LithologyColourCode
 from .LithologyHardnessCode import LithologyHardnessCode
 from .LithologyMaterialCode import LithologyMaterialCode
-from .WellYieldUnit import WellYieldUnit
+from .WellYieldUnitCode import WellYieldUnitCode
 from .BedrockMaterialCode import BedrockMaterialCode
 from .BedrockMaterialDescriptorCode import BedrockMaterialDescriptorCode
 from .LithologyStructureCode import LithologyStructureCode
@@ -48,7 +48,7 @@ class LithologyDescription(AuditModel):
     lithology_material = models.ForeignKey(LithologyMaterialCode, db_column='lithology_material_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name="Material")
 
     water_bearing_estimated_flow = models.DecimalField(max_digits=10, decimal_places=4, blank=True, null=True, verbose_name='Water Bearing Estimated Flow')
-    water_bearing_estimated_flow_units = models.ForeignKey(WellYieldUnit, db_column='well_yield_unit_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Units')
+    water_bearing_estimated_flow_units = models.ForeignKey(WellYieldUnitCode, db_column='well_yield_unit_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Units')
     lithology_observation = models.CharField(max_length=250, blank=True, null=True, verbose_name='Observations')
 
     bedrock_material = models.ForeignKey(BedrockMaterialCode, db_column='bedrock_material_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Bedrock Material')

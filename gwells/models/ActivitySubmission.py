@@ -18,7 +18,7 @@ from .WellActivityCode import WellActivityCode
 from .ProvinceStateCode import ProvinceStateCode
 from .WellClassCode import WellClassCode
 from .WellSubclassCode import WellSubclassCode
-from .WellStatus import WellStatus
+from .WellStatusCode import WellStatusCode
 from .IntendedWaterUseCode import IntendedWaterUseCode
 from .LicencedStatusCode import LicencedStatusCode
 from .LandDistrictCode import LandDistrictCode
@@ -37,7 +37,7 @@ from .FilterPackMaterialCode import FilterPackMaterialCode
 from .FilterPackMaterialSizeCode import FilterPackMaterialSizeCode
 from .DevelopmentMethodCode import DevelopmentMethodCode
 from .WaterQualityCharacteristic import WaterQualityCharacteristic
-from .WellYieldUnit import WellYieldUnit
+from .WellYieldUnitCode import WellYieldUnitCode
 from .ObsWellStatusCode import ObsWellStatusCode
 from .BCGS_Numbers import BCGS_Numbers
 from .DecommissionMethodCode import DecommissionMethodCode
@@ -149,7 +149,7 @@ class ActivitySubmission(AuditModel):
     comments = models.CharField(max_length=3000, blank=True)
     alternative_specs_submitted = models.BooleanField(default=False, verbose_name='Alternative specs submitted (if required)')
 
-    well_yield_unit = models.ForeignKey(WellYieldUnit, db_column='well_yield_unit_guid', on_delete=models.CASCADE, blank=True, null=True)
+    well_yield_unit = models.ForeignKey(WellYieldUnitCode, db_column='well_yield_unit_guid', on_delete=models.CASCADE, blank=True, null=True)
     diameter = models.CharField(max_length=9, blank=True)  #want to be integer in future
 
     tracker = FieldTracker()

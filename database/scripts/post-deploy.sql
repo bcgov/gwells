@@ -49,9 +49,9 @@ COMMENT ON TABLE gwells_water_quality_characteristic      IS 'Placeholder table 
 COMMENT ON TABLE gwells_well                              IS 'Placeholder table comment.';
 COMMENT ON TABLE well_activity_code                IS 'Placeholder table comment.';
 COMMENT ON TABLE well_class_code                        IS 'Placeholder table comment.';
-COMMENT ON TABLE gwells_well_status                       IS 'Placeholder table comment.';
+COMMENT ON TABLE well_status_code                       IS 'Placeholder table comment.';
 COMMENT ON TABLE well_subclass_code                     IS 'Placeholder table comment.';
 COMMENT ON TABLE gwells_well_water_quality                IS 'Placeholder table comment.';
-COMMENT ON TABLE gwells_well_yield_unit                   IS 'Placeholder table comment.';
+COMMENT ON TABLE well_yield_unit_code                   IS 'Placeholder table comment.';
 COMMENT ON TABLE gwells_yield_estimation_method           IS 'Placeholder table comment.';
 

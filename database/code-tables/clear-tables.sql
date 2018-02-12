@@ -8,7 +8,7 @@ TRUNCATE TABLE gwells_well,intended_water_use_code,well_class_code,
   liner_material_code,surface_seal_material_code,surface_seal_method_code,
   surface_seal_method_code,surface_seal_material_code,casing_material_code,
   gwells_yield_estimation_method,screen_assembly_type_code,development_method_code,
-  gwells_well_yield_unit,ground_elevation_method_code,gwells_well_status,
+  well_yield_unit_code,ground_elevation_method_code,well_status_code,
   licenced_status_code,screen_intake_method_code,drilling_company,
   screen_type_code,screen_material_code,screen_opening_code,screen_bottom_code,
   obs_well_status_code CASCADE;
