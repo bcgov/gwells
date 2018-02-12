@@ -17,7 +17,7 @@ from .ActivitySubmission import ActivitySubmission
 from .Well import Well
 from .LithologyDescriptionCode import LithologyDescriptionCode
 from .LithologyColourCode import LithologyColourCode
-from .LithologyHardness import LithologyHardness
+from .LithologyHardnessCode import LithologyHardnessCode
 from .LithologyMaterial import LithologyMaterial
 from .WellYieldUnit import WellYieldUnit
 from .BedrockMaterialCode import BedrockMaterialCode
@@ -44,7 +44,7 @@ class LithologyDescription(AuditModel):
 
     lithology_description = models.ForeignKey(LithologyDescriptionCode, db_column='lithology_description_code_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name="Description")
     lithology_colour = models.ForeignKey(LithologyColourCode, db_column='lithology_colour_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Colour')
-    lithology_hardness = models.ForeignKey(LithologyHardness, db_column='lithology_hardness_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Hardness')
+    lithology_hardness = models.ForeignKey(LithologyHardnessCode, db_column='lithology_hardness_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Hardness')
     lithology_material = models.ForeignKey(LithologyMaterial, db_column='lithology_material_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name="Material")
 
     water_bearing_estimated_flow = models.DecimalField(max_digits=10, decimal_places=4, blank=True, null=True, verbose_name='Water Bearing Estimated Flow')

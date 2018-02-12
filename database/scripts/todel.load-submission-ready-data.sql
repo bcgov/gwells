@@ -10,7 +10,7 @@
 \copy ground_elevation_method FROM './ground_elevation_method_code.csv' HEADER DELIMITER ',' CSV
 \copy lithology_structure FROM './gwells_lithology_structure.csv' HEADER DELIMITER ',' CSV
 \copy lithology_moisture  FROM './gwells_lithology_moisture.csv'  HEADER DELIMITER ',' CSV
-\copy lithology_hardness  FROM './gwells_lithology_hardness.csv'  HEADER DELIMITER ',' CSV
+\copy lithology_hardness  FROM './lithology_hardness_code.csv'  HEADER DELIMITER ',' CSV
 \copy bedrock_material_descriptor FROM './bedrock_material_descriptor_code.csv' HEADER DELIMITER ',' CSV
 \copy bedrock_material     FROM './bedrock_material_code.csv' HEADER DELIMITER ',' CSV
 \copy lithology_colour     FROM './lithology_colour_code.csv' HEADER DELIMITER ',' CSV
