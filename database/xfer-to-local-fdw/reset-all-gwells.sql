@@ -42,7 +42,7 @@
  drop table if exists lithology_colour_code                  cascade;
  drop table if exists gwells_lithology_description             cascade;
  drop table if exists gwells_lithology_description_code        cascade;
- drop table if exists gwells_lithology_hardness                cascade;
+ drop table if exists lithology_hardness_code                cascade;
  drop table if exists gwells_lithology_material                cascade;
  drop table if exists gwells_lithology_moisture                cascade;
  drop table if exists gwells_lithology_structure               cascade;

@@ -118,8 +118,8 @@ class ModelsTestCase(TestCase):
         self.assertIsInstance(lithology_description_code, LithologyDescriptionCode)
 
     def test_lithology_hardness_instantiation(self):
-        lithology_hardness = LithologyHardness()
-        self.assertIsInstance(lithology_hardness, LithologyHardness)
+        lithology_hardness = LithologyHardnessCode()
+        self.assertIsInstance(lithology_hardness, LithologyHardnessCode)
 
     def test_lithology_material_instantiation(self):
         lithology_material = LithologyMaterial()

@@ -23,7 +23,7 @@ from .LinerPerforation import LinerPerforation
 from .LithologyColourCode import LithologyColourCode
 from .LithologyDescription import LithologyDescription
 from .LithologyDescriptionCode import LithologyDescriptionCode
-from .LithologyHardness import LithologyHardness
+from .LithologyHardnessCode import LithologyHardnessCode
 from .LithologyMaterial import LithologyMaterial
 from .LithologyMoisture import LithologyMoisture
 from .LithologyStructure import LithologyStructure
@@ -78,7 +78,7 @@ __all__ = [
 'LithologyColourCode',
 'LithologyDescription',
 'LithologyDescriptionCode',
-'LithologyHardness',
+'LithologyHardnessCode',
 'LithologyMaterial',
 'LithologyMoisture',
 'LithologyStructure',

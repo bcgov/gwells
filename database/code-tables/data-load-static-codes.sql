@@ -95,8 +95,8 @@
 \copy lithology_colour_code (create_user,create_date,update_user,update_date,lithology_colour_guid,code,description,is_hidden,sort_order) from 'lithology_colour_code.csv' with header delimiter ',' CSV ;
 
 --LITHOLOGY HARDNESS
-\echo '... loading gwells_lithology_hardness code table'
-\copy gwells_lithology_hardness (lithology_hardness_guid,code,description,is_hidden,sort_order,create_date,update_date,create_user,update_user) from 'gwells_lithology_hardness.csv' with header delimiter ',' CSV ;
+\echo '... loading lithology_hardness_code code table'
+\copy lithology_hardness_code (lithology_hardness_guid,code,description,is_hidden,sort_order,create_date,update_date,create_user,update_user) from 'lithology_hardness_code.csv' with header delimiter ',' CSV ;
 
 --LAND DISTRICT
 \echo '... loading land_district_code code table'
