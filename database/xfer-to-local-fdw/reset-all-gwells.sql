@@ -65,10 +65,10 @@
  drop table if exists gwells_well                              cascade;
  drop table if exists well_activity_code                cascade;
  drop table if exists well_class_code                        cascade;
- drop table if exists gwells_well_status                       cascade;
+ drop table if exists well_status_code                       cascade;
  drop table if exists well_subclass_code                     cascade;
  drop table if exists gwells_well_water_quality                cascade;
- drop table if exists gwells_well_yield_unit                   cascade;
+ drop table if exists well_yield_unit_code                   cascade;
  drop table if exists gwells_user                              cascade;
  drop table if exists gwells_user_groups                       cascade;
 

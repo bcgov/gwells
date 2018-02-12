@@ -16,7 +16,7 @@ from .AuditModel import AuditModel
 from .Well import Well
 from .ActivitySubmission import ActivitySubmission
 from .YieldEstimationMethod import YieldEstimationMethod
-from .WellYieldUnit import WellYieldUnit
+from .WellYieldUnitCode import WellYieldUnitCode
 
 
 from django.db import models
@@ -34,7 +34,7 @@ class ProductionData(AuditModel):
     yield_estimation_method = models.ForeignKey(YieldEstimationMethod, db_column='yield_estimation_method_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Estimation Method')
     yield_estimation_rate = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='Estimation Rate', blank=True, null=True, validators=[MinValueValidator(Decimal('0.00'))])
     yield_estimation_duration = models.DecimalField(max_digits=9, decimal_places=2, verbose_name='Estimation Duration', blank=True, null=True, validators=[MinValueValidator(Decimal('0.01'))])
-    well_yield_unit = models.ForeignKey(WellYieldUnit, db_column='well_yield_unit_guid', blank=True, null=True)
+    well_yield_unit = models.ForeignKey(WellYieldUnitCode, db_column='well_yield_unit_guid', blank=True, null=True)
     static_level = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='SWL Before Test', blank=True, null=True, validators=[MinValueValidator(Decimal('0.0'))])
     drawdown = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, validators=[MinValueValidator(Decimal('0.00'))])
     hydro_fracturing_performed = models.BooleanField(default=False, verbose_name='Hydro-fracturing Performed?', choices=((False, 'No'), (True, 'Yes')))

@@ -16,20 +16,18 @@ from .AuditModel import AuditModel
 from django.db import models
 import uuid
 
-class WellStatus(AuditModel):
+class WellYieldUnitCode(AuditModel):
     """
-    Well Status.
+    Units of Well Yield.
     """
-    well_status_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    code = models.CharField(unique=True, max_length=10)
-    description = models.CharField(max_length=255)
-    is_hidden = models.BooleanField(default=False)
+    well_yield_unit_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    code = models.CharField(max_length=10, unique=True)
+    description = models.CharField(max_length=100)
     sort_order = models.PositiveIntegerField()
 
     class Meta:
-        db_table = 'gwells_well_status'
-        ordering = ['sort_order', 'code']
+        db_table = 'well_yield_unit_code'
+        ordering = ['sort_order', 'description']
 
-    def save(self, *args, **kwargs):
-        self.validate()
-        super(WellStatus, self).save(*args, **kwargs)
+    def __str__(self):
+        return self.description

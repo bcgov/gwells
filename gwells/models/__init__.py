@@ -47,9 +47,9 @@ from .WaterQualityCharacteristic import WaterQualityCharacteristic
 from .Well import Well
 from .WellActivityCode import WellActivityCode
 from .WellClassCode import WellClassCode
-from .WellStatus import WellStatus
+from .WellStatusCode import WellStatusCode
 from .WellSubclassCode import WellSubclassCode
-from .WellYieldUnit import WellYieldUnit
+from .WellYieldUnitCode import WellYieldUnitCode
 from .YieldEstimationMethod import YieldEstimationMethod
 
 __all__ = [
@@ -102,7 +102,7 @@ __all__ = [
 'Well',
 'WellActivityCode',
 'WellClassCode',
-'WellStatus',
+'WellStatusCode',
 'WellSubclassCode',
-'WellYieldUnit',
+'WellYieldUnitCode',
 'YieldEstimationMethod']
