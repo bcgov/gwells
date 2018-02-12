@@ -34,7 +34,7 @@ BEGIN
     screens.who_updated
   FROM wells.wells_screens screens
        INNER JOIN xform_gwells_well xform ON xform.well_id=screens.well_id
-       LEFT OUTER JOIN gwells_screen_assembly_type screen_assembly_type ON
+       LEFT OUTER JOIN screen_assembly_type_code screen_assembly_type ON
        ( screens.screen_assembly_type_code=screen_assembly_type.screen_assembly_type_code OR
          screens.screen_assembly_type_code='L' AND screen_assembly_type.screen_assembly_type_code='LEAD' OR
          screens.screen_assembly_type_code='K  & Riser' AND screen_assembly_type.screen_assembly_type_code='K_RISER'

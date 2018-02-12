@@ -79,7 +79,7 @@ SET TRIMSPOOL ON
 SET ECHO OFF
 SET VERIFY OFF
 SET TERMOUT OFF
-SPOOL H:\xform_gwells_surface_seal_material.csv
+SPOOL H:\xform_surface_seal_material_code.csv
 SELECT csv 
   'ETL_USER' AS create_user,
   '2017-07-01 00:00:00-08' AS create_date,
@@ -106,7 +106,7 @@ SET TRIMSPOOL ON
 SET ECHO OFF
 SET VERIFY OFF
 SET TERMOUT OFF
-SPOOL H:\xform_gwells_surface_seal_method.csv
+SPOOL H:\xform_surface_seal_method_code.csv
 SELECT /*csv*/  
   'ETL_USER' AS create_user,
   '2017-07-01 00:00:00-08' AS create_date,

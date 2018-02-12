@@ -16,18 +16,18 @@ from .AuditModel import AuditModel
 from django.db import models
 import uuid
 
-class ScreenOpening(AuditModel):
+class WellClassCode(AuditModel):
     """
-     The type of opening on a well screen, i.e. Continuous Slot, Slotted, Perforated Pipe.
+    Class of Well type.
     """
-    screen_opening_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    screen_opening_code = models.CharField(max_length=10, unique=True)
+    well_class_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
 
     class Meta:
-        db_table = 'gwells_screen_opening'
+        db_table = 'well_class_code'
         ordering = ['sort_order', 'description']
 
     def __str__(self):

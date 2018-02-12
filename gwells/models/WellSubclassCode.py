@@ -13,22 +13,33 @@
 """
 
 from .AuditModel import AuditModel
+from .WellClassCode import WellClassCode
 from django.db import models
 import uuid
 
-class ScreenAssemblyType(AuditModel):
+class WellSubclassCode(AuditModel):
     """
-     The category of screen assembly, i.e. K-Packer & Riser, K-Packer, Lead Packer, Riser Pipe, Screen, Screen Blank, Tail Pipe.
+    Subclass of Well type.
     """
-    screen_assembly_type_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    screen_assembly_type_code = models.CharField(max_length=10, unique=True)
+    well_subclass_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    well_class = models.ForeignKey(WellClassCode, null=True, db_column='well_class_guid', on_delete=models.CASCADE, blank=True)
+    code = models.CharField(max_length=10)
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
 
     class Meta:
-        db_table = 'gwells_screen_assembly_type'
+        db_table = 'well_subclass_code'
         ordering = ['sort_order', 'description']
+
+    def validate_unique(self, exclude=None):
+        qs = Room.objects.filter(name=self.code)
+        if qs.filter(well_class__code=self.well_class__code).exists():
+            raise ValidationError('Code must be unique per Well Class')
+
+    def save(self, *args, **kwargs):
+        self.validate_unique()
+        super(WellSubclassCode, self).save(*args, **kwargs)
 
     def __str__(self):
         return self.description

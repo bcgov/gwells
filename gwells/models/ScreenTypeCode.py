@@ -16,18 +16,18 @@ from .AuditModel import AuditModel
 from django.db import models
 import uuid
 
-class ScreenMaterial(AuditModel):
+class ScreenTypeCode(AuditModel):
     """
-     The material used to construct a well screen, i.e. Plastic, Stainless Steel, Other.
+     The possible types of well screens, i.e. Telescope, Pipe Size.
     """
-    screen_material_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    screen_material_code = models.CharField(max_length=10, unique=True)
+    screen_type_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    screen_type_code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
 
     class Meta:
-        db_table = 'gwells_screen_material'
+        db_table = 'screen_type_code'
         ordering = ['sort_order', 'description']
 
     def __str__(self):

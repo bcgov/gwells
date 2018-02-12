@@ -16,18 +16,19 @@ from .AuditModel import AuditModel
 from django.db import models
 import uuid
 
-class SurfaceSealMaterial(AuditModel):
+class ScreenIntakeMethodCode(AuditModel):
     """
-     Sealant material used that is installed in the annular space around the outside of the outermost casing and between multiple casings of a well.
+     Refers to the type of intake mechanism for a well screen, i.e. Screen, Open Bottom, Uncased Hole.
     """
-    surface_seal_material_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    surface_seal_material_code = models.CharField(max_length=10, unique=True)
+    screen_intake_method_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    screen_intake_code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
+    status_flag = models.BooleanField(default=False, choices=((False, 'N'), (True, 'Y')))
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
 
     class Meta:
-        db_table = 'gwells_surface_seal_material'
+        db_table = 'screen_intake_method_code'
         ordering = ['sort_order', 'description']
 
     def __str__(self):

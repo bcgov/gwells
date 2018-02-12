@@ -65,7 +65,7 @@ class ActivitySubmissionTypeAndClassForm(forms.ModelForm):
         super(ActivitySubmissionTypeAndClassForm, self).__init__(*args, **kwargs)
 
         try:
-            con = WellActivityType.objects.get(code='CON')
+            con = WellActivityCode.objects.get(code='CON')
             self.initial['well_activity_type'] = con
             self.fields['well_activity_type'].empty_label = None
         except Exception as e:

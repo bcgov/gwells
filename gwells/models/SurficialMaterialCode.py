@@ -16,19 +16,18 @@ from .AuditModel import AuditModel
 from django.db import models
 import uuid
 
-class ScreenIntakeMethod(AuditModel):
+class SurficialMaterialCode(AuditModel):
     """
-     Refers to the type of intake mechanism for a well screen, i.e. Screen, Open Bottom, Uncased Hole.
+    The surficial material encountered in lithology
     """
-    screen_intake_method_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    screen_intake_code = models.CharField(max_length=10, unique=True)
+    surficial_material_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
-    status_flag = models.BooleanField(default=False, choices=((False, 'N'), (True, 'Y')))
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
 
     class Meta:
-        db_table = 'gwells_screen_intake_method'
+        db_table = 'gwells_surficial_material'
         ordering = ['sort_order', 'description']
 
     def __str__(self):

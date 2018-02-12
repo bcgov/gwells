@@ -16,18 +16,18 @@ from .AuditModel import AuditModel
 from django.db import models
 import uuid
 
-class ScreenBottom(AuditModel):
+class ScreenAssemblyTypeCode(AuditModel):
     """
-     The type of bottom on a well screen, i.e. Bail, Plate, Plug, Other.
+     The category of screen assembly, i.e. K-Packer & Riser, K-Packer, Lead Packer, Riser Pipe, Screen, Screen Blank, Tail Pipe.
     """
-    screen_bottom_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    screen_bottom_code = models.CharField(max_length=10, unique=True)
+    screen_assembly_type_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    screen_assembly_type_code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
 
     class Meta:
-        db_table = 'gwells_screen_bottom'
+        db_table = 'screen_assembly_type_code'
         ordering = ['sort_order', 'description']
 
     def __str__(self):

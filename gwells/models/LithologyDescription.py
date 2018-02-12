@@ -24,7 +24,7 @@ from .BedrockMaterialCode import BedrockMaterialCode
 from .BedrockMaterialDescriptorCode import BedrockMaterialDescriptorCode
 from .LithologyStructureCode import LithologyStructureCode
 from .LithologyMoistureCode import LithologyMoistureCode
-from .SurficialMaterial import SurficialMaterial
+from .SurficialMaterialCode import SurficialMaterialCode
 
 from django.db import models
 from django.core.validators import MinValueValidator
@@ -55,8 +55,8 @@ class LithologyDescription(AuditModel):
     bedrock_material_descriptor = models.ForeignKey(BedrockMaterialDescriptorCode, db_column='bedrock_material_descriptor_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Descriptor')
     lithology_structure = models.ForeignKey(LithologyStructureCode, db_column='lithology_structure_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Bedding')
     lithology_moisture = models.ForeignKey(LithologyMoistureCode, db_column='lithology_moisture_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Moisture')
-    surficial_material = models.ForeignKey(SurficialMaterial, db_column='surficial_material_guid', related_name='surficial_material_set', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Surficial Material')
-    secondary_surficial_material = models.ForeignKey(SurficialMaterial, db_column='secondary_surficial_material_guid', related_name='secondary_surficial_material_set', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Secondary Surficial Material')
+    surficial_material = models.ForeignKey(SurficialMaterialCode, db_column='surficial_material_guid', related_name='surficial_material_set', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Surficial Material')
+    secondary_surficial_material = models.ForeignKey(SurficialMaterialCode, db_column='secondary_surficial_material_guid', related_name='secondary_surficial_material_set', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Secondary Surficial Material')
 
     lithology_sequence_number = models.BigIntegerField(blank=True, null=True)
 

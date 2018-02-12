@@ -1,11 +1,11 @@
 \encoding windows-1251
 \copy well_yield_unit 	  FROM './gwells_well_yield_unit.csv'   HEADER DELIMITER ',' CSV
 \copy province_state  	  FROM './province_state_code.csv' 	   HEADER DELIMITER ',' CSV
-\copy well_activity_type (well_activity_type_guid,code,description,is_hidden,sort_order,create_user,create_date,update_user,update_date) FROM './gwells_well_activity_type.csv' HEADER DELIMITER ',' CSV
+\copy well_activity_type (well_activity_type_guid,code,description,is_hidden,sort_order,create_user,create_date,update_user,update_date) FROM './well_activity_code.csv' HEADER DELIMITER ',' CSV
 
 \copy intended_water_use	FROM './intended_water_use_code.csv' HEADER DELIMITER ',' CSV
-\copy well_class  	    	FROM './gwells_well_class.csv'  	   	HEADER DELIMITER ',' CSV
-\copy well_subclass    	FROM './gwells_well_subclass.csv'     HEADER DELIMITER ',' CSV
+\copy well_class  	    	FROM './well_class_code.csv'  	   	HEADER DELIMITER ',' CSV
+\copy well_subclass    	FROM './well_subclass_code.csv'     HEADER DELIMITER ',' CSV
 \copy drilling_method    FROM './drilling_method_code.csv'    HEADER DELIMITER ',' CSV
 \copy ground_elevation_method FROM './ground_elevation_method_code.csv' HEADER DELIMITER ',' CSV
 \copy lithology_structure FROM './lithology_structure_code.csv' HEADER DELIMITER ',' CSV
@@ -19,21 +19,21 @@
 \copy casing_material FROM './casing_material_code.csv' HEADER DELIMITER ',' CSV
 \copy casing_code     FROM './casing_code.csv'     HEADER DELIMITER ',' CSV
 
-\copy screen_type     FROM './gwells_screen_type.csv'     HEADER DELIMITER ',' CSV
+\copy screen_type     FROM './screen_type_code.csv'     HEADER DELIMITER ',' CSV
 \copy screen_intake   FROM './gwells_screen_intake.csv'   HEADER DELIMITER ',' CSV
-\copy screen_opening  FROM './gwells_screen_opening.csv'  HEADER DELIMITER ',' CSV
-\copy screen_bottom   FROM './gwells_screen_bottom.csv'   HEADER DELIMITER ',' CSV
-\copy screen_material FROM './gwells_screen_material.csv' HEADER DELIMITER ',' CSV
+\copy screen_opening  FROM './screen_opening_code.csv'  HEADER DELIMITER ',' CSV
+\copy screen_bottom   FROM './screen_bottom_code.csv'   HEADER DELIMITER ',' CSV
+\copy screen_material FROM './screen_material_code.csv' HEADER DELIMITER ',' CSV
 \copy liner_material FROM './liner_material_code.csv' HEADER DELIMITER ',' CSV
 \copy filter_pack_material FROM './filter_pack_material_code.csv' HEADER DELIMITER ',' CSV
 \copy filter_pack_material_size FROM './filter_pack_material_size_code.csv' HEADER DELIMITER ',' CSV
 
-\copy screen_assembly_type    FROM './gwells_screen_assembly_type.csv'    HEADER DELIMITER ',' CSV 
+\copy screen_assembly_type    FROM './screen_assembly_type_code.csv'    HEADER DELIMITER ',' CSV 
 \copy development_method      FROM './development_method_code.csv'      HEADER DELIMITER ',' CSV
 \copy yield_estimation_method FROM './gwells_yield_estimation_method.csv' HEADER DELIMITER ',' CSV
 
 /* This will need further transformation to link to existing data */
-CREATE unlogged TABLE IF NOT EXISTS xform_gwells_surface_seal_method (
+CREATE unlogged TABLE IF NOT EXISTS xform_surface_seal_method_code (
   create_user              character varying(30)   ,
   create_date             timestamp with time zone,
   update_user              character varying(30)   ,
@@ -46,7 +46,7 @@ CREATE unlogged TABLE IF NOT EXISTS xform_gwells_surface_seal_method (
 );
 
 /* This will need further transformation to link to existing data */
-CREATE unlogged TABLE IF NOT EXISTS xform_gwells_surface_seal_material (
+CREATE unlogged TABLE IF NOT EXISTS xform_surface_seal_material_code (
   create_user                 character varying(30)   ,
   create_date                timestamp with time zone,
   update_user                 character varying(30)   ,
@@ -147,19 +147,19 @@ CREATE unlogged TABLE IF NOT EXISTS xform_gwells_driller (
 \copy xform_gwells_driller          FROM './xform_gwells_driller.csv'          HEADER DELIMITER ',' CSV
 \copy xform_gwells_well             FROM './xform_gwells_well.csv'  WITH (HEADER, DELIMITER ',' , FORMAT CSV, FORCE_NULL(update_date,drilling_method_guid,ground_elevation_method_guid));
 
-\copy xform_gwells_surface_seal_material FROM './xform_gwells_surface_seal_material.csv' HEADER DELIMITER ',' CSV
-\copy xform_gwells_surface_seal_method FROM './xform_gwells_surface_seal_method.csv' HEADER DELIMITER ',' CSV
+\copy xform_surface_seal_material_code FROM './xform_surface_seal_material_code.csv' HEADER DELIMITER ',' CSV
+\copy xform_surface_seal_method_code FROM './xform_surface_seal_method_code.csv' HEADER DELIMITER ',' CSV
 
 
 INSERT INTO surface_seal_material (create_user,create_date,update_user,update_date,
     surface_seal_material_guid,code,description,is_hidden,sort_order)
 SELECT create_user,create_date,update_user,update_date,
   surface_seal_material_guid, code,description,is_hidden,sort_order
-FROM xform_gwells_surface_seal_material
+FROM xform_surface_seal_material_code
 WHERE length(code) < 11
 AND  code not in 
   (SELECT CODE
-  FROM xform_gwells_surface_seal_material
+  FROM xform_surface_seal_material_code
   group by code
   having count(*) > 1);
 
@@ -167,7 +167,7 @@ INSERT INTO surface_seal_method (create_user,create_date,update_user,update_date
     surface_seal_method_guid,code,description,is_hidden,sort_order)
 SELECT create_user,create_date,update_user,update_date,
   surface_seal_method_guid, code,description,is_hidden,sort_order
-FROM xform_gwells_surface_seal_method;
+FROM xform_surface_seal_method_code;
 
 
 INSERT INTO land_district (land_district_guid, code, name, sort_order,
@@ -351,7 +351,7 @@ INNER      JOIN well_class          class ON old.CLASS_OF_WELL_CODCLASSIFIED_BY 
 LEFT OUTER JOIN well_subclass   subclass  ON old.SUBCLASS_OF_WELL_CLASSIFIED_BY = subclass.code 
                 AND subclass.well_class_guid = class.well_class_guid
 /*
-LEFT OUTER JOIN xform_gwells_surface_seal_material seal_material 
+LEFT OUTER JOIN xform_surface_seal_material_code seal_material 
   ON old.SEALANT_MATERIAL = seal_material.SEALANT_MATERIAL 
 */
 ;

@@ -16,18 +16,18 @@ from .AuditModel import AuditModel
 from django.db import models
 import uuid
 
-class SurfaceSealMethod(AuditModel):
+class ScreenOpeningCode(AuditModel):
     """
-     Method used to install the surface seal in the annular space around the outside of the outermost casing and between mulitple casings of a well.
+     The type of opening on a well screen, i.e. Continuous Slot, Slotted, Perforated Pipe.
     """
-    surface_seal_method_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    surface_seal_method_code = models.CharField(max_length=10, unique=True)
+    screen_opening_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    screen_opening_code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField()
 
     class Meta:
-        db_table = 'gwells_surface_seal_method'
+        db_table = 'screen_opening_code'
         ordering = ['sort_order', 'description']
 
     def __str__(self):
