@@ -60,7 +60,7 @@ BEGIN
   LEFT OUTER JOIN lithology_hardness_code lithology_hardness ON UPPER(wld.relative_hardness_code)=UPPER(lithology_hardness.code)
   LEFT OUTER JOIN lithology_colour_code lithology_colour ON UPPER(wld.lithology_colour_code)=UPPER(lithology_colour.code)
   LEFT OUTER JOIN gwells_well_yield_unit well_yield_unit ON UPPER(wld.water_bearing_est_flw_unt_cd)=UPPER(well_yield_unit.code)
-  LEFT OUTER JOIN gwells_lithology_material lithology_material ON UPPER(wld.lithology_material_code)=UPPER(lithology_material.code)
+  LEFT OUTER JOIN lithology_material_code lithology_material ON UPPER(wld.lithology_material_code)=UPPER(lithology_material.code)
   LEFT OUTER JOIN gwells_lithology_description_code lithology_description_code ON UPPER(wld.lithology_code)=UPPER(lithology_description_code.code);
 
   raise notice '...wells_lithology_descriptions data imported';

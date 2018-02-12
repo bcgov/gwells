@@ -122,16 +122,16 @@ class ModelsTestCase(TestCase):
         self.assertIsInstance(lithology_hardness, LithologyHardnessCode)
 
     def test_lithology_material_instantiation(self):
-        lithology_material = LithologyMaterial()
-        self.assertIsInstance(lithology_material, LithologyMaterial)
+        lithology_material = LithologyMaterialCode()
+        self.assertIsInstance(lithology_material, LithologyMaterialCode)
 
     def test_lithology_moisture_instantiation(self):
-        lithology_moisture = LithologyMoisture()
-        self.assertIsInstance(lithology_moisture, LithologyMoisture)
+        lithology_moisture = LithologyMoistureCode()
+        self.assertIsInstance(lithology_moisture, LithologyMoistureCode)
 
     def test_lithology_structure_instantiation(self):
-        lithology_structure = LithologyStructure()
-        self.assertIsInstance(lithology_structure, LithologyStructure)
+        lithology_structure = LithologyStructureCode()
+        self.assertIsInstance(lithology_structure, LithologyStructureCode)
 
     def test_ltsa_owner_instantiation(self):
         ltsa_owner = LtsaOwner()

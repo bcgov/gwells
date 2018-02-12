@@ -43,9 +43,9 @@
  drop table if exists gwells_lithology_description             cascade;
  drop table if exists gwells_lithology_description_code        cascade;
  drop table if exists lithology_hardness_code                cascade;
- drop table if exists gwells_lithology_material                cascade;
- drop table if exists gwells_lithology_moisture                cascade;
- drop table if exists gwells_lithology_structure               cascade;
+ drop table if exists lithology_material_code                cascade;
+ drop table if exists lithology_moisture_code                cascade;
+ drop table if exists lithology_structure_code               cascade;
  drop table if exists gwells_ltsa_owner                        cascade;
  drop table if exists gwells_observation_well_status           cascade;
  drop table if exists gwells_perforation                       cascade;

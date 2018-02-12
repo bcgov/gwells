@@ -24,9 +24,9 @@ from .LithologyColourCode import LithologyColourCode
 from .LithologyDescription import LithologyDescription
 from .LithologyDescriptionCode import LithologyDescriptionCode
 from .LithologyHardnessCode import LithologyHardnessCode
-from .LithologyMaterial import LithologyMaterial
-from .LithologyMoisture import LithologyMoisture
-from .LithologyStructure import LithologyStructure
+from .LithologyMaterialCode import LithologyMaterialCode
+from .LithologyMoistureCode import LithologyMoistureCode
+from .LithologyStructureCode import LithologyStructureCode
 from .LtsaOwner import LtsaOwner
 from .ObservationWellStatus import ObservationWellStatus
 from .Perforation import Perforation
@@ -79,9 +79,9 @@ __all__ = [
 'LithologyDescription',
 'LithologyDescriptionCode',
 'LithologyHardnessCode',
-'LithologyMaterial',
-'LithologyMoisture',
-'LithologyStructure',
+'LithologyMaterialCode',
+'LithologyMoistureCode',
+'LithologyStructureCode',
 'LtsaOwner',
 'ObservationWellStatus',
 'Perforation',
