@@ -16,10 +16,10 @@ BEGIN
     casing_material_guid                          , -->FK
     wall_thickness                                ,
     drive_shoe                                    ,
-    when_created                                  ,
-    when_updated                                  ,
-    who_created                                   ,
-    who_updated)
+    create_date                                  ,
+    update_date                                  ,
+    create_user                                   ,
+    update_user)
     SELECT
         gen_random_uuid()                             ,
         null                                          ,
@@ -40,7 +40,7 @@ BEGIN
         casings.who_updated
     FROM wells.wells_casings casings
         INNER JOIN xform_gwells_well xform ON xform.well_id=casings.well_id
-        LEFT OUTER JOIN gwells_casing_material casing_material ON casings.casing_material_code=casing_material.casing_material_code;
+        LEFT OUTER JOIN casing_material_code casing_material ON casings.casing_material_code=casing_material.casing_material_code;
      
 
   raise notice '...wells_casings data imported';

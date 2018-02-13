@@ -89,7 +89,7 @@ class LithologyForm(forms.ModelForm):
             lithology_moisture = cleaned_data.get('lithology_moisture')
             water_bearing_estimated_flow = cleaned_data.get('water_bearing_estimated_flow')
             try:
-                if lithology_moisture == LithologyMoisture.objects.get(code='Water Bear') and not water_bearing_estimated_flow:
+                if lithology_moisture == LithologyMoistureCode.objects.get(code='Water Bear') and not water_bearing_estimated_flow:
                     errors.append('Water Bearing Estimated Flow is required for Water Bearing Bedrock.')
             except Exception as e:
                 errors.append('Configuration error: Water Bearing Lithology Moisture does not exist, please contact the administrator.')

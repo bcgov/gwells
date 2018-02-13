@@ -1,4 +1,0 @@
-who_created,when_created,who_updated,when_updated,screen_intake_guid,code,description,is_hidden,sort_order 
-"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","74fb3b16796811e7b5a5be2e44b06b34","OPENHOLE","Open Bottom","N","10"
-"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","74fb3efe796811e7b5a5be2e44b06b34","SCREEN","Screen","N","20"
-"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","74fb40a2796811e7b5a5be2e44b06b34","UNCSHOLE","Uncased Hole","N","30"
