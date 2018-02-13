@@ -9,12 +9,15 @@ from gwells.models.ProvinceState import ProvinceState
 # Postman API tests include making requests with incomplete data, missing required fields etc.
 # They are located at {base-dir}/api-tests/
 
+# Django unit tests
+
 class OrganizationTests(TestCase):
     """
     Tests for the Organization model
     """
 
     def setUp(self):
+        # Create a ProvinceState object for our Organization's foreign key field
         ProvinceState.objects.create(
             code = 'BC',
             description = 'British Columbia',
@@ -22,14 +25,14 @@ class OrganizationTests(TestCase):
         )
 
         Organization.objects.create(
-            name='Bobby\'s Drilling',
+            name='Frankie and Betty Well Drilling Co.',
             city='Victoria',
             province_state = ProvinceState.objects.get(code='BC')
         )
 
     def test_organization_was_created(self):
-        org = Organization.objects.get()
-        self.assertEqual(org.name, 'Bobby\'s Drilling')
+        org = Organization.objects.get(name='Frankie and Betty Well Drilling Co.')
+        self.assertEqual(org.city, 'Victoria')
 
 
 class PersonTests(TestCase):
@@ -46,6 +49,9 @@ class PersonTests(TestCase):
     def test_person_was_created(self):
         person = Person.objects.get(first_name='Bobby')
         self.assertEqual(person.first_name, 'Bobby')
+
+
+# Django REST Framework tests
 
 class APIOrganizationTests(APITestCase):
     """
