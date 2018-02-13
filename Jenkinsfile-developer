@@ -61,6 +61,7 @@ node('bddstack') {
         echo "Build: ${BUILD_ID}"
         checkout scm
         dir('functional-tests') {
+	    unstash 'coverage'
 	    try {
                 sh './gradlew --debug --stacktrace chromeHeadlessTest'
 	    } finally {
@@ -82,7 +83,8 @@ node('bddstack') {
                             reportDir: 'build/reports/tests/chromeHeadlessTest',
                             reportFiles: 'index.html',
                             reportName: "Full Test Report"
-                        ])        
+                        ])
+		perfpublisher healthy: '0', metrics: '', name: 'nosetests.xml, build/test-results/**/*.xml', threshold: '', unhealthy: '0'
 	    }
         }
     }
