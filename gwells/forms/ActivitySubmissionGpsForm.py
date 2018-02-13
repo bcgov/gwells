@@ -153,7 +153,7 @@ class ActivitySubmissionGpsForm(forms.ModelForm):
             errors.append('Method for Determining Ground Elevation is required when specifying Ground Elevation.')
 
         try:
-            if drilling_method == DrillingMethod.objects.get(code='OTHER') and not other_drilling_method:
+            if drilling_method == DrillingMethodCode.objects.get(code='OTHER') and not other_drilling_method:
                 errors.append('Specify Other Drilling Method.')
         except Exception as e:
             errors.append('Configuration error: Other Drilling Method does not exist, please contact the administrator.')

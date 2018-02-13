@@ -6,7 +6,7 @@ DECLARE
 BEGIN
   raise notice '...importing wells_lithology_descriptions data';
 
-  INSERT INTO gwells_lithology_description(
+  INSERT INTO lithology_description(
     lithology_description_guid             ,
     filing_number                          ,
     well_tag_number                        ,
@@ -21,10 +21,10 @@ BEGIN
     well_yield_unit_guid                   ,
     lithology_observation                  ,
     lithology_sequence_number              ,
-    who_created                            ,
-    when_created                           ,
-    who_updated                            ,
-    when_updated
+    create_user                            ,
+    create_date                           ,
+    update_user                            ,
+    update_date
   )
   SELECT
     gen_random_uuid()                                         ,
@@ -57,15 +57,15 @@ BEGIN
   FROM wells.wells_lithology_descriptions wld
   INNER JOIN xform_gwells_well xform ON xform.well_id=wld.well_id
   INNER JOIN wells.wells_wells wells ON wells.well_id=wld.well_id
-  LEFT OUTER JOIN gwells_lithology_hardness lithology_hardness ON UPPER(wld.relative_hardness_code)=UPPER(lithology_hardness.code)
-  LEFT OUTER JOIN gwells_lithology_colour lithology_colour ON UPPER(wld.lithology_colour_code)=UPPER(lithology_colour.code)
-  LEFT OUTER JOIN gwells_well_yield_unit well_yield_unit ON UPPER(wld.water_bearing_est_flw_unt_cd)=UPPER(well_yield_unit.code)
-  LEFT OUTER JOIN gwells_lithology_material lithology_material ON UPPER(wld.lithology_material_code)=UPPER(lithology_material.code)
-  LEFT OUTER JOIN gwells_lithology_description_code lithology_description_code ON UPPER(wld.lithology_code)=UPPER(lithology_description_code.code);
+  LEFT OUTER JOIN lithology_hardness_code lithology_hardness ON UPPER(wld.relative_hardness_code)=UPPER(lithology_hardness.code)
+  LEFT OUTER JOIN lithology_colour_code lithology_colour ON UPPER(wld.lithology_colour_code)=UPPER(lithology_colour.code)
+  LEFT OUTER JOIN well_yield_unit_code well_yield_unit ON UPPER(wld.water_bearing_est_flw_unt_cd)=UPPER(well_yield_unit.code)
+  LEFT OUTER JOIN lithology_material_code lithology_material ON UPPER(wld.lithology_material_code)=UPPER(lithology_material.code)
+  LEFT OUTER JOIN lithology_description_code lithology_description_code ON UPPER(wld.lithology_code)=UPPER(lithology_description_code.code);
 
   raise notice '...wells_lithology_descriptions data imported';
-  SELECT count(*) from gwells_lithology_description into row_count;
-  raise notice '% rows loaded into the gwells_lithology_description table',  row_count;
+  SELECT count(*) from lithology_description into row_count;
+  raise notice '% rows loaded into the lithology_description table',  row_count;
 END;
 $$ LANGUAGE plpgsql;
 
