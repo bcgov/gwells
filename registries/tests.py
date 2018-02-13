@@ -18,7 +18,7 @@ class OrganizationTests(TestCase):
 
     def setUp(self):
         # Create a ProvinceStateCode object for our Organization's foreign key field
-        ProvinceStateCode.objects.create(
+        province = ProvinceStateCode.objects.create(
             code = 'BC',
             description = 'British Columbia',
             sort_order = 1
@@ -27,7 +27,7 @@ class OrganizationTests(TestCase):
         Organization.objects.create(
             name='Frankie and Betty Well Drilling Co.',
             city='Victoria',
-            province_state = ProvinceStateCode.objects.get(code='BC')
+            province_state = province
         )
 
     def test_organization_was_created(self):
@@ -65,9 +65,18 @@ class APIOrganizationTests(APITestCase):
         """
         Create a new organization object.
         """
+
+        # create a ProvinceStateCode object
+        province = ProvinceStateCode.objects.create(
+            code = 'BC',
+            description = 'British Columbia',
+            sort_order = 1
+        )
+
         initial_data = {
             'name': 'Bobby\'s Drilling',
-            'city': 'Victoria'
+            'city': 'Victoria',
+            'province_state': province.province_state_guid
         }
 
         url = reverse('organization-list')
