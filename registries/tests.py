@@ -72,12 +72,12 @@ class OrganizationTests(APITestCase):
         new_object = self.client.post(create_url, initial_data, format='json')
         created_guid = new_object.data['org_guid']
 
-        retrieve_url = reverse('organization-detail', kwargs={'org_guid': created_guid})
+        object_url = reverse('organization-detail', kwargs={'org_guid': created_guid})
 
         # Apply a new city name with PATCH method
-        self.client.patch(retrieve_url, new_data, format='json')
+        self.client.patch(object_url, new_data, format='json')
 
-        response = self.client.get(retrieve_url, format='json')
+        response = self.client.get(object_url, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['name'], initial_data['name'])
@@ -97,12 +97,12 @@ class OrganizationTests(APITestCase):
         new_object = self.client.post(create_url, initial_data, format='json')
         created_guid = new_object.data['org_guid']
 
-        retrieve_url = reverse('organization-detail', kwargs={'org_guid': created_guid})
+        object_url = reverse('organization-detail', kwargs={'org_guid': created_guid})
 
         # Apply a new city name with PATCH method
-        self.client.put(retrieve_url, new_data, format='json')
+        self.client.put(object_url, new_data, format='json')
         
-        response = self.client.get(retrieve_url, format='json')
+        response = self.client.get(object_url, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['name'], new_data['name'])
