@@ -18,6 +18,7 @@ stage('API Test') {
                             reportFiles: 'newman*.html',
                             reportName: "API Test Report"
                         ])
+                perfReport compareBuildPrevious: true, excludeResponseTime: true, ignoreFailedBuilds: true, ignoreUnstableBuilds: true, modeEvaluation: true, modePerformancePerTestCase: true, percentiles: '0,50,90,100', relativeFailedThresholdNegative: 80.0, relativeFailedThresholdPositive: 20.0, relativeUnstableThresholdNegative: 50.0, relativeUnstableThresholdPositive: 50.0, sourceDataFiles: 'newman/*.xml'        
 	            }
         }
     }
