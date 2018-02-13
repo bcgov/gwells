@@ -62,10 +62,10 @@
     if ($('#id_type_and_class-well_class option:selected').val() == '{{ water_supply_well_class_guid }}') {
       $('#id_type_and_class-well_subclass option').prop('selected', false);
       //$('#divSubclass').hide();
-      $('#divIntendedWaterUse').show();
+      $('#divIntendedWaterUseCode').show();
     } else {
       $('#id_type_and_class-intended_water_use option').prop('selected', false);
-      $('#divIntendedWaterUse').hide();
+      $('#divIntendedWaterUseCode').hide();
       //$('#divSubclass').show();
     }
   });

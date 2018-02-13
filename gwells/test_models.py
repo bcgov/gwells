@@ -34,32 +34,32 @@ class ModelsTestCase(TestCase):
         self.assertIsInstance(bcgs_numbers, BCGS_Numbers)
 
     def test_bedrock_material_instantiation(self):
-        bedrock_material= BedrockMaterial()
-        self.assertIsInstance(bedrock_material, BedrockMaterial)
+        bedrock_material= BedrockMaterialCode()
+        self.assertIsInstance(bedrock_material, BedrockMaterialCode)
 
     def test_bedrock_material_descriptor_instantiation(self):
-        bedrock_material_descriptor = BedrockMaterialDescriptor()
-        self.assertIsInstance(bedrock_material_descriptor, BedrockMaterialDescriptor)
+        bedrock_material_descriptor = BedrockMaterialDescriptorCode()
+        self.assertIsInstance(bedrock_material_descriptor, BedrockMaterialDescriptorCode)
 
     def test_casing_instantiation(self):
         casing = Casing()
         self.assertIsInstance(casing, Casing)
 
     def test_casing_material_instantiation(self):
-        casing_material = CasingMaterial()
-        self.assertIsInstance(casing_material, CasingMaterial)
+        casing_material = CasingMaterialCode()
+        self.assertIsInstance(casing_material, CasingMaterialCode)
 
-    def test_casing_type_instantiation(self):
-        casing_type = CasingType()
-        self.assertIsInstance(casing_type, CasingType)
+    def test_casing_code_instantiation(self):
+        casing_code = CasingCode()
+        self.assertIsInstance(casing_code, CasingCode)
 
     def test_decommission_method_instantiation(self):
-        decommission_method = DecommissionMethod()
-        self.assertIsInstance(decommission_method, DecommissionMethod)
+        decommission_method = DecommissionMethodCode()
+        self.assertIsInstance(decommission_method, DecommissionMethodCode)
 
     def test_development_method_instantiation(self):
-        development_method = DevelopmentMethod()
-        self.assertIsInstance(development_method, DevelopmentMethod)
+        development_method = DevelopmentMethodCode()
+        self.assertIsInstance(development_method, DevelopmentMethodCode)
 
     def test_driller_instantiation(self):
         driller = Driller()
@@ -70,44 +70,44 @@ class ModelsTestCase(TestCase):
         self.assertIsInstance(drilling_company, DrillingCompany)
 
     def test_drilling_method_instantiation(self):
-        drilling_method = DrillingMethod()
-        self.assertIsInstance(drilling_method, DrillingMethod)
+        drilling_method = DrillingMethodCode()
+        self.assertIsInstance(drilling_method, DrillingMethodCode)
 
     def test_filter_pack_material_instantiation(self):
-        filter_pack_material = FilterPackMaterial()
-        self.assertIsInstance(filter_pack_material, FilterPackMaterial)
+        filter_pack_material = FilterPackMaterialCode()
+        self.assertIsInstance(filter_pack_material, FilterPackMaterialCode)
 
     def test_filter_pack_material_size_instantiation(self):
-        filter_pack_material_size = FilterPackMaterialSize()
-        self.assertIsInstance(filter_pack_material_size, FilterPackMaterialSize)
+        filter_pack_material_size = FilterPackMaterialSizeCode()
+        self.assertIsInstance(filter_pack_material_size, FilterPackMaterialSizeCode)
 
     def test_ground_elevation_method_instantiation(self):
-        ground_elevation_method = GroundElevationMethod()
-        self.assertIsInstance(ground_elevation_method, GroundElevationMethod)
+        ground_elevation_method = GroundElevationMethodCode()
+        self.assertIsInstance(ground_elevation_method, GroundElevationMethodCode)
 
     def test_intended_water_use_instantiation(self):
-        intended_water_use = IntendedWaterUse()
-        self.assertIsInstance(intended_water_use, IntendedWaterUse)
+        intended_water_use = IntendedWaterUseCode()
+        self.assertIsInstance(intended_water_use, IntendedWaterUseCode)
 
     def test_land_district_instantiation(self):
-        land_district = LandDistrict()
-        self.assertIsInstance(land_district, LandDistrict)
+        land_district = LandDistrictCode()
+        self.assertIsInstance(land_district, LandDistrictCode)
 
     def test_licenced_status_instantiation(self):
-        licenced_status = LicencedStatus()
-        self.assertIsInstance(licenced_status, LicencedStatus)
+        licenced_status = LicencedStatusCode()
+        self.assertIsInstance(licenced_status, LicencedStatusCode)
 
     def test_liner_material_instantiation(self):
-        liner_material = LinerMaterial()
-        self.assertIsInstance(liner_material, LinerMaterial)
+        liner_material = LinerMaterialCode()
+        self.assertIsInstance(liner_material, LinerMaterialCode)
 
     def test_liner_perforation_instantiation(self):
         liner_perforation = LinerPerforation()
         self.assertIsInstance(liner_perforation, LinerPerforation)
 
     def test_lithology_colour_instantiation(self):
-        lithology_colour = LithologyColour()
-        self.assertIsInstance(lithology_colour, LithologyColour)
+        lithology_colour = LithologyColourCode()
+        self.assertIsInstance(lithology_colour, LithologyColourCode)
 
     def test_lithology_description_instantiation(self):
         lithology_description = LithologyDescription()
@@ -118,28 +118,28 @@ class ModelsTestCase(TestCase):
         self.assertIsInstance(lithology_description_code, LithologyDescriptionCode)
 
     def test_lithology_hardness_instantiation(self):
-        lithology_hardness = LithologyHardness()
-        self.assertIsInstance(lithology_hardness, LithologyHardness)
+        lithology_hardness = LithologyHardnessCode()
+        self.assertIsInstance(lithology_hardness, LithologyHardnessCode)
 
     def test_lithology_material_instantiation(self):
-        lithology_material = LithologyMaterial()
-        self.assertIsInstance(lithology_material, LithologyMaterial)
+        lithology_material = LithologyMaterialCode()
+        self.assertIsInstance(lithology_material, LithologyMaterialCode)
 
     def test_lithology_moisture_instantiation(self):
-        lithology_moisture = LithologyMoisture()
-        self.assertIsInstance(lithology_moisture, LithologyMoisture)
+        lithology_moisture = LithologyMoistureCode()
+        self.assertIsInstance(lithology_moisture, LithologyMoistureCode)
 
     def test_lithology_structure_instantiation(self):
-        lithology_structure = LithologyStructure()
-        self.assertIsInstance(lithology_structure, LithologyStructure)
+        lithology_structure = LithologyStructureCode()
+        self.assertIsInstance(lithology_structure, LithologyStructureCode)
 
     def test_ltsa_owner_instantiation(self):
         ltsa_owner = LtsaOwner()
         self.assertIsInstance(ltsa_owner, LtsaOwner)
 
     def test_observation_well_status_instantiation(self):
-        observation_well_status = ObservationWellStatus()
-        self.assertIsInstance(observation_well_status, ObservationWellStatus)
+        observation_well_status = ObsWellStatusCode()
+        self.assertIsInstance(observation_well_status, ObsWellStatusCode)
 
     def test_perforation_instantiation(self):
         perforation = Perforation()
@@ -150,48 +150,48 @@ class ModelsTestCase(TestCase):
         self.assertIsInstance(production_data, ProductionData)
 
     def test_province_state_instantiation(self):
-        province_state = ProvinceState()
-        self.assertIsInstance(province_state, ProvinceState)
+        province_state = ProvinceStateCode()
+        self.assertIsInstance(province_state, ProvinceStateCode)
 
     def test_screen_instantiation(self):
         screen = Screen()
         self.assertIsInstance(screen, Screen)
 
     def test_screen_assembly_type_instantiation(self):
-        screen_assembly_type = ScreenAssemblyType()
-        self.assertIsInstance(screen_assembly_type, ScreenAssemblyType)
+        screen_assembly_type = ScreenAssemblyTypeCode()
+        self.assertIsInstance(screen_assembly_type, ScreenAssemblyTypeCode)
 
     def test_screen_bottom_instantiation(self):
-        screen_bottom = ScreenBottom()
-        self.assertIsInstance(screen_bottom, ScreenBottom)
+        screen_bottom = ScreenBottomCode()
+        self.assertIsInstance(screen_bottom, ScreenBottomCode)
 
     def test_screen_intake_method_instantiation(self):
-        screen_intake_method = ScreenIntakeMethod()
-        self.assertIsInstance(screen_intake_method, ScreenIntakeMethod)
+        screen_intake_method = ScreenIntakeMethodCode()
+        self.assertIsInstance(screen_intake_method, ScreenIntakeMethodCode)
 
     def test_screen_material_instantiation(self):
-        screen_material = ScreenMaterial()
-        self.assertIsInstance(screen_material, ScreenMaterial)
+        screen_material = ScreenMaterialCode()
+        self.assertIsInstance(screen_material, ScreenMaterialCode)
 
     def test_screen_opening_instantiation(self):
-        screen_opening = ScreenOpening()
-        self.assertIsInstance(screen_opening, ScreenOpening)
+        screen_opening = ScreenOpeningCode()
+        self.assertIsInstance(screen_opening, ScreenOpeningCode)
 
     def test_screen_type_instantiation(self):
-        screen_type = ScreenType()
-        self.assertIsInstance(screen_type, ScreenType)
+        screen_type = ScreenTypeCode()
+        self.assertIsInstance(screen_type, ScreenTypeCode)
 
     def test_surface_seal_material_instantiation(self):
-        surface_seal_material = SurfaceSealMaterial()
-        self.assertIsInstance(surface_seal_material, SurfaceSealMaterial)
+        surface_seal_material = SurfaceSealMaterialCode()
+        self.assertIsInstance(surface_seal_material, SurfaceSealMaterialCode)
 
     def test_surface_seal_method_instantiation(self):
-        surface_seal_method = SurfaceSealMethod()
-        self.assertIsInstance(surface_seal_method, SurfaceSealMethod)
+        surface_seal_method = SurfaceSealMethodCode()
+        self.assertIsInstance(surface_seal_method, SurfaceSealMethodCode)
 
     def test_surficial_material_instantiation(self):
-        surficial_material = SurficialMaterial()
-        self.assertIsInstance(surficial_material, SurficialMaterial)
+        surficial_material = SurficialMaterialCode()
+        self.assertIsInstance(surficial_material, SurficialMaterialCode)
 
     def test_water_quality_characteristic_instantiation(self):
         water_quality_characteristic = WaterQualityCharacteristic()
@@ -202,25 +202,25 @@ class ModelsTestCase(TestCase):
         self.assertIsInstance(well, Well)
 
     def test_well_activity_type_instantiation(self):
-        well_activity_type = WellActivityType()
-        self.assertIsInstance(well_activity_type, WellActivityType)
+        well_activity_type = WellActivityCode()
+        self.assertIsInstance(well_activity_type, WellActivityCode)
 
     def test_well_class_instantiation(self):
-        well_class = WellClass()
-        self.assertIsInstance(well_class, WellClass)
+        well_class = WellClassCode()
+        self.assertIsInstance(well_class, WellClassCode)
 
     def test_well_status_instantiation(self):
-        well_status = WellStatus()
-        self.assertIsInstance(well_status, WellStatus)
+        well_status = WellStatusCode()
+        self.assertIsInstance(well_status, WellStatusCode)
 
     def test_well_subclass_instantiation(self):
-        well_subclass = WellSubclass()
-        self.assertIsInstance(well_subclass, WellSubclass)
+        well_subclass = WellSubclassCode()
+        self.assertIsInstance(well_subclass, WellSubclassCode)
 
     def test_well_yield_unit_instantiation(self):
-        well_yield_unit = WellYieldUnit()
-        self.assertIsInstance(well_yield_unit, WellYieldUnit)
+        well_yield_unit = WellYieldUnitCode()
+        self.assertIsInstance(well_yield_unit, WellYieldUnitCode)
 
     def test_yield_estimation_method_instantiation(self):
-        yield_estimation_method = YieldEstimationMethod()
-        self.assertIsInstance(yield_estimation_method, YieldEstimationMethod)
+        yield_estimation_method = YieldEstimationMethodCode()
+        self.assertIsInstance(yield_estimation_method, YieldEstimationMethodCode)

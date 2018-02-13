@@ -24,7 +24,7 @@ class LithologyDescriptionCode(AuditModel):
     sort_order = models.PositiveIntegerField()
 
     class Meta:
-        db_table = 'gwells_lithology_description_code'
+        db_table = 'lithology_description_code'
         ordering=['sort_order']
     def __str__(self):
         return 'lithology_description_code {} {}'.format(self.code, self.description)

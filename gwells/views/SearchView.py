@@ -18,7 +18,7 @@ from django.shortcuts import render
 from django.http import JsonResponse
 import json
 from ..forms import SearchForm
-from ..models import LandDistrict
+from ..models import LandDistrictCode
 
 class SearchView(generic.DetailView):
 
@@ -73,7 +73,7 @@ class SearchView(generic.DetailView):
 
         # create an object that will be used to render the names for land districts.
         land_districts = {}
-        all_land_districts = LandDistrict.objects.all()
+        all_land_districts = LandDistrictCode.objects.all()
         for land_district in all_land_districts:
             land_districts[land_district.land_district_guid] = land_district.name
 
