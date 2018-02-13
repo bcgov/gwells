@@ -83,7 +83,7 @@ node('bddstack') {
                                 reportFiles: 'index.html',
                                 reportName: "Full Test Report"
                             ])
-                }
+                    }
         }
     }
 }
