@@ -183,6 +183,29 @@ class APIOrganizationTests(APITestCase):
         self.assertEqual(get_after_delete_response.status_code, status.HTTP_404_NOT_FOUND)
 
 
+    def test_organization_audit_fields(self):
+        """
+        Test that AuditModel fields (create_user, create_date etc.)
+        are updated when Organization objects are created.
+        """
+        initial_data = {
+            'name': 'Bobby\'s Drilling',
+            'city': 'Victoria'
+        }
+        
+        create_url = reverse('organization-list')
+        new_object = self.client.post(create_url, initial_data, format='json')
+        created_guid = new_object.data['org_guid']
+
+        retrieve_url = reverse('organization-detail', kwargs={'org_guid': created_guid})
+        response = self.client.get(retrieve_url, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # TODO: When authentication is enforced, this line will need to change
+        self.assertEqual(response.data['create_user'], 'AnonymousUser')
+
+
 class APIPersonTests(APITestCase):
     """
     Tests for Person resource endpoint
@@ -306,3 +329,25 @@ class APIPersonTests(APITestCase):
 
         get_after_delete_response = self.client.get(retrieve_url, format='json')
         self.assertEqual(get_after_delete_response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_person_audit_fields(self):
+        """
+        Test that AuditModel fields (create_user, create_date etc.)
+        are updated when Person objects are created.
+        """
+        initial_data = {
+            'first_name': 'Bobby',
+            'surname': 'Driller'
+        }
+        
+        create_url = reverse('person-list')
+        new_object = self.client.post(create_url, initial_data, format='json')
+        created_guid = new_object.data['person_guid']
+
+        retrieve_url = reverse('person-detail', kwargs={'person_guid': created_guid})
+        response = self.client.get(retrieve_url, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # TODO: When authentication is enforced, this line will need to change
+        self.assertEqual(response.data['create_user'], 'AnonymousUser')
