@@ -38,7 +38,7 @@ class ActivitySubmissionWizardView(SessionWizardView):
         if self.steps.current == 'type_and_class' and not 'water_supply_well_class_guid' in context:
             # Get the pk of water supply well class so jquery can show/hide intended water use field
             try:
-                water_supply_class = WellClass.objects.get(code='WATR_SPPLY')
+                water_supply_class = WellClassCode.objects.get(code='WATR_SPPLY')
                 context['water_supply_well_class_guid'] = water_supply_class.well_class_guid
             except Exception as e:
                 context['water_supply_well_class_guid'] = None

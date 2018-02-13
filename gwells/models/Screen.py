@@ -15,7 +15,7 @@
 from .AuditModel import AuditModel
 from .ActivitySubmission import ActivitySubmission
 from .Well import Well
-from .ScreenAssemblyType import ScreenAssemblyType
+from .ScreenAssemblyTypeCode import ScreenAssemblyTypeCode
 
 from django.db import models
 from decimal import Decimal
@@ -32,7 +32,7 @@ class Screen(AuditModel):
     screen_from = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='From', blank=True, null=True, validators=[MinValueValidator(Decimal('0.00'))])
     screen_to = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='To', blank=False, null=True, validators=[MinValueValidator(Decimal('0.01'))])
     internal_diameter = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='Diameter', blank=True, null=True, validators=[MinValueValidator(Decimal('0.0'))])
-    assembly_type = models.ForeignKey(ScreenAssemblyType, db_column='screen_assembly_type_guid', on_delete=models.CASCADE, blank=True, null=True)
+    assembly_type = models.ForeignKey(ScreenAssemblyTypeCode, db_column='screen_assembly_type_guid', on_delete=models.CASCADE, blank=True, null=True)
     slot_size = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='Slot Size', blank=True, null=True, validators=[MinValueValidator(Decimal('0.00'))])
 
     class Meta:

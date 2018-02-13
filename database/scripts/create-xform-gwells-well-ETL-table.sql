@@ -44,7 +44,7 @@ CREATE unlogged TABLE IF NOT EXISTS xform_gwells_well (
    ground_elevation_method_guid        uuid,
    well_status_guid 	                  uuid,
    observation_well_number	            character varying(3),
-   observation_well_status_guid        uuid,
+   obs_well_status_guid        uuid,
    licenced_status_guid                uuid,
    alternative_specifications_ind      boolean,
    construction_start_date             timestamp with time zone,
@@ -88,10 +88,10 @@ CREATE unlogged TABLE IF NOT EXISTS xform_gwells_well (
    backfill_material                   character varying(100),
    decommission_details                character varying(250),
    comments                            character varying(255),
-   when_created                        timestamp with time zone,
-   when_updated                        timestamp with time zone,
-   who_created                         character varying(30),
-   who_updated                         character varying(30)
+   create_date                        timestamp with time zone,
+   update_date                        timestamp with time zone,
+   create_user                         character varying(30),
+   update_user                         character varying(30)
 );
 
 \echo 'Created xform_gwells_well ETL table';

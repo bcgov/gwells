@@ -16,6 +16,9 @@ from .AuditModel import AuditModel
 from django.db import models
 import uuid
 
+"""
+  Not a Code table, but a representative sample of data to support search
+"""
 class DrillingCompany(AuditModel):
     """
     Companies who perform drilling.
@@ -26,7 +29,7 @@ class DrillingCompany(AuditModel):
     is_hidden = models.BooleanField(default=False)
 
     class Meta:
-        db_table = 'gwells_drilling_company'
+        db_table = 'drilling_company'
         verbose_name_plural = 'Drilling Companies'
 
     def __str__(self):
