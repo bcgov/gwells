@@ -61,7 +61,7 @@ class LithologyDescription(AuditModel):
     lithology_sequence_number = models.BigIntegerField(blank=True, null=True)
 
     class Meta:
-        db_table = 'gwells_lithology_description'
+        db_table = 'lithology_description'
         ordering=["lithology_sequence_number"]
     def __str__(self):
         if self.activity_submission:

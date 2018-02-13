@@ -47,7 +47,7 @@ BEGIN
     COALESCE(production_data.when_updated,production_data.when_created)
   FROM wells.wells_production_data production_data
        INNER JOIN xform_gwells_well xform ON production_data.well_id=xform.well_id
-       LEFT OUTER JOIN gwells_yield_estimation_method yield_estimation_method ON production_data.yield_estimated_method_code=yield_estimation_method.yield_estimation_method_code;
+       LEFT OUTER JOIN yield_estimation_method_code yield_estimation_method ON production_data.yield_estimated_method_code=yield_estimation_method.yield_estimation_method_code;
 
 
   raise notice '...wells_production_data data imported';

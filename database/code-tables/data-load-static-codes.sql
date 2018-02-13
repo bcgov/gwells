@@ -71,8 +71,8 @@
 \copy development_method_code (create_user,create_date,update_user,update_date,development_method_guid,development_method_code,description,is_hidden,sort_order ) from 'development_method_code.csv' with header delimiter ',' CSV ;
 
 --ESTIMATION METHOD
-\echo '... loading gwells_yield_estimation_method code table'
-\copy gwells_yield_estimation_method (create_user,create_date,update_user,update_date,yield_estimation_method_guid,yield_estimation_method_code,description,is_hidden,sort_order) from 'gwells_yield_estimation_method.csv' with header delimiter ',' CSV ;
+\echo '... loading yield_estimation_method_code code table'
+\copy yield_estimation_method_code (create_user,create_date,update_user,update_date,yield_estimation_method_guid,yield_estimation_method_code,description,is_hidden,sort_order) from 'yield_estimation_method_code.csv' with header delimiter ',' CSV ;
 
 --CASING MATERIAL
 \echo '... loading casing_material_code code table'
@@ -107,8 +107,8 @@
 \copy lithology_material_code (create_user,create_date,update_user,update_date,lithology_material_guid,code,description,sort_order,status_flag) from 'lithology_material_code.csv' with header delimiter ',' CSV ;
 
 --LITHOLOGY DESCRIPTION
-\echo '... loading gwells_lithology_description_code code table'
-\copy gwells_lithology_description_code (create_user,create_date,update_user,update_date,lithology_description_code_guid,code,description,sort_order) from 'gwells_lithology_description_code.csv' with header delimiter ',' CSV ;
+\echo '... loading lithology_description_code code table'
+\copy lithology_description_code (create_user,create_date,update_user,update_date,lithology_description_code_guid,code,description,sort_order) from 'lithology_description_code.csv' with header delimiter ',' CSV ;
 
 --DECOMMISSION METHOD
 \echo '... loading decommission_method_code code table'

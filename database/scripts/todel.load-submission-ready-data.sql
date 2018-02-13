@@ -30,7 +30,7 @@
 
 \copy screen_assembly_type    FROM './screen_assembly_type_code.csv'    HEADER DELIMITER ',' CSV 
 \copy development_method      FROM './development_method_code.csv'      HEADER DELIMITER ',' CSV
-\copy yield_estimation_method FROM './gwells_yield_estimation_method.csv' HEADER DELIMITER ',' CSV
+\copy yield_estimation_method FROM './yield_estimation_method_code.csv' HEADER DELIMITER ',' CSV
 
 /* This will need further transformation to link to existing data */
 CREATE unlogged TABLE IF NOT EXISTS xform_surface_seal_method_code (

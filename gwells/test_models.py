@@ -222,5 +222,5 @@ class ModelsTestCase(TestCase):
         self.assertIsInstance(well_yield_unit, WellYieldUnitCode)
 
     def test_yield_estimation_method_instantiation(self):
-        yield_estimation_method = YieldEstimationMethod()
-        self.assertIsInstance(yield_estimation_method, YieldEstimationMethod)
+        yield_estimation_method = YieldEstimationMethodCode()
+        self.assertIsInstance(yield_estimation_method, YieldEstimationMethodCode)
