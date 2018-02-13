@@ -5,8 +5,8 @@ node('maven') {
         openshiftTag destStream: 'gwells', verbose: 'true', destTag: '$BUILD_ID', srcStream: 'gwells', srcTag: 'latest'
     }
 
-    node('python') {
-        stage('Unit Test') {
+    stage('Unit Test') {
+        node('python') {
             checkout scm
             try {
                 sh 'pip install --upgrade pip && pip install -r requirements.txt'
@@ -22,7 +22,7 @@ node('maven') {
     }    
 
     stage('Code Quality Check') {
-	//the checkout is mandatory, otherwise code quality check would fail
+	    //the checkout is mandatory, otherwise code quality check would fail
         echo "checking out source"
         echo "Build: ${BUILD_ID}"
         checkout scm
@@ -54,14 +54,13 @@ node('maven') {
     }
 }
 
-node('bddstack') {
-	stage('FT on Dev') {
+stage('FT on Dev') {
+	node('bddstack') {
 		//the checkout is mandatory, otherwise functional test would fail
         echo "checking out source"
         echo "Build: ${BUILD_ID}"
         checkout scm
         dir('functional-tests') {
-	        unstash 'coverage'
             try {
                     sh './gradlew --debug --stacktrace chromeHeadlessTest'
             } finally {
@@ -91,32 +90,23 @@ node('bddstack') {
 
 stage('ZAP Security Scan') {
     node('zap') {
-        stage('Scan Web Application') {
-            //the checkout is mandatory, otherwise functional test would fail
-            echo "checking out source"
-            echo "Build: ${BUILD_ID}"
-            checkout scm
-            dir('zap') {
-                def retVal = sh returnStatus: true, script: './runzapdev.sh'
-                publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: true, reportDir: '/zap/wrk', reportFiles: 'index.html', reportName: 'ZAP Full Scan', reportTitles: 'ZAP Full Scan'])
-                echo "Return value is: ${retVal}"
-                }
-        }
+        //the checkout is mandatory
+        echo "checking out source"
+        echo "Build: ${BUILD_ID}"
+        checkout scm
+        dir('zap') {
+            def retVal = sh returnStatus: true, script: './runzapdev.sh'
+            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: true, reportDir: '/zap/wrk', reportFiles: 'index.html', reportName: 'ZAP Full Scan', reportTitles: 'ZAP Full Scan'])
+            echo "Return value is: ${retVal}"
+            }
     }
 }
-
 
 stage('Deploy on Test') {
     input "Deploy to test?"
     node('maven') {
         openshiftTag destStream: 'gwells', verbose: 'true', destTag: 'test', srcStream: 'gwells', srcTag: '$BUILD_ID'
-	sh 'sleep 3m'
+        openshiftVerifyDeployment depCfg: 'gwells', namespace: 'moe-gwells-test', replicaCount: 1, verbose: 'false', verifyReplicaCount: 'false'
+	    echo ">>>> Test Deployment Complete"
     }
-}
-
-
-node('bddstack') {
-      stage('FT on Test (TBD)') {
-          sh 'sleep 5s'
-      }
 }
