@@ -50,7 +50,7 @@ from .WellClassCode import WellClassCode
 from .WellStatusCode import WellStatusCode
 from .WellSubclassCode import WellSubclassCode
 from .WellYieldUnitCode import WellYieldUnitCode
-from .YieldEstimationMethod import YieldEstimationMethod
+from .YieldEstimationMethodCode import YieldEstimationMethodCode
 
 __all__ = [
 'ActivitySubmission',
@@ -105,4 +105,4 @@ __all__ = [
 'WellStatusCode',
 'WellSubclassCode',
 'WellYieldUnitCode',
-'YieldEstimationMethod']
+'YieldEstimationMethodCode']

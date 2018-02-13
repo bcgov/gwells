@@ -25,8 +25,8 @@ COMMENT ON TABLE licenced_status_code                   IS 'Placeholder table co
 COMMENT ON TABLE liner_material_code                    IS 'Placeholder table comment.';
 COMMENT ON TABLE gwells_liner_perforation                 IS 'Placeholder table comment.';
 COMMENT ON TABLE lithology_colour_code                  IS 'Placeholder table comment.';
-COMMENT ON TABLE gwells_lithology_description             IS 'Placeholder table comment.';
-COMMENT ON TABLE gwells_lithology_description_code        IS 'Placeholder table comment.';
+COMMENT ON TABLE lithology_description             IS 'Placeholder table comment.';
+COMMENT ON TABLE lithology_description_code        IS 'Placeholder table comment.';
 COMMENT ON TABLE lithology_hardness_code                IS 'Placeholder table comment.';
 COMMENT ON TABLE lithology_material_code                IS 'Placeholder table comment.';
 COMMENT ON TABLE lithology_moisture_code                IS 'Placeholder table comment.';
@@ -53,5 +53,5 @@ COMMENT ON TABLE well_status_code                       IS 'Placeholder table co
 COMMENT ON TABLE well_subclass_code                     IS 'Placeholder table comment.';
 COMMENT ON TABLE gwells_well_water_quality                IS 'Placeholder table comment.';
 COMMENT ON TABLE well_yield_unit_code                   IS 'Placeholder table comment.';
-COMMENT ON TABLE gwells_yield_estimation_method           IS 'Placeholder table comment.';
+COMMENT ON TABLE yield_estimation_method_code           IS 'Placeholder table comment.';
 

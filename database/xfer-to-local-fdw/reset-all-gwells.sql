@@ -40,8 +40,8 @@
  drop table if exists liner_material_code                    cascade;
  drop table if exists gwells_liner_perforation                 cascade;
  drop table if exists lithology_colour_code                  cascade;
- drop table if exists gwells_lithology_description             cascade;
- drop table if exists gwells_lithology_description_code        cascade;
+ drop table if exists lithology_description             cascade;
+ drop table if exists lithology_description_code        cascade;
  drop table if exists lithology_hardness_code                cascade;
  drop table if exists lithology_material_code                cascade;
  drop table if exists lithology_moisture_code                cascade;
@@ -74,7 +74,7 @@
 
  drop table if exists gwells_user_user_permissions             cascade;
 
- drop table if exists gwells_yield_estimation_method           cascade;
+ drop table if exists yield_estimation_method_code           cascade;
  drop table if exists registries_activity_code                 cascade;
  drop table if exists registries_application                   cascade;
  drop table if exists registries_application_status            cascade;

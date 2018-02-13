@@ -15,7 +15,7 @@
 from .AuditModel import AuditModel
 from .Well import Well
 from .ActivitySubmission import ActivitySubmission
-from .YieldEstimationMethod import YieldEstimationMethod
+from .YieldEstimationMethodCode import YieldEstimationMethodCode
 from .WellYieldUnitCode import WellYieldUnitCode
 
 
@@ -31,7 +31,7 @@ class ProductionData(AuditModel):
     production_data_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     activity_submission = models.ForeignKey(ActivitySubmission, db_column='filing_number', on_delete=models.CASCADE, blank=True, null=True)
     well = models.ForeignKey(Well, db_column='well_tag_number', on_delete=models.CASCADE, blank=True, null=True)
-    yield_estimation_method = models.ForeignKey(YieldEstimationMethod, db_column='yield_estimation_method_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Estimation Method')
+    yield_estimation_method = models.ForeignKey(YieldEstimationMethodCode, db_column='yield_estimation_method_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Estimation Method')
     yield_estimation_rate = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='Estimation Rate', blank=True, null=True, validators=[MinValueValidator(Decimal('0.00'))])
     yield_estimation_duration = models.DecimalField(max_digits=9, decimal_places=2, verbose_name='Estimation Duration', blank=True, null=True, validators=[MinValueValidator(Decimal('0.01'))])
     well_yield_unit = models.ForeignKey(WellYieldUnitCode, db_column='well_yield_unit_guid', blank=True, null=True)
