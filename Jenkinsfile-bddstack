@@ -6,27 +6,28 @@ node('bddstack') {
         echo "Build: ${BUILD_ID}"
         checkout scm
         dir('functional-tests') {
-	    try {
-                sh './gradlew --debug --stacktrace chromeHeadlessTest'
-	    } finally {
-                junit 'build/test-results/**/*.xml'
-                publishHTML (target: [
-                            allowMissing: false,
-                            alwaysLinkToLastBuild: false,
-                            keepAll: true,
-                            reportDir: 'build/reports/spock',
-                            reportFiles: 'index.html',
-                            reportName: "BDD Spock Report"
-                        ])
-                publishHTML (target: [
-                            allowMissing: false,
-                            alwaysLinkToLastBuild: false,
-                            keepAll: true,
-                            reportDir: 'build/reports/tests/chromeHeadlessTest',
-                            reportFiles: 'index.html',
-                            reportName: "Full Test Report"
-                        ])        
-	    }
+            try {
+                    sh './gradlew --debug --stacktrace chromeHeadlessTest'
+            } finally {
+                    junit 'build/test-results/**/*.xml'
+                    publishHTML (target: [
+                                allowMissing: false,
+                                alwaysLinkToLastBuild: false,
+                                keepAll: true,
+                                reportDir: 'build/reports/spock',
+                                reportFiles: 'index.html',
+                                reportName: "BDD Spock Report"
+                            ])
+                    publishHTML (target: [
+                                allowMissing: false,
+                                alwaysLinkToLastBuild: false,
+                                keepAll: true,
+                                reportDir: 'build/reports/tests/chromeHeadlessTest',
+                                reportFiles: 'index.html',
+                                reportName: "Full Test Report"
+                            ])
+                    perfpublisher healthy: '0', metrics: '', name: 'build/test-results/**/*.xml', threshold: '', unhealthy: '0'                    
+            }
         }
     }
 }

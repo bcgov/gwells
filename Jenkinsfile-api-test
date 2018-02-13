@@ -1,0 +1,24 @@
+stage('API Test') {
+    node('nodejs') {
+		//the checkout is mandatory, otherwise functional test would fail
+        echo "checking out source"
+        echo "Build: ${BUILD_ID}"
+        checkout scm
+        dir('api-tests') {
+	    try {
+                sh 'npm install -g newman'
+                sh 'newman run apitest.json -r cli,junit,html;'
+	    } finally {
+                junit 'newman/*.xml'
+                publishHTML (target: [
+                            allowMissing: false,
+                            alwaysLinkToLastBuild: false,
+                            keepAll: true,
+                            reportDir: 'newman',
+                            reportFiles: 'newman*.html',
+                            reportName: "API Test Report"
+                        ])
+	            }
+        }
+    }
+}

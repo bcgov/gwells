@@ -7,10 +7,10 @@ BEGIN
 	raise notice '...importing wells_screens data';
 
 	INSERT INTO gwells_bcgs_number (
-	 who_created 
-	,when_created
-	,who_updated 
-	,when_updated
+	 create_user 
+	,create_date
+	,update_user 
+	,update_date
 	,bcgs_id     
 	,bcgs_number 
 	)

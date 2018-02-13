@@ -16,10 +16,10 @@ INSERT INTO registries_organization (
 ,certificate_authority 
 ,province_state_guid
 ,org_guid   
-,who_created  
-,when_created 
-,who_updated  
-,when_updated 
+,create_user  
+,create_date 
+,update_user  
+,update_date 
 ) SELECT
  'CGWA'
 ,null
@@ -29,7 +29,7 @@ INSERT INTO registries_organization (
 ,null
 ,'https://www.bcgwa.org/'
 ,true
-,(select prov.province_state_guid from gwells_province_state prov where prov.code = 'BC')
+,(select prov.province_state_guid from province_state_code prov where prov.code = 'BC')
 ,'d76775a3-650d-44cb-a3b7-5faf8558f29d'::uuid
 ,'DATALOAD_USER'
 ,'2018-01-01 00:00:00-08'
@@ -48,10 +48,10 @@ INSERT INTO registries_organization (
 ,certificate_authority 
 ,province_state_guid
 ,org_guid   
-,who_created  
-,when_created 
-,who_updated  
-,when_updated 
+,create_user  
+,create_date 
+,update_user  
+,update_date 
 ) SELECT
  'Province of B.C.'
 ,null
@@ -61,7 +61,7 @@ INSERT INTO registries_organization (
 ,null
 ,'https://www2.gov.bc.ca/gov/content/environment/air-land-water/water/laws-rules/groundwater-protection-regulation'
 ,true
-,(select prov.province_state_guid from gwells_province_state prov where prov.code = 'BC')
+,(select prov.province_state_guid from province_state_code prov where prov.code = 'BC')
 ,'d3dfedd0-59b3-41cd-a40c-6e35b236a3d6'::uuid
 ,'DATALOAD_USER'
 ,'2018-01-01 00:00:00-08'
@@ -73,10 +73,10 @@ INSERT INTO registries_organization (
  name                  
 ,certificate_authority 
 ,org_guid   
-,who_created  
-,when_created 
-,who_updated  
-,when_updated 
+,create_user  
+,create_date 
+,update_user  
+,update_date 
 ) SELECT
  distinct on (trim (both from company_name)) company_name
 ,false
@@ -105,7 +105,7 @@ UPDATE registries_organization org SET
 ,companyfax
 ,prov.province_state_guid
 from xform_registries_drillers_reg xform
-    ,gwells_province_state prov
+    ,province_state_code prov
 where xform.companyname = org.name
 and   prov.code = xform.companyprov
 LIMIT 1
@@ -123,10 +123,10 @@ INSERT INTO registries_person (
  first_name                  
 ,surname        
 ,person_guid                             
-,who_created  
-,when_created 
-,who_updated  
-,when_updated 
+,create_user  
+,create_date 
+,update_user  
+,update_date 
 )
 SELECT 
  (regexp_split_to_array(name,', '))[2]
@@ -146,10 +146,10 @@ INSERT INTO registries_contact_at (
 ,org_guid       
 ,person_guid                               
 ,contact_at_guid
-,who_created  
-,when_created 
-,who_updated  
-,when_updated 
+,create_user  
+,create_date 
+,update_user  
+,update_date 
 )
 SELECT trim (both from xform.companyphone)
 ,trim (both from xform.companyemail)
@@ -176,10 +176,10 @@ INSERT INTO registries_application (
 ,reason_denied   
 ,person_guid     
 ,application_guid 
-,who_created  
-,when_created 
-,who_updated  
-,when_updated 
+,create_user  
+,create_date 
+,update_user  
+,update_date 
 )
 SELECT
  null
@@ -201,10 +201,10 @@ INSERT INTO registries_classification_applied_for (
 ,application_guid               
 ,registries_subactivity_guid    
 ,classification_applied_for_guid
-,who_created  
-,when_created 
-,who_updated  
-,when_updated 
+,create_user  
+,create_date 
+,update_user  
+,update_date 
 )
 SELECT
  'LEGACY'
@@ -242,10 +242,10 @@ INSERT INTO registries_classification_applied_for (
 ,application_guid               
 ,registries_subactivity_guid    
 ,classification_applied_for_guid
-,who_created  
-,when_created 
-,who_updated  
-,when_updated 
+,create_user  
+,create_date 
+,update_user  
+,update_date 
 )
 SELECT
  'LEGACY'
@@ -284,10 +284,10 @@ INSERT INTO registries_classification_applied_for (
 ,application_guid               
 ,registries_subactivity_guid    
 ,classification_applied_for_guid
-,who_created  
-,when_created 
-,who_updated  
-,when_updated 
+,create_user  
+,create_date 
+,update_user  
+,update_date 
 )
 SELECT
  'LEGACY'
@@ -326,10 +326,10 @@ INSERT INTO registries_application_status (
 ,application_guid                  
 ,registries_application_status_guid
 ,application_status_guid           
-,who_created                       
-,when_created                      
-,who_updated                       
-,when_updated 
+,create_user                       
+,create_date                      
+,update_user                       
+,update_date 
 )
 SELECT
  null -- N/A for Pending
@@ -360,10 +360,10 @@ INSERT INTO registries_application_status (
 ,application_guid                  
 ,registries_application_status_guid
 ,application_status_guid           
-,who_created                       
-,when_created                      
-,who_updated                       
-,when_updated 
+,create_user                       
+,create_date                      
+,update_user                       
+,update_date 
 )
 SELECT
  xform_trk.date_approval_letter_card_sent
@@ -394,10 +394,10 @@ INSERT INTO registries_application_status (
 ,application_guid                  
 ,registries_application_status_guid
 ,application_status_guid           
-,who_created                       
-,when_created                      
-,who_updated                       
-,when_updated 
+,create_user                       
+,create_date                      
+,update_user                       
+,update_date 
 )
 SELECT
  null -- N/A for Pending
@@ -430,10 +430,10 @@ INSERT INTO registries_application_status (
 ,application_guid                  
 ,registries_application_status_guid
 ,application_status_guid           
-,who_created                       
-,when_created                      
-,who_updated                       
-,when_updated 
+,create_user                       
+,create_date                      
+,update_user                       
+,update_date 
 )
 SELECT
  xform_trk.date_denial_letter_sent
@@ -476,10 +476,10 @@ INSERT INTO registries_application_status (
 ,application_guid                  
 ,registries_application_status_guid
 ,application_status_guid           
-,who_created                       
-,when_created                      
-,who_updated                       
-,when_updated 
+,create_user                       
+,create_date                      
+,update_user                       
+,update_date 
 )
 SELECT
  null -- N/A for Pending
@@ -512,10 +512,10 @@ INSERT INTO registries_application_status (
 ,application_guid                  
 ,registries_application_status_guid
 ,application_status_guid           
-,who_created                       
-,when_created                      
-,who_updated                       
-,when_updated 
+,create_user                       
+,create_date                      
+,update_user                       
+,update_date 
 )
 SELECT
  null -- N/A for Pending
@@ -550,10 +550,10 @@ INSERT INTO registries_register (
 ,application_guid               
 ,registries_status_guid         
 ,register_guid                  
-,who_created                       
-,when_created                      
-,who_updated                       
-,when_updated 
+,create_user                       
+,create_date                      
+,update_user                       
+,update_date 
 )
 SELECT
  xform_reg.welldrillerregno
@@ -587,10 +587,10 @@ INSERT INTO registries_person (
  first_name                  
 ,surname        
 ,person_guid                             
-,who_created  
-,when_created 
-,who_updated  
-,when_updated 
+,create_user  
+,create_date 
+,update_user  
+,update_date 
 )
 SELECT 
  xform_reg.firstname
@@ -626,10 +626,10 @@ INSERT INTO registries_organization (
 ,certificate_authority 
 ,province_state_guid
 ,org_guid   
-,who_created  
-,when_created 
-,who_updated  
-,when_updated 
+,create_user  
+,create_date 
+,update_user  
+,update_date 
 ) SELECT
  distinct on (trim (both from companyname)) companyname
 ,companyaddress
@@ -646,7 +646,7 @@ INSERT INTO registries_organization (
 ,'DATALOAD_USER'
 ,'2018-01-01 00:00:00-08' 
 from xform_registries_drillers_reg xform_reg
-left join gwells_province_state prov
+left join province_state_code prov
 on prov.code = xform_reg.companyprov
 where xform_reg.companyname is not null
 and not exists (
@@ -664,10 +664,10 @@ INSERT INTO registries_contact_at (
 ,org_guid       
 ,person_guid                               
 ,contact_at_guid
-,who_created  
-,when_created 
-,who_updated  
-,when_updated 
+,create_user  
+,create_date 
+,update_user  
+,update_date 
 )
 SELECT trim (both from xform_reg.companyphone)
 ,trim (both from xform_reg.companyemail)
@@ -695,10 +695,10 @@ INSERT INTO registries_application (
 ,reason_denied   
 ,person_guid     
 ,application_guid 
-,who_created  
-,when_created 
-,who_updated  
-,when_updated 
+,create_user  
+,create_date 
+,update_user  
+,update_date 
 )
 SELECT
  xform_reg.file_number
@@ -728,10 +728,10 @@ INSERT INTO registries_classification_applied_for (
 ,application_guid               
 ,registries_subactivity_guid    
 ,classification_applied_for_guid
-,who_created  
-,when_created 
-,who_updated  
-,when_updated 
+,create_user  
+,create_date 
+,update_user  
+,update_date 
 )
 SELECT
  xform_reg.classofwelldriller
@@ -768,10 +768,10 @@ INSERT INTO registries_classification_applied_for (
 ,application_guid               
 ,registries_subactivity_guid    
 ,classification_applied_for_guid
-,who_created  
-,when_created 
-,who_updated  
-,when_updated 
+,create_user  
+,create_date 
+,update_user  
+,update_date 
 )
 SELECT
  xform_reg.classofwelldriller
@@ -807,10 +807,10 @@ INSERT INTO registries_classification_applied_for (
 ,application_guid               
 ,registries_subactivity_guid    
 ,classification_applied_for_guid
-,who_created  
-,when_created 
-,who_updated  
-,when_updated 
+,create_user  
+,create_date 
+,update_user  
+,update_date 
 )
 SELECT
  xform_reg.classofwelldriller
@@ -847,10 +847,10 @@ INSERT INTO registries_application_status (
 ,application_guid                  
 ,registries_application_status_guid
 ,application_status_guid           
-,who_created                       
-,when_created                      
-,who_updated                       
-,when_updated 
+,create_user                       
+,create_date                      
+,update_user                       
+,update_date 
 )
 SELECT
  null

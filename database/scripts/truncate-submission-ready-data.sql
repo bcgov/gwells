@@ -5,7 +5,7 @@ TRUNCATE bedrock_material RESTART IDENTITY CASCADE;
 TRUNCATE bedrock_material_descriptor RESTART IDENTITY CASCADE;
 TRUNCATE casing restart IDENTITY CASCADE;
 TRUNCATE casing_material RESTART IDENTITY CASCADE;
-TRUNCATE casing_type RESTART IDENTITY CASCADE;
+TRUNCATE casing_code RESTART IDENTITY CASCADE;
 TRUNCATE driller             RESTART IDENTITY CASCADE;
 TRUNCATE drilling_company    RESTART IDENTITY CASCADE;
 TRUNCATE drilling_method     RESTART IDENTITY CASCADE;
@@ -41,10 +41,10 @@ TRUNCATE development_method       RESTART IDENTITY CASCADE;
 TRUNCATE yield_estimation_method  RESTART IDENTITY CASCADE;
 
 /* Drop all temporary transformation tables */
-DROP TABLE IF EXISTS xform_gwells_land_district         CASCADE;
+DROP TABLE IF EXISTS xform_land_district_code         CASCADE;
 DROP TABLE IF EXISTS xform_gwells_well                  CASCADE;
 DROP TABLE IF EXISTS xform_gwells_driller               CASCADE;
-DROP TABLE IF EXISTS xform_gwells_drilling_company      CASCADE;
-DROP TABLE IF EXISTS xform_gwells_surface_seal_material CASCADE;
-DROP TABLE IF EXISTS xform_gwells_surface_seal_method   CASCADE;
+DROP TABLE IF EXISTS xform_drilling_company      CASCADE;
+DROP TABLE IF EXISTS xform_surface_seal_material_code CASCADE;
+DROP TABLE IF EXISTS xform_surface_seal_method_code   CASCADE;
 /* drop table xform_gwells_backfill_type cascade; */
