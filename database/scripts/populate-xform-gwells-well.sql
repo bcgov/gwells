@@ -49,7 +49,7 @@ DECLARE
     ground_elevation_method_guid       ,
     well_status_guid                   ,
     observation_well_number            ,
-    observation_well_status_guid       ,
+    obs_well_status_guid       ,
     licenced_status_guid               ,
     alternative_specifications_ind     ,
     construction_start_date            ,
@@ -92,10 +92,10 @@ DECLARE
     backfill_material                  ,
     decommission_details               ,
     comments                           ,
-    when_created                       ,
-    when_updated                       ,
-    who_created                        ,
-    who_updated)
+    create_date                       ,
+    update_date                       ,
+    create_user                        ,
+    update_user)
   SELECT
     wells.well_tag_number                                                    ,
     wells.well_id                                                            ,
@@ -190,7 +190,7 @@ DECLARE
       WHEN ''Inactive'' THEN ''b703a326-8ecc-48e4-89dd-d2fbd58834a9''::uuid
       WHEN ''Active'' THEN ''1af7ba78-1ab6-4992-b4f6-f105e519d2a6''::uuid
       ELSE null::uuid
-    END AS observation_well_status_guid                                      ,
+    END AS obs_well_status_guid                                      ,
     licenced_status.licenced_status_guid                                     ,
     CASE wells.alternative_specifications_ind
        WHEN ''N'' THEN false
@@ -242,23 +242,23 @@ DECLARE
     wells.who_created                                                        ,
     COALESCE(wells.who_updated,wells.who_created)
   FROM wells.wells_wells wells LEFT OUTER JOIN wells.wells_owners owner ON owner.owner_id=wells.owner_id
-              LEFT OUTER JOIN gwells_drilling_company drilling_company ON UPPER(wells.driller_company_code)=UPPER(drilling_company.drilling_company_code)
-              LEFT OUTER JOIN gwells_screen_intake_method screen_intake_method ON UPPER(wells.screen_intake_code)=UPPER(screen_intake_method.screen_intake_code)
-              LEFT OUTER JOIN gwells_screen_type screen_type ON UPPER(wells.screen_type_code)=UPPER(screen_type.screen_type_code)
-              LEFT OUTER JOIN gwells_screen_material screen_material ON UPPER(wells.screen_material_code)=UPPER(screen_material.screen_material_code)
-              LEFT OUTER JOIN gwells_screen_opening screen_opening ON UPPER(wells.screen_opening_code)=UPPER(screen_opening.screen_opening_code)
-              LEFT OUTER JOIN gwells_screen_bottom screen_bottom ON UPPER(wells.screen_bottom_code)=UPPER(screen_bottom.screen_bottom_code)
-              LEFT OUTER JOIN gwells_development_method development_method ON UPPER(wells.development_method_code)=UPPER(development_method.development_method_code)
-              LEFT OUTER JOIN gwells_surface_seal_method surface_seal_method ON UPPER(wells.surface_seal_method_code)=UPPER(surface_seal_method.surface_seal_method_code)
-              LEFT OUTER JOIN gwells_surface_seal_material surface_seal_material ON UPPER(wells.surface_seal_material_code)=UPPER(surface_seal_material.surface_seal_material_code)
-              LEFT OUTER JOIN gwells_liner_material liner_material ON UPPER(wells.liner_material_code)=UPPER(liner_material.liner_material_code)
-              LEFT OUTER JOIN gwells_land_district gld ON UPPER(wells.legal_land_district_code)=UPPER(gld.code)
-              LEFT OUTER JOIN gwells_well_status well_status ON UPPER(wells.status_of_well_code)=UPPER(well_status.code)
-              LEFT OUTER JOIN gwells_licenced_status licenced_status ON UPPER(wells.well_licence_general_status)=UPPER(licenced_status.code)
-              LEFT OUTER JOIN gwells_intended_water_use intended_water_use ON UPPER(wells.well_use_code)=UPPER(intended_water_use.code)
-              LEFT OUTER JOIN gwells_well_class class ON UPPER(wells.class_of_well_codclassified_by)=UPPER(class.code)
-              LEFT OUTER JOIN gwells_well_subclass subclass ON UPPER(wells.subclass_of_well_classified_by)=UPPER(subclass.code) AND subclass.well_class_guid = class.well_class_guid
-              LEFT OUTER JOIN gwells_decommission_method decommission_method ON UPPER(wells.closure_method_code)=UPPER(decommission_method.code)
+              LEFT OUTER JOIN drilling_company drilling_company ON UPPER(wells.driller_company_code)=UPPER(drilling_company.drilling_company_code)
+              LEFT OUTER JOIN screen_intake_method_code screen_intake_method ON UPPER(wells.screen_intake_code)=UPPER(screen_intake_method.screen_intake_code)
+              LEFT OUTER JOIN screen_type_code screen_type ON UPPER(wells.screen_type_code)=UPPER(screen_type.screen_type_code)
+              LEFT OUTER JOIN screen_material_code screen_material ON UPPER(wells.screen_material_code)=UPPER(screen_material.screen_material_code)
+              LEFT OUTER JOIN screen_opening_code screen_opening ON UPPER(wells.screen_opening_code)=UPPER(screen_opening.screen_opening_code)
+              LEFT OUTER JOIN screen_bottom_code screen_bottom ON UPPER(wells.screen_bottom_code)=UPPER(screen_bottom.screen_bottom_code)
+              LEFT OUTER JOIN development_method_code development_method ON UPPER(wells.development_method_code)=UPPER(development_method.development_method_code)
+              LEFT OUTER JOIN surface_seal_method_code surface_seal_method ON UPPER(wells.surface_seal_method_code)=UPPER(surface_seal_method.surface_seal_method_code)
+              LEFT OUTER JOIN surface_seal_material_code surface_seal_material ON UPPER(wells.surface_seal_material_code)=UPPER(surface_seal_material.surface_seal_material_code)
+              LEFT OUTER JOIN liner_material_code liner_material ON UPPER(wells.liner_material_code)=UPPER(liner_material.liner_material_code)
+              LEFT OUTER JOIN land_district_code gld ON UPPER(wells.legal_land_district_code)=UPPER(gld.code)
+              LEFT OUTER JOIN well_status_code well_status ON UPPER(wells.status_of_well_code)=UPPER(well_status.code)
+              LEFT OUTER JOIN licenced_status_code licenced_status ON UPPER(wells.well_licence_general_status)=UPPER(licenced_status.code)
+              LEFT OUTER JOIN intended_water_use_code intended_water_use ON UPPER(wells.well_use_code)=UPPER(intended_water_use.code)
+              LEFT OUTER JOIN well_class_code class ON UPPER(wells.class_of_well_codclassified_by)=UPPER(class.code)
+              LEFT OUTER JOIN well_subclass_code subclass ON UPPER(wells.subclass_of_well_classified_by)=UPPER(subclass.code) AND subclass.well_class_guid = class.well_class_guid
+              LEFT OUTER JOIN decommission_method_code decommission_method ON UPPER(wells.closure_method_code)=UPPER(decommission_method.code)
   WHERE wells.acceptance_status_code NOT IN (''PENDING'', ''REJECTED'', ''NEW'') ';
 
 BEGIN
@@ -308,7 +308,7 @@ BEGIN
      ground_elevation_method_guid        uuid,
      well_status_guid                    uuid,
      observation_well_number             character varying(3),
-     observation_well_status_guid        uuid,
+     obs_well_status_guid        uuid,
      licenced_status_guid                uuid,
      alternative_specifications_ind      boolean,
      construction_start_date             timestamp with time zone,
@@ -352,10 +352,10 @@ BEGIN
      backfill_material                   character varying(100),
      decommission_details                character varying(250),
      comments                            character varying(255),
-     when_created                        timestamp with time zone,
-     when_updated                        timestamp with time zone,
-     who_created                         character varying(30),
-     who_updated                         character varying(30)
+     create_date                        timestamp with time zone,
+     update_date                        timestamp with time zone,
+     create_user                         character varying(30),
+     update_user                         character varying(30)
   );
 
   raise notice 'Created xform_gwells_well ETL table';

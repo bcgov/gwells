@@ -767,7 +767,7 @@
 <fieldset id="well_yield_fieldset">
     <legend>Well Yield</legend>
     <div class="row print-compressed">
-        {% for productiondata in well.productiondata_set.all|dictsortreversed:"when_updated"|slice:"1" %}
+        {% for productiondata in well.productiondata_set.all|dictsortreversed:"update_date"|slice:"1" %}
         <div class="col-md-4 col-print-4 print-compressed">
             <div class="row print-compressed">
                 <div class="col-md-12 col-print-12 print-compressed">
