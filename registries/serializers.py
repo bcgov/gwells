@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from gwells.models.ProvinceStateCode import ProvinceStateCode
 from registries.models import (
     Organization,
     ContactAt,
@@ -35,6 +36,22 @@ class ContactAtSerializer(AuditModelSerializer):
             'contact_email'
         )
 
+
+# class ProvinceStateCodeSerializer(serializers.ModelSerializer):
+#     """
+#     Serializes Province/State objects for use by the Organization endpoints
+#     """
+
+#     class Meta:
+#         model = ProvinceStateCode
+#         fields = (
+#             'province_state_guid',
+#             'code',
+#             'description',
+#             'sort_order',
+#         )
+
+
 class OrganizationListSerializer(AuditModelSerializer):
     """
     Serializes Organization model fields for "list" view.
@@ -47,10 +64,10 @@ class OrganizationListSerializer(AuditModelSerializer):
 
         # Using all fields for now
         fields = (
-            #'create_user',
-            #'create_date',
-            #'update_user',
-            #'update_date',
+            # 'create_user',
+            # 'create_date',
+            # 'update_user',
+            # 'update_date',
             'org_guid',
             'name',
             'street_address',
@@ -69,7 +86,7 @@ class OrganizationSerializer(AuditModelSerializer):
     Serializes Organization model fields (public fields list)
     """
 
-    province_state = serializers.ReadOnlyField(source="province_state.code")
+    province_state = serializers.PrimaryKeyRelatedField(queryset=ProvinceStateCode.objects.all(), required=False)
     contacts = ContactAtSerializer(many=True, read_only=True)
 
     class Meta:
@@ -124,12 +141,12 @@ class PersonSerializer(AuditModelSerializer):
     class Meta:
         model = Person
         fields = (
-            'create_user',
-            'create_date',
-            'update_user',
-            'update_date',
             'person_guid',
             'first_name',
             'surname',
             'companies',
+            'create_user',
+            'create_date',
+            'update_user',
+            'update_date',
         )
