@@ -1,13 +1,58 @@
 from django.urls import reverse
+from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APITestCase
 from registries.models import Organization, Person
+from gwells.models.ProvinceState import ProvinceState
 
 # Note: see postman/newman for more API tests.
+# Postman API tests include making requests with incomplete data, missing required fields etc.
+# They are located at {base-dir}/api-tests/
 
-class OrganizationTests(APITestCase):
+class OrganizationTests(TestCase):
+    """
+    Tests for the Organization model
+    """
+
+    def setUp(self):
+        ProvinceState.objects.create(
+            code = 'BC',
+            description = 'British Columbia',
+            sort_order = 1
+        )
+
+        Organization.objects.create(
+            name='Bobby\'s Drilling',
+            city='Victoria',
+            province_state = ProvinceState.objects.get(code='BC')
+        )
+
+    def test_organization_was_created(self):
+        org = Organization.objects.get()
+        self.assertEqual(org.name, 'Bobby\'s Drilling')
+
+
+class PersonTests(TestCase):
+    """
+    Tests for Person model
+    """
+
+    def setUp(self):
+        Person.objects.create(
+            first_name='Bobby',
+            surname='Driller'
+        )
+
+    def test_person_was_created(self):
+        person = Person.objects.get(first_name='Bobby')
+        self.assertEqual(person.first_name, 'Bobby')
+
+class APIOrganizationTests(APITestCase):
     """
     Tests for the Organization resource endpoint
+
+    Includes tests for create, list, update (patch and put), and delete
+    using Django REST Framework's APIClient
     """
 
     def test_create_organization(self):
@@ -109,10 +154,30 @@ class OrganizationTests(APITestCase):
         self.assertEqual(response.data['city'], new_data['city'])
 
     def test_delete_organization(self):
-        pass
+        initial_data = {
+            'name': 'Bobby\'s Drilling',
+            'city': 'Victoria'
+        }
+
+        create_url = reverse('organization-list')
+        new_object = self.client.post(create_url, initial_data, format='json')
+        created_guid = new_object.data['org_guid']
+
+        retrieve_url = reverse('organization-detail', kwargs={'org_guid': created_guid})
+        retrieve_response = self.client.get(retrieve_url, format='json')
+
+        self.assertEqual(retrieve_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(retrieve_response.data['name'], initial_data['name'])
+        self.assertEqual(retrieve_response.data['city'], initial_data['city'])
+
+        delete_response = self.client.delete(retrieve_url, format='json')
+        self.assertEqual(delete_response.status_code, status.HTTP_204_NO_CONTENT)
+
+        get_after_delete_response = self.client.get(retrieve_url, format='json')
+        self.assertEqual(get_after_delete_response.status_code, status.HTTP_404_NOT_FOUND)
 
 
-class PersonTests(APITestCase):
+class APIPersonTests(APITestCase):
     """
     Tests for Person resource endpoint
     """
@@ -133,20 +198,105 @@ class PersonTests(APITestCase):
         self.assertEqual(Person.objects.count(), count_before + 1)
 
     def test_list_people(self):
+        initial_data = {
+            'first_name': 'Bobby',
+            'surname': 'Driller'
+        }
         url = reverse('person-list')
-        count = Person.objects.count()
+        new_object = self.client.post(url, initial_data, format='json')
+        created_guid = new_object.data['person_guid']
+
         response = self.client.get(url, format='json')
 
-        self.assertEqual(len(response.data), count)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(created_guid), 36)
+        self.assertContains(response, created_guid)
 
     def test_retrieve_person(self):
-        pass
+        initial_data = {
+            'first_name': 'Bobby',
+            'surname': 'Driller'
+        }
+
+        create_url = reverse('person-list')
+        new_object = self.client.post(create_url, initial_data, format='json')
+        created_guid = new_object.data['person_guid']
+
+        retrieve_url = reverse('person-detail', kwargs={'person_guid': created_guid})
+        response = self.client.get(retrieve_url, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['first_name'], initial_data['first_name'])
+        self.assertEqual(response.data['surname'], initial_data['surname'])
 
     def test_patch_person(self):
-        pass
+        initial_data = {
+            'first_name': 'Bobby',
+            'surname': 'Driller'
+        }
+        new_data = {
+            'surname': 'Wells'
+        }
+
+        create_url = reverse('person-list')
+        new_object = self.client.post(create_url, initial_data, format='json')
+        created_guid = new_object.data['person_guid']
+
+        object_url = reverse('person-detail', kwargs={'person_guid': created_guid})
+
+        # Apply a new city name with PATCH method
+        self.client.patch(object_url, new_data, format='json')
+
+        response = self.client.get(object_url, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['first_name'], initial_data['first_name'])
+        self.assertEqual(response.data['surname'], new_data['surname'])
 
     def test_put_person(self):
-        pass
+        initial_data = {
+            'first_name': 'Bobby',
+            'surname': 'Driller'
+        }
+        new_data = {
+            'first_name': 'Betty',
+            'surname': 'Wells'
+        }
+
+        create_url = reverse('person-list')
+        new_object = self.client.post(create_url, initial_data, format='json')
+        created_guid = new_object.data['person_guid']
+
+        object_url = reverse('person-detail', kwargs={'person_guid': created_guid})
+
+        # Apply a new name with PATCH method
+        self.client.put(object_url, new_data, format='json')
+        
+        response = self.client.get(object_url, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['first_name'], new_data['first_name'])
+        self.assertEqual(response.data['surname'], new_data['surname'])
 
     def test_delete_person(self):
-        pass
+        initial_data = {
+            'first_name': 'Bobby',
+            'surname': 'Driller'
+        }
+
+        create_url = reverse('person-list')
+        new_object = self.client.post(create_url, initial_data, format='json')
+        created_guid = new_object.data['person_guid']
+
+        retrieve_url = reverse('person-detail', kwargs={'person_guid': created_guid})
+        retrieve_response = self.client.get(retrieve_url, format='json')
+
+        self.assertEqual(retrieve_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(retrieve_response.data['first_name'], initial_data['first_name'])
+        self.assertEqual(retrieve_response.data['surname'], initial_data['surname'])
+
+        delete_response = self.client.delete(retrieve_url, format='json')
+        self.assertEqual(delete_response.status_code, status.HTTP_204_NO_CONTENT)
+
+        get_after_delete_response = self.client.get(retrieve_url, format='json')
+        self.assertEqual(get_after_delete_response.status_code, status.HTTP_404_NOT_FOUND)
