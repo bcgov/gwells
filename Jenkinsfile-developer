@@ -61,7 +61,7 @@ node('bddstack') {
         echo "Build: ${BUILD_ID}"
         checkout scm
         dir('functional-tests') {
-	    unstash 'nosetests'
+	    unstash 'coverage'
 	    try {
                 sh './gradlew --debug --stacktrace chromeHeadlessTest'
 	    } finally {
