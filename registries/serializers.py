@@ -10,10 +10,10 @@ class AuditModelSerializer(serializers.ModelSerializer):
     Serializes AuditModel fields.
     Can be inherited into serializers for models that inherit from AuditModel
     """
-    who_created = serializers.StringRelatedField()
-    when_created = serializers.ReadOnlyField()
-    who_updated = serializers.StringRelatedField()
-    when_updated = serializers.ReadOnlyField()
+    create_user = serializers.StringRelatedField()
+    create_date = serializers.ReadOnlyField()
+    update_user = serializers.StringRelatedField()
+    update_date = serializers.ReadOnlyField()
 
 
 class ContactAtSerializer(AuditModelSerializer):
@@ -47,10 +47,10 @@ class OrganizationListSerializer(AuditModelSerializer):
 
         # Using all fields for now
         fields = (
-            #'who_created',
-            #'when_created',
-            #'who_updated',
-            #'when_updated',
+            #'create_user',
+            #'create_date',
+            #'update_user',
+            #'update_date',
             'org_guid',
             'name',
             'street_address',
@@ -58,7 +58,6 @@ class OrganizationListSerializer(AuditModelSerializer):
             'province_state',
             'postal_code',
             'main_tel',
-            'who_created'
             #'fax_tel',
             #'website_url',
             #'certificate_authority',
@@ -76,10 +75,10 @@ class OrganizationSerializer(AuditModelSerializer):
     class Meta:
         model = Organization
         fields = (
-            'who_created',
-            'when_created',
-            'who_updated',
-            'when_updated',
+            'create_user',
+            'create_date',
+            'update_user',
+            'update_date',
             'org_guid',
             'name',
             'street_address',
@@ -94,27 +93,6 @@ class OrganizationSerializer(AuditModelSerializer):
         )
 
 
-class PersonSerializer(AuditModelSerializer):
-    """
-    Serializes the Person model
-    """
-
-    companies = ContactAtSerializer(many=True, read_only=True)
-
-    class Meta:
-        model = Person
-        fields = (
-            'who_created',
-            'when_created',
-            'who_updated',
-            'when_updated',
-            'person_guid',
-            'first_name',
-            'surname',
-            'companies',
-        )
-
-
 class PersonListSerializer(AuditModelSerializer):
     """
     Serializes the Person model for a list view (fewer fields than detail view)
@@ -125,10 +103,31 @@ class PersonListSerializer(AuditModelSerializer):
     class Meta:
         model = Person
         fields = (
-            # 'who_created',
-            # 'when_created',
-            # 'who_updated',
-            # 'when_updated',
+            # 'create_user',
+            # 'create_date',
+            # 'update_user',
+            # 'update_date',
+            'person_guid',
+            'first_name',
+            'surname',
+            'companies',
+        )
+
+
+class PersonSerializer(AuditModelSerializer):
+    """
+    Serializes the Person model
+    """
+
+    companies = ContactAtSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Person
+        fields = (
+            'create_user',
+            'create_date',
+            'update_user',
+            'update_date',
             'person_guid',
             'first_name',
             'surname',

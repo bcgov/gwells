@@ -8,25 +8,25 @@ from registries.serializers import OrganizationListSerializer, OrganizationSeria
 
 class AuditCreateMixin(CreateModelMixin):
     """
-    Adds who_created and when_created fields when instances are created
+    Adds create_user and create_date fields when instances are created
     """
 
     def perform_create(self, serializer):
         serializer.save(
-            who_created=self.request.user,
-            when_created=timezone.now()
+            create_user=self.request.user,
+            create_date=timezone.now()
             )
 
 
 class AuditUpdateMixin(UpdateModelMixin):
     """
-    Adds who_updated and when_updated fields when instances are updated
+    Adds update_user and update_date fields when instances are updated
     """
 
     def perform_update(self, serializer):
         serializer.save(
-            who_updated=self.request.user,
-            when_updated=timezone.now()
+            update_user=self.request.user,
+            update_date=timezone.now()
         )
 
 
@@ -108,11 +108,6 @@ class APIPersonRetrieveUpdateDestroyView(AuditUpdateMixin, RetrieveUpdateDestroy
     lookup_field = "person_guid"
     serializer_class = PersonSerializer
 
-    def perform_update(self, serializer):
-        serializer.save(
-            who_updated=self.request.user,
-            when_updated=timezone.now()
-        )
 
 # Placeholder for base url.
 def index(request):

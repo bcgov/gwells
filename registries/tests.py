@@ -3,7 +3,7 @@ from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APITestCase
 from registries.models import Organization, Person
-from gwells.models.ProvinceState import ProvinceState
+from gwells.models.ProvinceStateCode import ProvinceStateCode
 
 # Note: see postman/newman for more API tests.
 # Postman API tests include making requests with incomplete data, missing required fields etc.
@@ -17,8 +17,8 @@ class OrganizationTests(TestCase):
     """
 
     def setUp(self):
-        # Create a ProvinceState object for our Organization's foreign key field
-        ProvinceState.objects.create(
+        # Create a ProvinceStateCode object for our Organization's foreign key field
+        ProvinceStateCode.objects.create(
             code = 'BC',
             description = 'British Columbia',
             sort_order = 1
@@ -27,7 +27,7 @@ class OrganizationTests(TestCase):
         Organization.objects.create(
             name='Frankie and Betty Well Drilling Co.',
             city='Victoria',
-            province_state = ProvinceState.objects.get(code='BC')
+            province_state = ProvinceStateCode.objects.get(code='BC')
         )
 
     def test_organization_was_created(self):
