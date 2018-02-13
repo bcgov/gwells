@@ -16,7 +16,6 @@ node('maven') {
             finally {
                 stash includes: 'nosetests.xml,coverage.xml', name: 'coverage'
                 junit 'nosetests.xml'
-                perfReport compareBuildPrevious: true, excludeResponseTime: true, ignoreFailedBuilds: true, ignoreUnstableBuilds: true, modeEvaluation: true, modePerformancePerTestCase: true, percentiles: '0,50,90,100', relativeFailedThresholdNegative: 80.0, relativeFailedThresholdPositive: 20.0, relativeUnstableThresholdNegative: 50.0, relativeUnstableThresholdPositive: 50.0, sourceDataFiles: 'nosetests.xml'
             }
         }
     }    
@@ -49,6 +48,7 @@ node('maven') {
     stage('Deploy on Dev') {
         echo "Deploying to dev..."
         openshiftTag destStream: 'gwells', verbose: 'true', destTag: 'dev', srcStream: 'gwells', srcTag: '$BUILD_ID'
+        sleep 5
         openshiftVerifyDeployment depCfg: 'gwells', namespace: 'moe-gwells-dev', replicaCount: 1, verbose: 'false', verifyReplicaCount: 'false'
 	    echo ">>>> Deployment Complete"
     }
@@ -106,6 +106,7 @@ stage('Deploy on Test') {
     input "Deploy to test?"
     node('maven') {
         openshiftTag destStream: 'gwells', verbose: 'true', destTag: 'test', srcStream: 'gwells', srcTag: '$BUILD_ID'
+        sleep 5
         openshiftVerifyDeployment depCfg: 'gwells', namespace: 'moe-gwells-test', replicaCount: 1, verbose: 'false', verifyReplicaCount: 'false'
 	    echo ">>>> Test Deployment Complete"
     }
