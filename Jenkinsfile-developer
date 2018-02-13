@@ -48,8 +48,8 @@ node('maven') {
     stage('Deploy on Dev') {
         echo "Deploying to dev..."
         openshiftTag destStream: 'gwells', verbose: 'true', destTag: 'dev', srcStream: 'gwells', srcTag: '$BUILD_ID'
-	//Sleeping for a while to wait deployment completes
-	sh 'sleep 3m'
+        openshiftVerifyDeployment depCfg: 'gwells', namespace: 'moe-gwells-dev', replicaCount: 1, verbose: 'false', verifyReplicaCount: 'false'
+	    echo ">>>> Deployment Complete"
     }
 }
 
@@ -64,8 +64,7 @@ node('bddstack') {
             try {
                     sh './gradlew --debug --stacktrace chromeHeadlessTest'
             } finally {
-                    archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
-                    archiveArtifacts allowEmptyArchive: true, artifacts: 'build/test-results/**/*'
+                    archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/geb/**/*'
                     junit 'build/test-results/**/*.xml'
                     publishHTML (target: [
                                 allowMissing: false,
@@ -83,7 +82,7 @@ node('bddstack') {
                                 reportFiles: 'index.html',
                                 reportName: "Full Test Report"
                             ])
-                    perfReport compareBuildPrevious: true, excludeResponseTime: true, ignoreFailedBuilds: true, ignoreUnstableBuilds: true, modeEvaluation: true, modePerformancePerTestCase: true, percentiles: '0,50,90,100', relativeFailedThresholdNegative: 80.0, relativeFailedThresholdPositive: 20.0, relativeUnstableThresholdNegative: 50.0, relativeUnstableThresholdPositive: 50.0, sourceDataFiles: 'nosetests.xml,build/test-results/**/*.xml'        
+                    perfReport compareBuildPrevious: true, excludeResponseTime: true, ignoreFailedBuilds: true, ignoreUnstableBuilds: true, modeEvaluation: true, modePerformancePerTestCase: true, percentiles: '0,50,90,100', relativeFailedThresholdNegative: 80.0, relativeFailedThresholdPositive: 20.0, relativeUnstableThresholdNegative: 50.0, relativeUnstableThresholdPositive: 50.0, sourceDataFiles: './nosetests.xml,build/test-results/**/*.xml'        
                     }
         }
     }
