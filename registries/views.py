@@ -117,7 +117,18 @@ class APIPersonListCreateView(AuditCreateMixin, ListCreateAPIView):
     Creates a new person record
     """
 
-    queryset = Person.objects.all().prefetch_related('companies', 'companies__org')
+    # queryset = Person.objects.all().prefetch_related('companies', 'companies__org')
+    queryset = Person.objects \
+        .filter(applications__registrations__status__code__contains='ACTIVE') \
+        .prefetch_related(
+            'companies',
+            'companies__org',
+            'applications',
+            'applications__registrations',
+            'applications__registrations__registries_activity',
+            'applications__registrations__status'
+        )
+
     serializer_class = PersonSerializer
 
     def list(self, request):

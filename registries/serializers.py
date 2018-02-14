@@ -23,12 +23,14 @@ class RegistrationsSerializer(serializers.ModelSerializer):
     """
     Serializes Register model
     """
-    status = serializers.ReadOnlyField()
+    status = serializers.StringRelatedField(source='status.code')
+    activity = serializers.StringRelatedField(source='registries_activity.code')
 
     class Meta:
         model = Register
         fields = (
-            'register_guid',
+            # 'register_guid',
+            'activity',
             'status',
         )
 
@@ -38,18 +40,18 @@ class ApplicationSerializer(AuditModelSerializer):
     Serializes RegistryApplication model fields
     """
 
-    register_set = serializers.StringRelatedField(many=True)
+    registrations = RegistrationsSerializer(many=True, read_only=True)
 
     class Meta:
         model = RegistriesApplication
         fields = (
-            'application_guid',
-            'person',
-            'file_no',
-            'over19_ind',
-            'registrar_notes',
-            'reason_denied',
-            'register_set',
+            # 'application_guid',
+            # 'person',
+            # 'file_no',
+            # 'over19_ind',
+            # 'registrar_notes',
+            # 'reason_denied',
+            'registrations',
         )
 
 
@@ -152,6 +154,7 @@ class PersonListSerializer(AuditModelSerializer):
     """
 
     companies = ContactAtSerializer(many=True, read_only=True)
+    applications = ApplicationSerializer(many=True, read_only=True)
 
     class Meta:
         model = Person
@@ -164,6 +167,7 @@ class PersonListSerializer(AuditModelSerializer):
             'first_name',
             'surname',
             'companies',
+            'applications',
         )
 
 

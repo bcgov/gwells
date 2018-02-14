@@ -214,7 +214,7 @@ class Register(AuditModel):
         verbose_name="Register UUID, hidden from users")
     # TODO - GW constraint to ensure that DRILL/PUMP ActivityCode of this entry is consistent with the Application
     registries_activity = models.ForeignKey(ActivityCode, db_column='registries_activity_guid', on_delete=models.CASCADE, blank=True)
-    registries_application = models.ForeignKey(RegistriesApplication, db_column='application_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name="Application Reference")
+    registries_application = models.ForeignKey(RegistriesApplication, db_column='application_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name="Application Reference", related_name="registrations")
 
     registration_no = models.CharField(max_length=15,blank=True, null=True)    
     status = models.ForeignKey(RegistriesStatusCode, db_column='registries_status_guid', on_delete=models.CASCADE, verbose_name="Register Entry Status")
