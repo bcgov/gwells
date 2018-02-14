@@ -1,4 +1,4 @@
-/* Additional updaates to DB stucture, as Python's model.py has limited abilities to do this */
+/* Additional updates to DB stucture, as Python's model.py has limited abilities to do this */
 DROP INDEX IF EXISTS gwells_well_latlong CASCADE;
 CREATE INDEX gwells_well_latlong ON gwells_well (latitude, longitude);
 
