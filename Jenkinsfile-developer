@@ -60,6 +60,10 @@ stage('FT on Dev') {
         echo "checking out source"
         echo "Build: ${BUILD_ID}"
         checkout scm
+        dir('functional-tests/build/test-results') {
+            unstash 'coverage'
+            sh 'rm coverage.xml'
+        }
         dir('functional-tests') {
             try {
                     sh './gradlew chromeHeadlessTest'
