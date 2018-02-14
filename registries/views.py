@@ -36,38 +36,6 @@ class AuditUpdateMixin(UpdateModelMixin):
         )
 
 
-class APIApplicationListCreateView(AuditCreateMixin, ListCreateAPIView):
-    """
-    get:
-    Returns a list of all registered drilling organizations
-
-    post:
-    Creates a new drilling organization record
-    """
-
-    queryset = RegistriesApplication.objects.all().prefetch_related('register_set', 'register_set__registries_activity', 'register_set__status').select_related('person')
-    serializer_class = ApplicationSerializer
-
-
-class APIApplicationRetrieveUpdateDestroyView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
-    """
-    get:
-    Returns the specified drilling application
-
-    put:
-    Replaces the specified record with a new one
-
-    patch:
-    Updates a drilling application with the set of values provided in the request body
-
-    delete:
-    Removes the specified drilling application record
-    """
-
-    queryset = RegistriesApplication.objects.all().select_related('person')
-    lookup_field = "application_guid"
-    serializer_class = ApplicationSerializer
-
 
 class APIOrganizationListCreateView(AuditCreateMixin, ListCreateAPIView):
     """
@@ -162,3 +130,40 @@ class APIPersonRetrieveUpdateDestroyView(AuditUpdateMixin, RetrieveUpdateDestroy
 # Placeholder for base url.
 def index(request):
     return HttpResponse("TEST: Driller Register app home index.")
+
+#
+# APPLICATION ENDPOINT VIEWS
+# To confirm entry point to these views, see urls.py urlpatterns list ("application" entries)
+#
+
+class APIApplicationListCreateView(AuditCreateMixin, ListCreateAPIView):
+    """
+    get:
+    Returns a list of all registered drilling organizations
+
+    post:
+    Creates a new drilling organization record
+    """
+
+    queryset = RegistriesApplication.objects.all().prefetch_related('register_set', 'register_set__registries_activity', 'register_set__status').select_related('person')
+    serializer_class = ApplicationSerializer
+
+
+class APIApplicationRetrieveUpdateDestroyView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
+    """
+    get:
+    Returns the specified drilling application
+
+    put:
+    Replaces the specified record with a new one
+
+    patch:
+    Updates a drilling application with the set of values provided in the request body
+
+    delete:
+    Removes the specified drilling application record
+    """
+
+    queryset = RegistriesApplication.objects.all().select_related('person')
+    lookup_field = "application_guid"
+    serializer_class = ApplicationSerializer

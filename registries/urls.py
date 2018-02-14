@@ -26,8 +26,8 @@ urlpatterns = [
     url(r'^drillers/$', views.APIPersonListCreateView.as_view(), name='person-list'),
 
     # Register Application resource endpoints (applications from individuals to be registered as a driller, well installer etc.)
-    url(r'^applications/(?P<application_guid>[-\w]+)/$', views.APIApplicationRetrieveUpdateDestroyView.as_view(), name='application-detail'),
-    url(r'^applications/$', views.APIApplicationListCreateView.as_view(), name='application-list'),
+    # url(r'^applications/(?P<application_guid>[-\w]+)/$', views.APIApplicationRetrieveUpdateDestroyView.as_view(), name='application-detail'),
+    # url(r'^applications/$', views.APIApplicationListCreateView.as_view(), name='application-list'),
 
     # Swagger documentation endpoint
     url(r'^docs/$', get_swagger_view(title='GWELLS Driller registry'), name='api-docs'),
