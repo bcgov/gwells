@@ -10,6 +10,7 @@ stage('API Test') {
                 sh 'newman run apitest.json -r cli,junit,html;'
 	    } finally {
                 junit 'newman/*.xml'
+                stash includes: 'newman/*.xml', name: 'api-tests' 
                 publishHTML (target: [
                             allowMissing: false,
                             alwaysLinkToLastBuild: false,
@@ -18,6 +19,7 @@ stage('API Test') {
                             reportFiles: 'newman*.html',
                             reportName: "API Test Report"
                         ])
+                // Once included in the main developer pipeline, the next line will need to be omitted.
                 perfReport compareBuildPrevious: true, excludeResponseTime: true, ignoreFailedBuilds: true, ignoreUnstableBuilds: true, modeEvaluation: true, modePerformancePerTestCase: true, percentiles: '0,50,90,100', relativeFailedThresholdNegative: 80.0, relativeFailedThresholdPositive: 20.0, relativeUnstableThresholdNegative: 50.0, relativeUnstableThresholdPositive: 50.0, sourceDataFiles: 'newman/*.xml'        
 	            }
         }
