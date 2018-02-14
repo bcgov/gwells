@@ -21,11 +21,11 @@ class DecommissionMethodCode(AuditModel):
     code = models.CharField(max_length=10, verbose_name="Code")
     description = models.CharField(max_length=255, verbose_name="Description")
     status_flag = models.BooleanField(default=False, choices=((False, 'N'), (True, 'Y')))
-    sort_order = models.PositiveIntegerField()
+    display_order = models.PositiveIntegerField()
 
     class Meta:
         db_table = 'decommission_method_code'
-        ordering = ['sort_order']
+        ordering = ['display_order']
 
     def __str__(self):
         return self.description

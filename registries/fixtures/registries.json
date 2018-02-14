@@ -9,7 +9,7 @@
       "update_date": "2017-07-01T08:00:00Z",
       "code": "PE",
       "description": "Prince Edward Island",
-      "sort_order": 20
+      "display_order": 20
     }
   },
   {
@@ -22,7 +22,7 @@
       "update_date": "2017-07-01T08:00:00Z",
       "code": "QC",
       "description": "Quebec",
-      "sort_order": 22
+      "display_order": 22
     }
   },
   {
@@ -35,7 +35,7 @@
       "update_date": "2017-07-01T08:00:00Z",
       "code": "SK",
       "description": "Saskatchewan",
-      "sort_order": 24
+      "display_order": 24
     }
   },
   {
@@ -48,7 +48,7 @@
       "update_date": "2017-07-01T08:00:00Z",
       "code": "NU",
       "description": "Nunavut",
-      "sort_order": 18
+      "display_order": 18
     }
   },
   {
@@ -61,7 +61,7 @@
       "update_date": "2017-07-01T08:00:00Z",
       "code": "YT",
       "description": "Yukon",
-      "sort_order": 26
+      "display_order": 26
     }
   },
   {
@@ -74,7 +74,7 @@
       "update_date": "2017-07-01T08:00:00Z",
       "code": "NS",
       "description": "Nova Scotia",
-      "sort_order": 14
+      "display_order": 14
     }
   },
   {
@@ -87,7 +87,7 @@
       "update_date": "2017-07-01T08:00:00Z",
       "code": "NB",
       "description": "New Brunswick",
-      "sort_order": 10
+      "display_order": 10
     }
   },
   {
@@ -100,7 +100,7 @@
       "update_date": "2017-07-01T08:00:00Z",
       "code": "ON",
       "description": "Ontario",
-      "sort_order": 6
+      "display_order": 6
     }
   },
   {
@@ -113,7 +113,7 @@
       "update_date": "2017-07-01T08:00:00Z",
       "code": "MB",
       "description": "Manitoba",
-      "sort_order": 8
+      "display_order": 8
     }
   },
   {
@@ -126,7 +126,7 @@
       "update_date": "2017-07-01T08:00:00Z",
       "code": "NT",
       "description": "Northwest Territories",
-      "sort_order": 16
+      "display_order": 16
     }
   },
   {
@@ -139,7 +139,7 @@
       "update_date": "2017-07-01T08:00:00Z",
       "code": "NL",
       "description": "Newfoundland and Labrador",
-      "sort_order": 12
+      "display_order": 12
     }
   },
   {
@@ -152,7 +152,7 @@
       "update_date": "2017-07-01T08:00:00Z",
       "code": "BC",
       "description": "British Colmubia",
-      "sort_order": 2
+      "display_order": 2
     }
   },
   {
@@ -165,7 +165,7 @@
       "update_date": "2017-07-01T08:00:00Z",
       "code": "AB",
       "description": "Alberta",
-      "sort_order": 4
+      "display_order": 4
     }
   },
   {
@@ -178,7 +178,7 @@
       "update_date": "2017-07-01T08:00:00Z",
       "code": "WA",
       "description": "Never Never Land",
-      "sort_order": 30
+      "display_order": 30
     }
   },
   {
@@ -191,7 +191,7 @@
       "update_date": "2017-07-01T08:00:00Z",
       "code": "OTHER",
       "description": "Other",
-      "sort_order": 90
+      "display_order": 90
     }
   },
   {
@@ -205,7 +205,7 @@
       "code": "DRILL",
       "description": "Well Driller",
       "is_hidden": false,
-      "sort_order": 2
+      "display_order": 2
     }
   },
   {
@@ -219,7 +219,7 @@
       "code": "PUMP",
       "description": "Pump Installer",
       "is_hidden": false,
-      "sort_order": 4
+      "display_order": 4
     }
   },
   {
@@ -233,7 +233,7 @@
       "code": "P",
       "description": "Pending",
       "is_hidden": false,
-      "sort_order": 2
+      "display_order": 2
     }
   },
   {
@@ -247,7 +247,7 @@
       "code": "A",
       "description": "Approved",
       "is_hidden": false,
-      "sort_order": 4
+      "display_order": 4
     }
   },
   {
@@ -261,7 +261,7 @@
       "code": "I",
       "description": "Incomplete",
       "is_hidden": false,
-      "sort_order": 10
+      "display_order": 10
     }
   },
   {
@@ -275,7 +275,7 @@
       "code": "NA",
       "description": "Not Approved",
       "is_hidden": false,
-      "sort_order": 6
+      "display_order": 6
     }
   },
 
@@ -8352,7 +8352,7 @@
       "code": "WAT",
       "description": "Water supply well",
       "is_hidden": false,
-      "sort_order": 2
+      "display_order": 2
     }
   },
   {
@@ -8367,7 +8367,7 @@
       "code": "MON",
       "description": "Monitoring well",
       "is_hidden": false,
-      "sort_order": 2
+      "display_order": 2
     }
   },
   {
@@ -8382,7 +8382,7 @@
       "code": "RECH",
       "description": "Recharge/Injection well",
       "is_hidden": false,
-      "sort_order": 2
+      "display_order": 2
     }
   },
   {
@@ -8397,7 +8397,7 @@
       "code": "DEWAT",
       "description": "Dewatering well",
       "is_hidden": false,
-      "sort_order": 2
+      "display_order": 2
     }
   },
   {
@@ -8412,7 +8412,7 @@
       "code": "REM",
       "description": "Remediatation well",
       "is_hidden": false,
-      "sort_order": 2
+      "display_order": 2
     }
   },
   {
@@ -8427,7 +8427,7 @@
       "code": "GEO",
       "description": "Geotechnical well",
       "is_hidden": false,
-      "sort_order": 2
+      "display_order": 2
     }
   },
   {
@@ -8442,7 +8442,7 @@
       "code": "CLOS",
       "description": "Closed loop geoexchange well",
       "is_hidden": false,
-      "sort_order": 2
+      "display_order": 2
     }
   },
   {
@@ -8457,7 +8457,7 @@
       "code": "MON",
       "description": "Water supply well",
       "is_hidden": false,
-      "sort_order": 2
+      "display_order": 2
     }
   },
   {
@@ -8472,7 +8472,7 @@
       "code": "REM",
       "description": "Remediatation well",
       "is_hidden": false,
-      "sort_order": 2
+      "display_order": 2
     }
   },
   {
@@ -8487,7 +8487,7 @@
       "code": "GEO",
       "description": "Geotechnical well",
       "is_hidden": false,
-      "sort_order": 2
+      "display_order": 2
     }
   },
   {
@@ -8502,7 +8502,7 @@
       "code": "PUMP",
       "description": "Install pump in Water supply, Recharge/Injection, or Dewatering well",
       "is_hidden": false,
-      "sort_order": 2
+      "display_order": 2
     }
   },
 
@@ -19314,7 +19314,7 @@
       "code": "NLACT",
       "description": "No longer active",
       "is_hidden": false,
-      "sort_order": 2
+      "display_order": 2
     }
   },
   {
@@ -19328,7 +19328,7 @@
       "code": "NMEET",
       "description": "Did not meet the requirement of registration",
       "is_hidden": false,
-      "sort_order": 6
+      "display_order": 6
     }
   },
   {
@@ -19342,7 +19342,7 @@
       "code": "FAILTM",
       "description": "Failed to maintain requirement of registration",
       "is_hidden": false,
-      "sort_order": 4
+      "display_order": 4
     }
   },
   {
@@ -19356,7 +19356,7 @@
       "code": "REMOVED",
       "description": "Removed",
       "is_hidden": false,
-      "sort_order": 4
+      "display_order": 4
     }
   },
   {
@@ -19370,7 +19370,7 @@
       "code": "ACTIVE",
       "description": "Active",
       "is_hidden": false,
-      "sort_order": 2
+      "display_order": 2
     }
   },
   {
@@ -19385,7 +19385,7 @@
       "code": "WATER",
       "description": "Water Well Driller",
       "is_hidden": false,
-      "sort_order": 2
+      "display_order": 2
     }
   },
   {
@@ -19400,7 +19400,7 @@
       "code": "PUMPINST",
       "description": "Pump Installer",
       "is_hidden": false,
-      "sort_order": 8
+      "display_order": 8
     }
   },
   {
@@ -19415,7 +19415,7 @@
       "code": "GEOTECH",
       "description": "Geotechnical/Environmental Driller",
       "is_hidden": false,
-      "sort_order": 4
+      "display_order": 4
     }
   },
   {
@@ -19430,7 +19430,7 @@
       "code": "GEOXCHG",
       "description": "Geoexchange Driller",
       "is_hidden": false,
-      "sort_order": 6
+      "display_order": 6
     }
   }
 ]

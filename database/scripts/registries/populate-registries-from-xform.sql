@@ -464,7 +464,7 @@ and   xform_trk.app_approval_date is null -- Ignore bad data
 -- where  status.registries_application_status_guid = code.registries_application_status_guid
 -- and    appl.application_guid = status.application_guid
 -- and    appl.person_guid = per.person_guid
--- order by per.person_guid, status.effective_date, code.sort_order;
+-- order by per.person_guid, status.effective_date, code.display_order;
 
 
 -- Insert "Fake" applications for Drillers subsequently removed from Well Driller Register

@@ -20,11 +20,11 @@ class LithologyMaterialCode(AuditModel):
     lithology_material_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     code = models.CharField(max_length=10, verbose_name='Code')
     description = models.CharField(max_length=255, verbose_name='Description')
-    sort_order = models.PositiveIntegerField()
+    display_order = models.PositiveIntegerField()
     status_flag = models.BooleanField()
 
     class Meta:
         db_table = 'lithology_material_code'
-        ordering=['sort_order']
+        ordering=['display_order']
     def __str__(self):
         return 'lithology_material {} {}'.format(self.code, self.description)

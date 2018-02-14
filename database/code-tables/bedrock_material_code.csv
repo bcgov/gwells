@@ -1,4 +1,4 @@
-bedrock_material_guid,code,description,is_hidden,sort_order,create_date,update_date,create_user,update_user
+bedrock_material_guid,code,description,is_hidden,display_order,create_date,update_date,create_user,update_user
 "5b90fbe262a311e7907ba6006ad3dba0","Shale","Shale","N","10","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
 "5b90fffc62a311e7907ba6006ad3dba0","Sandstone","Sandstone","N","20","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
 "5b91047062a311e7907ba6006ad3dba0","Limestone","Limestone","N","30","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"

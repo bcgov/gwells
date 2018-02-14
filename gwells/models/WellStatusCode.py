@@ -24,11 +24,11 @@ class WellStatusCode(AuditModel):
     code = models.CharField(unique=True, max_length=10)
     description = models.CharField(max_length=255)
     is_hidden = models.BooleanField(default=False)
-    sort_order = models.PositiveIntegerField()
+    display_order = models.PositiveIntegerField()
 
     class Meta:
         db_table = 'well_status_code'
-        ordering = ['sort_order', 'code']
+        ordering = ['display_order', 'code']
 
     def save(self, *args, **kwargs):
         self.validate()
