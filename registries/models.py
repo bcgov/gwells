@@ -18,6 +18,7 @@ class Person(AuditModel):
     def __str__(self):
         return '%s %s' % (self.first_name, self.surname)
 
+
 class Organization(AuditModel):
     org_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False,
     	verbose_name="Organization UUID, hidden from users")
@@ -133,7 +134,7 @@ class RegistriesApplication(AuditModel):
     """
     application_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False,
         verbose_name="Register Application UUID, hidden from users")
-    person = models.ForeignKey(Person, db_column='person_guid', on_delete=models.CASCADE, verbose_name="Person Reference")
+    person = models.ForeignKey(Person, db_column='person_guid', on_delete=models.CASCADE, verbose_name="Person Reference", related_name='applications')
     file_no = models.CharField(max_length=25, blank=True, null=True, verbose_name='ORCS File # reference.')
     over19_ind = models.BooleanField(default=True)
     registrar_notes = models.CharField(max_length=255, blank=True, null=True, verbose_name='Registrar Notes, for internal use only.')
