@@ -102,11 +102,6 @@ tasks.withType(Test) {
     systemProperty 'com.athaydes.spockframework.report.outputDir', 'build/reports/spock'
     systemProperty 'com.athaydes.spockframework.report.internal.HtmlReportCreator.inlineCss', false
     systemProperty 'com.athaydes.spockframework.report.projectName',"GWELLS"
-    // Set the version of the project under test so it can be displayed in the report
-    def envbuild = System.getenv()
-    buildNumber = envbuild['BUILD_ID']
-    systemProperty 'com.athaydes.spockframework.report.projectVersion',buildNumber
-
 }
 
 tasks.withType(GroovyCompile) {
