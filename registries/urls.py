@@ -12,6 +12,7 @@
     limitations under the License.
 """
 from django.conf.urls import url
+from rest_framework_jwt.views import obtain_jwt_token
 from rest_framework_swagger.views import get_swagger_view
 from . import views
 
@@ -30,6 +31,9 @@ urlpatterns = [
 
     # Swagger documentation endpoint
     url(r'^docs/$', get_swagger_view(title='GWELLS Driller registry'), name='api-docs'),
+
+    # Temporary JWT Auth endpoint
+    url(r'^api-token-auth/', obtain_jwt_token),
 
     # Base gwells index
     url(r'^$', views.index, name='index'),
