@@ -21,7 +21,7 @@ class ProvinceStateCode(AuditModel):
     Lookup of Provinces/States.
     Used to specify valid provinces or states for the address of the owner of a well.
     It provides for a standard commonly understood code and description for provinces and states.
-    Some examples include: BC, AB, W
+    Some examples include: BC, AB, WA
     """
     province_state_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     code = models.CharField(max_length=10, unique=True)
