@@ -26,6 +26,9 @@ class DevelopmentMethodCode(AuditModel):
     is_hidden = models.BooleanField(default=False)
     display_order = models.PositiveIntegerField()
 
+    effective_date = models.DateTimeField(blank=True)
+    expiry_date    = models.DateTimeField(blank=True, null=True)
+
     class Meta:
         db_table = 'development_method_code'
         ordering = ['display_order', 'description']

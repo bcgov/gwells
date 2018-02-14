@@ -118,4 +118,9 @@
 \echo '... loading obs_well_status_code code table'
 \copy obs_well_status_code (create_user,create_date,update_user,update_date,obs_well_status_guid,code,description,is_hidden,display_order) from 'obs_well_status_code.csv' with header delimiter ',' CSV ;
 
+-- BEDROCK STATUS (currently not used)
+-- \echo '... loading bedrock_material_code code table'
+-- \copy bedrock_material_code (bedrock_material_guid,code,description,is_hidden,display_order,create_date,update_date,create_user,update_user) from 'bedrock_material_code.csv' with header delimiter ',' CSV ;
+
+
 \echo 'Finshed copy of static code tables.'

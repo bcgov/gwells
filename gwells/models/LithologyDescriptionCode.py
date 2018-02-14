@@ -23,6 +23,9 @@ class LithologyDescriptionCode(AuditModel):
     description = models.CharField(max_length=255, verbose_name='Description')
     display_order = models.PositiveIntegerField()
 
+    effective_date = models.DateTimeField(blank=True)
+    expiry_date    = models.DateTimeField(blank=True, null=True)
+
     class Meta:
         db_table = 'lithology_description_code'
         ordering=['display_order']

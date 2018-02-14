@@ -25,6 +25,9 @@ class WellYieldUnitCode(AuditModel):
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
 
+    effective_date = models.DateTimeField(blank=True)
+    expiry_date    = models.DateTimeField(blank=True, null=True)
+
     class Meta:
         db_table = 'well_yield_unit_code'
         ordering = ['display_order', 'description']
