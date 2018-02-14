@@ -23,8 +23,8 @@ class RegistrationsSerializer(serializers.ModelSerializer):
     """
     Serializes Register model
     """
-    status = serializers.StringRelatedField(source='status.code')
-    activity = serializers.StringRelatedField(source='registries_activity.code')
+    status = serializers.ReadOnlyField(source='status.code')
+    activity = serializers.ReadOnlyField(source='registries_activity.code')
 
     class Meta:
         model = Register
@@ -65,11 +65,11 @@ class ContactAtSerializer(AuditModelSerializer):
     class Meta:
         model = ContactAt
         fields = (
-            'contact_at_guid',
+            'contact_at_guid',            
+            'organization_name',
+            'person_name',
             'person',
             'org',
-            'person_name',
-            'organization_name',
             'contact_tel',
             'contact_email'
         )
