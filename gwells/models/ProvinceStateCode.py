@@ -28,6 +28,11 @@ class ProvinceStateCode(AuditModel):
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
 
+    """
+    Tue 13 Feb 22:24:26 2018 GW Disabled for now until Code With Us sprint is complete
+    effective_date = models.DateTimeField(blank=True)
+    expiry_date    = models.DateTimeField(blank=True, null=True)
+    """
     class Meta:
         db_table = 'province_state_code'
         ordering = ['display_order', 'description']

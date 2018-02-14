@@ -26,6 +26,9 @@ class LithologyHardnessCode(AuditModel):
     is_hidden = models.BooleanField(default=False)
     display_order = models.PositiveIntegerField()
 
+    effective_date = models.DateTimeField(blank=True)
+    expiry_date    = models.DateTimeField(blank=True, null=True)
+
     class Meta:
         db_table = 'lithology_hardness_code'
         ordering = ['display_order', 'description']
