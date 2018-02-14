@@ -85,17 +85,32 @@ class APIPersonListCreateView(AuditCreateMixin, ListCreateAPIView):
     Creates a new person record
     """
 
-    # queryset = Person.objects.all().prefetch_related('companies', 'companies__org')
-    queryset = Person.objects \
-        .filter(applications__registrations__status__code__contains='ACTIVE') \
-        .prefetch_related(
-            'companies',
-            'companies__org',
-            'applications',
-            'applications__registrations',
-            'applications__registrations__registries_activity',
-            'applications__registrations__status'
-        )
+    # Default queryset. Anonymous users should only see active drillers.
+    def get_queryset(self):
+        # if Group.objects.get(name='Gwells_Admin').user_set.filter(id=self.request.user.id).exists():
+        if (self.request.user.is_authenticated()):
+            queryset = Person.objects \
+                    .all() \
+                    .prefetch_related(
+                        'companies',
+                        'companies__org',
+                        'applications',
+                        'applications__registrations',
+                        'applications__registrations__registries_activity',
+                        'applications__registrations__status'
+                    )
+        else:
+            queryset = Person.objects \
+                    .filter(applications__registrations__status__code='ACTIVE') \
+                    .prefetch_related(
+                        'companies',
+                        'companies__org',
+                        'applications',
+                        'applications__registrations',
+                        'applications__registrations__registries_activity',
+                        'applications__registrations__status'
+                    )
+        return queryset
 
     serializer_class = PersonSerializer
 
