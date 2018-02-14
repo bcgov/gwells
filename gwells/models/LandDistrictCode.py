@@ -22,11 +22,11 @@ class LandDistrictCode(AuditModel):
     land_district_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     code = models.CharField(max_length=10, unique=True)
     name = models.CharField(max_length=255)
-    sort_order = models.PositiveIntegerField()
+    display_order = models.PositiveIntegerField()
 
     class Meta:
         db_table = 'land_district_code'
-        ordering = ['sort_order', 'name']
+        ordering = ['display_order', 'name']
 
     def __str__(self):
         return self.name

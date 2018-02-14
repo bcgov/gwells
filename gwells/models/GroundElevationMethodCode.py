@@ -26,11 +26,11 @@ class GroundElevationMethodCode(AuditModel):
     code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
-    sort_order = models.PositiveIntegerField()
+    display_order = models.PositiveIntegerField()
 
     class Meta:
         db_table = 'ground_elevation_method_code'
-        ordering = ['sort_order', 'description']
+        ordering = ['display_order', 'description']
 
     def __str__(self):
         return self.description

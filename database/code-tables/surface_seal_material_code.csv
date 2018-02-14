@@ -1,4 +1,4 @@
-create_user,create_date,update_user,update_date,surface_seal_material_guid,surface_seal_material_code,description,is_hidden,sort_order
+create_user,create_date,update_user,update_date,surface_seal_material_guid,surface_seal_material_code,description,is_hidden,display_order
 WELLS,2006-12-14 09:58:30-08,,,43ab06f4-488a-41e5-91d9-88db63d849ce,BNTITE_CLY,Bentonite clay,f,100
 WELLS,2006-12-14 09:58:30-08,,,922abe5b-da0f-4ef7-a477-acf21ff20739,BN_BACKFLL,Bentonite clay and backfill,f,100
 WELLS,2006-12-14 09:58:30-08,,,676091fb-6d6f-41ba-836d-a8e6bc82fc4f,BN_CEM_MIX,Bentonite clay and cement mixture,f,100

@@ -26,11 +26,11 @@ class WellSubclassCode(AuditModel):
     code = models.CharField(max_length=10)
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
-    sort_order = models.PositiveIntegerField()
+    display_order = models.PositiveIntegerField()
 
     class Meta:
         db_table = 'well_subclass_code'
-        ordering = ['sort_order', 'description']
+        ordering = ['display_order', 'description']
 
     def validate_unique(self, exclude=None):
         qs = Room.objects.filter(name=self.code)

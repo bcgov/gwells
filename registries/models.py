@@ -76,11 +76,11 @@ class ActivityCode(AuditModel):
     code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
-    sort_order = models.PositiveIntegerField()
+    display_order = models.PositiveIntegerField()
 
     class Meta:
         db_table = 'registries_activity_code'
-        ordering = ['sort_order', 'description']
+        ordering = ['display_order', 'description']
         verbose_name_plural = 'Possible types of restricted activity, related to well drilling and pump installing'
 
     def __str__(self):
@@ -95,11 +95,11 @@ class SubactivityCode(AuditModel):
     code = models.CharField(max_length=10)
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
-    sort_order = models.PositiveIntegerField()
+    display_order = models.PositiveIntegerField()
 
     class Meta:
         db_table = 'registries_subactivity_code'
-        ordering = ['sort_order', 'description']
+        ordering = ['display_order', 'description']
         verbose_name_plural = 'Possible subtypes of restricted activity, under a given Activity'
 
     def __str__(self):
@@ -115,11 +115,11 @@ class Qualificationcode(AuditModel):
     code = models.CharField(max_length=10)
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
-    sort_order = models.PositiveIntegerField()
+    display_order = models.PositiveIntegerField()
 
     class Meta:
         db_table = 'registries_qualification_code'
-        ordering = ['sort_order', 'description']
+        ordering = ['display_order', 'description']
         verbose_name_plural = 'Possible qualifications, under a given Activity and Subactivity'
 
     def __str__(self):
@@ -179,11 +179,11 @@ class RegistriesStatusCode(AuditModel):
     code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
-    sort_order = models.PositiveIntegerField()
+    display_order = models.PositiveIntegerField()
 
     class Meta:
         db_table = 'registries_status_code'
-        ordering = ['sort_order', 'description']
+        ordering = ['display_order', 'description']
         verbose_name_plural = 'Possible Status Codes of Register Entries'
 
     def __str__(self):
@@ -197,11 +197,11 @@ class RegistriesRemovalReason(AuditModel):
     code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
-    sort_order = models.PositiveIntegerField()
+    display_order = models.PositiveIntegerField()
 
     class Meta:
         db_table = 'registries_removal_reason_code'
-        ordering = ['sort_order', 'description']
+        ordering = ['display_order', 'description']
         verbose_name_plural = 'Possible reasons for removal from either of the Registers'
 
     def __str__(self):
@@ -246,11 +246,11 @@ class ApplicationStatusCode(AuditModel):
     code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
-    sort_order = models.PositiveIntegerField()
+    display_order = models.PositiveIntegerField()
 
     class Meta:
         db_table = 'registries_application_status_code'
-        ordering = ['sort_order', 'description']
+        ordering = ['display_order', 'description']
         verbose_name_plural = 'Possible statuses of Applications'
 
     def __str__(self):
@@ -385,7 +385,7 @@ class DrillerRegister(models.Model):
         managed = False
         db_table = 'registries_driller_register'
         """ 
-        ordering = ['sort_order', 'description']
+        ordering = ['display_order', 'description']
         verbose_name_plural = 'Possible statuses of Applications'
         """
 

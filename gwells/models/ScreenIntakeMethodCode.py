@@ -25,11 +25,11 @@ class ScreenIntakeMethodCode(AuditModel):
     description = models.CharField(max_length=100)
     status_flag = models.BooleanField(default=False, choices=((False, 'N'), (True, 'Y')))
     is_hidden = models.BooleanField(default=False)
-    sort_order = models.PositiveIntegerField()
+    display_order = models.PositiveIntegerField()
 
     class Meta:
         db_table = 'screen_intake_method_code'
-        ordering = ['sort_order', 'description']
+        ordering = ['display_order', 'description']
 
     def __str__(self):
         return self.description
