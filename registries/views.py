@@ -19,7 +19,7 @@ class AuditCreateMixin(CreateModelMixin):
 
     def perform_create(self, serializer):
         serializer.save(
-            create_user=self.request.user,
+            create_user=self.request.user.get_username(),
             create_date=timezone.now()
             )
 
@@ -31,7 +31,7 @@ class AuditUpdateMixin(UpdateModelMixin):
 
     def perform_update(self, serializer):
         serializer.save(
-            update_user=self.request.user,
+            update_user=self.request.user.get_username(),
             update_date=timezone.now()
         )
 
@@ -46,6 +46,26 @@ class APIApplicationListCreateView(AuditCreateMixin, ListCreateAPIView):
     """
 
     queryset = RegistriesApplication.objects.all().prefetch_related('register_set', 'register_set__registries_activity', 'register_set__status').select_related('person')
+    serializer_class = ApplicationSerializer
+
+
+class APIApplicationRetrieveUpdateDestroyView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
+    """
+    get:
+    Returns the specified drilling application
+
+    put:
+    Replaces the specified record with a new one
+
+    patch:
+    Updates a drilling application with the set of values provided in the request body
+
+    delete:
+    Removes the specified drilling application record
+    """
+
+    queryset = RegistriesApplication.objects.all().select_related('person')
+    lookup_field = "application_guid"
     serializer_class = ApplicationSerializer
 
 
