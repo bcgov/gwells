@@ -3,8 +3,14 @@ from django.utils import timezone
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.response import Response
 from rest_framework.mixins import CreateModelMixin, UpdateModelMixin
-from registries.models import Organization, Person, ContactAt
-from registries.serializers import OrganizationListSerializer, OrganizationSerializer, PersonSerializer, PersonListSerializer
+from registries.models import Organization, Person, ContactAt, RegistriesApplication
+from registries.serializers import (
+    ApplicationSerializer,
+    OrganizationListSerializer,
+    OrganizationSerializer,
+    PersonSerializer,
+    PersonListSerializer,
+)
 
 class AuditCreateMixin(CreateModelMixin):
     """
@@ -28,6 +34,19 @@ class AuditUpdateMixin(UpdateModelMixin):
             update_user=self.request.user,
             update_date=timezone.now()
         )
+
+
+class APIApplicationListCreateView(AuditCreateMixin, ListCreateAPIView):
+    """
+    get:
+    Returns a list of all registered drilling organizations
+
+    post:
+    Creates a new drilling organization record
+    """
+
+    queryset = RegistriesApplication.objects.all().prefetch_related('register_set', 'register_set__registries_activity', 'register_set__status').select_related('person')
+    serializer_class = ApplicationSerializer
 
 
 class APIOrganizationListCreateView(AuditCreateMixin, ListCreateAPIView):
@@ -78,7 +97,7 @@ class APIPersonListCreateView(AuditCreateMixin, ListCreateAPIView):
     Creates a new person record
     """
 
-    queryset = Person.objects.all().prefetch_related('companies')
+    queryset = Person.objects.all().prefetch_related('companies', 'companies__org')
     serializer_class = PersonSerializer
 
     def list(self, request):

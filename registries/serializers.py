@@ -3,7 +3,9 @@ from gwells.models.ProvinceStateCode import ProvinceStateCode
 from registries.models import (
     Organization,
     ContactAt,
-    Person
+    Person,
+    Register,   
+    RegistriesApplication,
 )
 
 class AuditModelSerializer(serializers.ModelSerializer):
@@ -15,6 +17,40 @@ class AuditModelSerializer(serializers.ModelSerializer):
     create_date = serializers.ReadOnlyField()
     update_user = serializers.StringRelatedField()
     update_date = serializers.ReadOnlyField()
+
+
+class RegistrationsSerializer(serializers.ModelSerializer):
+    """
+    Serializes Register model
+    """
+    status = serializers.ReadOnlyField()
+
+    class Meta:
+        model = Register
+        fields = (
+            'register_guid',
+            'status',
+        )
+
+
+class ApplicationSerializer(AuditModelSerializer):
+    """
+    Serializes RegistryApplication model fields
+    """
+
+    register_set = serializers.StringRelatedField(many=True)
+
+    class Meta:
+        model = RegistriesApplication
+        fields = (
+            'application_guid',
+            'person',
+            'file_no',
+            'over19_ind',
+            'registrar_notes',
+            'reason_denied',
+            'register_set',
+        )
 
 
 class ContactAtSerializer(AuditModelSerializer):
