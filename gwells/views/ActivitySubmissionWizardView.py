@@ -87,7 +87,7 @@ class ActivitySubmissionWizardView(SessionWizardView):
         cleaned_data = self.get_all_cleaned_data()
         characteristics_data = cleaned_data.pop('water_quality_characteristics')
 
-        if submission.well_activity_type.code == 'CON' and not submission.well:
+        if submission.well_activity_type.well_activity_type_code == 'CON' and not submission.well:
             #TODO
             w = submission.create_well()
             w.save()

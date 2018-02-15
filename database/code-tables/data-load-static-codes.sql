@@ -7,19 +7,19 @@
 
 --CLASS
 \echo '... loading gwells_well_class_code code table'
-\copy well_class_code (well_class_guid,code,description,is_hidden,display_order,create_date,update_date,create_user,update_user) from 'well_class_code.csv' with header delimiter ',' CSV ;
+\copy well_class_code (well_class_guid,well_class_code,description,is_hidden,display_order,create_date,update_date,create_user,update_user) from 'well_class_code.csv' with header delimiter ',' CSV ;
 
 --SUBCLASS
 \echo '... loading gwells_well_subclass_code code table'
-\copy well_subclass_code (well_subclass_guid,code,description,is_hidden,display_order,well_class_guid,create_date,update_date,create_user,update_user) from 'well_subclass_code.csv' with header delimiter ',' CSV ;
+\copy well_subclass_code (well_subclass_guid,well_subclass_code,description,is_hidden,display_order,well_class_guid,create_date,update_date,create_user,update_user) from 'well_subclass_code.csv' with header delimiter ',' CSV ;
 
 --PROVINCE_STATE
 \echo '... loading gwells_province_state_code code table'
-\copy province_state_code (province_state_guid,code,description,display_order,create_date,update_date,create_user,update_user) from 'province_state_code.csv' with header delimiter ',' CSV ;
+\copy province_state_code (province_state_guid,province_state_code,description,display_order,create_date,update_date,create_user,update_user) from 'province_state_code.csv' with header delimiter ',' CSV ;
 
 --YIELD UNIT
 \echo '... loading gwells_well_yield_unit_code code table'
-\copy well_yield_unit_code (well_yield_unit_guid,code,description,display_order,create_date,update_date,create_user,update_user) from 'well_yield_unit_code.csv' with header delimiter ',' CSV ;
+\copy well_yield_unit_code (well_yield_unit_guid,well_yield_unit_code,description,display_order,create_date,update_date,create_user,update_user) from 'well_yield_unit_code.csv' with header delimiter ',' CSV ;
 
 --DRILLING METHOD
 \echo '... loading gwells_drilling_method_code code table'
@@ -31,7 +31,7 @@
 
 --STATUS
 \echo '... loading well_status_code code table'
-\copy well_status_code (well_status_guid,code,description,is_hidden,display_order,create_date,update_date,create_user,update_user) from 'well_status_code.csv' with header delimiter ',' CSV ;
+\copy well_status_code (well_status_guid,well_status_code,description,is_hidden,display_order,create_date,update_date,create_user,update_user) from 'well_status_code.csv' with header delimiter ',' CSV ;
 
 --LICENCE
 \echo '... loading licenced_status_code code table'
@@ -96,7 +96,7 @@
 
 --LITHOLOGY HARDNESS
 \echo '... loading lithology_hardness_code code table'
-\copy lithology_hardness_code (lithology_hardness_guid,code,description,is_hidden,display_order,create_date,update_date,create_user,update_user) from 'lithology_hardness_code.csv' with header delimiter ',' CSV ;
+\copy lithology_hardness_code (lithology_hardness_guid,lithology_hardness_code,description,is_hidden,display_order,create_date,update_date,create_user,update_user) from 'lithology_hardness_code.csv' with header delimiter ',' CSV ;
 
 --LAND DISTRICT
 \echo '... loading land_district_code code table'
@@ -104,11 +104,18 @@
 
 --LITHOLOGY MATERIAL
 \echo '... loading lithology_material_code code table'
-\copy lithology_material_code (create_user,create_date,update_user,update_date,lithology_material_guid,code,description,display_order,status_flag) from 'lithology_material_code.csv' with header delimiter ',' CSV ;
+\copy lithology_material_code (create_user,create_date,update_user,update_date,lithology_material_guid,lithology_material_code,description,display_order,status_flag) from 'lithology_material_code.csv' with header delimiter ',' CSV ;
 
 --LITHOLOGY DESCRIPTION
 \echo '... loading lithology_description_code code table'
-\copy lithology_description_code (create_user,create_date,update_user,update_date,lithology_description_code_guid,code,description,display_order) from 'lithology_description_code.csv' with header delimiter ',' CSV ;
+\copy lithology_description_code (create_user,create_date,update_user,update_date,lithology_description_code_guid,lithology_description_code,description,display_order) from 'lithology_description_code.csv' with header delimiter ',' CSV ;
+
+-- Thu 15 Feb 08:16:45 2018 GW Where is LITHOLOGY MOISTURE?
+
+-- Thu 15 Feb 08:41:01 2018 GW Where is LITHOLOGY STRUCTURE?
+
+-- Thu 15 Feb 09:40:03 2018 GW Where is SURFICIAL MATERIAL CODE?
+
 
 --DECOMMISSION METHOD
 \echo '... loading decommission_method_code code table'
@@ -116,7 +123,7 @@
 
 --OBSERVATION WELL STATUS
 \echo '... loading obs_well_status_code code table'
-\copy obs_well_status_code (create_user,create_date,update_user,update_date,obs_well_status_guid,code,description,is_hidden,display_order) from 'obs_well_status_code.csv' with header delimiter ',' CSV ;
+\copy obs_well_status_code (create_user,create_date,update_user,update_date,obs_well_status_guid,obs_well_status_code,description,is_hidden,display_order) from 'obs_well_status_code.csv' with header delimiter ',' CSV ;
 
 -- BEDROCK STATUS (currently not used)
 -- \echo '... loading bedrock_material_code code table'

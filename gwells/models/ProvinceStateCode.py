@@ -24,7 +24,7 @@ class ProvinceStateCode(AuditModel):
     Some examples include: BC, AB, WA
     """
     province_state_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    code = models.CharField(max_length=10, unique=True)
+    province_state_code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
 

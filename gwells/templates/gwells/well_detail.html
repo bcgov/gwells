@@ -53,7 +53,7 @@
             <div class="row print-compressed">
                 <div class="col-md-12 col-print-12 print-compressed">
                     <label for="well_well_status">{% verbose_name well "well_status" %}:</label>
-                    <span id="well_well_status">{{well.well_status.code|default_if_none:'&nbsp;' }}</span>
+                    <span id="well_well_status">{{well.well_status.well_status_code|default_if_none:'&nbsp;' }}</span>
                 </div>
             </div>
             <div class="row print-compressed">
@@ -91,7 +91,7 @@
             <div class="row print-compressed">
                 <div class="col-md-12 col-print-12 print-compressed">
                     <label for="obs_well_status">{% verbose_name well "observation_well_status" %}:</label>
-                    <span id="obs_well_status">{{well.observation_well_status.code|default_if_none:'&nbsp;' }}</span>
+                    <span id="obs_well_status">{{well.observation_well_status.obs_well_status_code|default_if_none:'&nbsp;' }}</span>
                 </div>
             </div>
             <div class="row print-compressed">
@@ -405,7 +405,7 @@
                 <div class="col-md-5 col-print-5 print-compressed">
                     <span id="well_yield">
                       {% if  well.well_yield > 0 %}
-                      {{well.well_yield|exclude_zero_decimals}} {{well.well_yield_unit.code|default_if_none:"no unit provided"}}
+                      {{well.well_yield|exclude_zero_decimals}} {{well.well_yield_unit.well_yield_unit_code|default_if_none:"no unit provided"}}
                       {% else                             %}
                       &nbsp;
                       {% endif                            %}
@@ -419,7 +419,7 @@
                 <div class="col-md-5 col-print-5 print-compressed">
                     <span id="artesian_flow">
                       {% if well.artesian_flow > 0             %}
-                        {{well.artesian_flow|exclude_zero_decimals}}&nbsp;{{well.well_yield_unit.code|default_if_none:"no unit provided"}}
+                        {{well.artesian_flow|exclude_zero_decimals}}&nbsp;{{well.well_yield_unit.well_yield_unit_code|default_if_none:"no unit provided"}}
                       {% endif                                 %}
                     </span>
                 </div>
@@ -525,7 +525,7 @@
                         <td>{{lithology.lithology_hardness|default_if_none:'&nbsp;'}}</td>
                         <td>{{lithology.lithology_colour|default_if_none:'&nbsp;'}}</td>
                         <td>
-                            {% if lithology.water_bearing_estimated_flow %} {{lithology.water_bearing_estimated_flow|exclude_zero_decimals}}&nbsp;{{lithology.water_bearing_estimated_flow_units.code}} {% endif %}
+                            {% if lithology.water_bearing_estimated_flow %} {{lithology.water_bearing_estimated_flow|exclude_zero_decimals}}&nbsp;{{lithology.water_bearing_estimated_flow_units.well_yield_unit_code}} {% endif %}
                         </td>
                         <td>{{lithology.lithology_observation|default_if_none:'&nbsp;'}}</td>
                     </tr>
@@ -782,7 +782,7 @@
                     <label for="yield_estimation_rate">{% verbose_name productiondata "yield_estimation_rate" %}:</label>
                     <span id="yield_estimation_rate">
                     {% if productiondata.yield_estimation_rate > 0 %}
-                        {{productiondata.yield_estimation_rate|exclude_zero_decimals }} &nbsp; {{productiondata.well_yield_unit.code}}
+                        {{productiondata.yield_estimation_rate|exclude_zero_decimals }} &nbsp; {{productiondata.well_yield_unit.well_yield_unit_code}}
                     {% endif %}
                   </span>
                 </div>

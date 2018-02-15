@@ -19,7 +19,7 @@ import uuid
 
 class LithologyDescriptionCode(AuditModel):
     lithology_description_code_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    code = models.CharField(max_length=10, verbose_name='Code')
+    lithology_description_code = models.CharField(max_length=10, verbose_name='Code')
     description = models.CharField(max_length=255, verbose_name='Description')
     display_order = models.PositiveIntegerField()
 
