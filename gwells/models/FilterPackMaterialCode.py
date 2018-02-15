@@ -21,14 +21,17 @@ class FilterPackMaterialCode(AuditModel):
      The material used to pack a well filter, e.g. Very coarse sand, Very fine gravel, Fine gravel.
     """
     filter_pack_material_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    code = models.CharField(max_length=10, unique=True)
+    filter_pack_material_code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
-    sort_order = models.PositiveIntegerField()
+    display_order = models.PositiveIntegerField()
+
+    effective_date = models.DateTimeField(blank=True, null=True)
+    expiry_date    = models.DateTimeField(blank=True, null=True)
 
     class Meta:
         db_table = 'filter_pack_material_code'
-        ordering = ['sort_order', 'description']
+        ordering = ['display_order', 'description']
 
     def __str__(self):
         return self.description

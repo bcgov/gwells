@@ -2,7 +2,8 @@ import geb.spock.GebReportingSpec
 import spock.lang.*
 
 @Title("Login")
-@Narrative("""As an authorized groundwater staff, I need a log in link in order to have access to files (e.g., the well driller registry, edit) in order to CRUD my applicable records.""")
+@Narrative("""As an authorized groundwater staff, I need a log in link in order to have access to files (e.g., the well driller registry, edit) 
+in order to CRUD my applicable records.""")
 @See("https://trello.com/c/Uz8PvC8k")
 class LoginSpecs extends GebReportingSpec {
 

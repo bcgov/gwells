@@ -24,11 +24,14 @@ class ScreenTypeCode(AuditModel):
     screen_type_code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
-    sort_order = models.PositiveIntegerField()
+    display_order = models.PositiveIntegerField()
+
+    effective_date = models.DateTimeField(blank=True, null=True)
+    expiry_date    = models.DateTimeField(blank=True, null=True)
 
     class Meta:
         db_table = 'screen_type_code'
-        ordering = ['sort_order', 'description']
+        ordering = ['display_order', 'description']
 
     def __str__(self):
         return self.description

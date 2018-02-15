@@ -21,14 +21,17 @@ class LicencedStatusCode(AuditModel):
     LicencedStatusCode of Well.
     """
     licenced_status_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    code = models.CharField(unique=True, max_length=10)
+    licenced_status_code = models.CharField(unique=True, max_length=10)
     description = models.CharField(max_length=255)
     is_hidden = models.BooleanField(default=False)
-    sort_order = models.PositiveIntegerField()
+    display_order = models.PositiveIntegerField()
+
+    effective_date = models.DateTimeField(blank=True, null=True)
+    expiry_date    = models.DateTimeField(blank=True, null=True)
 
     class Meta:
         db_table = 'licenced_status_code'
-        ordering = ['sort_order', 'code']
+        ordering = ['display_order', 'licenced_status_code']
 
     def save(self, *args, **kwargs):
         self.validate()

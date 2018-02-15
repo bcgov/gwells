@@ -21,14 +21,17 @@ class LithologyHardnessCode(AuditModel):
     Hardness of the lithology
     """
     lithology_hardness_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    code = models.CharField(max_length=10, unique=True)
+    lithology_hardness_code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
-    sort_order = models.PositiveIntegerField()
+    display_order = models.PositiveIntegerField()
+
+    effective_date = models.DateTimeField(blank=True, null=True)
+    expiry_date    = models.DateTimeField(blank=True, null=True)
 
     class Meta:
         db_table = 'lithology_hardness_code'
-        ordering = ['sort_order', 'description']
+        ordering = ['display_order', 'description']
 
     def __str__(self):
         return self.description

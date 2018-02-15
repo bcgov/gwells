@@ -100,7 +100,7 @@ class ActivitySubmissionTypeAndClassForm(forms.ModelForm):
     def save(self, commit=True):
         instance = super(ActivitySubmissionTypeAndClassForm, self).save(commit=False)
         # Force subclass to None for closed loop geo-exchange
-        if instance.well_class.code == 'CLS_LP_GEO':
+        if instance.well_class.well_class_code == 'CLS_LP_GEO':
             instance.well_subclass = None
         if commit:
             instance.save()

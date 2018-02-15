@@ -21,13 +21,16 @@ class WellYieldUnitCode(AuditModel):
     Units of Well Yield.
     """
     well_yield_unit_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    code = models.CharField(max_length=10, unique=True)
+    well_yield_unit_code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
-    sort_order = models.PositiveIntegerField()
+    display_order = models.PositiveIntegerField()
+
+    effective_date = models.DateTimeField(blank=True, null=True)
+    expiry_date    = models.DateTimeField(blank=True, null=True)
 
     class Meta:
         db_table = 'well_yield_unit_code'
-        ordering = ['sort_order', 'description']
+        ordering = ['display_order', 'description']
 
     def __str__(self):
         return self.description
