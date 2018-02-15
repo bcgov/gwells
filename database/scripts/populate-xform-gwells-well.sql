@@ -258,7 +258,7 @@ DECLARE
               LEFT OUTER JOIN intended_water_use_code intended_water_use ON UPPER(wells.well_use_code)=UPPER(intended_water_use.code)
               LEFT OUTER JOIN well_class_code class ON UPPER(wells.class_of_well_codclassified_by)=UPPER(class.code)
               LEFT OUTER JOIN well_subclass_code subclass ON UPPER(wells.subclass_of_well_classified_by)=UPPER(subclass.code) AND subclass.well_class_guid = class.well_class_guid
-              LEFT OUTER JOIN decommission_method_code decommission_method ON UPPER(wells.closure_method_code)=UPPER(decommission_method.code)
+              LEFT OUTER JOIN decommission_method_code decommission_method ON UPPER(wells.closure_method_code)=UPPER(decommission_method.decommission_method_code)
   WHERE wells.acceptance_status_code NOT IN (''PENDING'', ''REJECTED'', ''NEW'') ';
 
 BEGIN
