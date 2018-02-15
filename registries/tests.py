@@ -57,7 +57,7 @@ class OrganizationTests(TestCase):
     def setUp(self):
         # Create a ProvinceStateCode object for our Organization's foreign key field
         province = ProvinceStateCode.objects.create(
-            code = 'BC',
+            province_state_code = 'BC',
             description = 'British Columbia',
             display_order = 1
         )
@@ -105,7 +105,7 @@ class APIOrganizationTests(AuthenticatedAPITestCase):
 
         # create a ProvinceStateCode object
         province = ProvinceStateCode.objects.create(
-            code = 'BC',
+            province_state_code = 'BC',
             description = 'British Columbia',
             display_order = 1
         )

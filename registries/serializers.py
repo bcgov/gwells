@@ -95,7 +95,7 @@ class OrganizationListSerializer(AuditModelSerializer):
     Serializes Organization model fields for "list" view.
     """
 
-    province_state = serializers.ReadOnlyField(source="province_state.code")
+    province_state = serializers.ReadOnlyField(source="province_state.province_state_code")
 
     class Meta:
         model = Organization
