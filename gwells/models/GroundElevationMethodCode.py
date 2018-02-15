@@ -23,7 +23,7 @@ class GroundElevationMethodCode(AuditModel):
     GPS, Altimeter, Differential GPS, Level, 1:50,000 map, 1:20,000 map, 1:10,000 map, 1:5,000 map.
     """
     ground_elevation_method_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    code = models.CharField(max_length=10, unique=True)
+    ground_elevation_method_code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     display_order = models.PositiveIntegerField()
