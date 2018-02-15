@@ -86,7 +86,7 @@ class ContactAtSerializer(AuditModelSerializer):
 #             'province_state_guid',
 #             'code',
 #             'description',
-#             'sort_order',
+#             'display_order',
 #         )
 
 
