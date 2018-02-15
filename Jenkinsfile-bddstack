@@ -1,5 +1,11 @@
 node('bddstack') {
 
+	try {
+    		timeout(time: 15, unit: 'SECONDS') { // change to a convenient timeout for you
+        		input "Deploy to test?"
+    		}
+	} finally {	
+
 	stage('BDDStack') {
 		//the checkout is mandatory, otherwise functional test would fail
         echo "checking out source"
@@ -29,5 +35,6 @@ node('bddstack') {
                     perfReport compareBuildPrevious: true, excludeResponseTime: true, ignoreFailedBuilds: true, ignoreUnstableBuilds: true, modeEvaluation: true, modePerformancePerTestCase: true, percentiles: '0,50,90,100', relativeFailedThresholdNegative: 80.0, relativeFailedThresholdPositive: 20.0, relativeUnstableThresholdNegative: 50.0, relativeUnstableThresholdPositive: 50.0, sourceDataFiles: 'build/test-results/**/*.xml'
             }
         }
+    }
     }
 }
