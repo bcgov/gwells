@@ -23,7 +23,7 @@ class LithologyMaterialCode(AuditModel):
     display_order = models.PositiveIntegerField()
     status_flag = models.BooleanField()
 
-    effective_date = models.DateTimeField(blank=True)
+    effective_date = models.DateTimeField(blank=True, null=True)
     expiry_date    = models.DateTimeField(blank=True, null=True)
 
     class Meta:

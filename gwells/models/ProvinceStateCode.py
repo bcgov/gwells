@@ -30,7 +30,7 @@ class ProvinceStateCode(AuditModel):
 
     """
     Tue 13 Feb 22:24:26 2018 GW Disabled for now until Code With Us sprint is complete
-    effective_date = models.DateTimeField(blank=True)
+    effective_date = models.DateTimeField(blank=True, null=True)
     expiry_date    = models.DateTimeField(blank=True, null=True)
     """
     class Meta:
