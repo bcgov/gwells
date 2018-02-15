@@ -242,6 +242,6 @@ class ActivitySubmission(AuditModel):
 
     def __str__(self):
         if self.filing_number:
-            return '%s %d %s %s' % (self.activity_submission_guid, self.filing_number, self.well_activity_type.code, self.street_address)
+            return '%s %d %s %s' % (self.activity_submission_guid, self.filing_number, self.well_activity_type.well_activity_type_code, self.street_address)
         else:
             return '%s %s' % (self.activity_submission_guid, self.street_address)

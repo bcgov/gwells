@@ -21,14 +21,17 @@ class SurficialMaterialCode(AuditModel):
     The surficial material encountered in lithology
     """
     surficial_material_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    code = models.CharField(max_length=10, unique=True)
+    surficial_material_code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
-    sort_order = models.PositiveIntegerField()
+    display_order = models.PositiveIntegerField()
+
+    effective_date = models.DateTimeField(blank=True, null=True)
+    expiry_date    = models.DateTimeField(blank=True, null=True)
 
     class Meta:
-        db_table = 'gwells_surficial_material'
-        ordering = ['sort_order', 'description']
+        db_table = 'surficial_material_code'
+        ordering = ['display_order', 'description']
 
     def __str__(self):
         return self.description

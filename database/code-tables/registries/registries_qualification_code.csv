@@ -1,4 +1,4 @@
-registries_qualification_guid,registries_subactivity_guid,code,description,is_hidden,sort_order,create_date,update_date,create_user,update_user
+registries_qualification_guid,registries_subactivity_guid,code,description,is_hidden,display_order,create_date,update_date,create_user,update_user
 "1f6c3324018c11e8ba890ed5f89f718b","1f6c2aaa018c11e8ba890ed5f89f718b","WAT","Water supply well","N","2","2018-01-01 00:00:00-08","2018-01-01 00:00:00-08","DATALOAD_USER","DATALOAD_USER"
 "1f6c3e46018c11e8ba890ed5f89f718b","1f6c2aaa018c11e8ba890ed5f89f718b","MON","Water supply well","N","2","2018-01-01 00:00:00-08","2018-01-01 00:00:00-08","DATALOAD_USER","DATALOAD_USER"
 "1f6c34aa018c11e8ba890ed5f89f718b","1f6c30c2018c11e8ba890ed5f89f718b","MON","Monitoring well","N","2","2018-01-01 00:00:00-08","2018-01-01 00:00:00-08","DATALOAD_USER","DATALOAD_USER"

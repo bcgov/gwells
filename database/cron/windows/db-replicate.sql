@@ -1,0 +1,1 @@
+SELECT gwells_db_replicate(false);

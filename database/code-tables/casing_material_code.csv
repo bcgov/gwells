@@ -1,4 +1,4 @@
-create_user,create_date,update_user,update_date,casing_material_guid,casing_material_code,description,is_hidden,sort_order
+create_user,create_date,update_user,update_date,casing_material_guid,casing_material_code,description,is_hidden,display_order
 ETL_USER,2017-07-01 01:00:00-07,ETL_USER,2017-07-01 01:00:00-07,6815ce22-6c14-11e7-907b-a6006ad3dba0,STEEL,Steel,f,10
 ETL_USER,2017-07-01 01:00:00-07,ETL_USER,2017-07-01 01:00:00-07,6815d0ca-6c14-11e7-907b-a6006ad3dba0,STL_PUL_OT,Steel Pulled Out,f,20
 ETL_USER,2017-07-01 01:00:00-07,ETL_USER,2017-07-01 01:00:00-07,6815d5f2-6c14-11e7-907b-a6006ad3dba0,PLASTIC,Plastic,f,30
