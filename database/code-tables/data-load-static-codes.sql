@@ -35,7 +35,7 @@
 
 --LICENCE
 \echo '... loading licenced_status_code code table'
-\copy licenced_status_code (licenced_status_guid,code,description,is_hidden,display_order,create_date,update_date,create_user,update_user) from 'licenced_status_code.csv' with header delimiter ',' CSV ;
+\copy licenced_status_code (licenced_status_guid,licenced_status_code,description,is_hidden,display_order,create_date,update_date,create_user,update_user) from 'licenced_status_code.csv' with header delimiter ',' CSV ;
 
 --DRILLING COMPANY
 \echo '... loading drilling_company code table'

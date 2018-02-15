@@ -45,7 +45,7 @@
             <div class="row print-compressed">
                 <div class="col-md-12 col-print-12 print-compressed">
                     <label for="licenced_status">{% verbose_name well "licenced_status" %}:</label>
-                    <span id="licenced_status">{{well.licenced_status.code|default_if_none:'&nbsp;' }}</span>
+                    <span id="licenced_status">{{well.licenced_status.licenced_status_code|default_if_none:'&nbsp;' }}</span>
                 </div>
             </div>
         </div>
