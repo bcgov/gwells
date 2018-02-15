@@ -1,10 +1,11 @@
 from django.urls import reverse
 from django.test import TestCase
 from rest_framework import status
-from rest_framework.test import APITestCase
+from rest_framework.test import APITestCase, APIRequestFactory
 from gwells.models.ProvinceStateCode import ProvinceStateCode
 from gwells.models.User import User
 from registries.models import Organization, Person
+from registries.views import APIPersonListCreateView
 
 # Note: see postman/newman for more API tests.
 # Postman API tests include making requests with incomplete data, missing required fields etc.
@@ -14,9 +15,9 @@ from registries.models import Organization, Person
 
 class AuthenticatedAPITestCase(APITestCase):
     """
-    Creates a user before each test and obtains token for that user.
+    Creates a user before each test and forces authentication with that user.
     Extends APITestCase from Django REST Framework.
-    Not to be inherited into Django unit tests (i.e., compatible with APITestCase not TestCase)
+    Not intended for regular Django TestCase (for DRF tests only)
     """
 
     def setUp(self):
@@ -25,22 +26,25 @@ class AuthenticatedAPITestCase(APITestCase):
         """
 
         # Use djangorestframework-jwt to get a valid token for our user.
-        # This will likely fail to work when Keycloak auth is implemented.
-        auth_url = reverse('get-token')
-        testuser_credentials = {
-            'username': 'testuser',
-            'password': 'douglas'
-        }
+        # This could fail to work when Keycloak auth is implemented.
+        # auth_url = reverse('get-token')
+        # testuser_credentials = {
+        #     'username': 'testuser',
+        #     'password': 'douglas'
+        # }
 
-        self.user = User.objects.create_user(
-            testuser_credentials['username'],
-            'test@example.com',
-            testuser_credentials['password']
-        )
+        # self.user = User.objects.create_user(
+        #     testuser_credentials['username'],
+        #     'test@example.com',
+        #     testuser_credentials['password']
+        # )
 
-        token = self.client.post(auth_url, testuser_credentials, format='json').data['token']
+        # token = self.client.post(auth_url, testuser_credentials, format='json').data['token']
 
-        self.client.credentials(HTTP_AUTHORIZATION='JWT ' + token)
+        # self.client.credentials(HTTP_AUTHORIZATION='JWT ' + token)
+        
+        self.user = User.objects.create_user('testuser', 'test@example.com', 'douglas')
+        self.client.force_authenticate(self.user)
 
 
 # Django unit tests
@@ -55,7 +59,7 @@ class OrganizationTests(TestCase):
         province = ProvinceStateCode.objects.create(
             code = 'BC',
             description = 'British Columbia',
-            sort_order = 1
+            display_order = 1
         )
 
         Organization.objects.create(
@@ -103,7 +107,7 @@ class APIOrganizationTests(AuthenticatedAPITestCase):
         province = ProvinceStateCode.objects.create(
             code = 'BC',
             description = 'British Columbia',
-            sort_order = 1
+            display_order = 1
         )
 
         initial_data = {
@@ -253,7 +257,13 @@ class APIPersonTests(AuthenticatedAPITestCase):
     Tests for Person resource endpoint
     """
 
-    created_guid = None
+    def setUp(self):
+        self.factory = APIRequestFactory()
+        self.initial_data = {
+            'first_name': 'Bobby',
+            'surname': 'Driller'
+        }
+        super().setUp()
 
     def test_create_person(self):
         url = reverse('person-list')
@@ -377,19 +387,51 @@ class APIPersonTests(AuthenticatedAPITestCase):
         Test that AuditModel fields (create_user, create_date etc.)
         are updated when Person objects are created.
         """
-        initial_data = {
-            'first_name': 'Bobby',
-            'surname': 'Driller'
-        }
-        
-        create_url = reverse('person-list')
-        new_object = self.client.post(create_url, initial_data, format='json')
-        created_guid = new_object.data['person_guid']
+        view = APIPersonListCreateView.as_view()
+        post_url = reverse('person-list')
+        request = self.factory.post(post_url, self.initial_data)
+        request.user = self.user
+        response = view(request)
+        created_guid = response.data['person_guid']
+    
+        person = Person.objects.get(person_guid=created_guid)
 
-        retrieve_url = reverse('person-detail', kwargs={'person_guid': created_guid})
-        response = self.client.get(retrieve_url, format='json')
+        self.assertEqual(person.create_user, self.user.username)
 
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+    def test_create_person_not_authenticated(self):
+        """
+        Ensure that users who are not authenticated cannot create Person objects
+        """
+        self.client.force_authenticate(user=None)
+        url = reverse('person-list')
+        data = {'first_name': 'Bobby', 'surname': 'Driller'}
 
-        # TODO: When authentication is enforced, this line will need to change
-        self.assertEqual(response.data['create_user'], self.user.username)
+        response = self.client.post(url, data, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_unsafe_methods_by_unauthorized_users(self):
+        """
+        Ensure that users who are not authenticated cannot perform "unsafe" actions
+        like UPDATE, PUT, DELETE on an object that is already in database
+        """
+        self.client.force_authenticate(user=None)
+        url = reverse('person-list')
+        person_object = Person.objects.create(first_name='Bobby', surname='Driller')
+        object_url = reverse('person-detail', kwargs={'person_guid':person_object.person_guid})
+
+        update_response = self.client.patch(object_url, {'first_name':'Billy'}, format='json')
+        put_response = self.client.put(
+            object_url,
+            {
+                'person_guid':person_object.person_guid,
+                'first_name':'Betty',
+                'surname':'McDrillerson'
+            },
+            format='json'
+        )
+        delete_response = self.client.delete(object_url, format='json')
+
+        self.assertEqual(update_response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(put_response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(delete_response.status_code, status.HTTP_401_UNAUTHORIZED)
