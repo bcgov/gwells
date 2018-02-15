@@ -62,7 +62,7 @@ class ActivitySubmissionScreenIntakeForm(forms.ModelForm):
 
         screen_intake_method = None
         try:
-            screen_intake_method = ScreenIntakeMethod.objects.get(code='SCREEN')
+            screen_intake_method = ScreenIntakeMethodCode.objects.get(code='SCREEN')
         except Exception as e:
             errors.append('Configuration error: Intake Method for Screen does not exist, please contact the administrator.')
 
@@ -80,13 +80,13 @@ class ActivitySubmissionScreenIntakeForm(forms.ModelForm):
                 self.add_error('screen_bottom', 'This field is required if Intake is a Screen.')
 
         try:
-            if screen_material == ScreenMaterial.objects.get(code='OTHER') and not other_screen_material:
+            if screen_material == ScreenMaterialCode.objects.get(code='OTHER') and not other_screen_material:
                 self.add_error('other_screen_material', 'This field is required.')
         except Exception as e:
             errors.append('Configuration error: Other Screen Material does not exist, please contact the administrator.')
 
         try:
-            if screen_bottom == ScreenBottom.objects.get(code='OTHER') and not other_screen_bottom:
+            if screen_bottom == ScreenBottomCode.objects.get(code='OTHER') and not other_screen_bottom:
                 self.add_error('other_screen_bottom', 'This field is required.')
         except Exception as e:
             errors.append('Configuration error: Other Screen Bottom does not exist, please contact the administrator.')

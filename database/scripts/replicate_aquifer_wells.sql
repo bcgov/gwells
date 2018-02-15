@@ -10,10 +10,10 @@ BEGIN
     aquifer_well_guid                             , --> PK
     aquifer_id                                    ,
     well_tag_number                               ,  -->FK for now -- moving to well_guid later
-    who_created                                   ,
-    when_created                                  ,
-    who_updated                                   ,
-    when_updated)
+    create_user                                   ,
+    create_date                                  ,
+    update_user                                   ,
+    update_date)
   SELECT
     gen_random_uuid()                             ,
     aws.aquifer_id                                ,
@@ -21,7 +21,7 @@ BEGIN
     aws.who_created                               ,
     aws.when_created                              ,
     coalesce(aws.who_updated, aws.who_created)    ,
-    coalesce(aws.when_updated, aws.when_created)
+    coalesce(aws.when_updated,aws.when_created)
   FROM wells.gw_aquifer_wells aws INNER JOIN xform_gwells_well xform ON aws.well_id = xform.well_id;
 
   raise notice '...gw_aquifer_well data imported';
