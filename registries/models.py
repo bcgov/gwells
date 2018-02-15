@@ -314,12 +314,10 @@ class RegistriesApplicationStatus(AuditModel):
             ,self.effective_date
             ,self.expired_date
             )
-
+"""
 class DrillerRegister(models.Model):
-    """
-    Consolidated view of Driller Register
-    """
-    registration_no = models.CharField(max_length=15,blank=True, null=True)    
+     Consolidated view of Driller Register
+     registration_no = models.CharField(max_length=15,blank=True, null=True)    
     registration_date = models.DateField(blank=True, null=True)
     status_code = models.CharField(max_length=10)
     register_removal_date  = models.DateField(blank=True, null=True,verbose_name="Date of Removal from Register")
@@ -412,10 +410,10 @@ class DrillerRegister(models.Model):
     class Meta:
         managed = False
         db_table = 'registries_driller_register'
-        """ 
+
         ordering = ['display_order', 'description']
         verbose_name_plural = 'Possible statuses of Applications'
-        """
-
+ 
     def __str__(self):
         return self.registration_no
+"""        
