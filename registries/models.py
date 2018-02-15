@@ -78,6 +78,12 @@ class ActivityCode(AuditModel):
     is_hidden = models.BooleanField(default=False)
     display_order = models.PositiveIntegerField()
 
+    """
+    Tue 13 Feb 22:24:26 2018 GW Disabled for now until Code With Us sprint is complete
+    effective_date = models.DateTimeField(blank=True)
+    expiry_date    = models.DateTimeField(blank=True, null=True)
+    """
+
     class Meta:
         db_table = 'registries_activity_code'
         ordering = ['display_order', 'description']
@@ -97,6 +103,12 @@ class SubactivityCode(AuditModel):
     is_hidden = models.BooleanField(default=False)
     display_order = models.PositiveIntegerField()
 
+    """
+    Tue 13 Feb 22:24:26 2018 GW Disabled for now until Code With Us sprint is complete
+    effective_date = models.DateTimeField(blank=True)
+    expiry_date    = models.DateTimeField(blank=True, null=True)
+    """
+
     class Meta:
         db_table = 'registries_subactivity_code'
         ordering = ['display_order', 'description']
@@ -106,7 +118,7 @@ class SubactivityCode(AuditModel):
         return self.description
 
 
-class Qualificationcode(AuditModel):
+class QualificationCode(AuditModel):
     """
     Type of well for which the activity is qualified.
     """
@@ -116,6 +128,12 @@ class Qualificationcode(AuditModel):
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     display_order = models.PositiveIntegerField()
+
+    """
+    Tue 13 Feb 22:24:26 2018 GW Disabled for now until Code With Us sprint is complete
+    effective_date = models.DateTimeField(blank=True)
+    expiry_date    = models.DateTimeField(blank=True, null=True)
+    """
 
     class Meta:
         db_table = 'registries_qualification_code'
@@ -181,6 +199,12 @@ class RegistriesStatusCode(AuditModel):
     is_hidden = models.BooleanField(default=False)
     display_order = models.PositiveIntegerField()
 
+    """
+    Tue 13 Feb 22:24:26 2018 GW Disabled for now until Code With Us sprint is complete
+    effective_date = models.DateTimeField(blank=True)
+    expiry_date    = models.DateTimeField(blank=True, null=True)
+    """
+
     class Meta:
         db_table = 'registries_status_code'
         ordering = ['display_order', 'description']
@@ -237,7 +261,6 @@ class Register(AuditModel):
             ,self.registries_application.person.surname
             )
 
-
 class ApplicationStatusCode(AuditModel):
     """
     Status of Applications for the Well Driller and Pump Installer Registries
@@ -247,6 +270,12 @@ class ApplicationStatusCode(AuditModel):
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     display_order = models.PositiveIntegerField()
+
+    """
+    Tue 13 Feb 22:24:26 2018 GW Disabled for now until Code With Us sprint is complete
+    effective_date = models.DateTimeField(blank=True)
+    expiry_date    = models.DateTimeField(blank=True, null=True)
+    """
 
     class Meta:
         db_table = 'registries_application_status_code'
@@ -285,7 +314,6 @@ class RegistriesApplicationStatus(AuditModel):
             ,self.effective_date
             ,self.expired_date
             )
-
 
 class DrillerRegister(models.Model):
     """
