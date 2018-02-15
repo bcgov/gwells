@@ -1,4 +1,4 @@
-intended_water_use_guid,code,description,is_hidden,display_order,create_date,update_date,create_user,update_user
+intended_water_use_guid,intended_water_use_code,description,is_hidden,display_order,create_date,update_date,create_user,update_user
 "932775ca47de11e7a91992ebcb67fe33","COM","Commercial and Industrial","N","100","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
 "9327783647de11e7a91992ebcb67fe33","DOM","Private Domestic","N","100","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
 "9327793a47de11e7a91992ebcb67fe33","IRR","Irrigation","N","100","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"

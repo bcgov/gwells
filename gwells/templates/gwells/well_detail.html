@@ -191,7 +191,7 @@
                                     </tr>
                                     <tr>
                                         <th scope="row">{% verbose_name well "land_district" %}</th>
-                                        <td><span id="land_district">{{well.land_district.code|default_if_none:'&nbsp;'}}&nbsp;{{well.land_district.name|default_if_none:'&nbsp;'}}</span></td>
+                                        <td><span id="land_district">{{well.land_district.land_district_code|default_if_none:'&nbsp;'}}&nbsp;{{well.land_district.name|default_if_none:'&nbsp;'}}</span></td>
                                     </tr>
                                     <tr>
                                         <th scope="row" style="width:240px;">{% verbose_name well "legal_pid" %}</th>
