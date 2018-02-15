@@ -21,7 +21,7 @@ class WellStatusCode(AuditModel):
     Well Status.
     """
     well_status_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    code = models.CharField(unique=True, max_length=10)
+    well_status_code = models.CharField(unique=True, max_length=10)
     description = models.CharField(max_length=255)
     is_hidden = models.BooleanField(default=False)
     display_order = models.PositiveIntegerField()
@@ -31,7 +31,7 @@ class WellStatusCode(AuditModel):
 
     class Meta:
         db_table = 'well_status_code'
-        ordering = ['display_order', 'code']
+        ordering = ['display_order', 'well_status_code']
 
     def save(self, *args, **kwargs):
         self.validate()

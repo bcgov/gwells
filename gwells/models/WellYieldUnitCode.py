@@ -21,7 +21,7 @@ class WellYieldUnitCode(AuditModel):
     Units of Well Yield.
     """
     well_yield_unit_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    code = models.CharField(max_length=10, unique=True)
+    well_yield_unit_code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
 

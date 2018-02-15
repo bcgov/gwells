@@ -21,7 +21,7 @@
             <span id="well_class">{{ activity_submission.well_class.description }}</span>
         </div>
         <div class="col-md-6">
-            {% if activity_submission.well_class.code == 'WATER_SUPL' %}
+            {% if activity_submission.well_class.well_class_code == 'WATER_SUPL' %}
             <label for="intended_water_use">Intended water use:</label>
             <span id="intended_water_use">{{ activity_submission.intended_water_use.description }}</span>            
             {% else %}

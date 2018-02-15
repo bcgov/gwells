@@ -1,4 +1,4 @@
-well_subclass_guid,code,description,is_hidden,display_order,well_class_guid,create_date,update_date,create_user,update_user
+well_subclass_guid,well_subclass_code,description,is_hidden,display_order,well_class_guid,create_date,update_date,create_user,update_user
 "5a3152c847e711e7a91992ebcb67fe33","BOREHOLE","Borehole","N","100",,"2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
 "5a31547647e711e7a91992ebcb67fe33","DOMESTIC","Domestic","N","100",,"2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
 "5a31562e47e711e7a91992ebcb67fe33","TEST_PIT","Test Pit","N","100",,"2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"

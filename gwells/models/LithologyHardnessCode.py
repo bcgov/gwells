@@ -21,7 +21,7 @@ class LithologyHardnessCode(AuditModel):
     Hardness of the lithology
     """
     lithology_hardness_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    code = models.CharField(max_length=10, unique=True)
+    lithology_hardness_code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
     display_order = models.PositiveIntegerField()
