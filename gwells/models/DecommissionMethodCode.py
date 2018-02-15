@@ -23,7 +23,7 @@ class DecommissionMethodCode(AuditModel):
     status_flag = models.BooleanField(default=False, choices=((False, 'N'), (True, 'Y')))
     display_order = models.PositiveIntegerField()
 
-    effective_date = models.DateTimeField(blank=True)
+    effective_date = models.DateTimeField(blank=True, null=True)
     expiry_date    = models.DateTimeField(blank=True, null=True)
 
     class Meta:
