@@ -92,7 +92,7 @@
 
 --LITHOLOGY COLOUR
 \echo '... loading lithology_colour_code code table'
-\copy lithology_colour_code (create_user,create_date,update_user,update_date,lithology_colour_guid,code,description,is_hidden,display_order) from 'lithology_colour_code.csv' with header delimiter ',' CSV ;
+\copy lithology_colour_code (create_user,create_date,update_user,update_date,lithology_colour_guid,lithology_colour_code,description,is_hidden,display_order) from 'lithology_colour_code.csv' with header delimiter ',' CSV ;
 
 --LITHOLOGY HARDNESS
 \echo '... loading lithology_hardness_code code table'
