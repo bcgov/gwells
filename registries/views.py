@@ -36,7 +36,6 @@ class AuditUpdateMixin(UpdateModelMixin):
         )
 
 
-
 class APIOrganizationListCreateView(AuditCreateMixin, ListCreateAPIView):
     """
     get:
@@ -145,6 +144,7 @@ class APIPersonRetrieveUpdateDestroyView(AuditUpdateMixin, RetrieveUpdateDestroy
 # Placeholder for base url.
 def index(request):
     return HttpResponse("TEST: Driller Register app home index.")
+
 
 #
 # APPLICATION ENDPOINT VIEWS
