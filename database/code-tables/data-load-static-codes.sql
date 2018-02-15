@@ -3,7 +3,7 @@
 
 --INTENDED USE
 \echo '... loading intended_water_use_code code table'
-\copy intended_water_use_code (intended_water_use_guid,code,description,is_hidden,display_order,create_date,update_date,create_user,update_user) from 'intended_water_use_code.csv' with header delimiter ',' CSV ;
+\copy intended_water_use_code (intended_water_use_guid,intended_water_use_code,description,is_hidden,display_order,create_date,update_date,create_user,update_user) from 'intended_water_use_code.csv' with header delimiter ',' CSV ;
 
 --CLASS
 \echo '... loading gwells_well_class_code code table'
@@ -100,7 +100,7 @@
 
 --LAND DISTRICT
 \echo '... loading land_district_code code table'
-\copy land_district_code (create_user,create_date,update_user,update_date,land_district_guid,code,name,display_order) from 'land_district_code.csv' with header delimiter ',' CSV ;
+\copy land_district_code (create_user,create_date,update_user,update_date,land_district_guid,land_district_code,name,display_order) from 'land_district_code.csv' with header delimiter ',' CSV ;
 
 --LITHOLOGY MATERIAL
 \echo '... loading lithology_material_code code table'
