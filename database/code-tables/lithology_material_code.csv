@@ -1,4 +1,4 @@
-create_user,create_date,update_user,update_date,lithology_material_guid,code,description,sort_order,status_flag
+create_user,create_date,update_user,update_date,lithology_material_guid,lithology_material_code,description,display_order,status_flag
 PROXY_WELLS,2008-01-07 13:06:21-08,PROXY_WELLS,2008-01-10 16:52:25-08,851e3489-ea3b-4231-834d-e4ae1d9066c4,51,peat,100,t
 PROXY_WELLS,2008-01-07 13:11:25-08,PROXY_WELLS,2008-01-10 16:52:38-08,b9cd76f1-f5c1-4bc8-b579-f28a8d1f2fc2,52,pea gravel,100,t
 PROXY_WELLS,2008-01-07 13:23:15-08,PROXY_WELLS,2008-01-10 16:52:52-08,9f672cc4-ed50-4754-a374-548aa79d4202,53,feldspar,100,t

@@ -1,4 +1,4 @@
-lithology_moisture_guid,code,description,is_hidden,sort_order,create_date,update_date,create_user,update_user
+lithology_moisture_guid,lithology_moisture_code,description,is_hidden,display_order,create_date,update_date,create_user,update_user
 "34d295a862a611e7907ba6006ad3dba0","Dry","Dry","N","10","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
 "34d2985062a611e7907ba6006ad3dba0","Wet","Wet","N","20","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
 "34d2995462a611e7907ba6006ad3dba0","Moist","Moist","N","30","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"

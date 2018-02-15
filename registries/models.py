@@ -76,11 +76,17 @@ class ActivityCode(AuditModel):
     code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
-    sort_order = models.PositiveIntegerField()
+    display_order = models.PositiveIntegerField()
+
+    """
+    Tue 13 Feb 22:24:26 2018 GW Disabled for now until Code With Us sprint is complete
+    effective_date = models.DateTimeField(blank=True)
+    expiry_date    = models.DateTimeField(blank=True, null=True)
+    """
 
     class Meta:
         db_table = 'registries_activity_code'
-        ordering = ['sort_order', 'description']
+        ordering = ['display_order', 'description']
         verbose_name_plural = 'Possible types of restricted activity, related to well drilling and pump installing'
 
     def __str__(self):
@@ -95,18 +101,24 @@ class SubactivityCode(AuditModel):
     code = models.CharField(max_length=10)
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
-    sort_order = models.PositiveIntegerField()
+    display_order = models.PositiveIntegerField()
+
+    """
+    Tue 13 Feb 22:24:26 2018 GW Disabled for now until Code With Us sprint is complete
+    effective_date = models.DateTimeField(blank=True)
+    expiry_date    = models.DateTimeField(blank=True, null=True)
+    """
 
     class Meta:
         db_table = 'registries_subactivity_code'
-        ordering = ['sort_order', 'description']
+        ordering = ['display_order', 'description']
         verbose_name_plural = 'Possible subtypes of restricted activity, under a given Activity'
 
     def __str__(self):
         return self.description
 
 
-class Qualificationcode(AuditModel):
+class QualificationCode(AuditModel):
     """
     Type of well for which the activity is qualified.
     """
@@ -115,11 +127,17 @@ class Qualificationcode(AuditModel):
     code = models.CharField(max_length=10)
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
-    sort_order = models.PositiveIntegerField()
+    display_order = models.PositiveIntegerField()
+
+    """
+    Tue 13 Feb 22:24:26 2018 GW Disabled for now until Code With Us sprint is complete
+    effective_date = models.DateTimeField(blank=True)
+    expiry_date    = models.DateTimeField(blank=True, null=True)
+    """
 
     class Meta:
         db_table = 'registries_qualification_code'
-        ordering = ['sort_order', 'description']
+        ordering = ['display_order', 'description']
         verbose_name_plural = 'Possible qualifications, under a given Activity and Subactivity'
 
     def __str__(self):
@@ -179,11 +197,17 @@ class RegistriesStatusCode(AuditModel):
     code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
-    sort_order = models.PositiveIntegerField()
+    display_order = models.PositiveIntegerField()
+
+    """
+    Tue 13 Feb 22:24:26 2018 GW Disabled for now until Code With Us sprint is complete
+    effective_date = models.DateTimeField(blank=True)
+    expiry_date    = models.DateTimeField(blank=True, null=True)
+    """
 
     class Meta:
         db_table = 'registries_status_code'
-        ordering = ['sort_order', 'description']
+        ordering = ['display_order', 'description']
         verbose_name_plural = 'Possible Status Codes of Register Entries'
 
     def __str__(self):
@@ -197,11 +221,11 @@ class RegistriesRemovalReason(AuditModel):
     code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
-    sort_order = models.PositiveIntegerField()
+    display_order = models.PositiveIntegerField()
 
     class Meta:
         db_table = 'registries_removal_reason_code'
-        ordering = ['sort_order', 'description']
+        ordering = ['display_order', 'description']
         verbose_name_plural = 'Possible reasons for removal from either of the Registers'
 
     def __str__(self):
@@ -237,7 +261,6 @@ class Register(AuditModel):
             ,self.registries_application.person.surname
             )
 
-
 class ApplicationStatusCode(AuditModel):
     """
     Status of Applications for the Well Driller and Pump Installer Registries
@@ -246,11 +269,17 @@ class ApplicationStatusCode(AuditModel):
     code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
-    sort_order = models.PositiveIntegerField()
+    display_order = models.PositiveIntegerField()
+
+    """
+    Tue 13 Feb 22:24:26 2018 GW Disabled for now until Code With Us sprint is complete
+    effective_date = models.DateTimeField(blank=True)
+    expiry_date    = models.DateTimeField(blank=True, null=True)
+    """
 
     class Meta:
         db_table = 'registries_application_status_code'
-        ordering = ['sort_order', 'description']
+        ordering = ['display_order', 'description']
         verbose_name_plural = 'Possible statuses of Applications'
 
     def __str__(self):
@@ -285,7 +314,6 @@ class RegistriesApplicationStatus(AuditModel):
             ,self.effective_date
             ,self.expired_date
             )
-
 
 class DrillerRegister(models.Model):
     """
@@ -385,7 +413,7 @@ class DrillerRegister(models.Model):
         managed = False
         db_table = 'registries_driller_register'
         """ 
-        ordering = ['sort_order', 'description']
+        ordering = ['display_order', 'description']
         verbose_name_plural = 'Possible statuses of Applications'
         """
 
