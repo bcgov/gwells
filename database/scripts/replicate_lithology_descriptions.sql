@@ -57,11 +57,11 @@ BEGIN
   FROM wells.wells_lithology_descriptions wld
   INNER JOIN xform_gwells_well xform ON xform.well_id=wld.well_id
   INNER JOIN wells.wells_wells wells ON wells.well_id=wld.well_id
-  LEFT OUTER JOIN lithology_hardness_code lithology_hardness ON UPPER(wld.relative_hardness_code)=UPPER(lithology_hardness.code)
-  LEFT OUTER JOIN lithology_colour_code lithology_colour ON UPPER(wld.lithology_colour_code)=UPPER(lithology_colour.code)
-  LEFT OUTER JOIN well_yield_unit_code well_yield_unit ON UPPER(wld.water_bearing_est_flw_unt_cd)=UPPER(well_yield_unit.code)
-  LEFT OUTER JOIN lithology_material_code lithology_material ON UPPER(wld.lithology_material_code)=UPPER(lithology_material.code)
-  LEFT OUTER JOIN lithology_description_code lithology_description_code ON UPPER(wld.lithology_code)=UPPER(lithology_description_code.code);
+  LEFT OUTER JOIN lithology_hardness_code lithology_hardness ON UPPER(wld.relative_hardness_code)=UPPER(lithology_hardness.lithology_hardness_code)
+  LEFT OUTER JOIN lithology_colour_code lithology_colour ON UPPER(wld.lithology_colour_code)=UPPER(lithology_colour.lithology_colour_code)
+  LEFT OUTER JOIN well_yield_unit_code well_yield_unit ON UPPER(wld.water_bearing_est_flw_unt_cd)=UPPER(well_yield_unit.well_yield_unit_code)
+  LEFT OUTER JOIN lithology_material_code lithology_material ON UPPER(wld.lithology_material_code)=UPPER(lithology_material.lithology_material_code)
+  LEFT OUTER JOIN lithology_description_code lithology_description_code ON UPPER(wld.lithology_code)=UPPER(lithology_description_code.lithology_description_code);
 
   raise notice '...wells_lithology_descriptions data imported';
   SELECT count(*) from lithology_description into row_count;

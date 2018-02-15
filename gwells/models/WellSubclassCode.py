@@ -23,18 +23,21 @@ class WellSubclassCode(AuditModel):
     """
     well_subclass_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     well_class = models.ForeignKey(WellClassCode, null=True, db_column='well_class_guid', on_delete=models.CASCADE, blank=True)
-    code = models.CharField(max_length=10)
+    well_subclass_code = models.CharField(max_length=10)
     description = models.CharField(max_length=100)
     is_hidden = models.BooleanField(default=False)
-    sort_order = models.PositiveIntegerField()
+    display_order = models.PositiveIntegerField()
+
+    effective_date = models.DateTimeField(blank=True)
+    expiry_date    = models.DateTimeField(blank=True, null=True)
 
     class Meta:
         db_table = 'well_subclass_code'
-        ordering = ['sort_order', 'description']
+        ordering = ['display_order', 'description']
 
     def validate_unique(self, exclude=None):
-        qs = Room.objects.filter(name=self.code)
-        if qs.filter(well_class__code=self.well_class__code).exists():
+        qs = Room.objects.filter(name=self.well_subclass_code)
+        if qs.filter(well_class__well_class_code=self.well_class__well_class_code).exists():
             raise ValidationError('Code must be unique per Well Class')
 
     def save(self, *args, **kwargs):

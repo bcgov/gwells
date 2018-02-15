@@ -20,7 +20,7 @@ SELECT
 ,org.name           AS org_name                 
 ,org.street_address        
 ,org.city                  
-,prov.code AS prov_state_code 
+,prov.province_state_code AS prov_state_code 
 ,prov.description as prov_state_desc 
 ,org.postal_code           
 ,org.main_tel              

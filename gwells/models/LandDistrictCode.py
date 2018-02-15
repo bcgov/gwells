@@ -20,13 +20,16 @@ class LandDistrictCode(AuditModel):
     Lookup of Legal Land Districts.
     """
     land_district_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    code = models.CharField(max_length=10, unique=True)
+    land_district_code = models.CharField(max_length=10, unique=True)
     name = models.CharField(max_length=255)
-    sort_order = models.PositiveIntegerField()
+    display_order = models.PositiveIntegerField()
+
+    effective_date = models.DateTimeField(blank=True)
+    expiry_date    = models.DateTimeField(blank=True, null=True)
 
     class Meta:
         db_table = 'land_district_code'
-        ordering = ['sort_order', 'name']
+        ordering = ['display_order', 'name']
 
     def __str__(self):
         return self.name
