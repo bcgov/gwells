@@ -461,7 +461,7 @@
                     <label for="drilling_method">{% verbose_name well "drilling_method" %}:</label>
                 </div>
                 <div class="col-md-5 col-print-5 print-compressed">
-                    <span id="drilling_method">{{well.drilling_method.code|default_if_none:'&nbsp;' }}</span>
+                    <span id="drilling_method">{{well.drilling_method.drilling_method_code|default_if_none:'&nbsp;' }}</span>
                 </div>
             </div>
             <div class="row print-compressed">
@@ -817,7 +817,7 @@
             <div class="row print-compressed">
                 <div class="col-md-12 col-print-12 print-compressed">
                     <label for="method_of_closure">{% verbose_name well "decommission_method" %}:</label>
-                    <span id="method_of_closure">{{well.decommission_method.code|default_if_none:'&nbsp;'}}</span>
+                    <span id="method_of_closure">{{well.decommission_method.decommission_method_code|default_if_none:'&nbsp;'}}</span>
                 </div>
             </div>
             <div class="row">

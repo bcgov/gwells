@@ -23,11 +23,11 @@
 
 --DRILLING METHOD
 \echo '... loading gwells_drilling_method_code code table'
-\copy drilling_method_code (drilling_method_guid,code,description,is_hidden,display_order,create_date,update_date,create_user,update_user) from 'drilling_method_code.csv' with header delimiter ',' CSV ;
+\copy drilling_method_code (drilling_method_guid,drilling_method_code,description,is_hidden,display_order,create_date,update_date,create_user,update_user) from 'drilling_method_code.csv' with header delimiter ',' CSV ;
 
 --GROUND ELEVATION
 \echo '... loading gwells_ground_elevation_method_code code table'
-\copy ground_elevation_method_code (ground_elevation_method_guid,code,description,is_hidden,display_order,create_date,update_date,create_user,update_user) from 'ground_elevation_method_code.csv' with header delimiter ',' CSV ;
+\copy ground_elevation_method_code (ground_elevation_method_guid,ground_elevation_method_code,description,is_hidden,display_order,create_date,update_date,create_user,update_user) from 'ground_elevation_method_code.csv' with header delimiter ',' CSV ;
 
 --STATUS
 \echo '... loading well_status_code code table'
@@ -112,7 +112,7 @@
 
 --DECOMMISSION METHOD
 \echo '... loading decommission_method_code code table'
-\copy decommission_method_code (create_user,create_date,update_user,update_date,code,description,status_flag,display_order,decommission_method_guid) from 'decommission_method_code.csv' with header delimiter ',' CSV ;
+\copy decommission_method_code (create_user,create_date,update_user,update_date,decommission_method_code,description,status_flag,display_order,decommission_method_guid) from 'decommission_method_code.csv' with header delimiter ',' CSV ;
 
 --OBSERVATION WELL STATUS
 \echo '... loading obs_well_status_code code table'
@@ -120,7 +120,7 @@
 
 -- BEDROCK STATUS (currently not used)
 -- \echo '... loading bedrock_material_code code table'
--- \copy bedrock_material_code (bedrock_material_guid,code,description,is_hidden,display_order,create_date,update_date,create_user,update_user) from 'bedrock_material_code.csv' with header delimiter ',' CSV ;
+-- \copy bedrock_material_code (bedrock_material_guid,bedrock_material_code,description,is_hidden,display_order,create_date,update_date,create_user,update_user) from 'bedrock_material_code.csv' with header delimiter ',' CSV ;
 
 
 \echo 'Finshed copy of static code tables.'
