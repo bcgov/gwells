@@ -2,12 +2,46 @@ from django.urls import reverse
 from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APITestCase
-from registries.models import Organization, Person
 from gwells.models.ProvinceStateCode import ProvinceStateCode
+from gwells.models.User import User
+from registries.models import Organization, Person
 
 # Note: see postman/newman for more API tests.
 # Postman API tests include making requests with incomplete data, missing required fields etc.
 # They are located at {base-dir}/api-tests/
+
+# Base classes
+
+class AuthenticatedAPITestCase(APITestCase):
+    """
+    Creates a user before each test and obtains token for that user.
+    Extends APITestCase from Django REST Framework.
+    Not to be inherited into Django unit tests (i.e., compatible with APITestCase not TestCase)
+    """
+
+    def setUp(self):
+        """
+        Set up authenticated test cases.
+        """
+
+        # Use djangorestframework-jwt to get a valid token for our user.
+        # This will likely fail to work when Keycloak auth is implemented.
+        auth_url = reverse('get-token')
+        testuser_credentials = {
+            'username': 'testuser',
+            'password': 'douglas'
+        }
+
+        self.user = User.objects.create_user(
+            testuser_credentials['username'],
+            'test@example.com',
+            testuser_credentials['password']
+        )
+
+        token = self.client.post(auth_url, testuser_credentials, format='json').data['token']
+
+        self.client.credentials(HTTP_AUTHORIZATION='JWT ' + token)
+
 
 # Django unit tests
 
@@ -53,12 +87,11 @@ class PersonTests(TestCase):
 
 # Django REST Framework tests
 
-class APIOrganizationTests(APITestCase):
+class APIOrganizationTests(AuthenticatedAPITestCase):
     """
-    Tests for the Organization resource endpoint
+    Tests for requests to the Organization resource endpoint
 
     Includes tests for create, list, update (patch and put), and delete
-    using Django REST Framework's APIClient
     """
 
     def test_create_organization(self):
@@ -212,10 +245,10 @@ class APIOrganizationTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # TODO: When authentication is enforced, this line will need to change
-        self.assertEqual(response.data['create_user'], 'AnonymousUser')
+        self.assertEqual(response.data['create_user'], self.user.username)
 
 
-class APIPersonTests(APITestCase):
+class APIPersonTests(AuthenticatedAPITestCase):
     """
     Tests for Person resource endpoint
     """
@@ -359,4 +392,4 @@ class APIPersonTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # TODO: When authentication is enforced, this line will need to change
-        self.assertEqual(response.data['create_user'], 'AnonymousUser')
+        self.assertEqual(response.data['create_user'], self.user.username)

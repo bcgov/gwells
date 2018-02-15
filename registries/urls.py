@@ -33,7 +33,7 @@ urlpatterns = [
     url(r'^docs/$', get_swagger_view(title='GWELLS Driller registry'), name='api-docs'),
 
     # Temporary JWT Auth endpoint
-    url(r'^api-token-auth/', obtain_jwt_token),
+    url(r'^api-token-auth/', obtain_jwt_token, name='get-token'),
 
     # Base gwells index
     url(r'^$', views.index, name='index'),
