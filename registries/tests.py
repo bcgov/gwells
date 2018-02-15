@@ -1,3 +1,4 @@
+import uuid
 from django.urls import reverse
 from django.test import TestCase
 from rest_framework import status
@@ -5,7 +6,7 @@ from rest_framework.test import APITestCase, APIRequestFactory
 from gwells.models.ProvinceStateCode import ProvinceStateCode
 from gwells.models.User import User
 from registries.models import Organization, Person
-from registries.views import APIPersonListCreateView
+from registries.views import APIPersonListCreateView, APIPersonRetrieveUpdateDestroyView
 
 # Note: see postman/newman for more API tests.
 # Postman API tests include making requests with incomplete data, missing required fields etc.
@@ -334,7 +335,7 @@ class APIPersonTests(AuthenticatedAPITestCase):
         self.assertEqual(response.data['first_name'], initial_data['first_name'])
         self.assertEqual(response.data['surname'], new_data['surname'])
 
-    def test_put_person(self):
+    def test_update_person_by_put(self):
         initial_data = {
             'first_name': 'Bobby',
             'surname': 'Driller'
@@ -358,6 +359,23 @@ class APIPersonTests(AuthenticatedAPITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['first_name'], new_data['first_name'])
         self.assertEqual(response.data['surname'], new_data['surname'])
+
+    # NOTE: Create object by put request is not implemented.
+    # def test_create_person_by_put(self):
+    #     view = APIPersonRetrieveUpdateDestroyView.as_view()
+    #     new_guid = uuid.uuid4()
+    #     print(new_guid)
+    #     url = reverse('person-detail', kwargs={'person_guid': new_guid})
+    #     data = self.initial_data
+    #     data['person_guid'] = new_guid
+
+    #     request = self.factory.put(url, data, format='json')
+    #     request.user = self.user
+
+    #     response = view(request)
+
+    #     self.assertEqual(response.data['first_name'], self.initial_data['first_name'])
+    #     self.assertEqual(Person.objects.get(person_guid=new_guid).first_name, self.initial_data['first_name'])
 
     def test_delete_person(self):
         initial_data = {
