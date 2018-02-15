@@ -41,7 +41,7 @@ Please note that the [populate-registries-from-xform.sql](../database/scripts/re
 
 We do not wish these files up on github, so please email the [Architect Owner] (gary.t.wong@gov.bc.ca) if you require them.  Alternatively, request the .json export of the data, using them as fixtures.  
 
-Please note that there is a dependency on the ProvinceState model of gwells, so any exports of registries will need this as well, for example:
+Please note that there is a dependency on the ProvinceStateCode model of gwells, so any exports of registries will need this as well, for example:
 ```
-python manage.py dumpdata registries gwells.ProvinceState
+python manage.py dumpdata registries gwells.ProvinceStateCode
 ```
