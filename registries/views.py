@@ -1,5 +1,6 @@
 from django.http import HttpResponse
 from django.utils import timezone
+from rest_framework import filters
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.response import Response
 from rest_framework.mixins import CreateModelMixin, UpdateModelMixin
@@ -84,9 +85,12 @@ class APIPersonListCreateView(AuditCreateMixin, ListCreateAPIView):
     Creates a new person record
     """
 
-    # Default queryset. Anonymous users should only see active drillers.
+    serializer_class = PersonSerializer
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('first_name', 'surname', 'companies__org__name')
+    max_limit = 1
+
     def get_queryset(self):
-        # if Group.objects.get(name='Gwells_Admin').user_set.filter(id=self.request.user.id).exists():
         if (self.request.user.is_authenticated()):
             queryset = Person.objects \
                     .all() \
@@ -111,11 +115,18 @@ class APIPersonListCreateView(AuditCreateMixin, ListCreateAPIView):
                     )
         return queryset
 
-    serializer_class = PersonSerializer
+    
 
     def list(self, request):
         queryset = self.get_queryset()
-        serializer = PersonListSerializer(queryset, many=True)
+        filtered_queryset = self.filter_queryset(queryset)
+
+        page = self.paginate_queryset(filtered_queryset)
+        if page is not None:
+            serializer = PersonListSerializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+        
+        serializer = PersonListSerializer(filtered_queryset, many=True)
         return Response(serializer.data)
 
 
