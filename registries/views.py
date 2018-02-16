@@ -2,6 +2,7 @@ from django.http import HttpResponse
 from django.utils import timezone
 from rest_framework import filters
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.pagination import LimitOffsetPagination, PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.mixins import CreateModelMixin, UpdateModelMixin
 from registries.models import Organization, Person, ContactAt, RegistriesApplication
@@ -37,6 +38,9 @@ class AuditUpdateMixin(UpdateModelMixin):
         )
 
 
+class APILimitOffsetPagination(LimitOffsetPagination):
+    max_limit = 50
+
 class APIOrganizationListCreateView(AuditCreateMixin, ListCreateAPIView):
     """
     get:
@@ -50,7 +54,7 @@ class APIOrganizationListCreateView(AuditCreateMixin, ListCreateAPIView):
     serializer_class = OrganizationSerializer
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name', 'contacts__person__first_name', 'contacts__person__surname', 'contacts__person__applications__file_no')
-    max_limit = 50
+    pagination_class = APILimitOffsetPagination
 
     def get_queryset(self):
         if (self.request.user.is_authenticated()):
@@ -100,9 +104,27 @@ class APIOrganizationRetrieveUpdateDestroyView(AuditUpdateMixin, RetrieveUpdateD
     Removes the specified drilling organization record
     """
 
-    queryset = Organization.objects.all()
     lookup_field = "org_guid"
     serializer_class = OrganizationSerializer
+
+    def get_queryset(self):
+        if (self.request.user.is_authenticated()):
+            queryset = Organization.objects \
+                    .all() \
+                    .select_related('province_state') \
+                    .prefetch_related(
+                        'contacts',
+                        'contacts__person',
+                    )
+        else:
+            queryset = Organization.objects \
+                    .filter(contacts__person__applications__registrations__status__code='ACTIVE') \
+                    .select_related('province_state') \
+                    .prefetch_related(
+                        'contacts',
+                        'contacts__person',
+                    )
+        return queryset
 
 
 class APIPersonListCreateView(AuditCreateMixin, ListCreateAPIView):
@@ -117,7 +139,7 @@ class APIPersonListCreateView(AuditCreateMixin, ListCreateAPIView):
     serializer_class = PersonSerializer
     filter_backends = (filters.SearchFilter,)
     search_fields = ('first_name', 'surname', 'companies__org__name')
-    max_limit = 50
+    pagination_class = APILimitOffsetPagination
 
     def get_queryset(self):
         if (self.request.user.is_authenticated()):
@@ -174,9 +196,33 @@ class APIPersonRetrieveUpdateDestroyView(AuditUpdateMixin, RetrieveUpdateDestroy
 
     # TODO: For public view, only return registered drillers. Needs to be fixed when registered functionality added.
     # queryset = Person.objects.filter( isRegistered=True )
-    queryset = Person.objects.all()
     lookup_field = "person_guid"
     serializer_class = PersonSerializer
+
+    def get_queryset(self):
+        if (self.request.user.is_authenticated()):
+            queryset = Person.objects \
+                    .all() \
+                    .prefetch_related(
+                        'companies',
+                        'companies__org',
+                        'applications',
+                        'applications__registrations',
+                        'applications__registrations__registries_activity',
+                        'applications__registrations__status'
+                    )
+        else:
+            queryset = Person.objects \
+                    .filter(applications__registrations__status__code='ACTIVE') \
+                    .prefetch_related(
+                        'companies',
+                        'companies__org',
+                        'applications',
+                        'applications__registrations',
+                        'applications__registrations__registries_activity',
+                        'applications__registrations__status'
+                    )
+        return queryset
 
 
 # Placeholder for base url.
