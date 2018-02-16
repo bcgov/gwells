@@ -434,7 +434,6 @@ class APIPersonTests(AuthenticatedAPITestCase):
         like UPDATE, PUT, DELETE on an object that is already in database
         """
         self.client.force_authenticate(user=None)
-        url = reverse('person-list')
         person_object = Person.objects.create(first_name='Bobby', surname='Driller')
         object_url = reverse('person-detail', kwargs={'person_guid':person_object.person_guid})
 
