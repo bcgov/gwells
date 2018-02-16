@@ -48,11 +48,40 @@ class APIOrganizationListCreateView(AuditCreateMixin, ListCreateAPIView):
 
     queryset = Organization.objects.all().select_related('province_state')
     serializer_class = OrganizationSerializer
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('name', 'contacts__person__first_name', 'contacts__person__surname', 'contacts__person__applications__file_no')
+    max_limit = 50
+
+    def get_queryset(self):
+        if (self.request.user.is_authenticated()):
+            queryset = Organization.objects \
+                    .all() \
+                    .select_related('province_state') \
+                    .prefetch_related(
+                        'contacts',
+                        'contacts__person',
+                    )
+        else:
+            queryset = Organization.objects \
+                    .filter(contacts__person__applications__registrations__status__code='ACTIVE') \
+                    .select_related('province_state') \
+                    .prefetch_related(
+                        'contacts',
+                        'contacts__person',
+                    )
+        return queryset
 
     # override list() in order to use a modified serializer (with fewer fields) for the list view
     def list(self, request):
         queryset = self.get_queryset()
-        serializer = OrganizationListSerializer(queryset, many=True)
+        filtered_queryset = self.filter_queryset(queryset)
+
+        page = self.paginate_queryset(filtered_queryset)
+        if page is not None:
+            serializer = OrganizationListSerializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = OrganizationListSerializer(filtered_queryset)
         return Response(serializer.data)
 
 
@@ -88,7 +117,7 @@ class APIPersonListCreateView(AuditCreateMixin, ListCreateAPIView):
     serializer_class = PersonSerializer
     filter_backends = (filters.SearchFilter,)
     search_fields = ('first_name', 'surname', 'companies__org__name')
-    max_limit = 1
+    max_limit = 50
 
     def get_queryset(self):
         if (self.request.user.is_authenticated()):
@@ -114,8 +143,6 @@ class APIPersonListCreateView(AuditCreateMixin, ListCreateAPIView):
                         'applications__registrations__status'
                     )
         return queryset
-
-    
 
     def list(self, request):
         queryset = self.get_queryset()
