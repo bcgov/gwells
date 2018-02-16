@@ -10,7 +10,9 @@ from registries.serializers import (
     ApplicationSerializer,
     OrganizationListSerializer,
     OrganizationSerializer,
+    OrganizationAdminSerializer,
     PersonSerializer,
+    PersonAdminSerializer,
     PersonListSerializer,
 )
 
@@ -50,10 +52,15 @@ class APIOrganizationListCreateView(AuditCreateMixin, ListCreateAPIView):
     Creates a new drilling organization record
     """
 
-    queryset = Organization.objects.all().select_related('province_state')
-    serializer_class = OrganizationSerializer
     filter_backends = (filters.SearchFilter,)
-    search_fields = ('name', 'contacts__person__first_name', 'contacts__person__surname', 'contacts__person__applications__file_no')
+    search_fields = (
+        'name',
+        'street_address',
+        'city',
+        'contacts__person__first_name',
+        'contacts__person__surname',
+        'contacts__person__applications__file_no'
+        )
     pagination_class = APILimitOffsetPagination
 
     def get_queryset(self):
@@ -64,7 +71,8 @@ class APIOrganizationListCreateView(AuditCreateMixin, ListCreateAPIView):
                     .prefetch_related(
                         'contacts',
                         'contacts__person',
-                    )
+                    ) \
+                    .distinct()
         else:
             queryset = Organization.objects \
                     .filter(contacts__person__applications__registrations__status__code='ACTIVE') \
@@ -72,8 +80,14 @@ class APIOrganizationListCreateView(AuditCreateMixin, ListCreateAPIView):
                     .prefetch_related(
                         'contacts',
                         'contacts__person',
-                    )
+                    ) \
+                    .distinct()
         return queryset
+
+    def get_serializer_class(self):
+        if (self.request.user.is_authenticated()):
+            return OrganizationAdminSerializer
+        return OrganizationSerializer
 
     # override list() in order to use a modified serializer (with fewer fields) for the list view
     def list(self, request):
@@ -123,8 +137,14 @@ class APIOrganizationRetrieveUpdateDestroyView(AuditUpdateMixin, RetrieveUpdateD
                     .prefetch_related(
                         'contacts',
                         'contacts__person',
-                    )
+                    ) \
+                    .distinct()
         return queryset
+
+    def get_serializer_class(self):
+        if (self.request.user.is_authenticated()):
+            return OrganizationAdminSerializer
+        return OrganizationSerializer
 
 
 class APIPersonListCreateView(AuditCreateMixin, ListCreateAPIView):
@@ -136,9 +156,8 @@ class APIPersonListCreateView(AuditCreateMixin, ListCreateAPIView):
     Creates a new person record
     """
 
-    serializer_class = PersonSerializer
     filter_backends = (filters.SearchFilter,)
-    search_fields = ('first_name', 'surname', 'companies__org__name')
+    search_fields = ('first_name', 'surname', 'companies__org__name', 'companies__org__city')
     pagination_class = APILimitOffsetPagination
 
     def get_queryset(self):
@@ -165,6 +184,11 @@ class APIPersonListCreateView(AuditCreateMixin, ListCreateAPIView):
                         'applications__registrations__status'
                     )
         return queryset
+
+    def get_serializer_class(self):
+        if (self.request.user.is_authenticated()):
+            return PersonAdminSerializer
+        return PersonSerializer
 
     def list(self, request):
         queryset = self.get_queryset()
@@ -194,10 +218,7 @@ class APIPersonRetrieveUpdateDestroyView(AuditUpdateMixin, RetrieveUpdateDestroy
     Removes the specified person record
     """
 
-    # TODO: For public view, only return registered drillers. Needs to be fixed when registered functionality added.
-    # queryset = Person.objects.filter( isRegistered=True )
     lookup_field = "person_guid"
-    serializer_class = PersonSerializer
 
     def get_queryset(self):
         if (self.request.user.is_authenticated()):
@@ -223,6 +244,11 @@ class APIPersonRetrieveUpdateDestroyView(AuditUpdateMixin, RetrieveUpdateDestroy
                         'applications__registrations__status'
                     )
         return queryset
+
+    def get_serializer_class(self):
+        if (self.request.user.is_authenticated()):
+            return PersonAdminSerializer
+        return PersonSerializer
 
 
 # Placeholder for base url.
