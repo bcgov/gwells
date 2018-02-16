@@ -96,6 +96,7 @@ class OrganizationListSerializer(AuditModelSerializer):
     """
 
     province_state = serializers.ReadOnlyField(source="province_state.province_state_code")
+    contacts = ContactAtSerializer(many=True, read_only=True)
 
     class Meta:
         model = Organization
@@ -113,6 +114,7 @@ class OrganizationListSerializer(AuditModelSerializer):
             'province_state',
             'postal_code',
             'main_tel',
+            'contacts',
             #'fax_tel',
             #'website_url',
             #'certificate_authority',
@@ -177,6 +179,7 @@ class PersonSerializer(AuditModelSerializer):
     """
 
     companies = ContactAtSerializer(many=True, read_only=True)
+    applications = ApplicationSerializer(many=True, read_only=True)
 
     class Meta:
         model = Person
@@ -189,4 +192,5 @@ class PersonSerializer(AuditModelSerializer):
             'create_date',
             'update_user',
             'update_date',
+            'applications',
         )
