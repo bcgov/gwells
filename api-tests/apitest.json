@@ -42,12 +42,12 @@
 									"formdata": [
 										{
 											"key": "username",
-											"value": "{{gwells_api_test_user}}",
+											"value": "{{test_user}}",
 											"type": "text"
 										},
 										{
 											"key": "password",
-											"value": "{{gwells_api_test_password}}",
+											"value": "{{test_password}}",
 											"type": "text"
 										}
 									]
