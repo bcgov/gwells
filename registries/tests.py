@@ -526,10 +526,55 @@ class APIFilteringPaginationTests(APITestCase):
         self.assertNotContains(response, self.driller.person_guid)
         self.assertNotContains(response, self.unregistered_driller.person_guid)
 
-class AnonUserOrganizationTests(APITestCase):
+class FixtureOrganizationTests(AuthenticatedAPITestCase):
     """
-    Tests for anonymous users navigating the API organization resource endpoint
+    Tests for the API organization resource endpoint using fake data fixtures
+    """
+    fixtures = ['registries/fixtures/registries.json']
+
+    def test_duplicated_entries(self):
+        # use anonymous user for this test. Anonymous user filtering is more complex
+        self.client.force_authenticate(user=None)
+        url = reverse('organization-list') + '?limit=100'
+        response = self.client.get(url, format='json')
+
+        company_set = set()
+        for item in response.data['results']:
+            company_set.add(item['org_guid'])
+        self.assertEqual(len(company_set), len(response.data['results']))
+
+    def test_duplicated_entries_admin(self):
+        # using test user
+        url = reverse('organization-list') + '?limit=100'
+        response = self.client.get(url, format='json')
+
+        company_set = set()
+        for item in response.data['results']:
+            company_set.add(item['org_guid'])
+        self.assertEqual(len(company_set), len(response.data['results']))
+
+class FixturePersonTests(AuthenticatedAPITestCase):
+    """
+    Tests for the API Person resource endpoint using fake data fixtures
     """
 
-    def setUp(self):
-        pass
+    def test_duplicated_person_entries_anon_user(self):
+        # use anonymous user
+        self.client.force_authenticate(user=None)
+        url = reverse('person-list') + '?limit=100'
+        response = self.client.get(url, format='json')
+
+        person_set = set()
+        for item in response.data['results']:
+            person_set.add(item['person_guid'])
+        self.assertEqual(len(person_set), len(response.data['results']))
+
+    def test_duplicated_person_entries_admin_user(self):
+        # use test user
+        url = reverse('person-list') + '?limit=100'
+        response = self.client.get(url, format='json')
+
+        person_set = set()
+        for item in response.data['results']:
+            person_set.add(item['person_guid'])
+        self.assertEqual(len(person_set), len(response.data['results']))
