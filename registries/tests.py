@@ -487,6 +487,9 @@ class APIFilteringPaginationTests(APITestCase):
         # Create unregistered driller
         self.unregistered_driller = Person.objects.create(first_name="Johnny", surname="Unregistered")
 
+        # create a company with no registered driller
+        self.company_with_no_driller = Organization.objects.create(name="Big Time Drilling Company")
+
     def test_user_cannot_see_unregistered_person_in_list(self):
         url = reverse('person-list')
         response = self.client.get(url, format='json')
@@ -526,6 +529,12 @@ class APIFilteringPaginationTests(APITestCase):
         self.assertNotContains(response, self.driller.person_guid)
         self.assertNotContains(response, self.unregistered_driller.person_guid)
 
+    def test_anon_user_cannot_see_unregistered_organization(self):
+        self.client.force_authenticate(user=None)
+        url = reverse('organization-detail', kwargs={'org_guid':self.company_with_no_driller.org_guid})
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
 class FixtureOrganizationTests(AuthenticatedAPITestCase):
     """
     Tests for the API organization resource endpoint using fake data fixtures
@@ -553,6 +562,15 @@ class FixtureOrganizationTests(AuthenticatedAPITestCase):
             company_set.add(item['org_guid'])
         self.assertEqual(len(company_set), len(response.data['results']))
 
+    def anon_user_should_not_see_audit_fields(self):
+        self.client.force_authenticate(user=None)
+        org_object = Organization.objects.first()
+        url = reverse('organization-detail', kwargs={'org_guid':org_object.org_guid})
+        response = self.client.get(url, format='json')
+
+        self.assertNotContains(response, 'create_user')
+        self.assertNotContains(response, 'update_user')
+
 class FixturePersonTests(AuthenticatedAPITestCase):
     """
     Tests for the API Person resource endpoint using fake data fixtures
@@ -577,4 +595,14 @@ class FixturePersonTests(AuthenticatedAPITestCase):
         person_set = set()
         for item in response.data['results']:
             person_set.add(item['person_guid'])
+        print(len(person_set))
         self.assertEqual(len(person_set), len(response.data['results']))
+
+    def anon_user_should_not_see_audit_fields(self):
+        self.client.force_authenticate(user=None)
+        person_object = Person.objects.first()
+        url = reverse('person-detail', kwargs={'person_guid':person_object.person_guid})
+        response = self.client.get(url, format='json')
+
+        self.assertNotContains(response, 'create_user')
+        self.assertNotContains(response, 'update_user')
