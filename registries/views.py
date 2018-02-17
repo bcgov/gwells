@@ -157,7 +157,13 @@ class APIPersonListCreateView(AuditCreateMixin, ListCreateAPIView):
     """
 
     filter_backends = (filters.SearchFilter,)
-    search_fields = ('first_name', 'surname', 'companies__org__name', 'companies__org__city')
+    search_fields = (
+        'first_name',
+        'surname',
+        'companies__org__name',
+        'companies__org__city',
+        'applications__registrations__registration_no'
+        )
     pagination_class = APILimitOffsetPagination
 
     def get_queryset(self):

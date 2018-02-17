@@ -32,6 +32,7 @@ class RegistrationsSerializer(serializers.ModelSerializer):
             # 'register_guid',
             'activity',
             'status',
+            'registration_no'
         )
 
 
