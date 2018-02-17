@@ -1,5 +1,4 @@
 from .AdminView import AdminView
-from .AddSurveyView import AddSurveyView
-from .SurveyDetailView import SurveyDetailView
+from .SurveyView import SurveyView
 
-__all__=['AddSurveyView', 'AdminView', 'SurveyDetailView']
+__all__=['SurveyView', 'AdminView']

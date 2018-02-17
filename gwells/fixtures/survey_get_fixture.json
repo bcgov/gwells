@@ -4,7 +4,8 @@
               "when_created": "2018-02-08T17:22:21.890Z",
               "when_updated": "2018-02-08T17:22:21.891Z",
               "who_updated": null,
-              "survey_name":"test survey"
+              "survey_introduction_text":"test survey",
+              "survey_page":"w"
             },
    "pk": "495a9927-5a13-490e-bf1d-08bf2048b098"}
 ]

@@ -13,13 +13,24 @@
 """
 
 from django.views import generic
+from django.forms import modelformset_factory
+from django.forms import modelform_factory
+from gwells.models.Survey import Survey
 
 class AdminView(generic.TemplateView):
+    context_object_name = 'context'
     template_name = 'gwells/site_admin.html'
 
     def get_context_data(self, **kwargs):
         """
         Return the context for the page.
         """
+
         context = super(AdminView, self).get_context_data(**kwargs)
+        SurveyForms = modelformset_factory(Survey, fields=('survey_introduction_text','survey_link', 'survey_page', 'survey_enabled'))
+        SurveyForm = modelform_factory(Survey, fields=('survey_introduction_text', 'survey_link', 'survey_page', 'survey_enabled'))
+
+        context['forms'] = SurveyForms()
+
+        context['form'] = SurveyForm()
         return context
