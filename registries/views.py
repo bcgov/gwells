@@ -71,8 +71,7 @@ class APIOrganizationListCreateView(AuditCreateMixin, ListCreateAPIView):
                     .prefetch_related(
                         'contacts',
                         'contacts__person',
-                    ) \
-                    .distinct()
+                    )
         else:
             queryset = Organization.objects \
                     .filter(contacts__person__applications__registrations__status__code='ACTIVE') \
