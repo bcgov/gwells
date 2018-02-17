@@ -25,7 +25,7 @@ from django.core import serializers
 #TODO split tests into one file per view
 
 class ViewsTestCase(TestCase):
-    fixtures = ['well_detail_fixture',  'survey_detail_fixture']
+    fixtures = ['well_detail_fixture',  'survey_get_fixture']
 
     @classmethod
     def setUpTestData(cls):
@@ -58,11 +58,19 @@ class ViewsTestCase(TestCase):
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_well_detail_no_well(self):
+        #setup
+        logger = logging.getLogger('django.request')
+        previous_level = logger.getEffectiveLevel()
+        logger.setLevel(logging.ERROR)
+
         initial_url = reverse('well_detail', kwargs={'pk':'1'})
         url = initial_url[:-2]
         response = self.client.get(url)
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
 
+        #teardown
+        logger.setLevel(previous_level)
+        
     def test_well_detail_ok(self):
         wells = Search.well_search(123, '', '', '')
         self.assertEqual(wells.count(), 1)
@@ -84,10 +92,18 @@ class ViewsTestCase(TestCase):
         self.ok('map_well_search')
 
     def test_404_not_ok(self):
+        #setup
+        logger = logging.getLogger('django.request')
+        previous_level = logger.getEffectiveLevel()
+        logger.setLevel(logging.ERROR)
+
         #look for clearly erroneous well_tag_number
         url = reverse('well_detail', kwargs={'pk':999999999})
         response = self.client.get(url)
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
+
+        #teardown
+        logger.setLevel(previous_level)
 
     def test_site_admin_ok(self):
         self.ok('site_admin')
@@ -97,13 +113,10 @@ class ViewsTestCase(TestCase):
         self.assertEquals(response.status_code, HTTPStatus.OK)
         self.assertContains( response, 'id="add_survey"')
 
-    def test_add_survey_present(self):
-        self.ok('add_survey')
-
     def test_survey_detail_ok(self):
         surveys = Survey.objects.all()
         self.assertEqual(surveys.count(), 1)
 
-        url = reverse('survey_detail', kwargs={'pk':"495a9927-5a13-490e-bf1d-08bf2048b098"})
+        url = reverse('survey', kwargs={'pk':"495a9927-5a13-490e-bf1d-08bf2048b098"})
         response = self.client.get(url)
         self.assertEqual(response.status_code, HTTPStatus.OK)

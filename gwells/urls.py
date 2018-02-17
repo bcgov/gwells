@@ -41,8 +41,8 @@ urlpatterns = [
     url(r'^'+ app_root_slash +'ajax/map_well_search/$', SearchView.map_well_search, name='map_well_search'),
     url(r'^'+ app_root_slash +'registries/', include('registries.urls')),
     url(r'^'+ app_root_slash +'site_admin', AdminView.as_view(), name='site_admin'),
-    url(r'^'+ app_root_slash +'admin/add_survey', AddSurveyView.as_view(), name='add_survey'),
-    url(r'^'+ app_root_slash +'admin/survey_detail/(?P<pk>[\w-]+)$', SurveyDetailView.as_view(), name='survey_detail'),
+    url(r'^'+ app_root_slash +'admin/survey', SurveyView.as_view(), name='survey'),
+    url(r'^'+ app_root_slash +'admin/survey/(?P<pk>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$', SurveyView.as_view(), name='survey'),
 ]
 
 if settings.ENABLE_DATA_ENTRY:
