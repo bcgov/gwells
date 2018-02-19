@@ -51,3 +51,14 @@ psql -U postgres -c "SELECT 1 FROM pg_roles WHERE rolname='gwells';" || \
 	psql -U postgres -c "CREATE USER gwells WITH createdb;"
 psql -U postgres -c "SELECT 1 FROM pg_database WHERE datname='gwells';" || \
 	psql -U postgres -c "CREATE DATABASE gwells WITH OWNER='gwells';"
+
+
+# Install virtualenv and virtualenvwrapper
+#
+# Brew install packages
+#
+PACKAGES="virtualenv virtualenvwrapper"
+for p in $PACKAGES
+do
+	pip3 show $p || echo pip3 install --user $p
+done
