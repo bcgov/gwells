@@ -12,9 +12,26 @@
     limitations under the License.
 """
 from django.conf.urls import url
-
+from rest_framework_jwt.views import obtain_jwt_token
+from rest_framework_swagger.views import get_swagger_view
 from . import views
 
 urlpatterns = [
-    url(r'^$', views.index, name='index'),
+    # Organization resource endpoints
+    url(r'^organizations/(?P<org_guid>[-\w]+)/$', views.APIOrganizationRetrieveUpdateDestroyView.as_view(), name='organization-detail'),
+    url(r'^organizations/$', views.APIOrganizationListCreateView.as_view(), name='organization-list'),
+
+    # Person resource endpoints (drillers, well installers, and other instances of Person model)
+    url(r'^drillers/(?P<person_guid>[-\w]+)/$', views.APIPersonRetrieveUpdateDestroyView.as_view(), name='person-detail'),
+    url(r'^drillers/$', views.APIPersonListCreateView.as_view(), name='person-list'),
+
+    # Temporary JWT Auth endpoint
+    url(r'^api-token-auth/', obtain_jwt_token, name='get-token'),
+
+    # Swagger documentation endpoint
+    url(r'^$', get_swagger_view(title='GWELLS Driller registry'), name='api-docs'),
+
+    # RegistriesApplication resource endpoints (applications from individuals to be registered as a driller, well installer etc.)
+    # url(r'^applications/(?P<application_guid>[-\w]+)/$', views.APIApplicationRetrieveUpdateDestroyView.as_view(), name='application-detail'),
+    # url(r'^applications/$', views.APIApplicationListCreateView.as_view(), name='application-list'),
 ]
