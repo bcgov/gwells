@@ -35,3 +35,10 @@ brew services start postgresql
 # Initialize db
 #
 initdb /usr/local/var/postgres/
+
+
+# Create user
+#
+PSQL_VER=$( psql --version | sed 's/[^0-9\.]*//g' )
+CREATE_U=$( sudo find /usr/local/Cellar -name createuser | grep postgresql | grep "$PSQL_VER" )
+"${CREATE_U}" -s postgres
