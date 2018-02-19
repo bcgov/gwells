@@ -257,6 +257,42 @@ class APIOrganizationTests(AuthenticatedAPITestCase):
         # TODO: When authentication is enforced, this line will need to change
         self.assertEqual(response.data['create_user'], self.user.username)
 
+    def test_create_org_not_authenticated(self):
+        """
+        Ensure that users who are not authenticated cannot create Organization objects
+        """
+        self.client.force_authenticate(user=None)
+        url = reverse('organization-list')
+        data = {'name': 'Big Time Drilling Co'}
+
+        response = self.client.post(url, data, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_unsafe_methods_by_unauthorized_users(self):
+        """
+        Ensure that users who are not authenticated cannot perform "unsafe" actions
+        like UPDATE, PUT, DELETE on an object that is already in database
+        """
+        self.client.force_authenticate(user=None)
+        org_object = Organization.objects.create(name='Big Time Drilling Co')
+        object_url = reverse('organization-detail', kwargs={'org_guid':org_object.org_guid})
+
+        update_response = self.client.patch(object_url, {'name':'Small Time Drilling Company'}, format='json')
+        put_response = self.client.put(
+            object_url,
+            {
+                'org_guid':org_object.org_guid,
+                'name':'Small Time Drilling Company',
+            },
+            format='json'
+        )
+        delete_response = self.client.delete(object_url, format='json')
+
+        self.assertEqual(update_response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(put_response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(delete_response.status_code, status.HTTP_401_UNAUTHORIZED)
+
 
 class APIPersonTests(AuthenticatedAPITestCase):
     """
