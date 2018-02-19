@@ -11,7 +11,7 @@ which brew || \
 
 # Brew install packages
 #
-PACKAGES="git postgresql python3"
+PACKAGES="git python3"
 for p in $PACKAGES
 do
 	which $p || brew install $p
@@ -27,24 +27,27 @@ git config --global --get user.email &&
 	git config --global --edit
 
 
-# Enable postgres service (now + boot)
+# PostgreSQL - install, enable service and initialize db
 #
-brew services start postgresql
+if( ! which psql );
+then
+	brew install postgresql
+	brew services start postgresql
+	initdb /usr/local/var/postgres/
+fi
 
 
-# Initialize db
-#
-initdb /usr/local/var/postgres/
-
-
-# Create user
+# Create postgres user
 #
 PSQL_VER=$( psql --version | sed 's/[^0-9\.]*//g' )
-CREATE_U=$( sudo find /usr/local/Cellar -name createuser | grep postgresql | grep "$PSQL_VER" )
-"${CREATE_U}" -s postgres
+CREATE_U=$( find /usr/local/Cellar/postgresql -name createuser | grep "$PSQL_VER" )
+psql -U postgres -c "select 1 from pg_roles where rolname='postgres';" || \
+	"${CREATE_U}" -s postgres
 
 
 # Create user and database
 #
-psql -U postgres -c "CREATE USER gwells WITH createdb;"
-psql -U postgres -c "CREATE DATABASE gwells WITN OWNER=gwells;"
+psql -U postgres -c "SELECT 1 FROM pg_roles WHERE rolname='gwells';" || \
+	psql -U postgres -c "CREATE USER gwells WITH createdb;"
+psql -U postgres -c "SELECT 1 FROM pg_database WHERE datname='gwells';" || \
+	psql -U postgres -c "CREATE DATABASE gwells WITH OWNER='gwells';"
