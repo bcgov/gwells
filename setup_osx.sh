@@ -42,3 +42,9 @@ initdb /usr/local/var/postgres/
 PSQL_VER=$( psql --version | sed 's/[^0-9\.]*//g' )
 CREATE_U=$( sudo find /usr/local/Cellar -name createuser | grep postgresql | grep "$PSQL_VER" )
 "${CREATE_U}" -s postgres
+
+
+# Create user and database
+#
+psql -U postgres -c "CREATE USER gwells WITH createdb;"
+psql -U postgres -c "CREATE DATABASE gwells WITN OWNER=gwells;"
