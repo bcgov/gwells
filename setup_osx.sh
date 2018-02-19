@@ -30,3 +30,8 @@ git config --global --get user.email &&
 # Enable postgres service (now + boot)
 #
 brew services start postgresql
+
+
+# Initialize db
+#
+initdb /usr/local/var/postgres/
