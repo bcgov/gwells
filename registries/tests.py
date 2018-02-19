@@ -1,11 +1,14 @@
 import uuid
+import os
 from django.urls import reverse
 from django.test import TestCase
+from django.core.management import call_command
+from django.utils.six import StringIO
 from rest_framework import status
 from rest_framework.test import APITestCase, APIRequestFactory
 from gwells.models.ProvinceStateCode import ProvinceStateCode
 from gwells.models.User import User
-from registries.models import Organization, Person
+from registries.models import Organization, Person, RegistriesApplication, Register, RegistriesStatusCode, ActivityCode
 from registries.views import APIPersonListCreateView, APIPersonRetrieveUpdateDestroyView
 
 # Note: see postman/newman for more API tests.
@@ -25,30 +28,27 @@ class AuthenticatedAPITestCase(APITestCase):
         """
         Set up authenticated test cases.
         """
-
-        # Use djangorestframework-jwt to get a valid token for our user.
-        # This could fail to work when Keycloak auth is implemented.
-        # auth_url = reverse('get-token')
-        # testuser_credentials = {
-        #     'username': 'testuser',
-        #     'password': 'douglas'
-        # }
-
-        # self.user = User.objects.create_user(
-        #     testuser_credentials['username'],
-        #     'test@example.com',
-        #     testuser_credentials['password']
-        # )
-
-        # token = self.client.post(auth_url, testuser_credentials, format='json').data['token']
-
-        # self.client.credentials(HTTP_AUTHORIZATION='JWT ' + token)
         
         self.user = User.objects.create_user('testuser', 'test@example.com', 'douglas')
         self.client.force_authenticate(self.user)
 
 
 # Django unit tests
+
+class CreateTestUserCommandTests(TestCase):
+    """
+    Tests for the manage.py createtestuser command.
+    Running this command should create a test user and return a success message,
+    or return a message that the user already exists, or return an error if
+    the environment variables for the test user's credentials were not available.
+    """
+
+    def test_create_testuser(self):
+        out = StringIO()
+        call_command('createtestuser', stdout=out, stderr=out)
+        name = os.getenv('GWELLS_API_TEST_USER')
+        user = User.objects.get()
+        self.assertEqual(user.username, name)
 
 class OrganizationTests(TestCase):
     """
@@ -434,7 +434,6 @@ class APIPersonTests(AuthenticatedAPITestCase):
         like UPDATE, PUT, DELETE on an object that is already in database
         """
         self.client.force_authenticate(user=None)
-        url = reverse('person-list')
         person_object = Person.objects.create(first_name='Bobby', surname='Driller')
         object_url = reverse('person-detail', kwargs={'person_guid':person_object.person_guid})
 
@@ -453,3 +452,157 @@ class APIPersonTests(AuthenticatedAPITestCase):
         self.assertEqual(update_response.status_code, status.HTTP_401_UNAUTHORIZED)
         self.assertEqual(put_response.status_code, status.HTTP_401_UNAUTHORIZED)
         self.assertEqual(delete_response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+class APIFilteringPaginationTests(APITestCase):
+    """
+    Tests of the filtering, searching and pagination systems.
+    Filtering tests include filtering out results if user is anonymous.
+    """
+
+    def setUp(self):
+        # necessary foreignkeys for registered drillers
+        self.code = RegistriesStatusCode.objects.create(code="ACTIVE", description="active", display_order="1")
+        self.activity = ActivityCode.objects.create(code="DRILL", description="driller", display_order="1")
+
+        # Create registered driller 1
+        self.driller = Person.objects.create(first_name='Wendy', surname="Well")
+        self.app = RegistriesApplication.objects.create(person=self.driller)
+        self.registration = Register.objects.create(
+            status=self.code,
+            registries_application=self.app,
+            registries_activity=self.activity,
+            registration_no="F12345",
+        )
+
+        # Create registered driller 2
+        self.driller2 = Person.objects.create(first_name='Debbie', surname="Driller")
+        self.app2 = RegistriesApplication.objects.create(person=self.driller2)
+        self.registration2 = Register.objects.create(
+            status=self.code,
+            registries_application=self.app2,
+            registries_activity=self.activity,
+            registration_no="F54321",
+        )
+
+        # Create unregistered driller
+        self.unregistered_driller = Person.objects.create(first_name="Johnny", surname="Unregistered")
+
+        # create a company with no registered driller
+        self.company_with_no_driller = Organization.objects.create(name="Big Time Drilling Company")
+
+    def test_user_cannot_see_unregistered_person_in_list(self):
+        url = reverse('person-list')
+        response = self.client.get(url, format='json')
+        self.assertEqual(len(response.data['results']), 2)
+        self.assertContains(response, 'Wendy')
+        self.assertContains(response, 'Debbie')
+        self.assertNotContains(response, 'Johnny')
+        self.assertNotContains(response, self.unregistered_driller.person_guid)
+
+    def test_user_cannot_retrieve_unregistered_person(self):
+        url = reverse('person-detail', kwargs={'person_guid':self.unregistered_driller.person_guid})
+        response = self.client.get(url, format='json')
+        person = Person.objects.get(person_guid=self.unregistered_driller.person_guid)
+
+        self.assertEqual(person.first_name, 'Johnny')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_search_for_name(self):
+        url = reverse('person-list') + '?search=' + self.driller.first_name
+        response = self.client.get(url, format='json')
+
+        self.assertContains(response, self.driller.first_name)
+        self.assertContains(response, self.driller.person_guid)
+        self.assertNotContains(response, self.driller2.first_name)
+        self.assertNotContains(response, 'Johnny')
+        self.assertNotContains(response, self.driller2.person_guid)
+        self.assertNotContains(response, self.unregistered_driller.person_guid)
+
+    def test_search_for_registration_number(self):
+        url = reverse('person-list') + '?search=' + self.registration2.registration_no
+        response = self.client.get(url, format='json')
+
+        self.assertContains(response, self.driller2.first_name)
+        self.assertContains(response, self.driller2.person_guid)
+        self.assertNotContains(response, self.driller.first_name)
+        self.assertNotContains(response, 'Johnny')
+        self.assertNotContains(response, self.driller.person_guid)
+        self.assertNotContains(response, self.unregistered_driller.person_guid)
+
+    def test_anon_user_cannot_see_unregistered_organization(self):
+        self.client.force_authenticate(user=None)
+        url = reverse('organization-detail', kwargs={'org_guid':self.company_with_no_driller.org_guid})
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+class FixtureOrganizationTests(AuthenticatedAPITestCase):
+    """
+    Tests for the API organization resource endpoint using fake data fixtures
+    """
+    fixtures = ['registries/fixtures/registries.json']
+
+    def test_duplicated_entries(self):
+        # use anonymous user for this test. Anonymous user filtering is more complex
+        self.client.force_authenticate(user=None)
+        url = reverse('organization-list') + '?limit=100'
+        response = self.client.get(url, format='json')
+
+        company_set = set()
+        for item in response.data['results']:
+            company_set.add(item['org_guid'])
+        self.assertEqual(len(company_set), len(response.data['results']))
+
+    def test_duplicated_entries_admin(self):
+        # using test user
+        url = reverse('organization-list') + '?limit=100'
+        response = self.client.get(url, format='json')
+
+        company_set = set()
+        for item in response.data['results']:
+            company_set.add(item['org_guid'])
+        self.assertEqual(len(company_set), len(response.data['results']))
+
+    def anon_user_should_not_see_audit_fields(self):
+        self.client.force_authenticate(user=None)
+        org_object = Organization.objects.first()
+        url = reverse('organization-detail', kwargs={'org_guid':org_object.org_guid})
+        response = self.client.get(url, format='json')
+
+        self.assertNotContains(response, 'create_user')
+        self.assertNotContains(response, 'update_user')
+
+class FixturePersonTests(AuthenticatedAPITestCase):
+    """
+    Tests for the API Person resource endpoint using fake data fixtures
+    """
+
+    def test_duplicated_person_entries_anon_user(self):
+        # use anonymous user
+        self.client.force_authenticate(user=None)
+        url = reverse('person-list') + '?limit=100'
+        response = self.client.get(url, format='json')
+
+        person_set = set()
+        for item in response.data['results']:
+            person_set.add(item['person_guid'])
+        self.assertEqual(len(person_set), len(response.data['results']))
+
+    def test_duplicated_person_entries_admin_user(self):
+        # use test user
+        url = reverse('person-list') + '?limit=100'
+        response = self.client.get(url, format='json')
+
+        person_set = set()
+        for item in response.data['results']:
+            person_set.add(item['person_guid'])
+        print(len(person_set))
+        self.assertEqual(len(person_set), len(response.data['results']))
+
+    def anon_user_should_not_see_audit_fields(self):
+        self.client.force_authenticate(user=None)
+        person_object = Person.objects.first()
+        url = reverse('person-detail', kwargs={'person_guid':person_object.person_guid})
+        response = self.client.get(url, format='json')
+
+        self.assertNotContains(response, 'create_user')
+        self.assertNotContains(response, 'update_user')
