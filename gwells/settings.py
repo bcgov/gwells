@@ -195,6 +195,7 @@ LOGGING = {
 AUTH_USER_MODEL='gwells.User'
 
 DRF_RENDERERS = ['rest_framework.renderers.JSONRenderer',]
+# Turn on browsable API if "DEBUG" set
 if DEBUG:
     DRF_RENDERERS.append('rest_framework.renderers.BrowsableAPIRenderer')
 
@@ -208,7 +209,7 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
     ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-    'PAGE_SIZE': 10,
+    'PAGE_SIZE': 30,
     'DEFAULT_THROTTLE_CLASSES': (
         'rest_framework.throttling.AnonRateThrottle',
         'rest_framework.throttling.UserRateThrottle'
