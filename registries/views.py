@@ -41,7 +41,7 @@ class AuditUpdateMixin(UpdateModelMixin):
 
 
 class APILimitOffsetPagination(LimitOffsetPagination):
-    max_limit = 50
+    max_limit = 100
 
 class APIOrganizationListCreateView(AuditCreateMixin, ListCreateAPIView):
     """
