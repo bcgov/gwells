@@ -18,6 +18,7 @@ class Person(AuditModel):
     def __str__(self):
         return '%s %s' % (self.first_name, self.surname)
 
+
 class Organization(AuditModel):
     org_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False,
     	verbose_name="Organization UUID, hidden from users")
@@ -45,9 +46,9 @@ class ContactAt(AuditModel):
     contact_at_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False,
     	verbose_name="Contact At UUID, hidden from users")
     person = models.ForeignKey(Person, db_column='person_guid', on_delete=models.CASCADE, null=True, 
-    	verbose_name="Person Reference")
+    	verbose_name="Person Reference", related_name="companies")
     org = models.ForeignKey(Organization, db_column='org_guid', on_delete=models.CASCADE, null=True, 
-    	verbose_name="Company Reference")
+    	verbose_name="Company Reference", related_name="contacts")
 
     contact_tel = models.CharField(blank=True, null=True,max_length=15,verbose_name="Contact telephone number")
     contact_email = models.EmailField(blank=True, null=True,verbose_name="Email adddress")
@@ -151,7 +152,7 @@ class RegistriesApplication(AuditModel):
     """
     application_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False,
         verbose_name="Register Application UUID, hidden from users")
-    person = models.ForeignKey(Person, db_column='person_guid', on_delete=models.CASCADE, verbose_name="Person Reference")
+    person = models.ForeignKey(Person, db_column='person_guid', on_delete=models.CASCADE, verbose_name="Person Reference", related_name='applications')
     file_no = models.CharField(max_length=25, blank=True, null=True, verbose_name='ORCS File # reference.')
     over19_ind = models.BooleanField(default=True)
     registrar_notes = models.CharField(max_length=255, blank=True, null=True, verbose_name='Registrar Notes, for internal use only.')
@@ -237,7 +238,7 @@ class Register(AuditModel):
         verbose_name="Register UUID, hidden from users")
     # TODO - GW constraint to ensure that DRILL/PUMP ActivityCode of this entry is consistent with the Application
     registries_activity = models.ForeignKey(ActivityCode, db_column='registries_activity_guid', on_delete=models.CASCADE, blank=True)
-    registries_application = models.ForeignKey(RegistriesApplication, db_column='application_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name="Application Reference")
+    registries_application = models.ForeignKey(RegistriesApplication, db_column='application_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name="Application Reference", related_name="registrations")
 
     registration_no = models.CharField(max_length=15,blank=True, null=True)    
     status = models.ForeignKey(RegistriesStatusCode, db_column='registries_status_guid', on_delete=models.CASCADE, verbose_name="Register Entry Status")
