@@ -30,6 +30,7 @@ class AuthenticatedAPITestCase(APITestCase):
         """
         
         self.user = User.objects.create_user('testuser', 'test@example.com', 'douglas')
+        self.user.is_staff = True
         self.client.force_authenticate(self.user)
 
 
@@ -46,7 +47,7 @@ class CreateTestUserCommandTests(TestCase):
     def test_create_testuser(self):
         out = StringIO()
         call_command('createtestuser', stdout=out, stderr=out)
-        name = os.getenv('GWELLS_API_TEST_USER')
+        name = os.getenv('GWELLS_API_TEST_USER', default='testuser')
         user = User.objects.get()
         self.assertEqual(user.username, name)
 
