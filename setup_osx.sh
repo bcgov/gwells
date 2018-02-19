@@ -25,3 +25,8 @@ git config --global --get push.default ||
 git config --global --get user.email &&
 	git config --global --get user.name ||
 	git config --global --edit
+
+
+# Enable postgres service (now + boot)
+#
+brew services start postgresql
