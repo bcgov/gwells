@@ -7,6 +7,7 @@ from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from rest_framework.mixins import CreateModelMixin, UpdateModelMixin
 from registries.models import Organization, Person, ContactAt, RegistriesApplication
+from registries.permissions import IsAdminOrReadOnly
 from registries.serializers import (
     ApplicationSerializer,
     OrganizationListSerializer,
@@ -53,6 +54,7 @@ class APIOrganizationListCreateView(AuditCreateMixin, ListCreateAPIView):
     Creates a new drilling organization record
     """
 
+    permission_classes = (IsAdminOrReadOnly,)
     filter_backends = (filters.SearchFilter,)
     search_fields = (
         'name',
@@ -118,6 +120,7 @@ class APIOrganizationRetrieveUpdateDestroyView(AuditUpdateMixin, RetrieveUpdateD
     Removes the specified drilling organization record
     """
 
+    permission_classes = (IsAdminOrReadOnly,)
     lookup_field = "org_guid"
     serializer_class = OrganizationSerializer
 
@@ -156,6 +159,7 @@ class APIPersonListCreateView(AuditCreateMixin, ListCreateAPIView):
     Creates a new person record
     """
 
+    permission_classes = (IsAdminOrReadOnly,)
     filter_backends = (filters.SearchFilter,)
     search_fields = (
         'first_name',
@@ -224,6 +228,7 @@ class APIPersonRetrieveUpdateDestroyView(AuditUpdateMixin, RetrieveUpdateDestroy
     Removes the specified person record
     """
 
+    permission_classes = (IsAdminOrReadOnly,)
     lookup_field = "person_guid"
 
     def get_queryset(self):
