@@ -37,7 +37,7 @@ class AuthenticatedAPITestCase(APITestCase):
 
 class CreateTestUserCommandTests(TestCase):
     """
-    Tests for the manage.py createtestuser command.
+    Tests for the 'manage.py createtestuser' command.
     Running this command should create a test user and return a success message,
     or return a message that the user already exists, or return an error if
     the environment variables for the test user's credentials were not available.
@@ -53,25 +53,29 @@ class CreateTestUserCommandTests(TestCase):
 class OrganizationTests(TestCase):
     """
     Tests for the Organization model
+
+    Simple test that we can create objects from models.py for the Organization model
+    Tests for views.py and other modules are in Django REST Framework tests
     """
 
     def setUp(self):
         # Create a ProvinceStateCode object for our Organization's foreign key field
-        province = ProvinceStateCode.objects.create(
+        self.province = ProvinceStateCode.objects.create(
             province_state_code = 'BC',
             description = 'British Columbia',
             display_order = 1
         )
 
-        Organization.objects.create(
+        self.org = Organization.objects.create(
             name='Frankie and Betty Well Drilling Co.',
             city='Victoria',
-            province_state = province
+            province_state = self.province
         )
 
     def test_organization_was_created(self):
         org = Organization.objects.get(name='Frankie and Betty Well Drilling Co.')
         self.assertEqual(org.city, 'Victoria')
+        self.assertEqual(org.province_state, self.province)
 
 
 class PersonTests(TestCase):
@@ -557,10 +561,24 @@ class FixtureOrganizationTests(AuthenticatedAPITestCase):
         url = reverse('organization-list') + '?limit=100'
         response = self.client.get(url, format='json')
 
+        # add the list of org_guids in the results to a set. A set will not contain duplicates
+        # so if the set has fewer items than the list, then the list has duplicates.
         company_set = set()
         for item in response.data['results']:
             company_set.add(item['org_guid'])
         self.assertEqual(len(company_set), len(response.data['results']))
+
+    def test_pagination_max_page_size(self):
+        # using test user
+        url = reverse('organization-list') + '?limit=500'
+        response = self.client.get(url, format='json')
+
+        # assert that we have enough records to hit the limit
+        # note: this will cause a test failure if we don't have enough records in the database
+        self.assertGreater(response.data['count'], len(response.data['results']))
+
+        # max_limit comes from class APILimitOffsetPagination in views.py 
+        self.assertEqual(len(response.data['results']), 100)
 
     def anon_user_should_not_see_audit_fields(self):
         self.client.force_authenticate(user=None)
