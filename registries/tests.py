@@ -30,6 +30,7 @@ class AuthenticatedAPITestCase(APITestCase):
         """
         
         self.user = User.objects.create_user('testuser', 'test@example.com', 'douglas')
+        self.user.is_staff = True
         self.client.force_authenticate(self.user)
 
 
@@ -37,7 +38,7 @@ class AuthenticatedAPITestCase(APITestCase):
 
 class CreateTestUserCommandTests(TestCase):
     """
-    Tests for the manage.py createtestuser command.
+    Tests for the 'manage.py createtestuser' command.
     Running this command should create a test user and return a success message,
     or return a message that the user already exists, or return an error if
     the environment variables for the test user's credentials were not available.
@@ -46,32 +47,36 @@ class CreateTestUserCommandTests(TestCase):
     def test_create_testuser(self):
         out = StringIO()
         call_command('createtestuser', stdout=out, stderr=out)
-        name = os.getenv('GWELLS_API_TEST_USER')
+        name = os.getenv('GWELLS_API_TEST_USER', default='testuser')
         user = User.objects.get()
         self.assertEqual(user.username, name)
 
 class OrganizationTests(TestCase):
     """
     Tests for the Organization model
+
+    Simple test that we can create objects from models.py for the Organization model
+    Tests for views.py and other modules are in Django REST Framework tests
     """
 
     def setUp(self):
         # Create a ProvinceStateCode object for our Organization's foreign key field
-        province = ProvinceStateCode.objects.create(
+        self.province = ProvinceStateCode.objects.create(
             province_state_code = 'BC',
             description = 'British Columbia',
             display_order = 1
         )
 
-        Organization.objects.create(
+        self.org = Organization.objects.create(
             name='Frankie and Betty Well Drilling Co.',
             city='Victoria',
-            province_state = province
+            province_state = self.province
         )
 
     def test_organization_was_created(self):
         org = Organization.objects.get(name='Frankie and Betty Well Drilling Co.')
         self.assertEqual(org.city, 'Victoria')
+        self.assertEqual(org.province_state, self.province)
 
 
 class PersonTests(TestCase):
@@ -251,6 +256,42 @@ class APIOrganizationTests(AuthenticatedAPITestCase):
 
         # TODO: When authentication is enforced, this line will need to change
         self.assertEqual(response.data['create_user'], self.user.username)
+
+    def test_create_org_not_authenticated(self):
+        """
+        Ensure that users who are not authenticated cannot create Organization objects
+        """
+        self.client.force_authenticate(user=None)
+        url = reverse('organization-list')
+        data = {'name': 'Big Time Drilling Co'}
+
+        response = self.client.post(url, data, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_unsafe_methods_by_unauthorized_users(self):
+        """
+        Ensure that users who are not authenticated cannot perform "unsafe" actions
+        like UPDATE, PUT, DELETE on an object that is already in database
+        """
+        self.client.force_authenticate(user=None)
+        org_object = Organization.objects.create(name='Big Time Drilling Co')
+        object_url = reverse('organization-detail', kwargs={'org_guid':org_object.org_guid})
+
+        update_response = self.client.patch(object_url, {'name':'Small Time Drilling Company'}, format='json')
+        put_response = self.client.put(
+            object_url,
+            {
+                'org_guid':org_object.org_guid,
+                'name':'Small Time Drilling Company',
+            },
+            format='json'
+        )
+        delete_response = self.client.delete(object_url, format='json')
+
+        self.assertEqual(update_response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(put_response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(delete_response.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
 class APIPersonTests(AuthenticatedAPITestCase):
@@ -557,10 +598,24 @@ class FixtureOrganizationTests(AuthenticatedAPITestCase):
         url = reverse('organization-list') + '?limit=100'
         response = self.client.get(url, format='json')
 
+        # add the list of org_guids in the results to a set. A set will not contain duplicates
+        # so if the set has fewer items than the list, then the list has duplicates.
         company_set = set()
         for item in response.data['results']:
             company_set.add(item['org_guid'])
         self.assertEqual(len(company_set), len(response.data['results']))
+
+    def test_pagination_max_page_size(self):
+        # using test user
+        url = reverse('organization-list') + '?limit=500'
+        response = self.client.get(url, format='json')
+
+        # assert that we have enough records to hit the limit
+        # note: this will cause a test failure if we don't have enough records in the database
+        self.assertGreater(response.data['count'], len(response.data['results']))
+
+        # max_limit comes from class APILimitOffsetPagination in views.py 
+        self.assertEqual(len(response.data['results']), 100)
 
     def anon_user_should_not_see_audit_fields(self):
         self.client.force_authenticate(user=None)

@@ -3,9 +3,11 @@ from django.utils import timezone
 from rest_framework import filters
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.pagination import LimitOffsetPagination, PageNumberPagination
+from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from rest_framework.mixins import CreateModelMixin, UpdateModelMixin
 from registries.models import Organization, Person, ContactAt, RegistriesApplication
+from registries.permissions import IsAdminOrReadOnly
 from registries.serializers import (
     ApplicationSerializer,
     OrganizationListSerializer,
@@ -41,7 +43,7 @@ class AuditUpdateMixin(UpdateModelMixin):
 
 
 class APILimitOffsetPagination(LimitOffsetPagination):
-    max_limit = 50
+    max_limit = 100
 
 class APIOrganizationListCreateView(AuditCreateMixin, ListCreateAPIView):
     """
@@ -52,6 +54,7 @@ class APIOrganizationListCreateView(AuditCreateMixin, ListCreateAPIView):
     Creates a new drilling organization record
     """
 
+    permission_classes = (IsAdminOrReadOnly,)
     filter_backends = (filters.SearchFilter,)
     search_fields = (
         'name',
@@ -117,6 +120,7 @@ class APIOrganizationRetrieveUpdateDestroyView(AuditUpdateMixin, RetrieveUpdateD
     Removes the specified drilling organization record
     """
 
+    permission_classes = (IsAdminOrReadOnly,)
     lookup_field = "org_guid"
     serializer_class = OrganizationSerializer
 
@@ -155,6 +159,7 @@ class APIPersonListCreateView(AuditCreateMixin, ListCreateAPIView):
     Creates a new person record
     """
 
+    permission_classes = (IsAdminOrReadOnly,)
     filter_backends = (filters.SearchFilter,)
     search_fields = (
         'first_name',
@@ -223,6 +228,7 @@ class APIPersonRetrieveUpdateDestroyView(AuditUpdateMixin, RetrieveUpdateDestroy
     Removes the specified person record
     """
 
+    permission_classes = (IsAdminOrReadOnly,)
     lookup_field = "person_guid"
 
     def get_queryset(self):
@@ -269,13 +275,20 @@ def index(request):
 class APIApplicationListCreateView(AuditCreateMixin, ListCreateAPIView):
     """
     get:
-    Returns a list of all registered drilling organizations
+    Returns a list of all registration applications
 
     post:
-    Creates a new drilling organization record
+    Creates a new registries application
     """
 
-    queryset = RegistriesApplication.objects.all().prefetch_related('register_set', 'register_set__registries_activity', 'register_set__status').select_related('person')
+    permission_classes = (IsAdminUser,)
+    queryset = RegistriesApplication.objects.all().prefetch_related(
+        'register_set',
+        'register_set__registries_activity',
+        'register_set__status'
+        ) \
+        .select_related('person')
+
     serializer_class = ApplicationSerializer
 
 
@@ -294,6 +307,7 @@ class APIApplicationRetrieveUpdateDestroyView(AuditUpdateMixin, RetrieveUpdateDe
     Removes the specified drilling application record
     """
 
+    permission_classes = (IsAdminUser,)
     queryset = RegistriesApplication.objects.all().select_related('person')
     lookup_field = "application_guid"
     serializer_class = ApplicationSerializer

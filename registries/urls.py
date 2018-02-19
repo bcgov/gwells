@@ -25,16 +25,13 @@ urlpatterns = [
     url(r'^drillers/(?P<person_guid>[-\w]+)/$', views.APIPersonRetrieveUpdateDestroyView.as_view(), name='person-detail'),
     url(r'^drillers/$', views.APIPersonListCreateView.as_view(), name='person-list'),
 
-    # Register Application resource endpoints (applications from individuals to be registered as a driller, well installer etc.)
-    # url(r'^applications/(?P<application_guid>[-\w]+)/$', views.APIApplicationRetrieveUpdateDestroyView.as_view(), name='application-detail'),
-    # url(r'^applications/$', views.APIApplicationListCreateView.as_view(), name='application-list'),
-
-    # Swagger documentation endpoint
-    url(r'^docs/$', get_swagger_view(title='GWELLS Driller registry'), name='api-docs'),
-
     # Temporary JWT Auth endpoint
     url(r'^api-token-auth/', obtain_jwt_token, name='get-token'),
 
-    # Base gwells index
-    url(r'^$', views.index, name='index'),
+    # Swagger documentation endpoint
+    url(r'^$', get_swagger_view(title='GWELLS Driller registry'), name='api-docs'),
+
+    # RegistriesApplication resource endpoints (applications from individuals to be registered as a driller, well installer etc.)
+    # url(r'^applications/(?P<application_guid>[-\w]+)/$', views.APIApplicationRetrieveUpdateDestroyView.as_view(), name='application-detail'),
+    # url(r'^applications/$', views.APIApplicationListCreateView.as_view(), name='application-list'),
 ]
