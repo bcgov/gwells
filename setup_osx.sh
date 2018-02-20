@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-set -eux
+set -eu
 
 
 # Install Homebrew
@@ -67,7 +67,7 @@ done
 #
 BASHSS=~/.bash_profile
 touch "${BASHSS}"
-VEW_SRC=$( find ~ -name virtualenvwrapper.sh | grep -m 1 . )
+VEWSRC=$( find ~ -name virtualenvwrapper.sh | grep -m 1 . )
 grep --quiet "virtualenvwrapper.sh" "${BASHSS}" || \
 	(
 		echo ;
@@ -75,5 +75,15 @@ grep --quiet "virtualenvwrapper.sh" "${BASHSS}" || \
 		echo "#";
 		echo "PATH=${PATH}:~/Library/Python/3.6/bin";
 		echo "export VIRTUALENVWRAPPER_PYTHON=/usr/local/bin/python3";
-		echo "source ${VEW_SRC}"
+		echo "source ${VEWSRC}"
 	) >> "${BASHSS}"
+
+
+# Make virtual environment
+#
+PATH="${PATH}":~/Library/Python/3.6/bin
+export VIRTUALENVWRAPPER_PYTHON=/usr/local/bin/python3
+set +u
+source "${VEWSRC}"
+mkvirtualenv gwells
+workon gwells
