@@ -103,3 +103,8 @@ workon gwells
 # Create dev database
 #
 python manage.py migrate
+
+
+# Run server
+#
+python manage.py runserver
