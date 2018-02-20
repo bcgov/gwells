@@ -8,60 +8,75 @@
 
 {% block body_block %}
 
-<h2>Survey Administration</h2>
-<div class="row header-row">
-  <div class="col-md-3">
-    <span>Introduction Text</span>
+  <h2>Survey Administration</h2>
+  <div class="row header-row">
+    <div class="col-md-2">
+      <span>Introduction Text</span>
+    </div>
+    <div class="col-md-2">
+      <span>Link</span>
+    </div>
+    <div class="col-md-1">
+        <span>Page</span>
+    </div>
+    <div class="col-md-1">
+        <span>Enabled</span>
+    </div>
+    <div class="col-md-1">
+        <span>Update</span>
+    </div>
+    <div class="col-md-1">
+        <span>Delete</span>
+    </div>
   </div>
-  <div class="col-md-3">
-    <span>Link</span>
-  </div>
-  <div class="col-md-3">
-      <span>Page</span>
-  </div>
-  <div class="col-md-1">
-      <span>Enabled</span>
-  </div>
-</div>
 
-{% for my_form in forms %}
-<div class="row">
-  <div class="col-md-11">
-    <form method="post" action="{% url 'survey' %}">
-      <input type="hidden" name="_method" value="post">
+  <div class="row form-group survey-form">
+    <form method="post" id="add_survey" action="{% url 'survey' %}">
       {% csrf_token %}
-      <input type="hidden" name="form-number" value="{{ forloop.counter0 }}"/>
-      {{my_form.survey_guid}}
-      <div class="row">
-        <div class="col-md-3">{{my_form.survey_introduction_text}}</div>
-        <div class="col-md-3">{{my_form.survey_link}}</div>
-        <div class="col-md-3">{{my_form.survey_page}}</div>
-        <div class="col-md-1">{{my_form.survey_enabled}}</div>
-        <div class="col-md-2"><input type="submit" value="update"></div>
+      <input type="hidden" name="_method" value="put">
+      <div class="col-md-2">{{form.survey_introduction_text}}</div>
+      <div class="col-md-2">{{form.survey_link}}</div>
+      <div class="col-md-1">{{form.survey_page}}</div>
+      <div class="col-md-1">{{form.survey_enabled}}</div>
+      <div class="col-md-1">
+        <button type="submit">
+          <span class="glyphicon glyphicon-plus"></span>
+        </button>
       </div>
     </form>
   </div>
-  <div class="col-md-1">
-    <form method="post" action="{% url 'survey'%}">
-      {% csrf_token %}
-      <input type="hidden" name="_method" value="delete">
-      <input type="hidden" name="form-number" value="{{ forloop.counter0 }}"/>
-      {{my_form.survey_guid}}
-      <div class="row">
-        <div class="col-md-12"><input type="submit" value="delete"></div>
-      </div>
-    </form>
-</div>
-{% endfor %}
 
-<form method="post" id="add_survey" action="{% url 'survey' %}">
-  {% csrf_token %}
-  <input type="hidden" name="_method" value="put">
-  <div class="col-md-3">{{form.survey_introduction_text}}</div>
-  <div class="col-md-3">{{form.survey_link}}</div>
-  <div class="col-md-3">{{form.survey_page}}</div>
-  <div class="col-md-1">{{form.survey_enabled}}</div>
-  <div class="col-md-2"><input type="submit" value="Add"></div>
-</form>
+  {% for my_form in forms %}
+  <div class="row form-group survey-form">
+        <form method="post" action="{% url 'survey' %}">
+          <input type="hidden" name="_method" value="post">
+          {% csrf_token %}
+          <input type="hidden" name="form-number" value="{{ forloop.counter0 }}"/>
+          {{my_form.survey_guid}}
+          <div class="col-md-2">{{my_form.survey_introduction_text}}</div>
+          <div class="col-md-2">{{my_form.survey_link}}</div>
+          <div class="col-md-1">{{my_form.survey_page}}</div>
+          <div class="col-md-1">{{my_form.survey_enabled}}</div>
+          <div class="col-md-1">
+            <button type="submit">
+              <span class="sr-only">update</span>
+              <span class="glyphicon glyphicon-pencil"></span>
+            </button>
+          </div>
+        </form>
+        <form method="post" action="{% url 'survey'%}">
+          {% csrf_token %}
+          <input type="hidden" name="_method" value="delete">
+          <input type="hidden" name="form-number" value="{{ forloop.counter0 }}"/>
+          {{my_form.survey_guid}}
+          <div class="col-md-1">
+            <button type="submit">
+              <span class="sr-only">delete</span>
+              <span class="glyphicon glyphicon-remove"></span>
+            </button>
+          </div>
+        </form>
+  </div>
+  {% endfor %}
 
 {% endblock %}
