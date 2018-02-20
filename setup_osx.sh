@@ -6,7 +6,8 @@ set -eux
 # Install Homebrew
 #
 which brew || \
-	/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+	/usr/bin/ruby -e "$( curl -fsSL \
+	https://raw.githubusercontent.com/Homebrew/install/master/install )"
 
 
 # Brew install packages
@@ -20,10 +21,10 @@ done
 
 # Configure git
 #
-git config --global --get push.default ||
+git config --global --get push.default || \
 	git config --global push.default simple
-git config --global --get user.email &&
-	git config --global --get user.name ||
+git config --global --get user.email && \
+	git config --global --get user.name || \
 	git config --global --edit
 
 
@@ -39,10 +40,10 @@ fi
 
 # Create postgres user
 #
-PSQL_VER=$( psql --version | sed 's/[^0-9\.]*//g' )
-CREATE_U=$( find /usr/local/Cellar/postgresql -name createuser | grep "$PSQL_VER" )
+PSQLV=$( psql --version | sed 's/[^0-9\.]*//g' )
+CUSER=$( find /usr/local/Cellar/postgresql -name createuser | grep "$PSQLV" )
 psql -U postgres -c "select 1 from pg_roles where rolname='postgres';" || \
-	"${CREATE_U}" -s postgres
+	"${CUSER}" -s postgres
 
 
 # Create user and database
@@ -53,9 +54,7 @@ psql -U postgres -c "SELECT 1 FROM pg_database WHERE datname='gwells';" || \
 	psql -U postgres -c "CREATE DATABASE gwells WITH OWNER='gwells';"
 
 
-# Install virtualenv and virtualenvwrapper
-#
-# Brew install packages
+# Pip3 install virtualenv and virtualenvwrapper
 #
 PACKAGES="virtualenv virtualenvwrapper"
 for p in $PACKAGES
