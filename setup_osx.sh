@@ -61,3 +61,19 @@ for p in $PACKAGES
 do
 	pip3 show $p || echo pip3 install --user $p
 done
+
+
+# Config bash shell to source virtualenvwrapper.sh
+#
+BASHSS=~/.bash_profile
+touch "${BASHSS}"
+VEW_SRC=$( find ~ -name virtualenvwrapper.sh | grep -m 1 . )
+grep --quiet "virtualenvwrapper.sh" "${BASHSS}" || \
+	(
+		echo ;
+		echo "# Setup mkvirtualenv";
+		echo "#";
+		echo "PATH=${PATH}:~/Library/Python/3.6/bin";
+		echo "export VIRTUALENVWRAPPER_PYTHON=/usr/local/bin/python3";
+		echo "source ${VEW_SRC}"
+	) >> "${BASHSS}"
