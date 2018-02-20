@@ -60,6 +60,8 @@ class APIOrganizationListCreateView(AuditCreateMixin, ListCreateAPIView):
 
     permission_classes = (IsAdminOrReadOnly,)
 
+    serializer_class = OrganizationSerializer
+
     # prefetch related objects for the queryset to prevent duplicate database trips later
     queryset = Organization.objects.all() \
         .select_related('province_state') \
@@ -97,9 +99,9 @@ class APIOrganizationListCreateView(AuditCreateMixin, ListCreateAPIView):
         Return appropriate serializer for user
         Admin serializers have more fields, including audit fields
         """
-        if (self.request.user.is_staff):
+        if self.request.user.is_staff:
             return OrganizationAdminSerializer
-        return OrganizationSerializer
+        return self.serializer_class
 
     # override list() in order to use a modified serializer (with fewer fields) for the list view
     def list(self, request):
@@ -159,7 +161,7 @@ class APIOrganizationRetrieveUpdateDestroyView(AuditUpdateMixin, RetrieveUpdateD
         return qs
 
     def get_serializer_class(self):
-        if (self.request.user.is_authenticated()):
+        if self.request.user.is_staff:
             return OrganizationAdminSerializer
         return self.serializer_class
 
@@ -174,6 +176,8 @@ class APIPersonListCreateView(AuditCreateMixin, ListCreateAPIView):
     """
 
     permission_classes = (IsAdminOrReadOnly,)
+
+    serializer_class = PersonSerializer
 
     # Allow searching on name fields, names of related companies, etc.
     filter_backends = (filters.SearchFilter,)
@@ -208,9 +212,9 @@ class APIPersonListCreateView(AuditCreateMixin, ListCreateAPIView):
 
     def get_serializer_class(self):
         """ Returns the appropriate serializer for the user """
-        if (self.request.user.is_staff):
+        if self.request.user.is_staff:
             return PersonAdminSerializer
-        return PersonSerializer
+        return self.serializer_class
 
     def list(self, request):
         """ List response using serializer with reduced number of fields """
@@ -243,6 +247,8 @@ class APIPersonRetrieveUpdateDestroyView(AuditUpdateMixin, RetrieveUpdateDestroy
 
     permission_classes = (IsAdminOrReadOnly,)
 
+    serializer_class = PersonSerializer
+
     # pk field has been replaced by person_guid
     lookup_field = "person_guid"
 
@@ -267,9 +273,9 @@ class APIPersonRetrieveUpdateDestroyView(AuditUpdateMixin, RetrieveUpdateDestroy
         return qs
 
     def get_serializer_class(self):
-        if (self.request.user.is_staff):
+        if self.request.user.is_staff:
             return PersonAdminSerializer
-        return PersonSerializer
+        return self.serializer_class
 
 
 # Placeholder for base url.
@@ -291,7 +297,7 @@ class APIApplicationListCreateView(AuditCreateMixin, ListCreateAPIView):
     """
 
     permission_classes = (IsAdminUser,)
-
+    serializer_class = ApplicationSerializer
     queryset = RegistriesApplication.objects.all() \
         .select_related('person') \
         .prefetch_related(
@@ -299,8 +305,6 @@ class APIApplicationListCreateView(AuditCreateMixin, ListCreateAPIView):
             'register_set__registries_activity',
             'register_set__status'
         )
-
-    serializer_class = ApplicationSerializer
 
 
 class APIApplicationRetrieveUpdateDestroyView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
@@ -319,6 +323,7 @@ class APIApplicationRetrieveUpdateDestroyView(AuditUpdateMixin, RetrieveUpdateDe
     """
 
     permission_classes = (IsAdminUser,)
+    serializer_class = ApplicationSerializer
     queryset = RegistriesApplication.objects.all().select_related('person')
     lookup_field = "application_guid"
-    serializer_class = ApplicationSerializer
+    
