@@ -122,3 +122,34 @@ class SurveyView_DELETE_TestCase(SurveyViewTestCase):
         self.assertEqual(response.url, reverse('site_admin'))
 
         self.assertEqual(0, Survey.objects.all().count())
+
+class SurveyView_NOMETHOD_TestCase(SurveyViewTestCase):
+    def test_nomethod(self):
+        data = {}
+
+        factory = RequestFactory()
+        request = factory.post(reverse('survey'), data) #defaults to get
+        surveyView = SurveyView.as_view()
+        response = surveyView(request)
+
+        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
+
+class SurveyView_INVALIDMETHOD_TestCase(SurveyViewTestCase):
+    fixtures = ['survey_get_fixture']
+
+    def test_invalid_method(self):
+        self.assertEqual(1, Survey.objects.all().count()) #validate that setup complete correctly --fixture
+
+        url = reverse('survey', kwargs={'pk':"495a9927-5a13-490e-bf1d-08bf2048b098"})
+
+        data = {'form-number':0,
+                'form-0-survey_guid':'495a9927-5a13-490e-bf1d-08bf2048b098',
+                '_method':'foo'}
+
+        factory = RequestFactory()
+        request = factory.post(reverse('survey'), data) #defaults to get
+        surveyView = SurveyView.as_view()
+
+        response = surveyView(request)
+
+        self.assertEqual(response.status_code, HTTPStatus.INTERNAL_SERVER_ERROR)
