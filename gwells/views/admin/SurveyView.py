@@ -6,6 +6,8 @@ from django.shortcuts import redirect
 from django.template import loader
 from django.http import HttpResponse
 from django.http import HttpResponseNotAllowed
+from django.http import HttpResponseNotFound
+from django.http import HttpResponseServerError
 import uuid
 
 def get_handler_method(request_handler, http_method):
@@ -40,43 +42,36 @@ class SurveyView(View):
 
                 if handler_method:
                     return handler_method(request, *args, **kwargs)
-        else:
-            methods = [method for method in cls.http_methods if get_handler_method(request_handler, _method)]
-            if len(methods) > 0:
-                return HttpResponseNotAllowed(methods)
             else:
-                raise Http404
+                methods = [method for method in cls.http_methods if get_handler_method(request_handler, _method)]
+                if len(methods) > 0:
+                    return HttpResponseNotAllowed(methods)
+                else:
+                    return HttpResponseServerError("Invalid method")
 
     def add_prefix(self, name, form_number):
         return 'form-' + str(form_number) + '-' + name
 
     def alter_fields_for_post(self, fields, form_number):
-
         for key in fields:
             fields[key]=self.add_prefix(fields[key], form_number)
 
     def __create_or_update_survey(self, request, method, form_number=0, **kwargs):
-        if method.upper()=='PUT':
-            fields = {'PUT':request.PUT}
-        elif method.upper() == 'POST':
-            fields = {'POST':request.POST}
-        else:
-            raise HTTP500
-
         form_fields = {'SURVEY_INTRODUCTION_TEXT':'survey_introduction_text',
                   'SURVEY_PAGE':'survey_page',
                   'SURVEY_LINK':'survey_link',
                   'SURVEY_ENABLED':'survey_enabled'}
 
-
         if method.upper()=='PUT':
+            fields = {'PUT':request.PUT}
             survey = Survey()
-        elif method.upper()=='POST':
+        elif method.upper() == 'POST':
+            fields = {'POST':request.POST}
             form_fields['SURVEY_GUID'] = 'survey_guid'
             self.alter_fields_for_post(form_fields, form_number)
             survey = Survey.objects.get(pk=fields[method].get(form_fields['SURVEY_GUID']))
         else:
-            raise ValueError('expected a form identifier that was an integer 0 or greater')
+            return HttpResponseNotAllowed(methods)
 
         survey.survey_introduction_text = fields[method].get(form_fields['SURVEY_INTRODUCTION_TEXT'])
         survey.survey_page = fields[method].get(form_fields['SURVEY_PAGE'])
@@ -107,11 +102,14 @@ class SurveyView(View):
 
     def put(self, request, **kwargs):
         self.__create_or_update_survey(request, 'PUT')
-
         return redirect(reverse('site_admin'))
 
     def post(self, request, **kwargs):
-        form_number = request.POST['form-number']
+        form_number = request.POST.get('form-number')
+
+        if form_number==None:
+            return HttpResponseNotFound('<h1>No survey specified - id required</h1>')
+
         form_number = int(form_number)
         self.__create_or_update_survey(request, 'POST', form_number)
 
