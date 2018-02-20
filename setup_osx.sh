@@ -65,8 +65,13 @@ psql -U postgres -c "SELECT 1 FROM pg_database WHERE datname='gwells';" || \
 PACKAGES="virtualenv virtualenvwrapper"
 for p in $PACKAGES
 do
-	pip3 show $p || echo pip3 install --user $p
+	pip3 show $p || pip3 install $p --user
 done
+
+
+# Pip3 install requirements
+#
+pip3 install -U -r requirements.txt
 
 
 # Config bash shell to source virtualenvwrapper.sh
