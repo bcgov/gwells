@@ -98,3 +98,8 @@ set +u
 source "${VEWSRC}"
 mkvirtualenv gwells || true
 workon gwells
+
+
+# Create dev database
+#
+python manage.py migrate
