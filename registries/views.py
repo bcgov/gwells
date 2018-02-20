@@ -43,6 +43,9 @@ class AuditUpdateMixin(UpdateModelMixin):
 
 
 class APILimitOffsetPagination(LimitOffsetPagination):
+    """
+    Provides LimitOffsetPagination with custom parameters.
+    """
     max_limit = 100
 
 class APIOrganizationListCreateView(AuditCreateMixin, ListCreateAPIView):
@@ -55,6 +58,15 @@ class APIOrganizationListCreateView(AuditCreateMixin, ListCreateAPIView):
     """
 
     permission_classes = (IsAdminOrReadOnly,)
+
+    queryset = Organization.objects.all() \
+        .select_related('province_state') \
+        .prefetch_related(
+            'contacts',
+            'contacts__person',
+        )
+
+    # Allow searching against fields like company name, address, name or registration of company contacts
     filter_backends = (filters.SearchFilter,)
     search_fields = (
         'name',
@@ -64,30 +76,22 @@ class APIOrganizationListCreateView(AuditCreateMixin, ListCreateAPIView):
         'contacts__person__surname',
         'contacts__person__applications__file_no'
         )
+
     pagination_class = APILimitOffsetPagination
 
     def get_queryset(self):
-        if (self.request.user.is_authenticated()):
-            queryset = Organization.objects \
-                    .all() \
-                    .select_related('province_state') \
-                    .prefetch_related(
-                        'contacts',
-                        'contacts__person',
-                    )
-        else:
-            queryset = Organization.objects \
-                    .filter(contacts__person__applications__registrations__status__code='ACTIVE') \
-                    .select_related('province_state') \
-                    .prefetch_related(
-                        'contacts',
-                        'contacts__person',
-                    ) \
-                    .distinct()
-        return queryset
+        """
+        Filter out organizations with no registered drillers if user is anonymous
+        """
+        qs = self.queryset
+        if not self.request.user.is_staff():
+            qs = self.queryset \
+                .filter(contacts__person__applications__registrations__status__code='ACTIVE') \
+                .distinct()
+        return qs
 
     def get_serializer_class(self):
-        if (self.request.user.is_authenticated()):
+        if (self.request.user.is_staff()):
             return OrganizationAdminSerializer
         return OrganizationSerializer
 
