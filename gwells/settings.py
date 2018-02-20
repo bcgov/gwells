@@ -78,7 +78,7 @@ INSTALLED_APPS = (
     'gwells',
     'crispy_forms',
     'formtools',
-    'registries',
+    # 'registries',
     'django_nose',
 )
 
