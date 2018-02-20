@@ -100,6 +100,21 @@ mkvirtualenv gwells || true
 workon gwells
 
 
+# Configure database with environment variables
+#
+export DATABASE_SERVICE_NAME=postgresql
+export DATABASE_ENGINE=postgresql
+export DATABASE_NAME=gwells
+export DATABASE_USER=gwells
+export DATABASE_PASSWORD=gwells
+export DATABASE_SCHEMA=public
+export DJANGO_DEBUG=True
+export APP_CONTEXT_ROOT=gwells
+export ENABLE_GOOGLE_ANALYTICS=False
+export ENABLE_DATA_ENTRY=True
+export BASEURL=http://gwells-dev.pathfinder.gov.bc.ca/
+
+
 # Create dev database
 #
 python manage.py migrate
