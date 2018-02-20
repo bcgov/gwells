@@ -96,6 +96,5 @@ PATH="${PATH}":~/Library/Python/3.6/bin
 export VIRTUALENVWRAPPER_PYTHON=/usr/local/bin/python3
 set +u
 source "${VEWSRC}"
-mkvirtualenv gwells
+mkvirtualenv gwells || true
 workon gwells
-set -u
