@@ -120,6 +120,11 @@ export BASEURL=http://gwells-dev.pathfinder.gov.bc.ca/
 python manage.py migrate
 
 
+# Open browser window after delay
+#
+( sleep 3 && open http://127.0.0.1:8000/gwells ) &
+
+
 # Run server
 #
 python manage.py runserver
