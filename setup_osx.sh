@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-set -eu
+set -eux
 
 
 # Install Homebrew
@@ -26,6 +26,12 @@ git config --global --get push.default || \
 git config --global --get user.email && \
 	git config --global --get user.name || \
 	git config --global --edit
+
+
+# Set remote (upstream) origin
+#
+git remote -v | grep "https://github.com/bcgov/gwells.git (push)" || \
+	git remote add upstream https://github.com/bcgov/gwells.git
 
 
 # PostgreSQL - install, enable service and initialize db
@@ -87,3 +93,4 @@ set +u
 source "${VEWSRC}"
 mkvirtualenv gwells
 workon gwells
+set -u
