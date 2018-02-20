@@ -15,7 +15,7 @@ which brew || \
 PACKAGES="git python3"
 for p in $PACKAGES
 do
-	which $p || brew install $p
+	brew list $p || brew install $p
 done
 
 
