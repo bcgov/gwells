@@ -59,8 +59,8 @@ class APIOrganizationListCreateView(AuditCreateMixin, ListCreateAPIView):
     """
 
     permission_classes = (IsAdminOrReadOnly,)
-
     serializer_class = OrganizationSerializer
+    pagination_class = APILimitOffsetPagination
 
     # prefetch related objects for the queryset to prevent duplicate database trips later
     queryset = Organization.objects.all() \
@@ -81,7 +81,7 @@ class APIOrganizationListCreateView(AuditCreateMixin, ListCreateAPIView):
         'contacts__person__applications__file_no'
         )
 
-    pagination_class = APILimitOffsetPagination
+    
 
     def get_queryset(self):
         """
@@ -176,8 +176,8 @@ class APIPersonListCreateView(AuditCreateMixin, ListCreateAPIView):
     """
 
     permission_classes = (IsAdminOrReadOnly,)
-
     serializer_class = PersonSerializer
+    pagination_class = APILimitOffsetPagination
 
     # Allow searching on name fields, names of related companies, etc.
     filter_backends = (filters.SearchFilter,)
@@ -188,8 +188,6 @@ class APIPersonListCreateView(AuditCreateMixin, ListCreateAPIView):
         'companies__org__city',
         'applications__registrations__registration_no'
         )
-
-    pagination_class = APILimitOffsetPagination
 
     # fetch related companies and registration applications (prevent duplicate database trips)
     queryset = Person.objects \
@@ -246,7 +244,6 @@ class APIPersonRetrieveUpdateDestroyView(AuditUpdateMixin, RetrieveUpdateDestroy
     """
 
     permission_classes = (IsAdminOrReadOnly,)
-
     serializer_class = PersonSerializer
 
     # pk field has been replaced by person_guid
