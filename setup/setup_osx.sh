@@ -71,7 +71,7 @@ done
 
 # Pip3 install requirements
 #
-pip3 install -U -r requirements.txt
+pip3 install -U -r ../requirements.txt
 
 
 # Config bash shell to source virtualenvwrapper.sh
@@ -117,7 +117,7 @@ export BASEURL=http://gwells-dev.pathfinder.gov.bc.ca/
 
 # Create dev database
 #
-python manage.py migrate
+python ../manage.py migrate
 
 
 # Open browser window after delay
@@ -127,4 +127,4 @@ python manage.py migrate
 
 # Run server
 #
-python manage.py runserver
+python ../manage.py runserver
