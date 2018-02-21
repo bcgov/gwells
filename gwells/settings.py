@@ -72,13 +72,13 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'debug_toolbar',
-	'django.contrib.postgres',
+    'django.contrib.postgres',
     'rest_framework',
-    'rest_framework_swagger',
+    #'rest_framework_swagger',
     'gwells',
     'crispy_forms',
     'formtools',
-    # 'registries',
+    'registries',
     'django_nose',
 )
 
