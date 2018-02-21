@@ -74,7 +74,7 @@ INSTALLED_APPS = (
     'debug_toolbar',
     'django.contrib.postgres',
     'rest_framework',
-    #'rest_framework_swagger',
+    'rest_framework_swagger',
     'gwells',
     'crispy_forms',
     'formtools',
@@ -119,7 +119,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'wsgi.application'
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
-# NOSE_ARGS = ['--with-xunit', '--with-coverage', '--cover-erase', '--cover-inclusive','--cover-xml-file coverage.xml']
 
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
