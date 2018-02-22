@@ -85,3 +85,6 @@ activate
 .vscode/settings.json
 
 x.sh
+
+# Frontend files
+frontend/node_modules/
