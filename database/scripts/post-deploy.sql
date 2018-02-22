@@ -1,4 +1,4 @@
-/* Additional updaates to DB stucture, as Python's model.py has limited abilities to do this */
+/* Additional updates to DB stucture, as Python's model.py has limited abilities to do this */
 DROP INDEX IF EXISTS gwells_well_latlong CASCADE;
 CREATE INDEX gwells_well_latlong ON gwells_well (latitude, longitude);
 
@@ -44,7 +44,7 @@ COMMENT ON TABLE screen_opening_code                    IS 'Placeholder table co
 COMMENT ON TABLE screen_type_code                       IS 'Placeholder table comment.';
 COMMENT ON TABLE surface_seal_material_code             IS 'Placeholder table comment.';
 COMMENT ON TABLE surface_seal_method_code               IS 'Placeholder table comment.';
-COMMENT ON TABLE gwells_surficial_material                IS 'Placeholder table comment.';
+COMMENT ON TABLE surficial_material_code                IS 'Placeholder table comment.';
 COMMENT ON TABLE gwells_water_quality_characteristic      IS 'Placeholder table comment.';
 COMMENT ON TABLE gwells_well                              IS 'Placeholder table comment.';
 COMMENT ON TABLE well_activity_code                IS 'Placeholder table comment.';
@@ -55,3 +55,44 @@ COMMENT ON TABLE gwells_well_water_quality                IS 'Placeholder table 
 COMMENT ON TABLE well_yield_unit_code                   IS 'Placeholder table comment.';
 COMMENT ON TABLE yield_estimation_method_code           IS 'Placeholder table comment.';
 
+
+ALTER TABLE bedrock_material_code ALTER COLUMN effective_date SET DEFAULT CURRENT_DATE;
+ALTER TABLE bedrock_material_descriptor_code ALTER COLUMN effective_date SET DEFAULT CURRENT_DATE;
+ALTER TABLE casing_code ALTER COLUMN effective_date SET DEFAULT CURRENT_DATE;
+ALTER TABLE casing_material_code ALTER COLUMN effective_date SET DEFAULT CURRENT_DATE;
+ALTER TABLE decommission_method_code ALTER COLUMN effective_date SET DEFAULT CURRENT_DATE;
+ALTER TABLE development_method_code ALTER COLUMN effective_date SET DEFAULT CURRENT_DATE;
+ALTER TABLE drilling_method_code ALTER COLUMN effective_date SET DEFAULT CURRENT_DATE;
+ALTER TABLE filter_pack_material_code ALTER COLUMN effective_date SET DEFAULT CURRENT_DATE;
+ALTER TABLE filter_pack_material_size_code ALTER COLUMN effective_date SET DEFAULT CURRENT_DATE;
+ALTER TABLE ground_elevation_method_code ALTER COLUMN effective_date SET DEFAULT CURRENT_DATE;
+ALTER TABLE intended_water_use_code ALTER COLUMN effective_date SET DEFAULT CURRENT_DATE;
+ALTER TABLE land_district_code ALTER COLUMN effective_date SET DEFAULT CURRENT_DATE;
+ALTER TABLE licenced_status_code ALTER COLUMN effective_date SET DEFAULT CURRENT_DATE;
+ALTER TABLE liner_material_code ALTER COLUMN effective_date SET DEFAULT CURRENT_DATE;
+ALTER TABLE lithology_colour_code ALTER COLUMN effective_date SET DEFAULT CURRENT_DATE;
+ALTER TABLE lithology_description_code ALTER COLUMN effective_date SET DEFAULT CURRENT_DATE;
+ALTER TABLE lithology_hardness_code ALTER COLUMN effective_date SET DEFAULT CURRENT_DATE;
+ALTER TABLE lithology_material_code ALTER COLUMN effective_date SET DEFAULT CURRENT_DATE;
+ALTER TABLE lithology_moisture_code ALTER COLUMN effective_date SET DEFAULT CURRENT_DATE;
+ALTER TABLE lithology_structure_code ALTER COLUMN effective_date SET DEFAULT CURRENT_DATE;
+ALTER TABLE obs_well_status_code ALTER COLUMN effective_date SET DEFAULT CURRENT_DATE;
+
+-- Tue 13 Feb 22:36:42 2018 GW Disabled for now until after CodeWithUs Sprint
+-- ALTER TABLE province_state_code ALTER COLUMN effective_date SET DEFAULT CURRENT_DATE;
+
+ALTER TABLE screen_assembly_type_code ALTER COLUMN effective_date SET DEFAULT CURRENT_DATE;
+ALTER TABLE screen_bottom_code ALTER COLUMN effective_date SET DEFAULT CURRENT_DATE;
+ALTER TABLE screen_intake_method_code ALTER COLUMN effective_date SET DEFAULT CURRENT_DATE;
+ALTER TABLE screen_material_code ALTER COLUMN effective_date SET DEFAULT CURRENT_DATE;
+ALTER TABLE screen_opening_code ALTER COLUMN effective_date SET DEFAULT CURRENT_DATE;
+ALTER TABLE screen_type_code ALTER COLUMN effective_date SET DEFAULT CURRENT_DATE;
+ALTER TABLE surface_seal_material_code ALTER COLUMN effective_date SET DEFAULT CURRENT_DATE;
+ALTER TABLE surface_seal_method_code ALTER COLUMN effective_date SET DEFAULT CURRENT_DATE;
+ALTER TABLE surficial_material_code ALTER COLUMN effective_date SET DEFAULT CURRENT_DATE;
+ALTER TABLE well_activity_code ALTER COLUMN effective_date SET DEFAULT CURRENT_DATE;
+ALTER TABLE well_class_code ALTER COLUMN effective_date SET DEFAULT CURRENT_DATE;
+ALTER TABLE well_status_code ALTER COLUMN effective_date SET DEFAULT CURRENT_DATE;
+ALTER TABLE well_subclass_code ALTER COLUMN effective_date SET DEFAULT CURRENT_DATE;
+ALTER TABLE well_yield_unit_code ALTER COLUMN effective_date SET DEFAULT CURRENT_DATE;
+ALTER TABLE yield_estimation_method_code ALTER COLUMN effective_date SET DEFAULT CURRENT_DATE;

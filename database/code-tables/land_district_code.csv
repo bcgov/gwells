@@ -1,4 +1,4 @@
-create_user,create_date,update_user,update_date,land_district_guid,code,name,sort_order
+create_user,create_date,update_user,update_date,land_district_guid,land_district_code,name,display_order
 WELLS,2003-08-13 08:55:13-07,WELLS,2006-12-14 09:29:24-08,1e741156-f51a-459d-9635-d4982804be8a,02,BARCLAY,100
 WELLS,2003-08-13 08:55:13-07,WELLS,2006-12-14 09:29:24-08,95bd552d-b06f-487e-bc89-6890ebc0907d,03,BRIGHT,100
 WELLS,2003-08-13 08:55:13-07,WELLS,2006-12-14 09:29:24-08,1d4c1250-5f17-4009-a745-61b529a042c1,04,CAMERON,100

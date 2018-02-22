@@ -29,7 +29,8 @@ INSERT INTO registries_organization (
 ,null
 ,'https://www.bcgwa.org/'
 ,true
-,(select prov.province_state_guid from province_state_code prov where prov.code = 'BC')
+,(select prov.province_state_guid from province_state_code prov where prov.province_state_code
+ = 'BC')
 ,'d76775a3-650d-44cb-a3b7-5faf8558f29d'::uuid
 ,'DATALOAD_USER'
 ,'2018-01-01 00:00:00-08'
@@ -61,7 +62,8 @@ INSERT INTO registries_organization (
 ,null
 ,'https://www2.gov.bc.ca/gov/content/environment/air-land-water/water/laws-rules/groundwater-protection-regulation'
 ,true
-,(select prov.province_state_guid from province_state_code prov where prov.code = 'BC')
+,(select prov.province_state_guid from province_state_code prov where prov.province_state_code
+ = 'BC')
 ,'d3dfedd0-59b3-41cd-a40c-6e35b236a3d6'::uuid
 ,'DATALOAD_USER'
 ,'2018-01-01 00:00:00-08'
@@ -107,7 +109,7 @@ UPDATE registries_organization org SET
 from xform_registries_drillers_reg xform
     ,province_state_code prov
 where xform.companyname = org.name
-and   prov.code = xform.companyprov
+and   prov.province_state_code = xform.companyprov
 LIMIT 1
 )
 WHERE org.certificate_authority is false;
@@ -464,7 +466,7 @@ and   xform_trk.app_approval_date is null -- Ignore bad data
 -- where  status.registries_application_status_guid = code.registries_application_status_guid
 -- and    appl.application_guid = status.application_guid
 -- and    appl.person_guid = per.person_guid
--- order by per.person_guid, status.effective_date, code.sort_order;
+-- order by per.person_guid, status.effective_date, code.display_order;
 
 
 -- Insert "Fake" applications for Drillers subsequently removed from Well Driller Register
@@ -647,7 +649,7 @@ INSERT INTO registries_organization (
 ,'2018-01-01 00:00:00-08' 
 from xform_registries_drillers_reg xform_reg
 left join province_state_code prov
-on prov.code = xform_reg.companyprov
+on prov.province_state_code = xform_reg.companyprov
 where xform_reg.companyname is not null
 and not exists (
   select 1

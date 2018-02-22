@@ -56,9 +56,9 @@
 									]
 								},
 								"url": {
-									"raw": "https://dlvrapps.nrs.gov.bc.ca/gwells/registries/api-token-auth/",
+									"raw": "{{base_url}}/api-token-auth/",
 									"host": [
-										"https://dlvrapps.nrs.gov.bc.ca/gwells/registries"
+										"{{base_url}}"
 									],
 									"path": [
 										"api-token-auth",
@@ -184,9 +184,9 @@
 									]
 								},
 								"url": {
-									"raw": "https://dlvrapps.nrs.gov.bc.ca/gwells/registries/organizations/",
+									"raw": "{{base_url}}/organizations/",
 									"host": [
-										"https://dlvrapps.nrs.gov.bc.ca/gwells/registries"
+										"{{base_url}}"
 									],
 									"path": [
 										"organizations",
@@ -259,9 +259,9 @@
 									"raw": ""
 								},
 								"url": {
-									"raw": "https://dlvrapps.nrs.gov.bc.ca/gwells/registries/organizations/",
+									"raw": "{{base_url}}/organizations/",
 									"host": [
-										"https://dlvrapps.nrs.gov.bc.ca/gwells/registries"
+										"{{base_url}}"
 									],
 									"path": [
 										"organizations",
@@ -325,9 +325,9 @@
 									"raw": ""
 								},
 								"url": {
-									"raw": "https://dlvrapps.nrs.gov.bc.ca/gwells/registries/organizations/{{created_guid}}/",
+									"raw": "{{base_url}}/organizations/{{created_guid}}/",
 									"host": [
-										"https://dlvrapps.nrs.gov.bc.ca/gwells/registries"
+										"{{base_url}}"
 									],
 									"path": [
 										"organizations",
@@ -391,9 +391,9 @@
 									]
 								},
 								"url": {
-									"raw": "https://dlvrapps.nrs.gov.bc.ca/gwells/registries/organizations/{{created_guid}}/",
+									"raw": "{{base_url}}/organizations/{{created_guid}}/",
 									"host": [
-										"https://dlvrapps.nrs.gov.bc.ca/gwells/registries"
+										"{{base_url}}"
 									],
 									"path": [
 										"organizations",
@@ -449,9 +449,9 @@
 									"raw": ""
 								},
 								"url": {
-									"raw": "https://dlvrapps.nrs.gov.bc.ca/gwells/registries/organizations/",
+									"raw": "{{base_url}}/organizations/",
 									"host": [
-										"https://dlvrapps.nrs.gov.bc.ca/gwells/registries"
+										"{{base_url}}"
 									],
 									"path": [
 										"organizations",
@@ -501,9 +501,9 @@
 									"raw": ""
 								},
 								"url": {
-									"raw": "https://dlvrapps.nrs.gov.bc.ca/gwells/registries/organizations/{{created_guid}}/",
+									"raw": "{{base_url}}/organizations/{{created_guid}}/",
 									"host": [
-										"https://dlvrapps.nrs.gov.bc.ca/gwells/registries"
+										"{{base_url}}"
 									],
 									"path": [
 										"organizations",
@@ -545,9 +545,9 @@
 									"raw": ""
 								},
 								"url": {
-									"raw": "https://dlvrapps.nrs.gov.bc.ca/gwells/registries/organizations/{{created_guid}}/",
+									"raw": "{{base_url}}/organizations/{{created_guid}}/",
 									"host": [
-										"https://dlvrapps.nrs.gov.bc.ca/gwells/registries"
+										"{{base_url}}"
 									],
 									"path": [
 										"organizations",
@@ -594,9 +594,9 @@
 									"raw": ""
 								},
 								"url": {
-									"raw": "https://dlvrapps.nrs.gov.bc.ca/gwells/registries/organizations/{{created_guid}}/",
+									"raw": "{{base_url}}/organizations/{{created_guid}}/",
 									"host": [
-										"https://dlvrapps.nrs.gov.bc.ca/gwells/registries"
+										"{{base_url}}"
 									],
 									"path": [
 										"organizations",
@@ -653,9 +653,9 @@
 									"raw": ""
 								},
 								"url": {
-									"raw": "https://dlvrapps.nrs.gov.bc.ca/gwells/registries/organizations/",
+									"raw": "{{base_url}}/organizations/",
 									"host": [
-										"https://dlvrapps.nrs.gov.bc.ca/gwells/registries"
+										"{{base_url}}"
 									],
 									"path": [
 										"organizations",
@@ -767,9 +767,9 @@
 									]
 								},
 								"url": {
-									"raw": "https://dlvrapps.nrs.gov.bc.ca/gwells/registries/organizations/",
+									"raw": "{{base_url}}/organizations/",
 									"host": [
-										"https://dlvrapps.nrs.gov.bc.ca/gwells/registries"
+										"{{base_url}}"
 									],
 									"path": [
 										"organizations",
@@ -882,9 +882,9 @@
 									]
 								},
 								"url": {
-									"raw": "https://dlvrapps.nrs.gov.bc.ca/gwells/registries/organizations/{{created_guid_bad_input}}/",
+									"raw": "{{base_url}}/organizations/{{created_guid_bad_input}}/",
 									"host": [
-										"https://dlvrapps.nrs.gov.bc.ca/gwells/registries"
+										"{{base_url}}"
 									],
 									"path": [
 										"organizations",
@@ -941,9 +941,9 @@
 									]
 								},
 								"url": {
-									"raw": "https://dlvrapps.nrs.gov.bc.ca/gwells/registries/organizations/",
+									"raw": "{{base_url}}/organizations/",
 									"host": [
-										"https://dlvrapps.nrs.gov.bc.ca/gwells/registries"
+										"{{base_url}}"
 									],
 									"path": [
 										"organizations",
@@ -983,9 +983,9 @@
 									"raw": ""
 								},
 								"url": {
-									"raw": "https://dlvrapps.nrs.gov.bc.ca/gwells/registries/organizations/{{created_guid_bad_input}}/",
+									"raw": "{{base_url}}/organizations/{{created_guid_bad_input}}/",
 									"host": [
-										"https://dlvrapps.nrs.gov.bc.ca/gwells/registries"
+										"{{base_url}}"
 									],
 									"path": [
 										"organizations",
@@ -1075,9 +1075,9 @@
 									]
 								},
 								"url": {
-									"raw": "https://dlvrapps.nrs.gov.bc.ca/gwells/registries/drillers/",
+									"raw": "{{base_url}}/drillers/",
 									"host": [
-										"https://dlvrapps.nrs.gov.bc.ca/gwells/registries"
+										"{{base_url}}"
 									],
 									"path": [
 										"drillers",
@@ -1146,9 +1146,9 @@
 									"raw": ""
 								},
 								"url": {
-									"raw": "https://dlvrapps.nrs.gov.bc.ca/gwells/registries/drillers/",
+									"raw": "{{base_url}}/drillers/",
 									"host": [
-										"https://dlvrapps.nrs.gov.bc.ca/gwells/registries"
+										"{{base_url}}"
 									],
 									"path": [
 										"drillers",
@@ -1210,9 +1210,9 @@
 									"raw": ""
 								},
 								"url": {
-									"raw": "https://dlvrapps.nrs.gov.bc.ca/gwells/registries/drillers/{{created_driller_guid}}/",
+									"raw": "{{base_url}}/drillers/{{created_driller_guid}}/",
 									"host": [
-										"https://dlvrapps.nrs.gov.bc.ca/gwells/registries"
+										"{{base_url}}"
 									],
 									"path": [
 										"drillers",
@@ -1276,9 +1276,9 @@
 									]
 								},
 								"url": {
-									"raw": "https://dlvrapps.nrs.gov.bc.ca/gwells/registries/drillers/{{created_driller_guid}}/",
+									"raw": "{{base_url}}/drillers/{{created_driller_guid}}/",
 									"host": [
-										"https://dlvrapps.nrs.gov.bc.ca/gwells/registries"
+										"{{base_url}}"
 									],
 									"path": [
 										"drillers",
@@ -1347,9 +1347,9 @@
 									]
 								},
 								"url": {
-									"raw": "https://dlvrapps.nrs.gov.bc.ca/gwells/registries/drillers/{{created_driller_guid}}/",
+									"raw": "{{base_url}}/drillers/{{created_driller_guid}}/",
 									"host": [
-										"https://dlvrapps.nrs.gov.bc.ca/gwells/registries"
+										"{{base_url}}"
 									],
 									"path": [
 										"drillers",
@@ -1405,9 +1405,9 @@
 									"raw": ""
 								},
 								"url": {
-									"raw": "https://dlvrapps.nrs.gov.bc.ca/gwells/registries/drillers/",
+									"raw": "{{base_url}}/drillers/",
 									"host": [
-										"https://dlvrapps.nrs.gov.bc.ca/gwells/registries"
+										"{{base_url}}"
 									],
 									"path": [
 										"drillers",
@@ -1457,9 +1457,9 @@
 									"raw": ""
 								},
 								"url": {
-									"raw": "https://dlvrapps.nrs.gov.bc.ca/gwells/registries/drillers/{{created_driller_guid}}/",
+									"raw": "{{base_url}}/drillers/{{created_driller_guid}}/",
 									"host": [
-										"https://dlvrapps.nrs.gov.bc.ca/gwells/registries"
+										"{{base_url}}"
 									],
 									"path": [
 										"drillers",
@@ -1501,9 +1501,9 @@
 									"raw": ""
 								},
 								"url": {
-									"raw": "https://dlvrapps.nrs.gov.bc.ca/gwells/registries/drillers/{{created_driller_guid}}/",
+									"raw": "{{base_url}}/drillers/{{created_driller_guid}}/",
 									"host": [
-										"https://dlvrapps.nrs.gov.bc.ca/gwells/registries"
+										"{{base_url}}"
 									],
 									"path": [
 										"drillers",
@@ -1550,9 +1550,9 @@
 									"raw": ""
 								},
 								"url": {
-									"raw": "https://dlvrapps.nrs.gov.bc.ca/gwells/registries/drillers/{{created_driller_guid}}/",
+									"raw": "{{base_url}}/drillers/{{created_driller_guid}}/",
 									"host": [
-										"https://dlvrapps.nrs.gov.bc.ca/gwells/registries"
+										"{{base_url}}"
 									],
 									"path": [
 										"drillers",
@@ -1609,9 +1609,9 @@
 									"raw": ""
 								},
 								"url": {
-									"raw": "https://dlvrapps.nrs.gov.bc.ca/gwells/registries/drillers/",
+									"raw": "{{base_url}}/drillers/",
 									"host": [
-										"https://dlvrapps.nrs.gov.bc.ca/gwells/registries"
+										"{{base_url}}"
 									],
 									"path": [
 										"drillers",
@@ -1661,9 +1661,9 @@
 									"raw": ""
 								},
 								"url": {
-									"raw": "https://dlvrapps.nrs.gov.bc.ca/gwells/registries/drillers/",
+									"raw": "{{base_url}}/drillers/",
 									"host": [
-										"https://dlvrapps.nrs.gov.bc.ca/gwells/registries"
+										"{{base_url}}"
 									],
 									"path": [
 										"drillers",
@@ -1671,140 +1671,6 @@
 									]
 								},
 								"description": "Attempt to create a driller record with missing required input."
-							},
-							"response": []
-						}
-					],
-					"_postman_isSubFolder": true
-				}
-			]
-		},
-		{
-			"name": "Anonymous user (not logged in)",
-			"description": "Tests for anonymous users (accessing API while not logged in).\n\nAnonymous users should have read-only access and should only see records of people who are registered and active (i.e. list of drillers should show only registered drillers).",
-			"item": [
-				{
-					"name": "Drillers",
-					"description": "Drillers resource tests for anonymous (not logged in) users",
-					"item": [
-						{
-							"name": "Driller List (anon)",
-							"event": [
-								{
-									"listen": "test",
-									"script": {
-										"id": "85a52a47-93ea-4668-ac69-08ecb21af39c",
-										"type": "text/javascript",
-										"exec": [
-											"( function() {",
-											"    pm.test(\"Status code is 200\", function () {",
-											"        pm.response.to.have.status(200);",
-											"    });",
-											"    ",
-											"    var created_guid = pm.environment.get(\"created_driller_guid\");",
-											"    var jsonData = pm.response.json();",
-											"    ",
-											"    pm.test(\"List of drillers has valid person objects\", function () {",
-											"        // First check that our GUID resembles a valid UUID (i.e. we are not testing before created_guid is set)",
-											"        pm.expect(created_guid.length).to.eql(36);",
-											"",
-											"        // Then check that created_guid is in the response body",
-											"        pm.expect(jsonData.results.length).to.be.above(0);",
-											"",
-											"        for (var i; i < jsonData.results.length; i++) {",
-											"            pm.expect(jsonData.results[i].person_guid.length).to.eql(36);",
-											"            pm.expect(jsonData.results[i].first_name.length).to.be.ok;",
-											"            pm.expect(jsonData.results[i].surname.length).to.be.ok;",
-											"        }",
-											"    });",
-											"",
-											"    pm.test(\"Pagination: if there are more objects than the page limit, provide a link to the next page\", function () {",
-											"        if (jsonData.results.length < jsonData.count) {",
-											"            pm.expect(jsonData.next.length).to.be.ok;",
-											"        }",
-											"    });",
-											"    ",
-											"    pm.test(\"There should be no non-\\\"ACTIVE\\\" drillers in the list (note: not a definitive test that a user will never see inactive drillers)\", function () {",
-											"        jsonData.results.forEach(function(driller) {",
-											"            driller.applications.forEach(function(app) {",
-											"                app.registrations.forEach(function(registration) {",
-											"                    pm.expect(registration.status).to.eql('ACTIVE')",
-											"                })",
-											"            })",
-											"        })",
-											"    });",
-											"",
-											"})();",
-											""
-										]
-									}
-								}
-							],
-							"request": {
-								"auth": {
-									"type": "noauth"
-								},
-								"method": "GET",
-								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
-								"url": {
-									"raw": "https://dlvrapps.nrs.gov.bc.ca/gwells/registries/drillers/",
-									"host": [
-										"https://dlvrapps.nrs.gov.bc.ca/gwells/registries"
-									],
-									"path": [
-										"drillers",
-										""
-									]
-								},
-								"description": "Driller model \"list\" view for anonymous (not logged in) users."
-							},
-							"response": []
-						},
-						{
-							"name": "Driller retrieve (inactive driller as anon user)",
-							"event": [
-								{
-									"listen": "test",
-									"script": {
-										"id": "f3c4d347-a1f3-4305-bef3-85f2500ed3bc",
-										"type": "text/javascript",
-										"exec": [
-											"( function() {",
-											"    pm.test(\"Requested resource should not be returned (user is not logged in)\", function () {",
-											"        pm.response.to.have.status(404);",
-											"    });",
-											"})();",
-											""
-										]
-									}
-								}
-							],
-							"request": {
-								"auth": {
-									"type": "noauth"
-								},
-								"method": "GET",
-								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
-								"url": {
-									"raw": "https://dlvrapps.nrs.gov.bc.ca/gwells/registries/drillers/{{created_driller_guid}}/",
-									"host": [
-										"https://dlvrapps.nrs.gov.bc.ca/gwells/registries"
-									],
-									"path": [
-										"drillers",
-										"{{created_driller_guid}}",
-										""
-									]
-								},
-								"description": "Driller model detail view - anon user trying to retrieve an unregistered person (anon users should only see registered drillers)"
 							},
 							"response": []
 						}

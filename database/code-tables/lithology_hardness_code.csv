@@ -1,4 +1,4 @@
-lithology_hardness_guid,code,description,is_hidden,sort_order,create_date,update_date,create_user,update_user
+lithology_hardness_guid,lithology_hardness_code,description,is_hidden,display_order,create_date,update_date,create_user,update_user
 "aeab5f0a62a511e7907ba6006ad3dba0","VERY HARD","Very Hard","N","60","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
 "aeab546062a511e7907ba6006ad3dba0","VERY_SOFT","Very Soft","N","70","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
 "aeab5d4862a511e7907ba6006ad3dba0","MEDIUM","Medium","N","30","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"

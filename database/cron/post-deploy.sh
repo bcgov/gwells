@@ -56,8 +56,12 @@ then
 	\i data-load-static-codes.sql
 EOF
 
+	echo ". Running DB Replication from Legacy Database, as per DB_REPLICATION flag"
+    cd /opt/app-root/src/database/cron/
+    ./db-replicate.sh
+
 	# \copy statements in data-load-static-codes.sql required to be in this directory
-	cd registries/
+	cd ../code-tables/registries/
 
 	# @Registries
 	# Temporary setup of Registries (Well Driller only) as part of Code With Us
@@ -66,13 +70,11 @@ EOF
 	\i clear-tables.sql
 	\ir ../../scripts/registries/populate-xforms-registries.sql
 	\i data-load-static-codes.sql
+	\ir ../../scripts/registries/populate-registries-from-xform.sql
+	\ir ../../scripts/registries/post-deploy.sql
+
+
 EOF
-
-
-	echo ". Running DB Replication from Legacy Database, as per DB_REPLICATION flag"
-    cd /opt/app-root/src/database/cron/
-    ./db-replicate.sh
-
 else
     echo ". Skipping DB Replication from Legacy Database, as per DB_REPLICATION flag"
 fi
