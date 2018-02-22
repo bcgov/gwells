@@ -1,6 +1,7 @@
 django>=1.11,<1.12
 django-debug-toolbar>=1.7
 gunicorn>=19.7.0
+gevent>=1.2.2
 psycopg2-binary>=2.7.1
 whitenoise>=3.3
 django-model-utils>=2.6.1
