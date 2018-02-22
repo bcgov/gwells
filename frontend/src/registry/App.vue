@@ -1,23 +1,27 @@
 <template>
   <div id="app">
-    <img src="./assets/logo.png">
+    <gwells-header/>
     <router-view/>
+    <gwells-footer/>
   </div>
 </template>
 
 <script>
+import Header from '@/registry/components/Header'
+import Footer from '@/registry/components/Footer'
 export default {
-  name: 'App'
+  name: 'App',
+  components: {
+    'gwells-header': Header,
+    'gwells-footer': Footer
+  }
 }
 </script>
 
 <style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+@import '../../node_modules/bootstrap/dist/css/bootstrap.css';
+@import '../assets/Gov-2.0-Bootstrap-Skeleton/css/ie10-viewport-bug-workaround.css';
+@import '../assets/Gov-2.0-Bootstrap-Skeleton/css/main.css';
+@import '../assets/Gov-2.0-Bootstrap-Skeleton/css/custom-form.css';
+@import '../assets/Gov-2.0-Bootstrap-Skeleton/css/custom-main.css';
 </style>
