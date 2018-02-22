@@ -1,4 +1,4 @@
-create_user,create_date,update_user,update_date,filter_pack_material_size_guid,code,description,is_hidden,sort_order 
+create_user,create_date,update_user,update_date,filter_pack_material_size_guid,filter_pack_material_size_code,description,is_hidden,display_order 
 "ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","221ab04e796c11e7b5a5be2e44b06b34","1_2MM","1.0 - 2.0 mm","N","10"
 "ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","221ab2ec796c11e7b5a5be2e44b06b34","2_4MM","2.0 - 4.0 mm","N","20"
 "ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","221ab9e0796c11e7b5a5be2e44b06b34","4_8MM","4.0 - 8.0 mm","N","30"
