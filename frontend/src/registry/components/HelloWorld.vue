@@ -24,7 +24,6 @@
                 <div id="introduction"></div>
                     <p>Insert your introductory content here. Ensure your content meets the stylistic and formatting standards for writing consistent and high quality content for B.C. government websites.</p>
                 </div>
-
                 <div id="body">
                     <h2>Heading Style 2</h2>
                     <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
