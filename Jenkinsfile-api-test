@@ -7,7 +7,7 @@ stage('API Test') {
         dir('api-tests') {
 	    try {
                 sh 'npm install -g newman'
-		sh 'runnewman.sh'
+		sh './runnewman.sh'
 	    } finally {
                 junit 'newman/*.xml'
                 stash includes: 'newman/*.xml', name: 'api-tests' 
