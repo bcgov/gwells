@@ -19,6 +19,16 @@ do
 done
 
 
+# PostgreSQL - install, enable service and initialize db
+#
+if( ! which psql );
+then
+	brew install postgresql
+	brew services start postgresql
+	initdb /usr/local/var/postgres/
+fi
+
+
 # Configure git
 #
 git config --global --get push.default || \
@@ -32,16 +42,6 @@ git config --global --get user.email && \
 #
 git remote -v | grep "https://github.com/bcgov/gwells.git (push)" || \
 	git remote add upstream https://github.com/bcgov/gwells.git
-
-
-# PostgreSQL - install, enable service and initialize db
-#
-if( ! which psql );
-then
-	brew install postgresql
-	brew services start postgresql
-	initdb /usr/local/var/postgres/
-fi
 
 
 # Create postgres user
@@ -98,6 +98,7 @@ set +u
 source "${VEWSRC}"
 mkvirtualenv gwells || true
 workon gwells
+set -u
 
 
 # Configure database with environment variables
@@ -117,7 +118,7 @@ export BASEURL=http://gwells-dev.pathfinder.gov.bc.ca/
 
 # Create dev database
 #
-python ../manage.py migrate
+python3 ../manage.py migrate
 
 
 # Open browser window after delay
@@ -127,4 +128,4 @@ python ../manage.py migrate
 
 # Run server
 #
-python ../manage.py runserver
+python3 ../manage.py runserver
