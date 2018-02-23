@@ -1,17 +1,19 @@
 <template>
-  <b-table
-    striped
-    :items="mockData"
-    :fields="fields"
-  />
+  <div>
+    <h2>Well Driller Results</h2>
+    <b-table
+      striped
+      :items="mockData"
+      :fields="fields"
+    />
+  </div>
 </template>
 
 <script>
 export default {
-  name: 'HelloWorld',
+  name: 'RegisterTable',
   data () {
     return {
-      msg: 'Welcome to Your Vue.js App',
       fields: ['name', 'street_address', 'city', 'province', 'main_tel'],
       mockData: [
         {
@@ -123,6 +125,26 @@ export default {
               contact_at_guid: '75c4345b-70a9-44d7-baf2-c4534f8c67a8',
               organization_name: 'Geoform Drilling Co.',
               person_name: 'Morris West',
+              person: '3f35f155-4e28-4bd7-b914-b44997c197f3',
+              org: 'ac354cf4-809c-4005-8dcd-715656847ac2',
+              contact_tel: '(778) 788-6649',
+              contact_email: 'bass@driller.ca'
+            }
+          ]
+        },
+        {
+          org_guid: 'ac354cf4-809c-4005-8dcd-715656847ac2',
+          name: 'Go Drilling Co.',
+          street_address: '7606 Stony Island Circle',
+          city: 'Deroche',
+          province: 'BC',
+          postal_code: 'V0T 3T7',
+          main_tel: '(250) 103-8104',
+          contacts: [
+            {
+              contact_at_guid: '75c4345b-70a9-44d7-baf2-c4534f8c67a8',
+              organization_name: 'Go Drilling Co.',
+              person_name: 'Norris Best',
               person: '3f35f155-4e28-4bd7-b914-b44997c197f3',
               org: 'ac354cf4-809c-4005-8dcd-715656847ac2',
               contact_tel: '(778) 788-6649',
