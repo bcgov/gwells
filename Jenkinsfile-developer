@@ -61,6 +61,7 @@ stage('API Test') {
         echo "Build: ${BUILD_ID}"
         checkout scm
         dir('api-tests') {
+	    sh 'npm install -g newman'
 	    try {
 		sh './runnewman.sh'
 	    } finally {
