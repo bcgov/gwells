@@ -19,7 +19,8 @@
     "popper.js": "^1.12.9",
     "vue": "^2.5.2",
     "vue-router": "^3.0.1",
-    "vue-strap": "^1.1.40"
+    "vue-strap": "^1.1.40",
+    "vuex": "^3.0.1"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.2",
