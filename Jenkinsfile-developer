@@ -63,7 +63,7 @@ stage('API Test') {
         dir('api-tests') {
 	    sh 'npm install -g newman'
 	    try {
-		sh './runnewman.sh'
+		sh 'newman run registries_api_tests.json --global-var base_url="https://gwells-dev.pathfinder.gov.bc.ca/gwells/registries" --global-var test_user="testuser" --global-var test_password="testpassword" -r cli,junit,html;'
 	    } finally {
                 junit 'newman/*.xml'
                 publishHTML (target: [
