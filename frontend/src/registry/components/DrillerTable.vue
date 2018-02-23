@@ -1,80 +1,82 @@
 <template>
-    <div id="topicTemplate" class="template container gov-container">
-        <div id="breadcrumbContainer">
-            <ol class="breadcrumb">
-
-                <li>
-                    <a href="#">Home</a>
-                </li>
-                <li>
-                    <a href="#">Breadcrumb Link</a>
-                </li>
-                <li>
-                    <a href="#">Breadcrumb Link</a>
-                </li>
-                <li>
-                    <a href="#">Breadcrumb Link</a>
-                </li>
-            </ol>
+  <div id="topicTemplate" class="template container gov-container">
+    <div id="breadcrumbContainer">
+      <ol class="breadcrumb">
+        <li>
+          <a href="#">Home</a>
+        </li>
+        <li>
+          <a href="#">Breadcrumb Link</a>
+        </li>
+        <li>
+          <a href="#">Breadcrumb Link</a>
+        </li>
+        <li>
+          <a href="#">Breadcrumb Link</a>
+        </li>
+      </ol>
+    </div>
+    <div class="row">
+      <div id="main-content" role="main" class="contentPageMainColumn col-sm-12">
+        <a id="main-content-anchor"></a>
+        <h1>Registered Drilling Contractors</h1>
+        <div id="introduction">
+          <p>Insert your introductory content here. Ensure your content meets the stylistic and formatting standards for writing consistent and high quality content for B.C. government websites.</p>
         </div>
-        <div class="row">
-            <div id="main-content" role="main" class="contentPageMainColumn col-sm-12">
-                <a id="main-content-anchor"></a>
-                <h1>Registered Drilling Contractors</h1>
-                <div id="introduction"></div>
-                    <p>Insert your introductory content here. Ensure your content meets the stylistic and formatting standards for writing consistent and high quality content for B.C. government websites.</p>
-                </div>
-                <div>
-    <table class="table table-striped">
-        <thead>
+      </div>
+      <div>
+        <table class="table table-striped">
+          <thead>
             <tr style="text-align: left;">
-                <th class="numeric">
-                    Company Name
-                </th>
-                <th class="numeric">
-                    Address
-                </th>
-                <th class="html">
-                    City
-                </th>
-                <th class="html">
-                    Province
-                </th>
-                <th class="html">
-                    Phone
-                </th>
+              <th class="numeric">
+                Company Name
+              </th>
+              <th class="numeric">
+                Address
+              </th>
+              <th class="html">
+                City
+              </th>
+              <th class="html">
+                Province
+              </th>
+              <th class="html">
+                Phone
+              </th>
             </tr>
-        </thead>
-        <tbody>
+          </thead>
+          <tbody>
             <tr v-for="item in mockData" :key="item.org_guid">
-                <td>{{item.name}}</td>
-                <td>{{item.street_address}}</td>
-                <td>{{item.city}}</td>
-                <td>{{item.province_state}}</td>
-                <td>{{item.main_tel}}</td>
+              <td>{{item.name}}</td>
+              <td>{{item.street_address}}</td>
+              <td>{{item.city}}</td>
+              <td>{{item.province_state}}</td>
+              <td>{{item.main_tel}}</td>
             </tr>
-        </tbody></table></div>
-                <!-- <div id="">
-                    <h2>Heading Style 2</h2>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+          </tbody>
+        </table>
+      </div>
+      <!-- <div id="">
+          <h2>Heading Style 2</h2>
+          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
 
-                    <p>"At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus. Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat."</p>
+          <p>"At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus. Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat."</p>
 
-                    <ul>
-                        <li><a href="#" target="_self">Abbreviations</a>&nbsp;</li>
-                        <li><a href="#" target="_self">Capitalization</a></li>
-                        <li><a href="#" target="_self">Formatting</a></li>
-                        <li><a href="#" target="_self">Headings</a></li>
-                        <li><a href="#" target="_self">Links</a></li>
-                        <li><a href="#" target="_self">Lists</a></li>
-                        <li><a href="#" target="_self">Numbers &amp; Dates</a></li>
-                        <li><a href="#" target="_self">Plain Language</a></li>
-                        <li><a href="#" target="_self">Punctuation</a></li>
-                        <li><a href="#" target="_self">Word Usage</a></li>
-                    </ul>
-                </div> -->
-            </div>
-        </div>
+          <ul>
+              <li><a href="#" target="_self">Abbreviations</a>&nbsp;</li>
+              <li><a href="#" target="_self">Capitalization</a></li>
+              <li><a href="#" target="_self">Formatting</a></li>
+              <li><a href="#" target="_self">Headings</a></li>
+              <li><a href="#" target="_self">Links</a></li>
+              <li><a href="#" target="_self">Lists</a></li>
+              <li><a href="#" target="_self">Numbers &amp; Dates</a></li>
+              <li><a href="#" target="_self">Plain Language</a></li>
+              <li><a href="#" target="_self">Punctuation</a></li>
+              <li><a href="#" target="_self">Word Usage</a></li>
+          </ul>
+      </div> -->
+    </div>
+  </div>
 </template>
 
 <script>
@@ -123,85 +125,85 @@ export default {
               contact_email: 'cardenas@driller.ca'
             }
           ]
+        },
+        {
+          org_guid: '6cf747f3-31cf-4c8f-9d2a-a1cd32dc24a4',
+          name: 'Exoplode Drilling Co.',
+          street_address: '5480 Burning Pointe',
+          city: 'Shookumchuk',
+          province_state: 'BC',
+          postal_code: 'V3S 9O8',
+          main_tel: '(250) 046-0449',
+          contacts: [
+            {
+              contact_at_guid: '15d733be-be35-4ae1-87a8-d7c3e42e7003',
+              organization_name: 'Exoplode Drilling Co.',
+              person_name: 'Dodson Griffith',
+              person: '54f26199-a6ac-4ee9-861d-907fa3e9b5e1',
+              org: '6cf747f3-31cf-4c8f-9d2a-a1cd32dc24a4',
+              contact_tel: '(250) 304-1599',
+              contact_email: 'gray@driller.ca'
+            },
+            {
+              contact_at_guid: '27771738-e2c9-45f0-982a-1849a1a39025',
+              organization_name: 'Exoplode Drilling Co.',
+              person_name: 'Lucas Dale',
+              person: '894f133f-f8f4-4a75-93f7-ce82e0232943',
+              org: '6cf747f3-31cf-4c8f-9d2a-a1cd32dc24a4',
+              contact_tel: '(250) 677-2223',
+              contact_email: 'bradley@driller.ca'
+            },
+            {
+              contact_at_guid: '84005af1-ac44-426f-ae25-0eaa9e8ad71e',
+              organization_name: 'Exoplode Drilling Co.',
+              person_name: 'Rollins Oneill',
+              person: '6f38afd3-de1f-4661-878a-aadaed54e339',
+              org: '6cf747f3-31cf-4c8f-9d2a-a1cd32dc24a4',
+              contact_tel: '(250) 986-4265',
+              contact_email: null
+            }
+          ]
+        },
+        {
+          org_guid: 'ac354cf4-809c-4005-8dcd-715656847ac2',
+          name: 'Geoform Drilling Co.',
+          street_address: '7604 Stony Island Circle',
+          city: 'Deroche',
+          province_state: 'BC',
+          postal_code: 'V0T 3T7',
+          main_tel: '(250) 103-8103',
+          contacts: [
+            {
+              contact_at_guid: '300991b3-9832-468e-adf5-a9c86c7a9ecf',
+              organization_name: 'Geoform Drilling Co.',
+              person_name: 'Rocha Mcmahon',
+              person: '73b41f91-6468-459c-b48f-756357627765',
+              org: 'ac354cf4-809c-4005-8dcd-715656847ac2',
+              contact_tel: '(604) 430-1783',
+              contact_email: 'brock@driller.ca'
+            },
+            {
+              contact_at_guid: '35c34ea3-c858-47bc-80b4-c6109e9a68c7',
+              organization_name: 'Geoform Drilling Co.',
+              person_name: 'Lawanda Mcgowan',
+              person: 'd739b11a-0790-46fe-bf9d-a3f2a40f728c',
+              org: 'ac354cf4-809c-4005-8dcd-715656847ac2',
+              contact_tel: '(604) 244-3019',
+              contact_email: 'irwin@driller.ca'
+            },
+            {
+              contact_at_guid: '75c4345b-70a9-44d7-baf2-c4534f8c67a8',
+              organization_name: 'Geoform Drilling Co.',
+              person_name: 'Morris West',
+              person: '3f35f155-4e28-4bd7-b914-b44997c197f3',
+              org: 'ac354cf4-809c-4005-8dcd-715656847ac2',
+              contact_tel: '(778) 788-6649',
+              contact_email: 'bass@driller.ca'
+            }
+          ]
         }
         // {
-        //   "org_guid": "6cf747f3-31cf-4c8f-9d2a-a1cd32dc24a4",
-        //   "name": "Exoplode Drilling Co.",
-        //   "street_address": "5480 Burning Pointe",
-        //   "city": "Shookumchuk",
-        //   "province_state": "BC",
-        //   "postal_code": "V3S 9O8",
-        //   "main_tel": "(250) 046-0449",
-        //   "contacts": [
-        //     {
-        //       "contact_at_guid": "15d733be-be35-4ae1-87a8-d7c3e42e7003",
-        //       "organization_name": "Exoplode Drilling Co.",
-        //       "person_name": "Dodson Griffith",
-        //       "person": "54f26199-a6ac-4ee9-861d-907fa3e9b5e1",
-        //       "org": "6cf747f3-31cf-4c8f-9d2a-a1cd32dc24a4",
-        //       "contact_tel": "(250) 304-1599",
-        //       "contact_email": "gray@driller.ca"
-        //     },
-        //     {
-        //       "contact_at_guid": "27771738-e2c9-45f0-982a-1849a1a39025",
-        //       "organization_name": "Exoplode Drilling Co.",
-        //       "person_name": "Lucas Dale",
-        //       "person": "894f133f-f8f4-4a75-93f7-ce82e0232943",
-        //       "org": "6cf747f3-31cf-4c8f-9d2a-a1cd32dc24a4",
-        //       "contact_tel": "(250) 677-2223",
-        //       "contact_email": "bradley@driller.ca"
-        //     },
-        //     {
-        //         "contact_at_guid": "84005af1-ac44-426f-ae25-0eaa9e8ad71e",
-        //         "organization_name": "Exoplode Drilling Co.",
-        //         "person_name": "Rollins Oneill",
-        //         "person": "6f38afd3-de1f-4661-878a-aadaed54e339",
-        //         "org": "6cf747f3-31cf-4c8f-9d2a-a1cd32dc24a4",
-        //         "contact_tel": "(250) 986-4265",
-        //         "contact_email": null
-        //     }
-        //   ]
-        // },
-        // {
-        //   "org_guid": "ac354cf4-809c-4005-8dcd-715656847ac2",
-        //   "name": "Geoform Drilling Co.",
-        //   "street_address": "7604 Stony Island Circle",
-        //   "city": "Deroche",
-        //   "province_state": "BC",
-        //   "postal_code": "V0T 3T7",
-        //   "main_tel": "(250) 103-8103",
-        //   "contacts": [
-        //     {
-        //       "contact_at_guid": "300991b3-9832-468e-adf5-a9c86c7a9ecf",
-        //       "organization_name": "Geoform Drilling Co.",
-        //       "person_name": "Rocha Mcmahon",
-        //       "person": "73b41f91-6468-459c-b48f-756357627765",
-        //       "org": "ac354cf4-809c-4005-8dcd-715656847ac2",
-        //       "contact_tel": "(604) 430-1783",
-        //       "contact_email": "brock@driller.ca"
-        //     },
-        //     {
-        //       "contact_at_guid": "35c34ea3-c858-47bc-80b4-c6109e9a68c7",
-        //       "organization_name": "Geoform Drilling Co.",
-        //       "person_name": "Lawanda Mcgowan",
-        //       "person": "d739b11a-0790-46fe-bf9d-a3f2a40f728c",
-        //       "org": "ac354cf4-809c-4005-8dcd-715656847ac2",
-        //       "contact_tel": "(604) 244-3019",
-        //       "contact_email": "irwin@driller.ca"
-        //     },
-        //     {
-        //       "contact_at_guid": "75c4345b-70a9-44d7-baf2-c4534f8c67a8",
-        //       "organization_name": "Geoform Drilling Co.",
-        //       "person_name": "Morris West",
-        //       "person": "3f35f155-4e28-4bd7-b914-b44997c197f3",
-        //       "org": "ac354cf4-809c-4005-8dcd-715656847ac2",
-        //       "contact_tel": "(778) 788-6649",
-        //       "contact_email": "bass@driller.ca"
-        //     }
-        //   ]
-        // },
-        // {
-        //   "org_guid": "417b3f42-4fed-4c6e-9a8b-c5bc3705b7d2",
+        //   org_guid: "417b3f42-4fed-4c6e-9a8b-c5bc3705b7d2",
         //   "name": "Hopeli Drilling Co.",
         //   "street_address": "7910 Cinder Moor",
         //   "city": "Port Moody",
