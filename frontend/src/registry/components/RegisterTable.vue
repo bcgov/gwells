@@ -1,82 +1,9 @@
 <template>
-  <div id="topicTemplate" class="template container gov-container">
-    <div id="breadcrumbContainer">
-      <ol class="breadcrumb">
-        <li>
-          <a href="#">Home</a>
-        </li>
-        <li>
-          <a href="#">Breadcrumb Link</a>
-        </li>
-        <li>
-          <a href="#">Breadcrumb Link</a>
-        </li>
-        <li>
-          <a href="#">Breadcrumb Link</a>
-        </li>
-      </ol>
-    </div>
-    <div class="row">
-      <div id="main-content" role="main" class="contentPageMainColumn col-sm-12">
-        <a id="main-content-anchor"></a>
-        <h1>Registered Drilling Contractors</h1>
-        <div id="introduction">
-          <p>Insert your introductory content here. Ensure your content meets the stylistic and formatting standards for writing consistent and high quality content for B.C. government websites.</p>
-        </div>
-      </div>
-      <div>
-        <table class="table table-striped">
-          <thead>
-            <tr style="text-align: left;">
-              <th class="numeric">
-                Company Name
-              </th>
-              <th class="numeric">
-                Address
-              </th>
-              <th class="html">
-                City
-              </th>
-              <th class="html">
-                Province
-              </th>
-              <th class="html">
-                Phone
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="item in mockData" :key="item.org_guid">
-              <td>{{item.name}}</td>
-              <td>{{item.street_address}}</td>
-              <td>{{item.city}}</td>
-              <td>{{item.province_state}}</td>
-              <td>{{item.main_tel}}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <!-- <div id="">
-          <h2>Heading Style 2</h2>
-          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-
-          <p>"At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus. Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat."</p>
-
-          <ul>
-              <li><a href="#" target="_self">Abbreviations</a>&nbsp;</li>
-              <li><a href="#" target="_self">Capitalization</a></li>
-              <li><a href="#" target="_self">Formatting</a></li>
-              <li><a href="#" target="_self">Headings</a></li>
-              <li><a href="#" target="_self">Links</a></li>
-              <li><a href="#" target="_self">Lists</a></li>
-              <li><a href="#" target="_self">Numbers &amp; Dates</a></li>
-              <li><a href="#" target="_self">Plain Language</a></li>
-              <li><a href="#" target="_self">Punctuation</a></li>
-              <li><a href="#" target="_self">Word Usage</a></li>
-          </ul>
-      </div> -->
-    </div>
-  </div>
+  <b-table
+    striped
+    :items="mockData"
+    :fields="fields"
+  />
 </template>
 
 <script>
@@ -85,13 +12,14 @@ export default {
   data () {
     return {
       msg: 'Welcome to Your Vue.js App',
+      fields: ['name', 'street_address', 'city', 'province', 'main_tel'],
       mockData: [
         {
           org_guid: '93f6f8fc-03d3-4a89-b1e5-f2c834c63562',
           name: 'Atgen Drilling Co.',
           street_address: '8852 Merry Wagon Arbor',
           city: 'Tow Hill',
-          province_state: 'AB',
+          province: 'AB',
           postal_code: 'V3J 2Q7',
           main_tel: '(778) 584-4523',
           contacts: [
@@ -111,7 +39,7 @@ export default {
           name: 'Earthplex Installers',
           street_address: '7010 Rocky Bluff Mall ',
           city: 'Atlin',
-          province_state: 'BC',
+          province: 'BC',
           postal_code: 'V0H 8E1',
           main_tel: '(250) 654-0361',
           contacts: [
@@ -131,7 +59,7 @@ export default {
           name: 'Exoplode Drilling Co.',
           street_address: '5480 Burning Pointe',
           city: 'Shookumchuk',
-          province_state: 'BC',
+          province: 'BC',
           postal_code: 'V3S 9O8',
           main_tel: '(250) 046-0449',
           contacts: [
@@ -169,7 +97,7 @@ export default {
           name: 'Geoform Drilling Co.',
           street_address: '7604 Stony Island Circle',
           city: 'Deroche',
-          province_state: 'BC',
+          province: 'BC',
           postal_code: 'V0T 3T7',
           main_tel: '(250) 103-8103',
           contacts: [
@@ -207,7 +135,7 @@ export default {
         //   "name": "Hopeli Drilling Co.",
         //   "street_address": "7910 Cinder Moor",
         //   "city": "Port Moody",
-        //   "province_state": "BC",
+        //   "province": "BC",
         //   "postal_code": "V0R 2G9",
         //   "main_tel": "(778) 197-7980",
         //   "contacts": [
@@ -227,7 +155,7 @@ export default {
         //   "name": "Jasper Drilling Co.",
         //   "street_address": "4374 Cinder Common",
         //   "city": "Sullivan Bay",
-        //   "province_state": "BC",
+        //   "province": "BC",
         //   "postal_code": "V8E 0Y3",
         //   "main_tel": "(250) 720-5533",
         //   "contacts": [
@@ -283,7 +211,7 @@ export default {
         //   "name": "Keeg Installers",
         //   "street_address": "9234 Golden Route",
         //   "city": "Grand Forks",
-        //   "province_state": "BC",
+        //   "province": "BC",
         //   "postal_code": "V5H 7T7",
         //   "main_tel": "(250) 296-6198",
         //   "contacts": [
@@ -303,7 +231,7 @@ export default {
         //   "name": "Lyria Drilling Co.",
         //   "street_address": "734 Red Downs",
         //   "city": "New Hazelton",
-        //   "province_state": "BC",
+        //   "province": "BC",
         //   "postal_code": "V1L 3O9",
         //   "main_tel": "(250) 380-3196",
         //   "contacts": [
@@ -323,7 +251,7 @@ export default {
         //   "name": "Myopium Drilling Co.",
         //   "street_address": "4381 Sunny Brook Jetty",
         //   "city": "Defot",
-        //   "province_state": "BC",
+        //   "province": "BC",
         //   "postal_code": "V5I 6N1",
         //   "main_tel": "(604) 109-1623",
         //   "contacts": [
@@ -343,7 +271,7 @@ export default {
         //   "name": "Netplode Drilling Co.",
         //   "street_address": "5424 Hazy Common",
         //   "city": "Cassidy\\'s",
-        //   "province_state": "BC",
+        //   "province": "BC",
         //   "postal_code": "V7S 8W0",
         //   "main_tel": "(778) 965-3975",
         //   "contacts": [
@@ -363,7 +291,7 @@ export default {
         //   "name": "Norali Drilling Co.",
         //   "street_address": "9266 Blue Pony Road",
         //   "city": "Eholt",
-        //   "province_state": "BC",
+        //   "province": "BC",
         //   "postal_code": "V3Q 9Q2",
         //   "main_tel": "(250) 851-7610",
         //   "contacts": [
@@ -404,18 +332,5 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-h1, h2 {
-  font-weight: normal;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
-}
+
 </style>
