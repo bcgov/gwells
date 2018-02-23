@@ -27,7 +27,7 @@
                     </div>
                     <div class="col-sm-8 col-md-8 col-lg-6 hidden-xs">
                         <div class="bcgov-title">
-                            <h1>Gov 2.0 Bootstrap Skeleton</h1>
+                            <h1>Groundwater Wells and Aquifers</h1>
                         </div>
                     </div>
                     <!-- /GOV & ENV TITLE -->
@@ -36,10 +36,10 @@
                     <div id="navbar" class="collapse navbar-collapse" role="navigation">
                         <a id="navigation-anchor"></a>
                         <ul class="nav navbar-nav">
-                            <li><a href="#">Navigation Link 1</a></li>
-                            <li><a href="#">Navigation Link 2</a></li>
-                            <li><a href="#">Navigation Link 3</a></li>
-                            <li><a href="#">Navigation Link 4</a></li>
+                            <li><a href="#">Search</a></li>
+                            <li><a href="#">Groundwater Information</a></li>
+                            <li><a href="#">Registry</a></li>
+                            <li><a href="#">Submit Report</a></li>
                         </ul>
                     </div>
                     <!-- /COLLAPSING NAVBAR -->
@@ -48,10 +48,10 @@
             <div class="navigationRibbon">
                 <div class="level2Navigation">
                     <div class="container">
-                        <a href="#">Navigation Link 1</a>
-                        <a href="#">Navigation Link 2</a>
-                        <a href="#">Navigation Link 3</a>
-                        <a href="#">Navigation Link 4</a>
+                        <a href="#">Search</a>
+                        <a href="#">Groundwater Information</a>
+                        <a href="#">Registry</a>
+                        <a href="#">Submit Report</a>
                     </div>
                 </div>
             </div>

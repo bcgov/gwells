@@ -1,7 +1,20 @@
 <template>
   <div id="app">
     <gwells-header/>
-    <router-view/>
+    <div id="topicTemplate" class="template container gov-container">
+      <div class="row">
+        <div id="main-content" role="main" class="contentPageMainColumn col-sm-12">
+          <a id="main-content-anchor"></a>
+          <h1>Register of Well Drillers and Well Pump Installers</h1>
+          <div id="introduction">
+            <p><a>Learn more about registering as a well driller or well pump installer in B.C.</a></p>
+          </div>
+        </div>
+        <div>
+          <router-view/>
+        </div>
+      </div>
+    </div>
     <gwells-footer/>
   </div>
 </template>
