@@ -1,5 +1,5 @@
 <template>
-<div id="footer" role="contentinfo" class="navbar navbar-fixed-bottom">
+<div id="footer" role="contentinfo">
     <!-- <img class="back-to-top" src="../../assets/images/back-to-top.png" alt="Back to top" title="Back to top" style="display: inline;"> -->
     <div id="footerWrapper">
         <div id="footerAdminSection">
@@ -42,8 +42,4 @@ export default {
 </script>
 
 <style scoped>
-#footer.navbar.navbar-fixed-bottom {
-    position: fixed;
-    margin-bottom:-5px;
-}
 </style>
