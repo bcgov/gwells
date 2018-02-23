@@ -3,6 +3,12 @@
 set -eu
 
 
+# Verbose option
+#
+[ ! -z "${VERBOSE+x}" ]&&[ "${VERBOSE}" == true ]&& \
+	set -x
+
+
 # Install Homebrew
 #
 which brew || \
