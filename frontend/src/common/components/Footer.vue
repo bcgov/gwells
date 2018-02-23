@@ -1,6 +1,6 @@
 <template>
 <div id="footer" role="contentinfo">
-    <img class="back-to-top" src="images/back-to-top.png" alt="Back to top" title="Back to top" style="display: inline;">
+    <img class="back-to-top" src="../../assets/images/back-to-top.png" alt="Back to top" title="Back to top" style="display: inline;">
     <div id="footerWrapper">
         <div id="footerAdminSection">
             <div id="footerAdminLinksContainer" class="container">
