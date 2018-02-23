@@ -66,7 +66,6 @@ stage('API Test') {
 		sh './runnewman.sh'
 	    } finally {
                 junit 'newman/*.xml'
-                stash includes: 'newman/*.xml', name: 'api-tests' 
                 publishHTML (target: [
                             allowMissing: false,
                             alwaysLinkToLastBuild: false,
@@ -75,7 +74,7 @@ stage('API Test') {
                             reportFiles: 'newman*.html',
                             reportName: "API Test Report"
                         ])
-                // Once included in the main developer pipeline, the next line will need to be omitted.
+                stash includes: 'newman/*.xml', name: 'api-tests' 
             }
         }
     }
