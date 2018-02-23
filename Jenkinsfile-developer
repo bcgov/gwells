@@ -62,7 +62,6 @@ stage('API Test') {
         checkout scm
         dir('api-tests') {
 	    try {
-                sh 'npm install -g newman'
 		sh './runnewman.sh'
 	    } finally {
                 junit 'newman/*.xml'
