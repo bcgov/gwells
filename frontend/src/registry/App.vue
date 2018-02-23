@@ -7,8 +7,8 @@
 </template>
 
 <script>
-import Header from '@/registry/components/Header'
-import Footer from '@/registry/components/Footer'
+import Header from '@/common/components/Header'
+import Footer from '@/common/components/Footer'
 export default {
   name: 'App',
   components: {
@@ -20,8 +20,8 @@ export default {
 
 <style>
 @import '../../node_modules/bootstrap/dist/css/bootstrap.css';
-@import '../assets/Gov-2.0-Bootstrap-Skeleton/css/ie10-viewport-bug-workaround.css';
-@import '../assets/Gov-2.0-Bootstrap-Skeleton/css/main.css';
-@import '../assets/Gov-2.0-Bootstrap-Skeleton/css/custom-form.css';
-@import '../assets/Gov-2.0-Bootstrap-Skeleton/css/custom-main.css';
+@import '../assets/css/ie10-viewport-bug-workaround.css';
+@import '../assets/css/main.css';
+@import '../assets/css/custom-form.css';
+@import '../assets/css/custom-main.css';
 </style>
