@@ -17,19 +17,19 @@
           <b-row align-h="start">
             <b-col>
               <b-form-group label="Community">
-                <b-form-select v-model="community" :options="cities"></b-form-select>
+                <b-form-select v-model="community" :options="cities" size="sm" style="font-size:14px"/>
               </b-form-group>
             </b-col>
             <b-col>
               <b-form-group label="Registration status">
-                <b-form-select v-model="regStatus" :options="regStatusOptions"></b-form-select>
+                <b-form-select v-model="regStatus" :options="regStatusOptions" size="sm" style="font-size:14px"/>
               </b-form-group>
             </b-col>
           </b-row>
           <b-row align-h="start">
             <b-col>
               <b-form-group label="Individual, company, or registration number">
-                <b-form-input type="text" placeholder="Search"></b-form-input>
+                <b-form-input type="text" placeholder="Search" size="sm" style="font-size:14px"/>
               </b-form-group>
             </b-col>
           </b-row>

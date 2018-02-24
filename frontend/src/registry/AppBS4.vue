@@ -1,16 +1,18 @@
 <template>
   <div id="app">
-    <b-container>
+    <b-container style="background-color: #ffffff">
       <b-row>
         <b-col>
           <a id="main-content-anchor"></a>
-          <h1>Register of Well Drillers and Well Pump Installers</h1>
-            <p><a>Learn more about registering as a well driller or well pump installer in B.C.</a></p>
+          <h1 class="g-title">Register of Well Drillers and Well Pump Installers</h1>
+            <p><a href="#">Learn more about registering as a well driller or well pump installer in B.C.</a></p>
         </b-col>
       </b-row>
       <b-row>
         <div>
+          <b-col>
           <router-view/>
+          </b-col>
         </div>
       </b-row>
     </b-container>
@@ -33,4 +35,16 @@ export default {
 @import "bootstrap/dist/css/bootstrap.min.css";
 @import "bootstrap-vue/dist/bootstrap-vue.css";
 /* @import '../assets/css/main.css'; */
+
+@font-face {
+  font-family: 'Myriad-Pro';
+  src: url('../assets/fonts/MyriadWebPro.ttf');
+}
+
+body {
+  font-family: Myriad-Pro, Calibri, Arial, 'sans serif';
+  background-color: #f1f1f1;
+  color: #494949;
+  font-size: 13px;
+}
 </style>
