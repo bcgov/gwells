@@ -3,7 +3,8 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import BootstrapVue from 'bootstrap-vue'
-import App from './App'
+// import App from './App'
+import App from './AppBS4'
 import router from './router'
 
 Vue.use(Vuex)

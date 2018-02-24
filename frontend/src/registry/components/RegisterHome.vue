@@ -1,41 +1,46 @@
 <template>
   <div>
-    <b-button variant="primary">Add new entry</b-button>
-    <b-button variant="primary">Manage companies</b-button>
-    <b-card border class="border" title="Search for a Well Driller or Well Installer">
-      <p class="card text">
+    <b-button class="m-1" variant="primary">Add new entry</b-button>
+    <b-button class="m-1" variant="primary">Manage companies</b-button>
+    <b-card class="mt-2 mb-2" title="Search for a Well Driller or Well Installer">
         <b-form>
-          <b-form-group>
-            <p>Choose a professional type:</p>
-            <b-form-radio-group>
-              <b-form-radio value="driller"><span style="margin-left:6px; font-weight: normal">Well Driller</span></b-form-radio>
-              <b-form-radio value="installer"><span style="margin-left:6px; font-weight: normal">Well Pump Installer</span></b-form-radio>
-            </b-form-radio-group>
-          </b-form-group>
           <b-row align-h="start">
             <b-col>
-              <b-form-group>
-                <p>Community</p>
+              <b-form-group label="Choose a professional type:">
+                <b-form-radio-group>
+                  <b-form-radio value="driller">Well Driller</b-form-radio>
+                  <b-form-radio value="installer">Well Pump Installer</b-form-radio>
+                </b-form-radio-group>
+              </b-form-group>
+            </b-col>
+          </b-row>
+          <b-row align-h="start">
+            <b-col>
+              <b-form-group label="Community">
                 <b-form-select v-model="community" :options="cities"></b-form-select>
               </b-form-group>
             </b-col>
             <b-col>
-              <b-form-group>
-                <p>Registration status</p>
+              <b-form-group label="Registration status">
                 <b-form-select v-model="regStatus" :options="regStatusOptions"></b-form-select>
               </b-form-group>
             </b-col>
           </b-row>
-          <b-form-group>
-            <p>Individual, company, or registration number</p>
-            <b-form-input type="text" placeholder="Search"></b-form-input>
-          </b-form-group>
-          <b-button type="submit" variant="primary">Submit</b-button>
-          <b-button type="reset" variant="secondary">Reset</b-button>
+          <b-row align-h="start">
+            <b-col>
+              <b-form-group label="Individual, company, or registration number">
+                <b-form-input type="text" placeholder="Search"></b-form-input>
+              </b-form-group>
+            </b-col>
+          </b-row>
+          <b-row align-h="start">
+            <b-col>
+              <b-button type="submit" variant="primary">Submit</b-button>
+              <b-button type="reset" variant="secondary">Reset</b-button>
+            </b-col>
+          </b-row>
         </b-form>
-      </p>
     </b-card>
-
     <register-table/>
   </div>
 </template>
