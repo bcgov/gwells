@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="p-2">
     <h2>Well Driller Results</h2>
     <b-table
       striped
