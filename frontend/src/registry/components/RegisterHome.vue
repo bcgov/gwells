@@ -1,48 +1,69 @@
 <template>
-  <div>
-    <b-button class="m-1" variant="primary">Add new entry</b-button>
-    <b-button class="m-1" variant="primary">Manage companies</b-button>
-    <b-card class="mt-2 mb-2" title="Search for a Well Driller or Well Installer">
-        <b-form>
-          <b-row align-h="start">
-            <b-col>
-              <b-form-group label="Choose a professional type:">
-                <b-form-radio-group>
-                  <b-form-radio value="driller">Well Driller</b-form-radio>
-                  <b-form-radio value="installer">Well Pump Installer</b-form-radio>
-                </b-form-radio-group>
-              </b-form-group>
-            </b-col>
-          </b-row>
-          <b-row align-h="start">
-            <b-col>
-              <b-form-group label="Community">
-                <b-form-select v-model="community" :options="cities" size="sm" style="font-size:14px"/>
-              </b-form-group>
-            </b-col>
-            <b-col>
-              <b-form-group label="Registration status">
-                <b-form-select v-model="regStatus" :options="regStatusOptions" size="sm" style="font-size:14px"/>
-              </b-form-group>
-            </b-col>
-          </b-row>
-          <b-row align-h="start">
-            <b-col>
-              <b-form-group label="Individual, company, or registration number">
-                <b-form-input type="text" placeholder="Search" size="sm" style="font-size:14px"/>
-              </b-form-group>
-            </b-col>
-          </b-row>
-          <b-row align-h="start">
-            <b-col>
-              <b-button type="submit" variant="primary">Submit</b-button>
-              <b-button type="reset" variant="secondary">Reset</b-button>
-            </b-col>
-          </b-row>
-        </b-form>
-    </b-card>
-    <register-table/>
-  </div>
+  <b-container>
+      <b-row>
+        <b-col>
+          <a id="main-content-anchor"></a>
+          <h1>Register of Well Drillers and Well Pump Installers</h1>
+            <p><a href="#">Learn more about registering as a well driller or well pump installer in B.C.</a></p>
+        </b-col>
+      </b-row>
+      <b-row>
+        <b-col>
+          <b-button class="m-1" variant="primary">Add new entry</b-button>
+          <b-button class="m-1" variant="primary">Manage companies</b-button>
+        </b-col>
+      </b-row>
+      <b-row>
+        <b-col>
+          <b-card class="mt-2 mb-2" title="Search for a Well Driller or Well Installer">
+          <b-form>
+            <b-container fluid>
+              <b-form-row align-h="start">
+                <b-col>
+                  <b-form-group label="Choose a professional type:">
+                    <b-form-radio-group>
+                      <b-form-radio value="driller">Well Driller</b-form-radio>
+                      <b-form-radio value="installer">Well Pump Installer</b-form-radio>
+                    </b-form-radio-group>
+                  </b-form-group>
+                </b-col>
+              </b-form-row>
+              <b-form-row align-h="start">
+                <b-col sm="12" md="6">
+                  <b-form-group label="Community">
+                    <b-form-select v-model="community" :options="cities" size="sm" style="font-size:14px"/>
+                  </b-form-group>
+                </b-col>
+                <b-col sm="12" md="6">
+                  <b-form-group label="Registration status">
+                    <b-form-select v-model="regStatus" :options="regStatusOptions" size="sm" style="font-size:14px"/>
+                  </b-form-group>
+                </b-col>
+              </b-form-row>
+              <b-form-row align-h="start">
+                <b-col>
+                  <b-form-group label="Individual, company, or registration number">
+                    <b-form-input type="text" placeholder="Search" size="sm" style="font-size:14px"/>
+                  </b-form-group>
+                </b-col>
+              </b-form-row>
+              <b-form-row align-h="start">
+                <b-col>
+                  <b-button type="submit" variant="primary">Submit</b-button>
+                  <b-button type="reset" variant="secondary">Reset</b-button>
+                </b-col>
+              </b-form-row>
+            </b-container>
+          </b-form>
+          </b-card>
+        </b-col>
+      </b-row>
+      <b-row>
+        <b-col>
+          <register-table/>
+        </b-col>
+      </b-row>
+  </b-container>
 </template>
 
 <script>

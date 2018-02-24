@@ -1,7 +1,8 @@
 <template>
   <div class="p-2">
-    <h2>Well Driller Results</h2>
+    <h3>Well Driller Results</h3>
     <b-table
+      responsive
       striped
       :items="mockData"
       :fields="fields"
