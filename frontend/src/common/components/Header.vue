@@ -1,62 +1,44 @@
 <template>
-    <div id="header" role="banner">
-        <div id="header-main" class="navbar navbar-default navbar-fixed-top">
-            <div class="container">
-                <div id="header-main-row" class="row">
-                    <!-- GOV TITLE -->
-                    <div class="col-sm-3 col-md-2 col-lg-2 header-main-left">
-                        <div id="logo">
-                            <a href="http://gov.bc.ca"><img src="../../assets/images/gov3_bc_logo.png" alt="Province of British Columbia" title="Province of British Columbia logo" /></a>
-                        </div>
-                        <div id="access">
-                            <ul>
-                                <li aria-label="Keyboard Tab Skip">
-                                    <a accesskey="0" href="#main-content-anchor" aria-label="Skip to main content">Skip to main content</a>
-                                </li>
-                                <li aria-label="Keyboard Tab Skip">
-                                    <a accesskey="0" href="#navigation-anchor" aria-label="Skip to navigation">Skip to navigation</a>
-                                </li>
-                                <li aria-label="Keyboard Tab Skip">
-                                    <a accesskey="0" href="http://gov.bc.ca/webaccessibility/" aria-label="Accessibility Statement">Accessibility Statement</a>
-                                </li>
-                            </ul>
-                        </div>
-                        <button type="button" class="navbar-toggle gov-button-custom collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="true" aria-label="Burger Navigation">
-                            <img src="images/menu-open-mobile.png" />
-                        </button>
-                    </div>
-                    <div class="col-sm-8 col-md-8 col-lg-6 hidden-xs">
-                        <div class="bcgov-title">
-                            <h1>Groundwater Wells and Aquifers</h1>
-                        </div>
-                    </div>
-                    <!-- /GOV & ENV TITLE -->
-
-                    <!-- COLLAPSING NAVBAR -->
-                    <div id="navbar" class="collapse navbar-collapse" role="navigation">
-                        <a id="navigation-anchor"></a>
-                        <ul class="nav navbar-nav">
-                            <li><a href="#">Search</a></li>
-                            <li><a href="#">Groundwater Information</a></li>
-                            <li><a href="#">Registry</a></li>
-                            <li><a href="#">Submit Report</a></li>
-                        </ul>
-                    </div>
-                    <!-- /COLLAPSING NAVBAR -->
-                </div>
+  <div>
+    <div class="header-wrapper">
+      <b-container class="header" style="padding-top: 0px; padding-left: 0px">
+        <b-row no-gutters>
+          <b-col cols="3" sm="2">
+            <a href="http://gov.bc.ca">
+            <div class="d-none d-lg-inline">
+              <img class ="header-logo" src="../../assets/images/gov3_bc_logo.png" alt="Province of British Columbia" title="Province of British Columbia logo" />
             </div>
-            <div class="navigationRibbon">
-                <div class="level2Navigation">
-                    <div class="container">
-                        <a href="#">Search</a>
-                        <a href="#">Groundwater Information</a>
-                        <a href="#">Registry</a>
-                        <a href="#">Submit Report</a>
-                    </div>
-                </div>
+            <div class="d-lg-none pl-2">
+              <img class ="header-logo" src="../../assets/images/gov3_bc_logo_mobile.png" alt="Province of British Columbia" title="Province of British Columbia logo" />
             </div>
+            </a>
+          </b-col>
+          <b-col class="pt-1 pt-sm-3 pt-lg-2 ml-3 ml-sm-0">
+            <span class="header-title d-none d-lg-inline">Groundwater Wells and Aquifers</span>
+            <span class="header-title-small d-none d-sm-inline d-lg-none">Groundwater Wells and Aquifers</span>
+            <span class="header-title-xsmall d-sm-none">Groundwater Wells and Aquifers</span>
+          </b-col>
+        </b-row>
+        <div id="access">
+          <a class="sr-only sr-only-focusable" accesskey="0" href="#main-content-anchor" aria-label="Skip to main content">Skip to main content</a>
+          <a class="sr-only sr-only-focusable" accesskey="0" href="#navigation-anchor" aria-label="Skip to navigation">Skip to navigation</a>
+          <a class="sr-only sr-only-focusable" accesskey="0" href="http://gov.bc.ca/webaccessibility/" aria-label="Accessibility Statement">Accessibility Statement</a>
         </div>
+      </b-container>
     </div>
+    <b-navbar class="nav-wrapper py-0" toggleable="md" type="dark">
+      <b-navbar-brand href="#"></b-navbar-brand>
+      <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
+      <b-collapse is-nav id="nav_collapse">
+        <b-container>
+        <b-navbar-nav>
+          <b-nav-item class="navbar-link" href="#">Search</b-nav-item>
+          <b-nav-item class="navbar-link" href="#">Groundwater Information</b-nav-item>
+          <b-nav-item class="navbar-link" href="#">Registry</b-nav-item>
+        </b-navbar-nav></b-container>
+      </b-collapse>
+    </b-navbar>
+  </div>
 </template>
 
 <script>
