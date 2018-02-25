@@ -69,7 +69,7 @@
       </b-row>
       <b-row>
         <b-col>
-          <register-table/>
+          <register-table :items="drillers"/>
         </b-col>
       </b-row>
   </b-container>
@@ -77,9 +77,15 @@
 
 <script>
 import RegisterTable from '@/registry/components/RegisterTable'
+import { mapGetters } from 'vuex'
+import { FETCH_DRILLER_LIST } from '@/registry/store/actions.types'
+
 export default {
   components: {
     'register-table': RegisterTable
+  },
+  created () {
+    this.$store.dispatch(FETCH_DRILLER_LIST)
   },
   computed: {
     cities () {
@@ -97,7 +103,12 @@ export default {
         }
       })
       return list
-    }
+    },
+    ...mapGetters([
+      'loading',
+      'error',
+      'drillers'
+    ])
   },
   data () {
     return {
