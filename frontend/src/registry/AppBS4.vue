@@ -163,6 +163,12 @@ h4 {
         border-color: #003366;
     }
 
+.btn-secondary {
+  color: #333;
+  background-color: #d1d1d1;
+  border-color: #afafaf;
+}
+
 .btn-outline-primary {
   color: #003366;
   border-color: #003366;

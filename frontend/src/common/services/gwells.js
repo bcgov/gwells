@@ -8,6 +8,12 @@ const ApiService = {
     axios.defaults.baseURL = BASE_URL
   },
   query (resource, params) {
+    if (params.search && params.search.length) {
+      resource = `${resource}/?search=${params.search}&limit=10`
+    } else {
+      resource = `${resource}/?limit=10`
+    }
+    console.log(resource)
     return axios.get(resource)
       .catch((error) => {
         throw new Error(`API query: ${error}`)

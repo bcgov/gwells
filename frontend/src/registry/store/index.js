@@ -25,9 +25,9 @@ export const store = new Vuex.Store({
     }
   },
   actions: {
-    [FETCH_DRILLER_LIST] ({commit}) {
+    [FETCH_DRILLER_LIST] ({commit}, params) {
       commit(SET_LOADING, true)
-      ApiService.query('drillers')
+      ApiService.query('drillers', params)
         .then((response) => {
           const drillers = []
           response.data.results.forEach((driller) => {
