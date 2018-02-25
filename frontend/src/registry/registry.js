@@ -9,15 +9,23 @@ import router from './router'
 import 'babel-polyfill'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
+import { store } from './store'
+
+// GWELLS js API library (helper methods for working with API)
+import ApiService from '@/common/services/gwells'
 
 Vue.use(Vuex)
 Vue.use(BootstrapVue)
 Vue.config.productionTip = false
 
+// set baseURL and default headers
+ApiService.init()
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
   router,
+  store,
   components: { App },
   template: '<App/>'
 })
