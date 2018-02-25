@@ -19,7 +19,7 @@ export default {
   props: ['items'],
   data () {
     return {
-      fields: ['name', 'street_address', 'city', 'province_state', 'main_tel']
+      fields: ['name', 'company', 'tel', 'email', 'status']
     }
   },
   computed: {

@@ -29,8 +29,25 @@ export const store = new Vuex.Store({
       commit(SET_LOADING, true)
       ApiService.query('drillers')
         .then((response) => {
+          const drillers = []
+          response.data.results.forEach((driller) => {
+            const company = driller.companies.length ? driller.companies[0] : {}
+            const companyName = company.organization_name || ''
+            // const address = company.length ? company.street_address
+            const tel = company.contact_tel || ''
+            const email = company.contact_email || ''
+            const status = driller.applications[0].registrations[0].status
+            const details = {
+              name: `${driller.first_name} ${driller.surname}`,
+              company: companyName,
+              tel: tel,
+              email: email,
+              status: status
+            }
+            drillers.push(details)
+          })
           commit(SET_LOADING, false)
-          commit(SET_DRILLER_LIST, response.data)
+          commit(SET_DRILLER_LIST, drillers)
         })
         .catch((error) => {
           commit(SET_LOADING, false)
