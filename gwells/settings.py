@@ -75,6 +75,7 @@ INSTALLED_APPS = (
     'django.contrib.postgres',
     'rest_framework',
     'rest_framework_swagger',
+    'corsheaders',
     'gwells',
     'crispy_forms',
     'formtools',
@@ -83,6 +84,7 @@ INSTALLED_APPS = (
 )
 
 MIDDLEWARE = (
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.gzip.GZipMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -218,3 +220,7 @@ REST_FRAMEWORK = {
         'user': '1000/hour'
     }
 }
+
+CORS_ORIGIN_WHITELIST = (
+    'localhost:8080',
+)
