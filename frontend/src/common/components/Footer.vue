@@ -1,38 +1,17 @@
 <template>
-<div id="footer" role="contentinfo">
-    <!-- <img class="back-to-top" src="../../assets/images/back-to-top.png" alt="Back to top" title="Back to top" style="display: inline;"> -->
-    <div id="footerWrapper">
-        <div id="footerAdminSection">
-            <div id="footerAdminLinksContainer" class="container">
-                <div id="footerAdminLinks" class="row">
-                    <ul class="inline">
-                        <li>
-                            <a href="#" target="_self">Home</a>
-                        </li>
-                        <li>
-                            <a href="#" target="_self">About this site</a>
-                        </li>
-                        <li>
-                            <a href="http://gov.bc.ca/disclaimer/" target="_self">Disclaimer</a>
-                        </li>
-                        <li>
-                            <a href="http://gov.bc.ca/privacy/" target="_self">Privacy</a>
-                        </li>
-                        <li>
-                            <a href="http://gov.bc.ca/webaccessibility/" target="_self">Accessibility</a>
-                        </li>
-                        <li>
-                            <a href="http://gov.bc.ca/copyright" target="_self">Copyright</a>
-                        </li>
-                        <li>
-                            <a href="#" target="_self">Contact Us</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+  <b-container class="footer-wrapper" fluid>
+    <b-container>
+      <b-nav class="footer" style="margin-top: 3px">
+          <b-nav-item><a id="footer-home" href="https://www.gov.bc.ca" target="_self">Home</a></b-nav-item>
+          <b-nav-item><a id="footer-about" href="https://www2.gov.bc.ca/gov/content/about-gov-bc-ca" target="_self">About gov.bc.ca</a></b-nav-item>
+          <b-nav-item><a id="footer-disclaimer" href="http://gov.bc.ca/disclaimer/" target="_self">Disclaimer</a></b-nav-item>
+          <b-nav-item><a id="footer-privacy" href="http://gov.bc.ca/privacy/" target="_self">Privacy</a></b-nav-item>
+          <b-nav-item><a id="footer-accessibility" href="http://gov.bc.ca/webaccessibility/" target="_self">Accessibility</a></b-nav-item>
+          <b-nav-item><a id="footer-copyright" href="http://gov.bc.ca/copyright" target="_self">Copyright</a></b-nav-item>
+          <b-nav-item><a href="https://www2.gov.bc.ca/gov/content/home/contact-us" target="_self">Contact Us</a></b-nav-item>
+      </b-nav>
+    </b-container>
+  </b-container>
 </template>
 
 <script>
@@ -41,5 +20,6 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
+
 </style>

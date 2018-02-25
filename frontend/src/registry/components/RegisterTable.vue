@@ -1,5 +1,5 @@
 <template>
-  <div class="p-2">
+  <div class="p-md-2 m-50px">
     <h3>Well Driller Results</h3>
     <b-table
       responsive
