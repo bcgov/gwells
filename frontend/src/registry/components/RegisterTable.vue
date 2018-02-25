@@ -6,6 +6,7 @@
       striped
       :items="items"
       :fields="fields"
+      v-if="!loading"
     />
     <div v-if="loading">Loading results...</div>
   </div>
