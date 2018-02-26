@@ -1,1 +1,1 @@
-SELECT gwells_db_replicate(false);
+SELECT db_replicate(false);

@@ -1,12 +1,12 @@
-DROP FUNCTION IF EXISTS gwells_migrate_casings();
+DROP FUNCTION IF EXISTS migrate_casings();
 
-CREATE OR REPLACE FUNCTION gwells_migrate_casings() RETURNS void AS $$
+CREATE OR REPLACE FUNCTION migrate_casings() RETURNS void AS $$
 DECLARE
   row_count integer;
 BEGIN
     raise notice '...importing wells_casings data';
 
-    INSERT INTO gwells_casing(
+    INSERT INTO casing(
     casing_guid                                   , -->PK
     filing_number                                 , -->FK
     well_tag_number                               , -->FK
@@ -39,14 +39,14 @@ BEGIN
         casings.who_created                           ,
         casings.who_updated
     FROM wells.wells_casings casings
-        INNER JOIN xform_gwells_well xform ON xform.well_id=casings.well_id
+        INNER JOIN xform_well xform ON xform.well_id=casings.well_id
         LEFT OUTER JOIN casing_material_code casing_material ON casings.casing_material_code=casing_material.casing_material_code;
      
 
   raise notice '...wells_casings data imported';
-  SELECT count(*) from gwells_casing into row_count;
-  raise notice '% rows loaded into the gwells_casing table',  row_count;
+  SELECT count(*) from casing into row_count;
+  raise notice '% rows loaded into the casing table',  row_count;
 END;
 $$ LANGUAGE plpgsql;
 
-COMMENT ON FUNCTION gwells_migrate_casings () IS 'Load Casing details, only for the wells that have been replicated.'; 
+COMMENT ON FUNCTION migrate_casings () IS 'Load Casing details, only for the wells that have been replicated.'; 

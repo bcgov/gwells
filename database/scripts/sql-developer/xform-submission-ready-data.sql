@@ -21,7 +21,7 @@ SET TRIMSPOOL ON
 SET ECHO OFF
 SET VERIFY OFF
 SET TERMOUT OFF
-SPOOL H:\xform_gwells_surface_seal_type.csv
+SPOOL H:\xform_surface_seal_type.csv
 SELECT /*csv*/  
   'ETL_USER' AS create_user,
   '2017-07-01 00:00:00-08' AS create_date,
@@ -149,7 +149,7 @@ SET TRIMSPOOL ON
 SET ECHO OFF
 SET VERIFY OFF
 SET TERMOUT OFF
-SPOOL H:\xform_gwells_well.csv
+SPOOL H:\xform_well.csv
 SELECT /*csv*/ 
   WELLS.WELLS_WELLS.WELL_TAG_NUMBER,
   SYS_GUID() AS WELL_GUID,
@@ -336,7 +336,7 @@ SET TRIMSPOOL ON
 SET ECHO OFF
 SET VERIFY OFF
 SET TERMOUT OFF
-SPOOL H:\xform_gwells_driller.csv
+SPOOL H:\xform_driller.csv
 SELECT /*csv*/ 
   SYS_GUID() AS driller_guid,
   INITCAP(REGEXP_SUBSTR(CREW_DRILLER_NAME,'(\S*)')) AS first_name,
@@ -367,7 +367,7 @@ SET TRIMSPOOL ON
 SET ECHO OFF
 SET VERIFY OFF
 SET TERMOUT OFF
-SPOOL H:\xform_gwells_drilling_company.csv
+SPOOL H:\xform_drilling_company.csv
 SELECT /*csv*/ 
   SYS_GUID() AS drilling_company_guid,
   WELLS.WELLS_DRILLER_CODES.DRILLER_COMPANY_NAME AS name,

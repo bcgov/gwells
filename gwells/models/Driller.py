@@ -30,7 +30,7 @@ class Driller(AuditModel):
     is_hidden = models.BooleanField(default=False)
 
     class Meta:
-        db_table = 'gwells_driller'
+        db_table = 'driller'
 
     def __str__(self):
         return '%s %s - %s' % (self.first_name, self.surname, self.registration_number)

@@ -1,4 +1,4 @@
-DROP FUNCTION IF EXISTS gwells_full_replicate();
+DROP FUNCTION IF EXISTS full_replicate();
 
 /*** NOTE: There is no refresh of Code Tables, as that is done during GWELLS Application code deployment
 		   This driver SQL script is meant to be run from the Database Pod, during nightly replications,
@@ -7,29 +7,29 @@ DROP FUNCTION IF EXISTS gwells_full_replicate();
 		   Therefore, there is a dependency on having all code tables populated, including BCGS numbers.
 
 	On the Postgres DB Pod:
-	psql -d $POSTGRESQL_DATABASE -U $POSTGRESQL_USER -c 'SELECT gwells_full_replicate();'
+	psql -d $POSTGRESQL_DATABASE -U $POSTGRESQL_USER -c 'SELECT full_replicate();'
 
 	As a remote task:
-	oc exec postgresql-80-04n7h -- /bin/bash -c 'psql -d $POSTGRESQL_DATABASE -U $POSTGRESQL_USER -c "SELECT gwells_full_replicate();"' 
+	oc exec postgresql-80-04n7h -- /bin/bash -c 'psql -d $POSTGRESQL_DATABASE -U $POSTGRESQL_USER -c "SELECT full_replicate();"' 
 
 
 
  ***/
-CREATE OR REPLACE FUNCTION gwells_full_replicate() RETURNS void AS $$
+CREATE OR REPLACE FUNCTION full_replicate() RETURNS void AS $$
 BEGIN
-	TRUNCATE TABLE gwells_well CASCADE;
-	PERFORM gwells_populate_xform(false);
-	PERFORM gwells_populate_well();	
-	PERFORM gwells_migrate_screens();
-	PERFORM gwells_migrate_production();
-	PERFORM gwells_migrate_casings();
-	PERFORM gwells_migrate_perforations();
-	PERFORM gwells_migrate_aquifers();
-	PERFORM gwells_migrate_lithology();
-	DROP TABLE IF EXISTS xform_gwells_well;
+	TRUNCATE TABLE well CASCADE;
+	PERFORM populate_xform(false);
+	PERFORM populate_well();	
+	PERFORM migrate_screens();
+	PERFORM migrate_production();
+	PERFORM migrate_casings();
+	PERFORM migrate_perforations();
+	PERFORM migrate_aquifers();
+	PERFORM migrate_lithology();
+	DROP TABLE IF EXISTS xform_well;
 END;
 $$ LANGUAGE plpgsql;
 
-COMMENT ON FUNCTION gwells_full_replicate () IS 'SQL Driver script to run full replication, without code table refresh.'; 
+COMMENT ON FUNCTION full_replicate () IS 'SQL Driver script to run full replication, without code table refresh.'; 
 
 

@@ -36,7 +36,7 @@ class Screen(AuditModel):
     slot_size = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='Slot Size', blank=True, null=True, validators=[MinValueValidator(Decimal('0.00'))])
 
     class Meta:
-        db_table = 'gwells_screen'
+        db_table = 'screen'
         ordering = ['screen_from', 'screen_to']
     def __str__(self):
         if self.activity_submission:
