@@ -25,14 +25,16 @@ do
 done
 
 
-# PostgreSQL - install, enable service and initialize db
+# Brew install PostgreSQL
 #
-if( ! which psql );
-then
-	brew install postgresql
-	brew services start postgresql
-	initdb /usr/local/var/postgres/
-fi
+( which psql )|| \
+        brew install postgresql
+
+
+# Start PostgreSQL
+#
+( pg_isready -q )|| \
+        brew services start postgresql
 
 
 # Configure git
