@@ -34,7 +34,7 @@ class SurveyViewTestCase(TestCase):
     def setUp(self):
         pass
 
-class SurveyView_Get_TestCase(SurveyViewTestCase):
+class GetTestCase(SurveyViewTestCase):
     fixtures = ['survey_get_fixture']
 
     def test_get(self):
@@ -44,7 +44,7 @@ class SurveyView_Get_TestCase(SurveyViewTestCase):
         self.assertContains(response, "name=\"survey_guid\"")
         self.assertContains(response, "value=\"495a9927-5a13-490e-bf1d-08bf2048b098\"")
 
-class SurveyView_PUT_TestCase(SurveyViewTestCase):
+class PutTestCase(SurveyViewTestCase):
 
     def test_put(self):
         fixture_file = '/'.join([settings.FIXTURES_DIRS[0], 'survey_get_fixture.json'])
@@ -64,8 +64,8 @@ class SurveyView_PUT_TestCase(SurveyViewTestCase):
 
             request = factory.post(reverse('survey'), data)
             request.PUT = request.POST #middleware usually takes care of this
-            surveyView = SurveyView.as_view()
-            response = surveyView(request)
+            survey_view = SurveyView.as_view()
+            response = survey_view(request)
 
             self.assertEqual(response.status_code, HTTPStatus.FOUND) #302 from redirect
             self.assertEqual(response.url, reverse('site_admin'))
@@ -73,7 +73,7 @@ class SurveyView_PUT_TestCase(SurveyViewTestCase):
             self.assertEqual(1, Survey.objects.all().count())
             self.assertEqual(survey.object.survey_introduction_text, Survey.objects.all()[0].survey_introduction_text)
 
-class SurveyView_POST_TestCase(SurveyViewTestCase):
+class PostTestCase(SurveyViewTestCase):
     fixtures = ['survey_get_fixture']
 
     def test_post(self):
@@ -91,8 +91,8 @@ class SurveyView_POST_TestCase(SurveyViewTestCase):
         factory = RequestFactory()
         request = factory.post(reverse('survey'), data)
 
-        surveyView = SurveyView.as_view()
-        response = surveyView(request)
+        survey_view = SurveyView.as_view()
+        response = survey_view(request)
 
         self.assertEqual(response.status_code, HTTPStatus.FOUND) #302 from redirect
         self.assertEqual(1, Survey.objects.all().count())
@@ -103,7 +103,7 @@ class SurveyView_POST_TestCase(SurveyViewTestCase):
         self.assertEqual(survey.survey_page, new_survey_page)
         self.assertEqual(survey.survey_link, new_survey_link)
 
-class SurveyView_DELETE_TestCase(SurveyViewTestCase):
+class DeleteTestCase(SurveyViewTestCase):
     fixtures = ['survey_get_fixture']
 
     def test_delete(self):
@@ -115,32 +115,30 @@ class SurveyView_DELETE_TestCase(SurveyViewTestCase):
         factory = RequestFactory()
         request = factory.post(reverse('survey'), data)
 
-        surveyView = SurveyView.as_view()
-        response = surveyView(request)
+        survey_view = SurveyView.as_view()
+        response = survey_view(request)
 
         self.assertEqual(response.status_code, HTTPStatus.FOUND) #302 from redirect
         self.assertEqual(response.url, reverse('site_admin'))
 
         self.assertEqual(0, Survey.objects.all().count())
 
-class SurveyView_NOMETHOD_TestCase(SurveyViewTestCase):
+class SurveyViewNoMethodTestCase(SurveyViewTestCase):
     def test_nomethod(self):
         data = {}
 
         factory = RequestFactory()
         request = factory.post(reverse('survey'), data) #defaults to get
-        surveyView = SurveyView.as_view()
-        response = surveyView(request)
+        survey_view = SurveyView.as_view()
+        response = survey_view(request)
 
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
 
-class SurveyView_INVALIDMETHOD_TestCase(SurveyViewTestCase):
+class SurveyViewInvalidMethodTestCase(SurveyViewTestCase):
     fixtures = ['survey_get_fixture']
 
     def test_invalid_method(self):
         self.assertEqual(1, Survey.objects.all().count()) #validate that setup complete correctly --fixture
-
-        url = reverse('survey', kwargs={'pk':"495a9927-5a13-490e-bf1d-08bf2048b098"})
 
         data = {'form-number':0,
                 'form-0-survey_guid':'495a9927-5a13-490e-bf1d-08bf2048b098',
@@ -148,8 +146,8 @@ class SurveyView_INVALIDMETHOD_TestCase(SurveyViewTestCase):
 
         factory = RequestFactory()
         request = factory.post(reverse('survey'), data) #defaults to get
-        surveyView = SurveyView.as_view()
+        survey_view = SurveyView.as_view()
 
-        response = surveyView(request)
+        response = survey_view(request)
 
         self.assertEqual(response.status_code, HTTPStatus.INTERNAL_SERVER_ERROR)
