@@ -70,7 +70,7 @@ class ViewsTestCase(TestCase):
 
         #teardown
         logger.setLevel(previous_level)
-        
+
     def test_well_detail_ok(self):
         wells = Search.well_search(123, '', '', '')
         self.assertEqual(wells.count(), 1)
@@ -111,7 +111,7 @@ class ViewsTestCase(TestCase):
     def test_site_admin_has_add_survey(self):
         response = self.client.get("http://localhost:8000/gwells/site_admin/")
         self.assertEquals(response.status_code, HTTPStatus.OK)
-        self.assertContains( response, 'id="add_survey"')
+        self.assertContains( response, 'id="add-survey"')
 
     def test_survey_detail_ok(self):
         surveys = Survey.objects.all()
