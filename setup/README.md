@@ -71,15 +71,7 @@ OS X:
     /usr/local/Cellar/postgresql/<version-number>/bin/createuser -s postgres
     ```
 
-4.  Requirements
-
-    OS X and Windows: Install requirements (file in root of repo)
-
-    ```
-    pip3 install -U -r ../requirements.txt
-    ```
-
-5.  Virtual Environment
+4.  Virtual Environment
 
     Using VirtualEnvWrapper create a virtual environment.
 
@@ -92,13 +84,7 @@ OS X:
     workon gwells
     ```
 
-6. Create a development database. You may first have to assign the gwells user a password:
-
-    ```
-    python3 ../manage.py migrate
-    ```
-
-7.  Config variables
+5.  Config variables
 
     If you are developing against a Postgres database you can set environment variables with a postactivate script.
 
@@ -133,13 +119,27 @@ OS X:
     export BASEURL=http://gwells-dev.pathfinder.gov.bc.ca/
     ```
 
-7. If everything is alright, you should be able to start the Django development server:
+6.  Requirements
+
+    Install requirements (file in root of repo)
+
+    ```
+    pip3 install -U -r ../requirements.txt
+    ```
+
+7.  Create a development database. You may first have to assign the gwells user a password.
+
+    ```
+    python3 ../manage.py migrate
+    ```
+
+8.  Start the Django development server.
 
     ```
     python3 ../manage.py runserver
     ```
 
-8. Open your browser and go to http://127.0.0.1:8000/gwells, you will be greeted with a welcome page.
+9.  Browse to http://127.0.0.1:8000/gwells, the welcome page.
 
 
 ## Deploying to OpenShift
@@ -147,7 +147,7 @@ OS X:
 See the [README](https://github.com/bcgov/gwells/blob/master/openshift/templates/README.md) in https://github.com/bcgov/gwells/tree/master/openshift/templates.
 
 
-## Logs
+#### Logs
 
 By default your Django application is served with gunicorn and configured to output its access log to stderr.
 You can look at the combined stdout and stderr of a given pod with this command:
@@ -157,45 +157,45 @@ You can look at the combined stdout and stderr of a given pod with this command:
 
 This can be useful to observe the correct functioning of your application.
 
-## Special environment variables
+#### Special environment variables
 Note that environment variables are case sensitive.
 
-### APP_CONFIG
+#### APP_CONFIG
 You can fine tune the gunicorn configuration through the environment variable `APP_CONFIG` that, when set, should point to a config file as documented [here](http://docs.gunicorn.org/en/latest/settings.html).
 
-### DB_REPLICATE
+#### DB_REPLICATE
 Until legacy WELLS is shutdown and all works done on GWELLS, there is a nightly replication of WELLS records to GWELLS Production.   This [variable](database/README.md#32) controls the behavior during deploys (to DEV/TEST/PROD) and is one of None, Subset, or Full.  
 
 * Recommended value on DEV:  `Subset` (otherwise the Functional Tests will fail)  
 * Recommended value on TEST: `Subset` or `Full`  
 * Recommended value on PROD: `Full`  
 
-### MINIO_ACCESS_KEY
+#### MINIO_ACCESS_KEY
 Access key acting as a user ID that uniquely identifies the account.  Set as part of `gwells-minio` deployment but then used in `gwells` deployment to connect to the internal (private) Minio Server.
 
-### MINIO_SECRET_KEY
+#### MINIO_SECRET_KEY
 Secret key acting as the password to the account.  Set as part of `gwells-minio` deployment but then used in `gwells` deployment to connect to the internal (private) Minio Server.
 
 See our [Wiki page](https://github.com/bcgov/gwells/wiki/Storage-of-Related-Documents) for more details.
 
-### S3_HOST
+#### S3_HOST
 Endpoint to the public S3 Server (e.g. `s3.ca-central-1.amazonaws.com`)
 
-### S3_ROOT_BUCKET
+#### S3_ROOT_BUCKET
 Top-level S3 bucket that organizes all publicly viewable documentes (e.g. `gwells-docs`)
 
-### DJANGO_SECRET_KEY
+#### DJANGO_SECRET_KEY
 When using one of the templates provided in this repository, this environment variable has its value automatically generated. For security purposes, make sure to set this to a random string as documented [here](https://docs.djangoproject.com/en/1.8/ref/settings/#std:setting-SECRET_KEY).
 
-### DJANGO_DEBUG
+#### DJANGO_DEBUG
 Set to `True` to enable debugging.  Recommended value:  `True`
 
 NOTE: On local developer environments, the `gradlew` tests will fail with `DJANGO_DEBUG=False` unless the developer manually runs `python3 manage.py collectstatic`.
 
-### ENABLE_DATA_ENTRY  
+#### ENABLE_DATA_ENTRY  
 Set to `True` to enable debugging.  Recommended value:  Not set for Production (as the feature is not released); `True` for Development.
 
-### ENABLE_GOOGLE_ANALYTICS
+#### ENABLE_GOOGLE_ANALYTICS
 Set to `True` to enable Google Analytics.  Recommended value:  Not set for Development; `True` for Production.
 
 ## One-off command execution
