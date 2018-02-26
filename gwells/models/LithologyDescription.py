@@ -51,8 +51,8 @@ class LithologyDescription(AuditModel):
     water_bearing_estimated_flow_units = models.ForeignKey(WellYieldUnitCode, db_column='well_yield_unit_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Units')
     lithology_observation = models.CharField(max_length=250, blank=True, null=True, verbose_name='Observations')
 
-    bedrock_material = models.ForeignKey(BedrockMaterialCode, db_column='bedrock_material_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Bedrock Material')
-    bedrock_material_descriptor = models.ForeignKey(BedrockMaterialDescriptorCode, db_column='bedrock_material_descriptor_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Descriptor')
+    bedrock_material = models.ForeignKey(BedrockMaterialCode, db_column='bedrock_material_code', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Bedrock Material')
+    bedrock_material_descriptor = models.ForeignKey(BedrockMaterialDescriptorCode, db_column='bedrock_material_descriptor_code', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Descriptor')
     lithology_structure = models.ForeignKey(LithologyStructureCode, db_column='lithology_structure_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Bedding')
     lithology_moisture = models.ForeignKey(LithologyMoistureCode, db_column='lithology_moisture_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Moisture')
     surficial_material = models.ForeignKey(SurficialMaterialCode, db_column='surficial_material_guid', related_name='surficial_material_set', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Surficial Material')
