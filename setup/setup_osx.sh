@@ -18,6 +18,18 @@ while ( xcode-select --install );
 done
 
 
+# Configure git and set remote (upstream) origin
+#
+git config --global --get push.default || \
+	git config --global push.default simple
+git config --global --get user.email && \
+	git config --global --get user.name || \
+	git config --global --edit
+#
+git remote -v | grep "https://github.com/bcgov/gwells.git (push)" || \
+	git remote add upstream https://github.com/bcgov/gwells.git
+
+
 # Install Homebrew
 #
 which brew || \
@@ -44,21 +56,6 @@ done
 #
 ( pg_isready -q )|| \
         brew services start postgresql
-
-
-# Configure git
-#
-git config --global --get push.default || \
-	git config --global push.default simple
-git config --global --get user.email && \
-	git config --global --get user.name || \
-	git config --global --edit
-
-
-# Set remote (upstream) origin
-#
-git remote -v | grep "https://github.com/bcgov/gwells.git (push)" || \
-	git remote add upstream https://github.com/bcgov/gwells.git
 
 
 # Create postgres user
