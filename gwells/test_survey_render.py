@@ -11,7 +11,7 @@ class SurveyRenderTestCase(TestCase):
     def setUp(self):
         pass
 
-class SurveyView_Well_TestCase(SurveyRenderTestCase):
+class WellTestCase(SurveyRenderTestCase):
     fixtures = ['well_detail_fixture','survey_well_fixture']
 
     def test_well(self):
@@ -23,7 +23,7 @@ class SurveyView_Well_TestCase(SurveyRenderTestCase):
         survey_id = survey_id + '495a9927-5a13-490e-bf1d-08bf2048b098'
         self.assertContains(response, survey_id)#the right survey included
 
-class SurveyView_DisabledSurvey_TestCase(SurveyRenderTestCase):
+class DisabledSurveyTestCase(SurveyRenderTestCase):
     fixtures = ['well_detail_fixture','survey_well_disabled_survey_fixture']
 
     def test_disabled_survey(self):
@@ -33,7 +33,7 @@ class SurveyView_DisabledSurvey_TestCase(SurveyRenderTestCase):
         survey_id='id="survey:'
         self.assertContains(response, survey_id, count=0)#one and only one survey included
 
-class SurveyView_Registry_TestCase(SurveyRenderTestCase):
+class RegistryTestCase(SurveyRenderTestCase):
     fixtures = ['survey_registry_fixture']
 
     def test_registry(self):
@@ -45,7 +45,7 @@ class SurveyView_Registry_TestCase(SurveyRenderTestCase):
         survey_id = survey_id + '495a9927-5a13-490e-bf1d-08bf2048b098'
         self.assertContains(response, survey_id)#the right survey included
 
-class SurveyView_Search_TestCase(SurveyRenderTestCase):
+class SearchTestCase(SurveyRenderTestCase):
     fixtures = ['survey_search_fixture']
 
     def test_search(self):
@@ -57,7 +57,7 @@ class SurveyView_Search_TestCase(SurveyRenderTestCase):
         survey_id = survey_id + '495a9927-5a13-490e-bf1d-08bf2048b098'
         self.assertContains(response, survey_id)#the right survey included
 
-class SurveyView_NoSurveys_TestCase(SurveyRenderTestCase):
+class NoSurveysTestCase(SurveyRenderTestCase):
     fixtures = ['well_detail_fixture']
 
     def test_no_surveys(self):
@@ -67,7 +67,7 @@ class SurveyView_NoSurveys_TestCase(SurveyRenderTestCase):
         survey_id='id="survey:'
         self.assertContains(response, survey_id, count=0)
 
-class SurveyView_MultipleSurveys_TestCase(SurveyRenderTestCase):
+class MultipleSurveysTestCase(SurveyRenderTestCase):
     fixtures = ['well_detail_fixture', 'survey_well_fixture1', 'survey_well_fixture2']
 
     def test_multiple_surveys(self):
