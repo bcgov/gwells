@@ -60,9 +60,11 @@ psql -U postgres -c "select 1 from pg_roles where rolname='postgres';" || \
 
 # Create user and database
 #
-psql -U postgres -c "SELECT 1 FROM pg_roles WHERE rolname='gwells';" || \
+psql -U postgres -c \
+	"SELECT 1 FROM pg_roles WHERE rolname='gwells';" | grep '1' || \
 	psql -U postgres -c "CREATE USER gwells WITH createdb;"
-psql -U postgres -c "SELECT 1 FROM pg_database WHERE datname='gwells';" || \
+psql -U postgres -c \
+	"SELECT 1 FROM pg_database WHERE datname='gwells';" | grep '1' || \
 	psql -U postgres -c "CREATE DATABASE gwells WITH OWNER='gwells';"
 
 
