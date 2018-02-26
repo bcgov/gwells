@@ -13,7 +13,6 @@ class GWellsRequestParsingMiddleware(MiddlewareMixin):
 
     def put(self, request):
         request.PUT = request.POST
-        pass
 
     def delete(self, request):
         pass
