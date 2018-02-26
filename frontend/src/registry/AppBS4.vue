@@ -36,86 +36,20 @@ export default {
   padding: 0;
 }
 
-body {
+#app {
   font-family: Myriad-Pro, Calibri, Arial, 'sans serif';
   background-color: #f1f1f1;
   color: #494949;
   font-size: 13px;
 }
 
-a {
+#app a {
   color: #1a5a96;
 }
 
-a:hover, .navbar-link a:hover {
+#app a:hover, .navbar-link a:hover {
   color: #00F;
   text-decoration: underline;
-}
-
-.header-wrapper {
-  background-color: #003366;
-  border-bottom: 2px solid #fcba19;
-}
-
-.nav-wrapper {
-  background-color: #38598a;
-  -webkit-box-shadow: 0px 3px 3px 1px rgba(51, 51, 51, 0.5);
-  -moz-box-shadow: 0px 3px 3px 1px rgba(51, 51, 51, 0.5);
-  box-shadow: 0px 3px 3px 1px rgba(51, 51, 51, 0.5);
-}
-
-.footer-wrapper {
-  background-color: #003366;
-  border-top: 2px solid #fcba19;
-}
-
-.header {
-  min-height: 68px;
-  padding-top: 32px;
-}
-
-.header .header-title {
-  color: #ffffff;
-  font-size: 35px;
-  font-weight: 600;
-  margin-bottom: 0;
-  margin-left: 0px;
-  margin-top: 25px;
-}
-
-.header .header-title-small {
-  color: #ffffff;
-  font-size: 24px;
-  font-weight: normal;
-  margin-bottom: 0;
-  margin-left: 20px;
-  padding-top: 0;
-}
-
-.header .header-title-xsmall {
-  color: #ffffff;
-  font-size: 20px;
-  font-weight: normal;
-  margin-bottom: 0;
-  margin-top: -10px;
-  vertical-align: middle;
-}
-
-.header .header-logo {
-  margin-left: 0px;
-}
-
-.navbar-link a {
-  margin-top: 5px;
-  color: #fff!important;
-}
-
-.footer {
-  min-height: 40px;
-}
-
-.footer a {
-  color: #ffffff;
 }
 
 h1, h2, h3, h4, h5 {
@@ -174,7 +108,7 @@ h4 {
   border-color: #003366;
 }
 
-.col-form-label {
+#app .col-form-label {
   font-weight: bold;
 }
 

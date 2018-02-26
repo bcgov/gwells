@@ -6,10 +6,10 @@ import BootstrapVue from 'bootstrap-vue'
 // import App from './App'
 import App from './AppBS4'
 import router from './router'
-import 'babel-polyfill'
+import { store } from './store'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
-import { store } from './store'
+import 'babel-polyfill'
 
 // GWELLS js API library (helper methods for working with API)
 import ApiService from '@/common/services/gwells'
