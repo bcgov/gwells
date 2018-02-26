@@ -9,6 +9,15 @@ set -eu
 	set -x
 
 
+# Install Xcode command line tools
+#
+while ( xcode-select --install );
+	do xcode-select --install
+	echo "Waiting for Xcode Developer Tools Install"
+	sleep 60
+done
+
+
 # Install Homebrew
 #
 which brew || \
