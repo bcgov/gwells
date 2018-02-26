@@ -1,5 +1,6 @@
 from django.http import HttpResponse
 from django.utils import timezone
+from django.views.generic import TemplateView
 from rest_framework import filters
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.pagination import LimitOffsetPagination, PageNumberPagination
@@ -48,6 +49,14 @@ class APILimitOffsetPagination(LimitOffsetPagination):
     """
 
     max_limit = 100
+
+
+class RegistriesIndexView(TemplateView):
+    """
+    Index page for Registries app - contains js frontend web app
+    """
+    template_name = 'registries/registries.html'
+
 
 class APIOrganizationListCreateView(AuditCreateMixin, ListCreateAPIView):
     """
