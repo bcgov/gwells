@@ -29,7 +29,7 @@ urlpatterns = [
     url(r'^api-token-auth/', obtain_jwt_token, name='get-token'),
 
     # Swagger documentation endpoint
-    url(r'^$', get_swagger_view(title='GWELLS Driller registry'), name='api-docs'),
+    url(r'^$', views.RegistriesIndexView.as_view(), name='home'),
 
     # RegistriesApplication resource endpoints (applications from individuals to be registered as a driller, well installer etc.)
     # url(r'^applications/(?P<application_guid>[-\w]+)/$', views.APIApplicationRetrieveUpdateDestroyView.as_view(), name='application-detail'),
