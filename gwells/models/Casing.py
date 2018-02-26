@@ -40,7 +40,7 @@ class Casing(AuditModel):
 
     class Meta:
         ordering = ["casing_from", "casing_to"]
-        db_table = 'gwells_casing'
+        db_table = 'casing'
 
 
     def __str__(self):

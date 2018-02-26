@@ -1,7 +1,7 @@
 \echo 'Starting to clear tables procedure...'
 
 -- Reset tables
-TRUNCATE TABLE gwells_well,intended_water_use_code,well_class_code,
+TRUNCATE TABLE well,intended_water_use_code,well_class_code,
   province_state_code,drilling_method_code,decommission_method_code,
   lithology_colour_code,lithology_hardness_code,land_district_code,
   lithology_material_code,lithology_description_code,

@@ -6,27 +6,27 @@
 \copy intended_water_use_code (intended_water_use_guid,intended_water_use_code,description,is_hidden,display_order,create_date,update_date,create_user,update_user) from 'intended_water_use_code.csv' with header delimiter ',' CSV ;
 
 --CLASS
-\echo '... loading gwells_well_class_code code table'
+\echo '... loading well_class_code code table'
 \copy well_class_code (well_class_guid,well_class_code,description,is_hidden,display_order,create_date,update_date,create_user,update_user) from 'well_class_code.csv' with header delimiter ',' CSV ;
 
 --SUBCLASS
-\echo '... loading gwells_well_subclass_code code table'
+\echo '... loading well_subclass_code code table'
 \copy well_subclass_code (well_subclass_guid,well_subclass_code,description,is_hidden,display_order,well_class_guid,create_date,update_date,create_user,update_user) from 'well_subclass_code.csv' with header delimiter ',' CSV ;
 
 --PROVINCE_STATE
-\echo '... loading gwells_province_state_code code table'
+\echo '... loading province_state_code code table'
 \copy province_state_code (province_state_guid,province_state_code,description,display_order,create_date,update_date,create_user,update_user) from 'province_state_code.csv' with header delimiter ',' CSV ;
 
 --YIELD UNIT
-\echo '... loading gwells_well_yield_unit_code code table'
+\echo '... loading well_yield_unit_code code table'
 \copy well_yield_unit_code (well_yield_unit_guid,well_yield_unit_code,description,display_order,create_date,update_date,create_user,update_user) from 'well_yield_unit_code.csv' with header delimiter ',' CSV ;
 
 --DRILLING METHOD
-\echo '... loading gwells_drilling_method_code code table'
+\echo '... loading drilling_method_code code table'
 \copy drilling_method_code (drilling_method_guid,drilling_method_code,description,is_hidden,display_order,create_date,update_date,create_user,update_user) from 'drilling_method_code.csv' with header delimiter ',' CSV ;
 
 --GROUND ELEVATION
-\echo '... loading gwells_ground_elevation_method_code code table'
+\echo '... loading ground_elevation_method_code code table'
 \copy ground_elevation_method_code (ground_elevation_method_guid,ground_elevation_method_code,description,is_hidden,display_order,create_date,update_date,create_user,update_user) from 'ground_elevation_method_code.csv' with header delimiter ',' CSV ;
 
 --STATUS

@@ -27,7 +27,7 @@ class WaterQualityCharacteristic(AuditModel):
     display_order = models.PositiveIntegerField()
 
     class Meta:
-        db_table = 'gwells_water_quality_characteristic'
+        db_table = 'water_quality_characteristic'
         ordering = ['display_order', 'description']
 
     def __str__(self):

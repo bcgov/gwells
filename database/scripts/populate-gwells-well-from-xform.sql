@@ -1,12 +1,12 @@
-DROP FUNCTION IF EXISTS gwells_populate_well();
+DROP FUNCTION IF EXISTS populate_well();
 
-CREATE OR REPLACE FUNCTION gwells_populate_well() RETURNS void AS $$
+CREATE OR REPLACE FUNCTION populate_well() RETURNS void AS $$
 DECLARE
   row_count integer;
 BEGIN
-  raise notice '... importing xform into the gwells_well table';
+  raise notice '... importing xform into the well table';
 
-  INSERT INTO gwells_well (
+  INSERT INTO well (
     well_tag_number                    ,
     well_guid                          ,
     owner_full_name                    ,
@@ -193,12 +193,12 @@ BEGIN
     xform.backfill_material                        ,
     xform.decommission_details                     ,
     xform.comments
-  FROM xform_gwells_well xform;
+  FROM xform_well xform;
 
-  raise notice '...xform data imported into the gwells_well table';
-  SELECT count(*) from gwells_well into row_count;
-  raise notice '% rows loaded into the gwells_well table',  row_count;
+  raise notice '...xform data imported into the well table';
+  SELECT count(*) from well into row_count;
+  raise notice '% rows loaded into the well table',  row_count;
 END;
 $$ LANGUAGE plpgsql;
 
-COMMENT ON FUNCTION gwells_populate_well () IS 'Transfer from local XFORM ETL table into gwells_well.';
+COMMENT ON FUNCTION populate_well () IS 'Transfer from local XFORM ETL table into well.';

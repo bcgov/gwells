@@ -1,12 +1,12 @@
-DROP FUNCTION IF EXISTS gwells_populate_xform(boolean);
+DROP FUNCTION IF EXISTS populate_xform(boolean);
 
-CREATE OR REPLACE FUNCTION gwells_populate_xform(
+CREATE OR REPLACE FUNCTION populate_xform(
   _subset_ind boolean DEFAULT true) RETURNS void AS $$
 DECLARE
   xform_rows integer;
   sql_stmt text;
   subset_clause text := 'AND wells.well_tag_number between 100001 and 113567';
-  insert_sql    text := 'INSERT INTO xform_gwells_well (
+  insert_sql    text := 'INSERT INTO xform_well (
     well_tag_number                    ,
     well_id                            ,
     well_guid                          ,
@@ -262,10 +262,10 @@ DECLARE
   WHERE wells.acceptance_status_code NOT IN (''PENDING'', ''REJECTED'', ''NEW'') ';
 
 BEGIN
-  raise notice 'Starting gwells_populate_xform() procedure...';
+  raise notice 'Starting populate_xform() procedure...';
 
-  DROP TABLE IF EXISTS xform_gwells_well;
-  CREATE unlogged TABLE IF NOT EXISTS xform_gwells_well (
+  DROP TABLE IF EXISTS xform_well;
+  CREATE unlogged TABLE IF NOT EXISTS xform_well (
      well_tag_number                     integer,
      well_id                             bigint,
      well_guid                           uuid,
@@ -358,7 +358,7 @@ BEGIN
      update_user                         character varying(30)
   );
 
-  raise notice 'Created xform_gwells_well ETL table';
+  raise notice 'Created xform_well ETL table';
 
   IF _subset_ind THEN
     sql_stmt := insert_sql || ' ' || subset_clause;
@@ -366,14 +366,14 @@ BEGIN
     sql_stmt := insert_sql;
   END IF;
 
-  raise notice '... transforming wells data (= ACCEPTED) via xform_gwells_well ETL table...';
+  raise notice '... transforming wells data (= ACCEPTED) via xform_well ETL table...';
   EXECUTE sql_stmt;
 
-  SELECT count(*) from xform_gwells_well into xform_rows;
-  raise notice '... % rows loaded into the xform_gwells_well table',  xform_rows;
-  raise notice 'Finished gwells_populate_xform() procedure.';
+  SELECT count(*) from xform_well into xform_rows;
+  raise notice '... % rows loaded into the xform_well table',  xform_rows;
+  raise notice 'Finished populate_xform() procedure.';
 
 END;
 $$ LANGUAGE plpgsql;
 
-COMMENT ON FUNCTION gwells_populate_xform (boolean) IS 'Load ETL Transform Table from legacy Oracle Database using Foreign Data Wrapper.';
+COMMENT ON FUNCTION populate_xform (boolean) IS 'Load ETL Transform Table from legacy Oracle Database using Foreign Data Wrapper.';

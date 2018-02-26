@@ -1,7 +1,7 @@
-\echo '...creating xform_gwells_well ETL table';
+\echo '...creating xform_well ETL table';
 
-DROP TABLE IF EXISTS xform_gwells_well;
-CREATE unlogged TABLE IF NOT EXISTS xform_gwells_well (
+DROP TABLE IF EXISTS xform_well;
+CREATE unlogged TABLE IF NOT EXISTS xform_well (
    well_tag_number                     integer,
    well_id                             bigint,
    well_guid                           uuid,
@@ -94,4 +94,4 @@ CREATE unlogged TABLE IF NOT EXISTS xform_gwells_well (
    update_user                         character varying(30)
 );
 
-\echo 'Created xform_gwells_well ETL table';
+\echo 'Created xform_well ETL table';
