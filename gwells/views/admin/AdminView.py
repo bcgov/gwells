@@ -28,12 +28,12 @@ class AdminView(generic.TemplateView):
 
         context = super(AdminView, self).get_context_data(**kwargs)
 
-        SurveyFormSet = modelformset_factory(Survey, fields=('survey_introduction_text','survey_link', 'survey_page', 'survey_enabled'), extra=0)
+        survey_form_set = modelformset_factory(Survey, fields=('survey_introduction_text','survey_link', 'survey_page', 'survey_enabled'), extra=0)
 
-        SurveyForms = SurveyFormSet(queryset=Survey.objects.all().order_by('-when_updated'))
-        SurveyForm = modelform_factory(Survey, fields=('survey_introduction_text', 'survey_link', 'survey_page', 'survey_enabled'))
+        survey_forms = survey_form_set(queryset=Survey.objects.all().order_by('-when_updated'))
+        survey_form = modelform_factory(Survey, fields=('survey_introduction_text', 'survey_link', 'survey_page', 'survey_enabled'))
 
-        context['forms'] = SurveyForms
+        context['forms'] = survey_forms
 
-        context['form'] = SurveyForm()
+        context['form'] = survey_form()
         return context
