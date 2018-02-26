@@ -24,7 +24,6 @@ class ScreenIntakeMethodCode(AuditModel):
     screen_intake_code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
     status_flag = models.BooleanField(default=False, choices=((False, 'N'), (True, 'Y')))
-    is_hidden = models.BooleanField(default=False)
     display_order = models.PositiveIntegerField()
 
     effective_date = models.DateTimeField(blank=True, null=True)

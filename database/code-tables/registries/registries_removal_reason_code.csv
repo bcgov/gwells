@@ -1,4 +1,4 @@
-registry_removal_reason_guid,code,description,is_hidden,display_order,create_date,update_date,create_user,update_user
-"81726e3deb2b4725acfd39dd3f582f57","NLACT","No longer active","N","2","2018-01-01 00:00:00-08","2018-01-01 00:00:00-08","DATALOAD_USER","DATALOAD_USER"
-"ec3c1fb9413e47c1a2ecab665d36d3c6","FAILTM","Failed to maintain requirement of registration","N","4","2018-01-01 00:00:00-08","2018-01-01 00:00:00-08","DATALOAD_USER","DATALOAD_USER"
-"9f34701fffc04a70acb5d47d7c16127b","NMEET","Did not meet the requirement of registration","N","6","2018-01-01 00:00:00-08","2018-01-01 00:00:00-08","DATALOAD_USER","DATALOAD_USER"
+registry_removal_reason_guid,code,description,display_order,create_date,update_date,create_user,update_user
+"81726e3deb2b4725acfd39dd3f582f57","NLACT","No longer active","2","2018-01-01 00:00:00-08","2018-01-01 00:00:00-08","DATALOAD_USER","DATALOAD_USER"
+"ec3c1fb9413e47c1a2ecab665d36d3c6","FAILTM","Failed to maintain requirement of registration","4","2018-01-01 00:00:00-08","2018-01-01 00:00:00-08","DATALOAD_USER","DATALOAD_USER"
+"9f34701fffc04a70acb5d47d7c16127b","NMEET","Did not meet the requirement of registration","6","2018-01-01 00:00:00-08","2018-01-01 00:00:00-08","DATALOAD_USER","DATALOAD_USER"
