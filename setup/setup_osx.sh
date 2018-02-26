@@ -39,17 +39,11 @@ which brew || \
 
 # Brew install packages
 #
-PACKAGES="git python3"
+PACKAGES="git postgresql python3"
 for p in $PACKAGES
 do
 	brew list $p || brew install $p
 done
-
-
-# Brew install PostgreSQL
-#
-( which psql )|| \
-        brew install postgresql
 
 
 # Start PostgreSQL
@@ -62,11 +56,12 @@ done
 #
 PSQLV=$( psql --version | sed 's/[^0-9\.]*//g' )
 CUSER=$( find /usr/local/Cellar/postgresql -name createuser | grep "$PSQLV" )
-psql -U postgres -c "select 1 from pg_roles where rolname='postgres';" || \
+psql -U postgres -c \
+	"select 1 from pg_roles where rolname='postgres';" | grep '1' || \
 	"${CUSER}" -s postgres
 
 
-# Create user and database
+# Create db user and database
 #
 psql -U postgres -c \
 	"SELECT 1 FROM pg_roles WHERE rolname='gwells';" | grep '1' || \
@@ -83,11 +78,6 @@ for p in $PACKAGES
 do
 	pip3 show $p || pip3 install $p --user
 done
-
-
-# Pip3 install requirements
-#
-pip3 install -U -r ../requirements.txt
 
 
 # Config bash shell to source virtualenvwrapper.sh
@@ -130,6 +120,11 @@ export APP_CONTEXT_ROOT=gwells
 export ENABLE_GOOGLE_ANALYTICS=False
 export ENABLE_DATA_ENTRY=True
 export BASEURL=http://gwells-dev.pathfinder.gov.bc.ca/
+
+
+# Pip3 install requirements
+#
+pip3 install -U -r ../requirements.txt
 
 
 # Create dev database
