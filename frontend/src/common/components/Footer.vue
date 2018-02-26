@@ -20,6 +20,23 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 
+.footer-wrapper {
+  background-color: #003366;
+  border-top: 2px solid #fcba19;
+}
+
+.footer {
+  min-height: 40px;
+}
+
+.footer a {
+  color: #ffffff;
+}
+
+.navbar-link a {
+  margin-top: 5px;
+  color: #fff!important;
+}
 </style>

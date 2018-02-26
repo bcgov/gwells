@@ -47,6 +47,59 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
+
+.header-wrapper {
+  background-color: #003366;
+  border-bottom: 2px solid #fcba19;
+}
+
+.nav-wrapper {
+  background-color: #38598a;
+  -webkit-box-shadow: 0px 3px 3px 1px rgba(51, 51, 51, 0.5);
+  -moz-box-shadow: 0px 3px 3px 1px rgba(51, 51, 51, 0.5);
+  box-shadow: 0px 3px 3px 1px rgba(51, 51, 51, 0.5);
+}
+
+.header {
+  min-height: 68px;
+  padding-top: 32px;
+}
+
+.header .header-title {
+  color: #ffffff;
+  font-size: 35px;
+  font-weight: 600;
+  margin-bottom: 0;
+  margin-left: 0px;
+  margin-top: 25px;
+}
+
+.header .header-title-small {
+  color: #ffffff;
+  font-size: 24px;
+  font-weight: normal;
+  margin-bottom: 0;
+  margin-left: 20px;
+  padding-top: 0;
+}
+
+.header .header-title-xsmall {
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: normal;
+  margin-bottom: 0;
+  margin-top: -10px;
+  vertical-align: middle;
+}
+
+.header .header-logo {
+  margin-left: 0px;
+}
+
+.navbar-link a {
+  margin-top: 5px;
+  color: #fff!important;
+}
 
 </style>
