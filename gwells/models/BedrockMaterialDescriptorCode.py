@@ -21,7 +21,6 @@ class BedrockMaterialDescriptorCode(AuditModel):
     """
     bedrock_material_descriptor_code = models.CharField(primary_key=True, editable=False, max_length=10)
     description = models.CharField(max_length=100)
-    is_hidden = models.BooleanField(default=False)
     display_order = models.PositiveIntegerField()
 
     effective_date = models.DateTimeField(blank=True, null=True)
