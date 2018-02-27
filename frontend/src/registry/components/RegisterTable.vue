@@ -1,14 +1,24 @@
 <template>
-  <div class="p-md-2 m-50px">
+  <div class="">
     <h3>Well Driller Results</h3>
-    <b-table
-      responsive
-      striped
-      :items="items"
-      :fields="fields"
-      v-if="!loading"
-    />
+    <div class="table-responsive">
+    <table class="table table-striped" v-if="!loading">
+      <thead>
+        <th v-for="field in fields" :key="field">{{field}}</th>
+      </thead>
+      <tbody>
+        <tr v-for="driller in drillers" :key="driller.person_guid">
+          <td>{{ driller.name }}</td>
+          <td>{{ driller.company }}</td>
+          <td>{{ driller.tel }}</td>
+          <td>{{ driller.email }}</td>
+          <td>{{ driller.status }}</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
     <div v-if="loading">Loading results...</div>
+    <div v-if="!drillers.length">No results were found.</div>
   </div>
 </template>
 
@@ -20,13 +30,14 @@ export default {
   props: ['items'],
   data () {
     return {
-      fields: ['name', 'company', 'tel', 'email', 'status']
+      fields: ['Name', 'Company', 'Telephone', 'E-mail', 'Status']
     }
   },
   computed: {
     ...mapGetters([
       'loading',
-      'error'
+      'error',
+      'drillers'
     ])
   }
 }
