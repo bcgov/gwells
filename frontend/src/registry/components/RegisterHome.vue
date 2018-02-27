@@ -68,7 +68,7 @@
                   <div class="form-group">
                     <div class="col-xs-12 col-sm-6 form-spacing">
                       <label for="regTypeInput">Individual, company, or registration number</label>
-                      <input type="text" class="form-control" id="regTypeInput" placeholder="Search" v-model="searchParams.searchString">
+                      <input type="text" class="form-control" id="regTypeInput" placeholder="Search" v-model="searchParams.search">
                     </div>
                   </div>
                   <div class="form-group">
