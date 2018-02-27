@@ -2,36 +2,36 @@ from gwells.models.AuditModel import AuditModel
 from gwells.models.ActivitySubmission import ActivitySubmission
 from gwells.models.AquiferWell import AquiferWell
 from gwells.models.BCGS_Numbers import BCGS_Numbers
-from gwells.models.BedrockMaterial import BedrockMaterial
-from gwells.models.BedrockMaterialDescriptor import BedrockMaterialDescriptor
+from gwells.models.BedrockMaterialCode import BedrockMaterialCode
+from gwells.models.BedrockMaterialDescriptorCode import BedrockMaterialDescriptorCode
 from gwells.models.Casing import Casing
-from gwells.models.CasingMaterial import CasingMaterial
-from gwells.models.CasingType import CasingType
-from gwells.models.DecommissionMethod import DecommissionMethod
-from gwells.models.DevelopmentMethod import DevelopmentMethod
+from gwells.models.CasingCode import CasingCode
+from gwells.models.CasingMaterialCode import CasingMaterialCode
+from gwells.models.DecommissionMethodCode import DecommissionMethodCode
+from gwells.models.DevelopmentMethodCode import DevelopmentMethodCode
 from gwells.models.Driller import Driller
 from gwells.models.DrillingCompany import DrillingCompany
-from gwells.models.DrillingMethod import DrillingMethod
-from gwells.models.FilterPackMaterial import FilterPackMaterial
-from gwells.models.FilterPackMaterialSize import FilterPackMaterialSize
-from gwells.models.GroundElevationMethod import GroundElevationMethod
-from gwells.models.IntendedWaterUse import IntendedWaterUse
-from gwells.models.LandDistrict import LandDistrict
-from gwells.models.LicencedStatus import LicencedStatus
-from gwells.models.LinerMaterial import LinerMaterial
+from gwells.models.DrillingMethodCode import DrillingMethodCode
+from gwells.models.FilterPackMaterialCode import FilterPackMaterialCode
+from gwells.models.FilterPackMaterialSizeCode import FilterPackMaterialSizeCode
+from gwells.models.GroundElevationMethodCode import GroundElevationMethodCode
+from gwells.models.IntendedWaterUseCode import IntendedWaterUseCode
+from gwells.models.LandDistrictCode import LandDistrictCode
+from gwells.models.LicencedStatusCode import LicencedStatusCode
+from gwells.models.LinerMaterialCode import LinerMaterialCode
 from gwells.models.LinerPerforation import LinerPerforation
-from gwells.models.LithologyColour import LithologyColour
+from gwells.models.LithologyColourCode import LithologyColourCode
 from gwells.models.LithologyDescription import LithologyDescription
 from gwells.models.LithologyDescriptionCode import LithologyDescriptionCode
-from gwells.models.LithologyHardness import LithologyHardness
-from gwells.models.LithologyMaterial import LithologyMaterial
-from gwells.models.LithologyMoisture import LithologyMoisture
-from gwells.models.LithologyStructure import LithologyStructure
+from gwells.models.LithologyHardnessCode import LithologyHardnessCode
+from gwells.models.LithologyMaterialCode import LithologyMaterialCode
+from gwells.models.LithologyMoistureCode import LithologyMoistureCode
+from gwells.models.LithologyStructureCode import LithologyStructureCode
 from gwells.models.LtsaOwner import LtsaOwner
-from gwells.models.ObservationWellStatus import ObservationWellStatus
+from gwells.models.ObsWellStatusCode import ObsWellStatusCode
 from gwells.models.Perforation import Perforation
 from gwells.models.ProductionData import ProductionData
-from gwells.models.ProvinceState import ProvinceState
+from gwells.models.ProvinceStateCode import ProvinceStateCode
 from gwells.models.Screen import Screen
 from gwells.models.ScreenAssemblyTypeCode import ScreenAssemblyTypeCode
 from gwells.models.ScreenBottomCode import ScreenBottomCode
@@ -46,12 +46,12 @@ from gwells.models.Survey import Survey
 from gwells.models.User import User
 from gwells.models.WaterQualityCharacteristic import WaterQualityCharacteristic
 from gwells.models.Well import Well
-from gwells.models.WellActivityType import WellActivityType
-from gwells.models.WellClass import WellClass
-from gwells.models.WellStatus import WellStatus
-from gwells.models.WellSubclass import WellSubclass
-from gwells.models.WellYieldUnit import WellYieldUnit
-from gwells.models.YieldEstimationMethod import YieldEstimationMethod
+from gwells.models.WellActivityCode import WellActivityCode
+from gwells.models.WellClassCode import WellClassCode
+from gwells.models.WellStatusCode import WellStatusCode
+from gwells.models.WellSubclassCode import WellSubclassCode
+from gwells.models.WellYieldUnitCode import WellYieldUnitCode
+from gwells.models.YieldEstimationMethodCode import YieldEstimationMethodCode
 
 __all__ = [
 'ActivitySubmission',
@@ -89,6 +89,15 @@ __all__ = [
 'ProductionData',
 'ProvinceStateCode',
 'Screen',
+'ScreenAssemblyTypeCode',
+'ScreenBottomCode',
+'ScreenIntakeMethodCode',
+'ScreenMaterialCode',
+'ScreenOpeningCode',
+'ScreenTypeCode',
+'SurfaceSealMaterialCode',
+'SurfaceSealMethodCode',
+'SurficialMaterialCode',
 'Survey',
 'User',
 'WaterQualityCharacteristic',
