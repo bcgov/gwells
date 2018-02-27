@@ -7,10 +7,10 @@
             <p><a href="#">Learn more about registering as a well driller or well pump installer in B.C.</a></p>
         </div>
         <div class="col-xs-4">
-          <button type="button" class="btn btn-primary" @click="adminToggle=!adminToggle">GWELLS Administrator options</button>
+          <button type="button" class="btn btn-primary" @click="adminPanelToggle=!adminPanelToggle">GWELLS Administrator options</button>
         </div>
       </div>
-      <div class="row" v-if="adminToggle">
+      <div class="row" v-if="adminPanelToggle">
         <div class="col-xs-12">
             <div class="well well-sm">
               <p>
@@ -55,7 +55,6 @@
                     <div class="form-group">
                       <div class="col-xs-12 col-sm-6 form-spacing">
                         <label>Registration status</label>
-                        <!-- <b-form-select v-model="regStatus" :options="regStatusOptions" size="sm" style="font-size:14px"/> -->
                         <select class="form-control">
                           <option>All</option>
                           <option>Pending</option>
@@ -128,7 +127,7 @@ export default {
   },
   data () {
     return {
-      adminToggle: false,
+      adminPanelToggle: false,
       community: null,
       regType: 'driller',
       regStatus: 'all',
