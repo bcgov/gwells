@@ -30,7 +30,7 @@ class ViewsTestCase(TestCase):
     @classmethod
     def setUpTestData(cls):
         #using fixtures
-	pass
+	    pass
 
     def setUp(self):
         pass
