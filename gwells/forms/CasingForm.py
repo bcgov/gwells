@@ -40,7 +40,7 @@ class CasingForm(forms.ModelForm):
             'diameter',
             HTML('</td>'),
             HTML('<td>'),
-            'casing_type',
+            'casing_code',
             HTML('</td>'),
             HTML('<td>'),
             'casing_material',
@@ -62,7 +62,7 @@ class CasingForm(forms.ModelForm):
 
         casing_from = cleaned_data.get('casing_from')
         casing_to = cleaned_data.get('casing_to')
-        casing_type = cleaned_data.get('casing_type')
+        casing_code = cleaned_data.get('casing_code')
         casing_material = cleaned_data.get('casing_material')
         wall_thickness = cleaned_data.get('wall_thickness')
         errors = []
@@ -70,20 +70,20 @@ class CasingForm(forms.ModelForm):
         if casing_from and casing_to and casing_to < casing_from:
             errors.append('To must be greater than or equal to From.')
 
-        open_casing_type = None
+        open_casing_code = None
         try:
-            open_casing_type = CasingType.objects.get(code='OPEN')
+            open_casing_code = CasingCode.objects.get(code='OPEN')
         except Exception as e:
-            errors.append('Configuration error: Open Hole Casing Type does not exist, please contact the administrator.')
+            errors.append('Configuration error: Open Hole Casing Code does not exist, please contact the administrator.')
 
-        if open_casing_type:
-            if casing_type != open_casing_type and not casing_material:
+        if open_casing_code:
+            if casing_code != open_casing_code and not casing_material:
                 self.add_error('casing_material', 'This field is required.')
 
-            if casing_type != open_casing_type and not wall_thickness:
+            if casing_code != open_casing_code and not wall_thickness:
                 self.add_error('wall_thickness', 'This field is required.')
 
-            if casing_type == open_casing_type and casing_material:
+            if casing_code == open_casing_code and casing_material:
                 self.add_error('casing_material', 'Open Hole cannot have a casing material.')
 
 
@@ -94,4 +94,4 @@ class CasingForm(forms.ModelForm):
 
     class Meta:
         model = Casing
-        fields = ['casing_from', 'casing_to', 'diameter', 'casing_type', 'casing_material', 'wall_thickness', 'drive_shoe']
+        fields = ['casing_from', 'casing_to', 'diameter', 'casing_code', 'casing_material', 'wall_thickness', 'drive_shoe']

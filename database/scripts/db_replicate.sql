@@ -24,10 +24,10 @@ DROP FUNCTION IF EXISTS gwells_db_replicate(boolean);
  ***/
 CREATE OR REPLACE FUNCTION gwells_db_replicate(_subset_ind boolean default true) RETURNS void AS $$
 BEGIN
-	TRUNCATE TABLE gwells_bcgs_number CASCADE;	
 	PERFORM gwells_populate_xform(_subset_ind);
-	TRUNCATE TABLE gwells_well CASCADE;	
+	TRUNCATE TABLE gwells_bcgs_number CASCADE;	
 	PERFORM gwells_migrate_bcgs();
+	TRUNCATE TABLE gwells_well CASCADE;	
 	PERFORM gwells_populate_well();	
 	PERFORM gwells_migrate_screens();
 	PERFORM gwells_migrate_production();

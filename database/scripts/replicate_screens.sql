@@ -15,10 +15,10 @@ BEGIN
     internal_diameter                             ,
     screen_assembly_type_guid                     , -->FK
     slot_size                                     ,
-    when_created                                  ,
-    when_updated                                  ,
-    who_created                                   ,
-    who_updated)
+    create_date                                  ,
+    update_date                                  ,
+    create_user                                   ,
+    update_user)
   SELECT
     gen_random_uuid()                             ,
     null                                          ,
@@ -34,7 +34,7 @@ BEGIN
     screens.who_updated
   FROM wells.wells_screens screens
        INNER JOIN xform_gwells_well xform ON xform.well_id=screens.well_id
-       LEFT OUTER JOIN gwells_screen_assembly_type screen_assembly_type ON
+       LEFT OUTER JOIN screen_assembly_type_code screen_assembly_type ON
        ( screens.screen_assembly_type_code=screen_assembly_type.screen_assembly_type_code OR
          screens.screen_assembly_type_code='L' AND screen_assembly_type.screen_assembly_type_code='LEAD' OR
          screens.screen_assembly_type_code='K  & Riser' AND screen_assembly_type.screen_assembly_type_code='K_RISER'

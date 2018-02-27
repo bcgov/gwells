@@ -24,16 +24,20 @@ class AuditModel(models.Model):
     """
     An abstract base class model that provides audit fields.
     """
-    who_created = models.CharField(max_length=30)
-    when_created = models.DateTimeField(blank=True, null=True)
-    who_updated = models.CharField(max_length=30, null=True)
-    when_updated = models.DateTimeField(blank=True, null=True)
+    create_user = models.CharField(max_length=30)
+    # Fri  9 Feb 20:40:38 2018 GW note to remove null=True from next three..
+    create_date = models.DateTimeField(blank=True, null=True)
+    update_user = models.CharField(max_length=30, null=True)
+    update_date = models.DateTimeField(blank=True, null=True)
 
     def save(self, *args, **kwargs):
-        ''' On save, update timestamps '''
+        ''' For all saves, populate "Update" fields '''
+        self.update_date = timezone.now()
+
+        ''' For "new" content, populate "Add" fields '''
         if self._state.adding == True:
-            self.when_created = timezone.now()
-        self.when_updated = timezone.now()
+            self.create_date = timezone.now()
+
         return super(AuditModel, self).save(*args, **kwargs)
 
     def serialize(self):

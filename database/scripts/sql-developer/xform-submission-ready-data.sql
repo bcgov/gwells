@@ -2,16 +2,16 @@ SET TRIMSPOOL ON
 SET ECHO OFF
 SET VERIFY OFF
 SET TERMOUT OFF
-SPOOL H:\xform_gwells_land_district.csv
+SPOOL H:\xform_land_district_code.csv
 SELECT /*csv*/  
   SYS_GUID() AS LAND_DISTRICT_GUID,
   TRIM(WELLS.WELLS_LEGAL_LAND_DIST_CODES.LEGAL_LAND_DISTRICT_CODE) AS CODE,
   TRIM(WELLS.WELLS_LEGAL_LAND_DIST_CODES.LEGAL_LAND_DISTRICT_NAME) AS NAME,
-  WELLS.WELLS_LEGAL_LAND_DIST_CODES.SORT_ORDER,
-  '2017-07-01 00:00:00-08' AS when_created,
-  '2017-07-01 00:00:00-08' AS when_updated,
-  'ETL_USER' AS who_created,
-  'ETL_USER' AS who_updated
+  WELLS.WELLS_LEGAL_LAND_DIST_CODES.display_order,
+  '2017-07-01 00:00:00-08' AS create_date,
+  '2017-07-01 00:00:00-08' AS update_date,
+  'ETL_USER' AS create_user,
+  'ETL_USER' AS update_user
 FROM WELLS.WELLS_LEGAL_LAND_DIST_CODES
 ORDER BY trim(LEGAL_LAND_DISTRICT_NAME)
 /
@@ -23,10 +23,10 @@ SET VERIFY OFF
 SET TERMOUT OFF
 SPOOL H:\xform_gwells_surface_seal_type.csv
 SELECT /*csv*/  
-  'ETL_USER' AS who_created,
-  '2017-07-01 00:00:00-08' AS when_created,
-  'ETL_USER' AS who_updated,
-  '2017-07-01 00:00:00-08' AS when_updated,
+  'ETL_USER' AS create_user,
+  '2017-07-01 00:00:00-08' AS create_date,
+  'ETL_USER' AS update_user,
+  '2017-07-01 00:00:00-08' AS update_date,
   SYS_GUID() AS surface_seal_type_guid,
   regexp_replace(
   regexp_replace(
@@ -43,7 +43,7 @@ SELECT /*csv*/
   AS CODE,
   INITCAP(SEALANT_MATERIAL) AS description,
   'N' AS is_hidden,
-  ROWNUM * 10 AS SORT_ORDER,
+  ROWNUM * 10 AS display_order,
   SEALANT_MATERIAL AS SEALANT_MATERIAL  
 FROM (
   SELECT DISTINCT UPPER(TRIM(SEALANT_MATERIAL)) AS SEALANT_MATERIAL
@@ -79,17 +79,17 @@ SET TRIMSPOOL ON
 SET ECHO OFF
 SET VERIFY OFF
 SET TERMOUT OFF
-SPOOL H:\xform_gwells_surface_seal_material.csv
+SPOOL H:\xform_surface_seal_material_code.csv
 SELECT csv 
-  'ETL_USER' AS who_created,
-  '2017-07-01 00:00:00-08' AS when_created,
-  'ETL_USER' AS who_updated,
-  '2017-07-01 00:00:00-08' AS when_updated,
+  'ETL_USER' AS create_user,
+  '2017-07-01 00:00:00-08' AS create_date,
+  'ETL_USER' AS update_user,
+  '2017-07-01 00:00:00-08' AS update_date,
   SYS_GUID() AS surface_seal_material_guid,
   CODE AS code,
   INITCAP(CODE) AS description,
   'N' AS is_hidden,
-  ROWNUM * 10 AS SORT_ORDER
+  ROWNUM * 10 AS display_order
 FROM (
   SELECT DISTINCT UPPER(TRIM(SEALANT_MATERIAL)) AS CODE
   FROM WELLS.WELLS_WELLS
@@ -106,17 +106,17 @@ SET TRIMSPOOL ON
 SET ECHO OFF
 SET VERIFY OFF
 SET TERMOUT OFF
-SPOOL H:\xform_gwells_surface_seal_method.csv
+SPOOL H:\xform_surface_seal_method_code.csv
 SELECT /*csv*/  
-  'ETL_USER' AS who_created,
-  '2017-07-01 00:00:00-08' AS when_created,
-  'ETL_USER' AS who_updated,
-  '2017-07-01 00:00:00-08' AS when_updated,
+  'ETL_USER' AS create_user,
+  '2017-07-01 00:00:00-08' AS create_date,
+  'ETL_USER' AS update_user,
+  '2017-07-01 00:00:00-08' AS update_date,
   SYS_GUID() AS surface_seal_method_guid,
   CODE AS code,
   INITCAP(CODE) AS description,
   'N' AS is_hidden,
-  ROWNUM * 10 AS SORT_ORDER
+  ROWNUM * 10 AS display_order
 FROM (
   SELECT DISTINCT UPPER(TRIM(surface_seal_method_code)) AS CODE
   FROM WELLS.WELLS_WELLS
@@ -247,12 +247,12 @@ SELECT /*csv*/
  surface_seal_type_guid    uuid                      
  surface_seal_method_guid    uuid                  
 */  
-  to_char(WELLS.WELLS_WELLS.WHEN_CREATED,'YYYY-MM-DD HH24:MI:SS') || '-08' /* PST Timezone */ AS when_created,
+  to_char(WELLS.WELLS_WELLS.WHEN_CREATED,'YYYY-MM-DD HH24:MI:SS') || '-08' /* PST Timezone */ AS create_date,
   NVL2(WELLS.WELLS_WELLS.WHEN_UPDATED,
       to_char(WELLS.WELLS_WELLS.WHEN_UPDATED,'YYYY-MM-DD HH24:MI:SS') || '-08' /* PST Timezone */,
-      NULL) AS when_updated,
-  'ETL_USER' AS who_created,
-  'ETL_USER' AS who_updated
+      NULL) AS update_date,
+  'ETL_USER' AS create_user,
+  'ETL_USER' AS update_user
 FROM WELLS.WELLS_WELLS
 LEFT OUTER JOIN WELLS.WELLS_OWNERS
 ON WELLS.WELLS_OWNERS.OWNER_ID = WELLS.WELLS_WELLS.OWNER_ID
@@ -343,10 +343,10 @@ SELECT /*csv*/
   INITCAP(REGEXP_SUBSTR(CREW_DRILLER_NAME,'\S+$' )) AS surname,
   PERMIT_NUMBER AS registration_number,
   'N' AS is_hidden,
-  '2017-07-01 00:00:00-08' AS when_created,
-  '2017-07-01 00:00:00-08' AS when_updated,  
-  'ETL_USER' AS who_created,
-  'ETL_USER' AS who_updated,
+  '2017-07-01 00:00:00-08' AS create_date,
+  '2017-07-01 00:00:00-08' AS update_date,  
+  'ETL_USER' AS create_user,
+  'ETL_USER' AS update_user,
   WELLS.WELLS_WELLS.DRILLER_COMPANY_CODE
 FROM WELLS.WELLS_WELLS 
 WHERE ROWID IN (
@@ -376,10 +376,10 @@ SELECT /*csv*/
      WHEN WELLS.WELLS_DRILLER_CODES.STATUS_FLAG = 'N' THEN 'Y'
      WHEN WELLS.WELLS_DRILLER_CODES.STATUS_FLAG = 'Y' THEN 'N'
   END AS is_hidden,  
-  '2017-07-01 00:00:00-08' AS when_created,
-  '2017-07-01 00:00:00-08' AS when_updated,  
-  'ETL_USER' AS who_created,
-  'ETL_USER' AS who_updated,
+  '2017-07-01 00:00:00-08' AS create_date,
+  '2017-07-01 00:00:00-08' AS update_date,  
+  'ETL_USER' AS create_user,
+  'ETL_USER' AS update_user,
   WELLS.WELLS_DRILLER_CODES.DRILLER_COMPANY_CODE AS driller_company_code
 FROM WELLS.WELLS_DRILLER_CODES
 /
