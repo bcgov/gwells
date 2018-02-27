@@ -1,4 +1,6 @@
 import uuid
+import logging
+
 from django.urls import reverse
 from django.test import TestCase
 from rest_framework import status
@@ -7,6 +9,7 @@ from gwells.models.ProvinceStateCode import ProvinceStateCode
 from gwells.models.User import User
 from registries.models import Organization, Person, RegistriesApplication, Register, RegistriesStatusCode, ActivityCode
 from registries.views import APIPersonListCreateView, APIPersonRetrieveUpdateDestroyView
+
 
 # Note: see postman/newman for more API tests.
 # Postman API tests include making requests with incomplete data, missing required fields etc.
@@ -25,7 +28,7 @@ class AuthenticatedAPITestCase(APITestCase):
         """
         Set up authenticated test cases.
         """
-        
+
         self.user = User.objects.create_user('testuser', 'test@example.com', 'douglas')
         self.user.is_staff = True
         self.client.force_authenticate(self.user)
@@ -186,7 +189,7 @@ class APIOrganizationTests(AuthenticatedAPITestCase):
 
         # Apply a new city name with PATCH method
         self.client.put(object_url, new_data, format='json')
-        
+
         response = self.client.get(object_url, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -194,6 +197,11 @@ class APIOrganizationTests(AuthenticatedAPITestCase):
         self.assertEqual(response.data['city'], new_data['city'])
 
     def test_delete_organization(self):
+        #setup
+        logger = logging.getLogger('django.request')
+        previous_level = logger.getEffectiveLevel()
+        logger.setLevel(logging.ERROR)
+
         initial_data = {
             'name': 'Bobby\'s Drilling',
             'city': 'Victoria'
@@ -216,6 +224,8 @@ class APIOrganizationTests(AuthenticatedAPITestCase):
         get_after_delete_response = self.client.get(retrieve_url, format='json')
         self.assertEqual(get_after_delete_response.status_code, status.HTTP_404_NOT_FOUND)
 
+        #teardown
+        logger.setLevel(previous_level)
 
     def test_organization_audit_fields(self):
         """
@@ -226,7 +236,7 @@ class APIOrganizationTests(AuthenticatedAPITestCase):
             'name': 'Bobby\'s Drilling',
             'city': 'Victoria'
         }
-        
+
         create_url = reverse('organization-list')
         new_object = self.client.post(create_url, initial_data, format='json')
         created_guid = new_object.data['org_guid']
@@ -376,7 +386,7 @@ class APIPersonTests(AuthenticatedAPITestCase):
 
         # Apply a new name with PATCH method
         self.client.put(object_url, new_data, format='json')
-        
+
         response = self.client.get(object_url, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -401,6 +411,11 @@ class APIPersonTests(AuthenticatedAPITestCase):
     #     self.assertEqual(Person.objects.get(person_guid=new_guid).first_name, self.initial_data['first_name'])
 
     def test_delete_person(self):
+        #setup
+        logger = logging.getLogger('django.request')
+        previous_level = logger.getEffectiveLevel()
+        logger.setLevel(logging.ERROR)
+
         initial_data = {
             'first_name': 'Bobby',
             'surname': 'Driller'
@@ -423,6 +438,9 @@ class APIPersonTests(AuthenticatedAPITestCase):
         get_after_delete_response = self.client.get(retrieve_url, format='json')
         self.assertEqual(get_after_delete_response.status_code, status.HTTP_404_NOT_FOUND)
 
+        #teardown
+        logger.setLevel(previous_level)
+
     def test_person_audit_fields(self):
         """
         Test that AuditModel fields (create_user, create_date etc.)
@@ -434,7 +452,7 @@ class APIPersonTests(AuthenticatedAPITestCase):
         request.user = self.user
         response = view(request)
         created_guid = response.data['person_guid']
-    
+
         person = Person.objects.get(person_guid=created_guid)
 
         self.assertEqual(person.create_user, self.user.username)
@@ -523,12 +541,20 @@ class APIFilteringPaginationTests(APITestCase):
         self.assertNotContains(response, self.unregistered_driller.person_guid)
 
     def test_user_cannot_retrieve_unregistered_person(self):
+        #setup
+        logger = logging.getLogger('django.request')
+        previous_level = logger.getEffectiveLevel()
+        logger.setLevel(logging.ERROR)
+
         url = reverse('person-detail', kwargs={'person_guid':self.unregistered_driller.person_guid})
         response = self.client.get(url, format='json')
         person = Person.objects.get(person_guid=self.unregistered_driller.person_guid)
 
         self.assertEqual(person.first_name, 'Johnny')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+        #teardown
+        logger.setLevel(previous_level)
 
     def test_search_for_name(self):
         url = reverse('person-list') + '?search=' + self.driller.first_name
@@ -553,10 +579,18 @@ class APIFilteringPaginationTests(APITestCase):
         self.assertNotContains(response, self.unregistered_driller.person_guid)
 
     def test_anon_user_cannot_see_unregistered_organization(self):
+        #setup
+        logger = logging.getLogger('django.request')
+        previous_level = logger.getEffectiveLevel()
+        logger.setLevel(logging.ERROR)
+
         self.client.force_authenticate(user=None)
         url = reverse('organization-detail', kwargs={'org_guid':self.company_with_no_driller.org_guid})
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+        #teardown
+        logger.setLevel(previous_level)
 
 class FixtureOrganizationTests(AuthenticatedAPITestCase):
     """
@@ -596,7 +630,7 @@ class FixtureOrganizationTests(AuthenticatedAPITestCase):
         # note: this will cause a test failure if we don't have enough records in the database
         self.assertGreater(response.data['count'], len(response.data['results']))
 
-        # max_limit comes from class APILimitOffsetPagination in views.py 
+        # max_limit comes from class APILimitOffsetPagination in views.py
         self.assertEqual(len(response.data['results']), 100)
 
     def anon_user_should_not_see_audit_fields(self):
