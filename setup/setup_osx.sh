@@ -20,10 +20,12 @@ done
 
 # Configure git and set remote (upstream) origin
 #
-git config --global --get push.default || \
+[ "$( git config --global --get push.default )" == "simple" ] || \
 	git config --global push.default simple
-git config --global --get user.email && \
-	git config --global --get user.name || \
+[ "$( git config --global --get core.autocrlf)" == "input" ] || \
+	git config --global core.autocrlf input
+[ "$( git config --global --get user.email )" ] && \
+	[ "( git config --global --get user.name)" ] || \
 	git config --global --edit
 #
 git remote -v | grep "https://github.com/bcgov/gwells.git (push)" || \
