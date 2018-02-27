@@ -75,7 +75,7 @@
 
 --CASING MATERIAL
 \echo '... loading casing_material_code code table'
-\copy casing_material_code (create_user,create_date,update_user,update_date,casing_material_guid,casing_material_code,description,display_order ) from 'casing_material_code.csv' with header delimiter ',' CSV ;
+\copy casing_material_code (create_user,create_date,update_user,update_date,casing_material_code,description,display_order ) from 'casing_material_code.csv' with header delimiter ',' CSV ;
 
 --SURFACE SEAL METHOD
 \echo '... loading surface_seal_method_code code table'
