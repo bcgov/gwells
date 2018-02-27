@@ -118,7 +118,7 @@
 
 --DECOMMISSION METHOD
 \echo '... loading decommission_method_code code table'
-\copy decommission_method_code (create_user,create_date,update_user,update_date,decommission_method_code,description,status_flag,display_order,decommission_method_guid) from 'decommission_method_code.csv' with header delimiter ',' CSV ;
+\copy decommission_method_code (create_user,create_date,update_user,update_date,decommission_method_code,description,status_flag,display_order) from 'decommission_method_code.csv' with header delimiter ',' CSV ;
 
 --OBSERVATION WELL STATUS
 \echo '... loading obs_well_status_code code table'
