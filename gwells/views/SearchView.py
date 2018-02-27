@@ -18,14 +18,14 @@ from django.shortcuts import render
 from django.http import JsonResponse
 import json
 from gwells.forms import SearchForm
-from gwells.models import LandDistrict
+from gwells.models import LandDistrictCode
 from gwells.models import Survey
 
 class SearchView(generic.DetailView):
 
     @staticmethod
     def get_surveys_for_context():
-        surveys = Survey.objects.order_by('when_created')
+        surveys = Survey.objects.order_by('create_date')
         page = 's'
         return surveys, page
 
