@@ -1,6 +1,5 @@
 <template>
   <div class="">
-    <h3>Well Driller Results</h3>
     <div class="table-responsive">
     <table class="table table-striped" v-if="!loading">
       <thead>

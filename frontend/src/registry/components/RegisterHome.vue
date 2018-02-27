@@ -86,6 +86,14 @@
       </div>
       <div class="row">
         <div class="col-xs-12">
+          <h3>Well Driller Results</h3>
+        </div>
+        <div class="col-xs-12 form-inline">
+          <div class="form-group col-xs-4">
+            <select class="form-control" v-model="searchParams.limit"><option>10</option><option>25</option></select> entries
+          </div>
+        </div>
+        <div class="col-xs-12">
           <register-table/>
         </div>
       </div>
@@ -102,7 +110,7 @@ export default {
     'register-table': RegisterTable
   },
   created () {
-    this.$store.dispatch(FETCH_DRILLER_LIST, { search: '' })
+    this.$store.dispatch(FETCH_DRILLER_LIST, this.searchParams)
   },
   computed: {
     cities () {
@@ -136,18 +144,24 @@ export default {
         { value: 'removed', text: 'Removed' }
       ],
       searchParams: {
-        searchString: ''
+        search: '',
+        communities: '',
+        regType: '',
+        regStatus: '',
+        limit: '10'
       }
     }
   },
   methods: {
     drillerSearch () {
-      this.$store.dispatch(FETCH_DRILLER_LIST, { search: this.searchParams.searchString })
+      this.$store.dispatch(FETCH_DRILLER_LIST, this.searchParams)
     },
     drillerSearchReset () {
-      this.regType = 'driller'
-      this.searchParams.searchString = ''
-      this.regStatus = 'all'
+      this.searchParams.regType = 'driller'
+      this.searchParams.search = ''
+      this.searchParams.regType = ''
+      this.searchParams.regStatus = 'all'
+      this.searchParams.limit = '10'
     }
   }
 }
