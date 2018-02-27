@@ -83,3 +83,13 @@ activate
 #virtual env
 /deactivate
 .vscode/settings.json
+
+x.sh
+
+
+# OS files
+.DS_Store
+.Trashes
+.directory
+Thumbs.db
+*~

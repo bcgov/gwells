@@ -19,12 +19,15 @@ import uuid
 
 class LithologyDescriptionCode(AuditModel):
     lithology_description_code_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    code = models.CharField(max_length=10, verbose_name='Code')
+    lithology_description_code = models.CharField(max_length=10, verbose_name='Code')
     description = models.CharField(max_length=255, verbose_name='Description')
-    sort_order = models.PositiveIntegerField()
+    display_order = models.PositiveIntegerField()
+
+    effective_date = models.DateTimeField(blank=True, null=True)
+    expiry_date    = models.DateTimeField(blank=True, null=True)
 
     class Meta:
-        db_table = 'gwells_lithology_description_code'
-        ordering=['sort_order']
+        db_table = 'lithology_description_code'
+        ordering=['display_order']
     def __str__(self):
         return 'lithology_description_code {} {}'.format(self.code, self.description)

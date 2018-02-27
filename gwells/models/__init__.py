@@ -33,15 +33,15 @@ from gwells.models.Perforation import Perforation
 from gwells.models.ProductionData import ProductionData
 from gwells.models.ProvinceState import ProvinceState
 from gwells.models.Screen import Screen
-from gwells.models.ScreenAssemblyType import ScreenAssemblyType
-from gwells.models.ScreenBottom import ScreenBottom
-from gwells.models.ScreenIntakeMethod import ScreenIntakeMethod
-from gwells.models.ScreenMaterial import ScreenMaterial
-from gwells.models.ScreenOpening import ScreenOpening
-from gwells.models.ScreenType import ScreenType
-from gwells.models.SurfaceSealMaterial import SurfaceSealMaterial
-from gwells.models.SurfaceSealMethod import SurfaceSealMethod
-from gwells.models.SurficialMaterial import SurficialMaterial
+from gwells.models.ScreenAssemblyTypeCode import ScreenAssemblyTypeCode
+from gwells.models.ScreenBottomCode import ScreenBottomCode
+from gwells.models.ScreenIntakeMethodCode import ScreenIntakeMethodCode
+from gwells.models.ScreenMaterialCode import ScreenMaterialCode
+from gwells.models.ScreenOpeningCode import ScreenOpeningCode
+from gwells.models.ScreenTypeCode import ScreenTypeCode
+from gwells.models.SurfaceSealMaterialCode import SurfaceSealMaterialCode
+from gwells.models.SurfaceSealMethodCode import SurfaceSealMethodCode
+from gwells.models.SurficialMaterialCode import SurficialMaterialCode
 from gwells.models.Survey import Survey
 from gwells.models.User import User
 from gwells.models.WaterQualityCharacteristic import WaterQualityCharacteristic
@@ -58,53 +58,44 @@ __all__ = [
 'AquiferWell',
 'AuditModel',
 'BCGS_Numbers',
-'BedrockMaterial',
-'BedrockMaterialDescriptor',
+'BedrockMaterialCode',
+'BedrockMaterialDescriptorCode',
 'Casing',
-'CasingMaterial',
-'CasingType',
-'DecommissionMethod',
-'DevelopmentMethod',
+'CasingMaterialCode',
+'CasingCode',
+'DecommissionMethodCode',
+'DevelopmentMethodCode',
 'Driller',
 'DrillingCompany',
-'DrillingMethod',
-'FilterPackMaterial',
-'FilterPackMaterialSize',
-'GroundElevationMethod',
-'IntendedWaterUse',
-'LandDistrict',
-'LicencedStatus',
-'LinerMaterial',
+'DrillingMethodCode',
+'FilterPackMaterialCode',
+'FilterPackMaterialSizeCode',
+'GroundElevationMethodCode',
+'IntendedWaterUseCode',
+'LandDistrictCode',
+'LicencedStatusCode',
+'LinerMaterialCode',
 'LinerPerforation',
-'LithologyColour',
+'LithologyColourCode',
 'LithologyDescription',
 'LithologyDescriptionCode',
-'LithologyHardness',
-'LithologyMaterial',
-'LithologyMoisture',
-'LithologyStructure',
+'LithologyHardnessCode',
+'LithologyMaterialCode',
+'LithologyMoistureCode',
+'LithologyStructureCode',
 'LtsaOwner',
-'ObservationWellStatus',
+'ObsWellStatusCode',
 'Perforation',
 'ProductionData',
-'ProvinceState',
+'ProvinceStateCode',
 'Screen',
-'ScreenAssemblyType',
-'ScreenBottom',
-'ScreenIntakeMethod',
-'ScreenMaterial',
-'ScreenOpening',
-'ScreenType',
-'SurfaceSealMaterial',
-'SurfaceSealMethod',
-'SurficialMaterial',
 'Survey',
 'User',
 'WaterQualityCharacteristic',
 'Well',
-'WellActivityType',
-'WellClass',
-'WellStatus',
-'WellSubclass',
-'WellYieldUnit',
-'YieldEstimationMethod']
+'WellActivityCode',
+'WellClassCode',
+'WellStatusCode',
+'WellSubclassCode',
+'WellYieldUnitCode',
+'YieldEstimationMethodCode']
