@@ -30,7 +30,7 @@ class AdminView(generic.TemplateView):
 
         survey_form_set = modelformset_factory(Survey, fields=('survey_introduction_text','survey_link', 'survey_page', 'survey_enabled'), extra=0)
 
-        survey_forms = survey_form_set(queryset=Survey.objects.all().order_by('-when_updated'))
+        survey_forms = survey_form_set(queryset=Survey.objects.all().order_by('-update_date'))
         survey_form = modelform_factory(Survey, fields=('survey_introduction_text', 'survey_link', 'survey_page', 'survey_enabled'))
 
         context['forms'] = survey_forms
