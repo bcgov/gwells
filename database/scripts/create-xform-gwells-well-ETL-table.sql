@@ -83,7 +83,7 @@ CREATE unlogged TABLE IF NOT EXISTS xform_well (
    backfill_depth                      numeric(7,2),
    liner_material_guid                 uuid,
    decommission_reason                 character varying(250),
-   decommission_method_guid            uuid,
+   decommission_method_code            character varying(10),,
    sealant_material                    character varying(100),
    backfill_material                   character varying(100),
    decommission_details                character varying(250),

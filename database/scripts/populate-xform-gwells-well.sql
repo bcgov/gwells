@@ -87,7 +87,7 @@ DECLARE
     backfill_depth                     ,
     liner_material_guid                ,
     decommission_reason                ,
-    decommission_method_guid           ,
+    decommission_method_code           ,
     sealant_material                   ,
     backfill_material                  ,
     decommission_details               ,
@@ -232,7 +232,7 @@ DECLARE
     wells.backfill_depth                                                     ,
     liner_material.liner_material_guid                                       ,
     wells.closure_reason                                                     ,
-    decommission_method.decommission_method_guid                             ,
+    wells.closure_method_code                         ,
     wells.sealant_material                                                   ,
     wells.backfill_material                                                  ,
     wells.closure_details                                                    ,
@@ -258,7 +258,6 @@ DECLARE
               LEFT OUTER JOIN intended_water_use_code intended_water_use ON UPPER(wells.well_use_code)=UPPER(intended_water_use.intended_water_use_code)
               LEFT OUTER JOIN well_class_code class ON UPPER(wells.class_of_well_codclassified_by)=UPPER(class.well_class_code)
               LEFT OUTER JOIN well_subclass_code subclass ON UPPER(wells.subclass_of_well_classified_by)=UPPER(subclass.well_subclass_code) AND subclass.well_class_guid = class.well_class_guid
-              LEFT OUTER JOIN decommission_method_code decommission_method ON UPPER(wells.closure_method_code)=UPPER(decommission_method.decommission_method_code)
   WHERE wells.acceptance_status_code NOT IN (''PENDING'', ''REJECTED'', ''NEW'') ';
 
 BEGIN
@@ -347,7 +346,7 @@ BEGIN
      backfill_depth                      numeric(7,2),
      liner_material_guid                 uuid,
      decommission_reason                 character varying(250),
-     decommission_method_guid            uuid,
+     decommission_method_code            character varying(10),
      sealant_material                    character varying(100),
      backfill_material                   character varying(100),
      decommission_details                character varying(250),
