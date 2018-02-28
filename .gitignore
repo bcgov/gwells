@@ -85,3 +85,4 @@ activate
 .vscode/settings.json
 
 x.sh
+sonar-runner/.gradle
