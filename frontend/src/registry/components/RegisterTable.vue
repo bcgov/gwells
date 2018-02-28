@@ -3,41 +3,49 @@
     <div class="table-responsive">
       <table class="table table-striped">
         <thead>
-          <th v-for="field in fields" :key="field">{{field}}</th>
+          <th class="col-xs-2" v-for="field in fields" :key="field">{{field}}</th>
         </thead>
-        <tbody v-if="drillers.results && drillers.results.length && !loading">
-          <tr v-if="drillers.results && drillers.results.length && !loading" v-for="driller in drillers.results" :key="driller.person_guid">
+        <tbody>
+          <tr v-if="drillers.results && drillers.results.length" v-for="driller in drillers.results" :key="driller.person_guid">
             <td>{{ driller.first_name }} {{ driller.surname }}</td>
-            <td>
-              <span v-if="driller.companies && driller.companies.length">{{ driller.companies[0].organization_name }}</span></td>
-            <td><span v-if="driller.companies && driller.companies.length">{{ driller.companies[0].contact_tel }}</span></td>
-            <td><span v-if="driller.companies && driller.companies.length">{{ driller.companies[0].contact_email }}</span></td>
-            <td>
-              <span v-if="
-                driller.applications &&
-                driller.applications.length &&
-                driller.applications[0].registrations &&
-                driller.applications[0].registrations.length"
-              >{{ driller.applications[0].registrations[0].status }}
-              </span>
-            </td>
+            <td>{{ driller.organization_name }}</td>
+            <td>{{ driller.contact_tel }}</td>
+            <td>{{ driller.contact_email }}</td>
+            <td>{{ driller.activity }}</td>
+          </tr>
+          <tr v-else>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
           </tr>
         </tbody>
       </table>
     </div>
-    <div v-if="loading">Loading results...</div>
+    <!-- <div v-if="loading">Loading results...</div> -->
     <div v-if="drillers.results && !drillers.results.length">No results were found.</div>
     <div v-if="drillers.results && drillers.results.length" class="col-sm-offset-10">
-      <nav aria-label="List navigation" v-if="drillers.results && drillers.results.length && !loading">
+      <nav aria-label="List navigation" v-if="drillers.results && drillers.results.length">
         <ul class="pagination">
           <li v-if="drillers.previous">
-            <button @click="paginationPrev" class="btn btn-outline-primary" aria-label="Previous">
-              <span aria-hidden="true">&laquo; Previous</span>
+            <button @click="paginationPrev" class="btn btn-default" aria-label="Previous">
+              <span aria-hidden="true">Previous</span>
+            </button>
+          </li>
+          <li v-else>
+            <button class="btn btn-default disabled" aria-hidden="true">
+              <span aria-hidden="true">Previous</span>
             </button>
           </li>
           <li v-if="drillers.next">
-            <button @click="paginationNext" class="btn btn-outline-primary" aria-label="Next">
-              <span aria-hidden="true">Next &raquo;</span>
+            <button @click="paginationNext" class="btn btn-default" aria-label="Next">
+              <span aria-hidden="true">Next</span>
+            </button>
+          </li>
+          <li v-else>
+            <button class="btn btn-default disabled" aria-hidden="true">
+              <span aria-hidden="true">Next</span>
             </button>
           </li>
         </ul>
@@ -56,13 +64,13 @@ export default {
   props: ['items'],
   data () {
     return {
-      fields: ['Name', 'Company', 'Telephone', 'E-mail', 'Status']
+      fields: ['Name', 'Company', 'Telephone', 'E-mail', 'Qualification']
     }
   },
   computed: {
     ...mapGetters([
       'loading',
-      'error',
+      'listError',
       'drillers'
     ])
   },
