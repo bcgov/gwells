@@ -23,7 +23,6 @@ class FilterPackMaterialSizeCode(AuditModel):
     filter_pack_material_size_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     filter_pack_material_size_code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
-    is_hidden = models.BooleanField(default=False)
     display_order = models.PositiveIntegerField()
 
     effective_date = models.DateTimeField(blank=True, null=True)

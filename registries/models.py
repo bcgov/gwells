@@ -76,7 +76,6 @@ class ActivityCode(AuditModel):
     registries_activity_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
-    is_hidden = models.BooleanField(default=False)
     display_order = models.PositiveIntegerField()
 
     """
@@ -101,7 +100,6 @@ class SubactivityCode(AuditModel):
     registries_activity = models.ForeignKey(ActivityCode, null=True, db_column='registries_activity_guid', on_delete=models.CASCADE, blank=True)
     code = models.CharField(max_length=10)
     description = models.CharField(max_length=100)
-    is_hidden = models.BooleanField(default=False)
     display_order = models.PositiveIntegerField()
 
     """
@@ -127,7 +125,6 @@ class QualificationCode(AuditModel):
     registries_subactivity = models.ForeignKey(SubactivityCode, null=True, db_column='registries_subactivity_guid', on_delete=models.CASCADE, blank=True)
     code = models.CharField(max_length=10)
     description = models.CharField(max_length=100)
-    is_hidden = models.BooleanField(default=False)
     display_order = models.PositiveIntegerField()
 
     """
@@ -197,7 +194,6 @@ class RegistriesStatusCode(AuditModel):
     registries_status_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
-    is_hidden = models.BooleanField(default=False)
     display_order = models.PositiveIntegerField()
 
     """
@@ -221,7 +217,6 @@ class RegistriesRemovalReason(AuditModel):
     registries_removal_reason_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
-    is_hidden = models.BooleanField(default=False)
     display_order = models.PositiveIntegerField()
 
     class Meta:
@@ -269,7 +264,6 @@ class ApplicationStatusCode(AuditModel):
     registries_application_status_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
-    is_hidden = models.BooleanField(default=False)
     display_order = models.PositiveIntegerField()
 
     """

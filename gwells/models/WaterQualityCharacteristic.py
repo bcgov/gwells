@@ -23,11 +23,10 @@ class WaterQualityCharacteristic(AuditModel):
     water_quality_characteristic_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
-    is_hidden = models.BooleanField(default=False)
     display_order = models.PositiveIntegerField()
 
     class Meta:
-        db_table = 'gwells_water_quality_characteristic'
+        db_table = 'water_quality_characteristic'
         ordering = ['display_order', 'description']
 
     def __str__(self):

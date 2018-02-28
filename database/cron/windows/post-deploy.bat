@@ -24,16 +24,16 @@ psql -d %DATABASE_NAME% -U %DATABASE_USER% -f db_replicate.sql
 
 REM  TODO delete the "-f full_db_replication.sql" once db_replicate.sql is tested
 REM  and the Jenkins job is reconfigured from:
-REM  'psql -d $POSTGRESQL_DATABASE -U $POSTGRESQL_USER -c "SELECT gwells_full_replicate();"'
+REM  'psql -d $POSTGRESQL_DATABASE -U $POSTGRESQL_USER -c "SELECT full_replicate();"'
 REM 
 REM  to:
-REM  'psql -d $POSTGRESQL_DATABASE -U $POSTGRESQL_USER -c "SELECT gwells_db_replicate(false);"'
+REM  'psql -d $POSTGRESQL_DATABASE -U $POSTGRESQL_USER -c "SELECT db_replicate(false);"'
 REM 
 REM  https://jenkins-moe-gwells-tools.pathfinder.gov.bc.ca/job/gwells-prod-db-scripts/configure
 
 cd ../code-tables/
 
-REM Refresh Code lookup tables, including the gwells_well table
+REM Refresh Code lookup tables, including the well table
 psql -d %DATABASE_NAME% -U %DATABASE_USER% -f clear-tables.sql
 psql -d %DATABASE_NAME% -U %DATABASE_USER% -f data-load-static-codes.sql
 

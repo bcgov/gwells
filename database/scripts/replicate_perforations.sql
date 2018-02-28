@@ -1,11 +1,11 @@
-DROP FUNCTION IF EXISTS gwells_migrate_perforations();
+DROP FUNCTION IF EXISTS migrate_perforations();
 
-CREATE OR REPLACE FUNCTION gwells_migrate_perforations() RETURNS void AS $$
+CREATE OR REPLACE FUNCTION migrate_perforations() RETURNS void AS $$
 DECLARE
   row_count integer;
 BEGIN
   raise notice '...importing wells_perforations data';
-  INSERT INTO gwells_perforation(
+  INSERT INTO perforation(
     perforation_guid                   ,
     well_tag_number                    ,
     liner_thickness                    ,
@@ -32,13 +32,13 @@ BEGIN
     perforations.who_updated           ,
     perforations.when_updated
   FROM wells.wells_perforations perforations
-  INNER JOIN xform_gwells_well xform ON perforations.well_id=xform.well_id;
+  INNER JOIN xform_well xform ON perforations.well_id=xform.well_id;
 
 
   raise notice '...wells_perforations data imported';
-  SELECT count(*) from gwells_perforation into row_count;
-  raise notice '% rows loaded into the gwells_perforation table',  row_count;
+  SELECT count(*) from perforation into row_count;
+  raise notice '% rows loaded into the perforation table',  row_count;
 END;
 $$ LANGUAGE plpgsql;
 
-COMMENT ON FUNCTION gwells_migrate_perforations () IS 'Load BCGS numbers, only for the wells that have been replicated.'; 
+COMMENT ON FUNCTION migrate_perforations () IS 'Load BCGS numbers, only for the wells that have been replicated.'; 

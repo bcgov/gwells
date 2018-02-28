@@ -51,18 +51,18 @@ The replicate process can be run ad-hoc on the PostgreSQL pod or on a local deve
 `false`: Full data replication  
 
 
-The logged output includes the number of rows inserted into the main "gwells_wells" PostgreSQL database table
+The logged output includes the number of rows inserted into the main "wells" PostgreSQL database table
 
 ```
-ssh-4.2$ psql -d $POSTGRESQL_DATABASE -U $POSTGRESQL_USER -c 'SELECT gwells_db_replicate(false);'
-NOTICE:  Starting gwells_populate_xform() procedure...
-NOTICE:  table "xform_gwells_well" does not exist, skipping
-NOTICE:  Created xform_gwells_well ETL table
-NOTICE:  ... transforming wells data (= ACCEPTED) via xform_gwells_well ETL table...
-NOTICE:  ... 111350 rows loaded into the xform_gwells_well table
+ssh-4.2$ psql -d $POSTGRESQL_DATABASE -U $POSTGRESQL_USER -c 'SELECT db_replicate(false);'
+NOTICE:  Starting populate_xform() procedure...
+NOTICE:  table "xform_well" does not exist, skipping
+NOTICE:  Created xform_well ETL table
+NOTICE:  ... transforming wells data (= ACCEPTED) via xform_well ETL table...
+NOTICE:  ... 111350 rows loaded into the xform_well table
 ...
-NOTICE:  ... importing xform into the gwells_well table
-NOTICE:  ...xform data imported into the gwells_well table
-NOTICE:  111350 rows loaded into the gwells_well table
+NOTICE:  ... importing xform into the well table
+NOTICE:  ...xform data imported into the well table
+NOTICE:  111350 rows loaded into the well table
 ...
 ```

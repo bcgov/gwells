@@ -128,11 +128,11 @@ class Well(AuditModel):
     filter_pack_material = models.ForeignKey(FilterPackMaterialCode, db_column='filter_pack_material_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Filter Pack Material')
     filter_pack_material_size = models.ForeignKey(FilterPackMaterialSizeCode, db_column='filter_pack_material_size_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Filter Pack Material Size')
 
-    development_method = models.ForeignKey(DevelopmentMethodCode, db_column='development_method_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Developed By')
+    development_method = models.ForeignKey(DevelopmentMethodCode, db_column='development_method_code', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Developed By')
     development_hours = models.DecimalField(max_digits=9, decimal_places=2, blank=True, null=True, verbose_name='Development Total Duration', validators=[MinValueValidator(Decimal('0.00'))])
     development_notes = models.CharField(max_length=255, blank=True, verbose_name='Development Notes')
 
-    water_quality_characteristics = models.ManyToManyField(WaterQualityCharacteristic, db_table='gwells_well_water_quality', blank=True, verbose_name='Obvious Water Quality Characteristics')
+    water_quality_characteristics = models.ManyToManyField(WaterQualityCharacteristic, db_table='well_water_quality', blank=True, verbose_name='Obvious Water Quality Characteristics')
     water_quality_colour = models.CharField(max_length=60, blank=True, verbose_name='Water Quality Colour')
     water_quality_odour = models.CharField(max_length=60, blank=True, verbose_name='Water Quality Odour')
 
@@ -168,7 +168,7 @@ class Well(AuditModel):
     bcgs_id = models.ForeignKey(BCGS_Numbers, db_column='bcgs_id', on_delete=models.CASCADE, blank=True, null=True, verbose_name="BCGS Mapsheet Number")
 
     decommission_reason = models.CharField(max_length=250, blank=True, null=True, verbose_name="Reason for Decommission")
-    decommission_method = models.ForeignKey(DecommissionMethodCode, db_column='decommission_method_guid', blank=True, null="True", verbose_name="Method of Decommission")
+    decommission_method = models.ForeignKey(DecommissionMethodCode, db_column='decommission_method_code', blank=True, null="True", verbose_name="Method of Decommission")
     sealant_material = models.CharField(max_length=100, blank=True, null=True, verbose_name="Sealant Material")
     backfill_material = models.CharField(max_length=100, blank=True, null=True, verbose_name="Backfill Material")
     decommission_details = models.CharField(max_length=250, blank=True, null=True, verbose_name="Decommission Details")
@@ -176,7 +176,7 @@ class Well(AuditModel):
     tracker = FieldTracker()
 
     class Meta:
-        db_table = 'gwells_well'
+        db_table = 'well'
 
     def __str__(self):
         if self.well_tag_number:
