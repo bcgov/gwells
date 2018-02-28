@@ -12,6 +12,7 @@
             <td>{{ driller.contact_tel }}</td>
             <td>{{ driller.contact_email }}</td>
             <td>{{ driller.activity }}</td>
+            <td><router-link :to="{ name: 'PersonDetail', params: { person_guid: driller.person_guid } }">Details</router-link></td>
           </tr>
           <tr v-else>
             <td>&nbsp;</td>
