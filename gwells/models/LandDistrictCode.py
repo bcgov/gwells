@@ -14,13 +14,12 @@
 
 from .AuditModel import AuditModel
 from django.db import models
-import uuid
+
 class LandDistrictCode(AuditModel):
     """
     Lookup of Legal Land Districts.
     """
-    land_district_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    land_district_code = models.CharField(max_length=10, unique=True)
+    land_district_code = models.CharField(primary_key=True, max_length=10, editable=False)
     name = models.CharField(max_length=255)
     display_order = models.PositiveIntegerField()
 

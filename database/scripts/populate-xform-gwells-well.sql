@@ -35,7 +35,7 @@ DECLARE
     well_disinfected                   ,
     well_yield                         ,
     intended_water_use_code            ,
-    land_district_guid                 ,
+    land_district_code                 ,
     province_state_guid                ,
     well_class_guid                    ,
     well_subclass_guid                 ,
@@ -50,7 +50,7 @@ DECLARE
     well_status_guid                   ,
     observation_well_number            ,
     obs_well_status_guid       ,
-    licenced_status_guid               ,
+    licenced_status_code               ,
     alternative_specifications_ind     ,
     construction_start_date            ,
     construction_end_date              ,
@@ -85,7 +85,7 @@ DECLARE
     surface_seal_thickness             ,
     backfill_type                      ,
     backfill_depth                     ,
-    liner_material_guid                ,
+    liner_material_code                ,
     decommission_reason                ,
     decommission_method_code           ,
     sealant_material                   ,
@@ -132,7 +132,7 @@ DECLARE
       WHEN ''OTH'' THEN ''OTHER''
       ELSE wells.well_use_code
     END AS intended_water_use_code                                           ,
-    land.land_district_guid                                                  ,
+    wells.legal_land_district_code as land_district_code                     ,
     CASE owner.province_state_code
       WHEN ''BC'' THEN ''f46b70b647d411e7a91992ebcb67fe33''::uuid
       WHEN ''AB'' THEN ''f46b742647d411e7a91992ebcb67fe33''::uuid
@@ -171,7 +171,7 @@ DECLARE
       WHEN ''Active'' THEN ''1af7ba78-1ab6-4992-b4f6-f105e519d2a6''::uuid
       ELSE null::uuid
     END AS obs_well_status_guid                                      ,
-    licenced_status.licenced_status_guid                                     ,
+    wells.well_licence_general_status AS licenced_status_code        ,
     CASE wells.alternative_specifications_ind
        WHEN ''N'' THEN false
        WHEN ''Y'' THEN true
@@ -210,9 +210,9 @@ DECLARE
     wells.surface_seal_thickness                                             ,
     wells.backfill_type                                                      ,
     wells.backfill_depth                                                     ,
-    liner_material.liner_material_guid                                       ,
+    wells.liner_material_code AS liner_material_code                         ,
     wells.closure_reason                                                     ,
-    wells.closure_method_code                         ,
+    wells.closure_method_code                                                ,
     wells.sealant_material                                                   ,
     wells.backfill_material                                                  ,
     wells.closure_details                                                    ,
@@ -230,10 +230,7 @@ DECLARE
               LEFT OUTER JOIN screen_bottom_code screen_bottom ON UPPER(wells.screen_bottom_code)=UPPER(screen_bottom.screen_bottom_code)
               LEFT OUTER JOIN surface_seal_method_code surface_seal_method ON UPPER(wells.surface_seal_method_code)=UPPER(surface_seal_method.surface_seal_method_code)
               LEFT OUTER JOIN surface_seal_material_code surface_seal_material ON UPPER(wells.surface_seal_material_code)=UPPER(surface_seal_material.surface_seal_material_code)
-              LEFT OUTER JOIN liner_material_code liner_material ON UPPER(wells.liner_material_code)=UPPER(liner_material.liner_material_code)
-              LEFT OUTER JOIN land_district_code land ON UPPER(wells.legal_land_district_code)=UPPER(land.land_district_code)
               LEFT OUTER JOIN well_status_code well_status ON UPPER(wells.status_of_well_code)=UPPER(well_status.well_status_code)
-              LEFT OUTER JOIN licenced_status_code licenced_status ON UPPER(wells.well_licence_general_status)=UPPER(licenced_status.licenced_status_code)
               LEFT OUTER JOIN well_class_code class ON UPPER(wells.class_of_well_codclassified_by)=UPPER(class.well_class_code)
               LEFT OUTER JOIN well_subclass_code subclass ON UPPER(wells.subclass_of_well_classified_by)=UPPER(subclass.well_subclass_code) AND subclass.well_class_guid = class.well_class_guid
   WHERE wells.acceptance_status_code NOT IN (''PENDING'', ''REJECTED'', ''NEW'') ';
@@ -271,7 +268,7 @@ BEGIN
      well_disinfected                    boolean,
      well_yield                          numeric(8,3),
      intended_water_use_code             character varying(10),
-     land_district_guid                  uuid,
+     land_district_code                  character varying(10),
      province_state_guid                 uuid,
      well_class_guid                     uuid,
      well_subclass_guid                  uuid,
@@ -286,7 +283,7 @@ BEGIN
      well_status_guid                    uuid,
      observation_well_number             character varying(3),
      obs_well_status_guid        uuid,
-     licenced_status_guid                uuid,
+     licenced_status_code                character varying(10),
      alternative_specifications_ind      boolean,
      construction_start_date             timestamp with time zone,
      construction_end_date               timestamp with time zone,
@@ -322,7 +319,7 @@ BEGIN
      surface_seal_thickness              numeric(7,2),
      backfill_type                       character varying(250),
      backfill_depth                      numeric(7,2),
-     liner_material_guid                 uuid,
+     liner_material_code                 character varying(10),
      decommission_reason                 character varying(250),
      decommission_method_code            character varying(10),
      sealant_material                    character varying(100),

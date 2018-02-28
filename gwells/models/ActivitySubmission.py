@@ -83,7 +83,7 @@ class ActivitySubmission(AuditModel):
     legal_section = models.CharField(max_length=10, blank=True, verbose_name='Section')
     legal_township = models.CharField(max_length=20, blank=True, verbose_name='Township')
     legal_range = models.CharField(max_length=10, blank=True, verbose_name='Range')
-    land_district = models.ForeignKey(LandDistrictCode, db_column='land_district_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Land District')
+    land_district = models.ForeignKey(LandDistrictCode, db_column='land_district_code', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Land District')
     legal_pid = models.PositiveIntegerField(blank=True, null=True, verbose_name='PID')
     well_location_description = models.CharField(max_length=500, blank=True, verbose_name='Well Location Description')
 
@@ -107,7 +107,7 @@ class ActivitySubmission(AuditModel):
     backfill_above_surface_seal = models.CharField(max_length=250, blank=True, verbose_name='Backfill Material Above Surface Seal')
     backfill_above_surface_seal_depth = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Backfill Depth')
 
-    liner_material = models.ForeignKey(LinerMaterialCode, db_column='liner_material_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Liner Material')
+    liner_material = models.ForeignKey(LinerMaterialCode, db_column='liner_material_code', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Liner Material')
     liner_diameter = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Liner Diameter', validators=[MinValueValidator(Decimal('0.00'))])
     liner_thickness = models.DecimalField(max_digits=5, decimal_places=3, blank=True, null=True, verbose_name='Liner Thickness', validators=[MinValueValidator(Decimal('0.00'))])
     liner_from = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Liner From', validators=[MinValueValidator(Decimal('0.00'))])
