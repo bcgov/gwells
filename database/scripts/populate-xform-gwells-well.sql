@@ -34,7 +34,7 @@ DECLARE
     well_cap_type                      ,
     well_disinfected                   ,
     well_yield                         ,
-    intended_water_use_guid            ,
+    intended_water_use_code            ,
     land_district_guid                 ,
     province_state_guid                ,
     well_class_guid                    ,
@@ -46,7 +46,7 @@ DECLARE
     well_orientation                   ,
     other_drilling_method              ,
     drilling_method_code              ,
-    ground_elevation_method_guid       ,
+    ground_elevation_method_code       ,
     well_status_guid                   ,
     observation_well_number            ,
     obs_well_status_guid       ,
@@ -128,8 +128,11 @@ DECLARE
       ELSE FALSE
     END AS well_disinfected                                                  ,
     wells.yield_value AS well_yield                                          ,
-    intended_water_use.intended_water_use_guid                               ,
-    land.land_district_guid                                                   ,
+    CASE wells.well_use_code
+      WHEN ''OTH'' THEN ''OTHER''
+      ELSE wells.well_use_code
+    END AS intended_water_use_code                                           ,
+    land.land_district_guid                                                  ,
     CASE owner.province_state_code
       WHEN ''BC'' THEN ''f46b70b647d411e7a91992ebcb67fe33''::uuid
       WHEN ''AB'' THEN ''f46b742647d411e7a91992ebcb67fe33''::uuid
@@ -160,17 +163,7 @@ DECLARE
     END AS well_orientation                                                  ,
     null AS other_drilling_method, -- placeholder as it is brand new content
     wells.drilling_method_code AS drilling_method_code, -- supersedes CONSTRUCTION_METHOD_CODE
-    CASE wells.ground_elevation_method_code
-      WHEN ''5K_MAP''  THEN ''523ac3ba77ad11e7b5a5be2e44b06b34''::uuid
-      WHEN ''10K_MAP''  THEN ''523ac81077ad11e7b5a5be2e44b06b34''::uuid
-      WHEN ''20K_MAP''  THEN ''523aca0477ad11e7b5a5be2e44b06b34''::uuid
-      WHEN ''50K_MAP''  THEN ''523ad10277ad11e7b5a5be2e44b06b34''::uuid
-      WHEN ''ALTIMETER'' THEN ''523ad2d877ad11e7b5a5be2e44b06b34''::uuid
-      WHEN ''DIFF_GPS''  THEN ''523ad47277ad11e7b5a5be2e44b06b34''::uuid
-      WHEN ''GPS''  THEN ''523ad60277ad11e7b5a5be2e44b06b34''::uuid
-      WHEN ''LEVEL''  THEN ''523ad79277ad11e7b5a5be2e44b06b34''::uuid
-      ELSE null::uuid
-    END AS ground_elevation_method_guid                                      ,
+    wells.ground_elevation_method_code AS ground_elevation_method_code,
     well_status.well_status_guid                                             ,
     to_char(wells.observation_well_number,''fm000'') AS observation_well_number,
     CASE wells.ministry_observation_well_stat
@@ -241,7 +234,6 @@ DECLARE
               LEFT OUTER JOIN land_district_code land ON UPPER(wells.legal_land_district_code)=UPPER(land.land_district_code)
               LEFT OUTER JOIN well_status_code well_status ON UPPER(wells.status_of_well_code)=UPPER(well_status.well_status_code)
               LEFT OUTER JOIN licenced_status_code licenced_status ON UPPER(wells.well_licence_general_status)=UPPER(licenced_status.licenced_status_code)
-              LEFT OUTER JOIN intended_water_use_code intended_water_use ON UPPER(wells.well_use_code)=UPPER(intended_water_use.intended_water_use_code)
               LEFT OUTER JOIN well_class_code class ON UPPER(wells.class_of_well_codclassified_by)=UPPER(class.well_class_code)
               LEFT OUTER JOIN well_subclass_code subclass ON UPPER(wells.subclass_of_well_classified_by)=UPPER(subclass.well_subclass_code) AND subclass.well_class_guid = class.well_class_guid
   WHERE wells.acceptance_status_code NOT IN (''PENDING'', ''REJECTED'', ''NEW'') ';
@@ -278,7 +270,7 @@ BEGIN
      well_cap_type                       character varying(40),
      well_disinfected                    boolean,
      well_yield                          numeric(8,3),
-     intended_water_use_guid             uuid,
+     intended_water_use_code             character varying(10),
      land_district_guid                  uuid,
      province_state_guid                 uuid,
      well_class_guid                     uuid,
@@ -290,7 +282,7 @@ BEGIN
      well_orientation                    boolean,
      other_drilling_method               character varying(50),
      drilling_method_code                character varying(10),
-     ground_elevation_method_guid        uuid,
+     ground_elevation_method_code        character varying(10),
      well_status_guid                    uuid,
      observation_well_number             character varying(3),
      obs_well_status_guid        uuid,
