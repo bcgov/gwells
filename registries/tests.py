@@ -599,19 +599,12 @@ class FixtureOrganizationTests(AuthenticatedAPITestCase):
         # max_limit comes from class APILimitOffsetPagination in views.py 
         self.assertEqual(len(response.data['results']), 100)
 
-    def anon_user_should_not_see_audit_fields(self):
-        self.client.force_authenticate(user=None)
-        org_object = Organization.objects.first()
-        url = reverse('organization-detail', kwargs={'org_guid':org_object.org_guid})
-        response = self.client.get(url, format='json')
-
-        self.assertNotContains(response, 'create_user')
-        self.assertNotContains(response, 'update_user')
 
 class FixturePersonTests(AuthenticatedAPITestCase):
     """
     Tests for the API Person resource endpoint using fake data fixtures
     """
+    fixtures = ['registries/fixtures/registries.json']
 
     def test_duplicated_person_entries_anon_user(self):
         # use anonymous user
@@ -635,11 +628,37 @@ class FixturePersonTests(AuthenticatedAPITestCase):
         print(len(person_set))
         self.assertEqual(len(person_set), len(response.data['results']))
 
-    def anon_user_should_not_see_audit_fields(self):
+    def test_fields_returned(self):
         self.client.force_authenticate(user=None)
-        person_object = Person.objects.first()
-        url = reverse('person-detail', kwargs={'person_guid':person_object.person_guid})
+        url = reverse('person-list')
         response = self.client.get(url, format='json')
 
-        self.assertNotContains(response, 'create_user')
-        self.assertNotContains(response, 'update_user')
+        for item in response.data['results']:
+            fields = [
+            "person_guid",
+            "first_name",
+            "surname",
+            "organization_name",
+            "contact_tel",
+            "contact_email",
+            "activity",
+            "status",
+            "registration_no",
+            ]
+
+            wrong_fields = [
+                'created_user',
+                'created_date',
+                'asdf',
+                'companies',
+                'applications'
+            ]
+
+            for field in fields:
+                self.assertEqual(field in item, True)
+            
+            for wrong_field in wrong_fields:
+                self.assertEqual(wrong_field in item, False)
+
+            for key in item.keys():
+                self.assertEqual(key in fields, True)
