@@ -6,8 +6,8 @@ stage('ZAP Security Scan') {
             echo "Build: ${BUILD_ID}"
             checkout scm
             dir('zap') {
-                def retVal = sh returnStatus: true, script: './runzapdev.sh'
-                publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: true, reportDir: '/zap/wrk', reportFiles: 'index.html', reportName: 'ZAP Full Scan', reportTitles: 'ZAP Full Scan'])
+                def retVal = sh returnStatus: true, script: '/zap/zap-x.sh -last_scan_report /home/jenkins/workspace/moe-gwells-tools-gwells-pipeline-zap/zap/index.html -session /home/jenkins/workspace/moe-gwells-tools-gwells-pipeline-zap/zap/TFRS -cmd'
+                publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: true, reportDir: '/home/jenkins/workspace/moe-gwells-tools-gwells-pipeline-zap/zap', reportFiles: 'index.html', reportName: 'ZAP Full Scan', reportTitles: 'ZAP Full Scan'])
                 echo "Return value is: ${retVal}"
                 }
         }
