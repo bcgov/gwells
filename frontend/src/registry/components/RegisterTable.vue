@@ -6,7 +6,7 @@
           <th class="col-xs-2" v-for="field in fields" :key="field">{{field}}</th>
         </thead>
         <tbody>
-          <tr v-if="drillers.results && drillers.results.length" v-for="driller in drillers.results" :key="driller.person_guid">
+          <tr id="registry-table-row" v-if="drillers.results && drillers.results.length" v-for="driller in drillers.results" :key="driller.person_guid">
             <td>{{ driller.first_name }} {{ driller.surname }}</td>
             <td>{{ driller.organization_name }}</td>
             <td>{{ driller.contact_tel }}</td>
@@ -39,12 +39,12 @@
             </button>
           </li>
           <li v-if="drillers.next">
-            <button @click="paginationNext" class="btn btn-default" aria-label="Next">
+            <button @click="paginationNext" class="btn btn-default" aria-label="Next" id="table-pagination-next">
               <span aria-hidden="true">Next</span>
             </button>
           </li>
           <li v-else>
-            <button class="btn btn-default disabled" aria-hidden="true">
+            <button class="btn btn-default disabled" aria-hidden="true" id="table-pagination-prev">
               <span aria-hidden="true">Next</span>
             </button>
           </li>
