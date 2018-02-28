@@ -3,7 +3,7 @@
       <div class="row">
         <div class="col-xs-8">
           <a id="main-content-anchor"></a>
-          <h2>Register of Well Drillers and Well Pump Installers</h2>
+          <h2 id="registry-title">Register of Well Drillers and Well Pump Installers</h2>
             <p><a href="#">Learn more about registering as a well driller or well pump installer in B.C.</a></p>
         </div>
         <div class="col-xs-4">
