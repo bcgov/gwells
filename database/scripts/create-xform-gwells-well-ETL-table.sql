@@ -72,7 +72,7 @@ CREATE unlogged TABLE IF NOT EXISTS xform_well (
    utm_easting                         integer,
    utm_accuracy_code                   character varying(10),
    bcgs_id                             bigint,
-   development_method_guid             uuid,
+   development_method_code             character varying(10),,
    development_duration                integer,
    yield_estimation_method_guid        uuid,
    surface_seal_method_guid            uuid,

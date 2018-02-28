@@ -67,7 +67,7 @@
 
 --DEVELOPMENT METHOD
 \echo '... loading development_method_code code table'
-\copy development_method_code (create_user,create_date,update_user,update_date,development_method_guid,development_method_code,description,display_order ) from 'development_method_code.csv' with header delimiter ',' CSV ;
+\copy development_method_code (create_user,create_date,update_user,update_date,development_method_code,description,display_order ) from 'development_method_code.csv' with header delimiter ',' CSV ;
 
 --ESTIMATION METHOD
 \echo '... loading yield_estimation_method_code code table'
