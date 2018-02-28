@@ -84,12 +84,15 @@
         </div>
       </div>
       <div class="row">
-        <div class="col-xs-12">
+        <div class="col-xs-12 col-sm-4">
           <h3>Well Driller Results</h3>
+        </div>
+        <div v-if="listError" class="col-xs-12 col-sm-7">
+          <api-error :error="listError" resetter="setListError"></api-error>
         </div>
         <div class="col-xs-12 form-inline">
           <div class="form-group col-xs-4">
-            <select class="form-control" v-model="searchParams.limit"><option>10</option><option>25</option></select> entries
+            <select class="form-control input-sm" v-model="searchParams.limit"><option>10</option><option>25</option></select> entries
           </div>
         </div>
         <div class="col-xs-12">
@@ -101,12 +104,14 @@
 
 <script>
 import RegisterTable from '@/registry/components/RegisterTable'
+import APIErrorMessage from '@/common/components/APIErrorMessage'
 import { mapGetters } from 'vuex'
 import { FETCH_DRILLER_LIST } from '@/registry/store/actions.types'
 
 export default {
   components: {
-    'register-table': RegisterTable
+    'register-table': RegisterTable,
+    'api-error': APIErrorMessage
   },
   created () {
     this.$store.dispatch(FETCH_DRILLER_LIST, this.searchParams)
@@ -122,7 +127,7 @@ export default {
     },
     ...mapGetters([
       'loading',
-      'error'
+      'listError'
     ])
   },
   data () {
