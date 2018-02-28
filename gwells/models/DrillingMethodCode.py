@@ -14,14 +14,12 @@
 
 from .AuditModel import AuditModel
 from django.db import models
-import uuid
 
 class DrillingMethodCode(AuditModel):
     """
     The method used to drill a well. For example, air rotary, dual rotary, cable tool, excavating, other.
     """
-    drilling_method_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    drilling_method_code = models.CharField(max_length=10, unique=True)
+    drilling_method_code = models.CharField(primary_key=True, max_length=10, editable=False)
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
 

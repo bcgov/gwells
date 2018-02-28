@@ -40,7 +40,7 @@ CREATE unlogged TABLE IF NOT EXISTS xform_well (
    ground_elevation                    numeric(10,2),
    well_orientation                    boolean,
    other_drilling_method               character varying(50),
-   drilling_method_guid                uuid,
+   drilling_method_code                character varying(10),
    ground_elevation_method_guid        uuid,
    well_status_guid 	                  uuid,
    observation_well_number	            character varying(3),
