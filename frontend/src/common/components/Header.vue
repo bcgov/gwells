@@ -6,10 +6,10 @@
           <b-col cols="3" sm="2">
             <a href="http://gov.bc.ca">
             <div class="d-none d-lg-inline">
-              <img class ="header-logo" src="../../assets/images/gov3_bc_logo.png" alt="Province of British Columbia" title="Province of British Columbia logo" />
+              <img class ="header-logo" src="../../../static/assets/images/gov3_bc_logo.png" alt="Province of British Columbia" title="Province of British Columbia logo" />
             </div>
             <div class="d-lg-none pl-2">
-              <img class ="header-logo" src="../../assets/images/gov3_bc_logo_mobile.png" alt="Province of British Columbia" title="Province of British Columbia logo" />
+              <img class ="header-logo" src="../../../static/assets/images/gov3_bc_logo_mobile.png" alt="Province of British Columbia" title="Province of British Columbia logo" />
             </div>
             </a>
           </b-col>

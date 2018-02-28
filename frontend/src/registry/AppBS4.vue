@@ -25,7 +25,7 @@ export default {
 <style>
 @font-face {
   font-family: 'Myriad-Pro';
-  src: url('../assets/fonts/MyriadWebPro.ttf');
+  src: url('../../static/assets/fonts/MyriadWebPro.ttf');
 }
 
 .app-wrapper {
