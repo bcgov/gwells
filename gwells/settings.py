@@ -51,6 +51,11 @@ ENABLE_ADDITIONAL_DOCUMENTS = os.getenv('ENABLE_ADDITIONAL_DOCUMENTS', 'False') 
 # Controls app context
 APP_CONTEXT_ROOT = os.getenv('APP_CONTEXT_ROOT','')
 
+FIXTURES_DIR = '/'.join([BASE_DIR, APP_CONTEXT_ROOT, 'fixtures'])
+
+# Fixtures dirs
+FIXTURES_DIRS = [FIXTURES_DIR]
+
 # django-settings-export lets us make these variables available in the templates.
 # This eleminate the need for setting the context for each and every view.
 SETTINGS_EXPORT = [
@@ -58,6 +63,7 @@ SETTINGS_EXPORT = [
     'ENABLE_GOOGLE_ANALYTICS',     # This is only enabled for production
     'ENABLE_ADDITIONAL_DOCUMENTS', # To temporarily disable additional documents feature
     'APP_CONTEXT_ROOT',            # This allows for moving the app around without code changes
+    'FIXTURES_DIRS'
 ]
 
 ALLOWED_HOSTS = ['*']
@@ -94,6 +100,7 @@ MIDDLEWARE = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
+    'gwells.middleware.GWellsRequestParsingMiddleware',
 )
 
 ROOT_URLCONF = 'gwells.urls'

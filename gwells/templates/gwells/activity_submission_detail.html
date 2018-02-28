@@ -23,10 +23,10 @@
         <div class="col-md-6">
             {% if activity_submission.well_class.well_class_code == 'WATER_SUPL' %}
             <label for="intended_water_use">Intended water use:</label>
-            <span id="intended_water_use">{{ activity_submission.intended_water_use.description }}</span>            
+            <span id="intended_water_use">{{ activity_submission.intended_water_use.description }}</span>
             {% else %}
             <label for="well_subclass">Subclass:</label>
-            <span id="well_subclass">{{ activity_submission.well_subclass.description }}</span>            
+            <span id="well_subclass">{{ activity_submission.well_subclass.description }}</span>
             {% endif %}
         </div>
     </div>
@@ -37,7 +37,7 @@
         </div>
         <div class="col-md-6">
             <label for="owner">Owner:</label>
-            <span id="owner">{{ activity_submission.owner_full_name }}</span>            
+            <span id="owner">{{ activity_submission.owner_full_name }}</span>
         </div>
     </div>
     <div class="row">
@@ -46,8 +46,6 @@
             <span id="address">{{ activity_submission.street_address }}</span>
         </div>
         <div class="col-md-6">
-            <!--<label for="well_drilled_depth">guid:</label>
-            <span id="well_drilled_depth">{{ activity_submission.well_drilled_depth }}</span>-->
         </div>
     </div>
     <div class="row">
@@ -73,7 +71,7 @@
         </div>
         <div class="col-md-6">
             <label for="location_desc">Location Description:</label>
-            <span id="location_desc">{{ activity_submission.well_location_description }}</span>            
+            <span id="location_desc">{{ activity_submission.well_location_description }}</span>
         </div>
     </div>
     <div class="row">
@@ -90,7 +88,7 @@
 {% block jqscript_block %}
     <script>
         $(document).ready(function(){
-            $('[data-toggle="popover"]').popover(); 
+            $('[data-toggle="popover"]').popover();
         });
     </script>
 {% endblock %}
