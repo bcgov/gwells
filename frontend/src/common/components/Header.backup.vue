@@ -6,7 +6,7 @@
                     <!-- GOV TITLE -->
                     <div class="col-sm-3 col-md-2 col-lg-2 header-main-left">
                         <div id="logo">
-                            <a href="http://gov.bc.ca"><img src="../../assets/images/gov3_bc_logo.png" alt="Province of British Columbia" title="Province of British Columbia logo" /></a>
+                            <a href="http://gov.bc.ca"><img src="../../../static/assets/images/gov3_bc_logo.png" alt="Province of British Columbia" title="Province of British Columbia logo" /></a>
                         </div>
                         <div id="access">
                             <ul>
