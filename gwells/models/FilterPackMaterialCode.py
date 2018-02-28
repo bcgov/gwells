@@ -14,14 +14,12 @@
 
 from .AuditModel import AuditModel
 from django.db import models
-import uuid
 
 class FilterPackMaterialCode(AuditModel):
     """
      The material used to pack a well filter, e.g. Very coarse sand, Very fine gravel, Fine gravel.
     """
-    filter_pack_material_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    filter_pack_material_code = models.CharField(max_length=10, unique=True)
+    filter_pack_material_code = models.CharField(primary_key=True, max_length=10, editable=False)
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
 

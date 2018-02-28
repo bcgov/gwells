@@ -211,20 +211,7 @@ SELECT /*csv*/
      ELSE 'Y'
   END AS orientation_vertical,
   null AS other_drilling_method, /* placeholder as it's brand new content*/
-  CASE   /*  supersedes CONSTRUCTION_METHOD_CODE */
-    WHEN WELLS.WELLS_WELLS.DRILLING_METHOD_CODE = 'AIR_ROTARY'  THEN '262aca1e5db211e7907ba6006ad3dba0'
-    WHEN WELLS.WELLS_WELLS.DRILLING_METHOD_CODE = 'AUGER'       THEN '262ace565db211e7907ba6006ad3dba0'
-    WHEN WELLS.WELLS_WELLS.DRILLING_METHOD_CODE = 'CABLE_TOOL'  THEN '262ad3d85db211e7907ba6006ad3dba0'
-    WHEN WELLS.WELLS_WELLS.DRILLING_METHOD_CODE = 'DRIVING'     THEN '262ad54a5db211e7907ba6006ad3dba0'
-    WHEN WELLS.WELLS_WELLS.DRILLING_METHOD_CODE = 'DUGOUT'      THEN '262ad6265db211e7907ba6006ad3dba0'
-    WHEN WELLS.WELLS_WELLS.DRILLING_METHOD_CODE = 'DUO_ROTARY'  THEN '262ad6ee5db211e7907ba6006ad3dba0'
-    WHEN WELLS.WELLS_WELLS.DRILLING_METHOD_CODE = 'EXCAVATING'  THEN '262ad7b65db211e7907ba6006ad3dba0'
-    WHEN WELLS.WELLS_WELLS.DRILLING_METHOD_CODE = 'JETTING'     THEN '262adb445db211e7907ba6006ad3dba0'
-    WHEN WELLS.WELLS_WELLS.DRILLING_METHOD_CODE = 'MUD_ROTARY'  THEN '262adc2a5db211e7907ba6006ad3dba0'
-    WHEN WELLS.WELLS_WELLS.DRILLING_METHOD_CODE = 'OTHER'       THEN '262adcf25db211e7907ba6006ad3dba0'
-    WHEN WELLS.WELLS_WELLS.DRILLING_METHOD_CODE = 'UNK'         THEN '262addb05db211e7907ba6006ad3dba0'
-    ELSE null 
-  END AS drilling_method_guid,
+  WELLS.WELLS_WELLS.DRILLING_METHOD_CODE AS drilling_method_code,
   CASE
     WHEN WELLS.WELLS_WELLS.GROUND_ELEVATION_METHOD_CODE = '5K_MAP'  THEN '523ac3ba77ad11e7b5a5be2e44b06b34'
     WHEN WELLS.WELLS_WELLS.GROUND_ELEVATION_METHOD_CODE = '10K_MAP'  THEN '523ac81077ad11e7b5a5be2e44b06b34'
@@ -240,7 +227,7 @@ SELECT /*csv*/
   WELLS.WELLS_WELLS.BACKFILL_TYPE  AS backfill_above_surface_seal,
   SEALANT_MATERIAL AS SEALANT_MATERIAL,
 /* other_drilling_method         character varying(50)  
- drilling_method_guid          uuid                  
+ drilling_method_code         character varying(10)                  
  ground_elevation_method_guid  uuid                  
  surface_seal_depth            numeric(5,2)          
  surface_seal_thickness        numeric(7,2)          

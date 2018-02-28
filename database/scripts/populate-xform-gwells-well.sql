@@ -45,7 +45,7 @@ DECLARE
     ground_elevation                   ,
     well_orientation                   ,
     other_drilling_method              ,
-    drilling_method_guid               ,
+    drilling_method_code              ,
     ground_elevation_method_guid       ,
     well_status_guid                   ,
     observation_well_number            ,
@@ -159,20 +159,7 @@ DECLARE
        ELSE true
     END AS well_orientation                                                  ,
     null AS other_drilling_method, -- placeholder as it is brand new content
-    CASE wells.drilling_method_code  -- supersedes CONSTRUCTION_METHOD_CODE
-      WHEN ''AIR_ROTARY'' THEN ''262aca1e5db211e7907ba6006ad3dba0''::uuid
-      WHEN ''AUGER''      THEN ''262ace565db211e7907ba6006ad3dba0''::uuid
-      WHEN ''CABLE_TOOL'' THEN ''262ad3d85db211e7907ba6006ad3dba0''::uuid
-      WHEN ''DRIVING''    THEN ''262ad54a5db211e7907ba6006ad3dba0''::uuid
-      WHEN ''DUGOUT''     THEN ''262ad6265db211e7907ba6006ad3dba0''::uuid
-      WHEN ''DUO_ROTARY'' THEN ''262ad6ee5db211e7907ba6006ad3dba0''::uuid
-      WHEN ''EXCAVATING'' THEN ''262ad7b65db211e7907ba6006ad3dba0''::uuid
-      WHEN ''JETTING''    THEN ''262adb445db211e7907ba6006ad3dba0''::uuid
-      WHEN ''MUD_ROTARY'' THEN ''262adc2a5db211e7907ba6006ad3dba0''::uuid
-      WHEN ''OTHER''      THEN ''262adcf25db211e7907ba6006ad3dba0''::uuid
-      WHEN ''UNK''        THEN ''262addb05db211e7907ba6006ad3dba0''::uuid
-      ELSE null::uuid
-    END AS drilling_method_guid                                              ,
+    wells.drilling_method_code AS drilling_method_code, -- supersedes CONSTRUCTION_METHOD_CODE
     CASE wells.ground_elevation_method_code
       WHEN ''5K_MAP''  THEN ''523ac3ba77ad11e7b5a5be2e44b06b34''::uuid
       WHEN ''10K_MAP''  THEN ''523ac81077ad11e7b5a5be2e44b06b34''::uuid
@@ -302,7 +289,7 @@ BEGIN
      ground_elevation                    numeric(10,2),
      well_orientation                    boolean,
      other_drilling_method               character varying(50),
-     drilling_method_guid                uuid,
+     drilling_method_code                character varying(10),
      ground_elevation_method_guid        uuid,
      well_status_guid                    uuid,
      observation_well_number             character varying(3),

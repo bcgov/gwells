@@ -23,7 +23,7 @@
 
 --DRILLING METHOD
 \echo '... loading drilling_method_code code table'
-\copy drilling_method_code (drilling_method_guid,drilling_method_code,description,display_order,create_date,update_date,create_user,update_user) from 'drilling_method_code.csv' with header delimiter ',' CSV ;
+\copy drilling_method_code (drilling_method_code,description,display_order,create_date,update_date,create_user,update_user) from 'drilling_method_code.csv' with header delimiter ',' CSV ;
 
 --GROUND ELEVATION
 \echo '... loading ground_elevation_method_code code table'
