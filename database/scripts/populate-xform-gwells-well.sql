@@ -77,7 +77,7 @@ DECLARE
     utm_easting                        ,
     utm_accuracy_code                  ,
     bcgs_id                            ,
-    development_method_guid            ,
+    development_method_code            ,
     development_duration               ,
     surface_seal_method_guid           ,
     surface_seal_material_guid         ,
@@ -222,7 +222,7 @@ DECLARE
     wells.utm_east                                                           ,
     wells.utm_accuracy_code                                                  ,
     wells.bcgs_id                                                            ,
-    development_method.development_method_guid                               ,
+    wells.development_method_code                             ,
     wells.development_hours                                                  ,
     surface_seal_method.surface_seal_method_guid                             ,
     surface_seal_material.surface_seal_material_guid                         ,
@@ -248,7 +248,6 @@ DECLARE
               LEFT OUTER JOIN screen_material_code screen_material ON UPPER(wells.screen_material_code)=UPPER(screen_material.screen_material_code)
               LEFT OUTER JOIN screen_opening_code screen_opening ON UPPER(wells.screen_opening_code)=UPPER(screen_opening.screen_opening_code)
               LEFT OUTER JOIN screen_bottom_code screen_bottom ON UPPER(wells.screen_bottom_code)=UPPER(screen_bottom.screen_bottom_code)
-              LEFT OUTER JOIN development_method_code development_method ON UPPER(wells.development_method_code)=UPPER(development_method.development_method_code)
               LEFT OUTER JOIN surface_seal_method_code surface_seal_method ON UPPER(wells.surface_seal_method_code)=UPPER(surface_seal_method.surface_seal_method_code)
               LEFT OUTER JOIN surface_seal_material_code surface_seal_material ON UPPER(wells.surface_seal_material_code)=UPPER(surface_seal_material.surface_seal_material_code)
               LEFT OUTER JOIN liner_material_code liner_material ON UPPER(wells.liner_material_code)=UPPER(liner_material.liner_material_code)
@@ -335,7 +334,7 @@ BEGIN
      utm_easting                         integer,
      utm_accuracy_code                   character varying(10),
      bcgs_id                             bigint,
-     development_method_guid             uuid,
+     development_method_code             character varying(10),
      development_duration                integer,
      yield_estimation_method_guid        uuid,
      surface_seal_method_guid            uuid,
