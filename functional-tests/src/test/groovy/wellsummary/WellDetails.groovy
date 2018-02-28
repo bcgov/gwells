@@ -146,7 +146,7 @@ class WellDetailsSpecs extends GebReportingSpec {
 		"well_tag_number"				  | "110749" 			| 110749
 		"identification_plate_number"     | "47948" 			| 110750
 		"owner_full_name"				  | "ROYAL CANADIAN MOUNTED POLICE"		| 110749
-		"licenced_status"				  | "Unlicensed"		| 110749
+		"licenced_status"				  | "UNLICENSED"		| 110749
 		"well_well_status"				  | "Closure"			| 110749
 		"well_class"	 				  | "Water Supply" 	 | 110749
 		"well_subclass"	 				  | "Domestic" 	 | 110749

@@ -35,7 +35,7 @@
 
 --LICENCE
 \echo '... loading licenced_status_code code table'
-\copy licenced_status_code (licenced_status_guid,licenced_status_code,description,display_order,create_date,update_date,create_user,update_user) from 'licenced_status_code.csv' with header delimiter ',' CSV ;
+\copy licenced_status_code (licenced_status_code,description,display_order,create_date,update_date,create_user,update_user) from 'licenced_status_code.csv' with header delimiter ',' CSV ;
 
 --DRILLING COMPANY
 \echo '... loading drilling_company code table'
@@ -87,11 +87,11 @@
 
 --LINER MATERIAL
 \echo '... loading liner_material_code code table'
-\copy liner_material_code (create_user,create_date,update_user,update_date,liner_material_guid,liner_material_code,description,display_order) from 'liner_material_code.csv' with header delimiter ',' CSV ;
+\copy liner_material_code (create_user,create_date,update_user,update_date,liner_material_code,description,display_order) from 'liner_material_code.csv' with header delimiter ',' CSV ;
 
 --LITHOLOGY COLOUR
 \echo '... loading lithology_colour_code code table'
-\copy lithology_colour_code (create_user,create_date,update_user,update_date,lithology_colour_guid,lithology_colour_code,description,display_order) from 'lithology_colour_code.csv' with header delimiter ',' CSV ;
+\copy lithology_colour_code (create_user,create_date,update_user,update_date,lithology_colour_code,description,display_order) from 'lithology_colour_code.csv' with header delimiter ',' CSV ;
 
 --LITHOLOGY HARDNESS
 \echo '... loading lithology_hardness_code code table'
@@ -99,7 +99,7 @@
 
 --LAND DISTRICT
 \echo '... loading land_district_code code table'
-\copy land_district_code (create_user,create_date,update_user,update_date,land_district_guid,land_district_code,name,display_order) from 'land_district_code.csv' with header delimiter ',' CSV ;
+\copy land_district_code (create_user,create_date,update_user,update_date,land_district_code,name,display_order) from 'land_district_code.csv' with header delimiter ',' CSV ;
 
 --LITHOLOGY MATERIAL
 \echo '... loading lithology_material_code code table'
@@ -107,7 +107,7 @@
 
 --LITHOLOGY DESCRIPTION
 \echo '... loading lithology_description_code code table'
-\copy lithology_description_code (create_user,create_date,update_user,update_date,lithology_description_code_guid,lithology_description_code,description,display_order) from 'lithology_description_code.csv' with header delimiter ',' CSV ;
+\copy lithology_description_code (create_user,create_date,update_user,update_date,lithology_description_code,description,display_order) from 'lithology_description_code.csv' with header delimiter ',' CSV ;
 
 -- Thu 15 Feb 08:16:45 2018 GW Where is LITHOLOGY MOISTURE?
 

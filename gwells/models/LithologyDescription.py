@@ -42,8 +42,8 @@ class LithologyDescription(AuditModel):
     lithology_to = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='To', blank=True, null=True, validators=[MinValueValidator(Decimal('0.01'))])
     lithology_raw_data = models.CharField(max_length=250, blank=True, null=True, verbose_name='Raw Data')
 
-    lithology_description = models.ForeignKey(LithologyDescriptionCode, db_column='lithology_description_code_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name="Description")
-    lithology_colour = models.ForeignKey(LithologyColourCode, db_column='lithology_colour_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Colour')
+    lithology_description = models.ForeignKey(LithologyDescriptionCode, db_column='lithology_description_code', on_delete=models.CASCADE, blank=True, null=True, verbose_name="Description")
+    lithology_colour = models.ForeignKey(LithologyColourCode, db_column='lithology_colour_code', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Colour')
     lithology_hardness = models.ForeignKey(LithologyHardnessCode, db_column='lithology_hardness_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Hardness')
     lithology_material = models.ForeignKey(LithologyMaterialCode, db_column='lithology_material_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name="Material")
 

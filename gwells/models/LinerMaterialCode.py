@@ -14,14 +14,12 @@
 
 from .AuditModel import AuditModel
 from django.db import models
-import uuid
 
 class LinerMaterialCode(AuditModel):
     """
      Liner material installed in a well to protect the well pump or other works in the well from damage.
     """
-    liner_material_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    liner_material_code = models.CharField(max_length=10, unique=True)
+    liner_material_code = models.CharField(primary_key=True, max_length=10, editable=False)
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
 

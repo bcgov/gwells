@@ -14,14 +14,12 @@
 
 from .AuditModel import AuditModel
 from django.db import models
-import uuid
 
 class LithologyColourCode(AuditModel):
     """
     Colour of the lithology
     """
-    lithology_colour_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    lithology_colour_code = models.CharField(max_length=10, unique=True)
+    lithology_colour_code = models.CharField(primary_key=True, max_length=10, editable=False)
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
 
