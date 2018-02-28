@@ -179,7 +179,7 @@ SELECT /*csv*/
   WELLS.WELLS_WELLS.TOTAL_DEPTH_DRILLED AS total_depth_drilled,
   WELLS.WELLS_WELLS.DEPTH_WELL_DRILLED AS finished_well_depth,
   WELLS.WELLS_WELLS.YIELD_VALUE AS well_yield,
-  WELLS.WELLS_WELLS.WELL_USE_CODE, /* -> intended_water_use_guid */
+  WELLS.WELLS_WELLS.WELL_USE_CODE,
   WELLS.WELLS_WELLS.LEGAL_LAND_DISTRICT_CODE, /* -> legal_land_district_guid */
   CASE
     WHEN WELLS.WELLS_OWNERS.PROVINCE_STATE_CODE = 'BC' THEN 'f46b70b647d411e7a91992ebcb67fe33'
@@ -212,23 +212,13 @@ SELECT /*csv*/
   END AS orientation_vertical,
   null AS other_drilling_method, /* placeholder as it's brand new content*/
   WELLS.WELLS_WELLS.DRILLING_METHOD_CODE AS drilling_method_code,
-  CASE
-    WHEN WELLS.WELLS_WELLS.GROUND_ELEVATION_METHOD_CODE = '5K_MAP'  THEN '523ac3ba77ad11e7b5a5be2e44b06b34'
-    WHEN WELLS.WELLS_WELLS.GROUND_ELEVATION_METHOD_CODE = '10K_MAP'  THEN '523ac81077ad11e7b5a5be2e44b06b34'
-    WHEN WELLS.WELLS_WELLS.GROUND_ELEVATION_METHOD_CODE = '20K_MAP'  THEN '523aca0477ad11e7b5a5be2e44b06b34'
-    WHEN WELLS.WELLS_WELLS.GROUND_ELEVATION_METHOD_CODE = '50K_MAP'  THEN '523ad10277ad11e7b5a5be2e44b06b34'
-    WHEN WELLS.WELLS_WELLS.GROUND_ELEVATION_METHOD_CODE = 'ALTIMETER' THEN '523ad2d877ad11e7b5a5be2e44b06b34'
-    WHEN WELLS.WELLS_WELLS.GROUND_ELEVATION_METHOD_CODE = 'DIFF_GPS'  THEN '523ad47277ad11e7b5a5be2e44b06b34'
-    WHEN WELLS.WELLS_WELLS.GROUND_ELEVATION_METHOD_CODE = 'GPS'  THEN '523ad60277ad11e7b5a5be2e44b06b34'
-    WHEN WELLS.WELLS_WELLS.GROUND_ELEVATION_METHOD_CODE = 'LEVEL'  THEN '523ad79277ad11e7b5a5be2e44b06b34'
-    ELSE null 
-  END AS ground_elevation_method_guid,
+  WELLS.WELLS_WELLS.GROUND_ELEVATION_METHOD_CODE AS ground_elevation_method_code,
   WELLS.WELLS_WELLS.BACKFILL_DEPTH AS bkfill_above_srfc_seal_depth,
   WELLS.WELLS_WELLS.BACKFILL_TYPE  AS backfill_above_surface_seal,
   SEALANT_MATERIAL AS SEALANT_MATERIAL,
 /* other_drilling_method         character varying(50)  
  drilling_method_code         character varying(10)                  
- ground_elevation_method_guid  uuid                  
+ ground_elevation_method_code  character varying(10)                   
  surface_seal_depth            numeric(5,2)          
  surface_seal_thickness        numeric(7,2)          
  surface_seal_type_guid    uuid                      

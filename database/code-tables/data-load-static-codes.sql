@@ -3,7 +3,7 @@
 
 --INTENDED USE
 \echo '... loading intended_water_use_code code table'
-\copy intended_water_use_code (intended_water_use_guid,intended_water_use_code,description,display_order,create_date,update_date,create_user,update_user) from 'intended_water_use_code.csv' with header delimiter ',' CSV ;
+\copy intended_water_use_code (intended_water_use_code,description,display_order,create_date,update_date,create_user,update_user) from 'intended_water_use_code.csv' with header delimiter ',' CSV ;
 
 --CLASS
 \echo '... loading well_class_code code table'
@@ -27,7 +27,7 @@
 
 --GROUND ELEVATION
 \echo '... loading ground_elevation_method_code code table'
-\copy ground_elevation_method_code (ground_elevation_method_guid,ground_elevation_method_code,description,display_order,create_date,update_date,create_user,update_user) from 'ground_elevation_method_code.csv' with header delimiter ',' CSV ;
+\copy ground_elevation_method_code (ground_elevation_method_code,description,display_order,create_date,update_date,create_user,update_user) from 'ground_elevation_method_code.csv' with header delimiter ',' CSV ;
 
 --STATUS
 \echo '... loading well_status_code code table'
