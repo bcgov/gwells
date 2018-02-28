@@ -2,7 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import ApiService from '@/common/services/gwells'
 import { FETCH_DRILLER_LIST } from './actions.types.js'
-import { SET_DRILLER_LIST, SET_LOADING, SET_ERROR } from './mutations.types.js'
+import { SET_DRILLER_LIST, SET_LOADING, SET_LIST_ERROR } from './mutations.types.js'
 
 Vue.use(Vuex)
 
@@ -10,15 +10,15 @@ export const store = new Vuex.Store({
   state: {
     currentUser: 'anonymous',
     loading: false,
-    error: null,
+    listError: null,
     drillerList: []
   },
   mutations: {
     [SET_LOADING] (state, payload) {
       state.loading = payload
     },
-    [SET_ERROR] (state, payload) {
-      state.error = payload
+    [SET_LIST_ERROR] (state, payload) {
+      state.listError = payload
     },
     [SET_DRILLER_LIST] (state, payload) {
       state.drillerList = payload
@@ -47,11 +47,12 @@ export const store = new Vuex.Store({
           //   drillers.push(details)
           // })
           commit(SET_LOADING, false)
+          commit(SET_LIST_ERROR, null)
           commit(SET_DRILLER_LIST, response.data)
         })
         .catch((error) => {
           commit(SET_LOADING, false)
-          commit(SET_ERROR, error)
+          commit(SET_LIST_ERROR, error.response)
         })
     }
   },
@@ -59,8 +60,8 @@ export const store = new Vuex.Store({
     loading (state) {
       return state.loading
     },
-    error (state) {
-      return state.error
+    listError (state) {
+      return state.listError
     },
     drillers (state) {
       return state.drillerList
