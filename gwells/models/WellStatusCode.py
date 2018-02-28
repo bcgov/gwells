@@ -23,7 +23,6 @@ class WellStatusCode(AuditModel):
     well_status_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     well_status_code = models.CharField(unique=True, max_length=10)
     description = models.CharField(max_length=255)
-    is_hidden = models.BooleanField(default=False)
     display_order = models.PositiveIntegerField()
 
     effective_date = models.DateTimeField(blank=True, null=True)

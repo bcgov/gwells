@@ -1,12 +1,12 @@
-DROP FUNCTION IF EXISTS gwells_populate_xform(boolean);
+DROP FUNCTION IF EXISTS populate_xform(boolean);
 
-CREATE OR REPLACE FUNCTION gwells_populate_xform(
+CREATE OR REPLACE FUNCTION populate_xform(
   _subset_ind boolean DEFAULT true) RETURNS void AS $$
 DECLARE
   xform_rows integer;
   sql_stmt text;
   subset_clause text := 'AND wells.well_tag_number between 100001 and 113567';
-  insert_sql    text := 'INSERT INTO xform_gwells_well (
+  insert_sql    text := 'INSERT INTO xform_well (
     well_tag_number                    ,
     well_id                            ,
     well_guid                          ,
@@ -77,7 +77,7 @@ DECLARE
     utm_easting                        ,
     utm_accuracy_code                  ,
     bcgs_id                            ,
-    development_method_guid            ,
+    development_method_code            ,
     development_duration               ,
     surface_seal_method_guid           ,
     surface_seal_material_guid         ,
@@ -87,7 +87,7 @@ DECLARE
     backfill_depth                     ,
     liner_material_guid                ,
     decommission_reason                ,
-    decommission_method_guid           ,
+    decommission_method_code           ,
     sealant_material                   ,
     backfill_material                  ,
     decommission_details               ,
@@ -222,7 +222,7 @@ DECLARE
     wells.utm_east                                                           ,
     wells.utm_accuracy_code                                                  ,
     wells.bcgs_id                                                            ,
-    development_method.development_method_guid                               ,
+    wells.development_method_code                             ,
     wells.development_hours                                                  ,
     surface_seal_method.surface_seal_method_guid                             ,
     surface_seal_material.surface_seal_material_guid                         ,
@@ -232,7 +232,7 @@ DECLARE
     wells.backfill_depth                                                     ,
     liner_material.liner_material_guid                                       ,
     wells.closure_reason                                                     ,
-    decommission_method.decommission_method_guid                             ,
+    wells.closure_method_code                         ,
     wells.sealant_material                                                   ,
     wells.backfill_material                                                  ,
     wells.closure_details                                                    ,
@@ -248,7 +248,6 @@ DECLARE
               LEFT OUTER JOIN screen_material_code screen_material ON UPPER(wells.screen_material_code)=UPPER(screen_material.screen_material_code)
               LEFT OUTER JOIN screen_opening_code screen_opening ON UPPER(wells.screen_opening_code)=UPPER(screen_opening.screen_opening_code)
               LEFT OUTER JOIN screen_bottom_code screen_bottom ON UPPER(wells.screen_bottom_code)=UPPER(screen_bottom.screen_bottom_code)
-              LEFT OUTER JOIN development_method_code development_method ON UPPER(wells.development_method_code)=UPPER(development_method.development_method_code)
               LEFT OUTER JOIN surface_seal_method_code surface_seal_method ON UPPER(wells.surface_seal_method_code)=UPPER(surface_seal_method.surface_seal_method_code)
               LEFT OUTER JOIN surface_seal_material_code surface_seal_material ON UPPER(wells.surface_seal_material_code)=UPPER(surface_seal_material.surface_seal_material_code)
               LEFT OUTER JOIN liner_material_code liner_material ON UPPER(wells.liner_material_code)=UPPER(liner_material.liner_material_code)
@@ -258,14 +257,13 @@ DECLARE
               LEFT OUTER JOIN intended_water_use_code intended_water_use ON UPPER(wells.well_use_code)=UPPER(intended_water_use.intended_water_use_code)
               LEFT OUTER JOIN well_class_code class ON UPPER(wells.class_of_well_codclassified_by)=UPPER(class.well_class_code)
               LEFT OUTER JOIN well_subclass_code subclass ON UPPER(wells.subclass_of_well_classified_by)=UPPER(subclass.well_subclass_code) AND subclass.well_class_guid = class.well_class_guid
-              LEFT OUTER JOIN decommission_method_code decommission_method ON UPPER(wells.closure_method_code)=UPPER(decommission_method.decommission_method_code)
   WHERE wells.acceptance_status_code NOT IN (''PENDING'', ''REJECTED'', ''NEW'') ';
 
 BEGIN
-  raise notice 'Starting gwells_populate_xform() procedure...';
+  raise notice 'Starting populate_xform() procedure...';
 
-  DROP TABLE IF EXISTS xform_gwells_well;
-  CREATE unlogged TABLE IF NOT EXISTS xform_gwells_well (
+  DROP TABLE IF EXISTS xform_well;
+  CREATE unlogged TABLE IF NOT EXISTS xform_well (
      well_tag_number                     integer,
      well_id                             bigint,
      well_guid                           uuid,
@@ -336,7 +334,7 @@ BEGIN
      utm_easting                         integer,
      utm_accuracy_code                   character varying(10),
      bcgs_id                             bigint,
-     development_method_guid             uuid,
+     development_method_code             character varying(10),
      development_duration                integer,
      yield_estimation_method_guid        uuid,
      surface_seal_method_guid            uuid,
@@ -347,7 +345,7 @@ BEGIN
      backfill_depth                      numeric(7,2),
      liner_material_guid                 uuid,
      decommission_reason                 character varying(250),
-     decommission_method_guid            uuid,
+     decommission_method_code            character varying(10),
      sealant_material                    character varying(100),
      backfill_material                   character varying(100),
      decommission_details                character varying(250),
@@ -358,7 +356,7 @@ BEGIN
      update_user                         character varying(30)
   );
 
-  raise notice 'Created xform_gwells_well ETL table';
+  raise notice 'Created xform_well ETL table';
 
   IF _subset_ind THEN
     sql_stmt := insert_sql || ' ' || subset_clause;
@@ -366,14 +364,14 @@ BEGIN
     sql_stmt := insert_sql;
   END IF;
 
-  raise notice '... transforming wells data (= ACCEPTED) via xform_gwells_well ETL table...';
+  raise notice '... transforming wells data (= ACCEPTED) via xform_well ETL table...';
   EXECUTE sql_stmt;
 
-  SELECT count(*) from xform_gwells_well into xform_rows;
-  raise notice '... % rows loaded into the xform_gwells_well table',  xform_rows;
-  raise notice 'Finished gwells_populate_xform() procedure.';
+  SELECT count(*) from xform_well into xform_rows;
+  raise notice '... % rows loaded into the xform_well table',  xform_rows;
+  raise notice 'Finished populate_xform() procedure.';
 
 END;
 $$ LANGUAGE plpgsql;
 
-COMMENT ON FUNCTION gwells_populate_xform (boolean) IS 'Load ETL Transform Table from legacy Oracle Database using Foreign Data Wrapper.';
+COMMENT ON FUNCTION populate_xform (boolean) IS 'Load ETL Transform Table from legacy Oracle Database using Foreign Data Wrapper.';

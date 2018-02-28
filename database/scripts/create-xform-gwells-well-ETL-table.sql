@@ -1,7 +1,7 @@
-\echo '...creating xform_gwells_well ETL table';
+\echo '...creating xform_well ETL table';
 
-DROP TABLE IF EXISTS xform_gwells_well;
-CREATE unlogged TABLE IF NOT EXISTS xform_gwells_well (
+DROP TABLE IF EXISTS xform_well;
+CREATE unlogged TABLE IF NOT EXISTS xform_well (
    well_tag_number                     integer,
    well_id                             bigint,
    well_guid                           uuid,
@@ -72,7 +72,7 @@ CREATE unlogged TABLE IF NOT EXISTS xform_gwells_well (
    utm_easting                         integer,
    utm_accuracy_code                   character varying(10),
    bcgs_id                             bigint,
-   development_method_guid             uuid,
+   development_method_code             character varying(10),,
    development_duration                integer,
    yield_estimation_method_guid        uuid,
    surface_seal_method_guid            uuid,
@@ -83,7 +83,7 @@ CREATE unlogged TABLE IF NOT EXISTS xform_gwells_well (
    backfill_depth                      numeric(7,2),
    liner_material_guid                 uuid,
    decommission_reason                 character varying(250),
-   decommission_method_guid            uuid,
+   decommission_method_code            character varying(10),,
    sealant_material                    character varying(100),
    backfill_material                   character varying(100),
    decommission_details                character varying(250),
@@ -94,4 +94,4 @@ CREATE unlogged TABLE IF NOT EXISTS xform_gwells_well (
    update_user                         character varying(30)
 );
 
-\echo 'Created xform_gwells_well ETL table';
+\echo 'Created xform_well ETL table';

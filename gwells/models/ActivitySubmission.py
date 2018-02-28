@@ -127,11 +127,11 @@ class ActivitySubmission(AuditModel):
     filter_pack_material = models.ForeignKey(FilterPackMaterialCode, db_column='filter_pack_material_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Filter Pack Material')
     filter_pack_material_size = models.ForeignKey(FilterPackMaterialSizeCode, db_column='filter_pack_material_size_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Filter Pack Material Size')
 
-    development_method = models.ForeignKey(DevelopmentMethodCode, db_column='development_method_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Development Method')
+    development_method = models.ForeignKey(DevelopmentMethodCode, db_column='development_method_code', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Development Method')
     development_hours = models.DecimalField(max_digits=9, decimal_places=2, blank=True, null=True, verbose_name='Development Total Duration', validators=[MinValueValidator(Decimal('0.00'))])
     development_notes = models.CharField(max_length=255, blank=True, verbose_name='Development Notes')
 
-    water_quality_characteristics = models.ManyToManyField(WaterQualityCharacteristic, db_table='gwells_activity_submission_water_quality', blank=True, verbose_name='Obvious Water Quality Characteristics')
+    water_quality_characteristics = models.ManyToManyField(WaterQualityCharacteristic, db_table='activity_submission_water_quality', blank=True, verbose_name='Obvious Water Quality Characteristics')
     water_quality_colour = models.CharField(max_length=60, blank=True, verbose_name='Water Quality Colour')
     water_quality_odour = models.CharField(max_length=60, blank=True, verbose_name='Water Quality Odour')
 
@@ -238,7 +238,7 @@ class ActivitySubmission(AuditModel):
         return w;
 
     class Meta:
-        db_table = 'gwells_activity_submission'
+        db_table = 'activity_submission'
 
     def __str__(self):
         if self.filing_number:

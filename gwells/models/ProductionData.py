@@ -41,7 +41,7 @@ class ProductionData(AuditModel):
     hydro_fracturing_yield_increase = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='Well Yield Increase Due to Hydro-fracturing', blank=True, null=True, validators=[MinValueValidator(Decimal('0.00'))])
 
     class Meta:
-        db_table = 'gwells_production_data'
+        db_table = 'production_data'
 
     def __str__(self):
         if self.activity_submission:

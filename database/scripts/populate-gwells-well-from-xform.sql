@@ -1,12 +1,12 @@
-DROP FUNCTION IF EXISTS gwells_populate_well();
+DROP FUNCTION IF EXISTS populate_well();
 
-CREATE OR REPLACE FUNCTION gwells_populate_well() RETURNS void AS $$
+CREATE OR REPLACE FUNCTION populate_well() RETURNS void AS $$
 DECLARE
   row_count integer;
 BEGIN
-  raise notice '... importing xform into the gwells_well table';
+  raise notice '... importing xform into the well table';
 
-  INSERT INTO gwells_well (
+  INSERT INTO well (
     well_tag_number                    ,
     well_guid                          ,
     owner_full_name                    ,
@@ -91,10 +91,10 @@ BEGIN
     utm_easting                        ,
     utm_accuracy_code                  ,
     bcgs_id                            ,
-    development_method_guid            ,
+    development_method_code            ,
     development_hours                  ,
     decommission_reason                ,
-    decommission_method_guid           ,
+    decommission_method_code           ,
     sealant_material                   ,
     backfill_material                  ,
     decommission_details               ,
@@ -185,20 +185,20 @@ BEGIN
     xform.utm_easting                              ,
     xform.utm_accuracy_code                        ,
   	xform.bcgs_id                                  ,
-    xform.development_method_guid                  ,
+    xform.development_method_code                 ,
     xform.development_duration                     ,
     xform.decommission_reason                      ,
-    xform.decommission_method_guid                 ,
+    xform.decommission_method_code                 ,
     xform.sealant_material                         ,
     xform.backfill_material                        ,
     xform.decommission_details                     ,
     xform.comments
-  FROM xform_gwells_well xform;
+  FROM xform_well xform;
 
-  raise notice '...xform data imported into the gwells_well table';
-  SELECT count(*) from gwells_well into row_count;
-  raise notice '% rows loaded into the gwells_well table',  row_count;
+  raise notice '...xform data imported into the well table';
+  SELECT count(*) from well into row_count;
+  raise notice '% rows loaded into the well table',  row_count;
 END;
 $$ LANGUAGE plpgsql;
 
-COMMENT ON FUNCTION gwells_populate_well () IS 'Transfer from local XFORM ETL table into gwells_well.';
+COMMENT ON FUNCTION populate_well () IS 'Transfer from local XFORM ETL table into well.';

@@ -1,7 +1,7 @@
-create_user,create_date,update_user,update_date,development_method_guid,code,description,is_hidden,display_order 
-"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","45d2d9f286c911e7bb31be2e44b06b34","AIR_LIFT","Air lifting","N","10"
-"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","45d2e13686c911e7bb31be2e44b06b34","BAIL","Bailing","N","20"
-"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","45d2e26286c911e7bb31be2e44b06b34","JET","Jetting","N","30"
-"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","45d2e33e86c911e7bb31be2e44b06b34","PUMP","Pumping","N","40"
-"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","45d2e41a86c911e7bb31be2e44b06b34","SURGE","Surging","N","50"
-"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","45d2e4e286c911e7bb31be2e44b06b34","OTHER","Other","N","60"
+create_user,create_date,update_user,update_date,code,description,display_order 
+"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","AIR_LIFT","Air lifting","10"
+"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","BAIL","Bailing","20"
+"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","JET","Jetting","30"
+"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","PUMP","Pumping","40"
+"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","SURGE","Surging","50"
+"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","OTHER","Other","60"

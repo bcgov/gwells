@@ -1,6 +1,6 @@
-DROP FUNCTION IF EXISTS gwells_migrate_lithology();
+DROP FUNCTION IF EXISTS migrate_lithology();
 
-CREATE OR REPLACE FUNCTION gwells_migrate_lithology() RETURNS void AS $$
+CREATE OR REPLACE FUNCTION migrate_lithology() RETURNS void AS $$
 DECLARE
   row_count integer;
 BEGIN
@@ -55,7 +55,7 @@ BEGIN
     COALESCE(wld.who_updated, wld.who_created)                ,
     COALESCE(wld.when_updated, wld.when_created)
   FROM wells.wells_lithology_descriptions wld
-  INNER JOIN xform_gwells_well xform ON xform.well_id=wld.well_id
+  INNER JOIN xform_well xform ON xform.well_id=wld.well_id
   INNER JOIN wells.wells_wells wells ON wells.well_id=wld.well_id
   LEFT OUTER JOIN lithology_hardness_code lithology_hardness ON UPPER(wld.relative_hardness_code)=UPPER(lithology_hardness.lithology_hardness_code)
   LEFT OUTER JOIN lithology_colour_code lithology_colour ON UPPER(wld.lithology_colour_code)=UPPER(lithology_colour.lithology_colour_code)
@@ -69,4 +69,4 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-COMMENT ON FUNCTION gwells_migrate_lithology () IS 'Load Lithology, only for the wells that have been replicated.'; 
+COMMENT ON FUNCTION migrate_lithology () IS 'Load Lithology, only for the wells that have been replicated.'; 

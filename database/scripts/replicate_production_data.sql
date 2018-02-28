@@ -1,11 +1,11 @@
-DROP FUNCTION IF EXISTS gwells_migrate_production();
+DROP FUNCTION IF EXISTS migrate_production();
 
-CREATE OR REPLACE FUNCTION gwells_migrate_production() RETURNS void AS $$
+CREATE OR REPLACE FUNCTION migrate_production() RETURNS void AS $$
 DECLARE
   row_count integer;
 BEGIN
   raise notice '...importing wells_production_data data';
-  INSERT INTO gwells_production_data(
+  INSERT INTO production_data(
     production_data_guid           ,
     filing_number                  ,
     well_tag_number                ,
@@ -46,14 +46,14 @@ BEGIN
     COALESCE(production_data.who_updated,production_data.who_created)      ,
     COALESCE(production_data.when_updated,production_data.when_created)
   FROM wells.wells_production_data production_data
-       INNER JOIN xform_gwells_well xform ON production_data.well_id=xform.well_id
+       INNER JOIN xform_well xform ON production_data.well_id=xform.well_id
        LEFT OUTER JOIN yield_estimation_method_code yield_estimation_method ON production_data.yield_estimated_method_code=yield_estimation_method.yield_estimation_method_code;
 
 
   raise notice '...wells_production_data data imported';
-  SELECT count(*) from gwells_production_data into row_count;
-  raise notice '% rows loaded into the gwells_production_data table',  row_count;
+  SELECT count(*) from production_data into row_count;
+  raise notice '% rows loaded into the production_data table',  row_count;
 END;
 $$ LANGUAGE plpgsql;
 
-COMMENT ON FUNCTION gwells_migrate_production () IS 'Load Production Data, only for the wells that have been replicated.'; 
+COMMENT ON FUNCTION migrate_production () IS 'Load Production Data, only for the wells that have been replicated.'; 

@@ -1,12 +1,12 @@
-DROP FUNCTION IF EXISTS gwells_migrate_screens();
+DROP FUNCTION IF EXISTS migrate_screens();
 
-CREATE OR REPLACE FUNCTION gwells_migrate_screens() RETURNS void AS $$
+CREATE OR REPLACE FUNCTION migrate_screens() RETURNS void AS $$
 DECLARE
   row_count integer;
 BEGIN
   raise notice '...importing wells_screens data';
 
-  INSERT INTO gwells_screen(
+  INSERT INTO screen(
     screen_guid                                   , -->PK
     filing_number                                 , -->FK
     well_tag_number                               , -->FK
@@ -33,7 +33,7 @@ BEGIN
     screens.who_created                           ,
     screens.who_updated
   FROM wells.wells_screens screens
-       INNER JOIN xform_gwells_well xform ON xform.well_id=screens.well_id
+       INNER JOIN xform_well xform ON xform.well_id=screens.well_id
        LEFT OUTER JOIN screen_assembly_type_code screen_assembly_type ON
        ( screens.screen_assembly_type_code=screen_assembly_type.screen_assembly_type_code OR
          screens.screen_assembly_type_code='L' AND screen_assembly_type.screen_assembly_type_code='LEAD' OR
@@ -41,9 +41,9 @@ BEGIN
        );
 
   raise notice '...wells_screens data imported';
-  SELECT count(*) from gwells_screen into row_count;
-  raise notice '% rows loaded into the gwells_screen table',  row_count;
+  SELECT count(*) from screen into row_count;
+  raise notice '% rows loaded into the screen table',  row_count;
 END;
 $$ LANGUAGE plpgsql;
 
-COMMENT ON FUNCTION gwells_migrate_screens () IS 'Load Screen details numbers, only for the wells that have been replicated.'; 
+COMMENT ON FUNCTION migrate_screens () IS 'Load Screen details numbers, only for the wells that have been replicated.'; 

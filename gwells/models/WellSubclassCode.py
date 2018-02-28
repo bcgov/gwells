@@ -25,7 +25,6 @@ class WellSubclassCode(AuditModel):
     well_class = models.ForeignKey(WellClassCode, null=True, db_column='well_class_guid', on_delete=models.CASCADE, blank=True)
     well_subclass_code = models.CharField(max_length=10)
     description = models.CharField(max_length=100)
-    is_hidden = models.BooleanField(default=False)
     display_order = models.PositiveIntegerField()
 
     effective_date = models.DateTimeField(blank=True, null=True)

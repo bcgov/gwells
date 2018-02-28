@@ -37,7 +37,7 @@ class LtsaOwner(AuditModel):
     tracker = FieldTracker()
 
     class Meta:
-        db_table = 'gwells_ltsa_owner'
+        db_table = 'ltsa_owner'
 
     def __str__(self):
         return '%s %s' % (self.full_name, self.mailing_address)

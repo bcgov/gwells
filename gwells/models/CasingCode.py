@@ -14,16 +14,13 @@
 
 from .AuditModel import AuditModel
 from django.db import models
-import uuid
 
 class CasingCode(AuditModel):
     """
     Type of Casing used on a well
     """
-    casing_code_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    casing_code = models.CharField(max_length=10, unique=True)
+    casing_code = models.CharField(primary_key=True, max_length=10, editable=False)
     description = models.CharField(max_length=100)
-    is_hidden = models.BooleanField(default=False)
     display_order = models.PositiveIntegerField()
 
     effective_date = models.DateTimeField(blank=True, null=True)
