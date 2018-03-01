@@ -213,15 +213,19 @@ a label.env-username {
     legend {
         margin-bottom: 5px;
     }
+
     .template {
         font-size: 10px !important;
     }
+
     .show-for-print {
         display: block !important;
     }
+
     .hide-for-print {
         display: none;
     }
+
     .shift-up-navbar-height {
         top: -40px;
     }
@@ -229,6 +233,7 @@ a label.env-username {
     .hidden-xs {
         display: block !important;
     }
+
     #header-main {
         position: relative;
         border-bottom: none;
@@ -312,6 +317,10 @@ a label.env-username {
     .print-pad5-left {
         padding-left: 5px !important;
         padding-right: 0px !important;
+    }
+
+    #header .bcgov-title h1 {
+      font-size: 32px;
     }
 }
 
