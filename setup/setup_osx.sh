@@ -18,6 +18,22 @@ while ( xcode-select --install );
 done
 
 
+# Install Oracle JDK
+#
+which java ||( \
+	tput bel
+	echo
+	echo "Warning: to perform gradlew tests Oracle Java 8 is required!"
+	echo
+	read -n 1 -p "Open download link and wait for install? (y|n):" yORn
+	echo
+	if([ "${yORn}" == "y" ]||[ "${yORn}" == "Y" ])
+	then
+		open http://www.oracle.com/technetwork/java/javase/downloads/index.html
+	fi
+)
+
+
 # Configure git and set remote (upstream) origin
 #
 [ "$( git config --global --get push.default )" == "simple" ] || \
