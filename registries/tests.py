@@ -693,3 +693,4 @@ class CreateTestUserCommandTests(TestCase):
         name = os.getenv('GWELLS_API_TEST_USER', default='testuser')
         user = User.objects.get()
         self.assertEqual(user.username, name)
+        self.assertEqual(user.is_staff, True)
