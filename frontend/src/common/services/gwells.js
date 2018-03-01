@@ -1,10 +1,8 @@
-import Vue from 'vue'
 import axios from 'axios'
 const BASE_URL = 'http://localhost:8000/gwells/registries/'
 
 const ApiService = {
   init () {
-    Vue.use(axios)
     axios.defaults.baseURL = BASE_URL
   },
   query (resource, params) {
