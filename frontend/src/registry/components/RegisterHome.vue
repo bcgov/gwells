@@ -1,12 +1,12 @@
 <template>
   <div class="container-fluid">
-      <div class="row">
-        <div class="col-xs-8">
+      <div class="row form-spacing">
+        <div class="col-xs-12 col-sm-8">
           <a id="main-content-anchor"></a>
           <h2 id="registry-title">Register of Well Drillers and Well Pump Installers</h2>
             <p><a href="#">Learn more about registering as a well driller or well pump installer in B.C.</a></p>
         </div>
-        <div class="col-xs-4">
+        <div class="col-xs-12 col-sm-4 text-center">
           <button type="button" class="btn btn-primary" @click="adminPanelToggle=!adminPanelToggle">GWELLS Administrator options</button>
         </div>
       </div>
