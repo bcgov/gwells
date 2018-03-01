@@ -825,6 +825,24 @@ input[type="number"]::-webkit-inner-spin-button {
     margin: 0;
 }
 
+.survey-form{
+     /* border-bottom: 1px solid grey; */
+}/* selector anchor */
+
+.survey-form input {/*decendent selector*/
+    margin: 6px;
+}
+
+.survey-form select {/*decendent selector*/
+    margin: 6px;
+}
+
 input[type="number"] {
     -moz-appearance: textfield;
 }
+
+
+
+.row.like-table-row { display: table-row; }
+.row.like-table-row > div { display: table-cell; vertical-align: middle; border: 1px solid #000; }
+.header-row { font-weight: bold; }
