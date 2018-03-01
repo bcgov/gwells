@@ -3,7 +3,7 @@
     <div class="table-responsive">
       <table class="table table-striped">
         <thead>
-          <th v-for="field in fields" :key="field" :class="field.class">{{field.name}}</th>
+          <th v-for="field in fields" :key="field.name" :class="field.class">{{field.name}}</th>
         </thead>
         <tbody>
           <tr id="registry-table-row" v-if="drillers.results && drillers.results.length" v-for="driller in drillers.results" :key="driller.person_guid">
@@ -60,7 +60,6 @@ const querystring = require('querystring')
 
 export default {
   name: 'RegisterTable',
-  props: ['items'],
   data () {
     return {
       fields: [

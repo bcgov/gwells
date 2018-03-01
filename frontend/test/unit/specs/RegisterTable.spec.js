@@ -1,12 +1,13 @@
 import { shallow, createLocalVue } from '@vue/test-utils'
 import Vuex from 'vuex'
+import VueRouter from 'vue-router'
+import { router } from '@/registry/router'
 import RegisterTable from '@/registry/components/RegisterTable'
 import { FETCH_DRILLER_LIST } from '@/registry/store/actions.types'
 
-const sinon = require('sinon')
-
 const localVue = createLocalVue()
 localVue.use(Vuex)
+localVue.use(VueRouter)
 
 describe('RegisterTable.vue', () => {
   let store
@@ -37,7 +38,7 @@ describe('RegisterTable.vue', () => {
       }
     }
     actions = {
-      [FETCH_DRILLER_LIST]: sinon.spy()
+      [FETCH_DRILLER_LIST]: () => { return null }
     }
     store = new Vuex.Store({ getters, actions })
   })
@@ -45,6 +46,7 @@ describe('RegisterTable.vue', () => {
   it('has a row for every person', () => {
     const wrapper = shallow(RegisterTable, {
       store,
+      router,
       localVue
     })
     expect(wrapper.findAll('#registry-table-row').length)
@@ -54,6 +56,7 @@ describe('RegisterTable.vue', () => {
   it('has the right people in each row', () => {
     const wrapper = shallow(RegisterTable, {
       store,
+      router,
       localVue
     })
     // first row
@@ -69,6 +72,7 @@ describe('RegisterTable.vue', () => {
   it('shows the pagination button for next page when a link is returned by API', () => {
     const wrapper = shallow(RegisterTable, {
       store,
+      router,
       localVue
     })
     expect(wrapper.find('#table-pagination-next').text()).to.equal('Next')
