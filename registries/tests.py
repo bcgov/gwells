@@ -394,23 +394,6 @@ class APIPersonTests(AuthenticatedAPITestCase):
         self.assertEqual(response.data['first_name'], new_data['first_name'])
         self.assertEqual(response.data['surname'], new_data['surname'])
 
-    # NOTE: Create object by put request is not implemented.
-    # def test_create_person_by_put(self):
-    #     view = APIPersonRetrieveUpdateDestroyView.as_view()
-    #     new_guid = uuid.uuid4()
-    #     print(new_guid)
-    #     url = reverse('person-detail', kwargs={'person_guid': new_guid})
-    #     data = self.initial_data
-    #     data['person_guid'] = new_guid
-
-    #     request = self.factory.put(url, data, format='json')
-    #     request.user = self.user
-
-    #     response = view(request)
-
-    #     self.assertEqual(response.data['first_name'], self.initial_data['first_name'])
-    #     self.assertEqual(Person.objects.get(person_guid=new_guid).first_name, self.initial_data['first_name'])
-
     def test_delete_person(self):
         #setup
         logger = logging.getLogger('django.request')
@@ -678,19 +661,3 @@ class FixturePersonTests(AuthenticatedAPITestCase):
 
         self.assertNotContains(response, 'create_user')
         self.assertNotContains(response, 'update_user')
-
-class CreateTestUserCommandTests(TestCase):
-    """
-    Tests for the 'manage.py createtestuser' command.
-    Running this command should create a test user and return a success message,
-    or return a message that the user already exists, or return an error if
-    the environment variables for the test user's credentials were not available.
-    """
-
-    def test_create_testuser(self):
-        out = StringIO()
-        call_command('createtestuser', stdout=out, stderr=out)
-        name = os.getenv('GWELLS_API_TEST_USER', default='testuser')
-        user = User.objects.get()
-        self.assertEqual(user.username, name)
-        self.assertEqual(user.is_staff, True)

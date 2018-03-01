@@ -852,6 +852,14 @@ input[type="number"] {
 
 
 
-.row.like-table-row { display: table-row; }
-.row.like-table-row > div { display: table-cell; vertical-align: middle; border: 1px solid #000; }
-.header-row { font-weight: bold; }
+.row.like-table-row { 
+    display: table-row; 
+}
+.row.like-table-row > div { 
+    display: table-cell; 
+    vertical-align: middle; 
+    border: 1px solid #000; 
+}
+.header-row { 
+    font-weight: bold; 
+}
