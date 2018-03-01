@@ -1,15 +1,16 @@
 import uuid
 import logging
-
+import os
 from django.urls import reverse
 from django.test import TestCase
+from django.core.management import call_command
+from django.utils.six import StringIO
 from rest_framework import status
 from rest_framework.test import APITestCase, APIRequestFactory
 from gwells.models.ProvinceStateCode import ProvinceStateCode
 from gwells.models.User import User
 from registries.models import Organization, Person, RegistriesApplication, Register, RegistriesStatusCode, ActivityCode
 from registries.views import APIPersonListCreateView, APIPersonRetrieveUpdateDestroyView
-
 
 # Note: see postman/newman for more API tests.
 # Postman API tests include making requests with incomplete data, missing required fields etc.
@@ -677,3 +678,18 @@ class FixturePersonTests(AuthenticatedAPITestCase):
 
         self.assertNotContains(response, 'create_user')
         self.assertNotContains(response, 'update_user')
+
+class CreateTestUserCommandTests(TestCase):
+    """
+    Tests for the 'manage.py createtestuser' command.
+    Running this command should create a test user and return a success message,
+    or return a message that the user already exists, or return an error if
+    the environment variables for the test user's credentials were not available.
+    """
+
+    def test_create_testuser(self):
+        out = StringIO()
+        call_command('createtestuser', stdout=out, stderr=out)
+        name = os.getenv('GWELLS_API_TEST_USER', default='testuser')
+        user = User.objects.get()
+        self.assertEqual(user.username, name)
