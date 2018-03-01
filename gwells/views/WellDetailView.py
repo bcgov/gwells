@@ -17,6 +17,9 @@ class WellDetailView(generic.DetailView):
         """
 
         context = super(WellDetailView, self).get_context_data(**kwargs)
+        surveys = Survey.objects.order_by('create_date')
+        context['surveys'] = surveys
+        context['page'] = 'w'
 
         if ENABLE_ADDITIONAL_DOCUMENTS:
             #Generic error Handling for now
