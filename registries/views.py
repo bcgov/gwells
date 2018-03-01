@@ -300,6 +300,7 @@ class APICitiesList(ListAPIView):
             'companies',
             'companies__org',
         ) \
+        .distinct('companies__org__city') \
         .order_by('companies__org__city')
 
     def get_queryset(self):

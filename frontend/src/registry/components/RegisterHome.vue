@@ -44,11 +44,9 @@
                     <div class="form-group">
                       <div class="col-xs-12 col-sm-6 form-spacing">
                         <label>Community</label>
-                        <select class="form-control" v-model="searchParams.communities">
-                          <option>All</option>
-                          <option>Victoria</option>
-                          <option>Duncan</option>
-                          <option>Nanaimo</option>
+                        <select class="form-control" v-model="searchParams.community">
+                          <option value="">All</option>
+                          <option v-for="city in cityList" :key="city.city + city.province" :value="city.city + ', ' + city.province_state">{{city.city}}<span v-if="city.province_state">, {{city.province_state}}</span></option>
                         </select>
                       </div>
                     </div>
@@ -56,7 +54,7 @@
                       <div class="col-xs-12 col-sm-6 form-spacing">
                         <label>Registration status</label>
                         <select v-model="searchParams.regStatus" class="form-control">
-                          <option>All</option>
+                          <option value="">All</option>
                           <option>Pending</option>
                           <option>Not registered</option>
                           <option>Registered</option>
@@ -106,7 +104,7 @@
 import RegisterTable from '@/registry/components/RegisterTable'
 import APIErrorMessage from '@/common/components/APIErrorMessage'
 import { mapGetters } from 'vuex'
-import { FETCH_DRILLER_LIST } from '@/registry/store/actions.types'
+import { FETCH_CITY_LIST, FETCH_DRILLER_LIST } from '@/registry/store/actions.types'
 
 export default {
   components: {
@@ -114,6 +112,7 @@ export default {
     'api-error': APIErrorMessage
   },
   created () {
+    this.$store.dispatch(FETCH_CITY_LIST)
     this.$store.dispatch(FETCH_DRILLER_LIST, this.searchParams)
   },
   computed: {
@@ -127,13 +126,13 @@ export default {
     },
     ...mapGetters([
       'loading',
-      'listError'
+      'listError',
+      'cityList'
     ])
   },
   data () {
     return {
       adminPanelToggle: false,
-      community: null,
       regType: 'driller',
       regStatus: 'all',
       regTypeOptions: [
@@ -149,9 +148,9 @@ export default {
       ],
       searchParams: {
         search: '',
-        communities: 'All',
+        community: '',
         regType: 'driller',
-        regStatus: 'All',
+        regStatus: '',
         limit: '10'
       }
     }
@@ -162,9 +161,9 @@ export default {
     },
     drillerSearchReset () {
       this.searchParams.search = ''
-      this.searchParams.communities = 'All'
+      this.searchParams.community = ''
       this.searchParams.regType = 'driller'
-      this.searchParams.regStatus = 'All'
+      this.searchParams.regStatus = ''
       this.searchParams.limit = '10'
     }
   }
