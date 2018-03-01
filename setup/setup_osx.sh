@@ -12,9 +12,10 @@ set -eu
 # Install Xcode command line tools
 #
 while ( xcode-select --install );
-	do xcode-select --install
+do
+	xcode-select --install
 	echo "Waiting for Xcode Developer Tools Install"
-	sleep 60
+	sleep 30
 done
 
 
@@ -31,11 +32,11 @@ done
 	then
 		open http://www.oracle.com/technetwork/java/javase/downloads/index.html
 
-		while !( echo "${J8_PATH+x}" | grep "1.8 " )
+		while !( echo "${J8_PATH+x}" | grep "1.8" )
 		do
 			J8_PATH=$( /usr/libexec/java_home -v 1.8 || true )
 			echo "Waiting for Java 8 Install"
-			sleep 60
+			sleep 30
 		done
 	fi
 )
@@ -126,7 +127,7 @@ grep --quiet "virtualenvwrapper.sh" "${BASHSS}" || \
 PATH="${PATH}":~/Library/Python/3.6/bin
 export VIRTUALENVWRAPPER_PYTHON=/usr/local/bin/python3
 set +u
-source "${VEWSRC}"
+source "${BASHSS}"
 mkvirtualenv gwells || true
 workon gwells
 set -u
