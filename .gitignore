@@ -88,3 +88,4 @@ x.sh
 
 # Frontend files
 frontend/node_modules/
+frontend/webpack-stats.json
