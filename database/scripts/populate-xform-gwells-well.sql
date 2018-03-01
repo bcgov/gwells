@@ -37,7 +37,7 @@ DECLARE
     intended_water_use_code            ,
     land_district_code                 ,
     province_state_guid                ,
-    well_class_guid                    ,
+    well_class_code                    ,
     well_subclass_guid                 ,
     well_yield_unit_guid               ,
     latitude                           ,
@@ -49,7 +49,7 @@ DECLARE
     ground_elevation_method_code       ,
     well_status_guid                   ,
     observation_well_number            ,
-    obs_well_status_guid       ,
+    obs_well_status_code       ,
     licenced_status_code               ,
     alternative_specifications_ind     ,
     construction_start_date            ,
@@ -67,11 +67,11 @@ DECLARE
     water_supply_system_well_name      ,
     well_identification_plate_attached ,
     ems                                ,
-    screen_intake_method_guid          ,
-    screen_type_guid                   ,
-    screen_material_guid               ,
-    screen_opening_guid                ,
-    screen_bottom_guid                 ,
+    screen_intake_method_code          ,
+    screen_type_code                   ,
+    screen_material_code               ,
+    screen_opening_code                ,
+    screen_bottom_code                ,
     utm_zone_code                      ,
     utm_northing                       ,
     utm_easting                        ,
@@ -79,8 +79,8 @@ DECLARE
     bcgs_id                            ,
     development_method_code            ,
     development_duration               ,
-    surface_seal_method_guid           ,
-    surface_seal_material_guid         ,
+    surface_seal_method_code           ,
+    surface_seal_material_code         ,
     surface_seal_length                ,
     surface_seal_thickness             ,
     backfill_type                      ,
@@ -139,7 +139,7 @@ DECLARE
       WHEN ''WASH_STATE'' THEN ''f46b77b447d411e7a91992ebcb67fe33''::uuid
       ELSE ''f46b7b1a47d411e7a91992ebcb67fe33''::uuid
     END AS province_state_guid                                             ,
-    class.well_class_guid                                                  ,
+    wells.class_of_well_codclassified_by AS well_class_code                ,
     subclass.well_subclass_guid                                            ,
     CASE wells.yield_unit_code
       WHEN ''GPM''  THEN ''c4634ef447c311e7a91992ebcb67fe33''::uuid
@@ -167,10 +167,9 @@ DECLARE
     well_status.well_status_guid                                             ,
     to_char(wells.observation_well_number,''fm000'') AS observation_well_number,
     CASE wells.ministry_observation_well_stat
-      WHEN ''Inactive'' THEN ''b703a326-8ecc-48e4-89dd-d2fbd58834a9''::uuid
-      WHEN ''Active'' THEN ''1af7ba78-1ab6-4992-b4f6-f105e519d2a6''::uuid
-      ELSE null::uuid
-    END AS obs_well_status_guid                                      ,
+      WHEN ''Abandoned'' THEN ''Inactive''
+      ELSE wells.ministry_observation_well_stat
+    END AS obs_well_status_code,
     wells.well_licence_general_status AS licenced_status_code        ,
     CASE wells.alternative_specifications_ind
        WHEN ''N'' THEN false
@@ -192,11 +191,11 @@ DECLARE
     wells.water_supply_well_name                                             ,
     wells.where_plate_attached                                               ,
     wells.chemistry_site_id                                                  ,
-    screen_intake_method.screen_intake_method_guid                           ,
-    screen_type.screen_type_guid                                             ,
-    screen_material.screen_material_guid                                     ,
-    screen_opening.screen_opening_guid                                       ,
-    screen_bottom.screen_bottom_guid                                         ,
+    wells.screen_intake_code                           ,
+    wells.screen_type_code                                            ,
+    wells.screen_material_code                                     ,
+    wells.screen_opening_code                                        ,
+    wells.screen_bottom_code                                                 ,
     wells.utm_zone_code                                                      ,
     wells.utm_north                                                          ,
     wells.utm_east                                                           ,
@@ -204,8 +203,8 @@ DECLARE
     wells.bcgs_id                                                            ,
     wells.development_method_code                             ,
     wells.development_hours                                                  ,
-    surface_seal_method.surface_seal_method_guid                             ,
-    surface_seal_material.surface_seal_material_guid                         ,
+    wells.surface_seal_method_code                                           ,
+    wells.surface_seal_material_code                      ,
     wells.surface_seal_depth                                                 ,
     wells.surface_seal_thickness                                             ,
     wells.backfill_type                                                      ,
@@ -223,16 +222,9 @@ DECLARE
     COALESCE(wells.who_updated,wells.who_created)
   FROM wells.wells_wells wells LEFT OUTER JOIN wells.wells_owners owner ON owner.owner_id=wells.owner_id
               LEFT OUTER JOIN drilling_company drilling_company ON UPPER(wells.driller_company_code)=UPPER(drilling_company.drilling_company_code)
-              LEFT OUTER JOIN screen_intake_method_code screen_intake_method ON UPPER(wells.screen_intake_code)=UPPER(screen_intake_method.screen_intake_code)
-              LEFT OUTER JOIN screen_type_code screen_type ON UPPER(wells.screen_type_code)=UPPER(screen_type.screen_type_code)
-              LEFT OUTER JOIN screen_material_code screen_material ON UPPER(wells.screen_material_code)=UPPER(screen_material.screen_material_code)
-              LEFT OUTER JOIN screen_opening_code screen_opening ON UPPER(wells.screen_opening_code)=UPPER(screen_opening.screen_opening_code)
-              LEFT OUTER JOIN screen_bottom_code screen_bottom ON UPPER(wells.screen_bottom_code)=UPPER(screen_bottom.screen_bottom_code)
-              LEFT OUTER JOIN surface_seal_method_code surface_seal_method ON UPPER(wells.surface_seal_method_code)=UPPER(surface_seal_method.surface_seal_method_code)
-              LEFT OUTER JOIN surface_seal_material_code surface_seal_material ON UPPER(wells.surface_seal_material_code)=UPPER(surface_seal_material.surface_seal_material_code)
               LEFT OUTER JOIN well_status_code well_status ON UPPER(wells.status_of_well_code)=UPPER(well_status.well_status_code)
-              LEFT OUTER JOIN well_class_code class ON UPPER(wells.class_of_well_codclassified_by)=UPPER(class.well_class_code)
-              LEFT OUTER JOIN well_subclass_code subclass ON UPPER(wells.subclass_of_well_classified_by)=UPPER(subclass.well_subclass_code) AND subclass.well_class_guid = class.well_class_guid
+              LEFT OUTER JOIN well_subclass_code subclass ON UPPER(wells.subclass_of_well_classified_by)=UPPER(subclass.well_subclass_code) 
+                AND subclass.well_class_code = wells.class_of_well_codclassified_by
   WHERE wells.acceptance_status_code NOT IN (''PENDING'', ''REJECTED'', ''NEW'') ';
 
 BEGIN
@@ -270,7 +262,7 @@ BEGIN
      intended_water_use_code             character varying(10),
      land_district_code                  character varying(10),
      province_state_guid                 uuid,
-     well_class_guid                     uuid,
+     well_class_code                     character varying(10),
      well_subclass_guid                  uuid,
      well_yield_unit_guid                uuid,
      latitude                            numeric(8,6),
@@ -282,7 +274,7 @@ BEGIN
      ground_elevation_method_code        character varying(10),
      well_status_guid                    uuid,
      observation_well_number             character varying(3),
-     obs_well_status_guid        uuid,
+     obs_well_status_code                character varying(10),
      licenced_status_code                character varying(10),
      alternative_specifications_ind      boolean,
      construction_start_date             timestamp with time zone,
@@ -300,11 +292,11 @@ BEGIN
      water_supply_system_name            character varying(80),
      water_supply_system_well_name       character varying(80),
      ems                                 character varying(10),
-     screen_intake_method_guid           uuid,
-     screen_type_guid                    uuid,
-     screen_material_guid                uuid,
-     screen_opening_guid                 uuid,
-     screen_bottom_guid                  uuid,
+     screen_intake_method_code           character varying(10),
+     screen_type_code                    character varying(10),
+     screen_material_code                character varying(10),
+     screen_opening_code                 character varying(10),
+     screen_bottom_code                  character varying(10),
      utm_zone_code                       character varying(10),
      utm_northing                        integer,
      utm_easting                         integer,
@@ -313,8 +305,8 @@ BEGIN
      development_method_code             character varying(10),
      development_duration                integer,
      yield_estimation_method_guid        uuid,
-     surface_seal_method_guid            uuid,
-     surface_seal_material_guid          uuid,
+     surface_seal_method_code            character varying(10),
+     surface_seal_material_code          character varying(10),
      surface_seal_length                 numeric(5,2),
      surface_seal_thickness              numeric(7,2),
      backfill_type                       character varying(250),

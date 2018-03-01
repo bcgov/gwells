@@ -35,13 +35,13 @@ class ActivitySubmissionWizardView(SessionWizardView):
         context = super(ActivitySubmissionWizardView, self).get_context_data(form=form, **kwargs)
         context['wizard_data'] = self.get_all_cleaned_data()
 
-        if self.steps.current == 'type_and_class' and not 'water_supply_well_class_guid' in context:
+        if self.steps.current == 'type_and_class' and not 'water_supply_well_class_code' in context:
             # Get the pk of water supply well class so jquery can show/hide intended water use field
             try:
                 water_supply_class = WellClassCode.objects.get(code='WATR_SPPLY')
-                context['water_supply_well_class_guid'] = water_supply_class.well_class_guid
+                context['water_supply_well_class_code'] = water_supply_class.well_class_code
             except Exception as e:
-                context['water_supply_well_class_guid'] = None
+                context['water_supply_well_class_code'] = None
         return context
 
     def get_form_instance(self, step):
@@ -87,7 +87,7 @@ class ActivitySubmissionWizardView(SessionWizardView):
         cleaned_data = self.get_all_cleaned_data()
         characteristics_data = cleaned_data.pop('water_quality_characteristics')
 
-        if submission.well_activity_type.well_activity_type_code == 'CON' and not submission.well:
+        if submission.well_activity_type.well_activity_code == 'CON' and not submission.well:
             #TODO
             w = submission.create_well()
             w.save()

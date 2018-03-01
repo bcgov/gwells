@@ -7,11 +7,11 @@
 
 --CLASS
 \echo '... loading well_class_code code table'
-\copy well_class_code (well_class_guid,well_class_code,description,display_order,create_date,update_date,create_user,update_user) from 'well_class_code.csv' with header delimiter ',' CSV ;
+\copy well_class_code (well_class_code,description,display_order,create_date,update_date,create_user,update_user) from 'well_class_code.csv' with header delimiter ',' CSV ;
 
 --SUBCLASS
 \echo '... loading well_subclass_code code table'
-\copy well_subclass_code (well_subclass_guid,well_subclass_code,description,display_order,well_class_guid,create_date,update_date,create_user,update_user) from 'well_subclass_code.csv' with header delimiter ',' CSV ;
+\copy well_subclass_code (well_subclass_guid,well_subclass_code,description,display_order,well_class_code,create_date,update_date,create_user,update_user) from 'well_subclass_code.csv' with header delimiter ',' CSV ;
 
 --PROVINCE_STATE
 \echo '... loading province_state_code code table'
@@ -43,27 +43,27 @@
 
 --SCREEN INTAKE METHOD
 \echo '... loading screen_intake_method_code code table'
-\copy screen_intake_method_code (create_user,create_date,update_user,update_date,screen_intake_method_guid,screen_intake_code,description,status_flag,display_order) from 'screen_intake_method_code.csv' with header delimiter ',' CSV ;
+\copy screen_intake_method_code (create_user,create_date,update_user,update_date,screen_intake_code,description,status_flag,display_order) from 'screen_intake_method_code.csv' with header delimiter ',' CSV ;
 
 --SCREEN TYPE
 \echo '... loading screen_type_code code table'
-\copy screen_type_code (create_user,create_date,update_user,update_date,screen_type_guid,screen_type_code,description,display_order) from 'screen_type_code.csv' with header delimiter ',' CSV ;
+\copy screen_type_code (create_user,create_date,update_user,update_date,screen_type_code,description,display_order) from 'screen_type_code.csv' with header delimiter ',' CSV ;
 
 --SCREEN MATERIAL
 \echo '... loading screen_material_code code table'
-\copy screen_material_code (create_user,create_date,update_user,update_date,screen_material_guid,screen_material_code,description,display_order) from 'screen_material_code.csv' with header delimiter ',' CSV ;
+\copy screen_material_code (create_user,create_date,update_user,update_date,screen_material_code,description,display_order) from 'screen_material_code.csv' with header delimiter ',' CSV ;
 
 --SCREEN OPENING
 \echo '... loading screen_opening_code code table'
-\copy screen_opening_code (create_user,create_date,update_user,update_date,screen_opening_guid,screen_opening_code,description,display_order) from 'screen_opening_code.csv' with header delimiter ',' CSV ;
+\copy screen_opening_code (create_user,create_date,update_user,update_date,screen_opening_code,description,display_order) from 'screen_opening_code.csv' with header delimiter ',' CSV ;
 
 --SCREEN BOTTOM
 \echo '... loading screen_bottom_code code table'
-\copy screen_bottom_code (create_user,create_date,update_user,update_date,screen_bottom_guid,screen_bottom_code,description,display_order) from 'screen_bottom_code.csv' with header delimiter ',' CSV ;
+\copy screen_bottom_code (create_user,create_date,update_user,update_date,screen_bottom_code,description,display_order) from 'screen_bottom_code.csv' with header delimiter ',' CSV ;
 
 --SCREEN ASSEMBLY
 \echo '... loading screen_assembly_type_code code table'
-\copy screen_assembly_type_code (create_user,create_date,update_user,update_date,screen_assembly_type_guid,screen_assembly_type_code,description,display_order) from 'screen_assembly_type_code.csv' with header delimiter ',' CSV ;
+\copy screen_assembly_type_code (create_user,create_date,update_user,update_date,screen_assembly_type_code,description,display_order) from 'screen_assembly_type_code.csv' with header delimiter ',' CSV ;
 
 --DEVELOPMENT METHOD
 \echo '... loading development_method_code code table'
@@ -79,11 +79,11 @@
 
 --SURFACE SEAL METHOD
 \echo '... loading surface_seal_method_code code table'
-\copy surface_seal_method_code (create_user,create_date,update_user,update_date,surface_seal_method_guid,surface_seal_method_code,description,display_order ) from 'surface_seal_method_code.csv' with header delimiter ',' CSV ;
+\copy surface_seal_method_code (create_user,create_date,update_user,update_date,surface_seal_method_code,description,display_order ) from 'surface_seal_method_code.csv' with header delimiter ',' CSV ;
 
 --SURFACE SEAL MATERIAL
 \echo '... loading surface_seal_material_code table'
-\copy surface_seal_material_code (create_user,create_date,update_user,update_date,surface_seal_material_guid,surface_seal_material_code,description,display_order ) from 'surface_seal_material_code.csv' with header delimiter ',' CSV ;
+\copy surface_seal_material_code (create_user,create_date,update_user,update_date,surface_seal_material_code,description,display_order ) from 'surface_seal_material_code.csv' with header delimiter ',' CSV ;
 
 --LINER MATERIAL
 \echo '... loading liner_material_code code table'
@@ -95,7 +95,7 @@
 
 --LITHOLOGY HARDNESS
 \echo '... loading lithology_hardness_code code table'
-\copy lithology_hardness_code (lithology_hardness_guid,lithology_hardness_code,description,display_order,create_date,update_date,create_user,update_user) from 'lithology_hardness_code.csv' with header delimiter ',' CSV ;
+\copy lithology_hardness_code (lithology_hardness_code,description,display_order,create_date,update_date,create_user,update_user) from 'lithology_hardness_code.csv' with header delimiter ',' CSV ;
 
 --LAND DISTRICT
 \echo '... loading land_district_code code table'
@@ -103,7 +103,7 @@
 
 --LITHOLOGY MATERIAL
 \echo '... loading lithology_material_code code table'
-\copy lithology_material_code (create_user,create_date,update_user,update_date,lithology_material_guid,lithology_material_code,description,display_order,status_flag) from 'lithology_material_code.csv' with header delimiter ',' CSV ;
+\copy lithology_material_code (create_user,create_date,update_user,update_date,lithology_material_code,description,display_order,status_flag) from 'lithology_material_code.csv' with header delimiter ',' CSV ;
 
 --LITHOLOGY DESCRIPTION
 \echo '... loading lithology_description_code code table'
@@ -122,7 +122,7 @@
 
 --OBSERVATION WELL STATUS
 \echo '... loading obs_well_status_code code table'
-\copy obs_well_status_code (create_user,create_date,update_user,update_date,obs_well_status_guid,obs_well_status_code,description,display_order) from 'obs_well_status_code.csv' with header delimiter ',' CSV ;
+\copy obs_well_status_code (create_user,create_date,update_user,update_date,obs_well_status_code,description,display_order) from 'obs_well_status_code.csv' with header delimiter ',' CSV ;
 
 -- BEDROCK STATUS (currently not used)
 -- \echo '... loading bedrock_material_code code table'

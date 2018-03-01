@@ -13,7 +13,7 @@ BEGIN
     screen_from                                   ,
     screen_to                                     ,
     internal_diameter                             ,
-    screen_assembly_type_guid                     , -->FK
+    screen_assembly_type_code                     , 
     slot_size                                     ,
     create_date                                  ,
     update_date                                  ,
@@ -26,19 +26,18 @@ BEGIN
     screens.screen_from                           ,
     screens.screen_to                             ,
     screens.screen_internal_diameter              ,
-    screen_assembly_type.screen_assembly_type_guid,
+    CASE screens.screen_assembly_type_code
+      WHEN 'L'          THEN 'LEAD'
+      WHEN 'K  & Riser' THEN 'K_RISER'
+      ELSE screens.screen_assembly_type_code
+    END AS screen_assembly_type_code ,
     screens.screen_slot_size                      ,
     screens.when_created                          ,
     screens.when_updated                          ,
     screens.who_created                           ,
     screens.who_updated
   FROM wells.wells_screens screens
-       INNER JOIN xform_well xform ON xform.well_id=screens.well_id
-       LEFT OUTER JOIN screen_assembly_type_code screen_assembly_type ON
-       ( screens.screen_assembly_type_code=screen_assembly_type.screen_assembly_type_code OR
-         screens.screen_assembly_type_code='L' AND screen_assembly_type.screen_assembly_type_code='LEAD' OR
-         screens.screen_assembly_type_code='K  & Riser' AND screen_assembly_type.screen_assembly_type_code='K_RISER'
-       );
+  INNER JOIN xform_well xform ON xform.well_id=screens.well_id;
 
   raise notice '...wells_screens data imported';
   SELECT count(*) from screen into row_count;

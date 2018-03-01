@@ -59,7 +59,7 @@
     });
   });
   $('#id_type_and_class-well_class').on('change', function() {
-    if ($('#id_type_and_class-well_class option:selected').val() == '{{ water_supply_well_class_guid }}') {
+    if ($('#id_type_and_class-well_class option:selected').val() == '{{ water_supply_well_class_code }}') {
       $('#id_type_and_class-well_subclass option').prop('selected', false);
       //$('#divSubclass').hide();
       $('#divIntendedWaterUseCode').show();

@@ -11,17 +11,14 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
-
 from .AuditModel import AuditModel
 from django.db import models
-import uuid
 
 class SurficialMaterialCode(AuditModel):
     """
     The surficial material encountered in lithology
     """
-    surficial_material_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    surficial_material_code = models.CharField(max_length=10, unique=True)
+    surficial_material_code = models.CharField(primary_key=True, max_length=10, editable=False)
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
 

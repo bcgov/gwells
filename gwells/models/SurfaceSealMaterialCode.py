@@ -11,17 +11,14 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
-
 from .AuditModel import AuditModel
 from django.db import models
-import uuid
 
 class SurfaceSealMaterialCode(AuditModel):
     """
      Sealant material used that is installed in the annular space around the outside of the outermost casing and between multiple casings of a well.
     """
-    surface_seal_material_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    surface_seal_material_code = models.CharField(max_length=10, unique=True)
+    surface_seal_material_code = models.CharField(primary_key=True, max_length=10, editable=False)
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
 

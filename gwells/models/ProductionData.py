@@ -11,13 +11,11 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
-
 from .AuditModel import AuditModel
 from .Well import Well
 from .ActivitySubmission import ActivitySubmission
 from .YieldEstimationMethodCode import YieldEstimationMethodCode
 from .WellYieldUnitCode import WellYieldUnitCode
-
 
 from django.db import models
 from django.core.validators import MinValueValidator
