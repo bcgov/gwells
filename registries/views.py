@@ -2,7 +2,7 @@ from django.http import HttpResponse
 from django.utils import timezone
 from django.views.generic import TemplateView
 from rest_framework import filters
-from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView
 from rest_framework.pagination import LimitOffsetPagination, PageNumberPagination
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
@@ -11,6 +11,7 @@ from registries.models import Organization, Person, ContactAt, RegistriesApplica
 from registries.permissions import IsAdminOrReadOnly
 from registries.serializers import (
     ApplicationSerializer,
+    CityListSerializer,
     OrganizationListSerializer,
     OrganizationSerializer,
     OrganizationAdminSerializer,
@@ -283,6 +284,38 @@ class APIPersonRetrieveUpdateDestroyView(AuditUpdateMixin, RetrieveUpdateDestroy
             return PersonAdminSerializer
         return self.serializer_class
 
+
+class APICitiesList(ListAPIView):
+    """
+    List of cities with a qualified, registered operator (driller or installer)
+
+    get: returns a list of cities with a qualified, registered operator (driller or installer)
+    """
+    serializer_class = CityListSerializer
+    lookup_field = 'person_guid'
+    pagination_class = None
+    queryset = Person.objects \
+        .exclude(companies__org__city__isnull=True) \
+        .prefetch_related(
+            'companies',
+            'companies__org',
+        ) \
+        .order_by('companies__org__city')
+
+    def get_queryset(self):
+        """
+        Returns only registered operators (i.e. drillers with active registration) to anonymous users
+        if request has a kwarg 'activity' (accepts values 'drill' and 'install'), queryset
+        will filter for that activity
+        """
+        qs = self.queryset
+        if not self.request.user.is_staff:
+            qs = qs.filter(applications__registrations__status__code='ACTIVE')
+        if self.kwargs['activity'] == 'drill':
+            qs = qs.filter(applications__registrations__registries_activity__code='DRILL')
+        if self.kwargs['activity'] == 'install':
+            qs = qs.filter(applications__registrations__registries_activity__code='PUMP')
+        return qs
 
 # Placeholder for base url.
 def index(request):

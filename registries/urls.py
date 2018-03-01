@@ -25,6 +25,9 @@ urlpatterns = [
     url(r'^drillers/(?P<person_guid>[-\w]+)/$', views.APIPersonRetrieveUpdateDestroyView.as_view(), name='person-detail'),
     url(r'^drillers/$', views.APIPersonListCreateView.as_view(), name='person-list'),
 
+    url(r'^cities/drillers/$', views.APICitiesList.as_view(), {'activity':'drill'}, name='city-list-drillers'),
+    url(r'^cities/installers/$', views.APICitiesList.as_view(), {'activity': 'install'}, name='city-list-installers'),
+
     # Temporary JWT Auth endpoint
     url(r'^api-token-auth/', obtain_jwt_token, name='get-token'),
 
