@@ -109,7 +109,8 @@ class ViewsTestCase(TestCase):
         self.ok('site_admin')
 
     def test_site_admin_has_add_survey(self):
-        response = self.client.get("http://localhost:8000/gwells/site_admin/")
+
+        response = self.client.get(reverse('site_admin'))
         self.assertEquals(response.status_code, HTTPStatus.OK)
         self.assertContains( response, 'id="add-survey"')
 
