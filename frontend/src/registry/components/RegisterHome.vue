@@ -26,17 +26,17 @@
             <div class="panel-body">
               <div class="container-fluid">
                 <h3>Search for a Well Driller or Well Installer</h3>
-                <form @submit.prevent="drillerSearch">
+                <form @submit.prevent="drillerSearch" @reset.prevent="drillerSearchReset">
                   <div class="form-group">
                     <div class="col-xs-12">
                       <label>Choose professional type: &nbsp;</label>
                     </div>
                     <div class="col-xs-12 form-spacing">
                       <label class="radio-inline">
-                        <input type="radio" name="regTypeSelector" id="regTypeDriller" value="driller" style="margin-top: 0px"> Well Driller
+                        <input type="radio" name="regTypeSelector" id="regTypeDriller" v-model="searchParams.regType" value="driller" style="margin-top: 0px"> Well Driller
                       </label>
                       <label class="radio-inline">
-                        <input type="radio" name="regTypeSelector" id="regTypeInstaller" value="installer" style="margin-top: 0px"> Pump Installer
+                        <input type="radio" name="regTypeSelector" id="regTypeInstaller" v-model="searchParams.regType" value="installer" style="margin-top: 0px"> Pump Installer
                       </label>
                     </div>
                   </div>
@@ -44,7 +44,7 @@
                     <div class="form-group">
                       <div class="col-xs-12 col-sm-6 form-spacing">
                         <label>Community</label>
-                        <select class="form-control">
+                        <select class="form-control" v-model="searchParams.communities">
                           <option>All</option>
                           <option>Victoria</option>
                           <option>Duncan</option>
@@ -55,7 +55,7 @@
                     <div class="form-group">
                       <div class="col-xs-12 col-sm-6 form-spacing">
                         <label>Registration status</label>
-                        <select class="form-control">
+                        <select v-model="searchParams.regStatus" class="form-control">
                           <option>All</option>
                           <option>Pending</option>
                           <option>Not registered</option>
@@ -149,9 +149,9 @@ export default {
       ],
       searchParams: {
         search: '',
-        communities: '',
-        regType: '',
-        regStatus: '',
+        communities: 'All',
+        regType: 'driller',
+        regStatus: 'All',
         limit: '10'
       }
     }
@@ -161,10 +161,10 @@ export default {
       this.$store.dispatch(FETCH_DRILLER_LIST, this.searchParams)
     },
     drillerSearchReset () {
-      this.searchParams.regType = 'driller'
       this.searchParams.search = ''
-      this.searchParams.regType = ''
-      this.searchParams.regStatus = 'all'
+      this.searchParams.communities = 'All'
+      this.searchParams.regType = 'driller'
+      this.searchParams.regStatus = 'All'
       this.searchParams.limit = '10'
     }
   }
