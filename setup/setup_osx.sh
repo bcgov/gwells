@@ -9,6 +9,13 @@ set -eu
 	set -x
 
 
+# Ensure bash shell script exists and store its checksum
+#
+BASHSS=~/.bash_profile
+touch "${BASHSS}"
+BASHSS_CHECKSUM=$( md5 -q "${BASHSS}" )
+
+
 # Install Xcode command line tools
 #
 while ( xcode-select --install );
@@ -108,8 +115,6 @@ done
 
 # Config bash shell to source virtualenvwrapper.sh
 #
-BASHSS=~/.bash_profile
-touch "${BASHSS}"
 VEWSRC=$( find ~ -name virtualenvwrapper.sh | grep -m 1 . )
 grep --quiet "virtualenvwrapper.sh" "${BASHSS}" || \
 	(
@@ -166,3 +171,15 @@ python3 ../manage.py migrate
 # Run server
 #
 python3 ../manage.py runserver
+
+
+# Recommend sourcing ~/.bash_profile if the file has changed
+#
+if [ "${BASHSS_CHECKSUM}" != $( md5 -q "${BASHSS}" ) ]
+then
+	echo
+	echo "Warning: ~/.bash_profile has changed!  To source it type:"
+	echo
+	echo "source ~/.bash_profile "
+fi
+echo
