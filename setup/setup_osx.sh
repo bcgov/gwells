@@ -30,7 +30,7 @@ done
 	echo
 	if([ "${yORn}" == "y" ]||[ "${yORn}" == "Y" ])
 	then
-		open http://www.oracle.com/technetwork/java/javase/downloads/index.html
+		open http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html
 
 		while !( echo "${J8_PATH+x}" | grep "1.8" )
 		do
