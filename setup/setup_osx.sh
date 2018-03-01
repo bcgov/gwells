@@ -39,9 +39,8 @@ done
 	then
 		open http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html
 
-		while !( echo "${J8_PATH+x}" | grep "1.8" )
+		while ! (( which java )&&( /usr/libexec/java_home -x | grep -o "1.8" ))
 		do
-			J8_PATH=$( /usr/libexec/java_home -v 1.8 || true )
 			echo "Waiting for Java 8 Install"
 			sleep 30
 		done
