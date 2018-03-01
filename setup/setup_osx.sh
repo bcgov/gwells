@@ -18,9 +18,9 @@ while ( xcode-select --install );
 done
 
 
-# Install Oracle JDK
+# Request and wait for Java 8 install
 #
-which java ||( \
+( which java )&&( /usr/libexec/java_home -x | grep -o "1.8" )||( \
 	tput bel
 	echo
 	echo "Warning: to perform gradlew tests Oracle Java 8 is required!"
@@ -30,6 +30,13 @@ which java ||( \
 	if([ "${yORn}" == "y" ]||[ "${yORn}" == "Y" ])
 	then
 		open http://www.oracle.com/technetwork/java/javase/downloads/index.html
+
+		while !( echo "${J8_PATH+x}" | grep "1.8 " )
+		do
+			J8_PATH=$( /usr/libexec/java_home -v 1.8 || true )
+			echo "Waiting for Java 8 Install"
+			sleep 60
+		done
 	fi
 )
 
