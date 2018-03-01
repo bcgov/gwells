@@ -49,7 +49,7 @@ ENABLE_GOOGLE_ANALYTICS = os.getenv('ENABLE_GOOGLE_ANALYTICS', 'False') == 'True
 ENABLE_ADDITIONAL_DOCUMENTS = os.getenv('ENABLE_ADDITIONAL_DOCUMENTS', 'False') == 'True'
 
 # Controls app context
-APP_CONTEXT_ROOT = os.getenv('APP_CONTEXT_ROOT','')
+APP_CONTEXT_ROOT = os.getenv('APP_CONTEXT_ROOT','gwells')
 
 FIXTURES_DIR = '/'.join([BASE_DIR, APP_CONTEXT_ROOT, 'fixtures'])
 
