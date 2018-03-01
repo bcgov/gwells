@@ -35,6 +35,45 @@
           Certificate number: {{ person.certNumber }}
         </div>
       </div>
+      <div class="row">
+        <h4>Classifications</h4>
+      </div>
+      <div class="row">
+        <div class="col-xs-12 col-sm-2" style="margin-bottom: -10px">
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" style="margin-top:-3px;" class="registry-disabled-item" v-model="checked" disabled>Well Driller
+            </label>
+          </div>
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" style="margin-top:-3px;" class="registry-disabled-item" v-model="checked" disabled>etc
+            </label>
+          </div>
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" style="margin-top:-3px;" class="registry-disabled-item" v-model="checked" disabled>Geothermal
+            </label>
+          </div>
+        </div>
+        <div class="col-xs-12 col-sm-2 registry-item" style="margin-top: -5px">
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" style="margin-top:-3px;" class="registry-disabled-item" disabled>Pump Installer
+            </label>
+          </div>
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" style="margin-top:-3px;" class="registry-disabled-item" v-model="checked" disabled>etc
+            </label>
+          </div>
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" style="margin-top:-3px;" class="registry-disabled-item" disabled>etc
+            </label>
+          </div>
+        </div>
+      </div>
     </fieldset>
     <fieldset class="registry-section">
       <legend>Adjudication</legend>
@@ -61,7 +100,11 @@
       </div>
       <div class="row">
         <div class="col-xs-12 registry-item">
-          As Deputy Comptroller, I confirm I have reviewed the application or action and approved this registry update.
+          <div class="checkbox form-inline">
+            <label>
+              <input type="checkbox" style="margin-top:-4px;" class="registry-disabled-item" disabled><span style="color: #808080">As Deputy Comptroller, I confirm I have reviewed the application or action and approved this registry update.</span>
+            </label>
+          </div>
         </div>
       </div>
     </fieldset>
@@ -87,7 +130,8 @@ export default {
         certAuthority: 'Canadian Groundwater Association',
         qualificationCode: 'DRILL',
         activityDescription: 'Well Driller'
-      }
+      },
+      checked: true
     }
   },
   computed: {
@@ -111,5 +155,8 @@ export default {
 }
 .registry-item {
   margin-bottom: 20px;
+}
+.registry-disabled-item {
+  cursor: auto!important;
 }
 </style>
