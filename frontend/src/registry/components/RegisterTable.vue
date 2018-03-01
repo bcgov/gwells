@@ -3,23 +3,21 @@
     <div class="table-responsive">
       <table class="table table-striped">
         <thead>
-          <th class="col-xs-2" v-for="field in fields" :key="field">{{field}}</th>
+          <th v-for="field in fields" :key="field" :class="field.class">{{field.name}}</th>
         </thead>
         <tbody>
           <tr id="registry-table-row" v-if="drillers.results && drillers.results.length" v-for="driller in drillers.results" :key="driller.person_guid">
             <td>{{ driller.first_name }} {{ driller.surname }}</td>
             <td>{{ driller.organization_name }}</td>
+            <td></td>
+            <td></td>
+            <td></td>
             <td>{{ driller.contact_tel }}</td>
             <td>{{ driller.contact_email }}</td>
             <td>{{ driller.activity }}</td>
             <td><router-link :to="{ name: 'PersonDetail', params: { person_guid: driller.person_guid } }">Details</router-link></td>
           </tr>
           <tr v-else>
-            <td>&nbsp;</td>
-            <td>&nbsp;</td>
-            <td>&nbsp;</td>
-            <td>&nbsp;</td>
-            <td>&nbsp;</td>
           </tr>
         </tbody>
       </table>
@@ -65,7 +63,53 @@ export default {
   props: ['items'],
   data () {
     return {
-      fields: ['Name', 'Company', 'Telephone', 'E-mail', 'Qualification']
+      fields: [
+        {
+          name: 'Name',
+          class: 'col-xs-2',
+          visible: 'public'
+        },
+        {
+          name: 'Company',
+          class: 'col-xs-2',
+          visible: 'public'
+        },
+        {
+          name: 'Address',
+          class: 'col-xs-2',
+          visible: 'public'
+        },
+        {
+          name: 'City',
+          class: 'col-xs-1',
+          visible: 'public'
+        },
+        {
+          name: 'Prov/State',
+          class: 'col-xs-1',
+          visible: 'public'
+        },
+        {
+          name: 'Telephone',
+          class: 'col-xs-1',
+          visible: 'public'
+        },
+        {
+          name: 'E-mail',
+          class: 'col-xs-1',
+          visible: 'public'
+        },
+        {
+          name: 'Qualification',
+          class: 'col-xs-1',
+          visible: 'public'
+        },
+        {
+          name: 'Details',
+          class: 'col-xs-1',
+          visible: 'admin'
+        }
+      ]
     }
   },
   computed: {
