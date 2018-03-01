@@ -59,7 +59,7 @@ describe('RegisterHome.vue', () => {
     expect(wrapper.findAll(APIErrorMessage).length)
       .to.equal(1)
   })
-  
+
   it('doesn\'t load the error component if there is no error', () => {
     const wrapper = shallow(RegisterHome, {
       store,
