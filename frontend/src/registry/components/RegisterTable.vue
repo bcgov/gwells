@@ -9,9 +9,9 @@
           <tr id="registry-table-row" v-if="drillers.results && drillers.results.length" v-for="driller in drillers.results" :key="driller.person_guid">
             <td>{{ driller.first_name }} {{ driller.surname }}</td>
             <td>{{ driller.organization_name }}</td>
-            <td></td>
-            <td></td>
-            <td></td>
+            <td>{{ driller.street_address }}</td>
+            <td>{{ driller.city }}</td>
+            <td>{{ driller.province_state }}</td>
             <td>{{ driller.contact_tel }}</td>
             <td>{{ driller.contact_email }}</td>
             <td>{{ driller.activity }}</td>
