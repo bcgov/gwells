@@ -16,6 +16,7 @@ class Command(BaseCommand):
 
       elif TEST_USER and TEST_PASSWD and not User.objects.filter(username=TEST_USER).exists():
           user = User.objects.create_user(TEST_USER, 'test@example.com', TEST_PASSWD)
+          user.is_staff = True
           user.save()
           self.stdout.write(self.style.SUCCESS('Successfully created test user "%s"' % user.username))
 
