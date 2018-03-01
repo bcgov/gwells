@@ -75,18 +75,65 @@ class ContactAtSerializer(AuditModelSerializer):
     """
     person_name = serializers.StringRelatedField(source="person")
     organization_name = serializers.StringRelatedField(source="org")
+    street_address = serializers.StringRelatedField(source="org.street_address")
+    city = serializers.StringRelatedField(source="org.city")
+    province_state = serializers.StringRelatedField(source="org.province_state.province_state_code")
 
     class Meta:
         model = ContactAt
         fields = (
             'contact_at_guid',            
             'organization_name',
+            'street_address',
+            'city',
+            'province_state',
             'person_name',
             'person',
             'org',
             'contact_tel',
             'contact_email'
         )
+
+
+class CityListSerializer(serializers.ModelSerializer):
+    """
+    Serializes city and province fields for list of cities with qualified drillers
+    """
+
+    companies = ContactAtSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Person
+        fields = (
+            'companies',
+        )
+
+
+    def to_representation(self, obj):
+        """
+        Flattens City list response
+        """
+        repr = super().to_representation(obj)
+
+        # remove and store nested objects
+        companies = repr.pop('companies')
+
+        # specify fields from ContactAtSerializer.meta.fields
+        company_fields = (
+            'city',
+            'province_state',
+        )
+
+        # bring each of the specified fields from the nested "companies" dict to the main dict
+        # NOTE: because of the one to many relationship, we get an array of companies
+        # After discussing with LM, we will return only the first company.
+        for field in company_fields:
+            if len(companies) and companies[0][field]:
+                repr[field] = companies[0][field]
+            else:
+                repr[field] = None
+
+        return repr
 
 
 class OrganizationListSerializer(AuditModelSerializer):
@@ -201,7 +248,14 @@ class PersonListSerializer(AuditModelSerializer):
             registrations = applications[0].pop('registrations')
 
         # specify fields from ContactAtSerializer.meta.fields
-        company_fields = ('organization_name', 'contact_tel', 'contact_email')
+        company_fields = (
+            'organization_name',
+            'street_address',
+            'city',
+            'province_state',
+            'contact_tel',
+            'contact_email'
+        )
 
         # from RegistrationsSerializer.meta.fields
         registration_fields = ('activity', 'status', 'registration_no')

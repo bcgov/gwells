@@ -653,15 +653,18 @@ class FixturePersonTests(AuthenticatedAPITestCase):
 
         for item in response.data['results']:
             fields = [
-            "person_guid",
-            "first_name",
-            "surname",
-            "organization_name",
-            "contact_tel",
-            "contact_email",
-            "activity",
-            "status",
-            "registration_no",
+            'person_guid',
+            'first_name',
+            'surname',
+            'organization_name',
+            'street_address',
+            'province_state',
+            'city',
+            'contact_tel',
+            'contact_email',
+            'activity',
+            'status',
+            'registration_no',
             ]
 
             wrong_fields = [
