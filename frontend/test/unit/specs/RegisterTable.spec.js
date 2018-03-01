@@ -49,9 +49,8 @@ describe('RegisterTable.vue', () => {
     })
     expect(wrapper.findAll('#registry-table-row').length)
       .to.equal(2)
-
-
   })
+
   it('has the right people in each row', () => {
     const wrapper = shallow(RegisterTable, {
       store,
