@@ -85,7 +85,6 @@ SELECT csv
   '2017-07-01 00:00:00-08' AS create_date,
   'ETL_USER' AS update_user,
   '2017-07-01 00:00:00-08' AS update_date,
-  SYS_GUID() AS surface_seal_material_guid,
   CODE AS code,
   INITCAP(CODE) AS description,
   'N' AS is_hidden,
@@ -112,7 +111,6 @@ SELECT /*csv*/
   '2017-07-01 00:00:00-08' AS create_date,
   'ETL_USER' AS update_user,
   '2017-07-01 00:00:00-08' AS update_date,
-  SYS_GUID() AS surface_seal_method_guid,
   CODE AS code,
   INITCAP(CODE) AS description,
   'N' AS is_hidden,
@@ -188,7 +186,7 @@ SELECT /*csv*/
     ELSE  /* 'OTHER' */ 'f46b7b1a47d411e7a91992ebcb67fe33'
   END AS province_state_guid,
   NVL2 (WELLS.WELLS_WELLS.CLASS_OF_WELL_CODCLASSIFIED_BY,WELLS.WELLS_WELLS.CLASS_OF_WELL_CODCLASSIFIED_BY,'LEGACY') 
-    AS CLASS_OF_WELL_CODCLASSIFIED_BY, /* -> well_class_guid */
+    AS CLASS_OF_WELL_CODCLASSIFIED_BY,
   WELLS.WELLS_WELLS.SUBCLASS_OF_WELL_CLASSIFIED_BY, /* -> well_subclass_guid */
   CASE
     WHEN WELLS.WELLS_WELLS.YIELD_UNIT_CODE = 'GPM'  THEN 'c4634ef447c311e7a91992ebcb67fe33'
@@ -222,7 +220,7 @@ SELECT /*csv*/
  surface_seal_depth            numeric(5,2)          
  surface_seal_thickness        numeric(7,2)          
  surface_seal_type_guid    uuid                      
- surface_seal_method_guid    uuid                  
+ surface_seal_method_code    character varying(10)                   
 */  
   to_char(WELLS.WELLS_WELLS.WHEN_CREATED,'YYYY-MM-DD HH24:MI:SS') || '-08' /* PST Timezone */ AS create_date,
   NVL2(WELLS.WELLS_WELLS.WHEN_UPDATED,

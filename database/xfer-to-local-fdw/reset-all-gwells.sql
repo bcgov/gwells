@@ -62,7 +62,7 @@ drop table if exists user_groups                       cascade;
 drop table if exists user_user_permissions             cascade;                                                                                                                              
 drop table if exists water_quality_characteristic      cascade;                                                                                                                              
 drop table if exists well                              cascade;                                                                                                                              
-drop table if exists well_activity_type                cascade;                                                                                                                              
+drop table if exists well_activity_code                cascade;                                                                                                                              
 drop table if exists well_class                        cascade;                                                                                                                              
 drop table if exists well_status                       cascade;                                                                                                                              
 drop table if exists well_subclass                     cascade;                                                                                                                              

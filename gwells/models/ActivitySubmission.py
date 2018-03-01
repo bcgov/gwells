@@ -11,7 +11,6 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
-
 from .AuditModel import AuditModel
 from .Well import Well
 from .WellActivityCode import WellActivityCode
@@ -57,8 +56,8 @@ class ActivitySubmission(AuditModel):
     filing_number = models.AutoField(primary_key=True)
     activity_submission_guid = models.UUIDField(primary_key=False, default=uuid.uuid4, editable=False)
     well_tag_number = models.ForeignKey(Well, db_column='well_tag_number', on_delete=models.CASCADE, blank=True, null=True)
-    well_activity_type = models.ForeignKey(WellActivityCode, db_column='well_activity_type_guid', on_delete=models.CASCADE, verbose_name='Type of Work')
-    well_class = models.ForeignKey(WellClassCode, null=True, db_column='well_class_guid', on_delete=models.CASCADE, verbose_name='Well Class')
+    well_activity_type = models.ForeignKey(WellActivityCode, db_column='well_activity_code', on_delete=models.CASCADE, verbose_name='Type of Work')
+    well_class = models.ForeignKey(WellClassCode, null=True, db_column='well_class_code', on_delete=models.CASCADE, verbose_name='Well Class')
     well_subclass = models.ForeignKey(WellSubclassCode, db_column='well_subclass_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Well Subclass')
     intended_water_use = models.ForeignKey(IntendedWaterUseCode, db_column='intended_water_use_code', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Intended Water Use')
     driller_responsible = models.ForeignKey(Driller, db_column='driller_responsible_guid', on_delete=models.CASCADE, verbose_name='Person Responsible for Drilling')
@@ -100,10 +99,10 @@ class ActivitySubmission(AuditModel):
     water_supply_system_name = models.CharField(max_length=50, blank=True, verbose_name='Water Supply System Name')
     water_supply_system_well_name = models.CharField(max_length=50, blank=True, verbose_name='Water Supply System Well Name')
 
-    surface_seal_material = models.ForeignKey(SurfaceSealMaterialCode, db_column='surface_seal_material_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Surface Seal Material')
+    surface_seal_material = models.ForeignKey(SurfaceSealMaterialCode, db_column='surface_seal_material_code', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Surface Seal Material')
     surface_seal_depth = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Surface Seal Depth')
     surface_seal_thickness = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Surface Seal Thickness', validators=[MinValueValidator(Decimal('1.00'))])
-    surface_seal_method = models.ForeignKey(SurfaceSealMethodCode, db_column='surface_seal_method_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Surface Seal Installation Method')
+    surface_seal_method = models.ForeignKey(SurfaceSealMethodCode, db_column='surface_seal_method_code', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Surface Seal Installation Method')
     backfill_above_surface_seal = models.CharField(max_length=250, blank=True, verbose_name='Backfill Material Above Surface Seal')
     backfill_above_surface_seal_depth = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Backfill Depth')
 
@@ -113,12 +112,12 @@ class ActivitySubmission(AuditModel):
     liner_from = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Liner From', validators=[MinValueValidator(Decimal('0.00'))])
     liner_to = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Liner To', validators=[MinValueValidator(Decimal('0.01'))])
 
-    screen_intake_method = models.ForeignKey(ScreenIntakeMethodCode, db_column='screen_intake_method_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Intake')
-    screen_type = models.ForeignKey(ScreenTypeCode, db_column='screen_type_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Type')
-    screen_material = models.ForeignKey(ScreenMaterialCode, db_column='screen_material_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Material')
+    screen_intake_method = models.ForeignKey(ScreenIntakeMethodCode, db_column='screen_intake_method_code', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Intake')
+    screen_type = models.ForeignKey(ScreenTypeCode, db_column='screen_type_code', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Type')
+    screen_material = models.ForeignKey(ScreenMaterialCode, db_column='screen_material_code', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Material')
     other_screen_material = models.CharField(max_length=50, blank=True, verbose_name='Specify Other Screen Material')
-    screen_opening = models.ForeignKey(ScreenOpeningCode, db_column='screen_opening_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Opening')
-    screen_bottom = models.ForeignKey(ScreenBottomCode, db_column='screen_bottom_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Bottom')
+    screen_opening = models.ForeignKey(ScreenOpeningCode, db_column='screen_opening_code', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Opening')
+    screen_bottom = models.ForeignKey(ScreenBottomCode, db_column='screen_bottom_code', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Bottom')
     other_screen_bottom = models.CharField(max_length=50, blank=True, verbose_name='Specify Other Screen Bottom')
 
     filter_pack_from = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Filter Pack From', validators=[MinValueValidator(Decimal('0.00'))])
@@ -242,6 +241,6 @@ class ActivitySubmission(AuditModel):
 
     def __str__(self):
         if self.filing_number:
-            return '%s %d %s %s' % (self.activity_submission_guid, self.filing_number, self.well_activity_type.well_activity_type_code, self.street_address)
+            return '%s %d %s %s' % (self.activity_submission_guid, self.filing_number, self.well_activity_type.well_activity_code, self.street_address)
         else:
             return '%s %s' % (self.activity_submission_guid, self.street_address)

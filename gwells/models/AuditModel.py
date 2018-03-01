@@ -11,7 +11,6 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
-
 from django.db import models
 from django.utils import timezone
 from django.core.validators import MinValueValidator

@@ -11,17 +11,14 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
-
 from .AuditModel import AuditModel
 from django.db import models
-import uuid
 
 class ScreenMaterialCode(AuditModel):
     """
      The material used to construct a well screen, i.e. Plastic, Stainless Steel, Other.
     """
-    screen_material_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    screen_material_code = models.CharField(max_length=10, unique=True)
+    screen_material_code = models.CharField(primary_key=True, max_length=10, editable=False)
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
 
