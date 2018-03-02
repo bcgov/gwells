@@ -88,6 +88,7 @@ INSTALLED_APPS = (
     'registries',
     'django_nose',
     'webpack_loader',
+    'django_filters',
 )
 
 MIDDLEWARE = (
