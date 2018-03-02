@@ -1,0 +1,45 @@
+{% extends 'gwells/base.html' %}
+{% load verbose_name %}
+
+{% block title %}Survey Details{% endblock %}
+
+{% block body_block %}
+<form id="survey_details">
+  <input type="hidden" name="survey_guid" value="{{survey.survey_guid}}">
+  <fieldset class="form-group">
+    <legend>Survey Details</legend>
+    <div class="row">
+      <div class="col-sm-6 col-md-3">
+        <label for="survey_introduction_text">{% verbose_name survey "survey_introduction_text" %}:</label>
+      </div>
+      <div class"col-sm-6 col-md-3">
+        <input type="text" class="form-control form-control-plaintext" id="survey_introduction_text" value="{{survey.survey_introduction_text}}" readonly>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-6 col-md-3">
+        <label for="survey_link">{% verbose_name survey "survey_link" %}:</label>
+      </div>
+      <div class"col-sm-6 col-md-3">
+        <input type="text" class="form-control form-control-plaintext" id="survey_link" value="{{survey.survey_link}}" readonly>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-6 col-md-3">
+        <label for="survey_page">{% verbose_name survey "survey_page" %}:</label>
+      </div>
+      <div class"col-sm-6 col-md-3">
+        <input type="text" class="form-control form-control-plaintext" id="survey_page" value="{{survey.get_survey_page_display}}" readonly>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-6 col-md-3">
+        <label for="survey_enabled">{% verbose_name survey "survey_enabled" %}:</label>
+      </div>
+      <div class"col-sm-6 col-md-3">
+        <input type="checkbox" class="form-control form-control-plaintext" id="survey_enabled" value="{{survey.survey_enabled}}" readonly>
+      </div>
+    </div>
+  </fieldset>
+</form>
+{% endblock %}

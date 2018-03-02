@@ -84,4 +84,9 @@ activate
 .vscode/settings.json
 
 x.sh
+
+# Frontend files
+frontend/node_modules/
+registries/static/registries/bundles/
+
 sonar-runner/.gradle

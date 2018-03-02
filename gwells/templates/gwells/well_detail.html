@@ -4,25 +4,13 @@
 {% block title %}Well Summary{% endblock %}
 
 {% block introduction_block %}
-<!--
-<div class="row hide-for-print show-for-screen">
-    <div class="col-sm-12 alert alert-info">
-        <div id="survey-msg" role="alert" aria-atomic="true">Please take a moment to complete a <a href="https://www.surveymonkey.com/r/VMWH39N" target=_blank>short survey</a> to let us know about your well summary page experience.</div>
-    </div>
-</div>
--->
-{% if file_client_error %}
-<div class="row hide-for-print show-for-screen">
-    <div class="col-sm-12 alert alert-danger">
-        <div id="file-client-error-msg-heading" role="alert" aria-atomic="true">{{file_client_error}}</div>
-    </div>
-</div>
-{% endif %}
 {% endblock %}
 {% block body_block %}
 <fieldset id="summary_information_fieldset">
-    <legend>Well Summary</legend>
+
+    <legend>Well Summary <a onclick="window.print();"><span title="Print" class="glyphicon glyphicon-print pull-right hide-for-print"></span></a></legend>
     <div class="row print-compressed">
+
         <div class="col-md-4 col-print-4 print-compressed">
             <div class="row print-compressed">
                 <div class="col-md-12 col-print-12 print-compressed">
@@ -855,7 +843,7 @@
 
     {% if file_client_error %}
     <div class="row hide-for-print show-for-screen">
-        <div class="col-sm-12 alert alert-danger">
+        <div class="col-sm-12 alert alert-warning">
             <div id="file-client-error-msg-body" role="alert" aria-atomic="true">{{file_client_error}}</div>
         </div>
     </div>

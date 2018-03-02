@@ -889,8 +889,9 @@ function UTMXYToLatLon (x, y, zone, southhemi, latlon)
     x /= UTMScaleFactor;
         
     /* If in southern hemisphere, adjust y accordingly. */
-    if (southhemi)
-    y -= 10000000.0;
+    if (southhemi){
+        y -= 10000000.0;
+    }
             
     y /= UTMScaleFactor;
     

@@ -6,11 +6,51 @@ plugins {
   id "org.owasp.dependencycheck" version "3.1.1"
 }
 
+def env = System.getenv()
+
+//consume environment variables and cli arguments
+//cli usage
+// ./gradlew -Pproject_name_extension=foo
+//env variable usage
+// in .bashrc or equivalent
+//   export SONAR_PROJECT_NAME_EXTENSION
+// ensure that the file is sourced to populate your environment
+// verify with
+//   printenv |  grep SONAR
+//then ./gradlew sonarQube
+
+def pne = ""
+
+if ( project.hasProperty('project_name_extension') ) {
+	pne = "-" + project_name_extension
+} else if ( env.SONAR_PROJECT_NAME_EXTENSION != null ) {
+	pne = "-" + env.SONAR_PROJECT_NAME_EXTENSION
+}
+
+//consume environment variables and cli arguments
+//cli usage
+// ./gradlew -Pproject_key_extension=foo sonarqube
+//env variable usage
+// in .bashrc or equivalent
+//   export SONAR_PROJECT_KEY_EXTENSION
+// ensure that the file is sourced to populate your environment
+// verify with
+//   printenv |  grep SONAR
+//then ./gradlew sonarqube
+
+def pke = ""
+
+if ( project.hasProperty('project_key_extension') ) {
+	pke = "-" + project_key_extension
+}  else if ( env.SONAR_PROJECT_KEY_EXTENSION != null ) {
+         pke = "-" + env.SONAR_PROJECT_KEY_EXTENSION
+}
+
 sonarqube {
     properties {
-        property "sonar.host.url", "https://sonarqube-moe-gwells-tools.pathfinder.gov.bc.ca"        
-        property "sonar.projectName", "GWells - Roland"
-        property "sonar.projectKey", "org.sonarqube:bcgov-gwells-roland"
+        //property "sonar.host.url", "https://sonarqube-moe-gwells-tools.pathfinder.gov.bc.ca" 
+        property "sonar.projectName", "GWells$pne"
+        property "sonar.projectKey", "org.sonarqube:bcgov-gwells$pke"
         property "sonar.projectBaseDir", "../"
         property "sonar.sources", "./gwells,./registries"
         property "sonar.lanuage", "py"
@@ -34,7 +74,6 @@ dependencyCheck {
 }
 
 allprojects {
-  def env = System.getenv()
   TimeZone.getTimeZone('UTC')
   Date date= new Date()
   String newdate=date.format("YYYYMMDD")
