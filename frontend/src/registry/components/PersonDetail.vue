@@ -24,6 +24,41 @@
     </fieldset>
     <fieldset class="registry-section">
       <legend>Classification and Qualifications</legend>
+      <div class="form-group">
+        <div class="row">
+          <div class="col-xs-12">
+            <label>Select qualification: &nbsp;</label>
+          </div>
+          <div class="col-xs-12 col-sm-4 col-md-3">
+            <div class="radio">
+              <div>
+                <label>
+                  <input type="radio" name="activitySelector" id="activityDriller" v-model="qualType" value="DRILL" style="margin-top: 0px"> Water Well Driller
+                </label>
+              <div>
+              </div>
+                <label>
+                  <input type="radio" name="activitySelector" id="activityInstaller" v-model="qualType" value="PUMP" style="margin-top: 0px"> Pump Installer
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="col-xs-12 col-sm-4 col-md-3 form-spacing">
+            <div class="radio">
+              <div>
+                <label class="registry-disabled-item">
+                  <input type="radio" class="registry-disabled-item" name="activitySelector" id="activityDriller" v-model="qualType" value="GEOTHERM" style="margin-top: 0px" disabled> Geoexchange Driller
+                </label>
+              <div>
+              </div>
+                <label class="registry-disabled-item">
+                  <input type="radio" class="registry-disabled-item" name="activitySelector" id="activityInstaller" v-model="qualType" value="GEOTECH" style="margin-top: 0px" disabled> Geotechnical/Environmental Driller
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       <div class="row">
         <h4>Qualification</h4>
       </div>
@@ -36,41 +71,35 @@
         </div>
       </div>
       <div class="row">
-        <h4>Classifications</h4>
+        <h4>Qualified to drill</h4>
       </div>
       <div class="row">
-        <div class="col-xs-12 col-sm-2" style="margin-bottom: -10px">
-          <div class="checkbox">
-            <label>
-              <input type="checkbox" style="margin-top:-3px;" class="registry-disabled-item" v-model="checked" disabled>Well Driller
-            </label>
+        <div class="col-xs-12 col-sm-4 col-md-3">
+          <div class="qualification-item">
+            <r-checkbox checked="true"></r-checkbox> Water supply wells
           </div>
-          <div class="checkbox">
-            <label>
-              <input type="checkbox" style="margin-top:-3px;" class="registry-disabled-item" v-model="checked" disabled>etc
-            </label>
+          <div class="qualification-item">
+            <r-checkbox checked="false"></r-checkbox> Monitoring wells
           </div>
-          <div class="checkbox">
-            <label>
-              <input type="checkbox" style="margin-top:-3px;" class="registry-disabled-item" v-model="checked" disabled>Geothermal
-            </label>
+          <div class="qualification-item">
+            <r-checkbox checked="false"></r-checkbox> Recharge wells
+          </div>
+          <div class="qualification-item">
+            <r-checkbox checked="true"></r-checkbox> Injection wells
           </div>
         </div>
-        <div class="col-xs-12 col-sm-2 registry-item" style="margin-top: -5px">
-          <div class="checkbox">
-            <label>
-              <input type="checkbox" style="margin-top:-3px;" class="registry-disabled-item" disabled>Pump Installer
-            </label>
+        <div class="col-xs-12 col-sm-4 col-md-3 registry-item">
+          <div class="qualification-item">
+            <r-checkbox checked="false"></r-checkbox> Dewatering wells
           </div>
-          <div class="checkbox">
-            <label>
-              <input type="checkbox" style="margin-top:-3px;" class="registry-disabled-item" v-model="checked" disabled>etc
-            </label>
+          <div class="qualification-item">
+            <r-checkbox checked="true"></r-checkbox> Remediation wells
           </div>
-          <div class="checkbox">
-            <label>
-              <input type="checkbox" style="margin-top:-3px;" class="registry-disabled-item" disabled>etc
-            </label>
+          <div class="qualification-item">
+            <r-checkbox checked="false"></r-checkbox> Geotechnical wells
+          </div>
+          <div class="qualification-item">
+            <r-checkbox checked="false"></r-checkbox> Closed-loop geoexchange wells
           </div>
         </div>
       </div>
@@ -113,6 +142,7 @@
 
 <script>
 import APIErrorMessage from '@/common/components/APIErrorMessage'
+import QualCheckbox from '@/common/components/QualCheckbox'
 import { mapGetters } from 'vuex'
 import { SET_DRILLER } from '@/registry/store/mutations.types'
 import { FETCH_DRILLER } from '@/registry/store/actions.types'
@@ -120,7 +150,8 @@ import { FETCH_DRILLER } from '@/registry/store/actions.types'
 export default {
   name: 'person-detail',
   components: {
-    'api-error': APIErrorMessage
+    'api-error': APIErrorMessage,
+    'r-checkbox': QualCheckbox
   },
   data () {
     return {
@@ -131,7 +162,17 @@ export default {
         qualificationCode: 'DRILL',
         activityDescription: 'Well Driller'
       },
-      checked: true
+      qualType: 'DRILL',
+      wellQualifications: {
+        supply: true,
+        monitoring: true,
+        recharge: true,
+        injection: true,
+        dewatering: false,
+        remediation: false,
+        geotechnical: true,
+        geoexchange: false
+      }
     }
   },
   computed: {
@@ -159,5 +200,8 @@ export default {
 .registry-disabled-item {
   color: #808080;
   cursor: auto!important;
+}
+.qualification-item {
+  margin-bottom: 5px;
 }
 </style>
