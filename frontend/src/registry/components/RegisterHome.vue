@@ -13,10 +13,17 @@
       <div class="row" v-if="adminPanelToggle">
         <div class="col-xs-12">
             <div class="well well-sm">
-              <p>
-                <button type="button" class="btn btn-primary">Add new entry</button>
-                <button type="button" class="btn btn-primary">Manage companies</button>
-              </p>
+              <div v-if="!user">
+                <button type="button" class="btn btn-primary" @click="login">Log in</button>
+              </div>
+              <div v-if="user">
+                <div>Logged in as {{ user.username }}</div>
+                <div>
+                  <button type="button" class="btn btn-primary">Add new entry</button>
+                  <button type="button" class="btn btn-primary">Manage companies</button>
+                </div>
+                <div><button type="button" class="btn btn-secondary" @click="logout">Log out</button></div>
+              </div>
             </div>
         </div>
       </div>
@@ -104,6 +111,7 @@
 import RegisterTable from '@/registry/components/RegisterTable'
 import APIErrorMessage from '@/common/components/APIErrorMessage'
 import { mapGetters } from 'vuex'
+import { SET_USER } from '@/registry/store/mutations.types'
 import { FETCH_CITY_LIST, FETCH_DRILLER_LIST } from '@/registry/store/actions.types'
 
 export default {
@@ -114,10 +122,6 @@ export default {
   data () {
     return {
       adminPanelToggle: false,
-      regTypeOptions: [
-        { text: 'Well Driller', value: 'DRILL' },
-        { text: 'Well Pump Installer', value: 'PUMP' }
-      ],
       regStatusOptions: [
         { value: '', text: 'All', public: false },
         { value: 'PENDING', text: 'Pending', public: false },
@@ -154,6 +158,7 @@ export default {
       return ''
     },
     ...mapGetters([
+      'user',
       'loading',
       'listError',
       'cityList'
@@ -161,7 +166,6 @@ export default {
   },
   watch: {
     'searchParams.activity': function () {
-      console.log('switched to', this.formatActivityForCityList)
       this.searchParams.city = ''
       this.$store.dispatch(FETCH_CITY_LIST, this.formatActivityForCityList)
     }
@@ -184,6 +188,12 @@ export default {
       this.searchParams.activity = 'DRILL'
       this.searchParams.status = 'ACTIVE'
       this.searchParams.limit = '10'
+    },
+    login () {
+      this.$store.commit(SET_USER, { username: 'admin' })
+    },
+    logout () {
+      this.$store.commit(SET_USER, null)
     }
   },
   created () {

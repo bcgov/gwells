@@ -6,18 +6,19 @@ import {
   FETCH_DRILLER,
   FETCH_DRILLER_LIST } from './actions.types.js'
 import {
+  SET_ERROR,
+  SET_LOADING,
+  SET_LIST_ERROR,
+  SET_USER,
   SET_CITY_LIST,
   SET_DRILLER,
-  SET_DRILLER_LIST,
-  SET_LOADING,
-  SET_ERROR,
-  SET_LIST_ERROR } from './mutations.types.js'
+  SET_DRILLER_LIST } from './mutations.types.js'
 
 Vue.use(Vuex)
 
 export const store = new Vuex.Store({
   state: {
-    currentUser: 'anonymous',
+    user: null,
     loading: false,
     error: null,
     listError: null,
@@ -34,6 +35,9 @@ export const store = new Vuex.Store({
     },
     [SET_LIST_ERROR] (state, payload) {
       state.listError = payload
+    },
+    [SET_USER] (state, payload) {
+      state.user = payload
     },
     [SET_CITY_LIST] (state, payload) {
       state.cityList = payload
@@ -91,6 +95,9 @@ export const store = new Vuex.Store({
     },
     listError (state) {
       return state.listError
+    },
+    user (state) {
+      return state.user
     },
     cityList (state) {
       return state.cityList
