@@ -18,7 +18,6 @@ class LithologyMaterialCode(AuditModel):
     lithology_material_code = models.CharField(primary_key=True, max_length=10, editable=False, verbose_name='Code')
     description = models.CharField(max_length=255, verbose_name='Description')
     display_order = models.PositiveIntegerField()
-    status_flag = models.BooleanField()
 
     effective_date = models.DateTimeField(blank=True, null=True)
     expiry_date    = models.DateTimeField(blank=True, null=True)
