@@ -157,6 +157,7 @@ export default {
   margin-bottom: 20px;
 }
 .registry-disabled-item {
+  color: #808080;
   cursor: auto!important;
 }
 </style>

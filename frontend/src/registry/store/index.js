@@ -46,8 +46,8 @@ export const store = new Vuex.Store({
     }
   },
   actions: {
-    [FETCH_CITY_LIST] ({commit}) {
-      ApiService.query('cities/drillers/')
+    [FETCH_CITY_LIST] ({commit}, activity) {
+      ApiService.query('cities/' + activity + '/')
         .then((response) => {
           commit(SET_CITY_LIST, response.data)
         })
