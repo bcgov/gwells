@@ -18,7 +18,7 @@ class BedrockMaterialDescriptorCode(AuditModel):
     """
     Further descriptor of the bedrock material encountered in lithology
     """
-    bedrock_material_descriptor_code = models.CharField(primary_key=True, editable=False, max_length=10)
+    bedrock_material_descriptor_code = models.CharField(primary_key=True, max_length=10, editable=False)
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
 
