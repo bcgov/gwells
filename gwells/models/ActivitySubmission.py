@@ -148,7 +148,7 @@ class ActivitySubmission(AuditModel):
     comments = models.CharField(max_length=3000, blank=True)
     alternative_specs_submitted = models.BooleanField(default=False, verbose_name='Alternative specs submitted (if required)')
 
-    well_yield_unit = models.ForeignKey(WellYieldUnitCode, db_column='well_yield_unit_guid', on_delete=models.CASCADE, blank=True, null=True)
+    well_yield_unit = models.ForeignKey(WellYieldUnitCode, db_column='well_yield_unit_code', on_delete=models.CASCADE, blank=True, null=True)
     diameter = models.CharField(max_length=9, blank=True)  #want to be integer in future
 
     tracker = FieldTracker()

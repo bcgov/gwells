@@ -39,7 +39,7 @@ DECLARE
     province_state_guid                ,
     well_class_code                    ,
     well_subclass_guid                 ,
-    well_yield_unit_guid               ,
+    well_yield_unit_code               ,
     latitude                           ,
     longitude                          ,
     ground_elevation                   ,
@@ -47,7 +47,7 @@ DECLARE
     other_drilling_method              ,
     drilling_method_code              ,
     ground_elevation_method_code       ,
-    well_status_guid                   ,
+    well_status_code                   ,
     observation_well_number            ,
     obs_well_status_code       ,
     licenced_status_code               ,
@@ -141,16 +141,10 @@ DECLARE
     END AS province_state_guid                                             ,
     wells.class_of_well_codclassified_by AS well_class_code                ,
     subclass.well_subclass_guid                                            ,
-    CASE wells.yield_unit_code
-      WHEN ''GPM''  THEN ''c4634ef447c311e7a91992ebcb67fe33''::uuid
-      WHEN ''IGM''  THEN ''c4634ff847c311e7a91992ebcb67fe33''::uuid
-      WHEN ''DRY''  THEN ''c46347b047c311e7a91992ebcb67fe33''::uuid
-      WHEN ''LPS''  THEN ''c46350c047c311e7a91992ebcb67fe33''::uuid
-      WHEN ''USGM'' THEN ''c463525047c311e7a91992ebcb67fe33''::uuid
-      WHEN ''GPH''  THEN ''c4634b4847c311e7a91992ebcb67fe33''::uuid
-      WHEN ''UNK''  THEN ''c463518847c311e7a91992ebcb67fe33''::uuid
-      ELSE ''c463518847c311e7a91992ebcb67fe33''::uuid -- As PostgreSQL does not permit "" as guid value
-    END AS well_yield_unit_guid                                              ,
+    CASE wells.yield_unit_code 
+        WHEN ''USGM'' THEN ''USGPM''
+        ELSE wells.yield_unit_code 
+    END AS well_yield_unit_code                          ,
     wells.latitude                                                           ,
     CASE
       WHEN wells.longitude > 0 THEN wells.longitude * -1
@@ -164,7 +158,7 @@ DECLARE
     null AS other_drilling_method, -- placeholder as it is brand new content
     wells.drilling_method_code AS drilling_method_code, -- supersedes CONSTRUCTION_METHOD_CODE
     wells.ground_elevation_method_code AS ground_elevation_method_code,
-    well_status.well_status_guid                                             ,
+    wells.status_of_well_code AS well_status_code                     ,
     to_char(wells.observation_well_number,''fm000'') AS observation_well_number,
     CASE wells.ministry_observation_well_stat
       WHEN ''Abandoned'' THEN ''Inactive''
@@ -222,7 +216,6 @@ DECLARE
     COALESCE(wells.who_updated,wells.who_created)
   FROM wells.wells_wells wells LEFT OUTER JOIN wells.wells_owners owner ON owner.owner_id=wells.owner_id
               LEFT OUTER JOIN drilling_company drilling_company ON UPPER(wells.driller_company_code)=UPPER(drilling_company.drilling_company_code)
-              LEFT OUTER JOIN well_status_code well_status ON UPPER(wells.status_of_well_code)=UPPER(well_status.well_status_code)
               LEFT OUTER JOIN well_subclass_code subclass ON UPPER(wells.subclass_of_well_classified_by)=UPPER(subclass.well_subclass_code) 
                 AND subclass.well_class_code = wells.class_of_well_codclassified_by
   WHERE wells.acceptance_status_code NOT IN (''PENDING'', ''REJECTED'', ''NEW'') ';
@@ -264,7 +257,7 @@ BEGIN
      province_state_guid                 uuid,
      well_class_code                     character varying(10),
      well_subclass_guid                  uuid,
-     well_yield_unit_guid                uuid,
+     well_yield_unit_code                character varying(10),
      latitude                            numeric(8,6),
      longitude                           numeric(9,6),
      ground_elevation                    numeric(10,2),
@@ -272,7 +265,7 @@ BEGIN
      other_drilling_method               character varying(50),
      drilling_method_code                character varying(10),
      ground_elevation_method_code        character varying(10),
-     well_status_guid                    uuid,
+     well_status_code                    character varying(10),
      observation_well_number             character varying(3),
      obs_well_status_code                character varying(10),
      licenced_status_code                character varying(10),
@@ -304,7 +297,7 @@ BEGIN
      bcgs_id                             bigint,
      development_method_code             character varying(10),
      development_duration                integer,
-     yield_estimation_method_guid        uuid,
+     yield_estimation_method_code        character varying(10),
      surface_seal_method_code            character varying(10),
      surface_seal_material_code          character varying(10),
      surface_seal_length                 numeric(5,2),

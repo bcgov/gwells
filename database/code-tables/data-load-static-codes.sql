@@ -19,7 +19,7 @@
 
 --YIELD UNIT
 \echo '... loading well_yield_unit_code code table'
-\copy well_yield_unit_code (well_yield_unit_guid,well_yield_unit_code,description,display_order,create_date,update_date,create_user,update_user) from 'well_yield_unit_code.csv' with header delimiter ',' CSV ;
+\copy well_yield_unit_code (well_yield_unit_code,description,display_order,create_date,update_date,create_user,update_user) from 'well_yield_unit_code.csv' with header delimiter ',' CSV ;
 
 --DRILLING METHOD
 \echo '... loading drilling_method_code code table'
@@ -31,7 +31,7 @@
 
 --STATUS
 \echo '... loading well_status_code code table'
-\copy well_status_code (well_status_guid,well_status_code,description,display_order,create_date,update_date,create_user,update_user) from 'well_status_code.csv' with header delimiter ',' CSV ;
+\copy well_status_code (well_status_code,description,display_order,create_date,update_date,create_user,update_user) from 'well_status_code.csv' with header delimiter ',' CSV ;
 
 --LICENCE
 \echo '... loading licenced_status_code code table'
@@ -71,7 +71,7 @@
 
 --ESTIMATION METHOD
 \echo '... loading yield_estimation_method_code code table'
-\copy yield_estimation_method_code (create_user,create_date,update_user,update_date,yield_estimation_method_guid,yield_estimation_method_code,description,display_order) from 'yield_estimation_method_code.csv' with header delimiter ',' CSV ;
+\copy yield_estimation_method_code (create_user,create_date,update_user,update_date,yield_estimation_method_code,description,display_order) from 'yield_estimation_method_code.csv' with header delimiter ',' CSV ;
 
 --CASING MATERIAL
 \echo '... loading casing_material_code code table'

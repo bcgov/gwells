@@ -64,7 +64,7 @@ class Well(AuditModel):
     well_class = models.ForeignKey(WellClassCode, null=True, db_column='well_class_code', on_delete=models.CASCADE, verbose_name='Well Class')
     well_subclass = models.ForeignKey(WellSubclassCode, db_column='well_subclass_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Well Subclass')
     intended_water_use = models.ForeignKey(IntendedWaterUseCode, db_column='intended_water_use_code', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Intended Water Use')
-    well_status = models.ForeignKey(WellStatusCode, db_column='well_status_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Well Status')
+    well_status = models.ForeignKey(WellStatusCode, db_column='well_status_code', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Well Status')
     licenced_status = models.ForeignKey(LicencedStatusCode, db_column='licenced_status_code', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Licenced Status')
 
     street_address = models.CharField(max_length=100, blank=True, verbose_name='Street Address')
@@ -152,7 +152,7 @@ class Well(AuditModel):
     comments = models.CharField(max_length=3000, blank=True, null=True)
     alternative_specs_submitted = models.BooleanField(default=False, verbose_name='Alternative specs submitted (if required)', choices=((False, 'No'), (True, 'Yes')))
 
-    well_yield_unit = models.ForeignKey(WellYieldUnitCode, db_column='well_yield_unit_guid', on_delete=models.CASCADE, blank=True, null=True)
+    well_yield_unit = models.ForeignKey(WellYieldUnitCode, db_column='well_yield_unit_code', on_delete=models.CASCADE, blank=True, null=True)
     diameter = models.CharField(max_length=9, blank=True)  #want to be integer in future
 
     observation_well_number = models.CharField(max_length=3, blank=True, null=True, verbose_name="Observation Well Number")
