@@ -36,7 +36,7 @@ DECLARE
     well_yield                         ,
     intended_water_use_code            ,
     land_district_code                 ,
-    province_state_guid                ,
+    province_state_code                ,
     well_class_code                    ,
     well_subclass_guid                 ,
     well_yield_unit_code               ,
@@ -134,11 +134,9 @@ DECLARE
     END AS intended_water_use_code                                           ,
     wells.legal_land_district_code as land_district_code                     ,
     CASE owner.province_state_code
-      WHEN ''BC'' THEN ''f46b70b647d411e7a91992ebcb67fe33''::uuid
-      WHEN ''AB'' THEN ''f46b742647d411e7a91992ebcb67fe33''::uuid
-      WHEN ''WASH_STATE'' THEN ''f46b77b447d411e7a91992ebcb67fe33''::uuid
-      ELSE ''f46b7b1a47d411e7a91992ebcb67fe33''::uuid
-    END AS province_state_guid                                             ,
+      WHEN ''WASH_STATE'' THEN ''WA''
+      ELSE owner.province_state_code
+    END AS province_state_code                                             ,
     wells.class_of_well_codclassified_by AS well_class_code                ,
     subclass.well_subclass_guid                                            ,
     CASE wells.yield_unit_code 
@@ -254,7 +252,7 @@ BEGIN
      well_yield                          numeric(8,3),
      intended_water_use_code             character varying(10),
      land_district_code                  character varying(10),
-     province_state_guid                 uuid,
+     province_state_code                 character varying(10),
      well_class_code                     character varying(10),
      well_subclass_guid                  uuid,
      well_yield_unit_code                character varying(10),

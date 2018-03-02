@@ -15,7 +15,7 @@
 
 --PROVINCE_STATE
 \echo '... loading province_state_code code table'
-\copy province_state_code (province_state_guid,province_state_code,description,display_order,create_date,update_date,create_user,update_user) from 'province_state_code.csv' with header delimiter ',' CSV ;
+\copy province_state_code (province_state_code,description,display_order,create_date,update_date,create_user,update_user) from 'province_state_code.csv' with header delimiter ',' CSV ;
 
 --YIELD UNIT
 \echo '... loading well_yield_unit_code code table'

@@ -31,7 +31,7 @@ CREATE unlogged TABLE IF NOT EXISTS xform_well (
    well_yield                          numeric(8,3),
    intended_water_use_code             character varying(10),
    land_district_code                  character varying(10),
-   province_state_guid                 uuid,
+   province_state_code                 character varying(10),
    well_class_code                     character varying(10),
    well_subclass_guid                  uuid,
    well_yield_unit_code                character varying(10),
