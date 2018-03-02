@@ -43,7 +43,7 @@
 
 --SCREEN INTAKE METHOD
 \echo '... loading screen_intake_method_code code table'
-\copy screen_intake_method_code (create_user,create_date,update_user,update_date,screen_intake_code,description,status_flag,display_order) from 'screen_intake_method_code.csv' with header delimiter ',' CSV ;
+\copy screen_intake_method_code (create_user,create_date,update_user,update_date,screen_intake_code,description,display_order) from 'screen_intake_method_code.csv' with header delimiter ',' CSV ;
 
 --SCREEN TYPE
 \echo '... loading screen_type_code code table'
@@ -103,7 +103,7 @@
 
 --LITHOLOGY MATERIAL
 \echo '... loading lithology_material_code code table'
-\copy lithology_material_code (create_user,create_date,update_user,update_date,lithology_material_code,description,display_order,status_flag) from 'lithology_material_code.csv' with header delimiter ',' CSV ;
+\copy lithology_material_code (create_user,create_date,update_user,update_date,lithology_material_code,description,display_order) from 'lithology_material_code.csv' with header delimiter ',' CSV ;
 
 --LITHOLOGY DESCRIPTION
 \echo '... loading lithology_description_code code table'
@@ -118,7 +118,7 @@
 
 --DECOMMISSION METHOD
 \echo '... loading decommission_method_code code table'
-\copy decommission_method_code (create_user,create_date,update_user,update_date,decommission_method_code,description,status_flag,display_order) from 'decommission_method_code.csv' with header delimiter ',' CSV ;
+\copy decommission_method_code (create_user,create_date,update_user,update_date,decommission_method_code,description,display_order) from 'decommission_method_code.csv' with header delimiter ',' CSV ;
 
 --OBSERVATION WELL STATUS
 \echo '... loading obs_well_status_code code table'
