@@ -43,7 +43,6 @@ from .SurfaceSealMaterialCode import SurfaceSealMaterialCode
 from .SurfaceSealMethodCode import SurfaceSealMethodCode
 from .SurficialMaterialCode import SurficialMaterialCode
 from .Survey import Survey
-from .User import User
 from .WaterQualityCharacteristic import WaterQualityCharacteristic
 from .Well import Well
 from .WellActivityCode import WellActivityCode
@@ -99,7 +98,6 @@ __all__ = [
 'SurfaceSealMethodCode',
 'SurficialMaterialCode',
 'Survey',
-'User',
 'WaterQualityCharacteristic',
 'Well',
 'WellActivityCode',
