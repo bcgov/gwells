@@ -36,7 +36,7 @@
                         <input type="radio" name="activitySelector" id="activityDriller" v-model="searchParams.activity" value="DRILL" style="margin-top: 0px"> Well Driller
                       </label>
                       <label class="radio-inline">
-                        <input type="radio" name="activitySelector" id="activityInstaller" v-model="searchParams.activity" value="PUMP" style="margin-top: 0px" disabled> Pump Installer
+                        <input type="radio" name="activitySelector" id="activityInstaller" v-model="searchParams.activity" value="PUMP" style="margin-top: 0px"> Pump Installer
                       </label>
                     </div>
                   </div>
@@ -111,9 +111,28 @@ export default {
     'register-table': RegisterTable,
     'api-error': APIErrorMessage
   },
-  created () {
-    this.$store.dispatch(FETCH_CITY_LIST)
-    this.drillerSearch()
+  data () {
+    return {
+      adminPanelToggle: false,
+      regTypeOptions: [
+        { text: 'Well Driller', value: 'DRILL' },
+        { text: 'Well Pump Installer', value: 'PUMP' }
+      ],
+      regStatusOptions: [
+        { value: '', text: 'All', public: false },
+        { value: 'PENDING', text: 'Pending', public: false },
+        { value: 'INACTIVE', text: 'Not registered', public: true },
+        { value: 'ACTIVE', text: 'Registered', public: true },
+        { value: 'REMOVED', text: 'Removed', public: false }
+      ],
+      searchParams: {
+        search: '',
+        city: '',
+        activity: 'DRILL',
+        status: 'ACTIVE',
+        limit: '10'
+      }
+    }
   },
   computed: {
     cities () {
@@ -124,33 +143,27 @@ export default {
       })
       return list
     },
+    formatActivityForCityList () {
+      // converts activity code to a plural string compatible with cities list endpoint
+      if (this.searchParams.activity === 'DRILL') {
+        return 'drillers'
+      }
+      if (this.searchParams.activity === 'PUMP') {
+        return 'installers'
+      }
+      return ''
+    },
     ...mapGetters([
       'loading',
       'listError',
       'cityList'
     ])
   },
-  data () {
-    return {
-      adminPanelToggle: false,
-      regTypeOptions: [
-        {text: 'Well Driller', value: 'DRILL'},
-        {text: 'Well Pump Installer', value: 'PUMP'}
-      ],
-      regStatusOptions: [
-        { value: '', text: 'All' },
-        { value: 'PENDING', text: 'Pending' },
-        { value: 'INACTIVE', text: 'Not registered' },
-        { value: 'ACTIVE', text: 'Registered' },
-        { value: 'REMOVED', text: 'Removed' }
-      ],
-      searchParams: {
-        search: '',
-        city: '',
-        activity: 'DRILL',
-        status: 'ACTIVE',
-        limit: '10'
-      }
+  watch: {
+    'searchParams.activity': function () {
+      console.log('switched to', this.formatActivityForCityList)
+      this.searchParams.city = ''
+      this.$store.dispatch(FETCH_CITY_LIST, this.formatActivityForCityList)
     }
   },
   methods: {
@@ -172,6 +185,10 @@ export default {
       this.searchParams.status = 'ACTIVE'
       this.searchParams.limit = '10'
     }
+  },
+  created () {
+    this.$store.dispatch(FETCH_CITY_LIST, this.formatActivityForCityList)
+    this.drillerSearch()
   }
 }
 </script>
@@ -182,5 +199,9 @@ export default {
 }
 .form-spacing {
   margin-bottom: 15px
+}
+.registry-disabled-item {
+  color: #808080;
+  cursor: auto!important;
 }
 </style>
