@@ -36,7 +36,7 @@
                         <input type="radio" name="activitySelector" id="activityDriller" v-model="searchParams.activity" value="DRILL" style="margin-top: 0px"> Well Driller
                       </label>
                       <label class="radio-inline">
-                        <input type="radio" name="activitySelector" id="activityInstaller" v-model="searchParams.activity" value="PUMP" style="margin-top: 0px"> Pump Installer
+                        <input type="radio" name="activitySelector" id="activityInstaller" v-model="searchParams.activity" value="PUMP" style="margin-top: 0px" disabled> Pump Installer
                       </label>
                     </div>
                   </div>
@@ -54,11 +54,11 @@
                       <div class="col-xs-12 col-sm-6 form-spacing">
                         <label>Registration status</label>
                         <select v-model="searchParams.status" class="form-control">
-                          <option value="">All</option>
-                          <option value="PENDING">Pending</option>
-                          <option value="INACTIVE">Not registered</option>
+                          <option value="" disabled>All</option>
+                          <option value="PENDING" disabled>Pending</option>
+                          <option value="INACTIVE" disabled>Not registered</option>
                           <option value="ACTIVE">Registered</option>
-                          <option value="REMOVED">Removed</option>
+                          <option value="REMOVED" disabled>Removed</option>
                         </select>
                       </div>
                     </div>
@@ -67,6 +67,11 @@
                     <div class="col-xs-12 col-sm-6 form-spacing">
                       <label for="regTypeInput">Individual, company, or registration number</label>
                       <input type="text" class="form-control" id="regTypeInput" placeholder="Search" v-model="searchParams.search">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <div class="col-xs-12 form-inline form-spacing">
+                        <select class="form-control input-sm" v-model="searchParams.limit"><option>10</option><option>25</option></select> entries
                     </div>
                   </div>
                   <div class="form-group">
@@ -87,11 +92,6 @@
         </div>
         <div v-if="listError" class="col-xs-12 col-sm-7">
           <api-error :error="listError" resetter="setListError"></api-error>
-        </div>
-        <div class="col-xs-12 form-inline">
-          <div class="form-group col-xs-4">
-            <select class="form-control input-sm" v-model="searchParams.limit"><option>10</option><option>25</option></select> entries
-          </div>
         </div>
         <div class="col-xs-12">
           <register-table/>
@@ -148,7 +148,7 @@ export default {
         search: '',
         city: '',
         activity: 'DRILL',
-        status: '',
+        status: 'ACTIVE',
         limit: '10'
       }
     }
