@@ -3,26 +3,24 @@
     <div class="table-responsive">
       <table class="table table-striped">
         <thead>
-          <th v-for="field in fields" :key="field.name" :class="field.class">{{field.name}}</th>
+          <th v-for="field in fields" :key="field.name" :class="field.class" v-if="field.visible === 'public' || user">{{field.name}}</th>
         </thead>
         <tbody>
           <tr id="registry-table-row" v-if="drillers.results && drillers.results.length" v-for="driller in drillers.results" :key="driller.person_guid">
             <td>{{ driller.first_name }} {{ driller.surname }}</td>
             <td>{{ driller.organization_name }}</td>
             <td>{{ driller.street_address }}</td>
-            <td>{{ driller.city }}</td>
-            <td>{{ driller.province_state }}</td>
+            <td>{{ driller.city }}<span v-if="driller.province_state">, {{ driller.province_state }}</span></td>
             <td>{{ driller.contact_tel }}</td>
             <td>{{ driller.contact_email }}</td>
             <td>{{ driller.activity }}</td>
-            <td><router-link :to="{ name: 'PersonDetail', params: { person_guid: driller.person_guid } }">Details</router-link></td>
+            <td v-if="user"><router-link :to="{ name: 'PersonDetail', params: { person_guid: driller.person_guid } }">Details</router-link></td>
           </tr>
           <tr v-else>
           </tr>
         </tbody>
       </table>
     </div>
-    <!-- <div v-if="loading">Loading results...</div> -->
     <div v-if="drillers.results && !drillers.results.length">No results were found.</div>
     <div v-if="drillers.results && drillers.results.length" class="col-sm-offset-10">
       <nav aria-label="List navigation" v-if="drillers.results && drillers.results.length">
@@ -62,6 +60,8 @@ export default {
   name: 'RegisterTable',
   data () {
     return {
+      // fields for the table headings\
+      // visible denotes whether field should be visible to public or admin only
       fields: [
         {
           name: 'Name',
@@ -80,11 +80,6 @@ export default {
         },
         {
           name: 'City',
-          class: 'col-xs-1',
-          visible: 'public'
-        },
-        {
-          name: 'Prov/State',
           class: 'col-xs-1',
           visible: 'public'
         },
@@ -115,11 +110,13 @@ export default {
     ...mapGetters([
       'loading',
       'listError',
+      'user',
       'drillers'
     ])
   },
   methods: {
     paginationNext () {
+      // API provides 'next' and 'previous' links with query strings for the current search
       if (this.drillers.next && ~this.drillers.next.indexOf('?')) {
         const q = this.drillers.next.split('?')[1]
         this.$store.dispatch(FETCH_DRILLER_LIST, querystring.parse(q))
