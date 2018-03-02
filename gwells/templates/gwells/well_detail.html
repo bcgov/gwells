@@ -856,9 +856,11 @@
                 </thead>
                 <tbody>
                     {% for document in documents %}
-                    <td>
-                        <a href="https://{{host}}/{{document.bucket_name}}/{{document.object_name}}" target="_blank">{{document.display_name}}</a>
-                    </td>
+                    <tr>
+                      <td>
+                          <a href="https://{{host}}/{{document.bucket_name}}/{{document.object_name}}" target="_blank">{{document.display_name}}</a>
+                      </td>
+                    </tr>
                     {% endfor %}
                 </tbody>
             </table>
