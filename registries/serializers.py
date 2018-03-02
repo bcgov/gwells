@@ -211,11 +211,13 @@ class ApplicationStatusSerializer(serializers.ModelSerializer):
     ApplicationStatus objects form a related set for an Application object.
     """
     status = serializers.StringRelatedField(many=False, read_only=True)
+    status_code = serializers.ReadOnlyField(source="status.code")
 
     class Meta:
         model = RegistriesApplicationStatus
         fields = (
             'status',
+            'status_code',
             'notified_date',
             'effective_date',
             'expired_date',
