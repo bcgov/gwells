@@ -6,6 +6,7 @@ from registries.models import (
     Person,
     Register,   
     RegistriesApplication,
+    RegistriesApplicationStatus,
     ActivityCode,
     SubactivityCode,
     QualificationCode,
@@ -189,6 +190,7 @@ class RegistrationsAdminSerializer(serializers.ModelSerializer):
     status = serializers.ReadOnlyField(source='status.description')
     activity = serializers.ReadOnlyField(source='registries_activity.description')
     activity_code = serializers.ReadOnlyField(source='registries_activity.code')
+    register_removal_reason = serializers.StringRelatedField(read_only=True)
 
     class Meta:
         model = Register
@@ -197,8 +199,27 @@ class RegistrationsAdminSerializer(serializers.ModelSerializer):
             'activity_code',
             'status',
             'registration_no',
+            'registration_date',
+            'register_removal_reason',
+            'register_removal_date',
+
         )
 
+class ApplicationStatusSerializer(serializers.ModelSerializer):
+    """
+    Serializes RegistriesApplicationStatus for admin users
+    ApplicationStatus objects form a related set for an Application object.
+    """
+    status = serializers.StringRelatedField(many=False, read_only=True)
+
+    class Meta:
+        model = RegistriesApplicationStatus
+        fields = (
+            'status',
+            'notified_date',
+            'effective_date',
+            'expired_date',
+        )
 
 class ApplicationListSerializer(AuditModelSerializer):
     """
@@ -221,6 +242,7 @@ class ApplicationAdminSerializer(AuditModelSerializer):
 
     registrations = RegistrationsAdminSerializer(many=True, read_only=True)
     classificationappliedfor_set = ClassificationAppliedForSerializer(many=True, read_only=True)
+    registriesapplicationstatus_set = ApplicationStatusSerializer(many=True, read_only=True)
 
     class Meta:
         model = RegistriesApplication
@@ -232,7 +254,8 @@ class ApplicationAdminSerializer(AuditModelSerializer):
             'registrar_notes',
             'reason_denied',
             'registrations',
-            'classificationappliedfor_set'
+            'classificationappliedfor_set',
+            'registriesapplicationstatus_set'
         )
 
 
