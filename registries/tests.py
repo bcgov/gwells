@@ -8,7 +8,7 @@ from django.utils.six import StringIO
 from rest_framework import status
 from rest_framework.test import APITestCase, APIRequestFactory
 from gwells.models.ProvinceStateCode import ProvinceStateCode
-from gwells.models.User import User
+from django.contrib.auth.models import User
 from registries.models import Organization, Person, RegistriesApplication, Register, RegistriesStatusCode, ActivityCode
 from registries.views import APIPersonListCreateView, APIPersonRetrieveUpdateDestroyView
 
