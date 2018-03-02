@@ -213,15 +213,19 @@ a label.env-username {
     legend {
         margin-bottom: 5px;
     }
+
     .template {
         font-size: 10px !important;
     }
+
     .show-for-print {
         display: block !important;
     }
+
     .hide-for-print {
         display: none;
     }
+
     .shift-up-navbar-height {
         top: -40px;
     }
@@ -229,6 +233,7 @@ a label.env-username {
     .hidden-xs {
         display: block !important;
     }
+
     #header-main {
         position: relative;
         border-bottom: none;
@@ -312,6 +317,10 @@ a label.env-username {
     .print-pad5-left {
         padding-left: 5px !important;
         padding-right: 0px !important;
+    }
+
+    #header .bcgov-title h1 {
+      font-size: 32px;
     }
 }
 
@@ -825,6 +834,32 @@ input[type="number"]::-webkit-inner-spin-button {
     margin: 0;
 }
 
+.survey-form{
+     /* border-bottom: 1px solid grey; */
+}/* selector anchor */
+
+.survey-form input {/*decendent selector*/
+    margin: 6px;
+}
+
+.survey-form select {/*decendent selector*/
+    margin: 6px;
+}
+
 input[type="number"] {
     -moz-appearance: textfield;
+}
+
+
+
+.row.like-table-row { 
+    display: table-row; 
+}
+.row.like-table-row > div { 
+    display: table-cell; 
+    vertical-align: middle; 
+    border: 1px solid #000; 
+}
+.header-row { 
+    font-weight: bold; 
 }

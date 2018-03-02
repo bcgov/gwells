@@ -5,8 +5,8 @@ from .BCGS_Numbers import BCGS_Numbers
 from .BedrockMaterialCode import BedrockMaterialCode
 from .BedrockMaterialDescriptorCode import BedrockMaterialDescriptorCode
 from .Casing import Casing
-from .CasingMaterialCode import CasingMaterialCode
 from .CasingCode import CasingCode
+from .CasingMaterialCode import CasingMaterialCode
 from .DecommissionMethodCode import DecommissionMethodCode
 from .DevelopmentMethodCode import DevelopmentMethodCode
 from .Driller import Driller
@@ -42,7 +42,7 @@ from .ScreenTypeCode import ScreenTypeCode
 from .SurfaceSealMaterialCode import SurfaceSealMaterialCode
 from .SurfaceSealMethodCode import SurfaceSealMethodCode
 from .SurficialMaterialCode import SurficialMaterialCode
-from .User import User
+from .Survey import Survey
 from .WaterQualityCharacteristic import WaterQualityCharacteristic
 from .Well import Well
 from .WellActivityCode import WellActivityCode
@@ -97,7 +97,7 @@ __all__ = [
 'SurfaceSealMaterialCode',
 'SurfaceSealMethodCode',
 'SurficialMaterialCode',
-'User',
+'Survey',
 'WaterQualityCharacteristic',
 'Well',
 'WellActivityCode',
