@@ -19,7 +19,7 @@ import uuid
 
 class WellSubclassCode(AuditModel):
     """
-    Subclass of Well type.
+    Subclass of Well type; we use GUID here as Django doesn't support multi-column PK's
     """
     well_subclass_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     well_class = models.ForeignKey(WellClassCode, null=True, db_column='well_class_code', on_delete=models.CASCADE, blank=True)

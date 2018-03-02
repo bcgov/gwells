@@ -11,17 +11,14 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
-
 from .AuditModel import AuditModel
 from django.db import models
-import uuid
 
 class WellStatusCode(AuditModel):
     """
     Well Status.
     """
-    well_status_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    well_status_code = models.CharField(unique=True, max_length=10)
+    well_status_code = models.CharField(primary_key=True, max_length=10,editable=False)
     description = models.CharField(max_length=255)
     display_order = models.PositiveIntegerField()
 
