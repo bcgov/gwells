@@ -3,7 +3,7 @@ import Vuex from 'vuex'
 import RegisterHome from '@/registry/components/RegisterHome'
 import RegisterTable from '@/registry/components/RegisterTable'
 import APIErrorMessage from '@/common/components/APIErrorMessage'
-import { FETCH_DRILLER_LIST } from '@/registry/store/actions.types'
+import { FETCH_CITY_LIST, FETCH_DRILLER_LIST } from '@/registry/store/actions.types'
 
 const sinon = require('sinon')
 
@@ -18,9 +18,11 @@ describe('RegisterHome.vue', () => {
   beforeEach(() => {
     getters = {
       loading: () => false,
-      listError: () => null
+      listError: () => null,
+      cityList: () => []
     }
     actions = {
+      [FETCH_CITY_LIST]: sinon.spy(),
       [FETCH_DRILLER_LIST]: sinon.spy()
     }
     store = new Vuex.Store({ getters, actions })
@@ -49,7 +51,8 @@ describe('RegisterHome.vue', () => {
       loading: () => false,
       listError: () => {
         return { status: '400', statusText: 'error!' }
-      }
+      },
+      cityList: () => []
     }
     const store = new Vuex.Store({ getters, actions })
     const wrapper = shallow(RegisterHome, {
