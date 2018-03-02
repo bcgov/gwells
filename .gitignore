@@ -69,7 +69,6 @@ gwells.pyproj*
 
 #functional-tests
 functional-tests/.gradle/
-functional-tests/gebReports/
 functional-tests/build
 functional-tests/.project
 functional-tests/.settings/org.eclipse.buildship.core.prefs
@@ -86,10 +85,8 @@ activate
 
 x.sh
 
+# Frontend files
+frontend/node_modules/
+registries/static/registries/bundles/
 
-# OS files
-.DS_Store
-.Trashes
-.directory
-Thumbs.db
-*~
+sonar-runner/.gradle
