@@ -45,17 +45,13 @@ urlpatterns = [
     url(r'^'+ app_root_slash +'admin/survey/(?P<pk>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$', SurveyView.as_view(), name='survey'),
 ]
 
-# 2018-MAR-02 GW Disabled explicitly as the ENV variable ENABLE_DATA_ENTRY seems to be ignored
-# if settings.ENABLE_DATA_ENTRY:
-if false:
+if settings.ENABLE_DATA_ENTRY:
     urlpatterns = [
         url(r'^'+ app_root_slash +'submission/$', ActivitySubmissionListView.as_view(), name='activity_submission_list'),
         url(r'^'+ app_root_slash +'submission/create$', ActivitySubmissionWizardView.as_view(views.FORMS), name='activity_submission_create'),
     ] + urlpatterns
 
-# 2018-MAR-02 GW Disabled explicitly as the ENV variable DJANGO_DEBUG seems to be ignored
-# if settings.DEBUG:
-if false:
+if settings.DEBUG:
     import debug_toolbar
     urlpatterns = [
         url(r'^__debug__/', include(debug_toolbar.urls)),
