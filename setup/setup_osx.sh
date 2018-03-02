@@ -126,6 +126,17 @@ grep --quiet "virtualenvwrapper.sh" "${BASHSS}" || \
 	) >> "${BASHSS}"
 
 
+# Set JAVA_HOME to use version 8
+#
+grep --quiet "export JAVA_HOME=" ~/.bash_profile || \
+	(
+		echo ;
+		echo "# Set Java 8 as default";
+		echo "#";
+		echo "export JAVA_HOME=$( /usr/libexec/java_home -v 1.8 )";
+	) >> ~/.bash_profile
+
+
 # Make virtual environment
 #
 PATH="${PATH}":~/Library/Python/3.6/bin
