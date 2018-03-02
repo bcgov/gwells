@@ -1,6 +1,7 @@
 from django.http import HttpResponse
 from django.utils import timezone
 from django.views.generic import TemplateView
+from django_filters import rest_framework as restfilters
 from rest_framework import filters
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView
 from rest_framework.pagination import LimitOffsetPagination, PageNumberPagination
@@ -50,6 +51,20 @@ class APILimitOffsetPagination(LimitOffsetPagination):
     """
 
     max_limit = 100
+
+
+class PersonFilter(restfilters.FilterSet):
+    """
+    Allows APIPersonListView to filter response by city, province, or registration status.
+    """
+    city = restfilters.CharFilter(name="companies__org__city")
+    prov = restfilters.CharFilter(name="companies__org__province_state__province_state_code")
+    status = restfilters.CharFilter(name="applications__registrations__status__code")
+    activity = restfilters.CharFilter(name="applications__registrations__registries_activity__code")
+
+    class Meta:
+        model = Person
+        fields = ('city', 'prov', 'status')
 
 
 class RegistriesIndexView(TemplateView):
@@ -190,7 +205,8 @@ class APIPersonListCreateView(AuditCreateMixin, ListCreateAPIView):
     pagination_class = APILimitOffsetPagination
 
     # Allow searching on name fields, names of related companies, etc.
-    filter_backends = (filters.SearchFilter,)
+    filter_backends = (restfilters.DjangoFilterBackend, filters.SearchFilter,)
+    filter_class = PersonFilter
     search_fields = (
         'first_name',
         'surname',

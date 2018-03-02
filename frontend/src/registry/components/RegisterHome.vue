@@ -33,10 +33,10 @@
                     </div>
                     <div class="col-xs-12 form-spacing">
                       <label class="radio-inline">
-                        <input type="radio" name="regTypeSelector" id="regTypeDriller" v-model="searchParams.regType" value="driller" style="margin-top: 0px"> Well Driller
+                        <input type="radio" name="activitySelector" id="activityDriller" v-model="searchParams.activity" value="DRILL" style="margin-top: 0px"> Well Driller
                       </label>
                       <label class="radio-inline">
-                        <input type="radio" name="regTypeSelector" id="regTypeInstaller" v-model="searchParams.regType" value="installer" style="margin-top: 0px"> Pump Installer
+                        <input type="radio" name="activitySelector" id="activityInstaller" v-model="searchParams.activity" value="PUMP" style="margin-top: 0px"> Pump Installer
                       </label>
                     </div>
                   </div>
@@ -44,21 +44,21 @@
                     <div class="form-group">
                       <div class="col-xs-12 col-sm-6 form-spacing">
                         <label>Community</label>
-                        <select class="form-control" v-model="searchParams.community">
+                        <select class="form-control" v-model="searchParams.city">
                           <option value="">All</option>
-                          <option v-for="city in cityList" :key="city.city + city.province" :value="city.city + ', ' + city.province_state">{{city.city}}<span v-if="city.province_state">, {{city.province_state}}</span></option>
+                          <option v-for="city in cityList" :key="city.city + city.province" :value="city.city + ',' + city.province_state">{{city.city}}<span v-if="city.province_state">, {{city.province_state}}</span></option>
                         </select>
                       </div>
                     </div>
                     <div class="form-group">
                       <div class="col-xs-12 col-sm-6 form-spacing">
                         <label>Registration status</label>
-                        <select v-model="searchParams.regStatus" class="form-control">
+                        <select v-model="searchParams.status" class="form-control">
                           <option value="">All</option>
-                          <option>Pending</option>
-                          <option>Not registered</option>
-                          <option>Registered</option>
-                          <option>Removed</option>
+                          <option value="PENDING">Pending</option>
+                          <option value="INACTIVE">Not registered</option>
+                          <option value="ACTIVE">Registered</option>
+                          <option value="REMOVED">Removed</option>
                         </select>
                       </div>
                     </div>
@@ -113,7 +113,7 @@ export default {
   },
   created () {
     this.$store.dispatch(FETCH_CITY_LIST)
-    this.$store.dispatch(FETCH_DRILLER_LIST, this.searchParams)
+    this.drillerSearch()
   },
   computed: {
     cities () {
@@ -133,37 +133,43 @@ export default {
   data () {
     return {
       adminPanelToggle: false,
-      regType: 'driller',
-      regStatus: 'all',
       regTypeOptions: [
-        {text: 'Well Driller', value: 'driller'},
-        {text: 'Well Pump Installer', value: 'installer'}
+        {text: 'Well Driller', value: 'DRILL'},
+        {text: 'Well Pump Installer', value: 'PUMP'}
       ],
       regStatusOptions: [
-        { value: 'all', text: 'All' },
-        { value: 'pending', text: 'Pending' },
-        { value: 'notRegistered', text: 'Not registered' },
-        { value: 'registered', text: 'Registered' },
-        { value: 'removed', text: 'Removed' }
+        { value: '', text: 'All' },
+        { value: 'PENDING', text: 'Pending' },
+        { value: 'INACTIVE', text: 'Not registered' },
+        { value: 'ACTIVE', text: 'Registered' },
+        { value: 'REMOVED', text: 'Removed' }
       ],
       searchParams: {
         search: '',
-        community: '',
-        regType: 'driller',
-        regStatus: '',
+        city: '',
+        activity: 'DRILL',
+        status: '',
         limit: '10'
       }
     }
   },
   methods: {
     drillerSearch () {
-      this.$store.dispatch(FETCH_DRILLER_LIST, this.searchParams)
+      const params = {
+        search: this.searchParams.search,
+        prov: this.searchParams.city.split(',')[1],
+        city: this.searchParams.city.split(',')[0],
+        status: this.searchParams.status,
+        limit: this.searchParams.limit,
+        activity: this.searchParams.activity
+      }
+      this.$store.dispatch(FETCH_DRILLER_LIST, params)
     },
     drillerSearchReset () {
       this.searchParams.search = ''
-      this.searchParams.community = ''
-      this.searchParams.regType = 'driller'
-      this.searchParams.regStatus = ''
+      this.searchParams.city = ''
+      this.searchParams.activity = 'DRILL'
+      this.searchParams.status = 'ACTIVE'
       this.searchParams.limit = '10'
     }
   }
