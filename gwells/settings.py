@@ -205,8 +205,6 @@ LOGGING = {
     }
 }
 
-AUTH_USER_MODEL='gwells.User'
-
 DRF_RENDERERS = ['rest_framework.renderers.JSONRenderer',]
 # Turn on browsable API if "DEBUG" set
 if DEBUG:
