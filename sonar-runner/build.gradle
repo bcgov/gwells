@@ -3,13 +3,14 @@ plugins {
   id "java"
   id "jacoco"
   id "org.sonarqube" version "2.6.1"
+  id "org.owasp.dependencycheck" version "3.1.1"
 }
 
 sonarqube {
     properties {
-        //property "sonar.host.url", "https://sonarqube-moe-gwells-tools.pathfinder.gov.bc.ca"        
-        property "sonar.projectName", "GWells"
-        property "sonar.projectKey", "org.sonarqube:bcgov-gwells"
+        property "sonar.host.url", "https://sonarqube-moe-gwells-tools.pathfinder.gov.bc.ca"        
+        property "sonar.projectName", "GWells - Roland"
+        property "sonar.projectKey", "org.sonarqube:bcgov-gwells-roland"
         property "sonar.projectBaseDir", "../"
         property "sonar.sources", "./gwells,./registries"
         property "sonar.lanuage", "py"
@@ -18,7 +19,17 @@ sonarqube {
         property "sonar.python.coverage.reportPath","coverage.xml"
         property "sonar.python.coveragePlugin","cobertura"
         property "sonar.jacoco.reportPath", "${project.buildDir}/jacoco/test.exec"
+        property "sonar.dependencyCheck.reportPath","./gwells/dependency-check-report.xml"
+        property "sonar.dependencyCheck.reportPath","./gwells/dependency-check-report.html"
+    }
+}
 
+dependencyCheck {
+    format='ALL'
+    scanConfigurations=['../**/*']
+    outputDirectory='../gwells'
+    analyzers {
+        experimentalEnabled=true
     }
 }
 
@@ -44,6 +55,7 @@ dependencies {
 
 repositories {
   repositories {
+    mavenCentral()
     maven {
       url "http://repo1.maven.org/maven2/"
     }
