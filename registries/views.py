@@ -11,7 +11,8 @@ from rest_framework.mixins import CreateModelMixin, UpdateModelMixin
 from registries.models import Organization, Person, ContactAt, RegistriesApplication
 from registries.permissions import IsAdminOrReadOnly
 from registries.serializers import (
-    ApplicationSerializer,
+    ApplicationAdminSerializer,
+    ApplicationListSerializer,
     CityListSerializer,
     OrganizationListSerializer,
     OrganizationSerializer,
@@ -353,7 +354,7 @@ class APIApplicationListCreateView(AuditCreateMixin, ListCreateAPIView):
     """
 
     permission_classes = (IsAdminUser,)
-    serializer_class = ApplicationSerializer
+    serializer_class = ApplicationListSerializer
     queryset = RegistriesApplication.objects.all() \
         .select_related('person') \
         .prefetch_related(
@@ -379,7 +380,7 @@ class APIApplicationRetrieveUpdateDestroyView(AuditUpdateMixin, RetrieveUpdateDe
     """
 
     permission_classes = (IsAdminUser,)
-    serializer_class = ApplicationSerializer
+    serializer_class = ApplicationListSerializer
     queryset = RegistriesApplication.objects.all().select_related('person')
     lookup_field = "application_guid"
     
