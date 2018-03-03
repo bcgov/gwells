@@ -49,7 +49,7 @@ node('maven') {
         echo "Deploying to dev..."
         openshiftTag destStream: 'gwells', verbose: 'true', destTag: 'dev', srcStream: 'gwells', srcTag: '$BUILD_ID'
         sleep 5
-        openshiftVerifyDeployment depCfg: 'gwells', namespace: 'moe-gwells-dev', replicaCount: 1, verbose: 'false', verifyReplicaCount: 'false'
+        openshiftVerifyDeployment depCfg: 'gwells', namespace: 'moe-gwells-dev', replicaCount: 1, verbose: 'false', verifyReplicaCount: 'false', waitTime: 600000
 	    echo ">>>> Deployment Complete"
     }
 }
