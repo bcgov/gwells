@@ -7,105 +7,27 @@
       <div class="col-xs-12" v-if="error">
         <api-error :error="error" resetter="setError"></api-error>
       </div>
-      <div class="col-xs-12">
-        <h2>Certification - {{ person.activityDescription }}</h2>
-      </div>
     </div>
     <fieldset class="registry-section">
-      <legend>Certification</legend>
+      <legend>Classifications</legend>
+      <div>
+        <div>Geoexchange Driller</div>
+        <div>Water Well Driller</div>
+      </div>
+    </fieldset>
+    <fieldset class="registry-section">
+      <legend>Personal Information</legend>
       <div class="row">
-        <div class="col-xs-12 col-sm-4 registry-item">
-          Certificate number: {{ person.certNumber }}
+        <div class="col-xs-12 col-sm-4">
+          Last name: {{ currentDriller.surname }}
         </div>
-        <div class="col-xs-12 col-sm-4 registry-item">
-          Issued by: {{ person.certAuthority }}
+        <div class="col-xs-12 col-sm-8">
+          First name: {{ currentDriller.first_name }}
         </div>
       </div>
     </fieldset>
     <fieldset class="registry-section">
-      <legend>Classification and Qualifications</legend>
-      <div class="form-group">
-        <div class="row">
-          <div class="col-xs-12">
-            <label>Select qualification: &nbsp;</label>
-          </div>
-          <div class="col-xs-12 col-sm-4 col-md-3">
-            <div class="radio">
-              <div>
-                <label>
-                  <input type="radio" name="activitySelector" id="activityDriller" v-model="qualType" value="DRILL" style="margin-top: 0px"> Water Well Driller
-                </label>
-              <div>
-              </div>
-                <label>
-                  <input type="radio" name="activitySelector" id="activityInstaller" v-model="qualType" value="PUMP" style="margin-top: 0px"> Pump Installer
-                </label>
-              </div>
-            </div>
-          </div>
-          <div class="col-xs-12 col-sm-4 col-md-3 form-spacing">
-            <div class="radio">
-              <div>
-                <label class="registry-disabled-item">
-                  <input type="radio" class="registry-disabled-item" name="activitySelector" id="activityDriller" v-model="qualType" value="GEOTHERM" style="margin-top: 0px" disabled> Geoexchange Driller
-                </label>
-              <div>
-              </div>
-                <label class="registry-disabled-item">
-                  <input type="radio" class="registry-disabled-item" name="activitySelector" id="activityInstaller" v-model="qualType" value="GEOTECH" style="margin-top: 0px" disabled> Geotechnical/Environmental Driller
-                </label>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <h4>Qualification</h4>
-      </div>
-      <div class="row">
-        <div class="col-xs-12 col-sm-4 registry-item">
-          Issued by: {{ person.certAuthority }}
-        </div>
-        <div class="col-xs-12 col-sm-4 registry-item">
-          Certificate number: {{ person.certNumber }}
-        </div>
-      </div>
-      <div class="row">
-        <h4>Qualified to drill</h4>
-      </div>
-      <div class="row">
-        <div class="col-xs-12 col-sm-4 col-md-3">
-          <div class="qualification-item">
-            <r-checkbox checked="true"></r-checkbox> Water supply wells
-          </div>
-          <div class="qualification-item">
-            <r-checkbox checked="false"></r-checkbox> Monitoring wells
-          </div>
-          <div class="qualification-item">
-            <r-checkbox checked="false"></r-checkbox> Recharge wells
-          </div>
-          <div class="qualification-item">
-            <r-checkbox checked="true"></r-checkbox> Injection wells
-          </div>
-        </div>
-        <div class="col-xs-12 col-sm-4 col-md-3 registry-item">
-          <div class="qualification-item">
-            <r-checkbox checked="false"></r-checkbox> Dewatering wells
-          </div>
-          <div class="qualification-item">
-            <r-checkbox checked="true"></r-checkbox> Remediation wells
-          </div>
-          <div class="qualification-item">
-            <r-checkbox checked="false"></r-checkbox> Geotechnical wells
-          </div>
-          <div class="qualification-item">
-            <r-checkbox checked="false"></r-checkbox> Closed-loop geoexchange wells
-          </div>
-        </div>
-      </div>
-    </fieldset>
-    <fieldset class="registry-section">
-      <legend>Adjudication</legend>
+      <legend>Current Company Information</legend>
       <div class="row">
         <div class="col-xs-12 registry-item">
           Date application received:
@@ -113,27 +35,34 @@
       </div>
       <div class="row">
         <div class="col-xs-12 col-sm-4 registry-item">
-          Approval outcome date:
+          Company name: {{ company.organization_name }}
         </div>
-        <div class="col-xs-12 col-sm-4 registry-item">
-          Approval outcome:
-        </div>
-        <div class="col-xs-12 col-sm-4 registry-item">
-          Reason denied:
+        <div class="col-xs-12 col-sm-8 registry-item">
+          Street address: {{ company.street_address }}
         </div>
       </div>
       <div class="row">
-        <div class="col-xs-12 col-sm-3 registry-item">
-          Register removal date:
+        <div class="col-xs-12 col-sm-4 registry-item">
+          City: {{ company.city }}
+        </div>
+        <div class="col-xs-12 col-sm-8 registry-item">
+          Province: {{ company.province_state }}
         </div>
       </div>
       <div class="row">
-        <div class="col-xs-12 registry-item">
-          <div class="checkbox form-inline">
-            <label>
-              <input type="checkbox" style="margin-top:-4px;" class="registry-disabled-item" disabled><span style="color: #808080">As Deputy Comptroller, I confirm I have reviewed the application or action and approved this registry update.</span>
-            </label>
-          </div>
+        <div class="col-xs-12 col-sm-4 registry-item">
+          Postal Code: {{ company.postal_code }}
+        </div>
+        <div class="col-xs-12 col-sm-8 registry-item">
+          Telephone: {{ company.contact_tel }}
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xs-12 col-sm-4 registry-item">
+          Email address: {{ company.contact_email }}
+        </div>
+        <div class="col-xs-12 col-sm-8 registry-item">
+          Website: {{ company.contact_email }}
         </div>
       </div>
     </fieldset>
@@ -176,6 +105,12 @@ export default {
     }
   },
   computed: {
+    company () {
+      if (this.currentDriller && this.currentDriller.companies && this.currentDriller.companies.length) {
+        return this.currentDriller.companies[0]
+      }
+      return {}
+    },
     ...mapGetters([
       'loading',
       'error',
