@@ -188,7 +188,8 @@ export default {
       'user',
       'loading',
       'listError',
-      'cityList'
+      'cityList',
+      'drillers'
     ])
   },
   watch: {
@@ -225,7 +226,9 @@ export default {
   },
   created () {
     this.$store.dispatch(FETCH_CITY_LIST, this.formatActivityForCityList)
-    this.drillerSearch()
+    if (!this.drillers || !this.drillers.results || !this.drillers.results.length) {
+      this.drillerSearch()
+    }
   }
 }
 </script>
