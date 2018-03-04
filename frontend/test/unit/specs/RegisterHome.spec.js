@@ -17,6 +17,8 @@ describe('RegisterHome.vue', () => {
 
   beforeEach(() => {
     getters = {
+      user: () => {},
+      drillers: () => [],
       loading: () => false,
       listError: () => null,
       cityList: () => []
@@ -48,6 +50,8 @@ describe('RegisterHome.vue', () => {
 
   it('loads the error component if there is an error', () => {
     const getters = {
+      user: () => {},
+      drillers: () => [],
       loading: () => false,
       listError: () => {
         return { status: '400', statusText: 'error!' }
