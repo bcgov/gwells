@@ -2,6 +2,8 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import ApiService from '@/common/services/gwells'
 import {
+  LOGIN,
+  LOGOUT,
   FETCH_CITY_LIST,
   FETCH_DRILLER,
   FETCH_DRILLER_LIST } from './actions.types.js'
@@ -53,6 +55,37 @@ export const store = new Vuex.Store({
     }
   },
   actions: {
+    [LOGIN] ({commit}, credentials) {
+      logging && console.log(`making auth request for user ${credentials.username}`)
+      ApiService.post('api-token-auth/', credentials)
+        .then((response) => {
+          const token = response.data.token
+          localStorage.setItem('token', token)
+
+          // decode JWT token for username and expiry
+          const base64Url = token.split('.')[1]
+          const base64 = base64Url.replace('-', '+').replace('_', '/')
+          const jsonData = JSON.parse(window.atob(base64))
+          logging && console.log(jsonData)
+          localStorage.setItem('username', jsonData.username)
+          localStorage.setItem('tokenExpiry', jsonData.exp)
+
+          // Add token to headers when making API calls
+          ApiService.authHeader('JWT', token)
+          commit(SET_USER, jsonData)
+        })
+        .catch((error) => {
+          commit(SET_ERROR, error.response)
+          logging && console.log('login error:', error.response)
+        })
+    },
+    [LOGOUT] ({commit}) {
+      localStorage.removeItem('token')
+      localStorage.removeItem('username')
+      localStorage.removeItem('tokenExpiry')
+      ApiService.authHeader()
+      commit(SET_USER, null)
+    },
     [FETCH_CITY_LIST] ({commit}, activity) {
       logging && console.log('fetching city list...')
       ApiService.query('cities/' + activity + '/')
