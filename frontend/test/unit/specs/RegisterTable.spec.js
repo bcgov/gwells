@@ -15,6 +15,7 @@ describe('RegisterTable.vue', () => {
 
   beforeEach(() => {
     getters = {
+      user: () => {},
       loading: () => false,
       listError: () => null,
       drillers: () => {
