@@ -25,6 +25,7 @@ urlpatterns = [
     url(r'^drillers/(?P<person_guid>[-\w]+)/$', views.APIPersonRetrieveUpdateDestroyView.as_view(), name='person-detail'),
     url(r'^drillers/$', views.APIPersonListCreateView.as_view(), name='person-list'),
 
+    # List of cities that currently have registered drillers, pump installers etc.
     url(r'^cities/drillers/$', views.APICitiesList.as_view(), {'activity':'drill'}, name='city-list-drillers'),
     url(r'^cities/installers/$', views.APICitiesList.as_view(), {'activity': 'install'}, name='city-list-installers'),
 
@@ -32,6 +33,9 @@ urlpatterns = [
     url(r'^api-token-auth/', obtain_jwt_token, name='get-token'),
 
     # Swagger documentation endpoint
+    url(r'^docs/$', get_swagger_view(title='GWELLS Driller registry'), name='api-docs'),
+
+    # Registries frontend webapp loader (html page that contains header, footer, and a SPA in between)
     url(r'^$', views.RegistriesIndexView.as_view(), name='home'),
 
     # RegistriesApplication resource endpoints (applications from individuals to be registered as a driller, well installer etc.)
