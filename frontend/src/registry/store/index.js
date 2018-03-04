@@ -56,7 +56,6 @@ export const store = new Vuex.Store({
   },
   actions: {
     [LOGIN] ({commit}, credentials) {
-      logging && console.log(`making auth request for user ${credentials.username}`)
       ApiService.post('api-token-auth/', credentials)
         .then((response) => {
           const token = response.data.token
