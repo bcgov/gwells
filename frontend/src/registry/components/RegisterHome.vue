@@ -1,28 +1,51 @@
 <template>
   <div class="container-fluid">
       <div class="row form-spacing">
-        <div class="col-xs-12 col-sm-8">
+        <div class="col-xs-12 col-sm-7">
           <a id="main-content-anchor"></a>
           <h2 id="registry-title">Register of Well Drillers and Well Pump Installers</h2>
             <p><a href="#">Learn more about registering as a well driller or well pump installer in B.C.</a></p>
         </div>
-        <div class="col-xs-12 col-sm-4 text-center">
-          <button type="button" class="btn btn-primary" @click="adminPanelToggle=!adminPanelToggle">GWELLS Administrator options</button>
+        <div class="col-xs-12 col-sm-5 text-center">
+          <button v-if="!user" type="button" class="btn btn-primary" @click="loginPanelToggle = !loginPanelToggle">Log in</button>
+          <button v-if="user" type="button" class="btn btn-secondary" @click="logout">Log out</button>
+          <button v-if="user" type="button" class="btn btn-primary" @click="adminPanelToggle=!adminPanelToggle">Options</button>
+        </div>
+      </div>
+      <div class="row" v-if="!user && loginPanelToggle">
+        <div class="col-xs-12">
+            <div class="well well-sm">
+              <div class="container-fluid">
+                <form @submit.prevent="login">
+                  <div class="form-group">
+                    <div class="col-xs-12 col-sm-2">
+                      <label for="loginUser">Username</label>
+                      <input type="text" class="form-control" id="loginUser" placeholder="Search" v-model="credentials.username">
+                    </div>
+                    <div class="col-xs-12 col-sm-2">
+                      <label for="loginPassword">Password</label>
+                      <input type="password" class="form-control" id="loginPassword" placeholder="Password" v-model="credentials.password">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <div class="col-xs-12">
+                      <button type="submit" class="btn btn-primary">Login</button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
         </div>
       </div>
       <div class="row" v-if="adminPanelToggle">
         <div class="col-xs-12">
             <div class="well well-sm">
-              <div v-if="!user">
-                <button type="button" class="btn btn-primary" @click="login">Log in</button>
-              </div>
               <div v-if="user">
                 <div>Logged in as {{ user.username }}</div>
                 <div>
                   <button type="button" class="btn btn-primary">Add new entry</button>
                   <button type="button" class="btn btn-primary">Manage companies</button>
                 </div>
-                <div><button type="button" class="btn btn-secondary" @click="logout">Log out</button></div>
               </div>
             </div>
         </div>
@@ -111,8 +134,7 @@
 import RegisterTable from '@/registry/components/RegisterTable'
 import APIErrorMessage from '@/common/components/APIErrorMessage'
 import { mapGetters } from 'vuex'
-import { SET_USER } from '@/registry/store/mutations.types'
-import { FETCH_CITY_LIST, FETCH_DRILLER_LIST } from '@/registry/store/actions.types'
+import { LOGIN, LOGOUT, FETCH_CITY_LIST, FETCH_DRILLER_LIST } from '@/registry/store/actions.types'
 
 export default {
   components: {
@@ -122,6 +144,7 @@ export default {
   data () {
     return {
       adminPanelToggle: false,
+      loginPanelToggle: false,
       regStatusOptions: [
         { value: '', text: 'All', public: false },
         { value: 'PENDING', text: 'Pending', public: false },
@@ -129,6 +152,10 @@ export default {
         { value: 'ACTIVE', text: 'Registered', public: true },
         { value: 'REMOVED', text: 'Removed', public: false }
       ],
+      credentials: {
+        username: null,
+        password: null
+      },
       searchParams: {
         search: '',
         city: '',
@@ -190,10 +217,10 @@ export default {
       this.searchParams.limit = '10'
     },
     login () {
-      this.$store.commit(SET_USER, { username: 'admin' })
+      this.$store.dispatch(LOGIN, this.credentials)
     },
     logout () {
-      this.$store.commit(SET_USER, null)
+      this.$store.dispatch(LOGOUT)
     }
   },
   created () {
