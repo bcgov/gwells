@@ -140,6 +140,7 @@
                             <li><a id="navbar-registry-legacy" href="{% url 'registry-legacy' %}">Registry</a></li>
                             {% if settings.ENABLE_DATA_ENTRY %}
                             <li><a id="navbar-submission" href="{% url 'activity_submission_create' %}">Submit Report</a></li>
+                            <li><a id="ribbon-admin" href="{% url 'site_admin' %}">Admin</a></li>
                             {% endif %}
                         </ul>
                     </div>
@@ -155,6 +156,7 @@
                             <li><a id="ribbon-registry-legacy" href="{% url 'registry-legacy' %}">Registry</a></li>
                             {% if settings.ENABLE_DATA_ENTRY %}
                             <li><a id="ribbon-submission" href="{% url 'activity_submission_create' %}">Submit Report</a></li>
+                            <li><a id="ribbon-admin" href="{% url 'site_admin' %}">Admin</a></li>
                             {% endif %}
 
                         </ul>
