@@ -3,13 +3,9 @@
 import 'babel-polyfill'
 import Vue from 'vue'
 import Vuex from 'vuex'
-// import BootstrapVue from 'bootstrap-vue'
 import App from './App'
-// import App from './AppBS4'
 import router from './router'
 import { store } from './store'
-// import 'bootstrap/dist/css/bootstrap.min.css'
-// import 'bootstrap-vue/dist/bootstrap-vue.css'
 
 // GWELLS js API library (helper methods for working with API)
 import ApiService from '@/common/services/gwells'
