@@ -1,24 +1,24 @@
 import org.apache.tools.ant.taskdefs.condition.Os
 
 plugins {
-    id "idea"
     id "groovy"
     id "com.energizedwork.webdriver-binaries" version "1.0"
-    id "com.energizedwork.idea-base" version "1.2"
+    id "net.foragerr.jmeter" version "1.0.10-3.3"
 }
 
 ext {
     // The drivers we want to use
-    drivers = ["firefox", "firefoxHeadless", "chrome", "chromeHeadless","ie","edge"]
+    drivers = ["firefox", "firefoxHeadless", "chrome", "chromeHeadless","ie","edge","safari"]
 
     ext {
         groovyVersion = '2.4.12'
-        gebVersion = '2.0'
+        gebVersion = '2.1'
         seleniumVersion = '3.6.0'
         chromeDriverVersion = '2.32'
         geckoDriverVersion = '0.18.0'
         ieDriverVersion = '3.6'
         edgeDriverVersion = seleniumVersion
+        safariDriverVersion = seleniumVersion
     }
 }
 
@@ -43,6 +43,7 @@ dependencies {
     testCompile "org.seleniumhq.selenium:selenium-support:$seleniumVersion"
 
     // Drivers
+    testCompile "org.seleniumhq.selenium:selenium-safari-driver:$seleniumVersion"
     testCompile "org.seleniumhq.selenium:selenium-chrome-driver:$seleniumVersion"
     testCompile "org.seleniumhq.selenium:selenium-firefox-driver:$seleniumVersion"
     testCompile "org.seleniumhq.selenium:selenium-ie-driver:$seleniumVersion"
@@ -94,7 +95,7 @@ test {
 
 tasks.withType(Test) {
     maxHeapSize = "1g"
-    jvmArgs '-XX:MaxMetaspaceSize=128m'
+    jvmArgs '-XX:MaxMetaspaceSize=512m'
     testLogging {
         exceptionFormat = 'full'
     }
@@ -108,3 +109,9 @@ tasks.withType(GroovyCompile) {
     groovyOptions.forkOptions.memoryMaximumSize = '256m'
 }
 
+jmeter {
+  jmTestFiles = [file("src/test/jmeter/test.jmx")] //if jmx file is not in the default location
+  jmSystemPropertiesFiles= [file("src/test/jmeter/jmeter.properties")] //to add additional system properties
+  //enableReports = true //produce Graphical and CSV reports
+  //enableExtendedReports = true //produce Graphical and CSV reports
+}
