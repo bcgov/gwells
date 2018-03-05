@@ -15,7 +15,7 @@ class MinioClient():
 
     def get_documents(self, well_tag_number):
 
-        prefix = str('{:0<6}'.format('{:0>2}'.format(well_tag_number//10000))) + '/WTN ' + str(well_tag_number)
+        prefix = str('{:0<6}'.format('{:0>2}'.format(well_tag_number//10000))) + '/WTN ' + str(well_tag_number) + '_'
 
         objects = self.minio_client.list_objects(self.top_bucket, prefix=prefix, recursive=True)
 
