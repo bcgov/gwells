@@ -50,7 +50,7 @@ describe('RegisterTable.vue', () => {
       stubs: ['router-link', 'router-view']
     })
     expect(wrapper.findAll('#registry-table-row').length)
-      .to.equal(2)
+      .toEqual(2)
   })
 
   it('has the right people in each row', () => {
@@ -61,13 +61,13 @@ describe('RegisterTable.vue', () => {
     })
     // first row
     expect(wrapper.findAll('#registry-table-row').at(0).text())
-      .to.contain('Driller')
+      .toContain('Driller')
     expect(wrapper.findAll('#registry-table-row').at(0).text())
-      .to.not.contain('Well')
+      .not.toContain('Well')
     expect(wrapper.findAll('#registry-table-row').at(1).text())
-      .to.contain('Well')
+      .toContain('Well')
     expect(wrapper.findAll('#registry-table-row').at(1).text())
-      .to.not.contain('Driller')
+      .not.toContain('Driller')
   })
   it('shows the pagination button for next page when a link is returned by API', () => {
     const wrapper = shallow(RegisterTable, {
@@ -75,6 +75,6 @@ describe('RegisterTable.vue', () => {
       localVue,
       stubs: ['router-link', 'router-view']
     })
-    expect(wrapper.find('#table-pagination-next').text()).to.equal('Next')
+    expect(wrapper.find('#table-pagination-next').text()).toEqual('Next')
   })
 })
