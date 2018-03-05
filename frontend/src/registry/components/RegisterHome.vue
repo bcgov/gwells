@@ -8,8 +8,7 @@
       </div>
       <div class="col-xs-12 col-sm-5 text-center">
         <button v-if="!user" type="button" class="btn btn-primary" @click="loginPanelToggle = !loginPanelToggle">Log in</button>
-        <button v-if="user" type="button" class="btn btn-secondary" @click="logout">Log out</button>
-        <button v-if="user" type="button" class="btn btn-primary" @click="adminPanelToggle=!adminPanelToggle">Options</button>
+        <button v-if="user" type="button" class="btn btn-secondary" @click="logout" id="logoutButton">Log out</button>
       </div>
     </div>
     <div class="row" v-if="!user && loginPanelToggle">
@@ -29,7 +28,7 @@
                 </div>
                 <div class="form-group">
                   <div class="col-xs-12">
-                    <button type="submit" class="btn btn-primary">Login</button>
+                    <button id="loginButton" type="submit" class="btn btn-primary">Login</button>
                   </div>
                 </div>
               </form>
@@ -217,7 +216,6 @@ export default {
         activity: this.searchParams.activity
       }
       this.lastSearchedActivity = this.searchParams.activity || 'DRILL'
-      console.log(this.lastSearchedActivity)
       this.$store.dispatch(FETCH_DRILLER_LIST, params)
     },
     drillerSearchReset () {
