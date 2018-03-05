@@ -90,3 +90,5 @@ frontend/node_modules/
 registries/static/registries/bundles/
 
 sonar-runner/.gradle
+*.patch
+*.orig
