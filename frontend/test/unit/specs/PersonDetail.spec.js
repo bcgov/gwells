@@ -169,14 +169,6 @@ describe('PersonDetail.vue', () => {
         $route: {params: {person_guid: 'aaaa-4444-bbbb-1111'}}
       }
     })
-    // const wrapper = shallow(PersonDetail, {
-    //   store,
-    //   localVue,
-    //   stubs: ['router-link', 'router-view'],
-    //   mocks: {
-    //     $route: {params: {person_guid: 'aaaa-4444-bbbb-1111'}}
-    //   }
-    // })
     expect(wrapper.findAll(APIErrorMessage).length).toEqual(1)
   })
   it('doesn\'t load the error component if there is no error', () => {
