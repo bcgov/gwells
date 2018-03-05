@@ -5,8 +5,6 @@ import RegisterTable from '@/registry/components/RegisterTable'
 import APIErrorMessage from '@/common/components/APIErrorMessage'
 import { FETCH_CITY_LIST, FETCH_DRILLER_LIST } from '@/registry/store/actions.types'
 
-const sinon = require('sinon')
-
 const localVue = createLocalVue()
 localVue.use(Vuex)
 
@@ -24,8 +22,8 @@ describe('RegisterHome.vue', () => {
       cityList: () => []
     }
     actions = {
-      [FETCH_CITY_LIST]: sinon.spy(),
-      [FETCH_DRILLER_LIST]: sinon.spy()
+      [FETCH_CITY_LIST]: () => null,
+      [FETCH_DRILLER_LIST]: () => null
     }
     store = new Vuex.Store({ getters, actions })
   })
@@ -36,7 +34,7 @@ describe('RegisterHome.vue', () => {
       localVue
     })
     expect(wrapper.find('#registry-title')
-      .text().trim()).to.equal('Register of Well Drillers and Well Pump Installers')
+      .text().trim()).toEqual('Register of Well Drillers and Well Pump Installers')
   })
 
   it('tries to load the table component', () => {
@@ -45,7 +43,7 @@ describe('RegisterHome.vue', () => {
       localVue
     })
     expect(wrapper.findAll(RegisterTable).length)
-      .to.equal(1)
+      .toEqual(1)
   })
 
   it('loads the error component if there is an error', () => {
@@ -64,7 +62,7 @@ describe('RegisterHome.vue', () => {
       localVue
     })
     expect(wrapper.findAll(APIErrorMessage).length)
-      .to.equal(1)
+      .toEqual(1)
   })
 
   it('doesn\'t load the error component if there is no error', () => {
@@ -73,6 +71,6 @@ describe('RegisterHome.vue', () => {
       localVue
     })
     expect(wrapper.findAll(APIErrorMessage).length)
-      .to.equal(0)
+      .toEqual(0)
   })
 })

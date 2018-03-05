@@ -137,7 +137,7 @@
 
 <script>
 import RegisterTable from '@/registry/components/RegisterTable'
-import LegalText from '@/registry/components/text/Legal'
+import LegalText from '@/registry/components/Legal'
 import APIErrorMessage from '@/common/components/APIErrorMessage'
 import { mapGetters } from 'vuex'
 import { LOGIN, LOGOUT, FETCH_CITY_LIST, FETCH_DRILLER_LIST } from '@/registry/store/actions.types'
