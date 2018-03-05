@@ -75,13 +75,13 @@
         <div class="col-xs-12 col-sm-4 registry-item">
           <span class="registry-label">Approval outcome:</span>
         </div>
+        <div class="col-xs-12 col-sm-4 registry-item">
+          <span class="registry-label">Reason not approved:</span>
+        </div>
       </div>
       <div class="row">
         <div class="col-xs-12 col-sm-4 registry-item">
           <span class="registry-label">Register removal date:</span>
-        </div>
-        <div class="col-xs-12 col-sm-4 registry-item">
-          <span class="registry-label">Reason denied:</span>
         </div>
       </div>
       <!-- <div class="row">
