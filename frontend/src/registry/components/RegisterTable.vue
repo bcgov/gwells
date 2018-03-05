@@ -9,10 +9,10 @@
           <tr id="registry-table-row" v-if="drillers.results && drillers.results.length" v-for="driller in drillers.results" :key="driller.person_guid">
             <td>{{ driller.first_name }} {{ driller.surname }}</td>
             <td>{{ driller.organization_name }}</td>
-            <td>{{ driller.street_address }}</td>
-            <td>{{ driller.city }}<span v-if="driller.province_state">, {{ driller.province_state }}</span></td>
-            <td>{{ driller.contact_tel }}</td>
-            <td>{{ driller.contact_email }}</td>
+            <td>{{ driller.street_address }}<div>{{ driller.city }}<span v-if="driller.province_state">, {{ driller.province_state }}</span></div></td>
+            <td><div v-if="driller.contact_tel">Phone: {{ driller.contact_tel }}</div><div v-if="driller.contact_email">Email: {{ driller.contact_email }}</div></td>
+            <td></td>
+            <td></td>
             <td>{{ driller.activity }}</td>
             <td v-if="user"><router-link :to="{ name: 'PersonDetail', params: { person_guid: driller.person_guid } }">Details</router-link></td>
           </tr>
@@ -65,36 +65,36 @@ export default {
       fields: [
         {
           name: 'Name',
-          class: 'col-xs-2',
-          visible: 'public'
-        },
-        {
-          name: 'Company',
-          class: 'col-xs-2',
-          visible: 'public'
-        },
-        {
-          name: 'Address',
-          class: 'col-xs-2',
-          visible: 'public'
-        },
-        {
-          name: 'City',
           class: 'col-xs-1',
           visible: 'public'
         },
         {
-          name: 'Telephone',
+          name: 'Company Name',
           class: 'col-xs-1',
           visible: 'public'
         },
         {
-          name: 'E-mail',
+          name: 'Company Address',
           class: 'col-xs-1',
           visible: 'public'
         },
         {
-          name: 'Qualification',
+          name: 'Contact Information',
+          class: 'col-xs-1',
+          visible: 'public'
+        },
+        {
+          name: 'Qualified to Drill',
+          class: 'col-xs-1',
+          visible: 'public'
+        },
+        {
+          name: 'Certificate Issued By',
+          class: 'col-xs-1',
+          visible: 'public'
+        },
+        {
+          name: 'Registration Status',
           class: 'col-xs-1',
           visible: 'public'
         },
