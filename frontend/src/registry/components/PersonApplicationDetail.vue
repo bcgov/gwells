@@ -2,104 +2,61 @@
   <div class="container-fluid">
     <div class="row" v-if="currentDriller != {}">
       <div class="col-xs-12 col-sm-8">
-        <h2>{{ currentDriller.first_name }} {{ currentDriller.surname }} - {{ person.certNumber }}</h2>
+        <h2>{{ currentDriller.first_name }} {{ currentDriller.surname }}</h2>
       </div>
       <div class="col-xs-12" v-if="error">
         <api-error :error="error" resetter="setError"></api-error>
       </div>
-      <div class="col-xs-12">
-        <h2>Certification - {{ person.activityDescription }}</h2>
+      <div class="col-xs-12" v-if="classification.registries_subactivity">
+        <h2>Certification - {{ classification.registries_subactivity.description }}</h2>
       </div>
     </div>
     <fieldset class="registry-section">
-      <legend>Certification</legend>
-      <div class="row">
-        <div class="col-xs-12 col-sm-4 registry-item">
-          Certificate number: {{ person.certNumber }}
-        </div>
-        <div class="col-xs-12 col-sm-4 registry-item">
-          Issued by: {{ person.certAuthority }}
-        </div>
-      </div>
-    </fieldset>
-    <fieldset class="registry-section">
       <legend>Classification and Qualifications</legend>
-      <div class="form-group">
-        <div class="row">
-          <div class="col-xs-12">
-            <label>Select qualification: &nbsp;</label>
-          </div>
-          <div class="col-xs-12 col-sm-4 col-md-3">
-            <div class="radio">
-              <div>
-                <label>
-                  <input type="radio" name="activitySelector" id="activityDriller" v-model="qualType" value="DRILL" style="margin-top: 0px"> Water Well Driller
-                </label>
-              <div>
-              </div>
-                <label>
-                  <input type="radio" name="activitySelector" id="activityInstaller" v-model="qualType" value="PUMP" style="margin-top: 0px"> Pump Installer
-                </label>
-              </div>
-            </div>
-          </div>
-          <div class="col-xs-12 col-sm-4 col-md-3 form-spacing">
-            <div class="radio">
-              <div>
-                <label class="registry-disabled-item">
-                  <input type="radio" class="registry-disabled-item" name="activitySelector" id="activityDriller" v-model="qualType" value="GEOTHERM" style="margin-top: 0px" disabled> Geoexchange Driller
-                </label>
-              <div>
-              </div>
-                <label class="registry-disabled-item">
-                  <input type="radio" class="registry-disabled-item" name="activitySelector" id="activityInstaller" v-model="qualType" value="GEOTECH" style="margin-top: 0px" disabled> Geotechnical/Environmental Driller
-                </label>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <h4>Qualification</h4>
+      <div class="row" v-if="classification.registries_subactivity">
+        <h4>Qualification: {{ classification.registries_subactivity.description }}&nbsp;
+        <span class="registry-subtle">
+          (<router-link :to="{ name: 'PersonDetail', params: { person_guid: currentDriller.person_guid }}">change</router-link>)
+        </span></h4>
       </div>
       <div class="row">
         <div class="col-xs-12 col-sm-4 registry-item">
-          Issued by: {{ person.certAuthority }}
+          <span class="registry-label">Issued by:</span>
         </div>
         <div class="col-xs-12 col-sm-4 registry-item">
-          Certificate number: {{ person.certNumber }}
+          <span class="registry-label">Certificate number:</span>
         </div>
       </div>
       <div class="row">
-        <h4>Qualified to drill</h4>
+        <h4>Qualified to drill under this license</h4>
       </div>
       <div class="row">
         <div class="col-xs-12 col-sm-4 col-md-3">
           <div class="qualification-item">
-            <r-checkbox checked="true"></r-checkbox> Water supply wells
+            <r-checkbox :checked="~qualCodeList.findIndex(q => q === 'WAT')"></r-checkbox> Water supply wells
           </div>
           <div class="qualification-item">
-            <r-checkbox checked="false"></r-checkbox> Monitoring wells
+            <r-checkbox :checked="~qualCodeList.findIndex(q => q === 'MON')"></r-checkbox> Monitoring wells
           </div>
           <div class="qualification-item">
-            <r-checkbox checked="false"></r-checkbox> Recharge wells
+            <r-checkbox :checked="~qualCodeList.findIndex(q => q === 'RECH')"></r-checkbox> Recharge wells
           </div>
           <div class="qualification-item">
-            <r-checkbox checked="true"></r-checkbox> Injection wells
+            <r-checkbox :checked="~qualCodeList.findIndex(q => q === 'RECH')"></r-checkbox> Injection wells
           </div>
         </div>
         <div class="col-xs-12 col-sm-4 col-md-3 registry-item">
           <div class="qualification-item">
-            <r-checkbox checked="false"></r-checkbox> Dewatering wells
+            <r-checkbox :checked="~qualCodeList.findIndex(q => q === 'WAT')"></r-checkbox> Dewatering wells
           </div>
           <div class="qualification-item">
-            <r-checkbox checked="true"></r-checkbox> Remediation wells
+            <r-checkbox :checked="~qualCodeList.findIndex(q => q === 'REM')"></r-checkbox> Remediation wells
           </div>
           <div class="qualification-item">
-            <r-checkbox checked="false"></r-checkbox> Geotechnical wells
+            <r-checkbox :checked="~qualCodeList.findIndex(q => q === 'GEO')"></r-checkbox> Geotechnical wells
           </div>
           <div class="qualification-item">
-            <r-checkbox checked="false"></r-checkbox> Closed-loop geoexchange wells
+            <r-checkbox :checked="~qualCodeList.findIndex(q => q === 'CLOS')"></r-checkbox> Closed-loop geoexchange wells
           </div>
         </div>
       </div>
@@ -108,26 +65,26 @@
       <legend>Adjudication</legend>
       <div class="row">
         <div class="col-xs-12 registry-item">
-          Date application received:
+          <span class="registry-label">Date application received:</span>
         </div>
       </div>
       <div class="row">
         <div class="col-xs-12 col-sm-4 registry-item">
-          Approval outcome date:
+          <span class="registry-label">Approval outcome date:</span>
         </div>
         <div class="col-xs-12 col-sm-4 registry-item">
-          Approval outcome:
-        </div>
-        <div class="col-xs-12 col-sm-4 registry-item">
-          Reason denied:
+          <span class="registry-label">Approval outcome:</span>
         </div>
       </div>
       <div class="row">
-        <div class="col-xs-12 col-sm-3 registry-item">
-          Register removal date:
+        <div class="col-xs-12 col-sm-4 registry-item">
+          <span class="registry-label">Register removal date:</span>
+        </div>
+        <div class="col-xs-12 col-sm-4 registry-item">
+          <span class="registry-label">Reason denied:</span>
         </div>
       </div>
-      <div class="row">
+      <!-- <div class="row">
         <div class="col-xs-12 registry-item">
           <div class="checkbox form-inline">
             <label>
@@ -135,7 +92,7 @@
             </label>
           </div>
         </div>
-      </div>
+      </div> -->
     </fieldset>
   </div>
 </template>
@@ -148,34 +105,43 @@ import { SET_DRILLER } from '@/registry/store/mutations.types'
 import { FETCH_DRILLER } from '@/registry/store/actions.types'
 
 export default {
-  name: 'person-detail',
+  name: 'PersonApplicationDetail',
   components: {
     'api-error': APIErrorMessage,
     'r-checkbox': QualCheckbox
   },
   data () {
-    return {
-      person: {
-        name: 'John Bobert',
-        certNumber: 'CGWA930209',
-        certAuthority: 'Canadian Groundwater Association',
-        qualificationCode: 'DRILL',
-        activityDescription: 'Well Driller'
-      },
-      qualType: 'DRILL',
-      wellQualifications: {
-        supply: true,
-        monitoring: true,
-        recharge: true,
-        injection: true,
-        dewatering: false,
-        remediation: false,
-        geotechnical: true,
-        geoexchange: false
-      }
-    }
+    return {}
   },
   computed: {
+    classification () {
+      let classification = {}
+      if (this.currentDriller.applications && this.currentDriller.applications.length) {
+        this.currentDriller.applications.forEach((app) => {
+          if (app.classificationappliedfor_set && app.classificationappliedfor_set.length) {
+            classification = app.classificationappliedfor_set.find((item) => {
+              console.log(item.registries_subactivity.code.toLowerCase())
+              console.log(this.$route.params.classCode)
+              return item.registries_subactivity.code.toLowerCase() === this.$route.params.classCode
+            })
+            console.log(classification)
+          }
+        })
+      }
+      return classification
+    },
+    qualCodeList () {
+      const qualList = []
+      if (
+        this.classification.registries_subactivity &&
+        this.classification.registries_subactivity.qualificationcode_set
+      ) {
+        this.classification.registries_subactivity.qualificationcode_set.forEach((item) => {
+          qualList.push(item.code)
+        })
+      }
+      return qualList
+    },
     ...mapGetters([
       'loading',
       'error',
@@ -183,7 +149,9 @@ export default {
     ])
   },
   created () {
-    this.$store.commit(SET_DRILLER, {})
+    if (this.currentDriller.person_guid !== this.$route.params.person_guid) {
+      this.$store.commit(SET_DRILLER, {})
+    }
     this.$store.dispatch(FETCH_DRILLER, this.$route.params.person_guid)
   }
 }
@@ -203,5 +171,8 @@ export default {
 }
 .qualification-item {
   margin-bottom: 5px;
+}
+.registry-subtle {
+  font-size: 0.9rem;
 }
 </style>
