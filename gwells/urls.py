@@ -47,6 +47,7 @@ if settings.ENABLE_DATA_ENTRY:
         url(r'^'+ app_root_slash +'submission/$', ActivitySubmissionListView.as_view(), name='activity_submission_list'),
         url(r'^'+ app_root_slash +'submission/create$', ActivitySubmissionWizardView.as_view(views.FORMS), name='activity_submission_create'),
         url(r'^'+ app_root_slash +'site_admin', AdminView.as_view(), name='site_admin'),
+        url(r'^'+ app_root_slash +'admin/survey', SurveyView.as_view(), name='survey'),
         url(r'^'+ app_root_slash +'admin/survey/(?P<pk>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$', SurveyView.as_view(), name='survey'),
     ] + urlpatterns
 
