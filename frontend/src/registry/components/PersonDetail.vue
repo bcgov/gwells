@@ -18,7 +18,13 @@
           </thead>
           <tbody>
             <tr v-if="classifications && classifications.length" v-for="(item, index) in classifications" :key="`classification ${index}`">
-              <td>{{ item.description }}</td>
+              <td><router-link :to="{
+                name: 'PersonApplicationDetail',
+                params: {
+                  person_guid: currentDriller.person_guid,
+                  classCode: item.code
+                }
+              }">{{ item.description }}</router-link></td>
               <td>{{ item.status }}</td>
               <td>{{ item.date }}</td>
             </tr>
@@ -30,15 +36,15 @@
       <legend>Personal Information</legend>
       <div class="row">
         <div class="col-xs-12 col-sm-4 registry-item">
-          Last name: {{ currentDriller.surname }}
+          <span class="registry-label">Last name:</span> {{ currentDriller.surname }}
         </div>
         <div class="col-xs-12 col-sm-8 registry-item">
-          First name: {{ currentDriller.first_name }}
+          <span class="registry-label">First name:</span> {{ currentDriller.first_name }}
         </div>
       </div>
       <div class="row">
         <div class="col-xs-12 col-sm-4 registry-item">
-          <r-checkbox :checked="drillerOver19"></r-checkbox> Confirmed applicant is 19 or older
+          <r-checkbox :checked="drillerOver19"></r-checkbox> <span class="registry-label">Confirmed applicant is 19 or older</span>
         </div>
       </div>
     </fieldset>
@@ -46,34 +52,31 @@
       <legend>Current Company Information</legend>
       <div class="row">
         <div class="col-xs-12 col-sm-4 registry-item">
-          Company name: {{ company.organization_name }}
+          <span class="registry-label">Company name:</span> {{ company.organization_name }}
         </div>
         <div class="col-xs-12 col-sm-8 registry-item">
-          Street address: {{ company.street_address }}
+          <span class="registry-label">Street address:</span> {{ company.street_address }}
         </div>
       </div>
       <div class="row">
         <div class="col-xs-12 col-sm-4 registry-item">
-          City: {{ company.city }}
+          <span class="registry-label">City:</span> {{ company.city }}
         </div>
         <div class="col-xs-12 col-sm-8 registry-item">
-          Province: {{ company.province_state }}
+          <span class="registry-label">Province:</span> {{ company.province_state }}
         </div>
       </div>
       <div class="row">
         <div class="col-xs-12 col-sm-4 registry-item">
-          Postal Code: {{ company.postal_code }}
+          <span class="registry-label">Postal Code:</span> {{ company.postal_code }}
         </div>
         <div class="col-xs-12 col-sm-8 registry-item">
-          Telephone: {{ company.contact_tel }}
+          <span class="registry-label">Telephone:</span> {{ company.contact_tel }}
         </div>
       </div>
       <div class="row">
-        <div class="col-xs-12 col-sm-4 registry-item">
-          Email address: {{ company.contact_email }}
-        </div>
-        <div class="col-xs-12 col-sm-8 registry-item">
-          Website: {{ company.contact_email }}
+        <div class="col-xs-12 col-sm-12 registry-item">
+          <span class="registry-label">Email address:</span> {{ company.contact_email }}
         </div>
       </div>
     </fieldset>
@@ -106,26 +109,7 @@ export default {
     'r-checkbox': QualCheckbox
   },
   data () {
-    return {
-      person: {
-        name: 'John Bobert',
-        certNumber: 'CGWA930209',
-        certAuthority: 'Canadian Groundwater Association',
-        qualificationCode: 'DRILL',
-        activityDescription: 'Well Driller'
-      },
-      qualType: 'DRILL',
-      wellQualifications: {
-        supply: true,
-        monitoring: true,
-        recharge: true,
-        injection: true,
-        dewatering: false,
-        remediation: false,
-        geotechnical: true,
-        geoexchange: false
-      }
-    }
+    return {}
   },
   computed: {
     company () {
@@ -153,8 +137,6 @@ export default {
         // since each person can have multiple applications, and each application can have multiple
         // classifications, we need to iterate through several arrays.
         this.currentDriller.applications.forEach((app) => {
-          console.log('checking application')
-          console.log(app)
           let status = null
           let date = null
 
@@ -166,32 +148,26 @@ export default {
 
           if (app.registriesapplicationstatus_set && app.registriesapplicationstatus_set.length) {
             statusPriority.forEach((code) => {
-              console.log('checking for status code', code)
               const statusLevel = app.registriesapplicationstatus_set.findIndex((item) => {
                 return item.status_code === code
               })
 
               if (~statusLevel) {
-                console.log('found a status', code)
                 status = app.registriesapplicationstatus_set[statusLevel].status
                 date = app.registriesapplicationstatus_set[statusLevel].effective_date
               }
             })
           }
-          console.log(status, date)
 
           // now iterate through classifications that the person has applied for and push onto an array
           if (app.classificationappliedfor_set &&
             app.classificationappliedfor_set.length) {
             app.classificationappliedfor_set.forEach((classification) => {
-              console.log('checking classification')
-              console.log(classification)
               if (
-                classification.registries_subactivity &&
-                classification.registries_subactivity.description &&
-                classification.registries_subactivity.description
+                classification.registries_subactivity
               ) {
                 classifications.push({
+                  code: classification.registries_subactivity.code.toLowerCase(),
                   description: classification.registries_subactivity.description,
                   status: status,
                   date: date
@@ -204,7 +180,6 @@ export default {
       return classifications
     },
     drillerApplicationNotes () {
-      console.log(this.currentDriller.applications)
       const notes = []
       if (this.currentDriller.applications && this.currentDriller.applications.length) {
         this.currentDriller.applications.forEach((app) => {
@@ -226,13 +201,15 @@ export default {
     ])
   },
   created () {
-    this.$store.commit(SET_DRILLER, {})
-    if (this.drillers && this.drillers.results && this.drillers.results.length) {
-      const driller = this.drillers.results.find((item) => {
-        return item.person_guid === this.$route.params.person_guid
-      })
-      if (driller) {
-        this.$store.commit(SET_DRILLER, driller)
+    if (this.currentDriller.person_guid !== this.$route.params.person_guid) {
+      this.$store.commit(SET_DRILLER, {})
+      if (this.drillers && this.drillers.results && this.drillers.results.length) {
+        const driller = this.drillers.results.find((item) => {
+          return item.person_guid === this.$route.params.person_guid
+        })
+        if (driller) {
+          this.$store.commit(SET_DRILLER, driller)
+        }
       }
     }
     this.$store.dispatch(FETCH_DRILLER, this.$route.params.person_guid)
@@ -247,6 +224,9 @@ export default {
 }
 .registry-item {
   margin-bottom: 20px;
+}
+.registry-label {
+  font-weight: bold;
 }
 .registry-disabled-item {
   color: #808080;
