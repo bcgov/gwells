@@ -1,5 +1,5 @@
 <template>
-  <div @click="clearError" class="alert alert-warning" role="alert">
+  <div @click="clearError" class="alert alert-warning" role="alert" id="errorAlert">
     {{ error.status }} {{ error.statusText }}: {{ error.data.detail }}
   </div>
 </template>
