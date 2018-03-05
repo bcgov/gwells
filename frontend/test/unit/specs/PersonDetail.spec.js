@@ -1,6 +1,7 @@
 import { shallow, createLocalVue } from '@vue/test-utils'
 import Vuex from 'vuex'
 import PersonDetail from '@/registry/components/PersonDetail'
+import APIErrorMessage from '@/common/components/APIErrorMessage'
 import { SET_DRILLER } from '@/registry/store/mutations.types'
 import { FETCH_DRILLER } from '@/registry/store/actions.types'
 
@@ -10,6 +11,7 @@ localVue.use(Vuex)
 describe('PersonDetail.vue', () => {
   let store
   let getters
+  let mutations
   let actions
 
   const fakePerson = JSON.parse(JSON.stringify({
@@ -129,15 +131,17 @@ describe('PersonDetail.vue', () => {
       currentDriller: jest.fn().mockReturnValue(fakePerson),
       drillers: () => []
     }
+    mutations = {
+      [SET_DRILLER]: jest.fn()
+    }
     actions = {
-      [SET_DRILLER]: jest.fn(),
       [FETCH_DRILLER]: jest.fn()
     }
-    store = new Vuex.Store({ getters, actions })
+    store = new Vuex.Store({ getters, actions, mutations })
   })
 
   it('dispatches the fetch driller action when page loads', () => {
-    const wrapper = shallow(PersonDetail, {
+    shallow(PersonDetail, {
       store,
       localVue,
       stubs: ['router-link', 'router-view'],
@@ -146,5 +150,55 @@ describe('PersonDetail.vue', () => {
       }
     })
     expect(actions.fetchDriller).toHaveBeenCalled()
+  })
+  it('loads the error component if there is an error', () => {
+    getters = {
+      loading: () => false,
+      error: () => {
+        return { status: '400', statusText: 'error!' }
+      },
+      currentDriller: jest.fn().mockReturnValue(fakePerson),
+      drillers: () => []
+    }
+    const storeError = new Vuex.Store({ getters, actions, mutations })
+    const wrapper = shallow(PersonDetail, {
+      store: storeError,
+      localVue,
+      stubs: ['router-link', 'router-view'],
+      mocks: {
+        $route: {params: {person_guid: 'aaaa-4444-bbbb-1111'}}
+      }
+    })
+    // const wrapper = shallow(PersonDetail, {
+    //   store,
+    //   localVue,
+    //   stubs: ['router-link', 'router-view'],
+    //   mocks: {
+    //     $route: {params: {person_guid: 'aaaa-4444-bbbb-1111'}}
+    //   }
+    // })
+    expect(wrapper.findAll(APIErrorMessage).length).toEqual(1)
+  })
+  it('doesn\'t load the error component if there is no error', () => {
+    const wrapper = shallow(PersonDetail, {
+      store,
+      localVue,
+      stubs: ['router-link', 'router-view'],
+      mocks: {
+        $route: {params: {person_guid: 'aaaa-4444-bbbb-1111'}}
+      }
+    })
+    expect(wrapper.findAll(APIErrorMessage).length).toEqual(0)
+  })
+  it('has a classifications property (based on the currentDriller loaded)', () => {
+    const wrapper = shallow(PersonDetail, {
+      store,
+      localVue,
+      stubs: ['router-link', 'router-view'],
+      mocks: {
+        $route: {params: {person_guid: 'aaaa-4444-bbbb-1111'}}
+      }
+    })
+    expect(wrapper.vm.classifications)
   })
 })
