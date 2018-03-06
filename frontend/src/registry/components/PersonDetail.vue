@@ -1,9 +1,23 @@
 <template>
   <div class="container-fluid">
     <div class="row" v-if="currentDriller != {}">
-      <div class="col-xs-12 col-sm-8">
+      <div class="col-xs-12 col-sm-7">
         <h2>{{ currentDriller.first_name }} {{ currentDriller.surname }}</h2>
       </div>
+      <div class="col-xs-12 col-sm-5 text-center">
+        <router-link
+          class="btn btn-secondary"
+          tag="button"
+          :to="{
+            name: 'PersonDetailEdit',
+            params: {
+              person_guid: currentDriller.person_guid
+            }
+          }"
+          v-if="currentDriller.person_guid"><i class="fa fa-edit"></i>Edit</router-link>
+      </div>
+    </div>
+    <div class="row">
       <div class="col-xs-12" v-if="error">
         <api-error :error="error" resetter="setError"></api-error>
       </div>
@@ -100,7 +114,7 @@ import APIErrorMessage from '@/common/components/APIErrorMessage'
 import QualCheckbox from '@/common/components/QualCheckbox'
 import { mapGetters } from 'vuex'
 import { SET_DRILLER } from '@/registry/store/mutations.types'
-import { FETCH_DRILLER } from '@/registry/store/actions.types'
+import { FETCH_DRILLER, LOGOUT } from '@/registry/store/actions.types'
 
 export default {
   name: 'person-detail',
@@ -195,10 +209,16 @@ export default {
     },
     ...mapGetters([
       'loading',
+      'user',
       'error',
       'currentDriller',
       'drillers'
     ])
+  },
+  methods: {
+    logout () {
+      this.$store.dispatch(LOGOUT)
+    }
   },
   created () {
     if (this.currentDriller.person_guid !== this.$route.params.person_guid) {
