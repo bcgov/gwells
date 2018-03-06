@@ -30,7 +30,7 @@
 
       <p>A person listed as a well driller in this Register must advise the Comptroller in writing within 60 days of any changes to the information included in the Register or if they are no longer actively working in B.C. as a well driller.</p>
 
-      <p>The person whose name appears in this Register should, in the course of their duties as a well driller in British Columbia, carry with them the well driller identification card issued to them by the Comptroller and must present it upon request to the Comptroller, the Regional Water Manager, an Engineer or an Officer under the <i>Water Sustainability Act</i> (WSA) , or a Drinking
+      <p>The person whose name appears in this Register should, in the course of their duties as a well driller in British Columbia, carry with them the well driller identification card issued to them by the Comptroller and must present it upon request to the Comptroller, the Regional Water Manager, an Engineer or an Officer under the <i>Water Sustainability Act</i> (WSA), or a Drinking
       Water Officer under the <i>Drinking Water Protection Act</i>, as proof of their qualifications as a well driller pursuant to Section 51 of the WSA.</p>
 
       <p>*‘Certificate issued by’: Explanation of abbreviations
