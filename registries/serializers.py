@@ -47,6 +47,8 @@ class ContactAtSerializer(AuditModelSerializer):
     street_address = serializers.StringRelatedField(source="org.street_address")
     city = serializers.StringRelatedField(source="org.city")
     province_state = serializers.StringRelatedField(source="org.province_state.province_state_code")
+    postal_code = serializers.StringRelatedField(source="org.postal_code")
+    website_url = serializers.StringRelatedField(source="org.website_url")
 
     class Meta:
         model = ContactAt
@@ -55,12 +57,14 @@ class ContactAtSerializer(AuditModelSerializer):
             'organization_name',
             'street_address',
             'city',
+            'postal_code',
             'province_state',
             'person_name',
             'person',
             'org',
             'contact_tel',
-            'contact_email'
+            'contact_email',
+            'website_url'
         )
 
 
