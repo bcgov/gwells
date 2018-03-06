@@ -98,11 +98,6 @@
                     <input type="text" class="form-control" id="regTypeInput" placeholder="Search" v-model="searchParams.search">
                   </div>
                 </div>
-                <!-- <div class="form-group">
-                  <div class="col-xs-12 form-inline form-spacing">
-                      <select class="form-control input-sm" v-model="searchParams.limit"><option>10</option><option>25</option></select> entries
-                  </div>
-                </div> -->
                 <div class="form-group">
                   <div class="col-xs-12">
                     <button type="submit" class="btn btn-primary">Submit</button>
