@@ -4,6 +4,8 @@
 # via the Oracle Foreign Data Wrapper on the postgres Pod.  This script runs
 # on a local developer workstation, calling renote 'oc exec' commands
 #
+# NOTE: You need to be logged in with a token, via:
+#       https://console.pathfinder.gov.bc.ca:8443/oauth/token/request
 #
 # Running on postgres database pod, as DB root access not enabled on gwells application pod
 podname=$(oc get pods -n moe-gwells-test | grep postgresql | grep Running | head -n 1 | awk '{print $1}')
@@ -95,7 +97,77 @@ oc rsync ${podname}:/tmp/xfer ~/tmp
 # > alter user wells set search_path to wells;
 # > EOF
 
+# Reset target schema to hold objects from pg_restore
+psql -d wells -U wells << EOF
+DROP SCHEMA IF EXISTS xfer_wells CASCADE;
+EOF
+
 pg_restore -d wells --v --no-owner --no-privileges -U wells ~/tmp/xfer/wells-legacy.$(date +"%m_%d_%Y").dmp
+
+# Empty out FDW home schema
+psql -d wells -U wells << EOF
+DROP TABLE IF EXISTS wells.gw_aquifer_attrs               CASCADE;
+DROP TABLE IF EXISTS wells.gw_aquifer_attrs_old           CASCADE;
+DROP TABLE IF EXISTS wells.gw_aquifer_wells               CASCADE;
+DROP TABLE IF EXISTS wells.gw_casing_material_codes       CASCADE;
+DROP TABLE IF EXISTS wells.gw_class_of_well_codes         CASCADE;
+DROP TABLE IF EXISTS wells.gw_class_subclass_xrefs        CASCADE;
+DROP TABLE IF EXISTS wells.gw_closure_method_codes        CASCADE;
+DROP TABLE IF EXISTS wells.gw_development_method_cds      CASCADE;
+DROP TABLE IF EXISTS wells.gw_drilling_method_codes       CASCADE;
+DROP TABLE IF EXISTS wells.gw_filter_pack_material_cds    CASCADE;
+DROP TABLE IF EXISTS wells.gw_filter_pack_size_codes      CASCADE;
+DROP TABLE IF EXISTS wells.gw_ground_elevaton_mthd_cds    CASCADE;
+DROP TABLE IF EXISTS wells.gw_liner_material_codes        CASCADE;
+DROP TABLE IF EXISTS wells.gw_nts_mapsheets               CASCADE;
+DROP TABLE IF EXISTS wells.gw_orientation_of_well_cds     CASCADE;
+DROP TABLE IF EXISTS wells.gw_province_state_codes        CASCADE;
+DROP TABLE IF EXISTS wells.gw_relative_hardness_codes     CASCADE;
+DROP TABLE IF EXISTS wells.gw_screen_assembly_type_cds    CASCADE;
+DROP TABLE IF EXISTS wells.gw_screen_bottom_codes         CASCADE;
+DROP TABLE IF EXISTS wells.gw_screen_intake_codes         CASCADE;
+DROP TABLE IF EXISTS wells.gw_screen_material_codes       CASCADE;
+DROP TABLE IF EXISTS wells.gw_screen_opening_codes        CASCADE;
+DROP TABLE IF EXISTS wells.gw_screen_type_codes           CASCADE;
+DROP TABLE IF EXISTS wells.gw_status_of_well_codes        CASCADE;
+DROP TABLE IF EXISTS wells.gw_subclass_of_well_codes      CASCADE;
+DROP TABLE IF EXISTS wells.gw_surface_seal_materil_cds    CASCADE;
+DROP TABLE IF EXISTS wells.gw_surface_seal_method_cds     CASCADE;
+DROP TABLE IF EXISTS wells.gw_utm_zone_codes              CASCADE;
+DROP TABLE IF EXISTS wells.gw_water_qual_chrctrstc_cds    CASCADE;
+DROP TABLE IF EXISTS wells.gw_well_water_quality_xrefs    CASCADE;
+DROP TABLE IF EXISTS wells.gw_yield_estimated_mthd_cds    CASCADE;
+DROP TABLE IF EXISTS wells.wells_acceptance_status_code   CASCADE;
+DROP TABLE IF EXISTS wells.wells_aquifer_lithology_codes  CASCADE;
+DROP TABLE IF EXISTS wells.wells_aquifer_subtype_codes    CASCADE;
+DROP TABLE IF EXISTS wells.wells_bcgs_numbers             CASCADE;
+DROP TABLE IF EXISTS wells.wells_casings                  CASCADE;
+DROP TABLE IF EXISTS wells.wells_constant                 CASCADE;
+DROP TABLE IF EXISTS wells.wells_constr_method_codes      CASCADE;
+DROP TABLE IF EXISTS wells.wells_driller_codes            CASCADE;
+DROP TABLE IF EXISTS wells.wells_errors                   CASCADE;
+DROP TABLE IF EXISTS wells.wells_ground_water_authrzation CASCADE;
+DROP TABLE IF EXISTS wells.wells_legal_land_dist_codes    CASCADE;
+DROP TABLE IF EXISTS wells.wells_lith_description_codes   CASCADE;
+DROP TABLE IF EXISTS wells.wells_lithology_colour_codes   CASCADE;
+DROP TABLE IF EXISTS wells.wells_lithology_descriptions   CASCADE;
+DROP TABLE IF EXISTS wells.wells_lithology_material_codes CASCADE;
+DROP TABLE IF EXISTS wells.wells_location_accuracy_code   CASCADE;
+DROP TABLE IF EXISTS wells.wells_owners                   CASCADE;
+DROP TABLE IF EXISTS wells.wells_perforations             CASCADE;
+DROP TABLE IF EXISTS wells.wells_production_data          CASCADE;
+DROP TABLE IF EXISTS wells.wells_screens                  CASCADE;
+DROP TABLE IF EXISTS wells.wells_sequences                CASCADE;
+DROP TABLE IF EXISTS wells.wells_temp_access              CASCADE;
+DROP TABLE IF EXISTS wells.wells_temp_access_lithology    CASCADE;
+DROP TABLE IF EXISTS wells.wells_use_codes                CASCADE;
+DROP TABLE IF EXISTS wells.wells_utm_description          CASCADE;
+DROP TABLE IF EXISTS wells.wells_utm_scale_codes          CASCADE;
+DROP TABLE IF EXISTS wells.wells_watershed_codes          CASCADE;
+DROP TABLE IF EXISTS wells.wells_well_licence             CASCADE;
+DROP TABLE IF EXISTS wells.wells_wells                    CASCADE;
+DROP TABLE IF EXISTS wells.wells_yield_unit_codes         CASCADE;
+EOF
 
 
 psql -d wells -U wells << EOF

@@ -11,7 +11,6 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
-
 from .AuditModel import AuditModel
 from django.db import models
 import uuid
@@ -26,7 +25,6 @@ class DrillingCompany(AuditModel):
     drilling_company_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     drilling_company_code = models.CharField(max_length=10, blank=True, null=True)
     name = models.CharField(max_length=200)
-    is_hidden = models.BooleanField(default=False)
 
     class Meta:
         db_table = 'drilling_company'

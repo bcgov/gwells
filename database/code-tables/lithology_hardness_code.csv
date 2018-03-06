@@ -1,9 +1,9 @@
-lithology_hardness_guid,lithology_hardness_code,description,is_hidden,display_order,create_date,update_date,create_user,update_user
-"aeab5f0a62a511e7907ba6006ad3dba0","VERY HARD","Very Hard","N","60","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
-"aeab546062a511e7907ba6006ad3dba0","VERY_SOFT","Very Soft","N","70","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
-"aeab5d4862a511e7907ba6006ad3dba0","MEDIUM","Medium","N","30","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
-"aeab59b062a511e7907ba6006ad3dba0","STIFF","Stiff","N","50","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
-"aa04738b59e144b3822e5105a56300ed","LOOSE","Loose","N","20","2018-01-08 16:38:00-08","2018-01-08 16:38:00-08","ETL_USER","ETL_USER"
-"9e70d0ced618493db8f6ade07e21853c","DENSE","Dense","N","0","2018-01-08 16:38:00-08","2018-01-08 16:38:00-08","ETL_USER","ETL_USER"
-"a98939eea3ff4a09837bb93be600e1c6","HARD","Hard","N","10","2018-01-08 16:38:00-08","2018-01-08 16:38:00-08","ETL_USER","ETL_USER"
-"a6e471db81674fee846b22f715112fd9","SOFT","Soft","N","40","2018-01-08 16:38:00-08","2018-01-08 16:38:00-08","ETL_USER","ETL_USER"
+lithology_hardness_code,description,display_order,create_date,update_date,create_user,update_user
+"VERY_HARD","Very Hard","60","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
+"VERY_SOFT","Very Soft","70","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
+"MEDIUM","Medium","30","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
+"STIFF","Stiff","50","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
+"LOOSE","Loose","20","2018-01-08 16:38:00-08","2018-01-08 16:38:00-08","ETL_USER","ETL_USER"
+"DENSE","Dense","0","2018-01-08 16:38:00-08","2018-01-08 16:38:00-08","ETL_USER","ETL_USER"
+"HARD","Hard","10","2018-01-08 16:38:00-08","2018-01-08 16:38:00-08","ETL_USER","ETL_USER"
+"SOFT","Soft","40","2018-01-08 16:38:00-08","2018-01-08 16:38:00-08","ETL_USER","ETL_USER"

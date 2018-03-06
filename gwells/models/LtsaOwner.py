@@ -11,7 +11,6 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
-
 from .AuditModel import AuditModel
 from .Well import Well
 from .ProvinceStateCode import ProvinceStateCode
@@ -31,13 +30,13 @@ class LtsaOwner(AuditModel):
     mailing_address = models.CharField(max_length=100, verbose_name='Mailing Address')
 
     city = models.CharField(max_length=100, verbose_name='Town/City')
-    province_state = models.ForeignKey(ProvinceStateCode, db_column='province_state_guid', on_delete=models.CASCADE, verbose_name='Province')
+    province_state = models.ForeignKey(ProvinceStateCode, db_column='province_state_code', on_delete=models.CASCADE, verbose_name='Province')
     postal_code = models.CharField(max_length=10, blank=True, verbose_name='Postal Code')
 
     tracker = FieldTracker()
 
     class Meta:
-        db_table = 'gwells_ltsa_owner'
+        db_table = 'ltsa_owner'
 
     def __str__(self):
         return '%s %s' % (self.full_name, self.mailing_address)
