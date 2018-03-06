@@ -34,63 +34,56 @@
           </tbody>
         </table>
       </div>
+      <div class="row">
+        <p class="col-xs-12"><i class="fa fa-plus-square-o"></i>Add classification</p>
+      </div>
     </div>
     <div class="panel" v-if="editDriller != {}">
       <div class="panel-body">
         <div class="container-fluid">
           <h3>Personal Information</h3>
-          <div class="row">
-            <div class="col-xs-12 col-sm-6">
-              <div class="form-group form-spacing">
-                <label for="personLastName">Last name:</label> <input type="text" id="personLastName" placeholder="Surname" v-model="editDriller.surname">
+          <form class="form-horizontal">
+            <div class="form-group">
+              <label class="col-xs-12 col-md-2 registry-form-label" for="personLastName">Last name:</label>
+              <div class="col-xs-12 col-md-3 form-spacing">
+                <input type="text" id="personLastName" placeholder="Surname" v-model="editDriller.surname">
+              </div>
+              <label class="col-xs-12 col-md-2 registry-form-label" for="personFirstName">First name:</label>
+              <div class="col-xs-12 col-md-3">
+                <input type="text" id="personFirstName" placeholder="First name" v-model="editDriller.first_name">
               </div>
             </div>
-            <div class="col-xs-12 col-sm-6">
-              <div class="form-group form-spacing">
-                <label for="personFirstName">First name:</label> <input type="text" id="personFirstName" placeholder="First name" v-model="editDriller.first_name">
-              </div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-xs-12 col-sm-6">
-              <div class="checkbox">
-                <label>
-                  <input type="checkbox" v-model="drillerOver19.value"> Confirmed applicant is 19 or older
+            <div class="form-group">
+              <div class="checkbox col-xs-12 col-sm-5">
+                <label class="form-spacing">
+                  <input type="checkbox" v-model="drillerOver19.value"  style="margin-top: 0px"> <strong>Confirmed applicant is 19 or older</strong>
                 </label>
               </div>
-            </div>
-            <div class="col-xs-12 col-sm-6">
-              <div class="form-group form-inline">
-                <label for="identificationSelect">Proof of age: </label>
+              <label class="col-xs-12 col-md-2 registry-form-label" for="identificationSelect">Proof of age: </label>
+              <div class="col-xs-12 col-md-3 form-spacing">
                 <select class="form-control" v-model="drillerOver19.proof" id="identificationSelect">
                   <option value="">Select identification type</option>
                   <option v-for="(item, index) in proofOfAgeChoices" :key="`ident ${index}`" :value="item">{{ item }}</option>
                 </select>
               </div>
             </div>
-          </div>
-          <div class="row">
-            <div class="col-xs-12 col-md-6">
-              <div class="form-group form-spacing">
-                <label for="drillRegNo">Driller registration number:</label>
+            <div class="form-group">
+              <label class="col-xs-12 col-md-2" for="drillRegNo">Driller registration number:</label>
+              <div class="col-xs-12 col-md-3 form-spacing">
                 <input type="text" id="drillRegNo" placeholder="Enter registration number" v-model="editDrillerReg.drillRegNo">
               </div>
-            </div>
-            <div class="col-xs-12 col-md-6">
-              <div class="form-group form-spacing">
-                <label for="pumpRegNo">Pump installer registration number:</label>
+              <label class="col-xs-12 col-md-2" for="pumpRegNo">Pump installer registration number:</label>
+              <div class="col-xs-12 col-md-3 form-spacing">
                 <input type="text" id="pumpRegNo" placeholder="Enter registration number" v-model="editDrillerReg.pumpRegNo">
               </div>
             </div>
-          </div>
-          <div class="row">
-            <div class="col-xs-12 col-md-6">
-              <div class="form-group form-spacing">
-                <label for="drillORCSNo">Driller ORCS number:</label>
+            <div class="form-group">
+              <label class="col-xs-12 col-md-2" for="drillORCSNo">Driller ORCS number:</label>
+              <div class="col-xs-12 col-md-3">
                 <input type="text" id="drillORCSNo" placeholder="Enter ORCS number" v-model="editDrillerReg.drillORCSNo">
               </div>
             </div>
-          </div>
+          </form>
         </div>
       </div>
     </div>
@@ -98,75 +91,66 @@
       <div class="panel-body">
         <div class="container-fluid">
           <h3>Company Information</h3>
-          <div class="row">
-            <div class="col-xs-12 col-sm-6">
-              <div class="form-group form-spacing">
-                <label for="orgName">Company name:</label>
+          <form class="form-horizontal">
+            <div class="form-group">
+              <label class="col-xs-12 col-md-2" for="orgName">Company name:</label>
+              <div class="col-xs-12 col-md-3 form-spacing">
                 <select id="orgName" v-model="editCompany.organization_name">
                   <option value="">Select company</option>
-                  <option>{{editCompany.organization_name}}</option>
+                  <option>{{company.organization_name}}</option>
                 </select>
               </div>
-            </div>
-            <div class="col-xs-12 col-sm-6">
-              <div class="form-group form-spacing">
-                <label for="orgAddress">Company address:</label> <input type="text" id="orgAddress" placeholder="Enter organization address" v-model="editCompany.street_address">
+              <label class="col-xs-12 col-md-2" for="orgAddress">Company address:</label>
+              <div class="col-xs-12 col-md-3 form-spacing">
+                <input type="text" id="orgAddress" placeholder="Enter organization address" v-model="editCompany.street_address">
               </div>
             </div>
-          </div>
-          <div class="row">
-            <div class="col-xs-12 col-sm-6">
-              <div class="form-group form-spacing">
-                <label for="orgCity">City:</label> <input type="text" id="orgCity" placeholder="Enter city" v-model="editCompany.city">
+            <div class="form-group">
+              <label class="col-xs-12 col-md-2" for="orgCity">City:</label>
+              <div class="col-xs-12 col-md-3 form-spacing">
+                <input type="text" id="orgCity" placeholder="Enter city" v-model="editCompany.city">
+              </div>
+              <label class="col-xs-12 col-md-2" for="orgProvince">Province:</label>
+              <div class="col-xs-12 col-md-3 form-spacing">
+                <input type="text" id="orgProvince" placeholder="Enter organization Province" v-model="editCompany.province_state">
               </div>
             </div>
-            <div class="col-xs-12 col-sm-6">
-              <div class="form-group form-spacing">
-                <label for="orgProvince">Province:</label> <input type="text" id="orgProvince" placeholder="Enter organization Province" v-model="editCompany.province_state">
+            <div class="form-group">
+              <label class="col-xs-12 col-md-2" for="orgPostalCode">Postal code:</label>
+              <div class="col-xs-12 col-md-3 form-spacing">
+                <input type="text" id="orgPostalCode" placeholder="Enter postal code" v-model="editCompany.postal_code">
+              </div>
+              <label class="col-xs-12 col-md-2" for="orgPhone">Office number:</label>
+              <div class="col-xs-12 col-md-3 form-spacing">
+                <input type="text" id="orgPhone" placeholder="Enter phone number" v-model="editCompany.contact_tel">
               </div>
             </div>
-          </div>
-          <div class="row">
-            <div class="col-xs-12 col-sm-6">
-              <div class="form-group form-spacing">
-                <label for="orgPostalCode">Postal code:</label> <input type="text" id="orgPostalCode" placeholder="Enter postal code" v-model="editCompany.postal_code">
+            <div class="form-group">
+              <label class="col-xs-12 col-md-2" for="orgCell">Cell number:</label>
+              <div class="col-xs-12 col-md-3 form-spacing">
+                <input type="text" id="orgCell" placeholder="Enter cell number">
+              </div>
+              <label class="col-xs-12 col-md-2" for="orgFax">Fax number:</label>
+              <div class="col-xs-12 col-md-3 form-spacing">
+                <input type="text" id="orgFax" placeholder="Enter fax number">
               </div>
             </div>
-            <div class="col-xs-12 col-sm-6">
-              <div class="form-group form-spacing">
-                <label for="orgPhone">Office number:</label> <input type="text" id="orgPhone" placeholder="Enter phone number" v-model="editCompany.contact_tel">
+            <div class="form-group">
+              <label class="col-xs-12 col-md-2" for="orgEmail">Email:</label>
+              <div class="col-xs-12 col-md-3 form-spacing">
+                <input type="text" id="orgEmail" placeholder="Enter email address" v-model="editCompany.contact_email">
+              </div>
+              <label class="col-xs-12 col-md-2" for="orgWebsite">Website:</label>
+              <div class="col-xs-12 col-md-3 form-spacing">
+                <input type="text" id="orgWebsite" placeholder="Enter website address" v-model="editCompany.website_url">
               </div>
             </div>
-          </div>
-          <div class="row">
-            <div class="col-xs-12 col-sm-6">
-              <div class="form-group form-spacing">
-                <label for="orgCell">Cell number:</label> <input type="text" id="orgCell" placeholder="Enter cell number">
+            <div class="form-group">
+              <div class="col-xs-12">
+                <button class="btn btn-secondary" type="button">Add new company</button>
               </div>
             </div>
-            <div class="col-xs-12 col-sm-6">
-              <div class="form-group form-spacing">
-                <label for="orgFax">Fax number:</label> <input type="text" id="orgFax" placeholder="Enter fax number">
-              </div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-xs-12 col-sm-6">
-              <div class="form-group form-spacing">
-                <label for="orgEmail">Email:</label> <input type="text" id="orgEmail" placeholder="Enter email address" v-model="editCompany.contact_email">
-              </div>
-            </div>
-            <div class="col-xs-12 col-sm-6">
-              <div class="form-group form-spacing">
-                <label for="orgWebsite">Website:</label> <input type="text" id="orgWebsite" placeholder="Enter website address" v-model="editCompany.website_url">
-              </div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-xs-12">
-              <button class="btn btn-secondary" type="button">Add new company</button>
-            </div>
-          </div>
+          </form>
         </div>
       </div>
     </div>
@@ -370,5 +354,8 @@ export default {
   font-size: 2rem;
   margin-left: 10px;
   margin-top: 5px;
+}
+.registry-form-label {
+  padding-top: 5px;
 }
 </style>
