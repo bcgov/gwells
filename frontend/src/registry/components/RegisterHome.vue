@@ -4,7 +4,7 @@
       <div class="col-xs-12 col-sm-7">
         <a id="main-content-anchor"></a>
         <h2 id="registry-title">Register of Well Drillers and Well Pump Installers</h2>
-          <p><a target="_blank" href="https://www2.gov.bc.ca/gov/content/environment/air-land-water/water/groundwater-wells/information-for-well-drillers-well-pump-installers/what-you-need-to-practice-in-bc">Learn more about registering as a well driller or well pump installer in B.C.</a></p>
+          <p><a href="https://www2.gov.bc.ca/gov/content/environment/air-land-water/water/groundwater-wells/information-for-well-drillers-well-pump-installers/what-you-need-to-practice-in-bc">Learn more about registering as a well driller or well pump installer in B.C.</a></p>
       </div>
       <div class="col-xs-12 col-sm-5 text-center">
         <button v-if="!user" type="button" class="btn btn-primary" @click="loginPanelToggle = !loginPanelToggle">Log in</button>
@@ -83,11 +83,11 @@
                     <div class="col-xs-12 col-sm-6 form-spacing">
                       <label>Registration status</label>
                       <select v-model="searchParams.status" class="form-control">
-                        <option value="" disabled>All</option>
-                        <option value="PENDING" disabled>Pending</option>
-                        <option value="INACTIVE" disabled>Not registered</option>
+                        <option value="">All</option>
+                        <option value="PENDING">Pending</option>
+                        <option value="INACTIVE">Not registered</option>
                         <option value="ACTIVE">Registered</option>
-                        <option value="REMOVED" disabled>Removed</option>
+                        <option value="REMOVED">Removed</option>
                       </select>
                     </div>
                   </div>
@@ -203,6 +203,9 @@ export default {
     'searchParams.activity': function () {
       this.searchParams.city = ''
       this.$store.dispatch(FETCH_CITY_LIST, this.formatActivityForCityList)
+    },
+    user: function () {
+      this.drillerSearchReset()
     }
   },
   methods: {
