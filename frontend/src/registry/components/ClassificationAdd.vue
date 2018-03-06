@@ -2,110 +2,136 @@
   <div class="container-fluid">
     <div class="row">
       <div class="col-xs-12">
-      <h3>Classification and Qualifications</h3>
-      <div class="form-group">
-        <div class="row">
-          <div class="col-xs-12">
-            <label>Select qualification: &nbsp;</label>
-          </div>
-          <div class="col-xs-12 col-sm-4 col-md-3">
-            <div class="radio">
-              <div>
-                <label>
-                  <input type="radio" name="activitySelector" id="activityDriller" v-model="qualType" value="DRILL" style="margin-top: 0px"> Water Well Driller
-                </label>
-              <div>
+        <form class="form-horizontal">
+          <h3>Classification and Qualifications</h3>
+          <div class="form-group">
+            <div class="col-xs-12">
+              <label>Select qualification: &nbsp;</label>
+            </div>
+            <div class="col-xs-12 col-sm-4 col-md-3">
+              <div class="radio">
+                <div>
+                  <label>
+                    <input type="radio" name="activitySelector" id="activityDriller" v-model="qualType" value="DRILL" style="margin-top: 0px"> Water Well Driller
+                  </label>
+                <div>
+                </div>
+                  <label>
+                    <input type="radio" name="activitySelector" id="activityInstaller" v-model="qualType" value="PUMP" style="margin-top: 0px"> Pump Installer
+                  </label>
+                </div>
               </div>
+            </div>
+            <div class="col-xs-12 col-sm-4 col-md-3 form-spacing">
+              <div class="radio">
+                <div>
+                  <label>
+                    <input type="radio" name="activitySelector" id="activityDriller" v-model="qualType" value="GEOTHERM" style="margin-top: 0px"> Geoexchange Driller
+                  </label>
+                <div>
+                </div>
+                  <label>
+                    <input type="radio" name="activitySelector" id="activityInstaller" v-model="qualType" value="GEOTECH" style="margin-top: 0px"> Geotechnical/Environmental Driller
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-xs-12 col-md-1 registry-form-label" for="issuedByOrg">Issued by: </label>
+            <div class="col-xs-12 col-md-3 form-spacing">
+              <select class="form-control" v-model="editClassification.issuedBy" id="issuedByOrg">
+                <option value="">Select issuing authority</option>
+                <option v-for="(item, index) in issuerOrgs" :key="`ident ${index}`" :value="item">{{ item }}</option>
+              </select>
+            </div>
+            <label class="col-xs-12 col-md-2 col-md-offset-1" for="certNumber">Certificate number:</label>
+            <div class="col-xs-12 col-md-3 form-spacing">
+              <input type="text" id="certNumber" placeholder="Enter certificate number" v-model="editClassification.certNo">
+            </div>
+          </div>
+          <div class="form-group">
+            <h4>Qualified to drill under this classification</h4>
+          </div>
+          <div class="form-group">
+            <div class="col-xs-12 col-sm-4 col-md-3">
+              <div class="checkbox">
                 <label>
-                  <input type="radio" name="activitySelector" id="activityInstaller" v-model="qualType" value="PUMP" style="margin-top: 0px"> Pump Installer
+                  <input type="checkbox" v-model="editClassification.qualCodes.wat"> Water supply wells
+                </label>
+              </div>
+              <div class="checkbox">
+                <label>
+                  <input type="checkbox" v-model="editClassification.qualCodes.mon"> Monitoring wells
+                </label>
+              </div>
+              <div class="checkbox">
+                <label>
+                  <input type="checkbox" v-model="editClassification.qualCodes.rech"> Recharge wells
+                </label>
+              </div>
+              <div class="checkbox">
+                <label>
+                  <input type="checkbox" v-model="editClassification.qualCodes.inj"> Injection wells
+                </label>
+              </div>
+            </div>
+            <div class="col-xs-12 col-sm-4 col-md-3 registry-item">
+              <div class="checkbox">
+                <label>
+                  <input type="checkbox" v-model="editClassification.qualCodes.dewat"> Dewatering wells
+                </label>
+              </div>
+              <div class="checkbox">
+                <label>
+                  <input type="checkbox" v-model="editClassification.qualCodes.rem"> Remediation wells
+                </label>
+              </div>
+              <div class="checkbox">
+                <label>
+                  <input type="checkbox" v-model="editClassification.qualCodes.geo"> Geotechnical wells
+                </label>
+              </div>
+              <div class="checkbox">
+                <label>
+                  <input type="checkbox" v-model="editClassification.qualCodes.clos"> Closed-loop geoexchange wells
                 </label>
               </div>
             </div>
           </div>
-          <div class="col-xs-12 col-sm-4 col-md-3 form-spacing">
-            <div class="radio">
-              <div>
-                <label>
-                  <input type="radio" name="activitySelector" id="activityDriller" v-model="qualType" value="GEOTHERM" style="margin-top: 0px" disabled> Geoexchange Driller
-                </label>
-              <div>
-              </div>
-                <label>
-                  <input type="radio" name="activitySelector" id="activityInstaller" v-model="qualType" value="GEOTECH" style="margin-top: 0px" disabled> Geotechnical/Environmental Driller
-                </label>
-              </div>
-            </div>
-          </div>
-        </div>
+        </form>
       </div>
-      <div class="form-group">
-        <label class="col-xs-12 col-md-2 registry-form-label" for="issuedByOrg">Issued by: </label>
-        <div class="col-xs-12 col-md-3 form-spacing">
-          <select class="form-control" v-model="editClassification.issuedBy" id="issuedByOrg">
-            <option value="">Select identification type</option>
-            <option v-for="(item, index) in issuerOrgs" :key="`ident ${index}`" :value="item">{{ item }}</option>
-          </select>
-        </div>
-        <div class="col-xs-12 col-sm-4 registry-item">
-          <span class="registry-label">Certificate number:</span>
-        </div>
-      </div>
-      <div class="row">
-        <h4>Qualified to drill under this license</h4>
-      </div>
-      <div class="row">
-        <div class="col-xs-12 col-sm-4 col-md-3">
-          <div class="qualification-item">
-            <r-checkbox></r-checkbox> Water supply wells
-          </div>
-          <div class="qualification-item">
-            <r-checkbox></r-checkbox> Monitoring wells
-          </div>
-          <div class="qualification-item">
-            <r-checkbox></r-checkbox> Recharge wells
-          </div>
-          <div class="qualification-item">
-            <r-checkbox></r-checkbox> Injection wells
-          </div>
-        </div>
-        <div class="col-xs-12 col-sm-4 col-md-3 registry-item">
-          <div class="qualification-item">
-            <r-checkbox></r-checkbox> Dewatering wells
-          </div>
-          <div class="qualification-item">
-            <r-checkbox></r-checkbox> Remediation wells
-          </div>
-          <div class="qualification-item">
-            <r-checkbox></r-checkbox> Geotechnical wells
-          </div>
-          <div class="qualification-item">
-            <r-checkbox></r-checkbox> Closed-loop geoexchange wells
-          </div>
-        </div>
-      </div>
+    </div>
     <fieldset class="registry-section">
       <legend>Adjudication</legend>
-      <div class="row">
-        <div class="col-xs-12 registry-item">
-          <span class="registry-label">Date application received:</span>
+      <form class="form-horizontal">
+        <div class="form-group">
+          <label class="col-xs-12 col-md-1" for="dateAppReceived">Date application received:</label>
+          <div class="col-xs-12 col-md-3 form-spacing">
+            <input type="text" id="dateAppReceived" placeholder="Select date" v-model="editClassification.application.receivedDate">
+          </div>
         </div>
-      </div>
-      <div class="row">
-        <div class="col-xs-12 col-sm-4 registry-item">
-          <span class="registry-label">Approval outcome date:</span>
+        <div class="form-group">
+          <label class="col-xs-12 col-md-1" for="approvalOutcomeDate">Approval outcome date:</label>
+          <div class="col-xs-12 col-md-3 form-spacing">
+            <input type="text" id="approvalOutcomeDate" placeholder="Select date" v-model="editClassification.application.approvalOutcomeDate">
+          </div>
+          <label class="col-xs-12 col-md-1" for="approvalOutcome">Approval outcome:</label>
+          <div class="col-xs-12 col-md-3 form-spacing">
+            <input type="text" id="approvalOutcome" placeholder="Enter approval outcome" v-model="editClassification.application.approvalOutcome">
+          </div>
+            <label class="col-xs-12 col-md-1" for="reasonDenied">Reason not approved:</label>
+            <div class="col-xs-12 col-md-3 form-spacing">
+              <input type="text" id="reasonDenied" placeholder="Enter reason not approved" v-model="editClassification.application.reasonDenied">
+            </div>
         </div>
-        <div class="col-xs-12 col-sm-4 registry-item">
-          <span class="registry-label">Approval outcome:</span>
+        <div class="form-group">
+          <label class="col-xs-12 col-md-1" for="removalDate">Register removal date:</label>
+          <div class="col-xs-12 col-md-3 form-spacing">
+            <input type="text" id="removalDate" placeholder="Select removal date" v-model="editClassification.application.removalDate">
+          </div>
         </div>
-        <div class="col-xs-12 col-sm-4 registry-item">
-          <span class="registry-label">Reason not approved:</span>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-xs-12 col-sm-4 registry-item">
-          <span class="registry-label">Register removal date:</span>
-        </div>
-      </div>
+      </form>
     </fieldset>
   </div>
 </template>
@@ -116,23 +142,71 @@ export default {
     return {
       editClassification: {
         issuedBy: '',
-        qualCodes: []
+        qualCodes: {
+          wat: false,
+          mon: false,
+          rech: false,
+          inj: false,
+          dewat: false,
+          rem: false,
+          geo: false,
+          clos: false
+        },
+        application: {
+          receivedDate: '',
+          approvalOutcomeDate: '',
+          approvalOutcome: '',
+          reasonDenied: '',
+          removalDate: ''
+        }
       },
       issuerOrgs: [
         'Canadian Groundwater Association',
         'Province of BC',
         'N/A'
       ],
-      qualCodes: [
-        'WAT',
-        'MON',
-        'RECH',
-        'RECH',
-        'WAT',
-        'REM',
-        'GEO',
-        'CLOS'
-      ]
+      qualCodes: {
+        drill: {
+          activity: 'DRILL',
+          quals: ['WAT', 'MON', 'RECH', 'DEWAT', 'REM', 'GEO']
+        },
+        geotech: {
+          activity: 'GEOTECH',
+          quals: ['MON', 'REM', 'GEO']
+        },
+        geotherm: {
+          activity: 'GEOTHERM',
+          quals: ['CLOS']
+        },
+        pump: {
+          activity: 'PUMP',
+          quals: []
+        }
+      },
+      qualType: 'DRILL'
+    }
+  },
+  computed: {
+    quals () {
+      const activity = this.qualCodes[this.qualType.toLowerCase()]
+      if (activity) {
+        return activity.quals
+      }
+      return []
+    }
+  },
+  watch: {
+    qualType: function () {
+      const qualList = this.quals.map(item => item.toLowerCase())
+      for (let key in this.editClassification.qualCodes) {
+        this.editClassification.qualCodes[key] = false
+      }
+      for (let key in qualList) {
+        if (key in this.editClassification.qualCodes) {
+          console.log()
+          this.editClassification.qualCodes[key] = true
+        }
+      }
     }
   }
 }
