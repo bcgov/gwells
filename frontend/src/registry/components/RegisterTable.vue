@@ -11,9 +11,9 @@
             <td>{{ driller.organization_name }}</td>
             <td>{{ driller.street_address }}<div>{{ driller.city }}<span v-if="driller.province_state">, {{ driller.province_state }}</span></div></td>
             <td><div v-if="driller.contact_tel">Phone: {{ driller.contact_tel }}</div><div v-if="driller.contact_email">Email: {{ driller.contact_email }}</div></td>
-            <td></td>
-            <td></td>
             <td>{{ driller.activity }}</td>
+            <td></td>
+            <td>{{ driller.status }}</td>
             <td v-if="user"><router-link :to="{ name: 'PersonDetail', params: { person_guid: driller.person_guid } }">Details</router-link></td>
           </tr>
           <tr v-else>
