@@ -98,7 +98,7 @@ stage('FT on Dev') {
             } finally {
                     archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/geb/**/*'
                     junit 'build/test-results/**/*.xml'
-                    junit 'build/jmeter/*.xml'
+                    // junit 'build/jmeter/*.xml'
                     publishHTML (target: [
                                 allowMissing: false,
                                 alwaysLinkToLastBuild: false,
