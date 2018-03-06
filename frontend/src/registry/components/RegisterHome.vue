@@ -98,11 +98,11 @@
                     <input type="text" class="form-control" id="regTypeInput" placeholder="Search" v-model="searchParams.search">
                   </div>
                 </div>
-                <div class="form-group">
+                <!-- <div class="form-group">
                   <div class="col-xs-12 form-inline form-spacing">
                       <select class="form-control input-sm" v-model="searchParams.limit"><option>10</option><option>25</option></select> entries
                   </div>
-                </div>
+                </div> -->
                 <div class="form-group">
                   <div class="col-xs-12">
                     <button type="submit" class="btn btn-primary">Submit</button>
@@ -126,7 +126,7 @@
         <register-table/>
       </div>
     </div>
-    <div class="row">
+    <div class="row" v-if="drillers.results && drillers.results.length">
       <div class="col-xs-12">
         <register-legal-text class="register-legal" :activity="lastSearchedActivity"/>
       </div>
