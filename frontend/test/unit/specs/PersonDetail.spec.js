@@ -128,6 +128,7 @@ describe('PersonDetail.vue', () => {
     getters = {
       loading: () => false,
       error: () => null,
+      user: () => null,
       currentDriller: jest.fn().mockReturnValue(fakePerson),
       drillers: () => []
     }
@@ -154,6 +155,7 @@ describe('PersonDetail.vue', () => {
   it('loads the error component if there is an error', () => {
     getters = {
       loading: () => false,
+      user: () => null,
       error: () => {
         return { status: '400', statusText: 'error!' }
       },
