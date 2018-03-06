@@ -94,13 +94,13 @@
         </div>
       </div>
     </fieldset>
-    <div v-if="drillerApplicationNotes && drillerApplicationNotes.length">
+    <div>
       <div class="row">
         <div class="col-xs-12">
-          <h4>Notes</h4>
+          <h4 class="registry-label">Notes</h4>
         </div>
       </div>
-      <div class="row">
+      <div class="row"  v-if="drillerApplicationNotes && drillerApplicationNotes.length">
         <div class="col-xs-12">
           <p v-for="note in drillerApplicationNotes" :key="note.appKey">{{ note.note }}</p>
         </div>
