@@ -28,7 +28,7 @@
         </div>
       </div>
       <div class="row">
-        <h4>Qualified to drill under this license</h4>
+        <h4>Qualified to drill under this classification</h4>
       </div>
       <div class="row">
         <div class="col-xs-12 col-sm-4 col-md-3">

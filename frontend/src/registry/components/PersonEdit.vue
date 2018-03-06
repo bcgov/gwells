@@ -5,37 +5,49 @@
         <h2>{{ currentDriller.first_name }} {{ currentDriller.surname }}</h2>
       </div>
       <div class="col-xs-12 col-sm-5 text-center">
-        <router-link :to="{ name: 'PersonDetail', params: { person_guid: currentDriller.person_guid } }" tag="button" class="btn btn-secondary">Cancel edit</router-link>
+        <router-link :to="{ name: 'PersonDetail', params: { person_guid: currentDriller.person_guid } }" tag="button" class="btn btn-secondary">Cancel editing person</router-link>
       </div>
       <div class="col-xs-12" v-if="error">
         <api-error :error="error" resetter="setError"></api-error>
       </div>
     </div>
-    <div>
-      <div class="table-responsive">
-        <table class="table">
-          <thead>
-            <th class="col-xs-2">Classification</th>
-            <th class="col-xs-2">Register Status</th>
-            <th class="col-xs-2">Date Registered</th>
-          </thead>
-          <tbody>
-            <tr v-if="classifications && classifications.length" v-for="(item, index) in classifications" :key="`classification ${index}`">
-              <td><router-link :to="{
-                name: 'PersonApplicationDetail',
-                params: {
-                  person_guid: currentDriller.person_guid,
-                  classCode: item.code
-                }
-              }">{{ item.description }}</router-link></td>
-              <td>{{ item.status }}</td>
-              <td>{{ item.date }}</td>
-            </tr>
-          </tbody>
-        </table>
+    <div class="panel" v-if="editDriller != {}">
+      <div class="panel-body">
+        <div class="container-fluid">
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <th class="col-xs-2">Classification</th>
+                <th class="col-xs-2">Register Status</th>
+                <th class="col-xs-2">Date Registered</th>
+              </thead>
+              <tbody>
+                <tr v-if="classifications && classifications.length" v-for="(classification, index) in classifications" :key="`classification ${index}`">
+                  <td>{{ classification.description }}</td>
+                  <td>{{ classification.status }}</td>
+                  <td>{{ classification.date }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="row">
+            <p class="col-xs-12">
+              <button type="button" class="btn btn-secondary" @click="addClassificationToggle = !addClassificationToggle">
+                <span v-if="!addClassificationToggle"><i class="fa fa-plus-square-o"></i> Add classification</span>
+                <span v-if="addClassificationToggle"><i class="fa fa-minus-square-o"></i> Cancel</span>
+              </button>
+            </p>
+          </div>
+        </div>
       </div>
-      <div class="row">
-        <p class="col-xs-12"><i class="fa fa-plus-square-o"></i>Add classification</p>
+    </div>
+    <div class="panel" v-if="addClassificationToggle" style="border-color: #1a5a96">
+      <div class="panel-body">
+        <add-classification/>
+          <button type="button" class="btn btn-primary" @click="addClassificationToggle = !addClassificationToggle">Save</button>
+          <button type="button" class="btn btn-secondary" @click="addClassificationToggle = !addClassificationToggle">
+            <span v-if="addClassificationToggle">Cancel</span>
+          </button>
       </div>
     </div>
     <div class="panel" v-if="editDriller != {}">
@@ -194,6 +206,7 @@
 <script>
 import APIErrorMessage from '@/common/components/APIErrorMessage'
 import QualCheckbox from '@/common/components/QualCheckbox'
+import ClassificationAdd from '@/registry/components/ClassificationAdd'
 import { mapGetters } from 'vuex'
 import { SET_DRILLER } from '@/registry/store/mutations.types'
 import { FETCH_DRILLER } from '@/registry/store/actions.types'
@@ -202,10 +215,12 @@ export default {
   name: 'PersonDetailEdit',
   components: {
     'api-error': APIErrorMessage,
-    'r-checkbox': QualCheckbox
+    'r-checkbox': QualCheckbox,
+    'add-classification': ClassificationAdd
   },
   data () {
     return {
+      addClassificationToggle: false,
       editDriller: {},
       editDrillerReg: {
         drillRegNo: '',
