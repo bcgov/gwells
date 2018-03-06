@@ -11,19 +11,15 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
-
 from .AuditModel import AuditModel
 from django.db import models
-import uuid
 
 class FilterPackMaterialSizeCode(AuditModel):
     """
      The size of material used to pack a well filter, e.g. 1.0 - 2.0 mm, 2.0 - 4.0 mm, 4.0 - 8.0 mm.
     """
-    filter_pack_material_size_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    filter_pack_material_size_code = models.CharField(max_length=10, unique=True)
+    filter_pack_material_size_code = models.CharField(primary_key=True, max_length=10, editable=False)
     description = models.CharField(max_length=100)
-    is_hidden = models.BooleanField(default=False)
     display_order = models.PositiveIntegerField()
 
     effective_date = models.DateTimeField(blank=True, null=True)

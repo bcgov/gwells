@@ -1,5 +1,5 @@
-well_status_guid,well_status_code,description,is_hidden,display_order,create_date,update_date,create_user,update_user
-"972d019eafa811e7abc4cec278b6b50a","Abandoned","Abandoned","N","10","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
-"972d05feafa811e7abc4cec278b6b50a","Alteration","Alteration","N","20","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
-"972d07deafa811e7abc4cec278b6b50a","Closure","Closure","N","30","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
-"972d0950afa811e7abc4cec278b6b50a","New","New","N","40","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
+well_status_code,description,display_order,create_date,update_date,create_user,update_user
+"ABANDONED","Abandoned","10","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
+"ALTERATION","Alteration","20","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
+"CLOSURE","Closure","30","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
+"NEW","New","40","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"

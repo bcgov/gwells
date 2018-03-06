@@ -1,5 +1,5 @@
-registries_subactivity_guid,registries_activity_guid,code,description,is_hidden,display_order,create_date,update_date,create_user,update_user
-"1f6c2aaa018c11e8ba890ed5f89f718b","9ecb8fbb428f45e19a3fe0ce05c563e2","WATER","Water Well Driller","N","2","2018-01-01 00:00:00-08","2018-01-01 00:00:00-08","DATALOAD_USER","DATALOAD_USER"
-"1f6c30c2018c11e8ba890ed5f89f718b","9ecb8fbb428f45e19a3fe0ce05c563e2","GEOTECH","Geotechnical/Environmental Driller","N","4","2018-01-01 00:00:00-08","2018-01-01 00:00:00-08","DATALOAD_USER","DATALOAD_USER"
-"1f6c3202018c11e8ba890ed5f89f718b","9ecb8fbb428f45e19a3fe0ce05c563e2","GEOXCHG","Geoexchange Driller","N","6","2018-01-01 00:00:00-08","2018-01-01 00:00:00-08","DATALOAD_USER","DATALOAD_USER"
-"1f6c2d0c018c11e8ba890ed5f89f718b","a2c5ac6f13b642c59e919672ab2ef5a8","PUMPINST","Pump Installer","N","8","2018-01-01 00:00:00-08","2018-01-01 00:00:00-08","DATALOAD_USER","DATALOAD_USER"
+registries_subactivity_guid,registries_activity_guid,code,description,display_order,create_date,update_date,create_user,update_user
+"1f6c2aaa018c11e8ba890ed5f89f718b","9ecb8fbb428f45e19a3fe0ce05c563e2","WATER","Water Well Driller","2","2018-01-01 00:00:00-08","2018-01-01 00:00:00-08","DATALOAD_USER","DATALOAD_USER"
+"1f6c30c2018c11e8ba890ed5f89f718b","9ecb8fbb428f45e19a3fe0ce05c563e2","GEOTECH","Geotechnical/Environmental Driller","4","2018-01-01 00:00:00-08","2018-01-01 00:00:00-08","DATALOAD_USER","DATALOAD_USER"
+"1f6c3202018c11e8ba890ed5f89f718b","9ecb8fbb428f45e19a3fe0ce05c563e2","GEOXCHG","Geoexchange Driller","6","2018-01-01 00:00:00-08","2018-01-01 00:00:00-08","DATALOAD_USER","DATALOAD_USER"
+"1f6c2d0c018c11e8ba890ed5f89f718b","a2c5ac6f13b642c59e919672ab2ef5a8","PUMPINST","Pump Installer","8","2018-01-01 00:00:00-08","2018-01-01 00:00:00-08","DATALOAD_USER","DATALOAD_USER"
