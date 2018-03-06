@@ -6,16 +6,23 @@ import AuthGuard from './authGuard'
 import RegisterHome from '@/registry/components/RegisterHome'
 import PersonDetail from '@/registry/components/PersonDetail'
 import PersonApplicationDetail from '@/registry/components/PersonApplicationDetail'
+import PersonEdit from '@/registry/components/PersonEdit'
 
 Vue.use(Router)
 
 export default new Router({
   routes: [
     {
-      path: '/',
-      name: 'RegisterHome',
-      component: RegisterHome,
-      beforeEnter: AuthEntry
+      path: '/people/edit/:person_guid',
+      name: 'PersonDetailEdit',
+      component: PersonEdit,
+      beforeEnter: AuthGuard
+    },
+    {
+      path: '/people/:person_guid/applications/:classCode',
+      name: 'PersonApplicationDetail',
+      component: PersonApplicationDetail,
+      beforeEnter: AuthGuard
     },
     {
       path: '/people/:person_guid',
@@ -24,10 +31,10 @@ export default new Router({
       beforeEnter: AuthGuard
     },
     {
-      path: '/people/:person_guid/applications/:classCode',
-      name: 'PersonApplicationDetail',
-      component: PersonApplicationDetail,
-      beforeEnter: AuthGuard
+      path: '/',
+      name: 'RegisterHome',
+      component: RegisterHome,
+      beforeEnter: AuthEntry
     }
   ]
 })
