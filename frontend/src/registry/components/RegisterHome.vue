@@ -246,7 +246,7 @@ export default {
   margin-top: 5px;
 }
 .form-spacing {
-  margin-bottom: 15px
+  margin-bottom: 15px;
 }
 .registry-disabled-item {
   color: #808080;
