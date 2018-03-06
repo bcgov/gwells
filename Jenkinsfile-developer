@@ -11,7 +11,7 @@ node('maven') {
             try {
                 sh 'pip install --upgrade pip && pip install -r requirements.txt'
                 sh 'python manage.py collectstatic && python manage.py migrate'
-                sh 'python manage.py test -c nose.cfg'
+                sh 'export ENABLE_DATA_ENTRY="True" && python manage.py test -c nose.cfg'
             } 
             finally {
                 stash includes: 'nosetests.xml,coverage.xml', name: 'coverage'
