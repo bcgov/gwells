@@ -1,14 +1,14 @@
-create_user,create_date,update_user,update_date,surface_seal_material_guid,surface_seal_material_code,description,is_hidden,display_order
-WELLS,2006-12-14 09:58:30-08,,,43ab06f4-488a-41e5-91d9-88db63d849ce,BNTITE_CLY,Bentonite clay,f,100
-WELLS,2006-12-14 09:58:30-08,,,922abe5b-da0f-4ef7-a477-acf21ff20739,BN_BACKFLL,Bentonite clay and backfill,f,100
-WELLS,2006-12-14 09:58:30-08,,,676091fb-6d6f-41ba-836d-a8e6bc82fc4f,BN_CEM_MIX,Bentonite clay and cement mixture,f,100
-WELLS,2006-12-14 09:58:30-08,,,b313c72c-9ca2-4744-ae06-c09e9393e98b,BN_SD_WTMX,Bentonite clay and sand and water mixture,f,100
-WELLS,2006-12-14 09:58:30-08,,,8dafce79-7f2b-4c82-9c12-595fb8334d48,BN_STL_CSG,Bentonite clay and steel casing,f,100
-WELLS,2006-12-14 09:58:30-08,,,68f99b29-32bc-4f59-b9c6-beb2d8cc8fb4,BN_WT_MIX,Bentonite clay and water mixture,f,100
-WELLS,2006-12-14 09:58:30-08,,,67164477-d86a-421f-9f39-9abb55e95a04,CON_GRT,Concrete grout,f,100
-WELLS,2006-12-14 09:58:30-08,,,272f4e82-187b-436a-b925-9ac062443d70,GRT_STLCSG,Grouted steel casing,f,100
-WELLS,2006-12-14 09:58:30-08,,,7c53a33f-7fa5-449c-965b-4d978b139f64,NT_CMT_GRT,Neat cement grout,f,100
-WELLS,2006-12-14 09:58:30-08,,,563790c9-93a8-43de-bb1e-b6327cb2c411,NT_CMT_BMX,Neat cement grout and bentonite mix,f,100
-WELLS,2006-12-14 09:58:30-08,,,af46c224-280f-4014-938e-d2c58d65db8c,SND_CMT_GT,Sand cement grout,f,100
-WELLS,2006-12-14 09:58:30-08,,,c5f29508-d01e-41cc-9e40-88e3244e2972,OTHER,Other,f,100
-WELLS,2008-05-07 10:26:37-07,,,f6febdf4-b24f-4378-ae37-131ec685c9ba,BN_DRL_CUT,Bentonite clay and drill cuttings,f,100
+create_user,create_date,update_user,update_date,surface_seal_material_code,description,display_order
+WELLS,2006-12-14 09:58:30-08,,,BNTITE_CLY,Bentonite clay,100
+WELLS,2006-12-14 09:58:30-08,,,BN_BACKFLL,Bentonite clay and backfill,100
+WELLS,2006-12-14 09:58:30-08,,,BN_CEM_MIX,Bentonite clay and cement mixture,100
+WELLS,2006-12-14 09:58:30-08,,,BN_SD_WTMX,Bentonite clay and sand and water mixture,100
+WELLS,2006-12-14 09:58:30-08,,,BN_STL_CSG,Bentonite clay and steel casing,100
+WELLS,2006-12-14 09:58:30-08,,,BN_WT_MIX,Bentonite clay and water mixture,100
+WELLS,2006-12-14 09:58:30-08,,,CON_GRT,Concrete grout,100
+WELLS,2006-12-14 09:58:30-08,,,GRT_STLCSG,Grouted steel casing,100
+WELLS,2006-12-14 09:58:30-08,,,NT_CMT_GRT,Neat cement grout,100
+WELLS,2006-12-14 09:58:30-08,,,NT_CMT_BMX,Neat cement grout and bentonite mix,100
+WELLS,2006-12-14 09:58:30-08,,,SND_CMT_GT,Sand cement grout,100
+WELLS,2006-12-14 09:58:30-08,,,OTHER,Other,100
+WELLS,2008-05-07 10:26:37-07,,,BN_DRL_CUT,Bentonite clay and drill cuttings,100

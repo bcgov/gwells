@@ -1,4 +1,4 @@
-create_user,create_date,update_user,update_date,screen_opening_guid,code,description,is_hidden,display_order
-"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","f8ffc274796811e7b5a5be2e44b06b34","CONTIN_SLT","Continuous Slot","N","10"
-"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","f8ffc634796811e7b5a5be2e44b06b34","PERF_PIPE","Perforated Pipe","N","20"
-"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","f8ffc7d8796811e7b5a5be2e44b06b34","SLOTTED","Slotted","N","30"
+create_user,create_date,update_user,update_date,code,description,display_order
+"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","CONTIN_SLT","Continuous Slot","10"
+"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","PERF_PIPE","Perforated Pipe","20"
+"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","SLOTTED","Slotted","30"

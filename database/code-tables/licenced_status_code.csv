@@ -1,3 +1,3 @@
-licensed_status_guid,code,description,is_hidden,display_order,create_date,update_date,create_user,update_user
-"31e3ee60b05211e7abc4cec278b6b50a","Licensed","Licensed","N","10","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
-"31e3f1f8b05211e7abc4cec278b6b50a","Unlicensed","Unlicensed","N","20","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
+code,description,display_order,create_date,update_date,create_user,update_user
+"LICENSED","Licensed","10","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
+"UNLICENSED","Unlicensed","20","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"

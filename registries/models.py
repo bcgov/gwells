@@ -26,7 +26,7 @@ class Organization(AuditModel):
     name = models.CharField(max_length=200)
     street_address = models.CharField(max_length=100, blank=True, null=True, verbose_name='Street Address')
     city = models.CharField(max_length=50, blank=True, null=True, verbose_name='Town/City')
-    province_state = models.ForeignKey(ProvinceStateCode, db_column='province_state_guid', on_delete=models.CASCADE, null=True, verbose_name='Province/State')
+    province_state = models.ForeignKey(ProvinceStateCode, db_column='province_state_code', on_delete=models.CASCADE, null=True, verbose_name='Province/State')
     postal_code = models.CharField(max_length=10, blank=True, null=True, verbose_name='Postal Code')
 
     main_tel = models.CharField(blank=True, null=True,max_length=15,verbose_name="Company main telephone number")
@@ -76,7 +76,6 @@ class ActivityCode(AuditModel):
     registries_activity_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
-    is_hidden = models.BooleanField(default=False)
     display_order = models.PositiveIntegerField()
 
     """
@@ -101,7 +100,6 @@ class SubactivityCode(AuditModel):
     registries_activity = models.ForeignKey(ActivityCode, null=True, db_column='registries_activity_guid', on_delete=models.CASCADE, blank=True)
     code = models.CharField(max_length=10)
     description = models.CharField(max_length=100)
-    is_hidden = models.BooleanField(default=False)
     display_order = models.PositiveIntegerField()
 
     """
@@ -127,7 +125,6 @@ class QualificationCode(AuditModel):
     registries_subactivity = models.ForeignKey(SubactivityCode, null=True, db_column='registries_subactivity_guid', on_delete=models.CASCADE, blank=True)
     code = models.CharField(max_length=10)
     description = models.CharField(max_length=100)
-    is_hidden = models.BooleanField(default=False)
     display_order = models.PositiveIntegerField()
 
     """
@@ -197,7 +194,6 @@ class RegistriesStatusCode(AuditModel):
     registries_status_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
-    is_hidden = models.BooleanField(default=False)
     display_order = models.PositiveIntegerField()
 
     """
@@ -221,7 +217,6 @@ class RegistriesRemovalReason(AuditModel):
     registries_removal_reason_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
-    is_hidden = models.BooleanField(default=False)
     display_order = models.PositiveIntegerField()
 
     class Meta:
@@ -269,7 +264,6 @@ class ApplicationStatusCode(AuditModel):
     registries_application_status_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
-    is_hidden = models.BooleanField(default=False)
     display_order = models.PositiveIntegerField()
 
     """

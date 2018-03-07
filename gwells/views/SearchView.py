@@ -85,7 +85,7 @@ class SearchView(generic.DetailView):
         land_districts = {}
         all_land_districts = LandDistrictCode.objects.all()
         for land_district in all_land_districts:
-            land_districts[land_district.land_district_guid] = land_district.name
+            land_districts[land_district.land_district_code] = land_district.name
 
         surveys, page = SearchView.get_surveys_for_context()
 
