@@ -2,18 +2,18 @@
   <div class="container-fluid">
     <div class="row" v-if="currentDriller != {}">
       <div class="col-xs-12 col-sm-8">
-        <h2>{{ currentDriller.first_name }} {{ currentDriller.surname }}</h2>
+        <h2 id="titlePersonName">{{ currentDriller.first_name }} {{ currentDriller.surname }}</h2>
       </div>
       <div class="col-xs-12" v-if="error">
         <api-error :error="error" resetter="setError"></api-error>
       </div>
-      <div class="col-xs-12" v-if="classification.registries_subactivity">
+      <div class="col-xs-12" v-if="classification && classification.registries_subactivity">
         <h2>Certification - {{ classification.registries_subactivity.description }}</h2>
       </div>
     </div>
     <fieldset class="registry-section">
       <legend>Classification and Qualifications</legend>
-      <div class="row" v-if="classification.registries_subactivity">
+      <div class="row" v-if="classification && classification.registries_subactivity">
         <h4>Qualification: {{ classification.registries_subactivity.description }}&nbsp;
         <span class="registry-subtle">
           (<router-link :to="{ name: 'PersonDetail', params: { person_guid: currentDriller.person_guid }}">change</router-link>)
@@ -120,11 +120,10 @@ export default {
         this.currentDriller.applications.forEach((app) => {
           if (app.classificationappliedfor_set && app.classificationappliedfor_set.length) {
             classification = app.classificationappliedfor_set.find((item) => {
-              console.log(item.registries_subactivity.code.toLowerCase())
-              console.log(this.$route.params.classCode)
-              return item.registries_subactivity.code.toLowerCase() === this.$route.params.classCode
+              if (item.registries_subactivity && item.registries_subactivity.code) {
+                return item.registries_subactivity.code.toLowerCase() === this.$route.params.classCode
+              }
             })
-            console.log(classification)
           }
         })
       }
@@ -133,6 +132,7 @@ export default {
     qualCodeList () {
       const qualList = []
       if (
+        this.classification &&
         this.classification.registries_subactivity &&
         this.classification.registries_subactivity.qualificationcode_set
       ) {
