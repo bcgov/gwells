@@ -14,7 +14,7 @@ import spock.lang.Unroll
 
 @Title("Well Details")
 @Narrative("""
-As a general public user, I need to be able to access a summary report, 
+As a general public user, I need to be able to access a summary report,
 through Search,  and see relevant information related to my well of interest.
 """)
 class WellDetailsSpecs extends GebReportingSpec {
@@ -22,7 +22,7 @@ class WellDetailsSpecs extends GebReportingSpec {
     def "Basic Field availability checking: #TestDesc #WellId"() {
         given: "Given that I have found my well"
 			go "gwells/well/$WellId"
- 		when: "I accessed the Well Summary Page"	
+ 		when: "I accessed the Well Summary Page"
 			at WellSummaryPage
 			assert  (well_tag_number.text() == "$WellId")
         then: "Then I see all available information related to the well"
@@ -41,8 +41,6 @@ class WellDetailsSpecs extends GebReportingSpec {
 			assert ems_id
 			assert aquifer_number
 			assert alternate_specs_submitted
-			assert water_supply_system_name
-			assert water_supply_system_well_name
 
 			assert address
 			assert city
@@ -86,7 +84,6 @@ class WellDetailsSpecs extends GebReportingSpec {
 			assert orientation_direction
 			assert ground_elevation
 			assert ground_elevation_method
-			assert well_plate_attached
 
 			assert intake_method
 			assert screen_type
@@ -122,27 +119,27 @@ class WellDetailsSpecs extends GebReportingSpec {
 			assert well_decommissioning
         	assert reason_for_decommission
         	assert method_of_closure
-        	assert decommission_details 
+        	assert decommission_details
 
 			assert comments
 			assert no_document_msg
 
         where:
-        TestDesc                          | WellId           
+        TestDesc                          | WellId
         "Well Tag - "                    | 110749
-    } 
+    }
     @Unroll
     def "Field content checking: #TestDesc - #WellId - #WellFieldContent"() {
         given: "Given that I have found my well"
-			go "gwells/well/$WellId" 
- 	 	when: "I accessed the Well Summary Page"	
+			go "gwells/well/$WellId"
+ 	 	when: "I accessed the Well Summary Page"
 			at WellSummaryPage
         then: "Then I see the expected information(#WellFieldContent) for the #TestDesc field"
 			at WellSummaryPage
 			println "$TestDesc: " +  page."$TestDesc".text().trim()
 			assert page."$TestDesc".text().trim() == "$WellFieldContent".trim()
-		where:	
-        TestDesc                          | WellFieldContent 	| WellId           
+		where:
+        TestDesc                          | WellFieldContent 	| WellId
 		"well_tag_number"				  | "110749" 			| 110749
 		"identification_plate_number"     | "47948" 			| 110750
 		"owner_full_name"				  | "ROYAL CANADIAN MOUNTED POLICE"		| 110749
@@ -158,8 +155,8 @@ class WellDetailsSpecs extends GebReportingSpec {
 		"aquifer_number"	 			  | "936" 	 | 102364
 		//"aquifer_number"	 			  | "464" 	 | 4980 //no link
 		"alternate_specs_submitted"	 	  | "No" 	 | 110749
-		"water_supply_system_name"	 	  | "CHETWYND PULP MILL" 	 | 102406
-		"water_supply_system_well_name"	  | "EAST WELL" 	 | 102406
+		//"water_supply_system_name"	 	  | "CHETWYND PULP MILL" 	 | 102406
+		//"water_supply_system_well_name"	  | "EAST WELL" 	 | 102406
 		"address"	 					  | "6647 CHRISTENSEN ROAD" 	 | 110749
 		"city"	 						  | "ANAHIM LAKE" 	 | 110749
 		"lot"							  | "A" 	 | 110749
@@ -197,7 +194,7 @@ class WellDetailsSpecs extends GebReportingSpec {
 		"orientation_direction"	 		  | "vertical" 	 | 110749
 		"ground_elevation"	 			  | "378 feet" 	 | 106648
 		"ground_elevation_method"	 	  | "1:10,000 Scale Map" 	 | 104636
-		"well_plate_attached"	 		  | "CASING" 	 | 106648
+		//"well_plate_attached"	 		  | "CASING" 	 | 106648
 		"intake_method"	 				  | "Open Bottom" 	 | 110749
 		"screen_type"	 				  | "Pipe size" 	 | 102666
 		"screen_material"	 			  | "Plastic" 	 | 102666
@@ -218,38 +215,38 @@ class WellDetailsSpecs extends GebReportingSpec {
 		"casings_diameter"	 			  | "12.250" 	 | 112366
 		"casings_material"	 			  | "Steel" 	 | 113503
 		"casings_thickness"	 			  | "0.219" 	 | 113503
-		"casings_driveshoe"	 			  | "Yes" 	 | 113503	
+		"casings_driveshoe"	 			  | "Yes" 	 | 113503
 		"surface_seal_method"	 		  | "Poured" 	 | 110627
 		"surface_seal_material"	 		  | "Bentonite clay" 	 | 110627
 		"surface_seal_thickness"	 	  | "2 inches" 	 | 105417
 		"surface_seal_length"	 		  | "18 feet" 	 | 105417
 		"backfill_type"	 				  | "CEMENT & BENTONITE CHIPS" 	 | 105417
 		"backfill_depth"	 			  | "18 feet" 	 |  105417
-		"liner_material"	 			  | "PVC" 	 |  111752 
-		"liner_diameter"	 			  | "4" 	 |  111752 
-		"liner_thickness"	 			  | "0.250" 	 |  111752 
-		"liner_from"	 				  | "8" 	 |  111752 
-		"liner_to"	 	  				  | "280" 	 |  111752 
-		"liner_perffrom"	 			  | "120" 	 |  111752 
-		"liner_perfto"	 				  | "140" 	 |  111752 
-		"lithology_from"	 			  | "0" 	 |  110000 
-        "lithology_to"	 				  | "2" 	 |  110000 
-        "lithology_raw_data"		      | "TOPSOIL, BROWN" 	 |  100001 
+		"liner_material"	 			  | "PVC" 	 |  111752
+		"liner_diameter"	 			  | "4" 	 |  111752
+		"liner_thickness"	 			  | "0.250" 	 |  111752
+		"liner_from"	 				  | "8" 	 |  111752
+		"liner_to"	 	  				  | "280" 	 |  111752
+		"liner_perffrom"	 			  | "120" 	 |  111752
+		"liner_perfto"	 				  | "140" 	 |  111752
+		"lithology_from"	 			  | "0" 	 |  110000
+        "lithology_to"	 				  | "2" 	 |  110000
+        "lithology_raw_data"		      | "TOPSOIL, BROWN" 	 |  100001
         "lithology_description"	 		  | "cemented" 	 |  110000
-        "lithology_material_description"  | "soil" 	 |  110000 
-        "lithology_relative_hardness"	  | "Stiff" 	 |  112152 
-        "lithology_colour" 	 			  | "dark" 	 |  110000 
-        "lithology_waterbearing_estimated_flow"	 | "200 USGPM" 	 |  104533 
-        "lithology_observations" 	 	  | "Water-bearing" 	 |  110000 
-        "reason_for_decommission" 	 	  | "SITE DEVELOPMENT" 	 |  110749 
-        "method_of_closure" 	 		  | "PUMPED" 	 |  110749 
-        "sealant_material" 	 			  | "CONCRETE" 	 |  110749 
-        "backfill_material" 	 		  | "BENTONITE AND GRAVEL" 	 |  100200 
+        "lithology_material_description"  | "soil" 	 |  110000
+        "lithology_relative_hardness"	  | "Stiff" 	 |  112152
+        "lithology_colour" 	 			  | "dark" 	 |  110000
+        "lithology_waterbearing_estimated_flow"	 | "200 USGPM" 	 |  104533
+        "lithology_observations" 	 	  | "Water-bearing" 	 |  110000
+        "reason_for_decommission" 	 	  | "SITE DEVELOPMENT" 	 |  110749
+        "method_of_closure" 	 		  | "PUMPED" 	 |  110749
+        "sealant_material" 	 			  | "CONCRETE" 	 |  110749
+        "backfill_material" 	 		  | "BENTONITE AND GRAVEL" 	 |  100200
         "decommission_details"  	 	  | "NO ISSUES WITH CLOSURE. ONLY SLIGHT ARTESIAN FLOW IN NOV. 2014. CASING LEFT IN PLACE, PUMP PULLED." 	 |  110749
 		"comments" 						  | "NOT RESPONSIBLE FOR QUALITY OR QUANTITY" | 110750
 		"documentlink"					  | "WTN 109912_Well Construction.pdf" | 109912
 		"no_document_msg"				  | "No additional documentation currently available for this well." | 100001
-    } 
+    }
 
 /* 	@Issue("https://trello.com/c/mi3lnU5k")
 	def "Find Aquifer Info"() {
@@ -264,8 +261,8 @@ class WellDetailsSpecs extends GebReportingSpec {
 		 		at AquiferReport
 				}
 		then: "a new window in my browser appears displaying the aquifer classification worksheet associated to that aquifer number."
-			assert aquifer_number.text().trim() == "936"		
+			assert aquifer_number.text().trim() == "936"
 
 
-	} */ 
+	} */
 }

@@ -105,7 +105,7 @@ class APIOrganizationTests(AuthenticatedAPITestCase):
         initial_data = {
             'name': 'Bobby\'s Drilling',
             'city': 'Victoria',
-            'province_state': province.province_state_guid
+            'province_state': province.province_state_code
         }
 
         url = reverse('organization-list')
