@@ -452,22 +452,6 @@
             <!-- spacer row -->
         </div>
     </div>
-    <div class="row print-compressed">
-        <div class="col-md-4 col-print-4 print-compressed">
-            <div class="row print-compressed">
-                <div class="col-md-12 col-print-12 print-compressed">
-                    <label for="well_plate_attached">{% verbose_name well "well_identification_plate_attached" %}:</label>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4 col-print-4 print-compressed">
-            <div class="row print-compressed">
-                <div class="col-md-12 col-print-12 print-compressed">
-                    <span id="well_plate_attached">{{well.well_identification_plate_attached|default_if_none:'&nbsp;' }}</span>
-                </div>
-            </div>
-        </div>
-    </div>
 </fieldset>
 
 <fieldset id="lithology_fieldset">
