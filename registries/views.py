@@ -1,3 +1,4 @@
+from collections import OrderedDict
 from django.http import HttpResponse
 from django.utils import timezone
 from django.views.generic import TemplateView
@@ -52,6 +53,14 @@ class APILimitOffsetPagination(LimitOffsetPagination):
     """
 
     max_limit = 100
+    def get_paginated_response(self, data):
+        return Response(OrderedDict([
+            ('count', self.count),
+            ('next', self.get_next_link()),
+            ('previous', self.get_previous_link()),
+            ('offset', self.offset),
+            ('results', data)
+        ]))
 
 
 class PersonFilter(restfilters.FilterSet):
@@ -206,8 +215,9 @@ class APIPersonListCreateView(AuditCreateMixin, ListCreateAPIView):
     pagination_class = APILimitOffsetPagination
 
     # Allow searching on name fields, names of related companies, etc.
-    filter_backends = (restfilters.DjangoFilterBackend, filters.SearchFilter,)
+    filter_backends = (restfilters.DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
     filter_class = PersonFilter
+    ordering_fields = ('surname', 'companies__org__name')
     search_fields = (
         'first_name',
         'surname',

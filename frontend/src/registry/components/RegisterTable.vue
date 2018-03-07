@@ -3,7 +3,9 @@
     <div class="table-responsive">
       <table class="table table-striped">
         <thead>
-          <th v-for="field in fields" :key="field.name" :class="field.class" v-if="field.visible === 'public' || user">{{field.name}}</th>
+          <th v-for="field in fields" :key="field.name" :class="field.class" v-if="field.visible === 'public' || user">
+            {{field.name}} <i class="fa fa-sort" v-if="field.sortable && field.sortCode" @click="sortBy(field.sortCode)"></i>
+          </th>
         </thead>
         <tbody>
           <tr id="registry-table-row" v-if="drillers.results && drillers.results.length" v-for="driller in drillers.results" :key="driller.person_guid">
@@ -22,7 +24,10 @@
       </table>
     </div>
     <div v-if="drillers.results && !drillers.results.length">No results were found.</div>
-    <div v-if="drillers.results && drillers.results.length" class="col-sm-offset-10">
+    <div class="col-xs-2">
+      <span v-if="drillers.results && drillers.results.length">Showing {{ drillers.offset + 1 }} to {{ drillers.offset + drillers.results.length }} of {{ drillers.count }}</span>
+    </div>
+    <div v-if="drillers.results && drillers.results.length" class="col-xs-12 col-sm-2 col-sm-offset-8">
       <nav aria-label="List navigation" v-if="drillers.results && drillers.results.length">
         <ul class="pagination">
           <li v-if="drillers.previous">
@@ -65,43 +70,54 @@ export default {
       fields: [
         {
           name: 'Name',
+          sortCode: 'surname',
           class: 'col-xs-1',
-          visible: 'public'
+          visible: 'public',
+          sortable: true
         },
         {
           name: 'Company Name',
+          sortCode: 'companies__org__name',
           class: 'col-xs-1',
-          visible: 'public'
+          visible: 'public',
+          sortable: true
         },
         {
           name: 'Company Address',
           class: 'col-xs-1',
-          visible: 'public'
+          visible: 'public',
+          sortable: false
         },
         {
           name: 'Contact Information',
           class: 'col-xs-1',
-          visible: 'public'
+          visible: 'public',
+          sortable: false
         },
         {
           name: 'Qualified to Drill',
           class: 'col-xs-1',
-          visible: 'public'
+          visible: 'public',
+          sortable: true
         },
         {
           name: 'Certificate Issued By',
           class: 'col-xs-1',
-          visible: 'public'
+          visible: 'public',
+          sortable: true,
+          sortCode: 'issuing_org'
         },
         {
           name: 'Registration Status',
           class: 'col-xs-1',
-          visible: 'public'
+          visible: 'public',
+          sortable: false
         },
         {
           name: 'Details',
           class: 'col-xs-1',
-          visible: 'admin'
+          visible: 'admin',
+          sortable: false
         }
       ]
     }
@@ -127,6 +143,9 @@ export default {
         const q = this.drillers.previous.split('?')[1]
         this.$store.dispatch(FETCH_DRILLER_LIST, querystring.parse(q))
       }
+    },
+    sortBy (sortCode) {
+      this.$emit('sort', sortCode)
     }
   }
 }
