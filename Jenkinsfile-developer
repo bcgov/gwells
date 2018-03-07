@@ -94,11 +94,9 @@ stage('FT on Dev') {
         dir('functional-tests') {
             try {
                     sh './gradlew chromeHeadlessTest'
-                    // sh './gradlew jmRun'
             } finally {
                     archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/geb/**/*'
                     junit 'build/test-results/**/*.xml'
-                    // junit 'build/jmeter/*.xml'
                     publishHTML (target: [
                                 allowMissing: false,
                                 alwaysLinkToLastBuild: false,
@@ -115,8 +113,12 @@ stage('FT on Dev') {
                                 reportFiles: 'index.html',
                                 reportName: "Full Test Report"
                             ])
-                    // perfReport compareBuildPrevious: true, excludeResponseTime: true, ignoreFailedBuilds: true, ignoreUnstableBuilds: true, modeEvaluation: true, modePerformancePerTestCase: true, percentiles: '0,50,90,100', relativeFailedThresholdNegative: 80.0, relativeFailedThresholdPositive: 20.0, relativeUnstableThresholdNegative: 50.0, relativeUnstableThresholdPositive: 50.0, sourceDataFiles: 'build/test-results/**/*.xml,build/jmeter/*.xml'
                     }
+            stage('Performance Test') {
+                sh './gradlew jmRun'
+                junit 'build/jmeter/*.xml'
+                perfReport compareBuildPrevious: true, excludeResponseTime: true, ignoreFailedBuilds: true, ignoreUnstableBuilds: true, modeEvaluation: true, modePerformancePerTestCase: true, percentiles: '0,50,90,100', relativeFailedThresholdNegative: 80.0, relativeFailedThresholdPositive: 20.0, relativeUnstableThresholdNegative: 50.0, relativeUnstableThresholdPositive: 50.0, sourceDataFiles: 'build/test-results/**/*.xml,build/jmeter/*.xml'
+            }
         }
     }
 }
