@@ -1,4 +1,5 @@
 import { store } from '@/registry/store'
+import ApiService from '@/common/services/gwells.js'
 import {
   LOGIN,
   LOGOUT,
@@ -15,6 +16,10 @@ import {
   SET_DRILLER_LIST } from '@/registry/store/mutations.types.js'
 
 describe('store', () => {
+  beforeEach(() => {
+    jest.resetAllMocks()
+    jest.resetModules()
+  })
   it('error mutation type commits error to state', () => {
     store.commit(SET_ERROR, 'whoa there!')
     expect(store.getters.error).toBe('whoa there!')
@@ -43,4 +48,9 @@ describe('store', () => {
     store.commit(SET_DRILLER, { first_name: 'Bob', surname: 'Driller' })
     expect(store.getters.currentDriller.surname).toBe('Driller')
   })
+  // it('sends request for city list when FETCH_CITY_LIST action called', () => {
+  //   const list = ApiService.query('drillers')
+
+  //   list.then((response) => console.log('apiservice', response))
+  // })
 })
