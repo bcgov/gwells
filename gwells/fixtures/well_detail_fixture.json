@@ -10,8 +10,7 @@
    "pk": "99491f03-8ea6-4c16-999e-a5d5b6030c0c"},
 
   {"model": "gwells.wellclasscode",
-   "fields": {"is_hidden": false,
-              "create_user": "",
+   "fields": {"create_user": "",
               "description": "",
               "create_date": "2018-02-08T17:22:21.892Z",
               "well_class_code": "",
