@@ -93,7 +93,8 @@ describe('RegisterHome.vue', () => {
         city: 'Anytown',
         activity: 'PUMP',
         status: 'INACTIVE',
-        limit: '10'
+        limit: '10',
+        ordering: ''
       }
     })
     expect(wrapper.vm.searchParams).toEqual({
@@ -101,7 +102,8 @@ describe('RegisterHome.vue', () => {
       city: 'Anytown',
       activity: 'PUMP',
       status: 'INACTIVE',
-      limit: '10'
+      limit: '10',
+      ordering: ''
     })
     wrapper.find('[type=reset]').trigger('reset')
     expect(wrapper.vm.searchParams).toEqual({
@@ -109,7 +111,8 @@ describe('RegisterHome.vue', () => {
       city: '',
       activity: 'DRILL',
       status: 'ACTIVE',
-      limit: '10'
+      limit: '10',
+      ordering: ''
     })
   })
   it('dispatches login action when login button is triggered', () => {
