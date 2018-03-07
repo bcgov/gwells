@@ -118,7 +118,7 @@
         <api-error :error="listError" resetter="setListError"></api-error>
       </div>
       <div class="col-xs-12">
-        <register-table/>
+        <register-table @sort="sortTable"/>
       </div>
     </div>
     <div class="row" v-if="drillers.results && drillers.results.length">
@@ -163,7 +163,8 @@ export default {
         city: '',
         activity: 'DRILL',
         status: 'ACTIVE',
-        limit: '10'
+        limit: '10',
+        ordering: ''
       }
     }
   },
@@ -186,6 +187,18 @@ export default {
       }
       return ''
     },
+    APISearchParams () {
+      // bundles searchParams into fields compatible with API
+      return {
+        search: this.searchParams.search,
+        prov: this.searchParams.city.split(',')[1],
+        city: this.searchParams.city.split(',')[0],
+        status: this.searchParams.status,
+        limit: this.searchParams.limit,
+        activity: this.searchParams.activity,
+        ordering: this.searchParams.ordering
+      }
+    },
     ...mapGetters([
       'user',
       'loading',
@@ -205,14 +218,7 @@ export default {
   },
   methods: {
     drillerSearch () {
-      const params = {
-        search: this.searchParams.search,
-        prov: this.searchParams.city.split(',')[1],
-        city: this.searchParams.city.split(',')[0],
-        status: this.searchParams.status,
-        limit: this.searchParams.limit,
-        activity: this.searchParams.activity
-      }
+      const params = this.APISearchParams
       this.lastSearchedActivity = this.searchParams.activity || 'DRILL'
       this.$store.dispatch(FETCH_DRILLER_LIST, params)
     },
@@ -222,6 +228,15 @@ export default {
       this.searchParams.activity = 'DRILL'
       this.searchParams.status = 'ACTIVE'
       this.searchParams.limit = '10'
+      this.searchParams.ordering = ''
+    },
+    sortTable (sortCode) {
+      if (this.searchParams.ordering && this.searchParams.ordering.length && this.searchParams.ordering[0] !== '-') {
+        this.searchParams['ordering'] = `-${sortCode}`
+      } else {
+        this.searchParams['ordering'] = `${sortCode}`
+      }
+      this.$store.dispatch(FETCH_DRILLER_LIST, this.APISearchParams)
     },
     login () {
       this.$store.dispatch(LOGIN, this.credentials)
