@@ -1,5 +1,5 @@
-create_user,create_date,update_user,update_date,screen_bottom_guid,screen_bottom_code,description,is_hidden,display_order 
-"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","c8c236f4796911e7b5a5be2e44b06b34","BAIL","Bail","N","10"
-"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","c8c23ac8796911e7b5a5be2e44b06b34","PLATE","Plate","N","20"
-"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","c8c23c9e796911e7b5a5be2e44b06b34","PLUG","Plug","N","30"
-"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","c8c23e38796911e7b5a5be2e44b06b34","OTHER","Other","N","40"
+create_user,create_date,update_user,update_date,screen_bottom_code,description,display_order 
+"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","BAIL","Bail","10"
+"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","PLATE","Plate","20"
+"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","PLUG","Plug","30"
+"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","OTHER","Other","40"

@@ -1,4 +1,4 @@
-create_user,create_date,update_user,update_date,filter_pack_material_guid,filter_pack_material_code,description,is_hidden,display_order 
-"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","5519721a796b11e7b5a5be2e44b06b34","VCSAND","Very Coarse Sand","N","10"
-"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","551974e0796b11e7b5a5be2e44b06b34","VFGRAV","Very Fine Gravel","N","20"
-"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","5519794a796b11e7b5a5be2e44b06b34","FGRAV","Fine Gravel","N","30"
+create_user,create_date,update_user,update_date,filter_pack_material_code,description,display_order 
+"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","VCSAND","Very Coarse Sand","10"
+"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","VFGRAV","Very Fine Gravel","20"
+"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","FGRAV","Fine Gravel","30"

@@ -4,27 +4,27 @@
 
 --Registry Activity Type
 \echo '... loading registries_activity_code table'
-\copy registries_activity_code (registries_activity_guid,code,description,is_hidden,display_order,create_date,update_date,create_user,update_user) from 'registries_activity_code.csv' with header delimiter ',' CSV ;
+\copy registries_activity_code (registries_activity_guid,code,description,display_order,create_date,update_date,create_user,update_user) from 'registries_activity_code.csv' with header delimiter ',' CSV ;
 
 --Registry Activity Subtype
 \echo '... loading registry_subactivity_code table'
-\copy registries_subactivity_code (registries_subactivity_guid,registries_activity_guid,code,description,is_hidden,display_order,create_date,update_date,create_user,update_user) from 'registries_subactivity_code.csv' with header delimiter ',' CSV ;
+\copy registries_subactivity_code (registries_subactivity_guid,registries_activity_guid,code,description,display_order,create_date,update_date,create_user,update_user) from 'registries_subactivity_code.csv' with header delimiter ',' CSV ;
 
 --Registry Qualification Type
 \echo '... loading registry_qualification code table'
-\copy registries_qualification_code (registries_qualification_guid,registries_subactivity_guid,code,description,is_hidden,display_order,create_date,update_date,create_user,update_user) from 'registries_qualification_code.csv' with header delimiter ',' CSV ;
+\copy registries_qualification_code (registries_qualification_guid,registries_subactivity_guid,code,description,display_order,create_date,update_date,create_user,update_user) from 'registries_qualification_code.csv' with header delimiter ',' CSV ;
 
 --Registry Status Code
 \echo '... loading registry_status_code code table'
-\copy registries_status_code (registries_status_guid,code,description,is_hidden,display_order,create_date,update_date,create_user,update_user) from 'registries_status_code.csv' with header delimiter ',' CSV ;
+\copy registries_status_code (registries_status_guid,code,description,display_order,create_date,update_date,create_user,update_user) from 'registries_status_code.csv' with header delimiter ',' CSV ;
 
 --Registry Application Status Code
 \echo '... loading registry_application_status_code code table'
-\copy registries_application_status_code (registries_application_status_guid,code,description,is_hidden,display_order,create_date,update_date,create_user,update_user) from 'registries_application_status_code.csv' with header delimiter ',' CSV ;
+\copy registries_application_status_code (registries_application_status_guid,code,description,display_order,create_date,update_date,create_user,update_user) from 'registries_application_status_code.csv' with header delimiter ',' CSV ;
 
 --Registry Removal Reasons Code
 \echo '... loading registry_removal_reason_code code table'
-\copy registries_removal_reason_code (registries_removal_reason_guid,code,description,is_hidden,display_order,create_date,update_date,create_user,update_user) from 'registries_removal_reason_code.csv' with header delimiter ',' CSV ;
+\copy registries_removal_reason_code (registries_removal_reason_guid,code,description,display_order,create_date,update_date,create_user,update_user) from 'registries_removal_reason_code.csv' with header delimiter ',' CSV ;
 
 \echo 'Registry - Finshed copy of static code tables.'
 

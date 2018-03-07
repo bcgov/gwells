@@ -11,7 +11,6 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
-
 from .AuditModel import AuditModel
 from .Well import Well
 
@@ -28,4 +27,4 @@ class AquiferWell(AuditModel):
     well_tag_number = models.ForeignKey(Well, db_column='well_tag_number', to_field='well_tag_number', on_delete=models.CASCADE, blank=False, null=False)
 
     class Meta:
-        db_table = 'gwells_aquifer_well'
+        db_table = 'aquifer_well'

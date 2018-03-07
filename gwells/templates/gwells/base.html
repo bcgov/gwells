@@ -69,7 +69,7 @@
     <![endif]-->
 
     <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/base/jquery-ui.css" type="text/css" media="all" />
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/dataTables.bootstrap.min.css" type="text/css" media="all" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/dataTables.bootstrap.min.css" type="text/css" media="all" /> 
     {% if settings.ENABLE_GOOGLE_ANALYTICS %}
     <script>
         (function(i, s, o, g, r, a, m) {
@@ -142,6 +142,7 @@
                             <li><a id="navbar-registry-legacy" href="{% url 'registry-legacy' %}">Registry</a></li>
                             {% if settings.ENABLE_DATA_ENTRY %}
                             <li><a id="navbar-submission" href="{% url 'activity_submission_create' %}">Submit Report</a></li>
+                            <li><a id="ribbon-admin" href="{% url 'site_admin' %}">Admin</a></li>
                             {% endif %}
                         </ul>
                     </div>
@@ -157,8 +158,8 @@
                             <li><a id="ribbon-registry-legacy" href="{% url 'registry-legacy' %}">Registry</a></li>
                             {% if settings.ENABLE_DATA_ENTRY %}
                             <li><a id="ribbon-submission" href="{% url 'activity_submission_create' %}">Submit Report</a></li>
-                            {% endif %}
                             <li><a id="ribbon-admin" href="{% url 'site_admin' %}">Admin</a></li>
+                            {% endif %}
                         </ul>
                     </div>
                 </div>
@@ -177,25 +178,20 @@
                 <h2>{% block bodyheading_block %}{% endblock %}</h2>
                 <!-- INTRODUCTION -->
                 <div id="introduction">
-                    {% for survey in surveys %}
-                      {% if survey.survey_page == page and survey.survey_enabled%}
-                        <div class="row hide-for-print show-for-screen">
-                            <div class="col-sm-12 alert alert-info">
-                                <div id="survey-msg" role="alert" aria-atomic="true">
-                                  {{survey.survey_introduction_text}} <a href="{{survey.survey_link}}" id="survey:{{survey.survey_guid}}" target=_blank>Survey</a>
-                                </div>
+                    {% for survey in surveys %} {% if survey.survey_page == page and survey.survey_enabled%}
+                    <div class="row hide-for-print show-for-screen">
+                        <div class="col-sm-12 alert alert-info">
+                            <div id="survey-msg" role="alert" aria-atomic="true">
+                                {{survey.survey_introduction_text}} <a href="{{survey.survey_link}}" id="survey:{{survey.survey_guid}}" target=_blank>Survey</a>
                             </div>
                         </div>
-                      {% endif %}
-                    {% endfor %}
-
-                    {% block introduction_block %}{% endblock %}
+                    </div>
+                    {% endif %} {% endfor %} {% block introduction_block %}{% endblock %}
                 </div>
                 <!-- /INTRODUCTION -->
 
                 <div id="body">
-                    {% block body_block %}
-                    {% endblock %}
+                    {% block body_block %} {% endblock %}
                 </div>
             </div>
         </div>
@@ -267,8 +263,7 @@
     <script src="{% static 'gwells/js/jquery.dataTables.min.js' %}"></script>
     <script src="{% static 'gwells/js/dataTables.bootstrap.min.js' %}"></script>
 
-    {% block jqscript_block %}
-    {% endblock %}
+    {% block jqscript_block %} {% endblock %}
 
 </body>
 
