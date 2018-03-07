@@ -11,19 +11,15 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
-
 from .AuditModel import AuditModel
 from django.db import models
-import uuid
 
 class ObsWellStatusCode(AuditModel):
     """
     Observation Well Status.
     """
-    obs_well_status_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    obs_well_status_code = models.CharField(unique=True, max_length=10)
+    obs_well_status_code = models.CharField(primary_key=True, max_length=10, editable=False)
     description = models.CharField(max_length=255)
-    is_hidden = models.BooleanField(default=False)
     display_order = models.PositiveIntegerField()
 
     effective_date = models.DateTimeField(blank=True, null=True)

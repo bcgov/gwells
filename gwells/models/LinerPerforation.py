@@ -11,7 +11,6 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
-
 from .AuditModel import AuditModel
 from .ActivitySubmission import ActivitySubmission
 from .Well import Well
@@ -32,7 +31,7 @@ class LinerPerforation(AuditModel):
     liner_perforation_to = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='Perforated To', blank=False, validators=[MinValueValidator(Decimal('0.01'))])
 
     class Meta:
-        db_table = 'gwells_liner_perforation'
+        db_table = 'liner_perforation'
 
     def __str__(self):
         if self.activity_submission:

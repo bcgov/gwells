@@ -11,7 +11,6 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
-
 from .AuditModel import AuditModel
 from .ActivitySubmission import ActivitySubmission
 from .Well import Well
@@ -33,14 +32,14 @@ class Casing(AuditModel):
     casing_from = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='From', null=True, blank=True, validators=[MinValueValidator(Decimal('0.00'))])
     casing_to = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='To', null=True, blank=True, validators=[MinValueValidator(Decimal('0.01'))])
     diameter = models.DecimalField(max_digits=8, decimal_places=3, verbose_name='Diameter', null=True, blank=True, validators=[MinValueValidator(Decimal('0.5'))])
-    casing_code = models.ForeignKey(CasingCode, db_column='casing_code_guid', on_delete=models.CASCADE, verbose_name='Casing Code', null=True)
-    casing_material = models.ForeignKey(CasingMaterialCode, db_column='casing_material_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Casing Material Code')
+    casing_code = models.ForeignKey(CasingCode, db_column='casing_code', on_delete=models.CASCADE, verbose_name='Casing Code', null=True)
+    casing_material = models.ForeignKey(CasingMaterialCode, db_column='casing_material_code', on_delete=models.CASCADE, blank=True, null=True, verbose_name='Casing Material Code')
     wall_thickness = models.DecimalField(max_digits=6, decimal_places=3, verbose_name='Wall Thickness', blank=True, null=True, validators=[MinValueValidator(Decimal('0.01'))])
     drive_shoe = models.NullBooleanField(default=False, null=True, verbose_name='Drive Shoe', choices=((False, 'No'), (True, 'Yes')))
 
     class Meta:
         ordering = ["casing_from", "casing_to"]
-        db_table = 'gwells_casing'
+        db_table = 'casing'
 
 
     def __str__(self):

@@ -92,3 +92,5 @@ registries/static/registries/bundles/
 
 
 sonar-runner/.gradle
+*.patch
+*.orig

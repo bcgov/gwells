@@ -1,9 +1,9 @@
-bedrock_material_descriptor_guid,bedrock_material_descriptor_code,description,is_hidden,display_order,create_date,update_date,create_user,update_user
-"49a5cec062a411e7907ba6006ad3dba0","Weathered","Weathered","N","10","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
-"49a5d1ea62a411e7907ba6006ad3dba0","Competent","Competent","N","20","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
-"49a5d3e862a411e7907ba6006ad3dba0","Fractured","Fractured","N","30","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
-"49a5d4c462a411e7907ba6006ad3dba0","Jointed","Jointed","N","40","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
-"49a5d58c62a411e7907ba6006ad3dba0","Interbed","Interbedded","N","50","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
-"49a5d99c62a411e7907ba6006ad3dba0","Fault","Fault","N","60","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
-"49a5dac862a411e7907ba6006ad3dba0","Fault Open","Fault Open","N","70","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
-"f37d398862a411e7907ba6006ad3dba0","Fault Goug","Fault Gouge","N","80","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
+bedrock_material_descriptor_code,description,display_order,create_date,update_date,create_user,update_user
+"Weathered","Weathered","10","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
+"Competent","Competent","20","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
+"Fractured","Fractured","30","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
+"Jointed","Jointed","40","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
+"Interbed","Interbedded","50","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
+"Fault","Fault","60","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
+"Fault Open","Fault Open","70","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
+"Fault Goug","Fault Gouge","80","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"

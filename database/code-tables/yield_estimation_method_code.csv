@@ -1,5 +1,5 @@
-create_user,create_date,update_user,update_date,yield_estimation_method_guid,yield_estimation_method_code,description,is_hidden,display_order 
-"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","b6c7d0ea86c911e7bb31be2e44b06b34","AIR_LIFT","Air Lifting","N","10"
-"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","b6c7d3e286c911e7bb31be2e44b06b34","BAILING","Bailing","N","20"
-"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","b6c7d7d486c911e7bb31be2e44b06b34","PUMPING","Pumping","N","30"
-"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","b6c7d8c486c911e7bb31be2e44b06b34","OTHER","Other","N","40"
+create_user,create_date,update_user,update_date,,yield_estimation_method_code,description,display_order 
+"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","AIR_LIFT","Air Lifting","10"
+"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","BAILING","Bailing","20"
+"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","PUMPING","Pumping","30"
+"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","OTHER","Other","40"
