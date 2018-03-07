@@ -1,72 +1,67 @@
 [
   {
     "model": "gwells.provincestatecode",
-    "pk": "19e0f351-d8e3-4d29-8615-ce4073f2ae22",
+    "pk": "PE",
     "fields": {
       "create_user": "ETL_USER",
       "create_date": "2017-07-01T08:00:00Z",
       "update_user": "ETL_USER",
       "update_date": "2017-07-01T08:00:00Z",
-      "province_state_code": "PE",
       "description": "Prince Edward Island",
       "display_order": 20
     }
   },
   {
     "model": "gwells.provincestatecode",
-    "pk": "2a882632-53dd-4112-b62e-8b9c37bf0e20",
+    "pk": "QC",
     "fields": {
       "create_user": "ETL_USER",
       "create_date": "2017-07-01T08:00:00Z",
       "update_user": "ETL_USER",
       "update_date": "2017-07-01T08:00:00Z",
-      "province_state_code": "QC",
       "description": "Quebec",
       "display_order": 22
     }
   },
   {
     "model": "gwells.provincestatecode",
-    "pk": "3d104532-d5b4-4889-aad8-4637dff5d67e",
+    "pk": "SK",
     "fields": {
       "create_user": "ETL_USER",
       "create_date": "2017-07-01T08:00:00Z",
       "update_user": "ETL_USER",
       "update_date": "2017-07-01T08:00:00Z",
-      "province_state_code": "SK",
       "description": "Saskatchewan",
       "display_order": 24
     }
   },
   {
     "model": "gwells.provincestatecode",
-    "pk": "86f7cd75-1d5a-45d7-a58f-f8cd7aa427e1",
+    "pk": "NU",
     "fields": {
       "create_user": "ETL_USER",
       "create_date": "2017-07-01T08:00:00Z",
       "update_user": "ETL_USER",
       "update_date": "2017-07-01T08:00:00Z",
-      "province_state_code": "NU",
       "description": "Nunavut",
       "display_order": 18
     }
   },
   {
     "model": "gwells.provincestatecode",
-    "pk": "8b51f479-f3b6-4464-858b-e3388a015e05",
+    "pk": "YT",
     "fields": {
       "create_user": "ETL_USER",
       "create_date": "2017-07-01T08:00:00Z",
       "update_user": "ETL_USER",
       "update_date": "2017-07-01T08:00:00Z",
-      "province_state_code": "YT",
       "description": "Yukon",
       "display_order": 26
     }
   },
   {
     "model": "gwells.provincestatecode",
-    "pk": "8d623221-cb16-45bc-ab12-b35c990e03d0",
+    "pk": "NS",
     "fields": {
       "create_user": "ETL_USER",
       "create_date": "2017-07-01T08:00:00Z",
@@ -79,117 +74,108 @@
   },
   {
     "model": "gwells.provincestatecode",
-    "pk": "90526734-5f9e-4b89-a6c7-15031b46ce50",
+    "pk": "NB",
     "fields": {
       "create_user": "ETL_USER",
       "create_date": "2017-07-01T08:00:00Z",
       "update_user": "ETL_USER",
       "update_date": "2017-07-01T08:00:00Z",
-      "province_state_code": "NB",
       "description": "New Brunswick",
       "display_order": 10
     }
   },
   {
     "model": "gwells.provincestatecode",
-    "pk": "95438226-b51b-4979-82bd-d8dbbc153b03",
+    "pk": "ON",
     "fields": {
       "create_user": "ETL_USER",
       "create_date": "2017-07-01T08:00:00Z",
       "update_user": "ETL_USER",
       "update_date": "2017-07-01T08:00:00Z",
-      "province_state_code": "ON",
       "description": "Ontario",
       "display_order": 6
     }
   },
   {
     "model": "gwells.provincestatecode",
-    "pk": "eaf0598a-6536-4338-8661-978c8f3dbe0c",
+    "pk": "MB",
     "fields": {
       "create_user": "ETL_USER",
       "create_date": "2017-07-01T08:00:00Z",
       "update_user": "ETL_USER",
       "update_date": "2017-07-01T08:00:00Z",
-      "province_state_code": "MB",
       "description": "Manitoba",
       "display_order": 8
     }
   },
   {
     "model": "gwells.provincestatecode",
-    "pk": "eb994201-f277-488e-b13c-4893cfcfadb5",
+    "pk": "NT",
     "fields": {
       "create_user": "ETL_USER",
       "create_date": "2017-07-01T08:00:00Z",
       "update_user": "ETL_USER",
       "update_date": "2017-07-01T08:00:00Z",
-      "province_state_code": "NT",
       "description": "Northwest Territories",
       "display_order": 16
     }
   },
   {
     "model": "gwells.provincestatecode",
-    "pk": "ef2cbb78-b617-4c12-9d28-5199161b9107",
+    "pk": "NL",
     "fields": {
       "create_user": "ETL_USER",
       "create_date": "2017-07-01T08:00:00Z",
       "update_user": "ETL_USER",
       "update_date": "2017-07-01T08:00:00Z",
-      "province_state_code": "NL",
       "description": "Newfoundland and Labrador",
       "display_order": 12
     }
   },
   {
     "model": "gwells.provincestatecode",
-    "pk": "f46b70b6-47d4-11e7-a919-92ebcb67fe33",
+    "pk": "BC",
     "fields": {
       "create_user": "ETL_USER",
       "create_date": "2017-07-01T08:00:00Z",
       "update_user": "ETL_USER",
       "update_date": "2017-07-01T08:00:00Z",
-      "province_state_code": "BC",
       "description": "British Colmubia",
       "display_order": 2
     }
   },
   {
     "model": "gwells.provincestatecode",
-    "pk": "f46b7426-47d4-11e7-a919-92ebcb67fe33",
+    "pk": "AB",
     "fields": {
       "create_user": "ETL_USER",
       "create_date": "2017-07-01T08:00:00Z",
       "update_user": "ETL_USER",
       "update_date": "2017-07-01T08:00:00Z",
-      "province_state_code": "AB",
       "description": "Alberta",
       "display_order": 4
     }
   },
   {
     "model": "gwells.provincestatecode",
-    "pk": "f46b77b4-47d4-11e7-a919-92ebcb67fe33",
+    "pk": "WA",
     "fields": {
       "create_user": "ETL_USER",
       "create_date": "2017-07-01T08:00:00Z",
       "update_user": "ETL_USER",
       "update_date": "2017-07-01T08:00:00Z",
-      "province_state_code": "WA",
       "description": "Never Never Land",
       "display_order": 30
     }
   },
   {
     "model": "gwells.provincestatecode",
-    "pk": "f46b7b1a-47d4-11e7-a919-92ebcb67fe33",
+    "pk": "OTHER",
     "fields": {
       "create_user": "ETL_USER",
       "create_date": "2017-07-01T08:00:00Z",
       "update_user": "ETL_USER",
       "update_date": "2017-07-01T08:00:00Z",
-      "province_state_code": "OTHER",
       "description": "Other",
       "display_order": 90
     }
@@ -204,7 +190,6 @@
       "update_date": "2018-01-01T08:00:00Z",
       "code": "DRILL",
       "description": "Well Driller",
-      "is_hidden": false,
       "display_order": 2
     }
   },
@@ -218,7 +203,6 @@
       "update_date": "2018-01-01T08:00:00Z",
       "code": "PUMP",
       "description": "Pump Installer",
-      "is_hidden": false,
       "display_order": 4
     }
   },
@@ -232,7 +216,6 @@
       "update_date": "2018-01-01T08:00:00Z",
       "code": "P",
       "description": "Pending",
-      "is_hidden": false,
       "display_order": 2
     }
   },
@@ -246,7 +229,6 @@
       "update_date": "2018-01-01T08:00:00Z",
       "code": "A",
       "description": "Approved",
-      "is_hidden": false,
       "display_order": 4
     }
   },
@@ -260,7 +242,6 @@
       "update_date": "2018-01-01T08:00:00Z",
       "code": "I",
       "description": "Incomplete",
-      "is_hidden": false,
       "display_order": 10
     }
   },
@@ -274,7 +255,6 @@
       "update_date": "2018-01-01T08:00:00Z",
       "code": "NA",
       "description": "Not Approved",
-      "is_hidden": false,
       "display_order": 6
     }
   },
@@ -2900,7 +2880,7 @@
       "name": "Uni Drilling Co.",
       "street_address": "4071 Middle Mall ",
       "city": "Port Progress",
-      "province_state": "f46b70b6-47d4-11e7-a919-92ebcb67fe33",
+      "province_state": "BC",
       "postal_code": "V6Y 7G1",
       "main_tel": "(250) 788-7512",
       "fax_tel": "(250) 788-7512",
@@ -2976,7 +2956,7 @@
       "name": "Satiance Drilling Co.",
       "street_address": "3994 Burning Willow Parkway",
       "city": "Fort Saint John",
-      "province_state": "f46b70b6-47d4-11e7-a919-92ebcb67fe33",
+      "province_state": "BC",
       "postal_code": "V3O 6M4",
       "main_tel": "(604) 244-3019",
       "fax_tel": "(604) 244-3019",
@@ -3090,7 +3070,7 @@
       "name": "Emoltra Drilling Co.",
       "street_address": "8457 Stony By-pass",
       "city": "Beaverley",
-      "province_state": "f46b70b6-47d4-11e7-a919-92ebcb67fe33",
+      "province_state": "BC",
       "postal_code": "V8N 7L0",
       "main_tel": "(250) 714-2504",
       "fax_tel": "(250) 714-2504",
@@ -3109,7 +3089,7 @@
       "name": "Netplode Drilling Co.",
       "street_address": "5424 Hazy Common",
       "city": "Cassidy\\'s",
-      "province_state": "f46b70b6-47d4-11e7-a919-92ebcb67fe33",
+      "province_state": "BC",
       "postal_code": "V7S 8W0",
       "main_tel": "(778) 965-3975",
       "fax_tel": "(778) 965-3975",
@@ -3128,7 +3108,7 @@
       "name": "Myopium Drilling Co.",
       "street_address": "4381 Sunny Brook Jetty",
       "city": "Defot",
-      "province_state": "f46b70b6-47d4-11e7-a919-92ebcb67fe33",
+      "province_state": "BC",
       "postal_code": "V5I 6N1",
       "main_tel": "(604) 109-1623",
       "fax_tel": "(604) 109-1623",
@@ -3166,7 +3146,7 @@
       "name": "Blurrybus Drilling Co.",
       "street_address": "8972 Silver Square",
       "city": "Mabel Lake",
-      "province_state": "f46b70b6-47d4-11e7-a919-92ebcb67fe33",
+      "province_state": "BC",
       "postal_code": "V7X 7P6",
       "main_tel": "(778) 825-8810",
       "fax_tel": "(778) 825-8810",
@@ -3204,7 +3184,7 @@
       "name": "Hopeli Drilling Co.",
       "street_address": "7910 Cinder Moor",
       "city": "Port Moody",
-      "province_state": "f46b70b6-47d4-11e7-a919-92ebcb67fe33",
+      "province_state": "BC",
       "postal_code": "V0R 2G9",
       "main_tel": "(778) 197-7980",
       "fax_tel": null,
@@ -3318,7 +3298,7 @@
       "name": "Tubesys Drilling Co.",
       "street_address": "4760 High Heights",
       "city": "Cedarvale",
-      "province_state": "f46b70b6-47d4-11e7-a919-92ebcb67fe33",
+      "province_state": "BC",
       "postal_code": "V8B 3N1",
       "main_tel": "(778) 243-5643",
       "fax_tel": "(778) 243-5643",
@@ -3337,7 +3317,7 @@
       "name": "Bluplanet Drilling Co.",
       "street_address": "1631 Amber Nectar Row",
       "city": "Alice Arm",
-      "province_state": "f46b70b6-47d4-11e7-a919-92ebcb67fe33",
+      "province_state": "BC",
       "postal_code": "V3B 9G5",
       "main_tel": "(778) 397-5790",
       "fax_tel": "(778) 397-5790",
@@ -3356,7 +3336,7 @@
       "name": "Retrack Drilling Co.",
       "street_address": "7967 Gentle Horse Mountain",
       "city": "Natal",
-      "province_state": "f46b70b6-47d4-11e7-a919-92ebcb67fe33",
+      "province_state": "BC",
       "postal_code": "V2O 4V7",
       "main_tel": "(250) 051-8787",
       "fax_tel": "(250) 051-8787",
@@ -3432,7 +3412,7 @@
       "name": "Norali Drilling Co.",
       "street_address": "9266 Blue Pony Road",
       "city": "Eholt",
-      "province_state": "f46b70b6-47d4-11e7-a919-92ebcb67fe33",
+      "province_state": "BC",
       "postal_code": "V3Q 9Q2",
       "main_tel": "(250) 851-7610",
       "fax_tel": "(250) 851-7610",
@@ -3641,7 +3621,7 @@
       "name": "Exoplode Drilling Co.",
       "street_address": "5480 Burning Pointe",
       "city": "Shookumchuk",
-      "province_state": "f46b70b6-47d4-11e7-a919-92ebcb67fe33",
+      "province_state": "BC",
       "postal_code": "V3S 9O8",
       "main_tel": "(250) 046-0449",
       "fax_tel": "(250) 046-0449",
@@ -3660,7 +3640,7 @@
       "name": "Zerology Drilling Co.",
       "street_address": "9133 Grand Freeway",
       "city": "Mcbride",
-      "province_state": "f46b70b6-47d4-11e7-a919-92ebcb67fe33",
+      "province_state": "BC",
       "postal_code": "V9H 5T5",
       "main_tel": "(778) 444-0506",
       "fax_tel": "(778) 444-0506",
@@ -3736,7 +3716,7 @@
       "name": "Webiotic Drilling Co.",
       "street_address": "2068 Iron Ledge",
       "city": "Chee House",
-      "province_state": "f46b70b6-47d4-11e7-a919-92ebcb67fe33",
+      "province_state": "BC",
       "postal_code": "V6F 6P7",
       "main_tel": "(604) 749-1940",
       "fax_tel": "(604) 749-1940",
@@ -3755,7 +3735,7 @@
       "name": "Podunk Drilling Co.",
       "street_address": "11 Middle Hickory Concession",
       "city": "Colvilletown",
-      "province_state": "f46b7426-47d4-11e7-a919-92ebcb67fe33",
+      "province_state": "AB",
       "postal_code": "V1S 9R2",
       "main_tel": "(250) 459-4523",
       "fax_tel": "(250) 459-4523",
@@ -3850,7 +3830,7 @@
       "name": "Rodeocean Drilling Co.",
       "street_address": "3019 Emerald Brook Gardens",
       "city": "Isle Pierre",
-      "province_state": "f46b70b6-47d4-11e7-a919-92ebcb67fe33",
+      "province_state": "BC",
       "postal_code": "V8T 1U6",
       "main_tel": "(250) 422-1583",
       "fax_tel": "(250) 422-1583",
@@ -3964,7 +3944,7 @@
       "name": "Lyria Drilling Co.",
       "street_address": "734 Red Downs",
       "city": "New Hazelton",
-      "province_state": "f46b70b6-47d4-11e7-a919-92ebcb67fe33",
+      "province_state": "BC",
       "postal_code": "V1L 3O9",
       "main_tel": "(250) 380-3196",
       "fax_tel": "(250) 380-3196",
@@ -4040,7 +4020,7 @@
       "name": "Ziore Drilling Co.",
       "street_address": "1180 Harvest Jetty",
       "city": "Creston",
-      "province_state": "f46b70b6-47d4-11e7-a919-92ebcb67fe33",
+      "province_state": "BC",
       "postal_code": "V4M 9V2",
       "main_tel": "(778) 106-5068",
       "fax_tel": "(778) 106-5068",
@@ -4078,7 +4058,7 @@
       "name": "Atgen Drilling Co.",
       "street_address": "8852 Merry Wagon Arbor",
       "city": "Tow Hill",
-      "province_state": "f46b7426-47d4-11e7-a919-92ebcb67fe33",
+      "province_state": "AB",
       "postal_code": "V3J 2Q7",
       "main_tel": "(778) 584-4523",
       "fax_tel": "(778) 584-4523",
@@ -4192,7 +4172,7 @@
       "name": "Jasper Drilling Co.",
       "street_address": "4374 Cinder Common",
       "city": "Sullivan Bay",
-      "province_state": "f46b70b6-47d4-11e7-a919-92ebcb67fe33",
+      "province_state": "BC",
       "postal_code": "V8E 0Y3",
       "main_tel": "(250) 720-5533",
       "fax_tel": "(250) 720-5533",
@@ -4249,7 +4229,7 @@
       "name": "Geoform Drilling Co.",
       "street_address": "7604 Stony Island Circle",
       "city": "Deroche",
-      "province_state": "f46b70b6-47d4-11e7-a919-92ebcb67fe33",
+      "province_state": "BC",
       "postal_code": "V0T 3T7",
       "main_tel": "(250) 103-8103",
       "fax_tel": "(250) 103-8103",
@@ -4477,7 +4457,7 @@
       "name": "Ontagene Drilling Co.",
       "street_address": "3248 Gentle Mount",
       "city": "Lake Windermere",
-      "province_state": "f46b70b6-47d4-11e7-a919-92ebcb67fe33",
+      "province_state": "BC",
       "postal_code": "V2H 2T5",
       "main_tel": "(250) 137-7902",
       "fax_tel": null,
@@ -4496,7 +4476,7 @@
       "name": "Rotodyne Drilling Co.",
       "street_address": "1897 Old Path",
       "city": "Mcdame",
-      "province_state": "f46b70b6-47d4-11e7-a919-92ebcb67fe33",
+      "province_state": "BC",
       "postal_code": "V2A 3I8",
       "main_tel": "(778) 025-0661",
       "fax_tel": "(778) 025-0661",
@@ -4553,7 +4533,7 @@
       "name": "Plutorque Installers",
       "street_address": "125 Thunder Elk Glen",
       "city": "Victoria",
-      "province_state": "f46b70b6-47d4-11e7-a919-92ebcb67fe33",
+      "province_state": "BC",
       "postal_code": "V0I 3M3",
       "main_tel": "(604) 876-4745",
       "fax_tel": null,
@@ -4572,7 +4552,7 @@
       "name": "Norali Installers",
       "street_address": "1014 Quiet Thicket",
       "city": "Seton Portage",
-      "province_state": "f46b70b6-47d4-11e7-a919-92ebcb67fe33",
+      "province_state": "BC",
       "postal_code": "V2A 9F2",
       "main_tel": "(250) 128-2774",
       "fax_tel": "(250) 128-2774",
@@ -4610,7 +4590,7 @@
       "name": "Zentix Installers",
       "street_address": "1900 Burning Oak Impasse",
       "city": "Mcmurphy",
-      "province_state": "f46b70b6-47d4-11e7-a919-92ebcb67fe33",
+      "province_state": "BC",
       "postal_code": "V7D 0P5",
       "main_tel": "(778) 689-6536",
       "fax_tel": "(778) 689-6536",
@@ -4648,7 +4628,7 @@
       "name": "Viasia Installers",
       "street_address": null,
       "city": null,
-      "province_state": "f46b70b6-47d4-11e7-a919-92ebcb67fe33",
+      "province_state": "BC",
       "postal_code": null,
       "main_tel": null,
       "fax_tel": null,
@@ -4667,7 +4647,7 @@
       "name": "Aquazure Installers",
       "street_address": null,
       "city": null,
-      "province_state": "f46b70b6-47d4-11e7-a919-92ebcb67fe33",
+      "province_state": "BC",
       "postal_code": null,
       "main_tel": null,
       "fax_tel": null,
@@ -4838,7 +4818,7 @@
       "name": "Keeg Installers",
       "street_address": "9234 Golden Route",
       "city": "Grand Forks",
-      "province_state": "f46b70b6-47d4-11e7-a919-92ebcb67fe33",
+      "province_state": "BC",
       "postal_code": "V5H 7T7",
       "main_tel": "(250) 296-6198",
       "fax_tel": "(250) 296-6198",
@@ -4876,7 +4856,7 @@
       "name": "Webiotic Installers",
       "street_address": "3099 Velvet Mountain",
       "city": "Gray Creek",
-      "province_state": "f46b70b6-47d4-11e7-a919-92ebcb67fe33",
+      "province_state": "BC",
       "postal_code": "V7P 5P6",
       "main_tel": "(778) 887-8648",
       "fax_tel": "(778) 887-8648",
@@ -4914,7 +4894,7 @@
       "name": "Affluex Installers",
       "street_address": "6380 Quaking Timber Pike",
       "city": "Sirdar",
-      "province_state": "f46b70b6-47d4-11e7-a919-92ebcb67fe33",
+      "province_state": "BC",
       "postal_code": "V4N 4R7",
       "main_tel": "(250) 632-2292",
       "fax_tel": null,
@@ -4952,7 +4932,7 @@
       "name": "Magnina Installers",
       "street_address": "4627 Stony Vale",
       "city": "Crofton",
-      "province_state": "f46b70b6-47d4-11e7-a919-92ebcb67fe33",
+      "province_state": "BC",
       "postal_code": "V2S 9T4",
       "main_tel": "(778) 282-5381",
       "fax_tel": "(778) 282-5381",
@@ -4971,7 +4951,7 @@
       "name": "Earthplex Installers",
       "street_address": "7010 Rocky Bluff Mall ",
       "city": "Atlin",
-      "province_state": "f46b70b6-47d4-11e7-a919-92ebcb67fe33",
+      "province_state": "BC",
       "postal_code": "V0H 8E1",
       "main_tel": "(250) 654-0361",
       "fax_tel": "(250) 654-0361",
@@ -4990,7 +4970,7 @@
       "name": "Rodeocean Installers",
       "street_address": "2869 Thunder Green",
       "city": "Birken",
-      "province_state": "f46b70b6-47d4-11e7-a919-92ebcb67fe33",
+      "province_state": "BC",
       "postal_code": "V1F 5G3",
       "main_tel": "(250) 836-5686",
       "fax_tel": "(250) 836-5686",
@@ -5028,7 +5008,7 @@
       "name": "Portaline Installers",
       "street_address": "8007 Crystal Villas",
       "city": "Squilax",
-      "province_state": "f46b70b6-47d4-11e7-a919-92ebcb67fe33",
+      "province_state": "BC",
       "postal_code": "V5R 3S5",
       "main_tel": "(250) 650-6271",
       "fax_tel": "(250) 650-6271",
@@ -5066,7 +5046,7 @@
       "name": "Collaire Installers",
       "street_address": "2250 Dusty Canyon",
       "city": "Methlakahtla",
-      "province_state": "f46b70b6-47d4-11e7-a919-92ebcb67fe33",
+      "province_state": "BC",
       "postal_code": "V3Q 4S4",
       "main_tel": "(778) 264-2034",
       "fax_tel": "(778) 264-2034",
@@ -8351,7 +8331,6 @@
       "registries_subactivity": "1f6c2aaa-018c-11e8-ba89-0ed5f89f718b",
       "code": "WAT",
       "description": "Water supply well",
-      "is_hidden": false,
       "display_order": 2
     }
   },
@@ -8366,7 +8345,6 @@
       "registries_subactivity": "1f6c30c2-018c-11e8-ba89-0ed5f89f718b",
       "code": "MON",
       "description": "Monitoring well",
-      "is_hidden": false,
       "display_order": 2
     }
   },
@@ -8381,7 +8359,6 @@
       "registries_subactivity": "1f6c2aaa-018c-11e8-ba89-0ed5f89f718b",
       "code": "RECH",
       "description": "Recharge/Injection well",
-      "is_hidden": false,
       "display_order": 2
     }
   },
@@ -8396,7 +8373,6 @@
       "registries_subactivity": "1f6c2aaa-018c-11e8-ba89-0ed5f89f718b",
       "code": "DEWAT",
       "description": "Dewatering well",
-      "is_hidden": false,
       "display_order": 2
     }
   },
@@ -8411,7 +8387,6 @@
       "registries_subactivity": "1f6c2aaa-018c-11e8-ba89-0ed5f89f718b",
       "code": "REM",
       "description": "Remediatation well",
-      "is_hidden": false,
       "display_order": 2
     }
   },
@@ -8426,7 +8401,6 @@
       "registries_subactivity": "1f6c2aaa-018c-11e8-ba89-0ed5f89f718b",
       "code": "GEO",
       "description": "Geotechnical well",
-      "is_hidden": false,
       "display_order": 2
     }
   },
@@ -8441,7 +8415,6 @@
       "registries_subactivity": "1f6c3202-018c-11e8-ba89-0ed5f89f718b",
       "code": "CLOS",
       "description": "Closed loop geoexchange well",
-      "is_hidden": false,
       "display_order": 2
     }
   },
@@ -8456,7 +8429,6 @@
       "registries_subactivity": "1f6c2aaa-018c-11e8-ba89-0ed5f89f718b",
       "code": "MON",
       "description": "Water supply well",
-      "is_hidden": false,
       "display_order": 2
     }
   },
@@ -8471,7 +8443,6 @@
       "registries_subactivity": "1f6c30c2-018c-11e8-ba89-0ed5f89f718b",
       "code": "REM",
       "description": "Remediatation well",
-      "is_hidden": false,
       "display_order": 2
     }
   },
@@ -8486,7 +8457,6 @@
       "registries_subactivity": "1f6c30c2-018c-11e8-ba89-0ed5f89f718b",
       "code": "GEO",
       "description": "Geotechnical well",
-      "is_hidden": false,
       "display_order": 2
     }
   },
@@ -8501,7 +8471,6 @@
       "registries_subactivity": "1f6c2d0c-018c-11e8-ba89-0ed5f89f718b",
       "code": "PUMP",
       "description": "Install pump in Water supply, Recharge/Injection, or Dewatering well",
-      "is_hidden": false,
       "display_order": 2
     }
   },
@@ -19313,7 +19282,6 @@
       "update_date": "2018-01-01T08:00:00Z",
       "code": "NLACT",
       "description": "No longer active",
-      "is_hidden": false,
       "display_order": 2
     }
   },
@@ -19327,7 +19295,6 @@
       "update_date": "2018-01-01T08:00:00Z",
       "code": "NMEET",
       "description": "Did not meet the requirement of registration",
-      "is_hidden": false,
       "display_order": 6
     }
   },
@@ -19341,7 +19308,6 @@
       "update_date": "2018-01-01T08:00:00Z",
       "code": "FAILTM",
       "description": "Failed to maintain requirement of registration",
-      "is_hidden": false,
       "display_order": 4
     }
   },
@@ -19355,7 +19321,6 @@
       "update_date": "2018-01-01T08:00:00Z",
       "code": "REMOVED",
       "description": "Removed",
-      "is_hidden": false,
       "display_order": 4
     }
   },
@@ -19369,7 +19334,6 @@
       "update_date": "2018-01-01T08:00:00Z",
       "code": "ACTIVE",
       "description": "Active",
-      "is_hidden": false,
       "display_order": 2
     }
   },
@@ -19384,7 +19348,6 @@
       "registries_activity": "9ecb8fbb-428f-45e1-9a3f-e0ce05c563e2",
       "code": "WATER",
       "description": "Water Well Driller",
-      "is_hidden": false,
       "display_order": 2
     }
   },
@@ -19399,7 +19362,6 @@
       "registries_activity": "a2c5ac6f-13b6-42c5-9e91-9672ab2ef5a8",
       "code": "PUMPINST",
       "description": "Pump Installer",
-      "is_hidden": false,
       "display_order": 8
     }
   },
@@ -19414,7 +19376,6 @@
       "registries_activity": "9ecb8fbb-428f-45e1-9a3f-e0ce05c563e2",
       "code": "GEOTECH",
       "description": "Geotechnical/Environmental Driller",
-      "is_hidden": false,
       "display_order": 4
     }
   },
@@ -19429,7 +19390,6 @@
       "registries_activity": "9ecb8fbb-428f-45e1-9a3f-e0ce05c563e2",
       "code": "GEOXCHG",
       "description": "Geoexchange Driller",
-      "is_hidden": false,
       "display_order": 6
     }
   }

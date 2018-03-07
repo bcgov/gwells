@@ -1,4 +1,4 @@
-create_user,create_date,update_user,update_date,casing_code_guid,casing_code,description,is_hidden,display_order 
-"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","59bc478c6c1611e7907ba6006ad3dba0","PROD","Production Casing","N","10"
-"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","59bc4f8e6c1611e7907ba6006ad3dba0","SURF","Surface Casing","N","20"
-"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","59bc53626c1611e7907ba6006ad3dba0","OPEN","Open Hole","N","30"
+create_user,create_date,update_user,update_date,casing_code,description,display_order 
+"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","PROD","Production Casing","10"
+"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","SURF","Surface Casing","20"
+"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","OPEN","Open Hole","30"
