@@ -21,6 +21,7 @@ from .search import Search
 from .views import *
 import logging
 from django.core import serializers
+from django.conf import settings
 
 #TODO split tests into one file per view
 
@@ -106,18 +107,28 @@ class ViewsTestCase(TestCase):
         logger.setLevel(previous_level)
 
     def test_site_admin_ok(self):
-        self.ok('site_admin')
+
+        if settings.ENABLE_DATA_ENTRY:
+            self.ok('site_admin')
+        else:
+            pass
 
     def test_site_admin_has_add_survey(self):
 
-        response = self.client.get(reverse('site_admin'))
-        self.assertEquals(response.status_code, HTTPStatus.OK)
-        self.assertContains( response, 'id="add-survey"')
+        if settings.ENABLE_DATA_ENTRY:
+            response = self.client.get(reverse('site_admin'))
+            self.assertEquals(response.status_code, HTTPStatus.OK)
+            self.assertContains( response, 'id="add-survey"')
+        else:
+            pass
 
     def test_survey_detail_ok(self):
-        surveys = Survey.objects.all()
-        self.assertEqual(surveys.count(), 1)
+        if settings.ENABLE_DATA_ENTRY:
+            surveys = Survey.objects.all()
+            self.assertEqual(surveys.count(), 1)
 
-        url = reverse('survey', kwargs={'pk':"495a9927-5a13-490e-bf1d-08bf2048b098"})
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, HTTPStatus.OK)
+            url = reverse('survey', kwargs={'pk':"495a9927-5a13-490e-bf1d-08bf2048b098"})
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, HTTPStatus.OK)
+        else:
+            pass

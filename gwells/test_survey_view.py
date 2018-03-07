@@ -38,116 +38,134 @@ class GetTestCase(SurveyViewTestCase):
     fixtures = ['survey_get_fixture']
 
     def test_get(self):
-        url = reverse('survey', kwargs={'pk':"495a9927-5a13-490e-bf1d-08bf2048b098"})
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, HTTPStatus.OK)
-        self.assertContains(response, "name=\"survey_guid\"")
-        self.assertContains(response, "value=\"495a9927-5a13-490e-bf1d-08bf2048b098\"")
+        if settings.ENABLE_DATA_ENTRY:
+            url = reverse('survey', kwargs={'pk':"495a9927-5a13-490e-bf1d-08bf2048b098"})
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, HTTPStatus.OK)
+            self.assertContains(response, "name=\"survey_guid\"")
+            self.assertContains(response, "value=\"495a9927-5a13-490e-bf1d-08bf2048b098\"")
+        else:
+            pass
 
 class PutTestCase(SurveyViewTestCase):
 
-    def test_put(self):
+    def test_put(self):        
         fixture_file = '/'.join([settings.FIXTURES_DIRS[0], 'survey_get_fixture.json'])
 
-        with open(fixture_file) as fixture:
-            fixture = list(serializers.deserialize('json', fixture))
+        if settings.ENABLE_DATA_ENTRY:
+            with open(fixture_file) as fixture:
+                fixture = list(serializers.deserialize('json', fixture))
 
-            self.assertEqual(1, len(fixture)) #make sure the fixture hasn't changed
+                self.assertEqual(1, len(fixture)) #make sure the fixture hasn't changed
 
-            survey = fixture[0]
+                survey = fixture[0]
+
+                factory = RequestFactory()
+
+                data = {'survey_introduction_text':survey.object.survey_introduction_text,
+                        'survey_page':survey.object.survey_page,
+                        '_method':'put'}
+
+                request = factory.post(reverse('survey'), data)
+                request.PUT = request.POST #middleware usually takes care of this
+                survey_view = SurveyView.as_view()
+                response = survey_view(request)
+
+                self.assertEqual(response.status_code, HTTPStatus.FOUND) #302 from redirect
+                self.assertEqual(response.url, reverse('site_admin'))
+
+                self.assertEqual(1, Survey.objects.all().count())
+                self.assertEqual(survey.object.survey_introduction_text, Survey.objects.all()[0].survey_introduction_text)
+        else:
+            pass
+
+class PostTestCase(SurveyViewTestCase):
+    fixtures = ['survey_get_fixture']
+
+    def test_post(self):
+        if settings.ENABLE_DATA_ENTRY:
+            new_survey_introduction_text = 'new survey introduction text'
+            new_survey_page = 'r'
+            new_survey_link = 'newlink.ca'
+
+            data = {'form-number':0,
+                    'form-0-survey_guid':'495a9927-5a13-490e-bf1d-08bf2048b098',
+                    'form-0-survey_introduction_text':new_survey_introduction_text,
+                    'form-0-survey_page':new_survey_page,
+                    'form-0-survey_link':new_survey_link,
+                    '_method':'post'}
 
             factory = RequestFactory()
-
-            data = {'survey_introduction_text':survey.object.survey_introduction_text,
-                    'survey_page':survey.object.survey_page,
-                    '_method':'put'}
-
             request = factory.post(reverse('survey'), data)
-            request.PUT = request.POST #middleware usually takes care of this
+
+            survey_view = SurveyView.as_view()
+            response = survey_view(request)
+
+            self.assertEqual(response.status_code, HTTPStatus.FOUND) #302 from redirect
+            self.assertEqual(1, Survey.objects.all().count())
+
+            survey = Survey.objects.all()[0]
+            self.assertEqual(str(survey.survey_guid), '495a9927-5a13-490e-bf1d-08bf2048b098')
+            self.assertEqual(survey.survey_introduction_text, new_survey_introduction_text)
+            self.assertEqual(survey.survey_page, new_survey_page)
+            self.assertEqual(survey.survey_link, new_survey_link)
+        else:
+            pass
+
+class DeleteTestCase(SurveyViewTestCase):
+    fixtures = ['survey_get_fixture']
+
+    def test_delete(self):
+        if settings.ENABLE_DATA_ENTRY:
+            self.assertEqual(1, Survey.objects.all().count()) #validate that setup complete correctly --fixture
+            data = {'form-number':0,
+                    'form-0-survey_guid':'495a9927-5a13-490e-bf1d-08bf2048b098',
+                    '_method':'delete'}
+
+            factory = RequestFactory()
+            request = factory.post(reverse('survey'), data)
+
             survey_view = SurveyView.as_view()
             response = survey_view(request)
 
             self.assertEqual(response.status_code, HTTPStatus.FOUND) #302 from redirect
             self.assertEqual(response.url, reverse('site_admin'))
 
-            self.assertEqual(1, Survey.objects.all().count())
-            self.assertEqual(survey.object.survey_introduction_text, Survey.objects.all()[0].survey_introduction_text)
-
-class PostTestCase(SurveyViewTestCase):
-    fixtures = ['survey_get_fixture']
-
-    def test_post(self):
-        new_survey_introduction_text = 'new survey introduction text'
-        new_survey_page = 'r'
-        new_survey_link = 'newlink.ca'
-
-        data = {'form-number':0,
-                'form-0-survey_guid':'495a9927-5a13-490e-bf1d-08bf2048b098',
-                'form-0-survey_introduction_text':new_survey_introduction_text,
-                'form-0-survey_page':new_survey_page,
-                'form-0-survey_link':new_survey_link,
-                '_method':'post'}
-
-        factory = RequestFactory()
-        request = factory.post(reverse('survey'), data)
-
-        survey_view = SurveyView.as_view()
-        response = survey_view(request)
-
-        self.assertEqual(response.status_code, HTTPStatus.FOUND) #302 from redirect
-        self.assertEqual(1, Survey.objects.all().count())
-
-        survey = Survey.objects.all()[0]
-        self.assertEqual(str(survey.survey_guid), '495a9927-5a13-490e-bf1d-08bf2048b098')
-        self.assertEqual(survey.survey_introduction_text, new_survey_introduction_text)
-        self.assertEqual(survey.survey_page, new_survey_page)
-        self.assertEqual(survey.survey_link, new_survey_link)
-
-class DeleteTestCase(SurveyViewTestCase):
-    fixtures = ['survey_get_fixture']
-
-    def test_delete(self):
-        self.assertEqual(1, Survey.objects.all().count()) #validate that setup complete correctly --fixture
-        data = {'form-number':0,
-                'form-0-survey_guid':'495a9927-5a13-490e-bf1d-08bf2048b098',
-                '_method':'delete'}
-
-        factory = RequestFactory()
-        request = factory.post(reverse('survey'), data)
-
-        survey_view = SurveyView.as_view()
-        response = survey_view(request)
-
-        self.assertEqual(response.status_code, HTTPStatus.FOUND) #302 from redirect
-        self.assertEqual(response.url, reverse('site_admin'))
-
-        self.assertEqual(0, Survey.objects.all().count())
+            self.assertEqual(0, Survey.objects.all().count())
+        else:
+            pass
 
 class SurveyViewNoMethodTestCase(SurveyViewTestCase):
     def test_nomethod(self):
-        data = {}
+        if settings.ENABLE_DATA_ENTRY:
+            data = {}
 
-        factory = RequestFactory()
-        request = factory.post(reverse('survey'), data) #defaults to get
-        survey_view = SurveyView.as_view()
-        response = survey_view(request)
+            factory = RequestFactory()
+            request = factory.post(reverse('survey'), data) #defaults to get
+            survey_view = SurveyView.as_view()
+            response = survey_view(request)
 
-        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
+            self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
+        else:
+            pass
 
 class SurveyViewInvalidMethodTestCase(SurveyViewTestCase):
     fixtures = ['survey_get_fixture']
 
     def test_invalid_method(self):
-        self.assertEqual(1, Survey.objects.all().count()) #validate that setup complete correctly --fixture
+        if settings.ENABLE_DATA_ENTRY:
+            self.assertEqual(1, Survey.objects.all().count()) #validate that setup complete correctly --fixture
 
-        data = {'form-number':0,
-                'form-0-survey_guid':'495a9927-5a13-490e-bf1d-08bf2048b098',
-                '_method':'foo'}
+            data = {'form-number':0,
+                    'form-0-survey_guid':'495a9927-5a13-490e-bf1d-08bf2048b098',
+                    '_method':'foo'}
 
-        factory = RequestFactory()
-        request = factory.post(reverse('survey'), data) #defaults to get
-        survey_view = SurveyView.as_view()
+            factory = RequestFactory()
+            request = factory.post(reverse('survey'), data) #defaults to get
+            survey_view = SurveyView.as_view()
 
-        response = survey_view(request)
+            response = survey_view(request)
 
-        self.assertEqual(response.status_code, HTTPStatus.INTERNAL_SERVER_ERROR)
+            self.assertEqual(response.status_code, HTTPStatus.INTERNAL_SERVER_ERROR)
+        else:
+            pass
