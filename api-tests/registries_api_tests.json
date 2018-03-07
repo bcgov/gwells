@@ -20,19 +20,22 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "38d80f5e-69a1-4bb8-bee1-6daed86c873d",
+										"id": "0031eb93-cfa6-457b-8948-e4efba9af579",
 										"type": "text/javascript",
 										"exec": [
 											"var jsonData = pm.response.json()",
 											"pm.environment.set(\"token\", jsonData.token);",
 											"",
-											"",
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.expect(pm.response.code, \"Login was not successful\").to.equal(200);",
+											"})",
 											"",
 											"pm.test(\"A token was returned\", function () {",
 											"    var jsonData = pm.response.json();",
-											"    pm.expect(jsonData.token).to.be.ok;",
+											"    pm.expect(jsonData.token, \"a token was not returned\").to.be.ok;",
 											"    pm.expect(jsonData.token.length).to.be.above(36);",
-											"});"
+											"});",
+											""
 										]
 									}
 								}
@@ -56,13 +59,20 @@
 									]
 								},
 								"url": {
-									"raw": "{{base_url}}/api-token-auth/",
+									"raw": "{{base_url}}/api-token-auth/?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api-token-auth",
 										""
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json",
+											"equals": true
+										}
 									]
 								},
 								"description": "Get token (log in)"
@@ -82,12 +92,12 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "e8c44c6f-c1e7-401f-83ba-a3f8e7373eb1",
+										"id": "767ee19c-badf-44a1-85e4-33f2811fcbd9",
 										"type": "text/javascript",
 										"exec": [
 											"( function() {",
 											"    pm.test(\"Successful POST request\", function () {",
-											"        pm.expect(pm.response.code).to.be.oneOf([201,202]);",
+											"        pm.expect(pm.response.code, \"response code not 201\").to.be.oneOf([201,202]);",
 											"    });",
 											"    ",
 											"    var jsonData = pm.response.json()",
@@ -96,30 +106,30 @@
 											"    pm.test(\"The record's identifier is in UUID format\", function () {",
 											"        var uuid_re = /\\w{8}-\\w{4}-\\w{4}-\\w{4}-\\w{12}/;",
 											"        var match = uuid_re.exec(jsonData.org_guid);",
-											"        pm.expect(match).to.be.ok;",
+											"        pm.expect(match, \"primary key not in UUID format\").to.be.ok;",
 											"        pm.expect(match.length).to.be.ok;",
 											"        pm.expect(match[0]).to.eql(jsonData.org_guid);",
 											"    });",
 											"    ",
 											"    pm.test(\"Organization name equals name supplied in request\", function () {",
-											"        pm.expect(jsonData.name).to.eql(\"Steve's Drilling Inc.\");",
+											"        pm.expect(jsonData.name, \"name does not match\").to.eql(\"Steve's Drilling Inc.\");",
 											"    });",
 											"    ",
 											"    pm.test(\"Street address equals value supplied in request\", function () {",
-											"        pm.expect(jsonData.street_address).to.eql(\"1012 Douglas\");",
+											"        pm.expect(jsonData.street_address, \"address does not match\").to.eql(\"1012 Douglas\");",
 											"    });",
 											"    ",
 											"    pm.test(\"Postal code equals value supplied in request\", function () {",
-											"        pm.expect(jsonData.postal_code).to.eql(\"a1a 1a1\");",
+											"        pm.expect(jsonData.postal_code, \"postal code does not match\").to.eql(\"a1a 1a1\");",
 											"    });",
 											"    ",
 											"    pm.test(\"City should be empty (it wasn't supplied)\", function () {",
-											"        pm.expect(jsonData.city).to.eql(\"\");",
+											"        pm.expect(jsonData.city, \"city field has unexpected value\").to.eql(\"\");",
 											"    });",
 											"    ",
 											"    pm.test(\"Audit fields (who_created, when_created) were filled in by backend\", function () {",
-											"        pm.expect(jsonData.create_user.length).to.be.ok;",
-											"        pm.expect(jsonData.create_date.length).to.be.ok;",
+											"        pm.expect(jsonData.create_user.length, \"create_user not present\").to.be.ok;",
+											"        pm.expect(jsonData.create_date.length, \"create_date not present\").to.be.ok;",
 											"    });",
 											"})();",
 											""
@@ -184,13 +194,20 @@
 									]
 								},
 								"url": {
-									"raw": "{{base_url}}/organizations/",
+									"raw": "{{base_url}}/organizations/?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"organizations",
 										""
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json",
+											"equals": true
+										}
 									]
 								},
 								"description": null
@@ -203,7 +220,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "94519a42-f003-4025-8464-280332ca3afb",
+										"id": "d54a135c-aef2-4eab-9041-88acd003e1db",
 										"type": "text/javascript",
 										"exec": [
 											"( function() {",
@@ -254,18 +271,22 @@
 										"value": "JWT {{token}}"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
+								"body": {},
 								"url": {
-									"raw": "{{base_url}}/organizations/",
+									"raw": "{{base_url}}/organizations/?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"organizations",
 										""
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json",
+											"equals": true
+										}
 									]
 								},
 								"description": "Organization model \"list\" view"
@@ -320,12 +341,9 @@
 										"value": "JWT {{token}}"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
+								"body": {},
 								"url": {
-									"raw": "{{base_url}}/organizations/{{created_guid}}/",
+									"raw": "{{base_url}}/organizations/{{created_guid}}/?format=json",
 									"host": [
 										"{{base_url}}"
 									],
@@ -333,6 +351,13 @@
 										"organizations",
 										"{{created_guid}}",
 										""
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json",
+											"equals": true
+										}
 									]
 								},
 								"description": "Retrieve single organization details"
@@ -391,7 +416,7 @@
 									]
 								},
 								"url": {
-									"raw": "{{base_url}}/organizations/{{created_guid}}/",
+									"raw": "{{base_url}}/organizations/{{created_guid}}/?format=json",
 									"host": [
 										"{{base_url}}"
 									],
@@ -399,6 +424,13 @@
 										"organizations",
 										"{{created_guid}}",
 										""
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json",
+											"equals": true
+										}
 									]
 								},
 								"description": null
@@ -444,18 +476,22 @@
 										"value": "JWT {{token}}"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
+								"body": {},
 								"url": {
-									"raw": "{{base_url}}/organizations/",
+									"raw": "{{base_url}}/organizations/?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"organizations",
 										""
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json",
+											"equals": true
+										}
 									]
 								},
 								"description": "Options for Organization list/create endpoint"
@@ -496,12 +532,9 @@
 										"value": "JWT {{token}}"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
+								"body": {},
 								"url": {
-									"raw": "{{base_url}}/organizations/{{created_guid}}/",
+									"raw": "{{base_url}}/organizations/{{created_guid}}/?format=json",
 									"host": [
 										"{{base_url}}"
 									],
@@ -509,6 +542,13 @@
 										"organizations",
 										"{{created_guid}}",
 										""
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json",
+											"equals": true
+										}
 									]
 								},
 								"description": "Options for Organization retrieve/update/destroy endpoint"
@@ -540,12 +580,9 @@
 										"value": "JWT {{token}}"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
+								"body": {},
 								"url": {
-									"raw": "{{base_url}}/organizations/{{created_guid}}/",
+									"raw": "{{base_url}}/organizations/{{created_guid}}/?format=json",
 									"host": [
 										"{{base_url}}"
 									],
@@ -553,6 +590,13 @@
 										"organizations",
 										"{{created_guid}}",
 										""
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json",
+											"equals": true
+										}
 									]
 								},
 								"description": "Delete request - deletes drilling organization specified by GUID."
@@ -589,12 +633,9 @@
 										"value": "JWT {{token}}"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
+								"body": {},
 								"url": {
-									"raw": "{{base_url}}/organizations/{{created_guid}}/",
+									"raw": "{{base_url}}/organizations/{{created_guid}}/?format=json",
 									"host": [
 										"{{base_url}}"
 									],
@@ -602,6 +643,13 @@
 										"organizations",
 										"{{created_guid}}",
 										""
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json",
+											"equals": true
+										}
 									]
 								},
 								"description": "Make a get request for the Organization record that was just deleted"
@@ -648,18 +696,22 @@
 										"value": "JWT {{token}}"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
+								"body": {},
 								"url": {
-									"raw": "{{base_url}}/organizations/",
+									"raw": "{{base_url}}/organizations/?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"organizations",
 										""
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json",
+											"equals": true
+										}
 									]
 								},
 								"description": "Driller model \"list\" view after deleting record"
@@ -767,13 +819,20 @@
 									]
 								},
 								"url": {
-									"raw": "{{base_url}}/organizations/",
+									"raw": "{{base_url}}/organizations/?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"organizations",
 										""
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json",
+											"equals": true
+										}
 									]
 								},
 								"description": "Attempt to create a driller record with bad input."
@@ -882,7 +941,7 @@
 									]
 								},
 								"url": {
-									"raw": "{{base_url}}/organizations/{{created_guid_bad_input}}/",
+									"raw": "{{base_url}}/organizations/{{created_guid_bad_input}}/?format=json",
 									"host": [
 										"{{base_url}}"
 									],
@@ -890,6 +949,13 @@
 										"organizations",
 										"{{created_guid_bad_input}}",
 										""
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json",
+											"equals": true
+										}
 									]
 								},
 								"description": "Attempt to retrieve a driller record created with bad input."
@@ -941,13 +1007,20 @@
 									]
 								},
 								"url": {
-									"raw": "{{base_url}}/organizations/",
+									"raw": "{{base_url}}/organizations/?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"organizations",
 										""
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json",
+											"equals": true
+										}
 									]
 								},
 								"description": "Attempt to create a driller record with missing required input."
@@ -978,12 +1051,9 @@
 										"value": "JWT {{token}}"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
+								"body": {},
 								"url": {
-									"raw": "{{base_url}}/organizations/{{created_guid_bad_input}}/",
+									"raw": "{{base_url}}/organizations/{{created_guid_bad_input}}/?format=json",
 									"host": [
 										"{{base_url}}"
 									],
@@ -991,6 +1061,13 @@
 										"organizations",
 										"{{created_guid_bad_input}}",
 										""
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json",
+											"equals": true
+										}
 									]
 								},
 								"description": "Delete the record that was created with bad input"
@@ -1075,13 +1152,20 @@
 									]
 								},
 								"url": {
-									"raw": "{{base_url}}/drillers/",
+									"raw": "{{base_url}}/drillers/?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"drillers",
 										""
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json",
+											"equals": true
+										}
 									]
 								},
 								"description": "Create a new driller"
@@ -1141,18 +1225,22 @@
 										"value": "JWT {{token}}"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
+								"body": {},
 								"url": {
-									"raw": "{{base_url}}/drillers/",
+									"raw": "{{base_url}}/drillers/?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"drillers",
 										""
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json",
+											"equals": true
+										}
 									]
 								},
 								"description": "Driller model \"list\" view"
@@ -1205,12 +1293,9 @@
 										"value": "JWT {{token}}"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
+								"body": {},
 								"url": {
-									"raw": "{{base_url}}/drillers/{{created_driller_guid}}/",
+									"raw": "{{base_url}}/drillers/{{created_driller_guid}}/?format=json",
 									"host": [
 										"{{base_url}}"
 									],
@@ -1218,6 +1303,13 @@
 										"drillers",
 										"{{created_driller_guid}}",
 										""
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json",
+											"equals": true
+										}
 									]
 								},
 								"description": "Driller model detail view - single driller"
@@ -1276,7 +1368,7 @@
 									]
 								},
 								"url": {
-									"raw": "{{base_url}}/drillers/{{created_driller_guid}}/",
+									"raw": "{{base_url}}/drillers/{{created_driller_guid}}/?format=json",
 									"host": [
 										"{{base_url}}"
 									],
@@ -1284,6 +1376,13 @@
 										"drillers",
 										"{{created_driller_guid}}",
 										""
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json",
+											"equals": true
+										}
 									]
 								},
 								"description": "Update a driller record"
@@ -1347,7 +1446,7 @@
 									]
 								},
 								"url": {
-									"raw": "{{base_url}}/drillers/{{created_driller_guid}}/",
+									"raw": "{{base_url}}/drillers/{{created_driller_guid}}/?format=json",
 									"host": [
 										"{{base_url}}"
 									],
@@ -1355,6 +1454,13 @@
 										"drillers",
 										"{{created_driller_guid}}",
 										""
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json",
+											"equals": true
+										}
 									]
 								},
 								"description": "Replace a driller record"
@@ -1400,18 +1506,22 @@
 										"value": "JWT {{token}}"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
+								"body": {},
 								"url": {
-									"raw": "{{base_url}}/drillers/",
+									"raw": "{{base_url}}/drillers/?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"drillers",
 										""
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json",
+											"equals": true
+										}
 									]
 								},
 								"description": "Options for Driller list/create endpoint"
@@ -1452,12 +1562,9 @@
 										"value": "JWT {{token}}"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
+								"body": {},
 								"url": {
-									"raw": "{{base_url}}/drillers/{{created_driller_guid}}/",
+									"raw": "{{base_url}}/drillers/{{created_driller_guid}}/?format=json",
 									"host": [
 										"{{base_url}}"
 									],
@@ -1465,6 +1572,13 @@
 										"drillers",
 										"{{created_driller_guid}}",
 										""
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json",
+											"equals": true
+										}
 									]
 								},
 								"description": "Options for Driller retrieve/update/destroy endpoint"
@@ -1496,12 +1610,9 @@
 										"value": "JWT {{token}}"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
+								"body": {},
 								"url": {
-									"raw": "{{base_url}}/drillers/{{created_driller_guid}}/",
+									"raw": "{{base_url}}/drillers/{{created_driller_guid}}/?format=json",
 									"host": [
 										"{{base_url}}"
 									],
@@ -1509,6 +1620,13 @@
 										"drillers",
 										"{{created_driller_guid}}",
 										""
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json",
+											"equals": true
+										}
 									]
 								},
 								"description": "Delete driller specified by GUID."
@@ -1545,12 +1663,9 @@
 										"value": "JWT {{token}}"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
+								"body": {},
 								"url": {
-									"raw": "{{base_url}}/drillers/{{created_driller_guid}}/",
+									"raw": "{{base_url}}/drillers/{{created_driller_guid}}/?format=json",
 									"host": [
 										"{{base_url}}"
 									],
@@ -1558,6 +1673,13 @@
 										"drillers",
 										"{{created_driller_guid}}",
 										""
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json",
+											"equals": true
+										}
 									]
 								},
 								"description": "Make a request for the Driller record that was just deleted"
@@ -1604,18 +1726,22 @@
 										"value": "JWT {{token}}"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
+								"body": {},
 								"url": {
-									"raw": "{{base_url}}/drillers/",
+									"raw": "{{base_url}}/drillers/?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"drillers",
 										""
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json",
+											"equals": true
+										}
 									]
 								},
 								"description": "List driller records after deleting record, and make sure the deleted driller isn't there"
@@ -1656,18 +1782,22 @@
 										"value": "JWT {{token}}"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
+								"body": {},
 								"url": {
-									"raw": "{{base_url}}/drillers/",
+									"raw": "{{base_url}}/drillers/?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"drillers",
 										""
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json",
+											"equals": true
+										}
 									]
 								},
 								"description": "Attempt to create a driller record with missing required input."

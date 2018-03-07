@@ -29,7 +29,6 @@ class RegistrationsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Register
         fields = (
-            # 'register_guid',
             'activity',
             'status',
             'registration_no'
@@ -46,12 +45,6 @@ class ApplicationSerializer(AuditModelSerializer):
     class Meta:
         model = RegistriesApplication
         fields = (
-            # 'application_guid',
-            # 'person',
-            # 'file_no',
-            # 'over19_ind',
-            # 'registrar_notes',
-            # 'reason_denied',
             'registrations',
         )
 
@@ -96,21 +89,6 @@ class ContactAtSerializer(AuditModelSerializer):
         )
 
 
-# class ProvinceStateCodeSerializer(serializers.ModelSerializer):
-#     """
-#     Serializes Province/State objects for use by the Organization endpoints
-#     """
-
-#     class Meta:
-#         model = ProvinceStateCode
-#         fields = (
-#             'province_state_guid',
-#             'code',
-#             'description',
-#             'display_order',
-#         )
-
-
 class OrganizationListSerializer(AuditModelSerializer):
     """
     Serializes Organization model fields for "list" view.
@@ -124,10 +102,6 @@ class OrganizationListSerializer(AuditModelSerializer):
 
         # Using all fields for now
         fields = (
-            # 'create_user',
-            # 'create_date',
-            # 'update_user',
-            # 'update_date',
             'org_guid',
             'name',
             'street_address',
@@ -136,9 +110,6 @@ class OrganizationListSerializer(AuditModelSerializer):
             'postal_code',
             'main_tel',
             'contacts',
-            #'fax_tel',
-            #'website_url',
-            #'certificate_authority',
         )
 
 
@@ -153,10 +124,6 @@ class OrganizationSerializer(AuditModelSerializer):
     class Meta:
         model = Organization
         fields = (
-            # 'create_user',
-            # 'create_date',
-            # 'update_user',
-            # 'update_date',
             'org_guid',
             'name',
             'street_address',
@@ -210,10 +177,6 @@ class PersonListSerializer(AuditModelSerializer):
     class Meta:
         model = Person
         fields = (
-            # 'create_user',
-            # 'create_date',
-            # 'update_user',
-            # 'update_date',
             'person_guid',
             'first_name',
             'surname',
@@ -238,10 +201,6 @@ class PersonSerializer(AuditModelSerializer):
             'surname',
             'companies',
             'applications',
-            # 'create_user',
-            # 'create_date',
-            # 'update_user',
-            # 'update_date',
         )
 
 class PersonAdminSerializer(AuditModelSerializer):
