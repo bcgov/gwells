@@ -463,8 +463,9 @@
     <legend>Lithology</legend>
     <div class="row print-compressed">
         <div class="col-md-12 col-print-12 table-responsive print-compressed">
-            <table id="lithology" class="table table-condensed table-bordered table-striped">
-                <thead>
+          {% if well.lithologydescription_set.all %}
+          <table id="lithology" class="table table-condensed table-bordered table-striped">
+              <thead>
                     <th>From (feet)</th>
                     <th>To (feet)</th>
                     <th>Lithology Raw Data</th>
@@ -475,7 +476,7 @@
                     <th>Water-Bearing<br>Estimated Flow</th>
                     <th>Observations</th>
                 </thead>
-                <tbody>
+              <tbody>
                     {% for lithology in well.lithologydescription_set.all %}
                     <tr>
                         <td>{{lithology.lithology_from|exclude_zero_decimals|default_if_none:'&nbsp;'}}</td>
@@ -492,7 +493,10 @@
                     </tr>
                     {% endfor %}
                 </tbody>
-            </table>
+          </table>
+          {% else %}
+          <span id="no_lithology_information">No lithology information available.</span>
+          {% endif %}
         </div>
     </div>
 </fieldset>
@@ -501,6 +505,7 @@
     <legend>Casing Details</legend>
     <div class="row print-compressed">
         <div class="col-md-12 col-print-12 table-responsive print-compressed">
+            {% if well.lithologydescription_set.all %}
             <table id="casings" class="table table-condensed table-bordered table-striped">
                 <thead>
                     <th>From (feet)</th>
@@ -536,6 +541,9 @@
                     {% endfor %}
                 </tbody>
             </table>
+            {% else %}
+            <span id="no_casing_information">No casing information available.</span>
+            {% endif %}
         </div>
     </div>
 </fieldset>
@@ -606,6 +614,7 @@
     <legend>Liner Details</legend>
     <div class="row print-compressed">
         <div class="col-md-12 col-print-12 table-responsive print-compressed">
+            {% if well.perforation_set.all %}
             <table id="liner_details" class="table table-condensed table-bordered table-striped">
                 <thead>
                     <th>Liner Material</th>
@@ -630,6 +639,9 @@
                     {% endfor %}
                 </tbody>
             </table>
+            {% else %}
+            <span id="no_liner_details_information">No liner details information available.</span>
+            {% endif %}
         </div>
     </div>
 </fieldset>
@@ -671,6 +683,7 @@
             </div>
         </div>
         <div class="col-md-8 col-print-8 table-responsive print-compressed">
+            {% if well.screen_set.all %}
             <table id="screens" class="table table-condensed table-bordered table-striped">
                 <thead>
                     <tr>
@@ -693,6 +706,9 @@
                     {% endfor %}
                 </tbody>
             </table>
+            {% else %}
+            <span id="no_screen_information">No screen information available.</span>
+            {% endif %}
         </div>
     </div>
 </fieldset>
