@@ -333,14 +333,6 @@ export default {
   created () {
     if (this.currentDriller.person_guid !== this.$route.params.person_guid) {
       this.$store.commit(SET_DRILLER, {})
-      if (this.drillers && this.drillers.results && this.drillers.results.length) {
-        const driller = this.drillers.results.find((item) => {
-          return item.person_guid === this.$route.params.person_guid
-        })
-        if (driller) {
-          this.$store.commit(SET_DRILLER, driller)
-        }
-      }
     }
     this.$store.dispatch(FETCH_DRILLER, this.$route.params.person_guid)
   }
