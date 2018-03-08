@@ -3,7 +3,7 @@
     <div class="row">
       <div class="col-xs-12">
         <form class="form-horizontal">
-          <h3>Classification and Qualifications</h3>
+          <h3 id="classificationAddHeading">Classification and Qualifications</h3>
           <div class="form-group">
             <div class="col-xs-12">
               <label>Select qualification: &nbsp;</label>
@@ -165,34 +165,32 @@ export default {
         'Province of BC',
         'N/A'
       ],
-      qualCodes: {
-        drill: {
-          activity: 'DRILL',
-          quals: ['WAT', 'MON', 'RECH', 'DEWAT', 'REM', 'GEO']
+      qualCodes: [
+        {
+        activity: 'DRILL',
+        quals: ['WAT', 'MON', 'RECH', 'DEWAT', 'REM', 'GEO']
         },
-        geotech: {
-          activity: 'GEOTECH',
-          quals: ['MON', 'REM', 'GEO']
+        {
+        activity: 'GEOTECH',
+        quals: ['MON', 'REM', 'GEO']
         },
-        geotherm: {
-          activity: 'GEOTHERM',
-          quals: ['CLOS']
+        {
+        activity: 'GEOTHERM',
+        quals: ['CLOS']
         },
-        pump: {
-          activity: 'PUMP',
-          quals: []
+        {
+        activity: 'PUMP',
+        quals: []
         }
-      },
+      ],
       qualType: 'DRILL'
     }
   },
   computed: {
     quals () {
-      const activity = this.qualCodes[this.qualType.toLowerCase()]
-      if (activity) {
-        return activity.quals
-      }
-      return []
+      const quals = []
+      const activity = this.qualCodes.find(item => item.activity === this.qualType)
+      return activity ? activity.quals : quals
     }
   },
   watch: {
@@ -201,10 +199,10 @@ export default {
       for (let key in this.editClassification.qualCodes) {
         this.editClassification.qualCodes[key] = false
       }
-      for (let key in qualList) {
-        if (key in this.editClassification.qualCodes) {
+      for (let i = 0; i < qualList.length; i++) {
+        if (qualList[i] in this.editClassification.qualCodes) {
           console.log()
-          this.editClassification.qualCodes[key] = true
+          this.editClassification.qualCodes[qualList[i]] = true
         }
       }
     }
