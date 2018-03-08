@@ -34,22 +34,9 @@ class SurveyViewTestCase(TestCase):
     def setUp(self):
         pass
 
-class GetTestCase(SurveyViewTestCase):
-    fixtures = ['survey_get_fixture']
-
-    def test_get(self):
-        if settings.ENABLE_DATA_ENTRY:
-            url = reverse('survey', kwargs={'pk':"495a9927-5a13-490e-bf1d-08bf2048b098"})
-            response = self.client.get(url)
-            self.assertEqual(response.status_code, HTTPStatus.OK)
-            self.assertContains(response, "name=\"survey_guid\"")
-            self.assertContains(response, "value=\"495a9927-5a13-490e-bf1d-08bf2048b098\"")
-        else:
-            pass
-
 class PutTestCase(SurveyViewTestCase):
 
-    def test_put(self):        
+    def test_put(self):
         fixture_file = '/'.join([settings.FIXTURES_DIRS[0], 'survey_get_fixture.json'])
 
         if settings.ENABLE_DATA_ENTRY:
