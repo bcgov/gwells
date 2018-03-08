@@ -24,12 +24,12 @@ from django.conf import settings
 from django.test import RequestFactory
 from django.http import QueryDict
 import json
+from django.contrib.auth.models import Group
 
 class SurveyViewTestCase(TestCase):
     @classmethod
     def setUpTestData(cls):
-        #using fixtures
-        pass
+        Group.objects.create(name='admin')
 
     def setUp(self):
         pass
