@@ -11,7 +11,7 @@ sonarqube {
         property "sonar.projectName", "GWells"
         property "sonar.projectKey", "org.sonarqube:bcgov-gwells"
         property "sonar.projectBaseDir", "../"
-        property "sonar.sources", "./gwells"
+        property "sonar.sources", "./gwells,./registries"
         property "sonar.lanuage", "py"
         //property "sonar.tests", "gwells/test*.py"
         property "sonar.sourceEncoding", "UTF-8"
