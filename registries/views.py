@@ -1,7 +1,10 @@
+from collections import OrderedDict
 from django.http import HttpResponse
 from django.utils import timezone
+from django.views.generic import TemplateView
+from django_filters import rest_framework as restfilters
 from rest_framework import filters
-from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView
 from rest_framework.pagination import LimitOffsetPagination, PageNumberPagination
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
@@ -9,7 +12,9 @@ from rest_framework.mixins import CreateModelMixin, UpdateModelMixin
 from registries.models import Organization, Person, ContactAt, RegistriesApplication
 from registries.permissions import IsAdminOrReadOnly
 from registries.serializers import (
-    ApplicationSerializer,
+    ApplicationAdminSerializer,
+    ApplicationListSerializer,
+    CityListSerializer,
     OrganizationListSerializer,
     OrganizationSerializer,
     OrganizationAdminSerializer,
@@ -48,6 +53,36 @@ class APILimitOffsetPagination(LimitOffsetPagination):
     """
 
     max_limit = 100
+    def get_paginated_response(self, data):
+        return Response(OrderedDict([
+            ('count', self.count),
+            ('next', self.get_next_link()),
+            ('previous', self.get_previous_link()),
+            ('offset', self.offset),
+            ('results', data)
+        ]))
+
+
+class PersonFilter(restfilters.FilterSet):
+    """
+    Allows APIPersonListView to filter response by city, province, or registration status.
+    """
+    city = restfilters.CharFilter(name="companies__org__city")
+    prov = restfilters.CharFilter(name="companies__org__province_state__province_state_code")
+    status = restfilters.CharFilter(name="applications__registrations__status__code")
+    activity = restfilters.CharFilter(name="applications__registrations__registries_activity__code")
+
+    class Meta:
+        model = Person
+        fields = ('city', 'prov', 'status')
+
+
+class RegistriesIndexView(TemplateView):
+    """
+    Index page for Registries app - contains js frontend web app
+    """
+    template_name = 'registries/registries.html'
+
 
 class APIOrganizationListCreateView(AuditCreateMixin, ListCreateAPIView):
     """
@@ -180,7 +215,9 @@ class APIPersonListCreateView(AuditCreateMixin, ListCreateAPIView):
     pagination_class = APILimitOffsetPagination
 
     # Allow searching on name fields, names of related companies, etc.
-    filter_backends = (filters.SearchFilter,)
+    filter_backends = (restfilters.DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
+    filter_class = PersonFilter
+    ordering_fields = ('surname', 'companies__org__name')
     search_fields = (
         'first_name',
         'surname',
@@ -275,6 +312,39 @@ class APIPersonRetrieveUpdateDestroyView(AuditUpdateMixin, RetrieveUpdateDestroy
         return self.serializer_class
 
 
+class APICitiesList(ListAPIView):
+    """
+    List of cities with a qualified, registered operator (driller or installer)
+
+    get: returns a list of cities with a qualified, registered operator (driller or installer)
+    """
+    serializer_class = CityListSerializer
+    lookup_field = 'person_guid'
+    pagination_class = None
+    queryset = Person.objects \
+        .exclude(companies__org__city__isnull=True) \
+        .prefetch_related(
+            'companies',
+            'companies__org',
+        ) \
+        .distinct('companies__org__city') \
+        .order_by('companies__org__city')
+
+    def get_queryset(self):
+        """
+        Returns only registered operators (i.e. drillers with active registration) to anonymous users
+        if request has a kwarg 'activity' (accepts values 'drill' and 'install'), queryset
+        will filter for that activity
+        """
+        qs = self.queryset
+        if not self.request.user.is_staff:
+            qs = qs.filter(applications__registrations__status__code='ACTIVE')
+        if self.kwargs['activity'] == 'drill':
+            qs = qs.filter(applications__registrations__registries_activity__code='DRILL')
+        if self.kwargs['activity'] == 'install':
+            qs = qs.filter(applications__registrations__registries_activity__code='PUMP')
+        return qs
+
 # Placeholder for base url.
 def index(request):
     return HttpResponse("TEST: Driller Register app home index.")
@@ -294,7 +364,7 @@ class APIApplicationListCreateView(AuditCreateMixin, ListCreateAPIView):
     """
 
     permission_classes = (IsAdminUser,)
-    serializer_class = ApplicationSerializer
+    serializer_class = ApplicationListSerializer
     queryset = RegistriesApplication.objects.all() \
         .select_related('person') \
         .prefetch_related(
@@ -320,7 +390,7 @@ class APIApplicationRetrieveUpdateDestroyView(AuditUpdateMixin, RetrieveUpdateDe
     """
 
     permission_classes = (IsAdminUser,)
-    serializer_class = ApplicationSerializer
+    serializer_class = ApplicationListSerializer
     queryset = RegistriesApplication.objects.all().select_related('person')
     lookup_field = "application_guid"
     
