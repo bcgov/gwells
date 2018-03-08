@@ -9,21 +9,53 @@ set -eu
 	set -x
 
 
+# Ensure bash shell script exists and store its checksum
+#
+BASHSS=~/.bash_profile
+touch "${BASHSS}"
+BASHSS_CHECKSUM=$( md5 -q "${BASHSS}" )
+
+
 # Install Xcode command line tools
 #
 while ( xcode-select --install );
-	do xcode-select --install
+do
+	xcode-select --install
 	echo "Waiting for Xcode Developer Tools Install"
-	sleep 60
+	sleep 30
 done
+
+
+# Request and wait for Java 8 install
+#
+( which java )&&( /usr/libexec/java_home -x | grep -o "1.8" )||( \
+	tput bel
+	echo
+	echo "Warning: to perform gradlew tests Oracle Java 8 is required!"
+	echo
+	read -n 1 -p "Open download link and wait for install? (y|n):" yORn
+	echo
+	if([ "${yORn}" == "y" ]||[ "${yORn}" == "Y" ])
+	then
+		open http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html
+
+		while ! (( which java )&&( /usr/libexec/java_home -x | grep -o "1.8" ))
+		do
+			echo "Waiting for Java 8 Install"
+			sleep 30
+		done
+	fi
+)
 
 
 # Configure git and set remote (upstream) origin
 #
-git config --global --get push.default || \
+[ "$( git config --global --get push.default )" == "simple" ] || \
 	git config --global push.default simple
-git config --global --get user.email && \
-	git config --global --get user.name || \
+[ "$( git config --global --get core.autocrlf)" == "input" ] || \
+	git config --global core.autocrlf input
+[ "$( git config --global --get user.email )" ] && \
+	[ "( git config --global --get user.name)" ] || \
 	git config --global --edit
 #
 git remote -v | grep "https://github.com/bcgov/gwells.git (push)" || \
@@ -82,8 +114,6 @@ done
 
 # Config bash shell to source virtualenvwrapper.sh
 #
-BASHSS=~/.bash_profile
-touch "${BASHSS}"
 VEWSRC=$( find ~ -name virtualenvwrapper.sh | grep -m 1 . )
 grep --quiet "virtualenvwrapper.sh" "${BASHSS}" || \
 	(
@@ -96,12 +126,23 @@ grep --quiet "virtualenvwrapper.sh" "${BASHSS}" || \
 	) >> "${BASHSS}"
 
 
+# Set JAVA_HOME to use version 8
+#
+grep --quiet "export JAVA_HOME=" ~/.bash_profile || \
+	(
+		echo ;
+		echo "# Set Java 8 as default";
+		echo "#";
+		echo "export JAVA_HOME=$( /usr/libexec/java_home -v 1.8 )";
+	) >> ~/.bash_profile
+
+
 # Make virtual environment
 #
 PATH="${PATH}":~/Library/Python/3.6/bin
 export VIRTUALENVWRAPPER_PYTHON=/usr/local/bin/python3
 set +u
-source "${VEWSRC}"
+source "${BASHSS}"
 mkvirtualenv gwells || true
 workon gwells
 set -u
@@ -140,3 +181,15 @@ python3 ../manage.py migrate
 # Run server
 #
 python3 ../manage.py runserver
+
+
+# Recommend sourcing ~/.bash_profile if the file has changed
+#
+if [ "${BASHSS_CHECKSUM}" != $( md5 -q "${BASHSS}" ) ]
+then
+	echo
+	echo "Warning: ~/.bash_profile has changed!  To source it type:"
+	echo
+	echo "source ~/.bash_profile "
+fi
+echo

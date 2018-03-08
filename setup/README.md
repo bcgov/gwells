@@ -48,10 +48,23 @@ OS X:
     git clone https://github.com/<github-user>/gwells.git
     ```
 
-    Change directory to gwells (cd gwells), then add remote (upstream) origin.
+    Change directory to repo, then add remote (upstream) origin.
 
     ```
+    cd gwells
     git remote add upstream https://github.com/bcgov/gwells.git
+    ```
+
+    Set email address and name
+    ```
+    git config --global user.email <GitHub registered email address>
+    git config --global user.name <GitHub registered firstName LastName>
+    ```
+
+    Set push default and line endings (Linux LF, not Win CRLF)
+    ```
+    git config --global push.default simple
+    git config --global core.autocrlf input
     ```
 
 3.  PostgreSQL
