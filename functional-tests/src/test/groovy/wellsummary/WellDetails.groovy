@@ -41,8 +41,6 @@ class WellDetailsSpecs extends GebReportingSpec {
 			assert ems_id
 			assert aquifer_number
 			assert alternate_specs_submitted
-			assert water_supply_system_name
-			assert water_supply_system_well_name
 
 			assert address
 			assert city
@@ -86,7 +84,6 @@ class WellDetailsSpecs extends GebReportingSpec {
 			assert orientation_direction
 			assert ground_elevation
 			assert ground_elevation_method
-			assert well_plate_attached
 
 			assert intake_method
 			assert screen_type
@@ -279,8 +276,8 @@ class WellDetailsSpecs extends GebReportingSpec {
 		"aquifer_number"	 			  | "936" 	 | 102364
 		//"aquifer_number"	 			  | "464" 	 | 4980 //no link
 		"alternate_specs_submitted"	 	  | "No" 	 | 110749
-		"water_supply_system_name"	 	  | "CHETWYND PULP MILL" 	 | 102406
-		"water_supply_system_well_name"	  | "EAST WELL" 	 | 102406
+		//"water_supply_system_name"	 	  | "CHETWYND PULP MILL" 	 | 102406
+		//"water_supply_system_well_name"	  | "EAST WELL" 	 | 102406
 		"address"	 					  | "6647 CHRISTENSEN ROAD" 	 | 110749
 		"city"	 						  | "ANAHIM LAKE" 	 | 110749
 		"lot"							  | "A" 	 | 110749
@@ -318,7 +315,7 @@ class WellDetailsSpecs extends GebReportingSpec {
 		"orientation_direction"	 		  | "vertical" 	 | 110749
 		"ground_elevation"	 			  | "378 feet" 	 | 106648
 		"ground_elevation_method"	 	  | "1:10,000 Scale Map" 	 | 104636
-		"well_plate_attached"	 		  | "CASING" 	 | 106648
+		//"well_plate_attached"	 		  | "CASING" 	 | 106648
 		"intake_method"	 				  | "Open Bottom" 	 | 110749
 		"screen_type"	 				  | "Pipe size" 	 | 102666
 		"screen_material"	 			  | "Plastic" 	 | 102666
