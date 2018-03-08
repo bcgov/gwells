@@ -12,16 +12,17 @@
     limitations under the License.
 """
 
-from .forms import *
+from gwells.forms import *
 from django.test import TestCase
 from django.core.urlresolvers import reverse
 from http import HTTPStatus
-from .models import *
-from .search import Search
-from .views import *
+from gwells.models import *
+from gwells.search import Search
+from gwells.views import *
 import logging
 from django.core import serializers
 from django.conf import settings
+from django.contrib.auth.models import Group
 
 #TODO split tests into one file per view
 
@@ -30,8 +31,7 @@ class ViewsTestCase(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        #using fixtures
-	    pass
+        Group.objects.create(name='admin')
 
     def setUp(self):
         pass
