@@ -111,7 +111,7 @@ class WellDetailsSpecs extends GebReportingSpec {
 			assert backfill_depth
 
 			assert perforations_fieldset
-			assert liner_details
+			assert no_liner_details_information
 
 			assert lithology_fieldset
 			assert lithology
@@ -128,6 +128,127 @@ class WellDetailsSpecs extends GebReportingSpec {
         TestDesc                          | WellId
         "Well Tag - "                    | 110749
     }
+
+    @Unroll
+    def "Basic Field availability checking liner details: #TestDesc #WellId"() {
+        given: "Given that I have found my well that has liner details"
+			go "gwells/well/$WellId"
+ 		when: "I accessed the Well Summary Page"
+			at WellSummaryPage
+			assert  (well_tag_number.text() == "$WellId")
+        then: "Then I see all the liner details related to the well"
+        	at WellSummaryPage
+
+        assert liner_details_table
+
+        where:
+        TestDesc                          | WellId
+        "Well Tag - "                    | 108027
+      }
+
+    @Unroll
+    def "Basic Field availability checking screen details: #TestDesc #WellId"() {
+        given: "Given that I have found a well with screen details"
+			go "gwells/well/$WellId"
+ 		when: "I accessed the Well Summary Page"
+			at WellSummaryPage
+			assert  (well_tag_number.text() == "$WellId")
+        then: "Then I see all screen details related to the well"
+        	at WellSummaryPage
+
+        assert screens
+
+        where:
+        TestDesc                          | WellId
+        "Well Tag - "                    | 108025
+      }
+
+    @Unroll
+    def "Basic Field availability checking screen details: #TestDesc #WellId"() {
+        given: "Given that I have found a well without screen details"
+      go "gwells/well/$WellId"
+    when: "I accessed the Well Summary Page"
+      at WellSummaryPage
+      assert  (well_tag_number.text() == "$WellId")
+        then: "Then I see a notice that tells me there is no screen information for that well"
+          at WellSummaryPage
+
+        assert no_screen_information
+
+        where:
+        TestDesc                          | WellId
+        "Well Tag - "                    | 104671
+      }
+
+    @Unroll
+    def "Basic Field availability checking casing details: #TestDesc #WellId"() {
+        given: "Given that I have found a well with casing details"
+			go "gwells/well/$WellId"
+ 		when: "I accessed the Well Summary Page"
+			at WellSummaryPage
+			assert  (well_tag_number.text() == "$WellId")
+        then: "Then I see all casing details related to the well"
+        	at WellSummaryPage
+
+        assert casings
+
+        where:
+        TestDesc                          | WellId
+        "Well Tag - "                    | 108025
+      }
+
+    @Unroll
+    def "Basic Field availability checking casing details: #TestDesc #WellId"() {
+        given: "Given that I have found a well without casing details"
+      go "gwells/well/$WellId"
+    when: "I accessed the Well Summary Page"
+      at WellSummaryPage
+      assert  (well_tag_number.text() == "$WellId")
+        then: "Then I see a notice that tells me there is no casing information for that well"
+          at WellSummaryPage
+
+        assert no_casing_information
+
+        where:
+        TestDesc                          | WellId
+        "Well Tag - "                    | 104671
+      }
+
+
+      @Unroll
+      def "Basic Field availability checking lithology details: #TestDesc #WellId"() {
+          given: "Given that I have found a well with lithology details"
+  			go "gwells/well/$WellId"
+   		when: "I accessed the Well Summary Page"
+  			at WellSummaryPage
+  			assert  (well_tag_number.text() == "$WellId")
+          then: "Then I see all lithology details related to the well"
+          	at WellSummaryPage
+
+          assert lithology
+
+          where:
+          TestDesc                          | WellId
+          "Well Tag - "                    | 105747
+        }
+
+      @Unroll
+      def "Basic Field availability checking lithology details: #TestDesc #WellId"() {
+          given: "Given that I have found a well without lithology details"
+        go "gwells/well/$WellId"
+      when: "I accessed the Well Summary Page"
+        at WellSummaryPage
+        assert  (well_tag_number.text() == "$WellId")
+          then: "Then I see a notice that tells me there is no lithology information for that well"
+            at WellSummaryPage
+
+          assert no_lithology_information
+
+          where:
+          TestDesc                          | WellId
+          "Well Tag - "                    | 104671
+        }
+
     @Unroll
     def "Field content checking: #TestDesc - #WellId - #WellFieldContent"() {
         given: "Given that I have found my well"
