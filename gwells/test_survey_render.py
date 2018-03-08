@@ -1,12 +1,12 @@
 from django.test import TestCase
 from django.core.urlresolvers import reverse
 from http import HTTPStatus
+from django.contrib.auth.models import Group
 
 class SurveyRenderTestCase(TestCase):
     @classmethod
     def setUpTestData(cls):
-        #using fixtures
-        pass
+        Group.objects.create(name='admin')
 
     def setUp(self):
         pass
