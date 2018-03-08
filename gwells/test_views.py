@@ -121,14 +121,3 @@ class ViewsTestCase(TestCase):
             self.assertContains( response, 'id="add-survey"')
         else:
             pass
-
-    def test_survey_detail_ok(self):
-        if settings.ENABLE_DATA_ENTRY:
-            surveys = Survey.objects.all()
-            self.assertEqual(surveys.count(), 1)
-
-            url = reverse('survey', kwargs={'pk':"495a9927-5a13-490e-bf1d-08bf2048b098"})
-            response = self.client.get(url)
-            self.assertEqual(response.status_code, HTTPStatus.OK)
-        else:
-            pass
