@@ -6,7 +6,9 @@ This folder houses web applications being developed for the GWELLS project.
 
 ## Development
 
-The GWELLS frontend web applications are developed with the Vue.JS framework and are organized/bundled by webpack. After building with ```npm run build```, each application gets its own bundle of javascript and css files like ```vendor.js``` and ```[app-name].js```. ```vendor.js``` contains modules and dependencies that are common to every app (like Vue.JS, axios, etc.), while ```[app-name].js``` contains app-specific code. This is to allow caching of the larger vendor.js file across all apps, while keeping application-specific javascript files small.
+The GWELLS frontend web applications are developed with the Vue.JS framework and are organized/bundled by webpack.
+
+Upon building, each application gets a bundle of javascript and css files. ```vendor.js``` contains dependencies that are common to each app (like Vue.JS and axios), while ```[app-name].js``` contains app-specific code. This is to allow caching of the larger vendor.js file across all apps, while keeping application-specific javascript files small.
 
 ### Adding new applications
 To add a new application, make a new folder in the ```src``` directory. Then go into ```build/webpack.base.conf.js``` and find the ```entry``` object of ```module.exports```:
@@ -32,6 +34,7 @@ module.exports = {
   },
 ...
 ```
+Note: don't use vue init to create new apps. This frontend folder was already created with the vue-cli webpack template.
 
 ## Qualified Well Driller Registry
 
@@ -72,12 +75,17 @@ npm run build --report
 
 ## Unit tests
 
+Unit tests use the jest testing framework and vue-test-utils. ```npm run test``` runs the tests and outputs coverage information to the ```test/unit/coverage``` folder.
+
 ```
 # run unit tests
 npm run unit
 
 # run all tests
 npm test
+
+# auto-run tests with watcher
+npm run unit -- --watch
 ```
 
 For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
