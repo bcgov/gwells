@@ -6,7 +6,7 @@ This folder houses web applications being developed for the GWELLS project.
 
 ## Development
 
-Web applications are developed with the Vue.JS framework and bundled by webpack. Each application gets its own bundle of javascript and css files like ```vendor.js``` and ```[app-name].js```. ```vendor.js``` contains modules and dependencies that are common to every app (like Vue.JS, axios, etc.), while ```[app-name].js``` contains app-specific code. This is to allow caching of the larger vendor.js file across all apps, while keeping application-specific javascript files small.
+The GWELLS frontend web applications are developed with the Vue.JS framework and are organized/bundled by webpack. After building with ```npm run build```, each application gets its own bundle of javascript and css files like ```vendor.js``` and ```[app-name].js```. ```vendor.js``` contains modules and dependencies that are common to every app (like Vue.JS, axios, etc.), while ```[app-name].js``` contains app-specific code. This is to allow caching of the larger vendor.js file across all apps, while keeping application-specific javascript files small.
 
 ### Adding new applications
 To add a new application, make a new folder in the ```src``` directory. Then go into ```build/webpack.base.conf.js``` and find the ```entry``` object of ```module.exports```:
