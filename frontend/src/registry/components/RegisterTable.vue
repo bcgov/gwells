@@ -31,7 +31,7 @@
       <nav aria-label="List navigation" v-if="drillers.results && drillers.results.length">
         <ul class="pagination">
           <li v-if="drillers.previous">
-            <button @click="paginationPrev" class="btn btn-default" aria-label="Previous">
+            <button @click="paginationPrev" class="btn btn-default" aria-label="Previous" id="table-pagination-prev">
               <span aria-hidden="true">Previous</span>
             </button>
           </li>
@@ -46,7 +46,7 @@
             </button>
           </li>
           <li v-else>
-            <button class="btn btn-default disabled" aria-hidden="true" id="table-pagination-prev">
+            <button class="btn btn-default disabled" aria-hidden="true">
               <span aria-hidden="true">Next</span>
             </button>
           </li>
