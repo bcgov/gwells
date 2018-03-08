@@ -167,20 +167,20 @@ export default {
       ],
       qualCodes: [
         {
-        activity: 'DRILL',
-        quals: ['WAT', 'MON', 'RECH', 'DEWAT', 'REM', 'GEO']
+          activity: 'DRILL',
+          quals: ['WAT', 'MON', 'RECH', 'DEWAT', 'REM', 'GEO']
         },
         {
-        activity: 'GEOTECH',
-        quals: ['MON', 'REM', 'GEO']
+          activity: 'GEOTECH',
+          quals: ['MON', 'REM', 'GEO']
         },
         {
-        activity: 'GEOTHERM',
-        quals: ['CLOS']
+          activity: 'GEOTHERM',
+          quals: ['CLOS']
         },
         {
-        activity: 'PUMP',
-        quals: []
+          activity: 'PUMP',
+          quals: []
         }
       ],
       qualType: 'DRILL'
@@ -201,7 +201,6 @@ export default {
       }
       for (let i = 0; i < qualList.length; i++) {
         if (qualList[i] in this.editClassification.qualCodes) {
-          console.log()
           this.editClassification.qualCodes[qualList[i]] = true
         }
       }
