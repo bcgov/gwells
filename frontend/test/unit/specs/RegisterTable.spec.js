@@ -20,8 +20,8 @@ describe('RegisterTable.vue', () => {
       listError: () => null,
       drillers: () => {
         return {
-          next: 'http://www.example.com/next/',
-          previous: null,
+          next: 'http://www.example.com/api/?limit=30&offset=60',
+          previous: 'http://www.example.com/api/?limit=30&offset=0',
           results: [
             {
               person_guid: '1',
@@ -38,7 +38,7 @@ describe('RegisterTable.vue', () => {
       }
     }
     actions = {
-      [FETCH_DRILLER_LIST]: () => { return null }
+      [FETCH_DRILLER_LIST]: jest.fn()
     }
     store = new Vuex.Store({ getters, actions })
   })
@@ -76,5 +76,40 @@ describe('RegisterTable.vue', () => {
       stubs: ['router-link', 'router-view']
     })
     expect(wrapper.find('#table-pagination-next').text()).toEqual('Next')
+  })
+  it('shows the pagination button for previous page when a link is returned by API', () => {
+    const wrapper = shallow(RegisterTable, {
+      store,
+      localVue,
+      stubs: ['router-link', 'router-view']
+    })
+    expect(wrapper.find('#table-pagination-prev').text()).toEqual('Previous')
+  })
+  it('dispatches fetch driller list with correct querystring when pagination next clicked', () => {
+    const wrapper = shallow(RegisterTable, {
+      store,
+      localVue,
+      stubs: ['router-link', 'router-view']
+    })
+    wrapper.find('#table-pagination-next').trigger('click')
+    expect(actions.fetchDrillers.mock.calls[0][1]).toEqual({limit: '30', offset: '60'})
+  })
+  it('dispatches fetch driller list with correct querystring when pagination prev clicked', () => {
+    const wrapper = shallow(RegisterTable, {
+      store,
+      localVue,
+      stubs: ['router-link', 'router-view']
+    })
+    wrapper.find('#table-pagination-prev').trigger('click')
+    expect(actions.fetchDrillers.mock.calls[0][1]).toEqual({limit: '30', offset: '0'})
+  })
+  it('emits the column code (e.g. surname) to be sorted when column sort button clicked', () => {
+    const wrapper = shallow(RegisterTable, {
+      store,
+      localVue,
+      stubs: ['router-link', 'router-view']
+    })
+    wrapper.find('th i').trigger('click')
+    expect(wrapper.emitted('sort')).toEqual([['surname']])
   })
 })

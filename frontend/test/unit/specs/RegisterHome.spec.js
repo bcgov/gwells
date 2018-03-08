@@ -144,5 +144,13 @@ describe('RegisterHome.vue', () => {
     button.trigger('click')
     expect(actions.logout).toHaveBeenCalled()
   })
-  it('fetches a new city list when user changes professional type to pump installer')
+  it('calls sort method when register table component emits a sort code', () => {
+    const wrapper = shallow(RegisterHome, {
+      store,
+      localVue
+    })
+    const table = wrapper.find(RegisterTable)
+    table.vm.$emit('sort', 'surname')
+    expect(wrapper.vm.searchParams.ordering).toEqual('surname')
+  })
 })

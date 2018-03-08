@@ -32,7 +32,7 @@ describe('PersonEdit.vue', () => {
     store = new Vuex.Store({ getters, actions, mutations })
   })
 
-  it('dispatches the fetch driller action when page loads', () => {
+  it('dispatches the fetch driller action when page loads if the current driller is not the right one', () => {
     shallow(PersonEdit, {
       store,
       localVue,
@@ -59,7 +59,7 @@ describe('PersonEdit.vue', () => {
       localVue,
       stubs: ['router-link', 'router-view'],
       mocks: {
-        $route: {params: {person_guid: 'aaaa-4444-bbbb-1111'}}
+        $route: {params: {person_guid: fakePerson.person_guid}}
       }
     })
     expect(wrapper.findAll(APIErrorMessage).length).toEqual(1)
@@ -70,7 +70,7 @@ describe('PersonEdit.vue', () => {
       localVue,
       stubs: ['router-link', 'router-view'],
       mocks: {
-        $route: {params: {person_guid: 'aaaa-4444-bbbb-1111'}}
+        $route: {params: {person_guid: fakePerson.person_guid}}
       }
     })
     expect(wrapper.findAll(APIErrorMessage).length).toEqual(0)
@@ -81,10 +81,21 @@ describe('PersonEdit.vue', () => {
       localVue,
       stubs: ['router-link', 'router-view'],
       mocks: {
-        $route: {params: {person_guid: 'aaaa-4444-bbbb-1111'}}
+        $route: {params: {person_guid: fakePerson.person_guid}}
       }
     })
-    expect(wrapper.vm.classifications)
+    expect(wrapper.vm.classifications).toEqual([
+      {
+        'code': 'geotech',
+        'date': '2005-01-05',
+        'description': 'Geotechnical/Environmental Driller',
+        'status': 'Approved'
+      },
+      {
+        'code': 'water',
+        'date': '2005-01-05',
+        'description': 'Water Well Driller',
+        'status': 'Approved'}
+    ])
   })
-  it('')
 })
