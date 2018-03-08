@@ -1,4 +1,5 @@
 ﻿{% load static %}
+{% load group_filter %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -69,7 +70,7 @@
     <![endif]-->
 
     <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/base/jquery-ui.css" type="text/css" media="all" />
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/dataTables.bootstrap.min.css" type="text/css" media="all" /> 
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/dataTables.bootstrap.min.css" type="text/css" media="all" />
     {% if settings.ENABLE_GOOGLE_ANALYTICS %}
     <script>
         (function(i, s, o, g, r, a, m) {
@@ -142,7 +143,9 @@
                             <li><a id="navbar-registry-legacy" href="{% url 'registry-legacy' %}">Registry</a></li>
                             {% if settings.ENABLE_DATA_ENTRY %}
                             <li><a id="navbar-submission" href="{% url 'activity_submission_create' %}">Submit Report</a></li>
-                            <li><a id="ribbon-admin" href="{% url 'site_admin' %}">Admin</a></li>
+                            {% endif %}
+                            {% if request.user|has_group:"admin" %}
+                            <li><a id="collapsable-ribbon-admin" href="{% url 'site_admin' %}">Admin</a></li>
                             {% endif %}
                         </ul>
                     </div>
@@ -156,8 +159,10 @@
                             <li><a id="ribbon-search" href="{% url 'search' %}">Search</a></li>
                             <li><a id="ribbon-groundwaterinfo" href="{% url 'groundwater_information' %}">Groundwater Information</a></li>
                             <li><a id="ribbon-registry-legacy" href="{% url 'registry-legacy' %}">Registry</a></li>
-                            {% if settings.ENABLE_DATA_ENTRY %}
+                            {%if settings.ENABLE_DATA_ENTRY %}
                             <li><a id="ribbon-submission" href="{% url 'activity_submission_create' %}">Submit Report</a></li>
+                            {%endif %}
+                            {% if request.user|has_group:"admin" %}
                             <li><a id="ribbon-admin" href="{% url 'site_admin' %}">Admin</a></li>
                             {% endif %}
                         </ul>
