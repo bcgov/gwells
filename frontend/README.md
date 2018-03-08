@@ -6,7 +6,7 @@ This folder houses web applications being developed for the GWELLS project.
 
 ## Development
 
-Web applications are developed with the Vue.JS framework and bundled by webpack. Each application gets its own bundle of javascript and css files like ```vendor.js``` and ```[app-name].js```. ```vendor.js``` contains modules and code that is common to every app (dependencies like Vue.JS, axios, etc.), while ```[app-name].js``` contains app-specific code. This is to allow caching of the larger vendor.js file across GWELLS web applications, while keeping application-specific javascript files small.
+Web applications are developed with the Vue.JS framework and bundled by webpack. Each application gets its own bundle of javascript and css files like ```vendor.js``` and ```[app-name].js```. ```vendor.js``` contains modules and dependencies that are common to every app (like Vue.JS, axios, etc.), while ```[app-name].js``` contains app-specific code. This is to allow caching of the larger vendor.js file across all apps, while keeping application-specific javascript files small.
 
 ### Adding new applications
 To add a new application, make a new folder in the ```src``` directory. Then go into ```build/webpack.base.conf.js``` and find the ```entry``` object of ```module.exports```:
@@ -39,7 +39,7 @@ The Registry frontend app provides a user interface for accessing the Registry A
 
 ## Serving web apps with Django
 
-To serve the webapps with Django, have ```views.py``` and ```urls.py``` load a template file with the django-webpack-loader tags. For more information, see [https://github.com/ezhome/django-webpack-loader](django-webpack-loader) and the existing template in the ```registries/templates/registries/``` folder.
+To serve the webapps with Django, have ```urls.py``` load a template file (you can use the TemplateView class) with the django-webpack-loader tags. For more information, see [https://github.com/ezhome/django-webpack-loader](django-webpack-loader) and the existing template in the ```registries/templates/registries/``` folder.
 
 Run the following commands to build the web app (bundle automatically inserted into Django template):
 
