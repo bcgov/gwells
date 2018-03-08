@@ -1808,6 +1808,156 @@
 					"_postman_isSubFolder": true
 				}
 			]
+		},
+		{
+			"name": "Anonymous user",
+			"description": "",
+			"item": [
+				{
+					"name": "Company List",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "94519a42-f003-4025-8464-280332ca3afb",
+								"type": "text/javascript",
+								"exec": [
+									"( function() {",
+									"    pm.test(\"Status code is 200\", function () {",
+									"        pm.response.to.have.status(200);",
+									"    });",
+									"    ",
+									"    pm.test(\"Response time is less than 200ms\", function () {",
+									"        pm.expect(pm.response.responseTime).to.be.below(200);",
+									"    });    ",
+									"    ",
+									"    var created_guid = pm.environment.get(\"created_guid\");",
+									"    var jsonData = pm.response.json();",
+									"    ",
+									"    pm.test(\"List of drilling companies has valid drilling company objects\", function () {",
+									"        // First check that our GUID resembles a valid UUID (i.e. we are not testing before created_guid is set)",
+									"        pm.expect(created_guid.length).to.eql(36);",
+									"",
+									"        // Then check that created_guid is in the response body",
+									"        pm.expect(jsonData.results.length).to.be.above(0);",
+									"        ",
+									"        for (var i; i < jsonData.results.length; i++) {",
+									"            pm.expect(jsonData.results[i].org_guid.length).to.eql(36);",
+									"            pm.expect(jsonData.results[i].name.length).to.be.ok;",
+									"        }",
+									"    });",
+									"    ",
+									"    pm.test(\"Pagination: if there are more objects than the page limit, provide a link to the next page\", function () {",
+									"        if (jsonData.results.length < jsonData.count) {",
+									"            pm.expect(jsonData.next.length).to.be.ok;",
+									"        }",
+									"    });",
+									"})();",
+									"",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{base_url}}/organizations/?format=json",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"organizations",
+								""
+							],
+							"query": [
+								{
+									"key": "format",
+									"value": "json",
+									"equals": true
+								}
+							]
+						},
+						"description": "Organization model \"list\" view"
+					},
+					"response": []
+				},
+				{
+					"name": "Driller List",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "d42608d8-fa0e-40ea-974e-3eb2b4cae7ad",
+								"type": "text/javascript",
+								"exec": [
+									"( function() {",
+									"    pm.test(\"Status code is 200\", function () {",
+									"        pm.response.to.have.status(200);",
+									"    });",
+									"    ",
+									"    var created_guid = pm.environment.get(\"created_driller_guid\");",
+									"    var jsonData = pm.response.json();",
+									"    ",
+									"    pm.test(\"List of drillers has valid person objects\", function () {",
+									"        // First check that our GUID resembles a valid UUID (i.e. we are not testing before created_guid is set)",
+									"        pm.expect(created_guid.length).to.eql(36);",
+									"",
+									"        // Then check that created_guid is in the response body",
+									"        pm.expect(jsonData.results.length).to.be.above(0);",
+									"",
+									"        for (var i; i < jsonData.results.length; i++) {",
+									"            pm.expect(jsonData.results[i].person_guid.length).to.eql(36);",
+									"            pm.expect(jsonData.results[i].first_name.length).to.be.ok;",
+									"            pm.expect(jsonData.results[i].surname.length).to.be.ok;",
+									"        }",
+									"    });",
+									"",
+									"    pm.test(\"Pagination: if there are more objects than the page limit, provide a link to the next page\", function () {",
+									"        if (jsonData.results.length < jsonData.count) {",
+									"            pm.expect(jsonData.next.length).to.be.ok;",
+									"        }",
+									"    });",
+									"})();",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{base_url}}/drillers/?format=json",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"drillers",
+								""
+							],
+							"query": [
+								{
+									"key": "format",
+									"value": "json",
+									"equals": true
+								}
+							]
+						},
+						"description": "Driller model \"list\" view"
+					},
+					"response": []
+				}
+			]
 		}
 	]
 }
