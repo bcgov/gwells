@@ -13,9 +13,8 @@
 """
 
 from django.test import TestCase
-from .models import *
-
-from django.test import TestCase
+from gwells.models import *
+from django.contrib.auth.models import User
 
 #TODO split the tests into one test file per class
 
@@ -224,3 +223,9 @@ class ModelsTestCase(TestCase):
     def test_yield_estimation_method_instantiation(self):
         yield_estimation_method = YieldEstimationMethodCode()
         self.assertIsInstance(yield_estimation_method, YieldEstimationMethodCode)
+
+    def test_profile(self):
+        user = User.objects.create(username="foo")
+        self.assertIsInstance(user, User)
+        self.assertEqual(Profile.objects.all().count(), 1)
+        self.assertEqual(user, Profile.objects.all()[0].user)
