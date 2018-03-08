@@ -36,7 +36,7 @@ urlpatterns = [
     url(r'^docs/$', get_swagger_view(title='GWELLS Driller registry'), name='api-docs'),
 
     # Registries frontend webapp loader (html page that contains header, footer, and a SPA in between)
-    url(r'^$', views.RegistriesIndexView.as_view(), name='home'),
+    url(r'^$', views.RegistriesIndexView.as_view(), name='registries-home'),
 
     # RegistriesApplication resource endpoints (applications from individuals to be registered as a driller, well installer etc.)
     # url(r'^applications/(?P<application_guid>[-\w]+)/$', views.APIApplicationRetrieveUpdateDestroyView.as_view(), name='application-detail'),
