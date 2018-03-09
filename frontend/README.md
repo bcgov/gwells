@@ -4,6 +4,10 @@
 
 This folder houses web applications being developed for the GWELLS project.
 
+## Qualified Well Driller Registry
+
+The Registry frontend app provides a user interface for accessing the Registry API. This app is located at /gwells/registries/ (base dir of the registries urls)
+
 ## Development
 
 The GWELLS frontend web applications are developed with the Vue.JS framework and are organized/bundled by webpack.
@@ -35,10 +39,6 @@ module.exports = {
 ...
 ```
 Note: don't use vue init to create new apps. This frontend folder was already created with the vue-cli webpack template.
-
-## Qualified Well Driller Registry
-
-The Registry frontend app provides a user interface for accessing the Registry API. This app is loaded at /gwells/registries/ (base dir of the registries urls)
 
 ## Serving web apps with Django
 
