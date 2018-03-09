@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+import datetime
 import logging.config
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -86,6 +87,8 @@ INSTALLED_APPS = (
     'formtools',
     'registries',
     'django_nose',
+    'webpack_loader',
+    'django_filters',
 )
 
 MIDDLEWARE = (
@@ -164,6 +167,9 @@ else:
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATICFILES_DIR = (
+    os.path.join(BASE_DIR, 'staticfiles')
+)
 
 LOGGING = {
     'version': 1,
@@ -198,6 +204,10 @@ LOGGING = {
     }
 }
 
+JWT_AUTH = {
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),
+}
+
 DRF_RENDERERS = ['rest_framework.renderers.JSONRenderer',]
 # Turn on browsable API if "DEBUG" set
 if DEBUG:
@@ -219,7 +229,18 @@ REST_FRAMEWORK = {
         'rest_framework.throttling.UserRateThrottle'
     ),
     'DEFAULT_THROTTLE_RATES': {
-        'anon': '200/hour',
-        'user': '1000/hour'
+        'anon': '100000/hour',
+        'user': '200000/hour'
+    }
+}
+
+WEBPACK_LOADER = {
+    'DEFAULT': {
+        'CACHE': not DEBUG,
+        'BUNDLE_DIR_NAME': 'bundles/', # must end with slash
+        'STATS_FILE': os.path.join(BASE_DIR, 'frontend/webpack-stats.json'),
+        'POLL_INTERVAL': 0.1,
+        'TIMEOUT': None,
+        'IGNORE': ['.+\.hot-update.js', '.+\.map']
     }
 }

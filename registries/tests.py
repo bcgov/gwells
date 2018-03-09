@@ -485,17 +485,18 @@ class APIFilteringPaginationTests(APITestCase):
     """
 
     def setUp(self):
-        # necessary foreignkeys for registered drillers
-        self.code = RegistriesStatusCode.objects.create(code="ACTIVE", description="active", display_order="1")
-        self.activity = ActivityCode.objects.create(code="DRILL", description="driller", display_order="1")
+        self.status_active = RegistriesStatusCode.objects.create(code="ACTIVE", description="active", display_order="1")
+        self.status_inactive = RegistriesStatusCode.objects.create(code="INACTIVE", description="inactive", display_order="2")
+        self.activity_drill = ActivityCode.objects.create(code="DRILL", description="driller", display_order="1")
+        self.activity_pump = ActivityCode.objects.create(code="PUMP", description="pump installer", display_order="2")
 
         # Create registered driller 1
         self.driller = Person.objects.create(first_name='Wendy', surname="Well")
         self.app = RegistriesApplication.objects.create(person=self.driller)
         self.registration = Register.objects.create(
-            status=self.code,
+            status=self.status_active,
             registries_application=self.app,
-            registries_activity=self.activity,
+            registries_activity=self.activity_drill,
             registration_no="F12345",
         )
 
@@ -503,14 +504,24 @@ class APIFilteringPaginationTests(APITestCase):
         self.driller2 = Person.objects.create(first_name='Debbie', surname="Driller")
         self.app2 = RegistriesApplication.objects.create(person=self.driller2)
         self.registration2 = Register.objects.create(
-            status=self.code,
+            status=self.status_active,
             registries_application=self.app2,
-            registries_activity=self.activity,
+            registries_activity=self.activity_drill,
             registration_no="F54321",
         )
 
         # Create unregistered driller
         self.unregistered_driller = Person.objects.create(first_name="Johnny", surname="Unregistered")
+
+        # Create inactive driller
+        self.inactive_driller = Person.objects.create(first_name="Billy", surname="Retired")
+        self.retired_app = RegistriesApplication.objects.create(person=self.inactive_driller)
+        self.retired_registration = Register.objects.create(
+            status=self.status_inactive,
+            registries_application=self.retired_app,
+            registries_activity=self.activity_drill,
+            registration_no="R55555"
+        )
 
         # create a company with no registered driller
         self.company_with_no_driller = Organization.objects.create(name="Big Time Drilling Company")
@@ -617,19 +628,12 @@ class FixtureOrganizationTests(AuthenticatedAPITestCase):
         # max_limit comes from class APILimitOffsetPagination in views.py
         self.assertEqual(len(response.data['results']), 100)
 
-    def anon_user_should_not_see_audit_fields(self):
-        self.client.force_authenticate(user=None)
-        org_object = Organization.objects.first()
-        url = reverse('organization-detail', kwargs={'org_guid':org_object.org_guid})
-        response = self.client.get(url, format='json')
-
-        self.assertNotContains(response, 'create_user')
-        self.assertNotContains(response, 'update_user')
 
 class FixturePersonTests(AuthenticatedAPITestCase):
     """
     Tests for the API Person resource endpoint using fake data fixtures
     """
+    fixtures = ['registries/fixtures/registries.json']
 
     def test_duplicated_person_entries_anon_user(self):
         # use anonymous user
@@ -652,11 +656,126 @@ class FixturePersonTests(AuthenticatedAPITestCase):
             person_set.add(item['person_guid'])
         self.assertEqual(len(person_set), len(response.data['results']))
 
-    def anon_user_should_not_see_audit_fields(self):
+    def test_fields_returned(self):
         self.client.force_authenticate(user=None)
-        person_object = Person.objects.first()
-        url = reverse('person-detail', kwargs={'person_guid':person_object.person_guid})
+        url = reverse('person-list')
         response = self.client.get(url, format='json')
 
-        self.assertNotContains(response, 'create_user')
-        self.assertNotContains(response, 'update_user')
+        for item in response.data['results']:
+            fields = [
+            'person_guid',
+            'first_name',
+            'surname',
+            'organization_name',
+            'street_address',
+            'province_state',
+            'city',
+            'contact_tel',
+            'contact_email',
+            'activity',
+            'status',
+            'registration_no',
+            ]
+
+            wrong_fields = [
+                'created_user',
+                'created_date',
+                'asdf',
+                'companies',
+                'applications'
+            ]
+
+            for field in fields:
+                self.assertEqual(field in item, True)
+            
+            for wrong_field in wrong_fields:
+                self.assertEqual(wrong_field in item, False)
+
+            for key in item.keys():
+                self.assertEqual(key in fields, True)
+
+    def test_search_response(self):
+        url = reverse('person-list')
+        response = self.client.get(url, format='json', search='ann')
+
+        # looking for errors (misconfigured search, filters etc)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_filter_response_city(self):
+        url = reverse('person-list') + '?city=Atlin'
+        response = self.client.get(url, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data['results']), 1)
+
+    def test_filter_response_status(self):
+        url = reverse('person-list') + '?status=ACTIVE'
+        response = self.client.get(url, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_filter_response_status_with_invalid_code(self):
+        url = reverse('person-list') + '?status=NOT_A_REAL_STATUS'
+        response = self.client.get(url, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_filter_response_province(self):
+        url = reverse('person-list') + '?prov=BC'
+        response = self.client.get(url, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_filter_response_province_and_city(self):
+        url = reverse('person-list') + '?prov=BC&city=Atlin'
+        response = self.client.get(url, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_filter_response_city_invalid_province(self):
+        url = reverse('person-list') + '?prov=ZZ&city=Atlin'
+        response = self.client.get(url, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data['results']), 0)
+
+    def test_filter_response_city_invalid_province_status(self):
+        url = reverse('person-list') + '?prov=ZZ&city=Atlin&status=ACTIVE'
+        response = self.client.get(url, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data['results']), 0)
+
+    def test_filter_response_city_province_status_activity(self):
+        url = reverse('person-list') + '?prov=BC&city=Atlin&status=ACTIVE&activity=DRILL'
+        response = self.client.get(url, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_filter_response_invalid_activity(self):
+        url = reverse('person-list') + '?prov=BC&city=Atlin&status=ACTIVE&activity=asdf'
+        response = self.client.get(url, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data['results']), 0)
+
+    # NOTE: this test is not compatible with sqlite
+    # def test_city_list(self):
+    #     url = reverse('city-list-drillers')
+    #     response = self.client.get(url, format='json')
+
+    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+class WebAppTests(TestCase):
+    """
+    Tests for the web app loader template
+    """
+
+    def test_webapp_template_loads(self):
+        """
+        test_webapp_template_loads: Test that web app loads. If failing, try running 'npm run build' from frontend/ folder
+        """
+        url = reverse('registries-home')
+        response = self.client.get(url)
+        
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
