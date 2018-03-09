@@ -32,17 +32,8 @@ psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER << EOF
 	\i replicate_perforations.sql
 	\i replicate_aquifer_wells.sql
 	\i replicate_lithology_descriptions.sql
-	\i full_db_replication.sql
 	\i db_replicate.sql
 EOF
-# TODO delete the "\i full_db_replication.sql" once db_replicate.sql is tested
-# and the Jenkins job is reconfigured from:
-# 'psql -d $POSTGRESQL_DATABASE -U $POSTGRESQL_USER -c "SELECT full_replicate();"'
-#
-# to:
-# 'psql -d $POSTGRESQL_DATABASE -U $POSTGRESQL_USER -c "SELECT db_replicate(false);"'
-#
-# https://jenkins-moe-gwells-tools.pathfinder.gov.bc.ca/job/gwells-prod-db-scripts/configure
 
 # $DB_REPLICATE can be one of "None" | "Subset" | "Full"
 if [ "$DB_REPLICATE" = "Subset" -o "$DB_REPLICATE" = "Full" ]
