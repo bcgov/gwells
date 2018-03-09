@@ -44,10 +44,10 @@ urlpatterns = [
 
 if settings.ENABLE_DATA_ENTRY:
     urlpatterns = [
-        url(r'^'+ app_root_slash +'submission/$', ActivitySubmissionListView.as_view(), name='activity_submission_list'),
         url(r'^'+ app_root_slash +'submission/create$', ActivitySubmissionWizardView.as_view(views.FORMS), name='activity_submission_create'),
-        url(r'^'+ app_root_slash +'admin/site_admin', AdminView.as_view(), name='site_admin'),
+        url(r'^'+ app_root_slash +'submission/$', ActivitySubmissionListView.as_view(), name='activity_submission_list'),
         url(r'^'+ app_root_slash +'admin/site_admin/survey', SurveyView.as_view(), name='survey'),
+        url(r'^'+ app_root_slash +'admin/site_admin', AdminView.as_view(), name='site_admin'),
         url(r'^'+ app_root_slash +'admin/', admin.site.urls),
     ] + urlpatterns
 
@@ -55,5 +55,4 @@ if settings.DEBUG:
     import debug_toolbar
     urlpatterns = [
         url(r'^__debug__/', include(debug_toolbar.urls)),
-        url(r'^'+ app_root_slash +'admin/', include(admin.site.urls)),
     ] + urlpatterns

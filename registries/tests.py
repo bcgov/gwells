@@ -650,7 +650,6 @@ class FixturePersonTests(AuthenticatedAPITestCase):
         person_set = set()
         for item in response.data['results']:
             person_set.add(item['person_guid'])
-        print(len(person_set))
         self.assertEqual(len(person_set), len(response.data['results']))
 
     def anon_user_should_not_see_audit_fields(self):
