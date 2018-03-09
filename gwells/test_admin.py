@@ -2,6 +2,8 @@ from django.test import TestCase
 from django.contrib.auth.models import Group
 from django.contrib.auth.models import User
 from django.urls import reverse
+from urllib.parse import urlparse
+from urllib.parse import parse_qsl
 
 class AdminTestCase(TestCase):
     @classmethod
@@ -11,7 +13,7 @@ class AdminTestCase(TestCase):
     def setUp(self):
         pass
 
-    def test_authenticated_user(self):
+    def test_authenticated_user_navbar(self):
         group_name = 'admin'
         username = 'admin'
         password = 'admin'
@@ -25,13 +27,16 @@ class AdminTestCase(TestCase):
 
         self.assertContains(response, 'id="ribbon-admin"')
 
-    def test_unauthenticated_user(self):
+        self.client.logout()
+        self.user.delete()
+
+    def test_unauthenticated_user_navbar(self):
 
         response = self.client.get(reverse('search'))
 
         self.assertNotContains(response, 'id="ribbon-admin"')
 
-    def test_unauthorized_user(self):
+    def test_unauthorized_user_navbar(self):
         username = 'admin'
         password = 'admin'
         email = 'admin@admin.com'
@@ -40,3 +45,18 @@ class AdminTestCase(TestCase):
         response = self.client.get(reverse('search'))
 
         self.assertNotContains(response, 'id="ribbon-admin"')
+
+    def test_unauthenticated_user_admin_view(self):
+
+        response = self.client.get(reverse('site_admin'))
+        self.assertEqual(response.status_code, 302)
+        url_components = urlparse(response.url)
+        self.assertEqual(url_components.path, reverse('admin:login'))
+
+        query=parse_qsl(url_components.query)
+        self.assertEqual(len(query), 1)
+
+        arg_tuple = query[0];
+        self.assertEqual(len(arg_tuple), 2)
+        self.assertEqual(arg_tuple[0], 'next')
+        self.assertEqual(arg_tuple[1], reverse('site_admin'))

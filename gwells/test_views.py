@@ -23,6 +23,7 @@ import logging
 from django.core import serializers
 from django.conf import settings
 from django.contrib.auth.models import Group
+from django.contrib.auth.models import User
 
 #TODO split tests into one file per view
 
@@ -109,15 +110,39 @@ class ViewsTestCase(TestCase):
     def test_site_admin_ok(self):
 
         if settings.ENABLE_DATA_ENTRY:
+            group_name = 'admin'
+            username = 'admin'
+            password = 'admin'
+            email = 'admin@admin.com'
+            self.user = User.objects.create_user(username=username, password=password, email=email)
+            admin_group = Group.objects.get(name=group_name)
+            admin_group.user_set.add(self.user)
+            self.client.login(username=username,password=password)
+
             self.ok('site_admin')
+
+            self.client.logout()
+            self.user.delete()
         else:
             pass
 
     def test_site_admin_has_add_survey(self):
 
         if settings.ENABLE_DATA_ENTRY:
+            group_name = 'admin'
+            username = 'admin'
+            password = 'admin'
+            email = 'admin@admin.com'
+            self.user = User.objects.create_user(username=username, password=password, email=email)
+            admin_group = Group.objects.get(name=group_name)
+            admin_group.user_set.add(self.user)
+            self.client.login(username=username,password=password)
+
             response = self.client.get(reverse('site_admin'))
             self.assertEquals(response.status_code, HTTPStatus.OK)
             self.assertContains( response, 'id="add-survey"')
+
+            self.client.logout()
+            self.user.delete()
         else:
             pass
