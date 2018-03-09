@@ -16,8 +16,12 @@ from django.views import generic
 from django.forms import modelformset_factory
 from django.forms import modelform_factory
 from gwells.models.Survey import Survey
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.urlresolvers import reverse_lazy
 
-class AdminView(generic.TemplateView):
+class AdminView(LoginRequiredMixin,generic.TemplateView):
+    login_url = reverse_lazy('admin:login')
+
     context_object_name = 'context'
     template_name = 'gwells/site_admin.html'
 
