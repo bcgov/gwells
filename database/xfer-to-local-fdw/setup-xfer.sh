@@ -8,6 +8,8 @@
 #       https://console.pathfinder.gov.bc.ca:8443/oauth/token/request
 #
 # Running on postgres database pod, as DB root access not enabled on gwells application pod
+
+oc project moe-gwells-test
 podname=$(oc get pods -n moe-gwells-test | grep postgresql | grep Running | head -n 1 | awk '{print $1}')
 oc exec ${podname} -n moe-gwells-test -- /bin/bash -c 'psql -d $POSTGRESQL_DATABASE -U $POSTGRESQL_USER << EOF
 drop schema if exists xfer_wells cascade;create schema xfer_wells;
@@ -97,7 +99,7 @@ oc rsync ${podname}:/tmp/xfer ~/tmp
 # > alter user wells set search_path to wells;
 # > EOF
 
-# Reset target schema to hold objects from pg_restore
+# Reset target schema on the local DB, to hold objects from pg_restore
 psql -d wells -U wells << EOF
 DROP SCHEMA IF EXISTS xfer_wells CASCADE;
 EOF
