@@ -17,7 +17,9 @@ from django.forms import modelformset_factory
 from django.forms import modelform_factory
 from gwells.models.Survey import Survey
 
-class AdminView(generic.TemplateView):
+from django.contrib.auth.mixins import LoginRequiredMixin
+
+class AdminView(LoginRequiredMixin, generic.TemplateView):
     context_object_name = 'context'
     template_name = 'gwells/site_admin.html'
 
