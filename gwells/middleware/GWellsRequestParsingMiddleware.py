@@ -2,6 +2,7 @@
 
 from django.http import HttpResponseBadRequest
 from django.utils.deprecation import MiddlewareMixin
+from django.http import HttpResponse
 
 class GWellsRequestParsingMiddleware(MiddlewareMixin):
 

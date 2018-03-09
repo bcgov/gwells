@@ -17,13 +17,24 @@ from django.forms import modelformset_factory
 from django.forms import modelform_factory
 from gwells.models.Survey import Survey
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import UserPassesTestMixin
 from django.core.urlresolvers import reverse_lazy
+from django.contrib.auth.models import Group
+from django.contrib.auth.models import User
 
-class AdminView(LoginRequiredMixin,generic.TemplateView):
+class AdminView(LoginRequiredMixin, UserPassesTestMixin, generic.TemplateView):
     login_url = reverse_lazy('admin:login')
 
     context_object_name = 'context'
     template_name = 'gwells/site_admin.html'
+
+    def test_func(self):
+        user = self.request.user
+        group_name = 'admin'
+        group = Group.objects.get(name=group_name)
+        user_groups = user.groups.all()
+        authorized = group in user_groups
+        return authorized
 
     def get_context_data(self, **kwargs):
         """

@@ -9,8 +9,12 @@ from django.http import HttpResponseNotAllowed
 from django.http import HttpResponseNotFound
 from django.http import HttpResponseServerError
 import uuid
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.core.urlresolvers import reverse_lazy
 
 def get_handler_method(request_handler, http_method):
+
     try:
         handler_method = getattr(request_handler, http_method.lower())
 
@@ -20,16 +24,29 @@ def get_handler_method(request_handler, http_method):
     except AttributeError:
         pass
 
-class SurveyView(View):
+class SurveyView(LoginRequiredMixin, View):
+
+    login_url = reverse_lazy('admin:login')
+    #permission_required = ('survey.can_add', 'survey.can_edit', 'survey.can_delete')
     model = Survey
+
     fields = ['survey_introduction_text', 'survey_link', 'survey_page', 'survey_enabled']
 
     http_methods = ['GET', 'POST', 'HEAD', 'PUT', 'DELETE', 'OPTIONS', 'TRACE']
 
-    @classmethod
-    def dispatch(cls, request, *args, **kwargs):
+    def dispatch(self, request, *args, **kwargs):
 
-        request_handler = cls()
+        #ensure that there is a user whose authentication can be validated
+        if not hasattr(request, 'user'):
+            self.request = request
+            return self.handle_no_permission()
+
+        #LoginRequired
+        if not request.user.is_authenticated:
+            self.request = request
+            return self.handle_no_permission()
+
+        request_handler = self
 
         _method = request.POST.get('_method')
 
@@ -37,13 +54,13 @@ class SurveyView(View):
             _method = request.method
 
         if _method != None:
-            if _method.upper() in cls.http_methods:
+            if _method.upper() in SurveyView.http_methods:
                 handler_method = get_handler_method(request_handler, _method.upper())
 
                 if handler_method:
                     return handler_method(request, *args, **kwargs)
             else:
-                methods = [method for method in cls.http_methods if get_handler_method(request_handler, _method)]
+                methods = [method for method in http_methods if get_handler_method(request_handler, _method)]
                 if len(methods) > 0:
                     return HttpResponseNotAllowed(methods)
                 else:
@@ -57,6 +74,7 @@ class SurveyView(View):
             fields[key]=self.add_prefix(fields[key], form_number)
 
     def __create_or_update_survey(self, request, method, form_number=0, **kwargs):
+
         form_fields = {'SURVEY_INTRODUCTION_TEXT':'survey_introduction_text',
                   'SURVEY_PAGE':'survey_page',
                   'SURVEY_LINK':'survey_link',
@@ -89,6 +107,7 @@ class SurveyView(View):
         survey.save()
 
     def get(self, request, **kwargs):
+
         template = loader.get_template('gwells/survey_detail.html')
 
         uri = request.build_absolute_uri()

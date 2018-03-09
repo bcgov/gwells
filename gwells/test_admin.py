@@ -37,14 +37,20 @@ class AdminTestCase(TestCase):
         self.assertNotContains(response, 'id="ribbon-admin"')
 
     def test_unauthorized_user_navbar(self):
+        #setup
         username = 'admin'
         password = 'admin'
         email = 'admin@admin.com'
         self.user = User.objects.create_user(username=username, password=password, email=email)
+        self.client.login(username=username,password=password)
 
+        #test
         response = self.client.get(reverse('search'))
-
         self.assertNotContains(response, 'id="ribbon-admin"')
+
+        #teardown
+        self.client.logout()
+        self.user.delete()
 
     def test_unauthenticated_user_admin_view(self):
 
@@ -60,3 +66,29 @@ class AdminTestCase(TestCase):
         self.assertEqual(len(arg_tuple), 2)
         self.assertEqual(arg_tuple[0], 'next')
         self.assertEqual(arg_tuple[1], reverse('site_admin'))
+
+    def test_unauthorized_user_admin_view(self):
+        #setup
+        username = 'admin'
+        password = 'admin'
+        email = 'admin@admin.com'
+        self.user = User.objects.create_user(username=username, password=password, email=email)
+        self.client.login(username=username,password=password)
+
+        #test
+        response = self.client.get(reverse('site_admin'))
+        self.assertEqual(response.status_code, 302)
+        url_components = urlparse(response.url)
+        self.assertEqual(url_components.path, reverse('admin:login'))
+
+        query=parse_qsl(url_components.query)
+        self.assertEqual(len(query), 1)
+
+        arg_tuple = query[0];
+        self.assertEqual(len(arg_tuple), 2)
+        self.assertEqual(arg_tuple[0], 'next')
+        self.assertEqual(arg_tuple[1], reverse('site_admin'))
+
+        #teardown
+        self.client.logout()
+        self.user.delete()
