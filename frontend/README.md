@@ -1,12 +1,18 @@
-# GWELLS web application
+# GWELLS web applications
 
 ## Introduction
 
 This folder houses web applications being developed for the GWELLS project.
 
+## Qualified Well Driller Registry
+
+The Registry frontend app provides a user interface for accessing the Registry API. This app is located at /gwells/registries/ (base dir of the registries urls)
+
 ## Development
 
-Web applications are developed with the Vue.JS framework and bundled by webpack. Each application gets its own bundle of javascript and css files like ```vendor.js``` and ```[app-name].js```. ```vendor.js``` contains modules and code that is common to every app (dependencies like Vue.JS, axios, etc.), while ```[app-name].js``` contains app-specific code. This is to allow caching of the larger vendor.js file across GWELLS web applications, while keeping application-specific javascript files small.
+The GWELLS frontend web applications are developed with the Vue.JS framework and are organized/bundled by webpack.
+
+Upon building, each application gets a bundle of javascript and css files. ```vendor.js``` contains dependencies that are common to each app (like Vue.JS and axios), while ```[app-name].js``` contains app-specific code. This is to allow caching of the larger vendor.js file across all apps, while keeping application-specific javascript files small.
 
 ### Adding new applications
 To add a new application, make a new folder in the ```src``` directory. Then go into ```build/webpack.base.conf.js``` and find the ```entry``` object of ```module.exports```:
@@ -32,14 +38,11 @@ module.exports = {
   },
 ...
 ```
-
-## Qualified Well Driller Registry
-
-The Registry frontend app provides a user interface for accessing the Registry API. This app is loaded at /gwells/registries/ (base dir of the registries urls)
+Note: don't use vue init to create new apps. This frontend folder was already created with the vue-cli webpack template.
 
 ## Serving web apps with Django
 
-To serve the webapps with Django, have ```views.py``` and ```urls.py``` load a template file with the django-webpack-loader tags. For more information, see [https://github.com/ezhome/django-webpack-loader](django-webpack-loader) and the existing template in the ```registries/templates/registries/``` folder.
+To serve the webapps with Django, have ```urls.py``` load a template file (you can use the TemplateView class) with the django-webpack-loader tags. For more information, see [https://github.com/ezhome/django-webpack-loader](django-webpack-loader) and the existing template in the ```registries/templates/registries/``` folder.
 
 Run the following commands to build the web app (bundle automatically inserted into Django template):
 
@@ -72,12 +75,17 @@ npm run build --report
 
 ## Unit tests
 
+Unit tests use the jest testing framework and vue-test-utils. ```npm run test``` runs the tests and outputs coverage information to the ```test/unit/coverage``` folder.
+
 ```
 # run unit tests
 npm run unit
 
 # run all tests
 npm test
+
+# auto-run tests with watcher
+npm run unit -- --watch
 ```
 
 For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
