@@ -1,4 +1,4 @@
-# GWELLS web application
+# GWELLS web applications
 
 ## Introduction
 
