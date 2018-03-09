@@ -1,1 +1,15 @@
-
+    stage('Unit Test') {
+        node('python') {
+            checkout scm
+            try {
+                sh 'pip install --upgrade pip && pip install -r requirements.txt'
+		sh 'cd frontend && npm install && npm run build && cd ..'
+		sh 'python manage.py collectstatic && python manage.py migrate'
+                sh 'export ENABLE_DATA_ENTRY="True" && python manage.py test -c nose.cfg'
+            } 
+            finally {
+                stash includes: 'nosetests.xml,coverage.xml', name: 'coverage'
+                junit 'nosetests.xml'
+            }
+        }
+    }  
