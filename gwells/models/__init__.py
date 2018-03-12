@@ -51,6 +51,9 @@ from .WellStatusCode import WellStatusCode
 from .WellSubclassCode import WellSubclassCode
 from .WellYieldUnitCode import WellYieldUnitCode
 from .YieldEstimationMethodCode import YieldEstimationMethodCode
+"""
+"""
+from .OnlineSurvey import OnlineSurvey
 
 __all__ = [
 'ActivitySubmission',
@@ -105,4 +108,5 @@ __all__ = [
 'WellStatusCode',
 'WellSubclassCode',
 'WellYieldUnitCode',
-'YieldEstimationMethodCode']
+'YieldEstimationMethodCode',
+'OnlineSurvey']
