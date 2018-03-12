@@ -49,11 +49,13 @@ if settings.ENABLE_DATA_ENTRY:
         url(r'^'+ app_root_slash +'site_admin', AdminView.as_view(), name='site_admin'),
         url(r'^'+ app_root_slash +'admin/survey', SurveyView.as_view(), name='survey'),
         url(r'^'+ app_root_slash +'admin/survey/(?P<pk>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$', SurveyView.as_view(), name='survey'),
+#
+        url(r'^'+ app_root_slash +'admin/', include(admin.site.urls)),
+        url(r'^'+ app_root_slash +'accounts/', include('django.contrib.auth.urls')),
     ] + urlpatterns
 
 if settings.DEBUG:
     import debug_toolbar
     urlpatterns = [
         url(r'^__debug__/', include(debug_toolbar.urls)),
-        url(r'^'+ app_root_slash +'admin/', include(admin.site.urls)),
     ] + urlpatterns

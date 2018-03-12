@@ -85,6 +85,9 @@ activate
 
 x.sh
 
+*.sublime-project
+*.sublime-workspace
+
 # Frontend files
 frontend/node_modules/
 frontend/webpack-stats.json
