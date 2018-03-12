@@ -244,3 +244,6 @@ WEBPACK_LOADER = {
         'IGNORE': ['.+\.hot-update.js', '.+\.map']
     }
 }
+LOGIN_URL = '/gwells/accounts/login/'
+LOGIN_REDIRECT_URL = '/gwells/search'
+
