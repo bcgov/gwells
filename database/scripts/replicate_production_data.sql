@@ -25,7 +25,10 @@ BEGIN
     gen_random_uuid()                                                      ,
     null                                                                   ,
     xform.well_tag_number                                                  ,
-    production_data.yield_estimated_method_code                            ,
+    CASE production_data.yield_estimated_method_code
+      WHEN 'UNK' THEN null
+      ELSE production_data.yield_estimated_method_code
+    END AS yield_estimation_method_code,
     production_data.test_rate                                              ,
     production_data.test_duration                                          ,
     CASE production_data.test_rate_units_code 
