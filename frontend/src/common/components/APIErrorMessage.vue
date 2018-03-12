@@ -1,6 +1,6 @@
 <template>
   <div @click="clearError" class="alert alert-warning" role="alert" id="errorAlert">
-    {{ error.status }} {{ error.statusText }}: {{ error.data.detail }}
+    {{ error.status }} {{ error.statusText }}<span v-if="error.data && error.data.detail">: {{ error.data.detail }}</span>
   </div>
 </template>
 
