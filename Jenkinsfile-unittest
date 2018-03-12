@@ -1,7 +1,6 @@
     stage('Unit Test') {
         node('python') {
             checkout scm
-	    sh 'unset BASH_ENV PROMPT_COMMAND ENV && virtualenv /opt/app-root && source /opt/app-root/bin/activate'
             try {
                 sh 'pip install --upgrade pip && pip install -r requirements.txt'
 		sh 'cd frontend && npm install && npm run build && cd ..'
