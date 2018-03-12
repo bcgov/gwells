@@ -15,3 +15,5 @@ yarn-error.log*
 *.sln
 
 webpack-stats.json
+
+junit.xml
