@@ -157,7 +157,7 @@ DECLARE
     wells.drilling_method_code AS drilling_method_code, -- supersedes CONSTRUCTION_METHOD_CODE
     wells.ground_elevation_method_code AS ground_elevation_method_code,
     CASE wells.status_of_well_code
-        WHEN ''UNK'' THEN ''OTHER''
+        WHEN ''UNK'' THEN null -- ''OTHER''
         ELSE wells.status_of_well_code
     END AS well_status_code                                                    ,
     to_char(wells.observation_well_number,''fm000'') AS observation_well_number,
@@ -188,7 +188,7 @@ DECLARE
     wells.chemistry_site_id                            ,
     wells.screen_intake_code                           ,
     CASE wells.screen_type_code
-        WHEN ''UNK'' THEN ''OTHER''
+        WHEN ''UNK'' THEN null
         ELSE wells.screen_type_code
     END AS screen_type_code                            ,
     CASE wells.screen_material_code 
@@ -205,7 +205,7 @@ DECLARE
     wells.development_method_code                      ,
     wells.development_hours                            ,
     CASE wells.surface_seal_method_code 
-      WHEN ''UNK'' THEN ''OTHER''
+      WHEN ''UNK'' THEN null
       ELSE wells.surface_seal_method_code
     END AS surface_seal_method_code                    ,
     CASE wells.surface_seal_material_code 
