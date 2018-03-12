@@ -1,18 +1,18 @@
 <template>
-  <div class="container-fluid">
-    <div class="row" v-if="currentDriller != {}">
+  <div class="container-fluid no-pad">
+    <div class="row no-pad" v-if="currentDriller != {}">
       <div class="col-xs-12 col-sm-7">
         <h2>{{ currentDriller.first_name }} {{ currentDriller.surname }}</h2>
       </div>
       <div class="col-xs-12 col-sm-5 text-center">
-        <router-link :to="{ name: 'PersonDetail', params: { person_guid: currentDriller.person_guid } }" tag="button" class="btn btn-secondary">Cancel editing person</router-link>
+        <router-link :to="{ name: 'PersonDetail', params: { person_guid: currentDriller.person_guid } }" class="btn btn-default">Cancel editing person</router-link>
       </div>
       <div class="col-xs-12" v-if="error">
         <api-error :error="error" resetter="setError"></api-error>
       </div>
     </div>
-    <div class="panel" v-if="editDriller != {}">
-      <div class="panel-body">
+    <div class="panel no-pad" v-if="editDriller != {}">
+      <div class="panel-body no-pad">
         <div class="container-fluid">
           <div class="table-responsive">
             <table class="table">
@@ -50,8 +50,8 @@
           </button>
       </div>
     </div>
-    <div class="panel" v-if="editDriller != {}">
-      <div class="panel-body">
+    <div class="panel no-pad" v-if="editDriller != {}">
+      <div class="panel-body no-pad">
         <div class="container-fluid">
           <h3>Personal Information</h3>
           <form class="form-horizontal">
@@ -99,8 +99,8 @@
         </div>
       </div>
     </div>
-    <div class="panel" v-if="editDriller != {}">
-      <div class="panel-body">
+    <div class="panel no-pad" v-if="editDriller != {}">
+      <div class="panel-body no-pad">
         <div class="container-fluid">
           <h3>Company Information</h3>
           <form class="form-horizontal">
@@ -166,8 +166,8 @@
         </div>
       </div>
     </div>
-    <div class="panel" v-if="editDriller != {}">
-      <div class="panel-body">
+    <div class="panel no-pad" v-if="editDriller != {}">
+      <div class="panel-body no-pad">
         <div class="container-fluid">
           <div class="row registry-item">
             <div class="col-xs-12">
@@ -178,13 +178,13 @@
         </div>
       </div>
     </div>
-    <div class="panel" v-if="editDriller != {}">
-      <div class="panel-body">
+    <div class="panel no-pad" v-if="editDriller != {}">
+      <div class="panel-body no-pad">
         <div class="container-fluid">
           <div class="row registry-item">
             <div class="col-xs-12">
               <button type="button" class="btn btn-primary">Save</button>
-              <router-link :to="{ name: 'PersonDetail', params: { person_guid: currentDriller.person_guid } }" tag="button" class="btn btn-secondary">Cancel</router-link>
+              <router-link :to="{ name: 'PersonDetail', params: { person_guid: currentDriller.person_guid } }" class="btn btn-default">Cancel</router-link>
             </div>
           </div>
           <div class="row registry-item">
