@@ -12,6 +12,10 @@ import uuid
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.core.urlresolvers import reverse_lazy
+from django.core.exceptions import PermissionDenied
+
+from django.contrib.auth.models import Permission
+from django.contrib.auth.models import Group
 
 def get_handler_method(request_handler, http_method):
 
@@ -27,7 +31,6 @@ def get_handler_method(request_handler, http_method):
 class SurveyView(LoginRequiredMixin, View):
 
     login_url = reverse_lazy('admin:login')
-    #permission_required = ('survey.can_add', 'survey.can_edit', 'survey.can_delete')
     model = Survey
 
     fields = ['survey_introduction_text', 'survey_link', 'survey_page', 'survey_enabled']
@@ -45,6 +48,14 @@ class SurveyView(LoginRequiredMixin, View):
         if not request.user.is_authenticated:
             self.request = request
             return self.handle_no_permission()
+
+        user_groups = Group.objects.filter(user=request.user)
+        admin_group = Group.objects.get(name='admin')
+
+        if not admin_group in user_groups:
+            if self.raise_exception or self.request.user.is_authenticated:
+                raise PermissionDenied("Prermission Denied")
+            return redirect_to_login(self.request.get_full_path(), self.get_login_url(), self.get_redirect_field_name())
 
         request_handler = self
 
