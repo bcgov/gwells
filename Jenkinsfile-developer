@@ -19,7 +19,8 @@ node('maven') {
                 archiveArtifacts allowEmptyArchive: true, artifacts: 'frontend/test/unit/**/*'
 		stash includes: 'nosetests.xml,coverage.xml', name: 'coverage'
 		stash includes: 'frontend/test/unit/coverage/clover.xml', name: 'nodecoverage'
-                junit 'nosetests.xml'
+		stash includes: 'frontend/junit.xml', name: 'nodejunit'
+                junit 'nosetests.xml,frontend/junit.xml'
 		publishHTML (target: [
                                 allowMissing: false,
                                 alwaysLinkToLastBuild: false,
@@ -48,10 +49,10 @@ node('maven') {
             returnStdout: true
         ).trim()
         echo "SONARQUBE_URL: ${SONARQUBE_URL}"
-
+	unstash 'nodejunit'
+	unstash 'nodecoverage'
         dir('sonar-runner') {
             unstash 'coverage'
-	    unstash 'nodecoverage'
             try {
                 sh returnStdout: true, script: "./gradlew sonarqube -Dsonar.host.url=${SONARQUBE_URL} -Dsonar.verbose=true --stacktrace --info  -Dsonar.sources=.."
             } finally { }
@@ -103,6 +104,7 @@ stage('FT on Dev') {
             unstash 'coverage'
             sh 'rm coverage.xml'
 	    unstash 'api-tests'
+	    unstash 'nodejunit'
         }
         dir('functional-tests') {
             try {
