@@ -19,7 +19,6 @@ sonarqube {
         property "sonar.python.coverage.reportPath","coverage.xml,./frontend/test/unit/coverage/clover.xml"
         property "sonar.python.coveragePlugin","cobertura"
         property "sonar.jacoco.reportPath", "${project.buildDir}/jacoco/test.exec"
-
     }
 }
 
@@ -30,7 +29,6 @@ allprojects {
   String newdate=date.format("YYYYMMdd")
   ext.baseVersion = newdate + "." + env['BUILD_NUMBER']
   ext.snapshotVersion = false
-
   group = "org.sonarqube"
   version = "$baseVersion" + (snapshotVersion ? "-SNAPSHOT" : "")
 }
