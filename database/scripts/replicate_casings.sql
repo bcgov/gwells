@@ -27,7 +27,10 @@ BEGIN
         casings.casing_from               ,
         casings.casing_to                 ,
         casings.casing_size               ,
-        casings.casing_material_code      ,
+        CASE casings.casing_material_code
+          WHEN 'UNK' THEN null
+          ELSE casings.casing_material_code
+        END AS casing_material_code        ,
         casings.casing_wall               ,
         CASE casings.casing_drive_shoe_ind
             WHEN '' THEN null
