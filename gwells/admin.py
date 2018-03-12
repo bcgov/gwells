@@ -12,12 +12,25 @@
     limitations under the License.
 """
 from django.contrib import admin
-from django.apps import apps
+# from django.apps import apps
+
 
 # Import all models
-from gwells.models import *
+from .models import (
+    Survey,
+    OnlineSurvey
+)
+
+class SurveyAdmin(admin.ModelAdmin):
+    pass
+
+class OnlineSurveyAdmin(admin.ModelAdmin):
+    date_hierarchy = 'effective_date'
+    empty_value_display = '- No Online Surveys defined -'
+    radio_fields = {"survey_page": admin.HORIZONTAL}
+    admin.save_as = True
+    admin.save_on_top = True
 
 # Register your models here.
-app = apps.get_app_config('gwells')
-for model_name, model in app.models.items():
-    admin.site.register(model)
+admin.site.register(Survey, SurveyAdmin)
+admin.site.register(OnlineSurvey, OnlineSurveyAdmin)

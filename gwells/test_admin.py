@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.urls import reverse
 from urllib.parse import urlparse
 from urllib.parse import parse_qsl
+from http import HTTPStatus
 
 class AdminTestCase(TestCase):
     @classmethod
