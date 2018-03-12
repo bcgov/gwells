@@ -49,6 +49,7 @@ if settings.ENABLE_DATA_ENTRY:
         url(r'^'+ app_root_slash +'admin/site_admin/survey', SurveyView.as_view(), name='survey'),
         url(r'^'+ app_root_slash +'admin/site_admin', AdminView.as_view(), name='site_admin'),
         url(r'^'+ app_root_slash +'admin/', admin.site.urls),
+        url(r'^'+ app_root_slash +'accounts/', include('django.contrib.auth.urls')),
     ] + urlpatterns
 
 if settings.DEBUG:

@@ -52,6 +52,7 @@ from gwells.models.WellStatusCode import WellStatusCode
 from gwells.models.WellSubclassCode import WellSubclassCode
 from gwells.models.WellYieldUnitCode import WellYieldUnitCode
 from gwells.models.YieldEstimationMethodCode import YieldEstimationMethodCode
+from .OnlineSurvey import OnlineSurvey
 
 __all__ = [
 'ActivitySubmission',
@@ -107,4 +108,5 @@ __all__ = [
 'WellStatusCode',
 'WellSubclassCode',
 'WellYieldUnitCode',
-'YieldEstimationMethodCode']
+'YieldEstimationMethodCode',
+'OnlineSurvey']
