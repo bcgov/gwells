@@ -14,10 +14,12 @@
     <fieldset class="registry-section">
       <legend>Classification and Qualifications</legend>
       <div class="row" v-if="classification && classification.registries_subactivity">
-        <h4>Qualification: {{ classification.registries_subactivity.description }}&nbsp;
-        <span class="registry-subtle">
-          (<router-link :to="{ name: 'PersonDetail', params: { person_guid: currentDriller.person_guid }}">change</router-link>)
-        </span></h4>
+        <div class="col-xs-12 registry-item">
+          <h4>Qualification: {{ classification.registries_subactivity.description }}&nbsp;
+          <span class="registry-subtle">
+            (<router-link :to="{ name: 'PersonDetail', params: { person_guid: currentDriller.person_guid }}">change</router-link>)
+          </span></h4>
+        </div>
       </div>
       <div class="row">
         <div class="col-xs-12 col-sm-4 registry-item">
@@ -28,7 +30,9 @@
         </div>
       </div>
       <div class="row">
-        <h4>Qualified to drill under this classification</h4>
+        <div class="col-xs-12 registry-item">
+          <h4>Qualified to drill under this classification</h4>
+        </div>
       </div>
       <div class="row">
         <div class="col-xs-12 col-sm-4 col-md-3">
