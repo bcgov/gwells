@@ -69,15 +69,13 @@
                     </label>
                   </div>
                 </div>
-                <div class="row">
-                  <div class="form-group">
-                    <div class="col-xs-12 col-sm-6 form-spacing">
-                      <label>Community</label>
-                      <select class="form-control" v-model="searchParams.city">
-                        <option value="">All</option>
-                        <option v-for="city in cityList" :key="city.city + city.province" :value="city.city + ',' + city.province_state">{{city.city}}<span v-if="city.province_state">, {{city.province_state}}</span></option>
-                      </select>
-                    </div>
+                <div class="form-group">
+                  <div class="col-xs-12 col-sm-6 form-spacing">
+                    <label>Community</label>
+                    <select class="form-control" v-model="searchParams.city">
+                      <option value="">All</option>
+                      <option v-for="city in cityList" :key="city.city + city.province" :value="city.city + ',' + city.province_state">{{city.city}}<span v-if="city.province_state">, {{city.province_state}}</span></option>
+                    </select>
                   </div>
                   <div class="form-group" v-if="user">
                     <div class="col-xs-12 col-sm-6 form-spacing">
