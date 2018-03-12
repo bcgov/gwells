@@ -1,6 +1,6 @@
 <template>
-  <div class="container-fluid">
-    <div class="row form-spacing">
+  <div class="container-fluid no-pad">
+    <div class="row form-spacing no-pad">
       <div class="col-xs-12 col-sm-7">
         <a id="main-content-anchor"></a>
         <h2 id="registry-title">Register of Well Drillers and Well Pump Installers</h2>
@@ -11,7 +11,7 @@
         <button v-if="user" type="button" class="btn btn-secondary" @click="logout" id="logoutButton">Log out</button>
       </div>
     </div>
-    <div class="row" v-if="!user && loginPanelToggle">
+    <div class="row no-pad" v-if="!user && loginPanelToggle">
       <div class="col-xs-12">
           <div class="well well-sm">
             <div class="container-fluid">
@@ -36,7 +36,7 @@
           </div>
       </div>
     </div>
-    <div class="row" v-if="adminPanelToggle">
+    <div class="row no-pad" v-if="adminPanelToggle">
       <div class="col-xs-12">
           <div class="well well-sm">
             <div v-if="user">
@@ -49,12 +49,12 @@
           </div>
       </div>
     </div>
-    <div class="row">
+    <div class="row no-pad">
       <div class="col-xs-12">
-        <div class="panel">
-          <div class="panel-body">
-            <div class="container-fluid">
-              <h3>Search for a Well Driller or Well Installer</h3>
+        <div class="panel no-pad">
+          <div class="panel-body no-pad">
+            <div class="container-fluid no-pad">
+              <h3 class="registry-panel-title">Search for a Well Driller or Well Installer</h3>
               <form @submit.prevent="drillerSearch" @reset.prevent="drillerSearchReset">
                 <div class="form-group">
                   <div class="col-xs-12">
@@ -69,20 +69,18 @@
                     </label>
                   </div>
                 </div>
-                <div class="row">
-                  <div class="form-group">
-                    <div class="col-xs-12 col-sm-6 form-spacing">
-                      <label>Community</label>
-                      <select class="form-control" v-model="searchParams.city">
-                        <option value="">All</option>
-                        <option v-for="city in cityList" :key="city.city + city.province" :value="city.city + ',' + city.province_state">{{city.city}}<span v-if="city.province_state">, {{city.province_state}}</span></option>
-                      </select>
-                    </div>
+                <div class="form-group">
+                  <div class="col-xs-12 col-sm-6 form-spacing">
+                    <label>Community</label>
+                    <select class="form-control" v-model="searchParams.city">
+                      <option value="">All</option>
+                      <option v-for="city in cityList" :key="city.city + city.province" :value="city.city + ',' + city.province_state">{{city.city}}<span v-if="city.province_state">, {{city.province_state}}</span></option>
+                    </select>
                   </div>
                   <div class="form-group" v-if="user">
                     <div class="col-xs-12 col-sm-6 form-spacing">
                       <label>Registration status</label>
-                      <select v-model="searchParams.status" class="form-control">
+                      <select v-model="searchParams.status" class="form-control" id="registrationStatusSelect">
                         <option value="">All</option>
                         <option value="PENDING">Pending</option>
                         <option value="INACTIVE">Not registered</option>
@@ -100,8 +98,8 @@
                 </div>
                 <div class="form-group">
                   <div class="col-xs-12">
-                    <button type="submit" class="btn btn-primary">Submit</button>
-                    <button type="reset" class="btn btn-secondary">Reset</button>
+                    <button type="submit" class="btn btn-primary" id="personSearchSubmit">Submit</button>
+                    <button type="reset" class="btn btn-secondary" id="personSearchReset">Reset</button>
                   </div>
                 </div>
               </form>
@@ -110,7 +108,7 @@
         </div>
       </div>
     </div>
-    <div class="row">
+    <div class="row no-pad">
       <div class="col-xs-12 col-sm-4">
         <h3>Well Driller Results</h3>
       </div>
@@ -121,7 +119,7 @@
         <register-table @sort="sortTable"/>
       </div>
     </div>
-    <div class="row" v-if="drillers.results && drillers.results.length">
+    <div class="row no-pad" v-if="drillers.results && drillers.results.length">
       <div class="col-xs-12">
         <register-legal-text class="register-legal" :activity="lastSearchedActivity"/>
       </div>
@@ -255,6 +253,41 @@ export default {
 </script>
 
 <style>
+.row.no-pad {
+  margin-right:0;
+  margin-left:0;
+}
+.row.no-pad > [class*='col-'] {
+  padding-right:0;
+  padding-left:0;
+}
+.panel.no-pad {
+  margin-right:0;
+  margin-left:0;
+  padding-right:0;
+  padding-left:0;
+  margin-top:0;
+  padding-top:0;
+}
+.panel.no-pad > .panel-body {
+  margin-right:0;
+  margin-left:0;
+  padding-right:0;
+  padding-left:0;
+  margin-top:0;
+  padding-top:0;
+}
+.container-fluid.no-pad {
+  margin-right:0;
+  margin-left:0;
+  padding-right:0;
+  padding-left:0;
+}
+.registry-panel-title {
+  margin-left: 10px;
+  margin-top: 0px;
+  padding-top:0px;
+}
 .btn {
   margin-top: 5px;
 }

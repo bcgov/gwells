@@ -24,34 +24,36 @@
       </table>
     </div>
     <div v-if="drillers.results && !drillers.results.length">No results were found.</div>
-    <div class="col-xs-2">
-      <span v-if="drillers.results && drillers.results.length">Showing {{ drillers.offset + 1 }} to {{ drillers.offset + drillers.results.length }} of {{ drillers.count }}</span>
-    </div>
-    <div v-if="drillers.results && drillers.results.length" class="col-xs-12 col-sm-3 col-sm-offset-7">
-      <nav aria-label="List navigation" v-if="drillers.results && drillers.results.length">
-        <ul class="pagination">
-          <li v-if="drillers.previous">
-            <button @click="paginationPrev" class="btn btn-default" aria-label="Previous" id="table-pagination-prev">
-              <span aria-hidden="true">Previous</span>
-            </button>
-          </li>
-          <li v-else>
-            <button class="btn btn-default disabled" aria-hidden="true">
-              <span aria-hidden="true">Previous</span>
-            </button>
-          </li>
-          <li v-if="drillers.next">
-            <button @click="paginationNext" class="btn btn-default" aria-label="Next" id="table-pagination-next">
-              <span aria-hidden="true">Next</span>
-            </button>
-          </li>
-          <li v-else>
-            <button class="btn btn-default disabled" aria-hidden="true">
-              <span aria-hidden="true">Next</span>
-            </button>
-          </li>
-        </ul>
-      </nav>
+    <div class="row">
+      <div class="col-xs-12 col-sm-4">
+        <span v-if="drillers.results && drillers.results.length">Showing {{ drillers.offset + 1 }} to {{ drillers.offset + drillers.results.length }} of {{ drillers.count }}</span>
+      </div>
+      <div v-if="drillers.results && drillers.results.length" class="col-xs-12 col-sm-4 col-sm-offset-4 col-md-offset-5 col-md-3">
+        <nav aria-label="List navigation" v-if="drillers.results && drillers.results.length">
+          <ul class="pagination">
+            <li v-if="drillers.previous">
+              <button type="button" @click="paginationPrev" class="btn btn-default" aria-label="Previous" id="table-pagination-prev">
+                <span aria-hidden="true">Previous</span>
+              </button>
+            </li>
+            <li v-else>
+              <button type="button" class="btn btn-default" aria-hidden="true" disabled>
+                <span aria-hidden="true">Previous</span>
+              </button>
+            </li>
+            <li v-if="drillers.next">
+              <button type="button" @click="paginationNext" class="btn btn-default" aria-label="Next" id="table-pagination-next">
+                <span aria-hidden="true">Next</span>
+              </button>
+            </li>
+            <li v-else>
+              <button type="button" class="btn btn-default" aria-hidden="true" disabled>
+                <span aria-hidden="true">Next</span>
+              </button>
+            </li>
+          </ul>
+        </nav>
+      </div>
     </div>
   </div>
 </template>
