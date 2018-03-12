@@ -24,10 +24,10 @@
       </table>
     </div>
     <div v-if="drillers.results && !drillers.results.length">No results were found.</div>
-    <div class="col-xs-2">
+    <div class="col-xs-12 col-sm-4">
       <span v-if="drillers.results && drillers.results.length">Showing {{ drillers.offset + 1 }} to {{ drillers.offset + drillers.results.length }} of {{ drillers.count }}</span>
     </div>
-    <div v-if="drillers.results && drillers.results.length" class="col-xs-12 col-sm-3 col-sm-offset-7">
+    <div v-if="drillers.results && drillers.results.length" class="col-xs-12 col-sm-4 col-sm-offset-4 col-md-offset-5 col-md-3">
       <nav aria-label="List navigation" v-if="drillers.results && drillers.results.length">
         <ul class="pagination">
           <li v-if="drillers.previous">
