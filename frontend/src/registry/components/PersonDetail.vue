@@ -1,13 +1,12 @@
 <template>
-  <div class="container-fluid">
-    <div class="row" v-if="currentDriller != {}">
+  <div class="container-fluid no-pad">
+    <div class="row no-pad" v-if="currentDriller != {}">
       <div class="col-xs-12 col-sm-7">
         <h2>{{ currentDriller.first_name }} {{ currentDriller.surname }}</h2>
       </div>
       <div class="col-xs-12 col-sm-5 text-center">
         <router-link
-          class="btn btn-secondary"
-          tag="button"
+          class="btn btn-default"
           :to="{
             name: 'PersonDetailEdit',
             params: {
@@ -17,7 +16,7 @@
           v-if="currentDriller.person_guid"><i class="fa fa-edit"></i>Edit</router-link>
       </div>
     </div>
-    <div class="row">
+    <div class="row no-pad">
       <div class="col-xs-12" v-if="error">
         <api-error :error="error" resetter="setError"></api-error>
       </div>
@@ -89,18 +88,18 @@
         </div>
       </div>
       <div class="row">
-        <div class="col-xs-12 col-sm-12 registry-item">
+        <div class="col-xs-12 registry-item">
           <span class="registry-label">Email address:</span> {{ company.contact_email }}
         </div>
       </div>
     </fieldset>
     <div>
-      <div class="row">
+      <div class="row no-pad">
         <div class="col-xs-12">
           <h4 class="registry-label">Notes</h4>
         </div>
       </div>
-      <div class="row"  v-if="drillerApplicationNotes && drillerApplicationNotes.length">
+      <div class="row no-pad"  v-if="drillerApplicationNotes && drillerApplicationNotes.length">
         <div class="col-xs-12">
           <p v-for="note in drillerApplicationNotes" :key="note.appKey">{{ note.note }}</p>
         </div>
