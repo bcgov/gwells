@@ -21,7 +21,7 @@ class GWellsRequestParsingMiddleware(MiddlewareMixin):
     def process_request(self, request):
         _method = request.POST.get('_method')
 
-        if(_method):
+        if _method:
             if _method.upper() == 'GET':
                 self.get(request)
             elif _method.upper() == 'PUT':
