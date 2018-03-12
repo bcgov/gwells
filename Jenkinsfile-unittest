@@ -11,13 +11,13 @@
             finally {
                 archiveArtifacts allowEmptyArchive: true, artifacts: 'frontend/test/unit/**/*'
 		stash includes: 'nosetests.xml,coverage.xml', name: 'coverage'
-		stash includes: 'frontend/test/unit/coverage/coverage.xml', name: 'nodecoverage'
+		stash includes: 'frontend/test/unit/coverage/clover.xml', name: 'nodecoverage'
                 junit 'nosetests.xml'
 		publishHTML (target: [
                                 allowMissing: false,
                                 alwaysLinkToLastBuild: false,
                                 keepAll: true,
-                                reportDir: 'frontend/test/unit/coverage/lcov-report',
+                                reportDir: 'frontend/test/unit/coverage/lcov-report/',
                                 reportFiles: 'index.html',
                                 reportName: "Node Coverage Report"
                             ])
