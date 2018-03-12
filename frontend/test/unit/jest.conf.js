@@ -22,5 +22,6 @@ module.exports = {
     '!src/registry/main.js',
     '!src/registry/router/index.js',
     '!**/node_modules/**'
-  ]
+  ],
+  testResultsProcessor: 'jest-junit'
 }
