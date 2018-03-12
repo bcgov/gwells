@@ -16,7 +16,7 @@ sonarqube {
         //property "sonar.tests", "gwells/test*.py"
         property "sonar.sourceEncoding", "UTF-8"
         property "sonar.python.xunit.reportPath","nosetests.xml"
-        property "sonar.python.coverage.reportPath","coverage.xml"
+        property "sonar.python.coverage.reportPath","coverage.xml,./frontend/test/unit/coverage/clover.xml"
         property "sonar.python.coveragePlugin","cobertura"
         property "sonar.jacoco.reportPath", "${project.buildDir}/jacoco/test.exec"
 
