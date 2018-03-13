@@ -32,7 +32,16 @@ BEGIN
     perforations.who_updated           ,
     perforations.when_updated
   FROM wells.wells_perforations perforations
-  INNER JOIN xform_well xform ON perforations.well_id=xform.well_id;
+  INNER JOIN xform_well xform ON perforations.well_id=xform.well_id
+  WHERE liner_from is not null
+  AND liner_to               IS NOT NULL
+  AND liner_diameter         IS NOT NULL
+  AND perforation_misc       IS NOT NULL
+  AND who_updated            IS NOT NULL
+  AND when_updated           IS NOT NULL
+  AND liner_thickness        IS NOT NULL
+  AND liner_perforation_from IS NOT NULL
+  AND liner_perforation_to   IS NOT NULL;
 
 
   raise notice '...wells_perforations data imported';

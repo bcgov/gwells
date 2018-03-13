@@ -759,27 +759,3 @@ class FixturePersonTests(AuthenticatedAPITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data['results']), 0)
-
-    # NOTE: this test is not compatible with sqlite
-    # def test_city_list(self):
-    #     url = reverse('city-list-drillers')
-    #     response = self.client.get(url, format='json')
-
-    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-class WebAppTests(TestCase):
-    """
-    Tests for the web app loader template
-    """
-
-#    def test_webapp_template_loads(self):
-#        """
-#        test_webapp_template_loads: Test that web app loads. If failing, try running 'npm run build' from frontend/ folder
-#        """
-#        #Setup
-#        Group.objects.create(name='admin')
-#
-#        url = reverse('registries-home')
-#        response = self.client.get(url)
-#
-#        self.assertEqual(response.status_code, status.HTTP_200_OK)

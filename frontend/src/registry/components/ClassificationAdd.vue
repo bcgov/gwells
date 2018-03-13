@@ -1,6 +1,6 @@
 <template>
-  <div class="container-fluid">
-    <div class="row">
+  <div class="container-fluid no-pad">
+    <div class="row no-pad">
       <div class="col-xs-12">
         <form class="form-horizontal">
           <h3 id="classificationAddHeading">Classification and Qualifications</h3>
@@ -8,32 +8,20 @@
             <div class="col-xs-12">
               <label>Select qualification: &nbsp;</label>
             </div>
-            <div class="col-xs-12 col-sm-4 col-md-3">
-              <div class="radio">
-                <div>
-                  <label>
-                    <input type="radio" name="activitySelector" id="activityDriller" v-model="qualType" value="DRILL" style="margin-top: 0px"> Water Well Driller
-                  </label>
-                <div>
-                </div>
-                  <label>
-                    <input type="radio" name="activitySelector" id="activityInstaller" v-model="qualType" value="PUMP" style="margin-top: 0px"> Pump Installer
-                  </label>
-                </div>
-              </div>
-            </div>
-            <div class="col-xs-12 col-sm-4 col-md-3 form-spacing">
-              <div class="radio">
-                <div>
-                  <label>
-                    <input type="radio" name="activitySelector" id="activityDriller" v-model="qualType" value="GEOTHERM" style="margin-top: 0px"> Geoexchange Driller
-                  </label>
-                <div>
-                </div>
-                  <label>
-                    <input type="radio" name="activitySelector" id="activityInstaller" v-model="qualType" value="GEOTECH" style="margin-top: 0px"> Geotechnical/Environmental Driller
-                  </label>
-                </div>
+            <div class="col-xs-12">
+              <div class="radio form-group">
+                <label class="col-xs-12">
+                  <input type="radio" name="activitySelector" id="activityDriller" v-model="qualType" value="DRILL" style="margin-top: 0px"> Water Well Driller
+                </label>
+                <label class="col-xs-12">
+                  <input type="radio" name="activitySelector" id="activityInstaller" v-model="qualType" value="PUMP" style="margin-top: 0px"> Pump Installer
+                </label>
+                <label class="col-xs-12">
+                  <input type="radio" name="activitySelector" id="activityDriller" v-model="qualType" value="GEOTHERM" style="margin-top: 0px"> Geoexchange Driller
+                </label>
+                <label class="col-xs-12">
+                  <input type="radio" name="activitySelector" id="activityInstaller" v-model="qualType" value="GEOTECH" style="margin-top: 0px"> Geotechnical/Environmental Driller
+                </label>
               </div>
             </div>
           </div>
