@@ -106,6 +106,8 @@ psql -U postgres -c \
 psql -U postgres -c \
         "CREATE USER gwells;"
 psql -U postgres -c \
+        "ALTER USER gwells WITH PASSWORD 'gwells';"
+psql -U postgres -c \
         "CREATE DATABASE gwells WITH owner='gwells';"
 
 
