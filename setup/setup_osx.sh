@@ -125,7 +125,7 @@ psql -U postgres -c \
         "CREATE DATABASE wells WITH owner='wells';"
 
 
-# Configure GWells with foreign data wrapper
+# Prepare GWells for foreign data wrapper
 #
 psql -U postgres -d gwells -c \
         "CREATE EXTENSION IF NOT EXISTS pgcrypto;"
@@ -137,6 +137,24 @@ psql -U postgres -d gwells -c \
 #
 PGPASSWORD=wells pg_restore --dbname postgresql://wells:wells@127.0.0.1:5432/wells \
 	--no-owner --no-privileges ./wells-legacy-public.dmp
+
+
+# Create foreign data wrapper linking Wells (legacy) to the GWells database
+#
+psql -U postgres -d gwells -c \
+        "DROP SERVER IF EXISTS wells CASCADE;"
+psql -U postgres -d gwells -c \
+        "CREATE SERVER wells FOREIGN DATA WRAPPER postgres_fdw \
+	OPTIONS (host 'localhost', dbname 'wells');"
+psql -U postgres -d gwells -c \
+        "DROP USER MAPPING IF EXISTS FOR public SERVER wells;"
+psql -U postgres -d gwells -c \
+        "CREATE USER MAPPING FOR PUBLIC SERVER wells \
+	OPTIONS (user 'wells', password 'wells');"
+psql -U postgres -d gwells -c \
+        "CREATE SCHEMA IF NOT EXISTS wells;"
+psql -U postgres -d gwells -c \
+        "GRANT usage ON SCHEMA wells TO gwells;"
 
 
 # Pip3 install virtualenv and virtualenvwrapper
