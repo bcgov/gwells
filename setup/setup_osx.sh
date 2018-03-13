@@ -125,6 +125,14 @@ psql -U postgres -c \
         "CREATE DATABASE wells WITH owner='wells';"
 
 
+# Configure GWells with foreign data wrapper
+#
+psql -U postgres -d gwells -c \
+        "CREATE EXTENSION IF NOT EXISTS pgcrypto;"
+psql -U postgres -d gwells -c \
+        "CREATE EXTENSION IF NOT EXISTS postgres_fdw;"
+
+
 # Pip3 install virtualenv and virtualenvwrapper
 #
 PACKAGES="virtualenv virtualenvwrapper"
