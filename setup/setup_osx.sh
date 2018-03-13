@@ -3,25 +3,44 @@
 set -eu
 
 
+# Variable settings
+#
+VERBOSE=${VERBOSE:-false}
+BASH_SS=${BASH_SS:-~/.bash_profile}
+
+
+# GWells environment variables
+#
+DATABASE_SERVICE_NAME="${DATABASE_SERVICE_NAME:-postgresql}"
+DATABASE_ENGINE="${DATABASE_ENGINE:-postgresql}"
+DATABASE_NAME="${DATABASE_NAME:-gwells}"
+DATABASE_USER="${DATABASE_USER:-gwells}"
+DATABASE_PASSWORD="${DATABASE_PASSWORD:-gwells}"
+DATABASE_SCHEMA="${DATABASE_SCHEMA:-public}"
+DJANGO_DEBUG="${DJANGO_DEBUG:-True}"
+APP_CONTEXT_ROOT="${APP_CONTEXT_ROOT:-gwells}"
+ENABLE_GOOGLE_ANALYTICS="${ENABLE_GOOGLE_ANALYTICS:-False}"
+ENABLE_DATA_ENTRY="${ENABLE_DATA_ENTRY:-True}"
+BASEURL="${BASEURL:-http://gwells-dev.pathfinder.gov.bc.ca/}"
+LEGACY_DATABASE_USER="${LEGACY_DATABASE_USER:-wells}"
+LEGACY_DATABASE_NAME="${LEGACY_DATABASE_NAME:-wells}"
+LEGACY_SCHEMA="${LEGACY_SCHEMA:-wells}"
+
+
 # Verbose option
 #
-[ ! -z "${VERBOSE+x}" ]&&[ "${VERBOSE}" == true ]&& \
+[ "${VERBOSE}" == true ]&& \
 	set -x
-
-
-# Receive a Wells (legacy) database to import
-#
-DB_LEGACY=${DB_LEGACY:=''}
 
 
 # Ensure bash shell script exists and store its checksum
 #
-BASHSS=~/.bash_profile
-touch "${BASHSS}"
-BASHSS_CHECKSUM=$( md5 -q "${BASHSS}" )
+touch "${BASH_SS}"
+BASHSS_CHECKSUM=$( md5 -q "${BASH_SS}" )
 
 
 # Save start directory
+#
 START_DIR=$( pwd )
 
 
@@ -140,9 +159,8 @@ psql -U postgres -d gwells -c \
 
 # Restore the legacy database from a database dump
 #
-[ -z ${DB_LEGACY} ]|| \
-	PGPASSWORD=wells pg_restore --dbname postgresql://wells:wells@127.0.0.1:5432/wells \
-		--no-owner --no-privileges "${DB_LEGACY}"
+PGPASSWORD=wells pg_restore --dbname postgresql://wells:wells@127.0.0.1:5432/wells \
+	--no-owner --no-privileges ./wells-legacy-public.dmp
 
 
 # Create foreign data wrapper linking Wells (legacy) to the GWells database
@@ -175,7 +193,7 @@ done
 # Config bash shell to source virtualenvwrapper.sh
 #
 VEWSRC=$( find ~ -name virtualenvwrapper.sh | grep -m 1 . )
-grep --quiet "virtualenvwrapper.sh" "${BASHSS}" || \
+grep --quiet "virtualenvwrapper.sh" "${BASH_SS}" || \
 	(
 		echo ;
 		echo "# Setup mkvirtualenv";
@@ -183,7 +201,7 @@ grep --quiet "virtualenvwrapper.sh" "${BASHSS}" || \
 		echo "PATH=${PATH}:~/Library/Python/3.6/bin";
 		echo "export VIRTUALENVWRAPPER_PYTHON=/usr/local/bin/python3";
 		echo "source ${VEWSRC}"
-	) >> "${BASHSS}"
+	) >> "${BASH_SS}"
 
 
 # Set JAVA_HOME to use version 8
@@ -202,7 +220,7 @@ grep --quiet "export JAVA_HOME=" ~/.bash_profile || \
 PATH="${PATH}":~/Library/Python/3.6/bin
 export VIRTUALENVWRAPPER_PYTHON=/usr/local/bin/python3
 set +u
-source "${BASHSS}"
+source "${BASH_SS}"
 mkvirtualenv gwells || true
 workon gwells
 set -u
@@ -210,20 +228,20 @@ set -u
 
 # Configure database with environment variables
 #
-export DATABASE_SERVICE_NAME=postgresql
-export DATABASE_ENGINE=postgresql
-export DATABASE_NAME=gwells
-export DATABASE_USER=gwells
-export DATABASE_PASSWORD=gwells
-export DATABASE_SCHEMA=public
-export DJANGO_DEBUG=True
-export APP_CONTEXT_ROOT=gwells
-export ENABLE_GOOGLE_ANALYTICS=False
-export ENABLE_DATA_ENTRY=True
-export BASEURL=http://gwells-dev.pathfinder.gov.bc.ca/
-export LEGACY_DATABASE_USER=wells
-export LEGACY_DATABASE_NAME=wells
-export LEGACY_SCHEMA=wells
+export DATABASE_SERVICE_NAME="${DATABASE_SERVICE_NAME}"
+export DATABASE_ENGINE"${DATABASE_ENGINE}"
+export DATABASE_NAME"${DATABASE_NAME}"
+export DATABASE_USER="${DATABASE_USER}"
+export DATABASE_PASSWORD="${DATABASE_PASSWORD}"
+export DATABASE_SCHEMA="${DATABASE_SCHEMA}"
+export DJANGO_DEBUG="${DJANGO_DEBUG}"
+export APP_CONTEXT_ROOT="${APP_CONTEXT_ROOT}"
+export ENABLE_GOOGLE_ANALYTICS="${ENABLE_GOOGLE_ANALYTICS}"
+export ENABLE_DATA_ENTRY="${ENABLE_DATA_ENTRY}"
+export BASEURL="${BASEURL}"
+export LEGACY_DATABASE_USER="${LEGACY_DATABASE_USER}"
+export LEGACY_DATABASE_NAME="${LEGACY_DATABASE_NAME}"
+export LEGACY_SCHEMA="${LEGACY_SCHEMA}"
 
 
 # Pip3 install requirements
@@ -276,7 +294,7 @@ python3 ../manage.py runserver
 
 # Recommend sourcing ~/.bash_profile if the file has changed
 #
-if [ "${BASHSS_CHECKSUM}" != $( md5 -q "${BASHSS}" ) ]
+if [ "${BASHSS_CHECKSUM}" != $( md5 -q "${BASH_SS}" ) ]
 then
 	echo
 	echo "Warning: ~/.bash_profile has changed!  To source it type:"
