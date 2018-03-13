@@ -16,6 +16,10 @@ touch "${BASHSS}"
 BASHSS_CHECKSUM=$( md5 -q "${BASHSS}" )
 
 
+# Save start directory
+START_DIR=$( pwd )
+
+
 # Install Xcode command line tools
 #
 while ( xcode-select --install );
