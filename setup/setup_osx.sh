@@ -9,6 +9,11 @@ set -eu
 	set -x
 
 
+# Receive a Wells (legacy) database to import
+#
+DB_LEGACY=${DB_LEGACY:=''}
+
+
 # Ensure bash shell script exists and store its checksum
 #
 BASHSS=~/.bash_profile
@@ -135,8 +140,9 @@ psql -U postgres -d gwells -c \
 
 # Restore the legacy database from a database dump
 #
-PGPASSWORD=wells pg_restore --dbname postgresql://wells:wells@127.0.0.1:5432/wells \
-	--no-owner --no-privileges ./wells-legacy-public.dmp
+[ -z ${DB_LEGACY} ]|| \
+	PGPASSWORD=wells pg_restore --dbname postgresql://wells:wells@127.0.0.1:5432/wells \
+		--no-owner --no-privileges "${DB_LEGACY}"
 
 
 # Create foreign data wrapper linking Wells (legacy) to the GWells database
