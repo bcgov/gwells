@@ -97,3 +97,11 @@ registries/static/registries/bundles/
 sonar-runner/.gradle
 *.patch
 *.orig
+
+
+# OS files
+.DS_Store
+.Trashes
+.directory
+Thumbs.db
+*~
