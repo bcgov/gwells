@@ -111,6 +111,20 @@ psql -U postgres -c \
         "CREATE DATABASE gwells WITH owner='gwells';"
 
 
+# Create Wells (legacy) postgres user and database
+#
+psql -U postgres -c \
+        "DROP DATABASE IF EXISTS wells;"
+psql -U postgres -c \
+        "DROP USER IF EXISTS wells;"
+psql -U postgres -c \
+        "CREATE USER wells;"
+psql -U postgres -c \
+        "ALTER USER wells WITH PASSWORD 'wells';"
+psql -U postgres -c \
+        "CREATE DATABASE wells WITH owner='wells';"
+
+
 # Pip3 install virtualenv and virtualenvwrapper
 #
 PACKAGES="virtualenv virtualenvwrapper"
