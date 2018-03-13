@@ -230,6 +230,34 @@ pip3 install -U -r ../requirements.txt
 python3 ../manage.py migrate
 
 
+# Migrate data from Wells (legacy) to GWells
+#
+START_DIR=$( pwd )
+cd ../database/code-tables/
+INCLUDES="clear-tables.sql
+        data-load-static-codes.sql"
+for i in ${INCLUDES}
+do
+        psql -U gwells -d gwells -f $i
+        echo "---"
+        echo
+done
+cd "${START_DIR}"
+#
+cd ../database/scripts/
+INCLUDES="create-xform-gwells-well-ETL-table.sql
+        populate-xform-gwells-well.sql
+        populate-gwells-well-from-xform.sql
+        replicate_screens.sql"
+for i in ${INCLUDES}
+do
+        psql -U gwells -d gwells -f $i
+        echo "---"
+        echo
+done
+cd "${START_DIR}"
+
+
 # Open browser window after delay
 #
 ( sleep 3 && open http://127.0.0.1:8000/gwells ) &
