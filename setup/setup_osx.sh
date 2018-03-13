@@ -161,6 +161,9 @@ export APP_CONTEXT_ROOT=gwells
 export ENABLE_GOOGLE_ANALYTICS=False
 export ENABLE_DATA_ENTRY=True
 export BASEURL=http://gwells-dev.pathfinder.gov.bc.ca/
+export LEGACY_DATABASE_USER=wells
+export LEGACY_DATABASE_NAME=wells
+export LEGACY_SCHEMA=wells
 
 
 # Pip3 install requirements
