@@ -133,6 +133,12 @@ psql -U postgres -d gwells -c \
         "CREATE EXTENSION IF NOT EXISTS postgres_fdw;"
 
 
+# Restore the legacy database from a database dump
+#
+PGPASSWORD=wells pg_restore --dbname postgresql://wells:wells@127.0.0.1:5432/wells \
+	--no-owner --no-privileges ./wells-legacy-public.dmp
+
+
 # Pip3 install virtualenv and virtualenvwrapper
 #
 PACKAGES="virtualenv virtualenvwrapper"
