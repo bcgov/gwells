@@ -97,14 +97,16 @@ psql -U postgres -c \
 	"${CUSER}" -s postgres
 
 
-# Create db user and database
+# Create GWells postgres user and database
 #
 psql -U postgres -c \
-	"SELECT 1 FROM pg_roles WHERE rolname='gwells';" | grep '1' || \
-	psql -U postgres -c "CREATE USER gwells WITH createdb;"
+        "DROP DATABASE IF EXISTS gwells;"
 psql -U postgres -c \
-	"SELECT 1 FROM pg_database WHERE datname='gwells';" | grep '1' || \
-	psql -U postgres -c "CREATE DATABASE gwells WITH OWNER='gwells';"
+        "DROP USER IF EXISTS gwells;"
+psql -U postgres -c \
+        "CREATE USER gwells;"
+psql -U postgres -c \
+        "CREATE DATABASE gwells WITH owner='gwells';"
 
 
 # Pip3 install virtualenv and virtualenvwrapper
