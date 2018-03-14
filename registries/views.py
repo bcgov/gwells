@@ -84,7 +84,7 @@ class RegistriesIndexView(TemplateView):
     template_name = 'registries/registries.html'
 
 
-class APIOrganizationListCreateView(AuditCreateMixin, ListCreateAPIView):
+class OrganizationListView(AuditCreateMixin, ListCreateAPIView):
     """
     get:
     Returns a list of all registered drilling organizations
@@ -155,7 +155,7 @@ class APIOrganizationListCreateView(AuditCreateMixin, ListCreateAPIView):
         return Response(serializer.data)
 
 
-class APIOrganizationRetrieveUpdateDestroyView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
+class OrganizationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
     """
     get:
     Returns the specified drilling organization
@@ -201,7 +201,7 @@ class APIOrganizationRetrieveUpdateDestroyView(AuditUpdateMixin, RetrieveUpdateD
         return self.serializer_class
 
 
-class APIPersonListCreateView(AuditCreateMixin, ListCreateAPIView):
+class PersonListView(AuditCreateMixin, ListCreateAPIView):
     """
     get:
     Returns a list of all person records
@@ -265,7 +265,7 @@ class APIPersonListCreateView(AuditCreateMixin, ListCreateAPIView):
         return Response(serializer.data)
 
 
-class APIPersonRetrieveUpdateDestroyView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
+class PersonDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
     """
     get:
     Returns the specified person
@@ -312,7 +312,7 @@ class APIPersonRetrieveUpdateDestroyView(AuditUpdateMixin, RetrieveUpdateDestroy
         return self.serializer_class
 
 
-class APICitiesList(ListAPIView):
+class CitiesListView(ListAPIView):
     """
     List of cities with a qualified, registered operator (driller or installer)
 
@@ -354,7 +354,7 @@ def index(request):
 # To confirm entry point to these views, see urls.py urlpatterns list ("application" entries)
 #
 
-class APIApplicationListCreateView(AuditCreateMixin, ListCreateAPIView):
+class ApplicationListView(AuditCreateMixin, ListCreateAPIView):
     """
     get:
     Returns a list of all registration applications
@@ -374,7 +374,7 @@ class APIApplicationListCreateView(AuditCreateMixin, ListCreateAPIView):
         )
 
 
-class APIApplicationRetrieveUpdateDestroyView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
+class ApplicationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
     """
     get:
     Returns the specified drilling application
