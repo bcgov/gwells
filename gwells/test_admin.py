@@ -115,3 +115,14 @@ class AdminTestCase(TestCase):
         self.client.logout()
         self.user.delete()
         admin_group.user_set.remove(self.user)
+
+
+class AdminTestCaseForMissingConfiguration(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        pass
+
+    def test_page_loads_when_app_is_not_configured_with_admin_group(self):
+        response = self.client.get(reverse('search'))
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertNotContains(response, 'id="ribbon-admin"')
