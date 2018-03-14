@@ -17,7 +17,7 @@ from rest_framework_jwt.views import obtain_jwt_token
 from rest_framework_swagger.views import get_swagger_view
 from . import views
 
-REGISTRIES_API_DESCRIPTION = "GWELLS Registry is a database of qualified well drillers and pump installers registered to operate in British Columbia"
+REGISTRIES_API_DESCRIPTION = "The GWELLS Registry is a database of qualified well drillers and pump installers registered to operate in British Columbia"
 
 urlpatterns = [
     # Organization resource endpoints
