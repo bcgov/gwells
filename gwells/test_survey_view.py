@@ -34,7 +34,7 @@ from urllib.parse import parse_qsl
 class SurveyViewTestCase(TestCase):
     @classmethod
     def setUpTestData(cls):
-        pass
+        Group.objects.create(name='admin')
 
     def setUp(self):
         pass
