@@ -12,16 +12,18 @@
     limitations under the License.
 """
 
-from .forms import *
+from gwells.forms import *
 from django.test import TestCase
 from django.core.urlresolvers import reverse
 from http import HTTPStatus
-from .models import *
-from .search import Search
-from .views import *
+from gwells.models import *
+from gwells.search import Search
+from gwells.views import *
 import logging
 from django.core import serializers
 from django.conf import settings
+from django.contrib.auth.models import Group
+from django.contrib.auth.models import User
 
 #TODO split tests into one file per view
 
@@ -30,8 +32,7 @@ class ViewsTestCase(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        #using fixtures
-	    pass
+        Group.objects.create(name='admin')
 
     def setUp(self):
         pass
@@ -106,33 +107,53 @@ class ViewsTestCase(TestCase):
         #teardown
         logger.setLevel(previous_level)
 
-"""
-Sun Mar 11 19:57:28 2018 GW Temporarily rem'd until Fiera review Django Admin version
-
     def test_site_admin_ok(self):
+        group_name = 'admin'
+        username = 'admin'
+        password = 'admin'
+        email = 'admin@admin.com'
+        self.user = User.objects.create_user(username=username, password=password, email=email)
+        admin_group = Group.objects.get(name=group_name)
+        admin_group.user_set.add(self.user)
+        self.client.login(username=username,password=password)
 
-        if settings.ENABLE_DATA_ENTRY:
-            self.ok('site_admin')
-        else:
-            pass
+        self.ok('site_admin')
+
+        self.client.logout()
+        self.user.delete()
+
     def test_site_admin_has_add_survey(self):
+        group_name = 'admin'
+        username = 'admin'
+        password = 'admin'
+        email = 'admin@admin.com'
+        self.user = User.objects.create_user(username=username, password=password, email=email)
+        admin_group = Group.objects.get(name=group_name)
+        admin_group.user_set.add(self.user)
+        self.client.login(username=username,password=password)
 
-        if settings.ENABLE_DATA_ENTRY:
-            response = self.client.get(reverse('site_admin'))
-            self.assertEquals(response.status_code, HTTPStatus.OK)
-            self.assertContains( response, 'id="add-survey"')
-        else:
-            pass
+        response = self.client.get(reverse('site_admin'))
+        self.assertEquals(response.status_code, HTTPStatus.OK)
+        self.assertContains( response, 'id="add-survey"')
+
+        self.client.logout()
+        self.user.delete()
 
     def test_survey_detail_ok(self):
-        if settings.ENABLE_DATA_ENTRY:
-            surveys = Survey.objects.all()
-            self.assertEqual(surveys.count(), 1)
+        group_name = 'admin'
+        username = 'admin'
+        password = 'admin'
+        email = 'admin@admin.com'
+        self.user = User.objects.create_user(username=username, password=password, email=email)
+        admin_group = Group.objects.get(name=group_name)
+        admin_group.user_set.add(self.user)
+        self.client.login(username=username,password=password)
 
-            url = reverse('survey', kwargs={'pk':"495a9927-5a13-490e-bf1d-08bf2048b098"})
-            response = self.client.get(url)
-            self.assertEqual(response.status_code, HTTPStatus.OK)
-        else:
-            pass
-"""
-            
+        surveys = Survey.objects.all()
+        self.assertEqual(surveys.count(), 1)
+        url = reverse('survey', kwargs={'pk':"495a9927-5a13-490e-bf1d-08bf2048b098"})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+        self.client.logout()
+        self.user.delete()

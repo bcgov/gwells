@@ -12,7 +12,6 @@
     limitations under the License.
 """
 from django.contrib import admin
-# from django.apps import apps
 
 
 # Import all models

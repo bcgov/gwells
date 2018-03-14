@@ -24,40 +24,92 @@ from django.conf import settings
 from django.test import RequestFactory
 from django.http import QueryDict
 import json
+from django.contrib.auth.models import Group
+from django.contrib.auth.models import User
+from django.contrib.auth.models import Permission
+from django.contrib.contenttypes.models import ContentType
+from urllib.parse import urlparse
+from urllib.parse import parse_qsl
 
 class SurveyViewTestCase(TestCase):
     @classmethod
     def setUpTestData(cls):
-        #using fixtures
-        pass
+        Group.objects.create(name='admin')
 
     def setUp(self):
         pass
 
-class GetTestCase(SurveyViewTestCase):
-    fixtures = ['survey_get_fixture']
+class SurveyViewGenericTestCase(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        admin_group = Group.objects.create(name='admin')
 
-    def test_get(self):
+    def test_with_unauthenticated_user(self):
+
+        response = self.client.post(reverse('survey'))
+
+        self.assertEqual(response.status_code, HTTPStatus.FOUND)#302 from redirect
+        url_components = urlparse(response.url)
+        self.assertEqual(url_components.path, reverse('admin:login'))
+
+        query=parse_qsl(url_components.query)
+        self.assertEqual(len(query), 1)
+
+        arg_tuple = query[0];
+        self.assertEqual(len(arg_tuple), 2)
+        self.assertEqual(arg_tuple[0], 'next')
+        self.assertEqual(arg_tuple[1], reverse('survey'))
+
+    def test_with_unauthorized_user(self):
+        #setup
+        username = 'admin'
+        password = 'admin'
+        email = 'admin@admin.com'
+        self.user = User.objects.create_user(username=username, password=password, email=email)
+        self.client.login(username=username,password=password)
+
+        logger = logging.getLogger('django.request')
+        previous_level = logger.getEffectiveLevel()
+        logger.setLevel(logging.ERROR)
+
+        #test
+        response = self.client.post(reverse('survey'))
+
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+
+        #teardown
+        logger.setLevel(previous_level)
+        self.client.logout()
+        self.user.delete()
+
+class SurveyViewPutTestCase(SurveyViewTestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        admin_group = Group.objects.create(name='admin')
+
+    def setUp(self):
+        pass
+
+    def test_put(self):
         if settings.ENABLE_DATA_ENTRY:
-            url = reverse('survey', kwargs={'pk':"495a9927-5a13-490e-bf1d-08bf2048b098"})
-            response = self.client.get(url)
-            self.assertEqual(response.status_code, HTTPStatus.OK)
-            self.assertContains(response, "name=\"survey_guid\"")
-            self.assertContains(response, "value=\"495a9927-5a13-490e-bf1d-08bf2048b098\"")
-        else:
-            pass
 
-class PutTestCase(SurveyViewTestCase):
+            fixture_file = '/'.join([settings.FIXTURES_DIRS[0], 'survey_get_fixture.json'])
 
-    def test_put(self):        
-        fixture_file = '/'.join([settings.FIXTURES_DIRS[0], 'survey_get_fixture.json'])
+            #setup
+            group_name = 'admin'
+            username = 'admin'
+            password = 'admin'
+            email = 'admin@admin.com'
+            self.user = User.objects.create_user(username=username, password=password, email=email)
+            admin_group = Group.objects.get(name=group_name)
+            admin_group.user_set.add(self.user)
+            self.client.login(username=username,password=password)
 
-        if settings.ENABLE_DATA_ENTRY:
+            #test
             with open(fixture_file) as fixture:
                 fixture = list(serializers.deserialize('json', fixture))
-
                 self.assertEqual(1, len(fixture)) #make sure the fixture hasn't changed
-
                 survey = fixture[0]
 
                 factory = RequestFactory()
@@ -66,24 +118,53 @@ class PutTestCase(SurveyViewTestCase):
                         'survey_page':survey.object.survey_page,
                         '_method':'put'}
 
-                request = factory.post(reverse('survey'), data)
-                request.PUT = request.POST #middleware usually takes care of this
-                survey_view = SurveyView.as_view()
-                response = survey_view(request)
+                response = self.client.post(reverse('survey'), data)
 
                 self.assertEqual(response.status_code, HTTPStatus.FOUND) #302 from redirect
                 self.assertEqual(response.url, reverse('site_admin'))
 
                 self.assertEqual(1, Survey.objects.all().count())
                 self.assertEqual(survey.object.survey_introduction_text, Survey.objects.all()[0].survey_introduction_text)
+
+            self.client.logout()
+            self.user.delete()
+            admin_group.user_set.remove(self.user)
         else:
             pass
 
-class PostTestCase(SurveyViewTestCase):
+
+
+class SurveyViewPostTestCase(SurveyViewTestCase):
     fixtures = ['survey_get_fixture']
+
+    @classmethod
+    def setUpTestData(cls):
+        admin_group = Group.objects.create(name='admin')
+        ct = ContentType.objects.get_for_model(Survey)
+
+        permission_a = Permission.objects.create(codename='gwells.add_survey', name='Can add survey', content_type=ct)
+        permission_e = Permission.objects.create(codename='gwells.change_survey', name='Can change survey', content_type=ct)
+        permission_d = Permission.objects.create(codename='gwells.delete_survey', name='Can delete survey', content_type=ct)
+
+        admin_group.permissions.add(permission_a)
+        admin_group.permissions.add(permission_e)
+        admin_group.permissions.add(permission_d)
+
 
     def test_post(self):
         if settings.ENABLE_DATA_ENTRY:
+
+            #setup
+            group_name = 'admin'
+            username = 'admin'
+            password = 'admin'
+            email = 'admin@admin.com'
+            self.user = User.objects.create_user(username=username, password=password, email=email)
+            admin_group = Group.objects.get(name=group_name)
+            admin_group.user_set.add(self.user)
+            self.client.login(username=username,password=password)
+
+            #test
             new_survey_introduction_text = 'new survey introduction text'
             new_survey_page = 'r'
             new_survey_link = 'newlink.ca'
@@ -95,11 +176,7 @@ class PostTestCase(SurveyViewTestCase):
                     'form-0-survey_link':new_survey_link,
                     '_method':'post'}
 
-            factory = RequestFactory()
-            request = factory.post(reverse('survey'), data)
-
-            survey_view = SurveyView.as_view()
-            response = survey_view(request)
+            response = self.client.post(reverse('survey'), data)
 
             self.assertEqual(response.status_code, HTTPStatus.FOUND) #302 from redirect
             self.assertEqual(1, Survey.objects.all().count())
@@ -109,48 +186,125 @@ class PostTestCase(SurveyViewTestCase):
             self.assertEqual(survey.survey_introduction_text, new_survey_introduction_text)
             self.assertEqual(survey.survey_page, new_survey_page)
             self.assertEqual(survey.survey_link, new_survey_link)
+
+            #teardown
+            self.client.logout()
+            self.user.delete()
+            admin_group.user_set.remove(self.user)
         else:
             pass
 
-class DeleteTestCase(SurveyViewTestCase):
+class SurveyViewDeleteTestCase(SurveyViewTestCase):
     fixtures = ['survey_get_fixture']
+
+    @classmethod
+    def setUpTestData(cls):
+        admin_group = Group.objects.create(name='admin')
+        ct = ContentType.objects.get_for_model(Survey)
+
+        permission_a = Permission.objects.create(codename='gwells.add_survey', name='Can add survey', content_type=ct)
+        permission_e = Permission.objects.create(codename='gwells.change_survey', name='Can change survey', content_type=ct)
+        permission_d = Permission.objects.create(codename='gwells.delete_survey', name='Can delete survey', content_type=ct)
+
+        admin_group.permissions.add(permission_a)
+        admin_group.permissions.add(permission_e)
+        admin_group.permissions.add(permission_d)
 
     def test_delete(self):
         if settings.ENABLE_DATA_ENTRY:
+            #setup
+            group_name = 'admin'
+            username = 'admin'
+            password = 'admin'
+            email = 'admin@admin.com'
+            self.user = User.objects.create_user(username=username, password=password, email=email)
+            admin_group = Group.objects.get(name=group_name)
+            admin_group.user_set.add(self.user)
+            self.client.login(username=username,password=password)
+
+            #test
             self.assertEqual(1, Survey.objects.all().count()) #validate that setup complete correctly --fixture
             data = {'form-number':0,
                     'form-0-survey_guid':'495a9927-5a13-490e-bf1d-08bf2048b098',
                     '_method':'delete'}
 
-            factory = RequestFactory()
-            request = factory.post(reverse('survey'), data)
-
-            survey_view = SurveyView.as_view()
-            response = survey_view(request)
+            response = self.client.post(reverse('survey'), data)
 
             self.assertEqual(response.status_code, HTTPStatus.FOUND) #302 from redirect
             self.assertEqual(response.url, reverse('site_admin'))
 
             self.assertEqual(0, Survey.objects.all().count())
+
+            #teardown
+            self.client.logout()
+            self.user.delete()
+            admin_group.user_set.remove(self.user)
         else:
             pass
 
 class SurveyViewNoMethodTestCase(SurveyViewTestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        admin_group = Group.objects.create(name='admin')
+        ct = ContentType.objects.get_for_model(Survey)
+
+        permission_a = Permission.objects.create(codename='gwells.add_survey', name='Can add survey', content_type=ct)
+        permission_e = Permission.objects.create(codename='gwells.change_survey', name='Can change survey', content_type=ct)
+        permission_d = Permission.objects.create(codename='gwells.delete_survey', name='Can delete survey', content_type=ct)
+
+        admin_group.permissions.add(permission_a)
+        admin_group.permissions.add(permission_e)
+        admin_group.permissions.add(permission_d)
+
     def test_nomethod(self):
         if settings.ENABLE_DATA_ENTRY:
+            #setup
+            group_name = 'admin'
+            username = 'admin'
+            password = 'admin'
+            email = 'admin@admin.com'
+            self.user = User.objects.create_user(username=username, password=password, email=email)
+            admin_group = Group.objects.get(name=group_name)
+            admin_group.user_set.add(self.user)
+            self.client.login(username=username,password=password)
+
+            logger = logging.getLogger('django.request')
+            previous_level = logger.getEffectiveLevel()
+            logger.setLevel(logging.ERROR)
+
+            #test
             data = {}
 
-            factory = RequestFactory()
-            request = factory.post(reverse('survey'), data) #defaults to get
-            survey_view = SurveyView.as_view()
-            response = survey_view(request)
+            response = self.client.post(reverse('survey'), data)
 
             self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
+
+            #teardown
+            self.client.logout()
+            self.user.delete()
+            admin_group.user_set.remove(self.user)
+            logger.setLevel(previous_level)
+
         else:
             pass
 
 class SurveyViewInvalidMethodTestCase(SurveyViewTestCase):
+
     fixtures = ['survey_get_fixture']
+
+    @classmethod
+    def setUpTestData(cls):
+        admin_group = Group.objects.create(name='admin')
+        ct = ContentType.objects.get_for_model(Survey)
+
+        permission_a = Permission.objects.create(codename='gwells.add_survey', name='Can add survey', content_type=ct)
+        permission_e = Permission.objects.create(codename='gwells.change_survey', name='Can change survey', content_type=ct)
+        permission_d = Permission.objects.create(codename='gwells.delete_survey', name='Can delete survey', content_type=ct)
+
+        admin_group.permissions.add(permission_a)
+        admin_group.permissions.add(permission_e)
+        admin_group.permissions.add(permission_d)
 
     def test_invalid_method(self):
         if settings.ENABLE_DATA_ENTRY:
@@ -160,12 +314,16 @@ class SurveyViewInvalidMethodTestCase(SurveyViewTestCase):
                     'form-0-survey_guid':'495a9927-5a13-490e-bf1d-08bf2048b098',
                     '_method':'foo'}
 
-            factory = RequestFactory()
-            request = factory.post(reverse('survey'), data) #defaults to get
-            survey_view = SurveyView.as_view()
+            #setup
+            logger = logging.getLogger('django.request')
+            previous_level = logger.getEffectiveLevel()
+            logger.setLevel(logging.ERROR)
 
-            response = survey_view(request)
+            response = self.client.post(reverse('survey'), data) #defaults to get
 
             self.assertEqual(response.status_code, HTTPStatus.INTERNAL_SERVER_ERROR)
+
+            #teardown
+            logger.setLevel(previous_level)
         else:
             pass
