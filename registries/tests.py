@@ -10,7 +10,7 @@ from rest_framework.test import APITestCase, APIRequestFactory
 from gwells.models.ProvinceStateCode import ProvinceStateCode
 from django.contrib.auth.models import User
 from registries.models import Organization, Person, RegistriesApplication, Register, RegistriesStatusCode, ActivityCode
-from registries.views import APIPersonListCreateView, APIPersonRetrieveUpdateDestroyView
+from registries.views import PersonListView, PersonDetailView
 from django.contrib.auth.models import Group
 
 # Note: see postman/newman for more API tests.
@@ -431,7 +431,7 @@ class APIPersonTests(AuthenticatedAPITestCase):
         Test that AuditModel fields (create_user, create_date etc.)
         are updated when Person objects are created.
         """
-        view = APIPersonListCreateView.as_view()
+        view = PersonListView.as_view()
         post_url = reverse('person-list')
         request = self.factory.post(post_url, self.initial_data)
         request.user = self.user
