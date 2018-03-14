@@ -33,15 +33,12 @@ BEGIN
     perforations.when_updated
   FROM wells.wells_perforations perforations
   INNER JOIN xform_well xform ON perforations.well_id=xform.well_id
-  WHERE liner_from is not null
-  AND liner_to               IS NOT NULL
-  AND liner_diameter         IS NOT NULL
-  AND perforation_misc       IS NOT NULL
-  AND who_updated            IS NOT NULL
-  AND when_updated           IS NOT NULL
-  AND liner_thickness        IS NOT NULL
-  AND liner_perforation_from IS NOT NULL
-  AND liner_perforation_to   IS NOT NULL;
+  WHERE NOT (liner_from is  null
+  AND liner_to               IS  NULL
+  AND liner_diameter         IS  NULL
+  AND liner_thickness        IS  NULL
+  AND liner_perforation_from IS  NULL
+  AND liner_perforation_to   IS  NULL);
 
 
   raise notice '...wells_perforations data imported';
@@ -50,4 +47,4 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-COMMENT ON FUNCTION migrate_perforations () IS 'Load BCGS numbers, only for the wells that have been replicated.'; 
+COMMENT ON FUNCTION migrate_perforations () IS 'Load BCGS numbers, only for the wells that have been replicated.';

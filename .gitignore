@@ -97,3 +97,6 @@ registries/static/registries/bundles/
 sonar-runner/.gradle
 *.patch
 *.orig
+sonar-runner/.settings/org.eclipse.buildship.core.prefs
+sonar-runner/.project
+sonar-runner/.classpath
