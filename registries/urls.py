@@ -18,21 +18,24 @@ from . import views
 
 urlpatterns = [
     # Organization resource endpoints
-    url(r'^organizations/(?P<org_guid>[-\w]+)/$', views.APIOrganizationRetrieveUpdateDestroyView.as_view(), name='organization-detail'),
-    url(r'^organizations/$', views.APIOrganizationListCreateView.as_view(), name='organization-list'),
+    url(r'^api/v1/organizations/(?P<org_guid>[-\w]+)/$', views.APIOrganizationRetrieveUpdateDestroyView.as_view(), name='organization-detail'),
+    url(r'^api/v1/organizations/$', views.APIOrganizationListCreateView.as_view(), name='organization-list'),
 
     # Person resource endpoints (drillers, well installers, and other instances of Person model)
-    url(r'^drillers/(?P<person_guid>[-\w]+)/$', views.APIPersonRetrieveUpdateDestroyView.as_view(), name='person-detail'),
-    url(r'^drillers/$', views.APIPersonListCreateView.as_view(), name='person-list'),
+    url(r'^api/v1/drillers/(?P<person_guid>[-\w]+)/$', views.APIPersonRetrieveUpdateDestroyView.as_view(), name='person-detail'),
+    url(r'^api/v1/drillers/$', views.APIPersonListCreateView.as_view(), name='person-list'),
 
     # List of cities that currently have registered drillers, pump installers etc.
-    url(r'^cities/drillers/$', views.APICitiesList.as_view(), {'activity':'drill'}, name='city-list-drillers'),
-    url(r'^cities/installers/$', views.APICitiesList.as_view(), {'activity': 'install'}, name='city-list-installers'),
+    url(r'^api/v1/cities/drillers/$', views.APICitiesList.as_view(), {'activity':'drill'}, name='city-list-drillers'),
+    url(r'^api/v1/cities/installers/$', views.APICitiesList.as_view(), {'activity': 'install'}, name='city-list-installers'),
 
     # Temporary JWT Auth endpoint
-    url(r'^api-token-auth/', obtain_jwt_token, name='get-token'),
+    url(r'^api/v1/api-token-auth/', obtain_jwt_token, name='get-token'),
 
     # Swagger documentation endpoint
+    url(r'^api/v1/$', get_swagger_view(title='GWELLS Driller registry'), name='api-docs'),
+
+    # Deprecated API docs link
     url(r'^docs/$', get_swagger_view(title='GWELLS Driller registry'), name='api-docs'),
 
     # Registries frontend webapp loader (html page that contains header, footer, and a SPA in between)
