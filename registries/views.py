@@ -134,7 +134,7 @@ class APIOrganizationListCreateView(AuditCreateMixin, ListCreateAPIView):
         Return appropriate serializer for user
         Admin serializers have more fields, including audit fields
         """
-        if self.request.user.is_staff:
+        if self.request and self.request.user.is_staff:
             return OrganizationAdminSerializer
         return self.serializer_class
 
@@ -196,7 +196,7 @@ class APIOrganizationRetrieveUpdateDestroyView(AuditUpdateMixin, RetrieveUpdateD
         return qs
 
     def get_serializer_class(self):
-        if self.request.user.is_staff:
+        if self.request and self.request.user.is_staff:
             return OrganizationAdminSerializer
         return self.serializer_class
 
@@ -247,7 +247,7 @@ class APIPersonListCreateView(AuditCreateMixin, ListCreateAPIView):
 
     def get_serializer_class(self):
         """ Returns the appropriate serializer for the user """
-        if self.request.user.is_staff:
+        if self.request and self.request.user.is_staff:
             return PersonAdminSerializer
         return self.serializer_class
 
@@ -307,7 +307,7 @@ class APIPersonRetrieveUpdateDestroyView(AuditUpdateMixin, RetrieveUpdateDestroy
         return qs
 
     def get_serializer_class(self):
-        if self.request.user.is_staff:
+        if self.request and self.request.user.is_staff:
             return PersonAdminSerializer
         return self.serializer_class
 

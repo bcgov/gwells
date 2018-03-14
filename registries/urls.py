@@ -12,9 +12,12 @@
     limitations under the License.
 """
 from django.conf.urls import url
+from rest_framework.documentation import include_docs_urls
 from rest_framework_jwt.views import obtain_jwt_token
 from rest_framework_swagger.views import get_swagger_view
 from . import views
+
+REGISTRIES_API_DESCRIPTION = "The GWELLS Registry is a database of qualified well drillers and pump installers registered to operate in British Columbia"
 
 urlpatterns = [
     # Organization resource endpoints
@@ -32,11 +35,14 @@ urlpatterns = [
     # Temporary JWT Auth endpoint
     url(r'^api/v1/api-token-auth/', obtain_jwt_token, name='get-token'),
 
+    # Django REST Framework Schema
+    url(r'^api/v1/schema/', include_docs_urls(title='GWELLS Registry', description=REGISTRIES_API_DESCRIPTION), name='api-schema'),
+
     # Swagger documentation endpoint
-    url(r'^api/v1/$', get_swagger_view(title='GWELLS Driller registry'), name='api-docs'),
+    url(r'^api/v1/$', get_swagger_view(title='GWELLS Registry'), name='api-docs'),
 
     # Deprecated API docs link
-    url(r'^docs/$', get_swagger_view(title='GWELLS Driller registry'), name='api-docs'),
+    url(r'^docs/$', get_swagger_view(title='GWELLS Registry'), name='api-docs-old'),
 
     # Registries frontend webapp loader (html page that contains header, footer, and a SPA in between)
     url(r'^$', views.RegistriesIndexView.as_view(), name='registries-home'),
