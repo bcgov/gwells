@@ -14,40 +14,50 @@
 from django.conf.urls import url
 from rest_framework.documentation import include_docs_urls
 from rest_framework_jwt.views import obtain_jwt_token
-from rest_framework_swagger.views import get_swagger_view
+from drf_yasg.views import get_schema_view
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
+from registries import permissions
 from . import views
 
-REGISTRIES_API_DESCRIPTION = "The GWELLS Registry is a database of qualified well drillers and pump installers registered to operate in British Columbia"
+schema_view = get_schema_view(
+    openapi.Info(
+        title="Well Driller and Pump Installer Registry API",
+        default_version='v1',
+        description="The Well Driller and Pump Installer Registry is a database of qualified well drillers and pump installers registered to operate in British Columbia.",
+        terms_of_service="http://www2.gov.bc.ca/gov/content?id=D1EE0A405E584363B205CD4353E02C88",
+        contact=openapi.Contact(email="groundwater@gov.bc.ca"),
+        license=openapi.License(name="Open Government License - British Columbia", url="https://www2.gov.bc.ca/gov/content?id=A519A56BC2BF44E4A008B33FCF527F61"),
+    ),
+    public=False,
+    permission_classes=(permissions.IsAdminOrReadOnly,),
+)
+
+# wrap obtain_jwt_token view in a function that excludes it from swagger documentation.
+obtain_jwt_token_noswagger = swagger_auto_schema(method='post', auto_schema=None)(obtain_jwt_token)
 
 urlpatterns = [
     # Organization resource endpoints
-    url(r'^api/v1/organizations/(?P<org_guid>[-\w]+)/$', views.APIOrganizationRetrieveUpdateDestroyView.as_view(), name='organization-detail'),
-    url(r'^api/v1/organizations/$', views.APIOrganizationListCreateView.as_view(), name='organization-list'),
+    url(r'^api/v1/organizations/(?P<org_guid>[-\w]+)/$', views.OrganizationDetailView.as_view(), name='organization-detail'),
+    url(r'^api/v1/organizations/$', views.OrganizationListView.as_view(), name='organization-list'),
 
     # Person resource endpoints (drillers, well installers, and other instances of Person model)
-    url(r'^api/v1/drillers/(?P<person_guid>[-\w]+)/$', views.APIPersonRetrieveUpdateDestroyView.as_view(), name='person-detail'),
-    url(r'^api/v1/drillers/$', views.APIPersonListCreateView.as_view(), name='person-list'),
+    url(r'^api/v1/drillers/(?P<person_guid>[-\w]+)/$', views.PersonDetailView.as_view(), name='person-detail'),
+    url(r'^api/v1/drillers/$', views.PersonListView.as_view(), name='person-list'),
 
     # List of cities that currently have registered drillers, pump installers etc.
-    url(r'^api/v1/cities/drillers/$', views.APICitiesList.as_view(), {'activity':'drill'}, name='city-list-drillers'),
-    url(r'^api/v1/cities/installers/$', views.APICitiesList.as_view(), {'activity': 'install'}, name='city-list-installers'),
+    url(r'^api/v1/cities/drillers/$', views.CitiesListView.as_view(), {'activity':'drill'}, name='city-list-drillers'),
+    url(r'^api/v1/cities/installers/$', views.CitiesListView.as_view(), {'activity': 'install'}, name='city-list-installers'),
 
-    # Temporary JWT Auth endpoint
-    url(r'^api/v1/api-token-auth/', obtain_jwt_token, name='get-token'),
-
-    # Django REST Framework Schema
-    url(r'^api/v1/schema/', include_docs_urls(title='GWELLS Registry', description=REGISTRIES_API_DESCRIPTION), name='api-schema'),
+    # Temporary development login endpoint
+    url(r'^api/v1/api-token-auth/', obtain_jwt_token_noswagger, name='get-token'),
 
     # Swagger documentation endpoint
-    url(r'^api/v1/$', get_swagger_view(title='GWELLS Registry'), name='api-docs'),
+    url(r'^api/', schema_view.with_ui('swagger', cache_timeout=None), name='api-docs'),
 
     # Deprecated API docs link
-    url(r'^docs/$', get_swagger_view(title='GWELLS Registry'), name='api-docs-old'),
+    url(r'^docs/$', schema_view.with_ui('swagger', cache_timeout=None), name='api-docs-old'),
 
     # Registries frontend webapp loader (html page that contains header, footer, and a SPA in between)
     url(r'^$', views.RegistriesIndexView.as_view(), name='registries-home'),
-
-    # RegistriesApplication resource endpoints (applications from individuals to be registered as a driller, well installer etc.)
-    # url(r'^applications/(?P<application_guid>[-\w]+)/$', views.APIApplicationRetrieveUpdateDestroyView.as_view(), name='application-detail'),
-    # url(r'^applications/$', views.APIApplicationListCreateView.as_view(), name='application-list'),
 ]
