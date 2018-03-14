@@ -82,7 +82,7 @@ class SurveyViewGenericTestCase(TestCase):
         self.client.logout()
         self.user.delete()
 
-class SurveyViesPutTestCase(SurveyViewTestCase):
+class SurveyViewPutTestCase(SurveyViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
