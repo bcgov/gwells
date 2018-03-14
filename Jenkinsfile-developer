@@ -1,7 +1,7 @@
 node('maven') {
     stage('Build') {
         echo "Building..."
-        openshiftBuild bldCfg: 'gwells-developer', showBuildLogs: 'true'
+        openshiftBuild bldCfg: 'gwells-developer', showBuildLogs: 'true', waitTime: 1800000
         openshiftTag destStream: 'gwells', verbose: 'true', destTag: '$BUILD_ID', srcStream: 'gwells', srcTag: 'latest'
     }
 
