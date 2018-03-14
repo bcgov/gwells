@@ -59,11 +59,13 @@
 									]
 								},
 								"url": {
-									"raw": "{{base_url}}/api-token-auth/?format=json",
+									"raw": "{{base_url}}/api/v1/api-token-auth/?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
+										"api",
+										"v1",
 										"api-token-auth",
 										""
 									],
@@ -194,11 +196,13 @@
 									]
 								},
 								"url": {
-									"raw": "{{base_url}}/organizations/?format=json",
+									"raw": "{{base_url}}/api/v1/organizations/?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
+										"api",
+										"v1",
 										"organizations",
 										""
 									],
@@ -273,11 +277,13 @@
 								],
 								"body": {},
 								"url": {
-									"raw": "{{base_url}}/organizations/?format=json",
+									"raw": "{{base_url}}/api/v1/organizations/?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
+										"api",
+										"v1",
 										"organizations",
 										""
 									],
@@ -343,11 +349,13 @@
 								],
 								"body": {},
 								"url": {
-									"raw": "{{base_url}}/organizations/{{created_guid}}/?format=json",
+									"raw": "{{base_url}}/api/v1/organizations/{{created_guid}}/?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
+										"api",
+										"v1",
 										"organizations",
 										"{{created_guid}}",
 										""
@@ -416,11 +424,13 @@
 									]
 								},
 								"url": {
-									"raw": "{{base_url}}/organizations/{{created_guid}}/?format=json",
+									"raw": "{{base_url}}/api/v1/organizations/{{created_guid}}/?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
+										"api",
+										"v1",
 										"organizations",
 										"{{created_guid}}",
 										""
@@ -478,11 +488,13 @@
 								],
 								"body": {},
 								"url": {
-									"raw": "{{base_url}}/organizations/?format=json",
+									"raw": "{{base_url}}/api/v1/organizations/?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
+										"api",
+										"v1",
 										"organizations",
 										""
 									],
@@ -534,11 +546,13 @@
 								],
 								"body": {},
 								"url": {
-									"raw": "{{base_url}}/organizations/{{created_guid}}/?format=json",
+									"raw": "{{base_url}}/api/v1/organizations/{{created_guid}}/?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
+										"api",
+										"v1",
 										"organizations",
 										"{{created_guid}}",
 										""
@@ -582,11 +596,13 @@
 								],
 								"body": {},
 								"url": {
-									"raw": "{{base_url}}/organizations/{{created_guid}}/?format=json",
+									"raw": "{{base_url}}/api/v1/organizations/{{created_guid}}/?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
+										"api",
+										"v1",
 										"organizations",
 										"{{created_guid}}",
 										""
@@ -635,11 +651,13 @@
 								],
 								"body": {},
 								"url": {
-									"raw": "{{base_url}}/organizations/{{created_guid}}/?format=json",
+									"raw": "{{base_url}}/api/v1/organizations/{{created_guid}}/?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
+										"api",
+										"v1",
 										"organizations",
 										"{{created_guid}}",
 										""
@@ -698,11 +716,13 @@
 								],
 								"body": {},
 								"url": {
-									"raw": "{{base_url}}/organizations/?format=json",
+									"raw": "{{base_url}}/api/v1/organizations/?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
+										"api",
+										"v1",
 										"organizations",
 										""
 									],
@@ -819,11 +839,13 @@
 									]
 								},
 								"url": {
-									"raw": "{{base_url}}/organizations/?format=json",
+									"raw": "{{base_url}}/api/v1/organizations/?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
+										"api",
+										"v1",
 										"organizations",
 										""
 									],
@@ -941,11 +963,13 @@
 									]
 								},
 								"url": {
-									"raw": "{{base_url}}/organizations/{{created_guid_bad_input}}/?format=json",
+									"raw": "{{base_url}}/api/v1/organizations/{{created_guid_bad_input}}/?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
+										"api",
+										"v1",
 										"organizations",
 										"{{created_guid_bad_input}}",
 										""
@@ -1007,11 +1031,13 @@
 									]
 								},
 								"url": {
-									"raw": "{{base_url}}/organizations/?format=json",
+									"raw": "{{base_url}}/api/v1/organizations/?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
+										"api",
+										"v1",
 										"organizations",
 										""
 									],
@@ -1053,11 +1079,13 @@
 								],
 								"body": {},
 								"url": {
-									"raw": "{{base_url}}/organizations/{{created_guid_bad_input}}/?format=json",
+									"raw": "{{base_url}}/api/v1/organizations/{{created_guid_bad_input}}/?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
+										"api",
+										"v1",
 										"organizations",
 										"{{created_guid_bad_input}}",
 										""
@@ -1152,11 +1180,13 @@
 									]
 								},
 								"url": {
-									"raw": "{{base_url}}/drillers/?format=json",
+									"raw": "{{base_url}}/api/v1/drillers/?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
+										"api",
+										"v1",
 										"drillers",
 										""
 									],
@@ -1227,11 +1257,13 @@
 								],
 								"body": {},
 								"url": {
-									"raw": "{{base_url}}/drillers/?format=json",
+									"raw": "{{base_url}}/api/v1/drillers/?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
+										"api",
+										"v1",
 										"drillers",
 										""
 									],
@@ -1295,11 +1327,13 @@
 								],
 								"body": {},
 								"url": {
-									"raw": "{{base_url}}/drillers/{{created_driller_guid}}/?format=json",
+									"raw": "{{base_url}}/api/v1/drillers/{{created_driller_guid}}/?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
+										"api",
+										"v1",
 										"drillers",
 										"{{created_driller_guid}}",
 										""
@@ -1368,11 +1402,13 @@
 									]
 								},
 								"url": {
-									"raw": "{{base_url}}/drillers/{{created_driller_guid}}/?format=json",
+									"raw": "{{base_url}}/api/v1/drillers/{{created_driller_guid}}/?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
+										"api",
+										"v1",
 										"drillers",
 										"{{created_driller_guid}}",
 										""
@@ -1446,11 +1482,13 @@
 									]
 								},
 								"url": {
-									"raw": "{{base_url}}/drillers/{{created_driller_guid}}/?format=json",
+									"raw": "{{base_url}}/api/v1/drillers/{{created_driller_guid}}/?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
+										"api",
+										"v1",
 										"drillers",
 										"{{created_driller_guid}}",
 										""
@@ -1508,11 +1546,13 @@
 								],
 								"body": {},
 								"url": {
-									"raw": "{{base_url}}/drillers/?format=json",
+									"raw": "{{base_url}}/api/v1/drillers/?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
+										"api",
+										"v1",
 										"drillers",
 										""
 									],
@@ -1564,11 +1604,13 @@
 								],
 								"body": {},
 								"url": {
-									"raw": "{{base_url}}/drillers/{{created_driller_guid}}/?format=json",
+									"raw": "{{base_url}}/api/v1/drillers/{{created_driller_guid}}/?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
+										"api",
+										"v1",
 										"drillers",
 										"{{created_driller_guid}}",
 										""
@@ -1612,11 +1654,13 @@
 								],
 								"body": {},
 								"url": {
-									"raw": "{{base_url}}/drillers/{{created_driller_guid}}/?format=json",
+									"raw": "{{base_url}}/api/v1/drillers/{{created_driller_guid}}/?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
+										"api",
+										"v1",
 										"drillers",
 										"{{created_driller_guid}}",
 										""
@@ -1665,11 +1709,13 @@
 								],
 								"body": {},
 								"url": {
-									"raw": "{{base_url}}/drillers/{{created_driller_guid}}/?format=json",
+									"raw": "{{base_url}}/api/v1/drillers/{{created_driller_guid}}/?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
+										"api",
+										"v1",
 										"drillers",
 										"{{created_driller_guid}}",
 										""
@@ -1728,11 +1774,13 @@
 								],
 								"body": {},
 								"url": {
-									"raw": "{{base_url}}/drillers/?format=json",
+									"raw": "{{base_url}}/api/v1/drillers/?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
+										"api",
+										"v1",
 										"drillers",
 										""
 									],
@@ -1784,11 +1832,13 @@
 								],
 								"body": {},
 								"url": {
-									"raw": "{{base_url}}/drillers/?format=json",
+									"raw": "{{base_url}}/api/v1/drillers/?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
+										"api",
+										"v1",
 										"drillers",
 										""
 									],
