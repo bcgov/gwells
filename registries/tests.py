@@ -11,6 +11,7 @@ from gwells.models.ProvinceStateCode import ProvinceStateCode
 from django.contrib.auth.models import User
 from registries.models import Organization, Person, RegistriesApplication, Register, RegistriesStatusCode, ActivityCode
 from registries.views import APIPersonListCreateView, APIPersonRetrieveUpdateDestroyView
+from django.contrib.auth.models import Group
 
 # Note: see postman/newman for more API tests.
 # Postman API tests include making requests with incomplete data, missing required fields etc.
@@ -654,7 +655,6 @@ class FixturePersonTests(AuthenticatedAPITestCase):
         person_set = set()
         for item in response.data['results']:
             person_set.add(item['person_guid'])
-        print(len(person_set))
         self.assertEqual(len(person_set), len(response.data['results']))
 
     def test_fields_returned(self):
@@ -688,7 +688,7 @@ class FixturePersonTests(AuthenticatedAPITestCase):
 
             for field in fields:
                 self.assertEqual(field in item, True)
-            
+
             for wrong_field in wrong_fields:
                 self.assertEqual(wrong_field in item, False)
 
