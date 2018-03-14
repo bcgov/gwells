@@ -93,15 +93,17 @@ frontend/node_modules/
 frontend/webpack-stats.json
 registries/static/registries/bundles/
 
-
 sonar-runner/.gradle
 *.patch
 *.orig
 
-
 # OS files
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
 .Trashes
 .directory
+ehthumbs.db
 Thumbs.db
 *~
