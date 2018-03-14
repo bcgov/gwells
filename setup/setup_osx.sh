@@ -289,7 +289,7 @@ cd "${START_DIR}"
 
 # Run server
 #
-python3 ../manage.py runserver
+python3 ../manage.py runserver || true
 
 
 # Recommend sourcing ~/.bash_profile if the file has changed
