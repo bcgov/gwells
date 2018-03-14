@@ -139,9 +139,10 @@ class QualificationCode(AuditModel):
         verbose_name_plural = 'Possible qualifications, under a given Activity and Subactivity'
 
     def __str__(self):
-        return '%s (%s)' % (self.description
-            ,self.registry_subactivity.description
-            )
+        return '%s (%s)' % (
+            self.description,
+            self.registries_subactivity.description,
+        )
 
 class RegistriesApplication(AuditModel):
     """
@@ -181,7 +182,7 @@ class ClassificationAppliedFor(AuditModel):
         verbose_name_plural = 'Registries Classification being applied for'
 
     def __str__(self):
-        return '%s : %s %s %s %s (%s)' % (self.classification_applied_for_guid
+        return '%s : %s %s %s (%s)' % (self.classification_applied_for_guid
             ,self.registries_application.person.first_name            
             ,self.registries_application.person.surname
             ,self.registries_subactivity.description
@@ -303,12 +304,13 @@ class RegistriesApplicationStatus(AuditModel):
         verbose_name_plural = 'Status for a given Application'
 
     def __str__(self):
-        return '%s : %s %s %s %s %s %s %s' % (self.application_status_guid
-            ,self.application.file_no
-            ,self.status.description
-            ,self.effective_date
-            ,self.expired_date
-            )
+        return '%s : %s %s %s %s' % (
+            self.application_status_guid,
+            self.application.file_no,
+            self.status.description,
+            self.effective_date,
+            self.expired_date,
+        )
 """
 class DrillerRegister(models.Model):
      Consolidated view of Driller Register
