@@ -7,7 +7,7 @@ REM	   the Postgresql server on your localhost
 REM 
 echo "Running Post-Deploy tasks..."
 set PGPASSWORD=%DATABASE_PASSWORD%
-cd ../scripts/
+cd ..\..\scripts\
 echo ". Creating additional DB objects (e.g. spatial indices, stored functions)"
 psql -d %DATABASE_NAME% -U %DATABASE_USER% -f post-deploy.sql
 psql -d %DATABASE_NAME% -U %DATABASE_USER% -f populate-xform-gwells-well.sql
@@ -21,13 +21,13 @@ psql -d %DATABASE_NAME% -U %DATABASE_USER% -f replicate_aquifer_wells.sql
 psql -d %DATABASE_NAME% -U %DATABASE_USER% -f replicate_lithology_descriptions.sql
 psql -d %DATABASE_NAME% -U %DATABASE_USER% -f db_replicate.sql
 
-cd ../code-tables/
+cd ..\code-tables\
 REM Refresh Code lookup tables, including the well table
 psql -d %DATABASE_NAME% -U %DATABASE_USER% -f clear-tables.sql
 psql -d %DATABASE_NAME% -U %DATABASE_USER% -f data-load-static-codes.sql
 
 echo ". Running DB Replication from Legacy Database, as per DB_REPLICATION flag"
-cd ../cron/
+cd ..\cron\
 psql -d %DATABASE_NAME% -U %DATABASE_USER% -f db_replicate.sql
 
 echo "Completed Post-Deploy tasks."
