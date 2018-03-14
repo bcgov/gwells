@@ -1,5 +1,5 @@
 import axios from 'axios'
-const BASE_URL = '/gwells/registries/'
+const BASE_URL = '/gwells/registries/api/v1/'
 
 const logging = false
 
