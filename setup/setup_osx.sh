@@ -265,7 +265,12 @@ export LEGACY_SCHEMA="${LEGACY_SCHEMA}"
 pip3 install -U -r ../requirements.txt
 
 
-# Create dev database
+# Dev only - adapt schema for GWells
+#
+python3 ../manage.py makemigrations
+
+
+# Migrate data from Wells (legacy) to GWells schema
 #
 python3 ../manage.py migrate
 
