@@ -1,4 +1,4 @@
-create_user,create_date,update_user,update_date,screen_material_guid,screen_material_code,description,is_hidden,display_order
-"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","628f2fb2796a11e7b5a5be2e44b06b34","PLASTIC","Plastic","N","10"
-"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","628f325a796a11e7b5a5be2e44b06b34","STNLSS_STL","Stainless Steel","N","20"
-"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","628f378c796a11e7b5a5be2e44b06b34","OTHER","Other","N","30"
+create_user,create_date,update_user,update_date,screen_material_code,description,display_order
+"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","PLASTIC","Plastic","10"
+"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","STNLSS_STL","Stainless Steel","20"
+"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","OTHER","Other","30"

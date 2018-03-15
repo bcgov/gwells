@@ -14,7 +14,7 @@ INSERT INTO registries_organization (
 ,fax_tel               
 ,website_url           
 ,certificate_authority 
-,province_state_guid
+,province_state_code
 ,org_guid   
 ,create_user  
 ,create_date 
@@ -29,8 +29,7 @@ INSERT INTO registries_organization (
 ,null
 ,'https://www.bcgwa.org/'
 ,true
-,(select prov.province_state_guid from province_state_code prov where prov.province_state_code
- = 'BC')
+,'BC'
 ,'d76775a3-650d-44cb-a3b7-5faf8558f29d'::uuid
 ,'DATALOAD_USER'
 ,'2018-01-01 00:00:00-08'
@@ -47,7 +46,7 @@ INSERT INTO registries_organization (
 ,fax_tel               
 ,website_url           
 ,certificate_authority 
-,province_state_guid
+,province_state_code
 ,org_guid   
 ,create_user  
 ,create_date 
@@ -62,8 +61,7 @@ INSERT INTO registries_organization (
 ,null
 ,'https://www2.gov.bc.ca/gov/content/environment/air-land-water/water/laws-rules/groundwater-protection-regulation'
 ,true
-,(select prov.province_state_guid from province_state_code prov where prov.province_state_code
- = 'BC')
+,'BC'
 ,'d3dfedd0-59b3-41cd-a40c-6e35b236a3d6'::uuid
 ,'DATALOAD_USER'
 ,'2018-01-01 00:00:00-08'
@@ -98,18 +96,16 @@ UPDATE registries_organization org SET
 ,postal_code           
 ,main_tel              
 ,fax_tel               
-,province_state_guid
+,province_state_code
 ) = (SELECT 
  companyaddress
 ,companycity
 ,companypostalcode
 ,companyphone
 ,companyfax
-,prov.province_state_guid
+,companyprov
 from xform_registries_drillers_reg xform
-    ,province_state_code prov
 where xform.companyname = org.name
-and   prov.province_state_code = xform.companyprov
 LIMIT 1
 )
 WHERE org.certificate_authority is false;
@@ -616,7 +612,8 @@ group by firstname, lastname
 having count(*) > 1;
 
 
-
+-- Thu  1 Mar 22:57:45 2018 GW After DA refactoring, this now returns
+-- INSERT 0 0
 INSERT INTO registries_organization (              
  name 
 ,street_address        
@@ -626,7 +623,7 @@ INSERT INTO registries_organization (
 ,fax_tel  
 ,website_url
 ,certificate_authority 
-,province_state_guid
+,province_state_code
 ,org_guid   
 ,create_user  
 ,create_date 
@@ -641,15 +638,13 @@ INSERT INTO registries_organization (
 ,companyfax
 ,null
 ,false
-,prov.province_state_guid
+,companyprov
 ,gen_random_uuid()
 ,'DATALOAD_USER'
 ,'2018-01-01 00:00:00-08'
 ,'DATALOAD_USER'
 ,'2018-01-01 00:00:00-08' 
 from xform_registries_drillers_reg xform_reg
-left join province_state_code prov
-on prov.province_state_code = xform_reg.companyprov
 where xform_reg.companyname is not null
 and not exists (
   select 1
@@ -724,6 +719,8 @@ and org.name = xform_reg.companyname;
 -- "Fake" Applications to represent grand-fathered web drillers
 
 -- 'DRILL', 'GEOXCHG'
+-- Thu  1 Mar 22:57:45 2018 GW After DA refactoring, this now returns
+-- INSERT 0 0
 INSERT INTO registries_classification_applied_for (              
  primary_certificate_no         
 ,certifying_org_guid                       

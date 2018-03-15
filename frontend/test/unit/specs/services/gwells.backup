@@ -1,0 +1,23 @@
+/* eslint-disable import/first */
+// jest.mock('axios', () => ({
+//   defaults: { BaseURL: '', headers: { common: {} }, interceptors: { request: { use: function (callback) { return callback } } } }
+// }))
+
+import { createLocalVue } from '@vue/test-utils'
+import ApiService from '@/common/services/gwells'
+
+describe('gwells.js', () => {
+  it('sets auth header when ApiService.init() called', () => {
+    
+    const token = 'asdf-secret-token-1234'
+    ApiService.init('JWT', token)
+    expect(axios.defaults.headers.common['Authorization']).toBe(token)
+  })
+  it('resets auth header when ApiService.init() called with no params', () => {
+    const token = 'asdf-secret-token-1234'
+    ApiService.init('JWT', token)
+    expect(axios.defaults.headers.common['Authorization']).toBe(token)
+    ApiService.init()
+    expect(axios.defaults.headers.common['Authorization']).not.toBeDefined()
+  })
+})

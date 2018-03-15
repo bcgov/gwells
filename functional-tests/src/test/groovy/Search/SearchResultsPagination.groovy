@@ -73,12 +73,12 @@ Given I have <count> search results
         	//$("#results_paginate a[data-dt-idx=\"$TargetPage\"]").click()
         where:
 		    TestDesc 													                          | WellId          | Address                  	| LegalId   		    | Owner    			    | Page    |TargetPage | NumberResult
-        "Multiple matching results - Address 12 - 1 to Max"        | ""             	| "12"                     | ""                | ""                | 1    	  |3    	    | 361    
-        "Multiple matching results - Address 12 - 1 to 2"          | ""             	| "12"                     | ""                | ""                | 1    	  |2    	    | 361   
-        "Multiple matching results - Address 12 - 2 to 3"          | ""             	| "12"                     | ""                | ""                | 2    	  |3    	    | 361   
-        "Multiple matching results - Address 12 - 1 to 3"          | ""             	| "12"                     | ""                | ""                | 1    	  |3    	    | 361   
-        "Multiple matching results - Address 12 - 3 to 1"          | ""             	| "12"                     | ""                | ""                | 3    	  |1    	    | 361   
-        "Multiple matching results - Address 12 - 3 to 2"          | ""             	| "12"                     | ""                | ""                | 3    	  |2    	    | 361   
+        "Multiple matching results - Address 12 - 1 to Max"        | ""             	| "12"                     | ""                | ""                | 1    	  |3    	    | 363    
+        "Multiple matching results - Address 12 - 1 to 2"          | ""             	| "12"                     | ""                | ""                | 1    	  |2    	    | 363   
+        "Multiple matching results - Address 12 - 2 to 3"          | ""             	| "12"                     | ""                | ""                | 2    	  |3    	    | 363   
+        "Multiple matching results - Address 12 - 1 to 3"          | ""             	| "12"                     | ""                | ""                | 1    	  |3    	    | 363   
+        "Multiple matching results - Address 12 - 3 to 1"          | ""             	| "12"                     | ""                | ""                | 3    	  |1    	    | 363   
+        "Multiple matching results - Address 12 - 3 to 2"          | ""             	| "12"                     | ""                | ""                | 3    	  |2    	    | 363   
     } 
         @Unroll
         def "Scenario 2: Next Page links: #TestDesc#Testresult"() {

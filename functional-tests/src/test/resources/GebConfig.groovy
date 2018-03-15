@@ -11,6 +11,7 @@ import org.openqa.selenium.firefox.FirefoxDriver
 import org.openqa.selenium.firefox.FirefoxOptions
 import org.openqa.selenium.ie.InternetExplorerDriver
 import org.openqa.selenium.edge.EdgeDriver
+import org.openqa.selenium.safari.SafariDriver
 import org.openqa.selenium.remote.DesiredCapabilities
 
 waiting {
@@ -25,7 +26,11 @@ environments {
 	// run via “./gradlew chromeTest”
 	// See: https://github.com/SeleniumHQ/selenium/wiki/ChromeDriver
 	chrome {
-		driver = { new ChromeDriver() }
+		driver = { 
+			ChromeOptions o = new ChromeOptions()
+			o.addArguments("start-maximized")
+			new ChromeDriver(o)
+			}
 	}
 
 	// run via “./gradlew chromeHeadlessTest”
@@ -36,6 +41,7 @@ environments {
 			o.addArguments('headless')
 			o.addArguments('disable-gpu') 
 			o.addArguments('no-sandbox')
+			o.addArguments("window-size=1600,900")
 			new ChromeDriver(o)
 		}
 	}
@@ -45,7 +51,7 @@ environments {
 	firefox {
 		driver = { new FirefoxDriver() }
 	}
-	
+		
 	firefoxHeadless {
 		driver = {
 			FirefoxOptions o = new FirefoxOptions()
@@ -70,6 +76,12 @@ environments {
 	// See: https://github.com/SeleniumHQ/selenium/wiki
 	edge {
 		driver = { new EdgeDriver() }
+	}
+
+	// run via “./gradlew safariTest”
+	// See: https://github.com/SeleniumHQ/selenium/wiki
+	safari {
+		driver = { new SafariDriver() }
 	}
 }
 
