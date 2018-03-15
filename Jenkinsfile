@@ -4,70 +4,48 @@ node('maven') {
         openshiftBuild bldCfg: 'gwells', showBuildLogs: 'true'
         openshiftTag destStream: 'gwells', verbose: 'true', destTag: '$BUILD_ID', srcStream: 'gwells', srcTag: 'latest'
     }
-
-    stage('Deploy on Dev') {
-        echo "Deploying to dev..."
-        openshiftTag destStream: 'gwells', verbose: 'true', destTag: 'dev', srcStream: 'gwells', srcTag: '$BUILD_ID'
-		//Sleeping for a while to wait deployment completes
-		sh 'sleep 3m'
-	}
-    
-    stage('Code Quality Check') {
-		//the checkout is mandatory, otherwise code quality check would fail
-        echo "checking out source"
-        echo "Build: ${BUILD_ID}"
-        checkout scm
-        SONARQUBE_PWD = sh (
-            script: 'oc env dc/sonarqube --list | awk  -F  "=" \'/SONARQUBE_ADMINPW/{print $2}\'',
-            returnStdout: true
-        ).trim()
-        echo "SONARQUBE_PWD: ${SONARQUBE_PWD}"
-
-        SONARQUBE_URL = sh (
-            script: 'oc get routes -o wide --no-headers | awk \'/sonarqube/{ print match($0,/edge/) ?  "https://"$2 : "http://"$2 }\'',
-            returnStdout: true
-        ).trim()
-        echo "SONARQUBE_URL: ${SONARQUBE_URL}"
-
-        dir('sonar-runner') {
-            sh returnStdout: true, script: "./gradlew sonarqube -Dsonar.host.url=${SONARQUBE_URL} -Dsonar.verbose=true --stacktrace --info  -Dsonar.sources=.."
-        }
-    }
-
 	
 }
 
-node('master') {
-	
-	stage('Functional Test') {
-		//the checkout is mandatory, otherwise functional test would fail
-        echo "checking out source"
-        echo "Build: ${BUILD_ID}"
-        checkout scm
-        dir('navunit') {
-			try {
-				sh './gradlew --debug --stacktrace phantomjsTest'
-			} finally { 
-				archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
-			}
-        }
-    }
 
-}
-
-
-stage('deploy-test') {
-    input "Deploy to test?"
-  
+stage('Deploy on Test') {
+    input "Deploy to Test?"
     node('maven') {
         openshiftTag destStream: 'gwells', verbose: 'true', destTag: 'test', srcStream: 'gwells', srcTag: '$BUILD_ID'
     }
 }
 
-stage('deploy-prod') {
-    input "Deploy to prod?"
-    
+node('bddstack') {
+	
+	stage('FT on Test (TBD)') {
+		//the checkout is mandatory, otherwise functional test would fail
+//        echo "checking out source"
+//        echo "Build: ${BUILD_ID}"
+//        checkout scm
+//        dir('functional-tests') {
+//			try {
+//                sh './gradlew --debug --stacktrace chromeHeadlessTest'
+//			} finally { 
+//				archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
+//                archiveArtifacts allowEmptyArchive: true, artifacts: 'build/test-results/**/*'
+//                junit 'build/test-results/**/*.xml'
+//			}
+//        }
+	  sh 'sleep 5s'
+    }
+
+}
+
+stage('Deploy on Prod') {
+    input "Deploy to Prod?"
     node('maven') {
         openshiftTag destStream: 'gwells', verbose: 'true', destTag: 'prod', srcStream: 'gwells', srcTag: '$BUILD_ID'
+	sh 'sleep 3m'
+    }
+}
+
+node('bddstack') {
+    stage('ST on Prod (TBD)') {
+        sh 'sleep 5s'
     }
 }
