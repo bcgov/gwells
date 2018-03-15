@@ -6,7 +6,7 @@ node('maven') {
     }
 
     stage('Unit Test') {
-        node('python') {
+        node('pythonnodejs') {
             checkout scm
             try {
                 sh 'pip install --upgrade pip && pip install -r requirements.txt'
