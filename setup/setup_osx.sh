@@ -3,9 +3,18 @@
 set -eu
 
 
-# Variable settings
+# Verbose option
 #
 VERBOSE=${VERBOSE:-false}
+
+
+# Receive a Wells (legacy) database to import
+#
+DB_LEGACY=${DB_LEGACY-''}
+
+
+# Non-standard bash shell script
+#
 BASH_SS=${BASH_SS:-~/.bash_profile}
 
 
@@ -25,6 +34,7 @@ BASEURL="${BASEURL:-http://gwells-dev.pathfinder.gov.bc.ca/}"
 LEGACY_DATABASE_USER="${LEGACY_DATABASE_USER:-wells}"
 LEGACY_DATABASE_NAME="${LEGACY_DATABASE_NAME:-wells}"
 LEGACY_SCHEMA="${LEGACY_SCHEMA:-wells}"
+LEGACY_DATABASE_PW="${LEGACY_DATABASE_PW:-wells}"          # For Wells db import
 
 
 # Verbose option
@@ -159,8 +169,9 @@ psql -U postgres -d gwells -c \
 
 # Restore the legacy database from a database dump
 #
-PGPASSWORD=wells pg_restore --dbname postgresql://wells:wells@127.0.0.1:5432/wells \
-	--no-owner --no-privileges ./wells-legacy-public.dmp
+[ -z ${DB_LEGACY} ]|| \
+	PGPASSWORD=wells pg_restore --no-owner --no-privileges "${DB_LEGACY}" \
+	--dbname postgresql://wells:wells@127.0.0.1:5432/wells
 
 
 # Create foreign data wrapper linking Wells (legacy) to the GWells database
@@ -229,8 +240,8 @@ set -u
 # Configure database with environment variables
 #
 export DATABASE_SERVICE_NAME="${DATABASE_SERVICE_NAME}"
-export DATABASE_ENGINE"${DATABASE_ENGINE}"
-export DATABASE_NAME"${DATABASE_NAME}"
+export DATABASE_ENGINE="${DATABASE_ENGINE}"
+export DATABASE_NAME="${DATABASE_NAME}"
 export DATABASE_USER="${DATABASE_USER}"
 export DATABASE_PASSWORD="${DATABASE_PASSWORD}"
 export DATABASE_SCHEMA="${DATABASE_SCHEMA}"
