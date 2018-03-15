@@ -1,5 +1,5 @@
-registries_application_status_guid,code,description,is_hidden,display_order,create_date,update_date,create_user,update_user
-"13b711fbd5b14e458938998a3469ccaf","P","Pending","N","2","2018-01-01 00:00:00-08","2018-01-01 00:00:00-08","DATALOAD_USER","DATALOAD_USER"
-"99f3f69a8fca499a8769816e27d58463","A","Approved","N","4","2018-01-01 00:00:00-08","2018-01-01 00:00:00-08","DATALOAD_USER","DATALOAD_USER"
-"c45fe5bd28854b9698bc363edb0c700e","NA","Not Approved","N","6","2018-01-01 00:00:00-08","2018-01-01 00:00:00-08","DATALOAD_USER","DATALOAD_USER"
-"a5975dca019e4fe3b5c69e94de13174c","I","Incomplete","N","10","2018-01-01 00:00:00-08","2018-01-01 00:00:00-08","DATALOAD_USER","DATALOAD_USER"
+registries_application_status_guid,code,description,display_order,create_date,update_date,create_user,update_user
+"13b711fbd5b14e458938998a3469ccaf","P","Pending","2","2018-01-01 00:00:00-08","2018-01-01 00:00:00-08","DATALOAD_USER","DATALOAD_USER"
+"99f3f69a8fca499a8769816e27d58463","A","Approved","4","2018-01-01 00:00:00-08","2018-01-01 00:00:00-08","DATALOAD_USER","DATALOAD_USER"
+"c45fe5bd28854b9698bc363edb0c700e","NA","Not Approved","6","2018-01-01 00:00:00-08","2018-01-01 00:00:00-08","DATALOAD_USER","DATALOAD_USER"
+"a5975dca019e4fe3b5c69e94de13174c","I","Incomplete","10","2018-01-01 00:00:00-08","2018-01-01 00:00:00-08","DATALOAD_USER","DATALOAD_USER"

@@ -1,4 +1,4 @@
-create_user,create_date,update_user,update_date,screen_intake_method_guid,screen_intake_code,description,status_flag,is_hidden,display_order
-WELLS,2006-12-14 09:58:29-08,,,9617bb96-09a1-4a97-b4de-d86940108741,OPEN_HOLE,Open Bottom,t,f,100
-WELLS,2006-12-14 09:58:29-08,,,e164ed97-2937-4c8b-b9e5-d6baf7617549,SCREEN,Screen,t,f,100
-WELLS,2006-12-14 09:58:29-08,,,10975bc1-f54a-436e-be59-513c9cd58000,UNCASD_HLE,Uncased Hole,t,f,100
+create_user,create_date,update_user,update_date,screen_intake_code,description,display_order
+WELLS,2006-12-14 09:58:29-08,,,OPEN_HOLE,Open Bottom,100
+WELLS,2006-12-14 09:58:29-08,,,SCREEN,Screen,100
+WELLS,2006-12-14 09:58:29-08,,,UNCASD_HLE,Uncased Hole,100

@@ -76,6 +76,9 @@ class WellSummaryPage extends Page {
 		screen_bottom { $( "span", id:"screen_bottom") }
 		screens { $( "table", id:"screens") }
 		screens_table { $( "#screens td")*.text() }
+
+    no_screen_information { $( "span", id:"no_screen_information" ) }
+
 		screen_from { $("#screens > tbody > tr:nth-child(2) > td:nth-child(1)") }
         screen_to {  $("#screens > tbody > tr:nth-child(2) > td:nth-child(2)") }
         internal_diameter {  $("#screens > tbody > tr:nth-child(2) > td:nth-child(3)") }
@@ -92,6 +95,7 @@ class WellSummaryPage extends Page {
 		casing_field_set { $( "fieldset", id:"casing_fieldset") }
 		casings { $( "table", id:"casings") }
 		casings_table { $("#casings td")*.text() }
+    no_casing_information { $( "span", id:"no_casing_information" ) }
 		casings_from { $("#casings > tbody > tr:nth-child(1) > td:nth-child(1)") }
 		casings_to { $("#casings > tbody > tr:nth-child(1) > td:nth-child(2)") }
 		casings_diameter { $("#casings > tbody > tr:nth-child(1) > td:nth-child(3)") }
@@ -109,6 +113,8 @@ class WellSummaryPage extends Page {
 
 		perforations_fieldset { $( "fieldset", id:"perforations_fieldset") }
 		liner_details { $( "table", id:"liner_details") }
+    no_liner_details_information { $("span", id:"no_liner_details_information") }
+
 		liner_details_table { $("#liner_details td")*.text() }
 		liner_material { $("#liner_details > tbody > tr:nth-child(1) > td:nth-child(1)") }
 		liner_diameter { $("#liner_details > tbody > tr:nth-child(1) > td:nth-child(2)") }
@@ -120,8 +126,9 @@ class WellSummaryPage extends Page {
 
 		lithology_fieldset { $( "fieldset", id:"lithology_fieldset") }
 		lithology { $( "table", id:"lithology") }
+    no_lithology_information { $( "span", id:"no_lithology_information" ) }
 		lithology_table { $("#lithology td")*.text() }
-		
+
 		lithology_from { $("#lithology > tbody > tr:nth-child(1) > td:nth-child(1)") }
         lithology_to { $("#lithology > tbody > tr:nth-child(1) > td:nth-child(2)") }
         lithology_raw_data { $("#lithology > tbody > tr:nth-child(1) > td:nth-child(3)") }

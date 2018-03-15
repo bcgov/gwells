@@ -1,12 +1,12 @@
-DROP FUNCTION IF EXISTS gwells_migrate_bcgs();
+DROP FUNCTION IF EXISTS migrate_bcgs();
 
-CREATE OR REPLACE FUNCTION gwells_migrate_bcgs() RETURNS void AS $$
+CREATE OR REPLACE FUNCTION migrate_bcgs() RETURNS void AS $$
 DECLARE
   row_count integer;
 BEGIN
 	raise notice '...importing wells_screens data';
 
-	INSERT INTO gwells_bcgs_number (
+	INSERT INTO bcgs_number (
 	 create_user 
 	,create_date
 	,update_user 
@@ -24,11 +24,11 @@ BEGIN
 	FROM WELLS.WELLS_BCGS_NUMBERS
 	ORDER BY BCGS_NUMBER;
 
-	raise notice '...BCGS data imported into the gwells_bcgs_number table';
-	SELECT count(*) from gwells_bcgs_number into row_count;
-	raise notice '% rows loaded into the gwells_bcgs_number table',  row_count;
+	raise notice '...BCGS data imported into the bcgs_number table';
+	SELECT count(*) from bcgs_number into row_count;
+	raise notice '% rows loaded into the bcgs_number table',  row_count;
 END;
 $$ LANGUAGE plpgsql;
 
-COMMENT ON FUNCTION gwells_migrate_bcgs () IS 'Load BCGS numbers from legacy Oracle Database using Foreign Data Wrapper.'; 
+COMMENT ON FUNCTION migrate_bcgs () IS 'Load BCGS numbers from legacy Oracle Database using Foreign Data Wrapper.'; 
 

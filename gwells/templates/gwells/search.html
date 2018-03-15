@@ -1,25 +1,24 @@
-{% extends 'gwells/base.html' %} {% load crispy_forms_tags %} {% block meta %}{{ block.super }}{% endblock %} {% block title %}Search{% endblock %} {% block bodyheading_block %}Groundwater Well Search{% endblock %} {% block introduction_block %}
+{% extends 'gwells/base.html' %} {% load crispy_forms_tags %}
 
-<!--<div class="row">
-    <div class="col-sm-12 alert alert-info">
-        <div id="survey-msg" role="alert" aria-atomic="true">Please take a moment to complete a <a href="https://www.surveymonkey.com/r/LTZNZYR" target=_blank>short survey</a> to let us know about your search experience.</div>
-    </div>
-</div>-->
+{% block meta %}{{ block.super }}{% endblock %}
+{% block title %}Search{% endblock %}
+{% block bodyheading_block %}Groundwater Well Search{% endblock %}
+{% block introduction_block %}{% endblock %}
 
-{% endblock %} {% block body_block %} {% if too_many_wells %}
+{% block body_block %}
+
+{% if too_many_wells %}
 <div class="row">
     <div class="col-sm-12 alert alert-warning">
         <div id="too-many-wells" role="alert" aria-atomic="true">{{ too_many_wells }}</div>
     </div>
 </div>
-
 {% elif 'well' in request.GET and not well_list %}
 <div class="row">
     <div class="class-sm-12 alert alert-warning">
         <div id="no-records-found" role="alert" aria-atomic="true">No well records could be found.</div>
     </div>
 </div>
-
 {% endif %}
 
 
@@ -115,7 +114,7 @@
                     {{ well.legal_district_lot|default_if_none:'&nbsp;' }}
                 </td>
                 <td>
-                    {{ land_districts.well.land_district.land_district_guid|default_if_none:'&nbsp;' }}
+                    {{ land_districts.well.land_district.land_district_code|default_if_none:'&nbsp;' }}
                 </td>
                 <td>
                     {{ well.legal_pid|stringformat:"09d"|default_if_none:'&nbsp;' }}
@@ -135,12 +134,18 @@
 <script>
     document.getElementById("search-map").scrollIntoView(true);
 </script>
-{% endif %} {% if 'well' in request.GET %}
-<br />
-<p>
-    Can’t find the well you are looking for? Try your search again using a different set of criteria. If you still need more assistance, Contact <a href="https://portal.nrs.gov.bc.ca/web/client/contact">FrontCounterBC</a>.
-</p>
-{% endif %} {% endblock %} {% block jqscript_block %}
+{% endif %}
+
+{% if 'well' in request.GET %}
+  <br />
+  <p>
+      Can’t find the well you are looking for? Try your search again using a different set of criteria. If you still need more assistance, Contact <a href="https://portal.nrs.gov.bc.ca/web/client/contact">FrontCounterBC</a>.
+  </p>
+{% endif %}
+
+{% endblock %}
+
+{% block jqscript_block %}
 <script>
     var searchMap = null;
     var searchMapNodeId = 'search-map';
@@ -238,7 +243,6 @@
         });
     });
 </script>
-
 <script>
     /*  To help show the popup when putting the focus on the question mark icon with keyboard*/
     document.getElementById("well_tag_question").addEventListener("focusin", trigger_over);
@@ -258,5 +262,4 @@
         $(this).trigger('mouseout');
     }
 </script>
-
 {% endblock %}

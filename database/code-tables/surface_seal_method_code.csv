@@ -1,3 +1,4 @@
-create_user,create_date,update_user,update_date,surface_seal_method_guid,surface_seal_method_code,description,is_hidden,display_order
-WELLS,2006-12-14 09:58:30-08,,,843ea84e-4319-4a62-98d1-db47123902eb,POURED,Poured,f,100
-WELLS,2006-12-14 09:58:30-08,,,ca7f67ff-ec4c-493d-9860-0137e6396c70,PUMPED,Pumped,f,100
+create_user,create_date,update_user,update_date,surface_seal_method_code,description,display_order
+WELLS,2006-12-14 09:58:30-08,,,POURED,Poured,10
+WELLS,2006-12-14 09:58:30-08,,,PUMPED,Pumped,20
+WELLS,2006-12-14 09:58:30-08,,,OTHER,Other,30

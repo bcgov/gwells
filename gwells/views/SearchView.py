@@ -17,11 +17,19 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.shortcuts import render
 from django.http import JsonResponse
 import json
-from ..forms import SearchForm
-from ..models import LandDistrictCode
+from gwells.forms import SearchForm
+from gwells.models import LandDistrictCode
+from gwells.models import Survey
 
 class SearchView(generic.DetailView):
 
+    @staticmethod
+    def get_surveys_for_context():
+        surveys = Survey.objects.order_by('create_date')
+        page = 's'
+        return surveys, page
+
+    @staticmethod
     def common_well_search(request):
         """
             Returns json and array data for a well search.  Used by both the map and text search.
@@ -37,8 +45,10 @@ class SearchView(generic.DetailView):
             well_results_json = json.dumps(
                 [well.as_dict() for well in well_results],
                 cls=DjangoJSONEncoder)
+
         return form, well_results, well_results_json
 
+    @staticmethod
     def well_search(request):
         """
             Text search.
@@ -75,7 +85,9 @@ class SearchView(generic.DetailView):
         land_districts = {}
         all_land_districts = LandDistrictCode.objects.all()
         for land_district in all_land_districts:
-            land_districts[land_district.land_district_guid] = land_district.name
+            land_districts[land_district.land_district_code] = land_district.name
+
+        surveys, page = SearchView.get_surveys_for_context()
 
         return render(request, 'gwells/search.html',
                       {'form': form, 'well_list': well_results,
@@ -83,8 +95,11 @@ class SearchView(generic.DetailView):
                        'wells_json': well_results_json,
                        'lat_long_box': lat_long_box,
                        'land_districts' : land_districts,
+                       'surveys':surveys,
+                       'page':page
                       })
 
+    @staticmethod
     def map_well_search(request):
         """
             Map search.
@@ -92,7 +107,7 @@ class SearchView(generic.DetailView):
         well_results = None
         well_results_json = '[]'
         form = None
-        if (request.method == 'GET' and 'start_lat_long' in request.GET
-                and 'end_lat_long' in request.GET):
+        if (request.method == 'GET' and 'start_lat_long' in request.GET and 'end_lat_long' in request.GET):
             form, well_results, well_results_json = SearchView.common_well_search(request)
+
         return JsonResponse(well_results_json, safe=False)
