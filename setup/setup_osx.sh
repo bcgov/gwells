@@ -43,6 +43,21 @@ LEGACY_DATABASE_PW="${LEGACY_DATABASE_PW:-wells}"          # For Wells db import
 	set -x
 
 
+# Check for params, output a message
+#
+if([ "$#" -ne 0 ])
+then
+	set +x
+	echo
+	echo "Please use variables to pass this script commands."
+	echo "E.g.:"
+	echo " 'VERBOSE=true ./setup_osx.sh'"
+	echo " 'DB_LEGACY=<path>/<filename>.dmp ./setup_osx.sh'"
+	echo
+	exit
+fi
+
+
 # Ensure bash shell script exists and store its checksum
 #
 touch "${BASH_SS}"
