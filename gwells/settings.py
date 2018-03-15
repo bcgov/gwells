@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+import datetime
 import logging.config
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -49,7 +50,12 @@ ENABLE_GOOGLE_ANALYTICS = os.getenv('ENABLE_GOOGLE_ANALYTICS', 'False') == 'True
 ENABLE_ADDITIONAL_DOCUMENTS = os.getenv('ENABLE_ADDITIONAL_DOCUMENTS', 'False') == 'True'
 
 # Controls app context
-APP_CONTEXT_ROOT = os.getenv('APP_CONTEXT_ROOT','')
+APP_CONTEXT_ROOT = os.getenv('APP_CONTEXT_ROOT','gwells')
+
+FIXTURES_DIR = '/'.join([BASE_DIR, APP_CONTEXT_ROOT, 'fixtures'])
+
+# Fixtures dirs
+FIXTURES_DIRS = [FIXTURES_DIR]
 
 # django-settings-export lets us make these variables available in the templates.
 # This eleminate the need for setting the context for each and every view.
@@ -58,6 +64,7 @@ SETTINGS_EXPORT = [
     'ENABLE_GOOGLE_ANALYTICS',     # This is only enabled for production
     'ENABLE_ADDITIONAL_DOCUMENTS', # To temporarily disable additional documents feature
     'APP_CONTEXT_ROOT',            # This allows for moving the app around without code changes
+    'FIXTURES_DIRS'
 ]
 
 ALLOWED_HOSTS = ['*']
@@ -72,12 +79,16 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'debug_toolbar',
-	'django.contrib.postgres',
+    'django.contrib.postgres',
+    'rest_framework',
+    'drf_yasg',
     'gwells',
     'crispy_forms',
     'formtools',
-#    'registries',
+    'registries',
     'django_nose',
+    'webpack_loader',
+    'django_filters',
 )
 
 MIDDLEWARE = (
@@ -92,6 +103,7 @@ MIDDLEWARE = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
+    'gwells.middleware.GWellsRequestParsingMiddleware',
 )
 
 ROOT_URLCONF = 'gwells.urls'
@@ -117,7 +129,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'wsgi.application'
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
-# NOSE_ARGS = ['--with-xunit', '--with-coverage', '--cover-erase', '--cover-inclusive','--cover-xml-file coverage.xml']
 
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
@@ -156,6 +167,9 @@ else:
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATICFILES_DIR = (
+    os.path.join(BASE_DIR, 'staticfiles')
+)
 
 LOGGING = {
     'version': 1,
@@ -190,4 +204,46 @@ LOGGING = {
     }
 }
 
-AUTH_USER_MODEL='gwells.User'
+JWT_AUTH = {
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),
+}
+
+DRF_RENDERERS = ['rest_framework.renderers.JSONRenderer',]
+# Turn on browsable API if "DEBUG" set
+if DEBUG:
+    DRF_RENDERERS.append('rest_framework.renderers.BrowsableAPIRenderer')
+
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': DRF_RENDERERS,
+    'DEFAULT_PERMISSION_CLASSES': (
+        'registries.permissions.IsAdminOrReadOnly',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ),
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 30,
+    'DEFAULT_THROTTLE_CLASSES': (
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle'
+    ),
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '100000/hour',
+        'user': '200000/hour'
+    }
+}
+
+WEBPACK_LOADER = {
+    'DEFAULT': {
+        'CACHE': not DEBUG,
+        'BUNDLE_DIR_NAME': 'bundles/', # must end with slash
+        'STATS_FILE': os.path.join(BASE_DIR, 'frontend/webpack-stats.json'),
+        'POLL_INTERVAL': 0.1,
+        'TIMEOUT': None,
+        'IGNORE': ['.+\.hot-update.js', '.+\.map']
+    }
+}
+LOGIN_URL = '/gwells/accounts/login/'
+LOGIN_REDIRECT_URL = '/gwells/search'
+

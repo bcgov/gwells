@@ -11,20 +11,15 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
-
 from .AuditModel import AuditModel
 from django.db import models
-import uuid
 
 class ScreenIntakeMethodCode(AuditModel):
     """
      Refers to the type of intake mechanism for a well screen, i.e. Screen, Open Bottom, Uncased Hole.
     """
-    screen_intake_method_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    screen_intake_code = models.CharField(max_length=10, unique=True)
+    screen_intake_code = models.CharField(primary_key=True, max_length=10, editable=False)
     description = models.CharField(max_length=100)
-    status_flag = models.BooleanField(default=False, choices=((False, 'N'), (True, 'Y')))
-    is_hidden = models.BooleanField(default=False)
     display_order = models.PositiveIntegerField()
 
     effective_date = models.DateTimeField(blank=True, null=True)

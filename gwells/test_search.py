@@ -12,9 +12,10 @@
     limitations under the License.
 """
 
-from .models import *
+from gwells.models import *
 from django.test import TestCase
-from .search import Search
+from gwells.search import Search
+from django.contrib.auth.models import Group
 
 class SearchTestCase(TestCase):
 
@@ -52,6 +53,8 @@ class SearchTestCase(TestCase):
         w3.latitude = 48.415571
         w3.longitude = -123.364190
         w3.save()
+
+        Group.objects.create(name='admin')
 
     def test_well_search_well_number(self):
         wells = Search.well_search('1', '', '', '')

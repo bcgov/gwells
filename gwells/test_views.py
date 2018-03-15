@@ -12,39 +12,27 @@
     limitations under the License.
 """
 
-from .forms import *
+from gwells.forms import *
 from django.test import TestCase
 from django.core.urlresolvers import reverse
 from http import HTTPStatus
-from .models import *
-from .search import Search
-from .views import *
+from gwells.models import *
+from gwells.search import Search
+from gwells.views import *
 import logging
+from django.core import serializers
+from django.conf import settings
+from django.contrib.auth.models import Group
+from django.contrib.auth.models import User
 
 #TODO split tests into one file per view
 
 class ViewsTestCase(TestCase):
-
-    well_tag_number = 123
+    fixtures = ['well_detail_fixture',  'survey_get_fixture']
 
     @classmethod
     def setUpTestData(cls):
-        #setup
-        prov = ProvinceStateCode.objects.create(display_order=1)
-        prov.save()
-
-        well_class = WellClassCode.objects.create(display_order=1)
-        well_class.save()
-
-        w = Well.objects.create(well_class=well_class, owner_province_state=prov)
-        w.identification_plate_number = 123
-        w.well_tag_number = ViewsTestCase.well_tag_number
-        w.street_address = '123 Main St.'
-        w.legal_plan = '7789'
-        w.owner_full_name = 'John Smith'
-        w.latitude = 48.413551
-        w.longitude = -123.359973
-        w.save()
+        Group.objects.create(name='admin')
 
     def setUp(self):
         pass
@@ -72,16 +60,24 @@ class ViewsTestCase(TestCase):
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_well_detail_no_well(self):
+        #setup
+        logger = logging.getLogger('django.request')
+        previous_level = logger.getEffectiveLevel()
+        logger.setLevel(logging.ERROR)
+
         initial_url = reverse('well_detail', kwargs={'pk':'1'})
         url = initial_url[:-2]
         response = self.client.get(url)
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
 
+        #teardown
+        logger.setLevel(previous_level)
+
     def test_well_detail_ok(self):
-        wells = Search.well_search(ViewsTestCase.well_tag_number, '', '', '')
+        wells = Search.well_search(123, '', '', '')
         self.assertEqual(wells.count(), 1)
 
-        url = reverse('well_detail', kwargs={'pk':ViewsTestCase.well_tag_number})
+        url = reverse('well_detail', kwargs={'pk':123})
         response = self.client.get(url)
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
@@ -98,5 +94,66 @@ class ViewsTestCase(TestCase):
         self.ok('map_well_search')
 
     def test_404_not_ok(self):
-        response = self.client.get("http://localhost:8000/gwells/well/-2")
+        #setup
+        logger = logging.getLogger('django.request')
+        previous_level = logger.getEffectiveLevel()
+        logger.setLevel(logging.ERROR)
+
+        #look for clearly erroneous well_tag_number
+        url = reverse('well_detail', kwargs={'pk':999999999})
+        response = self.client.get(url)
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
+
+        #teardown
+        logger.setLevel(previous_level)
+
+    def test_site_admin_ok(self):
+        group_name = 'admin'
+        username = 'admin'
+        password = 'admin'
+        email = 'admin@admin.com'
+        self.user = User.objects.create_user(username=username, password=password, email=email)
+        admin_group = Group.objects.get(name=group_name)
+        admin_group.user_set.add(self.user)
+        self.client.login(username=username,password=password)
+
+        self.ok('site_admin')
+
+        self.client.logout()
+        self.user.delete()
+
+    def test_site_admin_has_add_survey(self):
+        group_name = 'admin'
+        username = 'admin'
+        password = 'admin'
+        email = 'admin@admin.com'
+        self.user = User.objects.create_user(username=username, password=password, email=email)
+        admin_group = Group.objects.get(name=group_name)
+        admin_group.user_set.add(self.user)
+        self.client.login(username=username,password=password)
+
+        response = self.client.get(reverse('site_admin'))
+        self.assertEquals(response.status_code, HTTPStatus.OK)
+        self.assertContains( response, 'id="add-survey"')
+
+        self.client.logout()
+        self.user.delete()
+
+    def test_survey_detail_ok(self):
+        group_name = 'admin'
+        username = 'admin'
+        password = 'admin'
+        email = 'admin@admin.com'
+        self.user = User.objects.create_user(username=username, password=password, email=email)
+        admin_group = Group.objects.get(name=group_name)
+        admin_group.user_set.add(self.user)
+        self.client.login(username=username,password=password)
+
+        surveys = Survey.objects.all()
+        self.assertEqual(surveys.count(), 1)
+        url = reverse('survey', kwargs={'pk':"495a9927-5a13-490e-bf1d-08bf2048b098"})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+        self.client.logout()
+        self.user.delete()

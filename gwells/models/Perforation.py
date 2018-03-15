@@ -11,7 +11,6 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
-
 from .AuditModel import AuditModel
 from .Well import Well
 
@@ -33,7 +32,7 @@ class Perforation(AuditModel):
     liner_perforation_to = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Perforation To')
 
     class Meta:
-        db_table = 'gwells_perforation'
+        db_table = 'perforation'
         ordering = ['liner_from', 'liner_to', 'liner_perforation_from', 'liner_perforation_to', 'perforation_guid']
 
     def __str__(self):

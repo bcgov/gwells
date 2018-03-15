@@ -1,8 +1,8 @@
-create_user,create_date,update_user,update_date,filter_pack_material_size_guid,filter_pack_material_size_code,description,is_hidden,display_order 
-"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","221ab04e796c11e7b5a5be2e44b06b34","1_2MM","1.0 - 2.0 mm","N","10"
-"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","221ab2ec796c11e7b5a5be2e44b06b34","2_4MM","2.0 - 4.0 mm","N","20"
-"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","221ab9e0796c11e7b5a5be2e44b06b34","4_8MM","4.0 - 8.0 mm","N","30"
-"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","221abb34796c11e7b5a5be2e44b06b34","1020","(1020 sand)","N","40"
-"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","221abc24796c11e7b5a5be2e44b06b34","2040","(2040 sand)","N","50"
-"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","221abcec796c11e7b5a5be2e44b06b34","PEAGRAV","Pea Gravel","N","60"
-"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","221abdb4796c11e7b5a5be2e44b06b34","OTHER","Other","N","70"
+create_user,create_date,update_user,update_date,filter_pack_material_size_code,description,display_order 
+"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","1_2MM","1.0 - 2.0 mm","10"
+"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","2_4MM","2.0 - 4.0 mm","20"
+"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","4_8MM","4.0 - 8.0 mm","30"
+"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","1020","(1020 sand)","40"
+"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","2040","(2040 sand)","50"
+"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","PEAGRAV","Pea Gravel","60"
+"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","OTHER","Other","70"

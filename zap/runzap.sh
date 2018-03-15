@@ -1,1 +1,1 @@
-/zap/zap-full-scan.py -r index.html -t https://testapps.nrs.gov.bc.ca/gwells/
+/zap/zap-baseline.py -r index.html -t https://gwells-dev.pathfinder.gov.bc.ca/gwells/
