@@ -11,10 +11,8 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
-
 from .AuditModel import AuditModel
 from django.db import models
-import uuid
 
 class GroundElevationMethodCode(AuditModel):
     """
@@ -22,10 +20,8 @@ class GroundElevationMethodCode(AuditModel):
     Some examples of methods to determine ground elevation include:
     GPS, Altimeter, Differential GPS, Level, 1:50,000 map, 1:20,000 map, 1:10,000 map, 1:5,000 map.
     """
-    ground_elevation_method_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    ground_elevation_method_code = models.CharField(max_length=10, unique=True)
+    ground_elevation_method_code = models.CharField(primary_key=True, max_length=10, editable=False)
     description = models.CharField(max_length=100)
-    is_hidden = models.BooleanField(default=False)
     display_order = models.PositiveIntegerField()
 
     effective_date = models.DateTimeField(blank=True, null=True)

@@ -1,0 +1,1863 @@
+{
+	"info": {
+		"name": "GWELLS Register API",
+		"_postman_id": "a01759ca-dbe7-9cd5-42a3-eb411bb3e6e0",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Authenticated user",
+			"description": null,
+			"item": [
+				{
+					"name": "Log in",
+					"description": null,
+					"item": [
+						{
+							"name": "Log in",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "0031eb93-cfa6-457b-8948-e4efba9af579",
+										"type": "text/javascript",
+										"exec": [
+											"var jsonData = pm.response.json()",
+											"pm.environment.set(\"token\", jsonData.token);",
+											"",
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.expect(pm.response.code, \"Login was not successful\").to.equal(200);",
+											"})",
+											"",
+											"pm.test(\"A token was returned\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.token, \"a token was not returned\").to.be.ok;",
+											"    pm.expect(jsonData.token.length).to.be.above(36);",
+											"});",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "username",
+											"value": "{{test_user}}",
+											"type": "text"
+										},
+										{
+											"key": "password",
+											"value": "{{test_password}}",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/api-token-auth/?format=json",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"api-token-auth",
+										""
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json",
+											"equals": true
+										}
+									]
+								},
+								"description": "Get token (log in)"
+							},
+							"response": []
+						}
+					],
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Organizations",
+					"description": "Tests for organizations endpoint\n/registries/organizations/",
+					"item": [
+						{
+							"name": "Company create new",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "767ee19c-badf-44a1-85e4-33f2811fcbd9",
+										"type": "text/javascript",
+										"exec": [
+											"( function() {",
+											"    pm.test(\"Successful POST request\", function () {",
+											"        pm.expect(pm.response.code, \"response code not 201\").to.be.oneOf([201,202]);",
+											"    });",
+											"    ",
+											"    var jsonData = pm.response.json()",
+											"    pm.environment.set(\"created_guid\", jsonData.org_guid);",
+											"    ",
+											"    pm.test(\"The record's identifier is in UUID format\", function () {",
+											"        var uuid_re = /\\w{8}-\\w{4}-\\w{4}-\\w{4}-\\w{12}/;",
+											"        var match = uuid_re.exec(jsonData.org_guid);",
+											"        pm.expect(match, \"primary key not in UUID format\").to.be.ok;",
+											"        pm.expect(match.length).to.be.ok;",
+											"        pm.expect(match[0]).to.eql(jsonData.org_guid);",
+											"    });",
+											"    ",
+											"    pm.test(\"Organization name equals name supplied in request\", function () {",
+											"        pm.expect(jsonData.name, \"name does not match\").to.eql(\"Steve's Drilling Inc.\");",
+											"    });",
+											"    ",
+											"    pm.test(\"Street address equals value supplied in request\", function () {",
+											"        pm.expect(jsonData.street_address, \"address does not match\").to.eql(\"1012 Douglas\");",
+											"    });",
+											"    ",
+											"    pm.test(\"Postal code equals value supplied in request\", function () {",
+											"        pm.expect(jsonData.postal_code, \"postal code does not match\").to.eql(\"a1a 1a1\");",
+											"    });",
+											"    ",
+											"    pm.test(\"City should be empty (it wasn't supplied)\", function () {",
+											"        pm.expect(jsonData.city, \"city field has unexpected value\").to.eql(\"\");",
+											"    });",
+											"    ",
+											"    pm.test(\"Audit fields (who_created, when_created) were filled in by backend\", function () {",
+											"        pm.expect(jsonData.create_user.length, \"create_user not present\").to.be.ok;",
+											"        pm.expect(jsonData.create_date.length, \"create_date not present\").to.be.ok;",
+											"    });",
+											"})();",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "name",
+											"value": "Steve's Drilling Inc.",
+											"type": "text"
+										},
+										{
+											"key": "street_address",
+											"value": "1012 Douglas",
+											"type": "text"
+										},
+										{
+											"key": "city",
+											"value": "",
+											"type": "text"
+										},
+										{
+											"key": "postal_code",
+											"value": "a1a 1a1",
+											"type": "text"
+										},
+										{
+											"key": "main_tel",
+											"value": "",
+											"type": "text"
+										},
+										{
+											"key": "fax_tel",
+											"value": "",
+											"type": "text"
+										},
+										{
+											"key": "website_url",
+											"value": "",
+											"type": "text"
+										},
+										{
+											"key": "certificate_authority",
+											"value": "False",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/organizations/?format=json",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"organizations",
+										""
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json",
+											"equals": true
+										}
+									]
+								},
+								"description": null
+							},
+							"response": []
+						},
+						{
+							"name": "Company List",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "d54a135c-aef2-4eab-9041-88acd003e1db",
+										"type": "text/javascript",
+										"exec": [
+											"( function() {",
+											"    pm.test(\"Status code is 200\", function () {",
+											"        pm.response.to.have.status(200);",
+											"    });",
+											"    ",
+											"    pm.test(\"Response time is less than 200ms\", function () {",
+											"        pm.expect(pm.response.responseTime).to.be.below(200);",
+											"    });    ",
+											"    ",
+											"    var created_guid = pm.environment.get(\"created_guid\");",
+											"    var jsonData = pm.response.json();",
+											"    ",
+											"    pm.test(\"List of drilling companies has valid drilling company objects\", function () {",
+											"        // First check that our GUID resembles a valid UUID (i.e. we are not testing before created_guid is set)",
+											"        pm.expect(created_guid.length).to.eql(36);",
+											"",
+											"        // Then check that created_guid is in the response body",
+											"        pm.expect(jsonData.results.length).to.be.above(0);",
+											"        ",
+											"        for (var i; i < jsonData.results.length; i++) {",
+											"            pm.expect(jsonData.results[i].org_guid.length).to.eql(36);",
+											"            pm.expect(jsonData.results[i].name.length).to.be.ok;",
+											"        }",
+											"    });",
+											"    ",
+											"    pm.test(\"Pagination: if there are more objects than the page limit, provide a link to the next page\", function () {",
+											"        if (jsonData.results.length < jsonData.count) {",
+											"            pm.expect(jsonData.next.length).to.be.ok;",
+											"        }",
+											"    });",
+											"})();",
+											"",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}"
+									}
+								],
+								"body": {},
+								"url": {
+									"raw": "{{base_url}}/api/v1/organizations/?format=json",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"organizations",
+										""
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json",
+											"equals": true
+										}
+									]
+								},
+								"description": "Organization model \"list\" view"
+							},
+							"response": []
+						},
+						{
+							"name": "Company retrieve (single organization detail)",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "06fe37f1-dd46-4d9f-8a50-7124acef159b",
+										"type": "text/javascript",
+										"exec": [
+											"( function() {",
+											"    pm.test(\"Status code is 200\", function () {",
+											"        pm.response.to.have.status(200);",
+											"    });",
+											"    ",
+											"    var jsonData = pm.response.json()",
+											"    ",
+											"    pm.test(\"Organization name equals name supplied in request (Steve's Drilling Inc.)\", function () {",
+											"        pm.expect(jsonData.name).to.eql(\"Steve's Drilling Inc.\");",
+											"    });",
+											"    ",
+											"    pm.test(\"Street address equals value supplied in request (1012 Douglas)\", function () {",
+											"        pm.expect(jsonData.street_address).to.eql(\"1012 Douglas\");",
+											"    });",
+											"    ",
+											"    pm.test(\"Postal code equals value supplied in request (a1a 1a1)\", function () {",
+											"        pm.expect(jsonData.postal_code).to.eql(\"a1a 1a1\");",
+											"    });",
+											"    ",
+											"    pm.test(\"City should be empty (it wasn't supplied)\", function () {",
+											"        pm.expect(jsonData.city).to.eql(\"\");",
+											"    });",
+											"})();",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}"
+									}
+								],
+								"body": {},
+								"url": {
+									"raw": "{{base_url}}/api/v1/organizations/{{created_guid}}/?format=json",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"organizations",
+										"{{created_guid}}",
+										""
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json",
+											"equals": true
+										}
+									]
+								},
+								"description": "Retrieve single organization details"
+							},
+							"response": []
+						},
+						{
+							"name": "Company update",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "02f44562-7656-4a7a-a6fa-67a7ee6a1c73",
+										"type": "text/javascript",
+										"exec": [
+											"( function() {",
+											"    pm.test(\"Successful request (200 OK)\", function () {",
+											"        pm.expect(pm.response.code).to.eql(200);",
+											"    });",
+											"    ",
+											"    var jsonData = pm.response.json()",
+											"",
+											"    pm.test(\"City should now be Victoria\", function () {",
+											"        pm.expect(jsonData.city).to.eql(\"Victoria\");",
+											"    });",
+											"",
+											"    pm.test(\"Audit fields (who_updated, when_updated) were filled in by backend\", function () {",
+											"        pm.expect(jsonData.update_user.length).to.be.ok;",
+											"        pm.expect(jsonData.update_date.length).to.be.ok;",
+											"    });",
+											"})();",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "city",
+											"value": "Victoria",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/organizations/{{created_guid}}/?format=json",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"organizations",
+										"{{created_guid}}",
+										""
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json",
+											"equals": true
+										}
+									]
+								},
+								"description": null
+							},
+							"response": []
+						},
+						{
+							"name": "Company ListCreate Options",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "665ae006-e823-4f1b-b0d5-17de55f96cd1",
+										"type": "text/javascript",
+										"exec": [
+											"( function() {",
+											"    pm.test(\"Status code is 200\", function () {",
+											"        pm.response.to.have.status(200);",
+											"    });",
+											"",
+											"    var jsonData = pm.response.json();",
+											"",
+											"    pm.test(\"Response describes allowed actions for this endpoint\", function () {",
+											"        pm.response.to.have.header(\"Allow\");",
+											"    });",
+											"    ",
+											"    pm.test(\"Response body has actions object, with POST object that lists fields\", function () {",
+											"        pm.expect(jsonData.actions).to.be.ok;",
+											"        pm.expect(jsonData.actions.POST).to.be.ok;",
+											"        pm.expect(Object.keys(jsonData.actions.POST).length).to.be.ok;",
+											"    });",
+											"})();",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"method": "OPTIONS",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}"
+									}
+								],
+								"body": {},
+								"url": {
+									"raw": "{{base_url}}/api/v1/organizations/?format=json",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"organizations",
+										""
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json",
+											"equals": true
+										}
+									]
+								},
+								"description": "Options for Organization list/create endpoint"
+							},
+							"response": []
+						},
+						{
+							"name": "Company RetrieveUpdateDestroy Options",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "378cdf34-1e23-4ed1-b845-b0aeaa4c184f",
+										"type": "text/javascript",
+										"exec": [
+											"( function() {",
+											"    pm.test(\"Status code is 200\", function () {",
+											"        pm.response.to.have.status(200);",
+											"    });",
+											"",
+											"    pm.test(\"Response describes allowed actions for this endpoint\", function () {",
+											"        pm.response.to.have.header(\"Allow\");",
+											"    });",
+											"})();",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "OPTIONS",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}"
+									}
+								],
+								"body": {},
+								"url": {
+									"raw": "{{base_url}}/api/v1/organizations/{{created_guid}}/?format=json",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"organizations",
+										"{{created_guid}}",
+										""
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json",
+											"equals": true
+										}
+									]
+								},
+								"description": "Options for Organization retrieve/update/destroy endpoint"
+							},
+							"response": []
+						},
+						{
+							"name": "Company delete",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "a743a15a-6712-486a-9310-5d1261bb03c1",
+										"type": "text/javascript",
+										"exec": [
+											"pm.test(\"Status code is 204\", function () {",
+											"    pm.response.to.have.status(204);",
+											"});",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}"
+									}
+								],
+								"body": {},
+								"url": {
+									"raw": "{{base_url}}/api/v1/organizations/{{created_guid}}/?format=json",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"organizations",
+										"{{created_guid}}",
+										""
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json",
+											"equals": true
+										}
+									]
+								},
+								"description": "Delete request - deletes drilling organization specified by GUID."
+							},
+							"response": []
+						},
+						{
+							"name": "Company retrieve after delete",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "d6a004fb-bf4e-4bf7-a966-8252283716b4",
+										"type": "text/javascript",
+										"exec": [
+											"( function() {",
+											"    pm.test(\"Status code is 404\", function () {",
+											"        pm.response.to.have.status(404);",
+											"    });",
+											"})();",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}"
+									}
+								],
+								"body": {},
+								"url": {
+									"raw": "{{base_url}}/api/v1/organizations/{{created_guid}}/?format=json",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"organizations",
+										"{{created_guid}}",
+										""
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json",
+											"equals": true
+										}
+									]
+								},
+								"description": "Make a get request for the Organization record that was just deleted"
+							},
+							"response": []
+						},
+						{
+							"name": "Company List after delete",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "43017ea1-1f15-4963-9766-15549447a5be",
+										"type": "text/javascript",
+										"exec": [
+											"( function() {",
+											"    pm.test(\"Status code is 200\", function () {",
+											"        pm.response.to.have.status(200);",
+											"    });",
+											"    ",
+											"    var created_guid = pm.environment.get(\"created_guid\")",
+											"",
+											"    pm.test(\"List of drilling companies does not include the created company (successfully deleted)\", function () {",
+											"        // First check that our GUID resembles a valid UUID (i.e. we are not testing before created_guid is set)",
+											"        pm.expect(created_guid.length).to.eql(36);",
+											"        ",
+											"        // Then check that created_guid is in the response body",
+											"        pm.expect(pm.response.text()).to.not.include(created_guid);",
+											"    });",
+											"})();",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}"
+									}
+								],
+								"body": {},
+								"url": {
+									"raw": "{{base_url}}/api/v1/organizations/?format=json",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"organizations",
+										""
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json",
+											"equals": true
+										}
+									]
+								},
+								"description": "Driller model \"list\" view after deleting record"
+							},
+							"response": []
+						},
+						{
+							"name": "Company create bad input",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "53ca138a-1672-42d7-9d31-db1e281f2a41",
+										"type": "text/javascript",
+										"exec": [
+											"( function() {",
+											"    pm.test(\"Successful POST request\", function () {",
+											"        pm.expect(pm.response.code).to.be.oneOf([201,202]);",
+											"    });",
+											"    ",
+											"    var jsonData = pm.response.json();",
+											"    pm.environment.set(\"created_guid_bad_input\", jsonData.org_guid);",
+											"    ",
+											"    pm.test(\"The record's identifier is in UUID format\", function () {",
+											"        var uuid_re = /\\w{8}-\\w{4}-\\w{4}-\\w{4}-\\w{12}/;",
+											"        var match = uuid_re.exec(jsonData.org_guid);",
+											"        pm.expect(match).to.be.ok;",
+											"        pm.expect(match.length).to.be.ok;",
+											"        pm.expect(match[0]).to.eql(jsonData.org_guid);",
+											"    });",
+											"    ",
+											"    pm.test(\"Organization name wasn't cut off by bad input\", function () {",
+											"        pm.expect(jsonData.name).to.include(\"Drilling Co\");",
+											"        pm.expect(jsonData.name).to.include(\"rest of name\");",
+											"        pm.expect(jsonData.name).to.include(\"more name\");",
+											"    });",
+											"    ",
+											"    pm.test(\"Street address wasn't cut off by bad input\", function () {",
+											"        pm.expect(jsonData.street_address).to.include(\"address\");",
+											"        pm.expect(jsonData.street_address).to.include(\"rest of address\");",
+											"    });",
+											"    ",
+											"    pm.test(\"City wasn't cut off by bad input\", function () {",
+											"        pm.expect(jsonData.city).to.eql(\"1') or '1';\");",
+											"    });",
+											"})();"
+										]
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "name",
+											"value": "Drilling Co'; rest of name\\\\/*\\\";more name",
+											"type": "text"
+										},
+										{
+											"key": "street_address",
+											"value": "address\\\";\\/*-- \\'\\\\';rest of address",
+											"type": "text"
+										},
+										{
+											"key": "city",
+											"value": "1') or '1';",
+											"type": "text"
+										},
+										{
+											"key": "postal_code",
+											"value": "",
+											"type": "text"
+										},
+										{
+											"key": "main_tel",
+											"value": "",
+											"type": "text"
+										},
+										{
+											"key": "fax_tel",
+											"value": "",
+											"type": "text"
+										},
+										{
+											"key": "website_url",
+											"value": "",
+											"type": "text"
+										},
+										{
+											"key": "certificate_authority",
+											"value": "False",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/organizations/?format=json",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"organizations",
+										""
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json",
+											"equals": true
+										}
+									]
+								},
+								"description": "Attempt to create a driller record with bad input."
+							},
+							"response": []
+						},
+						{
+							"name": "Company retrieve bad input",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "8dcc8f03-3e7c-47e7-80c0-3e0d1cab7377",
+										"type": "text/javascript",
+										"exec": [
+											"( function() {",
+											"    pm.test(\"Successful GET request (200 OK)\", function () {",
+											"        pm.response.to.have.status(200);",
+											"    });",
+											"    ",
+											"    var jsonData = pm.response.json();",
+											"    ",
+											"    pm.test(\"Organization name wasn't cut off by bad input\", function () {",
+											"        pm.expect(jsonData.name).to.include(\"Drilling Co\");",
+											"        pm.expect(jsonData.name).to.include(\"rest of name\");",
+											"        pm.expect(jsonData.name).to.include(\"more name\");",
+											"    });",
+											"    ",
+											"    pm.test(\"Street address wasn't cut off by bad input\", function () {",
+											"        pm.expect(jsonData.street_address).to.include(\"address\");",
+											"        pm.expect(jsonData.street_address).to.include(\"rest of address\");",
+											"    });",
+											"    ",
+											"    pm.test(\"City wasn't cut off by bad input\", function () {",
+											"        pm.expect(jsonData.city).to.eql(\"1') or '1';\");",
+											"    });",
+											"})();"
+										]
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "who_created",
+											"value": "STH",
+											"type": "text"
+										},
+										{
+											"key": "who_updated",
+											"value": "",
+											"type": "text"
+										},
+										{
+											"key": "name",
+											"value": "Drilling Co'; rest of name\\\\/*\\\";more name",
+											"type": "text"
+										},
+										{
+											"key": "street_address",
+											"value": "address\\\";\\/* \\'\\\\';rest of address",
+											"type": "text"
+										},
+										{
+											"key": "city",
+											"value": "1') or '1';",
+											"type": "text"
+										},
+										{
+											"key": "postal_code",
+											"value": "",
+											"type": "text"
+										},
+										{
+											"key": "main_tel",
+											"value": "",
+											"type": "text"
+										},
+										{
+											"key": "fax_tel",
+											"value": "",
+											"type": "text"
+										},
+										{
+											"key": "website_url",
+											"value": "",
+											"type": "text"
+										},
+										{
+											"key": "certificate_authority",
+											"value": "False",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/organizations/{{created_guid_bad_input}}/?format=json",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"organizations",
+										"{{created_guid_bad_input}}",
+										""
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json",
+											"equals": true
+										}
+									]
+								},
+								"description": "Attempt to retrieve a driller record created with bad input."
+							},
+							"response": []
+						},
+						{
+							"name": "Company create attempt with missing input",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "0d1b13bb-0660-48c8-9023-8b5ba1884e3e",
+										"type": "text/javascript",
+										"exec": [
+											"( function() {",
+											"    pm.test(\"Request with missing required input should return 400 Bad Request\", function () {",
+											"        pm.response.to.have.status(400);",
+											"    });",
+											"    ",
+											"    pm.test(\"Response body contains useful error message\", function () {",
+											"        pm.expect(pm.response.text()).to.include(\"field is required\");",
+											"    });",
+											"})();",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "city",
+											"value": "Victoria",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/organizations/?format=json",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"organizations",
+										""
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json",
+											"equals": true
+										}
+									]
+								},
+								"description": "Attempt to create a driller record with missing required input."
+							},
+							"response": []
+						},
+						{
+							"name": "Company delete bad input record",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "fcb137e4-9af8-40fa-a196-1ad0d00b1da4",
+										"type": "text/javascript",
+										"exec": [
+											"pm.test(\"Status code is 204\", function () {",
+											"    pm.response.to.have.status(204);",
+											"});"
+										]
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}"
+									}
+								],
+								"body": {},
+								"url": {
+									"raw": "{{base_url}}/api/v1/organizations/{{created_guid_bad_input}}/?format=json",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"organizations",
+										"{{created_guid_bad_input}}",
+										""
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json",
+											"equals": true
+										}
+									]
+								},
+								"description": "Delete the record that was created with bad input"
+							},
+							"response": []
+						}
+					],
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Drillers",
+					"description": "Tests for drillers endpoint\n/registries/drillers/",
+					"item": [
+						{
+							"name": "Driller create new",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "05a0005d-cae7-447a-b666-63de221afd22",
+										"type": "text/javascript",
+										"exec": [
+											"( function() {",
+											"    pm.test(\"Successful POST request\", function () {",
+											"        pm.expect(pm.response.code).to.be.oneOf([201,202]);",
+											"    });",
+											"    ",
+											"    var jsonData = pm.response.json()",
+											"    pm.environment.set(\"created_driller_guid\", jsonData.person_guid);",
+											"    pm.environment.set(\"driller_audit_name\", jsonData.create_user);",
+											"    ",
+											"    pm.test(\"The record's identifier is in UUID format\", function () {",
+											"        var uuid_re = /\\w{8}-\\w{4}-\\w{4}-\\w{4}-\\w{12}/;",
+											"        var match = uuid_re.exec(jsonData.person_guid);",
+											"        pm.expect(match).to.be.ok;",
+											"        pm.expect(match.length).to.be.ok;",
+											"        pm.expect(match[0]).to.eql(jsonData.person_guid);",
+											"    });",
+											"    ",
+											"    pm.test(\"Person first name equals name supplied in request\", function () {",
+											"        pm.expect(jsonData.first_name).to.eql(\"Bobby\");",
+											"    });",
+											"    ",
+											"    pm.test(\"Last name equals value supplied in request\", function () {",
+											"        pm.expect(jsonData.surname).to.eql(\"Driller\");",
+											"    });",
+											"    ",
+											"    pm.test(\"Audit fields (create_user, create_date) were filled in by backend\", function () {",
+											"        pm.expect(jsonData.create_user.length).to.be.ok;",
+											"        pm.expect(jsonData.create_date.length).to.be.ok;",
+											"    });",
+											"})();",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "first_name",
+											"value": "Bobby",
+											"type": "text"
+										},
+										{
+											"key": "surname",
+											"value": "Driller",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/drillers/?format=json",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"drillers",
+										""
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json",
+											"equals": true
+										}
+									]
+								},
+								"description": "Create a new driller"
+							},
+							"response": []
+						},
+						{
+							"name": "Driller List",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "d42608d8-fa0e-40ea-974e-3eb2b4cae7ad",
+										"type": "text/javascript",
+										"exec": [
+											"( function() {",
+											"    pm.test(\"Status code is 200\", function () {",
+											"        pm.response.to.have.status(200);",
+											"    });",
+											"    ",
+											"    var created_guid = pm.environment.get(\"created_driller_guid\");",
+											"    var jsonData = pm.response.json();",
+											"    ",
+											"    pm.test(\"List of drillers has valid person objects\", function () {",
+											"        // First check that our GUID resembles a valid UUID (i.e. we are not testing before created_guid is set)",
+											"        pm.expect(created_guid.length).to.eql(36);",
+											"",
+											"        // Then check that created_guid is in the response body",
+											"        pm.expect(jsonData.results.length).to.be.above(0);",
+											"",
+											"        for (var i; i < jsonData.results.length; i++) {",
+											"            pm.expect(jsonData.results[i].person_guid.length).to.eql(36);",
+											"            pm.expect(jsonData.results[i].first_name.length).to.be.ok;",
+											"            pm.expect(jsonData.results[i].surname.length).to.be.ok;",
+											"        }",
+											"    });",
+											"",
+											"    pm.test(\"Pagination: if there are more objects than the page limit, provide a link to the next page\", function () {",
+											"        if (jsonData.results.length < jsonData.count) {",
+											"            pm.expect(jsonData.next.length).to.be.ok;",
+											"        }",
+											"    });",
+											"})();",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}"
+									}
+								],
+								"body": {},
+								"url": {
+									"raw": "{{base_url}}/api/v1/drillers/?format=json",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"drillers",
+										""
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json",
+											"equals": true
+										}
+									]
+								},
+								"description": "Driller model \"list\" view"
+							},
+							"response": []
+						},
+						{
+							"name": "Driller retrieve (single driller detail)",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "faa0b48b-bc98-4828-8f2f-48edffca38b6",
+										"type": "text/javascript",
+										"exec": [
+											"( function() {",
+											"    pm.test(\"Status code is 200\", function () {",
+											"        pm.response.to.have.status(200);",
+											"    });",
+											"    ",
+											"    var jsonData = pm.response.json()",
+											"    ",
+											"    pm.test(\"First name equals name supplied in request (Bobby)\", function () {",
+											"        pm.expect(jsonData.first_name).to.eql(\"Bobby\");",
+											"    });",
+											"    ",
+											"    pm.test(\"Last name equals value supplied in request (Driller)\", function () {",
+											"        pm.expect(jsonData.surname).to.eql(\"Driller\");",
+											"    });",
+											"    ",
+											"    pm.test(\"Audit fields are present and show the user who created the record\", function () {",
+											"        pm.expect(jsonData.create_user.length).to.be.ok;",
+											"        pm.expect(jsonData.create_date.length).to.be.ok;",
+											"        pm.expect(jsonData.create_user).to.eql(pm.environment.get(\"driller_audit_name\"));",
+											"    });",
+											"})();",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}"
+									}
+								],
+								"body": {},
+								"url": {
+									"raw": "{{base_url}}/api/v1/drillers/{{created_driller_guid}}/?format=json",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"drillers",
+										"{{created_driller_guid}}",
+										""
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json",
+											"equals": true
+										}
+									]
+								},
+								"description": "Driller model detail view - single driller"
+							},
+							"response": []
+						},
+						{
+							"name": "Driller update",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "df2f2a93-db21-480d-baee-d1f71b9c474c",
+										"type": "text/javascript",
+										"exec": [
+											"( function() {",
+											"    pm.test(\"Successful request (200 OK)\", function () {",
+											"        pm.expect(pm.response.code).to.eql(200);",
+											"    });",
+											"    ",
+											"    var jsonData = pm.response.json()",
+											"",
+											"    pm.test(\"Last name should now be Drillerson\", function () {",
+											"        pm.expect(jsonData.surname).to.eql(\"Drillerson\");",
+											"    });",
+											"",
+											"    pm.test(\"Audit fields (update_user, update_date) were filled in by backend\", function () {",
+											"        pm.expect(jsonData.update_user.length).to.be.ok;",
+											"        pm.expect(jsonData.update_date.length).to.be.ok;",
+											"    });",
+											"})();",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "surname",
+											"value": "Drillerson",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/drillers/{{created_driller_guid}}/?format=json",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"drillers",
+										"{{created_driller_guid}}",
+										""
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json",
+											"equals": true
+										}
+									]
+								},
+								"description": "Update a driller record"
+							},
+							"response": []
+						},
+						{
+							"name": "Driller put",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "c2d15b29-740b-45c2-b0d1-372297c05a9b",
+										"type": "text/javascript",
+										"exec": [
+											"( function() {",
+											"    pm.test(\"Successful request (200 OK)\", function () {",
+											"        pm.expect(pm.response.code).to.eql(200);",
+											"    });",
+											"    ",
+											"    var jsonData = pm.response.json()",
+											"",
+											"    pm.test(\"Last name should now be Drillerson\", function () {",
+											"        pm.expect(jsonData.surname).to.eql(\"Wells\");",
+											"    });",
+											"",
+											"    pm.test(\"Audit fields (update_user, update_date) were filled in by backend\", function () {",
+											"        pm.expect(jsonData.update_date.length).to.be.ok;",
+											"        pm.expect(jsonData.update_date.length).to.be.ok;",
+											"    });",
+											"})();",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "surname",
+											"value": "Wells",
+											"type": "text"
+										},
+										{
+											"key": "first_name",
+											"value": "Scott",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/drillers/{{created_driller_guid}}/?format=json",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"drillers",
+										"{{created_driller_guid}}",
+										""
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json",
+											"equals": true
+										}
+									]
+								},
+								"description": "Replace a driller record"
+							},
+							"response": []
+						},
+						{
+							"name": "Driller ListCreate Options",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "6caabd10-a649-4a56-96c3-e1b4bffc917c",
+										"type": "text/javascript",
+										"exec": [
+											"( function() {",
+											"    pm.test(\"Status code is 200\", function () {",
+											"        pm.response.to.have.status(200);",
+											"    });",
+											"",
+											"    var jsonData = pm.response.json();",
+											"",
+											"    pm.test(\"Response describes allowed actions for this endpoint\", function () {",
+											"        pm.response.to.have.header(\"Allow\");",
+											"    });",
+											"    ",
+											"    pm.test(\"Response body has actions object, with POST object that lists fields\", function () {",
+											"        pm.expect(jsonData.actions).to.be.ok;",
+											"        pm.expect(jsonData.actions.POST).to.be.ok;",
+											"        pm.expect(Object.keys(jsonData.actions.POST).length).to.be.ok;",
+											"    });",
+											"})();",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"method": "OPTIONS",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}"
+									}
+								],
+								"body": {},
+								"url": {
+									"raw": "{{base_url}}/api/v1/drillers/?format=json",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"drillers",
+										""
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json",
+											"equals": true
+										}
+									]
+								},
+								"description": "Options for Driller list/create endpoint"
+							},
+							"response": []
+						},
+						{
+							"name": "Driller RetrieveUpdateDestroy Options",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "378cdf34-1e23-4ed1-b845-b0aeaa4c184f",
+										"type": "text/javascript",
+										"exec": [
+											"( function() {",
+											"    pm.test(\"Status code is 200\", function () {",
+											"        pm.response.to.have.status(200);",
+											"    });",
+											"",
+											"    pm.test(\"Response describes allowed actions for this endpoint\", function () {",
+											"        pm.response.to.have.header(\"Allow\");",
+											"    });",
+											"})();",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "OPTIONS",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}"
+									}
+								],
+								"body": {},
+								"url": {
+									"raw": "{{base_url}}/api/v1/drillers/{{created_driller_guid}}/?format=json",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"drillers",
+										"{{created_driller_guid}}",
+										""
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json",
+											"equals": true
+										}
+									]
+								},
+								"description": "Options for Driller retrieve/update/destroy endpoint"
+							},
+							"response": []
+						},
+						{
+							"name": "Driller delete",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "a743a15a-6712-486a-9310-5d1261bb03c1",
+										"type": "text/javascript",
+										"exec": [
+											"pm.test(\"Status code is 204\", function () {",
+											"    pm.response.to.have.status(204);",
+											"});",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}"
+									}
+								],
+								"body": {},
+								"url": {
+									"raw": "{{base_url}}/api/v1/drillers/{{created_driller_guid}}/?format=json",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"drillers",
+										"{{created_driller_guid}}",
+										""
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json",
+											"equals": true
+										}
+									]
+								},
+								"description": "Delete driller specified by GUID."
+							},
+							"response": []
+						},
+						{
+							"name": "Driller retrieve after delete",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "d6a004fb-bf4e-4bf7-a966-8252283716b4",
+										"type": "text/javascript",
+										"exec": [
+											"( function() {",
+											"    pm.test(\"Status code is 404\", function () {",
+											"        pm.response.to.have.status(404);",
+											"    });",
+											"})();",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}"
+									}
+								],
+								"body": {},
+								"url": {
+									"raw": "{{base_url}}/api/v1/drillers/{{created_driller_guid}}/?format=json",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"drillers",
+										"{{created_driller_guid}}",
+										""
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json",
+											"equals": true
+										}
+									]
+								},
+								"description": "Make a request for the Driller record that was just deleted"
+							},
+							"response": []
+						},
+						{
+							"name": "Driller list after delete",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "811923c8-0326-4495-93c3-a88386c39178",
+										"type": "text/javascript",
+										"exec": [
+											"( function() {",
+											"    pm.test(\"Status code is 200\", function () {",
+											"        pm.response.to.have.status(200);",
+											"    });",
+											"    ",
+											"    var created_guid = pm.environment.get(\"created_driller_guid\")",
+											"",
+											"    pm.test(\"List of drillers does not include the deleted driller (successfully deleted)\", function () {",
+											"        // First check that our GUID resembles a valid UUID (i.e. we are not testing before created_guid is set)",
+											"        pm.expect(created_guid.length).to.eql(36);",
+											"        ",
+											"        // Then check that created_guid is in the response body",
+											"        pm.expect(pm.response.text()).to.not.include(created_guid);",
+											"    });",
+											"})();",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}"
+									}
+								],
+								"body": {},
+								"url": {
+									"raw": "{{base_url}}/api/v1/drillers/?format=json",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"drillers",
+										""
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json",
+											"equals": true
+										}
+									]
+								},
+								"description": "List driller records after deleting record, and make sure the deleted driller isn't there"
+							},
+							"response": []
+						},
+						{
+							"name": "Driller create attempt with missing input",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "0d1b13bb-0660-48c8-9023-8b5ba1884e3e",
+										"type": "text/javascript",
+										"exec": [
+											"( function() {",
+											"    pm.test(\"Request with missing required input should return 400 Bad Request\", function () {",
+											"        pm.response.to.have.status(400);",
+											"    });",
+											"    ",
+											"    pm.test(\"Response body contains useful error message\", function () {",
+											"        pm.expect(pm.response.text()).to.include(\"field is required\");",
+											"    });",
+											"})();",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}"
+									}
+								],
+								"body": {},
+								"url": {
+									"raw": "{{base_url}}/api/v1/drillers/?format=json",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"drillers",
+										""
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json",
+											"equals": true
+										}
+									]
+								},
+								"description": "Attempt to create a driller record with missing required input."
+							},
+							"response": []
+						}
+					],
+					"_postman_isSubFolder": true
+				}
+			]
+		}
+	]
+}

@@ -21,7 +21,7 @@ SET TRIMSPOOL ON
 SET ECHO OFF
 SET VERIFY OFF
 SET TERMOUT OFF
-SPOOL H:\xform_gwells_surface_seal_type.csv
+SPOOL H:\xform_surface_seal_type.csv
 SELECT /*csv*/  
   'ETL_USER' AS create_user,
   '2017-07-01 00:00:00-08' AS create_date,
@@ -85,7 +85,6 @@ SELECT csv
   '2017-07-01 00:00:00-08' AS create_date,
   'ETL_USER' AS update_user,
   '2017-07-01 00:00:00-08' AS update_date,
-  SYS_GUID() AS surface_seal_material_guid,
   CODE AS code,
   INITCAP(CODE) AS description,
   'N' AS is_hidden,
@@ -112,7 +111,6 @@ SELECT /*csv*/
   '2017-07-01 00:00:00-08' AS create_date,
   'ETL_USER' AS update_user,
   '2017-07-01 00:00:00-08' AS update_date,
-  SYS_GUID() AS surface_seal_method_guid,
   CODE AS code,
   INITCAP(CODE) AS description,
   'N' AS is_hidden,
@@ -149,7 +147,7 @@ SET TRIMSPOOL ON
 SET ECHO OFF
 SET VERIFY OFF
 SET TERMOUT OFF
-SPOOL H:\xform_gwells_well.csv
+SPOOL H:\xform_well.csv
 SELECT /*csv*/ 
   WELLS.WELLS_WELLS.WELL_TAG_NUMBER,
   SYS_GUID() AS WELL_GUID,
@@ -179,27 +177,16 @@ SELECT /*csv*/
   WELLS.WELLS_WELLS.TOTAL_DEPTH_DRILLED AS total_depth_drilled,
   WELLS.WELLS_WELLS.DEPTH_WELL_DRILLED AS finished_well_depth,
   WELLS.WELLS_WELLS.YIELD_VALUE AS well_yield,
-  WELLS.WELLS_WELLS.WELL_USE_CODE, /* -> intended_water_use_guid */
-  WELLS.WELLS_WELLS.LEGAL_LAND_DISTRICT_CODE, /* -> legal_land_district_guid */
+  WELLS.WELLS_WELLS.WELL_USE_CODE,
+  WELLS.WELLS_WELLS.LEGAL_LAND_DISTRICT_CODE,  
   CASE
-    WHEN WELLS.WELLS_OWNERS.PROVINCE_STATE_CODE = 'BC' THEN 'f46b70b647d411e7a91992ebcb67fe33'
-    WHEN WELLS.WELLS_OWNERS.PROVINCE_STATE_CODE = 'AB' THEN 'f46b742647d411e7a91992ebcb67fe33'
-    WHEN WELLS.WELLS_OWNERS.PROVINCE_STATE_CODE = 'WASH_STATE' THEN 'f46b77b447d411e7a91992ebcb67fe33'
-    ELSE  /* 'OTHER' */ 'f46b7b1a47d411e7a91992ebcb67fe33'
-  END AS province_state_guid,
+    WHEN WELLS.WELLS_OWNERS.PROVINCE_STATE_CODE = 'WASH_STATE' THEN 'WA'
+    ELSE WELLS.WELLS_OWNERS.PROVINCE_STATE_CODE
+  END AS province_state_code,
   NVL2 (WELLS.WELLS_WELLS.CLASS_OF_WELL_CODCLASSIFIED_BY,WELLS.WELLS_WELLS.CLASS_OF_WELL_CODCLASSIFIED_BY,'LEGACY') 
-    AS CLASS_OF_WELL_CODCLASSIFIED_BY, /* -> well_class_guid */
+    AS CLASS_OF_WELL_CODCLASSIFIED_BY,
   WELLS.WELLS_WELLS.SUBCLASS_OF_WELL_CLASSIFIED_BY, /* -> well_subclass_guid */
-  CASE
-    WHEN WELLS.WELLS_WELLS.YIELD_UNIT_CODE = 'GPM'  THEN 'c4634ef447c311e7a91992ebcb67fe33'
-    WHEN WELLS.WELLS_WELLS.YIELD_UNIT_CODE = 'IGM'  THEN 'c4634ff847c311e7a91992ebcb67fe33'
-    WHEN WELLS.WELLS_WELLS.YIELD_UNIT_CODE = 'DRY'  THEN 'c46347b047c311e7a91992ebcb67fe33'
-    WHEN WELLS.WELLS_WELLS.YIELD_UNIT_CODE = 'LPS'  THEN 'c46350c047c311e7a91992ebcb67fe33'
-    WHEN WELLS.WELLS_WELLS.YIELD_UNIT_CODE = 'USGM' THEN 'c463525047c311e7a91992ebcb67fe33'
-    WHEN WELLS.WELLS_WELLS.YIELD_UNIT_CODE = 'GPH'  THEN 'c4634b4847c311e7a91992ebcb67fe33'
-    WHEN WELLS.WELLS_WELLS.YIELD_UNIT_CODE = 'UNK'  THEN 'c463518847c311e7a91992ebcb67fe33'
-    ELSE 'c463518847c311e7a91992ebcb67fe33' /* As PostGres didn't like "" as guid value */
-  END AS well_yield_unit_guid,
+  WELLS.WELLS_WELLS.YIELD_UNIT_CODE AS well_yield_unit_guid,
   WELLS.WELLS_WELLS.LATITUDE,
   CASE
     WHEN WELLS.WELLS_WELLS.LONGITUDE > 0 THEN WELLS.WELLS_WELLS.LONGITUDE * -1
@@ -211,41 +198,18 @@ SELECT /*csv*/
      ELSE 'Y'
   END AS orientation_vertical,
   null AS other_drilling_method, /* placeholder as it's brand new content*/
-  CASE   /*  supersedes CONSTRUCTION_METHOD_CODE */
-    WHEN WELLS.WELLS_WELLS.DRILLING_METHOD_CODE = 'AIR_ROTARY'  THEN '262aca1e5db211e7907ba6006ad3dba0'
-    WHEN WELLS.WELLS_WELLS.DRILLING_METHOD_CODE = 'AUGER'       THEN '262ace565db211e7907ba6006ad3dba0'
-    WHEN WELLS.WELLS_WELLS.DRILLING_METHOD_CODE = 'CABLE_TOOL'  THEN '262ad3d85db211e7907ba6006ad3dba0'
-    WHEN WELLS.WELLS_WELLS.DRILLING_METHOD_CODE = 'DRIVING'     THEN '262ad54a5db211e7907ba6006ad3dba0'
-    WHEN WELLS.WELLS_WELLS.DRILLING_METHOD_CODE = 'DUGOUT'      THEN '262ad6265db211e7907ba6006ad3dba0'
-    WHEN WELLS.WELLS_WELLS.DRILLING_METHOD_CODE = 'DUO_ROTARY'  THEN '262ad6ee5db211e7907ba6006ad3dba0'
-    WHEN WELLS.WELLS_WELLS.DRILLING_METHOD_CODE = 'EXCAVATING'  THEN '262ad7b65db211e7907ba6006ad3dba0'
-    WHEN WELLS.WELLS_WELLS.DRILLING_METHOD_CODE = 'JETTING'     THEN '262adb445db211e7907ba6006ad3dba0'
-    WHEN WELLS.WELLS_WELLS.DRILLING_METHOD_CODE = 'MUD_ROTARY'  THEN '262adc2a5db211e7907ba6006ad3dba0'
-    WHEN WELLS.WELLS_WELLS.DRILLING_METHOD_CODE = 'OTHER'       THEN '262adcf25db211e7907ba6006ad3dba0'
-    WHEN WELLS.WELLS_WELLS.DRILLING_METHOD_CODE = 'UNK'         THEN '262addb05db211e7907ba6006ad3dba0'
-    ELSE null 
-  END AS drilling_method_guid,
-  CASE
-    WHEN WELLS.WELLS_WELLS.GROUND_ELEVATION_METHOD_CODE = '5K_MAP'  THEN '523ac3ba77ad11e7b5a5be2e44b06b34'
-    WHEN WELLS.WELLS_WELLS.GROUND_ELEVATION_METHOD_CODE = '10K_MAP'  THEN '523ac81077ad11e7b5a5be2e44b06b34'
-    WHEN WELLS.WELLS_WELLS.GROUND_ELEVATION_METHOD_CODE = '20K_MAP'  THEN '523aca0477ad11e7b5a5be2e44b06b34'
-    WHEN WELLS.WELLS_WELLS.GROUND_ELEVATION_METHOD_CODE = '50K_MAP'  THEN '523ad10277ad11e7b5a5be2e44b06b34'
-    WHEN WELLS.WELLS_WELLS.GROUND_ELEVATION_METHOD_CODE = 'ALTIMETER' THEN '523ad2d877ad11e7b5a5be2e44b06b34'
-    WHEN WELLS.WELLS_WELLS.GROUND_ELEVATION_METHOD_CODE = 'DIFF_GPS'  THEN '523ad47277ad11e7b5a5be2e44b06b34'
-    WHEN WELLS.WELLS_WELLS.GROUND_ELEVATION_METHOD_CODE = 'GPS'  THEN '523ad60277ad11e7b5a5be2e44b06b34'
-    WHEN WELLS.WELLS_WELLS.GROUND_ELEVATION_METHOD_CODE = 'LEVEL'  THEN '523ad79277ad11e7b5a5be2e44b06b34'
-    ELSE null 
-  END AS ground_elevation_method_guid,
+  WELLS.WELLS_WELLS.DRILLING_METHOD_CODE AS drilling_method_code,
+  WELLS.WELLS_WELLS.GROUND_ELEVATION_METHOD_CODE AS ground_elevation_method_code,
   WELLS.WELLS_WELLS.BACKFILL_DEPTH AS bkfill_above_srfc_seal_depth,
   WELLS.WELLS_WELLS.BACKFILL_TYPE  AS backfill_above_surface_seal,
   SEALANT_MATERIAL AS SEALANT_MATERIAL,
 /* other_drilling_method         character varying(50)  
- drilling_method_guid          uuid                  
- ground_elevation_method_guid  uuid                  
+ drilling_method_code         character varying(10)                  
+ ground_elevation_method_code  character varying(10)                   
  surface_seal_depth            numeric(5,2)          
  surface_seal_thickness        numeric(7,2)          
  surface_seal_type_guid    uuid                      
- surface_seal_method_guid    uuid                  
+ surface_seal_method_code    character varying(10)                   
 */  
   to_char(WELLS.WELLS_WELLS.WHEN_CREATED,'YYYY-MM-DD HH24:MI:SS') || '-08' /* PST Timezone */ AS create_date,
   NVL2(WELLS.WELLS_WELLS.WHEN_UPDATED,
@@ -336,7 +300,7 @@ SET TRIMSPOOL ON
 SET ECHO OFF
 SET VERIFY OFF
 SET TERMOUT OFF
-SPOOL H:\xform_gwells_driller.csv
+SPOOL H:\xform_driller.csv
 SELECT /*csv*/ 
   SYS_GUID() AS driller_guid,
   INITCAP(REGEXP_SUBSTR(CREW_DRILLER_NAME,'(\S*)')) AS first_name,
@@ -367,7 +331,7 @@ SET TRIMSPOOL ON
 SET ECHO OFF
 SET VERIFY OFF
 SET TERMOUT OFF
-SPOOL H:\xform_gwells_drilling_company.csv
+SPOOL H:\xform_drilling_company.csv
 SELECT /*csv*/ 
   SYS_GUID() AS drilling_company_guid,
   WELLS.WELLS_DRILLER_CODES.DRILLER_COMPANY_NAME AS name,

@@ -20,8 +20,7 @@ SELECT
 ,org.name           AS org_name                 
 ,org.street_address        
 ,org.city                  
-,prov.province_state_code AS prov_state_code 
-,prov.description as prov_state_desc 
+,org.province_state_code AS prov_state_code 
 ,org.postal_code           
 ,org.main_tel              
 ,org.fax_tel               
@@ -69,11 +68,6 @@ SELECT
 ,org.create_date AS org_create_date          
 ,org.update_user AS org_update_user          
 ,org.update_date AS org_update_date 
-,prov.province_state_guid as prov_guid
-,prov.create_user as prov_create_user
-,prov.create_date as prov_create_date
-,prov.update_user as prov_update_user
-,prov.update_date as prov_update_date
 FROM registries_register reg
 INNER JOIN registries_application appl
   ON appl.application_guid = reg.application_guid
@@ -87,8 +81,6 @@ INNER JOIN registries_contact_at contact
   ON per.person_guid = contact.person_guid
 INNER JOIN registries_organization org
   ON org.org_guid = contact.org_guid
-INNER JOIN province_state_code prov
-  ON prov.province_state_guid = org.province_state_guid
 LEFT JOIN registries_removal_reason_code removal
   ON removal.registries_removal_reason_guid = reg.registries_removal_reason_guid
 WHERE act.code = 'DRILL';       

@@ -11,19 +11,15 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
-
 from .AuditModel import AuditModel
 from django.db import models
-import uuid
 
 class SurfaceSealMethodCode(AuditModel):
     """
      Method used to install the surface seal in the annular space around the outside of the outermost casing and between mulitple casings of a well.
     """
-    surface_seal_method_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    surface_seal_method_code = models.CharField(max_length=10, unique=True)
+    surface_seal_method_code = models.CharField(primary_key=True, max_length=10, editable=False)
     description = models.CharField(max_length=100)
-    is_hidden = models.BooleanField(default=False)
     display_order = models.PositiveIntegerField()
 
     effective_date = models.DateTimeField(blank=True, null=True)

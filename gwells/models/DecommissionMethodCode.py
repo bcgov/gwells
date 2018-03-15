@@ -11,16 +11,12 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
-
 from .AuditModel import AuditModel
 from django.db import models
-import uuid
 
 class DecommissionMethodCode(AuditModel):
-    decommission_method_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    decommission_method_code = models.CharField(max_length=10, verbose_name="Code")
+    decommission_method_code = models.CharField(primary_key=True, max_length=10, editable=False, verbose_name="Code")
     description = models.CharField(max_length=255, verbose_name="Description")
-    status_flag = models.BooleanField(default=False, choices=((False, 'N'), (True, 'Y')))
     display_order = models.PositiveIntegerField()
 
     effective_date = models.DateTimeField(blank=True, null=True)

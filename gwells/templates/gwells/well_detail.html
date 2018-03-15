@@ -4,25 +4,18 @@
 {% block title %}Well Summary{% endblock %}
 
 {% block introduction_block %}
-<!--
 <div class="row hide-for-print show-for-screen">
     <div class="col-sm-12 alert alert-info">
-        <div id="survey-msg" role="alert" aria-atomic="true">Please take a moment to complete a <a href="https://www.surveymonkey.com/r/VMWH39N" target=_blank>short survey</a> to let us know about your well summary page experience.</div>
+        <div id="survey-msg" role="alert" aria-atomic="true">Please take a moment to complete a <a href="https://www.surveymonkey.com/r/YZFPV83" target=_blank>short survey</a> to let us know about your well summary page experience.</div>
     </div>
 </div>
--->
-{% if file_client_error %}
-<div class="row hide-for-print show-for-screen">
-    <div class="col-sm-12 alert alert-danger">
-        <div id="file-client-error-msg-heading" role="alert" aria-atomic="true">{{file_client_error}}</div>
-    </div>
-</div>
-{% endif %}
 {% endblock %}
 {% block body_block %}
 <fieldset id="summary_information_fieldset">
-    <legend>Well Summary</legend>
+
+    <legend>Well Summary <a onclick="window.print();"><span title="Print" class="glyphicon glyphicon-print pull-right hide-for-print"></span></a></legend>
     <div class="row print-compressed">
+
         <div class="col-md-4 col-print-4 print-compressed">
             <div class="row print-compressed">
                 <div class="col-md-12 col-print-12 print-compressed">
@@ -120,22 +113,6 @@
         </div>
     </div>
     &nbsp;
-    <div class="row print-compressed">
-        <div class="col-md-12 col-print-12 print-compressed">
-            <div class="row print-compressed">
-                <div class="col-md-12 print-compressed">
-                    <label for="water_supply_system_name">{% verbose_name well "water_supply_system_name" %}:</label>
-                    <span id="water_supply_system_name">{{well.water_supply_system_name|default_if_none:'&nbsp;' }}</span>
-                </div>
-            </div>
-            <div class="row print-compressed">
-                <div class="col-md-12 col-print-12 print-compressed">
-                    <label for="water_supply_system_well_name">{% verbose_name well "water_supply_system_well_name" %}:</label>
-                    <span id="water_supply_system_well_name">{{well.water_supply_system_well_name|default_if_none:'&nbsp;' }}</span>
-                </div>
-            </div>
-        </div>
-    </div>
 </fieldset>
 
 <fieldset id="location_information_fieldset">
@@ -480,30 +457,15 @@
             <!-- spacer row -->
         </div>
     </div>
-    <div class="row print-compressed">
-        <div class="col-md-4 col-print-4 print-compressed">
-            <div class="row print-compressed">
-                <div class="col-md-12 col-print-12 print-compressed">
-                    <label for="well_plate_attached">{% verbose_name well "well_identification_plate_attached" %}:</label>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4 col-print-4 print-compressed">
-            <div class="row print-compressed">
-                <div class="col-md-12 col-print-12 print-compressed">
-                    <span id="well_plate_attached">{{well.well_identification_plate_attached|default_if_none:'&nbsp;' }}</span>
-                </div>
-            </div>
-        </div>
-    </div>
 </fieldset>
 
 <fieldset id="lithology_fieldset">
     <legend>Lithology</legend>
     <div class="row print-compressed">
         <div class="col-md-12 col-print-12 table-responsive print-compressed">
-            <table id="lithology" class="table table-condensed table-bordered table-striped">
-                <thead>
+          {% if well.lithologydescription_set.all %}
+          <table id="lithology" class="table table-condensed table-bordered table-striped">
+              <thead>
                     <th>From (feet)</th>
                     <th>To (feet)</th>
                     <th>Lithology Raw Data</th>
@@ -514,7 +476,7 @@
                     <th>Water-Bearing<br>Estimated Flow</th>
                     <th>Observations</th>
                 </thead>
-                <tbody>
+              <tbody>
                     {% for lithology in well.lithologydescription_set.all %}
                     <tr>
                         <td>{{lithology.lithology_from|exclude_zero_decimals|default_if_none:'&nbsp;'}}</td>
@@ -531,7 +493,10 @@
                     </tr>
                     {% endfor %}
                 </tbody>
-            </table>
+          </table>
+          {% else %}
+          <span id="no_lithology_information">No lithology information available.</span>
+          {% endif %}
         </div>
     </div>
 </fieldset>
@@ -540,6 +505,7 @@
     <legend>Casing Details</legend>
     <div class="row print-compressed">
         <div class="col-md-12 col-print-12 table-responsive print-compressed">
+            {% if well.lithologydescription_set.all %}
             <table id="casings" class="table table-condensed table-bordered table-striped">
                 <thead>
                     <th>From (feet)</th>
@@ -575,6 +541,9 @@
                     {% endfor %}
                 </tbody>
             </table>
+            {% else %}
+            <span id="no_casing_information">No casing information available.</span>
+            {% endif %}
         </div>
     </div>
 </fieldset>
@@ -645,6 +614,7 @@
     <legend>Liner Details</legend>
     <div class="row print-compressed">
         <div class="col-md-12 col-print-12 table-responsive print-compressed">
+            {% if well.perforation_set.all %}
             <table id="liner_details" class="table table-condensed table-bordered table-striped">
                 <thead>
                     <th>Liner Material</th>
@@ -669,6 +639,9 @@
                     {% endfor %}
                 </tbody>
             </table>
+            {% else %}
+            <span id="no_liner_details_information">No liner information available.</span>
+            {% endif %}
         </div>
     </div>
 </fieldset>
@@ -710,6 +683,7 @@
             </div>
         </div>
         <div class="col-md-8 col-print-8 table-responsive print-compressed">
+            {% if well.screen_set.all %}
             <table id="screens" class="table table-condensed table-bordered table-striped">
                 <thead>
                     <tr>
@@ -732,6 +706,9 @@
                     {% endfor %}
                 </tbody>
             </table>
+            {% else %}
+            <span id="no_screen_information">No screen assembly information available.</span>
+            {% endif %}
         </div>
     </div>
 </fieldset>
@@ -855,7 +832,7 @@
 
     {% if file_client_error %}
     <div class="row hide-for-print show-for-screen">
-        <div class="col-sm-12 alert alert-danger">
+        <div class="col-sm-12 alert alert-warning">
             <div id="file-client-error-msg-body" role="alert" aria-atomic="true">{{file_client_error}}</div>
         </div>
     </div>

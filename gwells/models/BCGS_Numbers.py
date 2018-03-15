@@ -11,7 +11,6 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
-
 from .AuditModel import AuditModel
 from django.db import models
 import uuid
@@ -21,7 +20,7 @@ class BCGS_Numbers(AuditModel):
     bcgs_number = models.CharField(max_length=20, verbose_name="BCGS Mapsheet Number")
 
     class Meta:
-        db_table = 'gwells_bcgs_number'
+        db_table = 'bcgs_number'
         ordering = ['bcgs_number']
 
     def __str__(self):

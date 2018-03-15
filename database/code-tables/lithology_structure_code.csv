@@ -1,6 +1,6 @@
-lithology_structure_guid,lithology_structure_code,description,is_hidden,display_order,create_date,update_date,create_user,update_user
-"02f2917262a711e7907ba6006ad3dba0","Massive","Massive","N","10","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
-"02f2976262a711e7907ba6006ad3dba0","Thick Bed","Thickly Bedded","N","20","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
-"02f29a0a62a711e7907ba6006ad3dba0","Bedded","Bedded","N","30","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
-"02f29c1262a711e7907ba6006ad3dba0","Thin Bed","Thinly Bedded","N","40","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
-"02f29dfc62a711e7907ba6006ad3dba0","Laminated","Laminated","N","50","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
+lithology_structure_code,description,display_order,create_date,update_date,create_user,update_user
+"Massive","Massive","10","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
+"Thick Bed","Thickly Bedded","20","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
+"Bedded","Bedded","30","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
+"Thin Bed","Thinly Bedded","40","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
+"Laminated","Laminated","50","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"

@@ -69,7 +69,6 @@ gwells.pyproj*
 
 #functional-tests
 functional-tests/.gradle/
-functional-tests/gebReports/
 functional-tests/build
 functional-tests/.project
 functional-tests/.settings/org.eclipse.buildship.core.prefs
@@ -85,3 +84,19 @@ activate
 .vscode/settings.json
 
 x.sh
+
+*.sublime-project
+*.sublime-workspace
+
+# Frontend files
+frontend/node_modules/
+frontend/webpack-stats.json
+registries/static/registries/bundles/
+
+
+sonar-runner/.gradle
+*.patch
+*.orig
+sonar-runner/.settings/org.eclipse.buildship.core.prefs
+sonar-runner/.project
+sonar-runner/.classpath
