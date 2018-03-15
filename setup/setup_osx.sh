@@ -1,7 +1,10 @@
 #!/bin/bash
+
+
+# Halt on errors/unsets, change fail returns, change field separator
 #
 set -euo pipefail
-
+IFS=$'\n\t'
 
 # Verbose option
 #
@@ -124,8 +127,12 @@ which brew || \
 
 # Brew install packages
 #
-PACKAGES="git postgresql python3"
-for p in $PACKAGES
+PACKAGES=(
+	"git"
+	"postgresql"
+	"python3"
+)
+for p in ${PACKAGES[@]}
 do
 	brew list $p || brew install $p
 done
@@ -214,7 +221,10 @@ psql -U postgres -d gwells -c \
 
 # Pip3 install virtualenv and virtualenvwrapper
 #
-PACKAGES="virtualenv virtualenvwrapper"
+PACKAGES="
+	virtualenv
+	virtualenvwrapper
+"
 for p in $PACKAGES
 do
 	pip3 show $p || pip3 install $p --user
@@ -294,26 +304,26 @@ python3 ../manage.py migrate
 #
 START_DIR=$( pwd )
 cd ../database/code-tables/
-INCLUDES="clear-tables.sql
-        data-load-static-codes.sql"
-for i in ${INCLUDES}
+INCLUDES=(
+	"clear-tables.sql"
+        "data-load-static-codes.sql"
+)
+for i in ${INCLUDES[@]}
 do
         psql -U gwells -d gwells -f $i
-        echo "---"
-        echo
 done
 cd "${START_DIR}"
 #
 cd ../database/scripts/
-INCLUDES="create-xform-gwells-well-ETL-table.sql
-        populate-xform-gwells-well.sql
-        populate-gwells-well-from-xform.sql
-        replicate_screens.sql"
-for i in ${INCLUDES}
+INCLUDES=(
+	"create-xform-gwells-well-ETL-table.sql"
+        "populate-xform-gwells-well.sql"
+        "populate-gwells-well-from-xform.sql"
+        "replicate_screens.sql"
+)
+for i in ${INCLUDES[@]}
 do
         psql -U gwells -d gwells -f $i
-        echo "---"
-        echo
 done
 cd "${START_DIR}"
 
