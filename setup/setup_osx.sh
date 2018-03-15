@@ -118,8 +118,13 @@ done
 
 # Start PostgreSQL
 #
-( pg_isready -q )|| \
-        brew services start postgresql
+if( ! pg_isready -q )
+then
+	brew services start postgresql
+else
+	brew services restart postgresql
+	sleep 3
+fi
 
 
 # Create postgres user
