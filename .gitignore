@@ -124,10 +124,12 @@ functional-tests/src/test/groovy/testtamplet.txt
 
 # Custom GW
 activate
+x.sh
 
 #virtual env
 /deactivate
 .vscode/settings.json
+.venv
 
 # Frontend files
 frontend/node_modules/

@@ -11,6 +11,7 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
+import os
 from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin
@@ -26,6 +27,13 @@ if app_root:
    app_root_slash = app_root + '/'
 else:
    app_root_slash = app_root
+
+ADMIN_URL = os.getenv(
+    'DJANGO_ADMIN_URL',
+    # safe value used for development when DJANGO_ADMIN_URL might not be set
+    'admin'
+)
+
 
 urlpatterns = [
     # url(r'^'+ app_root +'$', views.HomeView.as_view(), name='home'),
@@ -43,7 +51,7 @@ urlpatterns = [
     url(r'^'+ app_root_slash +'site_admin/survey/(?P<pk>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$', SurveyView.as_view(), name='survey'), #survey details view
     url(r'^'+ app_root_slash +'site_admin/survey', SurveyView.as_view(), name='survey'), #survey api view
     url(r'^'+ app_root_slash +'site_admin', AdminView.as_view(), name='site_admin'), #editable list view of surveys and other site admin features
-    url(r'^'+ app_root_slash +'admin/', admin.site.urls),
+    url(r'^'+ app_root_slash +'DJANGO_ADMIN_URL/', admin.site.urls),
     url(r'^'+ app_root_slash +'accounts/', include('django.contrib.auth.urls')),
 ]
 
