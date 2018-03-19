@@ -112,8 +112,6 @@ class SurveyViewPutTestCase(SurveyViewTestCase):
                 self.assertEqual(1, len(fixture)) #make sure the fixture hasn't changed
                 survey = fixture[0]
 
-                factory = RequestFactory()
-
                 data = {'survey_introduction_text':survey.object.survey_introduction_text,
                         'survey_page':survey.object.survey_page,
                         '_method':'put'}
