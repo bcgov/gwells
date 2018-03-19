@@ -328,6 +328,23 @@ done
 cd "${START_DIR}"
 
 
+# Link to resemble OpenShift's /app-root/src directory
+#
+SOURCE_DIR=$( cd "${START_DIR}/.."; pwd )
+TARGET_DIR=/opt/app-root
+TARGET_LNK="${TARGET_DIR}/src"
+[ -d "${TARGET_DIR}" ]|| sudo mkdir -p "${TARGET_DIR}"
+if(
+	[ -L "${TARGET_LNK}" ]&& \
+	[ $( readlink -- "${TARGET_LNK}" ) != "${SOURCE_DIR}" ]
+)
+then
+	sudo unlink "${TARGET_LNK}"
+fi
+[ -L "${TARGET_LNK}" ]|| \
+	sudo ln -s "${SOURCE_DIR}" "${TARGET_LNK}"
+
+
 # Open browser window after delay
 #
 ( sleep 3 && open http://127.0.0.1:8000/gwells ) &
