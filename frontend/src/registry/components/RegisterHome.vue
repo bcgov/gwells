@@ -181,7 +181,7 @@ export default {
         return 'drillers'
       }
       if (this.searchParams.activity === 'PUMP') {
-        return 'pump-installers'
+        return 'installers'
       }
       return ''
     },

@@ -47,7 +47,7 @@ urlpatterns = [
 
     # List of cities that currently have registered drillers, pump installers etc.
     url(r'^api/v1/cities/drillers/$', views.CitiesListView.as_view(), {'activity':'drill'}, name='city-list-drillers'),
-    url(r'^api/v1/cities/pump-installers/$', views.CitiesListView.as_view(), {'activity': 'install'}, name='city-list-installers'),
+    url(r'^api/v1/cities/installers/$', views.CitiesListView.as_view(), {'activity': 'install'}, name='city-list-installers'),
 
     # Temporary development login endpoint
     url(r'^api/v1/api-token-auth/', obtain_jwt_token_noswagger, name='get-token'),
