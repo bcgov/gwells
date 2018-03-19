@@ -195,8 +195,7 @@ psql -U postgres -d gwells -c \
 # Restore the legacy database from a database dump
 #
 [ -z ${DB_LEGACY} ]|| \
-	PGPASSWORD=wells pg_restore --no-owner --no-privileges "${DB_LEGACY}" \
-	--dbname postgresql://wells:wells@127.0.0.1:5432/wells
+	pg_restore -U wells -d wells --no-owner --no-privileges "${DB_LEGACY}"
 
 
 # Create foreign data wrapper linking Wells (legacy) to the GWells database
