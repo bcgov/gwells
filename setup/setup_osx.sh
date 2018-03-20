@@ -6,6 +6,7 @@
 set -euo pipefail
 IFS=$'\n\t'
 
+
 # Verbose option
 #
 VERBOSE=${VERBOSE:-false}
@@ -13,7 +14,12 @@ VERBOSE=${VERBOSE:-false}
 
 # Receive a Wells (legacy) database to import
 #
-DB_LEGACY=${DB_LEGACY-''}
+DB_LEGACY=${DB_LEGACY:-''}
+
+
+# Post deploy option
+#
+POST_DEPLOY=${POST_DEPLOY:-false}
 
 
 # Non-standard bash shell script
@@ -143,8 +149,6 @@ done
 if( ! pg_isready -q )
 then
 	brew services start postgresql
-else
-	brew services restart postgresql
 	sleep 3
 fi
 
@@ -197,8 +201,7 @@ psql -U postgres -d gwells -c \
 # Restore the legacy database from a database dump
 #
 [ -z ${DB_LEGACY} ]|| \
-	PGPASSWORD=wells pg_restore --no-owner --no-privileges "${DB_LEGACY}" \
-	--dbname postgresql://wells:wells@127.0.0.1:5432/wells
+	pg_restore -U wells -d wells --no-owner --no-privileges "${DB_LEGACY}"
 
 
 # Create foreign data wrapper linking Wells (legacy) to the GWells database
@@ -216,7 +219,13 @@ psql -U postgres -d gwells -c \
 psql -U postgres -d gwells -c \
         "CREATE SCHEMA IF NOT EXISTS wells;"
 psql -U postgres -d gwells -c \
+	"IMPORT FOREIGN SCHEMA public FROM SERVER wells INTO wells;"
+psql -U postgres -d gwells -c \
         "GRANT usage ON SCHEMA wells TO gwells;"
+psql -U postgres -d gwells -c \
+	"GRANT select ON ALL TABLES in SCHEMA wells TO wells;"
+psql -U postgres -d gwells -c \
+        "CREATE SCHEMA IF NOT EXISTS wells;"
 
 
 # Pip3 install virtualenv and virtualenvwrapper
@@ -300,32 +309,30 @@ python3 ../manage.py makemigrations
 python3 ../manage.py migrate
 
 
-# Migrate data from Wells (legacy) to GWells
+# Link to resemble OpenShift's /app-root/src directory
 #
-START_DIR=$( pwd )
-cd ../database/code-tables/
-INCLUDES=(
-	"clear-tables.sql"
-        "data-load-static-codes.sql"
+SOURCE_DIR=$( cd "${START_DIR}/.."; pwd )
+TARGET_DIR=/opt/app-root
+TARGET_LNK="${TARGET_DIR}/src"
+[ -d "${TARGET_DIR}" ]|| sudo mkdir -p "${TARGET_DIR}"
+if(
+	[ -L "${TARGET_LNK}" ]&& \
+	[ $( readlink -- "${TARGET_LNK}" ) != "${SOURCE_DIR}" ]
 )
-for i in ${INCLUDES[@]}
-do
-        psql -U gwells -d gwells -f $i
-done
-cd "${START_DIR}"
+then
+	sudo unlink "${TARGET_LNK}"
+fi
+[ -L "${TARGET_LNK}" ]|| \
+	sudo ln -s "${SOURCE_DIR}" "${TARGET_LNK}"
+
+
+# Post deploy
 #
-cd ../database/scripts/
-INCLUDES=(
-	"create-xform-gwells-well-ETL-table.sql"
-        "populate-xform-gwells-well.sql"
-        "populate-gwells-well-from-xform.sql"
-        "replicate_screens.sql"
-)
-for i in ${INCLUDES[@]}
-do
-        psql -U gwells -d gwells -f $i
-done
-cd "${START_DIR}"
+if [ "${POST_DEPLOY}" == "true" ]
+then
+	cd "${START_DIR}"/../database/cron/
+	./post-deploy.sh
+fi
 
 
 # Open browser window after delay
@@ -335,6 +342,7 @@ cd "${START_DIR}"
 
 # Run server
 #
+cd "${START_DIR}"
 python3 ../manage.py runserver || true
 
 
