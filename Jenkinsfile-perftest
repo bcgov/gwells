@@ -19,10 +19,10 @@ podTemplate(label: 'bddstack', name: 'bddstack', serviceAccount: 'jenkins', clou
         	echo "Build: ${BUILD_ID}"
         	checkout scm
         	dir('functional-tests') {
-           		sh './gradlew jmRun'
+           		sh './gradlew jmRun && exit 0'
            		junit 'build/jmeter/*.xml'
            		perfReport compareBuildPrevious: true, excludeResponseTime: true, ignoreFailedBuilds: true, ignoreUnstableBuilds: true, modeEvaluation: true, modePerformancePerTestCase: true, percentiles: '0,50,90,100', relativeFailedThresholdNegative: 80.0, relativeFailedThresholdPositive: 20.0, relativeUnstableThresholdNegative: 50.0, relativeUnstableThresholdPositive: 50.0, sourceDataFiles: 'build/jmeter/*.xml'
-	   		return 0
+			sh 'exit 0'
         		}
     		}
 	}
