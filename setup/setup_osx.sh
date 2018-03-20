@@ -6,6 +6,7 @@
 set -euo pipefail
 IFS=$'\n\t'
 
+
 # Verbose option
 #
 VERBOSE=${VERBOSE:-false}
@@ -213,7 +214,13 @@ psql -U postgres -d gwells -c \
 psql -U postgres -d gwells -c \
         "CREATE SCHEMA IF NOT EXISTS wells;"
 psql -U postgres -d gwells -c \
+	"IMPORT FOREIGN SCHEMA public FROM SERVER wells INTO wells;"
+psql -U postgres -d gwells -c \
         "GRANT usage ON SCHEMA wells TO gwells;"
+psql -U postgres -d gwells -c \
+	"GRANT select ON ALL TABLES in SCHEMA wells TO wells;"
+psql -U postgres -d gwells -c \
+        "CREATE SCHEMA IF NOT EXISTS wells;"
 
 
 # Pip3 install virtualenv and virtualenvwrapper
