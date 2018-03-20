@@ -14,7 +14,12 @@ VERBOSE=${VERBOSE:-false}
 
 # Receive a Wells (legacy) database to import
 #
-DB_LEGACY=${DB_LEGACY-''}
+DB_LEGACY=${DB_LEGACY:-''}
+
+
+# Post deploy option
+#
+POST_DEPLOY=${POST_DEPLOY:-false}
 
 
 # Non-standard bash shell script
@@ -329,7 +334,6 @@ for i in ${INCLUDES[@]}
 do
         psql -U gwells -d gwells -f $i
 done
-cd "${START_DIR}"
 
 
 # Link to resemble OpenShift's /app-root/src directory
@@ -349,6 +353,16 @@ fi
 	sudo ln -s "${SOURCE_DIR}" "${TARGET_LNK}"
 
 
+# Post deploy
+#
+if [ "${POST_DEPLOY}" == "true" ]
+then
+	cd "${START_DIR}"/../database/cron/
+	./post-deploy.sh
+	sleep 30
+fi
+
+
 # Open browser window after delay
 #
 ( sleep 3 && open http://127.0.0.1:8000/gwells ) &
@@ -356,6 +370,7 @@ fi
 
 # Run server
 #
+cd "${START_DIR}"
 python3 ../manage.py runserver || true
 
 
