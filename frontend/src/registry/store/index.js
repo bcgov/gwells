@@ -24,7 +24,7 @@ export const store = new Vuex.Store({
     loading: false,
     error: null,
     listError: null,
-    cityList: [],
+    cityList: {}, // object looks like: { drillers: ['Duncan', 'Atlin'], installers: ['Squamish'] }
     drillerList: [],
     currentDriller: {}
   },
@@ -83,7 +83,9 @@ export const store = new Vuex.Store({
     [FETCH_CITY_LIST] ({commit}, activity) {
       ApiService.query('cities/' + activity + '/')
         .then((response) => {
-          commit(SET_CITY_LIST, response.data)
+          const list = Object.assign({}, this.state.cityList)
+          list[activity] = response.data
+          commit(SET_CITY_LIST, list)
         })
         .catch((error) => {
           commit(SET_ERROR, error.response)
