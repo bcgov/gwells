@@ -247,3 +247,12 @@ WEBPACK_LOADER = {
 LOGIN_URL = '/gwells/accounts/login/'
 LOGIN_REDIRECT_URL = '/gwells/search'
 
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS': {
+        'Bearer': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header'
+        }
+    }
+}
