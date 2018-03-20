@@ -309,33 +309,6 @@ python3 ../manage.py makemigrations
 python3 ../manage.py migrate
 
 
-# Migrate data from Wells (legacy) to GWells
-#
-START_DIR=$( pwd )
-cd ../database/code-tables/
-INCLUDES=(
-	"clear-tables.sql"
-        "data-load-static-codes.sql"
-)
-for i in ${INCLUDES[@]}
-do
-        psql -U gwells -d gwells -f $i
-done
-cd "${START_DIR}"
-#
-cd ../database/scripts/
-INCLUDES=(
-	"create-xform-gwells-well-ETL-table.sql"
-        "populate-xform-gwells-well.sql"
-        "populate-gwells-well-from-xform.sql"
-        "replicate_screens.sql"
-)
-for i in ${INCLUDES[@]}
-do
-        psql -U gwells -d gwells -f $i
-done
-
-
 # Link to resemble OpenShift's /app-root/src directory
 #
 SOURCE_DIR=$( cd "${START_DIR}/.."; pwd )
@@ -359,7 +332,6 @@ if [ "${POST_DEPLOY}" == "true" ]
 then
 	cd "${START_DIR}"/../database/cron/
 	./post-deploy.sh
-	sleep 30
 fi
 
 
