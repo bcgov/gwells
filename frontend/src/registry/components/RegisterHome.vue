@@ -74,21 +74,24 @@
                     <label>Community</label>
                     <select class="form-control" v-model="searchParams.city">
                       <option value="">All</option>
-                      <option v-for="city in cityList" :key="city.city + city.province" :value="city.city + ',' + city.province_state">{{city.city}}<span v-if="city.province_state">, {{city.province_state}}</span></option>
+                      <option v-for="city in cityList[formatActivityForCityList]" :key="city.city + city.province" :value="city.city + ',' + city.province_state">{{city.city}}<span v-if="city.province_state">, {{city.province_state}}</span></option>
                     </select>
                   </div>
-                  <div class="form-group" v-if="user">
-                    <div class="col-xs-12 col-sm-6 form-spacing">
-                      <label>Registration status</label>
-                      <select v-model="searchParams.status" class="form-control" id="registrationStatusSelect">
-                        <option value="">All</option>
-                        <option value="PENDING">Pending</option>
-                        <option value="INACTIVE">Not registered</option>
-                        <option value="ACTIVE">Registered</option>
-                        <option value="REMOVED">Removed</option>
-                      </select>
-                    </div>
+                </div>
+                <div class="form-group" v-if="user">
+                  <div class="col-xs-12 col-sm-6 form-spacing">
+                    <label>Registration status</label>
+                    <select v-model="searchParams.status" class="form-control" id="registrationStatusSelect">
+                      <option value="">All</option>
+                      <option value="PENDING">Pending</option>
+                      <option value="INACTIVE">Not registered</option>
+                      <option value="ACTIVE">Registered</option>
+                      <option value="REMOVED">Removed</option>
+                    </select>
                   </div>
+                </div>
+                <div class="form-group" v-if="!user">
+                  <div class="col-xs-12"></div>
                 </div>
                 <div class="form-group">
                   <div class="col-xs-12 col-sm-6 form-spacing">
@@ -238,6 +241,7 @@ export default {
     },
     login () {
       this.$store.dispatch(LOGIN, this.credentials)
+      this.loginPanelToggle = false
     },
     logout () {
       this.$store.dispatch(LOGOUT)
