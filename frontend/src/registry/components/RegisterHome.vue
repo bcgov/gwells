@@ -119,7 +119,7 @@
         <api-error :error="listError" resetter="setListError"></api-error>
       </div>
       <div class="col-xs-12">
-        <register-table @sort="sortTable"/>
+        <register-table @sort="sortTable" :activity="lastSearchedActivity"/>
       </div>
     </div>
     <div class="row no-pad" v-if="drillers.results && drillers.results.length">
