@@ -113,7 +113,7 @@
     </div>
     <div class="row no-pad">
       <div class="col-xs-12 col-sm-4">
-        <h3>Well Driller Results</h3>
+        <h3>{{ activityTitle }} Results</h3>
       </div>
       <div v-if="listError" class="col-xs-12 col-sm-7">
         <api-error :error="listError" resetter="setListError"></api-error>
@@ -185,6 +185,17 @@ export default {
       }
       if (this.searchParams.activity === 'PUMP') {
         return 'installers'
+      }
+      return ''
+    },
+    activityTitle () {
+      // Plain english title for results table
+      const activityMap = {
+        DRILL: 'Well Driller',
+        PUMP: 'Pump Installer'
+      }
+      if (activityMap[this.lastSearchedActivity]) {
+        return activityMap[this.lastSearchedActivity]
       }
       return ''
     },
