@@ -276,6 +276,38 @@ workon gwells
 set -u
 
 
+# Create and populate a postacticate file (like .bashrc for virtualenv)
+#
+ENV_VARS=(
+	"export DATABASE_SERVICE_NAME=${DATABASE_SERVICE_NAME}"
+	"export DATABASE_ENGINE=${DATABASE_ENGINE}"
+	"export DATABASE_NAME=${DATABASE_NAME}"
+	"export DATABASE_USER=${DATABASE_USER}"
+	"export DATABASE_PASSWORD=${DATABASE_PASSWORD}"
+	"export DATABASE_SCHEMA=${DATABASE_SCHEMA}"
+	"export DJANGO_DEBUG=${DJANGO_DEBUG}"
+	"export APP_CONTEXT_ROOT=${APP_CONTEXT_ROOT}"
+	"export ENABLE_GOOGLE_ANALYTICS=${ENABLE_GOOGLE_ANALYTICS}"
+	"export ENABLE_DATA_ENTRY=${ENABLE_DATA_ENTRY}"
+	"export BASEURL=${BASEURL}"
+	"export LEGACY_DATABASE_USER=${LEGACY_DATABASE_USER}"
+	"export LEGACY_DATABASE_NAME=${LEGACY_DATABASE_NAME}"
+	"export LEGACY_SCHEMA=${LEGACY_SCHEMA}"
+)
+#
+PA_FILE=~/.virtualenvs/gwells/bin/postactivate
+if [ ! -f "${PA_FILE}" ]
+then 	(
+		echo "#!/bin/bash"
+		echo "#"
+		for e in ${ENV_VARS[@]}
+		do
+			echo $e
+		done
+	) > "${PA_FILE}"
+fi
+
+
 # Configure database with environment variables
 #
 export DATABASE_SERVICE_NAME="${DATABASE_SERVICE_NAME}"
