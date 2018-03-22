@@ -112,4 +112,45 @@ describe('RegisterTable.vue', () => {
     wrapper.find('th i').trigger('click')
     expect(wrapper.emitted('sort')).toEqual([['surname']])
   })
+  it('has the right columns when searching for drillers', () => {
+    const wrapper = shallow(RegisterTable, {
+      store,
+      localVue,
+      stubs: ['router-link', 'router-view']
+    })
+    wrapper.setProps({ activity: 'DRILL' })
+    const tableHeaders = wrapper.findAll('th')
+    const expectedHeaders = [
+      'Name',
+      'Company Name',
+      'Company Address',
+      'Contact Information',
+      'Qualified to Drill',
+      'Certificate Issued By'
+    ]
+    expect(tableHeaders.length).toEqual(6)
+    for (let i = 0; i < tableHeaders.length; i++) {
+      expect(tableHeaders.wrappers[i].text()).toEqual(expectedHeaders[i])
+    }
+  })
+  it('has the right columns when searching for well pump installers', () => {
+    const wrapper = shallow(RegisterTable, {
+      store,
+      localVue,
+      stubs: ['router-link', 'router-view']
+    })
+    wrapper.setProps({ activity: 'PUMP' })
+    const tableHeaders = wrapper.findAll('th')
+    const expectedHeaders = [
+      'Name',
+      'Company Name',
+      'Company Address',
+      'Contact Information',
+      'Certificate Issued By'
+    ]
+    expect(tableHeaders.length).toEqual(5)
+    for (let i = 0; i < tableHeaders.length; i++) {
+      expect(tableHeaders.wrappers[i].text()).toEqual(expectedHeaders[i])
+    }
+  })
 })
