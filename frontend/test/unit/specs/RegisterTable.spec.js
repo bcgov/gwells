@@ -24,14 +24,32 @@ describe('RegisterTable.vue', () => {
           previous: 'http://www.example.com/api/?limit=30&offset=0',
           results: [
             {
-              person_guid: '1',
+              person_guid: '1e252dca-ccb9-439a-a6ec-aeec0f7e4a03',
               first_name: 'Bob',
-              surname: 'Driller'
+              surname: 'Driller',
+              organization_name: null,
+              street_address: null,
+              city: null,
+              province_state: null,
+              contact_tel: null,
+              contact_email: null,
+              activity: 'Well Driller',
+              status: 'Active',
+              registration_no: 'WD 08315530'
             },
             {
-              person_guid: '2',
+              person_guid: '1e252dca-ccb9-439a-a6ec-aeec0f7e4a02',
               first_name: 'Rob',
-              surname: 'Well'
+              surname: 'Well',
+              organization_name: null,
+              street_address: null,
+              city: null,
+              province_state: null,
+              contact_tel: null,
+              contact_email: null,
+              activity: 'Well Driller',
+              status: 'Active',
+              registration_no: 'WD 08315531'
             }
           ]
         }
@@ -59,6 +77,7 @@ describe('RegisterTable.vue', () => {
       localVue,
       stubs: ['router-link', 'router-view']
     })
+    wrapper.setData({activity: 'Well Driller'})
     // first row
     expect(wrapper.findAll('#registry-table-row').at(0).text())
       .toContain('Driller')
@@ -111,5 +130,46 @@ describe('RegisterTable.vue', () => {
     })
     wrapper.find('th i').trigger('click')
     expect(wrapper.emitted('sort')).toEqual([['surname']])
+  })
+  it('has the right columns when searching for drillers', () => {
+    const wrapper = shallow(RegisterTable, {
+      store,
+      localVue,
+      stubs: ['router-link', 'router-view']
+    })
+    wrapper.setProps({ activity: 'DRILL' })
+    const tableHeaders = wrapper.findAll('th')
+    const expectedHeaders = [
+      'Name',
+      'Company Name',
+      'Company Address',
+      'Contact Information',
+      'Qualified to Drill',
+      'Certificate Issued By'
+    ]
+    expect(tableHeaders.length).toEqual(6)
+    for (let i = 0; i < tableHeaders.length; i++) {
+      expect(tableHeaders.wrappers[i].text()).toEqual(expectedHeaders[i])
+    }
+  })
+  it('has the right columns when searching for well pump installers', () => {
+    const wrapper = shallow(RegisterTable, {
+      store,
+      localVue,
+      stubs: ['router-link', 'router-view']
+    })
+    wrapper.setProps({ activity: 'PUMP' })
+    const tableHeaders = wrapper.findAll('th')
+    const expectedHeaders = [
+      'Name',
+      'Company Name',
+      'Company Address',
+      'Contact Information',
+      'Certificate Issued By'
+    ]
+    expect(tableHeaders.length).toEqual(5)
+    for (let i = 0; i < tableHeaders.length; i++) {
+      expect(tableHeaders.wrappers[i].text()).toEqual(expectedHeaders[i])
+    }
   })
 })
