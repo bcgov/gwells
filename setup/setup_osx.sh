@@ -169,7 +169,7 @@ psql -U postgres -c \
 psql -U postgres -c \
         "DROP USER IF EXISTS gwells;"
 psql -U postgres -c \
-        "CREATE USER gwells;"
+        "CREATE USER gwells WITH createdb;"
 psql -U postgres -c \
         "ALTER USER gwells WITH PASSWORD 'gwells';"
 psql -U postgres -c \
