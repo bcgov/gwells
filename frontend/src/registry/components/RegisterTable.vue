@@ -9,7 +9,10 @@
         </thead>
         <tbody>
           <tr id="registry-table-row" v-if="drillers.results && drillers.results.length" v-for="driller in drillers.results" :key="driller.person_guid">
-            <td>{{ driller.first_name }} {{ driller.surname }}</td>
+            <td>
+              <div><b>{{ driller.first_name }} {{ driller.surname }}</b></div>
+              <div>{{ driller.registration_no }}</div>
+            </td>
             <td>{{ driller.organization_name }}</td>
             <td>{{ driller.street_address }}<div>{{ driller.city }}<span v-if="driller.province_state">, {{ driller.province_state }}</span></div></td>
             <td><div v-if="driller.contact_tel">Phone: {{ driller.contact_tel }}</div><div v-if="driller.contact_email">Email: {{ driller.contact_email }}</div></td>
