@@ -18,7 +18,7 @@
             <td><div v-if="driller.contact_tel">Phone: {{ driller.contact_tel }}</div><div v-if="driller.contact_email">Email: {{ driller.contact_email }}</div></td>
             <td v-if="activity === 'DRILL'">{{ driller.activity }}</td>
             <td></td>
-            <td v-if="user">{{ driller.status }}</td>
+            <td>{{ driller.status }}</td>
             <td v-if="user"><router-link :to="{ name: 'PersonDetail', params: { person_guid: driller.person_guid } }">Details</router-link></td>
           </tr>
           <tr v-else>
@@ -124,12 +124,12 @@ export default {
         {
           name: 'Registration Status',
           class: 'col-xs-1',
-          visible: 'admin',
+          visible: 'public',
           sortable: false,
           activity: 'all'
         },
         {
-          name: 'Details',
+          name: 'Action',
           class: 'col-xs-1',
           visible: 'admin',
           sortable: false,
