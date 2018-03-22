@@ -3,19 +3,22 @@
     <div class="table-responsive">
       <table class="table table-striped">
         <thead>
-          <th v-for="field in fields" :key="field.name" :class="field.class" v-if="field.visible === 'public' || user">
+          <th v-for="field in fields" :key="field.name" :class="field.class" v-if="(field.visible === 'public' || user) && (field.activity === activity || field.activity == 'all')">
             {{field.name}} <i class="fa fa-sort" v-if="field.sortable && field.sortCode" @click="sortBy(field.sortCode)"></i>
           </th>
         </thead>
         <tbody>
           <tr id="registry-table-row" v-if="drillers.results && drillers.results.length" v-for="driller in drillers.results" :key="driller.person_guid">
-            <td>{{ driller.first_name }} {{ driller.surname }}</td>
+            <td>
+              <div><b>{{ driller.first_name }} {{ driller.surname }}</b></div>
+              <div>{{ driller.registration_no }}</div>
+            </td>
             <td>{{ driller.organization_name }}</td>
             <td>{{ driller.street_address }}<div>{{ driller.city }}<span v-if="driller.province_state">, {{ driller.province_state }}</span></div></td>
             <td><div v-if="driller.contact_tel">Phone: {{ driller.contact_tel }}</div><div v-if="driller.contact_email">Email: {{ driller.contact_email }}</div></td>
-            <td>{{ driller.activity }}</td>
+            <td v-if="activity === 'DRILL'">{{ driller.activity }}</td>
             <td></td>
-            <td>{{ driller.status }}</td>
+            <td v-if="user">{{ driller.status }}</td>
             <td v-if="user"><router-link :to="{ name: 'PersonDetail', params: { person_guid: driller.person_guid } }">Details</router-link></td>
           </tr>
           <tr v-else>
@@ -65,61 +68,72 @@ const querystring = require('querystring')
 
 export default {
   name: 'RegisterTable',
+  props: ['activity'],
   data () {
     return {
-      // fields for the table headings\
+      // fields for the table headings
       // visible denotes whether field should be visible to public or admin only
+      // activity denotes what fields should be displayed for what activity (driller, installer etc.)
+      // activity: 'all' is displayed for all activities
       fields: [
         {
           name: 'Name',
           sortCode: 'surname',
           class: 'col-xs-1',
           visible: 'public',
-          sortable: true
+          sortable: true,
+          activity: 'all'
         },
         {
           name: 'Company Name',
           sortCode: 'companies__org__name',
           class: 'col-xs-1',
           visible: 'public',
-          sortable: true
+          sortable: true,
+          activity: 'all'
         },
         {
           name: 'Company Address',
           class: 'col-xs-1',
           visible: 'public',
-          sortable: false
+          sortable: false,
+          activity: 'all'
         },
         {
           name: 'Contact Information',
           class: 'col-xs-1',
           visible: 'public',
-          sortable: false
+          sortable: false,
+          activity: 'all'
         },
         {
           name: 'Qualified to Drill',
           class: 'col-xs-1',
           visible: 'public',
-          sortable: true
+          sortable: true,
+          activity: 'DRILL'
         },
         {
           name: 'Certificate Issued By',
           class: 'col-xs-1',
           visible: 'public',
           sortable: true,
-          sortCode: 'issuing_org'
+          sortCode: 'issuing_org',
+          activity: 'all'
         },
         {
           name: 'Registration Status',
           class: 'col-xs-1',
-          visible: 'public',
-          sortable: false
+          visible: 'admin',
+          sortable: false,
+          activity: 'all'
         },
         {
           name: 'Details',
           class: 'col-xs-1',
           visible: 'admin',
-          sortable: false
+          sortable: false,
+          activity: 'all'
         }
       ]
     }
