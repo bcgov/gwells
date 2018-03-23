@@ -51,18 +51,19 @@ EOF
     cd /opt/app-root/src/database/cron/
     ./db-replicate.sh
 
+
 	# \copy statements in data-load-static-codes.sql required to be in this directory
-	cd ../code-tables/registries/
+#	cd ../code-tables/registries/
 
 	# @Registries
 	# Temporary setup of Registries (Well Driller only) as part of Code With Us
 	# ,including Test Data loaded into the Registries (Driller) tables
-	psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER  << EOF
-	\i clear-tables.sql
-	\ir ../../scripts/registries/populate-xforms-registries.sql
-	\i data-load-static-codes.sql
-	\ir ../../scripts/registries/populate-registries-from-xform.sql
-	\ir ../../scripts/registries/post-deploy.sql
+#	psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER  << EOF
+#	\i clear-tables.sql
+#	\ir ../../scripts/registries/populate-xforms-registries.sql
+#	\i data-load-static-codes.sql
+#	\ir ../../scripts/registries/populate-registries-from-xform.sql
+#	\ir ../../scripts/registries/post-deploy.sql
 
 
 EOF
