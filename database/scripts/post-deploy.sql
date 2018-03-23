@@ -98,5 +98,5 @@ ALTER TABLE well_yield_unit_code ALTER COLUMN effective_date SET DEFAULT CURRENT
 ALTER TABLE yield_estimation_method_code ALTER COLUMN effective_date SET DEFAULT CURRENT_DATE;
 
 -- Thu  1 Mar 20:00:30 2018 GW Django doesn't support multi-column PK's
+ALTER TABLE well_subclass_code DROP CONSTRAINT IF EXISTS well_subclass_code_uk CASCADE;
 ALTER TABLE well_subclass_code ADD CONSTRAINT well_subclass_code_uk UNIQUE (well_class_code, well_subclass_code);
-\echo 'NOTE Ignore the ''ERROR:  relation "well_subclass_code_uk" already exists''\n '
