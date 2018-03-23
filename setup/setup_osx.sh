@@ -22,6 +22,11 @@ DB_LEGACY=${DB_LEGACY:-''}
 POST_DEPLOY=${POST_DEPLOY:-false}
 
 
+# Run basic tests
+#
+TEST=${TEST:-false}
+
+
 # Non-standard bash shell script
 #
 BASH_SS=${BASH_SS:-~/.bash_profile}
@@ -310,17 +315,27 @@ fi
 
 # Pip3 install requirements
 #
-pip3 install -U -r ../requirements.txt
+cd "${START_DIR}"/..
+pip3 install -U -r requirements.txt
 
 
 # Dev only - adapt schema for GWells
 #
-python3 ../manage.py makemigrations
+python3 manage.py makemigrations
 
 
 # Migrate data from Wells (legacy) to GWells schema
 #
-python3 ../manage.py migrate
+python3 manage.py migrate
+
+
+# Collect static files and run tests
+#
+if [ "${TEST}" == "true" ]
+then
+	python3 manage.py collectstatic
+	python3 manage.py test -c nose.cfg
+fi
 
 
 # Link to resemble OpenShift's /app-root/src directory
