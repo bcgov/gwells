@@ -99,6 +99,13 @@
                     <input type="text" class="form-control" id="regTypeInput" placeholder="Search" v-model="searchParams.search">
                   </div>
                 </div>
+                <div class="col-xs-12"></div>
+                <div class="form-group">
+                  <div class="col-xs-6 col-sm-2 form-spacing">
+                    <label>Entries</label>
+                    <select class="form-control input-sm" v-model="searchParams.limit"><option>10</option><option>25</option></select>
+                  </div>
+                </div>
                 <div class="form-group">
                   <div class="col-xs-12">
                     <button type="submit" class="btn btn-primary" id="personSearchSubmit">Submit</button>
@@ -113,7 +120,7 @@
     </div>
     <div class="row no-pad">
       <div class="col-xs-12 col-sm-4">
-        <h3>Well Driller Results</h3>
+        <h3>{{ activityTitle }} Results</h3>
       </div>
       <div v-if="listError" class="col-xs-12 col-sm-7">
         <api-error :error="listError" resetter="setListError"></api-error>
@@ -185,6 +192,17 @@ export default {
       }
       if (this.searchParams.activity === 'PUMP') {
         return 'installers'
+      }
+      return ''
+    },
+    activityTitle () {
+      // Plain english title for results table
+      const activityMap = {
+        DRILL: 'Well Driller',
+        PUMP: 'Pump Installer'
+      }
+      if (activityMap[this.lastSearchedActivity]) {
+        return activityMap[this.lastSearchedActivity]
       }
       return ''
     },
