@@ -64,9 +64,7 @@ EOF
 #	\i data-load-static-codes.sql
 #	\ir ../../scripts/registries/populate-registries-from-xform.sql
 #	\ir ../../scripts/registries/post-deploy.sql
-
-
-EOF
+#EOF
 else
     echo ". Skipping DB Replication from Legacy Database, as per DB_REPLICATION flag"
 fi
