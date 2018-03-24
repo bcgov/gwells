@@ -67,14 +67,14 @@ class PersonFilter(restfilters.FilterSet):
     """
     Allows APIPersonListView to filter response by city, province, or registration status.
     """
-    city = restfilters.CharFilter(name="companies__org__city")
+    # city = restfilters.MultipleChoiceFilter(name="companies__org__city")
     prov = restfilters.CharFilter(name="companies__org__province_state__province_state_code")
     status = restfilters.CharFilter(name="applications__registrations__status__code")
     activity = restfilters.CharFilter(name="applications__registrations__registries_activity__code")
 
     class Meta:
         model = Person
-        fields = ('city', 'prov', 'status')
+        fields = ('prov', 'status')
 
 
 class RegistriesIndexView(TemplateView):
@@ -241,8 +241,17 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
     def get_queryset(self):
         """ Returns Person queryset, removing non-active and unregistered drillers for anonymous users """
         qs = self.queryset
+
+        # Search for cities (split comma-separated list and return all matches)
+        cities = self.request.query_params.get('city', None)
+        if cities is not None and len(cities):
+            cities = cities.split(',')
+            qs = qs.filter(companies__org__city__in=cities)
+        
+        # Only show active drillers to non-admin users and public
         if not self.request.user.is_staff:
             qs = qs.filter(applications__registrations__status__code='ACTIVE').distinct()
+        
         return qs
 
     def get_serializer_class(self):
