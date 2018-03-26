@@ -67,8 +67,8 @@ class PersonFilter(restfilters.FilterSet):
     """
     Allows APIPersonListView to filter response by city, province, or registration status.
     """
-    # city = restfilters.MultipleChoiceFilter(name="companies__org__city")
-    prov = restfilters.CharFilter(name="companies__org__province_state__province_state_code")
+    # city = restfilters.MultipleChoiceFilter(name="organization__city")
+    prov = restfilters.CharFilter(name="organization__province_state__province_state_code")
     status = restfilters.CharFilter(name="applications__registrations__status__code")
     activity = restfilters.CharFilter(name="applications__registrations__registries_activity__code")
 
@@ -222,12 +222,12 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
     # Allow searching on name fields, names of related companies, etc.
     filter_backends = (restfilters.DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
     filter_class = PersonFilter
-    ordering_fields = ('surname', 'companies__org__name')
+    ordering_fields = ('surname', 'organization__name')
     search_fields = (
         'first_name',
         'surname',
-        'companies__org__name',
-        'companies__org__city',
+        'organization__name',
+        'organization__city',
         'applications__registrations__registration_no'
         )
 
@@ -236,7 +236,7 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
         .all() \
         .prefetch_related(
             'companies',
-            'companies__org',
+            'organization',
             'applications',
             'applications__registrations',
             'applications__registrations__registries_activity',
@@ -251,7 +251,7 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
         cities = self.request.query_params.get('city', None)
         if cities is not None and len(cities):
             cities = cities.split(',')
-            qs = qs.filter(companies__org__city__in=cities)
+            qs = qs.filter(organization__city__in=cities)
 
         # Only show active drillers to non-admin users and public
         if not self.request.user.is_staff:
@@ -303,8 +303,6 @@ class PersonDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
     queryset = Person.objects \
         .all() \
         .prefetch_related(
-            'companies',
-            'companies__org',
             'applications',
             'applications__registrations',
             'applications__registrations__registries_activity',
@@ -336,13 +334,9 @@ class CitiesListView(ListAPIView):
     lookup_field = 'person_guid'
     pagination_class = None
     queryset = Person.objects \
-        .exclude(companies__org__city__isnull=True) \
-        .prefetch_related(
-            'companies',
-            'companies__org',
-        ) \
-        .distinct('companies__org__city') \
-        .order_by('companies__org__city')
+        .exclude(organization__city__isnull=True) \
+        .distinct('organization__city') \
+        .order_by('organization__city')
 
     def get_queryset(self):
         """
