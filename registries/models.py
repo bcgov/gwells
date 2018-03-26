@@ -5,22 +5,6 @@ from gwells.models import AuditModel, ProvinceStateCode
 
 
 # Create your models here.
-class Person(AuditModel):
-    person_guid = models.UUIDField(
-        primary_key=True, default=uuid.uuid4, editable=False,
-        verbose_name="Person UUID, hidden from users")
-    first_name = models.CharField(max_length=100)
-    surname = models.CharField(max_length=100)
-
-    class Meta:
-        db_table = 'registries_person'
-        ordering = ['first_name', 'surname']
-        verbose_name_plural = 'Persons'
-
-    def __str__(self):
-        return '%s %s' % (self.first_name, self.surname)
-
-
 class Organization(AuditModel):
     org_guid = models.UUIDField(
         primary_key=True, default=uuid.uuid4, editable=False,
@@ -53,6 +37,24 @@ class Organization(AuditModel):
 
     def __str__(self):
         return self.name
+
+class Person(AuditModel):
+    person_guid = models.UUIDField(
+        primary_key=True, default=uuid.uuid4, editable=False,
+        verbose_name="Person UUID, hidden from users")
+    first_name = models.CharField(max_length=100)
+    surname = models.CharField(max_length=100)
+    organization = models.ForeignKey(
+        Organization, db_column='org_guid', on_delete=models.SET_NULL,
+        null=True, verbose_name="Organization Reference")
+
+    class Meta:
+        db_table = 'registries_person'
+        ordering = ['first_name', 'surname']
+        verbose_name_plural = 'Persons'
+
+    def __str__(self):
+        return '%s %s' % (self.first_name, self.surname)
 
 
 class CertifyingBody(AuditModel):
