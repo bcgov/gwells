@@ -13,7 +13,7 @@
     <div class="row no-pad" v-if="!user && loginPanelToggle">
       <div class="col-xs-12">
         <div class="well well-sm">
-          <form @submit.prevent="login">
+          <form @submit.prevent="login" id="registryLoginForm">
             <div class="form-group">
               <div class="col-xs-12 col-sm-2">
                 <label for="loginUser">Username</label>
@@ -33,14 +33,14 @@
         </div>
       </div>
     </div>
-    <div class="row no-pad" v-if="adminPanelToggle">
+    <div class="row no-pad" v-if="user">
       <div class="col-xs-12">
           <div class="well well-sm">
             <div v-if="user">
               <div>Logged in as {{ user.username }}</div>
               <div>
-                <button type="button" class="btn btn-primary">Add new entry</button>
-                <button type="button" class="btn btn-primary">Manage companies</button>
+                <button type="button" class="btn btn-primary" id="addNewEntryButton">Add new entry</button>
+                <button type="button" class="btn btn-primary" id="manageCompaniesButton">Manage companies</button>
               </div>
             </div>
           </div>
