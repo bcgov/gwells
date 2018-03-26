@@ -72,9 +72,9 @@
                 <div class="form-group">
                   <div class="col-xs-12 col-sm-6 form-spacing">
                     <label>Community</label>
-                    <select class="form-control" v-model="searchParams.city">
+                    <select id="cityOptions" class="form-control" v-model="searchParams.city" multiple="multiple" style="min-height: 5.8rem">
                       <option value="">All</option>
-                      <option v-for="city in cityList[formatActivityForCityList]" :key="city.city + city.province" :value="city.city + ',' + city.province_state">{{city.city}}<span v-if="city.province_state">, {{city.province_state}}</span></option>
+                      <option v-for="city in cityList[formatActivityForCityList]" :key="city.city + city.province" :value="city.city">{{city.city}}</option>
                     </select>
                   </div>
                 </div>
@@ -168,7 +168,7 @@ export default {
       },
       searchParams: {
         search: '',
-        city: '',
+        city: [],
         activity: 'DRILL',
         status: 'ACTIVE',
         limit: '10',
@@ -210,8 +210,8 @@ export default {
       // bundles searchParams into fields compatible with API
       return {
         search: this.searchParams.search,
-        prov: this.searchParams.city.split(',')[1],
-        city: this.searchParams.city.split(',')[0],
+        // prov: this.searchParams.city.split(',')[1],
+        city: this.searchParams.city.join(),
         status: this.searchParams.status,
         limit: this.searchParams.limit,
         activity: this.searchParams.activity,
@@ -228,7 +228,7 @@ export default {
   },
   watch: {
     'searchParams.activity': function () {
-      this.searchParams.city = ''
+      this.searchParams.city = []
       this.$store.dispatch(FETCH_CITY_LIST, this.formatActivityForCityList)
     },
     user: function () {
@@ -243,7 +243,7 @@ export default {
     },
     drillerSearchReset () {
       this.searchParams.search = ''
-      this.searchParams.city = ''
+      this.searchParams.city = []
       this.searchParams.activity = 'DRILL'
       this.searchParams.status = 'ACTIVE'
       this.searchParams.limit = '10'
