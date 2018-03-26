@@ -54,7 +54,7 @@ The replicate process can be run ad-hoc on the PostgreSQL pod or on a local deve
 The logged output includes the number of rows inserted into the main "wells" PostgreSQL database table
 
 ```
-ssh-4.2$ psql -d $POSTGRESQL_DATABASE -U $POSTGRESQL_USER -c 'SELECT db_replicate(false);'
+ssh-4.2$ psql -t -d $POSTGRESQL_DATABASE -U $POSTGRESQL_USER -c 'SELECT db_replicate(_subset_ind=>false);'
 NOTICE:  Starting populate_xform() procedure...
 NOTICE:  table "xform_well" does not exist, skipping
 NOTICE:  Created xform_well ETL table

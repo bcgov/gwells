@@ -6,6 +6,7 @@
 set -euo pipefail
 IFS=$'\n\t'
 
+
 # Verbose option
 #
 VERBOSE=${VERBOSE:-false}
@@ -13,7 +14,17 @@ VERBOSE=${VERBOSE:-false}
 
 # Receive a Wells (legacy) database to import
 #
-DB_LEGACY=${DB_LEGACY-''}
+DB_LEGACY=${DB_LEGACY:-''}
+
+
+# Post deploy option
+#
+POST_DEPLOY=${POST_DEPLOY:-false}
+
+
+# Run basic tests
+#
+TEST=${TEST:-false}
 
 
 # Non-standard bash shell script
@@ -143,8 +154,6 @@ done
 if( ! pg_isready -q )
 then
 	brew services start postgresql
-else
-	brew services restart postgresql
 	sleep 3
 fi
 
@@ -165,7 +174,7 @@ psql -U postgres -c \
 psql -U postgres -c \
         "DROP USER IF EXISTS gwells;"
 psql -U postgres -c \
-        "CREATE USER gwells;"
+        "CREATE USER gwells WITH createdb;"
 psql -U postgres -c \
         "ALTER USER gwells WITH PASSWORD 'gwells';"
 psql -U postgres -c \
@@ -197,8 +206,7 @@ psql -U postgres -d gwells -c \
 # Restore the legacy database from a database dump
 #
 [ -z ${DB_LEGACY} ]|| \
-	PGPASSWORD=wells pg_restore --no-owner --no-privileges "${DB_LEGACY}" \
-	--dbname postgresql://wells:wells@127.0.0.1:5432/wells
+	pg_restore -U wells -d wells --no-owner --no-privileges "${DB_LEGACY}"
 
 
 # Create foreign data wrapper linking Wells (legacy) to the GWells database
@@ -216,7 +224,13 @@ psql -U postgres -d gwells -c \
 psql -U postgres -d gwells -c \
         "CREATE SCHEMA IF NOT EXISTS wells;"
 psql -U postgres -d gwells -c \
+	"IMPORT FOREIGN SCHEMA public FROM SERVER wells INTO wells;"
+psql -U postgres -d gwells -c \
         "GRANT usage ON SCHEMA wells TO gwells;"
+psql -U postgres -d gwells -c \
+	"GRANT select ON ALL TABLES in SCHEMA wells TO wells;"
+psql -U postgres -d gwells -c \
+        "CREATE SCHEMA IF NOT EXISTS wells;"
 
 
 # Pip3 install virtualenv and virtualenvwrapper
@@ -267,65 +281,87 @@ workon gwells
 set -u
 
 
-# Configure database with environment variables
+# Create and populate a postacticate file (like .bashrc for virtualenv)
 #
-export DATABASE_SERVICE_NAME="${DATABASE_SERVICE_NAME}"
-export DATABASE_ENGINE="${DATABASE_ENGINE}"
-export DATABASE_NAME="${DATABASE_NAME}"
-export DATABASE_USER="${DATABASE_USER}"
-export DATABASE_PASSWORD="${DATABASE_PASSWORD}"
-export DATABASE_SCHEMA="${DATABASE_SCHEMA}"
-export DJANGO_DEBUG="${DJANGO_DEBUG}"
-export APP_CONTEXT_ROOT="${APP_CONTEXT_ROOT}"
-export ENABLE_GOOGLE_ANALYTICS="${ENABLE_GOOGLE_ANALYTICS}"
-export ENABLE_DATA_ENTRY="${ENABLE_DATA_ENTRY}"
-export BASEURL="${BASEURL}"
-export LEGACY_DATABASE_USER="${LEGACY_DATABASE_USER}"
-export LEGACY_DATABASE_NAME="${LEGACY_DATABASE_NAME}"
-export LEGACY_SCHEMA="${LEGACY_SCHEMA}"
+ENV_VARS=(
+	"export DATABASE_SERVICE_NAME=${DATABASE_SERVICE_NAME}"
+	"export DATABASE_ENGINE=${DATABASE_ENGINE}"
+	"export DATABASE_NAME=${DATABASE_NAME}"
+	"export DATABASE_USER=${DATABASE_USER}"
+	"export DATABASE_PASSWORD=${DATABASE_PASSWORD}"
+	"export DATABASE_SCHEMA=${DATABASE_SCHEMA}"
+	"export DJANGO_DEBUG=${DJANGO_DEBUG}"
+	"export APP_CONTEXT_ROOT=${APP_CONTEXT_ROOT}"
+	"export ENABLE_GOOGLE_ANALYTICS=${ENABLE_GOOGLE_ANALYTICS}"
+	"export ENABLE_DATA_ENTRY=${ENABLE_DATA_ENTRY}"
+	"export BASEURL=${BASEURL}"
+	"export LEGACY_DATABASE_USER=${LEGACY_DATABASE_USER}"
+	"export LEGACY_DATABASE_NAME=${LEGACY_DATABASE_NAME}"
+	"export LEGACY_SCHEMA=${LEGACY_SCHEMA}"
+)
+#
+PA_FILE=~/.virtualenvs/gwells/bin/postactivate
+if [ ! -f "${PA_FILE}" ]
+then 	(
+		echo "#!/bin/bash"
+		echo "#"
+		for e in ${ENV_VARS[@]}
+		do
+			echo $e
+		done
+	) > "${PA_FILE}"
+fi
 
 
 # Pip3 install requirements
 #
-pip3 install -U -r ../requirements.txt
+cd "${START_DIR}"/..
+pip3 install -U -r requirements.txt
 
 
 # Dev only - adapt schema for GWells
 #
-python3 ../manage.py makemigrations
+python3 manage.py makemigrations
 
 
 # Migrate data from Wells (legacy) to GWells schema
 #
-python3 ../manage.py migrate
+python3 manage.py migrate
 
 
-# Migrate data from Wells (legacy) to GWells
+# Collect static files and run tests
 #
-START_DIR=$( pwd )
-cd ../database/code-tables/
-INCLUDES=(
-	"clear-tables.sql"
-        "data-load-static-codes.sql"
-)
-for i in ${INCLUDES[@]}
-do
-        psql -U gwells -d gwells -f $i
-done
-cd "${START_DIR}"
+if [ "${TEST}" == "true" ]
+then
+	python3 manage.py collectstatic
+	python3 manage.py test -c nose.cfg
+fi
+
+
+# Link to resemble OpenShift's /app-root/src directory
 #
-cd ../database/scripts/
-INCLUDES=(
-	"create-xform-gwells-well-ETL-table.sql"
-        "populate-xform-gwells-well.sql"
-        "populate-gwells-well-from-xform.sql"
-        "replicate_screens.sql"
+SOURCE_DIR=$( cd "${START_DIR}/.."; pwd )
+TARGET_DIR=/opt/app-root
+TARGET_LNK="${TARGET_DIR}/src"
+[ -d "${TARGET_DIR}" ]|| sudo mkdir -p "${TARGET_DIR}"
+if(
+	[ -L "${TARGET_LNK}" ]&& \
+	[ $( readlink -- "${TARGET_LNK}" ) != "${SOURCE_DIR}" ]
 )
-for i in ${INCLUDES[@]}
-do
-        psql -U gwells -d gwells -f $i
-done
-cd "${START_DIR}"
+then
+	sudo unlink "${TARGET_LNK}"
+fi
+[ -L "${TARGET_LNK}" ]|| \
+	sudo ln -s "${SOURCE_DIR}" "${TARGET_LNK}"
+
+
+# Post deploy
+#
+if [ "${POST_DEPLOY}" == "true" ]
+then
+	cd "${START_DIR}"/../database/cron/
+	./post-deploy.sh
+fi
 
 
 # Open browser window after delay
@@ -335,6 +371,7 @@ cd "${START_DIR}"
 
 # Run server
 #
+cd "${START_DIR}"
 python3 ../manage.py runserver || true
 
 

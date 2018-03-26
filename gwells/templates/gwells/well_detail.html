@@ -13,8 +13,13 @@
 {% block body_block %}
 <fieldset id="summary_information_fieldset">
 
-    <legend>Well Summary <a onclick="window.print();"><span title="Print" class="glyphicon glyphicon-print pull-right hide-for-print"></span></a></legend>
-    <div class="row print-compressed">
+        {% if settings.ENABLE_GOOGLE_ANALYTICS %}
+                <legend>Well Summary <a onclick="ga('send', 'event', 'Button', 'print', 'Wells Summary Print'); window.print();"><span title="Print" class="glyphicon glyphicon-print pull-right hide-for-print"></span></a></legend>
+        {% else %}
+                <legend>Well Summary <a onclick="window.print();"><span title="Print" class="glyphicon glyphicon-print pull-right hide-for-print"></span></a></legend>
+        {% endif %}
+
+        <div class="row print-compressed">
 
         <div class="col-md-4 col-print-4 print-compressed">
             <div class="row print-compressed">

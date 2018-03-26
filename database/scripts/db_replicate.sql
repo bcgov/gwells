@@ -10,13 +10,12 @@ DROP FUNCTION IF EXISTS db_replicate(boolean);
 
 		   true : replicate just a subset of rows (analogous to $DB_REPLICATE="Subset") 
 		   false: replicate all rows (analogous to $DB_REPLICATE="Full") 
-111350
-12963
+
 	On the Postgres DB Pod:
-	psql -d $POSTGRESQL_DATABASE -U $POSTGRESQL_USER -c 'SELECT db_replicate(true);'
+	psql -t -d $POSTGRESQL_DATABASE -U $POSTGRESQL_USER -c 'SELECT db_replicate(_subset_ind=>true);'
 
 	As a remote task:
-	oc exec postgresql-80-04n7h -- /bin/bash -c 'psql -d $POSTGRESQL_DATABASE -U $POSTGRESQL_USER -c "SELECT db_replicate(false);"' 
+	oc exec postgresql-80-04n7h -- /bin/bash -c 'psql -t -d $POSTGRESQL_DATABASE -U $POSTGRESQL_USER -c "SELECT db_replicate(_subset_ind=>false);"' 
 
     If run on local Developer workstation, ensure that you have Environment variables set
     for $POSTGRESQL_DATABASE, $POSTGRESQL_USER
