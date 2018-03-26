@@ -57,53 +57,6 @@ node('maven') {
     }
 }
 
-podTemplate(label: 'nodejs', name: 'nodejs', serviceAccount: 'jenkins', cloud: 'openshift', containers: [
-  containerTemplate(
-    name: 'jnlp',
-    image: 'registry.access.redhat.com/openshift3/jenkins-slave-nodejs-rhel7',
-    resourceRequestCpu: '500m',
-    resourceLimitCpu: '1000m',
-    resourceRequestMemory: '1Gi',
-    resourceLimitMemory: '4Gi',
-    workingDir: '/tmp',
-    command: '',
-    args: '${computer.jnlpmac} ${computer.name}',
-    envVars: [
-        secretEnvVar(key: 'GWELLS_API_TEST_USER', secretName: 'apitest-secrets', secretKey: 'username'),
-        secretEnvVar(key: 'GWELLS_API_TEST_PASSWORD', secretName: 'apitest-secrets', secretKey: 'password'),
-        envVar(key:'BASEURL', value: 'https://testapps.nrs.gov.bc.ca/gwells/registries')
-       ]
-  )
-])       
-{
-    stage('API Test') {
-        input "Ready to start Tests?"
-        node('nodejs') {
-        //the checkout is mandatory, otherwise functional test would fail
-            echo "checking out source"
-            echo "Build: ${BUILD_ID}"
-            checkout scm
-            dir('api-tests') {
-            sh 'npm install -g newman'
-            try {
-                sh 'newman run registries_api_tests.json --global-var base_url=$BASEURL --global-var test_user=$GWELLS_API_TEST_USER --global-var test_password=$GWELLS_API_TEST_PASSWORD -r cli,junit,html;'
-                } finally {
-                        junit 'newman/*.xml'
-                        publishHTML (target: [
-                                    allowMissing: false,
-                                    alwaysLinkToLastBuild: false,
-                                    keepAll: true,
-                                    reportDir: 'newman',
-                                    reportFiles: 'newman*.html',
-                                    reportName: "API Test Report"
-                                ])
-                        stash includes: 'newman/*.xml', name: 'api-tests' 
-                    }
-            }
-        }
-    }
-}
-
 podTemplate(label: 'bddstack', name: 'bddstack', serviceAccount: 'jenkins', cloud: 'openshift', containers: [
   containerTemplate(
     name: 'jnlp',
@@ -122,6 +75,7 @@ podTemplate(label: 'bddstack', name: 'bddstack', serviceAccount: 'jenkins', clou
 ])       
 {
     stage('Smoke Test on Test') {
+        input "Ready to start Tests?"
         node('bddstack') {
             //the checkout is mandatory, otherwise functional test would fail
             echo "checking out source"
