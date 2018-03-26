@@ -145,7 +145,7 @@ podTemplate(label: 'bddstack', name: 'bddstack', serviceAccount: 'jenkins', clou
                                     keepAll: true,
                                     reportDir: 'build/reports/spock',
                                     reportFiles: 'index.html',
-                                    reportName: "BDD Spock Report"
+                                    reportName: "Test: BDD Spock Report"
                                 ])
                         publishHTML (target: [
                                     allowMissing: false,
@@ -153,7 +153,7 @@ podTemplate(label: 'bddstack', name: 'bddstack', serviceAccount: 'jenkins', clou
                                     keepAll: true,
                                     reportDir: 'build/reports/tests/chromeHeadlessTest',
                                     reportFiles: 'index.html',
-                                    reportName: "Full Test Report"
+                                    reportName: "Test: Full Test Report"
                                 ])
                     perfReport compareBuildPrevious: true, excludeResponseTime: true, ignoreFailedBuilds: true, ignoreUnstableBuilds: true, modeEvaluation: true, modePerformancePerTestCase: true, percentiles: '0,50,90,100', relativeFailedThresholdNegative: 80.0, relativeFailedThresholdPositive: 20.0, relativeUnstableThresholdNegative: 50.0, relativeUnstableThresholdPositive: 50.0, sourceDataFiles: 'build/test-results/**/*.xml'
                 }
@@ -212,7 +212,7 @@ podTemplate(label: 'bddstack', name: 'bddstack', serviceAccount: 'jenkins', clou
                                     keepAll: true,
                                     reportDir: 'build/reports/spock',
                                     reportFiles: 'index.html',
-                                    reportName: "BDD Spock Report"
+                                    reportName: "Prod: BDD Spock Report"
                                 ])
                         publishHTML (target: [
                                     allowMissing: false,
@@ -220,7 +220,7 @@ podTemplate(label: 'bddstack', name: 'bddstack', serviceAccount: 'jenkins', clou
                                     keepAll: true,
                                     reportDir: 'build/reports/tests/chromeHeadlessTest',
                                     reportFiles: 'index.html',
-                                    reportName: "Full Test Report"
+                                    reportName: "Prod: Full Test Report"
                                 ])
                     perfReport compareBuildPrevious: true, excludeResponseTime: true, ignoreFailedBuilds: true, ignoreUnstableBuilds: true, modeEvaluation: true, modePerformancePerTestCase: true, percentiles: '0,50,90,100', relativeFailedThresholdNegative: 80.0, relativeFailedThresholdPositive: 20.0, relativeUnstableThresholdNegative: 50.0, relativeUnstableThresholdPositive: 50.0, sourceDataFiles: 'build/test-results/**/*.xml'
                 }
