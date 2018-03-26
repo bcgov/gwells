@@ -29,7 +29,7 @@
     <div v-if="drillers.results && !drillers.results.length">No results were found.</div>
     <div class="row">
       <div class="col-xs-12 col-sm-4">
-        <span v-if="drillers.results && drillers.results.length">Showing {{ drillers.offset + 1 }} to {{ drillers.offset + drillers.results.length }} of {{ drillers.count }}</span>
+        <span v-if="drillers.results && drillers.results.length">Showing <span id="drillersCurrentOffset">{{ drillers.offset + 1 }}</span> to <span id="drillersCurrentOffsetLimit">{{ drillers.offset + drillers.results.length }}</span> of <span id="drillersTotalResults">{{ drillers.count }}</span></span>
       </div>
       <div v-if="drillers.results && drillers.results.length" class="col-xs-12 col-sm-4 col-sm-offset-4 col-md-offset-5 col-md-3">
         <nav aria-label="List navigation" v-if="drillers.results && drillers.results.length">

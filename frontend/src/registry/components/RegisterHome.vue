@@ -51,7 +51,7 @@
         <div class="panel no-pad">
           <div class="panel-body no-pad">
             <h3 class="registry-panel-title">Search for a Well Driller or Well Installer</h3>
-            <form @submit.prevent="drillerSearch" @reset.prevent="drillerSearchReset">
+            <form @submit.prevent="drillerSearch" @reset.prevent="drillerSearchReset" id="drillerSearchForm">
               <div class="form-group">
                 <div class="col-xs-12">
                   <label>Choose professional type: &nbsp;</label>
@@ -68,6 +68,7 @@
               <div class="form-group">
                 <div class="col-xs-12 col-sm-6 form-spacing">
                   <label for="cityOptions">Community</label>
+                  <div>To search more than one community, hold down the Ctrl key and select.</div>
                   <select id="cityOptions" class="form-control" v-model="searchParams.city" multiple="multiple" style="min-height: 5.8rem">
                     <option value="">All</option>
                     <option v-for="city in cityList[formatActivityForCityList]" :key="city.city + city.province" :value="city.city">{{city.city}}</option>
