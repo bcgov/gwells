@@ -12,8 +12,9 @@ IFS=$'\n\t'
 VERBOSE=${VERBOSE:-false}
 
 
-# Receive a Wells (legacy) database to import
+# Receive a GWells and Wells (legacy) databases to import
 #
+DB_MODERN=${DB_MODERN:-''}
 DB_LEGACY=${DB_LEGACY:-''}
 
 
@@ -327,6 +328,12 @@ python3 manage.py makemigrations
 # Migrate data from Wells (legacy) to GWells schema
 #
 python3 manage.py migrate
+
+
+# Restore the GWells (modern) database from a dump
+#
+[ -z ${DB_MODERN} ]|| \
+	pg_restore -U gwells -d gwells --no-owner --no-privileges "${DB_MODERN}"
 
 
 # Collect static files and run tests
