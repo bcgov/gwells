@@ -6,34 +6,32 @@
         <h2 id="registry-title">Register of Well Drillers and Well Pump Installers</h2>
           <p><a href="https://www2.gov.bc.ca/gov/content/environment/air-land-water/water/groundwater-wells/information-for-well-drillers-well-pump-installers/what-you-need-to-practice-in-bc">Learn more about registering as a well driller or well pump installer in B.C.</a></p>
       </div>
-      <div class="col-xs-12 col-sm-5 text-center">
+      <div class="col-xs-12 col-sm-5 text-right">
         <button v-if="!user" type="button" class="btn btn-primary" @click="loginPanelToggle = !loginPanelToggle">Log in</button>
         <button v-if="user" type="button" class="btn btn-secondary" @click="logout" id="logoutButton">Log out</button>
       </div>
     </div>
     <div class="row no-pad" v-if="!user && loginPanelToggle">
       <div class="col-xs-12">
-          <div class="well well-sm">
-            <div class="container-fluid">
-              <form @submit.prevent="login">
-                <div class="form-group">
-                  <div class="col-xs-12 col-sm-2">
-                    <label for="loginUser">Username</label>
-                    <input type="text" class="form-control" id="loginUser" placeholder="Search" v-model="credentials.username">
-                  </div>
-                  <div class="col-xs-12 col-sm-2">
-                    <label for="loginPassword">Password</label>
-                    <input type="password" class="form-control" id="loginPassword" placeholder="Password" v-model="credentials.password">
-                  </div>
-                </div>
-                <div class="form-group">
-                  <div class="col-xs-12">
-                    <button id="loginButton" type="submit" class="btn btn-primary">Login</button>
-                  </div>
-                </div>
-              </form>
+        <div class="well well-sm">
+          <form @submit.prevent="login">
+            <div class="form-group">
+              <div class="col-xs-12 col-sm-2">
+                <label for="loginUser">Username</label>
+                <input type="text" class="form-control" id="loginUser" placeholder="Search" v-model="credentials.username">
+              </div>
+              <div class="col-xs-12 col-sm-2">
+                <label for="loginPassword">Password</label>
+                <input type="password" class="form-control" id="loginPassword" placeholder="Password" v-model="credentials.password">
+              </div>
             </div>
-          </div>
+            <div class="form-group">
+              <div class="col-xs-12">
+                <button id="loginButton" type="submit" class="btn btn-primary">Login</button>
+              </div>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
     <div class="row no-pad" v-if="adminPanelToggle">
@@ -53,67 +51,65 @@
       <div class="col-xs-12">
         <div class="panel no-pad">
           <div class="panel-body no-pad">
-            <div class="container-fluid no-pad">
-              <h3 class="registry-panel-title">Search for a Well Driller or Well Installer</h3>
-              <form @submit.prevent="drillerSearch" @reset.prevent="drillerSearchReset">
-                <div class="form-group">
-                  <div class="col-xs-12">
-                    <label>Choose professional type: &nbsp;</label>
-                  </div>
-                  <div class="col-xs-12 form-spacing">
-                    <label class="radio-inline">
-                      <input type="radio" name="activitySelector" id="activityDriller" v-model="searchParams.activity" value="DRILL" style="margin-top: 0px"> Well Driller
-                    </label>
-                    <label class="radio-inline">
-                      <input type="radio" name="activitySelector" id="activityInstaller" v-model="searchParams.activity" value="PUMP" style="margin-top: 0px"> Pump Installer
-                    </label>
-                  </div>
+            <h3 class="registry-panel-title">Search for a Well Driller or Well Installer</h3>
+            <form @submit.prevent="drillerSearch" @reset.prevent="drillerSearchReset">
+              <div class="form-group">
+                <div class="col-xs-12">
+                  <label>Choose professional type: &nbsp;</label>
                 </div>
-                <div class="form-group">
-                  <div class="col-xs-12 col-sm-6 form-spacing">
-                    <label>Community</label>
-                    <select id="cityOptions" class="form-control" v-model="searchParams.city" multiple="multiple" style="min-height: 5.8rem">
-                      <option value="">All</option>
-                      <option v-for="city in cityList[formatActivityForCityList]" :key="city.city + city.province" :value="city.city">{{city.city}}</option>
-                    </select>
-                  </div>
+                <div class="col-xs-12 form-spacing">
+                  <label class="radio-inline">
+                    <input type="radio" name="activitySelector" id="activityDriller" v-model="searchParams.activity" value="DRILL" style="margin-top: 0px"> Well Driller
+                  </label>
+                  <label class="radio-inline">
+                    <input type="radio" name="activitySelector" id="activityInstaller" v-model="searchParams.activity" value="PUMP" style="margin-top: 0px"> Pump Installer
+                  </label>
                 </div>
-                <div class="form-group" v-if="user">
-                  <div class="col-xs-12 col-sm-6 form-spacing">
-                    <label>Registration status</label>
-                    <select v-model="searchParams.status" class="form-control" id="registrationStatusSelect">
-                      <option value="">All</option>
-                      <option value="PENDING">Pending</option>
-                      <option value="INACTIVE">Not registered</option>
-                      <option value="ACTIVE">Registered</option>
-                      <option value="REMOVED">Removed</option>
-                    </select>
-                  </div>
+              </div>
+              <div class="form-group">
+                <div class="col-xs-12 col-sm-6 form-spacing">
+                  <label>Community</label>
+                  <select id="cityOptions" class="form-control" v-model="searchParams.city" multiple="multiple" style="min-height: 5.8rem">
+                    <option value="">All</option>
+                    <option v-for="city in cityList[formatActivityForCityList]" :key="city.city + city.province" :value="city.city">{{city.city}}</option>
+                  </select>
                 </div>
-                <div class="form-group" v-if="!user">
-                  <div class="col-xs-12"></div>
+              </div>
+              <div class="form-group" v-if="user">
+                <div class="col-xs-12 col-sm-6 form-spacing">
+                  <label>Registration status</label>
+                  <select v-model="searchParams.status" class="form-control" id="registrationStatusSelect">
+                    <option value="">All</option>
+                    <option value="PENDING">Pending</option>
+                    <option value="INACTIVE">Not registered</option>
+                    <option value="ACTIVE">Registered</option>
+                    <option value="REMOVED">Removed</option>
+                  </select>
                 </div>
-                <div class="form-group">
-                  <div class="col-xs-12 col-sm-6 form-spacing">
-                    <label for="regTypeInput">Individual, company, or registration number</label>
-                    <input type="text" class="form-control" id="regTypeInput" placeholder="Search" v-model="searchParams.search">
-                  </div>
-                </div>
+              </div>
+              <div class="form-group" v-if="!user">
                 <div class="col-xs-12"></div>
-                <div class="form-group">
-                  <div class="col-xs-6 col-sm-2 form-spacing">
-                    <label>Entries</label>
-                    <select class="form-control input-sm" v-model="searchParams.limit"><option>10</option><option>25</option></select>
-                  </div>
+              </div>
+              <div class="form-group">
+                <div class="col-xs-12 col-sm-6 form-spacing">
+                  <label for="regTypeInput">Individual, company, or registration number</label>
+                  <input type="text" class="form-control" id="regTypeInput" placeholder="Search" v-model="searchParams.search">
                 </div>
-                <div class="form-group">
-                  <div class="col-xs-12">
-                    <button type="submit" class="btn btn-primary" id="personSearchSubmit">Submit</button>
-                    <button type="reset" class="btn btn-secondary" id="personSearchReset">Reset</button>
-                  </div>
+              </div>
+              <div class="col-xs-12"></div>
+              <div class="form-group">
+                <div class="col-xs-6 col-sm-2 form-spacing">
+                  <label>Entries</label>
+                  <select class="form-control input-sm" v-model="searchParams.limit"><option>10</option><option>25</option></select>
                 </div>
-              </form>
-            </div>
+              </div>
+              <div class="form-group">
+                <div class="col-xs-12">
+                  <button type="submit" class="btn btn-primary" id="personSearchSubmit">Submit</button>
+                  <button type="reset" class="btn btn-secondary" id="personSearchReset">Reset</button>
+                </div>
+              </div>
+            </form>
           </div>
         </div>
       </div>
