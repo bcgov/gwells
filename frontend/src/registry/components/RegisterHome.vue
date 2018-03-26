@@ -2,7 +2,6 @@
   <div class="container-fluid no-pad">
     <div class="row form-spacing no-pad">
       <div class="col-xs-12 col-sm-7">
-        <a id="main-content-anchor"></a>
         <h2 id="registry-title">Register of Well Drillers and Well Pump Installers</h2>
           <p><a href="https://www2.gov.bc.ca/gov/content/environment/air-land-water/water/groundwater-wells/information-for-well-drillers-well-pump-installers/what-you-need-to-practice-in-bc">Learn more about registering as a well driller or well pump installer in B.C.</a></p>
       </div>
@@ -68,7 +67,7 @@
               </div>
               <div class="form-group">
                 <div class="col-xs-12 col-sm-6 form-spacing">
-                  <label>Community</label>
+                  <label for="cityOptions">Community</label>
                   <select id="cityOptions" class="form-control" v-model="searchParams.city" multiple="multiple" style="min-height: 5.8rem">
                     <option value="">All</option>
                     <option v-for="city in cityList[formatActivityForCityList]" :key="city.city + city.province" :value="city.city">{{city.city}}</option>
@@ -77,7 +76,7 @@
               </div>
               <div class="form-group" v-if="user">
                 <div class="col-xs-12 col-sm-6 form-spacing">
-                  <label>Registration status</label>
+                  <label for="registrationStatusSelect">Registration status</label>
                   <select v-model="searchParams.status" class="form-control" id="registrationStatusSelect">
                     <option value="">All</option>
                     <option value="PENDING">Pending</option>
@@ -99,8 +98,8 @@
               <div class="col-xs-12"></div>
               <div class="form-group">
                 <div class="col-xs-6 col-sm-2 form-spacing">
-                  <label>Entries</label>
-                  <select class="form-control input-sm" v-model="searchParams.limit"><option>10</option><option>25</option></select>
+                  <label for="registriesResultsNumberSelect">Entries</label>
+                  <select class="form-control input-sm" v-model="searchParams.limit" id="registriesResultsNumberSelect"><option>10</option><option>25</option></select>
                 </div>
               </div>
               <div class="form-group">
