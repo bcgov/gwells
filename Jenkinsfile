@@ -84,6 +84,7 @@ podTemplate(label: 'bddstack', name: 'bddstack', serviceAccount: 'jenkins', clou
             dir('functional-tests/build/test-results') {
                 unstash 'coverage'
                 sh 'rm coverage.xml'
+		unstash 'nodejunit'    
                 }
             dir('functional-tests') {
                 try {
