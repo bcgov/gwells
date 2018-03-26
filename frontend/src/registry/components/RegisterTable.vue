@@ -1,14 +1,14 @@
 <template>
   <div class="">
     <div class="table-responsive">
-      <table class="table table-striped">
+      <table class="table table-striped" id="registry-table">
         <thead>
           <th v-for="field in fields" :key="field.name" :class="field.class" v-if="(field.visible === 'public' || user) && (field.activity === activity || field.activity == 'all')">
             {{field.name}} <i class="fa fa-sort" v-if="field.sortable && field.sortCode" @click="sortBy(field.sortCode)"></i>
           </th>
         </thead>
         <tbody>
-          <tr id="registry-table-row" v-if="drillers.results && drillers.results.length" v-for="driller in drillers.results" :key="driller.person_guid">
+          <tr v-if="drillers.results && drillers.results.length" v-for="(driller, index) in drillers.results" :key="driller.person_guid" :id="`registry-table-row-${index}`">
             <td>
               <div><b>{{ driller.first_name }} {{ driller.surname }}</b></div>
               <div>{{ driller.registration_no }}</div>
