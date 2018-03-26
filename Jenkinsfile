@@ -51,9 +51,9 @@ node('maven') {
     stage('Deploy on Test') {
         echo "Deploying to Test..."
         openshiftTag destStream: 'gwells', verbose: 'true', destTag: 'test', srcStream: 'gwells', srcTag: '$BUILD_ID'
-        sleep 5
-        openshiftVerifyDeployment depCfg: 'gwells', namespace: 'moe-gwells-test', replicaCount: 1, verbose: 'false', verifyReplicaCount: 'false', waitTime: 600000
-	    echo ">>>> Test Deployment Complete"
+        //sleep 5
+        //openshiftVerifyDeployment depCfg: 'gwells', namespace: 'moe-gwells-test', replicaCount: 1, verbose: 'false', verifyReplicaCount: 'false', waitTime: 600000
+	echo ">>>> Test Deployment Complete"
     }
 }
 
