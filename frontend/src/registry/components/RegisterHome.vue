@@ -2,7 +2,6 @@
   <div class="container-fluid no-pad">
     <div class="row form-spacing no-pad">
       <div class="col-xs-12 col-sm-7">
-        <h2 id="registry-title">Register of Well Drillers and Well Pump Installers</h2>
           <p><a href="https://www2.gov.bc.ca/gov/content/environment/air-land-water/water/groundwater-wells/information-for-well-drillers-well-pump-installers/what-you-need-to-practice-in-bc">Learn more about registering as a well driller or well pump installer in B.C.</a></p>
       </div>
       <div class="col-xs-12 col-sm-5 text-right">
@@ -13,23 +12,25 @@
     <div class="row no-pad" v-if="!user && loginPanelToggle">
       <div class="col-xs-12">
         <div class="well well-sm">
-          <form @submit.prevent="login" id="registryLoginForm">
-            <div class="form-group">
-              <div class="col-xs-12 col-sm-2">
-                <label for="loginUser">Username</label>
-                <input type="text" class="form-control" id="loginUser" placeholder="Search" v-model="credentials.username">
+          <div class="container">
+            <form @submit.prevent="login" id="registryLoginForm">
+              <div class="form-group">
+                <div class="col-xs-12 col-sm-2">
+                  <label for="loginUser">Username</label>
+                  <input type="text" class="form-control" id="loginUser" placeholder="Search" v-model="credentials.username">
+                </div>
+                <div class="col-xs-12 col-sm-2">
+                  <label for="loginPassword">Password</label>
+                  <input type="password" class="form-control" id="loginPassword" placeholder="Password" v-model="credentials.password">
+                </div>
               </div>
-              <div class="col-xs-12 col-sm-2">
-                <label for="loginPassword">Password</label>
-                <input type="password" class="form-control" id="loginPassword" placeholder="Password" v-model="credentials.password">
+              <div class="form-group">
+                <div class="col-xs-12">
+                  <button id="loginButton" type="submit" class="btn btn-primary">Login</button>
+                </div>
               </div>
-            </div>
-            <div class="form-group">
-              <div class="col-xs-12">
-                <button id="loginButton" type="submit" class="btn btn-primary">Login</button>
-              </div>
-            </div>
-          </form>
+            </form>
+          </div>
         </div>
       </div>
     </div>
