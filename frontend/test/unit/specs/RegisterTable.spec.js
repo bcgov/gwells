@@ -148,7 +148,7 @@ describe('RegisterTable.vue', () => {
       'Certificate Issued By',
       'Registration Status'
     ]
-    expect(tableHeaders.length).toEqual(7)
+    expect(tableHeaders.length).toEqual(6)
     for (let i = 0; i < tableHeaders.length; i++) {
       expect(tableHeaders.wrappers[i].text()).toEqual(expectedHeaders[i])
     }
@@ -169,7 +169,7 @@ describe('RegisterTable.vue', () => {
       'Certificate Issued By',
       'Registration Status'
     ]
-    expect(tableHeaders.length).toEqual(6)
+    expect(tableHeaders.length).toEqual(5)
     for (let i = 0; i < tableHeaders.length; i++) {
       expect(tableHeaders.wrappers[i].text()).toEqual(expectedHeaders[i])
     }
