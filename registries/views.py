@@ -9,7 +9,7 @@ from rest_framework.pagination import LimitOffsetPagination, PageNumberPaginatio
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from rest_framework.mixins import CreateModelMixin, UpdateModelMixin
-from registries.models import Organization, Person, ContactAt, RegistriesApplication
+from registries.models import Organization, Person, PersonContact, RegistriesApplication
 from registries.permissions import IsAdminOrReadOnly
 from registries.serializers import (
     ApplicationAdminSerializer,
@@ -116,18 +116,23 @@ class OrganizationListView(AuditCreateMixin, ListCreateAPIView):
         'contacts__person__applications__file_no'
         )
 
-    
+
 
     def get_queryset(self):
         """
         Filter out organizations with no registered drillers if user is anonymous
         """
+
+        """
+            Mon 26 Mar 11:26:48 2018 GW @DataModelChange
+
         qs = self.queryset
         if not self.request.user.is_staff:
             qs = qs \
                 .filter(contacts__person__applications__registrations__status__code='ACTIVE') \
                 .distinct() # filtering on ContactAt model related items can return duplicate companies
         return qs
+        """
 
     def get_serializer_class(self):
         """
@@ -247,11 +252,11 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
         if cities is not None and len(cities):
             cities = cities.split(',')
             qs = qs.filter(companies__org__city__in=cities)
-        
+
         # Only show active drillers to non-admin users and public
         if not self.request.user.is_staff:
             qs = qs.filter(applications__registrations__status__code='ACTIVE').distinct()
-        
+
         return qs
 
     def get_serializer_class(self):
@@ -269,7 +274,7 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
         if page is not None:
             serializer = PersonListSerializer(page, many=True)
             return self.get_paginated_response(serializer.data)
-        
+
         serializer = PersonListSerializer(filtered_queryset, many=True)
         return Response(serializer.data)
 
@@ -402,4 +407,4 @@ class ApplicationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
     serializer_class = ApplicationListSerializer
     queryset = RegistriesApplication.objects.all().select_related('person')
     lookup_field = "application_guid"
-    
+
