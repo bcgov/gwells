@@ -67,7 +67,8 @@ then
 	echo "Please use variables to pass this script commands."
 	echo "E.g.:"
 	echo " 'VERBOSE=true ./setup_osx.sh'"
-	echo " 'DB_LEGACY=<path>/<filename>.dmp ./setup_osx.sh'"
+	echo " 'DB_MODERN=<path>/<filename>.dmp DB_LEGACY=<path>/<filename>.dmp ./setup_osx.sh'"
+	echo " 'TEST=true ./setup_osx.sh'"
 	echo
 	exit
 fi
