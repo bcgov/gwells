@@ -116,7 +116,6 @@ class OrganizationListView(AuditCreateMixin, ListCreateAPIView):
         'contacts__person__applications__file_no'
         )
 
-    
 
     def get_queryset(self):
         """
@@ -242,7 +241,8 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
         """ Returns Person queryset, removing non-active and unregistered drillers for anonymous users """
         qs = self.queryset
 
-        # Search for cities (split comma-separated list and return all matches)
+        # Search for cities (split list and return all matches)
+        # search comes in as a comma-separated querystring param e.g: ?city=Atlin,Lake Windermere,Duncan
         cities = self.request.query_params.get('city', None)
         if cities is not None and len(cities):
             cities = cities.split(',')
