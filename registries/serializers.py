@@ -2,9 +2,9 @@ from rest_framework import serializers
 from gwells.models.ProvinceStateCode import ProvinceStateCode
 from registries.models import (
     Organization,
-    ContactAt,
+    PersonContact,
     Person,
-    Register,   
+    Register,
     RegistriesApplication,
     RegistriesApplicationStatus,
     ActivityCode,
@@ -38,12 +38,13 @@ class QualificationSerializer(serializers.ModelSerializer):
         )
 
 
-class ContactAtSerializer(AuditModelSerializer):
+class PersonContactSerializer(AuditModelSerializer):
     """
-    Serializes ContactAt model fields.
+    Serializes PersonContact model fields.
     """
+    """
+    Mon 26 Mar 11:26:48 2018 GW @DataModelChange
     person_name = serializers.StringRelatedField(source="person")
-    organization_name = serializers.StringRelatedField(source="org")
     street_address = serializers.StringRelatedField(source="org.street_address")
     city = serializers.StringRelatedField(source="org.city")
     province_state = serializers.StringRelatedField(source="org.province_state.province_state_code")
@@ -51,9 +52,9 @@ class ContactAtSerializer(AuditModelSerializer):
     website_url = serializers.StringRelatedField(source="org.website_url")
 
     class Meta:
-        model = ContactAt
+        model = PersonContact
         fields = (
-            'contact_at_guid',            
+            'contact_at_guid',
             'organization_name',
             'street_address',
             'city',
@@ -66,7 +67,7 @@ class ContactAtSerializer(AuditModelSerializer):
             'contact_email',
             'website_url'
         )
-
+    """
 
 class OrganizationSerializer(AuditModelSerializer):
     """
@@ -74,7 +75,7 @@ class OrganizationSerializer(AuditModelSerializer):
     """
 
     province_state = serializers.PrimaryKeyRelatedField(queryset=ProvinceStateCode.objects.all(), required=False)
-    contacts = ContactAtSerializer(many=True, read_only=True)
+    contacts = PersonContactSerializer(many=True, read_only=True)
 
     class Meta:
         model = Organization
@@ -99,7 +100,7 @@ class OrganizationAdminSerializer(AuditModelSerializer):
     """
 
     province_state = serializers.PrimaryKeyRelatedField(queryset=ProvinceStateCode.objects.all(), required=False)
-    contacts = ContactAtSerializer(many=True, read_only=True)
+    contacts = PersonContactSerializer(many=True, read_only=True)
 
     class Meta:
         model = Organization
@@ -270,7 +271,7 @@ class CityListSerializer(serializers.ModelSerializer):
     Serializes city and province fields for list of cities with qualified drillers
     """
 
-    companies = ContactAtSerializer(many=True, read_only=True)
+    companies = PersonContactSerializer(many=True, read_only=True)
 
     class Meta:
         model = Person
@@ -288,7 +289,7 @@ class CityListSerializer(serializers.ModelSerializer):
         # remove and store nested objects
         companies = repr.pop('companies')
 
-        # specify fields from ContactAtSerializer.meta.fields
+        # specify fields from PersonContactSerializer.meta.fields
         company_fields = (
             'city',
             'province_state',
@@ -312,7 +313,7 @@ class OrganizationListSerializer(AuditModelSerializer):
     """
 
     province_state = serializers.ReadOnlyField(source="province_state.province_state_code")
-    contacts = ContactAtSerializer(many=True, read_only=True)
+    contacts = PersonContactSerializer(many=True, read_only=True)
 
     class Meta:
         model = Organization
@@ -335,7 +336,7 @@ class PersonListSerializer(AuditModelSerializer):
     Serializes the Person model for a list view (fewer fields than detail view)
     """
 
-    companies = ContactAtSerializer(many=True, read_only=True)
+    companies = PersonContactSerializer(many=True, read_only=True)
     applications = ApplicationListSerializer(many=True, read_only=True)
 
     class Meta:
@@ -364,7 +365,7 @@ class PersonListSerializer(AuditModelSerializer):
         if len(applications) and len(applications[0]['registrations']):
             registrations = applications[0].pop('registrations')
 
-        # specify fields from ContactAtSerializer.meta.fields
+        # specify fields from PersonContactSerializer.meta.fields
         company_fields = (
             'organization_name',
             'street_address',
@@ -400,7 +401,7 @@ class PersonSerializer(AuditModelSerializer):
     Serializes the Person model (public/anonymous user fields)
     """
 
-    companies = ContactAtSerializer(many=True, read_only=True)
+    companies = PersonContactSerializer(many=True, read_only=True)
     applications = ApplicationListSerializer(many=True, read_only=True)
 
     class Meta:
@@ -419,7 +420,7 @@ class PersonAdminSerializer(AuditModelSerializer):
     Serializes the Person model (admin user fields)
     """
 
-    companies = ContactAtSerializer(many=True, read_only=True)
+    companies = PersonContactSerializer(many=True, read_only=True)
     applications = ApplicationAdminSerializer(many=True, read_only=True)
 
     class Meta:
