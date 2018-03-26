@@ -15,18 +15,18 @@
 #   $DB_REPLICATE (None|Subset|Full)
 #
 #   Example: ./db-replicate.sh
-#    
+#
 export PGPASSWORD=$DATABASE_PASSWORD
 
 if [ "$DB_REPLICATE" = "Subset" ]
 then
 	echo "... Limiting replication to a subset of Legacy Database, per DB_REPLICATE flag"
-	psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER -c 'SELECT db_replicate(true);'
+	psql -t -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER -c 'SELECT db_replicate(_subset_ind=>true);'
 elif [ "$DB_REPLICATE" = "Full" ]
 then
   	echo "... All rows replicated from Legacy Database"
-	psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER -c 'SELECT db_replicate(false);'
-else 	
+	psql -t -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER -c 'SELECT db_replicate(_subset_ind=>false);'
+else
   	echo "... ERROR Unrecognized DB_REPLICATE option - XFORM table is now empty."
   	exit 1
 fi

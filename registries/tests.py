@@ -759,3 +759,15 @@ class FixturePersonTests(AuthenticatedAPITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data['results']), 0)
+
+    def test_cities_search(self):
+        url = reverse('person-list') + '?city=Atlin,Cedarvale'
+        response = self.client.get(url, format='json')
+
+        self.assertEqual(len(response.data['results']), 2)
+
+    def test_cities_search_with_spaces(self):
+        url = reverse('person-list') + '?city=Atlin,Cedarvale,Lake Windermere'
+        response = self.client.get(url, format='json')
+
+        self.assertEqual(len(response.data['results']), 3)
