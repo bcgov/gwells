@@ -51,7 +51,7 @@
       <div class="col-xs-12">
         <div class="panel no-pad">
           <div class="panel-body no-pad">
-            <h3 class="registry-panel-title">Search for a Well Driller or Well Installer</h3>
+            <h3 class="registry-panel-title">Search for a Well Driller or Well Pump Installer</h3>
             <form @submit.prevent="drillerSearch" @reset.prevent="drillerSearchReset" id="drillerSearchForm">
               <div class="row no-pad">
                 <div class="col-xs-12">
@@ -64,7 +64,7 @@
                         <input type="radio" name="activitySelector" id="activityDriller" v-model="searchParams.activity" value="DRILL" style="margin-top: 0px"> Well Driller
                       </label>
                       <label class="radio-inline">
-                        <input type="radio" name="activitySelector" id="activityInstaller" v-model="searchParams.activity" value="PUMP" style="margin-top: 0px"> Pump Installer
+                        <input type="radio" name="activitySelector" id="activityInstaller" v-model="searchParams.activity" value="PUMP" style="margin-top: 0px"> Well Pump Installer
                       </label>
                     </div>
                   </div>
