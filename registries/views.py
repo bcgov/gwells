@@ -9,7 +9,7 @@ from rest_framework.pagination import LimitOffsetPagination, PageNumberPaginatio
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from rest_framework.mixins import CreateModelMixin, UpdateModelMixin
-from registries.models import Organization, Person, ContactAt, RegistriesApplication
+from registries.models import Organization, Person, ContactInfo, RegistriesApplication
 from registries.permissions import IsAdminOrReadOnly
 from registries.serializers import (
     ApplicationAdminSerializer,
@@ -125,7 +125,7 @@ class OrganizationListView(AuditCreateMixin, ListCreateAPIView):
         if not self.request.user.is_staff:
             qs = qs \
                 .filter(contacts__person__applications__registrations__status__code='ACTIVE') \
-                .distinct() # filtering on ContactAt model related items can return duplicate companies
+                .distinct() # filtering on ContactInfo model related items can return duplicate companies
         return qs
 
     def get_serializer_class(self):

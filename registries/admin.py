@@ -2,7 +2,7 @@ from django.contrib import admin
 from .models import (
     Person,
     Organization,
-    ContactAt,
+    ContactInfo,
     ActivityCode,
     SubactivityCode,
     QualificationCode,
@@ -19,7 +19,7 @@ from .models import (
 
 admin.site.register(Person)
 admin.site.register(Organization)
-admin.site.register(ContactAt)
+admin.site.register(ContactInfo)
 admin.site.register(ActivityCode)
 admin.site.register(SubactivityCode)
 admin.site.register(QualificationCode)

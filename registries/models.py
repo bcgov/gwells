@@ -3,12 +3,55 @@ import datetime
 from django.db import models
 from gwells.models import AuditModel, ProvinceStateCode
 
+
+class Organization(AuditModel):
+    org_guid = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False,
+    	verbose_name="Organization UUID")
+    name = models.CharField(max_length=200)
+    street_address = models.CharField(max_length=100, blank=True, verbose_name='Street Address')
+    city = models.CharField(max_length=50, blank=True, verbose_name='Town/City')
+    province_state = models.ForeignKey(
+        ProvinceStateCode,
+        db_column='province_state_code',
+        on_delete=models.SET_NULL,
+        null=True,
+        verbose_name='Province/State',
+        related_name="companies")
+    postal_code = models.CharField(max_length=10, blank=True, verbose_name='Postal Code')
+    main_tel = models.CharField(blank=True, max_length=15, verbose_name="Telephone number")
+    fax_tel = models.CharField(blank=True, max_length=15, verbose_name="Fax number")
+    website_url = models.URLField(blank=True, verbose_name="Website")
+    certificate_authority = models.BooleanField(
+        default=False,
+        verbose_name='Certifying Authority for Registries Activities',
+        choices=((False, 'No'), (True, 'Yes')))
+
+    class Meta:
+        db_table = 'registries_organization'
+        ordering = ['name']                
+        verbose_name_plural = 'Organizations'
+
+    def __str__(self):
+        return self.name
+
+
 # Create your models here.
 class Person(AuditModel):
-    person_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False,
-    	verbose_name="Person UUID, hidden from users")
+    person_guid = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False,
+    	verbose_name="Person UUID")
     first_name = models.CharField(max_length=100)
     surname = models.CharField(max_length=100)
+    organization = models.ForeignKey(
+        Organization,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name="contacts")
 
     class Meta:
         db_table = 'registries_person'
@@ -19,38 +62,24 @@ class Person(AuditModel):
         return '%s %s' % (self.first_name, self.surname)
 
 
-class Organization(AuditModel):
-    org_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False,
-    	verbose_name="Organization UUID, hidden from users")
-
-    name = models.CharField(max_length=200)
-    street_address = models.CharField(max_length=100, blank=True, null=True, verbose_name='Street Address')
-    city = models.CharField(max_length=50, blank=True, null=True, verbose_name='Town/City')
-    province_state = models.ForeignKey(ProvinceStateCode, db_column='province_state_code', on_delete=models.CASCADE, null=True, verbose_name='Province/State')
-    postal_code = models.CharField(max_length=10, blank=True, null=True, verbose_name='Postal Code')
-
-    main_tel = models.CharField(blank=True, null=True,max_length=15,verbose_name="Company main telephone number")
-    fax_tel = models.CharField(blank=True, null=True,max_length=15,verbose_name="Facsimile telephone number")
-    website_url = models.URLField(blank=True, null=True,verbose_name="Orgnization's Website")
-    certificate_authority = models.BooleanField(default=False, verbose_name='Certifying Authority for Registries Activities', choices=((False, 'No'), (True, 'Yes')))
-
-    class Meta:
-        db_table = 'registries_organization'
-        ordering = ['name']                
-        verbose_name_plural = 'Organizations'
-
-    def __str__(self):
-        return self.name
-
-class ContactAt(AuditModel):
-    contact_at_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False,
-    	verbose_name="Contact At UUID, hidden from users")
-    person = models.ForeignKey(Person, db_column='person_guid', on_delete=models.CASCADE, null=True, 
-    	verbose_name="Person Reference", related_name="companies")
-    org = models.ForeignKey(Organization, db_column='org_guid', on_delete=models.CASCADE, null=True, 
-    	verbose_name="Company Reference", related_name="contacts")
-
-    contact_tel = models.CharField(blank=True, null=True,max_length=15,verbose_name="Contact telephone number")
+class ContactInfo(AuditModel):
+    contact_at_guid = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False,
+    	verbose_name="Contact At UUID")
+    person = models.ForeignKey(
+        Person,
+        db_column='person_guid',
+        on_delete=models.CASCADE,
+        null=True,
+    	verbose_name="Person Reference",
+        related_name="contact_info")
+    contact_tel = models.CharField(
+        blank=True,
+        null=True,
+        max_length=15,
+        verbose_name="Contact telephone number")
     contact_email = models.EmailField(blank=True, null=True,verbose_name="Email adddress")
 
     # TODO - GW Replace defaults with save() method, see
@@ -64,10 +93,10 @@ class ContactAt(AuditModel):
         verbose_name_plural = 'Person contact details for a given Company'
 
     def __str__(self):
-        return '%s : %s %s at %s' % (self.contact_at_guid
-            ,self.person.first_name
-            ,self.person.surname
-            ,self.org.name)
+        return '%s - %s, %s' % (
+            self.person,
+            self.contact_tel,
+            self.contact_email)
 
 class ActivityCode(AuditModel):
     """
@@ -87,7 +116,7 @@ class ActivityCode(AuditModel):
     class Meta:
         db_table = 'registries_activity_code'
         ordering = ['display_order', 'description']
-        verbose_name_plural = 'Possible types of restricted activity, related to well drilling and pump installing'
+        verbose_name_plural = 'Well drilling and pump installing activity types'
 
     def __str__(self):
         return self.description
@@ -97,7 +126,12 @@ class SubactivityCode(AuditModel):
     Restricted Activity Subtype related to drilling wells and installing well pumps.
     """
     registries_subactivity_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    registries_activity = models.ForeignKey(ActivityCode, null=True, db_column='registries_activity_guid', on_delete=models.CASCADE, blank=True)
+    registries_activity = models.ForeignKey(
+        ActivityCode,
+        null=True,
+        db_column='registries_activity_guid',
+        on_delete=models.CASCADE,
+        blank=True)
     code = models.CharField(max_length=10)
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
@@ -121,8 +155,16 @@ class QualificationCode(AuditModel):
     """
     Type of well for which the activity is qualified.
     """
-    registries_qualification_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    registries_subactivity = models.ForeignKey(SubactivityCode, null=True, db_column='registries_subactivity_guid', on_delete=models.CASCADE, blank=True)
+    registries_qualification_guid = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False)
+    registries_subactivity = models.ForeignKey(
+        SubactivityCode,
+        null=True,
+        db_column='registries_subactivity_guid',
+        on_delete=models.CASCADE,
+        blank=True)
     code = models.CharField(max_length=10)
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
@@ -144,49 +186,6 @@ class QualificationCode(AuditModel):
             self.registries_subactivity.description,
         )
 
-class RegistriesApplication(AuditModel):
-    """
-    Application from a well driller or pump installer to be on the GWELLS Register.
-    """
-    application_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False,
-        verbose_name="Register Application UUID, hidden from users")
-    person = models.ForeignKey(Person, db_column='person_guid', on_delete=models.CASCADE, verbose_name="Person Reference", related_name='applications')
-    file_no = models.CharField(max_length=25, blank=True, null=True, verbose_name='ORCS File # reference.')
-    over19_ind = models.BooleanField(default=True)
-    registrar_notes = models.CharField(max_length=255, blank=True, null=True, verbose_name='Registrar Notes, for internal use only.')
-    reason_denied   = models.CharField(max_length=255, blank=True, null=True, verbose_name='Free form text explaining reason for denial.')
-
-    class Meta:
-        db_table = 'registries_application'
-        verbose_name_plural = 'Applications for Driller or Pump Installer'
-
-    def __str__(self):
-        return '%s : %s %s (%s)' % (self.application_guid
-            ,self.person.first_name
-            ,self.person.surname
-            ,self.file_no)
-
-# TODO - GW A related model/table for the one-off application where a secondary certificate(s) are attached
-class ClassificationAppliedFor(AuditModel):
-    classification_applied_for_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False,
-        verbose_name="UUID of the Registries Classification being applied for, hidden from users")
-    registries_application = models.ForeignKey(RegistriesApplication, db_column='application_guid', on_delete=models.CASCADE, verbose_name="Application Reference")
-    registries_subactivity = models.ForeignKey(SubactivityCode, null=True, db_column='registries_subactivity_guid', on_delete=models.CASCADE)
-
-    primary_certificate_authority = models.ForeignKey(Organization, null=True, db_column='certifying_org_guid', on_delete=models.CASCADE, limit_choices_to={'certificate_authority': True}
-        ,verbose_name="Certifying Organization")
-    primary_certificate_no = models.CharField(max_length=50)
-
-    class Meta:
-        db_table = 'registries_classification_applied_for'
-        verbose_name_plural = 'Registries Classification being applied for'
-
-    def __str__(self):
-        return '%s : %s %s %s (%s)' % (self.classification_applied_for_guid
-            ,self.registries_application.person.first_name            
-            ,self.registries_application.person.surname
-            ,self.registries_subactivity.description
-            ,self.registries_application.file_no)
 
 class RegistriesStatusCode(AuditModel):
     """
@@ -229,40 +228,133 @@ class RegistriesRemovalReason(AuditModel):
         return self.description
 
 class Register(AuditModel):
-
-    register_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False,
-        verbose_name="Register UUID, hidden from users")
+    register_guid = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False,
+        verbose_name="Register UUID")
     # TODO - GW constraint to ensure that DRILL/PUMP ActivityCode of this entry is consistent with the Application
-    registries_activity = models.ForeignKey(ActivityCode, db_column='registries_activity_guid', on_delete=models.CASCADE, blank=True)
-    registries_application = models.ForeignKey(RegistriesApplication, db_column='application_guid', on_delete=models.CASCADE, blank=True, null=True, verbose_name="Application Reference", related_name="registrations")
-
+    registries_activity = models.ForeignKey(
+        ActivityCode,
+        db_column='registries_activity_guid',
+        on_delete=models.CASCADE,
+        blank=True)
+    person = models.ForeignKey(
+        Person,
+        on_delete=models.CASCADE,
+        null=True,
+        related_name="registrations")
     registration_no = models.CharField(max_length=15,blank=True, null=True)    
-    status = models.ForeignKey(RegistriesStatusCode, db_column='registries_status_guid', on_delete=models.CASCADE, verbose_name="Register Entry Status")
+    status = models.ForeignKey(
+        RegistriesStatusCode,
+        db_column='registries_status_guid',
+        on_delete=models.CASCADE,
+        verbose_name="Register Entry Status")
     registration_date = models.DateField(blank=True, null=True)
-
-    register_removal_reason = models.ForeignKey(RegistriesRemovalReason, db_column='registries_removal_reason_guid', on_delete=models.CASCADE, blank=True, null=True,verbose_name="Removal Reason")
-    register_removal_date  = models.DateField(blank=True, null=True,verbose_name="Date of Removal from Register")
+    register_removal_reason = models.ForeignKey(
+        RegistriesRemovalReason,
+        db_column='registries_removal_reason_guid',
+        on_delete=models.CASCADE, blank=True,
+        null=True,verbose_name="Removal Reason")
+    register_removal_date  = models.DateField(
+        blank=True,
+        null=True,
+        verbose_name="Date of Removal from Register")
 
     class Meta:
         db_table = 'registries_register'
         verbose_name_plural = 'Register of Drillers and Pump Installers'
 
     def __str__(self):
-        return '%s : %s %s %s %s %s %s %s' % (self.register_guid
-            ,self.registries_activity.description
-            ,self.registration_no
-            ,self.registries_application.file_no
-            ,self.status
-            ,self.registration_date
-            ,self.registries_application.person.first_name
-            ,self.registries_application.person.surname
-            )
+        return '%s - %s' % (
+            self.person,
+            self.registries_activity
+        )
+
+
+class RegistriesApplication(AuditModel):
+    """
+    Application from a well driller or pump installer to be on the GWELLS Register.
+    """
+    application_guid = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False,
+        verbose_name="Register Application UUID")
+    person = models.ForeignKey(
+        Register,
+        db_column='register_guid',
+        on_delete=models.CASCADE,
+        verbose_name="Person Reference",
+        related_name='applications')
+    file_no = models.CharField(max_length=25, blank=True, null=True, verbose_name='ORCS File # reference.')
+    over19_ind = models.BooleanField(default=True)
+    registrar_notes = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        verbose_name='Registrar notes, for internal use only.')
+    reason_denied = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        verbose_name='Free form text explaining reason for denial.')
+
+    class Meta:
+        db_table = 'registries_application'
+        verbose_name_plural = 'Applications for Driller or Pump Installer'
+
+    def __str__(self):
+        return '%s : %s' % (
+            self.person,
+            self.file_no)
+
+
+# TODO - GW A related model/table for the one-off application where a secondary certificate(s) are attached
+class ClassificationAppliedFor(AuditModel):
+    classification_applied_for_guid = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False,
+        verbose_name="UUID of the Registries Classification being applied for")
+    registries_application = models.ForeignKey(
+        RegistriesApplication,
+        db_column='application_guid',
+        on_delete=models.CASCADE,
+        verbose_name="Application Reference")
+    registries_subactivity = models.ForeignKey(
+        SubactivityCode,
+        null=True,
+        db_column='registries_subactivity_guid',
+        on_delete=models.CASCADE)
+    primary_certificate_authority = models.ForeignKey(
+        Organization,
+        null=True,
+        db_column='certifying_org_guid',
+        on_delete=models.CASCADE,
+        limit_choices_to={'certificate_authority': True},
+        verbose_name="Certifying Organization")
+    primary_certificate_no = models.CharField(max_length=50)
+
+    class Meta:
+        db_table = 'registries_classification_applied_for'
+        verbose_name_plural = 'Registries Classification being applied for'
+
+    def __str__(self):
+        return '%s: %s' % (
+            self.registries_application,
+            self.registries_subactivity.description)
+
 
 class ApplicationStatusCode(AuditModel):
     """
     Status of Applications for the Well Driller and Pump Installer Registries
     """
-    registries_application_status_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    registries_application_status_guid = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False
+    )
     code = models.CharField(max_length=10, unique=True)
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
@@ -285,18 +377,24 @@ class RegistriesApplicationStatus(AuditModel):
     """
     Status of a specific Application for the Well Driller and Pump Installer Registries, at a point in time
     """    
-    application_status_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False,
-        verbose_name="Register Application Status UUID, hidden from users")
-    application = models.ForeignKey(RegistriesApplication, db_column='application_guid', on_delete=models.CASCADE, verbose_name="Application Reference")    
-    status = models.ForeignKey(ApplicationStatusCode, db_column='registries_application_status_guid', on_delete=models.CASCADE, verbose_name="Application Status Code Reference")
-
-    notified_date = models.DateField(blank=True, null=True,default=datetime.date.today)
-
-    # TODO - GW Replace defaults with save() method, see
-    # ../../gwells/models/AuditModel.py and 
-    # https://stackoverflow.com/questions/1737017/django-auto-now-and-auto-now-add
-    effective_date = models.DateField(default=datetime.date.today)
-    expired_date = models.DateField(blank=True, null=True,default=datetime.date.today)
+    application_status_guid = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False,
+        verbose_name="Register Application Status UUID")
+    application = models.ForeignKey(
+        RegistriesApplication,
+        db_column='application_guid',
+        on_delete=models.CASCADE,
+        verbose_name="Application Reference")
+    status = models.ForeignKey(
+        ApplicationStatusCode,
+        db_column='registries_application_status_guid',
+        on_delete=models.CASCADE,
+        verbose_name="Application Status Code Reference")
+    notified_date = models.DateField(blank=True, null=True, default=datetime.date.today)
+    effective_date = models.DateField(blank=True, null=True, default=datetime.date.today)
+    expired_date = models.DateField(blank=True, null=True, default=datetime.date.today)
 
     class Meta:
         db_table = 'registries_application_status'
@@ -304,13 +402,11 @@ class RegistriesApplicationStatus(AuditModel):
         verbose_name_plural = 'Status for a given Application'
 
     def __str__(self):
-        return '%s : %s %s %s %s' % (
-            self.application_status_guid,
-            self.application.file_no,
+        return '%s - %s - %s (exp %s)' % (
+            self.application,
             self.status.description,
             self.effective_date,
-            self.expired_date,
-        )
+            self.expired_date)
 """
 class DrillerRegister(models.Model):
      Consolidated view of Driller Register
@@ -344,7 +440,7 @@ class DrillerRegister(models.Model):
     website_url = models.URLField(blank=True, null=True,verbose_name="Orgnization's Website")
     #
     register_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False,
-        verbose_name="Register UUID, hidden from users")
+        verbose_name="Register UUID")
     reg_create_user = models.CharField(max_length=30)
     reg_create_date = models.DateTimeField(blank=True, null=True)
     reg_update_user = models.CharField(max_length=30, null=True)
