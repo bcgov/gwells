@@ -11,8 +11,8 @@ class Organization(AuditModel):
         editable=False,
     	verbose_name="Organization UUID")
     name = models.CharField(max_length=200)
-    street_address = models.CharField(max_length=100, blank=True, verbose_name='Street Address')
-    city = models.CharField(max_length=50, blank=True, verbose_name='Town/City')
+    street_address = models.CharField(max_length=100, blank=True, verbose_name='Street Address', default="")
+    city = models.CharField(max_length=50, blank=True, verbose_name='Town/City', default="")
     province_state = models.ForeignKey(
         ProvinceStateCode,
         db_column='province_state_code',
@@ -20,10 +20,10 @@ class Organization(AuditModel):
         null=True,
         verbose_name='Province/State',
         related_name="companies")
-    postal_code = models.CharField(max_length=10, blank=True, verbose_name='Postal Code')
-    main_tel = models.CharField(blank=True, max_length=15, verbose_name="Telephone number")
-    fax_tel = models.CharField(blank=True, max_length=15, verbose_name="Fax number")
-    website_url = models.URLField(blank=True, verbose_name="Website")
+    postal_code = models.CharField(max_length=10, blank=True, verbose_name='Postal Code', default="")
+    main_tel = models.CharField(blank=True, max_length=15, verbose_name="Telephone number", default="")
+    fax_tel = models.CharField(blank=True, max_length=15, verbose_name="Fax number", default="")
+    website_url = models.URLField(blank=True, verbose_name="Website", default="")
     certificate_authority = models.BooleanField(
         default=False,
         verbose_name='Certifying Authority for Registries Activities',
@@ -50,13 +50,14 @@ class Person(AuditModel):
     organization = models.ForeignKey(
         Organization,
         null=True,
+        blank=True,
         on_delete=models.SET_NULL,
         related_name="people")
 
     class Meta:
         db_table = 'registries_person'
         ordering = ['first_name', 'surname']        
-        verbose_name_plural = 'Persons'
+        verbose_name_plural = 'People'
 
     def __str__(self):
         return '%s %s' % (self.first_name, self.surname)
@@ -72,7 +73,6 @@ class ContactInfo(AuditModel):
         Person,
         db_column='person_guid',
         on_delete=models.CASCADE,
-        null=True,
     	verbose_name="Person Reference",
         related_name="contact_info")
     contact_tel = models.CharField(
@@ -90,7 +90,7 @@ class ContactInfo(AuditModel):
 
     class Meta:
         db_table = 'registries_contact_at'
-        verbose_name_plural = 'Person contact details for a given Company'
+        verbose_name_plural = 'Contact info'
 
     def __str__(self):
         return '%s - %s, %s' % (
@@ -116,7 +116,7 @@ class ActivityCode(AuditModel):
     class Meta:
         db_table = 'registries_activity_code'
         ordering = ['display_order', 'description']
-        verbose_name_plural = 'Well drilling and pump installing activity types'
+        verbose_name_plural = 'Activity codes'
 
     def __str__(self):
         return self.description
@@ -145,7 +145,7 @@ class SubactivityCode(AuditModel):
     class Meta:
         db_table = 'registries_subactivity_code'
         ordering = ['display_order', 'description']
-        verbose_name_plural = 'Possible subtypes of restricted activity, under a given Activity'
+        verbose_name_plural = 'Subactivity codes'
 
     def __str__(self):
         return self.description
@@ -159,12 +159,12 @@ class QualificationCode(AuditModel):
         primary_key=True,
         default=uuid.uuid4,
         editable=False)
-    registries_subactivity = models.ForeignKey(
-        SubactivityCode,
-        null=True,
-        db_column='registries_subactivity_guid',
-        on_delete=models.CASCADE,
-        blank=True)
+    # registries_subactivity = models.ForeignKey(
+    #     SubactivityCode,
+    #     null=True,
+    #     db_column='registries_subactivity_guid',
+    #     on_delete=models.CASCADE,
+    #     blank=True)
     code = models.CharField(max_length=10)
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
@@ -178,13 +178,10 @@ class QualificationCode(AuditModel):
     class Meta:
         db_table = 'registries_qualification_code'
         ordering = ['display_order', 'description']
-        verbose_name_plural = 'Possible qualifications, under a given Activity and Subactivity'
+        verbose_name_plural = 'Qualification codes'
 
     def __str__(self):
-        return '%s (%s)' % (
-            self.description,
-            self.registries_subactivity.description,
-        )
+        return self.description
 
 
 class RegistriesStatusCode(AuditModel):
@@ -205,7 +202,7 @@ class RegistriesStatusCode(AuditModel):
     class Meta:
         db_table = 'registries_status_code'
         ordering = ['display_order', 'description']
-        verbose_name_plural = 'Possible Status Codes of Register Entries'
+        verbose_name_plural = 'Registry status codes'
 
     def __str__(self):
         return self.description
@@ -222,7 +219,7 @@ class RegistriesRemovalReason(AuditModel):
     class Meta:
         db_table = 'registries_removal_reason_code'
         ordering = ['display_order', 'description']
-        verbose_name_plural = 'Possible reasons for removal from either of the Registers'
+        verbose_name_plural = 'Registry removal reasons'
 
     def __str__(self):
         return self.description
@@ -238,7 +235,7 @@ class Register(AuditModel):
         ActivityCode,
         db_column='registries_activity_guid',
         on_delete=models.CASCADE,
-        blank=True)
+        null=True)
     person = models.ForeignKey(
         Person,
         on_delete=models.CASCADE,
@@ -254,16 +251,17 @@ class Register(AuditModel):
     register_removal_reason = models.ForeignKey(
         RegistriesRemovalReason,
         db_column='registries_removal_reason_guid',
-        on_delete=models.CASCADE, blank=True,
-        null=True,verbose_name="Removal Reason")
-    register_removal_date  = models.DateField(
+        on_delete=models.CASCADE,
+        null=True,
+        verbose_name="Removal Reason")
+    register_removal_date = models.DateField(
         blank=True,
         null=True,
         verbose_name="Date of Removal from Register")
 
     class Meta:
         db_table = 'registries_register'
-        verbose_name_plural = 'Register of Drillers and Pump Installers'
+        verbose_name_plural = 'Registrations'
 
     def __str__(self):
         return '%s - %s' % (
@@ -299,10 +297,13 @@ class RegistriesApplication(AuditModel):
         blank=True,
         null=True,
         verbose_name='Free form text explaining reason for denial.')
+    subactivity = models.ForeignKey(SubactivityCode, on_delete=models.CASCADE, related_name="applications")
+    qualifications = models.ManyToManyField(QualificationCode)
+
 
     class Meta:
         db_table = 'registries_application'
-        verbose_name_plural = 'Applications for Driller or Pump Installer'
+        verbose_name_plural = 'Applications'
 
     def __str__(self):
         return '%s : %s' % (
@@ -338,7 +339,7 @@ class ClassificationAppliedFor(AuditModel):
 
     class Meta:
         db_table = 'registries_classification_applied_for'
-        verbose_name_plural = 'Registries Classification being applied for'
+        verbose_name_plural = 'Application classifications'
 
     def __str__(self):
         return '%s: %s' % (
@@ -368,7 +369,7 @@ class ApplicationStatusCode(AuditModel):
     class Meta:
         db_table = 'registries_application_status_code'
         ordering = ['display_order', 'description']
-        verbose_name_plural = 'Possible statuses of Applications'
+        verbose_name_plural = 'Application status codes'
 
     def __str__(self):
         return self.description
@@ -386,7 +387,8 @@ class RegistriesApplicationStatus(AuditModel):
         RegistriesApplication,
         db_column='application_guid',
         on_delete=models.CASCADE,
-        verbose_name="Application Reference")
+        verbose_name="Application Reference",
+        related_name="status_set")
     status = models.ForeignKey(
         ApplicationStatusCode,
         db_column='registries_application_status_guid',
@@ -399,7 +401,7 @@ class RegistriesApplicationStatus(AuditModel):
     class Meta:
         db_table = 'registries_application_status'
         ordering = ['application', 'effective_date']        
-        verbose_name_plural = 'Status for a given Application'
+        verbose_name_plural = 'Application status'
 
     def __str__(self):
         return '%s - %s - %s (exp %s)' % (
