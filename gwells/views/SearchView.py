@@ -21,6 +21,7 @@ from gwells.forms import SearchForm
 from gwells.models import LandDistrictCode
 from gwells.models import Survey
 
+
 class SearchView(generic.DetailView):
 
     @staticmethod
@@ -74,7 +75,9 @@ class SearchView(generic.DetailView):
 
         if well_results:
             if len(well_results) > SearchForm.WELL_RESULTS_LIMIT:
-                well_results_overflow = 'Query returned more than %d wells. Please refine your search or select a smaller area to look for wells in.' % SearchForm.WELL_RESULTS_LIMIT
+                well_results_overflow = ('Query returned more than %d wells. Please refine your search or '
+                                         'select a smaller area to look for wells in.'
+                                         % SearchForm.WELL_RESULTS_LIMIT)
                 well_results = None
             else:
                 well_results_json = json.dumps(
@@ -89,15 +92,14 @@ class SearchView(generic.DetailView):
 
         surveys, page = SearchView.get_surveys_for_context()
 
-        return render(request, 'gwells/search.html',
-                      {'form': form, 'well_list': well_results,
-                       'too_many_wells': well_results_overflow,
-                       'wells_json': well_results_json,
-                       'lat_long_box': lat_long_box,
-                       'land_districts' : land_districts,
-                       'surveys':surveys,
-                       'page':page
-                      })
+        return render(request, 'gwells/search.html', {
+            'form': form, 'well_list': well_results,
+            'too_many_wells': well_results_overflow,
+            'wells_json': well_results_json,
+            'lat_long_box': lat_long_box,
+            'land_districts': land_districts,
+            'surveys': surveys,
+            'page': page})
 
     @staticmethod
     def map_well_search(request):
