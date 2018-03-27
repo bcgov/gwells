@@ -49,15 +49,6 @@ describe('RegisterHome.vue', () => {
     store = new Vuex.Store({ getters, actions })
   })
 
-  it('renders the correct title', () => {
-    const wrapper = shallow(RegisterHome, {
-      store,
-      localVue
-    })
-    expect(wrapper.find('#registry-title')
-      .text().trim()).toEqual('Register of Well Drillers and Well Pump Installers')
-  })
-
   it('loads the table component', () => {
     const wrapper = shallow(RegisterHome, {
       store,
