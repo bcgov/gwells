@@ -206,6 +206,25 @@ class RegistrationsListSerializer(serializers.ModelSerializer):
         )
 
 
+class ApplicationStatusSerializer(serializers.ModelSerializer):
+    """
+    Serializes RegistriesApplicationStatus for admin users
+    ApplicationStatus objects form a related set for an Application object.
+    """
+    status = serializers.StringRelatedField(many=False, read_only=True)
+    status_code = serializers.ReadOnlyField(source="status.code")
+
+    class Meta:
+        model = RegistriesApplicationStatus
+        fields = (
+            'status',
+            'status_code',
+            'notified_date',
+            'effective_date',
+            'expired_date',
+        )
+
+
 class ApplicationAdminSerializer(AuditModelSerializer):
     """
     Serializes RegistryApplication model fields for admin users
@@ -251,24 +270,6 @@ class RegistrationsAdminSerializer(serializers.ModelSerializer):
             'register_removal_reason',
             'register_removal_date',
             'applications'
-        )
-
-class ApplicationStatusSerializer(serializers.ModelSerializer):
-    """
-    Serializes RegistriesApplicationStatus for admin users
-    ApplicationStatus objects form a related set for an Application object.
-    """
-    status = serializers.StringRelatedField(many=False, read_only=True)
-    status_code = serializers.ReadOnlyField(source="status.code")
-
-    class Meta:
-        model = RegistriesApplicationStatus
-        fields = (
-            'status',
-            'status_code',
-            'notified_date',
-            'effective_date',
-            'expired_date',
         )
 
 
