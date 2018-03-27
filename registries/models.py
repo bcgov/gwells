@@ -51,7 +51,7 @@ class Person(AuditModel):
         Organization,
         null=True,
         on_delete=models.SET_NULL,
-        related_name="contacts")
+        related_name="people")
 
     class Meta:
         db_table = 'registries_person'
