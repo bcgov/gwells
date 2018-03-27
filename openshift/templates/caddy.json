@@ -10,7 +10,7 @@
                 "displayName": "Name",
                 "description": "The suffix for all created objects",
                 "required": true,
-                "value": "maintenance"
+                "value": "proxy-caddy"
             },
             {
                 "name": "URL_REPO",
