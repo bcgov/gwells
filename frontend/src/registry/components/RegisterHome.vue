@@ -53,61 +53,85 @@
           <div class="panel-body no-pad">
             <h3 class="registry-panel-title">Search for a Well Driller or Well Installer</h3>
             <form @submit.prevent="drillerSearch" @reset.prevent="drillerSearchReset" id="drillerSearchForm">
-              <div class="form-group">
+              <div class="row no-pad">
                 <div class="col-xs-12">
-                  <label>Choose professional type: &nbsp;</label>
-                </div>
-                <div class="col-xs-12 form-spacing">
-                  <label class="radio-inline">
-                    <input type="radio" name="activitySelector" id="activityDriller" v-model="searchParams.activity" value="DRILL" style="margin-top: 0px"> Well Driller
-                  </label>
-                  <label class="radio-inline">
-                    <input type="radio" name="activitySelector" id="activityInstaller" v-model="searchParams.activity" value="PUMP" style="margin-top: 0px"> Pump Installer
-                  </label>
-                </div>
-              </div>
-              <div class="form-group">
-                <div class="col-xs-12 col-sm-6 form-spacing">
-                  <label for="cityOptions">Community</label>
-                  <div>To search more than one community, hold down the Ctrl key and select.</div>
-                  <select id="cityOptions" class="form-control" v-model="searchParams.city" multiple="multiple" style="min-height: 5.8rem">
-                    <option value="">All</option>
-                    <option v-for="city in cityList[formatActivityForCityList]" :key="city.city + city.province" :value="city.city">{{city.city}}</option>
-                  </select>
+                  <div class="form-group">
+                    <div class="col-xs-12">
+                      <label>Choose professional type: &nbsp;</label>
+                    </div>
+                    <div class="col-xs-12 form-spacing">
+                      <label class="radio-inline">
+                        <input type="radio" name="activitySelector" id="activityDriller" v-model="searchParams.activity" value="DRILL" style="margin-top: 0px"> Well Driller
+                      </label>
+                      <label class="radio-inline">
+                        <input type="radio" name="activitySelector" id="activityInstaller" v-model="searchParams.activity" value="PUMP" style="margin-top: 0px"> Pump Installer
+                      </label>
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div class="form-group" v-if="user">
-                <div class="col-xs-12 col-sm-6 form-spacing">
-                  <label for="registrationStatusSelect">Registration status</label>
-                  <select v-model="searchParams.status" class="form-control" id="registrationStatusSelect">
-                    <option value="">All</option>
-                    <option value="PENDING">Pending</option>
-                    <option value="INACTIVE">Not registered</option>
-                    <option value="ACTIVE">Registered</option>
-                    <option value="REMOVED">Removed</option>
-                  </select>
-                </div>
-              </div>
-              <div class="form-group" v-if="!user">
-                <div class="col-xs-12"></div>
-              </div>
-              <div class="form-group">
-                <div class="col-xs-12 col-sm-6 form-spacing">
-                  <label for="regTypeInput">Individual, company, or registration number</label>
-                  <input type="text" class="form-control" id="regTypeInput" placeholder="Search" v-model="searchParams.search">
-                </div>
-              </div>
-              <div class="col-xs-12"></div>
-              <div class="form-group">
-                <div class="col-xs-6 col-sm-2 form-spacing">
-                  <label for="registriesResultsNumberSelect">Entries</label>
-                  <select class="form-control input-sm" v-model="searchParams.limit" id="registriesResultsNumberSelect"><option>10</option><option>25</option></select>
-                </div>
-              </div>
-              <div class="form-group">
+              <div class="row no-pad">
                 <div class="col-xs-12">
-                  <button type="submit" class="btn btn-primary" id="personSearchSubmit">Submit</button>
-                  <button type="reset" class="btn btn-secondary" id="personSearchReset">Reset</button>
+                  <div class="form-group">
+                    <div class="col-xs-12 col-sm-6 form-spacing">
+                      <label for="cityOptions">Community</label>
+                      <div>To search more than one community, hold down the Ctrl key and select.</div>
+                      <select id="cityOptions" class="form-control" v-model="searchParams.city" multiple="multiple" style="min-height: 5.8rem">
+                        <option value="">All</option>
+                        <optgroup
+                          v-for="prov in cityList[formatActivityForCityList]"
+                          v-if="prov.cities && prov.cities.length"
+                          :key="prov.prov"
+                          :label="`${prov.prov} (${prov.cities.length})`"
+                        >
+                          <option v-for="city in prov.cities" :key="`${city} ${prov.prov}`" :value="city">{{ city }}</option>
+                        </optgroup>
+                        <!-- <option v-for="city in cityList[formatActivityForCityList]" :key="city.city + city.province" :value="city.city">{{city.city}}</option> -->
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-group" v-if="user">
+                    <div class="col-xs-12 col-sm-6 form-spacing">
+                      <label for="registrationStatusSelect">Registration status</label>
+                      <select v-model="searchParams.status" class="form-control" id="registrationStatusSelect">
+                        <option value="">All</option>
+                        <option value="PENDING">Pending</option>
+                        <option value="INACTIVE">Not registered</option>
+                        <option value="ACTIVE">Registered</option>
+                        <option value="REMOVED">Removed</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row no-pad">
+                <div class="col-xs-12">
+                  <div class="form-group">
+                    <div class="col-xs-12 col-sm-6 form-spacing">
+                      <label for="regTypeInput">Individual, company, or registration number</label>
+                      <input type="text" class="form-control" id="regTypeInput" placeholder="Search" v-model="searchParams.search">
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row no-pad">
+                <div class="col-xs-12">
+                  <div class="form-group">
+                    <div class="col-xs-6 col-sm-2 form-spacing">
+                      <label for="registriesResultsNumberSelect">Entries</label>
+                      <select class="form-control input-sm" v-model="searchParams.limit" id="registriesResultsNumberSelect"><option>10</option><option>25</option></select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row no-pad">
+                <div class="col-xs-12">
+                  <div class="form-group">
+                    <div class="col-xs-12">
+                      <button type="submit" class="btn btn-primary" id="personSearchSubmit">Submit</button>
+                      <button type="reset" class="btn btn-secondary" id="personSearchReset">Reset</button>
+                    </div>
+                  </div>
                 </div>
               </div>
             </form>
