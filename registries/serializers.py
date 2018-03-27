@@ -170,12 +170,32 @@ class ClassificationAppliedForSerializer(serializers.ModelSerializer):
         )
 
 
+class ApplicationStatusSerializer(serializers.ModelSerializer):
+    """
+    Serializes RegistriesApplicationStatus for admin users
+    ApplicationStatus objects form a related set for an Application object.
+    """
+    status = serializers.StringRelatedField(many=False, read_only=True)
+    status_code = serializers.ReadOnlyField(source="status.code")
+
+    class Meta:
+        model = RegistriesApplicationStatus
+        fields = (
+            'status',
+            'status_code',
+            'notified_date',
+            'effective_date',
+            'expired_date',
+        )
+
+
 class ApplicationListSerializer(AuditModelSerializer):
     """
     Serializes RegistryApplication model fields for anonymous users
     """
 
-    classifications = ClassificationAppliedForSerializer(many=True, read_only=True)
+    qualifications = QualificationSerializer(many=True, read_only=True)
+    status_set = ApplicationStatusSerializer(many=True, read_only=True)
 
     class Meta:
         model = RegistriesApplication
@@ -183,7 +203,8 @@ class ApplicationListSerializer(AuditModelSerializer):
             'application_guid',
             'file_no',
             'reason_denied',
-            'classifications'
+            'qualifications',
+            'status_set'
         )
 
 
@@ -206,25 +227,6 @@ class RegistrationsListSerializer(serializers.ModelSerializer):
         )
 
 
-class ApplicationStatusSerializer(serializers.ModelSerializer):
-    """
-    Serializes RegistriesApplicationStatus for admin users
-    ApplicationStatus objects form a related set for an Application object.
-    """
-    status = serializers.StringRelatedField(many=False, read_only=True)
-    status_code = serializers.ReadOnlyField(source="status.code")
-
-    class Meta:
-        model = RegistriesApplicationStatus
-        fields = (
-            'status',
-            'status_code',
-            'notified_date',
-            'effective_date',
-            'expired_date',
-        )
-
-
 class ApplicationAdminSerializer(AuditModelSerializer):
     """
     Serializes RegistryApplication model fields for admin users
@@ -238,7 +240,6 @@ class ApplicationAdminSerializer(AuditModelSerializer):
         model = RegistriesApplication
         fields = (
             'application_guid',
-            ''
             'person',
             'file_no',
             'over19_ind',
@@ -320,7 +321,6 @@ class OrganizationListSerializer(AuditModelSerializer):
     """
 
     province_state = serializers.ReadOnlyField(source="province_state.province_state_code")
-    contacts = ContactInfoSerializer(many=True, read_only=True)
 
     class Meta:
         model = Organization
@@ -334,7 +334,6 @@ class OrganizationListSerializer(AuditModelSerializer):
             'province_state',
             'postal_code',
             'main_tel',
-            'contacts',
         )
 
 
@@ -342,9 +341,8 @@ class PersonListSerializer(AuditModelSerializer):
     """
     Serializes the Person model for a list view (fewer fields than detail view)
     """
-
-    companies = ContactInfoSerializer(many=True, read_only=True)
-    applications = ApplicationListSerializer(many=True, read_only=True)
+    registrations = RegistrationsListSerializer(many=True, read_only=True)
+    organization = OrganizationListSerializer()
 
     class Meta:
         model = Person
@@ -352,55 +350,55 @@ class PersonListSerializer(AuditModelSerializer):
             'person_guid',
             'first_name',
             'surname',
-            'companies',
-            'applications',
+            'organization',
+            'registrations',
         )
 
 
-    def to_representation(self, obj):
-        """
-        Flattens Person list response
-        fields must be unique (PersonListSerializer.meta.fields, company_fields and registration_fields)
-        Missing fields are given an empty string
-        """
-        repr = super().to_representation(obj)
+    # def to_representation(self, obj):
+    #     """
+    #     Flattens Person list response
+    #     fields must be unique (PersonListSerializer.meta.fields, company_fields and registration_fields)
+    #     Missing fields are given an empty string
+    #     """
+    #     repr = super().to_representation(obj)
 
-        # remove and store nested objects
-        companies = repr.pop('companies')
-        applications = repr.pop('applications')
-        registrations = None
-        if len(applications) and len(applications[0]['registrations']):
-            registrations = applications[0].pop('registrations')
+    #     # remove and store nested objects
+    #     companies = repr.pop('companies')
+    #     applications = repr.pop('applications')
+    #     registrations = None
+    #     if len(applications) and len(applications[0]['registrations']):
+    #         registrations = applications[0].pop('registrations')
 
-        # specify fields from ContactInfoSerializer.meta.fields
-        company_fields = (
-            'organization_name',
-            'street_address',
-            'city',
-            'province_state',
-            'contact_tel',
-            'contact_email'
-        )
+    #     # specify fields from ContactInfoSerializer.meta.fields
+    #     company_fields = (
+    #         'organization_name',
+    #         'street_address',
+    #         'city',
+    #         'province_state',
+    #         'contact_tel',
+    #         'contact_email'
+    #     )
 
-        # from RegistrationsSerializer.meta.fields
-        registration_fields = ('activity', 'status', 'registration_no')
+    #     # from RegistrationsSerializer.meta.fields
+    #     registration_fields = ('activity', 'status', 'registration_no')
 
-        # bring each of the specified fields from the nested "companies" dict to the main dict
-        # NOTE: because of the one to many relationship, we get an array of companies
-        # After discussing with LM, we will return only the first company.
-        for field in company_fields:
-            if len(companies) and companies[0][field]:
-                repr[field] = companies[0][field]
-            else:
-                repr[field] = None
+    #     # bring each of the specified fields from the nested "companies" dict to the main dict
+    #     # NOTE: because of the one to many relationship, we get an array of companies
+    #     # After discussing with LM, we will return only the first company.
+    #     for field in company_fields:
+    #         if len(companies) and companies[0][field]:
+    #             repr[field] = companies[0][field]
+    #         else:
+    #             repr[field] = None
 
-        for field in registration_fields:
-            if registrations and len(registrations) > 0 and registrations[0][field]:
-                repr[field] = registrations[0][field]
-            else:
-                repr[field] = None
+    #     for field in registration_fields:
+    #         if registrations and len(registrations) > 0 and registrations[0][field]:
+    #             repr[field] = registrations[0][field]
+    #         else:
+    #             repr[field] = None
 
-        return repr
+    #     return repr
 
 
 class PersonSerializer(AuditModelSerializer):
@@ -408,8 +406,8 @@ class PersonSerializer(AuditModelSerializer):
     Serializes the Person model (public/anonymous user fields)
     """
 
-    companies = ContactInfoSerializer(many=True, read_only=True)
-    applications = ApplicationListSerializer(many=True, read_only=True)
+    company = ContactInfoSerializer(many=True, read_only=True)
+    registrations = RegistrationsListSerializer(many=True, read_only=True)
 
     class Meta:
         model = Person
@@ -417,8 +415,8 @@ class PersonSerializer(AuditModelSerializer):
             'person_guid',
             'first_name',
             'surname',
-            'companies',
-            'applications',
+            'company',
+            'registrations',
         )
 
 
