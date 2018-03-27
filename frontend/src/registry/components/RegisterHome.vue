@@ -164,6 +164,7 @@ import LegalText from '@/registry/components/Legal'
 import APIErrorMessage from '@/common/components/APIErrorMessage'
 import { mapGetters } from 'vuex'
 import { LOGIN, LOGOUT, FETCH_CITY_LIST, FETCH_DRILLER_LIST } from '@/registry/store/actions.types'
+import { SET_DRILLER_LIST } from '@/registry/store/mutations.types'
 
 export default {
   components: {
@@ -269,6 +270,7 @@ export default {
       this.searchParams.status = 'ACTIVE'
       this.searchParams.limit = '10'
       this.searchParams.ordering = ''
+      this.$store.commit(SET_DRILLER_LIST, [])
     },
     sortTable (sortCode) {
       if (this.searchParams.ordering && this.searchParams.ordering.length && this.searchParams.ordering[0] !== '-') {
@@ -288,9 +290,9 @@ export default {
   },
   created () {
     this.$store.dispatch(FETCH_CITY_LIST, this.formatActivityForCityList)
-    if (!this.drillers || !this.drillers.results || !this.drillers.results.length) {
-      this.drillerSearch()
-    }
+    // if (!this.drillers || !this.drillers.results || !this.drillers.results.length) {
+    //   this.drillerSearch()
+    // }
   }
 }
 </script>

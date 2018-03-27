@@ -4,6 +4,7 @@ import RegisterHome from '@/registry/components/RegisterHome'
 import RegisterTable from '@/registry/components/RegisterTable'
 import APIErrorMessage from '@/common/components/APIErrorMessage'
 import { FETCH_CITY_LIST, FETCH_DRILLER_LIST, LOGIN, LOGOUT } from '@/registry/store/actions.types'
+import { SET_DRILLER_LIST } from '@/registry/store/mutations.types';
 
 const localVue = createLocalVue()
 localVue.use(Vuex)
@@ -12,6 +13,7 @@ describe('RegisterHome.vue', () => {
   let store
   let getters
   let actions
+  let mutations
 
   beforeEach(() => {
     getters = {
@@ -46,7 +48,10 @@ describe('RegisterHome.vue', () => {
       [LOGIN]: jest.fn(),
       [LOGOUT]: jest.fn()
     }
-    store = new Vuex.Store({ getters, actions })
+    mutations = {
+      [SET_DRILLER_LIST]: jest.fn()
+    }
+    store = new Vuex.Store({ getters, actions, mutations })
   })
 
   it('loads the table component', () => {
@@ -84,13 +89,6 @@ describe('RegisterHome.vue', () => {
     })
     expect(wrapper.findAll(APIErrorMessage).length)
       .toEqual(0)
-  })
-  it('dispatches the fetch driller list action when loaded', () => {
-    shallow(RegisterHome, {
-      store,
-      localVue
-    })
-    expect(actions.fetchDrillers).toHaveBeenCalled()
   })
   it('resets search params when reset button is clicked', () => {
     const wrapper = shallow(RegisterHome, {
@@ -145,7 +143,7 @@ describe('RegisterHome.vue', () => {
       listError: () => null,
       cityList: () => []
     }
-    const storeWithUser = new Vuex.Store({ getters: gettersWithUser, actions })
+    const storeWithUser = new Vuex.Store({ getters: gettersWithUser, actions, mutations })
     const wrapper = shallow(RegisterHome, {
       store: storeWithUser,
       localVue
@@ -174,5 +172,13 @@ describe('RegisterHome.vue', () => {
     expect(cityOptions.at(1).text()).toEqual('Duncan')
     expect(cityOptions.at(2).text()).toEqual('Esquimalt')
     expect(cityOptions.at(3).text()).toEqual('Jasper')
+  })
+  it('clears driller list when reset is clicked', () => {
+    const wrapper = shallow(RegisterHome, {
+      store,
+      localVue
+    })
+    wrapper.find('[type=reset]').trigger('reset')
+    expect(mutations.setDrillerList).toHaveBeenCalled()
   })
 })
