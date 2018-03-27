@@ -51,7 +51,7 @@
       <div class="col-xs-12">
         <div class="panel no-pad">
           <div class="panel-body no-pad">
-            <h3 class="registry-panel-title">Search for a Well Driller or Well Installer</h3>
+            <h3 class="registry-panel-title">Search for a Well Driller or Well Pump Installer</h3>
             <form @submit.prevent="drillerSearch" @reset.prevent="drillerSearchReset" id="drillerSearchForm">
               <div class="row no-pad">
                 <div class="col-xs-12">
@@ -64,7 +64,7 @@
                         <input type="radio" name="activitySelector" id="activityDriller" v-model="searchParams.activity" value="DRILL" style="margin-top: 0px"> Well Driller
                       </label>
                       <label class="radio-inline">
-                        <input type="radio" name="activitySelector" id="activityInstaller" v-model="searchParams.activity" value="PUMP" style="margin-top: 0px"> Pump Installer
+                        <input type="radio" name="activitySelector" id="activityInstaller" v-model="searchParams.activity" value="PUMP" style="margin-top: 0px"> Well Pump Installer
                       </label>
                     </div>
                   </div>
@@ -86,7 +86,6 @@
                         >
                           <option v-for="city in prov.cities" :key="`${city} ${prov.prov}`" :value="city">{{ city }}</option>
                         </optgroup>
-                        <!-- <option v-for="city in cityList[formatActivityForCityList]" :key="city.city + city.province" :value="city.city">{{city.city}}</option> -->
                       </select>
                     </div>
                   </div>
@@ -164,6 +163,7 @@ import LegalText from '@/registry/components/Legal'
 import APIErrorMessage from '@/common/components/APIErrorMessage'
 import { mapGetters } from 'vuex'
 import { LOGIN, LOGOUT, FETCH_CITY_LIST, FETCH_DRILLER_LIST } from '@/registry/store/actions.types'
+import { SET_DRILLER_LIST } from '@/registry/store/mutations.types'
 
 export default {
   components: {
@@ -269,6 +269,7 @@ export default {
       this.searchParams.status = 'ACTIVE'
       this.searchParams.limit = '10'
       this.searchParams.ordering = ''
+      this.$store.commit(SET_DRILLER_LIST, [])
     },
     sortTable (sortCode) {
       if (this.searchParams.ordering && this.searchParams.ordering.length && this.searchParams.ordering[0] !== '-') {
@@ -288,9 +289,6 @@ export default {
   },
   created () {
     this.$store.dispatch(FETCH_CITY_LIST, this.formatActivityForCityList)
-    if (!this.drillers || !this.drillers.results || !this.drillers.results.length) {
-      this.drillerSearch()
-    }
   }
 }
 </script>
