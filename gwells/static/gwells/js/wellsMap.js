@@ -191,11 +191,14 @@ function WellsMap(options) {
     // Loads ESRI MapServer services.
     var _loadEsriLayers = function (esriLayers) {
         if (_exists(_leafletMap)) {
+            _clearErrorNode();
             esriLayers.forEach(function (esriLayer){
                 if (esriLayer && esriLayer.url) {
-                    L.esri.tiledMapLayer({
-                    url: esriLayer.url
-                    }).addTo(_leafletMap);
+                    var layer = L.esri.tiledMapLayer({
+                        url: esriLayer.url
+                    });
+                    layer.on('tileerror', _handleTileError);
+                    layer.addTo(_leafletMap);
                 }
             });
         }
@@ -603,10 +606,7 @@ function WellsMap(options) {
 
     // Zooms the map to the fetched location.
     var _getAndZoomToLocation = function (location) {
-        if (_exists(_errorsNodeId)) {
-            $('#' + _errorsNodeId).html('');
-            $('#' + _errorsNodeId).hide();
-        }
+        _clearErrorNode();
         if (location && location.coords) {
             var lat = location.coords.latitude;
             var long = location.coords.longitude;
@@ -619,12 +619,29 @@ function WellsMap(options) {
     // Handles any errors in fetching user's location.
     var _handleGeolocationErrors = function (error) {
         if (_exists(_errorsNodeId)) {
-            var msg = 'GEOLOCATION ERROR (' + error.code + '): ' + error.message;
-            $('#' + _errorsNodeId).html('<em>' + msg + '</em>');
+            // 2018/03/27 Changed to lower case in order to conform to rest of site.
+            var msg = 'Geolocation error (' + error.code + '): ' + error.message;
+            $('#' + _errorsNodeId + ' .message').html(msg);
             $('#' + _errorsNodeId).show();
         }
-        //console.log(error);
     };
+
+    // Clear and hide the error message.
+    var _clearErrorNode = function() {
+        if (_exists(_errorsNodeId)) {
+            $('#' + _errorsNodeId + ' .message').html('');
+            $('#' + _errorsNodeId).hide();
+        }
+    }
+
+    // Handle tile loading errors.
+    var _handleTileError = function(error) {
+        if (_exists(_errorsNodeId)) {
+            var msg = 'Map tile unavailable.';
+            $('#' + _errorsNodeId + ' .message').html(msg);
+            $('#' + _errorsNodeId).show();
+        }
+    }
 
     // Performs a final check on geolocation ability before fetching the device's location.
     var _startGeolocation = function () {
