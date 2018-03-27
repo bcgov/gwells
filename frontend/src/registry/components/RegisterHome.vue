@@ -86,7 +86,6 @@
                         >
                           <option v-for="city in prov.cities" :key="`${city} ${prov.prov}`" :value="city">{{ city }}</option>
                         </optgroup>
-                        <!-- <option v-for="city in cityList[formatActivityForCityList]" :key="city.city + city.province" :value="city.city">{{city.city}}</option> -->
                       </select>
                     </div>
                   </div>
