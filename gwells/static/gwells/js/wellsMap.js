@@ -637,7 +637,7 @@ function WellsMap(options) {
     // Handle tile loading errors.
     var _handleTileError = function(error) {
         if (_exists(_errorsNodeId)) {
-            var msg = 'Map tile unavailable.';
+            var msg = 'Map tile currently not available.';
             $('#' + _errorsNodeId + ' .message').html(msg);
             $('#' + _errorsNodeId).show();
         }
