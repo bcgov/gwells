@@ -23,18 +23,18 @@ describe('RegisterHome.vue', () => {
         return {
           drillers: [
             {
-              city: 'Duncan',
-              province_state: 'BC'
+              cities: ['Duncan', 'Esquimalt'],
+              prov: 'BC'
             },
             {
-              city: 'Victoria',
-              province_state: 'BC'
+              prov: 'AB',
+              cities: ['Jasper']
             }
           ],
           installers: [
             {
-              city: 'Nanaimo',
-              province_state: 'BC'
+              cities: ['Nanaimo'],
+              prov: 'BC'
             }
           ]
         }
@@ -169,9 +169,10 @@ describe('RegisterHome.vue', () => {
       localVue
     })
     const cityOptions = wrapper.findAll('#cityOptions option')
-    expect(cityOptions.length).toEqual(3) // two options in store + 'all' option
+    expect(cityOptions.length).toEqual(4) // three options in store + 'all' option
     expect(cityOptions.at(0).text()).toEqual('All')
     expect(cityOptions.at(1).text()).toEqual('Duncan')
-    expect(cityOptions.at(2).text()).toEqual('Victoria')
+    expect(cityOptions.at(2).text()).toEqual('Esquimalt')
+    expect(cityOptions.at(3).text()).toEqual('Jasper')
   })
 })
