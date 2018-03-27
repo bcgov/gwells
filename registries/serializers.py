@@ -2,7 +2,7 @@ from rest_framework import serializers
 from gwells.models.ProvinceStateCode import ProvinceStateCode
 from registries.models import (
     Organization,
-    ContactAt,
+    ContactInfo,
     Person,
     Register,   
     RegistriesApplication,
@@ -38,9 +38,9 @@ class QualificationSerializer(serializers.ModelSerializer):
         )
 
 
-class ContactAtSerializer(AuditModelSerializer):
+class ContactInfoSerializer(AuditModelSerializer):
     """
-    Serializes ContactAt model fields.
+    Serializes ContactInfo model fields.
     """
     person_name = serializers.StringRelatedField(source="person")
     organization_name = serializers.StringRelatedField(source="org")
@@ -51,7 +51,7 @@ class ContactAtSerializer(AuditModelSerializer):
     website_url = serializers.StringRelatedField(source="org.website_url")
 
     class Meta:
-        model = ContactAt
+        model = ContactInfo
         fields = (
             'contact_at_guid',            
             'organization_name',
@@ -74,7 +74,7 @@ class OrganizationSerializer(AuditModelSerializer):
     """
 
     province_state = serializers.PrimaryKeyRelatedField(queryset=ProvinceStateCode.objects.all(), required=False)
-    contacts = ContactAtSerializer(many=True, read_only=True)
+    contacts = ContactInfoSerializer(many=True, read_only=True)
 
     class Meta:
         model = Organization
@@ -99,7 +99,7 @@ class OrganizationAdminSerializer(AuditModelSerializer):
     """
 
     province_state = serializers.PrimaryKeyRelatedField(queryset=ProvinceStateCode.objects.all(), required=False)
-    contacts = ContactAtSerializer(many=True, read_only=True)
+    contacts = ContactInfoSerializer(many=True, read_only=True)
 
     class Meta:
         model = Organization
@@ -170,6 +170,23 @@ class ClassificationAppliedForSerializer(serializers.ModelSerializer):
         )
 
 
+class ApplicationListSerializer(AuditModelSerializer):
+    """
+    Serializes RegistryApplication model fields for anonymous users
+    """
+
+    classifications = ClassificationAppliedForSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = RegistriesApplication
+        fields = (
+            'application_guid',
+            'file_no',
+            'reason_denied',
+            'classifications'
+        )
+
+
 class RegistrationsListSerializer(serializers.ModelSerializer):
     """
     Serializes Register model
@@ -177,13 +194,39 @@ class RegistrationsListSerializer(serializers.ModelSerializer):
     """
     status = serializers.ReadOnlyField(source='status.description')
     activity = serializers.ReadOnlyField(source='registries_activity.description')
+    applications = ApplicationListSerializer(many=True, read_only=True)
 
     class Meta:
         model = Register
         fields = (
             'activity',
             'status',
-            'registration_no'
+            'registration_no',
+            'applications'
+        )
+
+
+class ApplicationAdminSerializer(AuditModelSerializer):
+    """
+    Serializes RegistryApplication model fields for admin users
+    """
+
+    
+    classificationappliedfor_set = ClassificationAppliedForSerializer(many=True, read_only=True)
+    registriesapplicationstatus_set = ApplicationStatusSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = RegistriesApplication
+        fields = (
+            'application_guid',
+            ''
+            'person',
+            'file_no',
+            'over19_ind',
+            'registrar_notes',
+            'reason_denied',
+            'classificationappliedfor_set',
+            'registriesapplicationstatus_set'
         )
 
 
@@ -195,6 +238,7 @@ class RegistrationsAdminSerializer(serializers.ModelSerializer):
     activity = serializers.ReadOnlyField(source='registries_activity.description')
     activity_code = serializers.ReadOnlyField(source='registries_activity.code')
     register_removal_reason = serializers.StringRelatedField(read_only=True)
+    applications = ApplicationAdminSerializer(many=True, read_only=True)
 
     class Meta:
         model = Register
@@ -206,7 +250,7 @@ class RegistrationsAdminSerializer(serializers.ModelSerializer):
             'registration_date',
             'register_removal_reason',
             'register_removal_date',
-
+            'applications'
         )
 
 class ApplicationStatusSerializer(serializers.ModelSerializer):
@@ -227,50 +271,13 @@ class ApplicationStatusSerializer(serializers.ModelSerializer):
             'expired_date',
         )
 
-class ApplicationListSerializer(AuditModelSerializer):
-    """
-    Serializes RegistryApplication model fields for anonymous users
-    """
-
-    registrations = RegistrationsListSerializer(many=True, read_only=True)
-
-    class Meta:
-        model = RegistriesApplication
-        fields = (
-            'registrations',
-        )
-
-
-class ApplicationAdminSerializer(AuditModelSerializer):
-    """
-    Serializes RegistryApplication model fields for admin users
-    """
-
-    registrations = RegistrationsAdminSerializer(many=True, read_only=True)
-    classificationappliedfor_set = ClassificationAppliedForSerializer(many=True, read_only=True)
-    registriesapplicationstatus_set = ApplicationStatusSerializer(many=True, read_only=True)
-
-    class Meta:
-        model = RegistriesApplication
-        fields = (
-            'application_guid',
-            'person',
-            'file_no',
-            'over19_ind',
-            'registrar_notes',
-            'reason_denied',
-            'registrations',
-            'classificationappliedfor_set',
-            'registriesapplicationstatus_set'
-        )
-
 
 class CityListSerializer(serializers.ModelSerializer):
     """
     Serializes city and province fields for list of cities with qualified drillers
     """
 
-    companies = ContactAtSerializer(many=True, read_only=True)
+    companies = ContactInfoSerializer(many=True, read_only=True)
 
     class Meta:
         model = Person
@@ -288,7 +295,7 @@ class CityListSerializer(serializers.ModelSerializer):
         # remove and store nested objects
         companies = repr.pop('companies')
 
-        # specify fields from ContactAtSerializer.meta.fields
+        # specify fields from ContactInfoSerializer.meta.fields
         company_fields = (
             'city',
             'province_state',
@@ -312,7 +319,7 @@ class OrganizationListSerializer(AuditModelSerializer):
     """
 
     province_state = serializers.ReadOnlyField(source="province_state.province_state_code")
-    contacts = ContactAtSerializer(many=True, read_only=True)
+    contacts = ContactInfoSerializer(many=True, read_only=True)
 
     class Meta:
         model = Organization
@@ -335,7 +342,7 @@ class PersonListSerializer(AuditModelSerializer):
     Serializes the Person model for a list view (fewer fields than detail view)
     """
 
-    companies = ContactAtSerializer(many=True, read_only=True)
+    companies = ContactInfoSerializer(many=True, read_only=True)
     applications = ApplicationListSerializer(many=True, read_only=True)
 
     class Meta:
@@ -364,7 +371,7 @@ class PersonListSerializer(AuditModelSerializer):
         if len(applications) and len(applications[0]['registrations']):
             registrations = applications[0].pop('registrations')
 
-        # specify fields from ContactAtSerializer.meta.fields
+        # specify fields from ContactInfoSerializer.meta.fields
         company_fields = (
             'organization_name',
             'street_address',
@@ -400,7 +407,7 @@ class PersonSerializer(AuditModelSerializer):
     Serializes the Person model (public/anonymous user fields)
     """
 
-    companies = ContactAtSerializer(many=True, read_only=True)
+    companies = ContactInfoSerializer(many=True, read_only=True)
     applications = ApplicationListSerializer(many=True, read_only=True)
 
     class Meta:
@@ -419,8 +426,8 @@ class PersonAdminSerializer(AuditModelSerializer):
     Serializes the Person model (admin user fields)
     """
 
-    companies = ContactAtSerializer(many=True, read_only=True)
-    applications = ApplicationAdminSerializer(many=True, read_only=True)
+    organization = OrganizationSerializer()
+    registrations = RegistrationsAdminSerializer(many=True, read_only=True)
 
     class Meta:
         model = Person
@@ -428,8 +435,8 @@ class PersonAdminSerializer(AuditModelSerializer):
             'person_guid',
             'first_name',
             'surname',
-            'companies',
-            'applications',
+            'organization',
+            'registrations',
             'create_user',
             'create_date',
             'update_user',
