@@ -9,7 +9,7 @@ from rest_framework.pagination import LimitOffsetPagination, PageNumberPaginatio
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from rest_framework.mixins import CreateModelMixin, UpdateModelMixin
-from registries.models import Organization, Person, PersonContact, RegistriesApplication
+from registries.models import Organization, Person, ContactAt, RegistriesApplication
 from registries.permissions import IsAdminOrReadOnly
 from registries.serializers import (
     ApplicationAdminSerializer,
@@ -67,8 +67,8 @@ class PersonFilter(restfilters.FilterSet):
     """
     Allows APIPersonListView to filter response by city, province, or registration status.
     """
-    # city = restfilters.MultipleChoiceFilter(name="organization__city")
-    prov = restfilters.CharFilter(name="organization__province_state__province_state_code")
+    # city = restfilters.MultipleChoiceFilter(name="companies__org__city")
+    prov = restfilters.CharFilter(name="companies__org__province_state__province_state_code")
     status = restfilters.CharFilter(name="applications__registrations__status__code")
     activity = restfilters.CharFilter(name="applications__registrations__registries_activity__code")
 
@@ -117,22 +117,16 @@ class OrganizationListView(AuditCreateMixin, ListCreateAPIView):
         )
 
 
-
     def get_queryset(self):
         """
         Filter out organizations with no registered drillers if user is anonymous
         """
-
-        """
-            Mon 26 Mar 11:26:48 2018 GW @DataModelChange
-
         qs = self.queryset
         if not self.request.user.is_staff:
             qs = qs \
                 .filter(contacts__person__applications__registrations__status__code='ACTIVE') \
                 .distinct() # filtering on ContactAt model related items can return duplicate companies
         return qs
-        """
 
     def get_serializer_class(self):
         """
@@ -222,12 +216,12 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
     # Allow searching on name fields, names of related companies, etc.
     filter_backends = (restfilters.DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
     filter_class = PersonFilter
-    ordering_fields = ('surname', 'organization__name')
+    ordering_fields = ('surname', 'companies__org__name')
     search_fields = (
         'first_name',
         'surname',
-        'organization__name',
-        'organization__city',
+        'companies__org__name',
+        'companies__org__city',
         'applications__registrations__registration_no'
         )
 
@@ -236,7 +230,7 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
         .all() \
         .prefetch_related(
             'companies',
-            'organization',
+            'companies__org',
             'applications',
             'applications__registrations',
             'applications__registrations__registries_activity',
@@ -247,16 +241,17 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
         """ Returns Person queryset, removing non-active and unregistered drillers for anonymous users """
         qs = self.queryset
 
-        # Search for cities (split comma-separated list and return all matches)
+        # Search for cities (split list and return all matches)
+        # search comes in as a comma-separated querystring param e.g: ?city=Atlin,Lake Windermere,Duncan
         cities = self.request.query_params.get('city', None)
         if cities is not None and len(cities):
             cities = cities.split(',')
-            qs = qs.filter(organization__city__in=cities)
-
+            qs = qs.filter(companies__org__city__in=cities)
+        
         # Only show active drillers to non-admin users and public
         if not self.request.user.is_staff:
             qs = qs.filter(applications__registrations__status__code='ACTIVE').distinct()
-
+        
         return qs
 
     def get_serializer_class(self):
@@ -274,7 +269,7 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
         if page is not None:
             serializer = PersonListSerializer(page, many=True)
             return self.get_paginated_response(serializer.data)
-
+        
         serializer = PersonListSerializer(filtered_queryset, many=True)
         return Response(serializer.data)
 
@@ -303,6 +298,8 @@ class PersonDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
     queryset = Person.objects \
         .all() \
         .prefetch_related(
+            'companies',
+            'companies__org',
             'applications',
             'applications__registrations',
             'applications__registrations__registries_activity',
@@ -334,9 +331,13 @@ class CitiesListView(ListAPIView):
     lookup_field = 'person_guid'
     pagination_class = None
     queryset = Person.objects \
-        .exclude(organization__city__isnull=True) \
-        .distinct('organization__city') \
-        .order_by('organization__city')
+        .exclude(companies__org__city__isnull=True) \
+        .prefetch_related(
+            'companies',
+            'companies__org',
+        ) \
+        .distinct('companies__org__city') \
+        .order_by('companies__org__city')
 
     def get_queryset(self):
         """
@@ -401,4 +402,4 @@ class ApplicationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
     serializer_class = ApplicationListSerializer
     queryset = RegistriesApplication.objects.all().select_related('person')
     lookup_field = "application_guid"
-
+    
