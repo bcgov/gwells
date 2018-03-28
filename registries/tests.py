@@ -493,36 +493,37 @@ class APIFilteringPaginationTests(APITestCase):
 
         # Create registered driller 1
         self.driller = Person.objects.create(first_name='Wendy', surname="Well")
-        self.app = RegistriesApplication.objects.create(person=self.driller)
         self.registration = Register.objects.create(
             status=self.status_active,
-            registries_application=self.app,
+            person=self.driller,
             registries_activity=self.activity_drill,
             registration_no="F12345",
         )
+        self.app = RegistriesApplication.objects.create(person=self.registration)        
 
         # Create registered driller 2
         self.driller2 = Person.objects.create(first_name='Debbie', surname="Driller")
-        self.app2 = RegistriesApplication.objects.create(person=self.driller2)
         self.registration2 = Register.objects.create(
             status=self.status_active,
-            registries_application=self.app2,
+            person=self.driller2,
             registries_activity=self.activity_drill,
             registration_no="F54321",
         )
+        self.app2 = RegistriesApplication.objects.create(person=self.registration2)
 
         # Create unregistered driller
         self.unregistered_driller = Person.objects.create(first_name="Johnny", surname="Unregistered")
 
         # Create inactive driller
         self.inactive_driller = Person.objects.create(first_name="Billy", surname="Retired")
-        self.retired_app = RegistriesApplication.objects.create(person=self.inactive_driller)
         self.retired_registration = Register.objects.create(
             status=self.status_inactive,
-            registries_application=self.retired_app,
+            person=self.inactive_driller,
             registries_activity=self.activity_drill,
             registration_no="R55555"
         )
+        self.retired_app = RegistriesApplication.objects.create(person=self.retired_registration)
+
 
         # create a company with no registered driller
         self.company_with_no_driller = Organization.objects.create(name="Big Time Drilling Company")
@@ -544,9 +545,12 @@ class APIFilteringPaginationTests(APITestCase):
 
         url = reverse('person-detail', kwargs={'person_guid':self.unregistered_driller.person_guid})
         response = self.client.get(url, format='json')
-        person = Person.objects.get(person_guid=self.unregistered_driller.person_guid)
 
+        # quick check to make sure the record actually exists
+        person = Person.objects.get(person_guid=self.unregistered_driller.person_guid)
         self.assertEqual(person.first_name, 'Johnny')
+
+        # now make sure API does not return the record if unauthorized
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
         #teardown

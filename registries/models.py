@@ -297,7 +297,7 @@ class RegistriesApplication(AuditModel):
         blank=True,
         null=True,
         verbose_name='Free form text explaining reason for denial.')
-    subactivity = models.ForeignKey(SubactivityCode, on_delete=models.CASCADE, related_name="applications")
+    subactivity = models.ForeignKey(SubactivityCode, on_delete=models.CASCADE, null=True, blank=True, related_name="applications")
     qualifications = models.ManyToManyField(QualificationCode)
 
 

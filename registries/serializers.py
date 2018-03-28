@@ -367,52 +367,6 @@ class PersonListSerializer(AuditModelSerializer):
         )
 
 
-    # def to_representation(self, obj):
-    #     """
-    #     Flattens Person list response
-    #     fields must be unique (PersonListSerializer.meta.fields, company_fields and registration_fields)
-    #     Missing fields are given an empty string
-    #     """
-    #     repr = super().to_representation(obj)
-
-    #     # remove and store nested objects
-    #     companies = repr.pop('companies')
-    #     applications = repr.pop('applications')
-    #     registrations = None
-    #     if len(applications) and len(applications[0]['registrations']):
-    #         registrations = applications[0].pop('registrations')
-
-    #     # specify fields from ContactInfoSerializer.meta.fields
-    #     company_fields = (
-    #         'organization_name',
-    #         'street_address',
-    #         'city',
-    #         'province_state',
-    #         'contact_tel',
-    #         'contact_email'
-    #     )
-
-    #     # from RegistrationsSerializer.meta.fields
-    #     registration_fields = ('activity', 'status', 'registration_no')
-
-    #     # bring each of the specified fields from the nested "companies" dict to the main dict
-    #     # NOTE: because of the one to many relationship, we get an array of companies
-    #     # After discussing with LM, we will return only the first company.
-    #     for field in company_fields:
-    #         if len(companies) and companies[0][field]:
-    #             repr[field] = companies[0][field]
-    #         else:
-    #             repr[field] = None
-
-    #     for field in registration_fields:
-    #         if registrations and len(registrations) > 0 and registrations[0][field]:
-    #             repr[field] = registrations[0][field]
-    #         else:
-    #             repr[field] = None
-
-    #     return repr
-
-
 class PersonAdminSerializer(AuditModelSerializer):
     """
     Serializes the Person model (admin user fields)
