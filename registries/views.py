@@ -95,7 +95,7 @@ class OrganizationListView(AuditCreateMixin, ListCreateAPIView):
 
     permission_classes = (IsAdminOrReadOnly,)
     serializer_class = OrganizationSerializer
-    pagination_class = APILimitOffsetPagination
+    # pagination_class = APILimitOffsetPagination
 
     # prefetch related objects for the queryset to prevent duplicate database trips later
     queryset = Organization.objects.all() \
@@ -125,7 +125,7 @@ class OrganizationListView(AuditCreateMixin, ListCreateAPIView):
         if not self.request.user.is_staff:
             qs = qs \
                 .filter(people__registrations__status__code='ACTIVE')
-            return qs
+        return qs
 
     def get_serializer_class(self):
         """

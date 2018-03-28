@@ -68,81 +68,11 @@ class ContactInfoSerializer(AuditModelSerializer):
         )
 
 
-class OrganizationSerializer(AuditModelSerializer):
-    """
-    Serializes Organization model fields (public fields list)
-    """
-
-    province_state = serializers.PrimaryKeyRelatedField(queryset=ProvinceStateCode.objects.all(), required=False)
-    contacts = ContactInfoSerializer(many=True, read_only=True)
-
-    class Meta:
-        model = Organization
-        fields = (
-            'org_guid',
-            'name',
-            'street_address',
-            'city',
-            'province_state',
-            'postal_code',
-            'main_tel',
-            'fax_tel',
-            'website_url',
-            'certificate_authority',
-            'contacts',
-        )
-
-
-class OrganizationAdminSerializer(AuditModelSerializer):
-    """
-    Serializes Organization model fields (admin fields list)
-    """
-
-    province_state = serializers.PrimaryKeyRelatedField(queryset=ProvinceStateCode.objects.all(), required=False)
-    contacts = ContactInfoSerializer(many=True, read_only=True)
-
-    class Meta:
-        model = Organization
-        fields = (
-            'create_user',
-            'create_date',
-            'update_user',
-            'update_date',
-            'org_guid',
-            'name',
-            'street_address',
-            'city',
-            'province_state',
-            'postal_code',
-            'main_tel',
-            'fax_tel',
-            'website_url',
-            'certificate_authority',
-            'contacts',
-        )
-
-
-class ActivitySerializer(serializers.ModelSerializer):
-    """
-    Serializes ActivityCode model
-    A Register record has a foreign key relationship to an ActivityCode object
-    """
-
-    class Meta:
-        model = ActivityCode
-        fields = (
-            'registries_activity_guid',
-            'code',
-            'description',
-        )
-
-
 class SubactivitySerializer(serializers.ModelSerializer):
     """
     Serializes SubactivityCode model
     SubactivityCode records form a related set of an ActivityCode object
     """
-    qualificationcode_set = QualificationSerializer(many=True)
 
     class Meta:
         model = SubactivityCode
@@ -150,23 +80,6 @@ class SubactivitySerializer(serializers.ModelSerializer):
             'registries_subactivity_guid',
             'code',
             'description',
-            'qualificationcode_set'
-        )
-
-
-class ClassificationAppliedForSerializer(serializers.ModelSerializer):
-    """
-    Serializes the ClassificationAppliedFor model.
-    ClassificationAppliedFor objects form a related set of Application objects
-    """
-    primary_certificate_authority = OrganizationSerializer(many=False, read_only=True)
-    registries_subactivity = SubactivitySerializer(many=False)
-
-    class Meta:
-        model = ClassificationAppliedFor
-        fields = (
-            'registries_subactivity',
-            'primary_certificate_authority',
         )
 
 
@@ -196,6 +109,7 @@ class ApplicationListSerializer(AuditModelSerializer):
 
     qualifications = QualificationSerializer(many=True, read_only=True)
     status_set = ApplicationStatusSerializer(many=True, read_only=True)
+    subactivity = SubactivitySerializer()
 
     class Meta:
         model = RegistriesApplication
@@ -204,7 +118,8 @@ class ApplicationListSerializer(AuditModelSerializer):
             'file_no',
             'reason_denied',
             'qualifications',
-            'status_set'
+            'status_set',
+            'subactivity'
         )
 
 
@@ -224,6 +139,108 @@ class RegistrationsListSerializer(serializers.ModelSerializer):
             'status',
             'registration_no',
             'applications'
+        )
+
+
+class PersonSerializer(AuditModelSerializer):
+    """
+    Serializes the Person model (public/anonymous user fields)
+    """
+
+    registrations = RegistrationsListSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Person
+        fields = (
+            'person_guid',
+            'first_name',
+            'surname',
+            'registrations',
+        )
+
+
+class OrganizationSerializer(AuditModelSerializer):
+    """
+    Serializes Organization model fields (public fields list)
+    """
+
+    province_state = serializers.PrimaryKeyRelatedField(queryset=ProvinceStateCode.objects.all(), required=False)
+    people = PersonSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Organization
+        fields = (
+            'org_guid',
+            'name',
+            'street_address',
+            'city',
+            'province_state',
+            'postal_code',
+            'main_tel',
+            'fax_tel',
+            'website_url',
+            'certificate_authority',
+            'people',
+        )
+
+
+class OrganizationAdminSerializer(AuditModelSerializer):
+    """
+    Serializes Organization model fields (admin fields list)
+    """
+
+    province_state = serializers.PrimaryKeyRelatedField(queryset=ProvinceStateCode.objects.all(), required=False)
+    people = PersonSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Organization
+        fields = (
+            'create_user',
+            'create_date',
+            'update_user',
+            'update_date',
+            'org_guid',
+            'name',
+            'street_address',
+            'city',
+            'province_state',
+            'postal_code',
+            'main_tel',
+            'fax_tel',
+            'website_url',
+            'certificate_authority',
+            'people',
+        )
+
+
+class ActivitySerializer(serializers.ModelSerializer):
+    """
+    Serializes ActivityCode model
+    A Register record has a foreign key relationship to an ActivityCode object
+    """
+
+    class Meta:
+        model = ActivityCode
+        fields = (
+            'registries_activity_guid',
+            'code',
+            'description',
+        )
+
+
+class ClassificationAppliedForSerializer(serializers.ModelSerializer):
+    """
+    Serializes the ClassificationAppliedFor model.
+    ClassificationAppliedFor objects form a related set of Application objects
+    """
+    primary_certificate_authority = OrganizationSerializer(many=False, read_only=True)
+    registries_subactivity = SubactivitySerializer(many=False)
+
+    class Meta:
+        model = ClassificationAppliedFor
+        fields = (
+            'registries_subactivity',
+            'primary_certificate_authority',
         )
 
 
@@ -279,12 +296,12 @@ class CityListSerializer(serializers.ModelSerializer):
     Serializes city and province fields for list of cities with qualified drillers
     """
 
-    companies = ContactInfoSerializer(many=True, read_only=True)
+    organization = OrganizationSerializer()
 
     class Meta:
         model = Person
         fields = (
-            'companies',
+            'organization',
         )
 
 
@@ -295,7 +312,7 @@ class CityListSerializer(serializers.ModelSerializer):
         repr = super().to_representation(obj)
 
         # remove and store nested objects
-        companies = repr.pop('companies')
+        org = repr.pop('organization')
 
         # specify fields from ContactInfoSerializer.meta.fields
         company_fields = (
@@ -303,12 +320,9 @@ class CityListSerializer(serializers.ModelSerializer):
             'province_state',
         )
 
-        # bring each of the specified fields from the nested "companies" dict to the main dict
-        # NOTE: because of the one to many relationship, we get an array of companies
-        # After discussing with LM, we will return only the first company.
         for field in company_fields:
-            if len(companies) and companies[0][field]:
-                repr[field] = companies[0][field]
+            if org and org[field]:
+                repr[field] = org[field]
             else:
                 repr[field] = None
 
@@ -324,8 +338,6 @@ class OrganizationListSerializer(AuditModelSerializer):
 
     class Meta:
         model = Organization
-
-        # Using all fields for now
         fields = (
             'org_guid',
             'name',
@@ -401,31 +413,12 @@ class PersonListSerializer(AuditModelSerializer):
     #     return repr
 
 
-class PersonSerializer(AuditModelSerializer):
-    """
-    Serializes the Person model (public/anonymous user fields)
-    """
-
-    company = ContactInfoSerializer(many=True, read_only=True)
-    registrations = RegistrationsListSerializer(many=True, read_only=True)
-
-    class Meta:
-        model = Person
-        fields = (
-            'person_guid',
-            'first_name',
-            'surname',
-            'company',
-            'registrations',
-        )
-
-
 class PersonAdminSerializer(AuditModelSerializer):
     """
     Serializes the Person model (admin user fields)
     """
 
-    organization = OrganizationSerializer()
+    organization = OrganizationSerializer(required=False)
     registrations = RegistrationsAdminSerializer(many=True, read_only=True)
 
     class Meta:
