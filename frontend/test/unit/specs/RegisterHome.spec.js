@@ -4,6 +4,7 @@ import RegisterHome from '@/registry/components/RegisterHome'
 import RegisterTable from '@/registry/components/RegisterTable'
 import APIErrorMessage from '@/common/components/APIErrorMessage'
 import { FETCH_CITY_LIST, FETCH_DRILLER_LIST, LOGIN, LOGOUT } from '@/registry/store/actions.types'
+import { SET_DRILLER_LIST } from '@/registry/store/mutations.types';
 
 const localVue = createLocalVue()
 localVue.use(Vuex)
@@ -12,6 +13,7 @@ describe('RegisterHome.vue', () => {
   let store
   let getters
   let actions
+  let mutations
 
   beforeEach(() => {
     getters = {
@@ -23,18 +25,18 @@ describe('RegisterHome.vue', () => {
         return {
           drillers: [
             {
-              city: 'Duncan',
-              province_state: 'BC'
+              cities: ['Duncan', 'Esquimalt'],
+              prov: 'BC'
             },
             {
-              city: 'Victoria',
-              province_state: 'BC'
+              prov: 'AB',
+              cities: ['Jasper']
             }
           ],
           installers: [
             {
-              city: 'Nanaimo',
-              province_state: 'BC'
+              cities: ['Nanaimo'],
+              prov: 'BC'
             }
           ]
         }
@@ -46,16 +48,10 @@ describe('RegisterHome.vue', () => {
       [LOGIN]: jest.fn(),
       [LOGOUT]: jest.fn()
     }
-    store = new Vuex.Store({ getters, actions })
-  })
-
-  it('renders the correct title', () => {
-    const wrapper = shallow(RegisterHome, {
-      store,
-      localVue
-    })
-    expect(wrapper.find('#registry-title')
-      .text().trim()).toEqual('Register of Well Drillers and Well Pump Installers')
+    mutations = {
+      [SET_DRILLER_LIST]: jest.fn()
+    }
+    store = new Vuex.Store({ getters, actions, mutations })
   })
 
   it('loads the table component', () => {
@@ -93,13 +89,6 @@ describe('RegisterHome.vue', () => {
     })
     expect(wrapper.findAll(APIErrorMessage).length)
       .toEqual(0)
-  })
-  it('dispatches the fetch driller list action when loaded', () => {
-    shallow(RegisterHome, {
-      store,
-      localVue
-    })
-    expect(actions.fetchDrillers).toHaveBeenCalled()
   })
   it('resets search params when reset button is clicked', () => {
     const wrapper = shallow(RegisterHome, {
@@ -154,7 +143,7 @@ describe('RegisterHome.vue', () => {
       listError: () => null,
       cityList: () => []
     }
-    const storeWithUser = new Vuex.Store({ getters: gettersWithUser, actions })
+    const storeWithUser = new Vuex.Store({ getters: gettersWithUser, actions, mutations })
     const wrapper = shallow(RegisterHome, {
       store: storeWithUser,
       localVue
@@ -178,9 +167,18 @@ describe('RegisterHome.vue', () => {
       localVue
     })
     const cityOptions = wrapper.findAll('#cityOptions option')
-    expect(cityOptions.length).toEqual(3) // two options in store + 'all' option
+    expect(cityOptions.length).toEqual(4) // three options in store + 'all' option
     expect(cityOptions.at(0).text()).toEqual('All')
     expect(cityOptions.at(1).text()).toEqual('Duncan')
-    expect(cityOptions.at(2).text()).toEqual('Victoria')
+    expect(cityOptions.at(2).text()).toEqual('Esquimalt')
+    expect(cityOptions.at(3).text()).toEqual('Jasper')
+  })
+  it('clears driller list when reset is clicked', () => {
+    const wrapper = shallow(RegisterHome, {
+      store,
+      localVue
+    })
+    wrapper.find('[type=reset]').trigger('reset')
+    expect(mutations.setDrillerList).toHaveBeenCalled()
   })
 })

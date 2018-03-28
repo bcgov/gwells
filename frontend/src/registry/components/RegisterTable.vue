@@ -1,14 +1,14 @@
 <template>
   <div class="">
     <div class="table-responsive">
-      <table class="table table-striped">
+      <table class="table table-striped" id="registry-table">
         <thead>
           <th v-for="field in fields" :key="field.name" :class="field.class" v-if="(field.visible === 'public' || user) && (field.activity === activity || field.activity == 'all')">
             {{field.name}} <i class="fa fa-sort" v-if="field.sortable && field.sortCode" @click="sortBy(field.sortCode)"></i>
           </th>
         </thead>
         <tbody>
-          <tr id="registry-table-row" v-if="drillers.results && drillers.results.length" v-for="driller in drillers.results" :key="driller.person_guid">
+          <tr v-if="drillers.results && drillers.results.length" v-for="(driller, index) in drillers.results" :key="driller.person_guid" :id="`registry-table-row-${index}`">
             <td>
               <div><b>{{ driller.first_name }} {{ driller.surname }}</b></div>
               <div>{{ driller.registration_no }}</div>
@@ -18,7 +18,7 @@
             <td><div v-if="driller.contact_tel">Phone: {{ driller.contact_tel }}</div><div v-if="driller.contact_email">Email: {{ driller.contact_email }}</div></td>
             <td v-if="activity === 'DRILL'">{{ driller.activity }}</td>
             <td></td>
-            <td>{{ driller.status }}</td>
+            <td v-if="user && activity === 'DRILL'">{{ driller.status }}</td>
             <td v-if="user"><router-link :to="{ name: 'PersonDetail', params: { person_guid: driller.person_guid } }">Details</router-link></td>
           </tr>
           <tr v-else>
@@ -29,7 +29,7 @@
     <div v-if="drillers.results && !drillers.results.length">No results were found.</div>
     <div class="row">
       <div class="col-xs-12 col-sm-4">
-        <span v-if="drillers.results && drillers.results.length">Showing {{ drillers.offset + 1 }} to {{ drillers.offset + drillers.results.length }} of {{ drillers.count }}</span>
+        <span v-if="drillers.results && drillers.results.length">Showing <span id="drillersCurrentOffset">{{ drillers.offset + 1 }}</span> to <span id="drillersCurrentOffsetLimit">{{ drillers.offset + drillers.results.length }}</span> of <span id="drillersTotalResults">{{ drillers.count }}</span></span>
       </div>
       <div v-if="drillers.results && drillers.results.length" class="col-xs-12 col-sm-4 col-sm-offset-4 col-md-offset-5 col-md-3">
         <nav aria-label="List navigation" v-if="drillers.results && drillers.results.length">
@@ -124,9 +124,9 @@ export default {
         {
           name: 'Registration Status',
           class: 'col-xs-1',
-          visible: 'public',
+          visible: 'admin',
           sortable: false,
-          activity: 'all'
+          activity: 'DRILL'
         },
         {
           name: 'Action',
