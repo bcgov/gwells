@@ -24,7 +24,7 @@ export const store = new Vuex.Store({
     loading: false,
     error: null,
     listError: null,
-    cityList: {}, // object looks like: { drillers: ['Duncan', 'Atlin'], installers: ['Squamish'] }
+    cityList: {},
     drillerList: [],
     currentDriller: {}
   },
@@ -84,7 +84,41 @@ export const store = new Vuex.Store({
       ApiService.query('cities/' + activity + '/')
         .then((response) => {
           const list = Object.assign({}, this.state.cityList)
-          list[activity] = response.data
+          const data = response.data
+          const listByProvince = []
+
+          /**
+           * iterate through each item in the response data and filter cities into
+           * an array of provinces. e.g.:
+           *
+           * listByProvince = [
+           *   {
+           *     prov: 'BC',
+           *     cities: [
+           *       'Duncan',
+           *       'Victoria'
+           *     ]
+           *   },
+           *   {
+           *     prov: 'AB',
+           *     cities: [
+           *       'Jasper',
+           *       'Hinton'
+           *     ]
+           *   }
+           * ]
+           *
+           */
+          data.forEach((item) => {
+            // if a province doesn't exist in listByProvince, create a new item
+            if (!~listByProvince.findIndex(prov => prov.prov === item.province_state)) {
+              listByProvince.push({ prov: item.province_state, cities: [] })
+            }
+            listByProvince.find(prov => prov.prov === item.province_state).cities.push(item.city)
+          })
+
+          // set the list for the activity (driller or well installer) to the list of provinces/cities
+          list[activity] = listByProvince
           commit(SET_CITY_LIST, list)
         })
         .catch((error) => {
