@@ -76,7 +76,7 @@
                     <div class="col-xs-12 col-sm-6 form-spacing">
                       <label for="cityOptions">Community</label>
                       <div>To search more than one community, hold down the Ctrl key and select.</div>
-                      <select id="cityOptions" class="form-control" v-model="searchParams.city" multiple="multiple" style="min-height: 5.8rem">
+                      <select id="cityOptions" class="form-control" v-model="searchParams.city" multiple="multiple" style="min-height: 5.8rem" name="registryCities">
                         <option value="">All</option>
                         <optgroup
                           v-for="prov in cityList[formatActivityForCityList]"
@@ -92,7 +92,7 @@
                   <div class="form-group" v-if="user">
                     <div class="col-xs-12 col-sm-6 form-spacing">
                       <label for="registrationStatusSelect">Registration status</label>
-                      <select v-model="searchParams.status" class="form-control" id="registrationStatusSelect">
+                      <select v-model="searchParams.status" class="form-control" id="registrationStatusSelect" name="registryStatuses">
                         <option value="">All</option>
                         <option value="PENDING">Pending</option>
                         <option value="INACTIVE">Not registered</option>
