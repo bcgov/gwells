@@ -534,6 +534,8 @@ class APIFilteringPaginationTests(APITestCase):
         self.assertEqual(len(response.data['results']), 2)
         self.assertContains(response, 'Wendy')
         self.assertContains(response, 'Debbie')
+
+        # Johnny is in database but is not registered, so make sure he's not in the publicly available list.
         self.assertNotContains(response, 'Johnny')
         self.assertNotContains(response, self.unregistered_driller.person_guid)
 
