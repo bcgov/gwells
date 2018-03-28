@@ -4,6 +4,7 @@ import RegisterHome from '@/registry/components/RegisterHome'
 import RegisterTable from '@/registry/components/RegisterTable'
 import APIErrorMessage from '@/common/components/APIErrorMessage'
 import { FETCH_CITY_LIST, FETCH_DRILLER_LIST, LOGIN, LOGOUT } from '@/registry/store/actions.types'
+import { SET_DRILLER_LIST } from '@/registry/store/mutations.types';
 
 const localVue = createLocalVue()
 localVue.use(Vuex)
@@ -12,6 +13,7 @@ describe('RegisterHome.vue', () => {
   let store
   let getters
   let actions
+  let mutations
 
   beforeEach(() => {
     getters = {
@@ -19,7 +21,26 @@ describe('RegisterHome.vue', () => {
       drillers: () => [],
       loading: () => false,
       listError: () => null,
-      cityList: () => []
+      cityList: () => {
+        return {
+          drillers: [
+            {
+              cities: ['Duncan', 'Esquimalt'],
+              prov: 'BC'
+            },
+            {
+              prov: 'AB',
+              cities: ['Jasper']
+            }
+          ],
+          installers: [
+            {
+              cities: ['Nanaimo'],
+              prov: 'BC'
+            }
+          ]
+        }
+      }
     }
     actions = {
       [FETCH_CITY_LIST]: jest.fn(),
@@ -27,16 +48,10 @@ describe('RegisterHome.vue', () => {
       [LOGIN]: jest.fn(),
       [LOGOUT]: jest.fn()
     }
-    store = new Vuex.Store({ getters, actions })
-  })
-
-  it('renders the correct title', () => {
-    const wrapper = shallow(RegisterHome, {
-      store,
-      localVue
-    })
-    expect(wrapper.find('#registry-title')
-      .text().trim()).toEqual('Register of Well Drillers and Well Pump Installers')
+    mutations = {
+      [SET_DRILLER_LIST]: jest.fn()
+    }
+    store = new Vuex.Store({ getters, actions, mutations })
   })
 
   it('loads the table component', () => {
@@ -75,13 +90,6 @@ describe('RegisterHome.vue', () => {
     expect(wrapper.findAll(APIErrorMessage).length)
       .toEqual(0)
   })
-  it('dispatches the fetch driller list action when loaded', () => {
-    shallow(RegisterHome, {
-      store,
-      localVue
-    })
-    expect(actions.fetchDrillers).toHaveBeenCalled()
-  })
   it('resets search params when reset button is clicked', () => {
     const wrapper = shallow(RegisterHome, {
       store,
@@ -90,8 +98,8 @@ describe('RegisterHome.vue', () => {
     wrapper.setData({
       searchParams: {
         search: 'Bob Driller',
-        city: 'Anytown',
         activity: 'PUMP',
+        city: [],
         status: 'INACTIVE',
         limit: '10',
         ordering: ''
@@ -99,7 +107,7 @@ describe('RegisterHome.vue', () => {
     })
     expect(wrapper.vm.searchParams).toEqual({
       search: 'Bob Driller',
-      city: 'Anytown',
+      city: [],
       activity: 'PUMP',
       status: 'INACTIVE',
       limit: '10',
@@ -108,7 +116,7 @@ describe('RegisterHome.vue', () => {
     wrapper.find('[type=reset]').trigger('reset')
     expect(wrapper.vm.searchParams).toEqual({
       search: '',
-      city: '',
+      city: [],
       activity: 'DRILL',
       status: 'ACTIVE',
       limit: '10',
@@ -135,7 +143,7 @@ describe('RegisterHome.vue', () => {
       listError: () => null,
       cityList: () => []
     }
-    const storeWithUser = new Vuex.Store({ getters: gettersWithUser, actions })
+    const storeWithUser = new Vuex.Store({ getters: gettersWithUser, actions, mutations })
     const wrapper = shallow(RegisterHome, {
       store: storeWithUser,
       localVue
@@ -152,5 +160,25 @@ describe('RegisterHome.vue', () => {
     const table = wrapper.find(RegisterTable)
     table.vm.$emit('sort', 'surname')
     expect(wrapper.vm.searchParams.ordering).toEqual('surname')
+  })
+  it('has a list of cities for drillers', () => {
+    const wrapper = shallow(RegisterHome, {
+      store,
+      localVue
+    })
+    const cityOptions = wrapper.findAll('#cityOptions option')
+    expect(cityOptions.length).toEqual(4) // three options in store + 'all' option
+    expect(cityOptions.at(0).text()).toEqual('All')
+    expect(cityOptions.at(1).text()).toEqual('Duncan')
+    expect(cityOptions.at(2).text()).toEqual('Esquimalt')
+    expect(cityOptions.at(3).text()).toEqual('Jasper')
+  })
+  it('clears driller list when reset is clicked', () => {
+    const wrapper = shallow(RegisterHome, {
+      store,
+      localVue
+    })
+    wrapper.find('[type=reset]').trigger('reset')
+    expect(mutations.setDrillerList).toHaveBeenCalled()
   })
 })
