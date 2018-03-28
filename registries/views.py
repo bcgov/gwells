@@ -307,7 +307,7 @@ class PersonDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
         """
         qs = self.queryset
         if not self.request.user.is_staff:
-            qs = qs.filter(applications__registrations__status__code='ACTIVE')
+            qs = qs.filter(registrations__status__code='ACTIVE')
         return qs
 
     def get_serializer_class(self):
