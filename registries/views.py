@@ -9,7 +9,7 @@ from rest_framework.pagination import LimitOffsetPagination, PageNumberPaginatio
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from rest_framework.mixins import CreateModelMixin, UpdateModelMixin
-from registries.models import Organization, Person, ContactAt, RegistriesApplication
+from registries.models import Organization, Person, ContactInfo, RegistriesApplication
 from registries.permissions import IsAdminOrReadOnly
 from registries.serializers import (
     ApplicationAdminSerializer,
@@ -67,10 +67,10 @@ class PersonFilter(restfilters.FilterSet):
     """
     Allows APIPersonListView to filter response by city, province, or registration status.
     """
-    # city = restfilters.MultipleChoiceFilter(name="companies__org__city")
-    prov = restfilters.CharFilter(name="companies__org__province_state__province_state_code")
-    status = restfilters.CharFilter(name="applications__registrations__status__code")
-    activity = restfilters.CharFilter(name="applications__registrations__registries_activity__code")
+    # city = restfilters.MultipleChoiceFilter(name="organization__city")
+    prov = restfilters.CharFilter(name="organization__province_state__province_state_code")
+    status = restfilters.CharFilter(name="registrations__status__code")
+    activity = restfilters.CharFilter(name="registrations__registries_activity__code")
 
     class Meta:
         model = Person
@@ -95,25 +95,25 @@ class OrganizationListView(AuditCreateMixin, ListCreateAPIView):
 
     permission_classes = (IsAdminOrReadOnly,)
     serializer_class = OrganizationSerializer
-    pagination_class = APILimitOffsetPagination
+    # pagination_class = APILimitOffsetPagination
 
     # prefetch related objects for the queryset to prevent duplicate database trips later
     queryset = Organization.objects.all() \
         .select_related('province_state') \
         .prefetch_related(
-            'contacts',
-            'contacts__person',
+            'people',
         )
 
-    # Allow searching against fields like company name, address, name or registration of company contacts
+    # Allow searching against fields like organization name, address,
+    # name or registration of organization contacts
     filter_backends = (filters.SearchFilter,)
     search_fields = (
         'name',
         'street_address',
         'city',
-        'contacts__person__first_name',
-        'contacts__person__surname',
-        'contacts__person__applications__file_no'
+        'people__first_name',
+        'people__surname',
+        'people__registrations__applications__file_no'
         )
 
 
@@ -124,8 +124,7 @@ class OrganizationListView(AuditCreateMixin, ListCreateAPIView):
         qs = self.queryset
         if not self.request.user.is_staff:
             qs = qs \
-                .filter(contacts__person__applications__registrations__status__code='ACTIVE') \
-                .distinct() # filtering on ContactAt model related items can return duplicate companies
+                .filter(people__registrations__status__code='ACTIVE')
         return qs
 
     def get_serializer_class(self):
@@ -179,8 +178,7 @@ class OrganizationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
     queryset = Organization.objects.all() \
         .select_related('province_state') \
         .prefetch_related(
-            'contacts',
-            'contacts__person',
+            'people',
         )
 
     def get_queryset(self):
@@ -190,7 +188,7 @@ class OrganizationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
         qs = self.queryset
         if not self.request.user.is_staff:
             qs = qs \
-                .filter(contacts__person__applications__registrations__status__code='ACTIVE') \
+                .filter(people__registrations__status__code='ACTIVE') \
                 .distinct()
         return qs
 
@@ -216,25 +214,23 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
     # Allow searching on name fields, names of related companies, etc.
     filter_backends = (restfilters.DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
     filter_class = PersonFilter
-    ordering_fields = ('surname', 'companies__org__name')
+    ordering_fields = ('surname', 'organization__name')
     search_fields = (
         'first_name',
         'surname',
-        'companies__org__name',
-        'companies__org__city',
-        'applications__registrations__registration_no'
+        'organization__name',
+        'organization__city',
+        'registrations__registration_no'
         )
 
     # fetch related companies and registration applications (prevent duplicate database trips)
     queryset = Person.objects \
         .all() \
         .prefetch_related(
-            'companies',
-            'companies__org',
-            'applications',
-            'applications__registrations',
-            'applications__registrations__registries_activity',
-            'applications__registrations__status'
+            'registrations',
+            'registrations__applications',
+            'registrations__registries_activity',
+            'registrations__status'
         )
 
     def get_queryset(self):
@@ -246,12 +242,12 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
         cities = self.request.query_params.get('city', None)
         if cities is not None and len(cities):
             cities = cities.split(',')
-            qs = qs.filter(companies__org__city__in=cities)
+            qs = qs.filter(organization__city__in=cities)
         
         # Only show active drillers to non-admin users and public
         if not self.request.user.is_staff:
-            qs = qs.filter(applications__registrations__status__code='ACTIVE').distinct()
-        
+            qs = qs.filter(registrations__status__code='ACTIVE')
+
         return qs
 
     def get_serializer_class(self):
@@ -269,7 +265,7 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
         if page is not None:
             serializer = PersonListSerializer(page, many=True)
             return self.get_paginated_response(serializer.data)
-        
+
         serializer = PersonListSerializer(filtered_queryset, many=True)
         return Response(serializer.data)
 
@@ -297,13 +293,12 @@ class PersonDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
 
     queryset = Person.objects \
         .all() \
+        .select_related('organization') \
         .prefetch_related(
-            'companies',
-            'companies__org',
-            'applications',
-            'applications__registrations',
-            'applications__registrations__registries_activity',
-            'applications__registrations__status'
+            'registrations__applications',
+            'registrations',
+            'registrations__registries_activity',
+            'registrations__status'
         )
 
     def get_queryset(self):
@@ -312,7 +307,7 @@ class PersonDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
         """
         qs = self.queryset
         if not self.request.user.is_staff:
-            qs = qs.filter(applications__registrations__status__code='ACTIVE')
+            qs = qs.filter(registrations__status__code='ACTIVE')
         return qs
 
     def get_serializer_class(self):
@@ -331,13 +326,12 @@ class CitiesListView(ListAPIView):
     lookup_field = 'person_guid'
     pagination_class = None
     queryset = Person.objects \
-        .exclude(companies__org__city__isnull=True) \
-        .prefetch_related(
-            'companies',
-            'companies__org',
+        .exclude(organization__city__isnull=True) \
+        .select_related(
+            'organization',
         ) \
-        .distinct('companies__org__city') \
-        .order_by('companies__org__city')
+        .distinct('organization__city') \
+        .order_by('organization__city')
 
     def get_queryset(self):
         """
@@ -347,11 +341,11 @@ class CitiesListView(ListAPIView):
         """
         qs = self.queryset
         if not self.request.user.is_staff:
-            qs = qs.filter(applications__registrations__status__code='ACTIVE')
+            qs = qs.filter(registrations__status__code='ACTIVE')
         if self.kwargs['activity'] == 'drill':
-            qs = qs.filter(applications__registrations__registries_activity__code='DRILL')
+            qs = qs.filter(registrations__registries_activity__code='DRILL')
         if self.kwargs['activity'] == 'install':
-            qs = qs.filter(applications__registrations__registries_activity__code='PUMP')
+            qs = qs.filter(registrations__registries_activity__code='PUMP')
         return qs
 
 # Placeholder for base url.
