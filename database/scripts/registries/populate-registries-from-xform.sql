@@ -122,9 +122,6 @@ from xform_registries_action_tracking_driller
 where company_name is not null
 order by trim (both from company_name);
 
-
-
-
 UPDATE registries_organization org SET 
 (street_address
 ,city
@@ -138,7 +135,7 @@ UPDATE registries_organization org SET
 ,companypostalcode
 ,companyphone
 ,companyfax
-,companyprov
+,COALESCE(companyprov,'BC')
 from xform_registries_drillers_reg xform
 where xform.companyname = org.name
 LIMIT 1
@@ -190,7 +187,7 @@ UPDATE registries_organization org SET
 ,companypostalcode
 ,companyphone
 ,companyfax
-,companyprov
+,COALESCE(companyprov,'BC')
 from xform_registries_pump_installers_reg xform
 where xform.companyname = org.name
 LIMIT 1
@@ -726,7 +723,7 @@ INSERT INTO registries_organization (
 ,companyfax
 ,null
 ,false
-,companyprov
+,COALESCE(companyprov,'BC')
 ,gen_random_uuid()
 ,'DATALOAD_USER'
 ,'2018-01-01 00:00:00-08'
@@ -1380,6 +1377,10 @@ where not exists (
 -- Start at HERE above
 
 
+
+UPDATE registries_organization org
+SET province_state_code = 'BC'
+where  province_state_code is null;
 
 
 
