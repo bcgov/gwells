@@ -2,7 +2,7 @@
     "kind": "Template",
     "apiVersion": "v1",
     "metadata": {
-        "name": "maintenance"
+        "name": "${APP_NAME}"
     },
     "parameters": [
             {
@@ -50,6 +50,7 @@
                             ],
                             "from": {
                                 "kind": "ImageStreamTag",
+                                "namespace": "moe-gwells-tools",
                                 "name": "${NAME}:latest"
                             }
                         }

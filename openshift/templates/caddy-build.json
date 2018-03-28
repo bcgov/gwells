@@ -2,7 +2,7 @@
     "kind": "Template",
     "apiVersion": "v1",
     "metadata": {
-        "name": "maintenance"
+        "name": "${APP_NAME}"
     },
     "parameters": [
             {
