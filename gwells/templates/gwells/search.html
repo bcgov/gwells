@@ -15,14 +15,14 @@
 </div>
 {% elif 'well' in request.GET and not well_list %}
 <div class="row">
-    <div class="class-sm-12 alert alert-warning">
+    <div class="col-sm-12 alert alert-warning">
         <div id="no-records-found" role="alert" aria-atomic="true">No well records could be found.</div>
     </div>
 </div>
 {% endif %}
 {# 2018/03/27 Moved map error to the same position as other errors. #}
 <div class="row" id="map-errors" hidden>
-    <div class="class-sm-12 alert alert-warning">
+    <div class="col-sm-12 alert alert-warning">
         <div role="alert" aria-atomic="true" class="message">Something</div>
     </div>
 </div>
