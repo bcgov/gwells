@@ -76,7 +76,7 @@
                     <div class="col-xs-12 col-sm-6 form-spacing">
                       <label for="cityOptions">Community</label>
                       <div>To search more than one community, hold down the Ctrl key and select.</div>
-                      <select id="cityOptions" class="form-control" v-model="searchParams.city" multiple="multiple" style="min-height: 5.8rem" name="registryCities">
+                      <select id="cityOptions" class="form-control" size="6" v-model="searchParams.city" multiple="multiple" name="registryCities">
                         <option value="">All</option>
                         <optgroup
                           v-for="prov in cityList[formatActivityForCityList]"
@@ -294,5 +294,4 @@ export default {
 </script>
 
 <style>
-
 </style>
