@@ -10,10 +10,7 @@ import { store } from './store'
 // GWELLS js API library (helper methods for working with API)
 import ApiService from '@/common/services/gwells'
 
-const vueSmoothScroll = require('vue-smoothscroll')
-
 Vue.use(Vuex)
-Vue.use(vueSmoothScroll)
 Vue.config.productionTip = false
 
 // set baseURL and default headers
@@ -27,5 +24,3 @@ new Vue({
   components: { App },
   template: '<App/>'
 })
-
-Vue.config.devtools = true
