@@ -17,9 +17,7 @@
             <td>
               {{ driller.street_address }}
               <div>
-                <span>{{ driller.city }}<span>
-                <span v-if="driller.city && driller.province_state">, </span>
-                <span v-if="driller.province_state">{{ driller.province_state }}</span>
+                <span>{{ driller.city }}</span><span v-if="driller.city && driller.province_state">, </span><span v-if="driller.province_state">{{ driller.province_state }}</span>
               </div>
             </td>
             <td><div v-if="driller.contact_tel">Phone: {{ driller.contact_tel }}</div><div v-if="driller.contact_email">Email: {{ driller.contact_email }}</div></td>
