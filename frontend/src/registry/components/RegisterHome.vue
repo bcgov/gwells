@@ -127,7 +127,7 @@
                 <div class="col-xs-12">
                   <div class="form-group">
                     <div class="col-xs-12">
-                      <button type="submit" class="btn btn-primary" id="personSearchSubmit">Submit</button>
+                      <button type="submit" class="btn btn-primary" id="personSearchSubmit">Search</button>
                       <button type="reset" class="btn btn-default" id="personSearchReset">Reset</button>
                     </div>
                   </div>
@@ -203,14 +203,6 @@ export default {
     }
   },
   computed: {
-    cities () {
-      const list = []
-      list.push({
-        value: null,
-        text: 'Select a city'
-      })
-      return list
-    },
     formatActivityForCityList () {
       // converts activity code to a plural string compatible with cities list endpoint
       if (this.searchParams.activity === 'DRILL') {
@@ -225,7 +217,7 @@ export default {
       // Plain english title for results table
       const activityMap = {
         DRILL: 'Well Driller',
-        PUMP: 'Pump Installer'
+        PUMP: 'Well Pump Installer'
       }
       if (activityMap[this.lastSearchedActivity]) {
         return activityMap[this.lastSearchedActivity]
@@ -254,10 +246,12 @@ export default {
   },
   watch: {
     'searchParams.activity': function () {
+      // get new city list when user changes activity (well driller or well pump installer)
       this.searchParams.city = []
       this.$store.dispatch(FETCH_CITY_LIST, this.formatActivityForCityList)
     },
     user: function () {
+      // reset search when user changes (this happens every login or logout)
       this.drillerSearchReset()
     }
   },
@@ -293,6 +287,7 @@ export default {
     }
   },
   created () {
+    // send request for city list when app is loaded
     this.$store.dispatch(FETCH_CITY_LIST, this.formatActivityForCityList)
   }
 }
