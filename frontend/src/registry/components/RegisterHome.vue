@@ -61,10 +61,10 @@
                     </div>
                     <div class="col-xs-12 form-spacing">
                       <label class="radio-inline">
-                        <input type="radio" name="activitySelector" id="activityDriller" v-model="searchParams.activity" value="DRILL" style="margin-top: 0px"> Well Driller
+                        <input type="radio" name="activitySelector" id="activityDriller" v-model="searchParams.activity" value="DRILL"> Well Driller
                       </label>
                       <label class="radio-inline">
-                        <input type="radio" name="activitySelector" id="activityInstaller" v-model="searchParams.activity" value="PUMP" style="margin-top: 0px"> Well Pump Installer
+                        <input type="radio" name="activitySelector" id="activityInstaller" v-model="searchParams.activity" value="PUMP"> Well Pump Installer
                       </label>
                     </div>
                   </div>
@@ -294,4 +294,7 @@ export default {
 </script>
 
 <style>
+.radio-inline input {
+  margin-top: 0px;
+}
 </style>
