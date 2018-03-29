@@ -29,7 +29,7 @@
 \echo 'Registry - Finshed copy of static code tables.'
 
 --Registries Test Data 
-\echo 'Registries - Loading test data, based upon January 2018 Well Driller Register'
+\echo 'Registries - Loading test data, based upon March 2018 Well Driller Register'
 
 \echo '... loading Registration Action Tracking_Driller'
 \copy xform_registries_action_tracking_driller (id,registered_ind,date_app_received,company_name,name,town_region, date_gone_for_review,app_approval_date,date_approval_letter_card_sent,app_denial_date,comments,date_denial_letter_sent,date_removed_from_register) from 'RegistrationActionTracking_Driller.sanitized.csv' with header delimiter ',' CSV ;
