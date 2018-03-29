@@ -53,6 +53,8 @@ EOF
 
 
 	# \copy statements in data-load-static-codes.sql required to be in this directory
+# Wed 28 Mar 19:50:16 2018 GW Commented out this section to avoid overwrite of
+#                             one-off Registries replication (from MS Access source)
 #	cd ../code-tables/registries/
 
 	# @Registries
