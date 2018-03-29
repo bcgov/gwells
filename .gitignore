@@ -112,6 +112,7 @@ gwells.pyproj*
 /bin/
 *.sublime-project
 *.sublime-workspace
+.vscode/settings.json
 
 #functional-tests
 functional-tests/.gradle/
@@ -128,8 +129,9 @@ x.sh
 
 #virtual env
 /deactivate
-.vscode/settings.json
 .venv
+.envrc
+.direnv
 
 # Frontend files
 frontend/node_modules/
