@@ -15,9 +15,12 @@ All files and scripts in this xfer-registries-to-openshift are temporary until w
 4. Create symlinks to support local testing
    - cd ./database/code-tables/registries
    - ln -s <outside of git repo> well_drillers_reg.sanitized.csv
-   - ln -s <outside of git repo> "Removed From Registry.sanitized.csv"
-   - ln -s <outside of git repo> "Registration Action Tracking_Driller.sanitized.csv"
+   - ln -s <outside of git repo> RemovedFromRegistry.sanitized.csv
+   - ln -s <outside of git repo> RegistrationActionTracking_Driller.sanitized.csv
+   - ln -s <outside of git repo> RegistrationActionTracking_Pump_Installer.sanitized.csv
+   - ln -s <outside of git repo> pump_install_reg.sanitized.csv
+
 
 Once this local setup is configured, the dev can run the scripts under 	./database/code-tables/registries/ to load the Registries data onto their local database.
 
-To transfer these files on the OpenShift environments, see setup-xfer.sh.
+To transfer these files on the OpenShift environments, see ./setup-xfer.sh.
