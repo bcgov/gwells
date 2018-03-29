@@ -1,5 +1,6 @@
 import geb.spock.GebReportingSpec
 import pages.app.HomePage
+import pages.app.RegisterPage
 import pages.app.SearchPage
 import pages.app.AdditionalInformationPage
 import pages.app.WellDrillerPage
@@ -41,5 +42,14 @@ class FlowSpecs extends GebReportingSpec {
         SearchPage           | "footer-copyright"      | 1             | 3                 || Copyright
         SearchPage           | "footer-home"           | 1             | 3                 || GovHome
         SearchPage           | "footer-about"          | 1             | 3                 || AboutGov
+    }
+
+    def "Check Registries Page"(){
+        given: "I go to the registries start page"
+            to RegisterPage
+        when: "I am on the page"    
+            at RegisterPage
+        then: "title = 'Register of Well Drillers and Well Pump Installers'" 
+            assert titletext == "Register of Well Drillers and Well Pump Installers"   
     }
 }
