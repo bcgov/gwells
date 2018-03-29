@@ -15,12 +15,17 @@
 </div>
 {% elif 'well' in request.GET and not well_list %}
 <div class="row">
-    <div class="class-sm-12 alert alert-warning">
+    <div class="col-sm-12 alert alert-warning">
         <div id="no-records-found" role="alert" aria-atomic="true">No well records could be found.</div>
     </div>
 </div>
 {% endif %}
-
+{# 2018/03/27 Moved map error to the same position as other errors. #}
+<div class="row" id="map-errors" hidden>
+    <div class="col-sm-12 alert alert-warning">
+        <div role="alert" aria-atomic="true" class="message"></div>
+    </div>
+</div>
 
 <div class="row">
     <div class="col-sm-12">
@@ -41,7 +46,6 @@
         <div aria-label="A map associated with GWELLS Search. All well information in this map is accessible via the table of well results that opens below the search form when a search succeeds." id="search-map"></div>
         <div id="attribution"></div>
     </div>
-    <div id="map-errors" class="col-md-12 alert alert-warning" hidden></div>
 </div>
 <br />
 <div id="wells-json" data-wells-search-json="{{wells_json}}" data-lat-long-box="{{lat_long_box}}"></div>
