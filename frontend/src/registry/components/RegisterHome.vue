@@ -138,7 +138,7 @@
         </div>
       </div>
     </div>
-    <div class="row no-pad" ref="registryTableResults">
+    <div class="row no-pad">
       <div class="col-xs-12 col-sm-4">
         <h3>{{ activityTitle }} Results</h3>
       </div>
@@ -146,7 +146,7 @@
         <api-error :error="listError" resetter="setListError"></api-error>
       </div>
       <div class="col-xs-12">
-        <register-table @sort="sortTable" :activity="lastSearchedActivity" />
+        <register-table @sort="sortTable" :activity="lastSearchedActivity"/>
       </div>
     </div>
     <div class="row no-pad" v-if="drillers.results && drillers.results.length">
@@ -261,11 +261,6 @@ export default {
       const params = this.APISearchParams
       this.lastSearchedActivity = this.searchParams.activity || 'DRILL'
       this.$store.dispatch(FETCH_DRILLER_LIST, params)
-
-      // scroll to table
-      const table = this.$refs.registryTableResults
-      console.log(table)
-      this.$SmoothScroll(table, 100)
     },
     drillerSearchReset () {
       this.searchParams.search = ''
