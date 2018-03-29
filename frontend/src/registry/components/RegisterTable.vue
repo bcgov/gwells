@@ -33,7 +33,6 @@
         </tbody>
       </table>
     </div>
-    <div v-if="drillers.results && !drillers.results.length">No results were found.</div>
     <div class="row">
       <div class="col-xs-12 col-sm-4">
         <span v-if="drillers.results && drillers.results.length">Showing <span id="drillersCurrentOffset">{{ drillers.offset + 1 }}</span> to <span id="drillersCurrentOffsetLimit">{{ drillers.offset + drillers.results.length }}</span> of <span id="drillersTotalResults">{{ drillers.count }}</span></span>
@@ -175,6 +174,6 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
+<style>
 
 </style>
