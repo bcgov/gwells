@@ -1,15 +1,15 @@
 import { shallow, createLocalVue } from '@vue/test-utils'
 import Vuex from 'vuex'
-import RegisterHome from '@/registry/components/RegisterHome'
-import RegisterTable from '@/registry/components/RegisterTable'
+import SearchHome from '@/registry/components/search/SearchHome'
+import SearchTable from '@/registry/components/search/SearchTable'
 import APIErrorMessage from '@/common/components/APIErrorMessage'
 import { FETCH_CITY_LIST, FETCH_DRILLER_LIST, LOGIN, LOGOUT } from '@/registry/store/actions.types'
-import { SET_DRILLER_LIST } from '@/registry/store/mutations.types';
+import { SET_DRILLER_LIST } from '@/registry/store/mutations.types'
 
 const localVue = createLocalVue()
 localVue.use(Vuex)
 
-describe('RegisterHome.vue', () => {
+describe('SearchHome.vue', () => {
   let store
   let getters
   let actions
@@ -88,11 +88,11 @@ describe('RegisterHome.vue', () => {
   })
 
   it('loads the table component', () => {
-    const wrapper = shallow(RegisterHome, {
+    const wrapper = shallow(SearchHome, {
       store,
       localVue
     })
-    expect(wrapper.findAll(RegisterTable).length)
+    expect(wrapper.findAll(SearchTable).length)
       .toEqual(1)
   })
 
@@ -107,7 +107,7 @@ describe('RegisterHome.vue', () => {
       cityList: () => []
     }
     const store = new Vuex.Store({ getters, actions })
-    const wrapper = shallow(RegisterHome, {
+    const wrapper = shallow(SearchHome, {
       store,
       localVue
     })
@@ -116,7 +116,7 @@ describe('RegisterHome.vue', () => {
   })
 
   it('doesn\'t load the error component if there is no error', () => {
-    const wrapper = shallow(RegisterHome, {
+    const wrapper = shallow(SearchHome, {
       store,
       localVue
     })
@@ -124,7 +124,7 @@ describe('RegisterHome.vue', () => {
       .toEqual(0)
   })
   it('resets search params when reset button is clicked', () => {
-    const wrapper = shallow(RegisterHome, {
+    const wrapper = shallow(SearchHome, {
       store,
       localVue
     })
@@ -157,7 +157,7 @@ describe('RegisterHome.vue', () => {
     })
   })
   it('dispatches login action when login button is triggered', () => {
-    const wrapper = shallow(RegisterHome, {
+    const wrapper = shallow(SearchHome, {
       store,
       localVue
     })
@@ -177,7 +177,7 @@ describe('RegisterHome.vue', () => {
       cityList: () => []
     }
     const storeWithUser = new Vuex.Store({ getters: gettersWithUser, actions, mutations })
-    const wrapper = shallow(RegisterHome, {
+    const wrapper = shallow(SearchHome, {
       store: storeWithUser,
       localVue
     })
@@ -186,16 +186,16 @@ describe('RegisterHome.vue', () => {
     expect(actions.logout).toHaveBeenCalled()
   })
   it('calls sort method when register table component emits a sort code', () => {
-    const wrapper = shallow(RegisterHome, {
+    const wrapper = shallow(SearchHome, {
       store,
       localVue
     })
-    const table = wrapper.find(RegisterTable)
+    const table = wrapper.find(SearchTable)
     table.vm.$emit('sort', 'surname')
     expect(wrapper.vm.searchParams.ordering).toEqual('surname')
   })
   it('has a list of cities for drillers', () => {
-    const wrapper = shallow(RegisterHome, {
+    const wrapper = shallow(SearchHome, {
       store,
       localVue
     })
@@ -207,7 +207,7 @@ describe('RegisterHome.vue', () => {
     expect(cityOptions.at(3).text()).toEqual('Jasper')
   })
   it('clears driller list when reset is clicked', () => {
-    const wrapper = shallow(RegisterHome, {
+    const wrapper = shallow(SearchHome, {
       store,
       localVue
     })
