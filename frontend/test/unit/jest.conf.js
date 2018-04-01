@@ -21,7 +21,8 @@ module.exports = {
     'src/**/*.{js,vue}',
     '!src/registry/main.js',
     '!src/registry/router/index.js',
-    '!**/node_modules/**'
+    '!**/node_modules/**',
+    '!src/common/assets/**'
   ],
   testResultsProcessor: 'jest-junit'
 }
