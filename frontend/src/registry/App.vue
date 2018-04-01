@@ -1,28 +1,28 @@
 <template>
   <div>
+    <gwells-header/>
     <router-view/>
+    <gwells-footer/>
   </div>
 </template>
 
 <script>
-// import Header from '@/common/components/Header'
-// import Footer from '@/common/components/Footer'
+import Header from '@/common/components/Header'
+import Footer from '@/common/components/Footer'
 export default {
   name: 'App',
   components: {
-    // 'gwells-header': Header,
-    // 'gwells-footer': Footer
+    'gwells-header': Header,
+    'gwells-footer': Footer
   }
 }
 </script>
 
 <style>
-@import url('https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css');
+/* @import url('https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css'); */
 @import '../../../gwells/static/gwells/css/ie10-viewport-bug-workaround.css';
-@import '../../../gwells/static/gwells/css/main.css';
-@import '../../../gwells/static/gwells/css/custom-main.css';
 
-.row.no-pad {
+/* .row.no-pad {
   margin-right:0;
   margin-left:0;
 }
@@ -207,5 +207,5 @@ export default {
     .btn-default .badge {
         color: #fff;
         background-color: #333;
-}
+} */
 </style>
