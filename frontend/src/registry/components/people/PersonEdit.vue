@@ -43,7 +43,7 @@
     </div>
     <div class="panel" v-if="addClassificationToggle" style="border-color: #1a5a96">
       <div class="panel-body">
-        <add-classification/>
+        <application-add/>
           <button type="button" class="btn btn-primary" @click="addClassificationToggle = !addClassificationToggle">Save</button>
           <button type="button" class="btn btn-secondary" @click="addClassificationToggle = !addClassificationToggle">
             <span v-if="addClassificationToggle">Cancel</span>
@@ -206,7 +206,7 @@
 <script>
 import APIErrorMessage from '@/common/components/APIErrorMessage'
 import QualCheckbox from '@/common/components/QualCheckbox'
-import ClassificationAdd from '@/registry/components/ClassificationAdd'
+import ApplicationAdd from '@/registry/components/people/ApplicationAdd'
 import { mapGetters } from 'vuex'
 import { SET_DRILLER } from '@/registry/store/mutations.types'
 import { FETCH_DRILLER } from '@/registry/store/actions.types'
@@ -216,7 +216,7 @@ export default {
   components: {
     'api-error': APIErrorMessage,
     'r-checkbox': QualCheckbox,
-    'add-classification': ClassificationAdd
+    'application-add': ApplicationAdd
   },
   data () {
     return {

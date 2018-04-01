@@ -1,13 +1,14 @@
 import { shallow, createLocalVue } from '@vue/test-utils'
 import Vuex from 'vuex'
-import PersonApplicationDetail from '@/registry/components/PersonApplicationDetail'
+import PersonDetail from '@/registry/components/people/PersonDetail'
+import APIErrorMessage from '@/common/components/APIErrorMessage'
 import { SET_DRILLER } from '@/registry/store/mutations.types'
 import { FETCH_DRILLER } from '@/registry/store/actions.types'
 
 const localVue = createLocalVue()
 localVue.use(Vuex)
 
-describe('PersonApplicationDetail.vue', () => {
+describe('PersonDetail.vue', () => {
   let store
   let getters
   let mutations
@@ -139,37 +140,59 @@ describe('PersonApplicationDetail.vue', () => {
     }
     store = new Vuex.Store({ getters, actions, mutations })
   })
-  it('loads the currentDriller and renders the person name as the page title', () => {
-    const wrapper = shallow(PersonApplicationDetail, {
-      localVue,
+
+  it('dispatches the fetch driller action when page loads', () => {
+    shallow(PersonDetail, {
       store,
+      localVue,
       stubs: ['router-link', 'router-view'],
       mocks: {
-        $route: {params: {person_guid: fakePerson.person_guid, classCode: 'geotech'}}
+        $route: {params: {person_guid: 'aaaa-4444-bbbb-1111'}}
       }
     })
-    expect(wrapper.find('#titlePersonName').text()).toBe(`${fakePerson.first_name} ${fakePerson.surname}`)
+    expect(actions.fetchDriller).toHaveBeenCalled()
   })
-  it('gets the list of qualified well/hole types from the driller profile for this application', () => {
-    const wrapper = shallow(PersonApplicationDetail, {
+  it('loads the error component if there is an error', () => {
+    getters = {
+      loading: () => false,
+      user: () => null,
+      error: () => {
+        return { status: '400', statusText: 'error!' }
+      },
+      currentDriller: jest.fn().mockReturnValue(fakePerson),
+      drillers: () => []
+    }
+    const storeError = new Vuex.Store({ getters, actions, mutations })
+    const wrapper = shallow(PersonDetail, {
+      store: storeError,
       localVue,
-      store,
       stubs: ['router-link', 'router-view'],
       mocks: {
-        $route: {params: {person_guid: fakePerson.person_guid, classCode: 'geotech'}}
+        $route: {params: {person_guid: 'aaaa-4444-bbbb-1111'}}
       }
     })
-    expect(wrapper.vm.qualCodeList.length).toBe(3)
+    expect(wrapper.findAll(APIErrorMessage).length).toEqual(1)
   })
-  it('removes current driller from store if we need to fetch another driller (prevent momentarily showing previous driller', () => {
-    const wrapper = shallow(PersonApplicationDetail, {
-      localVue,
+  it('doesn\'t load the error component if there is no error', () => {
+    const wrapper = shallow(PersonDetail, {
       store,
+      localVue,
       stubs: ['router-link', 'router-view'],
       mocks: {
-        $route: {params: {person_guid: 'aaaa-4444-aaaa', classCode: 'geotech'}}
+        $route: {params: {person_guid: 'aaaa-4444-bbbb-1111'}}
       }
     })
-    expect(mutations.setDriller).toHaveBeenCalled()
+    expect(wrapper.findAll(APIErrorMessage).length).toEqual(0)
+  })
+  it('has a classifications property (based on the currentDriller loaded)', () => {
+    const wrapper = shallow(PersonDetail, {
+      store,
+      localVue,
+      stubs: ['router-link', 'router-view'],
+      mocks: {
+        $route: {params: {person_guid: 'aaaa-4444-bbbb-1111'}}
+      }
+    })
+    expect(wrapper.vm.classifications)
   })
 })

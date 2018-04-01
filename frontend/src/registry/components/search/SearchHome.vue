@@ -151,7 +151,7 @@
         <h3>{{ activityTitle }} Results</h3>
       </div>
       <div class="col-xs-12">
-        <register-table @sort="sortTable" :activity="lastSearchedActivity"/>
+        <registry-table @sort="sortTable" :activity="lastSearchedActivity"/>
       </div>
     </div>
     <div class="row no-pad" v-if="drillers.results && drillers.results.length">
@@ -163,16 +163,16 @@
 </template>
 
 <script>
-import RegisterTable from '@/registry/components/RegisterTable'
-import LegalText from '@/registry/components/Legal'
-import APIErrorMessage from '@/common/components/APIErrorMessage'
+import SearchTable from '@/registry/components/search/SearchTable.vue'
+import LegalText from '@/registry/components/Legal.vue'
+import APIErrorMessage from '@/common/components/APIErrorMessage.vue'
 import { mapGetters } from 'vuex'
 import { LOGIN, LOGOUT, FETCH_CITY_LIST, FETCH_DRILLER_LIST } from '@/registry/store/actions.types'
 import { SET_DRILLER_LIST } from '@/registry/store/mutations.types'
 
 export default {
   components: {
-    'register-table': RegisterTable,
+    'registry-table': SearchTable,
     'api-error': APIErrorMessage,
     'register-legal-text': LegalText
   },
