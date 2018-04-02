@@ -1,7 +1,7 @@
 import axios from 'axios'
-const BASE_URL = '/gwells/registries/api/v1/'
+const BASE_URL = 'http://localhost:8000/gwells/registries/api/v1/'
 
-const logging = false
+const logging = true
 
 const ApiService = {
   init () {
