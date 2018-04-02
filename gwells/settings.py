@@ -262,3 +262,4 @@ SWAGGER_SETTINGS = {
 
 # matches subdomains of gov.bc.ca
 CORS_ORIGIN_REGEX_WHITELIST = (r'^(?:https?:\/\/)?(?:\w+\.)*gov\.bc\.ca$',)
+CORS_ORIGIN_WHITELIST = ('localhost:8080',)
