@@ -1,7 +1,12 @@
 <template>
-  <div @click="clearError" class="alert alert-warning" role="alert" id="errorAlert">
-    {{ error.status }} {{ error.statusText }}<span v-if="error.data && error.data.detail">: {{ error.data.detail }}</span>
-  </div>
+  <b-alert :show="error" dismissible @dismissed="clearError()" variant="warning" role="alert" id="errorAlert">
+    <div v-if="error && error.data && error.data.non_field_errors && error.data.non_field_errors.length">
+      {{ error.data.non_field_errors[0] }}
+    </div>
+    <div v-else>
+      {{ error.status }} {{ error.statusText }}<span v-if="error.data && error.data.detail">: {{ error.data.detail }}</span>
+    </div>
+  </b-alert>
 </template>
 
 <script>
