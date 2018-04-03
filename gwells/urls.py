@@ -47,12 +47,15 @@ urlpatterns = [
     url(r'^'+ app_root_slash +'health$', HealthView.health, name='health'),
     url(r'^'+ app_root_slash +'groundwater-information', TemplateView.as_view(template_name='gwells/groundwater_information.html'), name='groundwater_information'),
     url(r'^'+ app_root_slash +'ajax/map_well_search/$', SearchView.map_well_search, name='map_well_search'),
-    url(r'^'+ app_root_slash +'registries/', include('registries.urls')),
     url(r'^'+ app_root_slash +'site_admin/survey/(?P<pk>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$', SurveyView.as_view(), name='survey'), #survey details view
     url(r'^'+ app_root_slash +'site_admin/survey', SurveyView.as_view(), name='survey'), #survey api view
     url(r'^'+ app_root_slash +'site_admin', AdminView.as_view(), name='site_admin'), #editable list view of surveys and other site admin features
     url(r'^'+ app_root_slash + DJANGO_ADMIN_URL +'/', admin.site.urls),
     url(r'^'+ app_root_slash +'accounts/', include('django.contrib.auth.urls')),
+
+    # Registries API urls
+    url(r'^'+ app_root_slash, include('registries.urls')),
+
 ]
 
 if settings.ENABLE_DATA_ENTRY:

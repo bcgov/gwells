@@ -18,7 +18,40 @@ describe('RegisterHome.vue', () => {
   beforeEach(() => {
     getters = {
       user: () => {},
-      drillers: () => [],
+      drillers: () => {
+        return {
+          results: [
+            {
+              person_guid: '1e252dca-ccb9-439a-a6ec-aeec0f7e4a03',
+              first_name: 'Alexis',
+              surname: 'Rodriguez',
+              organization_name: null,
+              street_address: null,
+              city: null,
+              province_state: null,
+              contact_tel: null,
+              contact_email: null,
+              activity: 'Well Driller',
+              status: 'Active',
+              registration_no: 'WD 08315530'
+            },
+            {
+              person_guid: 'db02b5bb-1473-4f97-9bcf-f6214e8dd5aa',
+              first_name: 'Ann',
+              surname: 'Berg',
+              organization_name: 'Earthplex Installers',
+              street_address: '7010 Rocky Bluff Mall',
+              city: 'Atlin',
+              province_state: 'BC',
+              contact_tel: '(604) 424-7090',
+              contact_email: 'cardenas@driller.ca',
+              activity: 'Well Driller',
+              status: 'Active',
+              registration_no: 'WD 04187177'
+            }
+          ]
+        }
+      },
       loading: () => false,
       listError: () => null,
       cityList: () => {
