@@ -11,6 +11,13 @@
                 "description": "The suffix for all created objects",
                 "required": true,
                 "value": "proxy-caddy"
+            },
+            {
+                "name": "BUILD_PROJECT",
+                "displayName": "Build project",
+                "description": "The suffix for all created objects",
+                "required": true,
+                "value": "moe-gwells-tools"
             }
     ],
     "objects": [
@@ -50,7 +57,7 @@
                             ],
                             "from": {
                                 "kind": "ImageStreamTag",
-                                "namespace": "moe-gwells-tools",
+                                "namespace": "${BUILD_PROJECT}",
                                 "name": "${NAME}:latest"
                             }
                         }
