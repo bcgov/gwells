@@ -13,34 +13,38 @@ OS X:
 ```
 
 
-##### Setup
+##### Manual Setup
 
-1.  Prerequisites:
+Please use either these steps or the install script.
 
-    * [Git](https://git-scm.com/downloads/)
-    * [Python 3.5](https://www.python.org/downloads/)
-    * [PostgreSQL 9.5](https://www.postgresql.org/download/)
-    * [VirtualEnv](https://virtualenv.pypa.io/)
-    * [VirtualEnvWrapper (OS X)](http://virtualenvwrapper.readthedocs.org/)
-    * [VirtualEnvWrapper-Win (Windows)](https://pypi.python.org/pypi/virtualenvwrapper-win/)
+1.  ##### Prerequisites
 
-    </p>
+    ###### OS X
 
-    OS X: Install packages with Brew and Pip3
+    Optional: Install [Xcode](https://developer.apple.com/xcode/)
+
+    ```
+    xcode-select --install
+    ```
+
+    Install [Git](https://git-scm.com/downloads/) (included in Xcode), [PostgreSQL](https://www.postgresql.org), [Python3](https://www.python.org), [VirtualEnv](https://virtualenv.pypa.io/) and [VirtualEnvWrapper](http://virtualenvwrapper.readthedocs.org/) with Brew and Pip3
 
     ```
     /usr/bin/ruby -e "$( curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install )"
     brew install git postgresql python3
-    pip3 install postgresql virtualenv virtualenvwrapper --user
+    pip3 install virtualenv virtualenvwrapper --user
     ```
 
-    Windows: Install virtualenvwrapper-win instead of virtualenvwrapper.
+    ###### Windows
 
+    Install Install [Git](https://git-scm.com/downloads/), [PostgreSQL](https://www.postgresql.org/download/) and [Python](https://www.python.org/downloads/) manually.
+
+    Install [VirtualEnv](https://virtualenv.pypa.io/) and [VirtualEnvWrapper-Win](https://pypi.python.org/pypi/virtualenvwrapper-win/) with pip3:
     ```
-    pip3 install virtualenvwrapper-win
+    pip3 install virtualenv virtualenvwrapper-win --user
     ```
 
-2.  GitHub
+2.  ##### GitHub
 
     Fork this repo and clone it.
 
@@ -67,14 +71,7 @@ OS X:
     git config --global core.autocrlf input
     ```
 
-3.  PostgreSQL
-
-    Use the psql command line tool to create a database user and empty database.
-
-    ```
-    psql -U postgres -c "CREATE USER gwells WITH createdb;"
-    psql -U postgres -c "CREATE DATABASE gwells WITH OWNER='gwells';"
-    ```
+3.  ##### PostgreSQL
 
     PostgreSQL may need to be configured.  OS X file locations are used here.
 
@@ -84,24 +81,77 @@ OS X:
     /usr/local/Cellar/postgresql/<version-number>/bin/createuser -s postgres
     ```
 
-4.  Virtual Environment
+    Create a GWells (modern system) user and empty database.
 
-    Using VirtualEnvWrapper create a virtual environment.
+    ```
+    psql -U postgres -c "CREATE USER gwells WITH createdb;"
+    psql -U postgres -c "ALTER USER gwells WITH PASSWORD 'gwells';"
+    psql -U postgres -c "CREATE DATABASE gwells WITH owner='gwells';"
+    ```
+
+    Optional: Connect Wells (legacy system) using a foreign data wrapper.
+
+    ```
+    psql -U postgres -c "CREATE USER wells;"
+    psql -U postgres -c "ALTER USER wells WITH PASSWORD 'wells';"
+    psql -U postgres -c "CREATE DATABASE wells WITH owner='wells';"
+    pg_restore -U wells -d wells --no-owner --no-privileges <path to LEGACY_DB_DUMP>
+    psql -U postgres -d gwells -c "CREATE EXTENSION IF NOT EXISTS pgcrypto;"
+    psql -U postgres -d gwells -c "CREATE EXTENSION IF NOT EXISTS postgres_fdw;"
+    psql -U postgres -d gwells -c "DROP SERVER IF EXISTS wells CASCADE;"
+    psql -U postgres -d gwells -c "CREATE SERVER wells FOREIGN DATA WRAPPER postgres_fdw \
+        OPTIONS (host 'localhost', dbname 'wells');"
+    psql -U postgres -d gwells -c "DROP USER MAPPING IF EXISTS FOR public SERVER wells;"
+    psql -U postgres -d gwells -c "CREATE USER MAPPING FOR PUBLIC SERVER wells \
+        OPTIONS (user 'wells', password 'wells');"
+    psql -U postgres -d gwells -c "CREATE SCHEMA IF NOT EXISTS wells;"
+    psql -U postgres -d gwells -c "IMPORT FOREIGN SCHEMA public FROM SERVER wells INTO wells;"
+    psql -U postgres -d gwells -c "GRANT usage ON SCHEMA wells TO gwells;"
+    psql -U postgres -d gwells -c "GRANT select ON ALL TABLES in SCHEMA wells TO wells;"
+    psql -U postgres -d gwells -c "CREATE SCHEMA IF NOT EXISTS wells;"
+    ```
+
+4.  ##### Virtual Environment
+
+    Create and work on a virtual environment.
 
     ```
     mkvirtualenv gwells
-    ```
-
-    Work within your virtual environment.
-    ```
     workon gwells
     ```
 
-5.  Config variables
+    Install Python requirements (file in root of repo).
 
-    If you are developing against a Postgres database you can set environment variables with a postactivate script.
+    ```
+    pip3 install -U -r ../requirements.txt
+    ```
 
-    Windows: Add the following to %USERPROFILE%\Envs\myenv\Scripts\activate.bat.
+5.  ##### Config variables
+
+    ###### OS X
+
+    Export at the command line or add the following to:
+
+    * VirtualEnv postactivate script in ~/.virtualenvs/gwells/bin/postactivate
+    * Bash shell script in ~/.bash_profile
+
+    ```
+    export DATABASE_SERVICE_NAME=postgresql
+    export DATABASE_ENGINE=postgresql
+    export DATABASE_NAME=gwells
+    export DATABASE_USER=gwells
+    export DATABASE_PASSWORD=gwells
+    export DATABASE_SCHEMA=public
+    export DJANGO_DEBUG=True
+    export APP_CONTEXT_ROOT=gwells
+    export ENABLE_GOOGLE_ANALYTICS=False
+    export ENABLE_DATA_ENTRY=True
+    export BASEURL=http://gwells-dev.pathfinder.gov.bc.ca/
+    ```
+
+    ###### Windows
+
+    Add the following to %USERPROFILE%\Envs\myenv\Scripts\activate.bat:
 
     ```
     SET DATABASE_SERVICE_NAME=postgresql
@@ -117,42 +167,59 @@ OS X:
     SET BASEURL=http://gwells-dev.pathfinder.gov.bc.ca/
     ```
 
-    OS X: Export runtime variables at the command line.
-    ```
-    export DATABASE_SERVICE_NAME=postgresql
-    export DATABASE_ENGINE=postgresql
-    export DATABASE_NAME=gwells
-    export DATABASE_USER=gwells
-    export DATABASE_PASSWORD=gwells
-    export DATABASE_SCHEMA=public
-    export DJANGO_DEBUG=True
-    export APP_CONTEXT_ROOT=gwells
-    export ENABLE_GOOGLE_ANALYTICS=False
-    export ENABLE_DATA_ENTRY=True
-    export BASEURL=http://gwells-dev.pathfinder.gov.bc.ca/
-    ```
+6.  ##### Development Database
 
-6.  Requirements
-
-    Install requirements (file in root of repo)
+    Prepare and apply migration data structures (file in root of repo).
 
     ```
-    pip3 install -U -r ../requirements.txt
-    ```
-
-7.  Create a development database. You may first have to assign the gwells user a password.
-
-    ```
+    python3 ../manage.py makemigrations
     python3 ../manage.py migrate
     ```
 
-8.  Start the Django development server.
+    Optional: import a Wells database.
+
+    ```
+    pg_restore -U gwells -d gwells --no-owner --no-privileges <path to MODERN_DB_DUMP>
+    ```
+
+7.  ##### Testing
+
+    Collect static files and run tests (file in root of repo).
+
+    ```
+    python3 ../manage.py collectstatic
+	python3 ../manage.py test -c nose.cfg
+    ```
+
+8.  ##### Start GWells
+
+    Start the Django development server (file in root of repo).
 
     ```
     python3 ../manage.py runserver
     ```
 
-9.  Browse to http://127.0.0.1:8000/gwells, the welcome page.
+9.  ##### Use GWells
+
+    Browse to http://127.0.0.1:8000/gwells, the welcome page.
+
+    Shortcut, OS X:
+
+    ```
+    open http://127.0.0.1:8000/gwells
+    ```
+
+10. ##### Optional: Post-deploy
+
+    ###### OS X
+
+    Create OpenShift /opt/app-root/src and run post-deploy.
+
+    ```
+    sudo ln -s <repo root> /opt/app-root/src
+    cd ../database/cron/
+    ./post-deploy.sh
+    ```
 
 
 ## Deploying to OpenShift
