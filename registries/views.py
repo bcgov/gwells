@@ -9,7 +9,7 @@ from rest_framework.pagination import LimitOffsetPagination, PageNumberPaginatio
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from rest_framework.mixins import CreateModelMixin, UpdateModelMixin
-from registries.models import Organization, Person, ContactInfo, RegistriesApplication
+from registries.models import Organization, Person, ContactInfo, RegistriesApplication, Register
 from registries.permissions import IsAdminOrReadOnly
 from registries.serializers import (
     ApplicationAdminSerializer,
@@ -21,7 +21,7 @@ from registries.serializers import (
     PersonSerializer,
     PersonAdminSerializer,
     PersonListSerializer,
-)
+    RegistrationAdminSerializer,)
 
 class AuditCreateMixin(CreateModelMixin):
     """
@@ -95,7 +95,7 @@ class OrganizationListView(AuditCreateMixin, ListCreateAPIView):
 
     permission_classes = (IsAdminOrReadOnly,)
     serializer_class = OrganizationSerializer
-    # pagination_class = APILimitOffsetPagination
+    pagination_class = APILimitOffsetPagination
 
     # prefetch related objects for the queryset to prevent duplicate database trips later
     queryset = Organization.objects.all() \
@@ -352,10 +352,44 @@ class CitiesListView(ListAPIView):
 def index(request):
     return HttpResponse("TEST: Driller Register app home index.")
 
-#
-# APPLICATION ENDPOINT VIEWS
-# To confirm entry point to these views, see urls.py urlpatterns list ("application" entries)
-#
+
+class RegistrationListView(AuditCreateMixin, ListCreateAPIView):
+    """ 
+    get:
+    List all registration records
+
+    post:
+    Create a new well driller or well pump installer registration record for a person
+    """
+
+    permission_classes = (IsAdminUser,)
+    serializer_class = RegistrationAdminSerializer
+
+
+class RegistrationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
+    """
+    get:
+    Returns a well driller or well pump installer registration record
+
+    put:
+    Replaces a well driller or well pump installer registration record with a new one
+
+    patch:
+    Updates a registration record with new values
+
+    delete:
+    Removes the specified registration record from the database
+    """
+
+    permission_classes = (IsAdminUser,)
+    serializer_class = RegistrationAdminSerializer
+    queryset = Register.objects.all() \
+        .select_related(
+            'person',
+            'registries_activity',
+            'status',
+            'register_removal_reason',) \
+        .prefetch_related('applications')
 
 class ApplicationListView(AuditCreateMixin, ListCreateAPIView):
     """
@@ -369,7 +403,7 @@ class ApplicationListView(AuditCreateMixin, ListCreateAPIView):
     permission_classes = (IsAdminUser,)
     serializer_class = ApplicationListSerializer
     queryset = RegistriesApplication.objects.all() \
-        .select_related('person') \
+        .select_related('registration') \
         .prefetch_related(
             'register_set',
             'register_set__registries_activity',
@@ -394,6 +428,6 @@ class ApplicationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
 
     permission_classes = (IsAdminUser,)
     serializer_class = ApplicationListSerializer
-    queryset = RegistriesApplication.objects.all().select_related('person')
+    queryset = RegistriesApplication.objects.all().select_related('registration')
     lookup_field = "application_guid"
     
