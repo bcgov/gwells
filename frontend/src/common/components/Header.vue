@@ -24,7 +24,7 @@
         </b-navbar-nav>
       </b-container>
     </b-navbar>
-    <b-navbar class="bc-nav-links" toggleable="sm" type="dark">
+    <b-navbar class="bc-nav-links py-0" toggleable="sm" type="dark">
       <b-collapse class="py-2" is-nav id="nav_collapse">
         <b-container id="navContainer">
           <b-navbar-nav>
@@ -37,7 +37,6 @@
                 v-if="!user"
                 @click="loginPopover = !loginPopover"
                 ref="loginButton">Log in</b-nav-item>
-            <b-nav-item class="navbar-link lvl2-link" v-if="user">Actions</b-nav-item>
             <b-nav-item class="navbar-link lvl2-link" v-if="user" @click="logout()">Log out</b-nav-item>
           </b-navbar-nav>
         </b-container>
@@ -105,12 +104,12 @@ export default {
     }
   },
   methods: {
-    async login (evt) {
+    login (evt) {
       evt.preventDefault()
       if (!this.credentials.username) { this.loginUsernameState = false }
       if (!this.credentials.password) { this.loginPasswordState = false }
       if (this.credentials.username && this.credentials.password) {
-        await this.$store.dispatch(LOGIN, this.credentials)
+        this.$store.dispatch(LOGIN, this.credentials)
         this.loginPopover = false
       }
     },
