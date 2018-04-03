@@ -14,7 +14,12 @@
               <div>{{ driller.registration_no }}</div>
             </td>
             <td>{{ driller.organization_name }}</td>
-            <td>{{ driller.street_address }}<div>{{ driller.city }}<span v-if="driller.province_state">, {{ driller.province_state }}</span></div></td>
+            <td>
+              {{ driller.street_address }}
+              <div>
+                <span>{{ driller.city }}</span><span v-if="driller.city && driller.province_state">, </span><span v-if="driller.province_state">{{ driller.province_state }}</span>
+              </div>
+            </td>
             <td><div v-if="driller.contact_tel">Phone: {{ driller.contact_tel }}</div><div v-if="driller.contact_email">Email: {{ driller.contact_email }}</div></td>
             <td v-if="activity === 'DRILL'">{{ driller.activity }}</td>
             <td></td>
@@ -26,7 +31,6 @@
         </tbody>
       </table>
     </div>
-    <div v-if="drillers.results && !drillers.results.length">No results were found.</div>
     <div class="row">
       <div class="col-xs-12 col-sm-4">
         <span v-if="drillers.results && drillers.results.length">Showing <span id="drillersCurrentOffset">{{ drillers.offset + 1 }}</span> to <span id="drillersCurrentOffsetLimit">{{ drillers.offset + drillers.results.length }}</span> of <span id="drillersTotalResults">{{ drillers.count }}</span></span>
@@ -168,6 +172,6 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
+<style>
 
 </style>

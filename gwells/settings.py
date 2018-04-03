@@ -81,6 +81,7 @@ INSTALLED_APPS = (
     'debug_toolbar',
     'django.contrib.postgres',
     'rest_framework',
+    'corsheaders',
     'drf_yasg',
     'gwells',
     'crispy_forms',
@@ -89,9 +90,11 @@ INSTALLED_APPS = (
     'django_nose',
     'webpack_loader',
     'django_filters',
+#    'django_extensions',
 )
 
 MIDDLEWARE = (
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.gzip.GZipMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -256,3 +259,6 @@ SWAGGER_SETTINGS = {
         }
     }
 }
+
+# matches subdomains of gov.bc.ca
+CORS_ORIGIN_REGEX_WHITELIST = (r'^(?:https?:\/\/)?(?:\w+\.)*gov\.bc\.ca$',)

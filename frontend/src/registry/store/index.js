@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import ApiService from '@/common/services/gwells'
+import ApiService from '@/common/services/ApiService.js'
 import {
   LOGIN,
   LOGOUT,
