@@ -8,7 +8,7 @@ import router from './router'
 import { store } from './store'
 
 // GWELLS js API library (helper methods for working with API)
-import ApiService from '@/common/services/gwells'
+import ApiService from '@/common/services/ApiService.js'
 
 Vue.use(Vuex)
 Vue.config.productionTip = false

@@ -61,10 +61,10 @@
                     </div>
                     <div class="col-xs-12 form-spacing">
                       <label class="radio-inline">
-                        <input type="radio" name="activitySelector" id="activityDriller" v-model="searchParams.activity" value="DRILL" style="margin-top: 0px"> Well Driller
+                        <input type="radio" name="activitySelector" id="activityDriller" v-model="searchParams.activity" value="DRILL"> Well Driller
                       </label>
                       <label class="radio-inline">
-                        <input type="radio" name="activitySelector" id="activityInstaller" v-model="searchParams.activity" value="PUMP" style="margin-top: 0px"> Well Pump Installer
+                        <input type="radio" name="activitySelector" id="activityInstaller" v-model="searchParams.activity" value="PUMP"> Well Pump Installer
                       </label>
                     </div>
                   </div>
@@ -76,7 +76,7 @@
                     <div class="col-xs-12 col-sm-6 form-spacing">
                       <label for="cityOptions">Community</label>
                       <div>To search more than one community, hold down the Ctrl key and select.</div>
-                      <select id="cityOptions" class="form-control" v-model="searchParams.city" multiple="multiple" style="min-height: 5.8rem">
+                      <select id="cityOptions" class="form-control" size="6" v-model="searchParams.city" multiple="multiple" name="registryCities">
                         <option value="">All</option>
                         <optgroup
                           v-for="prov in cityList[formatActivityForCityList]"
@@ -92,7 +92,7 @@
                   <div class="form-group" v-if="user">
                     <div class="col-xs-12 col-sm-6 form-spacing">
                       <label for="registrationStatusSelect">Registration status</label>
-                      <select v-model="searchParams.status" class="form-control" id="registrationStatusSelect">
+                      <select v-model="searchParams.status" class="form-control" id="registrationStatusSelect" name="registryStatuses">
                         <option value="">All</option>
                         <option value="PENDING">Pending</option>
                         <option value="INACTIVE">Not registered</option>
@@ -127,8 +127,8 @@
                 <div class="col-xs-12">
                   <div class="form-group">
                     <div class="col-xs-12">
-                      <button type="submit" class="btn btn-primary" id="personSearchSubmit">Submit</button>
-                      <button type="reset" class="btn btn-secondary" id="personSearchReset">Reset</button>
+                      <button type="submit" class="btn btn-primary" id="personSearchSubmit">Search</button>
+                      <button type="reset" class="btn btn-default" id="personSearchReset">Reset</button>
                     </div>
                   </div>
                 </div>
@@ -138,12 +138,17 @@
         </div>
       </div>
     </div>
-    <div class="row no-pad">
+    <div class="row">
+      <div class="col-xs-12" v-if="drillers.results && !drillers.results.length">
+        No results were found.
+      </div>
+      <div class="col-xs-12" v-if="listError">
+        <api-error :error="listError" resetter="setListError"></api-error>
+      </div>
+    </div>
+    <div class="row no-pad"  v-if="drillers.results && drillers.results.length">
       <div class="col-xs-12 col-sm-4">
         <h3>{{ activityTitle }} Results</h3>
-      </div>
-      <div v-if="listError" class="col-xs-12 col-sm-7">
-        <api-error :error="listError" resetter="setListError"></api-error>
       </div>
       <div class="col-xs-12">
         <register-table @sort="sortTable" :activity="lastSearchedActivity"/>
@@ -198,14 +203,6 @@ export default {
     }
   },
   computed: {
-    cities () {
-      const list = []
-      list.push({
-        value: null,
-        text: 'Select a city'
-      })
-      return list
-    },
     formatActivityForCityList () {
       // converts activity code to a plural string compatible with cities list endpoint
       if (this.searchParams.activity === 'DRILL') {
@@ -220,7 +217,7 @@ export default {
       // Plain english title for results table
       const activityMap = {
         DRILL: 'Well Driller',
-        PUMP: 'Pump Installer'
+        PUMP: 'Well Pump Installer'
       }
       if (activityMap[this.lastSearchedActivity]) {
         return activityMap[this.lastSearchedActivity]
@@ -249,10 +246,12 @@ export default {
   },
   watch: {
     'searchParams.activity': function () {
+      // get new city list when user changes activity (well driller or well pump installer)
       this.searchParams.city = []
       this.$store.dispatch(FETCH_CITY_LIST, this.formatActivityForCityList)
     },
     user: function () {
+      // reset search when user changes (this happens every login or logout)
       this.drillerSearchReset()
     }
   },
@@ -288,58 +287,14 @@ export default {
     }
   },
   created () {
+    // send request for city list when app is loaded
     this.$store.dispatch(FETCH_CITY_LIST, this.formatActivityForCityList)
   }
 }
 </script>
 
 <style>
-.row.no-pad {
-  margin-right:0;
-  margin-left:0;
-}
-.row.no-pad > [class*='col-'] {
-  padding-right:0;
-  padding-left:0;
-}
-.panel.no-pad {
-  margin-right:0;
-  margin-left:0;
-  padding-right:0;
-  padding-left:0;
-  margin-top:0;
-  padding-top:0;
-}
-.panel.no-pad > .panel-body {
-  margin-right:0;
-  margin-left:0;
-  padding-right:0;
-  padding-left:0;
-  margin-top:0;
-  padding-top:0;
-}
-.container-fluid.no-pad {
-  margin-right:0;
-  margin-left:0;
-  padding-right:0;
-  padding-left:0;
-}
-.registry-panel-title {
-  margin-left: 10px;
+.radio-inline input {
   margin-top: 0px;
-  padding-top:0px;
-}
-.btn {
-  margin-top: 5px;
-}
-.form-spacing {
-  margin-bottom: 15px;
-}
-.registry-disabled-item {
-  color: #808080;
-  cursor: auto!important;
-}
-.register-legal {
-  margin-top: 25px;
 }
 </style>
