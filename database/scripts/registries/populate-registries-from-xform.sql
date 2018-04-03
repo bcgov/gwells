@@ -289,7 +289,7 @@ INSERT INTO registries_classification_applied_for (
 ,update_date 
 )
 SELECT
- 'LEGACY'
+ COALESCE(xform_reg.welldrillerregno,'LEGACY')
 ,CASE
    WHEN xform_reg.typeofcertificate like '%CGWA' 
      THEN 'd76775a3-650d-44cb-a3b7-5faf8558f29d'::uuid
@@ -330,7 +330,7 @@ INSERT INTO registries_classification_applied_for (
 ,update_date 
 )
 SELECT
- 'LEGACY'
+ COALESCE(xform_reg.welldrillerregno,'LEGACY')
 ,CASE
    WHEN xform_reg.typeofcertificate like '%CGWA' 
      THEN 'd76775a3-650d-44cb-a3b7-5faf8558f29d'::uuid
@@ -371,7 +371,7 @@ INSERT INTO registries_classification_applied_for (
 ,update_date 
 )
 SELECT
- 'LEGACY'
+ COALESCE(xform_reg.welldrillerregno,'LEGACY')
 ,CASE
    WHEN xform_reg.typeofcertificate like '%CGWA' 
      THEN 'd76775a3-650d-44cb-a3b7-5faf8558f29d'::uuid
@@ -818,7 +818,7 @@ INSERT INTO registries_classification_applied_for (
 ,update_date 
 )
 SELECT
- xform_reg.welldrillerregno
+ COALESCE(xform_reg.welldrillerregno,'LEGACY')
 ,CASE
    WHEN xform_reg.typeofcertificate like '%CGWA' 
      THEN 'd76775a3-650d-44cb-a3b7-5faf8558f29d'::uuid
@@ -858,7 +858,7 @@ INSERT INTO registries_classification_applied_for (
 ,update_date 
 )
 SELECT
- xform_reg.welldrillerregno
+ COALESCE(xform_reg.welldrillerregno,'LEGACY')
 ,CASE
    WHEN xform_reg.typeofcertificate like '%CGWA' 
      THEN 'd76775a3-650d-44cb-a3b7-5faf8558f29d'::uuid
@@ -897,7 +897,7 @@ INSERT INTO registries_classification_applied_for (
 ,update_date 
 )
 SELECT
- xform_reg.welldrillerregno
+ COALESCE(xform_reg.welldrillerregno,'LEGACY')
 ,CASE
    WHEN xform_reg.typeofcertificate like '%CGWA' 
      THEN 'd76775a3-650d-44cb-a3b7-5faf8558f29d'::uuid
@@ -1053,7 +1053,7 @@ INSERT INTO registries_classification_applied_for (
 ,update_date 
 )
 SELECT
- 'LEGACY'
+ COALESCE(xform_reg.wellpumpinstallerregno,'LEGACY')
 ,CASE
    WHEN xform_reg.typeofcertificate like '%CGWA%' 
      THEN 'd76775a3-650d-44cb-a3b7-5faf8558f29d'::uuid

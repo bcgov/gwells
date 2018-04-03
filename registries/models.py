@@ -279,7 +279,7 @@ class RegistriesApplication(AuditModel):
         default=uuid.uuid4,
         editable=False,
         verbose_name="Register Application UUID")
-    person = models.ForeignKey(
+    registration = models.ForeignKey(
         Register,
         db_column='register_guid',
         on_delete=models.CASCADE,
@@ -307,7 +307,7 @@ class RegistriesApplication(AuditModel):
 
     def __str__(self):
         return '%s : %s' % (
-            self.person,
+            self.registration,
             self.file_no)
 
 
