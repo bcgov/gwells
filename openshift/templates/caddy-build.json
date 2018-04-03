@@ -13,16 +13,24 @@
                 "value": "proxy-caddy"
             },
             {
-                "name": "URL_REPO",
-                "displayName": "URL_REPO",
+                "name": "GIT_REPO",
+                "displayName": "GIT_REPO",
                 "description": "URL to GitHub repo with static content",
                 "required": true,
                 "value": "https://github.com/bcgov/gwells.git"
             },
             {
+                "name": "GIT_BRANCH",
+                "displayName": "GIT_BRANCH",
+                "description": "Branch related to GitHub repo",
+                "required": false,
+                "value": "master"
+            },
+            {
                 "name": "IMG_NAME",
                 "displayName": "IMG_NAME",
                 "description": "Source image name",
+                "required": false,
                 "value": "bcgov-s2i-caddy"
             }
     ],
@@ -70,7 +78,8 @@
                 "source": {
                     "type": "Git",
                     "git": {
-                        "uri": "${URL_REPO}"
+                        "uri": "${GIT_REPO}",
+                        "ref": "${GIT_BRANCH}"
                     }
                 },
                 "strategy": {
