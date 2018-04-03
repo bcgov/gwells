@@ -1,12 +1,12 @@
 <template>
   <div>
     <gwells-header/>
-      <main role="main">
-        <b-container v-if="error">
-          <api-error :error="error" resetter="setError"/>
-        </b-container>
-        <router-view/>
-      </main>
+    <main role="main">
+      <b-container v-if="error">
+        <api-error :error="error" resetter="setError"/>
+      </b-container>
+      <router-view/>
+    </main>
     <gwells-footer/>
   </div>
 </template>
@@ -38,22 +38,29 @@ export default {
 @import '~bootstrap/scss/_variables';
 @import '~bootstrap/scss/mixins/_breakpoints';
 
+html {
+  font-size: 14px;
+}
 body {
   display: flex;
   flex-direction: column;
   background-color: #f1f1f1;
-  @include media-breakpoint-down(xs) {
-    margin-bottom: 9rem!important;
-  }
   // margin-bottom: 45px!important;
   height: 100%;
 }
 main {
+  margin-bottom: 12rem;
   padding-top: 20px;
   flex: auto;
 }
 header,
 footer {
   flex: none;
+}
+.h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6 {
+  font-weight: 500;
+}
+.col-form-label {
+  font-weight: 600;
 }
 </style>
