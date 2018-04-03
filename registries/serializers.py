@@ -257,7 +257,7 @@ class ApplicationAdminSerializer(AuditModelSerializer):
         model = RegistriesApplication
         fields = (
             'application_guid',
-            'person',
+            'registration',
             'file_no',
             'over19_ind',
             'registrar_notes',
@@ -267,7 +267,7 @@ class ApplicationAdminSerializer(AuditModelSerializer):
         )
 
 
-class RegistrationsAdminSerializer(serializers.ModelSerializer):
+class RegistrationAdminSerializer(serializers.ModelSerializer):
     """
     Serializes Register model for admin users
     """
@@ -354,7 +354,7 @@ class PersonListSerializer(AuditModelSerializer):
     Serializes the Person model for a list view (fewer fields than detail view)
     """
     registrations = RegistrationsListSerializer(many=True, read_only=True)
-    organization = OrganizationListSerializer()
+    organization = serializers.PrimaryKeyRelatedField(queryset=Organization.objects.all(), required=False)
 
     class Meta:
         model = Person
@@ -372,8 +372,8 @@ class PersonAdminSerializer(AuditModelSerializer):
     Serializes the Person model (admin user fields)
     """
 
-    organization = OrganizationSerializer(required=False)
-    registrations = RegistrationsAdminSerializer(many=True, read_only=True)
+    organization = serializers.PrimaryKeyRelatedField(queryset=Organization.objects.all(), required=False)
+    registrations = RegistrationAdminSerializer(many=True, read_only=True)
 
     class Meta:
         model = Person
