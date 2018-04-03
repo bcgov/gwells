@@ -49,7 +49,7 @@ body {
   height: 100%;
 }
 main {
-  margin-bottom: 12rem;
+  margin-bottom: 45px;
   padding-top: 20px;
   flex: auto;
 }
