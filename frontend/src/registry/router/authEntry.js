@@ -1,5 +1,5 @@
 import { store } from '../store'
-import ApiService from '@/common/services/gwells'
+import ApiService from '@/common/services/ApiService.js'
 import { SET_USER } from '@/registry/store/mutations.types'
 
 export default (to, from, next) => {
