@@ -37,7 +37,6 @@ schema_view = get_schema_view(
 obtain_jwt_token_noswagger = swagger_auto_schema(method='post', auto_schema=None)(obtain_jwt_token)
 
 urlpatterns = [
-    # Organization resource endpoints
     url(r'^api/v1/organizations/(?P<org_guid>[-\w]+)/$', views.OrganizationDetailView.as_view(), name='organization-detail'),
     url(r'^api/v1/organizations/$', views.OrganizationListView.as_view(), name='organization-list'),
 
@@ -55,9 +54,28 @@ urlpatterns = [
     # Swagger documentation endpoint
     url(r'^api/', schema_view.with_ui('swagger', cache_timeout=None), name='api-docs'),
 
-    # Deprecated API docs link
-    url(r'^docs/$', schema_view.with_ui('swagger', cache_timeout=None), name='api-docs-old'),
+    # Deprecated old URL endpoints
+        # Organization resource endpoints
+        url(r'^registries/api/v1/organizations/(?P<org_guid>[-\w]+)/$', views.OrganizationDetailView.as_view(), name='organization-detail'),
+        url(r'^registries/api/v1/organizations/$', views.OrganizationListView.as_view(), name='organization-list'),
 
-    # Registries frontend webapp loader (html page that contains header, footer, and a SPA in between)
-    url(r'^$', views.RegistriesIndexView.as_view(), name='registries-home'),
+        # Person resource endpoints (drillers, well installers, and other instances of Person model)
+        url(r'^registries/api/v1/drillers/(?P<person_guid>[-\w]+)/$', views.PersonDetailView.as_view(), name='person-detail'),
+        url(r'^registries/api/v1/drillers/$', views.PersonListView.as_view(), name='person-list'),
+
+        # List of cities that currently have registered drillers, pump installers etc.
+        url(r'^registries/api/v1/cities/drillers/$', views.CitiesListView.as_view(), {'activity':'drill'}, name='city-list-drillers'),
+        url(r'^registries/api/v1/cities/installers/$', views.CitiesListView.as_view(), {'activity': 'install'}, name='city-list-installers'),
+
+        # Temporary development login endpoint
+        url(r'^registries/api/v1/api-token-auth/', obtain_jwt_token_noswagger, name='get-token'),
+
+        # Swagger documentation endpoint
+        url(r'^registries/api/', schema_view.with_ui('swagger', cache_timeout=None), name='api-docs'),
+
+        # Deprecated API docs link
+        url(r'^registries/docs/$', schema_view.with_ui('swagger', cache_timeout=None), name='api-docs-old'),
+
+        # Registries frontend webapp loader (html page that contains header, footer, and a SPA in between)
+        url(r'^registries/$', views.RegistriesIndexView.as_view(), name='registries-home'),
 ]
