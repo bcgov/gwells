@@ -33,6 +33,7 @@ export default {
 .footer {
   @include media-breakpoint-only(xs) {
     height: 8.2rem!important;
+    margin-top: 10rem;
   }
   @include media-breakpoint-up(sm) {
     height: 45px!important;
