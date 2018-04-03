@@ -1,164 +1,127 @@
 <template>
-  <div class="container-fluid no-pad">
-    <div class="row form-spacing no-pad">
-      <div class="col-xs-12 col-sm-7">
-          <p><a href="https://www2.gov.bc.ca/gov/content/environment/air-land-water/water/groundwater-wells/information-for-well-drillers-well-pump-installers/what-you-need-to-practice-in-bc">Learn more about registering as a well driller or well pump installer in B.C.</a></p>
-      </div>
-      <div class="col-xs-12 col-sm-5 text-right">
-        <button v-if="!user" type="button" class="btn btn-primary" @click="loginPanelToggle = !loginPanelToggle">Log in</button>
-        <button v-if="user" type="button" class="btn btn-secondary" @click="logout" id="logoutButton">Log out</button>
-      </div>
-    </div>
-    <div class="row no-pad" v-if="!user && loginPanelToggle">
-      <div class="col-xs-12">
-        <div class="well well-sm">
-          <div class="container">
-            <form @submit.prevent="login" id="registryLoginForm">
-              <div class="form-group">
-                <div class="col-xs-12 col-sm-2">
-                  <label for="loginUser">Username</label>
-                  <input type="text" class="form-control" id="loginUser" placeholder="Search" v-model="credentials.username">
-                </div>
-                <div class="col-xs-12 col-sm-2">
-                  <label for="loginPassword">Password</label>
-                  <input type="password" class="form-control" id="loginPassword" placeholder="Password" v-model="credentials.password">
-                </div>
-              </div>
-              <div class="form-group">
-                <div class="col-xs-12">
-                  <button id="loginButton" type="submit" class="btn btn-primary">Login</button>
-                </div>
-              </div>
-            </form>
-          </div>
+  <div>
+    <b-card v-if="user" no-body class="container p-1 mb-3">
+      <b-card-header header-tag="header" class="p-1" role="tab">
+        <b-btn block href="#" v-b-toggle.adminPanel variant="light" class="text-left">Administrator options</b-btn>
+      </b-card-header>
+      <b-collapse id="adminPanel">
+        <b-card-body class="pb-1">
+          <b-button class="mb-2" variant="btn-light" id="addNewEntryButton">Add new entry</b-button>
+          <b-button class="mb-2" variant="btn-light" id="manageCompaniesButton">Manage companies</b-button>
+        </b-card-body>
+      </b-collapse>
+    </b-card>
+    <b-card class="container p-1" title="Register of Well Drillers and Well Pump Installers">
+      <p>
+        <a href="https://www2.gov.bc.ca/gov/content/environment/air-land-water/water/groundwater-wells/information-for-well-drillers-well-pump-installers/what-you-need-to-practice-in-bc">
+        Learn more about registering as a well driller or well pump installer in B.C.
+        </a>
+      </p>
+      <b-card no-body class="p-3 mb-4">
+        <h5>Search for a Well Driller or Well Pump Installer</h5>
+        <b-form @submit.prevent="drillerSearch" @reset.prevent="drillerSearchReset" id="drillerSearchForm">
+          <b-form-row>
+            <b-col cols="12">
+              <b-form-group label="Choose professional type:">
+                <b-form-radio-group v-model="searchParams.activity" name="activitySelector">
+                  <b-form-radio value="DRILL" id="activityDriller">Well Driller</b-form-radio>
+                  <b-form-radio value="PUMP" id="activityInstaller">Well Pump Installer</b-form-radio>
+                </b-form-radio-group>
+              </b-form-group>
+            </b-col>
+          </b-form-row>
+          <b-form-row>
+            <b-col cols="12" md="6" class="pr-md-5">
+              <b-form-group label="Community:" label-for="cityOptions">
+                <b-form-select
+                    multiple="multiple"
+                    id="cityOptions"
+                    v-model="searchParams.city"
+                    class="mb-3"
+                    :select-size="6">
+                    <option value="">All</option>
+                    <optgroup
+                      v-for="prov in cityList[formatActivityForCityList]"
+                      v-if="prov.cities && prov.cities.length"
+                      :key="prov.prov"
+                      :label="`${prov.prov} (${prov.cities.length})`"
+                    >
+                      <option v-for="city in prov.cities" :key="`${city} ${prov.prov}`" :value="city">{{ city }}</option>
+                    </optgroup>
+                </b-form-select>
+              </b-form-group>
+            </b-col>
+            <b-col cols="12" md="6" v-if="user">
+              <b-form-group label="Registration status" label-for="registrationStatusSelect">
+                <b-form-select
+                    v-model="searchParams.status"
+                    id="registrationStatusSelect"
+                    name="registryStatuses">
+                  <option value="">All</option>
+                  <option value="PENDING">Pending</option>
+                  <option value="INACTIVE">Not registered</option>
+                  <option value="ACTIVE">Registered</option>
+                  <option value="REMOVED">Removed</option>
+                </b-form-select>
+              </b-form-group>
+            </b-col>
+          </b-form-row>
+          <b-form-row>
+            <b-col cols="12" md="6">
+              <b-form-group label="Individual, company, or registration number" label-for="regTypeInput">
+                <b-form-input
+                    type="text"
+                    class="form-control"
+                    id="regTypeInput"
+                    placeholder="Search"
+                    v-model="searchParams.search"/>
+              </b-form-group>
+            </b-col>
+          </b-form-row>
+          <b-form-row>
+            <b-col>
+              <b-form-group label="Entries:" label-for="registriesResultsNumberSelect">
+                <select
+                    v-model="searchParams.limit"
+                    id="registriesResultsNumberSelect">
+                  <option>10</option>
+                  <option>25</option>
+                </select>
+              </b-form-group>
+            </b-col>
+          </b-form-row>
+          <b-form-row>
+            <b-col>
+              <b-form-group>
+                  <button type="submit" class="btn btn-primary mr-md-1" id="personSearchSubmit">Search</button>
+                  <button type="reset" class="btn btn-default" id="personSearchReset">Reset</button>
+              </b-form-group>
+            </b-col>
+          </b-form-row>
+        </b-form>
+      </b-card>
+      <b-row>
+        <b-col cols="12" v-if="drillers.results && !drillers.results.length">
+          No results were found.
+        </b-col>
+        <b-col cols="12" v-if="listError">
+          <api-error :error="listError" resetter="setListError"></api-error>
+        </b-col>
+      </b-row>
+      <b-row  v-if="drillers.results && drillers.results.length">
+        <div class="col-xs-12 col-sm-4">
+          <h3>{{ activityTitle }} Results</h3>
         </div>
-      </div>
-    </div>
-    <div class="row no-pad" v-if="user">
-      <div class="col-xs-12">
-          <div class="well well-sm">
-            <div v-if="user">
-              <div>Logged in as {{ user.username }}</div>
-              <div>
-                <button type="button" class="btn btn-primary" id="addNewEntryButton">Add new entry</button>
-                <button type="button" class="btn btn-primary" id="manageCompaniesButton">Manage companies</button>
-              </div>
-            </div>
-          </div>
-      </div>
-    </div>
-    <div class="row no-pad">
-      <div class="col-xs-12">
-        <div class="panel no-pad">
-          <div class="panel-body no-pad">
-            <h3 class="registry-panel-title">Search for a Well Driller or Well Pump Installer</h3>
-            <form @submit.prevent="drillerSearch" @reset.prevent="drillerSearchReset" id="drillerSearchForm">
-              <div class="row no-pad">
-                <div class="col-xs-12">
-                  <div class="form-group">
-                    <div class="col-xs-12">
-                      <label>Choose professional type: &nbsp;</label>
-                    </div>
-                    <div class="col-xs-12 form-spacing">
-                      <label class="radio-inline">
-                        <input type="radio" name="activitySelector" id="activityDriller" v-model="searchParams.activity" value="DRILL"> Well Driller
-                      </label>
-                      <label class="radio-inline">
-                        <input type="radio" name="activitySelector" id="activityInstaller" v-model="searchParams.activity" value="PUMP"> Well Pump Installer
-                      </label>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="row no-pad">
-                <div class="col-xs-12">
-                  <div class="form-group">
-                    <div class="col-xs-12 col-sm-6 form-spacing">
-                      <label for="cityOptions">Community</label>
-                      <div>To search more than one community, hold down the Ctrl key and select.</div>
-                      <select id="cityOptions" class="form-control" size="6" v-model="searchParams.city" multiple="multiple" name="registryCities">
-                        <option value="">All</option>
-                        <optgroup
-                          v-for="prov in cityList[formatActivityForCityList]"
-                          v-if="prov.cities && prov.cities.length"
-                          :key="prov.prov"
-                          :label="`${prov.prov} (${prov.cities.length})`"
-                        >
-                          <option v-for="city in prov.cities" :key="`${city} ${prov.prov}`" :value="city">{{ city }}</option>
-                        </optgroup>
-                      </select>
-                    </div>
-                  </div>
-                  <div class="form-group" v-if="user">
-                    <div class="col-xs-12 col-sm-6 form-spacing">
-                      <label for="registrationStatusSelect">Registration status</label>
-                      <select v-model="searchParams.status" class="form-control" id="registrationStatusSelect" name="registryStatuses">
-                        <option value="">All</option>
-                        <option value="PENDING">Pending</option>
-                        <option value="INACTIVE">Not registered</option>
-                        <option value="ACTIVE">Registered</option>
-                        <option value="REMOVED">Removed</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="row no-pad">
-                <div class="col-xs-12">
-                  <div class="form-group">
-                    <div class="col-xs-12 col-sm-6 form-spacing">
-                      <label for="regTypeInput">Individual, company, or registration number</label>
-                      <input type="text" class="form-control" id="regTypeInput" placeholder="Search" v-model="searchParams.search">
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="row no-pad">
-                <div class="col-xs-12">
-                  <div class="form-group">
-                    <div class="col-xs-6 col-sm-2 form-spacing">
-                      <label for="registriesResultsNumberSelect">Entries</label>
-                      <select class="form-control input-sm" v-model="searchParams.limit" id="registriesResultsNumberSelect"><option>10</option><option>25</option></select>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="row no-pad">
-                <div class="col-xs-12">
-                  <div class="form-group">
-                    <div class="col-xs-12">
-                      <button type="submit" class="btn btn-primary" id="personSearchSubmit">Search</button>
-                      <button type="reset" class="btn btn-default" id="personSearchReset">Reset</button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-xs-12" v-if="drillers.results && !drillers.results.length">
-        No results were found.
-      </div>
-      <div class="col-xs-12" v-if="listError">
-        <api-error :error="listError" resetter="setListError"></api-error>
-      </div>
-    </div>
-    <div class="row no-pad"  v-if="drillers.results && drillers.results.length">
-      <div class="col-xs-12 col-sm-4">
-        <h3>{{ activityTitle }} Results</h3>
-      </div>
-      <div class="col-xs-12">
-        <registry-table @sort="sortTable" :activity="lastSearchedActivity"/>
-      </div>
-    </div>
-    <div class="row no-pad" v-if="drillers.results && drillers.results.length">
-      <div class="col-xs-12">
-        <register-legal-text class="register-legal" :activity="lastSearchedActivity"/>
-      </div>
-    </div>
+        <b-col cols="12">
+          <registry-table @sort="sortTable" :activity="lastSearchedActivity"/>
+        </b-col>
+      </b-row>
+      <b-row v-if="drillers.results && drillers.results.length" class="mt-5">
+        <b-col cols="12">
+          <register-legal-text class="register-legal" :activity="lastSearchedActivity"/>
+        </b-col>
+      </b-row>
+    </b-card>
   </div>
 </template>
 
@@ -167,7 +130,7 @@ import SearchTable from '@/registry/components/search/SearchTable.vue'
 import LegalText from '@/registry/components/Legal.vue'
 import APIErrorMessage from '@/common/components/APIErrorMessage.vue'
 import { mapGetters } from 'vuex'
-import { LOGIN, LOGOUT, FETCH_CITY_LIST, FETCH_DRILLER_LIST } from '@/registry/store/actions.types'
+import { FETCH_CITY_LIST, FETCH_DRILLER_LIST } from '@/registry/store/actions.types'
 import { SET_DRILLER_LIST } from '@/registry/store/mutations.types'
 
 export default {
@@ -277,13 +240,6 @@ export default {
         this.searchParams['ordering'] = `${sortCode}`
       }
       this.$store.dispatch(FETCH_DRILLER_LIST, this.APISearchParams)
-    },
-    login () {
-      this.$store.dispatch(LOGIN, this.credentials)
-      this.loginPanelToggle = false
-    },
-    logout () {
-      this.$store.dispatch(LOGOUT)
     }
   },
   created () {
@@ -294,7 +250,4 @@ export default {
 </script>
 
 <style>
-.radio-inline input {
-  margin-top: 0px;
-}
 </style>
