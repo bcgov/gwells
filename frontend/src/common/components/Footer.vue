@@ -31,10 +31,12 @@ export default {
 @import '~bootstrap/scss/_variables';
 @import '~bootstrap/scss/mixins/_breakpoints';
 .footer {
-  @include media-breakpoint-down(xs) {
-    height: 8.2rem;
+  @include media-breakpoint-only(xs) {
+    height: 8.2rem!important;
   }
-  height: 45px;
+  @include media-breakpoint-up(sm) {
+    height: 45px!important;
+  }
   position: absolute;
   bottom: 0
 }
