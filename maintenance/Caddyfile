@@ -8,7 +8,7 @@ errors stdout
 
 rewrite / {
   regexp .*
-  to /maintenance/maintenance.html
+  to /maintenance.html
 }
 
 header / {
