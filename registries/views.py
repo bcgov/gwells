@@ -348,10 +348,6 @@ class CitiesListView(ListAPIView):
             qs = qs.filter(registrations__registries_activity__code='PUMP')
         return qs
 
-# Placeholder for base url.
-def index(request):
-    return HttpResponse("TEST: Driller Register app home index.")
-
 
 class RegistrationListView(AuditCreateMixin, ListCreateAPIView):
     """ 
@@ -404,11 +400,7 @@ class ApplicationListView(AuditCreateMixin, ListCreateAPIView):
     serializer_class = ApplicationListSerializer
     queryset = RegistriesApplication.objects.all() \
         .select_related('registration') \
-        .prefetch_related(
-            'register_set',
-            'register_set__registries_activity',
-            'register_set__status'
-        )
+        .prefetch_related('qualifications')
 
 
 class ApplicationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
