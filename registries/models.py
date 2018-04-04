@@ -12,18 +12,17 @@ class Organization(AuditModel):
     	verbose_name="Organization UUID")
     name = models.CharField(max_length=200)
     street_address = models.CharField(max_length=100, blank=True, verbose_name='Street Address', default="")
-    city = models.CharField(max_length=50, blank=True, verbose_name='Town/City', default="")
+    city = models.CharField(max_length=50, blank=True, null=True, verbose_name='Town/City', default="")
     province_state = models.ForeignKey(
         ProvinceStateCode,
         db_column='province_state_code',
-        on_delete=models.SET_NULL,
-        null=True,
+        on_delete=models.PROTECT,
         verbose_name='Province/State',
         related_name="companies")
-    postal_code = models.CharField(max_length=10, blank=True, verbose_name='Postal Code', default="")
-    main_tel = models.CharField(blank=True, max_length=15, verbose_name="Telephone number", default="")
-    fax_tel = models.CharField(blank=True, max_length=15, verbose_name="Fax number", default="")
-    website_url = models.URLField(blank=True, verbose_name="Website", default="")
+    postal_code = models.CharField(max_length=10, null=True, verbose_name='Postal Code')
+    main_tel = models.CharField(null=True, max_length=15, verbose_name="Telephone number")
+    fax_tel = models.CharField(null=True, max_length=15, verbose_name="Fax number")
+    website_url = models.URLField(null=True, verbose_name="Website")
     certificate_authority = models.BooleanField(
         default=False,
         verbose_name='Certifying Authority for Registries Activities',

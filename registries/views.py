@@ -360,6 +360,13 @@ class RegistrationListView(AuditCreateMixin, ListCreateAPIView):
 
     permission_classes = (IsAdminUser,)
     serializer_class = RegistrationAdminSerializer
+    queryset = Register.objects.all() \
+        .select_related(
+            'person',
+            'registries_activity',
+            'status',
+            'register_removal_reason',) \
+        .prefetch_related('applications')
 
 
 class RegistrationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
