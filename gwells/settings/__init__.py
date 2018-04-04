@@ -14,11 +14,12 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 import os
 import datetime
 import logging.config
+from pathlib import Path
 
 from gwells import database
 from gwells.settings.base import get_env_variable
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = str(Path(__file__).parents[2])
 
 
 # Quick-start development settings - unsuitable for production
