@@ -142,6 +142,7 @@ which brew || \
 #
 PACKAGES=(
 	"git"
+	"nodejs"
 	"postgresql"
 	"python3"
 )
@@ -315,14 +316,18 @@ then 	(
 fi
 
 
-# Pip3 install requirements
+# Install requirements with PIP3 and NPM
 #
 cd "${START_DIR}"/..
 pip3 install -U -r requirements.txt
+cd "${START_DIR}"/../frontend
+npm install
+npm run build
 
 
 # Dev only - adapt schema for GWells
 #
+cd "${START_DIR}"/..
 python3 manage.py makemigrations
 
 
