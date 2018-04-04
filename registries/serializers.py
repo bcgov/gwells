@@ -7,6 +7,7 @@ from registries.models import (
     Register,   
     RegistriesApplication,
     RegistriesApplicationStatus,
+    RegistriesStatusCode,
     ActivityCode,
     SubactivityCode,
     QualificationCode,
@@ -233,8 +234,8 @@ class ClassificationAppliedForSerializer(serializers.ModelSerializer):
     Serializes the ClassificationAppliedFor model.
     ClassificationAppliedFor objects form a related set of Application objects
     """
-    primary_certificate_authority = OrganizationSerializer(many=False, read_only=True)
-    registries_subactivity = SubactivitySerializer(many=False)
+    primary_certificate_authority = serializers.PrimaryKeyRelatedField(queryset=Organization.objects.all())
+    registries_subactivity = serializers.PrimaryKeyRelatedField(queryset=SubactivityCode.objects.all())
 
     class Meta:
         model = ClassificationAppliedFor
@@ -271,7 +272,7 @@ class RegistrationAdminSerializer(serializers.ModelSerializer):
     """
     Serializes Register model for admin users
     """
-    status = serializers.ReadOnlyField(source='status.description')
+    status = serializers.PrimaryKeyRelatedField(queryset=RegistriesStatusCode.objects.all())
     activity = serializers.ReadOnlyField(source='registries_activity.description')
     activity_code = serializers.ReadOnlyField(source='registries_activity.code')
     register_removal_reason = serializers.StringRelatedField(read_only=True)
@@ -280,6 +281,8 @@ class RegistrationAdminSerializer(serializers.ModelSerializer):
     class Meta:
         model = Register
         fields = (
+            'register_guid',
+            'person',
             'activity',
             'activity_code',
             'status',
@@ -294,6 +297,8 @@ class RegistrationAdminSerializer(serializers.ModelSerializer):
 class CityListSerializer(serializers.ModelSerializer):
     """
     Serializes city and province fields for list of cities with qualified drillers
+    The queryset is limited to one record per unique city in the Person table
+    The OrganizationSerializer fields are used to fill in city, province data
     """
 
     organization = OrganizationSerializer()
@@ -307,14 +312,14 @@ class CityListSerializer(serializers.ModelSerializer):
 
     def to_representation(self, obj):
         """
-        Flattens City list response
+        Flattens City list response to make an array of { city: '', province_state: '' } objects 
         """
         repr = super().to_representation(obj)
 
         # remove and store nested objects
         org = repr.pop('organization')
 
-        # specify fields from ContactInfoSerializer.meta.fields
+        # specify fields from OrganizationSerializer
         company_fields = (
             'city',
             'province_state',
