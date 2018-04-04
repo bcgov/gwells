@@ -316,21 +316,21 @@ class WellSearchSpecs extends GebReportingSpec {
 		
 		and: "And where there are no matching search results the message -No well records could be found.- is displayed"
 			if("$ShowError" == "Yes")
-				assert waitFor { not_found_msg.displayed == true }		
+			    assert waitFor { not_found_msg.displayed == true }
 
         where:
-        TestDesc                        					| Owner	       	|Address| ShowError    | NumberResult
-        "Multiple Results - Gary"							| "GARY"	   	|""		| "No"     	   | 55
-        "Single Result - Gary Akles"     					| "GARY AKLES" 	|""		| "No"         | 1	
-        "No matching results - Random Owner"    			| "Random Owner"|""		| "Yes"        | 0
-        "No matching results - Random Address"    			| ""			|"Random Address"		| "Yes"        | 0
-        "No matching results - Random Owner/Address"    	| "Random Owner"|"Random Address"		| "Yes"        | 0
-        "No matching results - <null>"         				| ""		    |""		| "Yes"        | 0
-        "One matching result - Address - 1229 LAKE ROAD "	|""				| "1229 LAKE ROAD "| "No"         | 1
-        "Multiple matching results - Address - 123"     	|""| "123"      | "No"         | 29	
-        "Multiple matching results - Address - 16TH"     	|""| "16TH"     | "No"         | 18
-       	"Partial Owner/Address - Gary/7239"					| "GARY"	   	|"7239"		| "No"     	   | 1
-        "Full Owner/ partial Address - Smith/Wolfe"		| "RONALD"	|"MALAHAT"		| "No"     	   | 1
-        "Partial Owner/Full Address - Gary/PILGRIM "				| "GARY"	   	|"PILGRIM "		| "No"     	   | 1
+        TestDesc                                            | Owner         | Address           | ShowError     | NumberResult
+        "Multiple Results - Gary"                           | "GARY"        | ""		        | "No"          | 55
+        "Single Result - Gary Akles"                        | "GARY AKLES"  | ""		        | "No"          | 1	
+        "No matching results - Random Owner"                | "Random Owner"| ""		        | "Yes"         | 0
+        "No matching results - Random Address"              | ""            | "Random Address"  | "Yes"         | 0
+        "No matching results - Random Owner/Address"        | "Random Owner"| "Random Address"  | "Yes"         | 0
+        "No matching results - <null>"                      | ""            | ""		        | "Yes"         | 0
+        "One matching result - Address - 1229 LAKE ROAD "	| ""            | "1229 LAKE ROAD " | "No"          | 1
+        "Multiple matching results - Address - 123"         | ""            | "123"             | "No"          | 29	
+        "Multiple matching results - Address - 16TH"        | ""            | "16TH"            | "No"          | 18
+       	"Partial Owner/Address - Gary/7239"                 | "GARY"        | "7239"		    | "No"          | 1
+        "Full Owner/ partial Address - Ronald/MALAHAT"      | "RONALD"      | "MALAHAT"		    | "No"          | 1
+        "Partial Owner/Full Address - Gary/PILGRIM "        | "GARY"        | "PILGRIM "		| "No"          | 1
     }         
 }
