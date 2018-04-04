@@ -25,30 +25,34 @@ class JwtOidcAuthentication(JSONWebTokenAuthentication):
 
     def authenticate_credentials(self, payload):
         User = get_user_model()
+
+        # get keycloak ID from JWT token
         username = payload.get('sub')
 
         if username is None:
             raise exceptions.AuthenticationFailed('JWT did not contain a "sub" attribute')
 
+        # get or create a user with the keycloak ID
         try:
-            user, created = User.objects.get_or_create(username=username)
+            user, user_created = User.objects.get_or_create(username=username)
         except:
             raise exceptions.AuthenticationFailed('Failed to retrieve or create user')
 
-        if created:
-            user.is_staff = True
+        if user_created:
             user.set_password(User.objects.make_random_password(length=36))
             user.save()
 
+        # load the user's GWELLS profile
         try:
-            roles = payload.get('resource_access').get('account').get('roles')
-        except:
-            raise exceptions.AuthenticationFailed('Failed to retrieve roles')
-
-        try:
-            profile = Profile.objects.get_or_create(user=user.id)
+            profile, __ = Profile.objects.get_or_create(user=user.id)
         except:
             raise exceptions.AuthenticationFailed('Failed to create user profile')
+
+        # get the roles supplied by Keycloak for this user
+        try:
+            roles = payload.get('realm_access').get('roles')
+        except:
+            raise exceptions.AuthenticationFailed('Failed to retrieve roles')
 
         if 'gwells_admin' in roles:
             profile.is_gwells_admin = True
