@@ -386,6 +386,7 @@ class RegistrationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
 
     permission_classes = (IsAdminUser,)
     serializer_class = RegistrationAdminSerializer
+    lookup_field = 'register_guid'
     queryset = Register.objects.all() \
         .select_related(
             'person',
@@ -404,7 +405,7 @@ class ApplicationListView(AuditCreateMixin, ListCreateAPIView):
     """
 
     permission_classes = (IsAdminUser,)
-    serializer_class = ApplicationListSerializer
+    serializer_class = ApplicationAdminSerializer
     queryset = RegistriesApplication.objects.all() \
         .select_related('registration') \
         .prefetch_related('qualifications')
@@ -426,7 +427,7 @@ class ApplicationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
     """
 
     permission_classes = (IsAdminUser,)
-    serializer_class = ApplicationListSerializer
+    serializer_class = ApplicationAdminSerializer
     queryset = RegistriesApplication.objects.all().select_related('registration')
     lookup_field = "application_guid"
     
