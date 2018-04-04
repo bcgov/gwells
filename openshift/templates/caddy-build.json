@@ -27,6 +27,13 @@
                 "value": "master"
             },
             {
+                "name": "GIT_CONTEXT_DIR",
+                "displayName": "GIT_CONTEXT_DIR",
+                "description": "Git path to Caddyfile and landing HTML",
+                "required": false,
+                "value": "/maintenance"
+            },
+            {
                 "name": "IMG_NAME",
                 "displayName": "IMG_NAME",
                 "description": "Source image name",
@@ -77,6 +84,7 @@
                 "runPolicy": "SerialLatestOnly",
                 "source": {
                     "type": "Git",
+                    "contextDir": "/maintenance",
                     "git": {
                         "uri": "${GIT_REPO}",
                         "ref": "${GIT_BRANCH}"
