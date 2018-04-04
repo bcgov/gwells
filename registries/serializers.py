@@ -4,13 +4,12 @@ from registries.models import (
     Organization,
     ContactInfo,
     Person,
-    Register,   
+    Register,
     RegistriesApplication,
     RegistriesApplicationStatus,
     ActivityCode,
     SubactivityCode,
-    QualificationCode,
-    ClassificationAppliedFor
+    Qualification
 )
 
 class AuditModelSerializer(serializers.ModelSerializer):
@@ -26,12 +25,12 @@ class AuditModelSerializer(serializers.ModelSerializer):
 
 class QualificationSerializer(serializers.ModelSerializer):
     """
-    Serializes QualificationCode model
-    QualificationCode records form a related set of a SubactivityCode object
+    Serializes Qualification model
+    Qualification records form a related set of a SubactivityCode object
     """
 
     class Meta:
-        model = QualificationCode
+        model = Qualification
         fields = (
             'code',
             'description'
@@ -53,7 +52,7 @@ class ContactInfoSerializer(AuditModelSerializer):
     class Meta:
         model = ContactInfo
         fields = (
-            'contact_at_guid',            
+            'contact_at_guid',
             'organization_name',
             'street_address',
             'city',
@@ -228,29 +227,11 @@ class ActivitySerializer(serializers.ModelSerializer):
         )
 
 
-class ClassificationAppliedForSerializer(serializers.ModelSerializer):
-    """
-    Serializes the ClassificationAppliedFor model.
-    ClassificationAppliedFor objects form a related set of Application objects
-    """
-    primary_certificate_authority = OrganizationSerializer(many=False, read_only=True)
-    registries_subactivity = SubactivitySerializer(many=False)
-
-    class Meta:
-        model = ClassificationAppliedFor
-        fields = (
-            'registries_subactivity',
-            'primary_certificate_authority',
-        )
-
-
 class ApplicationAdminSerializer(AuditModelSerializer):
     """
     Serializes RegistryApplication model fields for admin users
     """
 
-    
-    classificationappliedfor_set = ClassificationAppliedForSerializer(many=True, read_only=True)
     registriesapplicationstatus_set = ApplicationStatusSerializer(many=True, read_only=True)
 
     class Meta:

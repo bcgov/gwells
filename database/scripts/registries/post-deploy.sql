@@ -1,7 +1,9 @@
 /* Additional updates to DB stucture, as Python's model.py has limited abilities to do this */
-DROP VIEW IF EXISTS registries_driller_register;
+DROP VIEW IF EXISTS registries_well_driller_register;
+DROP VIEW IF EXISTS registries_pump_installer_register;
 
-CREATE OR REPLACE VIEW registries_driller_register AS
+
+CREATE OR REPLACE VIEW registries_well_driller_register AS
 SELECT 
  reg.registration_no               
 ,reg.registration_date             
@@ -77,7 +79,7 @@ INNER JOIN registries_activity_code act
   ON reg.registries_activity_guid = act.registries_activity_guid
 LEFT JOIN registries_person per
   ON per.person_guid = appl.person_guid
-INNER JOIN registries_contact_at contact
+INNER JOIN registries_contact_detail contact
   ON per.person_guid = contact.person_guid
 INNER JOIN registries_organization org
   ON org.org_guid = contact.org_guid

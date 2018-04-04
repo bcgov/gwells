@@ -22,10 +22,10 @@ INSERT INTO registries_organization (
 ,update_date
 ) SELECT
  'CGWA'
-,null
-,null
-,null
-,null
+,'1334 Riverside Road'
+,'Abbotsford'
+,'V2S 8J2'
+,' 604-530-8934'
 ,null
 ,'https://www.bcgwa.org/'
 ,true
@@ -54,9 +54,9 @@ INSERT INTO registries_organization (
 ,update_date
 ) SELECT
  'Province of B.C.'
-,null
-,null
-,null
+,'PO Box 9362 Stn Prov Govt'
+,'Victoria'
+,'V8W9M2'
 ,null
 ,null
 ,'https://www2.gov.bc.ca/gov/content/environment/air-land-water/water/laws-rules/groundwater-protection-regulation'
@@ -86,11 +86,11 @@ INSERT INTO registries_organization (
 ,update_date
 ) SELECT
  'Ontario Ministry of Environment'
-,null
-,null
-,null
-,null
-,null
+,'125 Resources Rd.'
+,'Toronto'
+,'M9P 3V6'
+,'1 888 396-9355'
+,'416 235-5960'
 ,'https://www.ontario.ca/page/well-technician-licence'
 ,true
 ,'ON'
@@ -100,6 +100,8 @@ INSERT INTO registries_organization (
 ,'DATALOAD_USER'
 ,'2018-01-01 00:00:00-08'
 ;
+
+-- UNION all distinct organization with non-null names and provinces.
 
 -- Well Drillers
 INSERT INTO registries_organization (
@@ -220,7 +222,7 @@ SELECT
 ,'2018-01-01 00:00:00-08' 
 from xform_registries_action_tracking_driller xform_trk;
 
-INSERT INTO registries_contact_at (
+INSERT INTO registries_contact_detail (
  contact_tel
 ,contact_email
 ,effective_date
@@ -738,7 +740,7 @@ and not exists (
   and   per.first_name = xform_reg.firstname);
 
 
-INSERT INTO registries_contact_at (              
+INSERT INTO registries_contact_detail (              
  contact_tel    
 ,contact_email  
 ,effective_date 
@@ -983,7 +985,7 @@ SELECT
 ,'2018-01-01 00:00:00-08' 
 from xform_registries_action_tracking_pump_installer xform_trk;
 
-INSERT INTO registries_contact_at (
+INSERT INTO registries_contact_detail (
  contact_tel
 ,contact_email
 ,effective_date
