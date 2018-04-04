@@ -34,6 +34,7 @@ class Profile(models.Model):
     smgov_useridentifier = models.UUIDField(blank=True, null=True)
     smgov_useremail = models.EmailField(unique=True, blank=True, null=True)
     smgov_userdisplayname = models.CharField(max_length=100, blank=True, null=True)
+    realm = models.CharField(max_length=10, default="Django")
 
     class Meta:
         db_table = 'profile'
