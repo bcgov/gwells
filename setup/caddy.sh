@@ -19,6 +19,7 @@ IMG_NAME=${IMG_NAME:-bcgov-s2i-caddy}
 APP_NAME=${APP_NAME:-proxy-caddy}
 GIT_REPO=${GIT_REPO:-https://github.com/gwells/gwells.git}
 GIT_BRANCH=${GIT_BRANCH:-master}
+BUILD_PROJECT=${BUILD_PROJECT:-moe-gwells-tools}
 OC_SERVER=${OC_SERVER:-https://console.pathfinder.gov.bc.ca:8443}
 OC_TEMPLATE_BUILD=${OC_TEMPLATE_BUILD:-../openshift/templates/caddy-build.json}
 OC_TEMPLATE_DEPLOY=${OC_TEMPLATE_DEPLOY:-../openshift/templates/caddy-deploy.json}
@@ -60,7 +61,7 @@ then
 	oc process -f ${OC_TEMPLATE_BUILD} -p NAME=${APP_NAME} GIT_REPO=${GIT_REPO} GIT_BRANCH=${GIT_BRANCH} IMG_NAME=${IMG_NAME} | oc apply -f -
 elif [ "${PARAM}" == "deploy" ]
 then
-	oc process -f ${OC_TEMPLATE_DEPLOY} -p NAME=${APP_NAME} | oc apply -f -
+	oc process -f ${OC_TEMPLATE_DEPLOY} -p NAME=${APP_NAME} BUILD_PROJECT=${BUILD_PROJECT} | oc apply -f -
 	oc expose svc ${APP_NAME}
 else
 	echo
