@@ -65,6 +65,9 @@ then
 	oc get route ${APP_NAME} || oc expose svc ${APP_NAME}
 	CONTAINER_IMG=$( oc get dc proxy-caddy -o json | grep '"image":' | awk '{ print $2 }' | tr -d ',"' )
 	echo "${CONTAINER_IMG}" >> ./container_img.log
+elif [ "${PARAM}" == "nuke" ]
+then
+	oc delete all -l app=${APP_NAME}
 else
 	echo
 	echo "Parameter '${PARAM}' not understood."
