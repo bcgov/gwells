@@ -1,11 +1,22 @@
+"""
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+"""
+
 from django.contrib.auth import get_user_model
 from rest_framework import exceptions
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
-from rest_framework.authentication import get_authorization_header, BaseAuthentication
-from rest_framework_jwt.authentication import JSONWebTokenAuthentication
-from rest_framework_jwt.settings import api_settings
+from gwells.models.Profile import Profile
 
-jwt_get_username_from_payload = api_settings.JWT_PAYLOAD_GET_USERNAME_HANDLER
 
 class JwtOidcAuthentication(JSONWebTokenAuthentication):
     """
@@ -20,9 +31,27 @@ class JwtOidcAuthentication(JSONWebTokenAuthentication):
             raise exceptions.AuthenticationFailed('JWT did not contain a "sub" attribute')
 
         try:
-            user = User.objects.get_or_create(user=username)
-        
+            user, created = User.objects.get_or_create(username=username)
         except:
             raise exceptions.AuthenticationFailed('Failed to retrieve or create user')
-        
+
+        if created:
+            user.is_staff = True
+            user.set_password(User.objects.make_random_password(length=36))
+            user.save()
+
+        try:
+            roles = payload.get('resource_access').get('account').get('roles')
+        except:
+            raise exceptions.AuthenticationFailed('Failed to retrieve roles')
+
+        try:
+            profile = Profile.objects.get_or_create(user=user.id)
+        except:
+            raise exceptions.AuthenticationFailed('Failed to create user profile')
+
+        if 'gwells_admin' in roles:
+            profile.is_gwells_admin = True
+            profile.save()
+
         return user
