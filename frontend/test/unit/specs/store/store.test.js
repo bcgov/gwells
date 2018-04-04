@@ -1,5 +1,5 @@
 import { store } from '@/registry/store'
-import ApiService from '@/common/services/gwells.js'
+import ApiService from '@/common/services/ApiService.js'
 import {
   LOGIN,
   LOGOUT,
