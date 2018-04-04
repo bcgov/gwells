@@ -63,6 +63,8 @@ elif [ "${PARAM}" == "deploy" ]
 then
 	oc process -f ${OC_TEMPLATE_DEPLOY} -p NAME=${APP_NAME} BUILD_PROJECT=${BUILD_PROJECT} | oc apply -f -
 	oc get route ${APP_NAME} || oc expose svc ${APP_NAME}
+	CONTAINER_IMG=$( oc get dc proxy-caddy -o json | grep '"image":' | awk '{ print $2 }' | tr -d ',"' )
+	echo "${CONTAINER_IMG}" >> ./container_img.log
 else
 	echo
 	echo "Parameter '${PARAM}' not understood."
