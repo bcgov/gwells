@@ -27,7 +27,7 @@ Please use either these steps or the install script.
     xcode-select --install
     ```
 
-    Install [Git](https://git-scm.com/downloads/) (included in Xcode), [PostgreSQL](https://www.postgresql.org), [Python3](https://www.python.org), [VirtualEnv](https://virtualenv.pypa.io/) and [VirtualEnvWrapper](http://virtualenvwrapper.readthedocs.org/) with Brew and Pip3
+    Install [Git](https://git-scm.com/downloads/) (included in Xcode), [NodeJs](https://nodejs.org/en/), [PostgreSQL](https://www.postgresql.org), [Python3](https://www.python.org), [VirtualEnv](https://virtualenv.pypa.io/) and [VirtualEnvWrapper](http://virtualenvwrapper.readthedocs.org/) with Brew and Pip3
 
     ```
     /usr/bin/ruby -e "$( curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install )"
@@ -37,7 +37,7 @@ Please use either these steps or the install script.
 
     ###### Windows
 
-    Install Install [Git](https://git-scm.com/downloads/), [PostgreSQL](https://www.postgresql.org/download/) and [Python](https://www.python.org/downloads/) manually.
+    Install Install [Git](https://git-scm.com/downloads/), [NodeJs](https://nodejs.org/en/download/), [PostgreSQL](https://www.postgresql.org/download/) and [Python](https://www.python.org/downloads/) manually.
 
     Install [VirtualEnv](https://virtualenv.pypa.io/) and [VirtualEnvWrapper-Win](https://pypi.python.org/pypi/virtualenvwrapper-win/) with pip3:
     ```
@@ -197,6 +197,14 @@ Please use either these steps or the install script.
 
     ```
     python3 ../manage.py runserver
+    ```
+
+    Optional: Build the Registries frontend app.  This should happen every time there has been a change in ./registries/.
+
+    ```
+    cd ../frontend
+    npm install
+    npm run build
     ```
 
 9.  ##### Use GWells
