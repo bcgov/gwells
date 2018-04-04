@@ -9,7 +9,7 @@ class Organization(AuditModel):
         primary_key=True,
         default=uuid.uuid4,
         editable=False,
-    	verbose_name="Organization UUID")
+        verbose_name="Organization UUID")
     name = models.CharField(max_length=200)
     street_address = models.CharField(max_length=100, blank=True, verbose_name='Street Address', default="")
     city = models.CharField(max_length=50, blank=True, null=True, verbose_name='Town/City', default="")
@@ -30,7 +30,7 @@ class Organization(AuditModel):
 
     class Meta:
         db_table = 'registries_organization'
-        ordering = ['name']                
+        ordering = ['name']
         verbose_name_plural = 'Organizations'
 
     def __str__(self):
@@ -43,7 +43,7 @@ class Person(AuditModel):
         primary_key=True,
         default=uuid.uuid4,
         editable=False,
-    	verbose_name="Person UUID")
+        verbose_name="Person UUID")
     first_name = models.CharField(max_length=100)
     surname = models.CharField(max_length=100)
     organization = models.ForeignKey(
@@ -55,7 +55,7 @@ class Person(AuditModel):
 
     class Meta:
         db_table = 'registries_person'
-        ordering = ['first_name', 'surname']        
+        ordering = ['first_name', 'surname']
         verbose_name_plural = 'People'
 
     def __str__(self):
@@ -67,25 +67,25 @@ class ContactInfo(AuditModel):
         primary_key=True,
         default=uuid.uuid4,
         editable=False,
-    	verbose_name="Contact At UUID")
+        verbose_name="Contact At UUID")
     person = models.ForeignKey(
         Person,
         db_column='person_guid',
         on_delete=models.CASCADE,
-    	verbose_name="Person Reference",
+        verbose_name="Person Reference",
         related_name="contact_info")
     contact_tel = models.CharField(
         blank=True,
         null=True,
         max_length=15,
         verbose_name="Contact telephone number")
-    contact_email = models.EmailField(blank=True, null=True,verbose_name="Email adddress")
+    contact_email = models.EmailField(blank=True, null=True, verbose_name="Email adddress")
 
     # TODO - GW Replace defaults with save() method, see
-    # ../../gwells/models/AuditModel.py and 
+    # ../../gwells/models/AuditModel.py and
     # https://stackoverflow.com/questions/1737017/django-auto-now-and-auto-now-add
     effective_date = models.DateField(default=datetime.date.today)
-    expired_date = models.DateField(blank=True, null=True,default=datetime.date.today)
+    expired_date = models.DateField(blank=True, null=True, default=datetime.date.today)
 
     class Meta:
         db_table = 'registries_contact_at'
@@ -96,6 +96,7 @@ class ContactInfo(AuditModel):
             self.person,
             self.contact_tel,
             self.contact_email)
+
 
 class ActivityCode(AuditModel):
     """
@@ -119,6 +120,7 @@ class ActivityCode(AuditModel):
 
     def __str__(self):
         return self.description
+
 
 class SubactivityCode(AuditModel):
     """
@@ -206,6 +208,7 @@ class RegistriesStatusCode(AuditModel):
     def __str__(self):
         return self.description
 
+
 class RegistriesRemovalReason(AuditModel):
     """
     Possible Reasons for Removal from either of the Registers
@@ -222,6 +225,7 @@ class RegistriesRemovalReason(AuditModel):
 
     def __str__(self):
         return self.description
+
 
 class Register(AuditModel):
     register_guid = models.UUIDField(
@@ -240,7 +244,7 @@ class Register(AuditModel):
         on_delete=models.CASCADE,
         null=True,
         related_name="registrations")
-    registration_no = models.CharField(max_length=15,blank=True, null=True)    
+    registration_no = models.CharField(max_length=15, blank=True, null=True)
     status = models.ForeignKey(
         RegistriesStatusCode,
         db_column='registries_status_guid',
@@ -298,7 +302,6 @@ class RegistriesApplication(AuditModel):
         verbose_name='Free form text explaining reason for denial.')
     subactivity = models.ForeignKey(SubactivityCode, on_delete=models.CASCADE, null=True, blank=True, related_name="applications")
     qualifications = models.ManyToManyField(QualificationCode)
-
 
     class Meta:
         db_table = 'registries_application'
@@ -373,10 +376,11 @@ class ApplicationStatusCode(AuditModel):
     def __str__(self):
         return self.description
 
+
 class RegistriesApplicationStatus(AuditModel):
     """
     Status of a specific Application for the Well Driller and Pump Installer Registries, at a point in time
-    """    
+    """
     application_status_guid = models.UUIDField(
         primary_key=True,
         default=uuid.uuid4,
@@ -399,7 +403,7 @@ class RegistriesApplicationStatus(AuditModel):
 
     class Meta:
         db_table = 'registries_application_status'
-        ordering = ['application', 'effective_date']        
+        ordering = ['application', 'effective_date']
         verbose_name_plural = 'Application status'
 
     def __str__(self):
@@ -411,7 +415,7 @@ class RegistriesApplicationStatus(AuditModel):
 """
 class DrillerRegister(models.Model):
      Consolidated view of Driller Register
-     registration_no = models.CharField(max_length=15,blank=True, null=True)    
+     registration_no = models.CharField(max_length=15,blank=True, null=True)
     registration_date = models.DateField(blank=True, null=True)
     status_code = models.CharField(max_length=10)
     register_removal_date  = models.DateField(blank=True, null=True,verbose_name="Date of Removal from Register")
@@ -507,7 +511,7 @@ class DrillerRegister(models.Model):
 
         ordering = ['display_order', 'description']
         verbose_name_plural = 'Possible statuses of Applications'
- 
+
     def __str__(self):
         return self.registration_no
-"""        
+"""
