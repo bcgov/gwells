@@ -44,6 +44,10 @@ urlpatterns = [
     url(r'^api/v1/drillers/(?P<person_guid>[-\w]+)/$', views.PersonDetailView.as_view(), name='person-detail'),
     url(r'^api/v1/drillers/$', views.PersonListView.as_view(), name='person-list'),
 
+    # Registration endponts (a person may register as a driller or well pump installer)
+    url(r'api/v1/registrations/(?P<register_guid>[-\w]+)/$', views.RegistrationDetailView.as_view(), name='register-detail'),
+    url(r'api/v1/registrations/', views.RegistrationListView.as_view(), name='register-list'),
+
     # List of cities that currently have registered drillers, pump installers etc.
     url(r'^api/v1/cities/drillers/$', views.CitiesListView.as_view(), {'activity':'drill'}, name='city-list-drillers'),
     url(r'^api/v1/cities/installers/$', views.CitiesListView.as_view(), {'activity': 'install'}, name='city-list-installers'),
