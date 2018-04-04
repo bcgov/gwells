@@ -10,7 +10,7 @@ from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from rest_framework.mixins import CreateModelMixin, UpdateModelMixin
 from registries.models import Organization, Person, ContactAt, RegistriesApplication
-from registries.permissions import IsAdminOrReadOnly
+from registries.permissions import IsAdminOrReadOnly, IsGwellsAdmin
 from registries.serializers import (
     ApplicationAdminSerializer,
     ApplicationListSerializer,
@@ -93,7 +93,7 @@ class OrganizationListView(AuditCreateMixin, ListCreateAPIView):
     Creates a new drilling organization record
     """
 
-    permission_classes = (IsAdminOrReadOnly,)
+    permission_classes = (IsGwellsAdmin,)
     serializer_class = OrganizationSerializer
     pagination_class = APILimitOffsetPagination
 
