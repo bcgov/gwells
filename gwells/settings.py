@@ -209,6 +209,11 @@ LOGGING = {
 
 JWT_AUTH = {
     'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),
+    'JWT_PUBLIC_KEY': """-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAjpPznS8NO5XNl395Xa/wJyhhMDMJUk8s2wrG/FQ9gZnRaCbm9YFYynZzeehkpTNbb+SsLBnh0Me5DKTSlt0Gm03ULXXW6FZzL3SCE1wTx6Trm+zQ1mx07aGDbv34OtK0HitToajZrnTsGQ0TloVbQladBM74S2K0ooveV7p2qIydFjtR+DTJGiOxSLvts+qsGn/Wr2l939SRpQa/10vpYJgCLsd6Bv/0v23DpmR8WbVkLh8e3rtI0XgsJ0ZFXR80DPt3fXX3gdrNdPRB+hpOR8IZMEUzhqGRg5VXP8Lp+bbaemFanTwlFD3aUfDlOcPekxYqQeEmS6ahA/6vCpjuGwIDAQAB
+-----END PUBLIC KEY-----""",
+    'JWT_ALGORITHM': 'RS256',
+    'JWT_AUDIENCE': 'mozilla-django-oidc'
 }
 
 DRF_RENDERERS = ['rest_framework.renderers.JSONRenderer',]
@@ -222,7 +227,6 @@ REST_FRAMEWORK = {
         'registries.permissions.IsAdminOrReadOnly',
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
         'gwells.authentication.JwtOidcAuthentication',
         'rest_framework.authentication.SessionAuthentication',
     ),
