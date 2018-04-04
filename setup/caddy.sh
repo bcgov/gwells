@@ -62,7 +62,7 @@ then
 elif [ "${PARAM}" == "deploy" ]
 then
 	oc process -f ${OC_TEMPLATE_DEPLOY} -p NAME=${APP_NAME} BUILD_PROJECT=${BUILD_PROJECT} | oc apply -f -
-	oc expose svc ${APP_NAME}
+	oc get route ${APP_NAME} || oc expose svc ${APP_NAME}
 else
 	echo
 	echo "Parameter '${PARAM}' not understood."
