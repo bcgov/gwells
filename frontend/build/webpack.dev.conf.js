@@ -65,6 +65,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         ignore: ['.*']
       }
     ])
+    // new BundleTracker({})
   ]
 })
 
