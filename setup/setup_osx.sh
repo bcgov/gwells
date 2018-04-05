@@ -12,8 +12,9 @@ IFS=$'\n\t'
 VERBOSE=${VERBOSE:-false}
 
 
-# Receive a Wells (legacy) database to import
+# Receive a GWells and Wells (legacy) databases to import
 #
+DB_MODERN=${DB_MODERN:-''}
 DB_LEGACY=${DB_LEGACY:-''}
 
 
@@ -66,7 +67,8 @@ then
 	echo "Please use variables to pass this script commands."
 	echo "E.g.:"
 	echo " 'VERBOSE=true ./setup_osx.sh'"
-	echo " 'DB_LEGACY=<path>/<filename>.dmp ./setup_osx.sh'"
+	echo " 'DB_MODERN=<path>/<filename>.dmp DB_LEGACY=<path>/<filename>.dmp ./setup_osx.sh'"
+	echo " 'TEST=true ./setup_osx.sh'"
 	echo
 	exit
 fi
@@ -140,6 +142,7 @@ which brew || \
 #
 PACKAGES=(
 	"git"
+	"nodejs"
 	"postgresql"
 	"python3"
 )
@@ -313,20 +316,30 @@ then 	(
 fi
 
 
-# Pip3 install requirements
+# Install requirements with PIP3 and NPM
 #
 cd "${START_DIR}"/..
 pip3 install -U -r requirements.txt
+cd "${START_DIR}"/../frontend
+npm install
+npm run build
 
 
 # Dev only - adapt schema for GWells
 #
+cd "${START_DIR}"/..
 python3 manage.py makemigrations
 
 
 # Migrate data from Wells (legacy) to GWells schema
 #
 python3 manage.py migrate
+
+
+# Restore the GWells (modern) database from a dump
+#
+[ -z ${DB_MODERN} ]|| \
+	pg_restore -U gwells -d gwells --no-owner --no-privileges "${DB_MODERN}"
 
 
 # Collect static files and run tests

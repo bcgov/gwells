@@ -61,11 +61,11 @@ EOF
 	# Temporary setup of Registries (Well Driller only) as part of Code With Us
 	# ,including Test Data loaded into the Registries (Driller) tables
 #	psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER  << EOF
+#	\ir ../../scripts/registries/post-deploy.sql
 #	\i clear-tables.sql
 #	\ir ../../scripts/registries/populate-xforms-registries.sql
 #	\i data-load-static-codes.sql
 #	\ir ../../scripts/registries/populate-registries-from-xform.sql
-#	\ir ../../scripts/registries/post-deploy.sql
 #EOF
 else
     echo ". Skipping DB Replication from Legacy Database, as per DB_REPLICATION flag"
