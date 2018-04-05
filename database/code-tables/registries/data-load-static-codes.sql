@@ -4,27 +4,37 @@
 
 --Registry Activity Type
 \echo '... loading registries_activity_code table'
-\copy registries_activity_code (registries_activity_guid,code,description,display_order,create_date,update_date,create_user,update_user) from 'registries_activity_code.csv' with header delimiter ',' CSV ;
+\copy registries_activity_code (registries_activity_code,description,display_order,create_date,update_date,create_user,update_user) from 'registries_activity_code.csv' with header delimiter ',' CSV ;
 
 --Registry Activity Subtype
 \echo '... loading registry_subactivity_code table'
-\copy registries_subactivity_code (registries_subactivity_guid,registries_activity_guid,code,description,display_order,create_date,update_date,create_user,update_user) from 'registries_subactivity_code.csv' with header delimiter ',' CSV ;
+\copy registries_subactivity_code (registries_subactivity_code,registries_activity_code,description,display_order,create_date,update_date,create_user,update_user) from 'registries_subactivity_code.csv' with header delimiter ',' CSV ;
 
---Registry Qualification Type
-\echo '... loading registry_qualification code table'
-\copy registries_qualification_code (registries_qualification_guid,registries_subactivity_guid,code,description,display_order,create_date,update_date,create_user,update_user) from 'registries_qualification_code.csv' with header delimiter ',' CSV ;
+--Registry Well Class
+\echo '... loading registry_well_class_code table'
+\copy registries_well_class_code (registries_well_class_code,description,display_order,create_date,update_date,create_user,update_user) from 'registries_well_class_code.csv' with header delimiter ',' CSV ;
+
+--Registry Well Class / Subactivity Mapping
+\echo '... loading registries_well_qualification table'
+\copy registries_well_qualification (registries_well_qualification_guid,registries_subactivity_code,registries_well_class_code,display_order,create_date,update_date,create_user,update_user) from 'registries_well_qualification.csv' with header delimiter ',' CSV ;
 
 --Registry Status Code
-\echo '... loading registry_status_code code table'
-\copy registries_status_code (registries_status_guid,code,description,display_order,create_date,update_date,create_user,update_user) from 'registries_status_code.csv' with header delimiter ',' CSV ;
+\echo '... loading registry_status_code table'
+\copy registries_status_code (registries_status_code,description,display_order,create_date,update_date,create_user,update_user) from 'registries_status_code.csv' with header delimiter ',' CSV ;
 
 --Registry Application Status Code
-\echo '... loading registry_application_status_code code table'
-\copy registries_application_status_code (registries_application_status_guid,code,description,display_order,create_date,update_date,create_user,update_user) from 'registries_application_status_code.csv' with header delimiter ',' CSV ;
+\echo '... loading registry_application_status_code table'
+\copy registries_application_status_code (registries_application_status_code,description,display_order,create_date,update_date,create_user,update_user) from 'registries_application_status_code.csv' with header delimiter ',' CSV ;
 
 --Registry Removal Reasons Code
-\echo '... loading registry_removal_reason_code code table'
-\copy registries_removal_reason_code (registries_removal_reason_guid,code,description,display_order,create_date,update_date,create_user,update_user) from 'registries_removal_reason_code.csv' with header delimiter ',' CSV ;
+\echo '... loading registries_removal_reason_code table'
+\copy registries_removal_reason_code (registries_removal_reason_code,description,display_order,create_date,update_date,create_user,update_user) from 'registries_removal_reason_code.csv' with header delimiter ',' CSV ;
+
+\echo '... loading registries_certifying_authority_code table'
+\copy registries_certifying_authority_code (create_user,create_date,update_user,update_date,cert_auth_code,description,effective_date,expired_date) from 'registries_certifying_authority_code.csv' with header delimiter ',' CSV ;
+
+\echo '... loading registries_accredited_certificate_code table'
+\copy registries_accredited_certificate_code (create_user,create_date,update_user,update_date,acc_cert_guid,name,description,effective_date,expired_date,cert_auth_code,registries_activity_code) from 'registries_accredited_certificate_code.csv' with header delimiter ',' CSV ;
 
 \echo 'Registry - Finshed copy of static code tables.'
 

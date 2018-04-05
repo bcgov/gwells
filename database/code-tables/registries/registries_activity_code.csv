@@ -1,3 +1,3 @@
-registries_activity_guid,code,description,display_order,create_date,update_date,create_user,update_user
-"9ecb8fbb428f45e19a3fe0ce05c563e2","DRILL","Well Driller","2","2018-01-01 00:00:00-08","2018-01-01 00:00:00-08","DATALOAD_USER","DATALOAD_USER"
-"a2c5ac6f13b642c59e919672ab2ef5a8","PUMP","Pump Installer","4","2018-01-01 00:00:00-08","2018-01-01 00:00:00-08","DATALOAD_USER","DATALOAD_USER"
+registries_activity_code,description,display_order,create_date,update_date,create_user,update_user
+"DRILL","Well Driller","2","2018-01-01 00:00:00-08","2018-01-01 00:00:00-08","DATALOAD_USER","DATALOAD_USER"
+"PUMP","Pump Installer","4","2018-01-01 00:00:00-08","2018-01-01 00:00:00-08","DATALOAD_USER","DATALOAD_USER"
