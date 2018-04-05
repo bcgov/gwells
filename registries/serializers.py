@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from rest_framework import relations
 from gwells.models.ProvinceStateCode import ProvinceStateCode
 from registries.models import (
     Organization,
@@ -12,6 +13,7 @@ from registries.models import (
     SubactivityCode,
     Qualification
 )
+
 
 class AuditModelSerializer(serializers.ModelSerializer):
     """
@@ -33,8 +35,11 @@ class QualificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Qualification
         fields = (
+            'registries_well_qualification_guid',
             'well_class',
-            'description'
+            'subactivity',
+            'effective_date',
+            'expired_date',
         )
 
 
@@ -137,6 +142,16 @@ class RegistrationsListSerializer(serializers.ModelSerializer):
         )
 
 
+class PersonBasicSerializer(serializers.ModelSerializer):
+    """
+    Serializes Person model with basic fields only
+    """
+
+    class Meta:
+        model = Person
+        fields = ('person_guid', 'name')
+
+
 class PersonSerializer(AuditModelSerializer):
     """
     Serializes the Person model (public/anonymous user fields)
@@ -224,7 +239,7 @@ class ApplicationAdminSerializer(AuditModelSerializer):
     Serializes RegistryApplication model fields for admin users
     """
 
-    registriesapplicationstatus_set = ApplicationStatusSerializer(many=True, read_only=True)
+    status_set = ApplicationStatusSerializer(many=True, read_only=True)
 
     class Meta:
         model = RegistriesApplication
@@ -235,24 +250,30 @@ class ApplicationAdminSerializer(AuditModelSerializer):
             'over19_ind',
             'registrar_notes',
             'reason_denied',
-            'classificationappliedfor_set',
-            'registriesapplicationstatus_set'
+            'subactivity',
+            'status_set'
         )
 
 
-class RegistrationAdminSerializer(serializers.ModelSerializer):
+class RegistrationAdminSerializer(AuditModelSerializer):
     """
     Serializes Register model for admin users
     """
     status = serializers.PrimaryKeyRelatedField(queryset=RegistriesStatusCode.objects.all())
     register_removal_reason = serializers.StringRelatedField(read_only=True)
     applications = ApplicationAdminSerializer(many=True, read_only=True)
+    person_name = serializers.StringRelatedField(source="person.name", read_only=True)
 
     class Meta:
         model = Register
         fields = (
+            'create_user',
+            'create_date',
+            'update_user',
+            'update_date',
             'register_guid',
             'person',
+            'person_name',
             'registries_activity',
             'status',
             'registration_no',
@@ -350,7 +371,7 @@ class PersonAdminSerializer(AuditModelSerializer):
     Serializes the Person model (admin user fields)
     """
 
-    organization = serializers.PrimaryKeyRelatedField(queryset=Organization.objects.all(), required=False)
+    # organization = serializers.PrimaryKeyRelatedField(queryset=Organization.objects.all(), required=False)
     registrations = RegistrationAdminSerializer(many=True, read_only=True)
 
     class Meta:
