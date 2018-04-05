@@ -326,6 +326,7 @@ class CitiesListView(ListAPIView):
     pagination_class = None
     queryset = Person.objects \
         .exclude(organization__city__isnull=True) \
+        .exclude(organization__city='') \
         .select_related(
             'organization',
         ) \
