@@ -31,7 +31,7 @@ if app_root:
 else:
     app_root_slash = app_root
 
-DJANGO_ADMIN_URL = get_env_variable('DJANGO_ADMIN_URL', 'admin')
+DJANGO_ADMIN_URL = get_env_variable('DJANGO_ADMIN_URL')
 
 urlpatterns = [
     # url(r'^'+ app_root +'$', views.HomeView.as_view(), name='home'),

@@ -26,11 +26,15 @@ engines = {
 
 
 def config():
-    service_name = get_env_variable('DATABASE_SERVICE_NAME').upper().replace('-', '_')
-    engine = engines.get(get_env_variable('DATABASE_ENGINE'))
+    service_name = get_env_variable('DATABASE_SERVICE_NAME', '').upper().replace('-', '_')
+    # Default to using sqlite if no database engine is specified
+    engine = engines.get(get_env_variable('DATABASE_ENGINE'), engines['sqlite'])
+    name = os.getenv('DATABASE_NAME')
+    if not name and engine == engines['sqlite']:
+        name = os.path.join(settings.BASE_DIR, 'db.sqlite3')
     return {
         'ENGINE': engine,
-        'NAME': get_env_variable('DATABASE_NAME'),
+        'NAME': name,
         'USER': get_env_variable('DATABASE_USER'),
         'PASSWORD': get_env_variable('DATABASE_PASSWORD'),
         'HOST': get_env_variable('{}_SERVICE_HOST'.format(service_name)),

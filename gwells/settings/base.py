@@ -28,8 +28,8 @@ if not ENFORCE_ENV_VARIABLES:
 def get_env_variable(var_name, default_value=None):
     result = getenv(var_name)
     if not result:
-        msg = 'Set the {} environment variable'.format(var_name)
-        if ENFORCE_ENV_VARIABLES:
+        msg = 'Environment variable "{}" not set'.format(var_name)
+        if ENFORCE_ENV_VARIABLES or default_value is None:
             raise ImproperlyConfigured(msg)
         else:
             logger.debug(msg)
