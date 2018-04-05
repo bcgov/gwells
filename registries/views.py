@@ -68,9 +68,9 @@ class PersonFilter(restfilters.FilterSet):
     Allows APIPersonListView to filter response by city, province, or registration status.
     """
     # city = restfilters.MultipleChoiceFilter(name="organization__city")
-    prov = restfilters.CharFilter(name="organization__province_state__province_state_code")
-    status = restfilters.CharFilter(name="registrations__status__code")
-    activity = restfilters.CharFilter(name="registrations__registries_activity__code")
+    prov = restfilters.CharFilter(name="organization__province_state")
+    status = restfilters.CharFilter(name="registrations__status")
+    activity = restfilters.CharFilter(name="registrations__registries_activity")
 
     class Meta:
         model = Person
@@ -101,7 +101,7 @@ class OrganizationListView(AuditCreateMixin, ListCreateAPIView):
     queryset = Organization.objects.all() \
         .select_related('province_state') \
         .prefetch_related(
-            'people',
+            'person_set',
         )
 
     # Allow searching against fields like organization name, address,
@@ -111,11 +111,10 @@ class OrganizationListView(AuditCreateMixin, ListCreateAPIView):
         'name',
         'street_address',
         'city',
-        'people__first_name',
-        'people__surname',
-        'people__registrations__applications__file_no'
+        'person_set__first_name',
+        'person_set__surname',
+        'person_set__registrations__applications__file_no'
         )
-
 
     def get_queryset(self):
         """
@@ -124,7 +123,7 @@ class OrganizationListView(AuditCreateMixin, ListCreateAPIView):
         qs = self.queryset
         if not self.request.user.is_staff:
             qs = qs \
-                .filter(people__registrations__status__code='ACTIVE')
+                .filter(person_set__registrations__status='ACTIVE')
         return qs
 
     def get_serializer_class(self):
@@ -178,7 +177,7 @@ class OrganizationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
     queryset = Organization.objects.all() \
         .select_related('province_state') \
         .prefetch_related(
-            'people',
+            'person_set',
         )
 
     def get_queryset(self):
@@ -188,7 +187,7 @@ class OrganizationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
         qs = self.queryset
         if not self.request.user.is_staff:
             qs = qs \
-                .filter(people__registrations__status__code='ACTIVE') \
+                .filter(person_set__registrations__status='ACTIVE') \
                 .distinct()
         return qs
 
@@ -246,7 +245,7 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
         
         # Only show active drillers to non-admin users and public
         if not self.request.user.is_staff:
-            qs = qs.filter(registrations__status__code='ACTIVE')
+            qs = qs.filter(registrations__status='ACTIVE')
 
         return qs
 
@@ -307,7 +306,7 @@ class PersonDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
         """
         qs = self.queryset
         if not self.request.user.is_staff:
-            qs = qs.filter(registrations__status__code='ACTIVE')
+            qs = qs.filter(registrations__status='ACTIVE')
         return qs
 
     def get_serializer_class(self):
@@ -341,11 +340,11 @@ class CitiesListView(ListAPIView):
         """
         qs = self.queryset
         if not self.request.user.is_staff:
-            qs = qs.filter(registrations__status__code='ACTIVE')
+            qs = qs.filter(registrations__status='ACTIVE')
         if self.kwargs['activity'] == 'drill':
-            qs = qs.filter(registrations__registries_activity__code='DRILL')
+            qs = qs.filter(registrations__registries_activity='DRILL')
         if self.kwargs['activity'] == 'install':
-            qs = qs.filter(registrations__registries_activity__code='PUMP')
+            qs = qs.filter(registrations__registries_activity='PUMP')
         return qs
 
 

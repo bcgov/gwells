@@ -145,7 +145,7 @@ class Person(AuditModel):
     organization = models.ForeignKey(
         Organization, blank=True,
         null=True, on_delete=models.PROTECT,
-        related_name="People")
+        related_name="person_set")
 
     class Meta:
         db_table = 'registries_person'
@@ -309,7 +309,7 @@ class Register(AuditModel):
         blank=True,
         null=True,
         verbose_name="Date of Removal from Register")
-
+        
     class Meta:
         db_table = 'registries_register'
         verbose_name_plural = 'Registrations'
