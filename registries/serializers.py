@@ -1,5 +1,4 @@
 from rest_framework import serializers
-from rest_framework import relations
 from gwells.models.ProvinceStateCode import ProvinceStateCode
 from registries.models import (
     Organization,
@@ -11,7 +10,8 @@ from registries.models import (
     RegistriesStatusCode,
     ActivityCode,
     SubactivityCode,
-    Qualification
+    Qualification,
+    ApplicationStatusCode
 )
 
 
@@ -90,12 +90,13 @@ class ApplicationStatusSerializer(serializers.ModelSerializer):
     Serializes RegistriesApplicationStatus for admin users
     ApplicationStatus objects form a related set for an Application object.
     """
+    description = serializers.StringRelatedField(source='status.description')
 
     class Meta:
         model = RegistriesApplicationStatus
         fields = (
             'status',
-            'status',
+            'description',
             'notified_date',
             'effective_date',
             'expired_date',
@@ -174,8 +175,6 @@ class OrganizationSerializer(AuditModelSerializer):
     Serializes Organization model fields (public fields list)
     """
 
-    person_set = PersonSerializer(many=True, read_only=True)
-
     class Meta:
         model = Organization
         fields = (
@@ -188,8 +187,6 @@ class OrganizationSerializer(AuditModelSerializer):
             'main_tel',
             'fax_tel',
             'website_url',
-            'certificate_authority',
-            'person_set',
         )
 
 
@@ -244,6 +241,10 @@ class ApplicationAdminSerializer(AuditModelSerializer):
     class Meta:
         model = RegistriesApplication
         fields = (
+            'create_user',
+            'create_date',
+            'update_user',
+            'update_date',
             'application_guid',
             'registration',
             'file_no',
@@ -253,6 +254,23 @@ class ApplicationAdminSerializer(AuditModelSerializer):
             'subactivity',
             'status_set'
         )
+    
+    def create(self, validated_data):
+        """
+        Create an application as well as a default status record of "pending"
+        """
+        try:
+            app = RegistriesApplication.objects.create(**validated_data)
+        except TypeError:
+            raise TypeError('A field may need to be made read only.')
+  
+        # make a status record to go with the new application
+        pending = ApplicationStatusCode.objects.get(registries_application_status_code='P')
+        RegistriesApplicationStatus.objects.create(
+            application=app,
+            status=pending)
+
+        return app
 
 
 class RegistrationAdminSerializer(AuditModelSerializer):
@@ -262,7 +280,7 @@ class RegistrationAdminSerializer(AuditModelSerializer):
     status = serializers.PrimaryKeyRelatedField(queryset=RegistriesStatusCode.objects.all())
     register_removal_reason = serializers.StringRelatedField(read_only=True)
     applications = ApplicationAdminSerializer(many=True, read_only=True)
-    person_name = serializers.StringRelatedField(source="person.name", read_only=True)
+    person_name = serializers.StringRelatedField(source='person.name')
 
     class Meta:
         model = Register
@@ -299,12 +317,11 @@ class CityListSerializer(serializers.ModelSerializer):
             'organization',
         )
 
-
-    def to_representation(self, obj):
+    def to_representation(self, instance):
         """
-        Flattens City list response to make an array of { city: '', province_state: '' } objects 
+        Flattens City list response to make an array of { city: '', province_state: '' } objects
         """
-        repr = super().to_representation(obj)
+        repr = super().to_representation(instance)
 
         # remove and store nested objects
         org = repr.pop('organization')
