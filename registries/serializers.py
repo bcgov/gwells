@@ -263,7 +263,7 @@ class ApplicationAdminSerializer(AuditModelSerializer):
             app = RegistriesApplication.objects.create(**validated_data)
         except TypeError:
             raise TypeError('A field may need to be made read only.')
-        
+  
         # make a status record to go with the new application
         pending = ApplicationStatusCode.objects.get(registries_application_status_code='P')
         RegistriesApplicationStatus.objects.create(
