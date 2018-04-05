@@ -106,7 +106,7 @@ class Organization(AuditModel):
         verbose_name="Organization UUID")
     name = models.CharField(max_length=200)
     street_address = models.CharField(max_length=100, blank=True, null=True, verbose_name='Street Address')
-    city = models.CharField(max_length=50, blank=True, null=True, verbose_name='Town/City')
+    city = models.CharField(max_length=50, null=True, verbose_name='Town/City')
     province_state = models.ForeignKey(
         ProvinceStateCode,
         db_column='province_state_code',
