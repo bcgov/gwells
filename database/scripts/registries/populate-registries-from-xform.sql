@@ -7,14 +7,14 @@
 
 -- Companies
 INSERT INTO registries_organization (
- create_user
+ name
+,create_user
 ,create_date
 ,update_user
 ,update_date
 ,effective_date
 ,expired_date
 ,org_guid
-,name
 ,street_address
 ,city
 ,postal_code
@@ -23,14 +23,14 @@ INSERT INTO registries_organization (
 ,website_url
 ,province_state_code
 ) SELECT
- 'DATALOAD_USER'
-,'2018-01-01 00:00:00-08'
+ distinct on (companyname) companyname
 ,'DATALOAD_USER'
-,'2018-01-01 00:00:00-08'
-,'1970-01-01 00:00:00-08'
-,null
-,reg_guid -- should actually be gen_random_uuid() 
-,companyname
+,'2018-01-01 00:00:00-08'::timestamp
+,'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'::timestamp
+,'1970-01-01 00:00:00-08'::timestamp
+,null::timestamp
+,gen_random_uuid()
 ,companyaddress
 ,companycity
 ,companypostalcode
@@ -46,14 +46,14 @@ from xform_registries_drillers_reg xform
 where companyname is not null;
 
 INSERT INTO registries_organization (
- create_user
+ name
+,create_user
 ,create_date
 ,update_user
 ,update_date
 ,effective_date
 ,expired_date
 ,org_guid
-,name
 ,street_address
 ,city
 ,postal_code
@@ -62,14 +62,14 @@ INSERT INTO registries_organization (
 ,website_url
 ,province_state_code
 ) SELECT
- 'DATALOAD_USER'
-,'2018-01-01 00:00:00-08'
+ distinct on (companyname) companyname
 ,'DATALOAD_USER'
-,'2018-01-01 00:00:00-08'
-,'1970-01-01 00:00:00-08'
-,null
-,reg_guid -- should actually be gen_random_uuid() 
-,companyname
+,'2018-01-01 00:00:00-08'::timestamp
+,'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'::timestamp
+,'1970-01-01 00:00:00-08'::timestamp
+,null::timestamp
+,gen_random_uuid()
 ,companyaddress
 ,companycity
 ,companypostalcode
@@ -83,10 +83,11 @@ INSERT INTO registries_organization (
  END AS province_state_code
 from xform_registries_pump_installers_reg xform
 where companyname is not null
+and companyname not in (
+SELECT name from registries_organization)
 and   companyname <> 'R. Ayre Enterprises'; -- bad data in companyprov (special char?)
 
-
--- Persons 
+-- Persons
 INSERT INTO registries_person (
  first_name
 ,surname
@@ -109,6 +110,17 @@ SELECT
 ,'DATALOAD_USER'
 ,'2018-01-01 00:00:00-08' 
 from xform_registries_drillers_reg xform;
+
+-- Attach companies for which they work
+UPDATE registries_person per
+SET organization_id = org.org_guid
+FROM registries_organization org,
+    xform_registries_drillers_reg xform
+WHERE org.name = xform.companyname
+and org.street_address = xform.companyaddress
+and org.city           = xform.companycity
+and per.person_guid = xform.reg_guid;
+
 
 INSERT INTO registries_contact_detail (
  create_user
@@ -181,7 +193,6 @@ INSERT INTO registries_contact_detail (
 ,companyemail
 ,reg_guid
 from xform_registries_pump_installers_reg xform;
-
 
 
 -- Driller Register (Active)
