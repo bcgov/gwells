@@ -29,7 +29,7 @@ BASE_DIR = str(Path(__file__).parents[2])
 # The SECRET_KEY is provided via an environment variable in OpenShift
 # safe value used for development when DJANGO_SECRET_KEY might not be set:
 # '9e4@&tw46$l31)zrqe3wi+-slqm(ruvz&se0^%9#6(_w3ui!c0'
-SECRET_KEY = get_env_variable('DJANGO_SECRET_KEY', '9e4@&tw46$l31)zrqe3wi+-slqm(ruvz&se0^%9#6(_w3ui!c0')
+SECRET_KEY = get_env_variable('DJANGO_SECRET_KEY', '7e4@&tw46$l31)zrqe3wi+-slqm(ruvz&se0^%9#6(_w3ui!c0')
 
 # Security Settings
 SECURE_BROWSER_XSS_FILTER = True
