@@ -348,10 +348,6 @@ class CitiesListView(ListAPIView):
             qs = qs.filter(registrations__registries_activity__code='PUMP')
         return qs
 
-# Placeholder for base url.
-def index(request):
-    return HttpResponse("TEST: Driller Register app home index.")
-
 
 class RegistrationListView(AuditCreateMixin, ListCreateAPIView):
     """ 
@@ -364,6 +360,13 @@ class RegistrationListView(AuditCreateMixin, ListCreateAPIView):
 
     permission_classes = (IsAdminUser,)
     serializer_class = RegistrationAdminSerializer
+    queryset = Register.objects.all() \
+        .select_related(
+            'person',
+            'registries_activity',
+            'status',
+            'register_removal_reason',) \
+        .prefetch_related('applications')
 
 
 class RegistrationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
@@ -383,6 +386,7 @@ class RegistrationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
 
     permission_classes = (IsAdminUser,)
     serializer_class = RegistrationAdminSerializer
+    lookup_field = 'register_guid'
     queryset = Register.objects.all() \
         .select_related(
             'person',
@@ -401,14 +405,10 @@ class ApplicationListView(AuditCreateMixin, ListCreateAPIView):
     """
 
     permission_classes = (IsAdminUser,)
-    serializer_class = ApplicationListSerializer
+    serializer_class = ApplicationAdminSerializer
     queryset = RegistriesApplication.objects.all() \
         .select_related('registration') \
-        .prefetch_related(
-            'register_set',
-            'register_set__registries_activity',
-            'register_set__status'
-        )
+        .prefetch_related('qualifications')
 
 
 class ApplicationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
@@ -427,7 +427,7 @@ class ApplicationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
     """
 
     permission_classes = (IsAdminUser,)
-    serializer_class = ApplicationListSerializer
+    serializer_class = ApplicationAdminSerializer
     queryset = RegistriesApplication.objects.all().select_related('registration')
     lookup_field = "application_guid"
     

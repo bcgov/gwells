@@ -95,6 +95,7 @@ class Organization(AuditModel):
     effective_date = models.DateField(default=datetime.date.today)
     expired_date = models.DateField(blank=True, null=True)
 
+
     class Meta:
         db_table = 'registries_organization'
         ordering = ['name']
