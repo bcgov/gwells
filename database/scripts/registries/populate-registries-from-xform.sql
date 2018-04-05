@@ -4,102 +4,7 @@
 --
 -- psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER -f populate-registries-from-xform.sql
 
--- Preload with known organizations that act as Certificate Authorities
-INSERT INTO registries_organization (
- name
-,street_address
-,city
-,postal_code
-,main_tel
-,fax_tel
-,website_url
-,certificate_authority
-,province_state_code
-,org_guid
-,create_user
-,create_date
-,update_user
-,update_date
-) SELECT
- 'CGWA'
-,'1334 Riverside Road'
-,'Abbotsford'
-,'V2S 8J2'
-,' 604-530-8934'
-,null
-,'https://www.bcgwa.org/'
-,true
-,'BC'
-,'d76775a3-650d-44cb-a3b7-5faf8558f29d'::uuid
-,'DATALOAD_USER'
-,'2018-01-01 00:00:00-08'
-,'DATALOAD_USER'
-,'2018-01-01 00:00:00-08'
-;
 
-INSERT INTO registries_organization (
- name
-,street_address
-,city
-,postal_code
-,main_tel
-,fax_tel
-,website_url
-,certificate_authority
-,province_state_code
-,org_guid
-,create_user
-,create_date
-,update_user
-,update_date
-) SELECT
- 'Province of B.C.'
-,'PO Box 9362 Stn Prov Govt'
-,'Victoria'
-,'V8W9M2'
-,null
-,null
-,'https://www2.gov.bc.ca/gov/content/environment/air-land-water/water/laws-rules/groundwater-protection-regulation'
-,true
-,'BC'
-,'d3dfedd0-59b3-41cd-a40c-6e35b236a3d6'::uuid
-,'DATALOAD_USER'
-,'2018-01-01 00:00:00-08'
-,'DATALOAD_USER'
-,'2018-01-01 00:00:00-08'
-;
-
-INSERT INTO registries_organization (
- name
-,street_address
-,city
-,postal_code
-,main_tel
-,fax_tel
-,website_url
-,certificate_authority
-,province_state_code
-,org_guid
-,create_user
-,create_date
-,update_user
-,update_date
-) SELECT
- 'Ontario Ministry of Environment'
-,'125 Resources Rd.'
-,'Toronto'
-,'M9P 3V6'
-,'1 888 396-9355'
-,'416 235-5960'
-,'https://www.ontario.ca/page/well-technician-licence'
-,true
-,'ON'
-,'3f2fab4c-239c-42eb-be0d-dad340cdcbef'::uuid
-,'DATALOAD_USER'
-,'2018-01-01 00:00:00-08'
-,'DATALOAD_USER'
-,'2018-01-01 00:00:00-08'
-;
 
 -- UNION all distinct organization with non-null names and provinces.
 
@@ -589,15 +494,15 @@ and   appl.person_guid = xform_trk.trk_guid -- we explicitly set this above
 
 -- "Fake" Approval 
 INSERT INTO registries_application_status (
- notified_date                     
+ notified_date       
 ,effective_date
-,expired_date                      
-,application_guid                  
+,expired_date        
+,application_guid    
 ,registries_application_status_guid
 ,application_status_guid           
-,create_user                       
-,create_date                      
-,update_user                       
+,create_user         
+,create_date        
+,update_user         
 ,update_date 
 )
 SELECT
@@ -630,7 +535,7 @@ INSERT INTO registries_register (
 ,register_removal_date          
 ,registries_removal_reason_guid 
 ,registries_activity_guid       
-,application_guid               
+,application_guid 
 ,registries_status_guid         
 ,register_guid
 ,create_user
@@ -644,7 +549,7 @@ SELECT
 ,null        
 ,null
 ,(select registries_activity_guid from registries_activity_code where code='DRILL')
-,appl.application_guid               
+,appl.application_guid 
 ,(select registries_status_guid from registries_status_code where code='ACTIVE')
 ,gen_random_uuid()   
 ,'DATALOAD_USER'
@@ -666,10 +571,10 @@ SELECT
 
 
 -- Drillers grandfathered in (without applications) and not in Tracking spreadsheet
-INSERT INTO registries_person (              
- first_name                  
+INSERT INTO registries_person (
+ first_name    
 ,surname        
-,person_guid                             
+,person_guid 
 ,create_user  
 ,create_date 
 ,update_user  
@@ -740,13 +645,13 @@ and not exists (
   and   per.first_name = xform_reg.firstname);
 
 
-INSERT INTO registries_contact_detail (              
+INSERT INTO registries_contact_detail (
  contact_tel    
 ,contact_email  
 ,effective_date 
 ,expired_date   
 ,org_guid       
-,person_guid                               
+,person_guid   
 ,contact_at_guid
 ,create_user  
 ,create_date 
@@ -772,7 +677,7 @@ and xform_reg.companyname is not null
 and org.name = xform_reg.companyname;
 
 -- "Fake" Application to represent grand-fathered web drillers
-INSERT INTO registries_application (              
+INSERT INTO registries_application (
  file_no         
 ,over19_ind      
 ,registrar_notes 
@@ -808,10 +713,10 @@ and org.name = xform_reg.companyname;
 -- 'DRILL', 'GEOXCHG'
 -- Thu  1 Mar 22:57:45 2018 GW After DA refactoring, this now returns
 -- INSERT 0 0
-INSERT INTO registries_classification_applied_for (              
+INSERT INTO registries_classification_applied_for (
  primary_certificate_no         
-,certifying_org_guid                       
-,application_guid               
+,certifying_org_guid         
+,application_guid 
 ,registries_subactivity_guid    
 ,classification_applied_for_guid
 ,create_user  
@@ -848,7 +753,7 @@ and   xform_reg.classofwelldriller LIKE '%Geothermal%';
 
 
 -- 'DRILL', 'GEOTECH'
-INSERT INTO registries_classification_applied_for (              
+INSERT INTO registries_classification_applied_for (
  primary_certificate_no         
 ,certifying_org_guid
 ,application_guid
@@ -887,10 +792,10 @@ and xform_reg.companyname is not null
 and   xform_reg.classofwelldriller LIKE '%Geotechnical%';
 
 -- 'DRILL', 'WATER'
-INSERT INTO registries_classification_applied_for (              
+INSERT INTO registries_classification_applied_for (
  primary_certificate_no         
-,certifying_org_guid                       
-,application_guid               
+,certifying_org_guid         
+,application_guid 
 ,registries_subactivity_guid    
 ,classification_applied_for_guid
 ,create_user  
@@ -927,15 +832,15 @@ and   xform_reg.classofwelldriller LIKE '%Water Well%';
 
 -- Fake Approvals
 INSERT INTO registries_application_status (
- notified_date                     
-,effective_date                    
-,expired_date                      
-,application_guid                  
+ notified_date       
+,effective_date      
+,expired_date        
+,application_guid    
 ,registries_application_status_guid
 ,application_status_guid           
-,create_user                       
-,create_date                      
-,update_user                       
+,create_user         
+,create_date        
+,update_user         
 ,update_date 
 )
 SELECT
@@ -1273,15 +1178,15 @@ and   appl.person_guid = xform_trk.trk_guid -- we explicitly set this above
 
 -- "Fake" Approval 
 INSERT INTO registries_application_status (
- notified_date                     
+ notified_date       
 ,effective_date
-,expired_date                      
-,application_guid                  
+,expired_date        
+,application_guid    
 ,registries_application_status_guid
 ,application_status_guid           
-,create_user                       
-,create_date                      
-,update_user                       
+,create_user         
+,create_date        
+,update_user         
 ,update_date 
 )
 SELECT
@@ -1316,7 +1221,7 @@ INSERT INTO registries_register (
 ,register_removal_date          
 ,registries_removal_reason_guid 
 ,registries_activity_guid       
-,application_guid               
+,application_guid 
 ,registries_status_guid         
 ,register_guid
 ,create_user
@@ -1330,7 +1235,7 @@ SELECT
 ,null        
 ,null
 ,(select registries_activity_guid from registries_activity_code where code='PUMP')
-,appl.application_guid               
+,appl.application_guid 
 ,(select registries_status_guid from registries_status_code where code='ACTIVE')
 ,gen_random_uuid()   
 ,'DATALOAD_USER'

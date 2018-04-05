@@ -3,6 +3,82 @@ import datetime
 from django.db import models
 from gwells.models import AuditModel, ProvinceStateCode
 
+class ActivityCode(AuditModel):
+    """
+    Restricted Activity related to drilling wells and installing well pumps.
+    """
+    registries_activity_code = models.CharField(primary_key=True, max_length=10, editable=False)
+    description = models.CharField(max_length=100)
+    display_order = models.PositiveIntegerField()
+    effective_date = models.DateField(default=datetime.date.today)
+    expired_date = models.DateField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'registries_activity_code'
+        ordering = ['display_order', 'description']
+        verbose_name_plural = 'Activity codes'
+
+    def __str__(self):
+        return self.description
+
+class SubactivityCode(AuditModel):
+    """
+    Restricted Activity Subtype related to drilling wells and installing well pumps.
+    """
+    registries_subactivity_code = models.CharField(primary_key=True, max_length=10, editable=False)
+    registries_activity = models.ForeignKey(ActivityCode, db_column='registries_activity_code',
+        on_delete=models.PROTECT)
+    description = models.CharField(max_length=100)
+    display_order = models.PositiveIntegerField()
+    effective_date = models.DateField(default=datetime.date.today)
+    expired_date = models.DateField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'registries_subactivity_code'
+        ordering = ['display_order', 'description']
+        verbose_name_plural = 'Subactivity codes'
+
+    def __str__(self):
+        return self.description
+
+
+class CertifyingAuthorityCode(AuditModel):
+    cert_auth_code = models.CharField(primary_key=True, max_length=50, editable=False,
+        verbose_name="Certifying Authority Name")
+    description = models.CharField(max_length=100, blank=True, null=True)
+
+    effective_date = models.DateField(default=datetime.date.today)
+    expired_date = models.DateField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'registries_certifying_authority_code'
+        ordering = ['cert_auth_code']
+        verbose_name_plural = 'Certifying Authorities'
+
+    def __str__(self):
+        return self.name
+
+class AccreditedCertficateCode(AuditModel):
+    acc_cert_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False,
+        verbose_name="Accredited Certficate UUID")
+    cert_auth = models.ForeignKey(CertifyingAuthorityCode, db_column='cert_auth_code',
+        on_delete=models.PROTECT)
+    registries_activity = models.ForeignKey(ActivityCode, db_column='registries_activity_code',
+        on_delete=models.PROTECT)
+    name = models.CharField(max_length=100, editable=False, verbose_name="Certificate Name")
+    description = models.CharField(max_length=100, blank=True, null=True)
+
+    effective_date = models.DateField(default=datetime.date.today)
+    expired_date = models.DateField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'registries_accredited_certificate_code'
+        ordering = ['registries_activity','cert_auth']
+        verbose_name_plural = 'Accredited Certficates'
+
+    def __str__(self):
+        return '%s %s %s' % (self.cert_auth, self.registries_activity, self.name)
+
 
 class Organization(AuditModel):
     org_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False,
@@ -18,13 +94,6 @@ class Organization(AuditModel):
     website_url = models.URLField(blank=True, null=True, verbose_name="Website")
     effective_date = models.DateField(default=datetime.date.today)
     expired_date = models.DateField(blank=True, null=True)
-
-
-
-    certificate_authority = models.BooleanField(
-        default=False,
-        verbose_name='Certifying Authority for Registries Activities',
-        choices=((False, 'No'), (True, 'Yes')))
 
     class Meta:
         db_table = 'registries_organization'
@@ -77,44 +146,6 @@ class ContactInfo(AuditModel):
             self.person,
             self.contact_tel,
             self.contact_email)
-
-class ActivityCode(AuditModel):
-    """
-    Restricted Activity related to drilling wells and installing well pumps.
-    """
-    registries_activity_code = models.CharField(primary_key=True, max_length=10, editable=False)
-    description = models.CharField(max_length=100)
-    display_order = models.PositiveIntegerField()
-    effective_date = models.DateField(default=datetime.date.today)
-    expired_date = models.DateField(blank=True, null=True)
-
-    class Meta:
-        db_table = 'registries_activity_code'
-        ordering = ['display_order', 'description']
-        verbose_name_plural = 'Activity codes'
-
-    def __str__(self):
-        return self.description
-
-class SubactivityCode(AuditModel):
-    """
-    Restricted Activity Subtype related to drilling wells and installing well pumps.
-    """
-    registries_subactivity_code = models.CharField(primary_key=True, max_length=10, editable=False)
-    registries_activity = models.ForeignKey(ActivityCode, db_column='registries_activity_code',
-        on_delete=models.PROTECT)
-    description = models.CharField(max_length=100)
-    display_order = models.PositiveIntegerField()
-    effective_date = models.DateField(default=datetime.date.today)
-    expired_date = models.DateField(blank=True, null=True)
-
-    class Meta:
-        db_table = 'registries_subactivity_code'
-        ordering = ['display_order', 'description']
-        verbose_name_plural = 'Subactivity codes'
-
-    def __str__(self):
-        return self.description
 
 
 class WellClassCode(AuditModel):
@@ -240,10 +271,9 @@ class RegistriesApplication(AuditModel):
     reason_denied = models.CharField(max_length=255, blank=True, null=True,
         verbose_name='Free form text explaining reason for denial.')
 
-    # TODO repoint to CertBody
-    primary_certificate_authority = models.ForeignKey(Organization, blank=True, null=True,
-        db_column='certifying_org_guid', on_delete=models.PROTECT,
-        limit_choices_to={'certificate_authority': True}, verbose_name="Certifying Organization")
+    # TODO Support multiple certificates
+    primary_certificate = models.ForeignKey(AccreditedCertficateCode, blank=True, null=True,
+        db_column='acc_cert_guid', on_delete=models.PROTECT, verbose_name="Certificate")
     primary_certificate_no = models.CharField(max_length=50)
 
     class Meta:
