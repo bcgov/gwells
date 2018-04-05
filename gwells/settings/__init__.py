@@ -29,30 +29,30 @@ BASE_DIR = str(Path(__file__).parents[2])
 # The SECRET_KEY is provided via an environment variable in OpenShift
 # safe value used for development when DJANGO_SECRET_KEY might not be set:
 # '9e4@&tw46$l31)zrqe3wi+-slqm(ruvz&se0^%9#6(_w3ui!c0'
-SECRET_KEY = get_env_variable('DJANGO_SECRET_KEY')
+SECRET_KEY = get_env_variable('DJANGO_SECRET_KEY', '9e4@&tw46$l31)zrqe3wi+-slqm(ruvz&se0^%9#6(_w3ui!c0')
 
 # Security Settings
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
-SESSION_COOKIE_SECURE = get_env_variable('SESSION_COOKIE_SECURE') == 'True'
-CSRF_COOKIE_SECURE = get_env_variable('CSRF_COOKIE_SECURE') == 'True'
+SESSION_COOKIE_SECURE = get_env_variable('SESSION_COOKIE_SECURE', 'False') == 'True'
+CSRF_COOKIE_SECURE = get_env_variable('CSRF_COOKIE_SECURE', 'False') == 'True'
 CSRF_COOKIE_HTTPONLY = True
 SESSION_COOKIE_HTTPONLY = True
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = get_env_variable('DJANGO_DEBUG') == 'True'
+DEBUG = get_env_variable('DJANGO_DEBUG', 'False') == 'True'
 
 # Controls availability of the data entry functionality
-ENABLE_DATA_ENTRY = get_env_variable('ENABLE_DATA_ENTRY') == 'True'
+ENABLE_DATA_ENTRY = get_env_variable('ENABLE_DATA_ENTRY', 'False') == 'True'
 
 # Controls availability of Google Analytics
-ENABLE_GOOGLE_ANALYTICS = get_env_variable('ENABLE_GOOGLE_ANALYTICS') == 'True'
+ENABLE_GOOGLE_ANALYTICS = get_env_variable('ENABLE_GOOGLE_ANALYTICS', 'False') == 'True'
 
 # Additional Documents Feature Flag
-ENABLE_ADDITIONAL_DOCUMENTS = get_env_variable('ENABLE_ADDITIONAL_DOCUMENTS') == 'True'
+ENABLE_ADDITIONAL_DOCUMENTS = get_env_variable('ENABLE_ADDITIONAL_DOCUMENTS', 'False') == 'True'
 
 # Controls app context
-APP_CONTEXT_ROOT = get_env_variable('APP_CONTEXT_ROOT')
+APP_CONTEXT_ROOT = get_env_variable('APP_CONTEXT_ROOT', 'gwells')
 
 FIXTURES_DIR = '/'.join([BASE_DIR, APP_CONTEXT_ROOT, 'fixtures'])
 
