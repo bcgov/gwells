@@ -69,12 +69,12 @@ class CertifyingAuthorityCode(AuditModel):
         return self.cert_auth_code
 
 
-class AccreditedCertficateCode(AuditModel):
+class AccreditedCertificateCode(AuditModel):
     acc_cert_guid = models.UUIDField(
         primary_key=True,
         default=uuid.uuid4,
         editable=False,
-        verbose_name="Accredited Certficate UUID")
+        verbose_name="Accredited Certificate UUID")
     cert_auth = models.ForeignKey(
         CertifyingAuthorityCode,
         db_column='cert_auth_code',
@@ -91,8 +91,8 @@ class AccreditedCertficateCode(AuditModel):
 
     class Meta:
         db_table = 'registries_accredited_certificate_code'
-        ordering = ['registries_activity','cert_auth']
-        verbose_name_plural = 'Accredited Certficates'
+        ordering = ['registries_activity', 'cert_auth']
+        verbose_name_plural = 'Accredited Certificates'
 
     def __str__(self):
         return '%s %s %s' % (self.cert_auth, self.registries_activity, self.name)
@@ -129,7 +129,6 @@ class Organization(AuditModel):
         return self.name
 
 
-# Create your models here.
 class Person(AuditModel):
     person_guid = models.UUIDField(
         primary_key=True,
@@ -153,6 +152,10 @@ class Person(AuditModel):
         verbose_name_plural = 'People'
 
     def __str__(self):
+        return '%s %s' % (self.first_name, self.surname)
+    
+    @property
+    def name(self):
         return '%s %s' % (self.first_name, self.surname)
 
 
@@ -356,7 +359,7 @@ class RegistriesApplication(AuditModel):
 
     # TODO Support multiple certificates
     primary_certificate = models.ForeignKey(
-        AccreditedCertficateCode,
+        AccreditedCertificateCode,
         blank=True,
         null=True,
         db_column='acc_cert_guid',
