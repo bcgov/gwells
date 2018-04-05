@@ -81,7 +81,6 @@ INSTALLED_APPS = (
     'debug_toolbar',
     'django.contrib.postgres',
     'rest_framework',
-    'corsheaders',
     'drf_yasg',
     'gwells',
     'crispy_forms',
@@ -90,7 +89,7 @@ INSTALLED_APPS = (
     'django_nose',
     'webpack_loader',
     'django_filters',
-#    'django_extensions',
+    'django_extensions',
 )
 
 MIDDLEWARE = (

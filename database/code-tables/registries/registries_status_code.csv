@@ -1,3 +1,3 @@
-registries_status_guid,code,description,display_order,create_date,update_date,create_user,update_user
-"dc37da91e36e49fab180e2c968988f13","ACTIVE","Active","2","2018-01-01 00:00:00-08","2018-01-01 00:00:00-08","DATALOAD_USER","DATALOAD_USER"
-"4730ae4f1e8842e180fd6fa65bbf858a","REMOVED","Removed","4","2018-01-01 00:00:00-08","2018-01-01 00:00:00-08","DATALOAD_USER","DATALOAD_USER"
+registries_status_code,description,display_order,create_date,update_date,create_user,update_user
+"ACTIVE","Active","2","2018-01-01 00:00:00-08","2018-01-01 00:00:00-08","DATALOAD_USER","DATALOAD_USER"
+"REMOVED","Removed","4","2018-01-01 00:00:00-08","2018-01-01 00:00:00-08","DATALOAD_USER","DATALOAD_USER"
