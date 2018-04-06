@@ -9,7 +9,14 @@ from rest_framework import status
 from rest_framework.test import APITestCase, APIRequestFactory
 from gwells.models.ProvinceStateCode import ProvinceStateCode
 from django.contrib.auth.models import User
-from registries.models import Organization, Person, RegistriesApplication, Register, RegistriesStatusCode, ActivityCode
+from registries.models import (
+    Organization,
+    Person,
+    RegistriesApplication,
+    Register,
+    RegistriesStatusCode,
+    ActivityCode,
+    SubactivityCode)
 from registries.views import PersonListView, PersonDetailView
 from django.contrib.auth.models import Group
 
@@ -91,39 +98,35 @@ class APIOrganizationTests(AuthenticatedAPITestCase):
     Includes tests for create, list, update (patch and put), and delete
     """
 
+    def setUp(self):
+        super().setUp()
+        self.province = ProvinceStateCode.objects.create(
+            province_state_code='BC',
+            description='British Columbia',
+            display_order=1)
+        
+        self.initial_data = {
+            'name': 'Bobby\'s Drilling',
+            'city': 'Victoria',
+            'province_state': 'BC'
+        }
+
     def test_create_organization(self):
         """
         Create a new organization object.
         """
 
-        # create a ProvinceStateCode object
-        province = ProvinceStateCode.objects.create(
-            province_state_code = 'BC',
-            description = 'British Columbia',
-            display_order = 1
-        )
-
-        initial_data = {
-            'name': 'Bobby\'s Drilling',
-            'city': 'Victoria',
-            'province_state': province.province_state_code
-        }
-
         url = reverse('organization-list')
         count_before = Organization.objects.count()
 
-        response = self.client.post(url, initial_data, format='json')
+        response = self.client.post(url, self.initial_data, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Organization.objects.count(), count_before + 1)
 
     def test_list_organization(self):
-        initial_data = {
-            'name': 'Bobby\'s Drilling',
-            'city': 'Victoria'
-        }
         url = reverse('organization-list')
-        new_object = self.client.post(url, initial_data, format='json')
+        new_object = self.client.post(url, self.initial_data, format='json')
         created_guid = new_object.data['org_guid']
 
         response = self.client.get(url, format='json')
@@ -133,33 +136,24 @@ class APIOrganizationTests(AuthenticatedAPITestCase):
         self.assertContains(response, created_guid)
 
     def test_retrieve_organization(self):
-        initial_data = {
-            'name': 'Bobby\'s Drilling',
-            'city': 'Victoria'
-        }
-
         create_url = reverse('organization-list')
-        new_object = self.client.post(create_url, initial_data, format='json')
+        new_object = self.client.post(create_url, self.initial_data, format='json')
         created_guid = new_object.data['org_guid']
 
         retrieve_url = reverse('organization-detail', kwargs={'org_guid': created_guid})
         response = self.client.get(retrieve_url, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['name'], initial_data['name'])
-        self.assertEqual(response.data['city'], initial_data['city'])
+        self.assertEqual(response.data['name'], self.initial_data['name'])
+        self.assertEqual(response.data['city'], self.initial_data['city'])
 
     def test_patch_organization(self):
-        initial_data = {
-            'name': 'Bobby\'s Drilling',
-            'city': 'Victoria'
-        }
         new_data = {
             'city': 'Duncan'
         }
 
         create_url = reverse('organization-list')
-        new_object = self.client.post(create_url, initial_data, format='json')
+        new_object = self.client.post(create_url, self.initial_data, format='json')
         created_guid = new_object.data['org_guid']
 
         object_url = reverse('organization-detail', kwargs={'org_guid': created_guid})
@@ -170,21 +164,18 @@ class APIOrganizationTests(AuthenticatedAPITestCase):
         response = self.client.get(object_url, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['name'], initial_data['name'])
+        self.assertEqual(response.data['name'], self.initial_data['name'])
         self.assertEqual(response.data['city'], new_data['city'])
 
     def test_put_organization(self):
-        initial_data = {
-            'name': 'Bobby\'s Drilling',
-            'city': 'Victoria'
-        }
         new_data = {
             'name': 'Betty\'s Drilling',
-            'city': 'Duncan'
+            'city': 'Duncan',
+            'province_state': 'BC'
         }
 
         create_url = reverse('organization-list')
-        new_object = self.client.post(create_url, initial_data, format='json')
+        new_object = self.client.post(create_url, self.initial_data, format='json')
         created_guid = new_object.data['org_guid']
 
         object_url = reverse('organization-detail', kwargs={'org_guid': created_guid})
@@ -204,21 +195,16 @@ class APIOrganizationTests(AuthenticatedAPITestCase):
         previous_level = logger.getEffectiveLevel()
         logger.setLevel(logging.ERROR)
 
-        initial_data = {
-            'name': 'Bobby\'s Drilling',
-            'city': 'Victoria'
-        }
-
         create_url = reverse('organization-list')
-        new_object = self.client.post(create_url, initial_data, format='json')
+        new_object = self.client.post(create_url, self.initial_data, format='json')
         created_guid = new_object.data['org_guid']
 
         retrieve_url = reverse('organization-detail', kwargs={'org_guid': created_guid})
         retrieve_response = self.client.get(retrieve_url, format='json')
 
         self.assertEqual(retrieve_response.status_code, status.HTTP_200_OK)
-        self.assertEqual(retrieve_response.data['name'], initial_data['name'])
-        self.assertEqual(retrieve_response.data['city'], initial_data['city'])
+        self.assertEqual(retrieve_response.data['name'], self.initial_data['name'])
+        self.assertEqual(retrieve_response.data['city'], self.initial_data['city'])
 
         delete_response = self.client.delete(retrieve_url, format='json')
         self.assertEqual(delete_response.status_code, status.HTTP_204_NO_CONTENT)
@@ -234,13 +220,9 @@ class APIOrganizationTests(AuthenticatedAPITestCase):
         Test that AuditModel fields (create_user, create_date etc.)
         are updated when Organization objects are created.
         """
-        initial_data = {
-            'name': 'Bobby\'s Drilling',
-            'city': 'Victoria'
-        }
 
         create_url = reverse('organization-list')
-        new_object = self.client.post(create_url, initial_data, format='json')
+        new_object = self.client.post(create_url, self.initial_data, format='json')
         created_guid = new_object.data['org_guid']
 
         retrieve_url = reverse('organization-detail', kwargs={'org_guid': created_guid})
@@ -269,7 +251,7 @@ class APIOrganizationTests(AuthenticatedAPITestCase):
         like UPDATE, PUT, DELETE on an object that is already in database
         """
         self.client.force_authenticate(user=None)
-        org_object = Organization.objects.create(name='Big Time Drilling Co')
+        org_object = Organization.objects.create(name='Big Time Drilling Co', province_state=self.province)
         object_url = reverse('organization-detail', kwargs={'org_guid':org_object.org_guid})
 
         update_response = self.client.patch(object_url, {'name':'Small Time Drilling Company'}, format='json')
@@ -315,12 +297,8 @@ class APIPersonTests(AuthenticatedAPITestCase):
         self.assertEqual(Person.objects.count(), count_before + 1)
 
     def test_list_people(self):
-        initial_data = {
-            'first_name': 'Bobby',
-            'surname': 'Driller'
-        }
         url = reverse('person-list')
-        new_object = self.client.post(url, initial_data, format='json')
+        new_object = self.client.post(url, self.initial_data, format='json')
         created_guid = new_object.data['person_guid']
 
         response = self.client.get(url, format='json')
@@ -330,33 +308,24 @@ class APIPersonTests(AuthenticatedAPITestCase):
         self.assertContains(response, created_guid)
 
     def test_retrieve_person(self):
-        initial_data = {
-            'first_name': 'Bobby',
-            'surname': 'Driller'
-        }
-
         create_url = reverse('person-list')
-        new_object = self.client.post(create_url, initial_data, format='json')
+        new_object = self.client.post(create_url, self.initial_data, format='json')
         created_guid = new_object.data['person_guid']
 
         retrieve_url = reverse('person-detail', kwargs={'person_guid': created_guid})
         response = self.client.get(retrieve_url, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['first_name'], initial_data['first_name'])
-        self.assertEqual(response.data['surname'], initial_data['surname'])
+        self.assertEqual(response.data['first_name'], self.initial_data['first_name'])
+        self.assertEqual(response.data['surname'], self.initial_data['surname'])
 
     def test_patch_person(self):
-        initial_data = {
-            'first_name': 'Bobby',
-            'surname': 'Driller'
-        }
         new_data = {
             'surname': 'Wells'
         }
 
         create_url = reverse('person-list')
-        new_object = self.client.post(create_url, initial_data, format='json')
+        new_object = self.client.post(create_url, self.initial_data, format='json')
         created_guid = new_object.data['person_guid']
 
         object_url = reverse('person-detail', kwargs={'person_guid': created_guid})
@@ -367,7 +336,7 @@ class APIPersonTests(AuthenticatedAPITestCase):
         response = self.client.get(object_url, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['first_name'], initial_data['first_name'])
+        self.assertEqual(response.data['first_name'], self.initial_data['first_name'])
         self.assertEqual(response.data['surname'], new_data['surname'])
 
     def test_update_person_by_put(self):
@@ -381,7 +350,7 @@ class APIPersonTests(AuthenticatedAPITestCase):
         }
 
         create_url = reverse('person-list')
-        new_object = self.client.post(create_url, initial_data, format='json')
+        new_object = self.client.post(create_url, self.initial_data, format='json')
         created_guid = new_object.data['person_guid']
 
         object_url = reverse('person-detail', kwargs={'person_guid': created_guid})
@@ -407,15 +376,15 @@ class APIPersonTests(AuthenticatedAPITestCase):
         }
 
         create_url = reverse('person-list')
-        new_object = self.client.post(create_url, initial_data, format='json')
+        new_object = self.client.post(create_url, self.initial_data, format='json')
         created_guid = new_object.data['person_guid']
 
         retrieve_url = reverse('person-detail', kwargs={'person_guid': created_guid})
         retrieve_response = self.client.get(retrieve_url, format='json')
 
         self.assertEqual(retrieve_response.status_code, status.HTTP_200_OK)
-        self.assertEqual(retrieve_response.data['first_name'], initial_data['first_name'])
-        self.assertEqual(retrieve_response.data['surname'], initial_data['surname'])
+        self.assertEqual(retrieve_response.data['first_name'], self.initial_data['first_name'])
+        self.assertEqual(retrieve_response.data['surname'], self.initial_data['surname'])
 
         delete_response = self.client.delete(retrieve_url, format='json')
         self.assertEqual(delete_response.status_code, status.HTTP_204_NO_CONTENT)
@@ -486,10 +455,25 @@ class APIFilteringPaginationTests(APITestCase):
     """
 
     def setUp(self):
-        self.status_active = RegistriesStatusCode.objects.create(code="ACTIVE", description="active", display_order="1")
-        self.status_inactive = RegistriesStatusCode.objects.create(code="INACTIVE", description="inactive", display_order="2")
-        self.activity_drill = ActivityCode.objects.create(code="DRILL", description="driller", display_order="1")
-        self.activity_pump = ActivityCode.objects.create(code="PUMP", description="pump installer", display_order="2")
+        self.province = ProvinceStateCode.objects.create(
+            province_state_code='BC',
+            display_order=1)
+        self.status_active = RegistriesStatusCode.objects.create(
+            registries_status_code="ACTIVE",
+            description="active",
+            display_order="1")
+        self.status_inactive = RegistriesStatusCode.objects.create(
+            registries_status_code="INACTIVE",
+            description="inactive",
+            display_order="2")
+        self.activity_drill = ActivityCode.objects.create(
+            registries_activity_code="DRILL",
+            description="driller",
+            display_order="1")
+        self.activity_pump = ActivityCode.objects.create(
+            registries_activity_code="PUMP",
+            description="pump installer",
+            display_order="2")
 
         # Create registered driller 1
         self.driller = Person.objects.create(first_name='Wendy', surname="Well")
@@ -499,7 +483,14 @@ class APIFilteringPaginationTests(APITestCase):
             registries_activity=self.activity_drill,
             registration_no="F12345",
         )
-        self.app = RegistriesApplication.objects.create(person=self.registration)        
+        self.subactivity = SubactivityCode.objects.create(
+            registries_activity=self.activity_drill,
+            registries_subactivity_code='WAT',
+            description='water',
+            display_order=1)
+        self.app = RegistriesApplication.objects.create(
+            registration=self.registration,
+            subactivity=self.subactivity)        
 
         # Create registered driller 2
         self.driller2 = Person.objects.create(first_name='Debbie', surname="Driller")
@@ -509,7 +500,10 @@ class APIFilteringPaginationTests(APITestCase):
             registries_activity=self.activity_drill,
             registration_no="F54321",
         )
-        self.app2 = RegistriesApplication.objects.create(person=self.registration2)
+        
+        self.app2 = RegistriesApplication.objects.create(
+            registration=self.registration2,
+            subactivity=self.subactivity)
 
         # Create unregistered driller
         self.unregistered_driller = Person.objects.create(first_name="Johnny", surname="Unregistered")
@@ -522,11 +516,14 @@ class APIFilteringPaginationTests(APITestCase):
             registries_activity=self.activity_drill,
             registration_no="R55555"
         )
-        self.retired_app = RegistriesApplication.objects.create(person=self.retired_registration)
-
+        self.retired_app = RegistriesApplication.objects.create(
+            registration=self.retired_registration,
+            subactivity=self.subactivity)
 
         # create a company with no registered driller
-        self.company_with_no_driller = Organization.objects.create(name="Big Time Drilling Company")
+        self.company_with_no_driller = Organization.objects.create(
+            name="Big Time Drilling Company",
+            province_state=self.province)
 
     def test_user_cannot_see_unregistered_person_in_list(self):
         url = reverse('person-list')
