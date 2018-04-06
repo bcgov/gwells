@@ -22,23 +22,23 @@ DROP VIEW IF EXISTS registries_pump_installer_register;
 
 --CREATE OR REPLACE VIEW registries_well_driller_register AS
 --SELECT 
--- reg.registration_no               
---,reg.registration_date             
+-- reg.registration_no
+--,reg.registration_date
 --,status.code   as status_code
---,reg.register_removal_date      
+--,reg.register_removal_date
 --,removal.code  as register_removal_reason
 --,act.code as activity_code
---,appl.file_no         
---,appl.over19_ind      
+--,appl.file_no
+--,appl.over19_ind
 --,appl.registrar_notes 
 --,appl.reason_denied 
 --,per.first_name
 --,per.surname
 --,contact.contact_tel
 --,contact.contact_email
---,org.name           AS org_name                 
---,org.street_address        
---,org.city                  
+--,org.name           AS org_name
+--,org.street_address
+--,org.city
 --,org.province_state_code AS prov_state_code 
 --,org.postal_code           
 --,org.main_tel              
