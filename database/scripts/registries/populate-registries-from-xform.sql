@@ -111,7 +111,7 @@ SELECT
 ,'2018-01-01 00:00:00-08' 
 from xform_registries_drillers_reg xform;
 
--- Attach companies for which they work
+-- Attach companies for whom the drillers work
 UPDATE registries_person per
 SET organization_id = org.org_guid
 FROM registries_organization org,
@@ -169,6 +169,17 @@ SELECT
 ,'DATALOAD_USER'
 ,'2018-01-01 00:00:00-08' 
 from xform_registries_pump_installers_reg xform;
+
+-- Attach companies for whom the pump installers work
+UPDATE registries_person per
+SET organization_id = org.org_guid
+FROM registries_organization org,
+    xform_registries_pump_installers_reg xform
+WHERE org.name = xform.companyname
+and org.street_address = xform.companyaddress
+and org.city           = xform.companycity
+and per.person_guid = xform.reg_guid;
+
 
 INSERT INTO registries_contact_detail (
  create_user
