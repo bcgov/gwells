@@ -1,32 +1,37 @@
 from django.contrib import admin
 from .models import (
     Person,
+    ContactInfo,
     Organization,
-    ContactAt,
     ActivityCode,
+    AccreditedCertificateCode,
+    CertifyingAuthorityCode,
     SubactivityCode,
-    QualificationCode,
     RegistriesApplication,
-    ClassificationAppliedFor,
     RegistriesStatusCode,
     RegistriesRemovalReason,
     Register,
     ApplicationStatusCode,
-    RegistriesApplicationStatus
+    RegistriesApplicationStatus,
+    WellClassCode,
+    Qualification
+
 )
 
 # Register your models here.
 
+admin.site.register(AccreditedCertificateCode)
+admin.site.register(CertifyingAuthorityCode)
+admin.site.register(ContactInfo)
 admin.site.register(Person)
 admin.site.register(Organization)
-admin.site.register(ContactAt)
 admin.site.register(ActivityCode)
 admin.site.register(SubactivityCode)
-admin.site.register(QualificationCode)
 admin.site.register(RegistriesApplication)
-admin.site.register(ClassificationAppliedFor)
 admin.site.register(RegistriesStatusCode)
 admin.site.register(RegistriesRemovalReason)
 admin.site.register(Register)
 admin.site.register(ApplicationStatusCode)
 admin.site.register(RegistriesApplicationStatus)
+admin.site.register(WellClassCode)
+admin.site.register(Qualification)
