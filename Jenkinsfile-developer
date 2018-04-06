@@ -25,7 +25,7 @@ node('maven') {
                 try {
                     sh 'pip install --upgrade pip && pip install -r requirements.txt'
             sh 'cd frontend && npm install && npm run build && cd ..'
-            sh 'DJANGO_SECRET_KEY=oneTwoThreeFourFiveSixSeven python manage.py collectstatic && python manage.py migrate'
+            sh 'python manage.py collectstatic && python manage.py migrate'
                     sh 'export ENABLE_DATA_ENTRY="True" && python manage.py test -c nose.cfg'
             sh 'cd frontend && npm test && cd ..'
                 } 
