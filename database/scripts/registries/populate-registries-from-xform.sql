@@ -350,7 +350,7 @@ INSERT INTO registries_register (
 ,registration_no
 ,registration_date
 ,register_removal_date
-,person_id
+,person_guid
 ,registries_removal_reason_code
 ,registries_activity_code
 ,registries_status_code
@@ -382,7 +382,7 @@ INSERT INTO registries_register (
 ,registration_no
 ,registration_date
 ,register_removal_date
-,person_id
+,person_guid
 ,registries_removal_reason_code
 ,registries_activity_code
 ,registries_status_code
@@ -419,7 +419,7 @@ INSERT INTO registries_register (
 ,registration_no
 ,registration_date
 ,register_removal_date
-,person_id
+,person_guid
 ,registries_removal_reason_code
 ,registries_activity_code
 ,registries_status_code
@@ -447,4 +447,50 @@ on    xform.firstname = per.first_name
 and   xform.lastname = per.surname
 ;
 
--- Applications 
+-- Applications from Well Drillers (ultimately successful)
+INSERT INTO registries_application (
+ create_user
+,create_date
+,update_user
+,update_date
+,application_guid
+,file_no
+,over19_ind
+,registrar_notes
+,reason_denied
+,primary_certificate_no
+,acc_cert_guid
+,register_guid
+,registries_subactivity_code
+)
+SELECT
+ 'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'
+,'DATALOAD_USER'
+,'2018-01-01 00:00:00-08' 
+,gen_random_uuid()
+,file_no
+,over19_ind
+,registrar_notes
+,reason_denied
+,primary_certificate_no
+,acc_cert_guid
+,reg.register_guid
+,registries_subactivity_code
+FROM
+
+
+SELECT register_guid, person_guid
+from registries_register reg,
+     xform_registries_action_tracking_driller
+WHERE 
+AND reg.registries_status_code = 'ACTIVE'
+
+
+SELECT register_guid, person_id
+from registries_register reg,
+     registries_person per
+WHERE per.person_guid = reg.person_guid;
+AND reg.registries_status_code = 'ACTIVE'
+
+
