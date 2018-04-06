@@ -156,7 +156,7 @@ from xform_registries_drillers_reg xform;
 
 -- Attach companies for whom the drillers work
 UPDATE registries_person per
-SET organization_id = org.org_guid
+SET organization_guid = org.org_guid
 FROM registries_organization org,
     xform_registries_drillers_reg xform
 WHERE org.name = xform.companyname
@@ -221,7 +221,7 @@ where not exists (
 
 -- Attach companies for whom the pump installers work
 UPDATE registries_person per
-SET organization_id = org.org_guid
+SET organization_guid = org.org_guid
 FROM registries_organization org,
     xform_registries_pump_installers_reg xform
 WHERE org.name = xform.companyname
@@ -229,7 +229,7 @@ and org.street_address = xform.companyaddress
 and org.city           = xform.companycity
 and per.person_guid = xform.reg_guid
 -- And not already attached to a company
-and per.organization_id is null;
+and per.organization_guid is null;
 
 -- Pump Installer Contact details
 INSERT INTO registries_contact_detail (
@@ -293,7 +293,7 @@ where not exists (
 
 -- Attach companies for whom the Removed Driller/Pump Installer used to work
 UPDATE registries_person per
-SET organization_id = org.org_guid
+SET organization_guid = org.org_guid
 FROM registries_organization org,
     xform_registries_removed_from xform
 WHERE org.name = xform.companyname
@@ -301,7 +301,7 @@ and org.street_address = xform.companyaddress
 and org.city           = xform.companycity
 and per.person_guid = xform.removed_guid
 -- And not already attached to a company
-and per.organization_id is null;
+and per.organization_guid is null;
 
 -- TODO NOTE we need to redo Data Model so that a Person can have multiple Contact Details, 
 -- and can indeed work for more than one company at a time (e.g. Pump Installer & Driller )
@@ -447,8 +447,11 @@ on    xform.firstname = per.first_name
 and   xform.lastname = per.surname
 ;
 
--- Applications from Well Drillers (ultimately successful)
-INSERT INTO registries_application (
+-- Applications from " Water Well" Well Drillers (ultimately successful)
+
+-- CANNOT do below as the same person appears on register many times
+-- and I cannot link to the same person.
+/*INSERT INTO registries_application (
  create_user
 ,create_date
 ,update_user
@@ -467,30 +470,29 @@ SELECT
  'DATALOAD_USER'
 ,'2018-01-01 00:00:00-08'
 ,'DATALOAD_USER'
-,'2018-01-01 00:00:00-08' 
+,'2018-01-01 00:00:00-08'
 ,gen_random_uuid()
-,file_no
-,over19_ind
-,registrar_notes
-,reason_denied
-,primary_certificate_no
-,acc_cert_guid
+,xform.file_number
+,TRUE
+,xform.notes
+,null
+,xform.certificatenumber
+, (SELECT acc_cert_guid
+    from registries_accredited_certificate_code
+    where name = 'Water Well Driller, Prov. Of BC'
+   )
 ,reg.register_guid
-,registries_subactivity_code
-FROM
-
-
-SELECT register_guid, person_guid
+,'WATER'
 from registries_register reg,
-     xform_registries_action_tracking_driller
-WHERE 
+     xform_registries_drillers_reg xform,
+     registries_person per,
+     xform_registries_action_tracking_driller trk
+WHERE per.person_guid = reg.person_guid
 AND reg.registries_status_code = 'ACTIVE'
+and reg.registries_activity_code = 'DRILL'
+and UPPER(trk.registered_ind) = 'YES'
+and trim(both from trk.name) = concat(per.surname, ', ', per.first_name)
+and xform.name = concat(per.surname, ', ', per.first_name)
+and xform.classofwelldriller like '%Water Well%';
 
-
-SELECT register_guid, person_id
-from registries_register reg,
-     registries_person per
-WHERE per.person_guid = reg.person_guid;
-AND reg.registries_status_code = 'ACTIVE'
-
-
+*/
