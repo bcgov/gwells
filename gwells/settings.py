@@ -14,12 +14,8 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 import os
 import datetime
 import logging.config
-from pathlib import Path
 
-from gwells import database
-from gwells.settings.base import get_env_variable
-
-BASE_DIR = str(Path(__file__).parents[2])
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 # Quick-start development settings - unsuitable for production
@@ -27,32 +23,34 @@ BASE_DIR = str(Path(__file__).parents[2])
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # The SECRET_KEY is provided via an environment variable in OpenShift
-# safe value used for development when DJANGO_SECRET_KEY might not be set:
-# '9e4@&tw46$l31)zrqe3wi+-slqm(ruvz&se0^%9#6(_w3ui!c0'
-SECRET_KEY = get_env_variable('DJANGO_SECRET_KEY', '9e4@&tw46$l31)zrqe3wi+-slqm(ruvz&se0^%9#6(_w3ui!c0')
+SECRET_KEY = os.getenv(
+    'DJANGO_SECRET_KEY',
+    # safe value used for development when DJANGO_SECRET_KEY might not be set
+    '9e4@&tw46$l31)zrqe3wi+-slqm(ruvz&se0^%9#6(_w3ui!c0'
+)
 
 # Security Settings
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
-SESSION_COOKIE_SECURE = get_env_variable('SESSION_COOKIE_SECURE', 'False') == 'True'
-CSRF_COOKIE_SECURE = get_env_variable('CSRF_COOKIE_SECURE', 'False') == 'True'
+SESSION_COOKIE_SECURE = os.getenv('SESSION_COOKIE_SECURE', 'False') == 'True'
+CSRF_COOKIE_SECURE = os.getenv('CSRF_COOKIE_SECURE', 'False') == 'True'
 CSRF_COOKIE_HTTPONLY = True
 SESSION_COOKIE_HTTPONLY = True
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = get_env_variable('DJANGO_DEBUG', 'False') == 'True'
+DEBUG = os.getenv('DJANGO_DEBUG', 'False') == 'True'
 
 # Controls availability of the data entry functionality
-ENABLE_DATA_ENTRY = get_env_variable('ENABLE_DATA_ENTRY', 'False') == 'True'
+ENABLE_DATA_ENTRY = os.getenv('ENABLE_DATA_ENTRY', 'False') == 'True'
 
 # Controls availability of Google Analytics
-ENABLE_GOOGLE_ANALYTICS = get_env_variable('ENABLE_GOOGLE_ANALYTICS', 'False') == 'True'
+ENABLE_GOOGLE_ANALYTICS = os.getenv('ENABLE_GOOGLE_ANALYTICS', 'False') == 'True'
 
 # Additional Documents Feature Flag
-ENABLE_ADDITIONAL_DOCUMENTS = get_env_variable('ENABLE_ADDITIONAL_DOCUMENTS', 'False') == 'True'
+ENABLE_ADDITIONAL_DOCUMENTS = os.getenv('ENABLE_ADDITIONAL_DOCUMENTS', 'False') == 'True'
 
 # Controls app context
-APP_CONTEXT_ROOT = get_env_variable('APP_CONTEXT_ROOT', 'gwells')
+APP_CONTEXT_ROOT = os.getenv('APP_CONTEXT_ROOT','gwells')
 
 FIXTURES_DIR = '/'.join([BASE_DIR, APP_CONTEXT_ROOT, 'fixtures'])
 
@@ -62,10 +60,10 @@ FIXTURES_DIRS = [FIXTURES_DIR]
 # django-settings-export lets us make these variables available in the templates.
 # This eleminate the need for setting the context for each and every view.
 SETTINGS_EXPORT = [
-    'ENABLE_DATA_ENTRY',            # To temporarily disable report submissions
-    'ENABLE_GOOGLE_ANALYTICS',      # This is only enabled for production
-    'ENABLE_ADDITIONAL_DOCUMENTS',  # To temporarily disable additional documents feature
-    'APP_CONTEXT_ROOT',             # This allows for moving the app around without code changes
+    'ENABLE_DATA_ENTRY',           # To temporarily disable report submissions
+    'ENABLE_GOOGLE_ANALYTICS',     # This is only enabled for production
+    'ENABLE_ADDITIONAL_DOCUMENTS', # To temporarily disable additional documents feature
+    'APP_CONTEXT_ROOT',            # This allows for moving the app around without code changes
     'FIXTURES_DIRS'
 ]
 
@@ -92,7 +90,7 @@ INSTALLED_APPS = (
     'django_nose',
     'webpack_loader',
     'django_filters',
-    'django_extensions',
+#    'django_extensions',
 )
 
 MIDDLEWARE = (
@@ -138,12 +136,14 @@ TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 
+from . import database
+
 DATABASES = {
     'default': database.config()
 }
 
 # Re-use database connections, leave connection alive for 5 mimutes
-CONN_MAX_AGE = 120
+CONN_MAX_AGE=120
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
@@ -163,9 +163,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
 if APP_CONTEXT_ROOT:
-    STATIC_URL = '/' + APP_CONTEXT_ROOT + '/static/'
+   STATIC_URL = '/'+ APP_CONTEXT_ROOT +'/static/'
 else:
-    STATIC_URL = '/static/'
+   STATIC_URL = '/static/'
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
@@ -193,8 +193,8 @@ LOGGING = {
     'handlers': {
         'console_handler': {
             'class': 'logging.StreamHandler',
-            'level': 'DEBUG',
-            'formatter': 'verbose',
+            'level':'DEBUG',
+            'formatter':'verbose',
             'filters': ['require_debug_false']
         }
     },
@@ -211,7 +211,7 @@ JWT_AUTH = {
     'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),
 }
 
-DRF_RENDERERS = ['rest_framework.renderers.JSONRenderer', ]
+DRF_RENDERERS = ['rest_framework.renderers.JSONRenderer',]
 # Turn on browsable API if "DEBUG" set
 if DEBUG:
     DRF_RENDERERS.append('rest_framework.renderers.BrowsableAPIRenderer')
@@ -240,7 +240,7 @@ REST_FRAMEWORK = {
 WEBPACK_LOADER = {
     'DEFAULT': {
         'CACHE': not DEBUG,
-        'BUNDLE_DIR_NAME': 'bundles/',  # must end with slash
+        'BUNDLE_DIR_NAME': 'bundles/', # must end with slash
         'STATS_FILE': os.path.join(BASE_DIR, 'frontend/webpack-stats.json'),
         'POLL_INTERVAL': 0.1,
         'TIMEOUT': None,
