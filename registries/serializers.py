@@ -114,6 +114,7 @@ class ApplicationListSerializer(AuditModelSerializer):
         read_only=True)
     status_set = ApplicationStatusSerializer(many=True, read_only=True)
     subactivity = SubactivitySerializer()
+    cert_authority = serializers.ReadOnlyField(source="primary_certificate.cert_auth.cert_auth_code")
 
     class Meta:
         model = RegistriesApplication
@@ -125,7 +126,7 @@ class ApplicationListSerializer(AuditModelSerializer):
             'status_set',
             'subactivity',
             'qualifications',
-            'primary_certificate')
+            'cert_authority')
 
 
 class RegistrationsListSerializer(serializers.ModelSerializer):
@@ -375,11 +376,6 @@ class PersonListSerializer(AuditModelSerializer):
     registrations = RegistrationsListSerializer(many=True, read_only=True)
     organization = OrganizationListSerializer()
 
-    def to_internal_value(self, data):
-        self.fields['organization'] = serializers.PrimaryKeyRelatedField(
-            queryset=Organization.objects.all())
-        return super(PersonListSerializer, self).to_internal_value(data)
-
     class Meta:
         model = Person
         fields = (
@@ -399,6 +395,11 @@ class PersonAdminSerializer(AuditModelSerializer):
     # organization = serializers.PrimaryKeyRelatedField(queryset=Organization.objects.all(), required=False)
     registrations = RegistrationAdminSerializer(many=True, read_only=True)
     organization = OrganizationListSerializer(required=False)
+
+    def to_internal_value(self, data):
+        self.fields['organization'] = serializers.PrimaryKeyRelatedField(
+            queryset=Organization.objects.all(), required=False)
+        return super(PersonAdminSerializer, self).to_internal_value(data)
 
     class Meta:
         model = Person
