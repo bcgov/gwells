@@ -143,6 +143,7 @@ class Person(AuditModel):
     # Works With Org...  (should be a xref table)
     organization = models.ForeignKey(
         Organization, blank=True,
+        db_column='organization_guid',
         null=True, on_delete=models.PROTECT,
         related_name="person_set")
 
@@ -292,7 +293,7 @@ class Register(AuditModel):
         ActivityCode,
         db_column='registries_activity_code',
         on_delete=models.PROTECT)
-    person = models.ForeignKey(Person, on_delete=models.PROTECT, related_name="registrations")
+    person = models.ForeignKey(Person, db_column='person_guid', on_delete=models.PROTECT, related_name="registrations")
     status = models.ForeignKey(
         RegistriesStatusCode,
         db_column='registries_status_code',
