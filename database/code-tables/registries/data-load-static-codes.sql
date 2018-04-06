@@ -8,7 +8,7 @@
 
 --Registry Activity Subtype
 \echo '... loading registry_subactivity_code table'
-\copy registries_subactivity_code (registries_subactivity_code,registries_activity_code,description,display_order,create_date,update_date,create_user,update_user) from 'registries_subactivity_code.csv' with header delimiter ',' CSV ;
+\copy registries_subactivity_code (registries_subactivity_code,registries_activity_code,description,display_order,create_date,update_date,create_user,update_user,effective_date,expired_date) from 'registries_subactivity_code.csv' with header delimiter ',' CSV ;
 
 --Registry Well Class
 \echo '... loading registry_well_class_code table'
