@@ -105,7 +105,7 @@ class Organization(AuditModel):
         editable=False,
         verbose_name="Organization UUID")
     name = models.CharField(max_length=200)
-    street_address = models.CharField(max_length=100, blank=True, null=True, verbose_name='Street Address')
+    street_address = models.CharField(max_length=100, null=True, verbose_name='Street Address')
     city = models.CharField(max_length=50, null=True, verbose_name='Town/City')
     province_state = models.ForeignKey(
         ProvinceStateCode,
@@ -113,10 +113,10 @@ class Organization(AuditModel):
         on_delete=models.PROTECT,
         verbose_name='Province/State',
         related_name="companies")
-    postal_code = models.CharField(max_length=10, blank=True, null=True, verbose_name='Postal Code')
-    main_tel = models.CharField(blank=True, null=True, max_length=15, verbose_name="Telephone number")
-    fax_tel = models.CharField(blank=True, null=True, max_length=15, verbose_name="Fax number")
-    website_url = models.URLField(blank=True, null=True, verbose_name="Website")
+    postal_code = models.CharField(max_length=10, null=True, verbose_name='Postal Code')
+    main_tel = models.CharField(null=True, max_length=15, verbose_name="Telephone number")
+    fax_tel = models.CharField(null=True, max_length=15, verbose_name="Fax number")
+    website_url = models.URLField(null=True, verbose_name="Website")
     effective_date = models.DateField(default=datetime.date.today)
     expired_date = models.DateField(blank=True, null=True)
 
@@ -143,6 +143,7 @@ class Person(AuditModel):
     # Works With Org...  (should be a xref table)
     organization = models.ForeignKey(
         Organization, blank=True,
+        db_column='organization_guid',
         null=True, on_delete=models.PROTECT,
         related_name="person_set")
 
@@ -292,7 +293,7 @@ class Register(AuditModel):
         ActivityCode,
         db_column='registries_activity_code',
         on_delete=models.PROTECT)
-    person = models.ForeignKey(Person, on_delete=models.PROTECT, related_name="registrations")
+    person = models.ForeignKey(Person, db_column='person_guid', on_delete=models.PROTECT, related_name="registrations")
     status = models.ForeignKey(
         RegistriesStatusCode,
         db_column='registries_status_code',
