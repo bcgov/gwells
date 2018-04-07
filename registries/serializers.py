@@ -32,14 +32,13 @@ class QualificationSerializer(serializers.ModelSerializer):
     Qualification records form a related set of a SubactivityCode object
     """
 
+    description = serializers.ReadOnlyField(source='well_class.description')
+
     class Meta:
         model = Qualification
         fields = (
-            'registries_well_qualification_guid',
             'well_class',
-            'subactivity',
-            'effective_date',
-            'expired_date',
+            'description',
         )
 
 
@@ -77,11 +76,14 @@ class SubactivitySerializer(serializers.ModelSerializer):
     SubactivityCode records form a related set of an ActivityCode object
     """
 
+    qualification_set = QualificationSerializer(many=True, read_only=True)
+
     class Meta:
         model = SubactivityCode
         fields = (
             'registries_subactivity_code',
             'description',
+            'qualification_set',
         )
 
 
@@ -135,13 +137,15 @@ class RegistrationsListSerializer(serializers.ModelSerializer):
     Register items form a related set of an Application object
     """
     status = serializers.ReadOnlyField(source='status.description')
-    activity = serializers.ReadOnlyField(source='registries_activity.description')
+    activity_description = serializers.ReadOnlyField(source='registries_activity.description')
+    activity = serializers.ReadOnlyField(source="registries_activity.registries_activity_code")
     applications = ApplicationListSerializer(many=True, read_only=True)
 
     class Meta:
         model = Register
         fields = (
             'activity',
+            'activity_description',
             'status',
             'registration_no',
             'applications'
