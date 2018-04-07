@@ -223,8 +223,7 @@ class Qualification(AuditModel):
     well_class = models.ForeignKey(
         WellClassCode,
         db_column='registries_well_class_code',
-        on_delete=models.PROTECT,
-        related_name="Qualification")
+        on_delete=models.PROTECT)
     subactivity = models.ForeignKey(
         SubactivityCode,
         db_column='registries_subactivity_code',
