@@ -20,6 +20,35 @@ ALTER TABLE registries_removal_reason_code ALTER COLUMN effective_date SET DEFAU
 DROP VIEW IF EXISTS registries_well_driller_register;
 DROP VIEW IF EXISTS registries_pump_installer_register;
 
+DROP VIEW IF EXISTS registries_v_person;
+
+-- GWELLS people in our system, with or without contact details
+CREATE OR REPLACE VIEW v_person AS
+SELECT 
+ per.first_name          AS first_name       
+,per.surname             AS surname          
+,con.contact_tel         AS contact_tel        
+,con.contact_email       AS contact_email      
+,per.create_user         AS per_create_user      
+,per.create_date         AS per_create_date      
+,per.update_user         AS per_update_user      
+,per.update_date         AS per_update_date      
+,per.person_guid         AS per_person_guid      
+,per.effective_date      AS per_effective_date   
+,per.expired_date        AS per_expired_date     
+,per.organization_guid   AS per_organization_guid
+,con.create_user         AS con_create_user        
+,con.create_date         AS con_create_date        
+,con.update_user         AS con_update_user        
+,con.update_date         AS con_update_date        
+,con.contact_detail_guid AS con_contact_detail_guid
+,con.effective_date      AS con_effective_date     
+,con.expired_date        AS con_expired_date       
+FROM registries_person per
+LEFT JOIN registries_contact_detail con 
+ON per.person_guid = con.person_guid
+;
+
 --CREATE OR REPLACE VIEW registries_well_driller_register AS
 --SELECT 
 -- reg.registration_no
