@@ -1,5 +1,5 @@
 <template>
-  <b-alert :show="error" dismissible @dismissed="clearError()" variant="warning" role="alert" id="errorAlert">
+  <b-alert :show="error !== null" dismissible @dismissed="clearError()" variant="warning" role="alert" id="errorAlert">
     <div v-if="error && error.data && error.data.non_field_errors && error.data.non_field_errors.length">
       {{ error.data.non_field_errors[0] }}
     </div>
