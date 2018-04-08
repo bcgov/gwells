@@ -170,6 +170,6 @@ describe('ApplicationDetail.vue', () => {
         $route: {params: {person_guid: 'aaaa-4444-aaaa', classCode: 'geotech'}}
       }
     })
-    expect(mutations.setDriller).toHaveBeenCalled()
+    expect(mutations.SET_DRILLER).toHaveBeenCalled()
   })
 })
