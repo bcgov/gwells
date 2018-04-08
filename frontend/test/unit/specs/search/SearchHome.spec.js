@@ -156,35 +156,6 @@ describe('SearchHome.vue', () => {
       ordering: ''
     })
   })
-  it('dispatches login action when login button is triggered', () => {
-    const wrapper = shallow(SearchHome, {
-      store,
-      localVue
-    })
-    wrapper.setData({
-      loginPanelToggle: true
-    })
-    const button = wrapper.find('#loginButton')
-    button.trigger('submit')
-    expect(actions.login).toHaveBeenCalled()
-  })
-  it('dispatches logout action when login button is triggered', () => {
-    const gettersWithUser = {
-      user: function () { return { username: 'im-a-user!' } },
-      drillers: () => [],
-      loading: () => false,
-      listError: () => null,
-      cityList: () => []
-    }
-    const storeWithUser = new Vuex.Store({ getters: gettersWithUser, actions, mutations })
-    const wrapper = shallow(SearchHome, {
-      store: storeWithUser,
-      localVue
-    })
-    const button = wrapper.find('#logoutButton')
-    button.trigger('click')
-    expect(actions.logout).toHaveBeenCalled()
-  })
   it('calls sort method when register table component emits a sort code', () => {
     const wrapper = shallow(SearchHome, {
       store,
@@ -212,6 +183,6 @@ describe('SearchHome.vue', () => {
       localVue
     })
     wrapper.find('[type=reset]').trigger('reset')
-    expect(mutations.setDrillerList).toHaveBeenCalled()
+    expect(mutations.SET_DRILLER_LIST).toHaveBeenCalled()
   })
 })

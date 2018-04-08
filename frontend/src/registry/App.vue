@@ -3,7 +3,7 @@
     <gwells-header/>
     <main role="main">
       <b-container v-if="error">
-        <api-error :error="error" resetter="setError"/>
+        <api-error :error="error" resetter="SET_ERROR"/>
       </b-container>
       <router-view/>
     </main>

@@ -41,7 +41,7 @@ describe('PersonEdit.vue', () => {
         $route: {params: {person_guid: 'aaaa-4444-bbbb-1111'}}
       }
     })
-    expect(actions.fetchDriller).toHaveBeenCalled()
+    expect(actions.FETCH_DRILLER).toHaveBeenCalled()
   })
   it('loads the error component if there is an error', () => {
     getters = {

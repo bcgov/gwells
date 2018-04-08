@@ -8,7 +8,7 @@
         <router-link :to="{ name: 'PersonDetail', params: { person_guid: currentDriller.person_guid } }" class="btn btn-default">Cancel editing person</router-link>
       </div>
       <div class="col-xs-12" v-if="error">
-        <api-error :error="error" resetter="setError"></api-error>
+        <api-error :error="error" resetter="SET_ERROR"></api-error>
       </div>
     </div>
     <div class="panel no-pad" v-if="editDriller != {}">

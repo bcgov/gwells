@@ -18,7 +18,7 @@
     </div>
     <div class="row no-pad">
       <div class="col-xs-12" v-if="error">
-        <api-error :error="error" resetter="setError"></api-error>
+        <api-error :error="error" resetter="SET_ERROR"></api-error>
       </div>
     </div>
     <div>

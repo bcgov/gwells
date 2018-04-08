@@ -111,7 +111,7 @@ describe('SearchTable.vue', () => {
       stubs: ['router-link', 'router-view']
     })
     wrapper.find('#table-pagination-next').trigger('click')
-    expect(actions.fetchDrillers.mock.calls[0][1]).toEqual({limit: '30', offset: '60'})
+    expect(actions.FETCH_DRILLER_LIST.mock.calls[0][1]).toEqual({limit: '30', offset: '60'})
   })
   it('dispatches fetch driller list with correct querystring when pagination prev clicked', () => {
     const wrapper = shallow(SearchTable, {
@@ -120,7 +120,7 @@ describe('SearchTable.vue', () => {
       stubs: ['router-link', 'router-view']
     })
     wrapper.find('#table-pagination-prev').trigger('click')
-    expect(actions.fetchDrillers.mock.calls[0][1]).toEqual({limit: '30', offset: '0'})
+    expect(actions.FETCH_DRILLER_LIST.mock.calls[0][1]).toEqual({limit: '30', offset: '0'})
   })
   it('emits the column code (e.g. surname) to be sorted when column sort button clicked', () => {
     const wrapper = shallow(SearchTable, {

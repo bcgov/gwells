@@ -105,7 +105,7 @@
           No results were found.
         </b-col>
         <b-col cols="12" v-if="listError">
-          <api-error :error="listError" resetter="setListError"></api-error>
+          <api-error :error="listError" resetter="SET_LIST_ERROR"></api-error>
         </b-col>
       </b-row>
       <b-row  v-if="drillers.results && drillers.results.length">
