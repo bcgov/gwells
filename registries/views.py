@@ -235,8 +235,8 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
             'registrations__applications__status_set__status',
             'registrations__applications__subactivity',
             'registrations__applications__subactivity__qualification_set',
-            'registrations__applications__subactivity__qualification_set__well_class'
-        )
+            'registrations__applications__subactivity__qualification_set__well_class') \
+        .distinct()
 
     def get_queryset(self):
         """ Returns Person queryset, removing non-active and unregistered drillers for anonymous users """
@@ -308,7 +308,7 @@ class PersonDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
             'registrations__applications__subactivity',
             'registrations__applications__subactivity__qualification_set',
             'registrations__applications__subactivity__qualification_set__well_class'
-        )
+        ).distinct()
 
     def get_queryset(self):
         """
