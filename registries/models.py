@@ -409,7 +409,7 @@ class RegistriesApplicationStatus(AuditModel):
     application = models.ForeignKey(
         RegistriesApplication,
         db_column='application_guid',
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         verbose_name="Application Reference",
         related_name="status_set")
     status = models.ForeignKey(
