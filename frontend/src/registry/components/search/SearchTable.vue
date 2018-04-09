@@ -43,7 +43,9 @@
             <td v-if="activity === 'DRILL'">
               <driller-subactivity :driller="driller"/>
             </td>
-            <td></td>
+            <td>
+              <driller-certificate-authority :driller="driller" :activity="activity"/>
+            </td>
             <td v-if="user && activity === 'DRILL'">
               <driller-registration-status :driller="driller" :activity="activity"/>
             </td>
@@ -98,6 +100,7 @@ import { FETCH_DRILLER_LIST } from '@/registry/store/actions.types'
 import DrillerSubactivity from '@/registry/components/search/table-helpers/DrillerSubactivity.vue'
 import DrillerRegistrationStatus from '@/registry/components/search/table-helpers/DrillerRegistrationStatus.vue'
 import DrillerContactInfo from '@/registry/components/search/table-helpers/DrillerContactInfo.vue'
+import DrillerCertAuth from '@/registry/components/search/table-helpers/DrillerCertAuth.vue'
 
 const querystring = require('querystring')
 
@@ -107,7 +110,8 @@ export default {
   components: {
     'driller-subactivity': DrillerSubactivity,
     'driller-registration-status': DrillerRegistrationStatus,
-    'driller-contact-info': DrillerContactInfo
+    'driller-contact-info': DrillerContactInfo,
+    'driller-certificate-authority': DrillerCertAuth
   },
   data () {
     return {
