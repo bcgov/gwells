@@ -157,7 +157,7 @@ export default {
       },
       searchParams: {
         search: '',
-        city: [],
+        city: [''],
         activity: 'DRILL',
         status: 'ACTIVE',
         limit: '10',
@@ -210,7 +210,7 @@ export default {
   watch: {
     'searchParams.activity': function () {
       // get new city list when user changes activity (well driller or well pump installer)
-      this.searchParams.city = []
+      this.searchParams.city = ['']
       this.$store.dispatch(FETCH_CITY_LIST, this.formatActivityForCityList)
     },
     user: function () {
@@ -226,7 +226,7 @@ export default {
     },
     drillerSearchReset () {
       this.searchParams.search = ''
-      this.searchParams.city = []
+      this.searchParams.city = ['']
       this.searchParams.activity = 'DRILL'
       this.searchParams.status = 'ACTIVE'
       this.searchParams.limit = '10'
