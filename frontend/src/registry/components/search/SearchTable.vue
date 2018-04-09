@@ -13,7 +13,7 @@
         <tbody>
           <tr v-if="drillers.results && drillers.results.length"
               v-for="(driller, index) in drillers.results"
-              :key="driller.person_guid" :id="`registry-table-row-${index}`">
+              :key="`tr ${driller.person_guid} ${index}`" :id="`registry-table-row-${index}`">
             <td>
               <div><b>{{ driller.first_name }} {{ driller.surname }}</b></div>
               <div v-if="driller.registrations && driller.registrations.length">
@@ -36,33 +36,17 @@
               </div>
             </td>
             <td>
-              <div v-if="driller.contact_tel">Phone: {{ driller.contact_tel }}</div>
-              <div v-if="driller.contact_email">Email: {{ driller.contact_email }}</div>
-            </td>
-            <td v-if="activity === 'DRILL'">
-              <div v-if="driller.registrations && driller.registrations.length">
-                <div
-                    v-for="(reg, regIndex) in driller.registrations"
-                    v-if="reg.activity === 'DRILL'"
-                    :key="`reg quals ${driller.person_guid} ${regIndex}`">
-                  <div
-                      v-if="reg.applications && reg.applications.length"
-                      v-for="(app, appIndex) in reg.applications"
-                      :key="`app quals ${driller.person_guid} ${app.application_guid} ${appIndex}`">
-                    <div
-                        v-if="app.subactivity &&
-                              app.subactivity.qualification_set &&
-                              app.subactivity.qualification_set.length"
-                        v-for="(qual, qualIndex) in app.subactivity.qualification_set"
-                        :key="`qual set ${driller.person_guid} ${app.application_guid} ${qualIndex}`">
-                        {{ qual.description }}
-                    </div>
-                  </div>
-                </div>
+              <div v-if="driller.contact_info && driller.contact_info.length">
+                <driller-contact-info :driller="driller"/>
               </div>
             </td>
+            <td v-if="activity === 'DRILL'">
+              <driller-subactivity :driller="driller"/>
+            </td>
             <td></td>
-            <td v-if="user && activity === 'DRILL'">{{ driller.status }}</td>
+            <td v-if="user && activity === 'DRILL'">
+              <driller-registration-status :driller="driller" :activity="activity"/>
+            </td>
             <td v-if="user">
               <router-link :to="{ name: 'PersonDetail', params: { person_guid: driller.person_guid } }">
                 Details
@@ -111,11 +95,20 @@
 <script>
 import { mapGetters } from 'vuex'
 import { FETCH_DRILLER_LIST } from '@/registry/store/actions.types'
+import DrillerSubactivity from '@/registry/components/search/table-helpers/DrillerSubactivity.vue'
+import DrillerRegistrationStatus from '@/registry/components/search/table-helpers/DrillerRegistrationStatus.vue'
+import DrillerContactInfo from '@/registry/components/search/table-helpers/DrillerContactInfo.vue'
+
 const querystring = require('querystring')
 
 export default {
   name: 'RegisterTable',
   props: ['activity'],
+  components: {
+    'driller-subactivity': DrillerSubactivity,
+    'driller-registration-status': DrillerRegistrationStatus,
+    'driller-contact-info': DrillerContactInfo
+  },
   data () {
     return {
       // fields for the table headings
