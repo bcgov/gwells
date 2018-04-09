@@ -1,107 +1,48 @@
 <template>
-  <div class="container-fluid no-pad">
-    <div class="row no-pad" v-if="currentDriller != {}">
-      <div class="col-xs-12 col-sm-7">
-        <h2>{{ currentDriller.first_name }} {{ currentDriller.surname }}</h2>
-      </div>
-      <div class="col-xs-12 col-sm-5 text-center">
-        <router-link
-          class="btn btn-default"
-          :to="{
-            name: 'PersonDetailEdit',
-            params: {
-              person_guid: currentDriller.person_guid
-            }
-          }"
-          v-if="currentDriller.person_guid"><i class="fa fa-edit"></i>Edit</router-link>
-      </div>
-    </div>
-    <div class="row no-pad">
-      <div class="col-xs-12" v-if="error">
-        <api-error :error="error" resetter="SET_ERROR"></api-error>
-      </div>
-    </div>
-    <div>
-      <div class="table-responsive">
-        <table class="table">
-          <thead>
-            <th class="col-xs-2">Classification</th>
-            <th class="col-xs-2">Register Status</th>
-            <th class="col-xs-2">Date Registered</th>
-          </thead>
-          <tbody>
-            <tr v-if="classifications && classifications.length" v-for="(item, index) in classifications" :key="`classification ${index}`">
-              <td><router-link :to="{
-                name: 'PersonApplicationDetail',
-                params: {
-                  person_guid: currentDriller.person_guid,
-                  classCode: item.code
-                }
-              }">{{ item.description }}</router-link></td>
-              <td>{{ item.status }}</td>
-              <td>{{ item.date }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-    <fieldset class="registry-section">
-      <legend>Personal Information</legend>
-      <div class="row">
-        <div class="col-xs-12 col-sm-4 registry-item">
-          <span class="registry-label">Last name:</span> {{ currentDriller.surname }}
+  <div class="container">
+    <div class="card">
+      <div class="card-body">
+        <div v-if="currentDriller != {}">
+          <div class="row">
+            <div class="col-xs-12 col-sm-7">
+              <h5 class="card-title">{{ currentDriller.first_name }} {{ currentDriller.surname }}</h5>
+            </div>
+            <div class="col-xs-12 col-sm-5 text-right">
+              <router-link
+                class="btn btn-default"
+                :to="{
+                  name: 'PersonDetailEdit',
+                  params: {
+                    person_guid: currentDriller.person_guid
+                  }
+                }"
+                v-if="currentDriller.person_guid"><i class="fa fa-edit"></i>Edit</router-link>
+            </div>
+          </div>
         </div>
-        <div class="col-xs-12 col-sm-8 registry-item">
-          <span class="registry-label">First name:</span> {{ currentDriller.first_name }}
+        <div class="row">
+          <div class="col-xs-12" v-if="error">
+            <api-error :error="error" resetter="SET_ERROR"></api-error>
+          </div>
         </div>
-      </div>
-      <div class="row">
-        <div class="col-xs-12 col-sm-4 registry-item">
-          <r-checkbox :checked="drillerOver19"></r-checkbox> <span class="registry-label">Confirmed applicant is 19 or older</span>
-        </div>
-      </div>
-    </fieldset>
-    <fieldset class="registry-section">
-      <legend>Current Company Information</legend>
-      <div class="row">
-        <div class="col-xs-12 col-sm-4 registry-item">
-          <span class="registry-label">Company name:</span> {{ company.organization_name }}
-        </div>
-        <div class="col-xs-12 col-sm-8 registry-item">
-          <span class="registry-label">Street address:</span> {{ company.street_address }}
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-xs-12 col-sm-4 registry-item">
-          <span class="registry-label">City:</span> {{ company.city }}
-        </div>
-        <div class="col-xs-12 col-sm-8 registry-item">
-          <span class="registry-label">Province:</span> {{ company.province_state }}
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-xs-12 col-sm-4 registry-item">
-          <span class="registry-label">Postal Code:</span> {{ company.postal_code }}
-        </div>
-        <div class="col-xs-12 col-sm-8 registry-item">
-          <span class="registry-label">Telephone:</span> {{ company.contact_tel }}
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-xs-12 registry-item">
-          <span class="registry-label">Email address:</span> {{ company.contact_email }}
-        </div>
-      </div>
-    </fieldset>
-    <div>
-      <div class="row no-pad">
-        <div class="col-xs-12">
-          <h4 class="registry-label">Notes</h4>
-        </div>
-      </div>
-      <div class="row no-pad"  v-if="drillerApplicationNotes && drillerApplicationNotes.length">
-        <div class="col-xs-12">
-          <p v-for="note in drillerApplicationNotes" :key="note.appKey">{{ note.note }}</p>
+        <div class="table-responsive">
+          <table id="classification-table" class="table">
+            <thead>
+              <th>Classification</th>
+              <th>Register Status</th>
+              <th>Date Registered</th>
+            </thead>
+            <tbody>
+              <tr v-if="classifications && classifications.length" v-for="(item, index) in classifications" :key="`classification ${index}`">
+                <td><router-link :to="{
+                  name: 'PersonApplicationDetail',
+                  params: { person_guid: currentDriller.person_guid, classCode: item.code } }">
+                {{ item.description }}</router-link></td>
+                <td>{{ item.status }}</td>
+                <td>{{ item.date }}</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -113,7 +54,7 @@ import APIErrorMessage from '@/common/components/APIErrorMessage'
 import QualCheckbox from '@/common/components/QualCheckbox'
 import { mapGetters } from 'vuex'
 import { SET_DRILLER } from '@/registry/store/mutations.types'
-import { FETCH_DRILLER, LOGOUT } from '@/registry/store/actions.types'
+import { FETCH_DRILLER } from '@/registry/store/actions.types'
 
 export default {
   name: 'person-detail',
@@ -144,50 +85,44 @@ export default {
 
       // classifications are contained within arrays pulled from the application table
       if (
-        this.currentDriller.applications &&
-        this.currentDriller.applications.length
+        this.currentDriller.registrations &&
+        this.currentDriller.registrations.length
       ) {
-        // since each person can have multiple applications, and each application can have multiple
+        // since each person can have multiple registrations, and each application can have multiple
         // classifications, we need to iterate through several arrays.
-        this.currentDriller.applications.forEach((app) => {
-          let status = null
-          let date = null
+        this.currentDriller.registrations.forEach((reg) => {
+          reg.applications.forEach((app) => {
+            let status
+            let date
 
-          // set date for this application- it will apply to all qualifications/classifications associated
-          // with this application.
+            // set date for this application- it will apply to all qualifications/classifications associated
+            // with this application.
 
-          // priority of status codes from lowest to highest
-          const statusPriority = ['P', 'A']
+            // priority of status codes from lowest to highest
+            const statusPriority = ['P', 'A']
 
-          if (app.registriesapplicationstatus_set && app.registriesapplicationstatus_set.length) {
-            statusPriority.forEach((code) => {
-              const statusLevel = app.registriesapplicationstatus_set.findIndex((item) => {
-                return item.status_code === code
-              })
-
-              if (~statusLevel) {
-                status = app.registriesapplicationstatus_set[statusLevel].status
-                date = app.registriesapplicationstatus_set[statusLevel].effective_date
-              }
-            })
-          }
-
-          // now iterate through classifications that the person has applied for and push onto an array
-          if (app.classificationappliedfor_set &&
-            app.classificationappliedfor_set.length) {
-            app.classificationappliedfor_set.forEach((classification) => {
-              if (
-                classification.registries_subactivity
-              ) {
-                classifications.push({
-                  code: classification.registries_subactivity.code.toLowerCase(),
-                  description: classification.registries_subactivity.description,
-                  status: status,
-                  date: date
+            if (app.status_set && app.status_set.length) {
+              statusPriority.forEach((code) => {
+                const statusLevel = app.status_set.findIndex((item) => {
+                  return item.status_code === code
                 })
-              }
+
+                if (~statusLevel) {
+                  status = app.status_set[statusLevel].description
+                  date = app.status_set[statusLevel].effective_date
+                }
+              })
+            }
+
+            // now iterate through classifications that the person has applied for and push onto an array
+
+            classifications.push({
+              code: app.subactivity,
+              description: app.subactivity_description,
+              status: status,
+              date: date
             })
-          }
+          })
         })
       }
       return classifications
@@ -214,15 +149,12 @@ export default {
       'drillers'
     ])
   },
-  methods: {
-    logout () {
-      this.$store.dispatch(LOGOUT)
-    }
-  },
   created () {
     if (this.currentDriller.person_guid !== this.$route.params.person_guid) {
+      // reset the currentDriller object if another driller was previously loaded
       this.$store.commit(SET_DRILLER, {})
       if (this.drillers && this.drillers.results && this.drillers.results.length) {
+        // use basic info (name etc) from driller list while complete record is being fetched from API
         const driller = this.drillers.results.find((item) => {
           return item.person_guid === this.$route.params.person_guid
         })
@@ -231,27 +163,14 @@ export default {
         }
       }
     }
+    // always fetch up to date record from API when page loads
     this.$store.dispatch(FETCH_DRILLER, this.$route.params.person_guid)
   }
 }
 </script>
 
 <style>
-.registry-section {
-  margin-top: 25px;
-  margin-bottom: 20px;
-}
-.registry-item {
-  margin-bottom: 20px;
-}
-.registry-label {
-  font-weight: bold;
-}
-.registry-disabled-item {
-  color: #808080;
-  cursor: auto!important;
-}
-.qualification-item {
-  margin-bottom: 5px;
+#classification-table th {
+  font-weight: 400!important;
 }
 </style>
