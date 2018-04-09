@@ -154,7 +154,7 @@ export default {
           activity: 'all'
         },
         {
-          name: 'Qualified to Drill',
+          name: 'Class of Driller',
           class: 'col-xs-1',
           visible: 'public',
           sortable: true,

@@ -144,7 +144,7 @@ describe('SearchTable.vue', () => {
       'Company Name',
       'Company Address',
       'Contact Information',
-      'Qualified to Drill',
+      'Class of Driller',
       'Certificate Issued By',
       'Registration Status'
     ]
