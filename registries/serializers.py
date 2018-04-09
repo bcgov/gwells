@@ -46,27 +46,12 @@ class ContactInfoSerializer(AuditModelSerializer):
     """
     Serializes ContactInfo model fields.
     """
-    person_name = serializers.StringRelatedField(source="person")
-    organization_name = serializers.StringRelatedField(source="org")
-    street_address = serializers.StringRelatedField(source="org.street_address")
-    city = serializers.StringRelatedField(source="org.city")
-    postal_code = serializers.StringRelatedField(source="org.postal_code")
-    website_url = serializers.StringRelatedField(source="org.website_url")
 
     class Meta:
         model = ContactInfo
         fields = (
-            'contact_at_guid',
-            'organization_name',
-            'street_address',
-            'city',
-            'postal_code',
-            'person_name',
-            'person',
-            'org',
             'contact_tel',
-            'contact_email',
-            'website_url'
+            'contact_email'
         )
 
 
@@ -379,6 +364,7 @@ class PersonListSerializer(AuditModelSerializer):
     """
     registrations = RegistrationsListSerializer(many=True, read_only=True)
     organization = OrganizationListSerializer()
+    contact_info = ContactInfoSerializer(many=True, read_only=True)
 
     class Meta:
         model = Person
@@ -388,6 +374,7 @@ class PersonListSerializer(AuditModelSerializer):
             'surname',
             'organization',
             'registrations',
+            'contact_info'
         )
 
 
