@@ -15,8 +15,8 @@ import os
 import datetime
 import logging.config
 
-from . import database
-import gwells.settings.base
+from gwells import database
+from gwells.settings.base import get_env_variable
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
