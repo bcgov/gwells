@@ -32,7 +32,7 @@ export default {
 </script>
 
 <style lang="scss">
-/* @import url('https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css'); */
+@import url('https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css');
 @import '../../../gwells/static/gwells/css/ie10-viewport-bug-workaround.css';
 @import '~bootstrap/scss/_functions';
 @import '~bootstrap/scss/_variables';
