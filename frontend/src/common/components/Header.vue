@@ -25,28 +25,31 @@
       </b-container>
     </b-navbar>
     <b-navbar class="bc-nav-links py-0" toggleable="sm" type="dark">
-      <b-collapse class="py-2" is-nav id="nav_collapse">
-        <b-container id="navContainer">
-          <b-navbar-nav>
-            <b-nav-text class="d-sm-none text-light">Groundwater Wells and Aquifers</b-nav-text>
-            <b-nav-item class="navbar-link lvl2-link" href="#">Well Search</b-nav-item>
-            <b-nav-item class="navbar-link lvl2-link" href="#">Groundwater Information</b-nav-item>
-            <b-nav-item class="navbar-link lvl2-link" href="#">Registry</b-nav-item>
-            <b-nav-item
-                class="navbar-link lvl2-link"
-                v-if="!user"
-                @click="loginPopover = !loginPopover"
-                ref="loginButton">Log in</b-nav-item>
-            <b-nav-item class="navbar-link lvl2-link" v-if="user" @click="logout()">Log out</b-nav-item>
-          </b-navbar-nav>
-        </b-container>
-      </b-collapse>
+      <b-container fluid>
+        <b-collapse class="py-2" is-nav id="nav_collapse">
+          <b-container id="navContainer">
+            <b-navbar-nav>
+              <b-nav-text class="d-sm-none text-light">Groundwater Wells and Aquifers</b-nav-text>
+              <b-nav-item class="navbar-link lvl2-link" href="#">Well Search</b-nav-item>
+              <b-nav-item class="navbar-link lvl2-link" href="#">Groundwater Information</b-nav-item>
+              <b-nav-item class="navbar-link lvl2-link" href="#">Registry</b-nav-item>
+              <b-nav-item
+                  class="navbar-link lvl2-link"
+                  v-if="!user"
+                  @click="loginPopover = !loginPopover"
+                  ref="loginButton">Log in</b-nav-item>
+              <b-nav-item class="navbar-link lvl2-link" v-if="user" @click="logout()">Log out</b-nav-item>
+            </b-navbar-nav>
+          </b-container>
+        </b-collapse>
+      </b-container>
     </b-navbar>
     <b-modal
         v-model="loginPopover"
         @shown="onLoginShown"
         title="Log in"
         hide-footer>
+        <b-form @submit.prevent="login">
         <b-form-group
             label="Username"
             label-for="loginPopUsername"
@@ -63,10 +66,11 @@
             label-for="loginPopPassword"
             :state="loginPasswordState" class="mb-3"
             invalid-feedback="This field is required">
-          <b-form-input size="sm" id="loginPopPassword" v-model="credentials.password"/>
+          <b-form-input size="sm" type="password" id="loginPopPassword" v-model="credentials.password"/>
         </b-form-group>
-        <b-btn @click="login" size="sm" variant="primary" class="mr-2">Log in</b-btn>
+        <b-btn type="submit" size="sm" variant="primary" class="mr-2">Log in</b-btn>
         <b-btn @click="loginPopover = false" size="sm" variant="light">Cancel</b-btn>
+        </b-form>
     </b-modal>
   </header>
 </template>
@@ -114,6 +118,7 @@ export default {
       }
     },
     logout () {
+      this.$router.push('/')
       this.$store.dispatch(LOGOUT)
     },
     onLoginShown () {
