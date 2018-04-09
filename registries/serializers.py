@@ -129,6 +129,7 @@ class RegistrationsListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Register
         fields = (
+            'register_guid',
             'activity',
             'activity_description',
             'status',
@@ -231,6 +232,7 @@ class ApplicationAdminSerializer(AuditModelSerializer):
     """
 
     status_set = ApplicationStatusSerializer(many=True, read_only=True)
+    cert_authority = serializers.ReadOnlyField(source="primary_certificate.cert_auth.cert_auth_code")
     qualifications = serializers.StringRelatedField(
         source='subactivity.qualification_set',
         many=True,
@@ -247,6 +249,7 @@ class ApplicationAdminSerializer(AuditModelSerializer):
             'registration',
             'file_no',
             'over19_ind',
+            'cert_authority',
             'registrar_notes',
             'reason_denied',
             'subactivity',
