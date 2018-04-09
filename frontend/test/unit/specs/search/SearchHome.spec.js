@@ -132,7 +132,7 @@ describe('SearchHome.vue', () => {
       searchParams: {
         search: 'Bob Driller',
         activity: 'PUMP',
-        city: [],
+        city: [''],
         status: 'INACTIVE',
         limit: '10',
         ordering: ''
@@ -140,7 +140,7 @@ describe('SearchHome.vue', () => {
     })
     expect(wrapper.vm.searchParams).toEqual({
       search: 'Bob Driller',
-      city: [],
+      city: [''],
       activity: 'PUMP',
       status: 'INACTIVE',
       limit: '10',
@@ -149,7 +149,7 @@ describe('SearchHome.vue', () => {
     wrapper.find('[type=reset]').trigger('reset')
     expect(wrapper.vm.searchParams).toEqual({
       search: '',
-      city: [],
+      city: [''],
       activity: 'DRILL',
       status: 'ACTIVE',
       limit: '10',
