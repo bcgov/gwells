@@ -1,0 +1,351 @@
+[{
+    "model": "gwells.provincestatecode",
+    "pk": "PE",
+    "fields": {
+        "create_user": "ETL_USER",
+        "create_date": "2017-07-01T08:00:00Z",
+        "update_user": "ETL_USER",
+        "update_date": "2017-07-01T08:00:00Z",
+        "description": "Prince Edward Island",
+        "display_order": 20
+    }
+}, {
+    "model": "gwells.provincestatecode",
+    "pk": "QC",
+    "fields": {
+        "create_user": "ETL_USER",
+        "create_date": "2017-07-01T08:00:00Z",
+        "update_user": "ETL_USER",
+        "update_date": "2017-07-01T08:00:00Z",
+        "description": "Quebec",
+        "display_order": 22
+    }
+}, {
+    "model": "gwells.provincestatecode",
+    "pk": "SK",
+    "fields": {
+        "create_user": "ETL_USER",
+        "create_date": "2017-07-01T08:00:00Z",
+        "update_user": "ETL_USER",
+        "update_date": "2017-07-01T08:00:00Z",
+        "description": "Saskatchewan",
+        "display_order": 24
+    }
+}, {
+    "model": "gwells.provincestatecode",
+    "pk": "NU",
+    "fields": {
+        "create_user": "ETL_USER",
+        "create_date": "2017-07-01T08:00:00Z",
+        "update_user": "ETL_USER",
+        "update_date": "2017-07-01T08:00:00Z",
+        "description": "Nunavut",
+        "display_order": 18
+    }
+}, {
+    "model": "gwells.provincestatecode",
+    "pk": "YT",
+    "fields": {
+        "create_user": "ETL_USER",
+        "create_date": "2017-07-01T08:00:00Z",
+        "update_user": "ETL_USER",
+        "update_date": "2017-07-01T08:00:00Z",
+        "description": "Yukon",
+        "display_order": 26
+    }
+}, {
+    "model": "gwells.provincestatecode",
+    "pk": "NS",
+    "fields": {
+        "create_user": "ETL_USER",
+        "create_date": "2017-07-01T08:00:00Z",
+        "update_user": "ETL_USER",
+        "update_date": "2017-07-01T08:00:00Z",
+        "province_state_code": "NS",
+        "description": "Nova Scotia",
+        "display_order": 14
+    }
+}, {
+    "model": "gwells.provincestatecode",
+    "pk": "NB",
+    "fields": {
+        "create_user": "ETL_USER",
+        "create_date": "2017-07-01T08:00:00Z",
+        "update_user": "ETL_USER",
+        "update_date": "2017-07-01T08:00:00Z",
+        "description": "New Brunswick",
+        "display_order": 10
+    }
+}, {
+    "model": "gwells.provincestatecode",
+    "pk": "ON",
+    "fields": {
+        "create_user": "ETL_USER",
+        "create_date": "2017-07-01T08:00:00Z",
+        "update_user": "ETL_USER",
+        "update_date": "2017-07-01T08:00:00Z",
+        "description": "Ontario",
+        "display_order": 6
+    }
+}, {
+    "model": "gwells.provincestatecode",
+    "pk": "MB",
+    "fields": {
+        "create_user": "ETL_USER",
+        "create_date": "2017-07-01T08:00:00Z",
+        "update_user": "ETL_USER",
+        "update_date": "2017-07-01T08:00:00Z",
+        "description": "Manitoba",
+        "display_order": 8
+    }
+}, {
+    "model": "gwells.provincestatecode",
+    "pk": "NT",
+    "fields": {
+        "create_user": "ETL_USER",
+        "create_date": "2017-07-01T08:00:00Z",
+        "update_user": "ETL_USER",
+        "update_date": "2017-07-01T08:00:00Z",
+        "description": "Northwest Territories",
+        "display_order": 16
+    }
+}, {
+    "model": "gwells.provincestatecode",
+    "pk": "NL",
+    "fields": {
+        "create_user": "ETL_USER",
+        "create_date": "2017-07-01T08:00:00Z",
+        "update_user": "ETL_USER",
+        "update_date": "2017-07-01T08:00:00Z",
+        "description": "Newfoundland and Labrador",
+        "display_order": 12
+    }
+}, {
+    "model": "gwells.provincestatecode",
+    "pk": "BC",
+    "fields": {
+        "create_user": "ETL_USER",
+        "create_date": "2017-07-01T08:00:00Z",
+        "update_user": "ETL_USER",
+        "update_date": "2017-07-01T08:00:00Z",
+        "description": "British Colmubia",
+        "display_order": 2
+    }
+}, {
+    "model": "gwells.provincestatecode",
+    "pk": "AB",
+    "fields": {
+        "create_user": "ETL_USER",
+        "create_date": "2017-07-01T08:00:00Z",
+        "update_user": "ETL_USER",
+        "update_date": "2017-07-01T08:00:00Z",
+        "description": "Alberta",
+        "display_order": 4
+    }
+}, {
+    "model": "gwells.provincestatecode",
+    "pk": "WA",
+    "fields": {
+        "create_user": "ETL_USER",
+        "create_date": "2017-07-01T08:00:00Z",
+        "update_user": "ETL_USER",
+        "update_date": "2017-07-01T08:00:00Z",
+        "description": "Never Never Land",
+        "display_order": 30
+    }
+}, {
+    "model": "gwells.provincestatecode",
+    "pk": "OTHER",
+    "fields": {
+        "create_user": "ETL_USER",
+        "create_date": "2017-07-01T08:00:00Z",
+        "update_user": "ETL_USER",
+        "update_date": "2017-07-01T08:00:00Z",
+        "description": "Other",
+        "display_order": 90
+    }
+}, {
+    "model": "registries.activitycode",
+    "pk": "9ecb8fbb-428f-45e1-9a3f-e0ce05c563e2",
+    "fields": {
+        "create_user": "DATALOAD_USER",
+        "create_date": "2018-01-01T08:00:00Z",
+        "update_user": "DATALOAD_USER",
+        "update_date": "2018-01-01T08:00:00Z",
+        "code": "DRILL",
+        "description": "Well Driller",
+        "display_order": 2
+    }
+}, {
+    "model": "registries.activitycode",
+    "pk": "a2c5ac6f-13b6-42c5-9e91-9672ab2ef5a8",
+    "fields": {
+        "create_user": "DATALOAD_USER",
+        "create_date": "2018-01-01T08:00:00Z",
+        "update_user": "DATALOAD_USER",
+        "update_date": "2018-01-01T08:00:00Z",
+        "code": "PUMP",
+        "description": "Pump Installer",
+        "display_order": 4
+    }
+}, {
+    "model": "registries.applicationstatuscode",
+    "pk": "13b711fb-d5b1-4e45-8938-998a3469ccaf",
+    "fields": {
+        "create_user": "DATALOAD_USER",
+        "create_date": "2018-01-01T08:00:00Z",
+        "update_user": "DATALOAD_USER",
+        "update_date": "2018-01-01T08:00:00Z",
+        "code": "P",
+        "description": "Pending",
+        "display_order": 2
+    }
+}, {
+    "model": "registries.applicationstatuscode",
+    "pk": "99f3f69a-8fca-499a-8769-816e27d58463",
+    "fields": {
+        "create_user": "DATALOAD_USER",
+        "create_date": "2018-01-01T08:00:00Z",
+        "update_user": "DATALOAD_USER",
+        "update_date": "2018-01-01T08:00:00Z",
+        "code": "A",
+        "description": "Approved",
+        "display_order": 4
+    }
+}, {
+    "model": "registries.applicationstatuscode",
+    "pk": "a5975dca-019e-4fe3-b5c6-9e94de13174c",
+    "fields": {
+        "create_user": "DATALOAD_USER",
+        "create_date": "2018-01-01T08:00:00Z",
+        "update_user": "DATALOAD_USER",
+        "update_date": "2018-01-01T08:00:00Z",
+        "code": "I",
+        "description": "Incomplete",
+        "display_order": 10
+    }
+}, {
+    "model": "registries.applicationstatuscode",
+    "pk": "c45fe5bd-2885-4b96-98bc-363edb0c700e",
+    "fields": {
+        "create_user": "DATALOAD_USER",
+        "create_date": "2018-01-01T08:00:00Z",
+        "update_user": "DATALOAD_USER",
+        "update_date": "2018-01-01T08:00:00Z",
+        "code": "NA",
+        "description": "Not Approved",
+        "display_order": 6
+    }
+}, {
+    "model": "registries.registriesremovalreason",
+    "pk": "81726e3d-eb2b-4725-acfd-39dd3f582f57",
+    "fields": {
+        "create_user": "DATALOAD_USER",
+        "create_date": "2018-01-01T08:00:00Z",
+        "update_user": "DATALOAD_USER",
+        "update_date": "2018-01-01T08:00:00Z",
+        "code": "NLACT",
+        "description": "No longer active",
+        "display_order": 2
+    }
+}, {
+    "model": "registries.registriesremovalreason",
+    "pk": "9f34701f-ffc0-4a70-acb5-d47d7c16127b",
+    "fields": {
+        "create_user": "DATALOAD_USER",
+        "create_date": "2018-01-01T08:00:00Z",
+        "update_user": "DATALOAD_USER",
+        "update_date": "2018-01-01T08:00:00Z",
+        "code": "NMEET",
+        "description": "Did not meet the requirement of registration",
+        "display_order": 6
+    }
+}, {
+    "model": "registries.registriesremovalreason",
+    "pk": "ec3c1fb9-413e-47c1-a2ec-ab665d36d3c6",
+    "fields": {
+        "create_user": "DATALOAD_USER",
+        "create_date": "2018-01-01T08:00:00Z",
+        "update_user": "DATALOAD_USER",
+        "update_date": "2018-01-01T08:00:00Z",
+        "code": "FAILTM",
+        "description": "Failed to maintain requirement of registration",
+        "display_order": 4
+    }
+}, {
+    "model": "registries.registriesstatuscode",
+    "pk": "4730ae4f-1e88-42e1-80fd-6fa65bbf858a",
+    "fields": {
+        "create_user": "DATALOAD_USER",
+        "create_date": "2018-01-01T08:00:00Z",
+        "update_user": "DATALOAD_USER",
+        "update_date": "2018-01-01T08:00:00Z",
+        "code": "REMOVED",
+        "description": "Removed",
+        "display_order": 4
+    }
+}, {
+    "model": "registries.registriesstatuscode",
+    "pk": "dc37da91-e36e-49fa-b180-e2c968988f13",
+    "fields": {
+        "create_user": "DATALOAD_USER",
+        "create_date": "2018-01-01T08:00:00Z",
+        "update_user": "DATALOAD_USER",
+        "update_date": "2018-01-01T08:00:00Z",
+        "code": "ACTIVE",
+        "description": "Active",
+        "display_order": 2
+    }
+}, {
+    "model": "registries.subactivitycode",
+    "pk": "1f6c2aaa-018c-11e8-ba89-0ed5f89f718b",
+    "fields": {
+        "create_user": "DATALOAD_USER",
+        "create_date": "2018-01-01T08:00:00Z",
+        "update_user": "DATALOAD_USER",
+        "update_date": "2018-01-01T08:00:00Z",
+        "registries_activity": "9ecb8fbb-428f-45e1-9a3f-e0ce05c563e2",
+        "code": "WATER",
+        "description": "Water Well Driller",
+        "display_order": 2
+    }
+}, {
+    "model": "registries.subactivitycode",
+    "pk": "1f6c2d0c-018c-11e8-ba89-0ed5f89f718b",
+    "fields": {
+        "create_user": "DATALOAD_USER",
+        "create_date": "2018-01-01T08:00:00Z",
+        "update_user": "DATALOAD_USER",
+        "update_date": "2018-01-01T08:00:00Z",
+        "registries_activity": "a2c5ac6f-13b6-42c5-9e91-9672ab2ef5a8",
+        "code": "PUMPINST",
+        "description": "Pump Installer",
+        "display_order": 8
+    }
+}, {
+    "model": "registries.subactivitycode",
+    "pk": "1f6c30c2-018c-11e8-ba89-0ed5f89f718b",
+    "fields": {
+        "create_user": "DATALOAD_USER",
+        "create_date": "2018-01-01T08:00:00Z",
+        "update_user": "DATALOAD_USER",
+        "update_date": "2018-01-01T08:00:00Z",
+        "registries_activity": "9ecb8fbb-428f-45e1-9a3f-e0ce05c563e2",
+        "code": "GEOTECH",
+        "description": "Geotechnical/Environmental Driller",
+        "display_order": 4
+    }
+}, {
+    "model": "registries.subactivitycode",
+    "pk": "1f6c3202-018c-11e8-ba89-0ed5f89f718b",
+    "fields": {
+        "create_user": "DATALOAD_USER",
+        "create_date": "2018-01-01T08:00:00Z",
+        "update_user": "DATALOAD_USER",
+        "update_date": "2018-01-01T08:00:00Z",
+        "registries_activity": "9ecb8fbb-428f-45e1-9a3f-e0ce05c563e2",
+        "code": "GEOXCHG",
+        "description": "Geoexchange Driller",
+        "display_order": 6
+    }
+}]
