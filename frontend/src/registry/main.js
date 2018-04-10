@@ -28,3 +28,5 @@ new Vue({
   components: { App },
   template: '<App/>'
 })
+
+Vue.config.devtools = true
