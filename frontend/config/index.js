@@ -9,7 +9,7 @@ module.exports = {
 
     // Paths
     assetsSubDirectory: 'static',
-    assetsPublicPath: '/',
+    assetsPublicPath: '/gwells/static/registries/',
     proxyTable: {},
 
     // Various Dev Server settings
