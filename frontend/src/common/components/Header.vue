@@ -20,10 +20,12 @@
           <span class="bc-nav-title d-none d-md-block">Groundwater Wells and Aquifers</span>
         </b-navbar-nav>
         <b-navbar-nav class="ml-auto">
-          <b-navbar-toggle class="d-sm-none" target="nav_collapse"></b-navbar-toggle>
           <b-nav-item>
             <keycloak-auth/>
           </b-nav-item>
+        </b-navbar-nav>
+        <b-navbar-nav class="ml-auto">
+          <b-navbar-toggle class="d-sm-none" target="nav_collapse"></b-navbar-toggle>
         </b-navbar-nav>
       </b-container>
     </b-navbar>
