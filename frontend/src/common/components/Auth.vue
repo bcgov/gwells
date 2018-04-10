@@ -32,6 +32,7 @@ export default {
         'url': 'https://dev-sso.pathfinder.gov.bc.ca/auth',
         'clientId': 'webapp-dev-local'
       })
+
       kc.init({onLoad: 'check-sso'}).success(() => {
         this.kc = kc
         this.$store.commit(SET_KEYCLOAK, kc)
@@ -40,7 +41,7 @@ export default {
     },
     keyCloakLogin () {
       if (this.kc) {
-        this.kc.login().success((authenticated) => {
+        this.kc.login({ idpHint: 'idir' }).success((authenticated) => {
           if (authenticated) {
             this.$store.commit(SET_KEYCLOAK, this.kc)
             ApiService.authHeader('JWT', this.kc.token)
