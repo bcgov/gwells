@@ -45,8 +45,6 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
-import { LOGIN, LOGOUT } from '@/registry/store/actions.types'
 import Auth from '@/common/components/Auth.vue'
 export default {
   components: {
@@ -54,53 +52,6 @@ export default {
   },
   data () {
     return {
-      loginPopover: false,
-      loginUsernameState: null,
-      loginPasswordState: null,
-      credentials: {
-        username: null,
-        password: null
-      }
-    }
-  },
-  computed: {
-    ...mapGetters([
-      'user'
-    ])
-  },
-  watch: {
-    'credentials.username' (val) {
-      if (val) {
-        this.loginUsernameState = true
-      }
-    },
-    'credentials.password' (val) {
-      if (val) {
-        this.loginPasswordState = true
-      }
-    }
-  },
-  methods: {
-    login (evt) {
-      evt.preventDefault()
-      if (!this.credentials.username) { this.loginUsernameState = false }
-      if (!this.credentials.password) { this.loginPasswordState = false }
-      if (this.credentials.username && this.credentials.password) {
-        this.$store.dispatch(LOGIN, this.credentials)
-        this.loginPopover = false
-      }
-    },
-    logout () {
-      this.$router.push('/')
-      this.$store.dispatch(LOGOUT)
-    },
-    onLoginShown () {
-      /* Transfer focus to the first input */
-      this.credentials.username = ''
-      this.credentials.password = ''
-      this.loginUsernameState = null
-      this.loginPasswordState = null
-      this.$refs.input1.focus()
     }
   }
 }
