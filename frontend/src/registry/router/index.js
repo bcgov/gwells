@@ -36,5 +36,6 @@ export default new Router({
       component: SearchHome,
       beforeEnter: AuthEntry
     }
-  ]
+  ],
+  mode: 'history'
 })
