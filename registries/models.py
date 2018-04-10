@@ -208,7 +208,7 @@ class WellClassCode(AuditModel):
         verbose_name_plural = 'Well Classes'
 
     def __str__(self):
-        return self.description
+        return self.registries_well_class_code
 
 
 class Qualification(AuditModel):
@@ -229,7 +229,7 @@ class Qualification(AuditModel):
         SubactivityCode,
         db_column='registries_subactivity_code',
         on_delete=models.PROTECT,
-        related_name="Qualification")
+        related_name="qualification_set")
     display_order = models.PositiveIntegerField()
     effective_date = models.DateField(default=datetime.date.today)
     expired_date = models.DateField(blank=True, null=True)
@@ -240,7 +240,7 @@ class Qualification(AuditModel):
         verbose_name_plural = 'Qualification codes'
 
     def __str__(self):
-        return '%s %s' % (self.subactivity, self.well_class)
+        return self.well_class.registries_well_class_code
 
 
 class RegistriesStatusCode(AuditModel):
@@ -409,7 +409,7 @@ class RegistriesApplicationStatus(AuditModel):
     application = models.ForeignKey(
         RegistriesApplication,
         db_column='application_guid',
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         verbose_name="Application Reference",
         related_name="status_set")
     status = models.ForeignKey(
