@@ -10,6 +10,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import Keycloak from 'keycloak-js'
+import ApiService from '@/common/services/ApiService.js'
 import { SET_KEYCLOAK } from '@/registry/store/mutations.types.js'
 
 export default {
@@ -28,16 +29,21 @@ export default {
         'url': 'https://dev-sso.pathfinder.gov.bc.ca/auth',
         'clientId': 'webapp-dev-local'
       })
-      kc.init().success((authenticated) => {
+      kc.init({onLoad: 'check-sso'}).success(() => {
         console.log('kc init')
         this.kc = kc
         this.$store.commit(SET_KEYCLOAK, kc)
+        ApiService.authHeader('JWT', kc.token)
       })
     },
     keyCloakLogin () {
       if (this.kc) {
-        this.kc.login()
-        this.$store.commit(SET_KEYCLOAK, this.kc)
+        this.kc.login().success((authenticated) => {
+          if (authenticated) {
+            this.$store.commit(SET_KEYCLOAK, this.kc)
+            ApiService.authHeader('JWT', this.kc.token)
+          }
+        })
       }
     }
   },
