@@ -1,14 +1,14 @@
 import { shallow, createLocalVue } from '@vue/test-utils'
 import Vuex from 'vuex'
 import VueRouter from 'vue-router'
-import RegisterTable from '@/registry/components/RegisterTable'
+import SearchTable from '@/registry/components/search/SearchTable'
 import { FETCH_DRILLER_LIST } from '@/registry/store/actions.types'
 
 const localVue = createLocalVue()
 localVue.use(Vuex)
 localVue.use(VueRouter)
 
-describe('RegisterTable.vue', () => {
+describe('SearchTable.vue', () => {
   let store
   let getters
   let actions
@@ -62,7 +62,7 @@ describe('RegisterTable.vue', () => {
   })
 
   it('has a row for every person', () => {
-    const wrapper = shallow(RegisterTable, {
+    const wrapper = shallow(SearchTable, {
       store,
       localVue,
       stubs: ['router-link', 'router-view']
@@ -72,7 +72,7 @@ describe('RegisterTable.vue', () => {
   })
 
   it('has the right people in each row', () => {
-    const wrapper = shallow(RegisterTable, {
+    const wrapper = shallow(SearchTable, {
       store,
       localVue,
       stubs: ['router-link', 'router-view']
@@ -89,7 +89,7 @@ describe('RegisterTable.vue', () => {
       .not.toContain('Driller')
   })
   it('shows the pagination button for next page when a link is returned by API', () => {
-    const wrapper = shallow(RegisterTable, {
+    const wrapper = shallow(SearchTable, {
       store,
       localVue,
       stubs: ['router-link', 'router-view']
@@ -97,7 +97,7 @@ describe('RegisterTable.vue', () => {
     expect(wrapper.find('#table-pagination-next').text()).toEqual('Next')
   })
   it('shows the pagination button for previous page when a link is returned by API', () => {
-    const wrapper = shallow(RegisterTable, {
+    const wrapper = shallow(SearchTable, {
       store,
       localVue,
       stubs: ['router-link', 'router-view']
@@ -105,25 +105,25 @@ describe('RegisterTable.vue', () => {
     expect(wrapper.find('#table-pagination-prev').text()).toEqual('Previous')
   })
   it('dispatches fetch driller list with correct querystring when pagination next clicked', () => {
-    const wrapper = shallow(RegisterTable, {
+    const wrapper = shallow(SearchTable, {
       store,
       localVue,
       stubs: ['router-link', 'router-view']
     })
     wrapper.find('#table-pagination-next').trigger('click')
-    expect(actions.fetchDrillers.mock.calls[0][1]).toEqual({limit: '30', offset: '60'})
+    expect(actions.FETCH_DRILLER_LIST.mock.calls[0][1]).toEqual({limit: '30', offset: '60'})
   })
   it('dispatches fetch driller list with correct querystring when pagination prev clicked', () => {
-    const wrapper = shallow(RegisterTable, {
+    const wrapper = shallow(SearchTable, {
       store,
       localVue,
       stubs: ['router-link', 'router-view']
     })
     wrapper.find('#table-pagination-prev').trigger('click')
-    expect(actions.fetchDrillers.mock.calls[0][1]).toEqual({limit: '30', offset: '0'})
+    expect(actions.FETCH_DRILLER_LIST.mock.calls[0][1]).toEqual({limit: '30', offset: '0'})
   })
   it('emits the column code (e.g. surname) to be sorted when column sort button clicked', () => {
-    const wrapper = shallow(RegisterTable, {
+    const wrapper = shallow(SearchTable, {
       store,
       localVue,
       stubs: ['router-link', 'router-view']
@@ -132,7 +132,7 @@ describe('RegisterTable.vue', () => {
     expect(wrapper.emitted('sort')).toEqual([['surname']])
   })
   it('has the right columns when searching for drillers', () => {
-    const wrapper = shallow(RegisterTable, {
+    const wrapper = shallow(SearchTable, {
       store,
       localVue,
       stubs: ['router-link', 'router-view']
@@ -144,7 +144,7 @@ describe('RegisterTable.vue', () => {
       'Company Name',
       'Company Address',
       'Contact Information',
-      'Qualified to Drill',
+      'Class of Driller',
       'Certificate Issued By',
       'Registration Status'
     ]
@@ -154,7 +154,7 @@ describe('RegisterTable.vue', () => {
     }
   })
   it('has the right columns when searching for well pump installers', () => {
-    const wrapper = shallow(RegisterTable, {
+    const wrapper = shallow(SearchTable, {
       store,
       localVue,
       stubs: ['router-link', 'router-view']

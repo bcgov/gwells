@@ -32,14 +32,13 @@ class QualificationSerializer(serializers.ModelSerializer):
     Qualification records form a related set of a SubactivityCode object
     """
 
+    description = serializers.ReadOnlyField(source='well_class.description')
+
     class Meta:
         model = Qualification
         fields = (
-            'registries_well_qualification_guid',
             'well_class',
-            'subactivity',
-            'effective_date',
-            'expired_date',
+            'description',
         )
 
 
@@ -47,27 +46,12 @@ class ContactInfoSerializer(AuditModelSerializer):
     """
     Serializes ContactInfo model fields.
     """
-    person_name = serializers.StringRelatedField(source="person")
-    organization_name = serializers.StringRelatedField(source="org")
-    street_address = serializers.StringRelatedField(source="org.street_address")
-    city = serializers.StringRelatedField(source="org.city")
-    postal_code = serializers.StringRelatedField(source="org.postal_code")
-    website_url = serializers.StringRelatedField(source="org.website_url")
 
     class Meta:
         model = ContactInfo
         fields = (
-            'contact_at_guid',
-            'organization_name',
-            'street_address',
-            'city',
-            'postal_code',
-            'person_name',
-            'person',
-            'org',
             'contact_tel',
-            'contact_email',
-            'website_url'
+            'contact_email'
         )
 
 
@@ -77,11 +61,14 @@ class SubactivitySerializer(serializers.ModelSerializer):
     SubactivityCode records form a related set of an ActivityCode object
     """
 
+    qualification_set = QualificationSerializer(many=True, read_only=True)
+
     class Meta:
         model = SubactivityCode
         fields = (
             'registries_subactivity_code',
             'description',
+            'qualification_set',
         )
 
 
@@ -135,13 +122,16 @@ class RegistrationsListSerializer(serializers.ModelSerializer):
     Register items form a related set of an Application object
     """
     status = serializers.ReadOnlyField(source='status.description')
-    activity = serializers.ReadOnlyField(source='registries_activity.description')
+    activity_description = serializers.ReadOnlyField(source='registries_activity.description')
+    activity = serializers.ReadOnlyField(source="registries_activity.registries_activity_code")
     applications = ApplicationListSerializer(many=True, read_only=True)
 
     class Meta:
         model = Register
         fields = (
+            'register_guid',
             'activity',
+            'activity_description',
             'status',
             'registration_no',
             'applications'
@@ -242,6 +232,7 @@ class ApplicationAdminSerializer(AuditModelSerializer):
     """
 
     status_set = ApplicationStatusSerializer(many=True, read_only=True)
+    cert_authority = serializers.ReadOnlyField(source="primary_certificate.cert_auth.cert_auth_code")
     qualifications = serializers.StringRelatedField(
         source='subactivity.qualification_set',
         many=True,
@@ -258,6 +249,7 @@ class ApplicationAdminSerializer(AuditModelSerializer):
             'registration',
             'file_no',
             'over19_ind',
+            'cert_authority',
             'registrar_notes',
             'reason_denied',
             'subactivity',
@@ -375,6 +367,7 @@ class PersonListSerializer(AuditModelSerializer):
     """
     registrations = RegistrationsListSerializer(many=True, read_only=True)
     organization = OrganizationListSerializer()
+    contact_info = ContactInfoSerializer(many=True, read_only=True)
 
     class Meta:
         model = Person
@@ -384,6 +377,7 @@ class PersonListSerializer(AuditModelSerializer):
             'surname',
             'organization',
             'registrations',
+            'contact_info'
         )
 
 

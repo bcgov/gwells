@@ -1,12 +1,11 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import AuthEntry from './authEntry'
 import AuthGuard from './authGuard'
 
-import RegisterHome from '@/registry/components/RegisterHome'
-import PersonDetail from '@/registry/components/PersonDetail'
-import PersonApplicationDetail from '@/registry/components/PersonApplicationDetail'
-import PersonEdit from '@/registry/components/PersonEdit'
+import SearchHome from '@/registry/components/search/SearchHome.vue'
+import PersonDetail from '@/registry/components/people/PersonDetail.vue'
+import ApplicationDetail from '@/registry/components/people/ApplicationDetail.vue'
+import PersonEdit from '@/registry/components/people/PersonEdit.vue'
 
 Vue.use(Router)
 
@@ -20,8 +19,8 @@ export default new Router({
     },
     {
       path: '/people/:person_guid/applications/:classCode',
-      name: 'PersonApplicationDetail',
-      component: PersonApplicationDetail,
+      name: 'ApplicationDetail',
+      component: ApplicationDetail,
       beforeEnter: AuthGuard
     },
     {
@@ -32,9 +31,10 @@ export default new Router({
     },
     {
       path: '/',
-      name: 'RegisterHome',
-      component: RegisterHome,
-      beforeEnter: AuthEntry
+      name: 'SearchHome',
+      component: SearchHome
     }
-  ]
+  ],
+  mode: 'history',
+  base: process.env.NODE_ENV === 'production' ? '/gwells/registries/' : '/'
 })

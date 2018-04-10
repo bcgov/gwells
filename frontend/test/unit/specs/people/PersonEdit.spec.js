@@ -1,10 +1,10 @@
 import { shallow, createLocalVue } from '@vue/test-utils'
 import Vuex from 'vuex'
-import PersonEdit from '@/registry/components/PersonEdit'
+import PersonEdit from '@/registry/components/people/PersonEdit'
 import APIErrorMessage from '@/common/components/APIErrorMessage'
 import { SET_DRILLER } from '@/registry/store/mutations.types'
 import { FETCH_DRILLER } from '@/registry/store/actions.types'
-import fakePerson from './fakePerson.js'
+import fakePerson from '../fakePerson.js'
 
 const localVue = createLocalVue()
 localVue.use(Vuex)
@@ -41,7 +41,7 @@ describe('PersonEdit.vue', () => {
         $route: {params: {person_guid: 'aaaa-4444-bbbb-1111'}}
       }
     })
-    expect(actions.fetchDriller).toHaveBeenCalled()
+    expect(actions.FETCH_DRILLER).toHaveBeenCalled()
   })
   it('loads the error component if there is an error', () => {
     getters = {

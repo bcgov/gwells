@@ -14,7 +14,8 @@ import {
   SET_USER,
   SET_CITY_LIST,
   SET_DRILLER,
-  SET_DRILLER_LIST } from './mutations.types.js'
+  SET_DRILLER_LIST,
+  SET_KEYCLOAK } from './mutations.types.js'
 
 Vue.use(Vuex)
 
@@ -26,7 +27,8 @@ export const store = new Vuex.Store({
     listError: null,
     cityList: {},
     drillerList: [],
-    currentDriller: {}
+    currentDriller: {},
+    keycloak: {}
   },
   mutations: {
     [SET_LOADING] (state, payload) {
@@ -49,10 +51,13 @@ export const store = new Vuex.Store({
     },
     [SET_DRILLER_LIST] (state, payload) {
       state.drillerList = payload
+    },
+    [SET_KEYCLOAK] (state, payload) {
+      state.keycloak = payload
     }
   },
   actions: {
-    [LOGIN] ({commit}, credentials) {
+    async [LOGIN] ({commit}, credentials) {
       ApiService.post('api-token-auth/', credentials)
         .then((response) => {
           const token = response.data.token
@@ -173,6 +178,9 @@ export const store = new Vuex.Store({
     },
     currentDriller (state) {
       return state.currentDriller
+    },
+    keycloak (state) {
+      return state.keycloak
     }
   }
 })

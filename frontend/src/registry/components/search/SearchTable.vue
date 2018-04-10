@@ -1,30 +1,59 @@
 <template>
-  <div class="">
+  <div>
     <div class="table-responsive">
       <table class="table table-striped" id="registry-table">
         <thead>
-          <th v-for="field in fields" :key="field.name" :class="field.class" v-if="(field.visible === 'public' || user) && (field.activity === activity || field.activity == 'all')">
+          <th v-for="field in fields"
+              :key="field.name"
+              :class="field.class"
+              v-if="(field.visible === 'public' || user) && (field.activity === activity || field.activity == 'all')">
             {{field.name}} <i class="fa fa-sort" v-if="field.sortable && field.sortCode" @click="sortBy(field.sortCode)"></i>
           </th>
         </thead>
         <tbody>
-          <tr v-if="drillers.results && drillers.results.length" v-for="(driller, index) in drillers.results" :key="driller.person_guid" :id="`registry-table-row-${index}`">
+          <tr v-if="drillers.results && drillers.results.length"
+              v-for="(driller, index) in drillers.results"
+              :key="`tr ${driller.person_guid} ${index}`" :id="`registry-table-row-${index}`">
             <td>
               <div><b>{{ driller.first_name }} {{ driller.surname }}</b></div>
-              <div>{{ driller.registration_no }}</div>
-            </td>
-            <td>{{ driller.organization_name }}</td>
-            <td>
-              {{ driller.street_address }}
-              <div>
-                <span>{{ driller.city }}</span><span v-if="driller.city && driller.province_state">, </span><span v-if="driller.province_state">{{ driller.province_state }}</span>
+              <div v-if="driller.registrations && driller.registrations.length">
+                <div
+                    v-for="(reg, regIndex) in driller.registrations"
+                    v-if="reg.activity === activity"
+                    :key="`reg no ${driller.person_guid} ${regIndex}`">
+                  {{ reg.registration_no }}</div>
               </div>
             </td>
-            <td><div v-if="driller.contact_tel">Phone: {{ driller.contact_tel }}</div><div v-if="driller.contact_email">Email: {{ driller.contact_email }}</div></td>
-            <td v-if="activity === 'DRILL'">{{ driller.activity }}</td>
-            <td></td>
-            <td v-if="user && activity === 'DRILL'">{{ driller.status }}</td>
-            <td v-if="user"><router-link :to="{ name: 'PersonDetail', params: { person_guid: driller.person_guid } }">Details</router-link></td>
+            <td>
+              <div v-if="driller.organization">{{ driller.organization.name }}</div></td>
+            <td>
+              <div v-if="driller.organization">{{ driller.organization.street_address }}
+                <div>
+                  <span>{{ driller.organization.city }}</span><span
+                    v-if="driller.organization.city && driller.organization.province_state">, </span><span
+                      v-if="driller.organization.province_state">{{ driller.organization.province_state }}</span>
+                </div>
+              </div>
+            </td>
+            <td>
+              <div v-if="driller.contact_info && driller.contact_info.length">
+                <driller-contact-info :driller="driller"/>
+              </div>
+            </td>
+            <td v-if="activity === 'DRILL'">
+              <driller-subactivity :driller="driller"/>
+            </td>
+            <td>
+              <driller-certificate-authority :driller="driller" :activity="activity"/>
+            </td>
+            <td v-if="user && activity === 'DRILL'">
+              <driller-registration-status :driller="driller" :activity="activity"/>
+            </td>
+            <td v-if="user">
+              <router-link :to="{ name: 'PersonDetail', params: { person_guid: driller.person_guid } }">
+                Details
+              </router-link>
+            </td>
           </tr>
           <tr v-else>
           </tr>
@@ -35,7 +64,7 @@
       <div class="col-xs-12 col-sm-4">
         <span v-if="drillers.results && drillers.results.length">Showing <span id="drillersCurrentOffset">{{ drillers.offset + 1 }}</span> to <span id="drillersCurrentOffsetLimit">{{ drillers.offset + drillers.results.length }}</span> of <span id="drillersTotalResults">{{ drillers.count }}</span></span>
       </div>
-      <div v-if="drillers.results && drillers.results.length" class="col-xs-12 col-sm-4 col-sm-offset-4 col-md-offset-5 col-md-3">
+      <div v-if="drillers.results && drillers.results.length" class="col-xs-12 col-sm-4 offset-sm-4 offset-md-5 col-md-3">
         <nav aria-label="List navigation" v-if="drillers.results && drillers.results.length">
           <ul class="pagination">
             <li v-if="drillers.previous">
@@ -68,11 +97,22 @@
 <script>
 import { mapGetters } from 'vuex'
 import { FETCH_DRILLER_LIST } from '@/registry/store/actions.types'
+import DrillerSubactivity from '@/registry/components/search/table-helpers/DrillerSubactivity.vue'
+import DrillerRegistrationStatus from '@/registry/components/search/table-helpers/DrillerRegistrationStatus.vue'
+import DrillerContactInfo from '@/registry/components/search/table-helpers/DrillerContactInfo.vue'
+import DrillerCertAuth from '@/registry/components/search/table-helpers/DrillerCertAuth.vue'
+
 const querystring = require('querystring')
 
 export default {
   name: 'RegisterTable',
   props: ['activity'],
+  components: {
+    'driller-subactivity': DrillerSubactivity,
+    'driller-registration-status': DrillerRegistrationStatus,
+    'driller-contact-info': DrillerContactInfo,
+    'driller-certificate-authority': DrillerCertAuth
+  },
   data () {
     return {
       // fields for the table headings
@@ -111,7 +151,7 @@ export default {
           activity: 'all'
         },
         {
-          name: 'Qualified to Drill',
+          name: 'Class of Driller',
           class: 'col-xs-1',
           visible: 'public',
           sortable: true,

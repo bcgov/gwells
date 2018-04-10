@@ -1,13 +1,13 @@
 import { shallow, createLocalVue } from '@vue/test-utils'
 import Vuex from 'vuex'
-import PersonApplicationDetail from '@/registry/components/PersonApplicationDetail'
+import ApplicationDetail from '@/registry/components/people/ApplicationDetail'
 import { SET_DRILLER } from '@/registry/store/mutations.types'
 import { FETCH_DRILLER } from '@/registry/store/actions.types'
 
 const localVue = createLocalVue()
 localVue.use(Vuex)
 
-describe('PersonApplicationDetail.vue', () => {
+describe('ApplicationDetail.vue', () => {
   let store
   let getters
   let mutations
@@ -140,7 +140,7 @@ describe('PersonApplicationDetail.vue', () => {
     store = new Vuex.Store({ getters, actions, mutations })
   })
   it('loads the currentDriller and renders the person name as the page title', () => {
-    const wrapper = shallow(PersonApplicationDetail, {
+    const wrapper = shallow(ApplicationDetail, {
       localVue,
       store,
       stubs: ['router-link', 'router-view'],
@@ -151,7 +151,7 @@ describe('PersonApplicationDetail.vue', () => {
     expect(wrapper.find('#titlePersonName').text()).toBe(`${fakePerson.first_name} ${fakePerson.surname}`)
   })
   it('gets the list of qualified well/hole types from the driller profile for this application', () => {
-    const wrapper = shallow(PersonApplicationDetail, {
+    const wrapper = shallow(ApplicationDetail, {
       localVue,
       store,
       stubs: ['router-link', 'router-view'],
@@ -162,7 +162,7 @@ describe('PersonApplicationDetail.vue', () => {
     expect(wrapper.vm.qualCodeList.length).toBe(3)
   })
   it('removes current driller from store if we need to fetch another driller (prevent momentarily showing previous driller', () => {
-    const wrapper = shallow(PersonApplicationDetail, {
+    shallow(ApplicationDetail, {
       localVue,
       store,
       stubs: ['router-link', 'router-view'],
@@ -170,6 +170,6 @@ describe('PersonApplicationDetail.vue', () => {
         $route: {params: {person_guid: 'aaaa-4444-aaaa', classCode: 'geotech'}}
       }
     })
-    expect(mutations.setDriller).toHaveBeenCalled()
+    expect(mutations.SET_DRILLER).toHaveBeenCalled()
   })
 })
