@@ -422,8 +422,7 @@ class ApplicationListView(AuditCreateMixin, ListCreateAPIView):
             'registration__person',
             'registration__registries_activity',
             'registration__status',
-            'registration__register_removal_reason') \
-        .prefetch_related('qualifications')
+            'registration__register_removal_reason')
 
 
 class ApplicationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
@@ -449,7 +448,5 @@ class ApplicationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
             'registration__person',
             'registration__registries_activity',
             'registration__status',
-            'registration__register_removal_reason') \
-        .prefetch_related('qualifications')
+            'registration__register_removal_reason')
     lookup_field = "application_guid"
-    
