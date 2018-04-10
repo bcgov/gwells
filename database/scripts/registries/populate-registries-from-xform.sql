@@ -448,7 +448,7 @@ and   xform.lastname = per.surname;
 -- Applications from "Water Well" Well Drillers (ultimately successful)
 
 -- CANNOT do below as the same person appears on register many times
--- and I cannot link to the same person.  But I for now can use
+-- and I cannot link to the same person w/o a key.  But I for now can use
 -- xform_registries_drillers_reg.reg_guid being the same as registries_person.person_guid
 
 INSERT INTO registries_application (
@@ -494,6 +494,95 @@ and xform.reg_guid = per.person_guid
 and xform.classofwelldriller like '%Water Well%'
 and trim(both from trk.name) = concat(per.surname, ', ', per.first_name)
 and xform.name = concat(per.surname, ', ', per.first_name);
+
+
+-- Active Statuses for Applications from "Water Well" Well Drillers (ultimately successful)
+--
+-- CANNOT do below as the same person appears on register many times
+-- and I cannot link to the same person w/o a key.  But I for now can use
+-- xform_registries_drillers_reg.reg_guid being the same as registries_person.person_guid
+
+INSERT INTO registries_application_status (
+ create_user
+,create_date
+,update_user
+,update_date
+,application_status_guid
+,notified_date
+,effective_date
+,expired_date
+,application_guid
+,registries_application_status_code
+)
+SELECT
+ 'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'
+,'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'
+,gen_random_uuid()
+,trk.date_approval_letter_card_sent
+,trk.app_approval_date
+,null -- still Registered 
+,app.application_guid
+,'A'
+from registries_register reg,
+     xform_registries_action_tracking_driller trk,
+     registries_person per,
+     registries_application app
+WHERE per.person_guid = reg.person_guid
+AND   app.register_guid = reg.register_guid
+AND reg.registries_status_code = 'ACTIVE'
+and reg.registries_activity_code = 'DRILL'
+and app.registries_subactivity_code = 'WATER'
+and trim(both from trk.name) = concat(per.surname, ', ', per.first_name)
+-- until data cleanup
+and trk.app_approval_date is not null;
+
+
+
+-- Historical Statuses for Applications from "Water Well" Well Drillers (ultimately successful)
+--
+-- CANNOT do below as the same person appears on register many times
+-- and I cannot link to the same person w/o a key.  But I for now can use
+-- xform_registries_drillers_reg.reg_guid being the same as registries_person.person_guid
+
+INSERT INTO registries_application_status (
+ create_user
+,create_date
+,update_user
+,update_date
+,application_status_guid
+,notified_date
+,effective_date
+,expired_date
+,application_guid
+,registries_application_status_code
+)
+SELECT
+ 'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'
+,'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'
+,gen_random_uuid()
+,null -- N/A for recipt of application
+,trk.date_app_received
+,trk.app_approval_date
+,app.application_guid
+,'P'
+from registries_register reg,
+     xform_registries_action_tracking_driller trk,
+     registries_person per,
+     registries_application app
+WHERE per.person_guid = reg.person_guid
+AND   app.register_guid = reg.register_guid
+AND reg.registries_status_code = 'ACTIVE'
+and reg.registries_activity_code = 'DRILL'
+and app.registries_subactivity_code = 'WATER'
+and trim(both from trk.name) = concat(per.surname, ', ', per.first_name)
+and trk.date_app_received is not null
+and trk.app_approval_date is not null;
+
+
 
 -- Applications from "Geoexchange" Well Drillers (ultimately successful)
 INSERT INTO registries_application (
