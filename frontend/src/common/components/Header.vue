@@ -21,6 +21,9 @@
         </b-navbar-nav>
         <b-navbar-nav class="ml-auto">
           <b-navbar-toggle class="d-sm-none" target="nav_collapse"></b-navbar-toggle>
+          <b-nav-item>
+            <keycloak-auth/>
+          </b-nav-item>
         </b-navbar-nav>
       </b-container>
     </b-navbar>
@@ -33,52 +36,22 @@
               <b-nav-item class="navbar-link lvl2-link" href="#">Well Search</b-nav-item>
               <b-nav-item class="navbar-link lvl2-link" href="#">Groundwater Information</b-nav-item>
               <b-nav-item class="navbar-link lvl2-link" href="#">Registry</b-nav-item>
-              <b-nav-item
-                  class="navbar-link lvl2-link"
-                  v-if="!user"
-                  @click="loginPopover = !loginPopover"
-                  ref="loginButton">Log in</b-nav-item>
-              <b-nav-item class="navbar-link lvl2-link" v-if="user" @click="logout()">Log out</b-nav-item>
             </b-navbar-nav>
           </b-container>
         </b-collapse>
       </b-container>
     </b-navbar>
-    <b-modal
-        v-model="loginPopover"
-        @shown="onLoginShown"
-        title="Log in"
-        hide-footer>
-        <b-form @submit.prevent="login">
-        <b-form-group
-            label="Username"
-            label-for="loginPopUsername"
-            :state="loginUsernameState" class="mb-3"
-            invalid-feedback="This field is required">
-          <b-form-input
-              ref="input1"
-              id="loginPopUsername"
-              size="sm"
-              v-model="credentials.username"/>
-        </b-form-group>
-        <b-form-group
-            label="Password"
-            label-for="loginPopPassword"
-            :state="loginPasswordState" class="mb-3"
-            invalid-feedback="This field is required">
-          <b-form-input size="sm" type="password" id="loginPopPassword" v-model="credentials.password"/>
-        </b-form-group>
-        <b-btn type="submit" size="sm" variant="primary" class="mr-2">Log in</b-btn>
-        <b-btn @click="loginPopover = false" size="sm" variant="light">Cancel</b-btn>
-        </b-form>
-    </b-modal>
   </header>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
 import { LOGIN, LOGOUT } from '@/registry/store/actions.types'
+import Auth from '@/common/components/Auth.vue'
 export default {
+  components: {
+    'keycloak-auth': Auth
+  },
   data () {
     return {
       loginPopover: false,
