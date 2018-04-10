@@ -1,9 +1,12 @@
 <template>
   <div>
     <div v-if="!keycloak || (keycloak && !keycloak.authenticated)">
-      <button type="button" class="btn btn-light" @click="keyCloakLogin()">Log in</button>
+      <button type="button" class="btn btn-light btn-sm" @click="keyCloakLogin()">Log in</button>
     </div>
-    <div v-if="keycloak && keycloak.authenticated">Logged in <span>({{ keycloak.tokenParsed.name }})</span></div>
+    <div v-if="keycloak && keycloak.authenticated">
+      <span class="userLoggedInText">{{ keycloak.tokenParsed.name }}</span>
+      <button type="button" class="btn btn-light btn-sm" @click="keyCloakLogout()">Log out</button>
+      </div>
   </div>
 </template>
 
@@ -30,7 +33,6 @@ export default {
         'clientId': 'webapp-dev-local'
       })
       kc.init({onLoad: 'check-sso'}).success(() => {
-        console.log('kc init')
         this.kc = kc
         this.$store.commit(SET_KEYCLOAK, kc)
         ApiService.authHeader('JWT', kc.token)
@@ -45,6 +47,11 @@ export default {
           }
         })
       }
+    },
+    keyCloakLogout () {
+      if (this.kc && this.kc.authenticated) {
+        this.kc.logout()
+      }
     }
   },
   created () {
@@ -54,5 +61,7 @@ export default {
 </script>
 
 <style>
-
+.userLoggedInText {
+  margin-right: 10px;
+}
 </style>
