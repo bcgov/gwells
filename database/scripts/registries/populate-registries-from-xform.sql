@@ -368,8 +368,7 @@ SELECT
 ,null
 ,'DRILL'
 ,'ACTIVE'
- from xform_registries_drillers_reg
- ;
+ from xform_registries_drillers_reg;
  -- TODO we may need a guid on Access side to keep it  straight , on all tables
 
 -- Pump Installer Register (Active)
@@ -403,8 +402,8 @@ SELECT
 from        xform_registries_pump_installers_reg xform
 inner join  registries_person per
 on xform.firstname = per.first_name
-and   xform.lastname = per.surname
-;
+and   xform.lastname = per.surname;
+
 -- TODO Cannot use reg_guid as this PERSON may have been
 --      entered as driller
 
@@ -444,8 +443,7 @@ SELECT
 from        xform_registries_removed_from xform
 inner join  registries_person per
 on    xform.firstname = per.first_name
-and   xform.lastname = per.surname
-;
+and   xform.lastname = per.surname;
 
 -- Applications from "Water Well" Well Drillers (ultimately successful)
 
@@ -495,7 +493,7 @@ and reg.registries_activity_code = 'DRILL'
 and xform.reg_guid = per.person_guid
 and xform.classofwelldriller like '%Water Well%'
 and trim(both from trk.name) = concat(per.surname, ', ', per.first_name)
-and xform.name = concat(per.surname, ', ', per.first_name)
+and xform.name = concat(per.surname, ', ', per.first_name);
 
 -- Applications from "Geoexchange" Well Drillers (ultimately successful)
 INSERT INTO registries_application (
@@ -540,7 +538,7 @@ and reg.registries_activity_code = 'DRILL'
 and xform.reg_guid = per.person_guid
 and xform.classofwelldriller like '%Geoexchange%'
 and trim(both from trk.name) = concat(per.surname, ', ', per.first_name)
-and xform.name = concat(per.surname, ', ', per.first_name)
+and xform.name = concat(per.surname, ', ', per.first_name);
 
 -- Applications from "Geotechnical" Well Drillers (ultimately successful)
 INSERT INTO registries_application (
@@ -585,7 +583,7 @@ and reg.registries_activity_code = 'DRILL'
 and xform.reg_guid = per.person_guid
 and xform.classofwelldriller like '%Geotechnical%'
 and trim(both from trk.name) = concat(per.surname, ', ', per.first_name)
-and xform.name = concat(per.surname, ', ', per.first_name)
+and xform.name = concat(per.surname, ', ', per.first_name);
 
 -- Applications from Pump Installers (ultimately successful)
 INSERT INTO registries_application (
