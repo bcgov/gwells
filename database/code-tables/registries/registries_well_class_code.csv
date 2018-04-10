@@ -1,0 +1,9 @@
+registries_well_class_code,description,display_order,create_date,update_date,create_user,update_user
+"WAT","Water supply well","2","2018-01-01 00:00:00-08","2018-01-01 00:00:00-08","DATALOAD_USER","DATALOAD_USER"
+"MON","Monitoring well","4","2018-01-01 00:00:00-08","2018-01-01 00:00:00-08","DATALOAD_USER","DATALOAD_USER"
+"RECH","Recharge/Injection well","6","2018-01-01 00:00:00-08","2018-01-01 00:00:00-08","DATALOAD_USER","DATALOAD_USER"
+"DEWAT","Dewatering well","8","2018-01-01 00:00:00-08","2018-01-01 00:00:00-08","DATALOAD_USER","DATALOAD_USER"
+"REM","Remediatation well","10","2018-01-01 00:00:00-08","2018-01-01 00:00:00-08","DATALOAD_USER","DATALOAD_USER"
+"GEO","Geotechnical well","12","2018-01-01 00:00:00-08","2018-01-01 00:00:00-08","DATALOAD_USER","DATALOAD_USER"
+"CLOS","Closed loop geoexchange well","14","2018-01-01 00:00:00-08","2018-01-01 00:00:00-08","DATALOAD_USER","DATALOAD_USER"
+"PUMP","Install pump in Water supply, Recharge/Injection, or Dewatering well","20","2018-01-01 00:00:00-08","2018-01-01 00:00:00-08","DATALOAD_USER","DATALOAD_USER"
