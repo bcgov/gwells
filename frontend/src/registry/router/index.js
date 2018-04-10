@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import AuthEntry from './authEntry'
 import AuthGuard from './authGuard'
 
 import SearchHome from '@/registry/components/search/SearchHome.vue'
@@ -33,9 +32,9 @@ export default new Router({
     {
       path: '/',
       name: 'SearchHome',
-      component: SearchHome,
-      beforeEnter: AuthEntry
+      component: SearchHome
     }
   ],
-  mode: 'history'
+  mode: 'history',
+  base: process.env.NODE_ENV === 'production' ? '/gwells/registries/' : '/'
 })
