@@ -1,6 +1,6 @@
 import { shallow, createLocalVue } from '@vue/test-utils'
 import Vuex from 'vuex'
-import PersonDetail from '@/registry/components/PersonDetail'
+import PersonDetail from '@/registry/components/people/PersonDetail'
 import APIErrorMessage from '@/common/components/APIErrorMessage'
 import { SET_DRILLER } from '@/registry/store/mutations.types'
 import { FETCH_DRILLER } from '@/registry/store/actions.types'
@@ -150,7 +150,7 @@ describe('PersonDetail.vue', () => {
         $route: {params: {person_guid: 'aaaa-4444-bbbb-1111'}}
       }
     })
-    expect(actions.fetchDriller).toHaveBeenCalled()
+    expect(actions.FETCH_DRILLER).toHaveBeenCalled()
   })
   it('loads the error component if there is an error', () => {
     getters = {

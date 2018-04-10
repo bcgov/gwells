@@ -5,7 +5,7 @@
         <h2 id="titlePersonName">{{ currentDriller.first_name }} {{ currentDriller.surname }}</h2>
       </div>
       <div class="col-xs-12" v-if="error">
-        <api-error :error="error" resetter="setError"></api-error>
+        <api-error :error="error" resetter="SET_ERROR"></api-error>
       </div>
       <div class="col-xs-12" v-if="classification && classification.registries_subactivity">
         <h2>Certification - {{ classification.registries_subactivity.description }}</h2>

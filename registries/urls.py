@@ -115,5 +115,5 @@ urlpatterns = [
     url(r'^registries/docs/$', schema_view.with_ui('swagger', cache_timeout=None), name='api-docs-old'),
 
     # Registries frontend webapp loader (html page that contains header, footer, and a SPA in between)
-    url(r'^registries/$', views.RegistriesIndexView.as_view(), name='registries-home'),
+    url(r'^registries/', views.RegistriesIndexView.as_view(), name='registries-home'),
 ]

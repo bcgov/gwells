@@ -3,14 +3,18 @@
 import 'babel-polyfill'
 import Vue from 'vue'
 import Vuex from 'vuex'
+import BootstrapVue from 'bootstrap-vue'
 import App from './App'
 import router from './router'
 import { store } from './store'
+import '@/common/assets/css/bootstrap-theme.min.css'
+import 'bootstrap-vue/dist/bootstrap-vue.css'
 
 // GWELLS js API library (helper methods for working with API)
 import ApiService from '@/common/services/ApiService.js'
 
 Vue.use(Vuex)
+Vue.use(BootstrapVue)
 Vue.config.productionTip = false
 
 // set baseURL and default headers
@@ -24,3 +28,5 @@ new Vue({
   components: { App },
   template: '<App/>'
 })
+
+Vue.config.devtools = true
