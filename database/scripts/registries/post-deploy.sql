@@ -320,6 +320,10 @@ SELECT
 ,reg.registries_activity_code      AS reg_registries_activity_code      
 ,reg.registries_status_code        AS reg_registries_status_code        
 ,app.registries_subactivity_code   AS app_registries_subactivity_code 
+,status.registries_application_status_code AS appstatus_code 
+,status.notified_date                      AS appstatus_notified_date                      
+,status.effective_date                     AS appstatus_effective_date                     
+,status.expired_date                       AS appstatus_expired_date                       
 -- Not relevant as only ACTIVE Drillers
 -- ,reg.register_removal_date         AS reg_register_removal_date         
 -- ,reg.person_guid                   AS reg_person_guid                   
@@ -366,9 +370,6 @@ SELECT
 ,app.primary_certificate_no      AS app_primary_certificate_no      
 ,app.acc_cert_guid               AS app_acc_cert_guid               
 ,app.register_guid               AS app_register_guid               
-
-
-,status.registries_application_status_code AS appstatus_code 
 ,status.create_user                        AS appstatus_create_user                        
 ,status.create_date                        AS appstatus_create_date                        
 ,status.update_user                        AS appstatus_update_user                        
@@ -379,7 +380,7 @@ SELECT
 ,status.expired_date                       AS appstatus_expired_date                       
 ,status.application_guid                   AS appstatus_application_guid                   
 */
-FROM registries_person per
+FROM registries_person         per
 LEFT JOIN registries_contact_detail con 
 ON per.person_guid = con.person_guid
 LEFT JOIN registries_organization org
@@ -392,10 +393,14 @@ INNER JOIN registries_application_status status
 ON app.application_guid = status.application_guid
 WHERE reg.registries_activity_code = 'DRILL'
 AND   reg.registries_status_code = 'ACTIVE'
+ORDER BY per.person_guid, reg.register_guid, app.application_guid, status.effective_date desc
 ;
 
 285 drillers
 723 on application 
 496 status
+
+select first_name, surname, reg_registration_no, reg_registration_date, appstatus_code, appstatus_effective_date, appstatus_expired_date
+from vw_well_driller_application;
 
 
