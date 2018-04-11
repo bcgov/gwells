@@ -181,6 +181,12 @@ export const store = new Vuex.Store({
     },
     keycloak (state) {
       return state.keycloak
+    },
+    userIsAdmin (state) {
+      if (state.keycloak && state.keycloak.authenticated) {
+        return state.keycloak.hasRealmRole('gwells_admin')
+      }
+      return false
     }
   }
 })
