@@ -23,6 +23,7 @@ from registries.serializers import (
     PersonListSerializer,
     RegistrationAdminSerializer,)
 
+
 class AuditCreateMixin(CreateModelMixin):
     """
     Adds create_user and create_date fields when instances are created
@@ -53,6 +54,7 @@ class APILimitOffsetPagination(LimitOffsetPagination):
     """
 
     max_limit = 100
+
     def get_paginated_response(self, data):
         return Response(OrderedDict([
             ('count', self.count),
@@ -245,7 +247,7 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
         # Search for cities (split list and return all matches)
         # search comes in as a comma-separated querystring param e.g: ?city=Atlin,Lake Windermere,Duncan
         cities = self.request.query_params.get('city', None)
-        if cities is not None and len(cities):
+        if cities:
             cities = cities.split(',')
             qs = qs.filter(organization__city__in=cities)
         
