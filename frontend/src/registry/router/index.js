@@ -15,19 +15,29 @@ export default new Router({
       path: '/people/edit/:person_guid',
       name: 'PersonDetailEdit',
       component: PersonEdit,
-      beforeEnter: AuthGuard
+      beforeEnter: AuthGuard,
+      meta: {
+        view: 'person',
+        edit: 'person'
+      }
     },
     {
       path: '/people/:person_guid/applications/:classCode',
       name: 'ApplicationDetail',
       component: ApplicationDetail,
-      beforeEnter: AuthGuard
+      beforeEnter: AuthGuard,
+      meta: {
+        view: 'person'
+      }
     },
     {
       path: '/people/:person_guid',
       name: 'PersonDetail',
       component: PersonDetail,
-      beforeEnter: AuthGuard
+      beforeEnter: AuthGuard,
+      meta: {
+        view: 'person'
+      }
     },
     {
       path: '/',
