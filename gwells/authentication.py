@@ -57,5 +57,7 @@ class JwtOidcAuthentication(JSONWebTokenAuthentication):
         if 'gwells_admin' in roles:
             profile.is_gwells_admin = True
             profile.save()
+            user.is_staff = True
+            user.save()
 
         return user
