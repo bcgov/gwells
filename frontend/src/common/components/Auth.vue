@@ -6,7 +6,7 @@
     <div v-if="keycloak && keycloak.authenticated">
       <span class="userLoggedInText">{{ keycloak.tokenParsed.name }}</span>
       <button type="button" class="btn btn-light btn-sm" @click="keyCloakLogout()">Log out</button>
-      </div>
+    </div>
   </div>
 </template>
 
@@ -52,6 +52,7 @@ export default {
     keyCloakLogout () {
       if (this.kc && this.kc.authenticated) {
         this.kc.logout()
+        this.$router.push({ name: 'SearchHome' })
       }
     }
   },
