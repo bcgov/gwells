@@ -24,7 +24,7 @@
             <keycloak-auth/>
           </b-nav-item>
         </b-navbar-nav>
-        <b-navbar-nav class="ml-auto">
+        <b-navbar-nav class="ml-auto d-sm-none">
           <b-navbar-toggle class="d-sm-none" target="nav_collapse"></b-navbar-toggle>
         </b-navbar-nav>
       </b-container>
@@ -34,7 +34,7 @@
         <b-collapse class="py-2" is-nav id="nav_collapse">
           <b-container id="navContainer">
             <b-navbar-nav>
-              <b-nav-text class="d-sm-none text-light">Groundwater Wells and Aquifers</b-nav-text>
+              <b-nav-item class="d-sm-none text-light">Groundwater Wells and Aquifers</b-nav-item>
               <b-nav-item class="navbar-link lvl2-link" href="#">Well Search</b-nav-item>
               <b-nav-item class="navbar-link lvl2-link" href="#">Groundwater Information</b-nav-item>
               <b-nav-item class="navbar-link lvl2-link" href="#">Registry</b-nav-item>
