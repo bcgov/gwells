@@ -154,7 +154,7 @@ class Person(AuditModel):
 
     def __str__(self):
         return '%s %s' % (self.first_name, self.surname)
-    
+
     @property
     def name(self):
         return '%s %s' % (self.first_name, self.surname)
@@ -208,7 +208,7 @@ class WellClassCode(AuditModel):
         verbose_name_plural = 'Well Classes'
 
     def __str__(self):
-        return self.description
+        return self.registries_well_class_code
 
 
 class Qualification(AuditModel):
@@ -229,7 +229,7 @@ class Qualification(AuditModel):
         SubactivityCode,
         db_column='registries_subactivity_code',
         on_delete=models.PROTECT,
-        related_name="Qualification")
+        related_name="qualification_set")
     display_order = models.PositiveIntegerField()
     effective_date = models.DateField(default=datetime.date.today)
     expired_date = models.DateField(blank=True, null=True)
@@ -240,7 +240,7 @@ class Qualification(AuditModel):
         verbose_name_plural = 'Qualification codes'
 
     def __str__(self):
-        return '%s %s' % (self.subactivity, self.well_class)
+        return self.well_class.registries_well_class_code
 
 
 class RegistriesStatusCode(AuditModel):
@@ -313,7 +313,7 @@ class Register(AuditModel):
         blank=True,
         null=True,
         verbose_name="Date of Removal from Register")
-        
+
     class Meta:
         db_table = 'registries_register'
         verbose_name_plural = 'Registrations'
@@ -409,7 +409,7 @@ class RegistriesApplicationStatus(AuditModel):
     application = models.ForeignKey(
         RegistriesApplication,
         db_column='application_guid',
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         verbose_name="Application Reference",
         related_name="status_set")
     status = models.ForeignKey(
@@ -432,3 +432,28 @@ class RegistriesApplicationStatus(AuditModel):
             self.status.description,
             self.effective_date,
             self.expired_date)
+
+"""
+Tue Apr 10 10:15:34 2018 Expose DB Views to Django
+"""
+class vw_well_class(models.Model):
+
+    subactivity = models.CharField(
+        primary_key=True,
+        max_length=10,
+        editable=False)
+    activity_code = models.ForeignKey(
+        ActivityCode,
+        db_column='registries_activity_code',
+        on_delete=models.PROTECT)
+    well_class = models.CharField(max_length=100)
+
+    class Meta:
+        db_table = 'vw_well_class'
+        verbose_name = "Registries Well Class"
+        verbose_name_plural = "Registries Well Classes"
+        managed = False
+
+    def __str__(self):
+        return '%s %s %s' % (self.subactivity, self.activity_code, self.well_class)
+

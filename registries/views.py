@@ -225,11 +225,17 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
     # fetch related companies and registration applications (prevent duplicate database trips)
     queryset = Person.objects \
         .all() \
+        .select_related('organization') \
         .prefetch_related(
             'registrations',
-            'registrations__applications',
             'registrations__registries_activity',
-            'registrations__status'
+            'registrations__status',
+            'registrations__applications',
+            'registrations__applications__status_set',
+            'registrations__applications__status_set__status',
+            'registrations__applications__subactivity',
+            'registrations__applications__subactivity__qualification_set',
+            'registrations__applications__subactivity__qualification_set__well_class'
         )
 
     def get_queryset(self):
@@ -294,10 +300,14 @@ class PersonDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
         .all() \
         .select_related('organization') \
         .prefetch_related(
-            'registrations__applications',
             'registrations',
             'registrations__registries_activity',
-            'registrations__status'
+            'registrations__status',
+            'registrations__applications',
+            'registrations__applications__status_set',
+            'registrations__applications__subactivity',
+            'registrations__applications__subactivity__qualification_set',
+            'registrations__applications__subactivity__qualification_set__well_class'
         )
 
     def get_queryset(self):
@@ -407,8 +417,12 @@ class ApplicationListView(AuditCreateMixin, ListCreateAPIView):
     permission_classes = (IsAdminUser,)
     serializer_class = ApplicationAdminSerializer
     queryset = RegistriesApplication.objects.all() \
-        .select_related('registration') \
-        .prefetch_related('qualifications')
+        .select_related(
+            'registration',
+            'registration__person',
+            'registration__registries_activity',
+            'registration__status',
+            'registration__register_removal_reason')
 
 
 class ApplicationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
@@ -428,6 +442,11 @@ class ApplicationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
 
     permission_classes = (IsAdminUser,)
     serializer_class = ApplicationAdminSerializer
-    queryset = RegistriesApplication.objects.all().select_related('registration')
+    queryset = RegistriesApplication.objects.all() \
+        .select_related(
+            'registration',
+            'registration__person',
+            'registration__registries_activity',
+            'registration__status',
+            'registration__register_removal_reason')
     lookup_field = "application_guid"
-    

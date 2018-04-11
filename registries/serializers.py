@@ -108,9 +108,13 @@ class ApplicationListSerializer(AuditModelSerializer):
     Serializes RegistryApplication model fields for anonymous users
     """
 
-    qualifications = QualificationSerializer(many=True, read_only=True)
+    qualifications = serializers.StringRelatedField(
+        source='subactivity.qualification_set',
+        many=True,
+        read_only=True)
     status_set = ApplicationStatusSerializer(many=True, read_only=True)
     subactivity = SubactivitySerializer()
+    cert_authority = serializers.ReadOnlyField(source="primary_certificate.cert_auth.cert_auth_code")
 
     class Meta:
         model = RegistriesApplication
@@ -120,8 +124,9 @@ class ApplicationListSerializer(AuditModelSerializer):
             'reason_denied',
             'qualifications',
             'status_set',
-            'subactivity'
-        )
+            'subactivity',
+            'qualifications',
+            'cert_authority')
 
 
 class RegistrationsListSerializer(serializers.ModelSerializer):
@@ -237,6 +242,10 @@ class ApplicationAdminSerializer(AuditModelSerializer):
     """
 
     status_set = ApplicationStatusSerializer(many=True, read_only=True)
+    qualifications = serializers.StringRelatedField(
+        source='subactivity.qualification_set',
+        many=True,
+        read_only=True)
 
     class Meta:
         model = RegistriesApplication
@@ -252,6 +261,7 @@ class ApplicationAdminSerializer(AuditModelSerializer):
             'registrar_notes',
             'reason_denied',
             'subactivity',
+            'qualifications',
             'status_set'
         )
     
@@ -346,8 +356,6 @@ class OrganizationListSerializer(AuditModelSerializer):
     Serializes Organization model fields for "list" view.
     """
 
-    person_count = serializers.SerializerMethodField()
-
     class Meta:
         model = Organization
         fields = (
@@ -358,11 +366,7 @@ class OrganizationListSerializer(AuditModelSerializer):
             'province_state',
             'postal_code',
             'main_tel',
-            'person_count'
         )
-
-    def get_person_count(self, obj):
-        return obj.person_set.count()
 
 
 class PersonListSerializer(AuditModelSerializer):
@@ -370,7 +374,7 @@ class PersonListSerializer(AuditModelSerializer):
     Serializes the Person model for a list view (fewer fields than detail view)
     """
     registrations = RegistrationsListSerializer(many=True, read_only=True)
-    organization = serializers.PrimaryKeyRelatedField(queryset=Organization.objects.all(), required=False)
+    organization = OrganizationListSerializer()
 
     class Meta:
         model = Person
@@ -390,6 +394,12 @@ class PersonAdminSerializer(AuditModelSerializer):
 
     # organization = serializers.PrimaryKeyRelatedField(queryset=Organization.objects.all(), required=False)
     registrations = RegistrationAdminSerializer(many=True, read_only=True)
+    organization = OrganizationListSerializer(required=False)
+
+    def to_internal_value(self, data):
+        self.fields['organization'] = serializers.PrimaryKeyRelatedField(
+            queryset=Organization.objects.all(), required=False)
+        return super(PersonAdminSerializer, self).to_internal_value(data)
 
     class Meta:
         model = Person
