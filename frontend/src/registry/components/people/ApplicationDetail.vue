@@ -37,30 +37,30 @@
       <div class="row">
         <div class="col-xs-12 col-sm-4 col-md-3">
           <div class="qualification-item">
-            <r-checkbox :checked="~qualCodeList.findIndex(q => q === 'WAT')"></r-checkbox> Water supply wells
+            <r-checkbox :checked="qualCodeList.some(q => q === 'WAT')"></r-checkbox> Water supply wells
           </div>
           <div class="qualification-item">
-            <r-checkbox :checked="~qualCodeList.findIndex(q => q === 'MON')"></r-checkbox> Monitoring wells
+            <r-checkbox :checked="qualCodeList.some(q => q === 'MON')"></r-checkbox> Monitoring wells
           </div>
           <div class="qualification-item">
-            <r-checkbox :checked="~qualCodeList.findIndex(q => q === 'RECH')"></r-checkbox> Recharge wells
+            <r-checkbox :checked="qualCodeList.some(q => q === 'RECH')"></r-checkbox> Recharge wells
           </div>
           <div class="qualification-item">
-            <r-checkbox :checked="~qualCodeList.findIndex(q => q === 'RECH')"></r-checkbox> Injection wells
+            <r-checkbox :checked="qualCodeList.some(q => q === 'RECH')"></r-checkbox> Injection wells
           </div>
         </div>
         <div class="col-xs-12 col-sm-4 col-md-3 registry-item">
           <div class="qualification-item">
-            <r-checkbox :checked="~qualCodeList.findIndex(q => q === 'WAT')"></r-checkbox> Dewatering wells
+            <r-checkbox :checked="qualCodeList.some(q => q === 'WAT')"></r-checkbox> Dewatering wells
           </div>
           <div class="qualification-item">
-            <r-checkbox :checked="~qualCodeList.findIndex(q => q === 'REM')"></r-checkbox> Remediation wells
+            <r-checkbox :checked="qualCodeList.some(q => q === 'REM')"></r-checkbox> Remediation wells
           </div>
           <div class="qualification-item">
-            <r-checkbox :checked="~qualCodeList.findIndex(q => q === 'GEO')"></r-checkbox> Geotechnical wells
+            <r-checkbox :checked="qualCodeList.some(q => q === 'GEO')"></r-checkbox> Geotechnical wells
           </div>
           <div class="qualification-item">
-            <r-checkbox :checked="~qualCodeList.findIndex(q => q === 'CLOS')"></r-checkbox> Closed-loop geoexchange wells
+            <r-checkbox :checked="qualCodeList.some(q => q === 'CLOS')"></r-checkbox> Closed-loop geoexchange wells
           </div>
         </div>
       </div>
