@@ -4,31 +4,21 @@ import 'babel-polyfill'
 import Vue from 'vue'
 import Vuex from 'vuex'
 import BootstrapVue from 'bootstrap-vue'
-import App from './App'
-import router from './router'
-import { store } from './store'
+import Footsie from './Footsie'
 import '@/common/assets/css/bootstrap-theme.min.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
-
-// GWELLS js API library (helper methods for working with API)
-import ApiService from '@/common/services/ApiService.js'
 
 Vue.use(Vuex)
 Vue.use(BootstrapVue)
 Vue.config.productionTip = false
 
-// set baseURL and default headers
-ApiService.init()
-
 /* eslint-disable no-new */
 new Vue({
-  el: '#app',
-  router,
-  store,
+  el: '#footsie',
   components: {
-    App
+    Footsie
   },
-  template: '<App/>'
+  template: '<Footsie/>'
 })
 
 Vue.config.devtools = true
