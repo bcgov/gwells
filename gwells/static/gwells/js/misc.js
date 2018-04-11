@@ -164,7 +164,10 @@ $(document).ready(function(event) {
 	});
     // When the last item of an "Explore Within" menu is tabbed past, close the menu	
 	$(".explore ul li:last-child a").on("focusout", function(e) {
-		$(this).closest("ul").slideUp(200, 'linear', function () { });
+		var ul = $(this).closest("ul");
+		if (ul) {
+			ul.slideUp(200, 'linear', function () { });
+		}
 	});
 	
 	// Submit the search query when the search icon is clicked
@@ -351,9 +354,10 @@ $(document).mouseup(function(e) {
 	}		
 	
 	// Close any navigation tile menus
-    $(".explore ul").not(target.closest(".explore").find("ul")).slideUp(200, 'linear', function () { });
-
-    
+	var ul = $(".explore ul").not(target.closest(".explore").find("ul"));
+	if (ul) {
+		ul.slideUp(200, 'linear', function () { });
+	}
 });
 
 var scrollTimer;
@@ -383,36 +387,6 @@ $(window).on("scroll", function() {
 			$("#shareContainer").css("bottom","10px");
 		}
 		
-		// Check if the footer is within the viewport and switch the position of the button accordingly
-		var windowBottomCoordinate = $(window).scrollTop() + $(window).height();	
-		if(windowBottomCoordinate > $("#footer").offset().top) {
-			$(".back-to-top").addClass("footer-overlap");
-			$("#shareContainer").addClass("footer-overlap");
-		} else {
-			$(".back-to-top").removeClass("footer-overlap");
-			$("#shareContainer").removeClass("footer-overlap");
-		}
-		
-		/* 
-		 * When the page is scrolled in desktop mode, collapse the header
-		*/				
-	/* var scrollPosition = $(window).scrollTop();
-		if(scrollPosition > 50 && $(window).width() >= 768) {
-			if(!$("#header").hasClass("collapsed-header")) {
-				$("#header-main > .container").hide();
-				$("#header").addClass("collapsed-header");
-                $("#header-main > .container").fadeIn("300"); 
-			}	
-		} else {
-			if($("#header").hasClass("collapsed-header")) {
-				$("#header-main > .container").hide();
-				$("#header").removeClass("collapsed-header");
-				$("#header-main > .container").fadeIn("300", function()  {
-					// After the full header is fully loaded, readjust the top padding on content
-					adjustContentPadding();	
-				})
-			}		
-		} */
 		addScrollableBurgerMenu();
 
 	}, 100); // Timeout in msec
