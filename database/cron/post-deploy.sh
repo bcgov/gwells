@@ -71,7 +71,4 @@ else
     echo ". Skipping DB Replication from Legacy Database, as per DB_REPLICATION flag"
 fi
 
-cd /opt/app-root/src/
-python manage.py createtestuser
-
 echo "Completed Post-Deploy tasks."
