@@ -1,6 +1,10 @@
 import os
+
 from django.core.management.base import BaseCommand, CommandError
 from django.contrib.auth import get_user_model
+
+from gwells.settings.base import get_env_variable
+
 
 class Command(BaseCommand):
     help = 'Creates a test user to assist with API testing'
@@ -8,8 +12,8 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         User = get_user_model()
 
-        TEST_USER = os.getenv('GWELLS_API_TEST_USER', None)
-        TEST_PASSWD = os.getenv('GWELLS_API_TEST_PASSWORD', None)
+        TEST_USER = get_env_variable('GWELLS_API_TEST_USER', None, strict=True)
+        TEST_PASSWD = get_env_variable('GWELLS_API_TEST_PASSWORD', None, strict=True)
 
         if not TEST_USER or not TEST_PASSWD:
             raise CommandError('Please set GWELLS_API_TEST_USER and GWELLS_API_TEST_PASSWORD')
