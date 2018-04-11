@@ -6,7 +6,7 @@
           <th v-for="field in fields"
               :key="field.name"
               :class="field.class"
-              v-if="(field.visible === 'public' || user) && (field.activity === activity || field.activity == 'all')">
+              v-if="(field.visible === 'public' || userIsAdmin) && (field.activity === activity || field.activity == 'all')">
             {{field.name}} <i class="fa fa-sort" v-if="field.sortable && field.sortCode" @click="sortBy(field.sortCode)"></i>
           </th>
         </thead>
@@ -46,10 +46,10 @@
             <td>
               <driller-certificate-authority :driller="driller" :activity="activity"/>
             </td>
-            <td v-if="user && activity === 'DRILL'">
+            <td v-if="userIsAdmin && activity === 'DRILL'">
               <driller-registration-status :driller="driller" :activity="activity"/>
             </td>
-            <td v-if="user">
+            <td v-if="userIsAdmin">
               <router-link :to="{ name: 'PersonDetail', params: { person_guid: driller.person_guid } }">
                 Details
               </router-link>
@@ -186,7 +186,7 @@ export default {
     ...mapGetters([
       'loading',
       'listError',
-      'user',
+      'userIsAdmin',
       'drillers'
     ])
   },
