@@ -17,7 +17,7 @@ describe('SearchHome.vue', () => {
 
   beforeEach(() => {
     getters = {
-      user: () => {},
+      userIsAdmin: () => false,
       drillers: () => {
         return {
           results: [
@@ -98,7 +98,7 @@ describe('SearchHome.vue', () => {
 
   it('loads the error component if there is an error', () => {
     const getters = {
-      user: () => {},
+      userIsAdmin: () => false,
       drillers: () => [],
       loading: () => false,
       listError: () => {
