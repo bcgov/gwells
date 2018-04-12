@@ -84,6 +84,7 @@ th {
     /* 	padding-bottom: 5px; */
 }
 
+/* TODO: Can probably get rid of all header/footer css */
 #header .header-main-left,
 #header .header-main-right {
     padding: 0;
@@ -515,11 +516,6 @@ nav ul.inline li a:visited {
 #footerFeedback {
     position: relative;
     height: 50px;
-}
-
-#footerToggle {
-    background-color: #003366;
-    text-align: center;
 }
 
 #footerCollapsible {
