@@ -19,7 +19,7 @@ export default {
           tel.push(item.contact_tel)
         }
         if (item.contact_email) {
-          tel.push(item.contact_email)
+          email.push(item.contact_email)
         }
       })
       return tel.concat(email)
