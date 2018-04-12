@@ -1,3 +1,4 @@
+<!-- TODO: This file may be redundant, just use the Footer.vue file directly -->
 <template>
   <div>
     <gwells-footer/>
