@@ -116,7 +116,7 @@ export const store = new Vuex.Store({
            */
           data.forEach((item) => {
             // if a province doesn't exist in listByProvince, create a new item
-            if (!~listByProvince.findIndex(prov => prov.prov === item.province_state)) {
+            if (!listByProvince.some(prov => prov.prov === item.province_state)) {
               listByProvince.push({ prov: item.province_state, cities: [] })
             }
             listByProvince.find(prov => prov.prov === item.province_state).cities.push(item.city)
