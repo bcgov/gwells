@@ -94,7 +94,7 @@
 </head>
 
 <body>
-    <!-- HEADER -->
+    <!-- PREPARE FOR VUE -->
     <script type="text/JavaScript">
         // TODO: Enable data entry is something we get from environment variables, so we can actually
         // remove this and have the VUE component access it directly (by setting during webpack build)
@@ -103,18 +103,22 @@
     </script>
     {% render_bundle 'manifest' %}
     {% render_bundle 'vendor' %}
+    <!-- /PREPARE FOR VUE -->
+   
+    <!-- HEADER -->
     <div id="headie"></div>
     {% render_bundle 'headie' %}
     <!-- /HEADER -->
 
     <!-- BODY CONTENT -->
     <div id="topicTemplate" class="template container env-container">
-
         <!-- PAGE CONTENT -->
         <div class="row">
             <div id="main-content" role="main" class="contentPageMainColumn col-sm-12">
                 <div id="main-content-anchor"></div>
+                <!-- TITLE -->
                 <h2>{% block bodyheading_block %}{% endblock %}</h2>
+                <!-- /TITLE -->
                 <!-- INTRODUCTION -->
                 <div id="introduction">
                     {% for survey in surveys %} {% if survey.survey_page == page and survey.survey_enabled%}
@@ -134,17 +138,15 @@
                 </div>
             </div>
         </div>
-        <!-- PAGE CONTENT -->
+        <!-- /PAGE CONTENT -->
     </div>
     <!-- /BODY CONTENT -->
-
-    <div id="shareIcons">
-    </div>
 
     <!-- FOOTER -->
     <div id="footsie"></div>
     {% render_bundle 'footsie' %}
     <!-- /FOOTER -->
+ 
 
     <!-- Bootstrap core JavaScript
     ================================================== -->
@@ -153,12 +155,6 @@
     <script src="{% static 'gwells/js/jquery/jquery.slim.min.js' %}"></script>
     <script src="{% static 'gwells/js/popper.js/popper.min.js' %}"></script>
     <script src="{% static 'gwells/js/bootstrap.min.js' %}"></script>
-    <script>
-    // enable popovers everywhere
-    $(function () {
-        $('[data-toggle="popover"]').popover()
-    })
-    </script>
 
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <script src="{% static 'gwells/js/ie10-viewport-bug-workaround.js' %}"></script>
