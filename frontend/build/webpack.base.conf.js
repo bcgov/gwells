@@ -23,8 +23,8 @@ module.exports = {
   context: path.resolve(__dirname, '../'),
   entry: {
     registry: './src/registry/main.js',
-    footsie: './src/footsie/main.js',
-    headie: './src/headie/main.js'
+    footer: './src/footer/main.js',
+    header: './src/header/main.js'
   },
   output: {
     path: config.build.assetsRoot,
