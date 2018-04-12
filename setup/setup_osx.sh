@@ -243,6 +243,7 @@ psql -U postgres -d gwells -c \
 
 # Pip3 install virtualenv and virtualenvwrapper
 #
+pip3 install --upgrade pip
 PACKAGES="
 	virtualenv
 	virtualenvwrapper
