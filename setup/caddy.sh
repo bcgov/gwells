@@ -55,7 +55,7 @@ then
 	oc patch route ${APP_NAME} -p '{ "spec": { "to": { "name": "proxy-caddy" }, "port": { "targetPort": "2015-tcp" }}}'
 elif [ "${PARAM}" == "maint-off" ]
 then
-	oc patch route ${APP_NAME} -p '{ "spec": { "to": { "name": "jenkins" }, "port": { "targetPort": "web" }}}'
+	oc patch route ${APP_NAME} -p '{ "spec": { "to": { "name": "gwells" }, "port": { "targetPort": "web" }}}'
 elif [ "${PARAM}" == "build" ]
 then
 	oc process -f ${OC_TEMPLATE_BUILD} -p NAME=${APP_NAME} GIT_REPO=${GIT_REPO} GIT_BRANCH=${GIT_BRANCH} IMG_NAME=${IMG_NAME} | oc apply -f -
