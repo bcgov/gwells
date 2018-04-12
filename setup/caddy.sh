@@ -17,7 +17,7 @@ VERBOSE=${VERBOSE:-false}
 #
 IMG_NAME=${IMG_NAME:-bcgov-s2i-caddy}
 APP_NAME=${APP_NAME:-proxy-caddy}
-GIT_REPO=${GIT_REPO:-https://github.com/gwells/gwells.git}
+GIT_REPO=${GIT_REPO:-https://github.com/bcgov/gwells.git}
 GIT_BRANCH=${GIT_BRANCH:-master}
 BUILD_PROJECT=${BUILD_PROJECT:-moe-gwells-tools}
 OC_SERVER=${OC_SERVER:-https://console.pathfinder.gov.bc.ca:8443}
