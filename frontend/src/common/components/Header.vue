@@ -35,9 +35,20 @@
           <b-container id="navContainer">
             <b-navbar-nav>
               <b-nav-text class="d-sm-none text-light">Groundwater Wells and Aquifers</b-nav-text>
-              <b-nav-item class="navbar-link lvl2-link" href="#">Well Search</b-nav-item>
-              <b-nav-item class="navbar-link lvl2-link" href="#">Groundwater Information</b-nav-item>
-              <b-nav-item class="navbar-link lvl2-link" href="#">Registry</b-nav-item>
+              <b-nav-item class="navbar-link lvl2-link" :href="url.search">Well Search</b-nav-item>
+              <b-nav-item class="navbar-link lvl2-link" :href="url.groundWater">Groundwater Information</b-nav-item>
+              <b-nav-item class="navbar-link lvl2-link" :href="url.registry">Registry</b-nav-item>
+              <b-nav-item class="navbar-link lvl2-link" v-if="show.dataEntry" :href="url.report">Submit Report</b-nav-item>
+              <b-nav-item class="navbar-link lvl2-link" v-if="show.admin" :href="url.admin">Admin</b-nav-item>
+              <!--
+                Need to match:
+                {% if settings.ENABLE_DATA_ENTRY %}
+                <li><a id="navbar-submission" href="{% url 'activity_submission_create' %}">Submit Report</a></li>
+                {% endif %}
+                {% if request.user|has_group:"admin" %}
+                <li><a id="collapsable-ribbon-admin" href="{% url 'site_admin' %}">Admin</a></li>
+                {% endif %}
+               -->
             </b-navbar-nav>
           </b-container>
         </b-collapse>
@@ -53,7 +64,25 @@ export default {
     'keycloak-auth': Auth
   },
   data () {
+    // TODO: Get this value from the store (vueX?)
+    let baseUrl = 'http://localhost:8000/gwells'
     return {
+      url: {
+        search: baseUrl,
+        groundWater: baseUrl + '/groundwater-information',
+        registry: baseUrl + '/registries',
+        report: baseUrl + '/submission/create',
+        // TODO: The django admin url should be set by environment and pulled in with webpack, placed into
+        // store (vuex?) and accessed from there.
+        admin: baseUrl + '/admin'
+      },
+      show: {
+        // TODO: Get these values from stor (VueX?)
+        // TODO: Find some other way, this is picked up as an error by webpack, complaining that the
+        // variables are not defined.
+        dataEntry: (typeof ENABLE_DATA_ENTRY === 'undefined') ? false : ENABLE_DATA_ENTRY,
+        admin: (typeof SHOW_ADMIN === 'undefined') ? false : SHOW_ADMIN
+      }
     }
   }
 }
