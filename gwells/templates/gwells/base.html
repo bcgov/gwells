@@ -45,7 +45,7 @@
 
     <title>Groundwater Wells {% block title %}{% endblock %} - Province of British Columbia</title>
 
-    <!-- BOOTSTRAP CORE CSS v3.3.6 -->
+    <!-- BOOTSTRAP (https://github.com/bcgov/bootstrap-theme) -->
     <link rel="stylesheet" href="{% static 'gwells/css/bootstrap-theme.min.css' %}" />
 
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
@@ -104,7 +104,7 @@
     {% render_bundle 'manifest' %}
     {% render_bundle 'vendor' %}
     <!-- /PREPARE FOR VUE -->
-   
+
     <!-- HEADER -->
     <div id="header"></div>
     {% render_bundle 'header' %}
@@ -142,11 +142,14 @@
     </div>
     <!-- /BODY CONTENT -->
 
+    <div id="shareIcons">
+    </div>
+
     <!-- FOOTER -->
     <div id="footer"></div>
     {% render_bundle 'footer' %}
     <!-- /FOOTER -->
- 
+
 
     <!-- Bootstrap core JavaScript
     ================================================== -->
