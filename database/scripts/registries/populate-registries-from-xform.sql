@@ -4,877 +4,719 @@
 --
 -- psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER -f populate-registries-from-xform.sql
 
--- Preload with known organizations that act as Certificate Authorities
-INSERT INTO registries_organization (              
- name                  
-,street_address        
-,city                  
-,postal_code           
-,main_tel              
-,fax_tel               
-,website_url           
-,certificate_authority 
-,province_state_code
-,org_guid   
-,create_user  
-,create_date 
-,update_user  
-,update_date 
-) SELECT
- 'CGWA'
-,null
-,null
-,null
-,null
-,null
-,'https://www.bcgwa.org/'
-,true
-,'BC'
-,'d76775a3-650d-44cb-a3b7-5faf8558f29d'::uuid
-,'DATALOAD_USER'
-,'2018-01-01 00:00:00-08'
-,'DATALOAD_USER'
-,'2018-01-01 00:00:00-08'
-;
 
-INSERT INTO registries_organization (              
- name                  
-,street_address        
-,city                  
-,postal_code           
-,main_tel              
-,fax_tel               
-,website_url           
-,certificate_authority 
-,province_state_code
-,org_guid   
-,create_user  
-,create_date 
-,update_user  
-,update_date 
-) SELECT
- 'Province of B.C.'
-,null
-,null
-,null
-,null
-,null
-,'https://www2.gov.bc.ca/gov/content/environment/air-land-water/water/laws-rules/groundwater-protection-regulation'
-,true
-,'BC'
-,'d3dfedd0-59b3-41cd-a40c-6e35b236a3d6'::uuid
-,'DATALOAD_USER'
-,'2018-01-01 00:00:00-08'
-,'DATALOAD_USER'
-,'2018-01-01 00:00:00-08'
-;
-
-INSERT INTO registries_organization (              
- name                  
-,certificate_authority 
-,org_guid   
-,create_user  
-,create_date 
-,update_user  
-,update_date 
-) SELECT
- distinct on (trim (both from company_name)) company_name
-,false
-,gen_random_uuid()
-,'DATALOAD_USER'
-,'2018-01-01 00:00:00-08'
-,'DATALOAD_USER'
-,'2018-01-01 00:00:00-08' 
-from xform_registries_action_tracking_driller
-where company_name is not null
-order by trim (both from company_name);
-
-
-UPDATE registries_organization org SET 
-(street_address        
-,city                  
-,postal_code           
-,main_tel              
-,fax_tel               
-,province_state_code
-) = (SELECT 
- companyaddress
-,companycity
-,companypostalcode
-,companyphone
-,companyfax
-,companyprov
-from xform_registries_drillers_reg xform
-where xform.companyname = org.name
-LIMIT 1
-)
-WHERE org.certificate_authority is false;
-
-
--- May need distinct on (first_name || surname )
-SELECT COUNT(*), firstname, lastname
-FROM   xform_registries_drillers_reg xform
-group by firstname, lastname
-having count(*) > 1;
-
-INSERT INTO registries_person (              
- first_name                  
-,surname        
-,person_guid                             
-,create_user  
-,create_date 
-,update_user  
-,update_date 
-)
-SELECT 
- (regexp_split_to_array(name,', '))[2]
-,(regexp_split_to_array(name,', '))[1]
-,xform_trk.trk_guid
-,'DATALOAD_USER'
-,'2018-01-01 00:00:00-08'
-,'DATALOAD_USER'
-,'2018-01-01 00:00:00-08' 
-from xform_registries_action_tracking_driller xform_trk;
-
-INSERT INTO registries_contact_at (              
- contact_tel    
-,contact_email  
-,effective_date 
-,expired_date   
-,org_guid       
-,person_guid                               
-,contact_at_guid
-,create_user  
-,create_date 
-,update_user  
-,update_date 
-)
-SELECT trim (both from xform.companyphone)
-,trim (both from xform.companyemail)
-,'1900-01-01 00:00:00-08' 
-,null
-,org.org_guid
-,per.person_guid
-,gen_random_uuid()
-,'DATALOAD_USER'
-,'2018-01-01 00:00:00-08'
-,'DATALOAD_USER'
-,'2018-01-01 00:00:00-08'
-from xform_registries_drillers_reg xform
-inner join registries_person per
-  on (per.surname    = xform.lastname and
-      per.first_name = xform.firstname)
-inner join registries_organization org
-  on org.name = xform.companyname;
-
-INSERT INTO registries_application (              
- file_no         
-,over19_ind      
-,registrar_notes 
-,reason_denied   
-,person_guid     
-,application_guid 
-,create_user  
-,create_date 
-,update_user  
-,update_date 
-)
-SELECT
- null
-,true
-,trim (both from xform_trk.comments)
-,null
-,xform_trk.trk_guid
-,gen_random_uuid()
-,'DATALOAD_USER'
-,'2018-01-01 00:00:00-08'
-,'DATALOAD_USER'
-,'2018-01-01 00:00:00-08'
-from xform_registries_action_tracking_driller xform_trk;
-
--- 'DRILL', 'GEOXCHG'
-INSERT INTO registries_classification_applied_for (              
- primary_certificate_no         
-,certifying_org_guid                       
-,application_guid               
-,registries_subactivity_guid    
-,classification_applied_for_guid
-,create_user  
-,create_date 
-,update_user  
-,update_date 
-)
-SELECT
- 'LEGACY'
-,CASE
-   WHEN xform_reg.typeofcertificate like '%CGWA' 
-     THEN 'd76775a3-650d-44cb-a3b7-5faf8558f29d'::uuid
-   WHEN xform_reg.typeofcertificate like '%Prov. Of BC'
-     THEN 'd3dfedd0-59b3-41cd-a40c-6e35b236a3d6'::uuid
- ELSE null
- END  
-,appl.application_guid
-,(select subact.registries_subactivity_guid
-  from registries_subactivity_code subact, registries_activity_code act
-  where act.registries_activity_guid = subact.registries_activity_guid
-  and   act.code = 'DRILL'
-  and   subact.code = 'GEOXCHG'
- )
-,gen_random_uuid()
-,'DATALOAD_USER'
-,'2018-01-01 00:00:00-08'
-,'DATALOAD_USER'
-,'2018-01-01 00:00:00-08'
-from registries_application appl
-    ,registries_person per
-    ,xform_registries_drillers_reg xform_reg
-where per.person_guid = appl.person_guid
-and  (per.surname    = xform_reg.lastname and
-      per.first_name = xform_reg.firstname)
-and   xform_reg.classofwell LIKE '%Geothermal%';
-
--- 'DRILL', 'GEOTECH'
-INSERT INTO registries_classification_applied_for (              
- primary_certificate_no         
-,certifying_org_guid                       
-,application_guid               
-,registries_subactivity_guid    
-,classification_applied_for_guid
-,create_user  
-,create_date 
-,update_user  
-,update_date 
-)
-SELECT
- 'LEGACY'
-,CASE
-   WHEN xform_reg.typeofcertificate like '%CGWA' 
-     THEN 'd76775a3-650d-44cb-a3b7-5faf8558f29d'::uuid
-   WHEN xform_reg.typeofcertificate like '%Prov. Of BC'
-     THEN 'd3dfedd0-59b3-41cd-a40c-6e35b236a3d6'::uuid
- ELSE null
- END  
-,appl.application_guid
-,(select subact.registries_subactivity_guid
-  from registries_subactivity_code subact, registries_activity_code act
-  where act.registries_activity_guid = subact.registries_activity_guid
-  and   act.code = 'DRILL'
-  and   subact.code = 'GEOTECH'
- )
-,gen_random_uuid()
-,'DATALOAD_USER'
-,'2018-01-01 00:00:00-08'
-,'DATALOAD_USER'
-,'2018-01-01 00:00:00-08'
-from registries_application appl
-    ,registries_person per
-    ,xform_registries_drillers_reg xform_reg
-where per.person_guid = appl.person_guid
-and  (per.surname    = xform_reg.lastname and
-      per.first_name = xform_reg.firstname)
-and   xform_reg.classofwell LIKE '%Geotechnical%';
-
-
--- 'DRILL', 'WATER'
-INSERT INTO registries_classification_applied_for (              
- primary_certificate_no         
-,certifying_org_guid                       
-,application_guid               
-,registries_subactivity_guid    
-,classification_applied_for_guid
-,create_user  
-,create_date 
-,update_user  
-,update_date 
-)
-SELECT
- 'LEGACY'
-,CASE
-   WHEN xform_reg.typeofcertificate like '%CGWA' 
-     THEN 'd76775a3-650d-44cb-a3b7-5faf8558f29d'::uuid
-   WHEN xform_reg.typeofcertificate like '%Prov. Of BC'
-     THEN 'd3dfedd0-59b3-41cd-a40c-6e35b236a3d6'::uuid
- ELSE null
- END  
-,appl.application_guid
-,(select subact.registries_subactivity_guid
-  from registries_subactivity_code subact, registries_activity_code act
-  where act.registries_activity_guid = subact.registries_activity_guid
-  and   act.code = 'DRILL'
-  and   subact.code = 'WATER'
- )
-,gen_random_uuid()
-,'DATALOAD_USER'
-,'2018-01-01 00:00:00-08'
-,'DATALOAD_USER'
-,'2018-01-01 00:00:00-08'
-from registries_application appl
-    ,registries_person per
-    ,xform_registries_drillers_reg xform_reg
-where per.person_guid = appl.person_guid
-and  (per.surname    = xform_reg.lastname and
-      per.first_name = xform_reg.firstname)
-and   xform_reg.classofwell LIKE '%Water Well%';
-
--- Pending of Applications Subsequently Approved
-INSERT INTO registries_application_status (
- notified_date                     
-,effective_date                    
-,expired_date                      
-,application_guid                  
-,registries_application_status_guid
-,application_status_guid           
-,create_user                       
-,create_date                      
-,update_user                       
-,update_date 
-)
-SELECT
- null -- N/A for Pending
-,xform_trk.date_app_received
-,coalesce(xform_trk.app_approval_date,xform_trk.date_app_received)
-,appl.application_guid
-,(select status_code.registries_application_status_guid
- from registries_application_status_code status_code
- where status_code.code = 'P')
-,gen_random_uuid()
-,'DATALOAD_USER'
-,'2018-01-01 00:00:00-08'
-,'DATALOAD_USER'
-,'2018-01-01 00:00:00-08'
-from xform_registries_action_tracking_driller xform_trk
-  ,registries_application appl
-where lower(xform_trk.registered_ind) = 'yes'
-and   appl.person_guid = xform_trk.trk_guid -- we explicitly set this above
-and   xform_trk.date_app_received is not null
-and   xform_trk.app_denial_date is null -- Ignore bad data
-;
-
--- Approval of Applications  
-INSERT INTO registries_application_status (
- notified_date                     
-,effective_date                    
-,expired_date                      
-,application_guid                  
-,registries_application_status_guid
-,application_status_guid           
-,create_user                       
-,create_date                      
-,update_user                       
-,update_date 
-)
-SELECT
- xform_trk.date_approval_letter_card_sent
-,coalesce(xform_trk.app_approval_date,xform_trk.date_app_received)
-,null
-,appl.application_guid
-,(select status_code.registries_application_status_guid
- from registries_application_status_code status_code
- where status_code.code = 'A')
-,gen_random_uuid()
-,'DATALOAD_USER'
-,'2018-01-01 00:00:00-08'
-,'DATALOAD_USER'
-,'2018-01-01 00:00:00-08'
-from xform_registries_action_tracking_driller xform_trk
-  ,registries_application appl
-where lower(xform_trk.registered_ind) = 'yes'
-and appl.person_guid = xform_trk.trk_guid -- we explicitly set this above
-and   xform_trk.app_approval_date is not null
-and   xform_trk.app_denial_date is null -- Ignore bad data
-;
-
--- Pending of Applications Subsequently Denied
-INSERT INTO registries_application_status (
- notified_date                     
-,effective_date                    
-,expired_date                      
-,application_guid                  
-,registries_application_status_guid
-,application_status_guid           
-,create_user                       
-,create_date                      
-,update_user                       
-,update_date 
-)
-SELECT
- null -- N/A for Pending
-,xform_trk.date_app_received
-,coalesce(xform_trk.app_denial_date,xform_trk.date_app_received)
-,appl.application_guid
-,(select status_code.registries_application_status_guid
- from registries_application_status_code status_code
- where status_code.code = 'P')
-,gen_random_uuid()
-,'DATALOAD_USER'
-,'2018-01-01 00:00:00-08'
-,'DATALOAD_USER'
-,'2018-01-01 00:00:00-08'
-from xform_registries_action_tracking_driller xform_trk
-  ,registries_application appl
-where appl.person_guid = xform_trk.trk_guid -- we explicitly set this above
-and   lower(xform_trk.registered_ind) = 'no'
-and   xform_trk.date_app_received is not null
-and   xform_trk.app_approval_date is null -- Ignore bad data
-;
-
-
--- Denial (not Approved) of Applications, including implicit denial since
--- app_denial_date / date_denial_letter_sent may be null
-INSERT INTO registries_application_status (
- notified_date                     
-,effective_date                    
-,expired_date                      
-,application_guid                  
-,registries_application_status_guid
-,application_status_guid           
-,create_user                       
-,create_date                      
-,update_user                       
-,update_date 
-)
-SELECT
- xform_trk.date_denial_letter_sent
-,coalesce(xform_trk.app_denial_date,xform_trk.date_app_received)
-,null
-,appl.application_guid
-,(select status_code.registries_application_status_guid
- from registries_application_status_code status_code
- where status_code.code = 'NA')
-,gen_random_uuid()
-,'DATALOAD_USER'
-,'2018-01-01 00:00:00-08'
-,'DATALOAD_USER'
-,'2018-01-01 00:00:00-08'
-from xform_registries_action_tracking_driller xform_trk
-  ,registries_application appl
-where appl.person_guid = xform_trk.trk_guid -- we explicitly set this above
-and   lower(xform_trk.registered_ind) = 'no'
-and   xform_trk.date_app_received is not null
-and   xform_trk.app_approval_date is null -- Ignore bad data
-;
-
--- NOTE: To view statuses in 'time order'
--- select per.person_guid, per.first_name, per.surname, 
--- code.description, status.effective_date, status.expired_date
--- from   registries_application_status status, registries_application_status_code code
---       ,registries_application appl, registries_person per
--- where  status.registries_application_status_guid = code.registries_application_status_guid
--- and    appl.application_guid = status.application_guid
--- and    appl.person_guid = per.person_guid
--- order by per.person_guid, status.effective_date, code.display_order;
-
-
--- Insert "Fake" applications for Drillers subsequently removed from Well Driller Register
--- Pending
-INSERT INTO registries_application_status (
- notified_date                     
-,effective_date                    
-,expired_date                      
-,application_guid                  
-,registries_application_status_guid
-,application_status_guid           
-,create_user                       
-,create_date                      
-,update_user                       
-,update_date 
-)
-SELECT
- null -- N/A for Pending
-,coalesce(xform_trk.date_app_received
-         ,xform_trk.app_approval_date
-         ,xform_trk.date_gone_for_review)
-,coalesce(xform_trk.date_app_received
-         ,xform_trk.app_approval_date
-         ,xform_trk.date_gone_for_review)
-,appl.application_guid
-,(select status_code.registries_application_status_guid
- from registries_application_status_code status_code
- where status_code.code = 'P')
-,gen_random_uuid()
-,'DATALOAD_USER'
-,'2018-01-01 00:00:00-08'
-,'DATALOAD_USER'
-,'2018-01-01 00:00:00-08'
-from xform_registries_action_tracking_driller xform_trk
-  ,registries_application appl
-where lower(xform_trk.registered_ind) = 'removed'
-and   appl.person_guid = xform_trk.trk_guid -- we explicitly set this above
-;
-
--- "Fake" Approval 
-INSERT INTO registries_application_status (
- notified_date                     
-,effective_date                    
-,expired_date                      
-,application_guid                  
-,registries_application_status_guid
-,application_status_guid           
-,create_user                       
-,create_date                      
-,update_user                       
-,update_date 
-)
-SELECT
- null -- N/A for Pending
-,coalesce(xform_trk.date_app_received
-         ,xform_trk.app_approval_date
-         ,xform_trk.date_gone_for_review)
-,coalesce(xform_trk.app_approval_date
-         ,xform_trk.date_app_received
-         ,xform_trk.date_gone_for_review)
-,appl.application_guid
-,(select status_code.registries_application_status_guid
- from registries_application_status_code status_code
- where status_code.code = 'A')
-,gen_random_uuid()
-,'DATALOAD_USER'
-,'2018-01-01 00:00:00-08'
-,'DATALOAD_USER'
-,'2018-01-01 00:00:00-08'
-from xform_registries_action_tracking_driller xform_trk
-  ,registries_application appl
-where lower(xform_trk.registered_ind) = 'removed'
-and   appl.person_guid = xform_trk.trk_guid -- we explicitly set this above
-;
-
--- Drillers whose applications were Approved but not Removed
-INSERT INTO registries_register (
- registration_no                
-,registration_date              
-,register_removal_date          
-,registries_removal_reason_guid 
-,registries_activity_guid       
-,application_guid               
-,registries_status_guid         
-,register_guid                  
-,create_user                       
-,create_date                      
-,update_user                       
-,update_date 
-)
-SELECT
- xform_reg.welldrillerregno
-,xform_reg.registrationdate
-,null        
-,null
-,(select registries_activity_guid from registries_activity_code where code='DRILL')
-,appl.application_guid               
-,(select registries_status_guid from registries_status_code where code='ACTIVE')
-,gen_random_uuid()   
-,'DATALOAD_USER'
-,'2018-01-01 00:00:00-08'
-,'DATALOAD_USER'
-,'2018-01-01 00:00:00-08'
- from xform_registries_action_tracking_driller xform_trk
-     ,registries_application appl
-     ,registries_person per
-     ,xform_registries_drillers_reg xform_reg
-    where lower(xform_trk.registered_ind) = 'yes'
-    and appl.person_guid = xform_trk.trk_guid -- we explicitly set this above
-    and per.person_guid = appl.person_guid
-    and  xform_trk.app_approval_date is not null
-    and (xform_reg.lastname  = per.surname and
-         xform_reg.firstname = per.first_name)
-    and  xform_trk.app_denial_date is null -- Ignore bad data 
-;
-
-
--- Drillers grandfathered in (without applications) and not in Tracking spreadsheet
-INSERT INTO registries_person (              
- first_name                  
-,surname        
-,person_guid                             
-,create_user  
-,create_date 
-,update_user  
-,update_date 
-)
-SELECT 
- xform_reg.firstname
-,xform_reg.lastname
-,xform_reg.reg_guid 
-,'DATALOAD_USER'
-,'2018-01-01 00:00:00-08'
-,'DATALOAD_USER'
-,'2018-01-01 00:00:00-08' 
-from xform_registries_drillers_reg xform_reg
-where not exists (
-  select 1
-  from registries_person per
-  where per.surname   = xform_reg.lastname
-  and   per.first_name = xform_reg.firstname);
-
--- May need distinct on (first_name || surname )
-SELECT COUNT(*), firstname, lastname
-FROM   xform_registries_drillers_reg xform
-group by firstname, lastname
-having count(*) > 1;
-
-
--- Thu  1 Mar 22:57:45 2018 GW After DA refactoring, this now returns
--- INSERT 0 0
-INSERT INTO registries_organization (              
- name 
-,street_address        
-,city                  
-,postal_code           
-,main_tel              
-,fax_tel  
+-- Companies from Driller Registry
+INSERT INTO registries_organization (
+ name
+,create_user
+,create_date
+,update_user
+,update_date
+,effective_date
+,expired_date
+,org_guid
+,street_address
+,city
+,postal_code
+,main_tel
+,fax_tel
 ,website_url
-,certificate_authority 
 ,province_state_code
-,org_guid   
-,create_user  
-,create_date 
-,update_user  
-,update_date 
 ) SELECT
- distinct on (trim (both from companyname)) companyname
+ distinct on (companyname) companyname
+,'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'::timestamp
+,'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'::timestamp
+,'1970-01-01 00:00:00-08'::timestamp
+,null::timestamp
+,gen_random_uuid()
 ,companyaddress
 ,companycity
 ,companypostalcode
-,companyphone
-,companyfax
+,substring(companyphone from 1 for 15)
+,substring(companyfax from 1 for 15)
 ,null
-,false
-,companyprov
+,CASE companyprov
+  WHEN 'YK' THEN 'YT'
+  WHEN null THEN 'BC'
+  ELSE companyprov
+ END AS province_state_code
+from xform_registries_drillers_reg xform
+where companyname is not null;
+
+-- Companies from Pump Installer Registry
+INSERT INTO registries_organization (
+ name
+,create_user
+,create_date
+,update_user
+,update_date
+,effective_date
+,expired_date
+,org_guid
+,street_address
+,city
+,postal_code
+,main_tel
+,fax_tel
+,website_url
+,province_state_code
+) SELECT
+ distinct on (companyname) companyname
+,'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'::timestamp
+,'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'::timestamp
+,'1970-01-01 00:00:00-08'::timestamp
+,null::timestamp
 ,gen_random_uuid()
+,companyaddress
+,companycity
+,companypostalcode
+,substring(companyphone from 1 for 15)
+,substring(companyfax from 1 for 15)
+,null
+,CASE companyprov
+  WHEN 'YK' THEN 'YT'
+  WHEN null THEN 'BC'
+  ELSE companyprov
+ END AS province_state_code
+from xform_registries_pump_installers_reg xform
+where companyname is not null
+and companyname not in (
+SELECT name from registries_organization)
+and   companyname <> 'R. Ayre Enterprises'; -- bad data in companyprov (special char?)
+
+-- Companies from drillers/pump-installers that have been removed
+INSERT INTO registries_organization (
+ name
+,create_user
+,create_date
+,update_user
+,update_date
+,effective_date
+,expired_date
+,org_guid
+,street_address
+,city
+,postal_code
+,main_tel
+,fax_tel
+,website_url
+,province_state_code
+) SELECT
+ distinct on (companyname) companyname
+,'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'::timestamp
+,'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'::timestamp
+,'1970-01-01 00:00:00-08'::timestamp
+,null::timestamp
+,gen_random_uuid()
+,companyaddress
+,companycity
+,companypostalcode
+,substring(companyphone from 1 for 15)
+,substring(companyfax from 1 for 15)
+,null
+,CASE companyprov
+  WHEN 'YK' THEN 'YT'
+  WHEN null THEN 'BC'
+  ELSE companyprov
+ END AS province_state_code
+from xform_registries_removed_from xform
+where companyname is not null
+and companyname not in (
+SELECT name from registries_organization);
+
+-- Drillers
+INSERT INTO registries_person (
+ first_name
+,surname
+,effective_date
+,expired_date
+,person_guid
+,create_user
+,create_date
+,update_user
+,update_date
+)
+SELECT
+ firstname
+,lastname
+,'1970-01-01 00:00:00-08'
+,null
+,reg_guid
 ,'DATALOAD_USER'
 ,'2018-01-01 00:00:00-08'
 ,'DATALOAD_USER'
 ,'2018-01-01 00:00:00-08' 
-from xform_registries_drillers_reg xform_reg
-where xform_reg.companyname is not null
+from xform_registries_drillers_reg xform;
+
+-- Attach companies for whom the drillers work
+UPDATE registries_person per
+SET organization_guid = org.org_guid
+FROM registries_organization org,
+    xform_registries_drillers_reg xform
+WHERE org.name = xform.companyname
+and org.street_address = xform.companyaddress
+and org.city           = xform.companycity
+and per.person_guid = xform.reg_guid;
+
+-- Driller Contact details
+INSERT INTO registries_contact_detail (
+ create_user
+,create_date
+,update_user
+,update_date
+,effective_date
+,expired_date
+,contact_detail_guid
+,contact_tel
+,contact_email
+,person_guid
+) SELECT
+ 'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'
+,'DATALOAD_USER'
+,'2018-01-01 00:00:00-08' 
+,'1970-01-01 00:00:00-08'
+,null
+,gen_random_uuid()
+,cellphone
+,companyemail
+,reg_guid
+from xform_registries_drillers_reg xform;
+
+-- Pump Installers
+INSERT INTO registries_person (
+ first_name
+,surname
+,effective_date
+,expired_date
+,person_guid
+,create_user
+,create_date
+,update_user
+,update_date
+)
+SELECT
+ firstname
+,lastname
+,'1970-01-01 00:00:00-08'
+,null
+,reg_guid
+,'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'
+,'DATALOAD_USER'
+,'2018-01-01 00:00:00-08' 
+from xform_registries_pump_installers_reg xform
+where not exists (
+    select 1 from registries_person existing
+     where xform.firstname = existing.first_name and xform.lastname = existing.surname
+);
+-- What about same name but different people?  With different contact details?
+
+
+-- Attach companies for whom the pump installers work
+UPDATE registries_person per
+SET organization_guid = org.org_guid
+FROM registries_organization org,
+    xform_registries_pump_installers_reg xform
+WHERE org.name = xform.companyname
+and org.street_address = xform.companyaddress
+and org.city           = xform.companycity
+and per.person_guid = xform.reg_guid
+-- And not already attached to a company
+and per.organization_guid is null;
+
+-- Pump Installer Contact details
+INSERT INTO registries_contact_detail (
+ create_user
+,create_date
+,update_user
+,update_date
+,effective_date
+,expired_date
+,contact_detail_guid
+,contact_tel
+,contact_email
+,person_guid
+) SELECT 
+ 'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'
+,'DATALOAD_USER'
+,'2018-01-01 00:00:00-08' 
+,'1970-01-01 00:00:00-08'
+,null
+,gen_random_uuid()
+,null -- Why no cellphone in pump installers?
+,companyemail
+,reg_guid
+from xform_registries_pump_installers_reg xform
+-- for whom not already in contact details due to Driller entry above
+where not exists (
+    select 1 from registries_person existing
+     where xform.firstname = existing.first_name and xform.lastname = existing.surname
+);
+
+
+-- Drillers/Pump Installers that were once on Register but since removed
+INSERT INTO registries_person (
+ first_name
+,surname
+,effective_date
+,expired_date
+,person_guid
+,create_user
+,create_date
+,update_user
+,update_date
+)
+SELECT
+ firstname
+,lastname
+,'1970-01-01 00:00:00-08'
+,null
+,removed_guid
+,'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'
+,'DATALOAD_USER'
+,'2018-01-01 00:00:00-08' 
+from xform_registries_removed_from xform
+where not exists (
+    select 1 from registries_person existing
+     where xform.firstname = existing.first_name and xform.lastname = existing.surname
+);
+
+
+-- Attach companies for whom the Removed Driller/Pump Installer used to work
+UPDATE registries_person per
+SET organization_guid = org.org_guid
+FROM registries_organization org,
+    xform_registries_removed_from xform
+WHERE org.name = xform.companyname
+and org.street_address = xform.companyaddress
+and org.city           = xform.companycity
+and per.person_guid = xform.removed_guid
+-- And not already attached to a company
+and per.organization_guid is null;
+
+-- TODO NOTE we need to redo Data Model so that a Person can have multiple Contact Details, 
+-- and can indeed work for more than one company at a time (e.g. Pump Installer & Driller )
+-- so Person --< Relationship (PUMP, DRILLER) >- Organizatino
+
+
+-- Contact details of the Removed Driller/Pump Installer
+INSERT INTO registries_contact_detail (
+ create_user
+,create_date
+,update_user
+,update_date
+,effective_date
+,expired_date
+,contact_detail_guid
+,contact_tel
+,contact_email
+,person_guid
+) SELECT
+ 'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'
+,'DATALOAD_USER'
+,'2018-01-01 00:00:00-08' 
+,'1970-01-01 00:00:00-08'
+,null
+,gen_random_uuid()
+,null -- TODO why no cellphone?
+,companyemail
+,removed_guid
+from xform_registries_removed_from xform
+where companyemail is not null
+-- for whom not already in contact details due to Driller or Pump Installer entries above
 and not exists (
-  select 1
-  from registries_person per
-  where per.surname   = xform_reg.lastname
-  and   per.first_name = xform_reg.firstname);
+    select 1 from registries_person existing
+     where xform.firstname = existing.first_name and xform.lastname = existing.surname
+);
+-- TODO Why no  entries above, when 'not exists' is inserted?
 
-
-INSERT INTO registries_contact_at (              
- contact_tel    
-,contact_email  
-,effective_date 
-,expired_date   
-,org_guid       
-,person_guid                               
-,contact_at_guid
-,create_user  
-,create_date 
-,update_user  
-,update_date 
+-- Driller Register (Active)
+INSERT INTO registries_register (
+ create_user
+,create_date
+,update_user
+,update_date
+,register_guid
+,registration_no
+,registration_date
+,register_removal_date
+,person_guid
+,registries_removal_reason_code
+,registries_activity_code
+,registries_status_code
 )
-SELECT trim (both from xform_reg.companyphone)
-,trim (both from xform_reg.companyemail)
-,'1900-01-01 00:00:00-08' 
+SELECT
+ 'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'
+,'DATALOAD_USER'
+,'2018-01-01 00:00:00-08' 
+,gen_random_uuid()
+,welldrillerregno
+,registrationdate
 ,null
-,org.org_guid
+,reg_guid
+,null
+,'DRILL'
+,'ACTIVE'
+ from xform_registries_drillers_reg;
+ -- TODO we may need a guid on Access side to keep it  straight , on all tables
+
+-- Pump Installer Register (Active)
+INSERT INTO registries_register (
+ create_user
+,create_date
+,update_user
+,update_date
+,register_guid
+,registration_no
+,registration_date
+,register_removal_date
+,person_guid
+,registries_removal_reason_code
+,registries_activity_code
+,registries_status_code
+)
+SELECT
+ 'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'
+,'DATALOAD_USER'
+,'2018-01-01 00:00:00-08' 
+,gen_random_uuid()
+,xform.wellpumpinstallerregno
+,xform.registrationdate
+,null
 ,per.person_guid
-,gen_random_uuid()
-,'DATALOAD_USER'
-,'2018-01-01 00:00:00-08'
-,'DATALOAD_USER'
-,'2018-01-01 00:00:00-08'
-from registries_person per
-    ,xform_registries_drillers_reg xform_reg
-    ,registries_organization org
-where per.person_guid = xform_reg.reg_guid
-and xform_reg.companyname is not null
-and org.name = xform_reg.companyname;
-
--- "Fake" Application to represent grand-fathered web drillers
-INSERT INTO registries_application (              
- file_no         
-,over19_ind      
-,registrar_notes 
-,reason_denied   
-,person_guid     
-,application_guid 
-,create_user  
-,create_date 
-,update_user  
-,update_date 
-)
-SELECT
- xform_reg.file_number
-,true
-,'System-created application for grandfathered driller.'
 ,null
-,xform_reg.reg_guid -- we explicitly set this above
-,gen_random_uuid()
-,'DATALOAD_USER'
-,'2018-01-01 00:00:00-08'
-,'DATALOAD_USER'
-,'2018-01-01 00:00:00-08'
-from registries_person per
-    ,xform_registries_drillers_reg xform_reg
-    ,registries_organization org
-where per.person_guid = xform_reg.reg_guid
-and xform_reg.companyname is not null
-and org.name = xform_reg.companyname;
+,'PUMP'
+,'ACTIVE'
+from        xform_registries_pump_installers_reg xform
+inner join  registries_person per
+on xform.firstname = per.first_name
+and   xform.lastname = per.surname;
+
+-- TODO Cannot use reg_guid as this PERSON may have been
+--      entered as driller
 
 
--- "Fake" Applications to represent grand-fathered web drillers
-
--- 'DRILL', 'GEOXCHG'
--- Thu  1 Mar 22:57:45 2018 GW After DA refactoring, this now returns
--- INSERT 0 0
-INSERT INTO registries_classification_applied_for (              
- primary_certificate_no         
-,certifying_org_guid                       
-,application_guid               
-,registries_subactivity_guid    
-,classification_applied_for_guid
-,create_user  
-,create_date 
-,update_user  
-,update_date 
+-- Driller/Pump Installer (Removed)
+INSERT INTO registries_register (
+ create_user
+,create_date
+,update_user
+,update_date
+,register_guid
+,registration_no
+,registration_date
+,register_removal_date
+,person_guid
+,registries_removal_reason_code
+,registries_activity_code
+,registries_status_code
 )
 SELECT
- xform_reg.classofwelldriller
-,CASE
-   WHEN xform_reg.typeofcertificate like '%CGWA' 
-     THEN 'd76775a3-650d-44cb-a3b7-5faf8558f29d'::uuid
-   WHEN xform_reg.typeofcertificate like '%Prov. Of BC'
-     THEN 'd3dfedd0-59b3-41cd-a40c-6e35b236a3d6'::uuid
- ELSE null
- END  
-,appl.application_guid
-,(select subact.registries_subactivity_guid
-  from registries_subactivity_code subact, registries_activity_code act
-  where act.registries_activity_guid = subact.registries_activity_guid
-  and   act.code = 'DRILL'
-  and   subact.code = 'GEOXCHG'
- )
+ 'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'
+,'DATALOAD_USER'
+,'2018-01-01 00:00:00-08' 
 ,gen_random_uuid()
-,'DATALOAD_USER'
-,'2018-01-01 00:00:00-08'
-,'DATALOAD_USER'
-,'2018-01-01 00:00:00-08'
-from registries_application appl
-    ,xform_registries_drillers_reg xform_reg
-where xform_reg.reg_guid = appl.person_guid
-and xform_reg.companyname is not null
-and   xform_reg.classofwell LIKE '%Geothermal%';
+,xform.registrationnumber
+,xform.registrationdate::date
+,removed_from_registry
+,per.person_guid
+,'NLACT' -- xform.reason
+,CASE substring(xform.registrationnumber from 1 for 2)
+  WHEN 'WP' THEN 'PUMP'
+  WHEN 'WD' THEN 'DRILL'
+  ELSE 'DRILL'
+ END AS registries_activity_code
+,'REMOVED'
+from        xform_registries_removed_from xform
+inner join  registries_person per
+on    xform.firstname = per.first_name
+and   xform.lastname = per.surname;
 
+-- Applications from "Water Well" Well Drillers (ultimately successful)
 
--- 'DRILL', 'GEOTECH'
-INSERT INTO registries_classification_applied_for (              
- primary_certificate_no         
-,certifying_org_guid                       
-,application_guid               
-,registries_subactivity_guid    
-,classification_applied_for_guid
-,create_user  
-,create_date 
-,update_user  
-,update_date 
+-- CANNOT do below as the same person appears on register many times
+-- and I cannot link to the same person w/o a key.  But I for now can use
+-- xform_registries_drillers_reg.reg_guid being the same as registries_person.person_guid
+
+INSERT INTO registries_application (
+ create_user
+,create_date
+,update_user
+,update_date
+,application_guid
+,file_no
+,over19_ind
+,registrar_notes
+,reason_denied
+,primary_certificate_no
+,acc_cert_guid
+,register_guid
+,registries_subactivity_code
 )
 SELECT
- xform_reg.classofwelldriller
-,CASE
-   WHEN xform_reg.typeofcertificate like '%CGWA' 
-     THEN 'd76775a3-650d-44cb-a3b7-5faf8558f29d'::uuid
-   WHEN xform_reg.typeofcertificate like '%Prov. Of BC'
-     THEN 'd3dfedd0-59b3-41cd-a40c-6e35b236a3d6'::uuid
- ELSE null
- END  
-,appl.application_guid
-,(select subact.registries_subactivity_guid
-  from registries_subactivity_code subact, registries_activity_code act
-  where act.registries_activity_guid = subact.registries_activity_guid
-  and   act.code = 'DRILL'
-  and   subact.code = 'GEOTECH'
- )
+ 'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'
+,'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'
 ,gen_random_uuid()
-,'DATALOAD_USER'
-,'2018-01-01 00:00:00-08'
-,'DATALOAD_USER'
-,'2018-01-01 00:00:00-08'
-from registries_application appl
-    ,xform_registries_drillers_reg xform_reg
-where xform_reg.reg_guid = appl.person_guid
-and xform_reg.companyname is not null
-and   xform_reg.classofwell LIKE '%Geotechnical%';
+,xform.file_number
+,TRUE
+,xform.notes
+,null
+,xform.certificatenumber
+, (SELECT acc_cert_guid
+    from registries_accredited_certificate_code
+    where name = 'Water Well Driller, Prov. Of BC'
+   )
+,reg.register_guid
+,'WATER'
+from registries_register reg,
+     xform_registries_drillers_reg xform,
+     xform_registries_action_tracking_driller trk,
+     registries_person per
+WHERE per.person_guid = reg.person_guid
+AND reg.registries_status_code = 'ACTIVE'
+and reg.registries_activity_code = 'DRILL'
+and xform.reg_guid = per.person_guid
+and xform.classofwelldriller like '%Water Well%'
+and trim(both from trk.name) = concat(per.surname, ', ', per.first_name)
+and xform.name = concat(per.surname, ', ', per.first_name);
 
--- 'DRILL', 'WATER'
-INSERT INTO registries_classification_applied_for (              
- primary_certificate_no         
-,certifying_org_guid                       
-,application_guid               
-,registries_subactivity_guid    
-,classification_applied_for_guid
-,create_user  
-,create_date 
-,update_user  
-,update_date 
-)
-SELECT
- xform_reg.classofwelldriller
-,CASE
-   WHEN xform_reg.typeofcertificate like '%CGWA' 
-     THEN 'd76775a3-650d-44cb-a3b7-5faf8558f29d'::uuid
-   WHEN xform_reg.typeofcertificate like '%Prov. Of BC'
-     THEN 'd3dfedd0-59b3-41cd-a40c-6e35b236a3d6'::uuid
- ELSE null
- END  
-,appl.application_guid
-,(select subact.registries_subactivity_guid
-  from registries_subactivity_code subact, registries_activity_code act
-  where act.registries_activity_guid = subact.registries_activity_guid
-  and   act.code = 'DRILL'
-  and   subact.code = 'WATER'
- )
-,gen_random_uuid()
-,'DATALOAD_USER'
-,'2018-01-01 00:00:00-08'
-,'DATALOAD_USER'
-,'2018-01-01 00:00:00-08'
-from registries_application appl
-    ,xform_registries_drillers_reg xform_reg
-where xform_reg.reg_guid = appl.person_guid
-and xform_reg.companyname is not null
-and   xform_reg.classofwell LIKE '%Water Well%';
 
--- Fake Approvals
+-- Active Statuses for Applications from "Water Well" Well Drillers (ultimately successful)
+--
+-- CANNOT do below as the same person appears on register many times
+-- and I cannot link to the same person w/o a key.  But I for now can use
+-- xform_registries_drillers_reg.reg_guid being the same as registries_person.person_guid
+
 INSERT INTO registries_application_status (
- notified_date                     
-,effective_date                    
-,expired_date                      
-,application_guid                  
-,registries_application_status_guid
-,application_status_guid           
-,create_user                       
-,create_date                      
-,update_user                       
-,update_date 
+ create_user
+,create_date
+,update_user
+,update_date
+,application_status_guid
+,notified_date
+,effective_date
+,expired_date
+,application_guid
+,registries_application_status_code
 )
 SELECT
- null
-,xform_reg.registrationdate
-,null
-,appl.application_guid
-,(select status_code.registries_application_status_guid
- from registries_application_status_code status_code
- where status_code.code = 'A')
+ 'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'
+,'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'
 ,gen_random_uuid()
-,'DATALOAD_USER'
-,'2018-01-01 00:00:00-08'
-,'DATALOAD_USER'
-,'2018-01-01 00:00:00-08'
-from registries_person per
-    ,xform_registries_drillers_reg xform_reg
-    ,registries_organization org
-    ,registries_application appl
-where per.person_guid = xform_reg.reg_guid
-and xform_reg.companyname is not null
-and org.name = xform_reg.companyname
-and appl.person_guid = xform_reg.reg_guid -- we explicitly set this above;
-;
+,trk.date_approval_letter_card_sent
+,trk.app_approval_date
+,null -- still Registered 
+,app.application_guid
+,'A'
+from registries_register reg,
+     xform_registries_action_tracking_driller trk,
+     registries_person per,
+     registries_application app
+WHERE per.person_guid = reg.person_guid
+AND   app.register_guid = reg.register_guid
+AND reg.registries_status_code = 'ACTIVE'
+and reg.registries_activity_code = 'DRILL'
+and app.registries_subactivity_code = 'WATER'
+and trim(both from trk.name) = concat(per.surname, ', ', per.first_name)
+-- until data cleanup
+and trk.app_approval_date is not null;
 
--- create registries_register (type DRILL)
---  for xform_registries_action_tracking_driller.Registered = Removed
---  similar to 'fake' applications, and statuses
+
+
+-- Historical Statuses for Applications from "Water Well" Well Drillers (ultimately successful)
+--
+-- CANNOT do below as the same person appears on register many times
+-- and I cannot link to the same person w/o a key.  But I for now can use
+-- xform_registries_drillers_reg.reg_guid being the same as registries_person.person_guid
+
+INSERT INTO registries_application_status (
+ create_user
+,create_date
+,update_user
+,update_date
+,application_status_guid
+,notified_date
+,effective_date
+,expired_date
+,application_guid
+,registries_application_status_code
+)
+SELECT
+ 'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'
+,'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'
+,gen_random_uuid()
+,null -- N/A for recipt of application
+,trk.date_app_received
+,trk.app_approval_date
+,app.application_guid
+,'P'
+from registries_register reg,
+     xform_registries_action_tracking_driller trk,
+     registries_person per,
+     registries_application app
+WHERE per.person_guid = reg.person_guid
+AND   app.register_guid = reg.register_guid
+AND reg.registries_status_code = 'ACTIVE'
+and reg.registries_activity_code = 'DRILL'
+and app.registries_subactivity_code = 'WATER'
+and trim(both from trk.name) = concat(per.surname, ', ', per.first_name)
+and trk.date_app_received is not null
+and trk.app_approval_date is not null;
+
+
+
+-- Applications from "Geoexchange" Well Drillers (ultimately successful)
+INSERT INTO registries_application (
+ create_user
+,create_date
+,update_user
+,update_date
+,application_guid
+,file_no
+,over19_ind
+,registrar_notes
+,reason_denied
+,primary_certificate_no
+,acc_cert_guid
+,register_guid
+,registries_subactivity_code
+)
+SELECT
+ 'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'
+,'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'
+,gen_random_uuid()
+,xform.file_number
+,TRUE
+,xform.notes
+,null
+,xform.certificatenumber
+, (SELECT acc_cert_guid
+    from registries_accredited_certificate_code
+    where name = 'Geoexchange Driller Certificate'
+   )
+,reg.register_guid
+,'GEOXCHG'
+from registries_register reg,
+     xform_registries_drillers_reg xform,
+     xform_registries_action_tracking_driller trk,
+     registries_person per
+WHERE per.person_guid = reg.person_guid
+AND reg.registries_status_code = 'ACTIVE'
+and reg.registries_activity_code = 'DRILL'
+and xform.reg_guid = per.person_guid
+and xform.classofwelldriller like '%Geoexchange%'
+and trim(both from trk.name) = concat(per.surname, ', ', per.first_name)
+and xform.name = concat(per.surname, ', ', per.first_name);
+
+-- Applications from "Geotechnical" Well Drillers (ultimately successful)
+INSERT INTO registries_application (
+ create_user
+,create_date
+,update_user
+,update_date
+,application_guid
+,file_no
+,over19_ind
+,registrar_notes
+,reason_denied
+,primary_certificate_no
+,acc_cert_guid
+,register_guid
+,registries_subactivity_code
+)
+SELECT
+ 'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'
+,'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'
+,gen_random_uuid()
+,xform.file_number
+,TRUE
+,xform.notes
+,null
+,xform.certificatenumber
+, (SELECT acc_cert_guid
+    from registries_accredited_certificate_code
+    where name = 'Geotechnical/Environmental Driller Certificate'
+   )
+,reg.register_guid
+,'GEOTECH'
+from registries_register reg,
+     xform_registries_drillers_reg xform,
+     xform_registries_action_tracking_driller trk,
+     registries_person per
+WHERE per.person_guid = reg.person_guid
+AND reg.registries_status_code = 'ACTIVE'
+and reg.registries_activity_code = 'DRILL'
+and xform.reg_guid = per.person_guid
+and xform.classofwelldriller like '%Geotechnical%'
+and trim(both from trk.name) = concat(per.surname, ', ', per.first_name)
+and xform.name = concat(per.surname, ', ', per.first_name);
+
+-- Applications from Pump Installers (ultimately successful)
+INSERT INTO registries_application (
+ create_user
+,create_date
+,update_user
+,update_date
+,application_guid
+,file_no
+,over19_ind
+,registrar_notes
+,reason_denied
+,primary_certificate_no
+,acc_cert_guid
+,register_guid
+,registries_subactivity_code
+)
+SELECT
+ 'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'
+,'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'
+,gen_random_uuid()
+,xform.file_number
+,TRUE
+,xform.notes
+,null
+,xform.wellpumpinstallerregno
+,CASE 
+  WHEN typeofcertificate like '%Ontario%' THEN '88d5d0aa-d2aa-450a-9708-a911dce42f7f'::uuid 
+  WHEN typeofcertificate like '%CGWA%'    THEN '1886daa8-e799-49f0-9034-33d02bad543d'::uuid 
+  WHEN typeofcertificate like '%BC%'      THEN '7bf968aa-c6e0-4f57-b4f4-58723214de80'::uuid 
+  ELSE 'a53d3f1e-65eb-46b7-8999-e662d654df77'::uuid
+ END AS acc_cert_guid
+,reg.register_guid
+,'PUMPINST'
+from registries_register reg,
+     xform_registries_pump_installers_reg xform,
+     xform_registries_action_tracking_pump_installer trk,
+     registries_person per
+WHERE per.person_guid = reg.person_guid
+AND reg.registries_status_code = 'ACTIVE'
+and reg.registries_activity_code = 'PUMP'
+and xform.reg_guid = per.person_guid
+and trim(both from trk.name) = concat(per.surname, ', ', per.first_name)
+and xform.name = concat(per.surname, ', ', per.first_name);
 

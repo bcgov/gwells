@@ -67,7 +67,7 @@ describe('RegisterTable.vue', () => {
       localVue,
       stubs: ['router-link', 'router-view']
     })
-    expect(wrapper.findAll('#registry-table-row').length)
+    expect(wrapper.findAll('#registry-table tr').length)
       .toEqual(2)
   })
 
@@ -79,13 +79,13 @@ describe('RegisterTable.vue', () => {
     })
     wrapper.setData({activity: 'Well Driller'})
     // first row
-    expect(wrapper.findAll('#registry-table-row').at(0).text())
+    expect(wrapper.findAll('#registry-table tr').at(0).text())
       .toContain('Driller')
-    expect(wrapper.findAll('#registry-table-row').at(0).text())
+    expect(wrapper.findAll('#registry-table tr').at(0).text())
       .not.toContain('Well')
-    expect(wrapper.findAll('#registry-table-row').at(1).text())
+    expect(wrapper.findAll('#registry-table tr').at(1).text())
       .toContain('Well')
-    expect(wrapper.findAll('#registry-table-row').at(1).text())
+    expect(wrapper.findAll('#registry-table tr').at(1).text())
       .not.toContain('Driller')
   })
   it('shows the pagination button for next page when a link is returned by API', () => {
@@ -148,7 +148,7 @@ describe('RegisterTable.vue', () => {
       'Certificate Issued By',
       'Registration Status'
     ]
-    expect(tableHeaders.length).toEqual(7)
+    expect(tableHeaders.length).toEqual(6)
     for (let i = 0; i < tableHeaders.length; i++) {
       expect(tableHeaders.wrappers[i].text()).toEqual(expectedHeaders[i])
     }
@@ -169,7 +169,7 @@ describe('RegisterTable.vue', () => {
       'Certificate Issued By',
       'Registration Status'
     ]
-    expect(tableHeaders.length).toEqual(6)
+    expect(tableHeaders.length).toEqual(5)
     for (let i = 0; i < tableHeaders.length; i++) {
       expect(tableHeaders.wrappers[i].text()).toEqual(expectedHeaders[i])
     }

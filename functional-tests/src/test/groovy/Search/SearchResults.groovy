@@ -83,8 +83,9 @@ class SearchResultsSpecs extends GebReportingSpec {
 
         then: "No records message should be shown"
         assert waitFor { not_found_msg.displayed == true }
-    } 
-        def "Scenario 1: Map Search - >0 Results"() {
+    }
+    
+    def "Scenario 1: Map Search - > 0 Results"() {
         given:
         to SearchPage
 
@@ -101,11 +102,10 @@ class SearchResultsSpecs extends GebReportingSpec {
 
             def str = results_info.text().split(' ')
             assert (str[1] == "1") //From entry
-            //assert (str[3] == "1") // To entry
             assert (str[5] > "1") //Total entries found
     }
 
-        def "Scenario 1: Map Search - > 1000 Results"() {
+    def "Scenario 1: Map Search - > 1000 Results"() {
         given: "I select a large area on the map and search for wells"
         to SearchPage
 
