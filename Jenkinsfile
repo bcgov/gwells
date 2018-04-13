@@ -75,7 +75,7 @@ podTemplate(label: 'bddstack', name: 'bddstack', serviceAccount: 'jenkins', clou
 ])       
 {
     stage('Smoke Test on Test') {
-        input "Ready to start Tests?"
+	input "Ready to start Tests?"
         node('bddstack') {
             //the checkout is mandatory, otherwise functional test would fail
             echo "checking out source"
@@ -84,7 +84,7 @@ podTemplate(label: 'bddstack', name: 'bddstack', serviceAccount: 'jenkins', clou
             dir('functional-tests/build/test-results') {
                 unstash 'coverage'
                 sh 'rm coverage.xml'
-		unstash 'nodejunit'    
+                unstash 'nodejunit'
                 }
             dir('functional-tests') {
                 try {

@@ -75,6 +75,7 @@ var/
 *.egg-info/
 .installed.cfg
 *.egg
+webpack-stats.json
 
 # PyInstaller and Pip install files
 #  Usually these files are written by a python script from a template
@@ -112,6 +113,7 @@ gwells.pyproj*
 /bin/
 *.sublime-project
 *.sublime-workspace
+.vscode
 
 #functional-tests
 functional-tests/.gradle/
@@ -128,8 +130,9 @@ x.sh
 
 #virtual env
 /deactivate
-.vscode/settings.json
 .venv
+.envrc
+.direnv
 
 # Frontend files
 frontend/node_modules/
@@ -142,6 +145,7 @@ sonar-runner/.gradle
 sonar-runner/.settings/org.eclipse.buildship.core.prefs
 sonar-runner/.project
 sonar-runner/.classpath
+.gradle
 
 # OS files
 .directory

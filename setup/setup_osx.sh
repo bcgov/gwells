@@ -12,8 +12,9 @@ IFS=$'\n\t'
 VERBOSE=${VERBOSE:-false}
 
 
-# Receive a Wells (legacy) database to import
+# Receive a GWells and Wells (legacy) databases to import
 #
+DB_MODERN=${DB_MODERN:-''}
 DB_LEGACY=${DB_LEGACY:-''}
 
 
@@ -49,6 +50,11 @@ LEGACY_DATABASE_USER="${LEGACY_DATABASE_USER:-wells}"
 LEGACY_DATABASE_NAME="${LEGACY_DATABASE_NAME:-wells}"
 LEGACY_SCHEMA="${LEGACY_SCHEMA:-wells}"
 LEGACY_DATABASE_PW="${LEGACY_DATABASE_PW:-wells}"          # For Wells db import
+DJANGO_SECRET_KEY="${DJANGO_SECRET_KEY:-'9e4@&tw46\$l31)zrqe3wi+-slqm(ruvz&se0^%9#6(_w3ui!c0'}"
+SESSION_COOKIE_SECURE="${SESSION_COOKIE_SECURE:-False}"
+CSRF_COOKIE_SECURE="${CSRF_COOKIE_SECURE:-False}"
+ENABLE_ADDITIONAL_DOCUMENTS="${ENABLE_ADDITIONAL_DOCUMENTSL:-False}"
+DJANGO_ADMIN_URL="${DJANGO_ADMIN_URL:-admin}"
 
 
 # Verbose option
@@ -66,7 +72,8 @@ then
 	echo "Please use variables to pass this script commands."
 	echo "E.g.:"
 	echo " 'VERBOSE=true ./setup_osx.sh'"
-	echo " 'DB_LEGACY=<path>/<filename>.dmp ./setup_osx.sh'"
+	echo " 'DB_MODERN=<path>/<filename>.dmp DB_LEGACY=<path>/<filename>.dmp ./setup_osx.sh'"
+	echo " 'TEST=true ./setup_osx.sh'"
 	echo
 	exit
 fi
@@ -140,6 +147,7 @@ which brew || \
 #
 PACKAGES=(
 	"git"
+	"nodejs"
 	"postgresql"
 	"python3"
 )
@@ -235,6 +243,7 @@ psql -U postgres -d gwells -c \
 
 # Pip3 install virtualenv and virtualenvwrapper
 #
+pip3 install --upgrade pip
 PACKAGES="
 	virtualenv
 	virtualenvwrapper
@@ -298,6 +307,11 @@ ENV_VARS=(
 	"export LEGACY_DATABASE_USER=${LEGACY_DATABASE_USER}"
 	"export LEGACY_DATABASE_NAME=${LEGACY_DATABASE_NAME}"
 	"export LEGACY_SCHEMA=${LEGACY_SCHEMA}"
+	"export DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}"
+	"export SESSION_COOKIE_SECURE=${SESSION_COOKIE_SECURE}"
+	"export CSRF_COOKIE_SECURE=${CSRF_COOKIE_SECURE}"
+	"export ENABLE_ADDITIONAL_DOCUMENTS=${ENABLE_ADDITIONAL_DOCUMENTS}"
+	"export DJANGO_ADMIN_URL=${DJANGO_ADMIN_URL}"
 )
 #
 PA_FILE=~/.virtualenvs/gwells/bin/postactivate
@@ -313,20 +327,30 @@ then 	(
 fi
 
 
-# Pip3 install requirements
+# Install requirements with PIP3 and NPM
 #
 cd "${START_DIR}"/..
 pip3 install -U -r requirements.txt
+cd "${START_DIR}"/../frontend
+npm install
+npm run build
 
 
 # Dev only - adapt schema for GWells
 #
+cd "${START_DIR}"/..
 python3 manage.py makemigrations
 
 
 # Migrate data from Wells (legacy) to GWells schema
 #
 python3 manage.py migrate
+
+
+# Restore the GWells (modern) database from a dump
+#
+[ -z ${DB_MODERN} ]|| \
+	pg_restore -U gwells -d gwells --no-owner --no-privileges "${DB_MODERN}"
 
 
 # Collect static files and run tests
