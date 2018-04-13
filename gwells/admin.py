@@ -17,7 +17,8 @@ from django.contrib import admin
 # Import all models
 from .models import (
     Survey,
-    OnlineSurvey
+    OnlineSurvey,
+    Profile
 )
 
 class SurveyAdmin(admin.ModelAdmin):
@@ -33,3 +34,4 @@ class OnlineSurveyAdmin(admin.ModelAdmin):
 # Register your models here.
 admin.site.register(Survey, SurveyAdmin)
 admin.site.register(OnlineSurvey, OnlineSurveyAdmin)
+admin.site.register(Profile)

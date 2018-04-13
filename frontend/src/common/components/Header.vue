@@ -24,7 +24,7 @@
             <keycloak-auth/>
           </b-nav-item>
         </b-navbar-nav>
-        <b-navbar-nav class="ml-auto">
+        <b-navbar-nav class="ml-auto d-sm-none">
           <b-navbar-toggle class="d-sm-none" target="nav_collapse"></b-navbar-toggle>
         </b-navbar-nav>
       </b-container>

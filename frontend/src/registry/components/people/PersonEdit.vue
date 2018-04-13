@@ -1,6 +1,6 @@
 <template>
-  <div class="container-fluid no-pad">
-    <div class="row no-pad" v-if="currentDriller != {}">
+  <div class="container">
+    <div class="row" v-if="currentDriller != {}">
       <div class="col-xs-12 col-sm-7">
         <h2>{{ currentDriller.first_name }} {{ currentDriller.surname }}</h2>
       </div>
@@ -11,15 +11,15 @@
         <api-error :error="error" resetter="SET_ERROR"></api-error>
       </div>
     </div>
-    <div class="panel no-pad" v-if="editDriller != {}">
-      <div class="panel-body no-pad">
+    <div class="card" v-if="editDriller != {}">
+      <div class="card-body">
         <div class="container-fluid">
           <div class="table-responsive">
             <table class="table">
               <thead>
-                <th class="col-xs-2">Classification</th>
-                <th class="col-xs-2">Register Status</th>
-                <th class="col-xs-2">Date Registered</th>
+                <th>Classification</th>
+                <th>Register Status</th>
+                <th>Date Registered</th>
               </thead>
               <tbody>
                 <tr v-if="classifications && classifications.length" v-for="(classification, index) in classifications" :key="`classification ${index}`">
@@ -41,8 +41,8 @@
         </div>
       </div>
     </div>
-    <div class="panel" v-if="addClassificationToggle" style="border-color: #1a5a96">
-      <div class="panel-body">
+    <div class="card" v-if="addClassificationToggle" style="border-color: #1a5a96">
+      <div class="card-body">
         <application-add/>
           <button type="button" class="btn btn-primary" @click="addClassificationToggle = !addClassificationToggle">Save</button>
           <button type="button" class="btn btn-secondary" @click="addClassificationToggle = !addClassificationToggle">
@@ -50,8 +50,8 @@
           </button>
       </div>
     </div>
-    <div class="panel no-pad" v-if="editDriller != {}">
-      <div class="panel-body no-pad">
+    <div class="card" v-if="editDriller != {}">
+      <div class="card-body">
         <div class="container-fluid">
           <h3>Personal Information</h3>
           <form class="form-horizontal">
@@ -99,8 +99,8 @@
         </div>
       </div>
     </div>
-    <div class="panel no-pad" v-if="editDriller != {}">
-      <div class="panel-body no-pad">
+    <div class="card" v-if="editDriller != {}">
+      <div class="card-body">
         <div class="container-fluid">
           <h3>Company Information</h3>
           <form class="form-horizontal">
@@ -166,8 +166,8 @@
         </div>
       </div>
     </div>
-    <div class="panel no-pad" v-if="editDriller != {}">
-      <div class="panel-body no-pad">
+    <div class="card" v-if="editDriller != {}">
+      <div class="card-body">
         <div class="container-fluid">
           <div class="row registry-item">
             <div class="col-xs-12">
@@ -178,8 +178,8 @@
         </div>
       </div>
     </div>
-    <div class="panel no-pad" v-if="editDriller != {}">
-      <div class="panel-body no-pad">
+    <div class="card" v-if="editDriller != {}">
+      <div class="card-body">
         <div class="container-fluid">
           <div class="row registry-item">
             <div class="col-xs-12">
