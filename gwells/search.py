@@ -16,6 +16,7 @@ from functools import reduce
 import operator
 from .models import Well
 
+
 class Search():
     def well_search(well='', addr='', legal='', owner='', lat_long_box=None, query_limit=1000):
         """
@@ -42,8 +43,8 @@ class Search():
 
         if legal:
             q_list.append(Q(legal_plan__icontains=legal) |
-                  Q(legal_district_lot__icontains=legal) |
-                  Q(legal_pid=legal))
+                          Q(legal_district_lot__icontains=legal) |
+                          Q(legal_pid=legal))
 
         if owner:
             q_list.append(Q(owner_full_name__icontains=owner))
@@ -70,12 +71,17 @@ class Search():
             max_long = max(start_long, end_long)
             min_long = min(start_long, end_long)
 
-            q_list.append(Q(latitude__gt=min_lat) & Q(latitude__lt=max_lat)
-                          & Q(longitude__gt=min_long) & Q(longitude__lt=max_long))
+            q_list.append(Q(latitude__gt=min_lat) & Q(latitude__lt=max_lat) &
+                          Q(longitude__gt=min_long) & Q(longitude__lt=max_long))
 
         if q_list:
-            # If there are too many results, we return one plus the query limit to engage post-query logic in views.py
-            well_results = Well.objects.only('well_tag_number', 'identification_plate_number', 'owner_full_name','street_address','legal_lot','legal_plan','legal_district_lot','land_district','legal_pid','diameter','finished_well_depth','well_guid','latitude','longitude','city').filter(
+            # If there are too many results, we return one plus the query limit to engage post-query logic in
+            # views.py
+            well_results = Well.objects.only('well_tag_number', 'identification_plate_number',
+                                             'owner_full_name', 'street_address', 'legal_lot', 'legal_plan',
+                                             'legal_district_lot', 'land_district', 'legal_pid', 'diameter',
+                                             'finished_well_depth', 'well_guid', 'latitude', 'longitude',
+                                             'city').filter(
                 reduce(operator.and_, q_list)).order_by('well_tag_number', 'create_date')[:query_limit+1]
 
         return well_results

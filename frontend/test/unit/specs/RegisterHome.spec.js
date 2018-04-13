@@ -4,6 +4,7 @@ import RegisterHome from '@/registry/components/RegisterHome'
 import RegisterTable from '@/registry/components/RegisterTable'
 import APIErrorMessage from '@/common/components/APIErrorMessage'
 import { FETCH_CITY_LIST, FETCH_DRILLER_LIST, LOGIN, LOGOUT } from '@/registry/store/actions.types'
+import { SET_DRILLER_LIST } from '@/registry/store/mutations.types';
 
 const localVue = createLocalVue()
 localVue.use(Vuex)
@@ -12,29 +13,63 @@ describe('RegisterHome.vue', () => {
   let store
   let getters
   let actions
+  let mutations
 
   beforeEach(() => {
     getters = {
       user: () => {},
-      drillers: () => [],
+      drillers: () => {
+        return {
+          results: [
+            {
+              person_guid: '1e252dca-ccb9-439a-a6ec-aeec0f7e4a03',
+              first_name: 'Alexis',
+              surname: 'Rodriguez',
+              organization_name: null,
+              street_address: null,
+              city: null,
+              province_state: null,
+              contact_tel: null,
+              contact_email: null,
+              activity: 'Well Driller',
+              status: 'Active',
+              registration_no: 'WD 08315530'
+            },
+            {
+              person_guid: 'db02b5bb-1473-4f97-9bcf-f6214e8dd5aa',
+              first_name: 'Ann',
+              surname: 'Berg',
+              organization_name: 'Earthplex Installers',
+              street_address: '7010 Rocky Bluff Mall',
+              city: 'Atlin',
+              province_state: 'BC',
+              contact_tel: '(604) 424-7090',
+              contact_email: 'cardenas@driller.ca',
+              activity: 'Well Driller',
+              status: 'Active',
+              registration_no: 'WD 04187177'
+            }
+          ]
+        }
+      },
       loading: () => false,
       listError: () => null,
       cityList: () => {
         return {
           drillers: [
             {
-              city: 'Duncan',
-              province_state: 'BC'
+              cities: ['Duncan', 'Esquimalt'],
+              prov: 'BC'
             },
             {
-              city: 'Victoria',
-              province_state: 'BC'
+              prov: 'AB',
+              cities: ['Jasper']
             }
           ],
           installers: [
             {
-              city: 'Nanaimo',
-              province_state: 'BC'
+              cities: ['Nanaimo'],
+              prov: 'BC'
             }
           ]
         }
@@ -46,16 +81,10 @@ describe('RegisterHome.vue', () => {
       [LOGIN]: jest.fn(),
       [LOGOUT]: jest.fn()
     }
-    store = new Vuex.Store({ getters, actions })
-  })
-
-  it('renders the correct title', () => {
-    const wrapper = shallow(RegisterHome, {
-      store,
-      localVue
-    })
-    expect(wrapper.find('#registry-title')
-      .text().trim()).toEqual('Register of Well Drillers and Well Pump Installers')
+    mutations = {
+      [SET_DRILLER_LIST]: jest.fn()
+    }
+    store = new Vuex.Store({ getters, actions, mutations })
   })
 
   it('loads the table component', () => {
@@ -93,13 +122,6 @@ describe('RegisterHome.vue', () => {
     })
     expect(wrapper.findAll(APIErrorMessage).length)
       .toEqual(0)
-  })
-  it('dispatches the fetch driller list action when loaded', () => {
-    shallow(RegisterHome, {
-      store,
-      localVue
-    })
-    expect(actions.fetchDrillers).toHaveBeenCalled()
   })
   it('resets search params when reset button is clicked', () => {
     const wrapper = shallow(RegisterHome, {
@@ -154,7 +176,7 @@ describe('RegisterHome.vue', () => {
       listError: () => null,
       cityList: () => []
     }
-    const storeWithUser = new Vuex.Store({ getters: gettersWithUser, actions })
+    const storeWithUser = new Vuex.Store({ getters: gettersWithUser, actions, mutations })
     const wrapper = shallow(RegisterHome, {
       store: storeWithUser,
       localVue
@@ -178,9 +200,18 @@ describe('RegisterHome.vue', () => {
       localVue
     })
     const cityOptions = wrapper.findAll('#cityOptions option')
-    expect(cityOptions.length).toEqual(3) // two options in store + 'all' option
+    expect(cityOptions.length).toEqual(4) // three options in store + 'all' option
     expect(cityOptions.at(0).text()).toEqual('All')
     expect(cityOptions.at(1).text()).toEqual('Duncan')
-    expect(cityOptions.at(2).text()).toEqual('Victoria')
+    expect(cityOptions.at(2).text()).toEqual('Esquimalt')
+    expect(cityOptions.at(3).text()).toEqual('Jasper')
+  })
+  it('clears driller list when reset is clicked', () => {
+    const wrapper = shallow(RegisterHome, {
+      store,
+      localVue
+    })
+    wrapper.find('[type=reset]').trigger('reset')
+    expect(mutations.setDrillerList).toHaveBeenCalled()
   })
 })
