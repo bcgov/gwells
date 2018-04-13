@@ -25,6 +25,13 @@ OC_TEMPLATE_BUILD=${OC_TEMPLATE_BUILD:-../openshift/templates/caddy-build.json}
 OC_TEMPLATE_DEPLOY=${OC_TEMPLATE_DEPLOY:-../openshift/templates/caddy-deploy.json}
 
 
+# App settings
+#
+APP_MAINT_OFF=${APP_MAINT_OFF:-gwells}
+APP_MAINT_ON=${APP_MAINT_ON:-$APP_NAME}
+APP_REDIRECT=${APP_REDIRECT:-$APP_MAINT_ON}
+
+
 # Verbose option
 #
 [ "${VERBOSE}" == true ]&& \
@@ -52,10 +59,12 @@ fi
 #
 if [ "${PARAM}" == "maint-on" ]
 then
-	oc patch route ${APP_NAME} -p '{ "spec": { "to": { "name": "proxy-caddy" }, "port": { "targetPort": "2015-tcp" }}}'
+	JSON='{ "spec": { "to": { "name": "'$( echo ${APP_MAINT_ON} )'" }, "port": { "targetPort": "2015-tcp" }}}'
+	oc patch route ${APP_REDIRECT} -p ${JSON}
 elif [ "${PARAM}" == "maint-off" ]
 then
-	oc patch route ${APP_NAME} -p '{ "spec": { "to": { "name": "gwells" }, "port": { "targetPort": "web" }}}'
+	JSON='{ "spec": { "to": { "name": "'$( echo ${APP_MAINT_OFF} )'" }, "port": { "targetPort": "web" }}}'
+	oc patch route ${APP_REDIRECT} -p ${JSON}
 elif [ "${PARAM}" == "build" ]
 then
 	oc process -f ${OC_TEMPLATE_BUILD} -p NAME=${APP_NAME} GIT_REPO=${GIT_REPO} GIT_BRANCH=${GIT_BRANCH} IMG_NAME=${IMG_NAME} | oc apply -f -
