@@ -16,7 +16,6 @@ VERBOSE=${VERBOSE:-false}
 # Server and build settings
 #
 IMG_NAME=${IMG_NAME:-bcgov-s2i-caddy}
-APP_NAME=${APP_NAME:-proxy-caddy}
 GIT_REPO=${GIT_REPO:-https://github.com/bcgov/gwells.git}
 GIT_BRANCH=${GIT_BRANCH:-master}
 BUILD_PROJECT=${BUILD_PROJECT:-moe-gwells-tools}
@@ -28,7 +27,7 @@ OC_TEMPLATE_DEPLOY=${OC_TEMPLATE_DEPLOY:-../openshift/templates/caddy-deploy.jso
 # App settings
 #
 APP_MAINT_OFF=${APP_MAINT_OFF:-gwells}
-APP_MAINT_ON=${APP_MAINT_ON:-$APP_NAME}
+APP_MAINT_ON=${APP_MAINT_ON:-proxy-caddy}
 APP_REDIRECT=${APP_REDIRECT:-$APP_MAINT_ON}
 
 
@@ -67,16 +66,16 @@ then
 	oc patch route ${APP_REDIRECT} -p ${JSON}
 elif [ "${PARAM}" == "build" ]
 then
-	oc process -f ${OC_TEMPLATE_BUILD} -p NAME=${APP_NAME} GIT_REPO=${GIT_REPO} GIT_BRANCH=${GIT_BRANCH} IMG_NAME=${IMG_NAME} | oc apply -f -
+	oc process -f ${OC_TEMPLATE_BUILD} -p NAME=${APP_MAINT_ON} GIT_REPO=${GIT_REPO} GIT_BRANCH=${GIT_BRANCH} IMG_NAME=${IMG_NAME} | oc apply -f -
 elif [ "${PARAM}" == "deploy" ]
 then
-	oc process -f ${OC_TEMPLATE_DEPLOY} -p NAME=${APP_NAME} BUILD_PROJECT=${BUILD_PROJECT} | oc apply -f -
-	[ "${APP_REDIRECT}" == "${APP_NAME}" ] && oc get route ${APP_NAME} || oc expose svc ${APP_NAME}
+	oc process -f ${OC_TEMPLATE_DEPLOY} -p NAME=${APP_MAINT_ON} BUILD_PROJECT=${BUILD_PROJECT} | oc apply -f -
+	[ "${APP_REDIRECT}" == "${APP_MAINT_ON}" ] && oc get route ${APP_MAINT_ON} || oc expose svc ${APP_MAINT_ON}
 	CONTAINER_IMG=$( oc get dc proxy-caddy -o json | grep '"image":' | awk '{ print $2 }' | tr -d ',"' )
 	echo "${CONTAINER_IMG}" >> ./container_img.log
 elif [ "${PARAM}" == "nuke" ]
 then
-	oc delete all -l app=${APP_NAME}
+	oc delete all -l app=${APP_MAINT_ON}
 else
 	echo
 	echo "Parameter '${PARAM}' not understood."
