@@ -1,5 +1,5 @@
 <template>
-  <footer class="footer">
+  <footer>
     <b-navbar type="dark" variant="primary" toggleable="sm">
       <b-container>
       <!-- Navbar content -->
