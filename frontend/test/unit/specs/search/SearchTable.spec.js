@@ -15,7 +15,7 @@ describe('SearchTable.vue', () => {
 
   beforeEach(() => {
     getters = {
-      user: () => {},
+      userIsAdmin: () => false,
       loading: () => false,
       listError: () => null,
       drillers: () => {

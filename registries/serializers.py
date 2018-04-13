@@ -358,6 +358,8 @@ class OrganizationListSerializer(AuditModelSerializer):
             'province_state',
             'postal_code',
             'main_tel',
+            'fax_tel',
+            'website_url',
         )
 
 
@@ -389,6 +391,7 @@ class PersonAdminSerializer(AuditModelSerializer):
     # organization = serializers.PrimaryKeyRelatedField(queryset=Organization.objects.all(), required=False)
     registrations = RegistrationAdminSerializer(many=True, read_only=True)
     organization = OrganizationListSerializer(required=False)
+    contact_info = ContactInfoSerializer(many=True, read_only=True)
 
     def to_internal_value(self, data):
         self.fields['organization'] = serializers.PrimaryKeyRelatedField(
@@ -403,6 +406,7 @@ class PersonAdminSerializer(AuditModelSerializer):
             'surname',
             'organization',
             'registrations',
+            'contact_info',
             'create_user',
             'create_date',
             'update_user',

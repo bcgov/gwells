@@ -19,7 +19,7 @@ export default {
   props: ['driller', 'activity'],
   methods: {
     applicationApproved (app) {
-      return app.status_set && app.status_set.length && !!~app.status_set.findIndex((item) => {
+      return app.status_set && app.status_set.length && app.status_set.some((item) => {
         return item.status === 'A'
       })
     }

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <b-card v-if="user" no-body class="container p-1 mb-3">
+    <b-card v-if="userIsAdmin" no-body class="container p-1 mb-3">
       <b-card-header header-tag="header" class="p-1" role="tab">
         <b-btn block href="#" v-b-toggle.adminPanel variant="light" class="text-left">Administrator options</b-btn>
       </b-card-header>
@@ -51,7 +51,7 @@
                 </b-form-select>
               </b-form-group>
             </b-col>
-            <b-col cols="12" md="6" v-if="user">
+            <b-col cols="12" md="6" v-if="userIsAdmin">
               <b-form-group label="Registration status" label-for="registrationStatusSelect">
                 <b-form-select
                     v-model="searchParams.status"
@@ -200,7 +200,7 @@ export default {
       }
     },
     ...mapGetters([
-      'user',
+      'userIsAdmin',
       'loading',
       'listError',
       'cityList',

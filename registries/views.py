@@ -10,7 +10,7 @@ from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from rest_framework.mixins import CreateModelMixin, UpdateModelMixin
 from registries.models import Organization, Person, ContactInfo, RegistriesApplication, Register
-from registries.permissions import IsAdminOrReadOnly
+from registries.permissions import IsAdminOrReadOnly, IsGwellsAdmin
 from registries.serializers import (
     ApplicationAdminSerializer,
     ApplicationListSerializer,
@@ -22,6 +22,7 @@ from registries.serializers import (
     PersonAdminSerializer,
     PersonListSerializer,
     RegistrationAdminSerializer,)
+
 
 class AuditCreateMixin(CreateModelMixin):
     """
@@ -53,6 +54,7 @@ class APILimitOffsetPagination(LimitOffsetPagination):
     """
 
     max_limit = 100
+
     def get_paginated_response(self, data):
         return Response(OrderedDict([
             ('count', self.count),
@@ -93,7 +95,7 @@ class OrganizationListView(AuditCreateMixin, ListCreateAPIView):
     Creates a new drilling organization record
     """
 
-    permission_classes = (IsAdminOrReadOnly,)
+    permission_classes = (IsGwellsAdmin,)
     serializer_class = OrganizationSerializer
     pagination_class = APILimitOffsetPagination
 
@@ -245,7 +247,7 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
         # Search for cities (split list and return all matches)
         # search comes in as a comma-separated querystring param e.g: ?city=Atlin,Lake Windermere,Duncan
         cities = self.request.query_params.get('city', None)
-        if cities is not None and len(cities):
+        if cities:
             cities = cities.split(',')
             qs = qs.filter(organization__city__in=cities)
         

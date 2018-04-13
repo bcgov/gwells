@@ -1,15 +1,18 @@
 <template>
   <div class="container">
+    <b-card no-body class="mb-3">
+        <b-breadcrumb :items="breadcrumbs" class="py-0 my-2"></b-breadcrumb>
+    </b-card>
     <div class="card">
       <div class="card-body">
         <div v-if="currentDriller != {}">
           <div class="row">
-            <div class="col-xs-12 col-sm-7">
+            <div class="col-9">
               <h5 class="card-title">{{ currentDriller.first_name }} {{ currentDriller.surname }}</h5>
             </div>
-            <div class="col-xs-12 col-sm-5 text-right">
+            <div class="col-3 text-right">
               <router-link
-                class="btn btn-default"
+                class="btn btn-default registries-edit-btn"
                 :to="{
                   name: 'PersonDetailEdit',
                   params: {
@@ -21,7 +24,7 @@
           </div>
         </div>
         <div class="row">
-          <div class="col-xs-12" v-if="error">
+          <div class="col-12" v-if="error">
             <api-error :error="error" resetter="SET_ERROR"></api-error>
           </div>
         </div>
@@ -35,7 +38,7 @@
             <tbody>
               <tr v-if="classifications && classifications.length" v-for="(item, index) in classifications" :key="`classification ${index}`">
                 <td><router-link :to="{
-                  name: 'PersonApplicationDetail',
+                  name: 'ApplicationDetail',
                   params: { person_guid: currentDriller.person_guid, classCode: item.code } }">
                 {{ item.description }}</router-link></td>
                 <td>{{ item.status }}</td>
@@ -43,6 +46,124 @@
               </tr>
             </tbody>
           </table>
+        </div>
+        <div class="card mb-3">
+          <div class="card-body">
+            <h5 class="card-title mb-3">Personal Information</h5>
+            <div class="row mb-2">
+              <div class="col-5 col-md-2 mb-1 mb-sm-0">
+                Last name:
+              </div>
+              <div class="col-7 col-md-4">
+                {{ currentDriller.surname }}
+              </div>
+              <div class="col-5 col-md-2">
+                First name:
+              </div>
+              <div class="col-7 col-md-4">
+                {{ currentDriller.first_name }}
+              </div>
+            </div>
+            <div class="row mb-2">
+              <div class="col-12 col-md-6 mb-1">
+                <i class="fa fa-check-square"></i>
+                Confirmed applicant is 19 or older
+              </div>
+              <div class="col-5 col-md-2">
+                Proof of age:
+              </div>
+              <div class="col-7 col-md-4">
+                Driver's license
+              </div>
+            </div>
+            <div class="row mb-2">
+              <div class="col-5 col-md-2">
+                ORCS number:
+              </div>
+              <div class="col-7 col-md-10">
+                JOB020180608
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title mb-3">Current Company Information</h5>
+            <div v-if="currentDriller.organization">
+              <div class="row mb-2">
+                <div class="col-5 col-md-2 mb-1 mb-sm-0">
+                  Company name:
+                </div>
+                <div class="col-7 col-md-4">
+                  {{ currentDriller.organization.name }}
+                </div>
+                <div class="col-5 col-md-2">
+                  Street address:
+                </div>
+                <div class="col-7 col-md-4">
+                  {{ currentDriller.organization.street_address }}
+                </div>
+              </div>
+              <div class="row mb-2">
+                <div class="col-5 col-md-2 mb-1 mb-sm-0">
+                  City:
+                </div>
+                <div class="col-7 col-md-4">
+                  {{ currentDriller.organization.city }}
+                </div>
+                <div class="col-5 col-md-2">
+                  Province:
+                </div>
+                <div class="col-7 col-md-4">
+                  {{ currentDriller.organization.province_state }}
+                </div>
+              </div>
+              <div class="row mb-2">
+                <div class="col-5 col-md-2 mb-1 mb-sm-0">
+                  Postal Code:
+                </div>
+                <div class="col-7 col-md-4">
+                  {{ currentDriller.organization.postal_code }}
+                </div>
+                <div class="col-5 col-md-2">
+                  Office number:
+                </div>
+                <div class="col-7 col-md-4">
+                  {{ currentDriller.organization.main_tel }}
+                </div>
+              </div>
+              <div class="row mb-2">
+                <div class="col-5 col-md-2 mb-1 mb-sm-0">
+                  Cell number:
+                </div>
+                <div class="col-7 col-md-4">
+                  {{ currentDriller.surname }}
+                </div>
+                <div class="col-5 col-md-2">
+                  Fax number:
+                </div>
+                <div class="col-7 col-md-4">
+                  {{ currentDriller.organization.fax_tel }}
+                </div>
+              </div>
+              <div class="row mb-2">
+                <div class="col-5 col-md-2 mb-1 mb-sm-0">
+                  Email address:
+                </div>
+                <div class="col-7 col-md-4">
+                  <div v-for="(email, index) in personEmail" :key="`person email ${index}`">
+                    {{ email }}
+                  </div>
+                </div>
+                <div class="col-5 col-md-2">
+                  Website:
+                </div>
+                <div class="col-7 col-md-4">
+                  {{ currentDriller.organization.website_url }}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -63,9 +184,30 @@ export default {
     'r-checkbox': QualCheckbox
   },
   data () {
-    return {}
+    return {
+      breadcrumbs: [
+        {
+          text: 'Registry Search',
+          to: { name: 'SearchHome' }
+        },
+        {
+          text: 'Person Profile',
+          active: true
+        }
+      ]
+    }
   },
   computed: {
+    personEmail () {
+      // sort a person's contact info into a list of emails
+      const email = []
+      this.currentDriller.contact_info.forEach((item) => {
+        if (item.contact_email) {
+          email.push(item.contact_email)
+        }
+      })
+      return email
+    },
     company () {
       if (this.currentDriller && this.currentDriller.companies && this.currentDriller.companies.length) {
         return this.currentDriller.companies[0]
@@ -74,7 +216,7 @@ export default {
     },
     drillerOver19 () {
       if (this.currentDriller.applications && this.currentDriller.applications.length) {
-        return ~this.currentDriller.applications.findIndex((app) => {
+        return this.currentDriller.applications.some((app) => {
           return app.over19_ind === true
         })
       }
@@ -103,13 +245,15 @@ export default {
 
             if (app.status_set && app.status_set.length) {
               statusPriority.forEach((code) => {
+                console.log('checking status', code)
                 const statusLevel = app.status_set.findIndex((item) => {
-                  return item.status_code === code
+                  return item.status === code
                 })
 
                 if (~statusLevel) {
                   status = app.status_set[statusLevel].description
                   date = app.status_set[statusLevel].effective_date
+                  console.log('found status ', code, status, date)
                 }
               })
             }
@@ -118,7 +262,7 @@ export default {
 
             classifications.push({
               code: app.subactivity,
-              description: app.subactivity_description,
+              description: app.subactivity,
               status: status,
               date: date
             })
@@ -172,5 +316,8 @@ export default {
 <style>
 #classification-table th {
   font-weight: 400!important;
+}
+.registries-edit-btn {
+  margin-top: -5px;
 }
 </style>
