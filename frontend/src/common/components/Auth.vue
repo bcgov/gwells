@@ -13,6 +13,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import ApiService from '@/common/services/ApiService.js'
+import { SET_ERROR } from '@/registry/store/mutations.types.js'
 
 export default {
   data () {
@@ -29,6 +30,8 @@ export default {
           if (authenticated) {
             ApiService.authHeader('JWT', this.keycloak.token)
           }
+        }).error((e) => {
+          this.$store.commit(SET_ERROR, { error: 'Cannot contact SSO provider' })
         })
       }
     },
