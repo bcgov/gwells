@@ -144,17 +144,21 @@ export const store = new Vuex.Store({
         })
     },
     [FETCH_DRILLER_LIST] ({commit}, params) {
-      commit(SET_LOADING, true)
-      ApiService.query('drillers/', params)
-        .then((response) => {
-          commit(SET_LOADING, false)
-          commit(SET_LIST_ERROR, null)
-          commit(SET_DRILLER_LIST, response.data)
-        })
-        .catch((error) => {
-          commit(SET_LOADING, false)
-          commit(SET_LIST_ERROR, error.response)
-        })
+      return new Promise((resolve, reject) => {
+        commit(SET_LOADING, true)
+        ApiService.query('drillers/', params)
+          .then((response) => {
+            commit(SET_LOADING, false)
+            commit(SET_LIST_ERROR, null)
+            commit(SET_DRILLER_LIST, response.data)
+            resolve()
+          })
+          .catch((error) => {
+            commit(SET_LOADING, false)
+            commit(SET_LIST_ERROR, error.response)
+            reject(error)
+          })
+      })
     }
   },
   getters: {
