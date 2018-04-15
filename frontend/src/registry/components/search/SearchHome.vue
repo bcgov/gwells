@@ -6,8 +6,15 @@
       </b-card-header>
       <b-collapse id="adminPanel">
         <b-card-body class="pb-1">
-          <b-button class="mb-2" variant="btn-light" id="addNewEntryButton">Add new entry</b-button>
-          <b-button class="mb-2" variant="btn-light" id="manageCompaniesButton">Manage companies</b-button>
+          <b-button
+            class="mb-2"
+            variant="primary"
+            id="addNewEntryButton"
+            :to="{ name: 'PersonAdd' }"
+          >
+            Add new entry
+          </b-button>
+          <b-button class="mb-2" variant="primary" id="manageCompaniesButton">Manage companies</b-button>
         </b-card-body>
       </b-collapse>
     </b-card>
@@ -44,7 +51,7 @@
                       v-for="prov in cityList[formatActivityForCityList]"
                       v-if="prov.cities && prov.cities.length"
                       :key="prov.prov"
-                      :label="`${prov.prov} (${prov.cities.length})`"
+                      :label="prov.prov"
                     >
                       <option v-for="city in prov.cities" :key="`${city} ${prov.prov}`" :value="city">{{ city }}</option>
                     </optgroup>
