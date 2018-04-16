@@ -66,7 +66,7 @@
             </b-row>
             <b-row class="mt-3">
               <b-col md="5">
-                <b-form-group
+                <!-- <b-form-group
                   id="companyInputGroup"
                   label="Company:"
                   label-for="companyInput">
@@ -74,7 +74,7 @@
                     v-model="drillerForm.person.organization"
                     :options="companies"
                     placeholder="Begin typing a company name"/>
-                </b-form-group>
+                </b-form-group> -->
                 <b-button type="button" href="#" variant="light" size="sm" class="mb-3"><i class="fa fa-plus-square-o"></i> Add a company</b-button>
               </b-col>
             </b-row>
@@ -205,6 +205,31 @@ export default {
       personData['contact_info'] = contactInfo
 
       ApiService.post('drillers', personData)
+    },
+    onFormReset () {
+      this.drillerForm = Object.assign({}, {
+        person: {
+          surname: '',
+          first_name: ''
+        },
+        regType: [],
+        contact_info: {
+          contact_tel: '',
+          contact_email: ''
+        },
+        registrations: {
+          drill: {
+            registries_activity: 'DRILL',
+            status: 'ACTIVE',
+            registration_no: ''
+          },
+          pump: {
+            registries_activity: 'PUMP',
+            status: 'ACTIVE',
+            registration_no: ''
+          }
+        }
+      })
     }
   }
 }
