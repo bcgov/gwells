@@ -28,7 +28,6 @@ OC_TEMPLATE_DEPLOY=${OC_TEMPLATE_DEPLOY:-../openshift/templates/caddy-deploy.jso
 #
 APP_MAINT_OFF=${APP_MAINT_OFF:-gwells}
 APP_MAINT_ON=${APP_MAINT_ON:-proxy-caddy}
-APP_REDIRECT=${APP_REDIRECT:-$APP_MAINT_OFF}
 
 
 # Verbose option
@@ -59,13 +58,13 @@ fi
 if [ "${PARAM}" == "maint-on" ]
 then
 	JSON='{ "spec": { "to": { "name": "'$( echo ${APP_MAINT_ON} )'" }, "port": { "targetPort": "2015-tcp" }}}'
-	oc patch route ${APP_REDIRECT} -p ${JSON}
+	oc patch route ${APP_MAINT_OFF} -p ${JSON}
 	JSON='{ "spec": { "to": { "name": "'$( echo ${APP_MAINT_OFF} )'" }, "port": { "targetPort": "web" }}}'
 	oc patch route ${APP_MAINT_ON} -p ${JSON}
 elif [ "${PARAM}" == "maint-off" ]
 then
 	JSON='{ "spec": { "to": { "name": "'$( echo ${APP_MAINT_OFF} )'" }, "port": { "targetPort": "web" }}}'
-	oc patch route ${APP_REDIRECT} -p ${JSON}
+	oc patch route ${APP_MAINT_OFF} -p ${JSON}
 	JSON='{ "spec": { "to": { "name": "'$( echo ${APP_MAINT_ON} )'" }, "port": { "targetPort": "2015-tcp" }}}'
 	oc patch route ${APP_MAINT_ON} -p ${JSON}
 elif [ "${PARAM}" == "build" ]
@@ -74,7 +73,7 @@ then
 elif [ "${PARAM}" == "deploy" ]
 then
 	oc process -f ${OC_TEMPLATE_DEPLOY} -p NAME=${APP_MAINT_ON} BUILD_PROJECT=${BUILD_PROJECT} | oc apply -f -
-	[ "${APP_REDIRECT}" == "${APP_MAINT_ON}" ] && oc get route ${APP_MAINT_ON} || oc expose svc ${APP_MAINT_ON}
+	[ "${APP_MAINT_OFF}" == "${APP_MAINT_ON}" ] && oc get route ${APP_MAINT_ON} || oc expose svc ${APP_MAINT_ON}
 	CONTAINER_IMG=$( oc get dc proxy-caddy -o json | grep '"image":' | awk '{ print $2 }' | tr -d ',"' )
 	echo "${CONTAINER_IMG}" >> ./container_img.log
 elif [ "${PARAM}" == "nuke" ]
