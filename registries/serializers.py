@@ -383,20 +383,54 @@ class PersonListSerializer(AuditModelSerializer):
         )
 
 
+class RegistrationAutoCreateSerializer(AuditModelSerializer):
+    """
+    Serializer for creating a registration when a Person record is created
+    """
+
+    class Meta:
+        model = Register
+        fields = ('registries_activity', 'status', 'registration_no')
+
 class PersonAdminSerializer(AuditModelSerializer):
     """
     Serializes the Person model (admin user fields)
     """
 
-    # organization = serializers.PrimaryKeyRelatedField(queryset=Organization.objects.all(), required=False)
-    registrations = RegistrationAdminSerializer(many=True, read_only=True)
-    organization = OrganizationListSerializer(required=False)
-    contact_info = ContactInfoSerializer(many=True, read_only=True)
+    registrations = RegistrationAdminSerializer(many=True)
+    organization = OrganizationListSerializer()
+    contact_info = ContactInfoSerializer(many=True)
 
     def to_internal_value(self, data):
+        """
+        Set fields to different serializers for create/update operations.
+        This method is called on POST/PUT/PATCH requests
+        """
+        self.fields['registrations'] = RegistrationAutoCreateSerializer(many=True)
         self.fields['organization'] = serializers.PrimaryKeyRelatedField(
             queryset=Organization.objects.all(), required=False)
         return super(PersonAdminSerializer, self).to_internal_value(data)
+
+    def create(self, validated_data):
+        """
+        Create Register and ContactInfo records to go along with a new person record
+        """
+        registrations = validated_data.pop('registrations')
+        contacts = validated_data.pop('contact_info')
+        person = Person.objects.create(**validated_data)
+        for reg_data in registrations:
+            Register.objects.create(person=person, **reg_data)
+        for contact_data in contacts:
+            ContactInfo.objects.create(person=person, **contact_data)
+        return person
+
+    def update(self, instance, validated_data):
+        """
+        Remove nested serializers before updating Person instance
+        """
+        validated_data.pop('registrations')
+        validated_data.pop('contact_info')
+        return super(PersonAdminSerializer, self).update(instance, validated_data)
 
     class Meta:
         model = Person
