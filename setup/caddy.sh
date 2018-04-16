@@ -57,25 +57,25 @@ fi
 #
 if [ "${PARAM}" == "maint-on" ]
 then
-	JSON='{ "spec": { "to": { "name": "'$( echo ${APP_MAINT_ON} )'" }, "port": { "targetPort": "2015-tcp" }}}'
-	oc patch route ${APP_MAINT_OFF} -p ${JSON}
-	JSON='{ "spec": { "to": { "name": "'$( echo ${APP_MAINT_OFF} )'" }, "port": { "targetPort": "web" }}}'
-	oc patch route ${APP_MAINT_ON} -p ${JSON}
+	oc patch route ${APP_MAINT_OFF} -p \
+		'{ "spec": { "to": { "name": "'$( echo ${APP_MAINT_ON} )'" }, "port": { "targetPort": "2015-tcp" }}}'
+	oc patch route ${APP_MAINT_ON} -p \
+		'{ "spec": { "to": { "name": "'$( echo ${APP_MAINT_OFF} )'" }, "port": { "targetPort": "web" }}}'
 elif [ "${PARAM}" == "maint-off" ]
 then
-	JSON='{ "spec": { "to": { "name": "'$( echo ${APP_MAINT_OFF} )'" }, "port": { "targetPort": "web" }}}'
-	oc patch route ${APP_MAINT_OFF} -p ${JSON}
-	JSON='{ "spec": { "to": { "name": "'$( echo ${APP_MAINT_ON} )'" }, "port": { "targetPort": "2015-tcp" }}}'
-	oc patch route ${APP_MAINT_ON} -p ${JSON}
+	oc patch route ${APP_MAINT_OFF} -p \
+		'{ "spec": { "to": { "name": "'$( echo ${APP_MAINT_OFF} )'" }, "port": { "targetPort": "web" }}}'
+	oc patch route ${APP_MAINT_ON} -p \
+		'{ "spec": { "to": { "name": "'$( echo ${APP_MAINT_ON} )'" }, "port": { "targetPort": "2015-tcp" }}}'
 elif [ "${PARAM}" == "build" ]
 then
 	oc process -f ${OC_TEMPLATE_BUILD} -p NAME=${APP_MAINT_ON} GIT_REPO=${GIT_REPO} GIT_BRANCH=${GIT_BRANCH} IMG_NAME=${IMG_NAME} | oc apply -f -
 elif [ "${PARAM}" == "deploy" ]
 then
 	oc process -f ${OC_TEMPLATE_DEPLOY} -p NAME=${APP_MAINT_ON} BUILD_PROJECT=${BUILD_PROJECT} | oc apply -f -
-	[ "${APP_MAINT_OFF}" == "${APP_MAINT_ON}" ] && oc get route ${APP_MAINT_ON} || oc expose svc ${APP_MAINT_ON}
-	CONTAINER_IMG=$( oc get dc proxy-caddy -o json | grep '"image":' | awk '{ print $2 }' | tr -d ',"' )
-	echo "${CONTAINER_IMG}" >> ./container_img.log
+	[ "${APP_MAINT_OFF}" == "${APP_MAINT_ON}" ] && oc get route ${APP_MAINT_ON} || \
+		oc expose svc ${APP_MAINT_ON}
+	oc get dc ${APP_MAINT_ON} -o json | grep '"image":' | awk '{ print $2 }' | tr -d ',"' >> ./container_img.log
 elif [ "${PARAM}" == "nuke" ]
 then
 	oc delete all -l app=${APP_MAINT_ON}
