@@ -9,7 +9,7 @@
     <div class="card">
       <div class="card-body">
           <h5 class="card-title">Add a Well Driller or Well Pump Installer</h5>
-          <b-form @reset.prevent="" @submit.prevent="">
+          <b-form @submit.prevent="onFormSubmit()" @reset.prevent="onFormReset()">
             <b-row>
               <b-col cols="12" md="5">
                 <b-form-group
@@ -19,7 +19,7 @@
                   <b-form-input
                     id="surnameInput"
                     type="text"
-                    v-model="drillerForm.surname"
+                    v-model="drillerForm.person.surname"
                     required
                     placeholder="Enter surname"/>
                 </b-form-group>
@@ -32,7 +32,7 @@
                   <b-form-input
                     id="firstnameInput"
                     type="text"
-                    v-model="drillerForm.first_name"
+                    v-model="drillerForm.person.first_name"
                     required
                     placeholder="Enter first name"/>
                 </b-form-group>
@@ -47,25 +47,11 @@
                   <b-form-input
                     id="contactTelInput"
                     type="text"
-                    v-model="drillerForm.contact.tel"
+                    v-model="drillerForm.contact_info.contact_tel"
                     placeholder="Enter telephone number"/>
                 </b-form-group>
               </b-col>
               <b-col cols="12" md="5" offset-md="1">
-                <b-form-group
-                  id="contactCellInputGroup"
-                  label="Cell number:"
-                  label-for="contactCellInput">
-                  <b-form-input
-                    id="contactCellInput"
-                    type="text"
-                    v-model="drillerForm.contact.cell"
-                    placeholder="Enter cell number"/>
-                </b-form-group>
-              </b-col>
-            </b-row>
-            <b-row>
-              <b-col cols="12" md="5">
                 <b-form-group
                   id="contactEmailInputGroup"
                   label="Email:"
@@ -73,7 +59,7 @@
                   <b-form-input
                     id="contactEmailInput"
                     type="text"
-                    v-model="drillerForm.contact.email"
+                    v-model="drillerForm.contact_info.contact_email"
                     placeholder="Enter email address"/>
                 </b-form-group>
               </b-col>
@@ -85,26 +71,25 @@
                   label="Company:"
                   label-for="companyInput">
                   <v-select
-                    v-model="drillerForm.organization"
+                    v-model="drillerForm.person.organization"
                     :options="companies"
                     placeholder="Begin typing a company name"/>
                 </b-form-group>
-                <b-button type="button" href="#" variant="light" size="sm"><i class="fa fa-plus-square-o"></i> Add a company</b-button>
+                <b-button type="button" href="#" variant="light" size="sm" class="mb-3"><i class="fa fa-plus-square-o"></i> Add a company</b-button>
               </b-col>
             </b-row>
             <b-row class="mt-3">
               <b-col>
                 <b-form-group label="Register as: " label-for="registrationTypeInput">
-                  <b-form-checkbox-group id="registrationTypeInput" name="registrationType" v-model="drillerForm.reg_type">
+                  <b-form-checkbox-group id="registrationTypeInput" name="registrationType" v-model="drillerForm.regType">
                     <b-form-checkbox value="DRILL">Well Driller</b-form-checkbox>
                     <b-form-checkbox value="PUMP">Well Pump Installer</b-form-checkbox>
                   </b-form-checkbox-group>
                 </b-form-group>
               </b-col>
             </b-row>
-            <b-card class="mb-3" v-if="drillerForm.reg_type.some(x => x === 'DRILL')">
-              <h6 class="card-title">Well Driller Registration Details</h6>
-              <b-row>
+            <b-card class="mb-3" v-if="drillerForm.regType.some(x => x === 'DRILL' || x === 'PUMP')">
+              <b-row v-if="drillerForm.regType.some(x => x === 'DRILL')">
                 <b-col cols="12" md="5">
                   <b-form-group
                     id="drillerRegNoInputGroup"
@@ -113,27 +98,12 @@
                     <b-form-input
                       id="drillerRegNoInput"
                       type="text"
-                      v-model="regForm.drill.drillRegNo"
-                      placeholder="Enter driller registration number"/>
-                  </b-form-group>
-                </b-col>
-                <b-col cols="12" md="5" offset-md="1">
-                  <b-form-group
-                    id="drillerORCSNoInputGroup"
-                    label="Well Driller ORCS Number:"
-                    label-for="drillerORCSNoInput">
-                    <b-form-input
-                      id="drillerORCSNoInput"
-                      type="text"
-                      v-model="regForm.drill.drillORCSNo"
-                      placeholder="Enter driller ORCS number"/>
+                      v-model="drillerForm.registrations.drill.registration_no"
+                      placeholder="Enter registration number"/>
                   </b-form-group>
                 </b-col>
               </b-row>
-            </b-card>
-            <b-card class="mb-3" v-if="drillerForm.reg_type.some(x => x === 'PUMP')">
-              <h6 class="card-title">Well Pump Installer Registration Details</h6>
-              <b-row>
+              <b-row v-if="drillerForm.regType.some(x => x === 'PUMP')">
                 <b-col cols="12" md="5">
                   <b-form-group
                     id="pumpRegNoInputGroup"
@@ -142,20 +112,8 @@
                     <b-form-input
                       id="pumpRegNoInput"
                       type="text"
-                      v-model="regForm.drill.drillRegNo"
+                      v-model="drillerForm.registrations.pump.registration_no"
                       placeholder="Enter registration number"/>
-                  </b-form-group>
-                </b-col>
-                <b-col cols="12" md="5" offset-md="1">
-                  <b-form-group
-                    id="pumpORCSNoInputGroup"
-                    label="Well Pump Installer ORCS Number:"
-                    label-for="pumpORCSNoInput">
-                    <b-form-input
-                      id="pumpORCSNoInput"
-                      type="text"
-                      v-model="regForm.drill.drillORCSNo"
-                      placeholder="Enter ORCS number"/>
                   </b-form-group>
                 </b-col>
               </b-row>
@@ -175,6 +133,7 @@
 <script>
 import APIErrorMessage from '@/common/components/APIErrorMessage'
 import { mapGetters } from 'vuex'
+import ApiService from '@/common/services/ApiService.js'
 
 export default {
   name: 'PersonDetailEdit',
@@ -194,24 +153,26 @@ export default {
         }
       ],
       drillerForm: {
-        surname: '',
-        first_name: '',
-        organization: null,
-        reg_type: [],
-        contact: {
-          tel: '',
-          cell: '',
-          email: ''
-        }
-      },
-      regForm: {
-        drill: {
-          drillRegNo: '',
-          drillORCSNo: ''
+        person: {
+          surname: '',
+          first_name: ''
         },
-        pump: {
-          pumpRegNo: '',
-          pumpORCSNo: ''
+        regType: [],
+        contact_info: {
+          contact_tel: '',
+          contact_email: ''
+        },
+        registrations: {
+          drill: {
+            registries_activity: 'DRILL',
+            status: 'ACTIVE',
+            registration_no: ''
+          },
+          pump: {
+            registries_activity: 'PUMP',
+            status: 'ACTIVE',
+            registration_no: ''
+          }
         }
       },
       companies: [
@@ -225,6 +186,26 @@ export default {
       'loading',
       'error'
     ])
+  },
+  methods: {
+    onFormSubmit () {
+      const registrations = []
+      const contactInfo = []
+      const personData = Object.assign({}, this.drillerForm.person)
+
+      // add registration data for activities checked off on form
+      this.drillerForm.regType.forEach((item) => {
+        registrations.push(this.drillerForm.registrations[item.toLowerCase()])
+      })
+
+      // add submitted contact info onto collection of person's contact details
+      contactInfo.push(this.drillerForm.contact_info)
+
+      personData['registrations'] = registrations
+      personData['contact_info'] = contactInfo
+
+      ApiService.post('drillers', personData)
+    }
   }
 }
 </script>
