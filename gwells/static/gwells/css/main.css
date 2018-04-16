@@ -3,11 +3,6 @@
     src: url('../fonts/MyriadWebPro.ttf');
 }
 
-html,
-body {
-    height: 100%;
-}
-
 body {
     font-family: Myriad-Pro, Calibri, Arial, 'sans serif';
     background-color: #f1f1f1;
