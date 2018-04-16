@@ -38,6 +38,18 @@ OC_TEMPLATE_DEPLOY=${OC_TEMPLATE_DEPLOY:-../openshift/templates/caddy-deploy.jso
 	set -x
 
 
+# Check project
+#
+PROJECT_CHECK=$( oc projects | tr -d '*' | grep -v "Using project" | grep "${PROJECT}" | awk '{ print $1 }' || echo )
+if [ "${PROJECT}" != "${PROJECT_CHECK}" ]
+then
+	echo
+	echo "Unable to access project ${PROJECT}"
+	echo
+	exit
+fi
+
+
 # Show message if passed any params
 #
 if [ "${#}" -lt 2 ]||[ "${PROJECT}" == "help" ]
