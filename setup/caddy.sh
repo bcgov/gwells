@@ -1,4 +1,4 @@
-#!/bin/bash
+${PROJECT}#!/bin/bash
 
 
 # Halt on errors/unsets, change fail returns, change field separator
@@ -9,19 +9,9 @@ IFS=$'\n\t'
 
 # Parameters and mode variables
 #
-PARAM=${1:-}
+PROJECT=${1:-}
+COMMAND=${2:-}
 VERBOSE=${VERBOSE:-false}
-
-
-# Server and build settings
-#
-IMG_NAME=${IMG_NAME:-bcgov-s2i-caddy}
-GIT_REPO=${GIT_REPO:-https://github.com/bcgov/gwells.git}
-GIT_BRANCH=${GIT_BRANCH:-master}
-BUILD_PROJECT=${BUILD_PROJECT:-moe-gwells-tools}
-OC_SERVER=${OC_SERVER:-https://console.pathfinder.gov.bc.ca:8443}
-OC_TEMPLATE_BUILD=${OC_TEMPLATE_BUILD:-../openshift/templates/caddy-build.json}
-OC_TEMPLATE_DEPLOY=${OC_TEMPLATE_DEPLOY:-../openshift/templates/caddy-deploy.json}
 
 
 # App settings
@@ -32,6 +22,16 @@ PORT_MAINT_OFF=${PORT_MAINT_OFF:-web}
 PORT_MAINT_ON=${PORT_MAINT_ON:-2015-tcp}
 
 
+# Server and build settings
+#
+IMG_NAME=${IMG_NAME:-bcgov-s2i-caddy}
+GIT_REPO=${GIT_REPO:-https://github.com/bcgov/gwells.git}
+GIT_BRANCH=${GIT_BRANCH:-master}
+OC_SERVER=${OC_SERVER:-https://console.pathfinder.gov.bc.ca:8443}
+OC_TEMPLATE_BUILD=${OC_TEMPLATE_BUILD:-../openshift/templates/caddy-build.json}
+OC_TEMPLATE_DEPLOY=${OC_TEMPLATE_DEPLOY:-../openshift/templates/caddy-deploy.json}
+
+
 # Verbose option
 #
 [ "${VERBOSE}" == true ]&& \
@@ -40,7 +40,7 @@ PORT_MAINT_ON=${PORT_MAINT_ON:-2015-tcp}
 
 # Show message if passed any params
 #
-if [ "${#}" -eq 0 ]
+if [ "${#}" -lt 2 ]||[ "${PROJECT}" == "help" ]
 then
 	echo
 	echo "Deploy Caddy to allow maintenance or downtime messages."
@@ -57,32 +57,34 @@ fi
 
 # Action based on parameter
 #
-if [ "${PARAM}" == "maint-on" ]
+if [ "${COMMAND}" == "maint-on" ]
 then
-	oc patch route ${APP_MAINT_OFF} -p \
+	oc patch route ${APP_MAINT_OFF} -n ${PROJECT} -p \
 		'{ "spec": { "to": { "name": "'$( echo ${APP_MAINT_ON} )'" }, "port": { "targetPort": "'$( echo ${PORT_MAINT_ON} )'" }}}'
-	oc patch route ${APP_MAINT_ON} -p \
+	oc patch route ${APP_MAINT_ON} -n ${PROJECT} -p \
 		'{ "spec": { "to": { "name": "'$( echo ${APP_MAINT_OFF} )'" }, "port": { "targetPort": "'$( echo ${PORT_MAINT_OFF} )'" }}}'
-elif [ "${PARAM}" == "maint-off" ]
+elif [ "${COMMAND}" == "maint-off" ]
 then
-	oc patch route ${APP_MAINT_OFF} -p \
+	oc patch route ${APP_MAINT_OFF} -n ${PROJECT} -p \
 		'{ "spec": { "to": { "name": "'$( echo ${APP_MAINT_OFF} )'" }, "port": { "targetPort": "'$( echo ${PORT_MAINT_OFF} )'" }}}'
-	oc patch route ${APP_MAINT_ON} -p \
+	oc patch route ${APP_MAINT_ON} -n ${PROJECT} -p \
 		'{ "spec": { "to": { "name": "'$( echo ${APP_MAINT_ON} )'" }, "port": { "targetPort": "'$( echo ${PORT_MAINT_ON} )'" }}}'
-elif [ "${PARAM}" == "build" ]
+elif [ "${COMMAND}" == "build" ]
 then
 	oc process -f ${OC_TEMPLATE_BUILD} -p NAME=${APP_MAINT_ON} GIT_REPO=${GIT_REPO} GIT_BRANCH=${GIT_BRANCH} IMG_NAME=${IMG_NAME} | oc apply -f -
-elif [ "${PARAM}" == "deploy" ]
+elif [ "${COMMAND}" == "deploy" ]
 then
-	oc process -f ${OC_TEMPLATE_DEPLOY} -p NAME=${APP_MAINT_ON} BUILD_PROJECT=${BUILD_PROJECT} | oc apply -f -
+	oc process -f ${OC_TEMPLATE_DEPLOY} -n ${PROJECT} \
+		-p NAME=${APP_MAINT_ON} BUILD_PROJECT=${PROJECT} \
+		| oc apply -f -
 	[ "${APP_MAINT_OFF}" == "${APP_MAINT_ON}" ] && oc get route ${APP_MAINT_ON} || \
 		oc expose svc ${APP_MAINT_ON}
 	oc get dc ${APP_MAINT_ON} -o json | grep '"image":' | awk '{ print $2 }' | tr -d ',"' >> ./container_img.log
-elif [ "${PARAM}" == "nuke" ]
+elif [ "${COMMAND}" == "nuke" ]
 then
 	oc delete all -l app=${APP_MAINT_ON}
 else
 	echo
-	echo "Parameter '${PARAM}' not understood."
+	echo "Parameter '${COMMAND}' not understood."
 	echo
 fi
