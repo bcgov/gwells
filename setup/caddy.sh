@@ -60,10 +60,14 @@ if [ "${PARAM}" == "maint-on" ]
 then
 	JSON='{ "spec": { "to": { "name": "'$( echo ${APP_MAINT_ON} )'" }, "port": { "targetPort": "2015-tcp" }}}'
 	oc patch route ${APP_REDIRECT} -p ${JSON}
+	JSON='{ "spec": { "to": { "name": "'$( echo ${APP_MAINT_OFF} )'" }, "port": { "targetPort": "web" }}}'
+	oc patch route ${APP_MAINT_ON} -p ${JSON}
 elif [ "${PARAM}" == "maint-off" ]
 then
 	JSON='{ "spec": { "to": { "name": "'$( echo ${APP_MAINT_OFF} )'" }, "port": { "targetPort": "web" }}}'
 	oc patch route ${APP_REDIRECT} -p ${JSON}
+	JSON='{ "spec": { "to": { "name": "'$( echo ${APP_MAINT_ON} )'" }, "port": { "targetPort": "2015-tcp" }}}'
+	oc patch route ${APP_MAINT_ON} -p ${JSON}
 elif [ "${PARAM}" == "build" ]
 then
 	oc process -f ${OC_TEMPLATE_BUILD} -p NAME=${APP_MAINT_ON} GIT_REPO=${GIT_REPO} GIT_BRANCH=${GIT_BRANCH} IMG_NAME=${IMG_NAME} | oc apply -f -
