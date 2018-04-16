@@ -28,6 +28,8 @@ OC_TEMPLATE_DEPLOY=${OC_TEMPLATE_DEPLOY:-../openshift/templates/caddy-deploy.jso
 #
 APP_MAINT_OFF=${APP_MAINT_OFF:-gwells}
 APP_MAINT_ON=${APP_MAINT_ON:-proxy-caddy}
+PORT_MAINT_OFF=${PORT_MAINT_OFF:-web}
+PORT_MAINT_ON=${PORT_MAINT_ON:-2015-tcp}
 
 
 # Verbose option
@@ -58,15 +60,15 @@ fi
 if [ "${PARAM}" == "maint-on" ]
 then
 	oc patch route ${APP_MAINT_OFF} -p \
-		'{ "spec": { "to": { "name": "'$( echo ${APP_MAINT_ON} )'" }, "port": { "targetPort": "2015-tcp" }}}'
+		'{ "spec": { "to": { "name": "'$( echo ${APP_MAINT_ON} )'" }, "port": { "targetPort": "'$( echo ${PORT_MAINT_ON} )'" }}}'
 	oc patch route ${APP_MAINT_ON} -p \
-		'{ "spec": { "to": { "name": "'$( echo ${APP_MAINT_OFF} )'" }, "port": { "targetPort": "web" }}}'
+		'{ "spec": { "to": { "name": "'$( echo ${APP_MAINT_OFF} )'" }, "port": { "targetPort": "'$( echo ${PORT_MAINT_OFF} )'" }}}'
 elif [ "${PARAM}" == "maint-off" ]
 then
 	oc patch route ${APP_MAINT_OFF} -p \
-		'{ "spec": { "to": { "name": "'$( echo ${APP_MAINT_OFF} )'" }, "port": { "targetPort": "web" }}}'
+		'{ "spec": { "to": { "name": "'$( echo ${APP_MAINT_OFF} )'" }, "port": { "targetPort": "'$( echo ${PORT_MAINT_OFF} )'" }}}'
 	oc patch route ${APP_MAINT_ON} -p \
-		'{ "spec": { "to": { "name": "'$( echo ${APP_MAINT_ON} )'" }, "port": { "targetPort": "2015-tcp" }}}'
+		'{ "spec": { "to": { "name": "'$( echo ${APP_MAINT_ON} )'" }, "port": { "targetPort": "'$( echo ${PORT_MAINT_ON} )'" }}}'
 elif [ "${PARAM}" == "build" ]
 then
 	oc process -f ${OC_TEMPLATE_BUILD} -p NAME=${APP_MAINT_ON} GIT_REPO=${GIT_REPO} GIT_BRANCH=${GIT_BRANCH} IMG_NAME=${IMG_NAME} | oc apply -f -
