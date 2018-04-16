@@ -110,7 +110,7 @@ podTemplate(label: 'nodejs', name: 'nodejs', serviceAccount: 'jenkins', cloud: '
             dir('api-tests') {
             sh 'npm install -g newman'
             try {
-                sh 'newman run registries_api_tests.json --global-var base_url="https://gwells-dev.pathfinder.gov.bc.ca/gwells" --global-var test_user=$GWELLS_API_TEST_USER --global-var test_password=$GWELLS_API_TEST_PASSWORD -r cli,junit,html;'
+                sh 'newman run ./registries_api_tests.json --global-var test_user=$GWELLS_API_TEST_USER --global-var test_password=$GWELLS_API_TEST_PASSWORD --global-var base_url=$GWELLS_API_BASE_URL --global-var auth_server=$auth_server --global-var client_id=$client_id --global-var client_secret=$client_secret -r cli,junit,html;'
                 } finally {
                         junit 'newman/*.xml'
                         publishHTML (target: [
