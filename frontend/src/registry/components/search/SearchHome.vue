@@ -181,7 +181,8 @@ export default {
         limit: '10',
         ordering: ''
       },
-      searchLoading: false
+      searchLoading: false,
+      lastSearchedParams: {}
     }
   },
   computed: {
@@ -247,6 +248,7 @@ export default {
         this.$SmoothScroll(table, 200)
         this.drillerSearchReset({keepActivity: true, keepLimit: true})
         this.searchLoading = false
+        this.lastSearchedParams = Object.assign({}, params)
       }).catch(() => {
         this.searchLoading = false
       })
@@ -272,7 +274,7 @@ export default {
       } else {
         this.searchParams['ordering'] = `${sortCode}`
       }
-      this.$store.dispatch(FETCH_DRILLER_LIST, this.APISearchParams)
+      this.$store.dispatch(FETCH_DRILLER_LIST, this.lastSearchedParams)
     }
   },
   created () {
