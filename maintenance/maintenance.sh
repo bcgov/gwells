@@ -34,6 +34,23 @@ OC_DEPLOY=${OC_DEPLOY:-../openshift/templates/caddy-deploy.json}
 	set -x
 
 
+# Show message if passed any params
+#
+if [ "${#}" -lt 2 ]
+then
+	echo
+	echo "Maintenace Mode: Caddy served static page"
+	echo
+	echo "Provide a project and a command."
+	echo " './maintenance.sh <project_name> <maint-on|maint-off|build|deploy>'"
+	echo
+	echo "Set variables to non-defaults at runtime.  E.g.:"
+	echo " 'VERBOSE=true GIT_BRANCH=master ./maintenance.sh <...>'"
+	echo
+	exit
+fi
+
+
 # Check project
 #
 CHECK=$( oc projects | tr -d '*' | grep -v "Using project" | grep "${PROJECT}" | awk '{ print $1 }' || echo )
@@ -41,23 +58,6 @@ if [ "${PROJECT}" != "${CHECK}" ]
 then
 	echo
 	echo "Unable to access project ${PROJECT}"
-	echo
-	exit
-fi
-
-
-# Show message if passed any params
-#
-if [ "${#}" -lt 2 ]||[ "${PROJECT}" == "help" ]
-then
-	echo
-	echo "Deploy Caddy to allow maintenance or downtime messages."
-	echo
-	echo "Provide at least one parameter."
-	echo " './maintenance.sh maintenance-on|maintenance-off|build|deploy'"
-	echo
-	echo "Set variables to non-defaults at runtime.  E.g.:"
-	echo " 'VERBOSE=true ./maintenance.sh <...>'"
 	echo
 	exit
 fi
