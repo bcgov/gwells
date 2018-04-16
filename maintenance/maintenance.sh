@@ -1,4 +1,4 @@
-${PROJECT}#!/bin/bash
+#!/bin/bash
 
 
 # Halt on errors/unsets, change fail returns, change field separator
@@ -11,25 +11,21 @@ IFS=$'\n\t'
 #
 PROJECT=${1:-}
 COMMAND=${2:-}
-VERBOSE=${VERBOSE:-false}
+VERBOSE=${VERBOSE:-}
 
 
-# App settings
+# App and build settings
 #
-APP_MAINT_OFF=${APP_MAINT_OFF:-gwells}
-APP_MAINT_ON=${APP_MAINT_ON:-proxy-caddy}
-PORT_MAINT_OFF=${PORT_MAINT_OFF:-web}
-PORT_MAINT_ON=${PORT_MAINT_ON:-2015-tcp}
-
-
-# Server and build settings
+APPLICATION=${APPLICATION:-gwells}
+APPLICATION_PORT=${APPLICATION_PORT:-web}
+STATIC_PAGE=${STATIC_PAGE:-proxy-caddy}
+STATIC_PAGE_PORT=${STATIC_PAGE_PORT:-2015-tcp}
 #
 IMG_NAME=${IMG_NAME:-bcgov-s2i-caddy}
 GIT_REPO=${GIT_REPO:-https://github.com/bcgov/gwells.git}
 GIT_BRANCH=${GIT_BRANCH:-master}
-OC_SERVER=${OC_SERVER:-https://console.pathfinder.gov.bc.ca:8443}
-OC_TEMPLATE_BUILD=${OC_TEMPLATE_BUILD:-../openshift/templates/caddy-build.json}
-OC_TEMPLATE_DEPLOY=${OC_TEMPLATE_DEPLOY:-../openshift/templates/caddy-deploy.json}
+OC_BUILD=${OC_BUILD:-../openshift/templates/caddy-build.json}
+OC_DEPLOY=${OC_DEPLOY:-../openshift/templates/caddy-deploy.json}
 
 
 # Verbose option
@@ -40,8 +36,8 @@ OC_TEMPLATE_DEPLOY=${OC_TEMPLATE_DEPLOY:-../openshift/templates/caddy-deploy.jso
 
 # Check project
 #
-PROJECT_CHECK=$( oc projects | tr -d '*' | grep -v "Using project" | grep "${PROJECT}" | awk '{ print $1 }' || echo )
-if [ "${PROJECT}" != "${PROJECT_CHECK}" ]
+CHECK=$( oc projects | tr -d '*' | grep -v "Using project" | grep "${PROJECT}" | awk '{ print $1 }' || echo )
+if [ "${PROJECT}" != "${CHECK}" ]
 then
 	echo
 	echo "Unable to access project ${PROJECT}"
@@ -71,30 +67,33 @@ fi
 #
 if [ "${COMMAND}" == "maint-on" ]
 then
-	oc patch route ${APP_MAINT_OFF} -n ${PROJECT} -p \
-		'{ "spec": { "to": { "name": "'$( echo ${APP_MAINT_ON} )'" }, "port": { "targetPort": "'$( echo ${PORT_MAINT_ON} )'" }}}'
-	oc patch route ${APP_MAINT_ON} -n ${PROJECT} -p \
-		'{ "spec": { "to": { "name": "'$( echo ${APP_MAINT_OFF} )'" }, "port": { "targetPort": "'$( echo ${PORT_MAINT_OFF} )'" }}}'
+	oc patch route ${APPLICATION} -n ${PROJECT} -p \
+		'{ "spec": { "to": { "name": "'$( echo ${STATIC_PAGE} )'" },
+		"port": { "targetPort": "'$( echo ${STATIC_PAGE_PORT} )'" }}}'
+	oc patch route ${STATIC_PAGE} -n ${PROJECT} -p \
+		'{ "spec": { "to": { "name": "'$( echo ${APPLICATION} )'" },
+		"port": { "targetPort": "'$( echo ${APPLICATION_PORT} )'" }}}'
 elif [ "${COMMAND}" == "maint-off" ]
 then
-	oc patch route ${APP_MAINT_OFF} -n ${PROJECT} -p \
-		'{ "spec": { "to": { "name": "'$( echo ${APP_MAINT_OFF} )'" }, "port": { "targetPort": "'$( echo ${PORT_MAINT_OFF} )'" }}}'
-	oc patch route ${APP_MAINT_ON} -n ${PROJECT} -p \
-		'{ "spec": { "to": { "name": "'$( echo ${APP_MAINT_ON} )'" }, "port": { "targetPort": "'$( echo ${PORT_MAINT_ON} )'" }}}'
+	oc patch route ${APPLICATION} -n ${PROJECT} -p \
+		'{ "spec": { "to": { "name": "'$( echo ${APPLICATION} )'" },
+		"port": { "targetPort": "'$( echo ${APPLICATION_PORT} )'" }}}'
+	oc patch route ${STATIC_PAGE} -n ${PROJECT} -p \
+		'{ "spec": { "to": { "name": "'$( echo ${STATIC_PAGE} )'" },
+		"port": { "targetPort": "'$( echo ${STATIC_PAGE_PORT} )'" }}}'
 elif [ "${COMMAND}" == "build" ]
 then
-	oc process -f ${OC_TEMPLATE_BUILD} -p NAME=${APP_MAINT_ON} GIT_REPO=${GIT_REPO} GIT_BRANCH=${GIT_BRANCH} IMG_NAME=${IMG_NAME} | oc apply -f -
+	oc process -f ${OC_BUILD} \
+		-p NAME=${STATIC_PAGE} GIT_REPO=${GIT_REPO} GIT_BRANCH=${GIT_BRANCH} IMG_NAME=${IMG_NAME} \
+		| oc apply -f -
 elif [ "${COMMAND}" == "deploy" ]
 then
-	oc process -f ${OC_TEMPLATE_DEPLOY} -n ${PROJECT} \
-		-p NAME=${APP_MAINT_ON} BUILD_PROJECT=${PROJECT} \
+	oc process -f ${OC_DEPLOY} -n ${PROJECT} -p NAME=${STATIC_PAGE} BUILD_PROJECT=${PROJECT} \
 		| oc apply -f -
-	[ "${APP_MAINT_OFF}" == "${APP_MAINT_ON}" ] && oc get route ${APP_MAINT_ON} || \
-		oc expose svc ${APP_MAINT_ON}
-	oc get dc ${APP_MAINT_ON} -o json | grep '"image":' | awk '{ print $2 }' | tr -d ',"' >> ./container_img.log
-elif [ "${COMMAND}" == "nuke" ]
-then
-	oc delete all -l app=${APP_MAINT_ON}
+	oc get route ${STATIC_PAGE} || \
+		oc expose svc ${STATIC_PAGE}
+	oc get dc ${STATIC_PAGE} -o json | grep '"image":' | awk '{ print $2 }' | tr -d ',"' \
+		| tee -a ./container_img.log
 else
 	echo
 	echo "Parameter '${COMMAND}' not understood."
