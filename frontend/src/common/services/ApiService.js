@@ -1,7 +1,7 @@
 import axios from 'axios'
-const BASE_URL = '/gwells/api/v1/'
+const BASE_URL = 'http://localhost:8000/gwells/api/v1/'
 
-const logging = false
+const logging = process.env.NODE_ENV !== 'production'
 
 const ApiService = {
   init () {

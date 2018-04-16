@@ -31,11 +31,11 @@ describe('APIErrorMessage.vue', () => {
   it('tells store to remove error when the alert is clicked', () => {
     const error = { status: '400', statusText: 'Error!', data: { detail: 'Whoa there! that\'s an error.' } }
     const wrapper = shallow(APIErrorMessage, {
-      propsData: { error, resetter: 'setError' },
+      propsData: { error, resetter: 'SET_ERROR' },
       store,
       localVue
     })
-    wrapper.find('#errorAlert').trigger('click')
-    expect(mutations.setError).toHaveBeenCalled()
+    wrapper.find('#errorAlert button.close').trigger('click')
+    expect(mutations.SET_ERROR).toHaveBeenCalled()
   })
 })
