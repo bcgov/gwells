@@ -28,7 +28,7 @@ OC_TEMPLATE_DEPLOY=${OC_TEMPLATE_DEPLOY:-../openshift/templates/caddy-deploy.jso
 #
 APP_MAINT_OFF=${APP_MAINT_OFF:-gwells}
 APP_MAINT_ON=${APP_MAINT_ON:-proxy-caddy}
-APP_REDIRECT=${APP_REDIRECT:-$APP_MAINT_ON}
+APP_REDIRECT=${APP_REDIRECT:-$APP_MAINT_OFF}
 
 
 # Verbose option
