@@ -80,7 +80,7 @@ export default {
         // TODO: Get these values from stor (VueX?)
         // TODO: Find some other way, this is picked up as an error by webpack, complaining that the
         // variables are not defined.
-        dataEntry: (typeof ENABLE_DATA_ENTRY === 'undefined') ? false : ENABLE_DATA_ENTRY,
+        dataEntry: process.env.ENABLE_DATA_ENTRY,
         admin: (typeof SHOW_ADMIN === 'undefined') ? false : SHOW_ADMIN
       }
     }
