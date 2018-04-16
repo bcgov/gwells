@@ -42,7 +42,7 @@ then
 	echo "Maintenace Mode: Caddy served static page"
 	echo
 	echo "Provide a project and a command."
-	echo " './maintenance.sh <project_name> <maint-on|maint-off|build|deploy>'"
+	echo " './maintenance.sh <project_name> <on|off|build|deploy>'"
 	echo
 	echo "Set variables to non-defaults at runtime.  E.g.:"
 	echo " 'VERBOSE=true GIT_BRANCH=master ./maintenance.sh <...>'"
@@ -65,7 +65,7 @@ fi
 
 # Action based on parameter
 #
-if [ "${COMMAND}" == "maint-on" ]
+if [ "${COMMAND}" == "on" ]
 then
 	oc patch route ${APPLICATION} -n ${PROJECT} -p \
 		'{ "spec": { "to": { "name": "'$( echo ${STATIC_PAGE} )'" },
@@ -73,7 +73,7 @@ then
 	oc patch route ${STATIC_PAGE} -n ${PROJECT} -p \
 		'{ "spec": { "to": { "name": "'$( echo ${APPLICATION} )'" },
 		"port": { "targetPort": "'$( echo ${APPLICATION_PORT} )'" }}}'
-elif [ "${COMMAND}" == "maint-off" ]
+elif [ "${COMMAND}" == "off" ]
 then
 	oc patch route ${APPLICATION} -n ${PROJECT} -p \
 		'{ "spec": { "to": { "name": "'$( echo ${APPLICATION} )'" },
