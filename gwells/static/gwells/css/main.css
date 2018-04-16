@@ -1227,7 +1227,7 @@ img.back-to-top {
 
 img.back-to-top.footer-overlap {
     position: absolute;
-    top: -63px;
+    bottom: 55px;
 }
 
 img.back-to-top:hover {
