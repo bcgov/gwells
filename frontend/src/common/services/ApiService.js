@@ -43,7 +43,7 @@ const ApiService = {
     throw new Error(`API get: UUID required to fetch ${resource}`)
   },
   post (resource, params) {
-    return axios.post(resource, params)
+    return axios.post(resource + '/', params)
   }
 }
 
