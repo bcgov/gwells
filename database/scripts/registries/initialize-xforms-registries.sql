@@ -9,6 +9,7 @@ DROP TABLE IF EXISTS xform_registries_action_tracking_driller;
 CREATE unlogged TABLE IF NOT EXISTS xform_registries_action_tracking_driller (
  trk_guid uuid DEFAULT gen_random_uuid()
 ,id integer
+,guid uuid DEFAULT gen_random_uuid()
 ,registered_ind character varying(20)
 ,date_app_received date
 ,company_name character varying(80)
@@ -21,6 +22,7 @@ CREATE unlogged TABLE IF NOT EXISTS xform_registries_action_tracking_driller (
 ,comments character varying(200)
 ,date_denial_letter_sent date
 ,date_removed_from_register date
+,reviewed_ind boolean
 );
 
 DROP TABLE IF EXISTS xform_registries_action_tracking_pump_installer;
@@ -72,8 +74,9 @@ CREATE unlogged TABLE IF NOT EXISTS xform_registries_drillers_reg (
 ,DrillerIdentifiedPreference character varying(100)
 ,MoERegion  character varying(100) -- IGNORE obsolete
 ,File_Number  character varying(50)
-,CellPhone character varying(20)
+,Cell_Phone character varying(20)
 ,Notes character varying(200)
+,Website character varying(200)
  );  
 
 DROP TABLE IF EXISTS xform_registries_pump_installers_reg;
@@ -100,7 +103,9 @@ CREATE unlogged TABLE IF NOT EXISTS xform_registries_pump_installers_reg (
 ,TypeofPumpEquipment  character varying(20) -- IGNORE no data
 ,MoERegion  character varying(100) -- IGNORE obsolete
 ,File_Number  character varying(50)
+,Cell_Phone character varying(20)
 ,Notes character varying(200)
+,Website character varying(200)
  );  
 
 DROP TABLE IF EXISTS xform_registries_removed_from;
