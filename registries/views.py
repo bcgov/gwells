@@ -216,6 +216,7 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
     filter_backends = (restfilters.DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
     filter_class = PersonFilter
     ordering_fields = ('surname', 'organization__name')
+    ordering = ('surname',)
     search_fields = (
         'first_name',
         'surname',
