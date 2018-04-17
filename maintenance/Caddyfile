@@ -8,6 +8,7 @@ errors stdout
 
 rewrite / {
   if {file} not *.css *.js *.png
+  ext !.css !.js !.png
   to /maintenance.html
 }
 
