@@ -269,10 +269,12 @@ export default {
       }
     },
     sortTable (sortCode) {
-      if (this.searchParams.ordering && this.searchParams.ordering.length && this.searchParams.ordering[0] !== '-') {
-        this.searchParams['ordering'] = `-${sortCode}`
+      if (
+        this.lastSearchedParams.ordering[0] !== '-'
+      ) {
+        this.lastSearchedParams['ordering'] = `-${sortCode}`
       } else {
-        this.searchParams['ordering'] = `${sortCode}`
+        this.lastSearchedParams['ordering'] = `${sortCode}`
       }
       this.$store.dispatch(FETCH_DRILLER_LIST, this.lastSearchedParams)
     }
