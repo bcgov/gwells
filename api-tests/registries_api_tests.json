@@ -1,7 +1,7 @@
 {
 	"info": {
-		"_postman_id": "a01759ca-dbe7-9cd5-42a3-eb411bb3e6e0",
-		"name": "GWELLS Register API",
+		"_postman_id": "ca547e9d-cc46-4795-97f8-33d359c17843",
+		"name": "GWELLS API (Keycloak)",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -19,11 +19,11 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "0031eb93-cfa6-457b-8948-e4efba9af579",
+										"id": "46c51db8-8a25-45d5-941f-f55f682ab9b6",
 										"type": "text/javascript",
 										"exec": [
 											"var jsonData = pm.response.json()",
-											"pm.environment.set(\"token\", jsonData.token);",
+											"pm.environment.set(\"token\", jsonData.access_token);",
 											"",
 											"pm.test(\"Status code is 200\", function () {",
 											"    pm.expect(pm.response.code, \"Login was not successful\").to.equal(200);",
@@ -31,8 +31,8 @@
 											"",
 											"pm.test(\"A token was returned\", function () {",
 											"    var jsonData = pm.response.json();",
-											"    pm.expect(jsonData.token, \"a token was not returned\").to.be.ok;",
-											"    pm.expect(jsonData.token.length).to.be.above(36);",
+											"    pm.expect(jsonData.access_token, \"a token was not returned\").to.be.ok;",
+											"    pm.expect(jsonData.access_token.length).to.be.above(36);",
 											"});",
 											""
 										]
@@ -40,11 +40,19 @@
 								}
 							],
 							"request": {
+								"auth": {
+									"type": "noauth"
+								},
 								"method": "POST",
-								"header": [],
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/x-www-form-urlencoded"
+									}
+								],
 								"body": {
-									"mode": "formdata",
-									"formdata": [
+									"mode": "urlencoded",
+									"urlencoded": [
 										{
 											"key": "username",
 											"value": "{{test_user}}",
@@ -54,25 +62,44 @@
 											"key": "password",
 											"value": "{{test_password}}",
 											"type": "text"
+										},
+										{
+											"key": "grant_type",
+											"value": "password",
+											"description": "",
+											"type": "text"
+										},
+										{
+											"key": "client_id",
+											"value": "{{client_id}}",
+											"description": "",
+											"type": "text"
+										},
+										{
+											"key": "client_secret",
+											"value": "{{client_secret}}",
+											"description": "",
+											"type": "text"
 										}
 									]
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v1/api-token-auth/?format=json",
+									"raw": "https://dev-sso.pathfinder.gov.bc.ca/auth/realms/gwells/protocol/openid-connect/token",
+									"protocol": "https",
 									"host": [
-										"{{base_url}}"
+										"dev-sso",
+										"pathfinder",
+										"gov",
+										"bc",
+										"ca"
 									],
 									"path": [
-										"api",
-										"v1",
-										"api-token-auth",
-										""
-									],
-									"query": [
-										{
-											"key": "format",
-											"value": "json"
-										}
+										"auth",
+										"realms",
+										"gwells",
+										"protocol",
+										"openid-connect",
+										"token"
 									]
 								},
 								"description": "Get token (log in)"
@@ -1152,22 +1179,15 @@
 									{
 										"key": "Authorization",
 										"value": "JWT {{token}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
 									}
 								],
 								"body": {
-									"mode": "formdata",
-									"formdata": [
-										{
-											"key": "first_name",
-											"value": "Bobby",
-											"type": "text"
-										},
-										{
-											"key": "surname",
-											"value": "Driller",
-											"type": "text"
-										}
-									]
+									"mode": "raw",
+									"raw": "{\n  \"first_name\": \"Bobby\",\n  \"surname\": \"Driller\",\n  \"registrations\": [{\"registries_activity\": \"DRILL\", \"status\": \"ACTIVE\"}],\n  \"contact_info\": [{\"contact_tel\": \"555-1234\"}]\n}"
 								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/drillers/?format=json",
