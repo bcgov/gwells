@@ -130,7 +130,7 @@ export default {
         },
         {
           name: 'Company Name',
-          sortCode: 'companies__org__name',
+          sortCode: 'organization__name',
           class: 'col-xs-1',
           visible: 'public',
           sortable: true,
