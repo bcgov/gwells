@@ -21,7 +21,7 @@ APPLICATION_PORT=${APPLICATION_PORT:-web}
 STATIC_PAGE=${STATIC_PAGE:-proxy-caddy}
 STATIC_PAGE_PORT=${STATIC_PAGE_PORT:-2015-tcp}
 #
-IMG_NAME=${IMG_NAME:-bcgov-s2i-caddy}
+IMG_SRC=${IMG_SRC:-bcgov-s2i-caddy}
 GIT_REPO=${GIT_REPO:-https://github.com/bcgov/gwells.git}
 GIT_BRANCH=${GIT_BRANCH:-master}
 OC_BUILD=${OC_BUILD:-../openshift/templates/caddy-build.json}
@@ -84,7 +84,7 @@ then
 elif [ "${COMMAND}" == "build" ]
 then
 	oc process -f ${OC_BUILD} \
-		-p NAME=${STATIC_PAGE} GIT_REPO=${GIT_REPO} GIT_BRANCH=${GIT_BRANCH} IMG_NAME=${IMG_NAME} \
+		-p NAME=${STATIC_PAGE} GIT_REPO=${GIT_REPO} GIT_BRANCH=${GIT_BRANCH} IMG_SRC=${IMG_SRC} \
 		| oc apply -f -
 elif [ "${COMMAND}" == "deploy" ]
 then
