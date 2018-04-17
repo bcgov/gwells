@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-if="activity === 'DRILL'">
-      <h3>LEGAL DISCLAIMER FOR WELL DRILLER:</h3>
+      <h5>LEGAL DISCLAIMER FOR WELL DRILLER:</h5>
 
       <p>By listing persons as well drillers in this Register, the Province of British Columbia (B.C.) in no way guarantees, or may be held liable, for any work performed by the person.</p>
 
@@ -42,7 +42,7 @@
       </p>
     </div>
     <div v-if="activity === 'PUMP'">
-      <h3>LEGAL DISCLAIMER FOR WELL PUMP INSTALLER:</h3>
+      <h5>LEGAL DISCLAIMER FOR WELL PUMP INSTALLER:</h5>
 
       <p>By listing persons as well pump installers in this Register, the Province of British Columbia (B.C.) in no way guarantees, or may be held liable, for any work performed by the person.</p>
 
