@@ -41,7 +41,6 @@ new Vue({
   components: { App },
   template: '<App/>',
   created () {
-    console.log(this.$keycloak)
     this.$keycloak.init({ onLoad: 'check-sso' }).success(() => {
       store.commit(SET_KEYCLOAK, this.$keycloak)
       if (this.$keycloak.authenticated) {

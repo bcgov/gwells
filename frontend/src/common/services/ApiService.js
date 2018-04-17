@@ -1,5 +1,6 @@
 import axios from 'axios'
-const BASE_URL = 'http://localhost:8000/gwells/api/v1/'
+const BASE_URL = process.env.NODE_ENV === 'production'
+  ? '/gwells/api/v1/' : 'http://localhost:8000/gwells/api/v1/'
 
 const logging = process.env.NODE_ENV !== 'production'
 
