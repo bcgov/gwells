@@ -14,7 +14,14 @@
           >
             Add new entry
           </b-button>
-          <b-button class="mb-2" variant="primary" id="manageCompaniesButton">Manage companies</b-button>
+          <b-button
+            class="mb-2"
+            variant="primary"
+            id="manageCompaniesButton"
+            :to="{ name: 'OrganizationAdd' }"
+          >
+            Manage companies
+          </b-button>
         </b-card-body>
       </b-collapse>
     </b-card>

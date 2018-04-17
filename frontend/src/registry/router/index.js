@@ -10,6 +10,8 @@ import PersonAdd from '@/registry/components/people/PersonAdd.vue'
 
 import ApplicationDetail from '@/registry/components/people/ApplicationDetail.vue'
 
+import OrganizationAdd from '@/registry/components/people/OrganizationAdd.vue'
+
 Vue.use(Router)
 
 export default new Router({
@@ -51,6 +53,15 @@ export default new Router({
       beforeEnter: AuthGuard,
       meta: {
         view: 'person'
+      }
+    },
+    {
+      path: '/organizations/add',
+      name: 'OrganizationAdd',
+      component: OrganizationAdd,
+      beforeEnter: AuthGuard,
+      meta: {
+        edit: 'organization'
       }
     },
     {
