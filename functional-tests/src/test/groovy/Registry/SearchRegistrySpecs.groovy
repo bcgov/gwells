@@ -32,12 +32,12 @@ class SearchRegistrySpecs extends GebReportingSpec {
 
         where:
         TestDesc 					| Search          	| SearchType      | Results             | NumberResult
-        "Empty search criteria"     | ""			    | ""              | ""				    | "472"
-        "Empty search criteria - Driller"     | ""			    | "driller"       | ""				    | "472"
+        "Empty search criteria"     | ""			    | ""              | ""				    | "468"
+        "Empty search criteria - Driller"     | ""			    | "driller"       | ""				    | "468"
         "Empty search criteria - Installer"     | ""			    | "installer"       | ""				    | "504"
         "Name=John"                 | "John"			| "name"          | ""				    | "18"
         "Name=Alan"                 | "Alan"			| "name"          | ""				    | "2"
-        "Community=Langley"                 | "Langley"			| "community"          | ""				    | "16"
-        "Community=Langley and Abbotsford"                 | "Abbotsford"			| "community"          | "5"				    | "5"
+        "Community=Langley"         | "Langley"			| "community"     | ""				    | "16"
+        "Community=Aldergrove"      | "Aldergrove"		| "community"     | ""				    | "16"
     }
 }

@@ -23,9 +23,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ActivitySubmission',
             fields=[
-                ('create_user', models.CharField(max_length=30)),
+                ('create_user', models.CharField(max_length=60)),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('update_user', models.CharField(max_length=30, null=True)),
+                ('update_user', models.CharField(max_length=60, null=True)),
                 ('update_date', models.DateTimeField(blank=True, null=True)),
                 ('filing_number', models.AutoField(primary_key=True, serialize=False)),
                 ('activity_submission_guid', models.UUIDField(default=uuid.uuid4, editable=False)),
@@ -96,9 +96,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='AquiferWell',
             fields=[
-                ('create_user', models.CharField(max_length=30)),
+                ('create_user', models.CharField(max_length=60)),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('update_user', models.CharField(max_length=30, null=True)),
+                ('update_user', models.CharField(max_length=60, null=True)),
                 ('update_date', models.DateTimeField(blank=True, null=True)),
                 ('aquifer_well_guid', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
                 ('aquifer_id', models.PositiveIntegerField(blank=True, null=True, verbose_name='Aquifer Number')),
@@ -110,9 +110,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='BCGS_Numbers',
             fields=[
-                ('create_user', models.CharField(max_length=30)),
+                ('create_user', models.CharField(max_length=60)),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('update_user', models.CharField(max_length=30, null=True)),
+                ('update_user', models.CharField(max_length=60, null=True)),
                 ('update_date', models.DateTimeField(blank=True, null=True)),
                 ('bcgs_id', models.BigIntegerField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
                 ('bcgs_number', models.CharField(max_length=20, verbose_name='BCGS Mapsheet Number')),
@@ -125,9 +125,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='BedrockMaterialCode',
             fields=[
-                ('create_user', models.CharField(max_length=30)),
+                ('create_user', models.CharField(max_length=60)),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('update_user', models.CharField(max_length=30, null=True)),
+                ('update_user', models.CharField(max_length=60, null=True)),
                 ('update_date', models.DateTimeField(blank=True, null=True)),
                 ('bedrock_material_code', models.CharField(editable=False, max_length=10, primary_key=True, serialize=False)),
                 ('description', models.CharField(max_length=100)),
@@ -143,9 +143,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='BedrockMaterialDescriptorCode',
             fields=[
-                ('create_user', models.CharField(max_length=30)),
+                ('create_user', models.CharField(max_length=60)),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('update_user', models.CharField(max_length=30, null=True)),
+                ('update_user', models.CharField(max_length=60, null=True)),
                 ('update_date', models.DateTimeField(blank=True, null=True)),
                 ('bedrock_material_descriptor_code', models.CharField(editable=False, max_length=10, primary_key=True, serialize=False)),
                 ('description', models.CharField(max_length=100)),
@@ -161,9 +161,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Casing',
             fields=[
-                ('create_user', models.CharField(max_length=30)),
+                ('create_user', models.CharField(max_length=60)),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('update_user', models.CharField(max_length=30, null=True)),
+                ('update_user', models.CharField(max_length=60, null=True)),
                 ('update_date', models.DateTimeField(blank=True, null=True)),
                 ('casing_guid', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
                 ('casing_from', models.DecimalField(blank=True, decimal_places=2, max_digits=7, null=True, validators=[django.core.validators.MinValueValidator(Decimal('0.00'))], verbose_name='From')),
@@ -181,9 +181,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='CasingCode',
             fields=[
-                ('create_user', models.CharField(max_length=30)),
+                ('create_user', models.CharField(max_length=60)),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('update_user', models.CharField(max_length=30, null=True)),
+                ('update_user', models.CharField(max_length=60, null=True)),
                 ('update_date', models.DateTimeField(blank=True, null=True)),
                 ('casing_code', models.CharField(editable=False, max_length=10, primary_key=True, serialize=False)),
                 ('description', models.CharField(max_length=100)),
@@ -199,9 +199,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='CasingMaterialCode',
             fields=[
-                ('create_user', models.CharField(max_length=30)),
+                ('create_user', models.CharField(max_length=60)),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('update_user', models.CharField(max_length=30, null=True)),
+                ('update_user', models.CharField(max_length=60, null=True)),
                 ('update_date', models.DateTimeField(blank=True, null=True)),
                 ('casing_material_code', models.CharField(editable=False, max_length=10, primary_key=True, serialize=False)),
                 ('description', models.CharField(max_length=100)),
@@ -217,9 +217,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='DecommissionMethodCode',
             fields=[
-                ('create_user', models.CharField(max_length=30)),
+                ('create_user', models.CharField(max_length=60)),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('update_user', models.CharField(max_length=30, null=True)),
+                ('update_user', models.CharField(max_length=60, null=True)),
                 ('update_date', models.DateTimeField(blank=True, null=True)),
                 ('decommission_method_code', models.CharField(editable=False, max_length=10, primary_key=True, serialize=False, verbose_name='Code')),
                 ('description', models.CharField(max_length=255, verbose_name='Description')),
@@ -235,9 +235,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='DevelopmentMethodCode',
             fields=[
-                ('create_user', models.CharField(max_length=30)),
+                ('create_user', models.CharField(max_length=60)),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('update_user', models.CharField(max_length=30, null=True)),
+                ('update_user', models.CharField(max_length=60, null=True)),
                 ('update_date', models.DateTimeField(blank=True, null=True)),
                 ('development_method_code', models.CharField(editable=False, max_length=10, primary_key=True, serialize=False)),
                 ('description', models.CharField(max_length=100)),
@@ -253,9 +253,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Driller',
             fields=[
-                ('create_user', models.CharField(max_length=30)),
+                ('create_user', models.CharField(max_length=60)),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('update_user', models.CharField(max_length=30, null=True)),
+                ('update_user', models.CharField(max_length=60, null=True)),
                 ('update_date', models.DateTimeField(blank=True, null=True)),
                 ('driller_guid', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
                 ('first_name', models.CharField(max_length=100)),
@@ -269,25 +269,25 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='DrillingCompany',
             fields=[
-                ('create_user', models.CharField(max_length=30)),
+                ('create_user', models.CharField(max_length=60)),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('update_user', models.CharField(max_length=30, null=True)),
+                ('update_user', models.CharField(max_length=60, null=True)),
                 ('update_date', models.DateTimeField(blank=True, null=True)),
                 ('drilling_company_guid', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
                 ('drilling_company_code', models.CharField(blank=True, max_length=10, null=True)),
                 ('name', models.CharField(max_length=200)),
             ],
             options={
-                'db_table': 'drilling_company',
                 'verbose_name_plural': 'Drilling Companies',
+                'db_table': 'drilling_company',
             },
         ),
         migrations.CreateModel(
             name='DrillingMethodCode',
             fields=[
-                ('create_user', models.CharField(max_length=30)),
+                ('create_user', models.CharField(max_length=60)),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('update_user', models.CharField(max_length=30, null=True)),
+                ('update_user', models.CharField(max_length=60, null=True)),
                 ('update_date', models.DateTimeField(blank=True, null=True)),
                 ('drilling_method_code', models.CharField(editable=False, max_length=10, primary_key=True, serialize=False)),
                 ('description', models.CharField(max_length=100)),
@@ -303,9 +303,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='FilterPackMaterialCode',
             fields=[
-                ('create_user', models.CharField(max_length=30)),
+                ('create_user', models.CharField(max_length=60)),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('update_user', models.CharField(max_length=30, null=True)),
+                ('update_user', models.CharField(max_length=60, null=True)),
                 ('update_date', models.DateTimeField(blank=True, null=True)),
                 ('filter_pack_material_code', models.CharField(editable=False, max_length=10, primary_key=True, serialize=False)),
                 ('description', models.CharField(max_length=100)),
@@ -321,9 +321,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='FilterPackMaterialSizeCode',
             fields=[
-                ('create_user', models.CharField(max_length=30)),
+                ('create_user', models.CharField(max_length=60)),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('update_user', models.CharField(max_length=30, null=True)),
+                ('update_user', models.CharField(max_length=60, null=True)),
                 ('update_date', models.DateTimeField(blank=True, null=True)),
                 ('filter_pack_material_size_code', models.CharField(editable=False, max_length=10, primary_key=True, serialize=False)),
                 ('description', models.CharField(max_length=100)),
@@ -339,9 +339,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='GroundElevationMethodCode',
             fields=[
-                ('create_user', models.CharField(max_length=30)),
+                ('create_user', models.CharField(max_length=60)),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('update_user', models.CharField(max_length=30, null=True)),
+                ('update_user', models.CharField(max_length=60, null=True)),
                 ('update_date', models.DateTimeField(blank=True, null=True)),
                 ('ground_elevation_method_code', models.CharField(editable=False, max_length=10, primary_key=True, serialize=False)),
                 ('description', models.CharField(max_length=100)),
@@ -357,9 +357,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='IntendedWaterUseCode',
             fields=[
-                ('create_user', models.CharField(max_length=30)),
+                ('create_user', models.CharField(max_length=60)),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('update_user', models.CharField(max_length=30, null=True)),
+                ('update_user', models.CharField(max_length=60, null=True)),
                 ('update_date', models.DateTimeField(blank=True, null=True)),
                 ('intended_water_use_code', models.CharField(editable=False, max_length=10, primary_key=True, serialize=False)),
                 ('description', models.CharField(max_length=100)),
@@ -375,9 +375,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='LandDistrictCode',
             fields=[
-                ('create_user', models.CharField(max_length=30)),
+                ('create_user', models.CharField(max_length=60)),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('update_user', models.CharField(max_length=30, null=True)),
+                ('update_user', models.CharField(max_length=60, null=True)),
                 ('update_date', models.DateTimeField(blank=True, null=True)),
                 ('land_district_code', models.CharField(editable=False, max_length=10, primary_key=True, serialize=False)),
                 ('name', models.CharField(max_length=255)),
@@ -393,9 +393,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='LicencedStatusCode',
             fields=[
-                ('create_user', models.CharField(max_length=30)),
+                ('create_user', models.CharField(max_length=60)),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('update_user', models.CharField(max_length=30, null=True)),
+                ('update_user', models.CharField(max_length=60, null=True)),
                 ('update_date', models.DateTimeField(blank=True, null=True)),
                 ('licenced_status_code', models.CharField(editable=False, max_length=10, primary_key=True, serialize=False)),
                 ('description', models.CharField(max_length=255)),
@@ -411,9 +411,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='LinerMaterialCode',
             fields=[
-                ('create_user', models.CharField(max_length=30)),
+                ('create_user', models.CharField(max_length=60)),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('update_user', models.CharField(max_length=30, null=True)),
+                ('update_user', models.CharField(max_length=60, null=True)),
                 ('update_date', models.DateTimeField(blank=True, null=True)),
                 ('liner_material_code', models.CharField(editable=False, max_length=10, primary_key=True, serialize=False)),
                 ('description', models.CharField(max_length=100)),
@@ -429,9 +429,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='LinerPerforation',
             fields=[
-                ('create_user', models.CharField(max_length=30)),
+                ('create_user', models.CharField(max_length=60)),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('update_user', models.CharField(max_length=30, null=True)),
+                ('update_user', models.CharField(max_length=60, null=True)),
                 ('update_date', models.DateTimeField(blank=True, null=True)),
                 ('liner_perforation_guid', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
                 ('liner_perforation_from', models.DecimalField(decimal_places=2, max_digits=7, validators=[django.core.validators.MinValueValidator(Decimal('0.00'))], verbose_name='Perforated From')),
@@ -445,9 +445,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='LithologyColourCode',
             fields=[
-                ('create_user', models.CharField(max_length=30)),
+                ('create_user', models.CharField(max_length=60)),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('update_user', models.CharField(max_length=30, null=True)),
+                ('update_user', models.CharField(max_length=60, null=True)),
                 ('update_date', models.DateTimeField(blank=True, null=True)),
                 ('lithology_colour_code', models.CharField(editable=False, max_length=10, primary_key=True, serialize=False)),
                 ('description', models.CharField(max_length=100)),
@@ -463,9 +463,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='LithologyDescription',
             fields=[
-                ('create_user', models.CharField(max_length=30)),
+                ('create_user', models.CharField(max_length=60)),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('update_user', models.CharField(max_length=30, null=True)),
+                ('update_user', models.CharField(max_length=60, null=True)),
                 ('update_date', models.DateTimeField(blank=True, null=True)),
                 ('lithology_description_guid', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
                 ('lithology_from', models.DecimalField(blank=True, decimal_places=2, max_digits=7, null=True, validators=[django.core.validators.MinValueValidator(Decimal('0.00'))], verbose_name='From')),
@@ -487,9 +487,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='LithologyDescriptionCode',
             fields=[
-                ('create_user', models.CharField(max_length=30)),
+                ('create_user', models.CharField(max_length=60)),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('update_user', models.CharField(max_length=30, null=True)),
+                ('update_user', models.CharField(max_length=60, null=True)),
                 ('update_date', models.DateTimeField(blank=True, null=True)),
                 ('lithology_description_code', models.CharField(editable=False, max_length=10, primary_key=True, serialize=False, verbose_name='Code')),
                 ('description', models.CharField(max_length=255, verbose_name='Description')),
@@ -505,9 +505,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='LithologyHardnessCode',
             fields=[
-                ('create_user', models.CharField(max_length=30)),
+                ('create_user', models.CharField(max_length=60)),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('update_user', models.CharField(max_length=30, null=True)),
+                ('update_user', models.CharField(max_length=60, null=True)),
                 ('update_date', models.DateTimeField(blank=True, null=True)),
                 ('lithology_hardness_code', models.CharField(editable=False, max_length=10, primary_key=True, serialize=False)),
                 ('description', models.CharField(max_length=100)),
@@ -523,9 +523,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='LithologyMaterialCode',
             fields=[
-                ('create_user', models.CharField(max_length=30)),
+                ('create_user', models.CharField(max_length=60)),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('update_user', models.CharField(max_length=30, null=True)),
+                ('update_user', models.CharField(max_length=60, null=True)),
                 ('update_date', models.DateTimeField(blank=True, null=True)),
                 ('lithology_material_code', models.CharField(editable=False, max_length=10, primary_key=True, serialize=False, verbose_name='Code')),
                 ('description', models.CharField(max_length=255, verbose_name='Description')),
@@ -541,9 +541,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='LithologyMoistureCode',
             fields=[
-                ('create_user', models.CharField(max_length=30)),
+                ('create_user', models.CharField(max_length=60)),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('update_user', models.CharField(max_length=30, null=True)),
+                ('update_user', models.CharField(max_length=60, null=True)),
                 ('update_date', models.DateTimeField(blank=True, null=True)),
                 ('lithology_moisture_code', models.CharField(editable=False, max_length=10, primary_key=True, serialize=False)),
                 ('description', models.CharField(max_length=100)),
@@ -559,9 +559,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='LithologyStructureCode',
             fields=[
-                ('create_user', models.CharField(max_length=30)),
+                ('create_user', models.CharField(max_length=60)),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('update_user', models.CharField(max_length=30, null=True)),
+                ('update_user', models.CharField(max_length=60, null=True)),
                 ('update_date', models.DateTimeField(blank=True, null=True)),
                 ('lithology_structure_code', models.CharField(editable=False, max_length=10, primary_key=True, serialize=False)),
                 ('description', models.CharField(max_length=100)),
@@ -577,9 +577,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='LtsaOwner',
             fields=[
-                ('create_user', models.CharField(max_length=30)),
+                ('create_user', models.CharField(max_length=60)),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('update_user', models.CharField(max_length=30, null=True)),
+                ('update_user', models.CharField(max_length=60, null=True)),
                 ('update_date', models.DateTimeField(blank=True, null=True)),
                 ('lsts_owner_guid', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
                 ('full_name', models.CharField(max_length=200, verbose_name='Owner Name')),
@@ -594,9 +594,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ObsWellStatusCode',
             fields=[
-                ('create_user', models.CharField(max_length=30)),
+                ('create_user', models.CharField(max_length=60)),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('update_user', models.CharField(max_length=30, null=True)),
+                ('update_user', models.CharField(max_length=60, null=True)),
                 ('update_date', models.DateTimeField(blank=True, null=True)),
                 ('obs_well_status_code', models.CharField(editable=False, max_length=10, primary_key=True, serialize=False)),
                 ('description', models.CharField(max_length=255)),
@@ -628,9 +628,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Perforation',
             fields=[
-                ('create_user', models.CharField(max_length=30)),
+                ('create_user', models.CharField(max_length=60)),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('update_user', models.CharField(max_length=30, null=True)),
+                ('update_user', models.CharField(max_length=60, null=True)),
                 ('update_date', models.DateTimeField(blank=True, null=True)),
                 ('perforation_guid', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
                 ('liner_thickness', models.DecimalField(blank=True, decimal_places=3, max_digits=5, null=True, verbose_name='Liner Thickness')),
@@ -648,9 +648,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ProductionData',
             fields=[
-                ('create_user', models.CharField(max_length=30)),
+                ('create_user', models.CharField(max_length=60)),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('update_user', models.CharField(max_length=30, null=True)),
+                ('update_user', models.CharField(max_length=60, null=True)),
                 ('update_date', models.DateTimeField(blank=True, null=True)),
                 ('production_data_guid', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
                 ('yield_estimation_rate', models.DecimalField(blank=True, decimal_places=2, max_digits=7, null=True, validators=[django.core.validators.MinValueValidator(Decimal('0.00'))], verbose_name='Estimation Rate')),
@@ -672,7 +672,9 @@ class Migration(migrations.Migration):
                 ('smgov_useridentifier', models.UUIDField(blank=True, null=True)),
                 ('smgov_useremail', models.EmailField(blank=True, max_length=254, null=True, unique=True)),
                 ('smgov_userdisplayname', models.CharField(blank=True, max_length=100, null=True)),
-                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                ('realm', models.CharField(default='Django', max_length=10)),
+                ('is_gwells_admin', models.BooleanField(default=False)),
+                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='profile', to=settings.AUTH_USER_MODEL)),
             ],
             options={
                 'db_table': 'profile',
@@ -681,9 +683,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ProvinceStateCode',
             fields=[
-                ('create_user', models.CharField(max_length=30)),
+                ('create_user', models.CharField(max_length=60)),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('update_user', models.CharField(max_length=30, null=True)),
+                ('update_user', models.CharField(max_length=60, null=True)),
                 ('update_date', models.DateTimeField(blank=True, null=True)),
                 ('province_state_code', models.CharField(editable=False, max_length=10, primary_key=True, serialize=False)),
                 ('description', models.CharField(max_length=100)),
@@ -697,9 +699,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Screen',
             fields=[
-                ('create_user', models.CharField(max_length=30)),
+                ('create_user', models.CharField(max_length=60)),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('update_user', models.CharField(max_length=30, null=True)),
+                ('update_user', models.CharField(max_length=60, null=True)),
                 ('update_date', models.DateTimeField(blank=True, null=True)),
                 ('screen_guid', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
                 ('screen_from', models.DecimalField(blank=True, decimal_places=2, max_digits=7, null=True, validators=[django.core.validators.MinValueValidator(Decimal('0.00'))], verbose_name='From')),
@@ -716,9 +718,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ScreenAssemblyTypeCode',
             fields=[
-                ('create_user', models.CharField(max_length=30)),
+                ('create_user', models.CharField(max_length=60)),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('update_user', models.CharField(max_length=30, null=True)),
+                ('update_user', models.CharField(max_length=60, null=True)),
                 ('update_date', models.DateTimeField(blank=True, null=True)),
                 ('screen_assembly_type_code', models.CharField(editable=False, max_length=10, primary_key=True, serialize=False)),
                 ('description', models.CharField(max_length=100)),
@@ -734,9 +736,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ScreenBottomCode',
             fields=[
-                ('create_user', models.CharField(max_length=30)),
+                ('create_user', models.CharField(max_length=60)),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('update_user', models.CharField(max_length=30, null=True)),
+                ('update_user', models.CharField(max_length=60, null=True)),
                 ('update_date', models.DateTimeField(blank=True, null=True)),
                 ('screen_bottom_code', models.CharField(editable=False, max_length=10, primary_key=True, serialize=False)),
                 ('description', models.CharField(max_length=100)),
@@ -752,9 +754,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ScreenIntakeMethodCode',
             fields=[
-                ('create_user', models.CharField(max_length=30)),
+                ('create_user', models.CharField(max_length=60)),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('update_user', models.CharField(max_length=30, null=True)),
+                ('update_user', models.CharField(max_length=60, null=True)),
                 ('update_date', models.DateTimeField(blank=True, null=True)),
                 ('screen_intake_code', models.CharField(editable=False, max_length=10, primary_key=True, serialize=False)),
                 ('description', models.CharField(max_length=100)),
@@ -770,9 +772,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ScreenMaterialCode',
             fields=[
-                ('create_user', models.CharField(max_length=30)),
+                ('create_user', models.CharField(max_length=60)),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('update_user', models.CharField(max_length=30, null=True)),
+                ('update_user', models.CharField(max_length=60, null=True)),
                 ('update_date', models.DateTimeField(blank=True, null=True)),
                 ('screen_material_code', models.CharField(editable=False, max_length=10, primary_key=True, serialize=False)),
                 ('description', models.CharField(max_length=100)),
@@ -788,9 +790,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ScreenOpeningCode',
             fields=[
-                ('create_user', models.CharField(max_length=30)),
+                ('create_user', models.CharField(max_length=60)),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('update_user', models.CharField(max_length=30, null=True)),
+                ('update_user', models.CharField(max_length=60, null=True)),
                 ('update_date', models.DateTimeField(blank=True, null=True)),
                 ('screen_opening_code', models.CharField(editable=False, max_length=10, primary_key=True, serialize=False)),
                 ('description', models.CharField(max_length=100)),
@@ -806,9 +808,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ScreenTypeCode',
             fields=[
-                ('create_user', models.CharField(max_length=30)),
+                ('create_user', models.CharField(max_length=60)),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('update_user', models.CharField(max_length=30, null=True)),
+                ('update_user', models.CharField(max_length=60, null=True)),
                 ('update_date', models.DateTimeField(blank=True, null=True)),
                 ('screen_type_code', models.CharField(editable=False, max_length=10, primary_key=True, serialize=False)),
                 ('description', models.CharField(max_length=100)),
@@ -824,9 +826,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='SurfaceSealMaterialCode',
             fields=[
-                ('create_user', models.CharField(max_length=30)),
+                ('create_user', models.CharField(max_length=60)),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('update_user', models.CharField(max_length=30, null=True)),
+                ('update_user', models.CharField(max_length=60, null=True)),
                 ('update_date', models.DateTimeField(blank=True, null=True)),
                 ('surface_seal_material_code', models.CharField(editable=False, max_length=10, primary_key=True, serialize=False)),
                 ('description', models.CharField(max_length=100)),
@@ -842,9 +844,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='SurfaceSealMethodCode',
             fields=[
-                ('create_user', models.CharField(max_length=30)),
+                ('create_user', models.CharField(max_length=60)),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('update_user', models.CharField(max_length=30, null=True)),
+                ('update_user', models.CharField(max_length=60, null=True)),
                 ('update_date', models.DateTimeField(blank=True, null=True)),
                 ('surface_seal_method_code', models.CharField(editable=False, max_length=10, primary_key=True, serialize=False)),
                 ('description', models.CharField(max_length=100)),
@@ -860,9 +862,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='SurficialMaterialCode',
             fields=[
-                ('create_user', models.CharField(max_length=30)),
+                ('create_user', models.CharField(max_length=60)),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('update_user', models.CharField(max_length=30, null=True)),
+                ('update_user', models.CharField(max_length=60, null=True)),
                 ('update_date', models.DateTimeField(blank=True, null=True)),
                 ('surficial_material_code', models.CharField(editable=False, max_length=10, primary_key=True, serialize=False)),
                 ('description', models.CharField(max_length=100)),
@@ -878,9 +880,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Survey',
             fields=[
-                ('create_user', models.CharField(max_length=30)),
+                ('create_user', models.CharField(max_length=60)),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('update_user', models.CharField(max_length=30, null=True)),
+                ('update_user', models.CharField(max_length=60, null=True)),
                 ('update_date', models.DateTimeField(blank=True, null=True)),
                 ('survey_guid', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
                 ('survey_introduction_text', models.CharField(blank=True, max_length=50, null=True, verbose_name='Introduction Text')),
@@ -895,9 +897,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='WaterQualityCharacteristic',
             fields=[
-                ('create_user', models.CharField(max_length=30)),
+                ('create_user', models.CharField(max_length=60)),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('update_user', models.CharField(max_length=30, null=True)),
+                ('update_user', models.CharField(max_length=60, null=True)),
                 ('update_date', models.DateTimeField(blank=True, null=True)),
                 ('water_quality_characteristic_guid', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
                 ('code', models.CharField(max_length=10, unique=True)),
@@ -912,9 +914,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Well',
             fields=[
-                ('create_user', models.CharField(max_length=30)),
+                ('create_user', models.CharField(max_length=60)),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('update_user', models.CharField(max_length=30, null=True)),
+                ('update_user', models.CharField(max_length=60, null=True)),
                 ('update_date', models.DateTimeField(blank=True, null=True)),
                 ('well_guid', models.UUIDField(default=uuid.uuid4, editable=False)),
                 ('well_tag_number', models.AutoField(primary_key=True, serialize=False, verbose_name='Well Tag Number')),
@@ -1018,9 +1020,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='WellActivityCode',
             fields=[
-                ('create_user', models.CharField(max_length=30)),
+                ('create_user', models.CharField(max_length=60)),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('update_user', models.CharField(max_length=30, null=True)),
+                ('update_user', models.CharField(max_length=60, null=True)),
                 ('update_date', models.DateTimeField(blank=True, null=True)),
                 ('well_activity_type_code', models.CharField(editable=False, max_length=10, primary_key=True, serialize=False)),
                 ('description', models.CharField(max_length=100)),
@@ -1036,9 +1038,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='WellClassCode',
             fields=[
-                ('create_user', models.CharField(max_length=30)),
+                ('create_user', models.CharField(max_length=60)),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('update_user', models.CharField(max_length=30, null=True)),
+                ('update_user', models.CharField(max_length=60, null=True)),
                 ('update_date', models.DateTimeField(blank=True, null=True)),
                 ('well_class_code', models.CharField(editable=False, max_length=10, primary_key=True, serialize=False)),
                 ('description', models.CharField(max_length=100)),
@@ -1054,9 +1056,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='WellStatusCode',
             fields=[
-                ('create_user', models.CharField(max_length=30)),
+                ('create_user', models.CharField(max_length=60)),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('update_user', models.CharField(max_length=30, null=True)),
+                ('update_user', models.CharField(max_length=60, null=True)),
                 ('update_date', models.DateTimeField(blank=True, null=True)),
                 ('well_status_code', models.CharField(editable=False, max_length=10, primary_key=True, serialize=False)),
                 ('description', models.CharField(max_length=255)),
@@ -1072,9 +1074,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='WellSubclassCode',
             fields=[
-                ('create_user', models.CharField(max_length=30)),
+                ('create_user', models.CharField(max_length=60)),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('update_user', models.CharField(max_length=30, null=True)),
+                ('update_user', models.CharField(max_length=60, null=True)),
                 ('update_date', models.DateTimeField(blank=True, null=True)),
                 ('well_subclass_guid', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
                 ('well_subclass_code', models.CharField(max_length=10)),
@@ -1092,9 +1094,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='WellYieldUnitCode',
             fields=[
-                ('create_user', models.CharField(max_length=30)),
+                ('create_user', models.CharField(max_length=60)),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('update_user', models.CharField(max_length=30, null=True)),
+                ('update_user', models.CharField(max_length=60, null=True)),
                 ('update_date', models.DateTimeField(blank=True, null=True)),
                 ('well_yield_unit_code', models.CharField(editable=False, max_length=10, primary_key=True, serialize=False)),
                 ('description', models.CharField(max_length=100)),
@@ -1110,9 +1112,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='YieldEstimationMethodCode',
             fields=[
-                ('create_user', models.CharField(max_length=30)),
+                ('create_user', models.CharField(max_length=60)),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('update_user', models.CharField(max_length=30, null=True)),
+                ('update_user', models.CharField(max_length=60, null=True)),
                 ('update_date', models.DateTimeField(blank=True, null=True)),
                 ('yield_estimation_method_code', models.CharField(editable=False, max_length=10, primary_key=True, serialize=False)),
                 ('description', models.CharField(max_length=100)),
