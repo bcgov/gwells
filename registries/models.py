@@ -154,7 +154,7 @@ class Person(AuditModel):
 
     def __str__(self):
         return '%s %s' % (self.first_name, self.surname)
-    
+
     @property
     def name(self):
         return '%s %s' % (self.first_name, self.surname)
@@ -312,7 +312,7 @@ class Register(AuditModel):
         blank=True,
         null=True,
         verbose_name="Date of Removal from Register")
-        
+
     class Meta:
         db_table = 'registries_register'
         verbose_name_plural = 'Registrations'
@@ -431,3 +431,28 @@ class RegistriesApplicationStatus(AuditModel):
             self.status.description,
             self.effective_date,
             self.expired_date)
+
+"""
+Tue Apr 10 10:15:34 2018 Expose DB Views to Django
+"""
+class vw_well_class(models.Model):
+
+    subactivity = models.CharField(
+        primary_key=True,
+        max_length=10,
+        editable=False)
+    activity_code = models.ForeignKey(
+        ActivityCode,
+        db_column='registries_activity_code',
+        on_delete=models.PROTECT)
+    well_class = models.CharField(max_length=100)
+
+    class Meta:
+        db_table = 'vw_well_class'
+        verbose_name = "Registries Well Class"
+        verbose_name_plural = "Registries Well Classes"
+        managed = False
+
+    def __str__(self):
+        return '%s %s %s' % (self.subactivity, self.activity_code, self.well_class)
+

@@ -14,29 +14,29 @@ a {
     color: #1a5a96;
 }
 
-h1,
-h2,
-h3,
-h4,
+#main-content h1,
+#main-content h2,
+#main-content h3,
+#main-content h4,
 h5 {
     margin-top: 0;
     color: #494949;
 }
 
-h1 {
+#main-content h1 {
     font-size: 24px;
     font-weight: 600;
 }
 
-h2 {
+#main-content h2 {
     font-size: 21px;
 }
 
-h3 {
+#main-content h3 {
     font-size: 18px;
 }
 
-h4 {
+#main-content h4 {
     font-size: 15px;
 }
 
@@ -65,6 +65,11 @@ th {
 
 .table-responsive {
     border: none;
+}
+
+#main-content .row {
+    margin-left: 0px;
+    margin-right: 0px;
 }
 
 #header {
@@ -1670,10 +1675,9 @@ img.back-to-top:hover {
     top: 1px;
     margin-right: 10px;
     display: inline-block;
-    font-family: 'FontAwesome';
+    font-family: 'Font Awesome 5 Free';
     -webkit-font-smoothing: antialiased;
-    font-style: normal;
-    font-weight: normal;
+    font-weight: 900;
     line-height: 1;
     -moz-osx-font-smoothing: grayscale;
     content: "\f058";
@@ -1699,12 +1703,11 @@ img.back-to-top:hover {
     top: 1px;
     margin-right: 10px;
     display: inline-block;
-    font-family: 'FontAwesome';
     -webkit-font-smoothing: antialiased;
-    font-style: normal;
-    font-weight: normal;
     line-height: 1;
     -moz-osx-font-smoothing: grayscale;
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
     content: "\f071";
     font-size: larger;
 }
@@ -1714,10 +1717,9 @@ img.back-to-top:hover {
     top: 1px;
     margin-right: 10px;
     display: inline-block;
-    font-family: 'FontAwesome';
+    font-family: 'Font Awesome 5 Free';
     -webkit-font-smoothing: antialiased;
-    font-style: normal;
-    font-weight: normal;
+    font-weight: 900;
     line-height: 1;
     -moz-osx-font-smoothing: grayscale;
     content: "\f06a";

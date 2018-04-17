@@ -311,7 +311,7 @@ class WellDetailsSpecs extends GebReportingSpec {
 		"artesian_flow"	 				  | "15 USGPM" 	 | 110749
 		"drilling_method"	 			  | "AIR_ROTARY" 	 | 100501
 		"bedrock_depth"	 				  | "60 feet" 	 | 110749
-		"artesian_pressure"	    		  | "10 inches" 	 | 113552
+		"artesian_pressure"	    		  | "11 inches" 	 | 113552
 		"orientation_direction"	 		  | "vertical" 	 | 110749
 		"ground_elevation"	 			  | "378 feet" 	 | 106648
 		"ground_elevation_method"	 	  | "1:10,000 Scale Map" 	 | 104636
