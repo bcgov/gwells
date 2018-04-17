@@ -24,6 +24,7 @@
     <meta name="dcsext.creator" content="" />
     <meta name="dcterms.language" content="eng" />
     <meta name="keywords" content="groundwater wells, ground water, well, British Columbia, water well drilling, geoexchange well, water well, geotechnical well, water supply wells, dewatering wells, injection wells, remediation wells, monitoring wells">
+    <meta name="show.admin" content="{% if request.user|has_group:"admin" %}true{% else %}false{% endif %}"/>
     <link rel="apple-touch-icon" sizes="57x57" href="{% static 'gwells/icons/apple-icon-57x57.png' %}" />
     <link rel="apple-touch-icon" sizes="60x60" href="{% static 'gwells/icons/apple-icon-60x60.png' %}" />
     <link rel="apple-touch-icon" sizes="72x72" href="{% static 'gwells/icons/apple-icon-72x72.png' %}" />
@@ -91,12 +92,6 @@
 </head>
 
 <body>
-    <!-- PREPARE FOR VUE -->
-    <script type="text/JavaScript">
-        // TODO: Enable data entry is something we get from environment variables, so we can actually
-        // remove this and have the VUE component access it directly (by setting during webpack build)
-        {% if request.user|has_group:"admin" %}const SHOW_ADMIN = true{% endif %} 
-    </script>
     {% render_bundle 'manifest' %}
     {% render_bundle 'vendor' %}
     <!-- /PREPARE FOR VUE -->
