@@ -19,7 +19,7 @@
       </p>
       <b-card no-body class="p-3 mb-4">
         <h5>Search for a Well Driller or Well Pump Installer</h5>
-        <b-form @submit.prevent="drillerSearch" @reset.prevent="drillerSearchReset" id="drillerSearchForm">
+        <b-form @submit.prevent="drillerSearch" @reset.prevent="drillerSearchReset({clearDrillers: true})" id="drillerSearchForm">
           <b-form-row>
             <b-col cols="12">
               <b-form-group label="Choose professional type:">
@@ -93,34 +93,45 @@
           <b-form-row>
             <b-col>
               <b-form-group>
-                  <button type="submit" class="btn btn-primary mr-md-1" id="personSearchSubmit">Search</button>
+                  <button
+                    type="submit"
+                    class="btn btn-primary registries-search-btn mr-md-1"
+                    id="personSearchSubmit"
+                    :disabled="searchLoading">
+                    <span>Search</span>
+                    <!-- <span v-if="searchLoading"><i class="fa fa-refresh fa-spin"></i></span> -->
+                  </button>
                   <button type="reset" class="btn btn-default" id="personSearchReset">Reset</button>
               </b-form-group>
             </b-col>
           </b-form-row>
         </b-form>
       </b-card>
-      <b-row>
-        <b-col cols="12" v-if="drillers.results && !drillers.results.length">
-          No results were found.
-        </b-col>
-        <b-col cols="12" v-if="listError">
-          <api-error :error="listError" resetter="SET_LIST_ERROR"></api-error>
-        </b-col>
-      </b-row>
-      <b-row  v-if="drillers.results && drillers.results.length">
-        <div class="col-xs-12 col-sm-4">
-          <h3>{{ activityTitle }} Results</h3>
-        </div>
-        <b-col cols="12">
-          <registry-table @sort="sortTable" :activity="lastSearchedActivity"/>
-        </b-col>
-      </b-row>
-      <b-row v-if="drillers.results && drillers.results.length" class="mt-5">
-        <b-col cols="12">
-          <register-legal-text class="register-legal" :activity="lastSearchedActivity"/>
-        </b-col>
-      </b-row>
+      <div ref="registryTableResults">
+        <template v-if="!searchLoading">
+          <b-row>
+            <b-col cols="12" v-if="drillers.results && !drillers.results.length">
+              No results were found.
+            </b-col>
+            <b-col cols="12" v-if="listError">
+              <api-error :error="listError" resetter="SET_LIST_ERROR"></api-error>
+            </b-col>
+          </b-row>
+          <b-row v-if="drillers.results && drillers.results.length">
+            <div class="col-xs-12 col-sm-4">
+              <h3>{{ activityTitle }} Results</h3>
+            </div>
+            <b-col cols="12">
+              <registry-table @sort="sortTable" :activity="lastSearchedActivity"/>
+            </b-col>
+          </b-row>
+          <b-row v-if="drillers.results && drillers.results.length" class="mt-5">
+            <b-col cols="12">
+              <register-legal-text class="register-legal" :activity="lastSearchedActivity"/>
+            </b-col>
+          </b-row>
+        </template>
+      </div>
     </b-card>
   </div>
 </template>
@@ -162,7 +173,8 @@ export default {
         status: 'ACTIVE',
         limit: '10',
         ordering: ''
-      }
+      },
+      searchLoading: false
     }
   },
   computed: {
@@ -220,18 +232,32 @@ export default {
   },
   methods: {
     drillerSearch () {
+      const table = this.$refs.registryTableResults
       const params = this.APISearchParams
       this.lastSearchedActivity = this.searchParams.activity || 'DRILL'
-      this.$store.dispatch(FETCH_DRILLER_LIST, params)
+      this.searchLoading = true
+      this.$store.dispatch(FETCH_DRILLER_LIST, params).then(() => {
+        this.$SmoothScroll(table, 200)
+        this.drillerSearchReset({keepActivity: true, keepLimit: true})
+        this.searchLoading = false
+      }).catch(() => {
+        this.searchLoading = false
+      })
     },
-    drillerSearchReset () {
+    drillerSearchReset (options = {}) {
       this.searchParams.search = ''
       this.searchParams.city = ['']
-      this.searchParams.activity = 'DRILL'
       this.searchParams.status = 'ACTIVE'
-      this.searchParams.limit = '10'
       this.searchParams.ordering = ''
-      this.$store.commit(SET_DRILLER_LIST, [])
+      if (options.clearDrillers) {
+        this.$store.commit(SET_DRILLER_LIST, [])
+      }
+      if (!options.keepActivity) {
+        this.searchParams.activity = 'DRILL'
+      }
+      if (!options.keepLimit) {
+        this.searchParams.limit = '10'
+      }
     },
     sortTable (sortCode) {
       if (this.searchParams.ordering && this.searchParams.ordering.length && this.searchParams.ordering[0] !== '-') {
@@ -250,4 +276,7 @@ export default {
 </script>
 
 <style>
+.registries-search-btn {
+  min-width: 70px;
+}
 </style>

@@ -1,7 +1,5 @@
 # Auto detect text files and perform LF normalization
-*		text=auto
-
-# Basic .gitattributes for a python repo.
+*		text eol=lf
 
 # Source files
 # ============
@@ -14,11 +12,18 @@
 # Binary files
 # ============
 *.db		binary
+*.jar		binary
 *.p 		binary
 *.pkl 		binary
+*.png		binary
 *.pyc 		binary
 *.pyd		binary
 *.pyo 		binary
+*.ttf		binary
+
+# Static files
+# ============
+/gwells/static/**	binary
 
 # Note: .db, .p, and .pkl files are associated
 # with the python modules ``pickle``, ``dbm.*``,

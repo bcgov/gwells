@@ -11,12 +11,14 @@ import { store } from './store'
 import { SET_KEYCLOAK } from '@/registry/store/mutations.types.js'
 import '@/common/assets/css/bootstrap-theme.min.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
+import vueSmoothScroll from 'vue-smoothscroll'
 
 // GWELLS js API library (helper methods for working with API)
 import ApiService from '@/common/services/ApiService.js'
 
 Vue.use(Vuex)
 Vue.use(BootstrapVue)
+Vue.use(vueSmoothScroll)
 
 // start Keycloak
 Vue.prototype.$keycloak = Keycloak({
