@@ -1235,6 +1235,13 @@ img.back-to-top.footer-overlap {
     bottom: 55px;
 }
 
+@media (max-width: 575px) {
+    img.back-to-top.footer-overlap {
+        position: absolute;
+        bottom: 120px;
+    }
+}
+
 img.back-to-top:hover {
     opacity: 0.90;
     filter: alpha(opacity=90);
