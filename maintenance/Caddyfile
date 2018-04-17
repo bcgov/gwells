@@ -6,8 +6,8 @@ log stdout
 
 errors stdout
 
-rewrite /gwells {
-  regexp /gwells/.*
+rewrite / {
+  if {file} not *.css *.js *.png
   to /maintenance.html
 }
 
