@@ -8,7 +8,7 @@ errors stdout
 
 rewrite /gwells {
   regexp .*
-  to /maintenance.html
+  to /maintenance.mht
 }
 
 header / {
