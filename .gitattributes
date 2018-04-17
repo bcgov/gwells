@@ -19,6 +19,8 @@
 *.pyc 		binary
 *.pyd		binary
 *.pyo 		binary
+*.png       binary
+*.ttf       binary
 
 # Note: .db, .p, and .pkl files are associated
 # with the python modules ``pickle``, ``dbm.*``,
