@@ -72,6 +72,6 @@ else
 fi
 
 cd /opt/app-root/src/
-python manage.py createtestuser
+python manage.py post-deploy
 
 echo "Completed Post-Deploy tasks."

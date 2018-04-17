@@ -368,8 +368,7 @@ SELECT
 ,null
 ,'DRILL'
 ,'ACTIVE'
- from xform_registries_drillers_reg
- ;
+ from xform_registries_drillers_reg;
  -- TODO we may need a guid on Access side to keep it  straight , on all tables
 
 -- Pump Installer Register (Active)
@@ -403,8 +402,8 @@ SELECT
 from        xform_registries_pump_installers_reg xform
 inner join  registries_person per
 on xform.firstname = per.first_name
-and   xform.lastname = per.surname
-;
+and   xform.lastname = per.surname;
+
 -- TODO Cannot use reg_guid as this PERSON may have been
 --      entered as driller
 
@@ -444,14 +443,15 @@ SELECT
 from        xform_registries_removed_from xform
 inner join  registries_person per
 on    xform.firstname = per.first_name
-and   xform.lastname = per.surname
-;
+and   xform.lastname = per.surname;
 
--- Applications from " Water Well" Well Drillers (ultimately successful)
+-- Applications from "Water Well" Well Drillers (ultimately successful)
 
 -- CANNOT do below as the same person appears on register many times
--- and I cannot link to the same person.
-/*INSERT INTO registries_application (
+-- and I cannot link to the same person w/o a key.  But I for now can use
+-- xform_registries_drillers_reg.reg_guid being the same as registries_person.person_guid
+
+INSERT INTO registries_application (
  create_user
 ,create_date
 ,update_user
@@ -485,14 +485,238 @@ SELECT
 ,'WATER'
 from registries_register reg,
      xform_registries_drillers_reg xform,
-     registries_person per,
-     xform_registries_action_tracking_driller trk
+     xform_registries_action_tracking_driller trk,
+     registries_person per
 WHERE per.person_guid = reg.person_guid
 AND reg.registries_status_code = 'ACTIVE'
 and reg.registries_activity_code = 'DRILL'
-and UPPER(trk.registered_ind) = 'YES'
+and xform.reg_guid = per.person_guid
+and xform.classofwelldriller like '%Water Well%'
 and trim(both from trk.name) = concat(per.surname, ', ', per.first_name)
-and xform.name = concat(per.surname, ', ', per.first_name)
-and xform.classofwelldriller like '%Water Well%';
+and xform.name = concat(per.surname, ', ', per.first_name);
 
-*/
+
+-- Active Statuses for Applications from "Water Well" Well Drillers (ultimately successful)
+--
+-- CANNOT do below as the same person appears on register many times
+-- and I cannot link to the same person w/o a key.  But I for now can use
+-- xform_registries_drillers_reg.reg_guid being the same as registries_person.person_guid
+
+INSERT INTO registries_application_status (
+ create_user
+,create_date
+,update_user
+,update_date
+,application_status_guid
+,notified_date
+,effective_date
+,expired_date
+,application_guid
+,registries_application_status_code
+)
+SELECT
+ 'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'
+,'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'
+,gen_random_uuid()
+,trk.date_approval_letter_card_sent
+,trk.app_approval_date
+,null -- still Registered 
+,app.application_guid
+,'A'
+from registries_register reg,
+     xform_registries_action_tracking_driller trk,
+     registries_person per,
+     registries_application app
+WHERE per.person_guid = reg.person_guid
+AND   app.register_guid = reg.register_guid
+AND reg.registries_status_code = 'ACTIVE'
+and reg.registries_activity_code = 'DRILL'
+and app.registries_subactivity_code = 'WATER'
+and trim(both from trk.name) = concat(per.surname, ', ', per.first_name)
+-- until data cleanup
+and trk.app_approval_date is not null;
+
+
+
+-- Historical Statuses for Applications from "Water Well" Well Drillers (ultimately successful)
+--
+-- CANNOT do below as the same person appears on register many times
+-- and I cannot link to the same person w/o a key.  But I for now can use
+-- xform_registries_drillers_reg.reg_guid being the same as registries_person.person_guid
+
+INSERT INTO registries_application_status (
+ create_user
+,create_date
+,update_user
+,update_date
+,application_status_guid
+,notified_date
+,effective_date
+,expired_date
+,application_guid
+,registries_application_status_code
+)
+SELECT
+ 'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'
+,'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'
+,gen_random_uuid()
+,null -- N/A for recipt of application
+,trk.date_app_received
+,trk.app_approval_date
+,app.application_guid
+,'P'
+from registries_register reg,
+     xform_registries_action_tracking_driller trk,
+     registries_person per,
+     registries_application app
+WHERE per.person_guid = reg.person_guid
+AND   app.register_guid = reg.register_guid
+AND reg.registries_status_code = 'ACTIVE'
+and reg.registries_activity_code = 'DRILL'
+and app.registries_subactivity_code = 'WATER'
+and trim(both from trk.name) = concat(per.surname, ', ', per.first_name)
+and trk.date_app_received is not null
+and trk.app_approval_date is not null;
+
+
+
+-- Applications from "Geoexchange" Well Drillers (ultimately successful)
+INSERT INTO registries_application (
+ create_user
+,create_date
+,update_user
+,update_date
+,application_guid
+,file_no
+,over19_ind
+,registrar_notes
+,reason_denied
+,primary_certificate_no
+,acc_cert_guid
+,register_guid
+,registries_subactivity_code
+)
+SELECT
+ 'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'
+,'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'
+,gen_random_uuid()
+,xform.file_number
+,TRUE
+,xform.notes
+,null
+,xform.certificatenumber
+, (SELECT acc_cert_guid
+    from registries_accredited_certificate_code
+    where name = 'Geoexchange Driller Certificate'
+   )
+,reg.register_guid
+,'GEOXCHG'
+from registries_register reg,
+     xform_registries_drillers_reg xform,
+     xform_registries_action_tracking_driller trk,
+     registries_person per
+WHERE per.person_guid = reg.person_guid
+AND reg.registries_status_code = 'ACTIVE'
+and reg.registries_activity_code = 'DRILL'
+and xform.reg_guid = per.person_guid
+and xform.classofwelldriller like '%Geoexchange%'
+and trim(both from trk.name) = concat(per.surname, ', ', per.first_name)
+and xform.name = concat(per.surname, ', ', per.first_name);
+
+-- Applications from "Geotechnical" Well Drillers (ultimately successful)
+INSERT INTO registries_application (
+ create_user
+,create_date
+,update_user
+,update_date
+,application_guid
+,file_no
+,over19_ind
+,registrar_notes
+,reason_denied
+,primary_certificate_no
+,acc_cert_guid
+,register_guid
+,registries_subactivity_code
+)
+SELECT
+ 'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'
+,'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'
+,gen_random_uuid()
+,xform.file_number
+,TRUE
+,xform.notes
+,null
+,xform.certificatenumber
+, (SELECT acc_cert_guid
+    from registries_accredited_certificate_code
+    where name = 'Geotechnical/Environmental Driller Certificate'
+   )
+,reg.register_guid
+,'GEOTECH'
+from registries_register reg,
+     xform_registries_drillers_reg xform,
+     xform_registries_action_tracking_driller trk,
+     registries_person per
+WHERE per.person_guid = reg.person_guid
+AND reg.registries_status_code = 'ACTIVE'
+and reg.registries_activity_code = 'DRILL'
+and xform.reg_guid = per.person_guid
+and xform.classofwelldriller like '%Geotechnical%'
+and trim(both from trk.name) = concat(per.surname, ', ', per.first_name)
+and xform.name = concat(per.surname, ', ', per.first_name);
+
+-- Applications from Pump Installers (ultimately successful)
+INSERT INTO registries_application (
+ create_user
+,create_date
+,update_user
+,update_date
+,application_guid
+,file_no
+,over19_ind
+,registrar_notes
+,reason_denied
+,primary_certificate_no
+,acc_cert_guid
+,register_guid
+,registries_subactivity_code
+)
+SELECT
+ 'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'
+,'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'
+,gen_random_uuid()
+,xform.file_number
+,TRUE
+,xform.notes
+,null
+,xform.wellpumpinstallerregno
+,CASE 
+  WHEN typeofcertificate like '%Ontario%' THEN '88d5d0aa-d2aa-450a-9708-a911dce42f7f'::uuid 
+  WHEN typeofcertificate like '%CGWA%'    THEN '1886daa8-e799-49f0-9034-33d02bad543d'::uuid 
+  WHEN typeofcertificate like '%BC%'      THEN '7bf968aa-c6e0-4f57-b4f4-58723214de80'::uuid 
+  ELSE 'a53d3f1e-65eb-46b7-8999-e662d654df77'::uuid
+ END AS acc_cert_guid
+,reg.register_guid
+,'PUMPINST'
+from registries_register reg,
+     xform_registries_pump_installers_reg xform,
+     xform_registries_action_tracking_pump_installer trk,
+     registries_person per
+WHERE per.person_guid = reg.person_guid
+AND reg.registries_status_code = 'ACTIVE'
+and reg.registries_activity_code = 'PUMP'
+and xform.reg_guid = per.person_guid
+and trim(both from trk.name) = concat(per.surname, ', ', per.first_name)
+and xform.name = concat(per.surname, ', ', per.first_name);
+

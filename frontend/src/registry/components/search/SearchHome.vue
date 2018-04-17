@@ -105,8 +105,8 @@
                     class="btn btn-primary registries-search-btn mr-md-1"
                     id="personSearchSubmit"
                     :disabled="searchLoading">
-                    <span v-if="!searchLoading">Search</span>
-                    <span v-if="searchLoading"><i class="fa fa-refresh fa-spin"></i></span>
+                    <span>Search</span>
+                    <!-- <span v-if="searchLoading"><i class="fa fa-refresh fa-spin"></i></span> -->
                   </button>
                   <button type="reset" class="btn btn-default" id="personSearchReset">Reset</button>
               </b-form-group>
