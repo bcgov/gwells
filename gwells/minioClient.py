@@ -1,5 +1,6 @@
 import os
 from minio import Minio
+from gwells.settings.base import get_env_variable
 
 # NOTE Well Summary page uses publicly-viewable S3 bucket, so no credentials are needed
 #

@@ -33,9 +33,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='AccreditedCertificateCode',
             fields=[
-                ('create_user', models.CharField(max_length=30)),
+                ('create_user', models.CharField(max_length=60)),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('update_user', models.CharField(max_length=30, null=True)),
+                ('update_user', models.CharField(max_length=60, null=True)),
                 ('update_date', models.DateTimeField(blank=True, null=True)),
                 ('acc_cert_guid', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False, verbose_name='Accredited Certificate UUID')),
                 ('name', models.CharField(editable=False, max_length=100, verbose_name='Certificate Name')),
@@ -52,9 +52,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ActivityCode',
             fields=[
-                ('create_user', models.CharField(max_length=30)),
+                ('create_user', models.CharField(max_length=60)),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('update_user', models.CharField(max_length=30, null=True)),
+                ('update_user', models.CharField(max_length=60, null=True)),
                 ('update_date', models.DateTimeField(blank=True, null=True)),
                 ('registries_activity_code', models.CharField(editable=False, max_length=10, primary_key=True, serialize=False)),
                 ('description', models.CharField(max_length=100)),
@@ -71,9 +71,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ApplicationStatusCode',
             fields=[
-                ('create_user', models.CharField(max_length=30)),
+                ('create_user', models.CharField(max_length=60)),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('update_user', models.CharField(max_length=30, null=True)),
+                ('update_user', models.CharField(max_length=60, null=True)),
                 ('update_date', models.DateTimeField(blank=True, null=True)),
                 ('registries_application_status_code', models.CharField(editable=False, max_length=10, primary_key=True, serialize=False)),
                 ('description', models.CharField(max_length=100)),
@@ -90,9 +90,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='CertifyingAuthorityCode',
             fields=[
-                ('create_user', models.CharField(max_length=30)),
+                ('create_user', models.CharField(max_length=60)),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('update_user', models.CharField(max_length=30, null=True)),
+                ('update_user', models.CharField(max_length=60, null=True)),
                 ('update_date', models.DateTimeField(blank=True, null=True)),
                 ('cert_auth_code', models.CharField(editable=False, max_length=50, primary_key=True, serialize=False, verbose_name='Certifying Authority Name')),
                 ('description', models.CharField(blank=True, max_length=100, null=True)),
@@ -108,9 +108,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ContactInfo',
             fields=[
-                ('create_user', models.CharField(max_length=30)),
+                ('create_user', models.CharField(max_length=60)),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('update_user', models.CharField(max_length=30, null=True)),
+                ('update_user', models.CharField(max_length=60, null=True)),
                 ('update_date', models.DateTimeField(blank=True, null=True)),
                 ('contact_detail_guid', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False, verbose_name='Contact At UUID')),
                 ('contact_tel', models.CharField(blank=True, max_length=15, null=True, verbose_name='Contact telephone number')),
@@ -126,9 +126,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Organization',
             fields=[
-                ('create_user', models.CharField(max_length=30)),
+                ('create_user', models.CharField(max_length=60)),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('update_user', models.CharField(max_length=30, null=True)),
+                ('update_user', models.CharField(max_length=60, null=True)),
                 ('update_date', models.DateTimeField(blank=True, null=True)),
                 ('org_guid', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False, verbose_name='Organization UUID')),
                 ('name', models.CharField(max_length=200)),
@@ -151,9 +151,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Person',
             fields=[
-                ('create_user', models.CharField(max_length=30)),
+                ('create_user', models.CharField(max_length=60)),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('update_user', models.CharField(max_length=30, null=True)),
+                ('update_user', models.CharField(max_length=60, null=True)),
                 ('update_date', models.DateTimeField(blank=True, null=True)),
                 ('person_guid', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False, verbose_name='Person UUID')),
                 ('first_name', models.CharField(max_length=100)),
@@ -171,9 +171,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Qualification',
             fields=[
-                ('create_user', models.CharField(max_length=30)),
+                ('create_user', models.CharField(max_length=60)),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('update_user', models.CharField(max_length=30, null=True)),
+                ('update_user', models.CharField(max_length=60, null=True)),
                 ('update_date', models.DateTimeField(blank=True, null=True)),
                 ('registries_well_qualification_guid', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False, verbose_name='Qualification / Well Class UUID')),
                 ('display_order', models.PositiveIntegerField()),
@@ -189,9 +189,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Register',
             fields=[
-                ('create_user', models.CharField(max_length=30)),
+                ('create_user', models.CharField(max_length=60)),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('update_user', models.CharField(max_length=30, null=True)),
+                ('update_user', models.CharField(max_length=60, null=True)),
                 ('update_date', models.DateTimeField(blank=True, null=True)),
                 ('register_guid', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False, verbose_name='Register UUID')),
                 ('registration_no', models.CharField(blank=True, max_length=15, null=True)),
@@ -207,9 +207,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='RegistriesApplication',
             fields=[
-                ('create_user', models.CharField(max_length=30)),
+                ('create_user', models.CharField(max_length=60)),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('update_user', models.CharField(max_length=30, null=True)),
+                ('update_user', models.CharField(max_length=60, null=True)),
                 ('update_date', models.DateTimeField(blank=True, null=True)),
                 ('application_guid', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False, verbose_name='Register Application UUID')),
                 ('file_no', models.CharField(blank=True, max_length=25, null=True, verbose_name='ORCS File # reference.')),
@@ -228,9 +228,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='RegistriesApplicationStatus',
             fields=[
-                ('create_user', models.CharField(max_length=30)),
+                ('create_user', models.CharField(max_length=60)),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('update_user', models.CharField(max_length=30, null=True)),
+                ('update_user', models.CharField(max_length=60, null=True)),
                 ('update_date', models.DateTimeField(blank=True, null=True)),
                 ('application_status_guid', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False, verbose_name='Register Application Status UUID')),
                 ('notified_date', models.DateField(blank=True, default=datetime.date.today, null=True)),
@@ -248,9 +248,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='RegistriesRemovalReason',
             fields=[
-                ('create_user', models.CharField(max_length=30)),
+                ('create_user', models.CharField(max_length=60)),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('update_user', models.CharField(max_length=30, null=True)),
+                ('update_user', models.CharField(max_length=60, null=True)),
                 ('update_date', models.DateTimeField(blank=True, null=True)),
                 ('registries_removal_reason_code', models.CharField(editable=False, max_length=10, primary_key=True, serialize=False)),
                 ('description', models.CharField(max_length=100)),
@@ -267,9 +267,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='RegistriesStatusCode',
             fields=[
-                ('create_user', models.CharField(max_length=30)),
+                ('create_user', models.CharField(max_length=60)),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('update_user', models.CharField(max_length=30, null=True)),
+                ('update_user', models.CharField(max_length=60, null=True)),
                 ('update_date', models.DateTimeField(blank=True, null=True)),
                 ('registries_status_code', models.CharField(editable=False, max_length=10, primary_key=True, serialize=False)),
                 ('description', models.CharField(max_length=100)),
@@ -286,9 +286,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='SubactivityCode',
             fields=[
-                ('create_user', models.CharField(max_length=30)),
+                ('create_user', models.CharField(max_length=60)),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('update_user', models.CharField(max_length=30, null=True)),
+                ('update_user', models.CharField(max_length=60, null=True)),
                 ('update_date', models.DateTimeField(blank=True, null=True)),
                 ('registries_subactivity_code', models.CharField(editable=False, max_length=10, primary_key=True, serialize=False)),
                 ('description', models.CharField(max_length=100)),
@@ -306,9 +306,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='WellClassCode',
             fields=[
-                ('create_user', models.CharField(max_length=30)),
+                ('create_user', models.CharField(max_length=60)),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('update_user', models.CharField(max_length=30, null=True)),
+                ('update_user', models.CharField(max_length=60, null=True)),
                 ('update_date', models.DateTimeField(blank=True, null=True)),
                 ('registries_well_class_code', models.CharField(editable=False, max_length=10, primary_key=True, serialize=False)),
                 ('description', models.CharField(max_length=100)),
