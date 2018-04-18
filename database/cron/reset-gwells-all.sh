@@ -35,9 +35,9 @@ then
 fi
 
 
-oc project moe-gwells-test
-podname=$(oc get pods -n moe-gwells-test | grep postgresql-[0-9] | grep Running | head -n 1 | awk '{print $1}')
-oc exec ${podname} -n moe-gwells-test -- /bin/bash -c 'export PGPASSWORD=$POSTGRESQL_PASSWORD;psql -h $POSTGRESQL_SERVICE_HOST -d $POSTGRESQL_DATABASE -U $POSTGRESQL_USER  << EOF
+oc project ${PROJECT}
+podname=$(oc get pods -n ${PROJECT} | grep postgresql-[0-9] | grep Running | head -n 1 | awk '{print $1}')
+oc exec ${podname} -n ${PROJECT} -- /bin/bash -c 'export PGPASSWORD=$POSTGRESQL_PASSWORD;psql -h $POSTGRESQL_SERVICE_HOST -d $POSTGRESQL_DATABASE -U $POSTGRESQL_USER  << EOF
 drop table if exists activity_submission                             cascade;
 drop table if exists activity_submission_water_quality               cascade;
 drop table if exists aquifer_well                                    cascade;
