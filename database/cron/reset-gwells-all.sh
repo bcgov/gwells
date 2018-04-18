@@ -35,6 +35,30 @@ then
 fi
 
 
+# Check login
+#
+if ( ! oc whoami )
+then
+    echo
+    echo "Please obtain an OpenShift API token.  A window will open shortly."
+    sleep 3
+    open https://console.pathfinder.gov.bc.ca:8443/oauth/token/request
+    exit
+fi
+
+
+# Check project availability
+#
+CHECK=$( oc projects | tr -d '*' | grep -v "Using project" | grep "${PROJECT}" | awk '{ print $1 }' || echo )
+if [ "${PROJECT}" != "${CHECK}" ]
+then
+	echo
+	echo "Unable to access project ${PROJECT}"
+	echo
+	exit
+fi
+
+
 oc project ${PROJECT}
 podname=$(oc get pods -n ${PROJECT} | grep postgresql-[0-9] | grep Running | head -n 1 | awk '{print $1}')
 oc exec ${podname} -n ${PROJECT} -- /bin/bash -c 'export PGPASSWORD=$POSTGRESQL_PASSWORD;psql -h $POSTGRESQL_SERVICE_HOST -d $POSTGRESQL_DATABASE -U $POSTGRESQL_USER  << EOF
