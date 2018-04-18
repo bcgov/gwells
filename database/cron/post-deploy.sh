@@ -73,9 +73,8 @@ fi
 
 # libpython3.5m.so.rh-python35-1.0 => /opt/rh/rh-python35/root/usr/lib64/libpython3.5m.so.rh-python35-1.0 (0x00007f845927b000)
 
-echo $LD_LIBRARY_PATH
+echo ". Running python-related post-deploy tasks."
 export LD_LIBRARY_PATH=/opt/rh/rh-python35/root/usr/lib64/
-
 cd /opt/app-root/src/
 python manage.py post-deploy
 
