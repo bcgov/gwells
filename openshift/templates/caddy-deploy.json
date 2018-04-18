@@ -9,14 +9,14 @@
                 "name": "NAME",
                 "displayName": "Name",
                 "description": "The suffix for all created objects",
-                "required": true,
+                "required": false,
                 "value": "proxy-caddy"
             },
             {
                 "name": "BUILD_PROJECT",
                 "displayName": "Build project",
                 "description": "The suffix for all created objects",
-                "required": true,
+                "required": false,
                 "value": "moe-gwells-tools"
             }
     ],
