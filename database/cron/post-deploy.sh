@@ -63,7 +63,7 @@ EOF
 #	psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER  << EOF
 #	\ir ../../scripts/registries/post-deploy.sql
 #	\i clear-tables.sql
-#	\ir ../../scripts/registries/populate-xforms-registries.sql
+#	\ir ../../scripts/registries/initialize-xforms-registries.sql
 #	\i data-load-static-codes.sql
 #	\ir ../../scripts/registries/populate-registries-from-xform.sql
 #EOF

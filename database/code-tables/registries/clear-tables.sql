@@ -5,7 +5,6 @@
 
 -- Reset lookup tables tables
 
-/*
 truncate table registries_application_status          cascade;
 truncate table registries_well_qualification cascade;
 truncate table registries_register cascade;
@@ -21,7 +20,6 @@ truncate table registries_removal_reason_code cascade;
 truncate table registries_subactivity_code cascade;
 truncate table registries_certifying_authority_code   cascade;
 truncate table registries_well_class_code cascade;
-*/
 
 -- Reset Test Data
 truncate registries_organization, registries_person cascade;
