@@ -1,13 +1,11 @@
 # Fri Apr 13 12:55:03 2018
 # SQL Script that is run as part of 'resetting' the application model.py.  The pipeline deployment automatically
 # handles:
-# 1. removal of all /migrations/000*.py in all Django apps (via check-in to the repo)
+# 1. removal/addition of all /migrations/000*.py in all Django apps (via check-in to the repo)
 # 2. execution of 'python manage.py migrate'  (via the Build Configuration's [Post-Commit Hook](https://console.pathfinder.gov.bc.ca:8443/console/project/moe-gwells-tools/edit/builds/gwells-developer))
 #
-# ./reset-gwells-all.sh
+# ./reset-gwells-all.sh 
 #
-# Still requires a parameter for dev/test/prod with default to dev
-
 
 # Halt conditions, verbosity and field separator
 #
@@ -154,12 +152,12 @@ drop table if exists xform_registries_pump_installers_reg            cascade;
 drop table if exists xform_registries_removed_from                   cascade;
 drop table if exists yield_estimation_method_code                    cascade;
 
-drop table if exists registries_certifying_authority_code cascade;
+drop table if exists registries_certifying_authority_code   cascade;
 drop table if exists registries_accredited_certificate_code cascade;
 
 drop table if exists registries_classification_applied_for cascade;
 drop table if exists registries_contact_at                 cascade;
-drop table if exists registries_contact_detail                cascade;
+drop table if exists registries_contact_detail             cascade;
 drop table if exists registries_organization               cascade;
 drop table if exists registries_person                     cascade;
 drop table if exists registries_qualification_code         cascade;
