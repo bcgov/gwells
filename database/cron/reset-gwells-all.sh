@@ -21,6 +21,20 @@ IFS=$'\n\t'
 PROJECT=${1:-moe-gwells-dev}
 
 
+# Show message if passed any params
+#
+if [ "${#}" -eq 0 ]
+then
+	echo
+    echo "Part of resetting the application model.py."
+    echo
+	echo "Provide a project name."
+	echo " './reset-gwells-all.sh <project_name>'"
+	echo
+	exit
+fi
+
+
 oc project moe-gwells-test
 podname=$(oc get pods -n moe-gwells-test | grep postgresql-[0-9] | grep Running | head -n 1 | awk '{print $1}')
 oc exec ${podname} -n moe-gwells-test -- /bin/bash -c 'export PGPASSWORD=$POSTGRESQL_PASSWORD;psql -h $POSTGRESQL_SERVICE_HOST -d $POSTGRESQL_DATABASE -U $POSTGRESQL_USER  << EOF
