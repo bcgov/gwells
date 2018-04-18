@@ -18,9 +18,10 @@ set -euo pipefail
 IFS=$'\n\t'
 
 
-# Parameters and mode variables
+# Parameters
 #
 PROJECT=${1:-}
+TO_COPY=${2:-/Users/garywong/projects/registry-gwells-export/2018-APR-16.sanitized}
 
 
 # Show message if passed any params
@@ -28,8 +29,10 @@ PROJECT=${1:-}
 if [ "${#}" -eq 0 ]
 then
 	echo
+    echo "Copies a folder of sanitized .CSVs and runs .SQL scripts"
+    echo
 	echo "Provide a project name."
-	echo " './setup-xfer.sh <project_name>'"
+	echo " './setup-xfer.sh <project_name> <optional:input_file>'"
 	echo
 	exit
 fi
@@ -66,8 +69,9 @@ PODNAME=$( oc get pods -n ${PROJECT} | grep gwells-[0-9] | grep Running | head -
 
 # Use oc rsync to copy into the pod and move to the correct dir
 #
-oc rsync /Users/garywong/projects/registry-gwells-export/2018-APR-16.sanitized  $PODNAME:/tmp
-oc exec ${PODNAME} -n ${PROJECT} -- /bin/bash -c 'cp --remove-destination /tmp/2018-APR-16.sanitized/*.sanitized.csv  /opt/app-root/src/database/code-tables/registries/'
+oc rsync ${TO_COPY} ${PODNAME}:/tmp
+COPY_BASE=$( basename ${TO_COPY} )
+oc exec ${PODNAME} -n ${PROJECT} -- /bin/bash -c 'cp --remove-destination /tmp/'${COPY_BASE}'/*.sanitized.csv  /opt/app-root/src/database/code-tables/registries/'
 
 
 # Run post-deploy and other scripts
