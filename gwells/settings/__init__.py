@@ -137,6 +137,17 @@ WSGI_APPLICATION = 'wsgi.application'
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
+NOSE_ARGS = {
+    "--tests=gwells/test_forms.py, gwells/test_models.py, gwells/test_search.py, gwells/test_views.py, gwells/test_survey_view.py, gwells/test_survey_render.py, registries/tests.py, gwells/test_admin.py",
+    "--with-xunit",
+    "--with-coverage",
+    "--cover-erase",
+    "--cover-inclusive",
+    "--cover-xml",
+    "--cover-xml-file=coverage.xml",
+    "--cover-package=gwells,registries",
+}
+
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 
