@@ -9,14 +9,14 @@
                 "name": "NAME",
                 "displayName": "Name",
                 "description": "The suffix for all created objects",
-                "required": true,
+                "required": false,
                 "value": "proxy-caddy"
             },
             {
                 "name": "GIT_REPO",
                 "displayName": "GIT_REPO",
                 "description": "URL to GitHub repo with static content",
-                "required": true,
+                "required": false,
                 "value": "https://github.com/bcgov/gwells.git"
             },
             {
