@@ -18,6 +18,23 @@ set -euo pipefail
 IFS=$'\n\t'
 
 
+# Parameters and mode variables
+#
+PROJECT=${1:-}
+
+
+# Show message if passed any params
+#
+if [ "${#}" -eq 0 ]
+then
+	echo
+	echo "Provide a project name."
+	echo " './setup-xfer.sh <project_name>'"
+	echo
+	exit
+fi
+
+
 oc project moe-gwells-dev
 podname=$(oc get pods -n moe-gwells-dev | grep gwells-[0-9] | grep Running | head -n 1 | awk '{print $1}')
 oc rsync /Users/garywong/projects/registry-gwells-export/2018-APR-16.sanitized  $podname:/tmp
