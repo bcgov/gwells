@@ -4,8 +4,8 @@
 --
 -- psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER -f populate-registries-from-xform.sql
 
-
 -- Companies from Driller Registry
+\echo 'Inserting Companies from Driller Registry'
 INSERT INTO registries_organization (
  name
 ,create_user
@@ -46,6 +46,7 @@ from xform_registries_drillers_reg xform
 where companyname is not null;
 
 -- Companies from Pump Installer Registry
+\echo 'Inserting Companies from Pump Installer Registry'
 INSERT INTO registries_organization (
  name
 ,create_user
@@ -85,10 +86,10 @@ INSERT INTO registries_organization (
 from xform_registries_pump_installers_reg xform
 where companyname is not null
 and companyname not in (
-SELECT name from registries_organization)
-and   companyname <> 'R. Ayre Enterprises'; -- bad data in companyprov (special char?)
+SELECT name from registries_organization);
 
 -- Companies from drillers/pump-installers that have been removed
+/*
 INSERT INTO registries_organization (
  name
 ,create_user
@@ -129,8 +130,11 @@ from xform_registries_removed_from xform
 where companyname is not null
 and companyname not in (
 SELECT name from registries_organization);
+*/
 
 -- Drillers
+\echo 'Inserting People from Driller Registry'
+
 INSERT INTO registries_person (
  first_name
 ,surname
@@ -155,6 +159,7 @@ SELECT
 from xform_registries_drillers_reg xform;
 
 -- Attach companies for whom the drillers work
+\echo '...Updating people, attaching companies from Driller Registry'
 UPDATE registries_person per
 SET organization_guid = org.org_guid
 FROM registries_organization org,
@@ -165,6 +170,7 @@ and org.city           = xform.companycity
 and per.person_guid = xform.reg_guid;
 
 -- Driller Contact details
+\echo '...Updating people, attaching contact details from Driller Registry'
 INSERT INTO registries_contact_detail (
  create_user
 ,create_date
@@ -184,12 +190,13 @@ INSERT INTO registries_contact_detail (
 ,'1970-01-01 00:00:00-08'
 ,null
 ,gen_random_uuid()
-,cellphone
+,cell_phone
 ,companyemail
 ,reg_guid
 from xform_registries_drillers_reg xform;
 
 -- Pump Installers
+\echo 'Inserting People from Pump Installer Registry'
 INSERT INTO registries_person (
  first_name
 ,surname
@@ -220,6 +227,7 @@ where not exists (
 
 
 -- Attach companies for whom the pump installers work
+\echo '...Updating people, attaching companies from Pump Installer Registry'
 UPDATE registries_person per
 SET organization_guid = org.org_guid
 FROM registries_organization org,
@@ -232,6 +240,7 @@ and per.person_guid = xform.reg_guid
 and per.organization_guid is null;
 
 -- Pump Installer Contact details
+\echo '...Updating people, attaching contact detils from Driller Registry'
 INSERT INTO registries_contact_detail (
  create_user
 ,create_date
@@ -251,7 +260,7 @@ INSERT INTO registries_contact_detail (
 ,'1970-01-01 00:00:00-08'
 ,null
 ,gen_random_uuid()
-,null -- Why no cellphone in pump installers?
+,cell_phone
 ,companyemail
 ,reg_guid
 from xform_registries_pump_installers_reg xform
@@ -263,6 +272,7 @@ where not exists (
 
 
 -- Drillers/Pump Installers that were once on Register but since removed
+/*
 INSERT INTO registries_person (
  first_name
 ,surname
@@ -289,9 +299,10 @@ where not exists (
     select 1 from registries_person existing
      where xform.firstname = existing.first_name and xform.lastname = existing.surname
 );
-
+*/
 
 -- Attach companies for whom the Removed Driller/Pump Installer used to work
+/*
 UPDATE registries_person per
 SET organization_guid = org.org_guid
 FROM registries_organization org,
@@ -302,6 +313,7 @@ and org.city           = xform.companycity
 and per.person_guid = xform.removed_guid
 -- And not already attached to a company
 and per.organization_guid is null;
+*/
 
 -- TODO NOTE we need to redo Data Model so that a Person can have multiple Contact Details, 
 -- and can indeed work for more than one company at a time (e.g. Pump Installer & Driller )
@@ -309,6 +321,7 @@ and per.organization_guid is null;
 
 
 -- Contact details of the Removed Driller/Pump Installer
+/*
 INSERT INTO registries_contact_detail (
  create_user
 ,create_date
@@ -338,9 +351,11 @@ and not exists (
     select 1 from registries_person existing
      where xform.firstname = existing.first_name and xform.lastname = existing.surname
 );
+*/
 -- TODO Why no  entries above, when 'not exists' is inserted?
 
 -- Driller Register (Active)
+\echo 'Inserting Entries into Driller Registry'
 INSERT INTO registries_register (
  create_user
 ,create_date
@@ -372,6 +387,7 @@ SELECT
  -- TODO we may need a guid on Access side to keep it  straight , on all tables
 
 -- Pump Installer Register (Active)
+\echo 'Inserting Entries into Pump Installer Registry'
 INSERT INTO registries_register (
  create_user
 ,create_date
@@ -409,6 +425,7 @@ and   xform.lastname = per.surname;
 
 
 -- Driller/Pump Installer (Removed)
+/*
 INSERT INTO registries_register (
  create_user
 ,create_date
@@ -444,13 +461,13 @@ from        xform_registries_removed_from xform
 inner join  registries_person per
 on    xform.firstname = per.first_name
 and   xform.lastname = per.surname;
-
+*/
 -- Applications from "Water Well" Well Drillers (ultimately successful)
 
 -- CANNOT do below as the same person appears on register many times
 -- and I cannot link to the same person w/o a key.  But I for now can use
 -- xform_registries_drillers_reg.reg_guid being the same as registries_person.person_guid
-
+/*
 INSERT INTO registries_application (
  create_user
 ,create_date
@@ -494,14 +511,14 @@ and xform.reg_guid = per.person_guid
 and xform.classofwelldriller like '%Water Well%'
 and trim(both from trk.name) = concat(per.surname, ', ', per.first_name)
 and xform.name = concat(per.surname, ', ', per.first_name);
-
+*/
 
 -- Active Statuses for Applications from "Water Well" Well Drillers (ultimately successful)
 --
 -- CANNOT do below as the same person appears on register many times
 -- and I cannot link to the same person w/o a key.  But I for now can use
 -- xform_registries_drillers_reg.reg_guid being the same as registries_person.person_guid
-
+/*
 INSERT INTO registries_application_status (
  create_user
 ,create_date
@@ -538,7 +555,7 @@ and trim(both from trk.name) = concat(per.surname, ', ', per.first_name)
 -- until data cleanup
 and trk.app_approval_date is not null;
 
-
+*/
 
 -- Historical Statuses for Applications from "Water Well" Well Drillers (ultimately successful)
 --
@@ -546,6 +563,7 @@ and trk.app_approval_date is not null;
 -- and I cannot link to the same person w/o a key.  But I for now can use
 -- xform_registries_drillers_reg.reg_guid being the same as registries_person.person_guid
 
+/*
 INSERT INTO registries_application_status (
  create_user
 ,create_date
@@ -582,9 +600,10 @@ and trim(both from trk.name) = concat(per.surname, ', ', per.first_name)
 and trk.date_app_received is not null
 and trk.app_approval_date is not null;
 
-
+*/
 
 -- Applications from "Geoexchange" Well Drillers (ultimately successful)
+/*
 INSERT INTO registries_application (
  create_user
 ,create_date
@@ -628,8 +647,10 @@ and xform.reg_guid = per.person_guid
 and xform.classofwelldriller like '%Geoexchange%'
 and trim(both from trk.name) = concat(per.surname, ', ', per.first_name)
 and xform.name = concat(per.surname, ', ', per.first_name);
+*/
 
 -- Applications from "Geotechnical" Well Drillers (ultimately successful)
+/*
 INSERT INTO registries_application (
  create_user
 ,create_date
@@ -673,8 +694,10 @@ and xform.reg_guid = per.person_guid
 and xform.classofwelldriller like '%Geotechnical%'
 and trim(both from trk.name) = concat(per.surname, ', ', per.first_name)
 and xform.name = concat(per.surname, ', ', per.first_name);
+*/
 
 -- Applications from Pump Installers (ultimately successful)
+/*
 INSERT INTO registries_application (
  create_user
 ,create_date
@@ -719,4 +742,4 @@ and reg.registries_activity_code = 'PUMP'
 and xform.reg_guid = per.person_guid
 and trim(both from trk.name) = concat(per.surname, ', ', per.first_name)
 and xform.name = concat(per.surname, ', ', per.first_name);
-
+*/

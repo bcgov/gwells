@@ -316,7 +316,7 @@ class WellDetailsSpecs extends GebReportingSpec {
 		"ground_elevation"	 			  | "378 feet" 	 | 106648
 		"ground_elevation_method"	 	  | "1:10,000 Scale Map" 	 | 104636
 		//"well_plate_attached"	 		  | "CASING" 	 | 106648
-		"intake_method"	 				  | "Open Bottom" 	 | 110749
+		// "intake_method"	 				  | "Open Bottom" 	 | 110749
 		"screen_type"	 				  | "Pipe size" 	 | 102666
 		"screen_material"	 			  | "Plastic" 	 | 102666
 		"screen_opening"	              | "Perforated Pipe" 	 | 102666

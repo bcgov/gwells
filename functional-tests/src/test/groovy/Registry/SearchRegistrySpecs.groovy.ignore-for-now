@@ -38,6 +38,6 @@ class SearchRegistrySpecs extends GebReportingSpec {
         "Name=John"                 | "John"			| "name"          | ""				    | "18"
         "Name=Alan"                 | "Alan"			| "name"          | ""				    | "2"
         "Community=Langley"         | "Langley"			| "community"     | ""				    | "16"
-        "Community=Aldergrove"      | "Aldergrove"		| "community"     | ""				    | "16"
+        "Community=Aldergrove"      | "Aldergrove"		| "community"     | ""				    | "10"
     }
 }
