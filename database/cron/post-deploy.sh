@@ -71,6 +71,11 @@ else
     echo ". Skipping DB Replication from Legacy Database, as per DB_REPLICATION flag"
 fi
 
+# libpython3.5m.so.rh-python35-1.0 => /opt/rh/rh-python35/root/usr/lib64/libpython3.5m.so.rh-python35-1.0 (0x00007f845927b000)
+
+echo $LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=/opt/rh/rh-python35/root/usr/lib64/
+
 cd /opt/app-root/src/
 python manage.py post-deploy
 
