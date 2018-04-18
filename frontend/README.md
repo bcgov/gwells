@@ -55,13 +55,28 @@ npm run build
 
 ```
 
+## Serving the web apps with Django and hot reloading
+
+Start webpack in listening mode (Django will listen to changes)
+
+```bash
+# Listen for file changes
+npm run django
+```
+
+Start python in debug mode.
+```
+# Django MUST be run in debug mode to point to the correct static files.
+DJANGO_DEBUG=True python manage.py runserver
+```
+
 ## Serving web app with hot reload for development
 
 The app can be served with hot reload as follows:
 
 ```bash
 # serve with hot reload at localhost:8080
-npm run dev
+APPLICATION_ROOT="/" npm run dev
 ```
 
 You may need to edit ```index.html``` and/or ```build/webpack.base.conf.js``` and ```build/webpack.dev.conf.js``` to load your app if you are creating a new one (currently the registries app is loaded).
