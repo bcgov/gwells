@@ -102,6 +102,7 @@ drop table if exists registries_accredited_certificate_code cascade;
 
 drop table if exists registries_classification_applied_for cascade;
 drop table if exists registries_contact_at                 cascade;
+drop table if exists registries_contact_detail                cascade;
 drop table if exists registries_organization               cascade;
 drop table if exists registries_person                     cascade;
 drop table if exists registries_qualification_code         cascade;

@@ -14,11 +14,11 @@ podname=$(oc get pods -n moe-gwells-dev | grep gwells-[0-9] | grep Running | hea
 oc rsync /Users/garywong/projects/registry-gwells-export/2018-APR-16.sanitized  $podname:/tmp
 oc exec ${podname} -n moe-gwells-dev -- /bin/bash -c 'cp --remove-destination /tmp/2018-APR-16.sanitized/*.sanitized.csv  /opt/app-root/src/database/code-tables/registries/'
 oc exec ${podname} -n moe-gwells-dev -- /bin/bash -c 'export PGPASSWORD=$DATABASE_PASSWORD;cd /opt/app-root/src/database/code-tables/registries/;psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER  << EOF
+\ir ../../scripts/registries/post-deploy.sql
 \i clear-tables.sql
 \ir ../../scripts/registries/initialize-xforms-registries.sql
 \i data-load-static-codes.sql
 \ir ../../scripts/registries/populate-registries-from-xform.sql
-\ir ../../scripts/registries/post-deploy.sql
 EOF
 '
 # TEST
@@ -34,3 +34,4 @@ oc exec ${podname} -n moe-gwells-test -- /bin/bash -c 'export PGPASSWORD=$DATABA
 \ir ../../scripts/registries/populate-registries-from-xform.sql
 EOF
 '
+
