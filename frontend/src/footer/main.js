@@ -5,8 +5,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import BootstrapVue from 'bootstrap-vue'
 import Footer from '../common/components/Footer'
-// import '@/common/assets/css/bootstrap-theme.min.css'
-// import 'bootstrap-vue/dist/bootstrap-vue.css'
+// The footer does not import boostrap css, as it is assumed it's already imported by the header.
 
 Vue.use(Vuex)
 Vue.use(BootstrapVue)
