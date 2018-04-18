@@ -35,6 +35,18 @@ then
 fi
 
 
+# Check project
+#
+CHECK=$( oc projects | tr -d '*' | grep -v "Using project" | grep "${PROJECT}" | awk '{ print $1 }' || echo )
+if [ "${PROJECT}" != "${CHECK}" ]
+then
+	echo
+	echo "Unable to access project ${PROJECT}"
+	echo
+	exit
+fi
+
+
 oc project moe-gwells-dev
 podname=$(oc get pods -n moe-gwells-dev | grep gwells-[0-9] | grep Running | head -n 1 | awk '{print $1}')
 oc rsync /Users/garywong/projects/registry-gwells-export/2018-APR-16.sanitized  $podname:/tmp
