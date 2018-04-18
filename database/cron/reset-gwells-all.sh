@@ -1,12 +1,21 @@
 # Fri Apr 13 12:55:03 2018
-# SQL Script that is run as part of 'resetting' the application model.py.  The pipeline deployment automatically 
+# SQL Script that is run as part of 'resetting' the application model.py.  The pipeline deployment automatically
 # handles:
 # 1. removal of all /migrations/000*.py in all Django apps (via check-in to the repo)
 # 2. execution of 'python manage.py migrate'  (via the Build Configuration's [Post-Commit Hook](https://console.pathfinder.gov.bc.ca:8443/console/project/moe-gwells-tools/edit/builds/gwells-developer))
-# 
+#
 # ./reset-gwells-all.sh
-# 
+#
 # Still requires a parameter for dev/test/prod with default to dev
+
+
+# Halt conditions, verbosity and field separator
+#
+set -euo pipefail
+[ "${VERBOSE:-x}" != true ]|| set -x
+IFS=$'\n\t'
+
+
 oc project moe-gwells-test
 podname=$(oc get pods -n moe-gwells-test | grep postgresql-[0-9] | grep Running | head -n 1 | awk '{print $1}')
 oc exec ${podname} -n moe-gwells-test -- /bin/bash -c 'export PGPASSWORD=$POSTGRESQL_PASSWORD;psql -h $POSTGRESQL_SERVICE_HOST -d $POSTGRESQL_DATABASE -U $POSTGRESQL_USER  << EOF
