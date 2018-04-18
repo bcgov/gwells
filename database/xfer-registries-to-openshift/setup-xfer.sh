@@ -69,7 +69,7 @@ PODNAME=$( oc get pods -n ${PROJECT} | grep gwells-[0-9] | grep Running | head -
 
 # Use oc rsync to copy into the pod and move to the correct dir
 #
-oc rsync ${TO_COPY} ${PODNAME}:/tmp
+oc -n ${PROJECT} rsync ${TO_COPY} ${PODNAME}:/tmp
 COPY_BASE=$( basename ${TO_COPY} )
 oc exec ${PODNAME} -n ${PROJECT} -- /bin/bash -c 'cp --remove-destination /tmp/'${COPY_BASE}'/*.sanitized.csv  /opt/app-root/src/database/code-tables/registries/'
 
