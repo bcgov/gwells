@@ -1,14 +1,23 @@
 #!/bin/sh
 #
-# Fri Mar 23 11:12:37 2018 GW Shell script to copy over sanizited legacy MS Access 
+# Fri Mar 23 11:12:37 2018 GW Shell script to copy over sanizited legacy MS Access
 # tables via 'oc rsync' on the postgres Pod.  This script runs on a local developer
-# workstation, calling renote 'oc exec' commands
+# workstation, calling remote 'oc exec' commands
 #
 # NOTE: You need to be logged in with a token, via:
 #       https://console.pathfinder.gov.bc.ca:8443/oauth/token/request
 #
 # Running on postgres database pod, as DB root access not enabled on gwells application pod
 # DEV
+
+
+# Halt conditions, verbosity and field separator
+#
+set -euo pipefail
+[ "${VERBOSE:-x}" != true ]|| set -x
+IFS=$'\n\t'
+
+
 oc project moe-gwells-dev
 podname=$(oc get pods -n moe-gwells-dev | grep gwells-[0-9] | grep Running | head -n 1 | awk '{print $1}')
 oc rsync /Users/garywong/projects/registry-gwells-export/2018-APR-16.sanitized  $podname:/tmp
@@ -34,4 +43,3 @@ oc exec ${podname} -n moe-gwells-test -- /bin/bash -c 'export PGPASSWORD=$DATABA
 \ir ../../scripts/registries/populate-registries-from-xform.sql
 EOF
 '
-
