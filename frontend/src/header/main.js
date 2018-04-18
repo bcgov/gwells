@@ -3,6 +3,7 @@
 import 'babel-polyfill'
 import Vue from 'vue'
 import Vuex from 'vuex'
+import { store } from '@/registry/store'
 import BootstrapVue from 'bootstrap-vue'
 import Header from '../common/components/Header'
 import '@/common/assets/css/bootstrap-theme.min.css'
@@ -15,10 +16,11 @@ Vue.config.productionTip = false
 /* eslint-disable no-new */
 new Vue({
   el: '#header',
+  store,
   components: {
     Header
   },
-  template: '<Header/>'
+  template: '<Header auth="hide"/>'
 })
 
 Vue.config.devtools = true

@@ -21,7 +21,7 @@
         </b-navbar-nav>
         <b-navbar-nav class="ml-auto">
           <b-nav-item>
-            <keycloak-auth/>
+            <keycloak-auth v-if="auth !== 'hide'"/>
           </b-nav-item>
         </b-navbar-nav>
         <b-navbar-nav class="ml-auto d-sm-none">
@@ -54,8 +54,9 @@ export default {
   components: {
     'keycloak-auth': Auth
   },
+  props: ['auth'],
   data () {
-    let adminMeta = document.head.querySelector('meta[name="show.admin"]');
+    let adminMeta = document.head.querySelector('meta[name="show.admin"]')
     return {
       show: {
         dataEntry: process.env.ENABLE_DATA_ENTRY,
