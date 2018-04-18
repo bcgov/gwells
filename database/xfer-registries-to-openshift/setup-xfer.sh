@@ -72,11 +72,18 @@ oc exec ${PODNAME} -n ${PROJECT} -- /bin/bash -c 'cp --remove-destination /tmp/2
 
 # Run post-deploy and other scripts
 #
-oc exec ${PODNAME} -n ${PROJECT} -- /bin/bash -c 'export PGPASSWORD=$DATABASE_PASSWORD;cd /opt/app-root/src/database/code-tables/registries/;psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER  << EOF
-\ir ../../scripts/registries/post-deploy.sql
-\i clear-tables.sql
-\ir ../../scripts/registries/initialize-xforms-registries.sql
-\i data-load-static-codes.sql
-\ir ../../scripts/registries/populate-registries-from-xform.sql
-EOF
-'
+SCRIPTS=(
+    "/opt/app-root/src/database/scripts/registries/post-deploy.sql"
+    "/opt/app-root/src/database/code-tables/registries/clear-tables.sql"
+    "/opt/app-root/src/database/scripts/registries/initialize-xforms-registries.sql"
+    "/opt/app-root/src/database/code-tables/registries/data-load-static-codes.sql"
+    "/opt/app-root/src/database/scripts/registries/populate-registries-from-xform.sql"
+)
+for s in ${SCRIPTS[@]}
+do
+    DIR=$( dirname $s )
+    SQL=$( basename $s )
+    echo
+    echo " >> $s"
+    oc exec ${PODNAME} -n ${PROJECT} -- /bin/bash -c 'export PGPASSWORD=$DATABASE_PASSWORD; cd '${DIR}'; psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER -f ./'${SQL}
+done
