@@ -16,12 +16,12 @@ VERBOSE=${VERBOSE:-}
 
 # App and build settings
 #
-APPLICATION=${APPLICATION:-gwells}
+APPLICATION_NAME=${APPLICATION_NAME:-gwells}
 APPLICATION_PORT=${APPLICATION_PORT:-web}
-STATIC_PAGE=${STATIC_PAGE:-proxy-caddy}
+STATIC_PAGE_NAME=${STATIC_PAGE_NAME:-proxy-caddy}
 STATIC_PAGE_PORT=${STATIC_PAGE_PORT:-2015-tcp}
 #
-IMG_NAME=${IMG_NAME:-bcgov-s2i-caddy}
+IMG_SRC=${IMG_SRC:-bcgov-s2i-caddy}
 GIT_REPO=${GIT_REPO:-https://github.com/bcgov/gwells.git}
 GIT_BRANCH=${GIT_BRANCH:-master}
 OC_BUILD=${OC_BUILD:-../openshift/templates/caddy-build.json}
@@ -67,32 +67,32 @@ fi
 #
 if [ "${COMMAND}" == "on" ]
 then
-	oc patch route ${APPLICATION} -n ${PROJECT} -p \
-		'{ "spec": { "to": { "name": "'$( echo ${STATIC_PAGE} )'" },
+	oc patch route ${APPLICATION_NAME} -n ${PROJECT} -p \
+		'{ "spec": { "to": { "name": "'$( echo ${STATIC_PAGE_NAME} )'" },
 		"port": { "targetPort": "'$( echo ${STATIC_PAGE_PORT} )'" }}}'
-	oc patch route ${STATIC_PAGE} -n ${PROJECT} -p \
-		'{ "spec": { "to": { "name": "'$( echo ${APPLICATION} )'" },
+	oc patch route ${STATIC_PAGE_NAME} -n ${PROJECT} -p \
+		'{ "spec": { "to": { "name": "'$( echo ${APPLICATION_NAME} )'" },
 		"port": { "targetPort": "'$( echo ${APPLICATION_PORT} )'" }}}'
 elif [ "${COMMAND}" == "off" ]
 then
-	oc patch route ${APPLICATION} -n ${PROJECT} -p \
-		'{ "spec": { "to": { "name": "'$( echo ${APPLICATION} )'" },
+	oc patch route ${APPLICATION_NAME} -n ${PROJECT} -p \
+		'{ "spec": { "to": { "name": "'$( echo ${APPLICATION_NAME} )'" },
 		"port": { "targetPort": "'$( echo ${APPLICATION_PORT} )'" }}}'
-	oc patch route ${STATIC_PAGE} -n ${PROJECT} -p \
-		'{ "spec": { "to": { "name": "'$( echo ${STATIC_PAGE} )'" },
+	oc patch route ${STATIC_PAGE_NAME} -n ${PROJECT} -p \
+		'{ "spec": { "to": { "name": "'$( echo ${STATIC_PAGE_NAME} )'" },
 		"port": { "targetPort": "'$( echo ${STATIC_PAGE_PORT} )'" }}}'
 elif [ "${COMMAND}" == "build" ]
 then
 	oc process -f ${OC_BUILD} \
-		-p NAME=${STATIC_PAGE} GIT_REPO=${GIT_REPO} GIT_BRANCH=${GIT_BRANCH} IMG_NAME=${IMG_NAME} \
+		-p NAME=${STATIC_PAGE_NAME} GIT_REPO=${GIT_REPO} GIT_BRANCH=${GIT_BRANCH} IMG_SRC=${IMG_SRC} \
 		| oc apply -f -
 elif [ "${COMMAND}" == "deploy" ]
 then
-	oc process -f ${OC_DEPLOY} -n ${PROJECT} -p NAME=${STATIC_PAGE} BUILD_PROJECT=${PROJECT} \
+	oc process -f ${OC_DEPLOY} -n ${PROJECT} -p NAME=${STATIC_PAGE_NAME} BUILD_PROJECT=${PROJECT} \
 		| oc apply -f -
-	oc get route ${STATIC_PAGE} || \
-		oc expose svc ${STATIC_PAGE}
-	oc get dc ${STATIC_PAGE} -o json | grep '"image":' | awk '{ print $2 }' | tr -d ',"' \
+	oc get route ${STATIC_PAGE_NAME} || \
+		oc expose svc ${STATIC_PAGE_NAME}
+	oc get dc ${STATIC_PAGE_NAME} -o json | grep '"image":' | awk '{ print $2 }' | tr -d ',"' \
 		| tee -a ./container_img.log
 else
 	echo
