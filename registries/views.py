@@ -218,6 +218,7 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
                        filters.SearchFilter, filters.OrderingFilter)
     filter_class = PersonFilter
     ordering_fields = ('surname', 'organization__name')
+    ordering = ('surname')
     search_fields = (
         'first_name',
         'surname',
