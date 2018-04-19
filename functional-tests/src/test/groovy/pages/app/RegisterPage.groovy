@@ -15,8 +15,8 @@ class RegisterPage extends Page {
         search { $("#regTypeInput") }
         firstrow { $("#registry-table-row-0") }
         result { $("#drillersTotalResults").text() }
-        selectinstaller { $("#activityInstaller").click() }
-        selectdriller { $("#activityDriller").click() }
+        selectinstaller { $("label[for=activityInstaller]").click() }
+        selectdriller { $("label[for=activityDriller]").click() }
         noresults { $("div", text:"No results were found.") }
         selectcommunity { $("form",id:"drillerSearchForm").$("#cityOptions") }
     }

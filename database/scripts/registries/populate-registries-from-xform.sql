@@ -240,7 +240,7 @@ and per.person_guid = xform.reg_guid
 and per.organization_guid is null;
 
 -- Pump Installer Contact details
-\echo '...Updating people, attaching contact detils from Driller Registry'
+\echo '...Updating people, attaching contact details from Driller Registry'
 INSERT INTO registries_contact_detail (
  create_user
 ,create_date
