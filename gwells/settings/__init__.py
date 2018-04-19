@@ -134,6 +134,8 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'wsgi.application'
+# 2018/04/19: According to the documentation, bootstrap4 is still in alpha:
+# http://django-crispy-forms.readthedocs.io/en/latest/install.html?highlight=bootstrap4
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
