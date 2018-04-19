@@ -30,7 +30,7 @@ gwells=> select * from django_migrations;
 Major changes (e.g. to the User model, or Authentication, or to deletion/renaming of database objects) are not well handled in Django.  In this situation, it is better to 'reset' all the migrations (see [article](https://simpleisbetterthancomplex.com/tutorial/2016/07/26/how-to-reset-migrations.html)).
 
 ## Reset django_migrations table
-We reset ALL the database objects currently, as we are still in the 'replicate from legacy system' mode with no new data.  Until we start entering production data (e.g. Registries) we can reset the target database (DEV, or TEST or PROD) by running [./reset-gwells-all.sh <env>].
+We reset ALL the database objects currently, as we are still in the 'replicate from legacy system' mode with no new data.  Until we start entering production data (e.g. Registries) we can reset the target database (DEV, or TEST or PROD) by running [./reset-gwells-all.sh <OpenShift Project>].
 
 It's better to run the reset script on the postgresql pod, as the gwells pod will be brought down as part the 'Recreate' strategy of the rollout.
 
