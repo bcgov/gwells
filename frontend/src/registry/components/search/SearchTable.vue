@@ -15,7 +15,7 @@
               v-for="(driller, index) in drillers.results"
               :key="`tr ${driller.person_guid} ${index}`" :id="`registry-table-row-${index}`">
             <td :id="`drillerName${index}`">
-              <div><b>{{ driller.first_name }} {{ driller.surname }}</b></div>
+              <div><b>{{ driller.surname }}, {{ driller.first_name }}</b></div>
               <div v-if="driller.registrations && driller.registrations.length">
                 <div
                     v-for="(reg, regIndex) in driller.registrations"
