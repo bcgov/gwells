@@ -21,7 +21,7 @@ IFS=$'\n\t'
 # Parameters
 #
 PROJECT=${1:-}
-TO_COPY=${2:-/Users/garywong/projects/registry-gwells-export/2018-APR-16.sanitized}
+TO_COPY=${2:-/Users/garywong/projects/registry-gwells-export}
 
 
 # Show message if passed any params
@@ -29,7 +29,7 @@ TO_COPY=${2:-/Users/garywong/projects/registry-gwells-export/2018-APR-16.sanitiz
 if [ "${#}" -eq 0 ]
 then
 	echo
-    echo "Copies a folder of sanitized .CSVs and runs .SQL scripts"
+    echo "Copies a folder of .CSVs and runs .SQL scripts"
     echo
 	echo "Provide a project name."
 	echo " './setup-xfer.sh <project_name> <optional:input_file>'"
@@ -71,7 +71,7 @@ PODNAME=$( oc get pods -n ${PROJECT} | grep gwells-[0-9] | grep Running | head -
 #
 oc rsync ${TO_COPY} -n ${PROJECT} ${PODNAME}:/tmp
 COPY_BASE=$( basename ${TO_COPY} )
-oc exec ${PODNAME} -n ${PROJECT} -- /bin/bash -c 'cp --remove-destination /tmp/'${COPY_BASE}'/*.sanitized.csv  /opt/app-root/src/database/code-tables/registries/'
+oc exec ${PODNAME} -n ${PROJECT} -- /bin/bash -c 'cp --remove-destination /tmp/'${COPY_BASE}'/*.csv  /opt/app-root/src/database/code-tables/registries/'
 
 
 # Run post-deploy and other scripts
