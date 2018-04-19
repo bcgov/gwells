@@ -14,7 +14,8 @@ import {
   SET_USER,
   SET_CITY_LIST,
   SET_DRILLER,
-  SET_DRILLER_LIST } from './mutations.types.js'
+  SET_DRILLER_LIST,
+  SET_KEYCLOAK } from './mutations.types.js'
 
 Vue.use(Vuex)
 
@@ -26,7 +27,8 @@ export const store = new Vuex.Store({
     listError: null,
     cityList: {},
     drillerList: [],
-    currentDriller: {}
+    currentDriller: {},
+    keycloak: {}
   },
   mutations: {
     [SET_LOADING] (state, payload) {
@@ -49,10 +51,13 @@ export const store = new Vuex.Store({
     },
     [SET_DRILLER_LIST] (state, payload) {
       state.drillerList = payload
+    },
+    [SET_KEYCLOAK] (state, payload) {
+      state.keycloak = payload
     }
   },
   actions: {
-    [LOGIN] ({commit}, credentials) {
+    async [LOGIN] ({commit}, credentials) {
       ApiService.post('api-token-auth/', credentials)
         .then((response) => {
           const token = response.data.token
@@ -111,7 +116,7 @@ export const store = new Vuex.Store({
            */
           data.forEach((item) => {
             // if a province doesn't exist in listByProvince, create a new item
-            if (!~listByProvince.findIndex(prov => prov.prov === item.province_state)) {
+            if (!listByProvince.some(prov => prov.prov === item.province_state)) {
               listByProvince.push({ prov: item.province_state, cities: [] })
             }
             listByProvince.find(prov => prov.prov === item.province_state).cities.push(item.city)
@@ -139,17 +144,21 @@ export const store = new Vuex.Store({
         })
     },
     [FETCH_DRILLER_LIST] ({commit}, params) {
-      commit(SET_LOADING, true)
-      ApiService.query('drillers/', params)
-        .then((response) => {
-          commit(SET_LOADING, false)
-          commit(SET_LIST_ERROR, null)
-          commit(SET_DRILLER_LIST, response.data)
-        })
-        .catch((error) => {
-          commit(SET_LOADING, false)
-          commit(SET_LIST_ERROR, error.response)
-        })
+      return new Promise((resolve, reject) => {
+        commit(SET_LOADING, true)
+        ApiService.query('drillers/', params)
+          .then((response) => {
+            commit(SET_LOADING, false)
+            commit(SET_LIST_ERROR, null)
+            commit(SET_DRILLER_LIST, response.data)
+            resolve()
+          })
+          .catch((error) => {
+            commit(SET_LOADING, false)
+            commit(SET_LIST_ERROR, error.response)
+            reject(error)
+          })
+      })
     }
   },
   getters: {
@@ -173,6 +182,15 @@ export const store = new Vuex.Store({
     },
     currentDriller (state) {
       return state.currentDriller
+    },
+    keycloak (state) {
+      return state.keycloak
+    },
+    userIsAdmin (state) {
+      if (state.keycloak && state.keycloak.authenticated) {
+        return state.keycloak.hasRealmRole('gwells_admin')
+      }
+      return false
     }
   }
 })
