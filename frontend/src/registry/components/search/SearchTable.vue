@@ -14,8 +14,8 @@
           <tr v-if="drillers.results && drillers.results.length"
               v-for="(driller, index) in drillers.results"
               :key="`tr ${driller.person_guid} ${index}`" :id="`registry-table-row-${index}`">
-            <td>
-              <div><b>{{ driller.first_name }} {{ driller.surname }}</b></div>
+            <td :id="`drillerName${index}`">
+              <div class="font-weight-bold">{{ driller.surname }}, {{ driller.first_name }}</div>
               <div v-if="driller.registrations && driller.registrations.length">
                 <div
                     v-for="(reg, regIndex) in driller.registrations"
@@ -24,9 +24,9 @@
                   {{ reg.registration_no }}</div>
               </div>
             </td>
-            <td>
+            <td :id="`personOrg${index}`">
               <div v-if="driller.organization">{{ driller.organization.name }}</div></td>
-            <td>
+            <td :id="`personAddress${index}`">
               <div v-if="driller.organization">{{ driller.organization.street_address }}
                 <div>
                   <span>{{ driller.organization.city }}</span><span
@@ -35,18 +35,18 @@
                 </div>
               </div>
             </td>
-            <td>
+            <td :id="`personContact${index}`">
               <div v-if="driller.contact_info && driller.contact_info.length">
                 <driller-contact-info :driller="driller"/>
               </div>
             </td>
-            <td v-if="activity === 'DRILL'">
+            <td v-if="activity === 'DRILL'" :id="`personSubActivity${index}`">
               <driller-subactivity :driller="driller"/>
             </td>
-            <td>
+            <td :id="`certAuth${index}`">
               <driller-certificate-authority :driller="driller" :activity="activity"/>
             </td>
-            <td v-if="userIsAdmin && activity === 'DRILL'">
+            <td v-if="userIsAdmin && activity === 'DRILL'" :id="`personRegStatus${index}`">
               <driller-registration-status :driller="driller" :activity="activity"/>
             </td>
             <td v-if="userIsAdmin">
