@@ -33,7 +33,7 @@ class AuditCreateMixin(CreateModelMixin):
         serializer.save(
             create_user=self.request.user.get_username(),
             create_date=timezone.now()
-            )
+        )
 
 
 class AuditUpdateMixin(UpdateModelMixin):
@@ -72,7 +72,8 @@ class PersonFilter(restfilters.FilterSet):
     # city = restfilters.MultipleChoiceFilter(name="organization__city")
     prov = restfilters.CharFilter(name="organization__province_state")
     status = restfilters.CharFilter(name="registrations__status")
-    activity = restfilters.CharFilter(name="registrations__registries_activity")
+    activity = restfilters.CharFilter(
+        name="registrations__registries_activity")
 
     class Meta:
         model = Person
@@ -104,7 +105,7 @@ class OrganizationListView(AuditCreateMixin, ListCreateAPIView):
         .select_related('province_state') \
         .prefetch_related(
             'person_set',
-        )
+    )
 
     # Allow searching against fields like organization name, address,
     # name or registration of organization contacts
@@ -116,7 +117,7 @@ class OrganizationListView(AuditCreateMixin, ListCreateAPIView):
         'person_set__first_name',
         'person_set__surname',
         'person_set__registrations__applications__file_no'
-        )
+    )
 
     def get_queryset(self):
         """
@@ -180,7 +181,7 @@ class OrganizationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
         .select_related('province_state') \
         .prefetch_related(
             'person_set',
-        )
+    )
 
     def get_queryset(self):
         """
@@ -213,7 +214,8 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
     pagination_class = APILimitOffsetPagination
 
     # Allow searching on name fields, names of related companies, etc.
-    filter_backends = (restfilters.DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
+    filter_backends = (restfilters.DjangoFilterBackend,
+                       filters.SearchFilter, filters.OrderingFilter)
     filter_class = PersonFilter
     ordering_fields = ('surname', 'organization__name')
     ordering = ('surname',)
@@ -223,13 +225,14 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
         'organization__name',
         'organization__city',
         'registrations__registration_no'
-        )
+    )
 
     # fetch related companies and registration applications (prevent duplicate database trips)
     queryset = Person.objects \
         .all() \
         .select_related('organization') \
         .prefetch_related(
+            'contact_info',
             'registrations',
             'registrations__registries_activity',
             'registrations__status',
@@ -251,7 +254,7 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
         if cities:
             cities = cities.split(',')
             qs = qs.filter(organization__city__in=cities)
-        
+
         # Only show active drillers to non-admin users and public
         if not self.request.user.is_staff:
             qs = qs.filter(registrations__status='ACTIVE')

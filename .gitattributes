@@ -12,6 +12,7 @@
 # Binary files
 # ============
 *.db		binary
+*.eot		binary
 *.jar		binary
 *.p 		binary
 *.pkl 		binary

@@ -6,7 +6,7 @@ log stdout
 
 errors stdout
 
-rewrite /gwells {
+rewrite / {
   regexp .*
   to /maintenance.html
 }
