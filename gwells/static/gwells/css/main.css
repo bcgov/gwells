@@ -1696,13 +1696,13 @@ img.back-to-top:hover {
     top: 1px;
     margin-right: 10px;
     display: inline-block;
-    font-family: 'Glyphicons Halflings';
+    font-family: 'Font Awesome 5 Free';
     -webkit-font-smoothing: antialiased;
-    font-style: normal;
-    font-weight: normal;
+    font-weight: 900;
     line-height: 1;
     -moz-osx-font-smoothing: grayscale;
-    content: "\e086";
+    content: "\f05a";
+    font-size: larger;
 }
 
 .alert-warning:before {
