@@ -55,7 +55,7 @@ EOF
 	# \copy statements in data-load-static-codes.sql required to be in this directory
 # Wed 28 Mar 19:50:16 2018 GW Commented out this section to avoid overwrite of
 #                             one-off Registries replication (from MS Access source)
-#	cd ../code-tables/registries/
+#	cd /opt/app-root/src/database/code-tables/registries/
 
 	# @Registries
 	# Temporary setup of Registries (Well Driller only) as part of Code With Us
@@ -63,14 +63,18 @@ EOF
 #	psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER  << EOF
 #	\ir ../../scripts/registries/post-deploy.sql
 #	\i clear-tables.sql
-#	\ir ../../scripts/registries/populate-xforms-registries.sql
+#	\ir ../../scripts/registries/initialize-xforms-registries.sql
 #	\i data-load-static-codes.sql
 #	\ir ../../scripts/registries/populate-registries-from-xform.sql
-#EOF
+#   EOF
 else
     echo ". Skipping DB Replication from Legacy Database, as per DB_REPLICATION flag"
 fi
 
+# libpython3.5m.so.rh-python35-1.0 => /opt/rh/rh-python35/root/usr/lib64/libpython3.5m.so.rh-python35-1.0 (0x00007f845927b000)
+
+echo ". Running python-related post-deploy tasks."
+export LD_LIBRARY_PATH=/opt/rh/rh-python35/root/usr/lib64/
 cd /opt/app-root/src/
 python manage.py post-deploy
 

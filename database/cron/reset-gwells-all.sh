@@ -1,15 +1,70 @@
 # Fri Apr 13 12:55:03 2018
-# SQL Script that is run as part of 'resetting' the application model.py.  The pipeline deployment automatically 
+# SQL Script that is run as part of 'resetting' the application model.py.  The pipeline deployment automatically
 # handles:
-# 1. removal of all /migrations/000*.py in all Django apps (via check-in to the repo)
+# 1. removal/addition of all /migrations/000*.py in all Django apps (via check-in to the repo)
 # 2. execution of 'python manage.py migrate'  (via the Build Configuration's [Post-Commit Hook](https://console.pathfinder.gov.bc.ca:8443/console/project/moe-gwells-tools/edit/builds/gwells-developer))
-# 
-# ./reset-gwells-all.sh
-# 
-# Still requires a parameter for dev/test/prod with default to dev
-oc project moe-gwells-test
-podname=$(oc get pods -n moe-gwells-test | grep postgresql-[0-9] | grep Running | head -n 1 | awk '{print $1}')
-oc exec ${podname} -n moe-gwells-test -- /bin/bash -c 'export PGPASSWORD=$POSTGRESQL_PASSWORD;psql -h $POSTGRESQL_SERVICE_HOST -d $POSTGRESQL_DATABASE -U $POSTGRESQL_USER  << EOF
+#
+# ./reset-gwells-all.sh 
+#
+
+# Halt conditions, verbosity and field separator
+#
+set -euo pipefail
+[ "${VERBOSE:-x}" != true ]|| set -x
+IFS=$'\n\t'
+
+
+# Receive project from parameter, default to dev
+#
+PROJECT=${1:-moe-gwells-dev}
+
+
+# Show message if passed any params
+#
+if [ "${#}" -eq 0 ]
+then
+	echo
+    echo "Part of resetting the application model.py."
+    echo
+	echo "Provide a project name."
+	echo " './reset-gwells-all.sh <project_name>'"
+	echo
+	exit
+fi
+
+
+# Check login
+#
+if ( ! oc whoami )
+then
+    echo
+    echo "Please obtain an OpenShift API token.  A window will open shortly."
+    sleep 3
+    open https://console.pathfinder.gov.bc.ca:8443/oauth/token/request
+    exit
+fi
+
+
+# Check project availability
+#
+CHECK=$( oc projects | tr -d '*' | grep -v "Using project" | grep "${PROJECT}" | awk '{ print $1 }' || echo )
+if [ "${PROJECT}" != "${CHECK}" ]
+then
+	echo
+	echo "Unable to access project ${PROJECT}"
+	echo
+	exit
+fi
+
+
+# Identify running GWells database pod under selected project
+#
+PODNAME=$(oc get pods -n ${PROJECT} | grep postgresql-[0-9] | grep Running | head -n 1 | awk '{print $1}')
+
+
+# Drop tables
+#
+oc exec ${PODNAME} -n ${PROJECT} -- /bin/bash -c 'export PGPASSWORD=$POSTGRESQL_PASSWORD;psql -h $POSTGRESQL_SERVICE_HOST -d $POSTGRESQL_DATABASE -U $POSTGRESQL_USER  << EOF
 drop table if exists activity_submission                             cascade;
 drop table if exists activity_submission_water_quality               cascade;
 drop table if exists aquifer_well                                    cascade;
@@ -97,11 +152,12 @@ drop table if exists xform_registries_pump_installers_reg            cascade;
 drop table if exists xform_registries_removed_from                   cascade;
 drop table if exists yield_estimation_method_code                    cascade;
 
-drop table if exists registries_certifying_authority_code cascade;
+drop table if exists registries_certifying_authority_code   cascade;
 drop table if exists registries_accredited_certificate_code cascade;
 
 drop table if exists registries_classification_applied_for cascade;
 drop table if exists registries_contact_at                 cascade;
+drop table if exists registries_contact_detail             cascade;
 drop table if exists registries_organization               cascade;
 drop table if exists registries_person                     cascade;
 drop table if exists registries_qualification_code         cascade;

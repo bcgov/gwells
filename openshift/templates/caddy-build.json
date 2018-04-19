@@ -9,14 +9,14 @@
                 "name": "NAME",
                 "displayName": "Name",
                 "description": "The suffix for all created objects",
-                "required": true,
+                "required": false,
                 "value": "proxy-caddy"
             },
             {
                 "name": "GIT_REPO",
                 "displayName": "GIT_REPO",
                 "description": "URL to GitHub repo with static content",
-                "required": true,
+                "required": false,
                 "value": "https://github.com/bcgov/gwells.git"
             },
             {
@@ -27,15 +27,8 @@
                 "value": "master"
             },
             {
-                "name": "GIT_CONTEXT_DIR",
-                "displayName": "GIT_CONTEXT_DIR",
-                "description": "Git path to Caddyfile and landing HTML",
-                "required": false,
-                "value": "/maintenance"
-            },
-            {
-                "name": "IMG_NAME",
-                "displayName": "IMG_NAME",
+                "name": "IMG_SRC",
+                "displayName": "IMG_SRC",
                 "description": "Source image name",
                 "required": false,
                 "value": "bcgov-s2i-caddy"
@@ -96,7 +89,7 @@
                         "from": {
                             "kind": "ImageStreamTag",
                             "namespace": "openshift",
-                            "name": "${IMG_NAME}:latest"
+                            "name": "${IMG_SRC}:latest"
                         }
                     }
                 },
