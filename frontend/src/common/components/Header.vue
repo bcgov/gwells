@@ -39,7 +39,7 @@
               <b-nav-item class="navbar-link lvl2-link" href="/gwells/groundwater-information/">Groundwater Information</b-nav-item>
               <b-nav-item class="navbar-link lvl2-link" href="/gwells/registries/">Registry</b-nav-item>
               <b-nav-item class="navbar-link lvl2-link" v-if="show.dataEntry" href="/gwells/submission/create/">Submit Report</b-nav-item>
-              <b-nav-item class="navbar-link lvl2-link" v-if="show.admin" href="/gwells/admin/">Admin</b-nav-item>
+              <b-nav-item id="ribbon-admin" class="navbar-link lvl2-link" v-if="show.admin" href="/gwells/admin/">Admin</b-nav-item>
             </b-navbar-nav>
           </b-container>
         </b-collapse>
