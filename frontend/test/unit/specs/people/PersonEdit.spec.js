@@ -75,27 +75,4 @@ describe('PersonEdit.vue', () => {
     })
     expect(wrapper.findAll(APIErrorMessage).length).toEqual(0)
   })
-  it('has a classifications property (based on the currentDriller loaded)', () => {
-    const wrapper = shallow(PersonEdit, {
-      store,
-      localVue,
-      stubs: ['router-link', 'router-view'],
-      mocks: {
-        $route: {params: {person_guid: fakePerson.person_guid}}
-      }
-    })
-    expect(wrapper.vm.classifications).toEqual([
-      {
-        'code': 'geotech',
-        'date': '2005-01-05',
-        'description': 'Geotechnical/Environmental Driller',
-        'status': 'Approved'
-      },
-      {
-        'code': 'water',
-        'date': '2005-01-05',
-        'description': 'Water Well Driller',
-        'status': 'Approved'}
-    ])
-  })
 })
