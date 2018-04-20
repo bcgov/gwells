@@ -84,7 +84,7 @@
                   size="sm"
                   class="mb-3">
                   <i class="fa fa-plus-square-o"></i> Add a company</b-button>
-                  <b-modal id="orgModal" title="Add an Organization"><organization-add></organization-add></b-modal>
+                  <organization-add @newOrgAdded="newOrgHandler"></organization-add>
               </b-col>
             </b-row>
             <b-row class="mt-3">
@@ -210,8 +210,7 @@ export default {
         }
       },
       companies: [
-        { org_guid: '123', name: 'Big Time Drilling Co.' },
-        { org_guid: '124', name: 'Steve\'s Drilling Inc.' }
+        { org_guid: '', name: '' }
       ],
       submitSuccess: false,
       submitError: false
@@ -255,7 +254,8 @@ export default {
       personData['contact_info'] = contactInfo
 
       ApiService.post('drillers', personData).then((response) => {
-        this.submitSuccess = true
+        this.onFormReset()
+        this.$router.push({ name: 'PersonDetail', params: { person_guid: response.data.person_guid } })
       }).catch((error) => {
         this.submitError = error.response
       })
@@ -284,6 +284,16 @@ export default {
             registration_no: ''
           }
         }
+      })
+    },
+    newOrgHandler (orgGuid) {
+      ApiService.query('organizations/names/').then((response) => {
+        this.companies = response.data
+
+        // Find the new company with the "emitted" organization record UUID
+        this.drillerForm.person.organization = this.companies.find((company) => company.org_guid === orgGuid)
+      }).catch(() => {
+        this.orgListError = 'Unable to retrieve organization list.'
       })
     }
   },
