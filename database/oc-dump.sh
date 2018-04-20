@@ -25,12 +25,13 @@ SAVE_TO=${2:-$(date +%Y-%m-%d-%T.out)}
 # APP and mode variables
 #
 APPLICATION_NAME=${APPLICATION_NAME:-gwells}
-MAINTENANCE=${MAINTENANCE:-true}
+APPLICATION_PORT=${APPLICATION_PORT:-web}
+KEEP_APP_ONLINE=${KEEP_APP_ONLINE:-true}
 
 
 # Show message if passed any params
 #
-if [ "${#}" -eq 0 ]
+if [ "${#}" -eq 0 ]||[ "${#}" -gt 2 ]
 then
 	echo
     echo "Dumps from a GWells database to store locally"
@@ -69,8 +70,8 @@ fi
 # Put GWells into maintenance mode and scale down (deployment config)
 #
 REPO_DIR=$( git rev-parse --show-toplevel )
-[ "${MAINTENANCE}" != "true" ] || (
+[ "${KEEP_APP_ONLINE}" != "false" ] || (
 	cd ${REPO_DIR}/maintenance/;
-	./maintenance.sh ${PROJECT} on;
+	APPLICATION_NAME=${APPLICATION_NAME} APPLICATION_PORT=${APPLICATION_PORT} ./maintenance.sh ${PROJECT} on;
 	oc scale -n ${PROJECT} --replicas=0 deploymentconfig ${PODNAME}
 )
