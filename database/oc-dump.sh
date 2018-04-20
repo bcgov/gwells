@@ -58,3 +58,12 @@ then
 	echo
 	exit
 fi
+
+
+# Put GWells into maintenance mode
+#
+REPO_DIR=$( git rev-parse --show-toplevel )
+echo $(
+	cd ${REPO_DIR}/maintenance/;
+	./maintenance.sh ${PROJECT} off;
+)
