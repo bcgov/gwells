@@ -39,6 +39,9 @@ obtain_jwt_token_noswagger = swagger_auto_schema(
     method='post', auto_schema=None)(obtain_jwt_token)
 
 urlpatterns = [
+    url(r'^api/v1/organizations/names/$',
+        views.OrganizationNameListView.as_view(),
+        name='organization-names'),
     url(r'^api/v1/organizations/(?P<org_guid>[-\w]+)/$',
         views.OrganizationDetailView.as_view(),
         name='organization-detail'),

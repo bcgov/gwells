@@ -18,6 +18,7 @@ from registries.serializers import (
     OrganizationListSerializer,
     OrganizationSerializer,
     OrganizationAdminSerializer,
+    OrganizationNameListSerializer,
     PersonSerializer,
     PersonAdminSerializer,
     PersonListSerializer,
@@ -457,3 +458,15 @@ class ApplicationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
             'registration__status',
             'registration__register_removal_reason')
     lookup_field = "application_guid"
+
+
+class OrganizationNameListView(ListAPIView):
+    """
+    Simple list of organizations with only organization names
+    """
+
+    permission_classes = (IsGwellsAdmin,)
+    serializer_class = OrganizationNameListSerializer
+    queryset = Organization.objects.all()
+    pagination_class = None
+    lookup_field = 'organization_guid'
