@@ -22,6 +22,11 @@ PROJECT=${1:-}
 SAVE_TO=${2:-$(date +%Y-%m-%d-%T.out)}
 
 
+# Mode variables
+#
+MAINTENANCE=${MAINTENANCE:-true}
+
+
 # Show message if passed any params
 #
 if [ "${#}" -eq 0 ]
@@ -63,7 +68,7 @@ fi
 # Put GWells into maintenance mode
 #
 REPO_DIR=$( git rev-parse --show-toplevel )
-echo $(
+[ "${MAINTENANCE}" != "true" ] || echo $(
 	cd ${REPO_DIR}/maintenance/;
 	./maintenance.sh ${PROJECT} off;
 )
