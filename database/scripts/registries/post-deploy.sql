@@ -396,11 +396,12 @@ AND   reg.registries_status_code = 'ACTIVE'
 ORDER BY per.person_guid, reg.register_guid, app.application_guid, status.effective_date desc
 ;
 
+/*
 285 drillers
 723 on application 
 496 status
 
 select first_name, surname, reg_registration_no, reg_registration_date, appstatus_code, appstatus_effective_date, appstatus_expired_date
 from vw_well_driller_application;
-
+*/
 
