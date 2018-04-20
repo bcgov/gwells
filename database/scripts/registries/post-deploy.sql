@@ -25,14 +25,15 @@ CREATE OR REPLACE VIEW vw_well_class AS
 SELECT 
  subact.registries_activity_code   AS activity_code   
 ,subact.description                AS subactivity                
-,class.description               AS well_class               
+,class.description                 AS class_desc               
+,class.registries_well_class_code  AS class_name
+
 ---- Remainder are PK, FK, Audit columns (usually hidden from user)
 /*
 ,class.create_user               AS class_create_user               
 ,class.create_date               AS class_create_date               
 ,class.update_user               AS class_update_user               
 ,class.update_date               AS class_update_date               
-,class.registries_well_class_code AS class_registries_well_class_code
 ,class.display_order             AS class_display_order             
 ,class.effective_date            AS class_effective_date            
 ,class.expired_date              AS class_expired_date              
@@ -51,8 +52,6 @@ ON qual.registries_well_class_code = class.registries_well_class_code
 INNER JOIN registries_subactivity_code subact
 ON qual.registries_subactivity_code = subact.registries_subactivity_code
 ;
-
-
 
 -- GWELLS people in our system, with or without contact details
 DROP VIEW IF EXISTS vw_person;
