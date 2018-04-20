@@ -64,6 +64,10 @@ PODNAME=$(oc get pods -n ${PROJECT} | grep postgresql-[0-9] | grep Running | hea
 
 # Drop tables
 #
+# Fri 20 Apr 10:26:57 2018 GW Excluded "province_state_code", as this impacts the
+#                             Registries app.  As we move to a steady-state (in terms
+#                             of lookup code tables, we will SKIP reloading them)
+#
 oc exec ${PODNAME} -n ${PROJECT} -- /bin/bash -c 'export PGPASSWORD=$POSTGRESQL_PASSWORD;psql -h $POSTGRESQL_SERVICE_HOST -d $POSTGRESQL_DATABASE -U $POSTGRESQL_USER  << EOF
 drop table if exists activity_submission                             cascade;
 drop table if exists activity_submission_water_quality               cascade;
@@ -111,7 +115,6 @@ drop table if exists online_survey                                   cascade;
 drop table if exists perforation                                     cascade;
 drop table if exists production_data                                 cascade;
 drop table if exists profile                                         cascade;
-drop table if exists province_state_code                             cascade;
 drop table if exists registries_accredited_certificate               cascade;
 drop table if exists registries_activity_code                        cascade;
 drop table if exists registries_application                          cascade;
