@@ -4,13 +4,17 @@
       <b-container>
       <!-- Navbar content -->
         <b-navbar-nav>
-            <b-nav-item href="https://www2.gov.bc.ca/gov/content/home/disclaimer">Disclaimer
+            <b-nav-item id="footer-home" href="https://www.gov.bc.ca/">Home
             </b-nav-item>
-            <b-nav-item href="https://www2.gov.bc.ca/gov/content/home/privacy">Privacy
+            <b-nav-item id="footer-about" href="https://www2.gov.bc.ca/gov/content/about-gov-bc-ca">About gov.bc.ca
             </b-nav-item>
-            <b-nav-item href="https://www2.gov.bc.ca/gov/content/home/accessibility">Accessibility
+            <b-nav-item id="footer-disclaimer" href="http://gov.bc.ca/disclaimer/">Disclaimer
             </b-nav-item>
-            <b-nav-item href="https://www2.gov.bc.ca/gov/content/home/copyright">Copyright
+            <b-nav-item id="footer-privacy" href="http://gov.bc.ca/privacy/">Privacy
+            </b-nav-item>
+            <b-nav-item id="footer-accessibility" href="http://gov.bc.ca/webaccessibility/">Accessibility
+            </b-nav-item>
+            <b-nav-item id="footer-copyright" href="http://gov.bc.ca/copyright">Copyright
             </b-nav-item>
             <b-nav-item href="https://www2.gov.bc.ca/gov/content/home/contact-us">Contact Us
             </b-nav-item>
