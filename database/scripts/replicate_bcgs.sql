@@ -7,20 +7,10 @@ BEGIN
 	raise notice '...importing wells_screens data';
 
 	INSERT INTO bcgs_number (
-	 create_user 
-	,create_date
-	,update_user 
-	,update_date
-	,bcgs_id     
-	,bcgs_number 
+	 create_user, create_date, update_user, update_date, bcgs_id, bcgs_number
 	)
 	SELECT
-	 who_created
-	,when_created
-	,who_updated
-	,when_updated
-	,bcgs_id      
-	,bcgs_number 
+	 who_created ,when_created ,who_updated ,when_updated, bcgs_id, bcgs_number
 	FROM WELLS.WELLS_BCGS_NUMBERS
 	ORDER BY BCGS_NUMBER;
 
