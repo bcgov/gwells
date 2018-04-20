@@ -22,8 +22,9 @@ PROJECT=${1:-}
 SAVE_TO=${2:-$(date +%Y-%m-%d-%T.out)}
 
 
-# Mode variables
+# APP and mode variables
 #
+APPLICATION_NAME=${APPLICATION_NAME:-gwells}
 MAINTENANCE=${MAINTENANCE:-true}
 
 
@@ -43,7 +44,7 @@ fi
 
 # Check login
 #
-if ( ! oc whoami )
+if ! oc whoami
 then
     echo
     echo "Please obtain an OpenShift API token.  A window will open shortly."
@@ -68,7 +69,7 @@ fi
 # Put GWells into maintenance mode
 #
 REPO_DIR=$( git rev-parse --show-toplevel )
-[ "${MAINTENANCE}" != "true" ] || echo $(
+[ "${MAINTENANCE}" != "true" ] || (
 	cd ${REPO_DIR}/maintenance/;
-	./maintenance.sh ${PROJECT} off;
+	./maintenance.sh ${PROJECT} on;
 )
