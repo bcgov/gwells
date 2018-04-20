@@ -1,17 +1,12 @@
 <template>
-  <b-container>
-    <b-card no-body class="mb-3">
-      <b-breadcrumb :items="breadcrumbs" class="py-0 my-2"></b-breadcrumb>
-    </b-card>
+  <b-modal id="orgModal" title="Add an Organization" hide-footer @shown="focusInput()">
     <div class="col-xs-12" v-if="error">
       <api-error :error="error" resetter="SET_ERROR"></api-error>
     </div>
-    <div class="card">
-      <div class="card-body">
-        <h5 class="card-title">Add an Organization</h5>
+    <div class="container">
         <b-form @submit.prevent="onFormSubmit()" @reset.prevent="onFormReset()">
           <b-row>
-            <b-col cols="12" md="5">
+            <b-col cols="12">
               <b-form-group
                 id="orgNameInputGroup"
                 label="Organization name:"
@@ -21,12 +16,13 @@
                     type="text"
                     v-model="orgForm.name"
                     required
-                    placeholder="Enter organization name"/>
+                    placeholder="Enter organization name"
+                    ref="orgNameInput"/>
               </b-form-group>
             </b-col>
           </b-row>
           <b-row class="mt-3">
-            <b-col cols="12" md="5">
+            <b-col cols="12">
               <b-form-group
                 id="orgAddressInputGroup"
                 label="Street address:"
@@ -38,7 +34,9 @@
                     placeholder="Enter street address"/>
               </b-form-group>
             </b-col>
-            <b-col cols="12" md="5">
+          </b-row>
+          <b-row>
+            <b-col cols="12" md="6">
               <b-form-group
                 id="orgCityInputGroup"
                 label="City:"
@@ -50,17 +48,17 @@
                     placeholder="Enter city"/>
               </b-form-group>
             </b-col>
-          </b-row>
-          <b-row>
-            <b-col cols="12" md="5">
+            <b-col cols="12" md="6">
               <b-form-group
                 id="provInputGroup"
                 label="Province/State:"
                 label-for="provInput">
-                <v-select :options="provOptions" v-model="orgForm.province_state" placeholder="Select a province or state"/>
+                <v-select :options="provOptions" v-model="orgForm.province_state" placeholder="Select province"/>
               </b-form-group>
             </b-col>
-            <b-col cols="12" md="5">
+          </b-row>
+          <b-row>
+            <b-col cols="12" md="6">
               <b-form-group
                 id="postalCodeInputGroup"
                 label="Postal code:"
@@ -74,7 +72,7 @@
             </b-col>
           </b-row>
           <b-row class="mt-3">
-            <b-col cols="12" md="5">
+            <b-col cols="12" md="6">
               <b-form-group
                 id="telInputGroup"
                 label="Telephone:"
@@ -86,7 +84,7 @@
                     placeholder="Enter telephone number"/>
               </b-form-group>
             </b-col>
-            <b-col cols="12" md="5">
+            <b-col cols="12" md="6">
               <b-form-group
                 id="faxInputGroup"
                 label="Fax number:"
@@ -100,7 +98,21 @@
             </b-col>
           </b-row>
           <b-row>
-            <b-col cols="12" md="5">
+            <b-col cols="12">
+              <b-form-group
+                id="emailInputGroup"
+                label="Email:"
+                label-for="emailInput">
+                <b-form-input
+                    id="emailInput"
+                    type="text"
+                    v-model="orgForm.email"
+                    placeholder="Enter email address"/>
+              </b-form-group>
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col cols="12">
               <b-form-group
                 id="websiteInputGroup"
                 label="Website:"
@@ -109,32 +121,35 @@
                     id="websiteInput"
                     type="text"
                     v-model="orgForm.website_url"
-                    placeholder="Enter website address"/>
+                    placeholder="Enter website address (e.g. http://www.example.com)"/>
               </b-form-group>
             </b-col>
           </b-row>
-          <b-row class="mt-3">
+          <b-row class="my-3">
             <b-col>
-              <b-button type="submit" class="mr-2" variant="primary">Submit</b-button>
-              <b-button type="reset" variant="light">Reset</b-button>
+              <b-button type="submit" class="mr-2" variant="primary" :disabled="orgSubmitLoading">Submit</b-button>
+              <b-button type="reset" variant="light" id="orgFormResetButton">Cancel</b-button>
             </b-col>
           </b-row>
         </b-form>
-      </div>
+        <b-alert v-if="!!orgSubmitError" show variant="warning" dismissible @dismissed="orgSubmitError=null">
+          Error creating a new organization.
+          <div v-for="(value, key, index) in orgSubmitError.data" :key="`submit error ${index}`">
+              <span class="text-capitalize">{{ key }}</span>:
+              <span
+                v-for="(msg, msgIndex) in value"
+                :key="`submit error msg ${index} ${msgIndex}`">{{ msg }} </span>
+            </div>
+        </b-alert>
     </div>
-  </b-container>
+  </b-modal>
 </template>
 
 <script>
-import APIErrorMessage from '@/common/components/APIErrorMessage'
-import { mapGetters } from 'vuex'
 import ApiService from '@/common/services/ApiService.js'
 
 export default {
   name: 'OrganizationAdd',
-  components: {
-    'api-error': APIErrorMessage
-  },
   data () {
     return {
       breadcrumbs: [
@@ -157,23 +172,30 @@ export default {
         fax_tel: '',
         website_url: ''
       },
-      provOptions: ['BC', 'AB']
+      provOptions: ['BC', 'AB'],
+      orgSubmitLoading: false,
+      orgSubmitError: null
     }
-  },
-  computed: {
-    ...mapGetters(['error'])
   },
   methods: {
     onFormSubmit () {
       const org = {}
+      this.orgSubmitLoading = true
 
       // build 'org' object out of orgForm, skipping empty strings
       for (let prop in this.orgForm) {
-        if (this.orgForm[prop] !== '') {
+        if (this.orgForm[prop] !== '' && this.orgForm[prop] !== null) {
           org[prop] = this.orgForm[prop]
         }
       }
-      ApiService.post('organizations', org)
+      ApiService.post('organizations', org).then((response) => {
+        this.orgSubmitLoading = false
+        this.$root.$emit('bv::hide::modal', 'orgModal')
+        this.$emit('newOrgAdded', response.data.org_guid)
+      }).catch((error) => {
+        this.orgSubmitLoading = false
+        this.orgSubmitError = error.response
+      })
     },
     onFormReset () {
       this.orgForm = Object.assign({}, {
@@ -186,6 +208,10 @@ export default {
         fax_tel: '',
         website_url: ''
       })
+      this.$root.$emit('bv::hide::modal', 'orgModal')
+    },
+    focusInput () {
+      this.$refs.orgNameInput.focus()
     }
   }
 }
