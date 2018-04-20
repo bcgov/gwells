@@ -1,111 +1,121 @@
 const fakePerson = JSON.parse(JSON.stringify({
-  'person_guid': 'db0802c8-681e-4c65-8f2b-fd6dd3d2717a',
-  'first_name': 'Corine',
-  'surname': 'Navarro',
-  'companies': [{
-    'contact_at_guid': 'dcc8d473-6d43-4353-9edd-83d87957d3b8',
-    'organization_name': 'Jasper Drilling Co.',
-    'street_address': '4374 Cinder Common',
-    'city': 'Sullivan Bay',
+  'person_guid': '728c5b91-25aa-44de-8b5d-3b0b7ab115a5',
+  'first_name': 'Bob',
+  'surname': 'Drillerson',
+  'organization': {
+    'org_guid': '081b3614-286f-4446-a984-88b05677bd45',
+    'name': 'Drillerson Drilling Ltd.',
+    'street_address': '1111 Industrial St',
+    'city': 'Victoria',
     'province_state': 'BC',
-    'person_name': 'Corine Navarro',
-    'person': 'db0802c8-681e-4c65-8f2b-fd6dd3d2717a',
-    'org': '9f9937dc-8559-4418-ba22-9b9f0a94d456',
-    'contact_tel': '(604) 135-2080',
-    'contact_email': null
-  }],
-  'applications': [{
-    'application_guid': '0c3fcd58-28b5-483d-ac69-e4d57cf43d0a',
-    'person': 'db0802c8-681e-4c65-8f2b-fd6dd3d2717a',
-    'file_no': null,
-    'over19_ind': true,
-    'registrar_notes': null,
-    'reason_denied': null,
-    'registrations': [{
-      'activity': 'Well Driller',
-      'activity_code': 'DRILL',
+    'postal_code': 'X9A 1A8',
+    'main_tel': '(250) 555-4123',
+    'fax_tel': '(250) 555-4121',
+    'website_url': null
+  },
+  'registrations': [
+    {
+      'register_guid': '816eca52-7c45-4ff8-a0f0-e907ced6d93b',
+      'activity': 'DRILL',
+      'activity_description': 'Well Driller',
       'status': 'Active',
-      'registration_no': 'WD 06179496',
-      'registration_date': '2004-06-19',
-      'register_removal_reason': null,
-      'register_removal_date': null
-    }],
-    'classificationappliedfor_set': [{
-      'registries_subactivity': {
-        'registries_subactivity_guid': '1f6c30c2-018c-11e8-ba89-0ed5f89f718b',
-        'code': 'GEOTECH',
-        'description': 'Geotechnical/Environmental Driller',
-        'qualificationcode_set': [{
-          'code': 'GEO',
-          'description': 'Geotechnical well'
+      'registration_no': 'WD 95111111',
+      'applications': [
+        {
+          'application_guid': 'ae06c5a3-27b4-45b5-afb8-4622eb619855',
+          'file_no': 'A12345',
+          'reason_denied': null,
+          'qualifications': [
+            'WAT',
+            'MON',
+            'RECH',
+            'DEWAT',
+            'REM',
+            'GEO',
+            'PUMP'
+          ],
+          'status_set': [
+            {
+              'status': 'A',
+              'description': 'Approved',
+              'notified_date': '2018-04-12',
+              'effective_date': '2018-04-12',
+              'expired_date': null
+            }
+          ],
+          'subactivity': {
+            'registries_subactivity_code': 'WATER',
+            'description': 'Water Well Driller',
+            'qualification_set': [
+              {
+                'well_class': 'WAT',
+                'description': 'Water supply well'
+              },
+              {
+                'well_class': 'MON',
+                'description': 'Monitoring well'
+              },
+              {
+                'well_class': 'RECH',
+                'description': 'Recharge/Injection well'
+              },
+              {
+                'well_class': 'DEWAT',
+                'description': 'Dewatering well'
+              },
+              {
+                'well_class': 'REM',
+                'description': 'Remediatation well'
+              },
+              {
+                'well_class': 'GEO',
+                'description': 'Geotechnical well'
+              },
+              {
+                'well_class': 'PUMP',
+                'description': 'Install pump in Water supply, Recharge/Injection, or Dewatering well'
+              }
+            ]
+          },
+          'cert_authority': 'BC'
         },
         {
-          'code': 'MON',
-          'description': 'Monitoring well'
-        },
-        {
-          'code': 'REM',
-          'description': 'Remediatation well'
+          'application_guid': '5ce89aee-e058-4eca-a66b-28ea0b3acb43',
+          'file_no': '124',
+          'reason_denied': null,
+          'qualifications': [
+            'CLOS'
+          ],
+          'status_set': [
+            {
+              'status': 'A',
+              'description': 'Approved',
+              'notified_date': '2018-04-12',
+              'effective_date': '2018-04-12',
+              'expired_date': null
+            }
+          ],
+          'subactivity': {
+            'registries_subactivity_code': 'GEOXCHG',
+            'description': 'Geoexchange Driller',
+            'qualification_set': [
+              {
+                'well_class': 'CLOS',
+                'description': 'Closed loop geoexchange well'
+              }
+            ]
+          },
+          'cert_authority': 'BC'
         }
-        ]
-      },
-      'primary_certificate_authority': null
-    },
-    {
-      'registries_subactivity': {
-        'registries_subactivity_guid': '1f6c2aaa-018c-11e8-ba89-0ed5f89f718b',
-        'code': 'WATER',
-        'description': 'Water Well Driller',
-        'qualificationcode_set': [{
-          'code': 'DEWAT',
-          'description': 'Dewatering well'
-        },
-        {
-          'code': 'GEO',
-          'description': 'Geotechnical well'
-        },
-        {
-          'code': 'RECH',
-          'description': 'Recharge/Injection well'
-        },
-        {
-          'code': 'REM',
-          'description': 'Remediatation well'
-        },
-        {
-          'code': 'MON',
-          'description': 'Water supply well'
-        },
-        {
-          'code': 'WAT',
-          'description': 'Water supply well'
-        }
-        ]
-      },
-      'primary_certificate_authority': null
+      ]
     }
-    ],
-    'registriesapplicationstatus_set': [{
-      'status': 'Pending',
-      'status_code': 'P',
-      'notified_date': null,
-      'effective_date': '2004-12-20',
-      'expired_date': '2005-04-15'
-    },
+  ],
+  'contact_info': [
     {
-      'status': 'Approved',
-      'status_code': 'A',
-      'notified_date': '2005-01-08',
-      'effective_date': '2005-01-05',
-      'expired_date': null
+      'contact_tel': null,
+      'contact_email': 'driller1@example.com'
     }
-    ]
-  }],
-  'create_user': 'DATALOAD_USER',
-  'create_date': '2018-01-01T08:00:00Z',
-  'update_user': 'DATALOAD_USER',
-  'update_date': '2018-01-01T08:00:00Z'
-
+  ]
 }))
 
 export default fakePerson

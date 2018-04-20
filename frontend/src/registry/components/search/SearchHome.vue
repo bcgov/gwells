@@ -237,7 +237,7 @@ export default {
       this.lastSearchedActivity = this.searchParams.activity || 'DRILL'
       this.searchLoading = true
       this.$store.dispatch(FETCH_DRILLER_LIST, params).then(() => {
-        this.$SmoothScroll(table, 200)
+        this.$SmoothScroll(table, 100)
         this.drillerSearchReset({keepActivity: true, keepLimit: true})
         this.searchLoading = false
       }).catch(() => {
