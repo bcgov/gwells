@@ -66,10 +66,11 @@ then
 fi
 
 
-# Put GWells into maintenance mode
+# Put GWells into maintenance mode and scale down (deployment config)
 #
 REPO_DIR=$( git rev-parse --show-toplevel )
 [ "${MAINTENANCE}" != "true" ] || (
 	cd ${REPO_DIR}/maintenance/;
 	./maintenance.sh ${PROJECT} on;
+	oc scale -n ${PROJECT} --replicas=0 deploymentconfig ${PODNAME}
 )
