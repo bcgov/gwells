@@ -10,7 +10,7 @@ from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from rest_framework.mixins import CreateModelMixin, UpdateModelMixin
 from registries.models import Organization, Person, ContactInfo, RegistriesApplication, Register
-from registries.permissions import IsAdminOrReadOnly
+from registries.permissions import IsAdminOrReadOnly, IsGwellsAdmin
 from registries.serializers import (
     ApplicationAdminSerializer,
     ApplicationListSerializer,
@@ -23,6 +23,7 @@ from registries.serializers import (
     PersonListSerializer,
     RegistrationAdminSerializer,)
 
+
 class AuditCreateMixin(CreateModelMixin):
     """
     Adds create_user and create_date fields when instances are created
@@ -32,7 +33,7 @@ class AuditCreateMixin(CreateModelMixin):
         serializer.save(
             create_user=self.request.user.get_username(),
             create_date=timezone.now()
-            )
+        )
 
 
 class AuditUpdateMixin(UpdateModelMixin):
@@ -53,6 +54,7 @@ class APILimitOffsetPagination(LimitOffsetPagination):
     """
 
     max_limit = 100
+
     def get_paginated_response(self, data):
         return Response(OrderedDict([
             ('count', self.count),
@@ -70,7 +72,8 @@ class PersonFilter(restfilters.FilterSet):
     # city = restfilters.MultipleChoiceFilter(name="organization__city")
     prov = restfilters.CharFilter(name="organization__province_state")
     status = restfilters.CharFilter(name="registrations__status")
-    activity = restfilters.CharFilter(name="registrations__registries_activity")
+    activity = restfilters.CharFilter(
+        name="registrations__registries_activity")
 
     class Meta:
         model = Person
@@ -93,7 +96,7 @@ class OrganizationListView(AuditCreateMixin, ListCreateAPIView):
     Creates a new drilling organization record
     """
 
-    permission_classes = (IsAdminOrReadOnly,)
+    permission_classes = (IsGwellsAdmin,)
     serializer_class = OrganizationSerializer
     pagination_class = APILimitOffsetPagination
 
@@ -102,7 +105,7 @@ class OrganizationListView(AuditCreateMixin, ListCreateAPIView):
         .select_related('province_state') \
         .prefetch_related(
             'person_set',
-        )
+    )
 
     # Allow searching against fields like organization name, address,
     # name or registration of organization contacts
@@ -114,7 +117,7 @@ class OrganizationListView(AuditCreateMixin, ListCreateAPIView):
         'person_set__first_name',
         'person_set__surname',
         'person_set__registrations__applications__file_no'
-        )
+    )
 
     def get_queryset(self):
         """
@@ -178,7 +181,7 @@ class OrganizationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
         .select_related('province_state') \
         .prefetch_related(
             'person_set',
-        )
+    )
 
     def get_queryset(self):
         """
@@ -211,22 +214,25 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
     pagination_class = APILimitOffsetPagination
 
     # Allow searching on name fields, names of related companies, etc.
-    filter_backends = (restfilters.DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
+    filter_backends = (restfilters.DjangoFilterBackend,
+                       filters.SearchFilter, filters.OrderingFilter)
     filter_class = PersonFilter
     ordering_fields = ('surname', 'organization__name')
+    ordering = ('surname')
     search_fields = (
         'first_name',
         'surname',
         'organization__name',
         'organization__city',
         'registrations__registration_no'
-        )
+    )
 
     # fetch related companies and registration applications (prevent duplicate database trips)
     queryset = Person.objects \
         .all() \
         .select_related('organization') \
         .prefetch_related(
+            'contact_info',
             'registrations',
             'registrations__registries_activity',
             'registrations__status',
@@ -235,8 +241,8 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
             'registrations__applications__status_set__status',
             'registrations__applications__subactivity',
             'registrations__applications__subactivity__qualification_set',
-            'registrations__applications__subactivity__qualification_set__well_class'
-        )
+            'registrations__applications__subactivity__qualification_set__well_class') \
+        .distinct()
 
     def get_queryset(self):
         """ Returns Person queryset, removing non-active and unregistered drillers for anonymous users """
@@ -245,10 +251,10 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
         # Search for cities (split list and return all matches)
         # search comes in as a comma-separated querystring param e.g: ?city=Atlin,Lake Windermere,Duncan
         cities = self.request.query_params.get('city', None)
-        if cities is not None and len(cities):
+        if cities:
             cities = cities.split(',')
             qs = qs.filter(organization__city__in=cities)
-        
+
         # Only show active drillers to non-admin users and public
         if not self.request.user.is_staff:
             qs = qs.filter(registrations__status='ACTIVE')
@@ -308,7 +314,7 @@ class PersonDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
             'registrations__applications__subactivity',
             'registrations__applications__subactivity__qualification_set',
             'registrations__applications__subactivity__qualification_set__well_class'
-        )
+        ).distinct()
 
     def get_queryset(self):
         """
@@ -404,6 +410,7 @@ class RegistrationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
             'status',
             'register_removal_reason',) \
         .prefetch_related('applications')
+
 
 class ApplicationListView(AuditCreateMixin, ListCreateAPIView):
     """
