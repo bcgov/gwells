@@ -137,15 +137,17 @@ class Person(AuditModel):
         verbose_name="Person UUID")
     first_name = models.CharField(max_length=100)
     surname = models.CharField(max_length=100)
+
+    # As per D.A. - temporary fields to hold compliance-related details
+    well_driller_orcs_no = models.CharField(max_length=25, blank=True, null=True,
+        verbose_name='ORCS File # reference (in context of Well Driller).')
+    pump_installer_orcs_no = models.CharField(max_length=25, blank=True, null=True,
+        verbose_name='ORCS File # reference (in context of Pump Installer).')
+
+
     effective_date = models.DateField(default=datetime.date.today)
     expired_date = models.DateField(blank=True, null=True)
 
-    # Works With Org...  (should be a xref table)
-    organization = models.ForeignKey(
-        Organization, blank=True,
-        db_column='organization_guid',
-        null=True, on_delete=models.PROTECT,
-        related_name="person_set")
 
     class Meta:
         db_table = 'registries_person'
@@ -177,6 +179,12 @@ class ContactInfo(AuditModel):
         null=True,
         max_length=15,
         verbose_name="Contact telephone number")
+    contact_cell = models.CharField(
+        blank=True,
+        null=True,
+        max_length=15,
+        verbose_name="Contact cell number")
+
     contact_email = models.EmailField(blank=True, null=True, verbose_name="Email adddress")
     effective_date = models.DateField(default=datetime.date.today)
     expired_date = models.DateField(blank=True, null=True)
@@ -293,6 +301,11 @@ class Register(AuditModel):
         db_column='registries_activity_code',
         on_delete=models.PROTECT)
     person = models.ForeignKey(Person, db_column='person_guid', on_delete=models.PROTECT, related_name="registrations")
+    organization = models.ForeignKey(
+        Organization, blank=True,
+        db_column='organization_guid',
+        null=True, on_delete=models.PROTECT,
+        related_name="registrations")
     status = models.ForeignKey(
         RegistriesStatusCode,
         db_column='registries_status_code',
@@ -432,6 +445,34 @@ class RegistriesApplicationStatus(AuditModel):
             self.effective_date,
             self.expired_date)
 
+class Register_Note(AuditModel):
+    register_note_guid = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False,
+        verbose_name="Register Node UUID")
+    registration = models.ForeignKey(
+        Register,
+        db_column='register_guid',
+        on_delete=models.PROTECT,
+        verbose_name="Register Reference",
+        related_name='notes')
+    notes = models.TextField(
+        max_length=2000,
+        blank=True,
+        null=True,
+        verbose_name='Registrar notes, for internal use only.')
+
+    class Meta:
+        db_table = 'registries_register_note'
+        verbose_name_plural = 'Registrar Notes'
+
+    def __str__(self):
+        return '%s' % (
+            self.notes
+        )
+
+
 """
 Tue Apr 10 10:15:34 2018 Expose DB Views to Django
 """
@@ -445,7 +486,8 @@ class vw_well_class(models.Model):
         ActivityCode,
         db_column='registries_activity_code',
         on_delete=models.PROTECT)
-    well_class = models.CharField(max_length=100)
+    class_desc = models.CharField(max_length=100)
+    class_name = models.CharField(max_length=100)
 
     class Meta:
         db_table = 'vw_well_class'
@@ -455,4 +497,3 @@ class vw_well_class(models.Model):
 
     def __str__(self):
         return '%s %s %s' % (self.subactivity, self.activity_code, self.well_class)
-
