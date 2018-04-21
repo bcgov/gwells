@@ -15,7 +15,7 @@
 
 --PROVINCE_STATE
 \echo '... skipping province_state_code code table, to'
-\echo '    impacting dependent Registries app.'
+\echo '    avoid impacting dependent Registries app.'
 -- \copy province_state_code (province_state_code,description,display_order,create_date,update_date,create_user,update_user) from 'province_state_code.csv' with header delimiter ',' CSV ;
 
 --YIELD UNIT
