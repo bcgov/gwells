@@ -19,14 +19,14 @@ IFS=$'\n\t'
 # Parameters
 #
 PROJECT=${1:-}
-SAVE_TO=${2:-./$(date +%Y-%m-%d-%T)}
+SAVE_TO=${2:-./${PROJECT}-$(date +%Y-%m-%d-%T)}
 
 
 # APP and mode variables
 #
-APPLICATION_NAME=${APPLICATION_NAME:-gwells}
-APPLICATION_PORT=${APPLICATION_PORT:-web}
-DATABASE_NAME=${DATABASE_NAME:-gwells}
+APP_NAME=${APP_NAME:-gwells}
+APP_PORT=${APP_PORT:-web}
+DB_NAME=${DB_NAME:-gwells}
 KEEP_APP_ONLINE=${KEEP_APP_ONLINE:-true}
 
 
@@ -74,8 +74,8 @@ REPO_DIR=$( git rev-parse --show-toplevel )
 if [ "${KEEP_APP_ONLINE}" != "true" ]
 then
 	cd ${REPO_DIR}/maintenance/;
-	APPLICATION_NAME=${APPLICATION_NAME} APPLICATION_PORT=${APPLICATION_PORT} ./maintenance.sh ${PROJECT} on;
-	oc scale -n ${PROJECT} --replicas=0 deploymentconfig ${APPLICATION_NAME}
+	APPLICATION_NAME=${APP_NAME} APPLICATION_PORT=${APP_PORT} ./maintenance.sh ${PROJECT} on;
+	oc scale -n ${PROJECT} --replicas=0 deploymentconfig ${APP_NAME}
 fi
 
 
@@ -86,6 +86,5 @@ SAVE_FILE=$( basename ${SAVE_TO} )
 SAVE_PATH=$( dirname ${SAVE_TO} )
 oc exec ${POD_DB} -n ${PROJECT} -- /bin/bash -c 'mkdir -p /tmp/sql-bk/'
 mkdir -p ${SAVE_PATH}
-oc exec ${POD_DB} -n ${PROJECT} -- /bin/bash -c \
-	'pg_dump '${DATABASE_NAME}' | gzip > /tmp/'${PROJECT}-${SAVE_FILE}'.gz'
-oc rsync ${POD_DB}:/tmp/${PROJECT}-${SAVE_FILE}.gz ${SAVE_PATH} -n ${PROJECT}
+oc exec ${POD_DB} -n ${PROJECT} -- /bin/bash -c 'pg_dump '${DB_NAME}' | gzip > /tmp/'${SAVE_FILE}'.gz'
+oc rsync ${POD_DB}:/tmp/${SAVE_FILE}.gz ${SAVE_PATH} -n ${PROJECT}
