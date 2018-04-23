@@ -276,9 +276,7 @@ export default {
       }
     },
     sortTable (sortCode) {
-      if (
-        this.lastSearchedParams.ordering[0] !== '-'
-      ) {
+      if (this.lastSearchedParams.ordering[0] !== '-') {
         this.lastSearchedParams['ordering'] = `-${sortCode}`
       } else {
         this.lastSearchedParams['ordering'] = `${sortCode}`
