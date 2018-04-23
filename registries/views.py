@@ -1,5 +1,5 @@
 from collections import OrderedDict
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse
 from django.utils import timezone
 from django.views.generic import TemplateView
 from django_filters import rest_framework as restfilters
@@ -348,12 +348,11 @@ class PersonDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
         """
         Set expired_date to current date
         """
-        try:
-            instance = self.get_object()
-            instance.expired_date = timezone.now()
-            instance.save()
-        except Http404:
-            pass
+
+        instance = self.get_object()
+        instance.expired_date = timezone.now()
+        instance.save()
+
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
