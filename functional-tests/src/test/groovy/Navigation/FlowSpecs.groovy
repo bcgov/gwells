@@ -19,6 +19,30 @@ import spock.lang.*
 class FlowSpecs extends GebReportingSpec {
 
     @Unroll
+    def "Navigate Page from: #startPage, click footer/header Link: #clickLink, Assert Page: #assertPage"(){
+	    given: "I start on the #startPage"
+			to startPage
+        when: "I click on the link #clickLink"
+			waitFor { $("li", id:"$clickLink").$("a").click() }
+        then:
+			at assertPage
+
+        where:
+        startPage                   | clickLink                | clickCount    | timeoutSeconds    || assertPage
+        SearchPage                  | "ribbon-groundwaterinfo" | 1             | 3                 || AdditionalInformationPage
+        AdditionalInformationPage   | "ribbon-search"          | 1             | 3                 || SearchPage
+        SearchPage    		        | "ribbon-search"          | 1             | 3                 || SearchPage
+        SearchPage                  | "ribbon-registry"        | 1             | 3                 || WellDrillerPage
+        //Test Externally Linked Pages
+		SearchPage           | "footer-disclaimer"     | 1             | 3                 || Disclaimer
+        SearchPage           | "footer-privacy"        | 1             | 3                 || Privacy
+        SearchPage           | "footer-accessibility"  | 1             | 3                 || Accessibility
+        SearchPage           | "footer-copyright"      | 1             | 3                 || Copyright
+        SearchPage           | "footer-home"           | 1             | 3                 || GovHome
+        SearchPage           | "footer-about"          | 1             | 3                 || AboutGov
+    }
+
+    @Unroll
     def "Navigate Page from: #startPage, click Link: #clickLink, Assert Page: #assertPage"(){
 	    given: "I start on the #startPage"
 			to startPage
@@ -28,20 +52,9 @@ class FlowSpecs extends GebReportingSpec {
 			at assertPage
 
         where:
-        startPage                   | clickLink                | clickCount    | timeoutSeconds    || assertPage
-        SearchPage                  | "ribbon-groundwaterinfo" | 1             | 3                 || AdditionalInformationPage
-        AdditionalInformationPage   | "ribbon-search"          | 1             | 3                 || SearchPage
-        SearchPage    		        | "ribbon-search"          | 1             | 3                 || SearchPage
+        startPage                   | clickLink                | clickCount    | timeoutSeconds    || assertPage 
         SearchPage                  | "BCWRAtlas"              | 1             | 3                 || BCWaterResourceAtlas
         SearchPage                  | "iMapBC"                 | 1             | 3                 || iMapBC
-        SearchPage                  | "ribbon-registry-legacy" | 1             | 3                 || WellDrillerPage
-        //Test Externally Linked Pages
-		SearchPage           | "footer-disclaimer"     | 1             | 3                 || Disclaimer
-        SearchPage           | "footer-privacy"        | 1             | 3                 || Privacy
-        SearchPage           | "footer-accessibility"  | 1             | 3                 || Accessibility
-        SearchPage           | "footer-copyright"      | 1             | 3                 || Copyright
-        SearchPage           | "footer-home"           | 1             | 3                 || GovHome
-        SearchPage           | "footer-about"          | 1             | 3                 || AboutGov
     }
 
     def "Check Registries Page"(){
