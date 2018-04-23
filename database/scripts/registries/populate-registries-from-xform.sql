@@ -384,7 +384,6 @@ SELECT
 ,'DRILL'
 ,'ACTIVE'
  from xform_registries_drillers_reg;
- -- TODO we may need a guid on Access side to keep it  straight , on all tables
 
 -- Pump Installer Register (Active)
 \echo 'Inserting Entries into Pump Installer Registry'
@@ -462,12 +461,94 @@ inner join  registries_person per
 on    xform.firstname = per.first_name
 and   xform.lastname = per.surname;
 */
--- Applications from "Water Well" Well Drillers (ultimately successful)
 
--- CANNOT do below as the same person appears on register many times
--- and I cannot link to the same person w/o a key.  But I for now can use
--- xform_registries_drillers_reg.reg_guid being the same as registries_person.person_guid
-/*
+
+-- Applications from pre-2016-FEB-29 2016 Well Drillers, who were
+-- grandfathered in 
+\echo 'Inserting "Fake" Applications for pre-2016-FEB-29 grandfathered Well Drillers (WATER)'
+INSERT INTO registries_application (
+ create_user
+,create_date
+,update_user
+,update_date
+,application_guid
+,file_no
+,over19_ind
+,registrar_notes
+,reason_denied
+,primary_certificate_no
+,acc_cert_guid
+,register_guid
+,registries_subactivity_code
+)
+SELECT
+ 'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'
+,'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'
+,gen_random_uuid()
+,xform.file_number
+,TRUE
+,CONCAT_WS('. ',xform.notes,'Registered prior to 2016-FEB-29, assigned all Driller Classes and qualified to drill ')
+,null
+,COALESCE(xform.certificatenumber, 'N/A')
+, (SELECT acc_cert_guid
+    from registries_accredited_certificate_code
+    where name = 'Grand-parent'
+    and  registries_activity_code = 'DRILL'
+   )
+,reg.register_guid
+,'WATER'
+from registries_register reg,
+     xform_registries_drillers_reg xform,
+     registries_person per
+WHERE per.person_guid = reg.person_guid
+AND reg.registries_status_code = 'ACTIVE'
+and reg.registries_activity_code = 'DRILL'
+and xform.reg_guid = per.person_guid
+and xform.registrationdate <=  '2016-02-29'
+and xform.name = concat(per.surname, ', ', per.first_name);
+
+-- Pseudo-Applications from "Water Well" Well Drillers, who were
+-- grandfathered in 
+\echo '... Approved entries'
+INSERT INTO registries_application_status (
+ create_user
+,create_date
+,update_user
+,update_date
+,application_status_guid
+,notified_date
+,effective_date
+,expired_date
+,application_guid
+,registries_application_status_code
+)
+SELECT
+ 'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'
+,'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'
+,gen_random_uuid()
+,xform.registrationdate -- default in this case
+,xform.registrationdate -- default in this case
+,null -- still Registered 
+,app.application_guid
+,'A'
+from registries_register reg,
+     registries_person per,
+     registries_application app,
+     xform_registries_drillers_reg xform
+WHERE per.person_guid = reg.person_guid
+AND   app.register_guid = reg.register_guid
+AND reg.registries_status_code = 'ACTIVE'
+and reg.registries_activity_code = 'DRILL'
+and app.registries_subactivity_code = 'WATER'
+and xform.registrationdate <=  '2016-02-29'
+and xform.name = concat(per.surname, ', ', per.first_name)
+;
+
+\echo 'Inserting "Fake" Applications for pre-2016-FEB-29 grandfathered Well Drillers (GEOTECH)'
 INSERT INTO registries_application (
  create_user
 ,create_date
@@ -493,32 +574,25 @@ SELECT
 ,TRUE
 ,xform.notes
 ,null
-,xform.certificatenumber
+,COALESCE(xform.certificatenumber, 'N/A')
 , (SELECT acc_cert_guid
     from registries_accredited_certificate_code
-    where name = 'Water Well Driller, Prov. Of BC'
+    where name = 'Grand-parent'
+    and  registries_activity_code = 'DRILL'
    )
 ,reg.register_guid
-,'WATER'
+,'GEOTECH'
 from registries_register reg,
      xform_registries_drillers_reg xform,
-     xform_registries_action_tracking_driller trk,
      registries_person per
 WHERE per.person_guid = reg.person_guid
 AND reg.registries_status_code = 'ACTIVE'
 and reg.registries_activity_code = 'DRILL'
 and xform.reg_guid = per.person_guid
-and xform.classofwelldriller like '%Water Well%'
-and trim(both from trk.name) = concat(per.surname, ', ', per.first_name)
+and xform.registrationdate <=  '2016-02-29'
 and xform.name = concat(per.surname, ', ', per.first_name);
-*/
 
--- Active Statuses for Applications from "Water Well" Well Drillers (ultimately successful)
---
--- CANNOT do below as the same person appears on register many times
--- and I cannot link to the same person w/o a key.  But I for now can use
--- xform_registries_drillers_reg.reg_guid being the same as registries_person.person_guid
-/*
+\echo '... Approved entries'
 INSERT INTO registries_application_status (
  create_user
 ,create_date
@@ -537,25 +611,193 @@ SELECT
 ,'DATALOAD_USER'
 ,'2018-01-01 00:00:00-08'
 ,gen_random_uuid()
-,trk.date_approval_letter_card_sent
-,trk.app_approval_date
+,xform.registrationdate -- default in this case
+,xform.registrationdate -- default in this case
 ,null -- still Registered 
 ,app.application_guid
 ,'A'
 from registries_register reg,
-     xform_registries_action_tracking_driller trk,
      registries_person per,
-     registries_application app
+     registries_application app,
+     xform_registries_drillers_reg xform
 WHERE per.person_guid = reg.person_guid
 AND   app.register_guid = reg.register_guid
 AND reg.registries_status_code = 'ACTIVE'
 and reg.registries_activity_code = 'DRILL'
-and app.registries_subactivity_code = 'WATER'
-and trim(both from trk.name) = concat(per.surname, ', ', per.first_name)
--- until data cleanup
-and trk.app_approval_date is not null;
+and app.registries_subactivity_code = 'GEOTECH'
+and xform.registrationdate <=  '2016-02-29'
+and xform.name = concat(per.surname, ', ', per.first_name)
+;
 
-*/
+\echo 'Inserting "Fake" Applications for pre-2016-FEB-29 grandfathered Well Drillers (GEOXCHG)'
+INSERT INTO registries_application (
+ create_user
+,create_date
+,update_user
+,update_date
+,application_guid
+,file_no
+,over19_ind
+,registrar_notes
+,reason_denied
+,primary_certificate_no
+,acc_cert_guid
+,register_guid
+,registries_subactivity_code
+)
+SELECT
+ 'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'
+,'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'
+,gen_random_uuid()
+,xform.file_number
+,TRUE
+,xform.notes
+,null
+,COALESCE(xform.certificatenumber, 'N/A')
+, (SELECT acc_cert_guid
+    from registries_accredited_certificate_code
+    where name = 'Grand-parent'
+    and  registries_activity_code = 'DRILL'
+   )
+,reg.register_guid
+,'GEOXCHG'
+from registries_register reg,
+     xform_registries_drillers_reg xform,
+     registries_person per
+WHERE per.person_guid = reg.person_guid
+AND reg.registries_status_code = 'ACTIVE'
+and reg.registries_activity_code = 'DRILL'
+and xform.reg_guid = per.person_guid
+and xform.registrationdate <=  '2016-02-29'
+and xform.name = concat(per.surname, ', ', per.first_name);
+
+\echo '... Approved entries'
+INSERT INTO registries_application_status (
+ create_user
+,create_date
+,update_user
+,update_date
+,application_status_guid
+,notified_date
+,effective_date
+,expired_date
+,application_guid
+,registries_application_status_code
+)
+SELECT
+ 'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'
+,'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'
+,gen_random_uuid()
+,xform.registrationdate -- default in this case
+,xform.registrationdate -- default in this case
+,null -- still Registered 
+,app.application_guid
+,'A'
+from registries_register reg,
+     registries_person per,
+     registries_application app,
+     xform_registries_drillers_reg xform
+WHERE per.person_guid = reg.person_guid
+AND   app.register_guid = reg.register_guid
+AND reg.registries_status_code = 'ACTIVE'
+and reg.registries_activity_code = 'DRILL'
+and app.registries_subactivity_code = 'GEOXCHG'
+and xform.registrationdate <=  '2016-02-29'
+and xform.name = concat(per.surname, ', ', per.first_name)
+;
+
+
+\echo 'Inserting "Fake" Applications for Pump Installers (PUMPINST)'
+\echo '.. to be fixed manually post-migration or via a '
+\echo '.. subsequent re-migration after data cleanup in'
+\echo '.. the source MS Access tables.'
+INSERT INTO registries_application (
+ create_user
+,create_date
+,update_user
+,update_date
+,application_guid
+,file_no
+,over19_ind
+,registrar_notes
+,reason_denied
+,primary_certificate_no
+,acc_cert_guid
+,register_guid
+,registries_subactivity_code
+)
+SELECT
+ 'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'
+,'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'
+,gen_random_uuid()
+,xform.file_number
+,TRUE
+,CONCAT_WS('. ',xform.notes,'Pseudo-Applications until ACTION_TRACKING tables are fixed. ')
+,null
+,'N/A' -- why no cert #?
+, (SELECT acc_cert_guid
+    from registries_accredited_certificate_code
+    where name = 'Grand-parent'
+    and  registries_activity_code = 'PUMP'
+   )
+,reg.register_guid
+,'PUMPINST'
+from registries_register reg,
+     xform_registries_pump_installers_reg xform,
+     registries_person per
+WHERE per.person_guid = reg.person_guid
+AND reg.registries_status_code = 'ACTIVE'
+and reg.registries_activity_code = 'PUMP'
+-- and xform.reg_guid = per.person_guid CANNOT use this as the person_guid came
+-- from previous well-driller creation
+and xform.firstname = per.first_name
+and xform.lastname = per.surname;
+
+
+\echo '... Approved entries for Pump Installers '
+INSERT INTO registries_application_status (
+ create_user
+,create_date
+,update_user
+,update_date
+,application_status_guid
+,notified_date
+,effective_date
+,expired_date
+,application_guid
+,registries_application_status_code
+)
+SELECT
+ 'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'
+,'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'
+,gen_random_uuid()
+,xform.registrationdate -- default in this case
+,xform.registrationdate -- default in this case
+,null -- still Registered 
+,app.application_guid
+,'A'
+from registries_register reg,
+     registries_person per,
+     registries_application app,
+     xform_registries_pump_installers_reg xform
+WHERE per.person_guid = reg.person_guid
+AND   app.register_guid = reg.register_guid
+AND reg.registries_status_code = 'ACTIVE'
+and reg.registries_activity_code = 'PUMP'
+and xform.firstname = per.first_name
+and xform.lastname = per.surname;
+;
+
+
+
 
 -- Historical Statuses for Applications from "Water Well" Well Drillers (ultimately successful)
 --

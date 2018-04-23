@@ -164,6 +164,8 @@ describe('SearchHome.vue', () => {
     const table = wrapper.find(SearchTable)
     table.vm.$emit('sort', 'surname')
     expect(wrapper.vm.searchParams.ordering).toEqual('surname')
+    table.vm.$emit('sort', 'surname')
+    expect(wrapper.vm.searchParams.ordering).toEqual('-surname')
   })
   it('has a list of cities for drillers', () => {
     const wrapper = shallow(SearchHome, {
