@@ -4,7 +4,7 @@ const logging = process.env.NODE_ENV !== 'production'
 
 const ApiService = {
   init () {
-    axios.defaults.baseURL = process.env.BASE_URL
+    axios.defaults.baseURL = process.env.AXIOS_BASE_URL
     if (logging) {
       console.log('turning on interceptors')
       axios.interceptors.request.use(function (request) {
