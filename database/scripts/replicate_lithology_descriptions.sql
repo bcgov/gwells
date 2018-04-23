@@ -21,11 +21,8 @@ BEGIN
     well_yield_unit_code                   ,
     lithology_observation                  ,
     lithology_sequence_number              ,
-    create_user                            ,
-    create_date                           ,
-    update_user                            ,
-    update_date
-  )
+    create_user, create_date, update_user, update_date
+    )
   SELECT
     gen_random_uuid()                                       ,
     null                                                    ,
@@ -44,10 +41,7 @@ BEGIN
     END AS well_yield_unit_code                             ,
     wld.lithology_observation                               ,
     wld.lithology_sequence_number                           ,
-    wld.who_created                                         ,
-    wld.when_created                                        ,
-    COALESCE(wld.who_updated, wld.who_created)              ,
-    COALESCE(wld.when_updated, wld.when_created)
+    wld.who_created, wld.when_created, COALESCE(wld.who_updated, wld.who_created), COALESCE(wld.when_updated, wld.when_created)
   FROM wells.wells_lithology_descriptions wld
   INNER JOIN xform_well xform ON xform.well_id=wld.well_id
   INNER JOIN wells.wells_wells wells ON wells.well_id=wld.well_id;

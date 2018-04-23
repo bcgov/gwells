@@ -1,11 +1,4 @@
 import { store } from '@/registry/store'
-import ApiService from '@/common/services/ApiService.js'
-import {
-  LOGIN,
-  LOGOUT,
-  FETCH_CITY_LIST,
-  FETCH_DRILLER,
-  FETCH_DRILLER_LIST } from '@/registry/store/actions.types.js'
 import {
   SET_ERROR,
   SET_LOADING,
@@ -48,9 +41,4 @@ describe('store', () => {
     store.commit(SET_DRILLER, { first_name: 'Bob', surname: 'Driller' })
     expect(store.getters.currentDriller.surname).toBe('Driller')
   })
-  // it('sends request for city list when FETCH_CITY_LIST action called', () => {
-  //   const list = ApiService.query('drillers')
-
-  //   list.then((response) => console.log('apiservice', response))
-  // })
 })
