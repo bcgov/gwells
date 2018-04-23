@@ -84,7 +84,7 @@ fi
 POD_DB=$( oc get pods -n ${PROJECT} -o name | grep -Eo "postgresql-[0-9]+-[[:alnum:]]+" )
 SAVE_FILE=$( basename ${SAVE_TO} )
 SAVE_PATH=$( dirname ${SAVE_TO} )
-oc exec ${POD_DB} -n ${PROJECT} -- /bin/bash -c 'mkdir -p /tmp/sql-bk/'
 mkdir -p ${SAVE_PATH}
 oc exec ${POD_DB} -n ${PROJECT} -- /bin/bash -c 'pg_dump '${DB_NAME}' | gzip > /tmp/'${SAVE_FILE}'.gz'
 oc rsync ${POD_DB}:/tmp/${SAVE_FILE}.gz ${SAVE_PATH} -n ${PROJECT}
+oc exec ${POD_DB} -n ${PROJECT} -- /bin/bash -c 'rm /tmp/'${SAVE_FILE}'.gz'
