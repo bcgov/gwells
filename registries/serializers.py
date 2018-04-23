@@ -406,7 +406,7 @@ class PersonAdminSerializer(AuditModelSerializer):
 
     registrations = RegistrationAdminSerializer(many=True)
     organization = OrganizationListSerializer()
-    contact_info = ContactInfoSerializer(many=True)
+    contact_info = ContactInfoSerializer(many=True, required=False)
 
     def to_internal_value(self, data):
         """
@@ -414,7 +414,7 @@ class PersonAdminSerializer(AuditModelSerializer):
         This method is called on POST/PUT/PATCH requests
         """
         self.fields['registrations'] = RegistrationAutoCreateSerializer(
-            many=True)
+            many=True, required=False)
         self.fields['organization'] = serializers.PrimaryKeyRelatedField(
             queryset=Organization.objects.all(), required=False)
         return super(PersonAdminSerializer, self).to_internal_value(data)
@@ -423,9 +423,14 @@ class PersonAdminSerializer(AuditModelSerializer):
         """
         Create Register and ContactInfo records to go along with a new person record
         """
-        registrations = validated_data.pop('registrations')
-        contacts = validated_data.pop('contact_info')
+
+        registrations = validated_data.pop(
+            'registrations') if 'registrations' in validated_data else list()
+        contacts = validated_data.pop(
+            'contact_info') if 'contact_info' in validated_data else list()
+
         person = Person.objects.create(**validated_data)
+
         for reg_data in registrations:
             Register.objects.create(person=person, **reg_data)
         for contact_data in contacts:
@@ -436,8 +441,10 @@ class PersonAdminSerializer(AuditModelSerializer):
         """
         Remove nested serializers before updating Person instance
         """
-        validated_data.pop('registrations')
-        validated_data.pop('contact_info')
+        if 'registrations' in validated_data:
+            validated_data.pop('registrations')
+        if 'contact_info' in validated_data:
+            validated_data.pop('contact_info')
         return super(PersonAdminSerializer, self).update(instance, validated_data)
 
     class Meta:
