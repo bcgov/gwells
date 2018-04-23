@@ -139,6 +139,7 @@ WSGI_APPLICATION = 'wsgi.application'
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
+
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 

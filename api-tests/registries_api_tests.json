@@ -84,22 +84,9 @@
 									]
 								},
 								"url": {
-									"raw": "https://dev-sso.pathfinder.gov.bc.ca/auth/realms/gwells/protocol/openid-connect/token",
-									"protocol": "https",
+									"raw": "{{auth_server}}",
 									"host": [
-										"dev-sso",
-										"pathfinder",
-										"gov",
-										"bc",
-										"ca"
-									],
-									"path": [
-										"auth",
-										"realms",
-										"gwells",
-										"protocol",
-										"openid-connect",
-										"token"
+										"{{auth_server}}"
 									]
 								},
 								"description": "Get token (log in)"
@@ -248,17 +235,13 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "d54a135c-aef2-4eab-9041-88acd003e1db",
+										"id": "d882b27b-2b02-436f-ac11-d26f1f7bb4b7",
 										"type": "text/javascript",
 										"exec": [
 											"( function() {",
 											"    pm.test(\"Status code is 200\", function () {",
 											"        pm.response.to.have.status(200);",
 											"    });",
-											"    ",
-											"    pm.test(\"Response time is less than 200ms\", function () {",
-											"        pm.expect(pm.response.responseTime).to.be.below(200);",
-											"    });    ",
 											"    ",
 											"    var created_guid = pm.environment.get(\"created_guid\");",
 											"    var jsonData = pm.response.json();",

@@ -14,11 +14,9 @@ BEGIN
     liner_to                           ,
     liner_perforation_from             ,
     liner_perforation_to               ,
-    create_user                        ,
-    create_date                       ,
-    update_user                        ,
-    update_date
-  ) SELECT
+    create_user, create_date, update_user, update_date
+    )
+  SELECT
     gen_random_uuid()                  ,
     xform.well_tag_number              ,
     perforations.liner_thickness       ,
@@ -27,10 +25,7 @@ BEGIN
     perforations.liner_to              ,
     perforations.liner_perforation_from,
     perforations.liner_perforation_to  ,
-    perforations.who_created           ,
-    perforations.when_created          ,
-    perforations.who_updated           ,
-    perforations.when_updated
+    perforations.who_created, perforations.when_created, perforations.who_updated, perforations.when_updated
   FROM wells.wells_perforations perforations
   INNER JOIN xform_well xform ON perforations.well_id=xform.well_id
   WHERE NOT (liner_from is  null
