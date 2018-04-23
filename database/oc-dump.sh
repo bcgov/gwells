@@ -30,6 +30,11 @@ DB_NAME=${DB_NAME:-gwells}
 KEEP_APP_ONLINE=${KEEP_APP_ONLINE:-true}
 
 
+# Repo directory
+#
+REPO_DIR=$( git rev-parse --show-toplevel )
+
+
 # Show message if passed any params
 #
 if [ "${#}" -eq 0 ]||[ "${#}" -gt 2 ]
@@ -70,11 +75,10 @@ fi
 
 # Put GWells into maintenance mode and scale down (deployment config)
 #
-REPO_DIR=$( git rev-parse --show-toplevel )
 if [ "${KEEP_APP_ONLINE}" != "true" ]
 then
-	cd ${REPO_DIR}/maintenance/;
-	APPLICATION_NAME=${APP_NAME} APPLICATION_PORT=${APP_PORT} ./maintenance.sh ${PROJECT} on;
+	cd ${REPO_DIR}/maintenance/
+	APPLICATION_NAME=${APP_NAME} APPLICATION_PORT=${APP_PORT} ./maintenance.sh ${PROJECT} on
 	oc scale -n ${PROJECT} --replicas=0 deploymentconfig ${APP_NAME}
 fi
 
@@ -88,3 +92,13 @@ mkdir -p ${SAVE_PATH}
 oc exec ${POD_DB} -n ${PROJECT} -- /bin/bash -c 'pg_dump '${DB_NAME}' | gzip > /tmp/'${SAVE_FILE}'.gz'
 oc rsync ${POD_DB}:/tmp/${SAVE_FILE}.gz ${SAVE_PATH} -n ${PROJECT}
 oc exec ${POD_DB} -n ${PROJECT} -- /bin/bash -c 'rm /tmp/'${SAVE_FILE}'.gz'
+
+
+# Take GWells out of maintenance mode and scale back up (deployment config)
+#
+if [ "${KEEP_APP_ONLINE}" != "true" ]
+then
+	cd ${REPO_DIR}/maintenance/
+	APPLICATION_NAME=${APP_NAME} APPLICATION_PORT=${APP_PORT} ./maintenance.sh ${PROJECT} off
+	oc scale -n ${PROJECT} --replicas=1 deploymentconfig ${APP_NAME}
+fi
