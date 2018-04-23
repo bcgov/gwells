@@ -19,7 +19,7 @@ IFS=$'\n\t'
 # Parameters
 #
 PROJECT=${1:-}
-SAVE_TO=${2:-./$(date +%Y-%m-%d-%T)}
+SAVE_TO=${2:-./sql-bk/$(date +%Y-%m-%d-%T)}
 
 
 # APP and mode variables
@@ -82,3 +82,8 @@ fi
 # Identify database and take a backup
 #
 POD_DB=$( oc get pods -n ${PROJECT} -o name | grep -Eo "postgresql-[0-9]+-[[:alnum:]]+" )
+SAVE_FILE=$( basename ${SAVE_TO} )
+oc exec ${POD_DB} -n ${PROJECT} -- /bin/bash -c 'mkdir -p /tmp/sql-bk/'
+mkdir -p ./sql-bk/
+oc exec ${POD_DB} -n ${PROJECT} -- /bin/bash -c \
+	'pg_dump '${DB_NAME}' | gzip > /tmp/sql-bk/'${PROJECT}-${SAVE_FILE}'.gz'
