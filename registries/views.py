@@ -202,12 +202,11 @@ class OrganizationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
         """
         Set expired_date to current date
         """
-        try:
-            instance = self.get_object()
-            instance.expired_date = timezone.now()
-            instance.save()
-        except Http404:
-            pass
+
+        instance = self.get_object()
+        instance.expired_date = timezone.now()
+        instance.save()
+
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
