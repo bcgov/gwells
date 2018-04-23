@@ -1,12 +1,10 @@
 import axios from 'axios'
-const BASE_URL = process.env.NODE_ENV === 'production'
-  ? '/gwells/api/v1/' : 'http://localhost:8000/gwells/api/v1/'
 
 const logging = process.env.NODE_ENV !== 'production'
 
 const ApiService = {
   init () {
-    axios.defaults.baseURL = BASE_URL
+    axios.defaults.baseURL = process.env.AXIOS_BASE_URL
     if (logging) {
       console.log('turning on interceptors')
       axios.interceptors.request.use(function (request) {
