@@ -83,15 +83,21 @@ then
 fi
 
 
+# Make sure $SAVE_TO ends in .gz
+#
+[ "$( echo ${SAVE_TO} | tail -c4 )" == ".gz" ]|| SAVE_TO="${SAVE_TO}.gz"
+echo "${SAVE_TO}"
+
+
 # Identify database and take a backup
 #
 POD_DB=$( oc get pods -n ${PROJECT} -o name | grep -Eo "postgresql-[0-9]+-[[:alnum:]]+" )
 SAVE_FILE=$( basename ${SAVE_TO} )
 SAVE_PATH=$( dirname ${SAVE_TO} )
 mkdir -p ${SAVE_PATH}
-oc exec ${POD_DB} -n ${PROJECT} -- /bin/bash -c 'pg_dump '${DB_NAME}' | gzip > /tmp/'${SAVE_FILE}'.gz'
-oc rsync ${POD_DB}:/tmp/${SAVE_FILE}.gz ${SAVE_PATH} -n ${PROJECT}
-oc exec ${POD_DB} -n ${PROJECT} -- /bin/bash -c 'rm /tmp/'${SAVE_FILE}'.gz'
+oc exec ${POD_DB} -n ${PROJECT} -- /bin/bash -c 'pg_dump '${DB_NAME}' | gzip > /tmp/'${SAVE_FILE}
+oc rsync ${POD_DB}:/tmp/${SAVE_FILE} ${SAVE_PATH} -n ${PROJECT}
+oc exec ${POD_DB} -n ${PROJECT} -- /bin/bash -c 'rm /tmp/'${SAVE_FILE}
 
 
 # Take GWells out of maintenance mode and scale back up (deployment config)
