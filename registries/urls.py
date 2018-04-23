@@ -27,23 +27,27 @@ schema_view = get_schema_view(
         description="The Well Driller and Pump Installer Registry is a database of qualified well drillers and pump installers registered to operate in British Columbia.",
         terms_of_service="http://www2.gov.bc.ca/gov/content?id=D1EE0A405E584363B205CD4353E02C88",
         contact=openapi.Contact(email="groundwater@gov.bc.ca"),
-        license=openapi.License(name="Open Government License - British Columbia", url="https://www2.gov.bc.ca/gov/content?id=A519A56BC2BF44E4A008B33FCF527F61"),
+        license=openapi.License(name="Open Government License - British Columbia",
+                                url="https://www2.gov.bc.ca/gov/content?id=A519A56BC2BF44E4A008B33FCF527F61"),
     ),
     public=False,
     permission_classes=(permissions.IsAdminOrReadOnly,),
 )
 
 # wrap obtain_jwt_token view in a function that excludes it from swagger documentation.
-obtain_jwt_token_noswagger = swagger_auto_schema(method='post', auto_schema=None)(obtain_jwt_token)
+obtain_jwt_token_noswagger = swagger_auto_schema(
+    method='post', auto_schema=None)(obtain_jwt_token)
 
 urlpatterns = [
-    # Fri 20 Apr 15:07:09 2018 GW @@SH-to-fix
-    #url(r'^api/v1/organizations/(?P<org_guid>[-\w]+)/$',
-    #    views.OrganizationDetailView.as_view(),
-    #    name='organization-detail'),
-    #url(r'^api/v1/organizations/$',
-    #    views.OrganizationListView.as_view(),
-    #    name='organization-list'),
+    url(r'^api/v1/organizations/names/$',
+        views.OrganizationNameListView.as_view(),
+        name='organization-names'),
+    url(r'^api/v1/organizations/(?P<org_guid>[-\w]+)/$',
+        views.OrganizationDetailView.as_view(),
+        name='organization-detail'),
+    url(r'^api/v1/organizations/$',
+        views.OrganizationListView.as_view(),
+        name='organization-list'),
 
     # Person resource endpoints (drillers, well installers, and other instances of Person model)
     # Fri 20 Apr 15:07:09 2018 GW @@SH-to-fix
@@ -56,18 +60,21 @@ urlpatterns = [
     url(r'api/v1/registrations/(?P<register_guid>[-\w]+)/$',
         views.RegistrationDetailView.as_view(),
         name='register-detail'),
-    url(r'api/v1/registrations/', views.RegistrationListView.as_view(), name='register-list'),
+    url(r'api/v1/registrations/',
+        views.RegistrationListView.as_view(), name='register-list'),
 
     # Applications (applications to be qualified for a drilling activity)
     url(r'api/v1/applications/(?P<application_guid>[-\w]+)/$',
         views.ApplicationDetailView.as_view(),
         name='application-detail'),
-    url(r'api/v1/applications/', views.ApplicationListView.as_view(), name='application-list'),
+    url(r'api/v1/applications/', views.ApplicationListView.as_view(),
+        name='application-list'),
+
 
     # List of cities that currently have registered drillers, pump installers etc.
     url(r'^api/v1/cities/drillers/$',
         views.CitiesListView.as_view(),
-        {'activity':'drill'},
+        {'activity': 'drill'},
         name='city-list-drillers'),
     url(r'^api/v1/cities/installers/$',
         views.CitiesListView.as_view(),
@@ -78,9 +85,10 @@ urlpatterns = [
     url(r'^api/v1/api-token-auth/', obtain_jwt_token_noswagger, name='get-token'),
 
     # Swagger documentation endpoint
-    url(r'^api/', schema_view.with_ui('swagger', cache_timeout=None), name='api-docs'),
+    url(r'^api/', schema_view.with_ui('swagger',
+                                      cache_timeout=None), name='api-docs'),
 
-    # Deprecated old URL endpoints
+    # Deprecated old URL endpoints. NOTE: These may be linked from API catalogue
 
     # Organization resource endpoints
     # Fri 20 Apr 15:07:09 2018 GW @@SH-to-fix
@@ -102,7 +110,7 @@ urlpatterns = [
     # List of cities that currently have registered drillers, pump installers etc.
     url(r'^registries/api/v1/cities/drillers/$',
         views.CitiesListView.as_view(),
-        {'activity':'drill'},
+        {'activity': 'drill'},
         name='city-list-drillers'),
     url(r'^registries/api/v1/cities/installers/$',
         views.CitiesListView.as_view(),
@@ -110,13 +118,16 @@ urlpatterns = [
         name='city-list-installers'),
 
     # Temporary development login endpoint
-    url(r'^registries/api/v1/api-token-auth/', obtain_jwt_token_noswagger, name='get-token'),
+    url(r'^registries/api/v1/api-token-auth/',
+        obtain_jwt_token_noswagger, name='get-token'),
 
     # Swagger documentation endpoint
-    url(r'^registries/api/', schema_view.with_ui('swagger', cache_timeout=None), name='api-docs'),
+    url(r'^registries/api/', schema_view.with_ui('swagger',
+                                                 cache_timeout=None), name='api-docs'),
 
     # Deprecated API docs link
-    url(r'^registries/docs/$', schema_view.with_ui('swagger', cache_timeout=None), name='api-docs-old'),
+    url(r'^registries/docs/$', schema_view.with_ui('swagger',
+                                                   cache_timeout=None), name='api-docs-old'),
 
     # Registries frontend webapp loader (html page that contains header, footer, and a SPA in between)
     url(r'^registries/', views.RegistriesIndexView.as_view(), name='registries-home'),

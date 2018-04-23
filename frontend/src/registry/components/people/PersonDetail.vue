@@ -84,6 +84,16 @@
                 JOB020180608
               </div>
             </div>
+            <div class="row mb-2">
+              <div class="col-5 col-md-2">
+                Email address:
+              </div>
+              <div class="col-7 col-md-4">
+                <div v-for="(email, index) in personEmail" :key="`person email ${index}`">
+                  {{ email }}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
         <div class="card">
@@ -151,9 +161,7 @@
                   Email address:
                 </div>
                 <div class="col-7 col-md-4">
-                  <div v-for="(email, index) in personEmail" :key="`person email ${index}`">
-                    {{ email }}
-                  </div>
+                  {{ currentDriller.organization.contact_email }}
                 </div>
                 <div class="col-5 col-md-2">
                   Website:
@@ -208,6 +216,15 @@ export default {
       })
       return email
     },
+    personTel () {
+      const tel = []
+      this.currentDriller.contact_info.forEach((item) => {
+        if (item.contact_tel) {
+          tel.push(item.contact_tel)
+        }
+      })
+      return tel
+    },
     company () {
       if (this.currentDriller && this.currentDriller.companies && this.currentDriller.companies.length) {
         return this.currentDriller.companies[0]
@@ -245,7 +262,6 @@ export default {
 
             if (app.status_set && app.status_set.length) {
               statusPriority.forEach((code) => {
-                console.log('checking status', code)
                 const statusLevel = app.status_set.findIndex((item) => {
                   return item.status === code
                 })
@@ -253,7 +269,6 @@ export default {
                 if (~statusLevel) {
                   status = app.status_set[statusLevel].description
                   date = app.status_set[statusLevel].effective_date
-                  console.log('found status ', code, status, date)
                 }
               })
             }

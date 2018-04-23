@@ -63,4 +63,29 @@ footer {
 .col-form-label {
   font-weight: 600;
 }
+.registry-section {
+  margin-top: 25px;
+  margin-bottom: 20px;
+}
+.registry-item {
+  margin-bottom: 20px;
+}
+.registry-label {
+  font-weight: bold;
+}
+.registry-disabled-item {
+  color: #808080;
+  cursor: auto!important;
+}
+.qualification-item {
+  margin-bottom: 5px;
+}
+.attachment-icon {
+  font-size: 2rem;
+  margin-left: 10px;
+  margin-top: 5px;
+}
+.registry-form-label {
+  padding-top: 5px;
+}
 </style>

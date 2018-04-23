@@ -30,23 +30,30 @@ class JwtOidcAuthentication(JSONWebTokenAuthentication):
         username = payload.get('sub')
 
         if username is None:
-            raise exceptions.AuthenticationFailed('JWT did not contain a "sub" attribute')
+            raise exceptions.AuthenticationFailed(
+                'JWT did not contain a "sub" attribute')
 
         # get or create a user with the keycloak ID
         try:
             user, user_created = User.objects.get_or_create(username=username)
         except:
-            raise exceptions.AuthenticationFailed('Failed to retrieve or create user')
+            raise exceptions.AuthenticationFailed(
+                'Failed to retrieve or create user')
 
         if user_created:
             user.set_password(User.objects.make_random_password(length=36))
+            user.email = payload.get('email')
             user.save()
+
+        user.email = payload.get('email')
+        user.save()
 
         # load the user's GWELLS profile
         try:
             profile, __ = Profile.objects.get_or_create(user=user.id)
         except:
-            raise exceptions.AuthenticationFailed('Failed to create user profile')
+            raise exceptions.AuthenticationFailed(
+                'Failed to create user profile')
 
         # get the roles supplied by Keycloak for this user
         try:
