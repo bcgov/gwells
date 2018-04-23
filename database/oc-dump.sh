@@ -19,14 +19,14 @@ IFS=$'\n\t'
 # Parameters
 #
 PROJECT=${1:-}
-SAVE_TO=${2:-./sql-bk/$(date +%Y-%m-%d-%T)}
+SAVE_TO=${2:-./$(date +%Y-%m-%d-%T)}
 
 
 # APP and mode variables
 #
 APPLICATION_NAME=${APPLICATION_NAME:-gwells}
 APPLICATION_PORT=${APPLICATION_PORT:-web}
-DB_NAME=${DB_NAME:-gwells}
+DATABASE_NAME=${DATABASE_NAME:-gwells}
 KEEP_APP_ONLINE=${KEEP_APP_ONLINE:-true}
 
 
@@ -83,7 +83,9 @@ fi
 #
 POD_DB=$( oc get pods -n ${PROJECT} -o name | grep -Eo "postgresql-[0-9]+-[[:alnum:]]+" )
 SAVE_FILE=$( basename ${SAVE_TO} )
+SAVE_PATH=$( dirname ${SAVE_TO} )
 oc exec ${POD_DB} -n ${PROJECT} -- /bin/bash -c 'mkdir -p /tmp/sql-bk/'
-mkdir -p ./sql-bk/
+mkdir -p ${SAVE_PATH}
 oc exec ${POD_DB} -n ${PROJECT} -- /bin/bash -c \
-	'pg_dump '${DB_NAME}' | gzip > /tmp/sql-bk/'${PROJECT}-${SAVE_FILE}'.gz'
+	'pg_dump '${DATABASE_NAME}' | gzip > /tmp/'${PROJECT}-${SAVE_FILE}'.gz'
+oc rsync ${POD_DB}:/tmp/${PROJECT}-${SAVE_FILE}.gz ${SAVE_PATH} -n ${PROJECT}
