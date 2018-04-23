@@ -16,11 +16,10 @@ BEGIN
     static_level                   ,
     drawdown                       ,
     hydro_fracturing_performed     ,
-    create_user                    ,
-    create_date                   ,
-    update_user                    ,
+    create_user, create_date,
+    update_user,
     update_date
-  )
+    )
   SELECT
     gen_random_uuid()                                                      ,
     null                                                                   ,
@@ -38,13 +37,11 @@ BEGIN
     production_data.static_level                                           ,
     production_data.net_drawdown                                           ,
     false                                                                  ,
-    production_data.who_created                                            ,
-    production_data.when_created                                           ,
+    production_data.who_created, production_data.when_created,
     COALESCE(production_data.who_updated,production_data.who_created)      ,
     COALESCE(production_data.when_updated,production_data.when_created)
   FROM wells.wells_production_data production_data
   INNER JOIN xform_well xform ON production_data.well_id=xform.well_id;
-
 
   raise notice '...wells_production_data data imported';
   SELECT count(*) from production_data into row_count;

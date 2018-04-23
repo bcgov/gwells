@@ -1,8 +1,15 @@
-import { shallow, createLocalVue } from '@vue/test-utils'
+import {
+  shallow,
+  mount,
+  createLocalVue
+} from '@vue/test-utils'
 import Vuex from 'vuex'
 import VueRouter from 'vue-router'
 import SearchTable from '@/registry/components/search/SearchTable'
-import { FETCH_DRILLER_LIST } from '@/registry/store/actions.types'
+import {
+  FETCH_DRILLER_LIST
+} from '@/registry/store/actions.types'
+import fakePersonList from '../fakePersonList.js'
 
 const localVue = createLocalVue()
 localVue.use(Vuex)
@@ -18,47 +25,15 @@ describe('SearchTable.vue', () => {
       userIsAdmin: () => false,
       loading: () => false,
       listError: () => null,
-      drillers: () => {
-        return {
-          next: 'http://www.example.com/api/?limit=30&offset=60',
-          previous: 'http://www.example.com/api/?limit=30&offset=0',
-          results: [
-            {
-              person_guid: '1e252dca-ccb9-439a-a6ec-aeec0f7e4a03',
-              first_name: 'Bob',
-              surname: 'Driller',
-              organization_name: null,
-              street_address: null,
-              city: null,
-              province_state: null,
-              contact_tel: null,
-              contact_email: null,
-              activity: 'Well Driller',
-              status: 'Active',
-              registration_no: 'WD 08315530'
-            },
-            {
-              person_guid: '1e252dca-ccb9-439a-a6ec-aeec0f7e4a02',
-              first_name: 'Rob',
-              surname: 'Well',
-              organization_name: null,
-              street_address: null,
-              city: null,
-              province_state: null,
-              contact_tel: null,
-              contact_email: null,
-              activity: 'Well Driller',
-              status: 'Active',
-              registration_no: 'WD 08315531'
-            }
-          ]
-        }
-      }
+      drillers: jest.fn().mockReturnValue(fakePersonList)
     }
     actions = {
       [FETCH_DRILLER_LIST]: jest.fn()
     }
-    store = new Vuex.Store({ getters, actions })
+    store = new Vuex.Store({
+      getters,
+      actions
+    })
   })
 
   it('has a row for every person', () => {
@@ -77,16 +52,18 @@ describe('SearchTable.vue', () => {
       localVue,
       stubs: ['router-link', 'router-view']
     })
-    wrapper.setData({activity: 'Well Driller'})
+    wrapper.setData({
+      activity: 'Well Driller'
+    })
     // first row
-    expect(wrapper.findAll('#registry-table tr').at(0).text())
-      .toContain('Driller')
-    expect(wrapper.findAll('#registry-table tr').at(0).text())
-      .not.toContain('Well')
-    expect(wrapper.findAll('#registry-table tr').at(1).text())
-      .toContain('Well')
-    expect(wrapper.findAll('#registry-table tr').at(1).text())
-      .not.toContain('Driller')
+    expect(wrapper.find('#registry-table #drillerName0').text())
+      .toContain('Bob')
+    expect(wrapper.find('#registry-table #drillerName0').text())
+      .not.toContain('Don')
+    expect(wrapper.find('#registry-table #drillerName1').text())
+      .toContain('Don')
+    expect(wrapper.find('#registry-table #drillerName1').text())
+      .not.toContain('Bob')
   })
   it('shows the pagination button for next page when a link is returned by API', () => {
     const wrapper = shallow(SearchTable, {
@@ -111,7 +88,10 @@ describe('SearchTable.vue', () => {
       stubs: ['router-link', 'router-view']
     })
     wrapper.find('#table-pagination-next').trigger('click')
-    expect(actions.FETCH_DRILLER_LIST.mock.calls[0][1]).toEqual({limit: '30', offset: '60'})
+    expect(actions.FETCH_DRILLER_LIST.mock.calls[0][1]).toEqual({
+      limit: '30',
+      offset: '60'
+    })
   })
   it('dispatches fetch driller list with correct querystring when pagination prev clicked', () => {
     const wrapper = shallow(SearchTable, {
@@ -120,7 +100,10 @@ describe('SearchTable.vue', () => {
       stubs: ['router-link', 'router-view']
     })
     wrapper.find('#table-pagination-prev').trigger('click')
-    expect(actions.FETCH_DRILLER_LIST.mock.calls[0][1]).toEqual({limit: '30', offset: '0'})
+    expect(actions.FETCH_DRILLER_LIST.mock.calls[0][1]).toEqual({
+      limit: '30',
+      offset: '0'
+    })
   })
   it('emits the column code (e.g. surname) to be sorted when column sort button clicked', () => {
     const wrapper = shallow(SearchTable, {
@@ -129,7 +112,9 @@ describe('SearchTable.vue', () => {
       stubs: ['router-link', 'router-view']
     })
     wrapper.find('th i').trigger('click')
-    expect(wrapper.emitted('sort')).toEqual([['surname']])
+    expect(wrapper.emitted('sort')).toEqual([
+      ['surname']
+    ])
   })
   it('has the right columns when searching for drillers', () => {
     const wrapper = shallow(SearchTable, {
@@ -137,7 +122,9 @@ describe('SearchTable.vue', () => {
       localVue,
       stubs: ['router-link', 'router-view']
     })
-    wrapper.setProps({ activity: 'DRILL' })
+    wrapper.setProps({
+      activity: 'DRILL'
+    })
     const tableHeaders = wrapper.findAll('th')
     const expectedHeaders = [
       'Name',
@@ -159,7 +146,9 @@ describe('SearchTable.vue', () => {
       localVue,
       stubs: ['router-link', 'router-view']
     })
-    wrapper.setProps({ activity: 'PUMP' })
+    wrapper.setProps({
+      activity: 'PUMP'
+    })
     const tableHeaders = wrapper.findAll('th')
     const expectedHeaders = [
       'Name',
@@ -173,5 +162,91 @@ describe('SearchTable.vue', () => {
     for (let i = 0; i < tableHeaders.length; i++) {
       expect(tableHeaders.wrappers[i].text()).toEqual(expectedHeaders[i])
     }
+  })
+  it('shows the organization name for each driller', () => {
+    const wrapper = shallow(SearchTable, {
+      store,
+      localVue,
+      stubs: ['router-link', 'router-view']
+    })
+    wrapper.setData({
+      activity: 'DRILL'
+    })
+    const personOrg = wrapper.find('#personOrg0').text()
+    expect(personOrg).toEqual('Drillerson Drilling Ltd.')
+  })
+  it('shows the driller\'s organization address', () => {
+    const wrapper = shallow(SearchTable, {
+      store,
+      localVue,
+      stubs: ['router-link', 'router-view']
+    })
+    wrapper.setData({
+      activity: 'DRILL'
+    })
+    const personAddress = wrapper.find('#personAddress0').text()
+    expect(personAddress).toContain('1111 Industrial St')
+    expect(personAddress).toContain('Victoria, BC')
+  })
+  it('shows the driller\'s contact info', () => {
+    const wrapper = mount(SearchTable, {
+      store,
+      localVue,
+      stubs: ['router-link', 'router-view']
+    })
+    wrapper.setData({
+      activity: 'DRILL'
+    })
+    const personContact = wrapper.find('#personContact0').text()
+    expect(personContact).toContain('driller1@example.com')
+  })
+  it('shows the driller\'s subactivities', () => {
+    const wrapper = mount(SearchTable, {
+      store,
+      localVue,
+      stubs: ['router-link', 'router-view']
+    })
+    wrapper.setData({
+      activity: 'DRILL'
+    })
+    const personSubActivity = wrapper.find('#personSubActivity0').text()
+    expect(personSubActivity).toContain('Water Well Driller')
+    expect(personSubActivity).toContain('Geoexchange Driller')
+    expect(personSubActivity).not.toContain('Environmental')
+  })
+  it('shows the driller\'s certificate authority', () => {
+    const wrapper = mount(SearchTable, {
+      store,
+      localVue,
+      stubs: ['router-link', 'router-view']
+    })
+    wrapper.setData({
+      activity: 'DRILL'
+    })
+    const personCertAuth = wrapper.find('#certAuth0').text()
+    expect(personCertAuth).toContain('BC')
+  })
+  it('shows the driller\'s registration status', () => {
+    getters = {
+      userIsAdmin: () => true,
+      user: () => 'user',
+      loading: () => false,
+      listError: () => null,
+      drillers: jest.fn().mockReturnValue(fakePersonList)
+    }
+    store = new Vuex.Store({
+      getters,
+      actions
+    })
+    const wrapper = mount(SearchTable, {
+      store,
+      localVue,
+      stubs: ['router-link', 'router-view']
+    })
+    wrapper.setData({
+      activity: 'DRILL'
+    })
+    const personRegStatus = wrapper.find('#personRegStatus0').text()
+    expect(personRegStatus).toContain('Active')
   })
 })
