@@ -77,3 +77,8 @@ then
 	APPLICATION_NAME=${APPLICATION_NAME} APPLICATION_PORT=${APPLICATION_PORT} ./maintenance.sh ${PROJECT} on;
 	oc scale -n ${PROJECT} --replicas=0 deploymentconfig ${APPLICATION_NAME}
 fi
+
+
+# Identify database and take a backup
+#
+POD_DB=$( oc get pods -n ${PROJECT} -o name | grep -Eo "postgresql-[0-9]+-[[:alnum:]]+" )
