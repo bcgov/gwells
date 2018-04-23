@@ -262,7 +262,6 @@ export default {
 
             if (app.status_set && app.status_set.length) {
               statusPriority.forEach((code) => {
-                console.log('checking status', code)
                 const statusLevel = app.status_set.findIndex((item) => {
                   return item.status === code
                 })
@@ -270,7 +269,6 @@ export default {
                 if (~statusLevel) {
                   status = app.status_set[statusLevel].description
                   date = app.status_set[statusLevel].effective_date
-                  console.log('found status ', code, status, date)
                 }
               })
             }
