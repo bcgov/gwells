@@ -4,5 +4,5 @@ module.exports = {
   NODE_ENV: JSON.stringify('production'),
   ENABLE_DATA_ENTRY: JSON.stringify(false),
   APPLICATION_ROOT: JSON.stringify('/gwells/registries'),
-  BASE_URL: JSON.stringify('/gwells/api/v1/')
+  AXIOS_BASE_URL: JSON.stringify('/gwells/api/v1/')
 }
