@@ -108,3 +108,12 @@ then
 	APPLICATION_NAME=${APP_NAME} APPLICATION_PORT=${APP_PORT} ./maintenance.sh ${PROJECT} off
 	oc scale -n ${PROJECT} --replicas=1 deploymentconfig ${APP_NAME}
 fi
+
+
+# Summarize
+#
+echo
+echo "DB:   ${DB_NAME}"
+echo "Size: $( du -h ${SAVE_TO} | awk '{ print $1 }' )"
+echo "Name: ${SAVE_TO}"
+echo
