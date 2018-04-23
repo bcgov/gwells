@@ -37,7 +37,7 @@
               <b-nav-text class="d-sm-none text-light">Groundwater Wells and Aquifers</b-nav-text>
               <b-nav-item id="ribbon-search" class="navbar-link lvl2-link" href="/gwells">Well Search</b-nav-item>
               <b-nav-item id="ribbon-groundwaterinfo" class="navbar-link lvl2-link" href="/gwells/groundwater-information">Groundwater Information</b-nav-item>
-              <b-nav-item class="navbar-link lvl2-link" href="/gwells/registries">Registry</b-nav-item>
+              <b-nav-item id="ribbon-registry" class="navbar-link lvl2-link" href="/gwells/registries">Registry</b-nav-item>
               <b-nav-item class="navbar-link lvl2-link" v-if="show.dataEntry" href="/gwells/submission/create">Submit Report</b-nav-item>
               <b-nav-item id="ribbon-admin" class="navbar-link lvl2-link" v-if="show.admin" href="/gwells/admin">Admin</b-nav-item>
             </b-navbar-nav>
