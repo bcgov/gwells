@@ -4,7 +4,7 @@
 --
 -- psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER -f populate-registries-from-xform.sql
 
--- Companies from Driller Registry
+-- Companies from Driller Registry (140)
 \echo 'Inserting Companies from Driller Registry'
 INSERT INTO registries_organization (
  name
@@ -45,7 +45,7 @@ INSERT INTO registries_organization (
 from xform_registries_drillers_reg xform
 where companyname is not null;
 
--- Companies from Pump Installer Registry
+-- Companies from Pump Installer Registry 177
 \echo 'Inserting Companies from Pump Installer Registry'
 INSERT INTO registries_organization (
  name
@@ -132,9 +132,8 @@ and companyname not in (
 SELECT name from registries_organization);
 */
 
--- Drillers
+-- Drillers 285
 \echo 'Inserting People from Driller Registry'
-
 INSERT INTO registries_person (
  first_name
 ,surname
@@ -158,18 +157,7 @@ SELECT
 ,'2018-01-01 00:00:00-08' 
 from xform_registries_drillers_reg xform;
 
--- Attach companies for whom the drillers work
-\echo '...Updating people, attaching companies from Driller Registry'
-UPDATE registries_person per
-SET organization_guid = org.org_guid
-FROM registries_organization org,
-    xform_registries_drillers_reg xform
-WHERE org.name = xform.companyname
-and org.street_address = xform.companyaddress
-and org.city           = xform.companycity
-and per.person_guid = xform.reg_guid;
-
--- Driller Contact details
+-- Driller Contact details 285
 \echo '...Updating people, attaching contact details from Driller Registry'
 INSERT INTO registries_contact_detail (
  create_user
@@ -179,6 +167,7 @@ INSERT INTO registries_contact_detail (
 ,effective_date
 ,expired_date
 ,contact_detail_guid
+,contact_cell
 ,contact_tel
 ,contact_email
 ,person_guid
@@ -191,11 +180,12 @@ INSERT INTO registries_contact_detail (
 ,null
 ,gen_random_uuid()
 ,cell_phone
+,null
 ,companyemail
 ,reg_guid
 from xform_registries_drillers_reg xform;
 
--- Pump Installers
+-- Pump Installers 259  (61 of the 320 are already in the Register as Well Drillers)
 \echo 'Inserting People from Pump Installer Registry'
 INSERT INTO registries_person (
  first_name
@@ -225,22 +215,8 @@ where not exists (
 );
 -- What about same name but different people?  With different contact details?
 
-
--- Attach companies for whom the pump installers work
-\echo '...Updating people, attaching companies from Pump Installer Registry'
-UPDATE registries_person per
-SET organization_guid = org.org_guid
-FROM registries_organization org,
-    xform_registries_pump_installers_reg xform
-WHERE org.name = xform.companyname
-and org.street_address = xform.companyaddress
-and org.city           = xform.companycity
-and per.person_guid = xform.reg_guid
--- And not already attached to a company
-and per.organization_guid is null;
-
--- Pump Installer Contact details
-\echo '...Updating people, attaching contact details from Driller Registry'
+-- Pump Installer Contact details 259  (61 of the 320 already have Contact Details as Well Drillers)
+\echo '...Updating people, attaching contact details from Pump Installers'
 INSERT INTO registries_contact_detail (
  create_user
 ,create_date
@@ -249,6 +225,7 @@ INSERT INTO registries_contact_detail (
 ,effective_date
 ,expired_date
 ,contact_detail_guid
+,contact_cell
 ,contact_tel
 ,contact_email
 ,person_guid
@@ -261,13 +238,15 @@ INSERT INTO registries_contact_detail (
 ,null
 ,gen_random_uuid()
 ,cell_phone
+,null
 ,companyemail
 ,reg_guid
 from xform_registries_pump_installers_reg xform
 -- for whom not already in contact details due to Driller entry above
 where not exists (
-    select 1 from registries_person existing
-     where xform.firstname = existing.first_name and xform.lastname = existing.surname
+    select 1 from registries_person existing inner join registries_contact_detail contact
+    on existing.person_guid = contact.person_guid
+    where xform.firstname = existing.first_name and xform.lastname = existing.surname
 );
 
 
@@ -354,7 +333,7 @@ and not exists (
 */
 -- TODO Why no  entries above, when 'not exists' is inserted?
 
--- Driller Register (Active)
+-- Driller Register (Active) 285
 \echo 'Inserting Entries into Driller Registry'
 INSERT INTO registries_register (
  create_user
@@ -385,7 +364,20 @@ SELECT
 ,'ACTIVE'
  from xform_registries_drillers_reg;
 
--- Pump Installer Register (Active)
+-- Attach companies for whom the drillers work 285
+\echo '...Updating Register, attaching companies from Driller Registry'
+UPDATE registries_register reg
+SET organization_guid = org.org_guid
+FROM registries_organization org,
+    xform_registries_drillers_reg xform
+WHERE org.name = xform.companyname
+and org.street_address = xform.companyaddress
+and org.city           = xform.companycity
+-- And not already attached to a company
+and reg.organization_guid is null;
+
+
+-- Pump Installer Register (Active) 320
 \echo 'Inserting Entries into Pump Installer Registry'
 INSERT INTO registries_register (
  create_user
@@ -421,6 +413,22 @@ and   xform.lastname = per.surname;
 
 -- TODO Cannot use reg_guid as this PERSON may have been
 --      entered as driller
+
+ 
+-- Attach companies for whom the pump installers work 320
+\echo '...Updating Register, attaching companies from Pump Installer Registry'
+UPDATE registries_register reg
+SET organization_guid = org.org_guid
+FROM registries_organization org,
+    xform_registries_pump_installers_reg xform
+WHERE org.name = xform.companyname
+and org.street_address = xform.companyaddress
+and org.city           = xform.companycity
+-- And not already attached to a company
+and reg.organization_guid is null;
+
+
+
 
 
 -- Driller/Pump Installer (Removed)
@@ -464,7 +472,7 @@ and   xform.lastname = per.surname;
 
 
 -- Applications from pre-2016-FEB-29 2016 Well Drillers, who were
--- grandfathered in 
+-- grandfathered in 257
 \echo 'Inserting "Fake" Applications for pre-2016-FEB-29 grandfathered Well Drillers (WATER)'
 INSERT INTO registries_application (
  create_user
@@ -510,7 +518,7 @@ and xform.registrationdate <=  '2016-02-29'
 and xform.name = concat(per.surname, ', ', per.first_name);
 
 -- Pseudo-Applications from "Water Well" Well Drillers, who were
--- grandfathered in 
+-- grandfathered in  257
 \echo '... Approved entries'
 INSERT INTO registries_application_status (
  create_user
@@ -548,6 +556,7 @@ and xform.registrationdate <=  '2016-02-29'
 and xform.name = concat(per.surname, ', ', per.first_name)
 ;
 
+-- 257
 \echo 'Inserting "Fake" Applications for pre-2016-FEB-29 grandfathered Well Drillers (GEOTECH)'
 INSERT INTO registries_application (
  create_user
@@ -592,6 +601,7 @@ and xform.reg_guid = per.person_guid
 and xform.registrationdate <=  '2016-02-29'
 and xform.name = concat(per.surname, ', ', per.first_name);
 
+-- 257
 \echo '... Approved entries'
 INSERT INTO registries_application_status (
  create_user
@@ -629,6 +639,7 @@ and xform.registrationdate <=  '2016-02-29'
 and xform.name = concat(per.surname, ', ', per.first_name)
 ;
 
+-- 257
 \echo 'Inserting "Fake" Applications for pre-2016-FEB-29 grandfathered Well Drillers (GEOXCHG)'
 INSERT INTO registries_application (
  create_user
@@ -711,6 +722,7 @@ and xform.name = concat(per.surname, ', ', per.first_name)
 ;
 
 
+-- 320 
 \echo 'Inserting "Fake" Applications for Pump Installers (PUMPINST)'
 \echo '.. to be fixed manually post-migration or via a '
 \echo '.. subsequent re-migration after data cleanup in'
@@ -759,7 +771,7 @@ and reg.registries_activity_code = 'PUMP'
 and xform.firstname = per.first_name
 and xform.lastname = per.surname;
 
-
+-- 320
 \echo '... Approved entries for Pump Installers '
 INSERT INTO registries_application_status (
  create_user

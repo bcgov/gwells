@@ -59,6 +59,7 @@ CREATE OR REPLACE VIEW vw_person AS
 SELECT 
  per.first_name          AS first_name       
 ,per.surname             AS surname          
+,con.contact_cell        AS contact_cell
 ,con.contact_tel         AS contact_tel        
 ,con.contact_email       AS contact_email      
 ---- Remainder are PK, FK, Audit columns (usually hidden from user)
@@ -70,7 +71,6 @@ SELECT
 ,per.person_guid         AS per_person_guid      
 ,per.effective_date      AS per_effective_date   
 ,per.expired_date        AS per_expired_date     
-,per.organization_guid   AS per_organization_guid
 ,con.create_user         AS con_create_user        
 ,con.create_date         AS con_create_date        
 ,con.update_user         AS con_update_user        
@@ -82,54 +82,6 @@ SELECT
 FROM registries_person per
 LEFT JOIN registries_contact_detail con 
 ON per.person_guid = con.person_guid
-;
-
--- People and the Company for which they work
-DROP VIEW IF EXISTS vw_person_org;
-CREATE OR REPLACE VIEW vw_person_org AS
-SELECT 
- per.first_name          AS first_name       
-,per.surname             AS surname          
-,con.contact_tel         AS contact_tel        
-,con.contact_email       AS contact_email      
-,org.name                AS org_name               
-,org.street_address      AS org_street_address     
-,org.city                AS org_city               
-,org.postal_code         AS org_postal_code        
-,org.main_tel            AS org_main_tel           
-,org.fax_tel             AS org_fax_tel            
-,org.website_url         AS org_website_url        
-,org.province_state_code AS org_province_state_code
----- Remainder are PK, FK, Audit columns (usually hidden from user)
-/*
-,per.create_user         AS per_create_user      
-,per.create_date         AS per_create_date      
-,per.update_user         AS per_update_user      
-,per.update_date         AS per_update_date      
-,per.person_guid         AS per_person_guid      
-,per.effective_date      AS per_effective_date   
-,per.expired_date        AS per_expired_date     
-,per.organization_guid   AS per_organization_guid
-,con.create_user         AS con_create_user        
-,con.create_date         AS con_create_date        
-,con.update_user         AS con_update_user        
-,con.update_date         AS con_update_date        
-,con.contact_detail_guid AS con_contact_detail_guid
-,con.effective_date      AS con_effective_date     
-,con.expired_date        AS con_expired_date       
-,org.create_user         AS org_create_user        
-,org.create_date         AS org_create_date        
-,org.update_user         AS org_update_user        
-,org.update_date         AS org_update_date        
-,org.org_guid            AS org_org_guid           
-,org.effective_date      AS org_effective_date     
-,org.expired_date        AS org_expired_date
-*/
-FROM registries_person per
-LEFT JOIN registries_contact_detail con 
-ON per.person_guid = con.person_guid
-LEFT JOIN registries_organization org
-ON per.organization_guid = org.org_guid
 ;
 
 -- "ACTIVE" Well Drillers on the Registry
@@ -138,6 +90,7 @@ CREATE OR REPLACE VIEW vw_well_driller_reg AS
 SELECT 
  per.first_name          AS first_name       
 ,per.surname             AS surname          
+,con.contact_cell         AS contact_cell        
 ,con.contact_tel         AS contact_tel        
 ,con.contact_email       AS contact_email      
 ,org.name                AS org_name               
@@ -187,14 +140,14 @@ SELECT
 ,reg.update_date         AS reg_update_date                   
 ,reg.register_guid       AS reg_register_guid
 */
-FROM registries_person per
-LEFT JOIN registries_contact_detail con 
-ON per.person_guid = con.person_guid
-LEFT JOIN registries_organization org
-ON per.organization_guid = org.org_guid
-INNER JOIN  registries_register reg
-ON per.person_guid = reg.person_guid
-WHERE reg.registries_activity_code = 'DRILL'
+FROM registries_person per,
+     registries_contact_detail con,
+     registries_organization org,
+     registries_register reg
+WHERE per.person_guid = con.person_guid
+AND   per.person_guid = reg.person_guid
+AND   reg.organization_guid = org.org_guid
+AND   reg.registries_activity_code = 'DRILL'
 AND   reg.registries_status_code = 'ACTIVE'
 ;
 
@@ -253,14 +206,14 @@ SELECT
 ,reg.update_date         AS reg_update_date                   
 ,reg.register_guid       AS reg_register_guid
 */
-FROM registries_person per
-LEFT JOIN registries_contact_detail con 
-ON per.person_guid = con.person_guid
-LEFT JOIN registries_organization org
-ON per.organization_guid = org.org_guid
-INNER JOIN  registries_register reg
-ON per.person_guid = reg.person_guid
-WHERE reg.registries_activity_code = 'PUMP'
+FROM registries_person per,
+     registries_contact_detail con,
+     registries_organization org,
+     registries_register reg
+WHERE per.person_guid = con.person_guid
+AND   per.person_guid = reg.person_guid
+AND   reg.organization_guid = org.org_guid
+AND   reg.registries_activity_code = 'PUMP'
 AND   reg.registries_status_code = 'ACTIVE'
 ;
 
@@ -299,6 +252,7 @@ ON cert.cert_auth_code = auth.cert_auth_code;
 --
 
 -- "Application History" of Well Drillers on the Registry
+/*
 DROP VIEW IF EXISTS vw_well_driller_application;
 CREATE OR REPLACE VIEW vw_well_driller_application AS
 SELECT 
@@ -329,56 +283,55 @@ SELECT
 -- ,reg.registries_removal_reason_code AS reg_registries_removal_reason_code
 --
 ---- Remainder are PK, FK, Audit columns (usually hidden from user)
-/*
-,per.create_user         AS per_create_user      
-,per.create_date         AS per_create_date      
-,per.update_user         AS per_update_user      
-,per.update_date         AS per_update_date      
-,per.person_guid         AS per_person_guid      
-,per.effective_date      AS per_effective_date   
-,per.expired_date        AS per_expired_date     
-,per.organization_guid   AS per_organization_guid
-,con.create_user         AS con_create_user        
-,con.create_date         AS con_create_date        
-,con.update_user         AS con_update_user        
-,con.update_date         AS con_update_date        
-,con.contact_detail_guid AS con_contact_detail_guid
-,con.effective_date      AS con_effective_date     
-,con.expired_date        AS con_expired_date       
-,org.create_user         AS org_create_user        
-,org.create_date         AS org_create_date        
-,org.update_user         AS org_update_user        
-,org.update_date         AS org_update_date        
-,org.org_guid            AS org_org_guid           
-,org.effective_date      AS org_effective_date     
-,org.expired_date        AS org_expired_date       
-,reg.create_user         AS reg_create_user                   
-,reg.create_date         AS reg_create_date                   
-,reg.update_user         AS reg_update_user                   
-,reg.update_date         AS reg_update_date                   
-,reg.register_guid       AS reg_register_guid
-,app.create_user                 AS app_create_user                 
-,app.create_date                 AS app_create_date                 
-,app.update_user                 AS app_update_user                 
-,app.update_date                 AS app_update_date                 
-,app.application_guid            AS app_application_guid            
-,app.file_no                     AS app_file_no                     
-,app.over19_ind                  AS app_over19_ind                  
-,app.registrar_notes             AS app_registrar_notes             
-,app.reason_denied               AS app_reason_denied               
-,app.primary_certificate_no      AS app_primary_certificate_no      
-,app.acc_cert_guid               AS app_acc_cert_guid               
-,app.register_guid               AS app_register_guid               
-,status.create_user                        AS appstatus_create_user                        
-,status.create_date                        AS appstatus_create_date                        
-,status.update_user                        AS appstatus_update_user                        
-,status.update_date                        AS appstatus_update_date                        
-,status.application_status_guid            AS appstatus_application_status_guid            
-,status.notified_date                      AS appstatus_notified_date                      
-,status.effective_date                     AS appstatus_effective_date                     
-,status.expired_date                       AS appstatus_expired_date                       
-,status.application_guid                   AS appstatus_application_guid                   
-*/
+-- ,per.create_user         AS per_create_user      
+-- ,per.create_date         AS per_create_date      
+-- ,per.update_user         AS per_update_user      
+-- ,per.update_date         AS per_update_date      
+-- ,per.person_guid         AS per_person_guid      
+-- ,per.effective_date      AS per_effective_date   
+-- ,per.expired_date        AS per_expired_date     
+-- ,per.organization_guid   AS per_organization_guid
+-- ,con.create_user         AS con_create_user        
+-- ,con.create_date         AS con_create_date        
+-- ,con.update_user         AS con_update_user        
+-- ,con.update_date         AS con_update_date        
+-- ,con.contact_detail_guid AS con_contact_detail_guid
+-- ,con.effective_date      AS con_effective_date     
+-- ,con.expired_date        AS con_expired_date       
+-- ,org.create_user         AS org_create_user        
+-- ,org.create_date         AS org_create_date        
+-- ,org.update_user         AS org_update_user        
+-- ,org.update_date         AS org_update_date        
+-- ,org.org_guid            AS org_org_guid           
+-- ,org.effective_date      AS org_effective_date     
+-- ,org.expired_date        AS org_expired_date       
+-- ,reg.create_user         AS reg_create_user                   
+-- ,reg.create_date         AS reg_create_date                   
+-- ,reg.update_user         AS reg_update_user                   
+-- ,reg.update_date         AS reg_update_date                   
+-- ,reg.register_guid       AS reg_register_guid
+-- ,app.create_user                 AS app_create_user                 
+-- ,app.create_date                 AS app_create_date                 
+-- ,app.update_user                 AS app_update_user                 
+-- ,app.update_date                 AS app_update_date                 
+-- ,app.application_guid            AS app_application_guid            
+-- ,app.file_no                     AS app_file_no                     
+-- ,app.over19_ind                  AS app_over19_ind                  
+-- ,app.registrar_notes             AS app_registrar_notes             
+-- ,app.reason_denied               AS app_reason_denied               
+-- ,app.primary_certificate_no      AS app_primary_certificate_no      
+-- ,app.acc_cert_guid               AS app_acc_cert_guid               
+-- ,app.register_guid               AS app_register_guid               
+-- ,status.create_user                        AS appstatus_create_user                        
+-- ,status.create_date                        AS appstatus_create_date                        
+-- ,status.update_user                        AS appstatus_update_user                        
+-- ,status.update_date                        AS appstatus_update_date                        
+-- ,status.application_status_guid            AS appstatus_application_status_guid            
+-- ,status.notified_date                      AS appstatus_notified_date                      
+-- ,status.effective_date                     AS appstatus_effective_date                     
+-- ,status.expired_date                       AS appstatus_expired_date                       
+-- ,status.application_guid                   AS appstatus_application_guid                   
+-- 
 FROM registries_person         per
 LEFT JOIN registries_contact_detail con 
 ON per.person_guid = con.person_guid
@@ -394,6 +347,7 @@ WHERE reg.registries_activity_code = 'DRILL'
 AND   reg.registries_status_code = 'ACTIVE'
 ORDER BY per.person_guid, reg.register_guid, app.application_guid, status.effective_date desc
 ;
+*/
 
 /*
 285 drillers
