@@ -19,13 +19,14 @@ IFS=$'\n\t'
 # Parameters
 #
 PROJECT=${1:-}
-SAVE_TO=${2:-$(date +%Y-%m-%d-%T.out)}
+SAVE_TO=${2:-./$(date +%Y-%m-%d-%T)}
 
 
 # APP and mode variables
 #
 APPLICATION_NAME=${APPLICATION_NAME:-gwells}
 APPLICATION_PORT=${APPLICATION_PORT:-web}
+DB_NAME=${DB_NAME:-gwells}
 KEEP_APP_ONLINE=${KEEP_APP_ONLINE:-true}
 
 
@@ -70,8 +71,9 @@ fi
 # Put GWells into maintenance mode and scale down (deployment config)
 #
 REPO_DIR=$( git rev-parse --show-toplevel )
-[ "${KEEP_APP_ONLINE}" != "false" ] || (
+if [ "${KEEP_APP_ONLINE}" != "true" ]
+then
 	cd ${REPO_DIR}/maintenance/;
 	APPLICATION_NAME=${APPLICATION_NAME} APPLICATION_PORT=${APPLICATION_PORT} ./maintenance.sh ${PROJECT} on;
-	oc scale -n ${PROJECT} --replicas=0 deploymentconfig ${PODNAME}
-)
+	oc scale -n ${PROJECT} --replicas=0 deploymentconfig ${APPLICATION_NAME}
+fi
