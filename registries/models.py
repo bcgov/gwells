@@ -8,7 +8,8 @@ class ActivityCode(AuditModel):
     """
     Restricted Activity related to drilling wells and installing well pumps.
     """
-    registries_activity_code = models.CharField(primary_key=True, max_length=10, editable=False)
+    registries_activity_code = models.CharField(
+        primary_key=True, max_length=10, editable=False)
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
     effective_date = models.DateField(default=datetime.date.today)
@@ -83,7 +84,8 @@ class AccreditedCertificateCode(AuditModel):
         ActivityCode,
         db_column='registries_activity_code',
         on_delete=models.PROTECT)
-    name = models.CharField(max_length=100, editable=False, verbose_name="Certificate Name")
+    name = models.CharField(max_length=100, editable=False,
+                            verbose_name="Certificate Name")
     description = models.CharField(max_length=100, blank=True, null=True)
 
     effective_date = models.DateField(default=datetime.date.today)
@@ -99,13 +101,17 @@ class AccreditedCertificateCode(AuditModel):
 
 
 class Organization(AuditModel):
+    """
+    Organizations participating in well drilling or well pump installation activities
+    """
     org_guid = models.UUIDField(
         primary_key=True,
         default=uuid.uuid4,
         editable=False,
         verbose_name="Organization UUID")
     name = models.CharField(max_length=200)
-    street_address = models.CharField(max_length=100, null=True, verbose_name='Street Address')
+    street_address = models.CharField(
+        max_length=100, null=True, verbose_name='Street Address')
     city = models.CharField(max_length=50, null=True, verbose_name='Town/City')
     province_state = models.ForeignKey(
         ProvinceStateCode,
@@ -113,9 +119,14 @@ class Organization(AuditModel):
         on_delete=models.PROTECT,
         verbose_name='Province/State',
         related_name="companies")
-    postal_code = models.CharField(max_length=10, null=True, verbose_name='Postal Code')
-    main_tel = models.CharField(null=True, max_length=15, verbose_name="Telephone number")
-    fax_tel = models.CharField(null=True, max_length=15, verbose_name="Fax number")
+    postal_code = models.CharField(
+        max_length=10, null=True, verbose_name='Postal Code')
+    main_tel = models.CharField(
+        null=True, max_length=15, verbose_name="Telephone number")
+    fax_tel = models.CharField(
+        null=True, max_length=15, verbose_name="Fax number")
+    email = models.EmailField(blank=True, null=True,
+                              verbose_name="Email address")
     website_url = models.URLField(null=True, verbose_name="Website")
     effective_date = models.DateField(default=datetime.date.today)
     expired_date = models.DateField(blank=True, null=True)
@@ -130,6 +141,9 @@ class Organization(AuditModel):
 
 
 class Person(AuditModel):
+    """
+    Person record (well driller or well pump installer)
+    """
     person_guid = models.UUIDField(
         primary_key=True,
         default=uuid.uuid4,
@@ -137,15 +151,17 @@ class Person(AuditModel):
         verbose_name="Person UUID")
     first_name = models.CharField(max_length=100)
     surname = models.CharField(max_length=100)
+
+    # As per D.A. - temporary fields to hold compliance-related details
+    well_driller_orcs_no = models.CharField(max_length=25, blank=True, null=True,
+        verbose_name='ORCS File # reference (in context of Well Driller).')
+    pump_installer_orcs_no = models.CharField(max_length=25, blank=True, null=True,
+        verbose_name='ORCS File # reference (in context of Pump Installer).')
+
+
     effective_date = models.DateField(default=datetime.date.today)
     expired_date = models.DateField(blank=True, null=True)
 
-    # Works With Org...  (should be a xref table)
-    organization = models.ForeignKey(
-        Organization, blank=True,
-        db_column='organization_guid',
-        null=True, on_delete=models.PROTECT,
-        related_name="person_set")
 
     class Meta:
         db_table = 'registries_person'
@@ -161,6 +177,9 @@ class Person(AuditModel):
 
 
 class ContactInfo(AuditModel):
+    """
+    Contact information for registered people
+    """
     contact_detail_guid = models.UUIDField(
         primary_key=True,
         default=uuid.uuid4,
@@ -177,7 +196,14 @@ class ContactInfo(AuditModel):
         null=True,
         max_length=15,
         verbose_name="Contact telephone number")
+    contact_cell = models.CharField(
+        blank=True,
+        null=True,
+        max_length=15,
+        verbose_name="Contact cell number")
+
     contact_email = models.EmailField(blank=True, null=True, verbose_name="Email adddress")
+
     effective_date = models.DateField(default=datetime.date.today)
     expired_date = models.DateField(blank=True, null=True)
 
@@ -196,7 +222,8 @@ class WellClassCode(AuditModel):
     """
     Class of Wells, classifying the type of wells and activities/subactivies permitted
     """
-    registries_well_class_code = models.CharField(primary_key=True, max_length=10, editable=False)
+    registries_well_class_code = models.CharField(
+        primary_key=True, max_length=10, editable=False)
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
     effective_date = models.DateField(default=datetime.date.today)
@@ -246,7 +273,8 @@ class RegistriesStatusCode(AuditModel):
     """
     Status of the Register Entry
     """
-    registries_status_code = models.CharField(primary_key=True, max_length=10, editable=False)
+    registries_status_code = models.CharField(
+        primary_key=True, max_length=10, editable=False)
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
     effective_date = models.DateField(default=datetime.date.today)
@@ -265,7 +293,8 @@ class RegistriesRemovalReason(AuditModel):
     """
     Possible Reasons for Removal from either of the Registers
     """
-    registries_removal_reason_code = models.CharField(primary_key=True, max_length=10, editable=False)
+    registries_removal_reason_code = models.CharField(
+        primary_key=True, max_length=10, editable=False)
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
     effective_date = models.DateField(default=datetime.date.today)
@@ -281,7 +310,10 @@ class RegistriesRemovalReason(AuditModel):
 
 
 class Register(AuditModel):
-    PENDING = 'P'
+    """
+    Registration record for a well driller or well pump installer
+    """
+    PENDING = 'P'  # default value for status
 
     register_guid = models.UUIDField(
         primary_key=True,
@@ -293,6 +325,12 @@ class Register(AuditModel):
         db_column='registries_activity_code',
         on_delete=models.PROTECT)
     person = models.ForeignKey(Person, db_column='person_guid', on_delete=models.PROTECT, related_name="registrations")
+    organization = models.ForeignKey(
+        Organization, blank=True,
+        db_column='organization_guid',
+        null=True, on_delete=models.PROTECT,
+        related_name="registrations")
+
     status = models.ForeignKey(
         RegistriesStatusCode,
         db_column='registries_status_code',
@@ -344,7 +382,8 @@ class RegistriesApplication(AuditModel):
         db_column='registries_subactivity_code',
         on_delete=models.PROTECT,
         related_name="applications")
-    file_no = models.CharField(max_length=25, blank=True, null=True, verbose_name='ORCS File # reference.')
+    file_no = models.CharField(
+        max_length=25, blank=True, null=True, verbose_name='ORCS File # reference.')
     over19_ind = models.BooleanField(default=True)
     registrar_notes = models.CharField(
         max_length=255,
@@ -381,7 +420,8 @@ class ApplicationStatusCode(AuditModel):
     """
     Status of Applications for the Well Driller and Pump Installer Registries
     """
-    registries_application_status_code = models.CharField(primary_key=True, max_length=10, editable=False)
+    registries_application_status_code = models.CharField(
+        primary_key=True, max_length=10, editable=False)
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
     effective_date = models.DateField(default=datetime.date.today)
@@ -416,7 +456,8 @@ class RegistriesApplicationStatus(AuditModel):
         db_column='registries_application_status_code',
         on_delete=models.PROTECT,
         verbose_name="Application Status Code Reference")
-    notified_date = models.DateField(blank=True, null=True, default=datetime.date.today)
+    notified_date = models.DateField(
+        blank=True, null=True, default=datetime.date.today)
     effective_date = models.DateField(default=datetime.date.today)
     expired_date = models.DateField(blank=True, null=True)
 
@@ -432,9 +473,40 @@ class RegistriesApplicationStatus(AuditModel):
             self.effective_date,
             self.expired_date)
 
+
+class Register_Note(AuditModel):
+    register_note_guid = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False,
+        verbose_name="Register Node UUID")
+    registration = models.ForeignKey(
+        Register,
+        db_column='register_guid',
+        on_delete=models.PROTECT,
+        verbose_name="Register Reference",
+        related_name='notes')
+    notes = models.TextField(
+        max_length=2000,
+        blank=True,
+        null=True,
+        verbose_name='Registrar notes, for internal use only.')
+
+    class Meta:
+        db_table = 'registries_register_note'
+        verbose_name_plural = 'Registrar Notes'
+
+    def __str__(self):
+        return '%s' % (
+            self.notes
+        )
+
+
 """
 Tue Apr 10 10:15:34 2018 Expose DB Views to Django
 """
+
+
 class vw_well_class(models.Model):
 
     subactivity = models.CharField(
@@ -445,7 +517,8 @@ class vw_well_class(models.Model):
         ActivityCode,
         db_column='registries_activity_code',
         on_delete=models.PROTECT)
-    well_class = models.CharField(max_length=100)
+    class_desc = models.CharField(max_length=100)
+    class_name = models.CharField(max_length=100)
 
     class Meta:
         db_table = 'vw_well_class'
@@ -455,4 +528,3 @@ class vw_well_class(models.Model):
 
     def __str__(self):
         return '%s %s %s' % (self.subactivity, self.activity_code, self.well_class)
-
