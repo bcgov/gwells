@@ -6,8 +6,22 @@
       </b-card-header>
       <b-collapse id="adminPanel">
         <b-card-body class="pb-1">
-          <b-button class="mb-2" variant="btn-light" id="addNewEntryButton">Add new entry</b-button>
-          <b-button class="mb-2" variant="btn-light" id="manageCompaniesButton">Manage companies</b-button>
+          <b-button
+            class="mb-2"
+            variant="primary"
+            id="addNewEntryButton"
+            :to="{ name: 'PersonAdd' }"
+          >
+            Add new entry
+          </b-button>
+          <b-button
+            class="mb-2"
+            variant="primary"
+            id="manageCompaniesButton"
+            :to="{ name: 'OrganizationAdd' }"
+          >
+            Manage companies
+          </b-button>
         </b-card-body>
       </b-collapse>
     </b-card>
@@ -44,7 +58,7 @@
                       v-for="prov in cityList[formatActivityForCityList]"
                       v-if="prov.cities && prov.cities.length"
                       :key="prov.prov"
-                      :label="`${prov.prov} (${prov.cities.length})`"
+                      :label="prov.prov"
                     >
                       <option v-for="city in prov.cities" :key="`${city} ${prov.prov}`" :value="city">{{ city }}</option>
                     </optgroup>
@@ -174,7 +188,8 @@ export default {
         limit: '10',
         ordering: ''
       },
-      searchLoading: false
+      searchLoading: false,
+      lastSearchedParams: {}
     }
   },
   computed: {
@@ -240,6 +255,7 @@ export default {
         this.$SmoothScroll(table, 100)
         this.drillerSearchReset({keepActivity: true, keepLimit: true})
         this.searchLoading = false
+        this.lastSearchedParams = Object.assign({}, params)
       }).catch(() => {
         this.searchLoading = false
       })
@@ -260,12 +276,12 @@ export default {
       }
     },
     sortTable (sortCode) {
-      if (this.searchParams.ordering && this.searchParams.ordering.length && this.searchParams.ordering[0] !== '-') {
-        this.searchParams['ordering'] = `-${sortCode}`
+      if (this.lastSearchedParams.ordering[0] !== '-') {
+        this.lastSearchedParams['ordering'] = `-${sortCode}`
       } else {
-        this.searchParams['ordering'] = `${sortCode}`
+        this.lastSearchedParams['ordering'] = `${sortCode}`
       }
-      this.$store.dispatch(FETCH_DRILLER_LIST, this.APISearchParams)
+      this.$store.dispatch(FETCH_DRILLER_LIST, this.lastSearchedParams)
     }
   },
   created () {
