@@ -25,9 +25,8 @@ SAVE_TO=${2:-./${PROJECT}-$(date +%Y-%m-%d-%T)}
 # APP and mode variables
 #
 APP_NAME=${APP_NAME:-gwells}
-APP_PORT=${APP_PORT:-web}
-DB_NAME=${DB_NAME:-gwells}
-KEEP_APP_ONLINE=${KEEP_APP_ONLINE:-true}
+DB_NAME=${DB_NAME:-${APP_NAME}}
+KEEP_APP_ONLINE=${KEEP_APP_ONLINE:-false}
 
 
 # Repo directory
@@ -78,7 +77,7 @@ fi
 if [ "${KEEP_APP_ONLINE}" != "true" ]
 then
 	cd ${REPO_DIR}/maintenance/
-	APPLICATION_NAME=${APP_NAME} APPLICATION_PORT=${APP_PORT} ./maintenance.sh ${PROJECT} on
+	APPLICATION_NAME=${APP_NAME} ./maintenance.sh ${PROJECT} on
 	oc scale -n ${PROJECT} --replicas=0 deploymentconfig ${APP_NAME}
 fi
 
@@ -86,7 +85,6 @@ fi
 # Make sure $SAVE_TO ends in .gz
 #
 [ "$( echo ${SAVE_TO} | tail -c4 )" == ".gz" ]|| SAVE_TO="${SAVE_TO}.gz"
-echo "${SAVE_TO}"
 
 
 # Identify database and take a backup
@@ -104,9 +102,10 @@ oc exec ${POD_DB} -n ${PROJECT} -- /bin/bash -c 'rm /tmp/'${SAVE_FILE}
 #
 if [ "${KEEP_APP_ONLINE}" != "true" ]
 then
-	cd ${REPO_DIR}/maintenance/
-	APPLICATION_NAME=${APP_NAME} APPLICATION_PORT=${APP_PORT} ./maintenance.sh ${PROJECT} off
 	oc scale -n ${PROJECT} --replicas=1 deploymentconfig ${APP_NAME}
+	sleep 30
+	cd ${REPO_DIR}/maintenance/
+	APPLICATION_NAME=${APP_NAME} ./maintenance.sh ${PROJECT} off
 fi
 
 
