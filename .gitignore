@@ -137,7 +137,7 @@ x.sh
 # Frontend files
 frontend/node_modules/
 frontend/webpack-stats.json
-registries/static/registries/bundles/
+gwells/static/vue
 
 sonar-runner/.gradle
 *.patch
