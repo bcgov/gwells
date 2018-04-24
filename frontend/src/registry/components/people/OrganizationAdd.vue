@@ -147,6 +147,7 @@
 
 <script>
 import ApiService from '@/common/services/ApiService.js'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'OrganizationAdd',
@@ -176,6 +177,9 @@ export default {
       orgSubmitLoading: false,
       orgSubmitError: null
     }
+  },
+  computed: {
+    ...mapGetters(['error'])
   },
   methods: {
     onFormSubmit () {
