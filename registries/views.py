@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from django.utils import timezone
 from django.views.generic import TemplateView
 from django_filters import rest_framework as restfilters
-from rest_framework import filters
+from rest_framework import filters, status
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView
 from rest_framework.pagination import LimitOffsetPagination, PageNumberPagination
 from rest_framework.permissions import IsAdminUser
@@ -18,6 +18,7 @@ from registries.serializers import (
     OrganizationListSerializer,
     OrganizationSerializer,
     OrganizationAdminSerializer,
+    OrganizationNameListSerializer,
     PersonSerializer,
     PersonAdminSerializer,
     PersonListSerializer,
@@ -102,10 +103,9 @@ class OrganizationListView(AuditCreateMixin, ListCreateAPIView):
 
     # prefetch related objects for the queryset to prevent duplicate database trips later
     queryset = Organization.objects.all() \
-        .select_related('province_state') \
-        .prefetch_related(
-            'person_set',
-    )
+        .select_related('province_state',) \
+        .prefetch_related('person_set',) \
+        .filter(expired_date__isnull=True)
 
     # Allow searching against fields like organization name, address,
     # name or registration of organization contacts
@@ -178,10 +178,9 @@ class OrganizationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
 
     # prefetch related province, contacts and person records to prevent future additional database trips
     queryset = Organization.objects.all() \
-        .select_related('province_state') \
-        .prefetch_related(
-            'person_set',
-    )
+        .select_related('province_state',) \
+        .prefetch_related('person_set',) \
+        .filter(expired_date__isnull=True)
 
     def get_queryset(self):
         """
@@ -198,6 +197,17 @@ class OrganizationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
         if self.request and self.request.user.is_staff:
             return OrganizationAdminSerializer
         return self.serializer_class
+
+    def destroy(self, request, *args, **kwargs):
+        """
+        Set expired_date to current date
+        """
+
+        instance = self.get_object()
+        instance.expired_date = timezone.now()
+        instance.save()
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class PersonListView(AuditCreateMixin, ListCreateAPIView):
@@ -218,7 +228,7 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
                        filters.SearchFilter, filters.OrderingFilter)
     filter_class = PersonFilter
     ordering_fields = ('surname', 'organization__name')
-    ordering = ('surname')
+    ordering = ('surname',)
     search_fields = (
         'first_name',
         'surname',
@@ -241,8 +251,10 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
             'registrations__applications__status_set__status',
             'registrations__applications__subactivity',
             'registrations__applications__subactivity__qualification_set',
-            'registrations__applications__subactivity__qualification_set__well_class') \
-        .distinct()
+            'registrations__applications__subactivity__qualification_set__well_class'
+        ).filter(
+            expired_date__isnull=True
+        ).distinct()
 
     def get_queryset(self):
         """ Returns Person queryset, removing non-active and unregistered drillers for anonymous users """
@@ -314,6 +326,8 @@ class PersonDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
             'registrations__applications__subactivity',
             'registrations__applications__subactivity__qualification_set',
             'registrations__applications__subactivity__qualification_set__well_class'
+        ).filter(
+            expired_date__isnull=True
         ).distinct()
 
     def get_queryset(self):
@@ -329,6 +343,17 @@ class PersonDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
         if self.request and self.request.user.is_staff:
             return PersonAdminSerializer
         return self.serializer_class
+
+    def destroy(self, request, *args, **kwargs):
+        """
+        Set expired_date to current date
+        """
+
+        instance = self.get_object()
+        instance.expired_date = timezone.now()
+        instance.save()
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class CitiesListView(ListAPIView):
@@ -347,7 +372,8 @@ class CitiesListView(ListAPIView):
             'organization',
         ) \
         .distinct('organization__city') \
-        .order_by('organization__city')
+        .order_by('organization__city') \
+        .filter(expired_date__isnull=True)
 
     def get_queryset(self):
         """
@@ -457,3 +483,15 @@ class ApplicationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
             'registration__status',
             'registration__register_removal_reason')
     lookup_field = "application_guid"
+
+
+class OrganizationNameListView(ListAPIView):
+    """
+    Simple list of organizations with only organization names
+    """
+
+    permission_classes = (IsGwellsAdmin,)
+    serializer_class = OrganizationNameListSerializer
+    queryset = Organization.objects.filter(expired_date__isnull=True)
+    pagination_class = None
+    lookup_field = 'organization_guid'

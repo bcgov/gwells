@@ -18,7 +18,8 @@ from django.contrib import admin
 from .models import (
     Survey,
     OnlineSurvey,
-    Profile
+    Profile,
+    ProvinceStateCode
 )
 
 class SurveyAdmin(admin.ModelAdmin):
@@ -35,3 +36,4 @@ class OnlineSurveyAdmin(admin.ModelAdmin):
 admin.site.register(Survey, SurveyAdmin)
 admin.site.register(OnlineSurvey, OnlineSurveyAdmin)
 admin.site.register(Profile)
+admin.site.register(ProvinceStateCode)
