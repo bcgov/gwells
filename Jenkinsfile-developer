@@ -69,7 +69,7 @@ node('maven') {
         dir('sonar-runner') {
             unstash 'coverage'
             try {
-                sh returnStdout: true, script: "./gradlew sonarqube -Dsonar.host.url=${SONARQUBE_URL} -Dsonar.verbose=true --stacktrace --info  -Dsonar.sources=.."
+                sh returnStdout: true, script: "./gradlew sonarqube -Dsonar.host.url=${SONARQUBE_URL} -Dsonar.verbose=true --stacktrace --info --debug -Dsonar.sources=.."
             } finally { }
         }
     }    
