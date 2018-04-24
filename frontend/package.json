@@ -9,10 +9,10 @@
     "start": "npm run dev",
     "unit": "jest --config test/unit/jest.conf.js --coverage",
     "test": "npm run unit",
-    "watch": "jest --config test/unit/jest.conf.js --watch --verbose",
+    "watch-test": "jest --config test/unit/jest.conf.js --watch --verbose",
     "lint": "eslint --ext .js,.vue src test/unit",
     "build": "node build/build.js",
-    "django": "./node_modules/.bin/webpack --config build/webpack.dev.conf.js --watch"
+    "watch": "./node_modules/.bin/webpack --config build/webpack.dev.conf.js --watch"
   },
   "dependencies": {
     "axios": "^0.18.0",
