@@ -266,6 +266,8 @@ export default {
                   return item.status === code
                 })
 
+                // check if statusLevel is a valid array index (e.g. not -1)
+                // note: ~(-1) evaluates to 0, but is truthy for valid array indices
                 if (~statusLevel) {
                   status = app.status_set[statusLevel].description
                   date = app.status_set[statusLevel].effective_date
