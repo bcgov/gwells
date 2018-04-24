@@ -76,8 +76,7 @@ fi
 #
 if [ "${KEEP_APP_ONLINE}" != "true" ]
 then
-	cd ${REPO_DIR}/maintenance/
-	APPLICATION_NAME=${APP_NAME} ./maintenance.sh ${PROJECT} on
+	APPLICATION_NAME=${APP_NAME} ../maintenance/maintenance.sh ${PROJECT} on
 	oc scale -n ${PROJECT} --replicas=0 deploymentconfig ${APP_NAME}
 fi
 
@@ -104,8 +103,7 @@ if [ "${KEEP_APP_ONLINE}" != "true" ]
 then
 	oc scale -n ${PROJECT} --replicas=1 deploymentconfig ${APP_NAME}
 	sleep 30
-	cd ${REPO_DIR}/maintenance/
-	APPLICATION_NAME=${APP_NAME} ./maintenance.sh ${PROJECT} off
+	APPLICATION_NAME=${APP_NAME} ../maintenance/maintenance.sh ${PROJECT} off
 fi
 
 
