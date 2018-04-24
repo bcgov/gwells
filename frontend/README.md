@@ -61,7 +61,7 @@ Start webpack in listening mode (Django will listen to changes)
 
 ```bash
 # Listen for file changes
-npm run django
+npm run watch
 ```
 
 Start python in debug mode.
