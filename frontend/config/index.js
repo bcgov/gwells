@@ -9,7 +9,7 @@ module.exports = {
 
     // Paths
     assetsSubDirectory: 'bundles',
-    assetsPublicPath: '/gwells/static/registries/',
+    assetsPublicPath: '/gwells/static/vue/',
     proxyTable: {},
 
     // Various Dev Server settings
@@ -48,9 +48,9 @@ module.exports = {
     index: path.resolve(__dirname, '../dist/index.html'),
 
     // Paths
-    assetsRoot: path.resolve(__dirname, '../../registries/static/registries/'),
+    assetsRoot: path.resolve(__dirname, '../../gwells/static/vue'),
     assetsSubDirectory: 'bundles',
-    assetsPublicPath: '/gwells/static/registries/',
+    assetsPublicPath: '/gwells/static/vue/',
 
     /**
      * Source Maps
