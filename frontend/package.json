@@ -11,7 +11,8 @@
     "test": "npm run unit",
     "watch": "jest --config test/unit/jest.conf.js --watch --verbose",
     "lint": "eslint --ext .js,.vue src test/unit",
-    "build": "node build/build.js"
+    "build": "node build/build.js",
+    "django": "./node_modules/.bin/webpack --config build/webpack.dev.conf.js --watch"
   },
   "dependencies": {
     "axios": "^0.18.0",
@@ -52,7 +53,7 @@
     "eslint-plugin-promise": "^3.4.0",
     "eslint-plugin-standard": "^3.0.1",
     "eslint-plugin-vue": "^4.0.0",
-    "extract-text-webpack-plugin": "^3.0.0",
+    "extract-text-webpack-plugin": "^3.0.2",
     "file-loader": "^1.1.4",
     "friendly-errors-webpack-plugin": "^1.6.1",
     "html-webpack-plugin": "^2.30.1",
@@ -60,6 +61,7 @@
     "jest": "^22.4.2",
     "jest-junit": "^3.6.0",
     "jest-serializer-vue": "^0.3.0",
+    "jquery": "^3.3.1",
     "node-notifier": "^5.1.2",
     "node-sass": "^4.8.3",
     "optimize-css-assets-webpack-plugin": "^3.2.0",
@@ -76,6 +78,7 @@
     "url-loader": "^0.5.8",
     "vue-jest": "^2.1.0",
     "vue-loader": "^13.3.0",
+    "vue-server-renderer": "^2.5.16",
     "vue-style-loader": "^3.0.1",
     "vue-template-compiler": "^2.5.2",
     "webpack": "^3.6.0",
@@ -85,8 +88,8 @@
     "webpack-merge": "^4.1.0"
   },
   "engines": {
-    "node": ">= 6.0.0",
-    "npm": ">= 3.0.0"
+    "node": "6.11.3",
+    "npm": ">= 3.10.9"
   },
   "browserslist": [
     "> 1%",
