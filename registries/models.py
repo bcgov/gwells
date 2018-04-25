@@ -101,9 +101,6 @@ class AccreditedCertificateCode(AuditModel):
 
 
 class Organization(AuditModel):
-    """
-    Organizations participating in well drilling or well pump installation activities
-    """
     org_guid = models.UUIDField(
         primary_key=True,
         default=uuid.uuid4,
@@ -125,8 +122,6 @@ class Organization(AuditModel):
         null=True, max_length=15, verbose_name="Telephone number")
     fax_tel = models.CharField(
         null=True, max_length=15, verbose_name="Fax number")
-    email = models.EmailField(blank=True, null=True,
-                              verbose_name="Email address")
     website_url = models.URLField(null=True, verbose_name="Website")
     effective_date = models.DateField(default=datetime.date.today)
     expired_date = models.DateField(blank=True, null=True)
@@ -141,9 +136,6 @@ class Organization(AuditModel):
 
 
 class Person(AuditModel):
-    """
-    Person record (well driller or well pump installer)
-    """
     person_guid = models.UUIDField(
         primary_key=True,
         default=uuid.uuid4,
@@ -154,14 +146,12 @@ class Person(AuditModel):
 
     # As per D.A. - temporary fields to hold compliance-related details
     well_driller_orcs_no = models.CharField(max_length=25, blank=True, null=True,
-        verbose_name='ORCS File # reference (in context of Well Driller).')
+                                            verbose_name='ORCS File # reference (in context of Well Driller).')
     pump_installer_orcs_no = models.CharField(max_length=25, blank=True, null=True,
-        verbose_name='ORCS File # reference (in context of Pump Installer).')
-
+                                              verbose_name='ORCS File # reference (in context of Pump Installer).')
 
     effective_date = models.DateField(default=datetime.date.today)
     expired_date = models.DateField(blank=True, null=True)
-
 
     class Meta:
         db_table = 'registries_person'
@@ -177,9 +167,6 @@ class Person(AuditModel):
 
 
 class ContactInfo(AuditModel):
-    """
-    Contact information for registered people
-    """
     contact_detail_guid = models.UUIDField(
         primary_key=True,
         default=uuid.uuid4,
@@ -202,8 +189,8 @@ class ContactInfo(AuditModel):
         max_length=15,
         verbose_name="Contact cell number")
 
-    contact_email = models.EmailField(blank=True, null=True, verbose_name="Email adddress")
-
+    contact_email = models.EmailField(
+        blank=True, null=True, verbose_name="Email adddress")
     effective_date = models.DateField(default=datetime.date.today)
     expired_date = models.DateField(blank=True, null=True)
 
@@ -310,10 +297,7 @@ class RegistriesRemovalReason(AuditModel):
 
 
 class Register(AuditModel):
-    """
-    Registration record for a well driller or well pump installer
-    """
-    PENDING = 'P'  # default value for status
+    PENDING = 'P'
 
     register_guid = models.UUIDField(
         primary_key=True,
@@ -324,13 +308,13 @@ class Register(AuditModel):
         ActivityCode,
         db_column='registries_activity_code',
         on_delete=models.PROTECT)
-    person = models.ForeignKey(Person, db_column='person_guid', on_delete=models.PROTECT, related_name="registrations")
+    person = models.ForeignKey(Person, db_column='person_guid',
+                               on_delete=models.PROTECT, related_name="registrations")
     organization = models.ForeignKey(
         Organization, blank=True,
         db_column='organization_guid',
         null=True, on_delete=models.PROTECT,
         related_name="registrations")
-
     status = models.ForeignKey(
         RegistriesStatusCode,
         db_column='registries_status_code',
