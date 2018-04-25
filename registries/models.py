@@ -144,7 +144,6 @@ class Person(AuditModel):
     pump_installer_orcs_no = models.CharField(max_length=25, blank=True, null=True,
         verbose_name='ORCS File # reference (in context of Pump Installer).')
 
-
     effective_date = models.DateField(default=datetime.date.today)
     expired_date = models.DateField(blank=True, null=True)
 
@@ -471,7 +470,6 @@ class Register_Note(AuditModel):
         return '%s' % (
             self.notes
         )
-
 
 """
 Tue Apr 10 10:15:34 2018 Expose DB Views to Django

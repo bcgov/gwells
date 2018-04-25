@@ -25,6 +25,23 @@ To run with all, you can run:
 
 Replace `./gradlew` with `gradlew.bat` in the above examples if you're on Windows.
 
+    
+To run a single class of tests, you can run:
+
+    ./gradlew chromeTest --tests <ClassName>
+
+NOTE: To find the class name, navigate to the &ast;.groovy files under [./src/test/groovy](./src/test/groovy).  or example, the `Registry/SearchRegistrySpecs.groovy` file has:
+```
+class SearchRegistrySpecs extends GebReportingSpec {
+```
+
+To run just this sets of Functional tests:
+```
+        ./gradlew chromeTest -tests SearchRegistrySpecs
+```
+
+
+
 ## Questions and issues
 
 Please ask questions on our [Slack Channel][slack_channel] and raise issues in [BDDStack issue tracker][issue_tracker].
