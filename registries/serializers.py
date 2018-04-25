@@ -1,3 +1,18 @@
+"""
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+"""
+
+from django.utils import timezone
 from rest_framework import serializers
 from gwells.models.ProvinceStateCode import ProvinceStateCode
 from registries.models import (
@@ -235,6 +250,7 @@ class ApplicationAdminSerializer(AuditModelSerializer):
     """
 
     status_set = ApplicationStatusSerializer(many=True, read_only=True)
+    current_status = ApplicationStatusSerializer()
     cert_authority = serializers.ReadOnlyField(
         source="primary_certificate.cert_auth.cert_auth_code")
     qualifications = serializers.StringRelatedField(
@@ -258,7 +274,8 @@ class ApplicationAdminSerializer(AuditModelSerializer):
             'reason_denied',
             'subactivity',
             'qualifications',
-            'status_set'
+            'status_set',
+            'current_status'
         )
 
     def create(self, validated_data):
@@ -271,6 +288,7 @@ class ApplicationAdminSerializer(AuditModelSerializer):
             raise TypeError('A field may need to be made read only.')
 
         # make a status record to go with the new application
+        # by default we set the ApplicationStatus to P(ending).
         pending = ApplicationStatusCode.objects.get(
             registries_application_status_code='P')
         RegistriesApplicationStatus.objects.create(
@@ -278,6 +296,37 @@ class ApplicationAdminSerializer(AuditModelSerializer):
             status=pending)
 
         return app
+
+    def update(self, instance, validated_data):
+        current_status = instance.current_status
+        validated_status = validated_data.get('current_status', current_status)
+
+        # We have to handle the current_status seperately because django
+        # isn't smart enough to handle this kind of db relation.
+
+        # Validated_status is an OrderedDict at this point
+        validated_status_code = validated_status.get('status').registries_application_status_code
+        if current_status:
+            current_status_code = current_status.status.registries_application_status_code
+        else:
+            logger.error('RegistryApplication should always have a current status', instance)
+            current_status_code = None
+
+        if validated_status_code != current_status_code:
+            # Change the status
+            # Expire existing status
+            if current_status:
+                current_status.expired_date = timezone.now()
+                current_status.save()
+            new_status = ApplicationStatusCode.objects.get(
+                registries_application_status_code=validated_status_code)
+            RegistriesApplicationStatus.objects.create(
+                application=instance,
+                status=new_status)
+
+        # Pop off current_status since it's already handeled
+        validated_data.pop('current_status')
+        return super().update(instance, validated_data)
 
 
 class RegistrationAdminSerializer(AuditModelSerializer):
