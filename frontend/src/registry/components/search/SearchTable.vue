@@ -15,7 +15,14 @@
               v-for="(driller, index) in drillers.results"
               :key="`tr ${driller.person_guid} ${index}`" :id="`registry-table-row-${index}`">
             <td :id="`drillerName${index}`">
-              <div class="font-weight-bold">{{ driller.surname }}, {{ driller.first_name }}</div>
+              <router-link
+                v-if="userIsAdmin"
+                :to="{ name: 'PersonDetail', params: { person_guid: driller.person_guid } }">
+                  {{ driller.surname }}, {{ driller.first_name }}
+              </router-link>
+              <div v-else class="font-weight-bold">
+                {{ driller.surname }}, {{ driller.first_name }}
+              </div>
               <div v-if="driller.registrations && driller.registrations.length">
                 <div
                     v-for="(reg, regIndex) in driller.registrations"
@@ -48,11 +55,6 @@
             </td>
             <td v-if="userIsAdmin && activity === 'DRILL'" :id="`personRegStatus${index}`">
               <driller-registration-status :driller="driller" :activity="activity"/>
-            </td>
-            <td v-if="userIsAdmin">
-              <router-link :to="{ name: 'PersonDetail', params: { person_guid: driller.person_guid } }">
-                Details
-              </router-link>
             </td>
           </tr>
           <tr v-else>
@@ -161,8 +163,7 @@ export default {
           name: 'Certificate Issued By',
           class: 'col-xs-1',
           visible: 'public',
-          sortable: true,
-          sortCode: 'issuing_org',
+          sortable: false,
           activity: 'all'
         },
         {
@@ -171,13 +172,6 @@ export default {
           visible: 'admin',
           sortable: false,
           activity: 'DRILL'
-        },
-        {
-          name: 'Action',
-          class: 'col-xs-1',
-          visible: 'admin',
-          sortable: false,
-          activity: 'all'
         }
       ]
     }

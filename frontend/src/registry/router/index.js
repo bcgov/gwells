@@ -71,5 +71,5 @@ export default new Router({
     }
   ],
   mode: 'history',
-  base: process.env.NODE_ENV === 'production' ? '/gwells/registries/' : '/'
+  base: process.env.APPLICATION_ROOT
 })

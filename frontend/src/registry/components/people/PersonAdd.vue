@@ -177,7 +177,7 @@ export default {
     return {
       breadcrumbs: [
         {
-          text: 'Registry Search',
+          text: 'Registry',
           to: { name: 'SearchHome' }
         },
         {
