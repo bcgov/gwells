@@ -153,16 +153,6 @@ export default {
   name: 'OrganizationAdd',
   data () {
     return {
-      breadcrumbs: [
-        {
-          text: 'Registry Search',
-          to: { name: 'SearchHome' }
-        },
-        {
-          text: 'Add an Organization',
-          active: true
-        }
-      ],
       orgForm: {
         name: '',
         street_address: '',
