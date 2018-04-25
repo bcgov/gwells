@@ -6,13 +6,28 @@
       </b-card-header>
       <b-collapse id="adminPanel">
         <b-card-body class="pb-1">
-          <b-button class="mb-2" variant="btn-light" id="addNewEntryButton">Add new entry</b-button>
-          <b-button class="mb-2" variant="btn-light" id="manageCompaniesButton">Manage companies</b-button>
+          <b-button
+            class="mb-2"
+            variant="primary"
+            id="addNewEntryButton"
+            :to="{ name: 'PersonAdd' }"
+          >
+            Add new entry
+          </b-button>
+          <b-button
+            class="mb-2"
+            variant="primary"
+            id="manageCompaniesButton"
+            :to="{ name: 'OrganizationAdd' }"
+          >
+            Manage companies
+          </b-button>
         </b-card-body>
       </b-collapse>
     </b-card>
     <b-card class="container p-1" title="Register of Well Drillers and Well Pump Installers">
-      <p>
+      To update contact information or for general enquiries email <a href="mailto:Groundwater@gov.bc.ca">groundwater@gov.bc.ca</a>.
+      <p class="mt-1">
         <a href="https://www2.gov.bc.ca/gov/content/environment/air-land-water/water/groundwater-wells/information-for-well-drillers-well-pump-installers/what-you-need-to-practice-in-bc">
         Learn more about registering as a well driller or well pump installer in B.C.
         </a>
@@ -44,7 +59,7 @@
                       v-for="prov in cityList[formatActivityForCityList]"
                       v-if="prov.cities && prov.cities.length"
                       :key="prov.prov"
-                      :label="`${prov.prov} (${prov.cities.length})`"
+                      :label="prov.prov"
                     >
                       <option v-for="city in prov.cities" :key="`${city} ${prov.prov}`" :value="city">{{ city }}</option>
                     </optgroup>
@@ -122,6 +137,9 @@
               <h3>{{ activityTitle }} Results</h3>
             </div>
             <b-col cols="12">
+              To update contact information email <a href="mailto:Groundwater@gov.bc.ca">groundwater@gov.bc.ca</a>.
+            </b-col>
+            <b-col cols="12" class="mt-2">
               <registry-table @sort="sortTable" :activity="lastSearchedActivity"/>
             </b-col>
           </b-row>
@@ -174,7 +192,8 @@ export default {
         limit: '10',
         ordering: ''
       },
-      searchLoading: false
+      searchLoading: false,
+      lastSearchedParams: {}
     }
   },
   computed: {
@@ -240,6 +259,7 @@ export default {
         this.$SmoothScroll(table, 100)
         this.drillerSearchReset({keepActivity: true, keepLimit: true})
         this.searchLoading = false
+        this.lastSearchedParams = Object.assign({}, params)
       }).catch(() => {
         this.searchLoading = false
       })
@@ -260,12 +280,12 @@ export default {
       }
     },
     sortTable (sortCode) {
-      if (this.searchParams.ordering && this.searchParams.ordering.length && this.searchParams.ordering[0] !== '-') {
-        this.searchParams['ordering'] = `-${sortCode}`
+      if (this.lastSearchedParams.ordering[0] !== '-') {
+        this.lastSearchedParams['ordering'] = `-${sortCode}`
       } else {
-        this.searchParams['ordering'] = `${sortCode}`
+        this.lastSearchedParams['ordering'] = `${sortCode}`
       }
-      this.$store.dispatch(FETCH_DRILLER_LIST, this.APISearchParams)
+      this.$store.dispatch(FETCH_DRILLER_LIST, this.lastSearchedParams)
     }
   },
   created () {
