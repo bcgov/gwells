@@ -66,6 +66,20 @@ class APILimitOffsetPagination(LimitOffsetPagination):
         ]))
 
 
+class PersonFilter(restfilters.FilterSet):
+    """
+    Allows APIPersonListView to filter response by city, province, or registration status.
+    """
+    # city = restfilters.MultipleChoiceFilter(name="organization__city")
+    prov = restfilters.CharFilter(name="organization__province_state")
+    status = restfilters.CharFilter(name="registrations__status")
+    activity = restfilters.CharFilter(
+        name="registrations__registries_activity")
+
+    class Meta:
+        model = Person
+        fields = ('prov', 'status')
+
 
 class RegistriesIndexView(TemplateView):
     """
@@ -351,7 +365,6 @@ class CitiesListView(ListAPIView):
     serializer_class = CityListSerializer
     lookup_field = 'person_guid'
     pagination_class = None
-
     queryset = Person.objects \
         .exclude(organization__city__isnull=True) \
         .exclude(organization__city='') \
@@ -379,7 +392,7 @@ class CitiesListView(ListAPIView):
 
 
 class RegistrationListView(AuditCreateMixin, ListCreateAPIView):
-    """
+    """ 
     get:
     List all registration records
 
