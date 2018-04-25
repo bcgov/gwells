@@ -52,7 +52,7 @@
                   class="btn btn-light btn-sm registries-edit-btn"
                   tag="button"
                   to="#"
-                  v-if="currentDriller.person_guid"><i class="fa fa-edit"></i> Edit</router-link>            
+                  v-if="currentDriller.person_guid"><i class="fa fa-edit"></i> Edit</router-link>
               </div>
             </div>
             <div class="row mb-2">
@@ -87,7 +87,7 @@
                   class="btn btn-light btn-sm registries-edit-btn"
                   tag="button"
                   to="#"
-                  v-if="currentDriller.person_guid"><i class="fa fa-edit"></i> Edit</router-link>            
+                  v-if="currentDriller.person_guid"><i class="fa fa-edit"></i> Edit</router-link>
               </div>
             </div>
             <div class="row mb-2">
@@ -121,12 +121,12 @@
                   class="btn btn-light btn-sm registries-edit-btn"
                   tag="button"
                   to="#"
-                  v-if="currentDriller.person_guid"><i class="fa fa-refresh"></i> Change</router-link> 
+                  v-if="currentDriller.person_guid"><i class="fa fa-refresh"></i> Change</router-link>
                 <router-link
                   class="btn btn-light btn-sm registries-edit-btn"
                   tag="button"
                   to="#"
-                  v-if="currentDriller.person_guid"><i class="fa fa-edit"></i> Edit</router-link>            
+                  v-if="currentDriller.person_guid"><i class="fa fa-edit"></i> Edit</router-link>
               </div>
             </div>
             <div v-if="currentDriller.organization">
@@ -225,7 +225,7 @@ export default {
     return {
       breadcrumbs: [
         {
-          text: 'Registry Search',
+          text: 'Registry',
           to: { name: 'SearchHome' }
         },
         {
