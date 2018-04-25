@@ -17,12 +17,12 @@
               alt="B.C. Government Logo">
         </a>
         <b-navbar-nav>
-          <span class="bc-nav-title d-none d-md-block">Groundwater Wells and Aquifers</span>
+          <li class="bc-nav-title d-none d-md-block">Groundwater Wells and Aquifers</li>
         </b-navbar-nav>
         <b-navbar-nav class="ml-auto">
-          <b-nav-item>
-            <keycloak-auth/>
-          </b-nav-item>
+          <li>
+            <keycloak-auth v-if="auth !== 'hide'"/>
+          </li>
         </b-navbar-nav>
         <b-navbar-nav class="ml-auto d-sm-none">
           <b-navbar-toggle class="d-sm-none" target="nav_collapse"></b-navbar-toggle>
@@ -34,10 +34,12 @@
         <b-collapse class="py-2" is-nav id="nav_collapse">
           <b-container id="navContainer">
             <b-navbar-nav>
-              <b-nav-item class="d-sm-none text-light">Groundwater Wells and Aquifers</b-nav-item>
-              <b-nav-item class="navbar-link lvl2-link" href="#">Well Search</b-nav-item>
-              <b-nav-item class="navbar-link lvl2-link" href="#">Groundwater Information</b-nav-item>
-              <b-nav-item class="navbar-link lvl2-link" href="#">Registry</b-nav-item>
+              <li class="d-sm-none text-light mb-2 mt-2">Groundwater Wells and Aquifers</li>
+              <b-nav-item id="ribbon-search" class="navbar-link lvl2-link" href="/gwells">Well Search</b-nav-item>
+              <b-nav-item id="ribbon-groundwaterinfo" class="navbar-link lvl2-link" href="/gwells/groundwater-information">Groundwater Information</b-nav-item>
+              <b-nav-item id="ribbon-registry" class="navbar-link lvl2-link" href="/gwells/registries">Registry</b-nav-item>
+              <b-nav-item class="navbar-link lvl2-link" v-if="show.dataEntry" href="/gwells/submission/create">Submit Report</b-nav-item>
+              <b-nav-item id="ribbon-admin" class="navbar-link lvl2-link" v-if="show.admin" href="/gwells/admin">Admin</b-nav-item>
             </b-navbar-nav>
           </b-container>
         </b-collapse>
@@ -52,8 +54,14 @@ export default {
   components: {
     'keycloak-auth': Auth
   },
+  props: ['auth'],
   data () {
+    let adminMeta = document.head.querySelector('meta[name="show.admin"]')
     return {
+      show: {
+        dataEntry: process.env.ENABLE_DATA_ENTRY,
+        admin: adminMeta ? adminMeta.content === 'true' : false
+      }
     }
   }
 }

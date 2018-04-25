@@ -44,8 +44,6 @@ html {
 body {
   display: flex;
   flex-direction: column;
-  background-color: #f1f1f1;
-  // margin-bottom: 45px!important;
   height: 100%;
 }
 main {
@@ -59,33 +57,5 @@ footer {
 }
 .h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6 {
   font-weight: 500;
-}
-.col-form-label {
-  font-weight: 600;
-}
-.registry-section {
-  margin-top: 25px;
-  margin-bottom: 20px;
-}
-.registry-item {
-  margin-bottom: 20px;
-}
-.registry-label {
-  font-weight: bold;
-}
-.registry-disabled-item {
-  color: #808080;
-  cursor: auto!important;
-}
-.qualification-item {
-  margin-bottom: 5px;
-}
-.attachment-icon {
-  font-size: 2rem;
-  margin-left: 10px;
-  margin-top: 5px;
-}
-.registry-form-label {
-  padding-top: 5px;
 }
 </style>

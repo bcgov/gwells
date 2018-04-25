@@ -134,6 +134,8 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'wsgi.application'
+# 2018/04/19: According to the documentation, bootstrap4 is still in alpha:
+# http://django-crispy-forms.readthedocs.io/en/latest/install.html?highlight=bootstrap4
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
@@ -248,10 +250,7 @@ WEBPACK_LOADER = {
     'DEFAULT': {
         'CACHE': not DEBUG,
         'BUNDLE_DIR_NAME': 'bundles/',  # must end with slash
-        'STATS_FILE': os.path.join(BASE_DIR, 'frontend/webpack-stats.json'),
-        'POLL_INTERVAL': 0.1,
-        'TIMEOUT': None,
-        'IGNORE': ['.+\.hot-update.js', '.+\.map']
+        'STATS_FILE': os.path.join(BASE_DIR, 'frontend/webpack-stats.json')
     }
 }
 LOGIN_URL = '/gwells/accounts/login/'
