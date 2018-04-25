@@ -64,14 +64,17 @@ node('maven') {
             returnStdout: true
         ).trim()
         echo "SONARQUBE_URL: ${SONARQUBE_URL}"
-	    unstash 'nodejunit'
-	    unstash 'nodecoverage'
-        dir('sonar-runner') {
-            unstash 'coverage'
-            try {
-                sh returnStdout: true, script: "./gradlew sonarqube -Dsonar.host.url=${SONARQUBE_URL} -Dsonar.verbose=true --stacktrace --info  -Dsonar.sources=.."
-            } finally { }
-        }
+
+        echo "Skipping SonarQube temporarily... "
+
+	    //unstash 'nodejunit'
+	    //unstash 'nodecoverage'
+        //dir('sonar-runner') {
+        //    unstash 'coverage'
+        //    try {
+        //        sh returnStdout: true, script: "./gradlew sonarqube -Dsonar.host.url=${SONARQUBE_URL} -Dsonar.verbose=true --stacktrace --info  -Dsonar.sources=.."
+        //    } finally { }
+        //}
     }    
 
     stage('Deploy on Dev') {
