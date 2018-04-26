@@ -306,30 +306,31 @@ class ApplicationAdminSerializer(AuditModelSerializer):
         change occurs, especially if it leaves an application without a current
         status.
         """
-        current_status = instance.current_status
         # We pop the current status, as the update method on the base
         # class cannot serialize nested fields.
-        validated_status = validated_data.pop('current_status', current_status)
+        validated_status = validated_data.pop('current_status', None)
 
-        # Validated_status is an OrderedDict at this point.
-        validated_status_code = validated_status.get('status').registries_application_status_code
-        if current_status:
-            current_status_code = current_status.status.registries_application_status_code
-        else:
-            logger.error('RegistryApplication should always have a current status', instance)
-            current_status_code = None
-
-        if validated_status_code != current_status_code:
+        if validated_status:
+            # Validated_status is an OrderedDict at this point.
+            validated_status_code = validated_status.get('status').registries_application_status_code
+            current_status = instance.current_status
             if current_status:
-                # Expire existing status.
-                current_status.expired_date = timezone.now()
-                current_status.save()
-            new_status = ApplicationStatusCode.objects.get(
-                registries_application_status_code=validated_status_code)
-            # Create a new status.
-            RegistriesApplicationStatus.objects.create(
-                application=instance,
-                status=new_status)
+                current_status_code = current_status.status.registries_application_status_code
+            else:
+                logger.error('RegistryApplication should always have a current status', instance)
+                current_status_code = None
+
+            if validated_status_code != current_status_code:
+                if current_status:
+                    # Expire existing status.
+                    current_status.expired_date = timezone.now()
+                    current_status.save()
+                new_status = ApplicationStatusCode.objects.get(
+                    registries_application_status_code=validated_status_code)
+                # Create a new status.
+                RegistriesApplicationStatus.objects.create(
+                    application=instance,
+                    status=new_status)
 
         return super().update(instance, validated_data)
 
