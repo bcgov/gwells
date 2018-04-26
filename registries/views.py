@@ -327,6 +327,7 @@ class PersonDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
             'registrations__applications__primary_certificate',
             'registrations__applications__primary_certificate__cert_auth',
             'registrations__applications__status_set',
+            'registrations__applications__status_set__status',
             'registrations__applications__subactivity',
             'registrations__applications__subactivity__qualification_set',
             'registrations__applications__subactivity__qualification_set__well_class'
@@ -410,8 +411,18 @@ class RegistrationListView(AuditCreateMixin, ListCreateAPIView):
             'person',
             'registries_activity',
             'status',
+            'organization',
             'register_removal_reason',) \
-        .prefetch_related('applications')
+        .prefetch_related(
+            'applications',
+            'applications__primary_certificate',
+            'applications__primary_certificate__cert_auth',
+            'applications__status_set',
+            'applications__status_set__status',
+            'applications__subactivity',
+            'applications__subactivity__qualification_set',
+            'applications__subactivity__qualification_set__well_class'
+    )
 
 
 class RegistrationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
@@ -437,8 +448,18 @@ class RegistrationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
             'person',
             'registries_activity',
             'status',
+            'organization',
             'register_removal_reason',) \
-        .prefetch_related('applications')
+        .prefetch_related(
+            'applications',
+            'applications__primary_certificate',
+            'applications__primary_certificate__cert_auth',
+            'applications__status_set',
+            'applications__status_set__status',
+            'applications__subactivity',
+            'applications__subactivity__qualification_set',
+            'applications__subactivity__qualification_set__well_class'
+    )
 
 
 class ApplicationListView(AuditCreateMixin, ListCreateAPIView):
