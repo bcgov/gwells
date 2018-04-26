@@ -23,7 +23,7 @@
 
 <script>
 export default {
-  props: ['driller'],
+  props: ['driller']
 }
 </script>
 
