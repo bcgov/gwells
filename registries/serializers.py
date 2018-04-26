@@ -461,8 +461,8 @@ class PersonListSerializer(AuditModelSerializer):
     """
     Serializes the Person model for a list view (fewer fields than detail view)
     """
-    registrations = RegistrationsListSerializer(many=True, read_only=True)
     contact_info = ContactInfoSerializer(many=True, read_only=True)
+    registrations = serializers.SerializerMethodField()
 
     class Meta:
         model = Person
@@ -473,6 +473,18 @@ class PersonListSerializer(AuditModelSerializer):
             'registrations',
             'contact_info'
         )
+
+    def get_registrations(self, person):
+        """
+        Filter for approved applications (application has an 'approved' status that is not expired)
+        """
+
+        registrations = [
+            reg for reg in person.registrations.all() if reg.status.registries_status_code == 'ACTIVE']
+
+        serializer = RegistrationsListSerializer(
+            instance=registrations, many=True)
+        return serializer.data
 
 
 class RegistrationAutoCreateSerializer(AuditModelSerializer):
