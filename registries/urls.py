@@ -24,7 +24,8 @@ schema_view = get_schema_view(
     openapi.Info(
         title="Well Driller and Pump Installer Registry API",
         default_version='v1',
-        description="The Well Driller and Pump Installer Registry is a database of qualified well drillers and pump installers registered to operate in British Columbia.",
+        description=str("The Well Driller and Pump Installer Registry is a database of qualified well "
+                        "drillers and pump installers registered to operate in British Columbia."),
         terms_of_service="http://www2.gov.bc.ca/gov/content?id=D1EE0A405E584363B205CD4353E02C88",
         contact=openapi.Contact(email="groundwater@gov.bc.ca"),
         license=openapi.License(name="Open Government License - British Columbia",

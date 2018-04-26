@@ -430,9 +430,12 @@ class RegistriesApplication(AuditModel):
     @property
     def current_status(self):
         try:
-            return RegistriesApplicationStatus.objects.get(application=self.application_guid, expired_date=None)
+            return RegistriesApplicationStatus.objects.get(
+                application=self.application_guid,
+                expired_date=None)
         except:
-            logger.error('Could not find the current status for application', self.application_guid)
+            logger.error('Could not find the current status for application: {}'.format(
+                self.application_guid))
             return None
 
     class Meta:
