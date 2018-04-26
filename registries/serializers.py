@@ -273,7 +273,7 @@ class ApplicationAdminSerializer(AuditModelSerializer):
     """
 
     status_set = ApplicationStatusSerializer(many=True, read_only=True)
-    current_status = ApplicationStatusSerializer()
+    current_status = ApplicationStatusSerializer(required=False)
     cert_authority = serializers.ReadOnlyField(
         source="primary_certificate.cert_auth.cert_auth_code")
     qualifications = serializers.StringRelatedField(
@@ -344,12 +344,14 @@ class ApplicationAdminSerializer(AuditModelSerializer):
 
         if validated_status:
             # Validated_status is an OrderedDict at this point.
-            validated_status_code = validated_status.get('status').registries_application_status_code
+            validated_status_code = validated_status.get(
+                'status').registries_application_status_code
             current_status = instance.current_status
             if current_status:
                 current_status_code = current_status.status.registries_application_status_code
             else:
-                logger.error('RegistryApplication should always have a current status', instance)
+                logger.error(
+                    'RegistryApplication should always have a current status', instance)
                 current_status_code = None
 
             if validated_status_code != current_status_code:
