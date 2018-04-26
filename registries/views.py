@@ -410,7 +410,7 @@ class CitiesListView(ListAPIView):
 
 
 class RegistrationListView(AuditCreateMixin, ListCreateAPIView):
-    """ 
+    """
     get:
     List all registration records
 
