@@ -71,7 +71,8 @@ class PersonFilter(restfilters.FilterSet):
     Allows APIPersonListView to filter response by city, province, or registration status.
     """
     # city = restfilters.MultipleChoiceFilter(name="organization__city")
-    prov = restfilters.CharFilter(name="organization__province_state")
+    prov = restfilters.CharFilter(
+        name="registrations__organization__province_state")
     status = restfilters.CharFilter(name="registrations__status")
     activity = restfilters.CharFilter(
         name="registrations__registries_activity")
@@ -104,8 +105,7 @@ class OrganizationListView(AuditCreateMixin, ListCreateAPIView):
     # prefetch related objects for the queryset to prevent duplicate database trips later
     queryset = Organization.objects.all() \
         .select_related('province_state',) \
-        .prefetch_related('person_set',) \
-        .filter(expired_date__isnull=True)
+        .prefetch_related('registrations', 'registrations__person')
 
     # Allow searching against fields like organization name, address,
     # name or registration of organization contacts
@@ -114,9 +114,9 @@ class OrganizationListView(AuditCreateMixin, ListCreateAPIView):
         'name',
         'street_address',
         'city',
-        'person_set__first_name',
-        'person_set__surname',
-        'person_set__registrations__applications__file_no'
+        'registrations__person__first_name',
+        'registrations__person__surname',
+        'registrations__applications__file_no'
     )
 
     def get_queryset(self):
@@ -179,7 +179,7 @@ class OrganizationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
     # prefetch related province, contacts and person records to prevent future additional database trips
     queryset = Organization.objects.all() \
         .select_related('province_state',) \
-        .prefetch_related('person_set',) \
+        .prefetch_related('registrations', 'registrations__person') \
         .filter(expired_date__isnull=True)
 
     def get_queryset(self):
@@ -189,7 +189,7 @@ class OrganizationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
         qs = self.queryset
         if not self.request.user.is_staff:
             qs = qs \
-                .filter(person_set__registrations__status='ACTIVE') \
+                .filter(registrations__status='ACTIVE') \
                 .distinct()
         return qs
 
@@ -227,26 +227,28 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
     filter_backends = (restfilters.DjangoFilterBackend,
                        filters.SearchFilter, filters.OrderingFilter)
     filter_class = PersonFilter
-    ordering_fields = ('surname', 'organization__name')
+    ordering_fields = ('surname', 'registrations__organization__name')
     ordering = ('surname',)
     search_fields = (
         'first_name',
         'surname',
-        'organization__name',
-        'organization__city',
+        'registrations__organization__name',
+        'registrations__organization__city',
         'registrations__registration_no'
     )
 
     # fetch related companies and registration applications (prevent duplicate database trips)
     queryset = Person.objects \
         .all() \
-        .select_related('organization') \
         .prefetch_related(
             'contact_info',
             'registrations',
             'registrations__registries_activity',
             'registrations__status',
+            'registrations__organization',
             'registrations__applications',
+            'registrations__applications__primary_certificate',
+            'registrations__applications__primary_certificate__cert_auth',
             'registrations__applications__status_set',
             'registrations__applications__status_set__status',
             'registrations__applications__subactivity',
@@ -265,7 +267,7 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
         cities = self.request.query_params.get('city', None)
         if cities:
             cities = cities.split(',')
-            qs = qs.filter(organization__city__in=cities)
+            qs = qs.filter(registrations__organization__city__in=cities)
 
         # Only show active drillers to non-admin users and public
         if not self.request.user.is_staff:
@@ -316,12 +318,14 @@ class PersonDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
 
     queryset = Person.objects \
         .all() \
-        .select_related('organization') \
         .prefetch_related(
             'registrations',
             'registrations__registries_activity',
+            'registrations__organization',
             'registrations__status',
             'registrations__applications',
+            'registrations__applications__primary_certificate',
+            'registrations__applications__primary_certificate__cert_auth',
             'registrations__applications__status_set',
             'registrations__applications__subactivity',
             'registrations__applications__subactivity__qualification_set',
@@ -363,17 +367,16 @@ class CitiesListView(ListAPIView):
     get: returns a list of cities with a qualified, registered operator (driller or installer)
     """
     serializer_class = CityListSerializer
-    lookup_field = 'person_guid'
+    lookup_field = 'register_guid'
     pagination_class = None
-    queryset = Person.objects \
+    queryset = Register.objects \
         .exclude(organization__city__isnull=True) \
         .exclude(organization__city='') \
         .select_related(
             'organization',
         ) \
         .distinct('organization__city') \
-        .order_by('organization__city') \
-        .filter(expired_date__isnull=True)
+        .order_by('organization__city')
 
     def get_queryset(self):
         """
@@ -383,11 +386,11 @@ class CitiesListView(ListAPIView):
         """
         qs = self.queryset
         if not self.request.user.is_staff:
-            qs = qs.filter(registrations__status='ACTIVE')
+            qs = qs.filter(status='ACTIVE')
         if self.kwargs['activity'] == 'drill':
-            qs = qs.filter(registrations__registries_activity='DRILL')
+            qs = qs.filter(registries_activity='DRILL')
         if self.kwargs['activity'] == 'install':
-            qs = qs.filter(registrations__registries_activity='PUMP')
+            qs = qs.filter(registries_activity='PUMP')
         return qs
 
 
