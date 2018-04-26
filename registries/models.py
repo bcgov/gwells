@@ -1,7 +1,24 @@
+"""
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+"""
 import uuid
 import datetime
+import logging
 from django.db import models
 from gwells.models import AuditModel, ProvinceStateCode
+
+
+logger = logging.getLogger(__name__)
 
 
 class ActivityCode(AuditModel):
@@ -346,6 +363,26 @@ class Register(AuditModel):
         )
 
 
+class ApplicationStatusCode(AuditModel):
+    """
+    Status of Applications for the Well Driller and Pump Installer Registries
+    """
+    registries_application_status_code = models.CharField(
+        primary_key=True, max_length=10, editable=False)
+    description = models.CharField(max_length=100)
+    display_order = models.PositiveIntegerField()
+    effective_date = models.DateField(default=datetime.date.today)
+    expired_date = models.DateField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'registries_application_status_code'
+        ordering = ['display_order', 'description']
+        verbose_name_plural = 'Application Status Codes'
+
+    def __str__(self):
+        return self.description
+
+
 class RegistriesApplication(AuditModel):
     """
     Application from a well driller or pump installer to be on the GWELLS Register.
@@ -390,6 +427,14 @@ class RegistriesApplication(AuditModel):
         verbose_name="Certificate")
     primary_certificate_no = models.CharField(max_length=50)
 
+    @property
+    def current_status(self):
+        try:
+            return RegistriesApplicationStatus.objects.get(application=self.application_guid, expired_date=None)
+        except:
+            logger.error('Could not find the current status for application', self.application_guid)
+            return None
+
     class Meta:
         db_table = 'registries_application'
         verbose_name_plural = 'Applications'
@@ -398,26 +443,6 @@ class RegistriesApplication(AuditModel):
         return '%s : %s' % (
             self.registration,
             self.file_no)
-
-
-class ApplicationStatusCode(AuditModel):
-    """
-    Status of Applications for the Well Driller and Pump Installer Registries
-    """
-    registries_application_status_code = models.CharField(
-        primary_key=True, max_length=10, editable=False)
-    description = models.CharField(max_length=100)
-    display_order = models.PositiveIntegerField()
-    effective_date = models.DateField(default=datetime.date.today)
-    expired_date = models.DateField(blank=True, null=True)
-
-    class Meta:
-        db_table = 'registries_application_status_code'
-        ordering = ['display_order', 'description']
-        verbose_name_plural = 'Application Status Codes'
-
-    def __str__(self):
-        return self.description
 
 
 class RegistriesApplicationStatus(AuditModel):

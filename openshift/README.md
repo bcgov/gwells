@@ -6,6 +6,19 @@ moe-gwells-dev has a resource limit of [8 cores](https://console.pathfinder.gov.
 
 Deployments may fail without a meaningful error message (e.g. timeout is the most common one).  If this happens then we scale down all ancillary pods in [moe-gwells-dev](https://console.pathfinder.gov.bc.ca:8443/console/project/moe-gwells-dev/overview) or [moe-gwells-test](https://console.pathfinder.gov.bc.ca:8443/console/project/moe-gwells-test/overview).  This does not seem to happon on [moe-gwells-prod](https://console.pathfinder.gov.bc.ca:8443/console/project/moe-gwells-prod/overview).
 
+Error message examples during deployment:
+```
+[2018-04-18 21:18:34 +0000] [1] [CRITICAL] WORKER TIMEOUT (pid:47)
+[2018-04-18 21:18:34 +0000] [47] [INFO] Worker exiting (pid: 47)
+[2018-04-18 21:18:34 +0000] [1] [CRITICAL] WORKER TIMEOUT (pid:48)
+```
+
+SonarQube also has error messages that are misleading but actually can be resolved by increasing memory or CPU Resource Limits:
+```
+ERROR: script returned exit code 137
+```
+
+
 A more detailed explanation is that each application has its own limit (e.g. [DEV gwells](https://console.pathfinder.gov.bc.ca:8443/console/project/moe-gwells-dev/set-limits?kind=DeploymentConfig&name=gwells) has CPU 700 millicores available while running) but during deployment, may require MORE than the 700 millicores during deployments.
 
 Until we can fine-tune each individual applications CPU limit, or are provided more resources overall, we need to be watchful for failed deployments due to running out of resources.   To fix this, we get ready to rerun the pipeline but before that, we go to the [Overview page](https://console.pathfinder.gov.bc.ca:8443/console/project/moe-gwells-dev/overview) expand the view into each of the applications in turn and scale down to 0:
