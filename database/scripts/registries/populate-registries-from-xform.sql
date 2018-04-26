@@ -364,7 +364,7 @@ SELECT
 ,'ACTIVE'
  from xform_registries_drillers_reg;
 
--- Attach companies for whom the drillers work 285
+-- Attach companies for whom the drillers work 252
 \echo '...Updating Register, attaching companies from Driller Registry'
 UPDATE registries_register reg
 SET organization_guid = org.org_guid
@@ -419,7 +419,7 @@ and   xform.lastname = per.surname;
 --      entered as driller
 
  
--- Attach companies for whom the pump installers work 320
+-- Attach companies for whom the pump installers work 268
 \echo '...Updating Register, attaching companies from Pump Installer Registry'
 UPDATE registries_register reg
 SET organization_guid = org.org_guid
@@ -521,6 +521,54 @@ and xform.reg_guid = per.person_guid
 and xform.registrationdate <=  '2016-02-29'
 and xform.name = concat(per.surname, ', ', per.first_name);
 
+-- Applications from post-2016-FEB-29 2016 Well Drillers
+-- 17
+\echo 'Inserting "Fake" Applications for post-2016-FEB-29  Well Drillers (WATER)'
+INSERT INTO registries_application (
+ create_user
+,create_date
+,update_user
+,update_date
+,application_guid
+,file_no
+,over19_ind
+,registrar_notes
+,reason_denied
+,primary_certificate_no
+,acc_cert_guid
+,register_guid
+,registries_subactivity_code
+)
+SELECT
+ 'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'
+,'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'
+,gen_random_uuid()
+,xform.file_number
+,TRUE
+,xform.notes
+,null
+,COALESCE(xform.certificatenumber, 'N/A')
+, (SELECT acc_cert_guid
+    from registries_accredited_certificate_code
+    where name = 'Grand-parent'
+    and  registries_activity_code = 'DRILL'
+   )
+,reg.register_guid
+,'WATER'
+from registries_register reg,
+     xform_registries_drillers_reg xform,
+     registries_person per
+WHERE per.person_guid = reg.person_guid
+AND reg.registries_status_code = 'ACTIVE'
+and reg.registries_activity_code = 'DRILL'
+and xform.reg_guid = per.person_guid
+and xform.name = concat(per.surname, ', ', per.first_name)
+and xform.registrationdate >  '2016-02-29'
+and xform.classofwelldriller like '%Water Well%';
+
+
 -- Pseudo-Applications from "Water Well" Well Drillers, who were
 -- grandfathered in  257
 \echo '... Approved entries'
@@ -559,6 +607,48 @@ and app.registries_subactivity_code = 'WATER'
 and xform.registrationdate <=  '2016-02-29'
 and xform.name = concat(per.surname, ', ', per.first_name)
 ;
+
+-- Pseudo-Applications from post-2016-FEB-29 2016 Well Drillers (WATER)
+-- 17
+\echo '... Approved entries'
+INSERT INTO registries_application_status (
+ create_user
+,create_date
+,update_user
+,update_date
+,application_status_guid
+,notified_date
+,effective_date
+,expired_date
+,application_guid
+,registries_application_status_code
+)
+SELECT
+ 'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'
+,'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'
+,gen_random_uuid()
+,xform.registrationdate -- default in this case
+,xform.registrationdate -- default in this case
+,null -- still Registered 
+,app.application_guid
+,'A'
+from registries_register reg,
+     registries_person per,
+     registries_application app,
+     xform_registries_drillers_reg xform
+WHERE per.person_guid = reg.person_guid
+AND   app.register_guid = reg.register_guid
+AND reg.registries_status_code = 'ACTIVE'
+and reg.registries_activity_code = 'DRILL'
+and app.registries_subactivity_code = 'WATER'
+and xform.registrationdate >  '2016-02-29'
+and xform.name = concat(per.surname, ', ', per.first_name)
+;
+
+
+
 
 -- 257
 \echo 'Inserting "Fake" Applications for pre-2016-FEB-29 grandfathered Well Drillers (GEOTECH)'
@@ -605,6 +695,56 @@ and xform.reg_guid = per.person_guid
 and xform.registrationdate <=  '2016-02-29'
 and xform.name = concat(per.surname, ', ', per.first_name);
 
+
+-- Applications from post-2016-FEB-29 2016 Well Drillers
+-- 10
+\echo 'Inserting "Fake" Applications for post-2016-FEB-29  Well Drillers (GEOTECH)'
+INSERT INTO registries_application (
+ create_user
+,create_date
+,update_user
+,update_date
+,application_guid
+,file_no
+,over19_ind
+,registrar_notes
+,reason_denied
+,primary_certificate_no
+,acc_cert_guid
+,register_guid
+,registries_subactivity_code
+)
+SELECT
+ 'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'
+,'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'
+,gen_random_uuid()
+,xform.file_number
+,TRUE
+,xform.notes
+,null
+,COALESCE(xform.certificatenumber, 'N/A')
+, (SELECT acc_cert_guid
+    from registries_accredited_certificate_code
+    where name = 'Grand-parent'
+    and  registries_activity_code = 'DRILL'
+   )
+,reg.register_guid
+,'GEOTECH'
+from registries_register reg,
+     xform_registries_drillers_reg xform,
+     registries_person per
+WHERE per.person_guid = reg.person_guid
+AND reg.registries_status_code = 'ACTIVE'
+and reg.registries_activity_code = 'DRILL'
+and xform.reg_guid = per.person_guid
+and xform.name = concat(per.surname, ', ', per.first_name)
+and xform.registrationdate >  '2016-02-29'
+and (xform.classofwelldriller like '%Geotechnical%'
+     or xform.classofwelldriller like '%Geotechnical'
+     or xform.classofwelldriller like 'Geotechnical%');
+
 -- 257
 \echo '... Approved entries'
 INSERT INTO registries_application_status (
@@ -642,6 +782,48 @@ and app.registries_subactivity_code = 'GEOTECH'
 and xform.registrationdate <=  '2016-02-29'
 and xform.name = concat(per.surname, ', ', per.first_name)
 ;
+
+
+-- Pseudo-Applications from post-2016-FEB-29 2016 Well Drillers (GEOTECH)
+-- 3
+\echo '... Approved entries'
+INSERT INTO registries_application_status (
+ create_user
+,create_date
+,update_user
+,update_date
+,application_status_guid
+,notified_date
+,effective_date
+,expired_date
+,application_guid
+,registries_application_status_code
+)
+SELECT
+ 'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'
+,'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'
+,gen_random_uuid()
+,xform.registrationdate -- default in this case
+,xform.registrationdate -- default in this case
+,null -- still Registered 
+,app.application_guid
+,'A'
+from registries_register reg,
+     registries_person per,
+     registries_application app,
+     xform_registries_drillers_reg xform
+WHERE per.person_guid = reg.person_guid
+AND   app.register_guid = reg.register_guid
+AND reg.registries_status_code = 'ACTIVE'
+and reg.registries_activity_code = 'DRILL'
+and app.registries_subactivity_code = 'GEOTECH'
+and xform.registrationdate >  '2016-02-29'
+and xform.name = concat(per.surname, ', ', per.first_name)
+;
+
+
 
 -- 257
 \echo 'Inserting "Fake" Applications for pre-2016-FEB-29 grandfathered Well Drillers (GEOXCHG)'
@@ -688,7 +870,59 @@ and xform.reg_guid = per.person_guid
 and xform.registrationdate <=  '2016-02-29'
 and xform.name = concat(per.surname, ', ', per.first_name);
 
+
+-- Applications from post-2016-FEB-29 2016 Well Drillers
+-- 3
+\echo 'Inserting "Fake" Applications for post-2016-FEB-29  Well Drillers (GEOXCHG)'
+INSERT INTO registries_application (
+ create_user
+,create_date
+,update_user
+,update_date
+,application_guid
+,file_no
+,over19_ind
+,registrar_notes
+,reason_denied
+,primary_certificate_no
+,acc_cert_guid
+,register_guid
+,registries_subactivity_code
+)
+SELECT
+ 'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'
+,'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'
+,gen_random_uuid()
+,xform.file_number
+,TRUE
+,xform.notes
+,null
+,COALESCE(xform.certificatenumber, 'N/A')
+, (SELECT acc_cert_guid
+    from registries_accredited_certificate_code
+    where name = 'Grand-parent'
+    and  registries_activity_code = 'DRILL'
+   )
+,reg.register_guid
+,'GEOXCHG'
+from registries_register reg,
+     xform_registries_drillers_reg xform,
+     registries_person per
+WHERE per.person_guid = reg.person_guid
+AND reg.registries_status_code = 'ACTIVE'
+and reg.registries_activity_code = 'DRILL'
+and xform.reg_guid = per.person_guid
+and xform.name = concat(per.surname, ', ', per.first_name)
+and xform.registrationdate >  '2016-02-29'
+and (trim(both from xform.classofwelldriller) = 'Geoexchange'
+     or xform.classofwelldriller like '%Geoexchange%');
+
+
+
 \echo '... Approved entries'
+-- 320
 INSERT INTO registries_application_status (
  create_user
 ,create_date
@@ -724,6 +958,47 @@ and app.registries_subactivity_code = 'GEOXCHG'
 and xform.registrationdate <=  '2016-02-29'
 and xform.name = concat(per.surname, ', ', per.first_name)
 ;
+
+
+-- Pseudo-Applications from post-2016-FEB-29 2016 Well Drillers (GEOXCHG)
+-- 320
+\echo '... Approved entries'
+INSERT INTO registries_application_status (
+ create_user
+,create_date
+,update_user
+,update_date
+,application_status_guid
+,notified_date
+,effective_date
+,expired_date
+,application_guid
+,registries_application_status_code
+)
+SELECT
+ 'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'
+,'DATALOAD_USER'
+,'2018-01-01 00:00:00-08'
+,gen_random_uuid()
+,xform.registrationdate -- default in this case
+,xform.registrationdate -- default in this case
+,null -- still Registered 
+,app.application_guid
+,'A'
+from registries_register reg,
+     registries_person per,
+     registries_application app,
+     xform_registries_drillers_reg xform
+WHERE per.person_guid = reg.person_guid
+AND   app.register_guid = reg.register_guid
+AND reg.registries_status_code = 'ACTIVE'
+and reg.registries_activity_code = 'DRILL'
+and app.registries_subactivity_code = 'GEOXCHG'
+and xform.registrationdate >  '2016-02-29'
+and xform.name = concat(per.surname, ', ', per.first_name)
+;
+
 
 
 -- 320 
