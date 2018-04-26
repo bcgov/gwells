@@ -16,7 +16,7 @@
 
 <script>
 export default {
-  props: ['driller', 'activity'],
+  props: ['driller', 'activity']
 }
 </script>
 
