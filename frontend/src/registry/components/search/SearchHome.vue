@@ -114,7 +114,6 @@
                     id="personSearchSubmit"
                     :disabled="searchLoading">
                     <span>Search</span>
-                    <!-- <span v-if="searchLoading"><i class="fa fa-refresh fa-spin"></i></span> -->
                   </button>
                   <button type="reset" class="btn btn-default" id="personSearchReset">Reset</button>
               </b-form-group>
