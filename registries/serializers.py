@@ -133,6 +133,26 @@ class ApplicationListSerializer(AuditModelSerializer):
             'cert_authority')
 
 
+class OrganizationListSerializer(AuditModelSerializer):
+    """
+    Serializes Organization model fields for "list" view.
+    """
+
+    class Meta:
+        model = Organization
+        fields = (
+            'org_guid',
+            'name',
+            'street_address',
+            'city',
+            'province_state',
+            'postal_code',
+            'main_tel',
+            'fax_tel',
+            'website_url',
+        )
+
+
 class RegistrationsListSerializer(serializers.ModelSerializer):
     """
     Serializes Register model
@@ -144,6 +164,7 @@ class RegistrationsListSerializer(serializers.ModelSerializer):
     activity = serializers.ReadOnlyField(
         source="registries_activity.registries_activity_code")
     applications = ApplicationListSerializer(many=True, read_only=True)
+    organization = OrganizationListSerializer()
 
     class Meta:
         model = Register
@@ -153,7 +174,8 @@ class RegistrationsListSerializer(serializers.ModelSerializer):
             'activity_description',
             'status',
             'registration_no',
-            'applications'
+            'applications',
+            'organization'
         )
 
 
@@ -251,7 +273,7 @@ class ApplicationAdminSerializer(AuditModelSerializer):
     """
 
     status_set = ApplicationStatusSerializer(many=True, read_only=True)
-    current_status = ApplicationStatusSerializer()
+    current_status = ApplicationStatusSerializer(required=False)
     cert_authority = serializers.ReadOnlyField(
         source="primary_certificate.cert_auth.cert_auth_code")
     qualifications = serializers.StringRelatedField(
@@ -322,12 +344,14 @@ class ApplicationAdminSerializer(AuditModelSerializer):
 
         if validated_status:
             # Validated_status is an OrderedDict at this point.
-            validated_status_code = validated_status.get('status').registries_application_status_code
+            validated_status_code = validated_status.get(
+                'status').registries_application_status_code
             current_status = instance.current_status
             if current_status:
                 current_status_code = current_status.status.registries_application_status_code
             else:
-                logger.error('RegistryApplication should always have a current status', instance)
+                logger.error(
+                    'RegistryApplication should always have a current status', instance)
                 current_status_code = None
 
             if validated_status_code != current_status_code:
@@ -354,6 +378,7 @@ class RegistrationAdminSerializer(AuditModelSerializer):
     register_removal_reason = serializers.StringRelatedField(read_only=True)
     applications = ApplicationAdminSerializer(many=True, read_only=True)
     person_name = serializers.StringRelatedField(source='person.name')
+    organization = OrganizationListSerializer()
 
     class Meta:
         model = Register
@@ -371,8 +396,17 @@ class RegistrationAdminSerializer(AuditModelSerializer):
             'registration_date',
             'register_removal_reason',
             'register_removal_date',
-            'applications'
+            'applications',
+            'organization'
         )
+
+    def to_internal_value(self, data):
+        """
+        Set fields to different serializers for create/update operations.
+        """
+        self.fields['organization'] = serializers.PrimaryKeyRelatedField(
+            queryset=Organization.objects.all(), required=False)
+        return super(RegistrationAdminSerializer, self).to_internal_value(data)
 
 
 class CityListSerializer(serializers.ModelSerializer):
@@ -385,7 +419,7 @@ class CityListSerializer(serializers.ModelSerializer):
     organization = OrganizationSerializer()
 
     class Meta:
-        model = Person
+        model = Register
         fields = (
             'organization',
         )
@@ -414,32 +448,11 @@ class CityListSerializer(serializers.ModelSerializer):
         return repr
 
 
-class OrganizationListSerializer(AuditModelSerializer):
-    """
-    Serializes Organization model fields for "list" view.
-    """
-
-    class Meta:
-        model = Organization
-        fields = (
-            'org_guid',
-            'name',
-            'street_address',
-            'city',
-            'province_state',
-            'postal_code',
-            'main_tel',
-            'fax_tel',
-            'website_url',
-        )
-
-
 class PersonListSerializer(AuditModelSerializer):
     """
     Serializes the Person model for a list view (fewer fields than detail view)
     """
     registrations = RegistrationsListSerializer(many=True, read_only=True)
-    organization = OrganizationListSerializer()
     contact_info = ContactInfoSerializer(many=True, read_only=True)
 
     class Meta:
@@ -448,7 +461,6 @@ class PersonListSerializer(AuditModelSerializer):
             'person_guid',
             'first_name',
             'surname',
-            'organization',
             'registrations',
             'contact_info'
         )
@@ -461,7 +473,8 @@ class RegistrationAutoCreateSerializer(AuditModelSerializer):
 
     class Meta:
         model = Register
-        fields = ('registries_activity', 'status', 'registration_no')
+        fields = ('registries_activity', 'status',
+                  'registration_no', 'organization')
 
 
 class PersonAdminSerializer(AuditModelSerializer):
@@ -470,7 +483,6 @@ class PersonAdminSerializer(AuditModelSerializer):
     """
 
     registrations = RegistrationAdminSerializer(many=True)
-    organization = OrganizationListSerializer()
     contact_info = ContactInfoSerializer(many=True, required=False)
 
     def to_internal_value(self, data):
@@ -480,8 +492,6 @@ class PersonAdminSerializer(AuditModelSerializer):
         """
         self.fields['registrations'] = RegistrationAutoCreateSerializer(
             many=True, required=False)
-        self.fields['organization'] = serializers.PrimaryKeyRelatedField(
-            queryset=Organization.objects.all(), required=False)
         return super(PersonAdminSerializer, self).to_internal_value(data)
 
     def create(self, validated_data):
@@ -518,7 +528,6 @@ class PersonAdminSerializer(AuditModelSerializer):
             'person_guid',
             'first_name',
             'surname',
-            'organization',
             'registrations',
             'contact_info',
             'create_user',
