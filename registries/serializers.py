@@ -476,7 +476,7 @@ class PersonListSerializer(AuditModelSerializer):
 
     def get_registrations(self, person):
         """
-        Filter for approved applications (application has an 'approved' status that is not expired)
+        Filter for active registrations
         """
 
         registrations = [
