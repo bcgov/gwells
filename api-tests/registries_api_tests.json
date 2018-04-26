@@ -571,172 +571,6 @@
 							"response": []
 						},
 						{
-							"name": "Company delete",
-							"event": [
-								{
-									"listen": "test",
-									"script": {
-										"id": "a743a15a-6712-486a-9310-5d1261bb03c1",
-										"type": "text/javascript",
-										"exec": [
-											"pm.test(\"Status code is 204\", function () {",
-											"    pm.response.to.have.status(204);",
-											"});",
-											""
-										]
-									}
-								}
-							],
-							"request": {
-								"method": "DELETE",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "JWT {{token}}"
-									}
-								],
-								"body": {},
-								"url": {
-									"raw": "{{base_url}}/api/v1/organizations/{{created_guid}}/?format=json",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"api",
-										"v1",
-										"organizations",
-										"{{created_guid}}",
-										""
-									],
-									"query": [
-										{
-											"key": "format",
-											"value": "json"
-										}
-									]
-								},
-								"description": "Delete request - deletes drilling organization specified by GUID."
-							},
-							"response": []
-						},
-						{
-							"name": "Company retrieve after delete",
-							"event": [
-								{
-									"listen": "test",
-									"script": {
-										"id": "d6a004fb-bf4e-4bf7-a966-8252283716b4",
-										"type": "text/javascript",
-										"exec": [
-											"( function() {",
-											"    pm.test(\"Status code is 404\", function () {",
-											"        pm.response.to.have.status(404);",
-											"    });",
-											"})();",
-											""
-										]
-									}
-								}
-							],
-							"request": {
-								"auth": {
-									"type": "noauth"
-								},
-								"method": "GET",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "JWT {{token}}"
-									}
-								],
-								"body": {},
-								"url": {
-									"raw": "{{base_url}}/api/v1/organizations/{{created_guid}}/?format=json",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"api",
-										"v1",
-										"organizations",
-										"{{created_guid}}",
-										""
-									],
-									"query": [
-										{
-											"key": "format",
-											"value": "json"
-										}
-									]
-								},
-								"description": "Make a get request for the Organization record that was just deleted"
-							},
-							"response": []
-						},
-						{
-							"name": "Company List after delete",
-							"event": [
-								{
-									"listen": "test",
-									"script": {
-										"id": "43017ea1-1f15-4963-9766-15549447a5be",
-										"type": "text/javascript",
-										"exec": [
-											"( function() {",
-											"    pm.test(\"Status code is 200\", function () {",
-											"        pm.response.to.have.status(200);",
-											"    });",
-											"    ",
-											"    var created_guid = pm.environment.get(\"created_guid\")",
-											"",
-											"    pm.test(\"List of drilling companies does not include the created company (successfully deleted)\", function () {",
-											"        // First check that our GUID resembles a valid UUID (i.e. we are not testing before created_guid is set)",
-											"        pm.expect(created_guid.length).to.eql(36);",
-											"        ",
-											"        // Then check that created_guid is in the response body",
-											"        pm.expect(pm.response.text()).to.not.include(created_guid);",
-											"    });",
-											"})();",
-											""
-										]
-									}
-								}
-							],
-							"request": {
-								"auth": {
-									"type": "noauth"
-								},
-								"method": "GET",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "JWT {{token}}"
-									}
-								],
-								"body": {},
-								"url": {
-									"raw": "{{base_url}}/api/v1/organizations/?format=json",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"api",
-										"v1",
-										"organizations",
-										""
-									],
-									"query": [
-										{
-											"key": "format",
-											"value": "json"
-										}
-									]
-								},
-								"description": "Driller model \"list\" view after deleting record"
-							},
-							"response": []
-						},
-						{
 							"name": "Company create bad input",
 							"event": [
 								{
@@ -1170,7 +1004,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n  \"first_name\": \"Bobby\",\n  \"surname\": \"Driller\",\n  \"registrations\": [{\"registries_activity\": \"DRILL\", \"status\": \"ACTIVE\"}],\n  \"contact_info\": [{\"contact_tel\": \"555-1234\"}]\n}"
+									"raw": "{\n  \"first_name\": \"Bobby\",\n  \"surname\": \"Driller\",\n  \"registrations\": [{\"registries_activity\": \"DRILL\", \"status\": \"ACTIVE\", \"organization\": \"{{created_guid}}\"}],\n  \"contact_info\": [{\"contact_tel\": \"555-1234\"}]\n}"
 								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/drillers/?format=json",
@@ -1411,135 +1245,6 @@
 							"response": []
 						},
 						{
-							"name": "Create company for driller",
-							"event": [
-								{
-									"listen": "test",
-									"script": {
-										"id": "ee6cea12-4cd4-4d37-8b5d-30c164852137",
-										"type": "text/javascript",
-										"exec": [
-											"( function() {",
-											"    pm.test(\"Successful POST request\", function () {",
-											"        pm.expect(pm.response.code, \"response code not 201\").to.be.oneOf([201,202]);",
-											"    });",
-											"    ",
-											"    var jsonData = pm.response.json()",
-											"    pm.environment.set(\"created_guid\", jsonData.org_guid);",
-											"    ",
-											"    pm.test(\"The record's identifier is in UUID format\", function () {",
-											"        var uuid_re = /\\w{8}-\\w{4}-\\w{4}-\\w{4}-\\w{12}/;",
-											"        var match = uuid_re.exec(jsonData.org_guid);",
-											"        pm.expect(match, \"primary key not in UUID format\").to.be.ok;",
-											"        pm.expect(match.length).to.be.ok;",
-											"        pm.expect(match[0]).to.eql(jsonData.org_guid);",
-											"    });",
-											"    ",
-											"    pm.test(\"Organization name equals name supplied in request\", function () {",
-											"        pm.expect(jsonData.name, \"name does not match\").to.eql(\"Steve's Drilling Inc.\");",
-											"    });",
-											"    ",
-											"    pm.test(\"Street address equals value supplied in request\", function () {",
-											"        pm.expect(jsonData.street_address, \"address does not match\").to.eql(\"1012 Douglas\");",
-											"    });",
-											"    ",
-											"    pm.test(\"Postal code equals value supplied in request\", function () {",
-											"        pm.expect(jsonData.postal_code, \"postal code does not match\").to.eql(\"a1a 1a1\");",
-											"    });",
-											"    ",
-											"    pm.test(\"City should be empty (it wasn't supplied)\", function () {",
-											"        pm.expect(jsonData.city, \"city field has unexpected value\").to.not.be.ok;",
-											"    });",
-											"    ",
-											"    pm.test(\"Audit fields (who_created, when_created) were filled in by backend\", function () {",
-											"        pm.expect(jsonData.create_user.length, \"create_user not present\").to.be.ok;",
-											"        pm.expect(jsonData.create_date.length, \"create_date not present\").to.be.ok;",
-											"    });",
-											"})();",
-											""
-										]
-									}
-								}
-							],
-							"request": {
-								"auth": {
-									"type": "noauth"
-								},
-								"method": "POST",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "JWT {{token}}"
-									}
-								],
-								"body": {
-									"mode": "formdata",
-									"formdata": [
-										{
-											"key": "name",
-											"value": "Steve's Drilling Inc.",
-											"type": "text"
-										},
-										{
-											"key": "street_address",
-											"value": "1012 Douglas",
-											"type": "text"
-										},
-										{
-											"key": "city",
-											"value": "",
-											"type": "text"
-										},
-										{
-											"key": "postal_code",
-											"value": "a1a 1a1",
-											"type": "text"
-										},
-										{
-											"key": "main_tel",
-											"value": "",
-											"type": "text"
-										},
-										{
-											"key": "fax_tel",
-											"value": "",
-											"type": "text"
-										},
-										{
-											"key": "website_url",
-											"value": "",
-											"type": "text"
-										},
-										{
-											"key": "province_state",
-											"value": "BC",
-											"description": "",
-											"type": "text"
-										}
-									]
-								},
-								"url": {
-									"raw": "{{base_url}}/api/v1/organizations/?format=json",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"api",
-										"v1",
-										"organizations",
-										""
-									],
-									"query": [
-										{
-											"key": "format",
-											"value": "json"
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
 							"name": "Driller update",
 							"event": [
 								{
@@ -1587,12 +1292,6 @@
 											"key": "surname",
 											"value": "Drillerson",
 											"type": "text"
-										},
-										{
-											"key": "organization",
-											"value": "{{created_guid}}",
-											"description": "",
-											"type": "text"
 										}
 									]
 								},
@@ -1620,12 +1319,12 @@
 							"response": []
 						},
 						{
-							"name": "Driller retrieve after adding company",
+							"name": "Driller retrieve after update",
 							"event": [
 								{
 									"listen": "test",
 									"script": {
-										"id": "756091c5-395e-45f5-b91d-e7b47674f8ec",
+										"id": "90c1a570-0bd4-40da-8017-b2adf4277172",
 										"type": "text/javascript",
 										"exec": [
 											"( function() {",
@@ -1641,10 +1340,6 @@
 											"    ",
 											"    pm.test(\"Last name equals value supplied in request (Drillerson)\", function () {",
 											"        pm.expect(jsonData.surname).to.eql(\"Drillerson\");",
-											"    });",
-											"    ",
-											"    pm.test(\"Company info is present\", function () {",
-											"        pm.expect(jsonData.organization.name).to.eql(\"Steve's Drilling Inc.\")",
 											"    });",
 											"    ",
 											"    pm.test(\"Audit fields are present and show the user who created the record\", function () {",
@@ -1942,6 +1637,172 @@
 							"response": []
 						},
 						{
+							"name": "Company delete",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "a743a15a-6712-486a-9310-5d1261bb03c1",
+										"type": "text/javascript",
+										"exec": [
+											"pm.test(\"Status code is 204\", function () {",
+											"    pm.response.to.have.status(204);",
+											"});",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}"
+									}
+								],
+								"body": {},
+								"url": {
+									"raw": "{{base_url}}/api/v1/organizations/{{created_guid}}/?format=json",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"organizations",
+										"{{created_guid}}",
+										""
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json"
+										}
+									]
+								},
+								"description": "Delete request - deletes drilling organization specified by GUID."
+							},
+							"response": []
+						},
+						{
+							"name": "Company List after delete",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "43017ea1-1f15-4963-9766-15549447a5be",
+										"type": "text/javascript",
+										"exec": [
+											"( function() {",
+											"    pm.test(\"Status code is 200\", function () {",
+											"        pm.response.to.have.status(200);",
+											"    });",
+											"    ",
+											"    var created_guid = pm.environment.get(\"created_guid\")",
+											"",
+											"    pm.test(\"List of drilling companies does not include the created company (successfully deleted)\", function () {",
+											"        // First check that our GUID resembles a valid UUID (i.e. we are not testing before created_guid is set)",
+											"        pm.expect(created_guid.length).to.eql(36);",
+											"        ",
+											"        // Then check that created_guid is in the response body",
+											"        pm.expect(pm.response.text()).to.not.include(created_guid);",
+											"    });",
+											"})();",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}"
+									}
+								],
+								"body": {},
+								"url": {
+									"raw": "{{base_url}}/api/v1/organizations/?format=json",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"organizations",
+										""
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json"
+										}
+									]
+								},
+								"description": "Driller model \"list\" view after deleting record"
+							},
+							"response": []
+						},
+						{
+							"name": "Company retrieve after delete",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "d6a004fb-bf4e-4bf7-a966-8252283716b4",
+										"type": "text/javascript",
+										"exec": [
+											"( function() {",
+											"    pm.test(\"Status code is 404\", function () {",
+											"        pm.response.to.have.status(404);",
+											"    });",
+											"})();",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}"
+									}
+								],
+								"body": {},
+								"url": {
+									"raw": "{{base_url}}/api/v1/organizations/{{created_guid}}/?format=json",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"organizations",
+										"{{created_guid}}",
+										""
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json"
+										}
+									]
+								},
+								"description": "Make a get request for the Organization record that was just deleted"
+							},
+							"response": []
+						},
+						{
 							"name": "Driller retrieve after delete",
 							"event": [
 								{
@@ -2112,55 +1973,6 @@
 									]
 								},
 								"description": "Attempt to create a driller record with missing required input."
-							},
-							"response": []
-						},
-						{
-							"name": "Company delete",
-							"event": [
-								{
-									"listen": "test",
-									"script": {
-										"id": "a743a15a-6712-486a-9310-5d1261bb03c1",
-										"type": "text/javascript",
-										"exec": [
-											"pm.test(\"Status code is 204\", function () {",
-											"    pm.response.to.have.status(204);",
-											"});",
-											""
-										]
-									}
-								}
-							],
-							"request": {
-								"method": "DELETE",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "JWT {{token}}"
-									}
-								],
-								"body": {},
-								"url": {
-									"raw": "{{base_url}}/api/v1/organizations/{{created_guid}}/?format=json",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"api",
-										"v1",
-										"organizations",
-										"{{created_guid}}",
-										""
-									],
-									"query": [
-										{
-											"key": "format",
-											"value": "json"
-										}
-									]
-								},
-								"description": "Delete request - deletes drilling organization specified by GUID."
 							},
 							"response": []
 						}
@@ -2357,6 +2169,131 @@
 							"response": []
 						},
 						{
+							"name": "Create company for driller",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "720af7d5-bc68-454f-ad0b-e8bc1f569bf3",
+										"type": "text/javascript",
+										"exec": [
+											"( function() {",
+											"    pm.test(\"Successful POST request\", function () {",
+											"        pm.expect(pm.response.code, \"response code not 201\").to.be.oneOf([201,202]);",
+											"    });",
+											"    ",
+											"    var jsonData = pm.response.json()",
+											"    pm.environment.set(\"created_guid\", jsonData.org_guid);",
+											"    ",
+											"    pm.test(\"The record's identifier is in UUID format\", function () {",
+											"        var uuid_re = /\\w{8}-\\w{4}-\\w{4}-\\w{4}-\\w{12}/;",
+											"        var match = uuid_re.exec(jsonData.org_guid);",
+											"        pm.expect(match, \"primary key not in UUID format\").to.be.ok;",
+											"        pm.expect(match.length).to.be.ok;",
+											"        pm.expect(match[0]).to.eql(jsonData.org_guid);",
+											"    });",
+											"    ",
+											"    pm.test(\"Organization name equals name supplied in request\", function () {",
+											"        pm.expect(jsonData.name, \"name does not match\").to.eql(\"Steve's Drilling Inc.\");",
+											"    });",
+											"    ",
+											"    pm.test(\"Street address equals value supplied in request\", function () {",
+											"        pm.expect(jsonData.street_address, \"address does not match\").to.eql(\"1012 Douglas\");",
+											"    });",
+											"    ",
+											"    pm.test(\"Postal code equals value supplied in request\", function () {",
+											"        pm.expect(jsonData.postal_code, \"postal code does not match\").to.eql(\"a1a 1a1\");",
+											"    });",
+											"    ",
+											"    pm.test(\"Audit fields (who_created, when_created) were filled in by backend\", function () {",
+											"        pm.expect(jsonData.create_user.length, \"create_user not present\").to.be.ok;",
+											"        pm.expect(jsonData.create_date.length, \"create_date not present\").to.be.ok;",
+											"    });",
+											"})();",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "name",
+											"value": "Steve's Drilling Inc.",
+											"type": "text"
+										},
+										{
+											"key": "street_address",
+											"value": "1012 Douglas",
+											"type": "text"
+										},
+										{
+											"key": "city",
+											"value": "Drillerville",
+											"type": "text"
+										},
+										{
+											"key": "postal_code",
+											"value": "a1a 1a1",
+											"type": "text"
+										},
+										{
+											"key": "main_tel",
+											"value": "",
+											"type": "text"
+										},
+										{
+											"key": "fax_tel",
+											"value": "",
+											"type": "text"
+										},
+										{
+											"key": "website_url",
+											"value": "",
+											"type": "text"
+										},
+										{
+											"key": "province_state",
+											"value": "BC",
+											"description": "",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/organizations/?format=json",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"organizations",
+										""
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
 							"name": "Edit registration",
 							"event": [
 								{
@@ -2402,6 +2339,12 @@
 										{
 											"key": "registration_no",
 											"value": "12345",
+											"description": "",
+											"type": "text"
+										},
+										{
+											"key": "organization",
+											"value": "{{created_guid}}",
 											"description": "",
 											"type": "text"
 										}
@@ -2706,6 +2649,146 @@
 							"response": []
 						},
 						{
+							"name": "Update application - Pending, Water",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "9740e966-9bda-4937-ac03-3b18e22cbe8c",
+										"type": "text/javascript",
+										"exec": [
+											"( function() {",
+											"    pm.test(\"Successful POST request\", function () {",
+											"        pm.expect(pm.response.code, \"response code not 200\").to.eql(200);",
+											"    });",
+											"    var jsonData = pm.response.json();",
+											"    ",
+											"    pm.test(\"The record's current status is Pending\", function () {",
+											"        pm.expect(jsonData.current_status.status, \"current status not P\").to.eql(\"P\");",
+											"    });",
+											"    ",
+											"    pm.test(\"The record's subactivity is WATER\", function () {",
+											"        pm.expect(jsonData.subactivity, \"current status not WATER\").to.eql(\"WATER\");",
+											"    });",
+											"})();",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"subactivity\": \"WATER\",\n\t\"current_status\": {\n\t\t\"status\": \"P\"\n\t}\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/applications/{{created_application_guid}}/?format=json",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"applications",
+										"{{created_application_guid}}",
+										""
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json"
+										}
+									]
+								},
+								"description": "Create a new application for a registration"
+							},
+							"response": []
+						},
+						{
+							"name": "Update application - Active, Geotech",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "daa29f3c-9201-4949-8f85-71dcd5aaf5a7",
+										"type": "text/javascript",
+										"exec": [
+											"( function() {",
+											"    pm.test(\"Successful POST request\", function () {",
+											"        pm.expect(pm.response.code, \"response code not 200\").to.eql(200);",
+											"    });",
+											"    var jsonData = pm.response.json();",
+											"    ",
+											"    pm.test(\"The record's current status is Active\", function () {",
+											"        pm.expect(jsonData.current_status.status, \"current status not A\").to.eql(\"A\");",
+											"    });",
+											"    ",
+											"    pm.test(\"The record's subactivity is GEOTECH\", function () {",
+											"        pm.expect(jsonData.subactivity, \"current status not GEOTECH\").to.eql(\"GEOTECH\");",
+											"    });",
+											"})();",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"subactivity\": \"GEOTECH\",\n\t\"current_status\": {\n\t\t\"status\": \"A\"\n\t}\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/applications/{{created_application_guid}}/?format=json",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"applications",
+										"{{created_application_guid}}",
+										""
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json"
+										}
+									]
+								},
+								"description": "Create a new application for a registration"
+							},
+							"response": []
+						},
+						{
 							"name": "Get registration",
 							"event": [
 								{
@@ -2777,6 +2860,84 @@
 									]
 								},
 								"description": "Get registration record"
+							},
+							"response": []
+						},
+						{
+							"name": "City list",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "5b71f4b4-f345-4d3a-b382-39e3219fdc2c",
+										"type": "text/javascript",
+										"exec": [
+											"( function() {",
+											"    pm.test(\"Status code is 200\", function () {",
+											"        pm.response.to.have.status(200);",
+											"    });",
+											"    ",
+											"    var jsonData = pm.response.json();",
+											"    ",
+											"    pm.test(\"List of cities has at least one object\", function () {",
+											"        // Then check that created_guid is in the response body",
+											"        pm.expect(jsonData.length).to.be.above(0);",
+											"    });",
+											"    ",
+											"    pm.test(\"Each object has a city and province property\", function () {",
+											"        // Then check that created_guid is in the response body",
+											"",
+											"        for (let i = 0; i < jsonData.length; i++) {",
+											"            pm.expect(jsonData[i].city).to.be.ok;",
+											"        }",
+											"        for (let i = 0; i < jsonData.length; i++) {",
+											"            pm.expect(jsonData[i].province_state).to.be.ok;",
+											"        }",
+											"    });",
+											"    ",
+											"    pm.test(\"List of cities includes the city where the test driller is based\", function () {",
+											"        // Then check that created_guid is in the response body",
+											"        pm.expect(jsonData.some((item) => item.city === \"Drillerville\")).to.be.ok;",
+											"    });",
+											"})();",
+											"",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}"
+									}
+								],
+								"body": {},
+								"url": {
+									"raw": "{{base_url}}/api/v1/cities/drillers/?format=json",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"cities",
+										"drillers",
+										""
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json"
+										}
+									]
+								},
+								"description": "Organization model \"list\" view"
 							},
 							"response": []
 						},
@@ -2924,6 +3085,55 @@
 									]
 								},
 								"description": "Delete application specified by GUID."
+							},
+							"response": []
+						},
+						{
+							"name": "Company delete",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "a743a15a-6712-486a-9310-5d1261bb03c1",
+										"type": "text/javascript",
+										"exec": [
+											"pm.test(\"Status code is 204\", function () {",
+											"    pm.response.to.have.status(204);",
+											"});",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}"
+									}
+								],
+								"body": {},
+								"url": {
+									"raw": "{{base_url}}/api/v1/organizations/{{created_guid}}/?format=json",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"organizations",
+										"{{created_guid}}",
+										""
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json"
+										}
+									]
+								},
+								"description": "Delete request - deletes drilling organization specified by GUID."
 							},
 							"response": []
 						}
