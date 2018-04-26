@@ -117,7 +117,6 @@ class ApplicationListSerializer(AuditModelSerializer):
         many=True,
         read_only=True)
     subactivity = SubactivitySerializer()
-    status_set = ApplicationStatusSerializer(many=True, read_only=True)
     cert_authority = serializers.ReadOnlyField(
         source="primary_certificate.cert_auth.cert_auth_code")
 
@@ -126,7 +125,6 @@ class ApplicationListSerializer(AuditModelSerializer):
         fields = (
             'qualifications',
             'subactivity',
-            'status_set',
             'qualifications',
             'cert_authority')
 
