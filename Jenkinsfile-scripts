@@ -1,0 +1,20 @@
+properties(
+    [
+        pipelineTriggers(
+            [
+                cron( '10 H * * *' )
+            ]
+        )
+    ]
+)
+stage ( 'test' ){
+    node ( 'master' )
+    {
+    sh 'ls -la'
+    sh 'pwd'
+            dir( 'database' ){
+                sh 'ls -la'
+                sh 'pwd'
+            }
+    }
+}
