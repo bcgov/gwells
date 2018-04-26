@@ -147,21 +147,12 @@
 
 <script>
 import ApiService from '@/common/services/ApiService.js'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'OrganizationAdd',
   data () {
     return {
-      breadcrumbs: [
-        {
-          text: 'Registry Search',
-          to: { name: 'SearchHome' }
-        },
-        {
-          text: 'Add an Organization',
-          active: true
-        }
-      ],
       orgForm: {
         name: '',
         street_address: '',
@@ -176,6 +167,9 @@ export default {
       orgSubmitLoading: false,
       orgSubmitError: null
     }
+  },
+  computed: {
+    ...mapGetters(['error'])
   },
   methods: {
     onFormSubmit () {
