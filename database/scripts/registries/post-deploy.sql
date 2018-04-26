@@ -88,7 +88,8 @@ ON per.person_guid = con.person_guid
 DROP VIEW IF EXISTS vw_well_driller_reg;
 CREATE OR REPLACE VIEW vw_well_driller_reg AS
 SELECT 
- per.first_name          AS first_name       
+ reg.register_guid       AS reg_register_guid
+,per.first_name          AS first_name       
 ,per.surname             AS surname          
 ,con.contact_cell         AS contact_cell        
 ,con.contact_tel         AS contact_tel        
@@ -103,8 +104,9 @@ SELECT
 ,org.province_state_code AS org_province_state_code
 ,reg.registration_no               AS reg_registration_no               
 ,reg.registration_date             AS reg_registration_date             
-,reg.registries_activity_code      AS reg_registries_activity_code      
-,reg.registries_status_code        AS reg_registries_status_code        
+,reg.registries_status_code        AS reg_registries_status_code
+,app.primary_certificate_no        AS app_primary_certificate_no
+,string_agg(app.registries_subactivity_code, ', ') as well_class_list
 -- Not relevant as only ACTIVE Drillers
 -- ,reg.register_removal_date         AS reg_register_removal_date         
 -- ,reg.person_guid                   AS reg_person_guid                   
@@ -116,7 +118,6 @@ SELECT
 ,per.create_date         AS per_create_date      
 ,per.update_user         AS per_update_user      
 ,per.update_date         AS per_update_date      
-,per.person_guid         AS per_person_guid      
 ,per.effective_date      AS per_effective_date   
 ,per.expired_date        AS per_expired_date     
 ,per.organization_guid   AS per_organization_guid
@@ -124,32 +125,74 @@ SELECT
 ,con.create_date         AS con_create_date        
 ,con.update_user         AS con_update_user        
 ,con.update_date         AS con_update_date        
-,con.contact_detail_guid AS con_contact_detail_guid
 ,con.effective_date      AS con_effective_date     
 ,con.expired_date        AS con_expired_date       
 ,org.create_user         AS org_create_user        
 ,org.create_date         AS org_create_date        
 ,org.update_user         AS org_update_user        
 ,org.update_date         AS org_update_date        
-,org.org_guid            AS org_org_guid           
 ,org.effective_date      AS org_effective_date     
 ,org.expired_date        AS org_expired_date       
 ,reg.create_user         AS reg_create_user                   
 ,reg.create_date         AS reg_create_date                   
 ,reg.update_user         AS reg_update_user                   
 ,reg.update_date         AS reg_update_date                   
-,reg.register_guid       AS reg_register_guid
 */
 FROM registries_person per,
      registries_contact_detail con,
      registries_organization org,
-     registries_register reg
+     registries_register reg,
+     registries_application app
 WHERE per.person_guid = con.person_guid
 AND   per.person_guid = reg.person_guid
 AND   reg.organization_guid = org.org_guid
 AND   reg.registries_activity_code = 'DRILL'
 AND   reg.registries_status_code = 'ACTIVE'
+AND   reg.register_guid = app.register_guid
+GROUP BY 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18
 ;
+
+/*
+
+
+select reg_register_guid,first_name, surname, org_name, reg_registration_no, reg_registration_date, 
+app_primary_certificate_no, well_class_list 
+,app.create_user                
+,app.create_date                
+,app.update_user                
+,app.update_date                
+,app.application_guid           
+,app.file_no                    
+,app.over19_ind                 
+,app.registrar_notes            
+,app.reason_denied              
+,app.primary_certificate_no     
+,app.acc_cert_guid              
+,app.register_guid              
+,app.registries_subactivity_code
+,app.create_user                
+,app.create_date                
+,app.update_user                
+,app.update_date                
+,app.application_guid           
+,app.file_no                    
+,app.over19_ind                 
+,app.registrar_notes            
+,app.reason_denied              
+,app.primary_certificate_no     
+,app.acc_cert_guid              
+,app.register_guid              
+,app.registries_subactivity_code
+from vw_well_driller_reg reg,
+     registries_application app
+where reg.reg_register_guid = app.register_guid
+and reg_register_guid = '3c1ed5f5-d2c3-48ef-9826-6d08f94b6249';
+
+
+
+*/
+
+
 
 -- "ACTIVE" Pump Installers on the Registry
 DROP VIEW IF EXISTS vw_pump_installer_reg;

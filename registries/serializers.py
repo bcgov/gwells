@@ -14,6 +14,7 @@
 import logging
 from django.utils import timezone
 from django.db import transaction
+import logging
 from rest_framework import serializers
 from registries.models import (
     Organization,
@@ -28,6 +29,9 @@ from registries.models import (
     Qualification,
     ApplicationStatusCode
 )
+
+logger = logging.getLogger(__name__)
+
 
 logger = logging.getLogger(__name__)
 
@@ -359,8 +363,7 @@ class ApplicationAdminSerializer(AuditModelSerializer):
             if current_status:
                 current_status_code = current_status.status.registries_application_status_code
             else:
-                logger.error(
-                    'RegistryApplication should always have a current status', instance)
+                logger.error('RegistryApplication {} does not have a current status'.format(instance))
                 current_status_code = None
 
             if validated_status_code != current_status_code:
