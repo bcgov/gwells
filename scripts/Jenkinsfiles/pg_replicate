@@ -1,0 +1,86 @@
+// Cron job for postgres vacuum and replication
+//
+//  Setup in Jenkins:
+//  > Folder > New Item > Pipeline
+//  > Pipeline > Definition > Pipeline script from SCM
+//    SCM: Git
+//      Repository URL: https://github.com/bcgov/gwells
+//      Branches to build: */master
+//      Script path: scripts/Jenkinsfiles/db_vacuum-replicate
+
+properties(
+    [
+        pipelineTriggers(
+            [
+                cron( 'H 6 * * 1-6' )
+            ]
+        )
+    ]
+)
+def PROJECT = 'moe-gwells-test'
+stage ( 'test' )
+{
+    node ( 'master' )
+    {
+        String POD_DB = sh(
+            script:
+                """
+                    oc get pods -n "${PROJECT}" | grep -i "Running" | grep -Eo \
+                        "gwells-pgsql-[[:alpha:]]+-[[:digit:]]+-[[:alnum:]]+"
+                """,
+            returnStdout:
+                true
+        ).trim()
+        String STATUS = sh(
+            script:
+                """
+                oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
+                    'psql -d gwells -c \
+                        "SELECT 1 AS online FROM WELLS.WELLS_WELLS LIMIT 1;" | grep -o online'
+                """,
+            returnStdout:
+                true
+        ).trim()
+        if ( STATUS == "online" ){
+            echo POD_DB +" is online"
+            sh """
+                oc patch route gwells -n "${PROJECT}" -p \
+                    '{ "spec": { "to": { "name": "proxy-caddy"}, "port": { "targetPort": "2015-tcp" }}}'
+                oc patch route proxy-caddy -n "${PROJECT}" -p \
+                    '{ "spec": { "to": { "name": "gwells" }, "port": { "targetPort": "web" }}}'
+
+                oc scale dc gwells --timeout=5s --replicas=0 -n "${PROJECT}"
+                oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
+                    'psql -d gwells -c "VACUUM FULL;"'
+                oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
+                    'psql -t -d gwells -U "\${POSTGRESQL_USER}" -c \
+                        "SELECT db_replicate_step1(_subset_ind=>false);"'
+                oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
+                    'psql -t -d gwells -U "\${POSTGRESQL_USER}" -c \
+                        "SELECT db_replicate_step2 ();"'
+            """
+        } else {
+            echo POD_DB +" is offline"
+        }
+        int WELL_COUNT = sh(
+            script:
+                """
+                    oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
+                        'psql -t -d gwells -U "\${POSTGRESQL_USER}" -c "SELECT count(*) from well;"'
+                """,
+            returnStdout:
+                true
+        ).trim()
+        if ( WELL_COUNT > 120000 ){
+            sh """
+                oc scale dc gwells --timeout=5s --replicas=1 -n "${PROJECT}"
+                oc patch route gwells -n "${PROJECT}" -p \
+                    '{ "spec": { "to": { "name": "gwells" }, "port": { "targetPort": "web" }}}'
+                oc patch route proxy-caddy -n "${PROJECT}" -p \
+                    '{ "spec": { "to": { "name": "proxy-caddy" }, "port": { "targetPort": "2015-tcp" }}}'
+            """
+        } else {
+            echo WELL_COUNT +" <= 120000, well count too low"
+        }
+    }
+}
