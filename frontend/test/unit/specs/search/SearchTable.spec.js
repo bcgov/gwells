@@ -164,7 +164,7 @@ describe('SearchTable.vue', () => {
     }
   })
   it('shows the organization name for each driller', () => {
-    const wrapper = shallow(SearchTable, {
+    const wrapper = mount(SearchTable, {
       store,
       localVue,
       stubs: ['router-link', 'router-view']
@@ -176,7 +176,7 @@ describe('SearchTable.vue', () => {
     expect(personOrg).toEqual('Drillerson Drilling Ltd.')
   })
   it('shows the driller\'s organization address', () => {
-    const wrapper = shallow(SearchTable, {
+    const wrapper = mount(SearchTable, {
       store,
       localVue,
       stubs: ['router-link', 'router-view']

@@ -6,7 +6,7 @@
       <div v-if="reg.applications && reg.applications.length"
           v-for="(app, appIndex) in reg.applications"
           :key="`app cert ${driller.person_guid} ${app.application_guid} ${appIndex}`">
-        <div v-if="applicationApproved(app) && app.subactivity">
+        <div v-if="app.subactivity">
           {{ app.cert_authority }}
         </div>
       </div>
@@ -17,13 +17,6 @@
 <script>
 export default {
   props: ['driller', 'activity'],
-  methods: {
-    applicationApproved (app) {
-      return app.status_set && app.status_set.length && app.status_set.some((item) => {
-        return item.status === 'A'
-      })
-    }
-  }
 }
 </script>
 

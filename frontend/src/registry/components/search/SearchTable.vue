@@ -32,15 +32,9 @@
               </div>
             </td>
             <td :id="`personOrg${index}`">
-              <div v-if="driller.organization">{{ driller.organization.name }}</div></td>
+              <driller-org-name :driller="driller" :activity="activity"></driller-org-name>
             <td :id="`personAddress${index}`">
-              <div v-if="driller.organization">{{ driller.organization.street_address }}
-                <div>
-                  <span>{{ driller.organization.city }}</span><span
-                    v-if="driller.organization.city && driller.organization.province_state">, </span><span
-                      v-if="driller.organization.province_state">{{ driller.organization.province_state }}</span>
-                </div>
-              </div>
+              <driller-org-address :driller="driller" :activity="activity"></driller-org-address>
             </td>
             <td :id="`personContact${index}`">
               <div v-if="driller.contact_info && driller.contact_info.length">
@@ -103,6 +97,8 @@ import DrillerSubactivity from '@/registry/components/search/table-helpers/Drill
 import DrillerRegistrationStatus from '@/registry/components/search/table-helpers/DrillerRegistrationStatus.vue'
 import DrillerContactInfo from '@/registry/components/search/table-helpers/DrillerContactInfo.vue'
 import DrillerCertAuth from '@/registry/components/search/table-helpers/DrillerCertAuth.vue'
+import DrillerOrganization from '@/registry/components/search/table-helpers/DrillerOrganization.vue'
+import DrillerOrgAddress from '@/registry/components/search/table-helpers/DrillerOrgAddress.vue'
 
 const querystring = require('querystring')
 
@@ -113,7 +109,9 @@ export default {
     'driller-subactivity': DrillerSubactivity,
     'driller-registration-status': DrillerRegistrationStatus,
     'driller-contact-info': DrillerContactInfo,
-    'driller-certificate-authority': DrillerCertAuth
+    'driller-certificate-authority': DrillerCertAuth,
+    'driller-org-name': DrillerOrganization,
+    'driller-org-address': DrillerOrgAddress
   },
   data () {
     return {
@@ -131,11 +129,10 @@ export default {
           activity: 'all'
         },
         {
-          name: 'Company Name',
-          sortCode: 'organization__name',
+          name: 'Company Name', // temporary placeholder - org sorting needs to be re-implemented on backend
           class: 'col-xs-1',
           visible: 'public',
-          sortable: true,
+          sortable: false,
           activity: 'all'
         },
         {
