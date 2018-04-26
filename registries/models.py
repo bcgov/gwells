@@ -162,10 +162,16 @@ class Person(AuditModel):
     surname = models.CharField(max_length=100)
 
     # As per D.A. - temporary fields to hold compliance-related details
-    well_driller_orcs_no = models.CharField(max_length=25, blank=True, null=True,
-                                            verbose_name='ORCS File # reference (in context of Well Driller).')
-    pump_installer_orcs_no = models.CharField(max_length=25, blank=True, null=True,
-                                              verbose_name='ORCS File # reference (in context of Pump Installer).')
+    well_driller_orcs_no = models.CharField(
+        max_length=25,
+        blank=True,
+        null=True,
+        verbose_name='ORCS File # reference (in context of Well Driller).')
+    pump_installer_orcs_no = models.CharField(
+        max_length=25, 
+        blank=True, 
+        null=True,
+        verbose_name='ORCS File # reference (in context of Pump Installer).')
 
     effective_date = models.DateField(default=datetime.date.today)
     expired_date = models.DateField(blank=True, null=True)
