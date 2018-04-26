@@ -284,8 +284,14 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
             qs = qs.filter(registrations__organization__city__in=cities)
 
         # Only show active drillers to non-admin users and public
+        activity = self.request.query_params.get('activity', None)
         if not self.request.user.is_staff:
-            qs = qs.filter(registrations__status='ACTIVE')
+            if activity:
+                qs = qs.filter(registrations__status='ACTIVE',
+                               registrations__registries_activity__registries_activity_code=activity)
+
+            else:
+                qs = qs.filter(registrations__status='ACTIVE')
 
         return qs
 
