@@ -117,9 +117,9 @@ git remote -v | grep "bcgov/gwells.git (push)" || \
 	git remote add upstream https://github.com/bcgov/gwells.git
 
 
-# Install Homebrew
+# Install/Upgrade Homebrew
 #
-which brew || \
+which brew && brew upgrade || \
 	/usr/bin/ruby -e "$( curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install )"
 
 
