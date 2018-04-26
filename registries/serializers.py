@@ -13,6 +13,7 @@
 """
 
 from django.utils import timezone
+from django.db import transaction
 from rest_framework import serializers
 from gwells.models.ProvinceStateCode import ProvinceStateCode
 from registries.models import (
@@ -297,14 +298,20 @@ class ApplicationAdminSerializer(AuditModelSerializer):
 
         return app
 
+    @transaction.atomic
     def update(self, instance, validated_data):
+        """
+        The update is wrapped inside a transaction since we're changing a few
+        records and creating one. We want to avoid a state where where a partial
+        change occurs, especially if it leaves an application without a current
+        status.
+        """
         current_status = instance.current_status
-        validated_status = validated_data.get('current_status', current_status)
+        # We pop the current status, as the update method on the base
+        # class cannot serialize nested fields.
+        validated_status = validated_data.pop('current_status', current_status)
 
-        # We have to handle the current_status seperately because django
-        # isn't smart enough to handle this kind of db relation.
-
-        # Validated_status is an OrderedDict at this point
+        # Validated_status is an OrderedDict at this point.
         validated_status_code = validated_status.get('status').registries_application_status_code
         if current_status:
             current_status_code = current_status.status.registries_application_status_code
@@ -313,19 +320,17 @@ class ApplicationAdminSerializer(AuditModelSerializer):
             current_status_code = None
 
         if validated_status_code != current_status_code:
-            # Change the status
-            # Expire existing status
             if current_status:
+                # Expire existing status.
                 current_status.expired_date = timezone.now()
                 current_status.save()
             new_status = ApplicationStatusCode.objects.get(
                 registries_application_status_code=validated_status_code)
+            # Create a new status.
             RegistriesApplicationStatus.objects.create(
                 application=instance,
                 status=new_status)
 
-        # Pop off current_status since it's already handeled
-        validated_data.pop('current_status')
         return super().update(instance, validated_data)
 
 
