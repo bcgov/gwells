@@ -128,6 +128,7 @@ which brew || \
 PACKAGES=(
 	"git"
 	"nodejs"
+	"nvm"
 	"postgresql"
 	"python3"
 )
@@ -303,6 +304,9 @@ fi
 cd "${START_DIR}"/..
 pip3 install -U -r requirements.txt
 cd "${START_DIR}"/../frontend
+source /usr/local/opt/nvm/nvm.sh
+nvm install v6.11.3
+nvm alias default 6.11.3
 npm install
 npm run build
 
