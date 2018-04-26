@@ -15,7 +15,6 @@ export default {
     company () {
       const company = {}
       if (this.driller && this.driller.registrations && this.driller.registrations.length && this.activity) {
-        
         const registration = this.driller.registrations.find((reg) => {
           return reg.activity === this.activity
         })
