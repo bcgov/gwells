@@ -369,10 +369,14 @@ SELECT
 UPDATE registries_register reg
 SET organization_guid = org.org_guid
 FROM registries_organization org,
-    xform_registries_drillers_reg xform
+    xform_registries_drillers_reg xform,
+    registries_person per
 WHERE org.name = xform.companyname
 and org.street_address = xform.companyaddress
 and org.city           = xform.companycity
+and per.person_guid    = reg.person_guid
+and xform.firstname = per.first_name
+and xform.lastname = per.surname
 -- And not already attached to a company
 and reg.organization_guid is null;
 
@@ -420,16 +424,16 @@ and   xform.lastname = per.surname;
 UPDATE registries_register reg
 SET organization_guid = org.org_guid
 FROM registries_organization org,
-    xform_registries_pump_installers_reg xform
+    xform_registries_pump_installers_reg xform,
+    registries_person per
 WHERE org.name = xform.companyname
 and org.street_address = xform.companyaddress
 and org.city           = xform.companycity
+and per.person_guid    = reg.person_guid
+and xform.firstname = per.first_name
+and xform.lastname = per.surname
 -- And not already attached to a company
 and reg.organization_guid is null;
-
-
-
-
 
 -- Driller/Pump Installer (Removed)
 /*
