@@ -17,12 +17,12 @@
               alt="B.C. Government Logo">
         </a>
         <b-navbar-nav>
-          <span class="bc-nav-title d-none d-md-block">Groundwater Wells and Aquifers</span>
+          <li class="bc-nav-title d-none d-md-block">Groundwater Wells and Aquifers</li>
         </b-navbar-nav>
         <b-navbar-nav class="ml-auto">
-          <b-nav-item>
+          <li>
             <keycloak-auth v-if="auth !== 'hide'"/>
-          </b-nav-item>
+          </li>
         </b-navbar-nav>
         <b-navbar-nav class="ml-auto d-sm-none">
           <b-navbar-toggle class="d-sm-none" target="nav_collapse"></b-navbar-toggle>
@@ -34,7 +34,7 @@
         <b-collapse class="py-2" is-nav id="nav_collapse">
           <b-container id="navContainer">
             <b-navbar-nav>
-              <b-nav-text class="d-sm-none text-light">Groundwater Wells and Aquifers</b-nav-text>
+              <li class="d-sm-none text-light mb-2 mt-2">Groundwater Wells and Aquifers</li>
               <b-nav-item id="ribbon-search" class="navbar-link lvl2-link" href="/gwells">Well Search</b-nav-item>
               <b-nav-item id="ribbon-groundwaterinfo" class="navbar-link lvl2-link" href="/gwells/groundwater-information">Groundwater Information</b-nav-item>
               <b-nav-item id="ribbon-registry" class="navbar-link lvl2-link" href="/gwells/registries">Registry</b-nav-item>

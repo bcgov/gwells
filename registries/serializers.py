@@ -258,6 +258,7 @@ class ApplicationAdminSerializer(AuditModelSerializer):
         source='subactivity.qualification_set',
         many=True,
         read_only=True)
+    subactivity = SubactivitySerializer()
 
     class Meta:
         model = RegistriesApplication
@@ -278,6 +279,15 @@ class ApplicationAdminSerializer(AuditModelSerializer):
             'status_set',
             'current_status'
         )
+
+    def to_internal_value(self, data):
+        """
+        Set fields to different serializers for create/update operations.
+        This method is called on POST/PUT/PATCH requests
+        """
+        self.fields['subactivity'] = serializers.PrimaryKeyRelatedField(
+            queryset=SubactivityCode.objects.all())
+        return super(ApplicationAdminSerializer, self).to_internal_value(data)
 
     def create(self, validated_data):
         """
