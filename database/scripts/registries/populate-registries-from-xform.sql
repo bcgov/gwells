@@ -4,7 +4,7 @@
 --
 -- psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER -f populate-registries-from-xform.sql
 
--- Companies from Driller Registry (140)
+-- Companies from Driller Registry (272)
 \echo 'Inserting Companies from Driller Registry'
 INSERT INTO registries_organization (
  name
@@ -23,7 +23,7 @@ INSERT INTO registries_organization (
 ,website_url
 ,province_state_code
 ) SELECT
- distinct on (companyname) companyname
+ companyname
 ,'DATALOAD_USER'
 ,'2018-01-01 00:00:00-08'::timestamp
 ,'DATALOAD_USER'
@@ -43,9 +43,14 @@ INSERT INTO registries_organization (
   ELSE companyprov
  END AS province_state_code
 from xform_registries_drillers_reg xform
-where companyname is not null;
+where (companyname,companyaddress,companycity,companyprov)
+IN (SELECT
+ distinct companyname,companyaddress,companycity,companyprov
+from xform_registries_drillers_reg xform
+where companyname is not null);
 
--- Companies from Pump Installer Registry 177
+
+-- Companies from Pump Installer Registry 189
 \echo 'Inserting Companies from Pump Installer Registry'
 INSERT INTO registries_organization (
  name
@@ -84,9 +89,13 @@ INSERT INTO registries_organization (
   ELSE companyprov
  END AS province_state_code
 from xform_registries_pump_installers_reg xform
-where companyname is not null
-and companyname not in (
-SELECT name from registries_organization);
+where (companyname,companyaddress,companycity,companyprov)
+IN (SELECT
+ distinct companyname,companyaddress,companycity,companyprov
+from xform_registries_pump_installers_reg xform
+where companyname is not null)
+and (companyname,companyaddress,companycity) not in (
+SELECT name,street_address,city from registries_organization);
 
 -- Companies from drillers/pump-installers that have been removed
 /*
@@ -364,7 +373,7 @@ SELECT
 ,'ACTIVE'
  from xform_registries_drillers_reg;
 
--- Attach companies for whom the drillers work 252
+-- Attach companies for whom the drillers work 272
 \echo '...Updating Register, attaching companies from Driller Registry'
 UPDATE registries_register reg
 SET organization_guid = org.org_guid
@@ -419,7 +428,7 @@ and   xform.lastname = per.surname;
 --      entered as driller
 
  
--- Attach companies for whom the pump installers work 268
+-- Attach companies for whom the pump installers work 286
 \echo '...Updating Register, attaching companies from Pump Installer Registry'
 UPDATE registries_register reg
 SET organization_guid = org.org_guid
@@ -569,7 +578,7 @@ and xform.registrationdate >  '2016-02-29'
 and xform.classofwelldriller like '%Water Well%';
 
 
--- Pseudo-Applications from "Water Well" Well Drillers, who were
+-- Pseudo-Application Statuses from "Water Well" Well Drillers, who were
 -- grandfathered in  257
 \echo '... Approved entries'
 INSERT INTO registries_application_status (
@@ -646,8 +655,6 @@ and app.registries_subactivity_code = 'WATER'
 and xform.registrationdate >  '2016-02-29'
 and xform.name = concat(per.surname, ', ', per.first_name)
 ;
-
-
 
 
 -- 257
@@ -785,7 +792,7 @@ and xform.name = concat(per.surname, ', ', per.first_name)
 
 
 -- Pseudo-Applications from post-2016-FEB-29 2016 Well Drillers (GEOTECH)
--- 3
+-- 10
 \echo '... Approved entries'
 INSERT INTO registries_application_status (
  create_user
@@ -822,8 +829,6 @@ and app.registries_subactivity_code = 'GEOTECH'
 and xform.registrationdate >  '2016-02-29'
 and xform.name = concat(per.surname, ', ', per.first_name)
 ;
-
-
 
 -- 257
 \echo 'Inserting "Fake" Applications for pre-2016-FEB-29 grandfathered Well Drillers (GEOXCHG)'
@@ -922,7 +927,7 @@ and (trim(both from xform.classofwelldriller) = 'Geoexchange'
 
 
 \echo '... Approved entries'
--- 320
+-- 257
 INSERT INTO registries_application_status (
  create_user
 ,create_date
@@ -961,7 +966,7 @@ and xform.name = concat(per.surname, ', ', per.first_name)
 
 
 -- Pseudo-Applications from post-2016-FEB-29 2016 Well Drillers (GEOXCHG)
--- 320
+-- 3
 \echo '... Approved entries'
 INSERT INTO registries_application_status (
  create_user
@@ -998,7 +1003,6 @@ and app.registries_subactivity_code = 'GEOXCHG'
 and xform.registrationdate >  '2016-02-29'
 and xform.name = concat(per.surname, ', ', per.first_name)
 ;
-
 
 
 -- 320 
