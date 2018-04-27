@@ -1675,6 +1675,10 @@ img.back-to-top:hover {
         display: none;
     }
     .noScreen {}
+
+    .back-to-top {
+        display: none !important;
+    }
 }
 
 .alert-success:before {
@@ -2306,4 +2310,8 @@ h5.twitterUserName a {
 
 .alert-danger {
     color: #d2322d;
+}
+
+.cursor-pointer {
+    cursor: pointer;
 }
