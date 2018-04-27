@@ -57,11 +57,11 @@
     <link rel="stylesheet" href="{% static 'gwells/css/ie10-viewport-bug-workaround.css' %}" />
 
     <!-- STANDARD CSS -->
-    <link type="text/css" href="{% static 'gwells/css/main.css' %}" rel="stylesheet" />
+    <link type="text/css" href="{% static 'gwells/css/main.css' %}{% if debug%}?{% now "U" %}{% endif %}" rel="stylesheet" />
 
     <!-- CUSTOM CSS -->
-    <link href="{% static 'gwells/css/custom-main.css' %}" rel="stylesheet" />
-    <link href="{% static 'gwells/css/custom-form.css' %}" rel="stylesheet" />
+    <link href="{% static 'gwells/css/custom-main.css' %}{% if debug%}?{% now "U" %}{% endif %}" rel="stylesheet" />
+    <link href="{% static 'gwells/css/custom-form.css' %}{% if debug%}?{% now "U" %}{% endif %}" rel="stylesheet" />
 
     <!-- LEAFLET CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ==" crossorigin="" />
