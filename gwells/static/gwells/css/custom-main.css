@@ -223,7 +223,7 @@ a label.env-username {
     }
 
     .hide-for-print {
-        display: none;
+        display: none !important;
     }
 
     .shift-up-navbar-height {
@@ -852,14 +852,14 @@ input[type="number"] {
 
 
 
-.row.like-table-row { 
-    display: table-row; 
+.row.like-table-row {
+    display: table-row;
 }
-.row.like-table-row > div { 
-    display: table-cell; 
-    vertical-align: middle; 
-    border: 1px solid #000; 
+.row.like-table-row > div {
+    display: table-cell;
+    vertical-align: middle;
+    border: 1px solid #000;
 }
-.header-row { 
-    font-weight: bold; 
+.header-row {
+    font-weight: bold;
 }
