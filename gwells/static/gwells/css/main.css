@@ -14,6 +14,10 @@ a {
     color: #1a5a96;
 }
 
+#main-content {
+    line-height: 1.42857143;
+}
+
 #main-content h1,
 #main-content h2,
 #main-content h3,
@@ -2314,4 +2318,8 @@ h5.twitterUserName a {
 
 .cursor-pointer {
     cursor: pointer;
+}
+
+legend {
+    border-bottom: 1px solid #e5e5e5;
 }
