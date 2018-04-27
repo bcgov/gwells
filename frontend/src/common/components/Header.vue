@@ -4,11 +4,21 @@
       <!-- Navbar content -->
       <b-container>
         <a class="navbar-brand" href="https://www2.gov.bc.ca">
-          <div class="nav-logo d-none d-sm-block"
-            title="B.C. Government Logo"/>
+          <img
+              class="nav-logo img-fluid d-none d-sm-block"
+              src="@/common/assets/images/17_gov3_bc_logo.svg"
+              width="152" height="55"
+              alt="B.C. Government Logo">
+          <img
+              class="img-fluid d-none d-sm-block nav-logo-print"
+              src="@/common/assets/images/17_gov3_bc_logo_transparent.svg"
+              width="152" height="55"
+              alt="B.C. Government Logo">
           <img
               class="img-fluid d-sm-none"
               src="@/common/assets/images/01_gov3_bc_symbol.svg"
+              width="61"
+              height="43"
               alt="B.C. Government Logo">
         </a>
         <b-navbar-nav>
@@ -96,12 +106,9 @@ header li + li {
   padding-top:0;
   padding-bottom:0;
 }
-.nav-logo {
-    background: url('../../common/assets/images/17_gov3_bc_logo.svg');
-    background-size: cover;
-    width: 61px;
-    height: 43px;
-  }
+.nav-logo-print {
+  height: 0px !important;
+}
 @media print {
   header nav {
     background-color: rgba(0,0,0,0) !important;
@@ -110,10 +117,11 @@ header li + li {
   .bc-nav-title {
     color: #000 !important;
   }
+  .nav-logo-print {
+    height: 55px !important;
+  }
   .nav-logo {
-    background: url('../../common/assets/images/17_gov3_bc_logo_transparent.svg');
-    width: 156px;
-    height: 43px;
+    height: 0px !important;
   }
 }
 </style>
