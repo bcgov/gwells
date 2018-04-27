@@ -10,11 +10,13 @@ from rest_framework.test import APITestCase, APIRequestFactory
 from gwells.models.ProvinceStateCode import ProvinceStateCode
 from django.contrib.auth.models import User
 from registries.models import (
+    ApplicationStatusCode,
     Organization,
     Person,
     RegistriesApplication,
     Register,
     RegistriesStatusCode,
+    RegistriesApplicationStatus,
     ActivityCode,
     SubactivityCode)
 from registries.views import PersonListView, PersonDetailView
@@ -92,8 +94,118 @@ class PersonTests(TestCase):
         self.assertEqual(person.first_name, 'Bobby')
 
 
-# Django REST Framework tests
+class RegistriesApplicationTestBase(AuthenticatedAPITestCase):
+    """
+    Base class for RegistriesApplication
+    """
 
+    def setUp(self):
+        super().setUp()
+        # Crate activityCode
+        self.activity_drill = ActivityCode.objects.create(
+            registries_activity_code="DRILL",
+            description="driller",
+            display_order="1")
+        # Create registries status
+        self.status_active = RegistriesStatusCode.objects.create(
+            registries_status_code="ACTIVE",
+            description="active",
+            display_order="1")
+        # Create new registrations
+        # Create registered driller 1
+        self.driller = Person.objects.create(
+            first_name='Wendy', surname="Well")
+        self.registration = Register.objects.create(
+            status=self.status_active,
+            person=self.driller,
+            registries_activity=self.activity_drill,
+            registration_no="F12345",
+        )
+        # Create subactivities
+        self.subactivity = SubactivityCode.objects.create(
+            registries_activity=self.activity_drill,
+            registries_subactivity_code='WATER',
+            description='water',
+            display_order=1)
+        self.subactivity = SubactivityCode.objects.create(
+            registries_activity=self.activity_drill,
+            registries_subactivity_code='GEOTECH',
+            description='geotech',
+            display_order=1)
+        # Create application status
+        self.application_status_active = ApplicationStatusCode.objects.create(
+            registries_application_status_code='A',
+            description='Active',
+            display_order=1
+        )
+        self.application_status_pending = ApplicationStatusCode.objects.create(
+            registries_application_status_code='P',
+            description='Pending',
+            display_order=1
+        )
+        # Application
+        self.app = RegistriesApplication.objects.create(
+            registration=self.registration,
+            subactivity=self.subactivity)
+
+
+class RegistriesApplicationNoStatusTest(RegistriesApplicationTestBase):
+
+    def test_update_application_status_to_active(self):
+        """ Test that an application created without a status can be updated to Active
+        """
+        data = {
+            'current_status': {
+                'status': 'A'
+            }
+        }
+
+        url = reverse('application-detail',
+                      kwargs={'application_guid': self.app.application_guid})
+        response = self.client.patch(url, data, format='json')
+        updated_application = RegistriesApplication.objects.get(application_guid=self.app.application_guid)
+        self.assertEqual(updated_application.current_status.status.registries_application_status_code, 'A')
+
+
+class RegistriesApplicationWithStatusActiveTest(RegistriesApplicationTestBase):
+
+    def setUp(self):
+        super().setUp()
+        RegistriesApplicationStatus.objects.create(
+            application=self.app,
+            status=self.application_status_pending)
+
+    def test_update_application_status_to_active(self):
+        """ Test that an application created with a Pending status can be updated to Active
+        """
+        data = {
+            'current_status': {
+                'status': 'A'
+            }
+        }
+
+        url = reverse('application-detail',
+                      kwargs={'application_guid': self.app.application_guid})
+        response = self.client.patch(url, data, format='json')
+        updated_application = RegistriesApplication.objects.get(application_guid=self.app.application_guid)
+        self.assertEqual(updated_application.current_status.status.registries_application_status_code, 'A')
+
+
+class RegistriesApplicationStatusSubactivityTest(RegistriesApplicationTestBase):
+
+    def test_update_application_subactivity(self):
+        """ Test that an application created with water as a subactivity can be changed to geotech
+        """
+        data = {'subactivity': 'GEOTECH'}
+
+        url = reverse('application-detail',
+                      kwargs={'application_guid': self.app.application_guid})
+        response = self.client.patch(url, data, format='json')
+        updated_application = RegistriesApplication.objects.get(application_guid=self.app.application_guid)
+        self.assertEqual(updated_application.subactivity.registries_subactivity_code, 'GEOTECH')
+
+
+# Django REST Framework tests
 class APIOrganizationTests(AuthenticatedAPITestCase):
     """
     Tests for requests to the Organization resource endpoint
