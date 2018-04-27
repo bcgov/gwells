@@ -26,7 +26,7 @@ th {
     text-align: left;
 }
 
-fieldset {
+#main-content fieldset {
     page-break-inside: avoid;
     page-break-after: avoid;
     padding-bottom: 8px;
@@ -304,7 +304,7 @@ a label.env-username {
     .margin-left {
         margin-left: 60px;
     }
-    .print-compressed {
+    #main-content .print-compressed {
         padding-left: 0px;
         padding-right: 0px;
         padding-top: 0px;
