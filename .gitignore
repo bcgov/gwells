@@ -41,6 +41,7 @@
 .Trashes
 ehthumbs.db
 Thumbs.db
+*.md5
 
 
 ##################
@@ -114,6 +115,7 @@ gwells.pyproj*
 *.sublime-project
 *.sublime-workspace
 .vscode
+*.ipynb
 
 #functional-tests
 functional-tests/.gradle/
@@ -131,13 +133,12 @@ x.sh
 #virtual env
 /deactivate
 .venv
-.envrc
 .direnv
 
 # Frontend files
 frontend/node_modules/
 frontend/webpack-stats.json
-registries/static/registries/bundles/
+gwells/static/vue
 
 sonar-runner/.gradle
 *.patch
