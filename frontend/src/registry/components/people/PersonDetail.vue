@@ -1,25 +1,14 @@
 <template>
-  <div class="container">
+  <div class="container p-1 p-md-3">
     <b-card no-body class="mb-3">
         <b-breadcrumb :items="breadcrumbs" class="py-0 my-2"></b-breadcrumb>
     </b-card>
     <div class="card">
-      <div class="card-body">
+      <div class="card-body p-2 p-md-3">
         <div v-if="currentDriller != {}">
           <div class="row">
-            <div class="col-9">
+            <div class="col-12">
               <h5 class="card-title">{{ currentDriller.first_name }} {{ currentDriller.surname }}</h5>
-            </div>
-            <div class="col-3 text-right">
-              <router-link
-                class="btn btn-default registries-edit-btn"
-                :to="{
-                  name: 'PersonDetailEdit',
-                  params: {
-                    person_guid: currentDriller.person_guid
-                  }
-                }"
-                v-if="currentDriller.person_guid"><i class="fa fa-edit"></i>Edit</router-link>
             </div>
           </div>
         </div>
@@ -47,9 +36,25 @@
             </tbody>
           </table>
         </div>
+        <router-link
+          class="btn btn-light btn-sm registries-edit-btn mb-3"
+          tag="button"
+          to="#"
+          v-if="currentDriller.person_guid"><i class="fa fa-plus-square-o"></i> Add application</router-link>
         <div class="card mb-3">
-          <div class="card-body">
-            <h5 class="card-title mb-3">Personal Information</h5>
+          <div class="card-body p-2 p-md-3">
+            <div class="row">
+              <div class="col-9">
+                <h6 class="card-title mb-3">Personal Information</h6>
+              </div>
+              <div class="col-3 text-right">
+                <router-link
+                  class="btn btn-light btn-sm registries-edit-btn"
+                  tag="button"
+                  to="#"
+                  v-if="currentDriller.person_guid"><i class="fa fa-edit"></i> Edit</router-link>
+              </div>
+            </div>
             <div class="row mb-2">
               <div class="col-5 col-md-2 mb-1 mb-sm-0">
                 Last name:
@@ -65,30 +70,65 @@
               </div>
             </div>
             <div class="row mb-2">
-              <div class="col-12 col-md-6 mb-1">
-                <i class="fa fa-check-square"></i>
-                Confirmed applicant is 19 or older
-              </div>
               <div class="col-5 col-md-2">
-                Proof of age:
+                ORCS number:
               </div>
-              <div class="col-7 col-md-4">
-                Driver's license
+            </div>
+          </div>
+        </div>
+        <div class="card mb-3">
+          <div class="card-body p-2 p-md-3">
+            <div class="row">
+              <div class="col-9">
+                <h6 class="card-title mb-3">Contact Information</h6>
+              </div>
+              <div class="col-3 text-right">
+                <router-link
+                  class="btn btn-light btn-sm registries-edit-btn"
+                  tag="button"
+                  to="#"
+                  v-if="currentDriller.person_guid"><i class="fa fa-edit"></i> Edit</router-link>
               </div>
             </div>
             <div class="row mb-2">
               <div class="col-5 col-md-2">
-                ORCS number:
+                Email address:
               </div>
-              <div class="col-7 col-md-10">
-                JOB020180608
+              <div class="col-7 col-md-4">
+                <div v-for="(email, index) in personEmail" :key="`person email ${index}`">
+                  {{ email }}
+                </div>
+              </div>
+              <div class="col-5 col-md-2">
+                Telephone:
+              </div>
+              <div class="col-7 col-md-4">
+                <div v-for="(tel, index) in personTel" :key="`person tel ${index}`">
+                  {{ tel }}
+                </div>
               </div>
             </div>
           </div>
         </div>
         <div class="card">
-          <div class="card-body">
-            <h5 class="card-title mb-3">Current Company Information</h5>
+          <div class="card-body p-2 p-md-3">
+            <div class="row">
+              <div class="col-6">
+                <h6 class="card-title mb-3">Current Company</h6>
+              </div>
+              <div class="col-6 text-right">
+                <router-link
+                  class="btn btn-light btn-sm registries-edit-btn"
+                  tag="button"
+                  to="#"
+                  v-if="currentDriller.person_guid"><i class="fa fa-refresh"></i> Change</router-link>
+                <router-link
+                  class="btn btn-light btn-sm registries-edit-btn"
+                  tag="button"
+                  to="#"
+                  v-if="currentDriller.person_guid"><i class="fa fa-edit"></i> Edit</router-link>
+              </div>
+            </div>
             <div v-if="currentDriller.organization">
               <div class="row mb-2">
                 <div class="col-5 col-md-2 mb-1 mb-sm-0">
@@ -151,9 +191,7 @@
                   Email address:
                 </div>
                 <div class="col-7 col-md-4">
-                  <div v-for="(email, index) in personEmail" :key="`person email ${index}`">
-                    {{ email }}
-                  </div>
+                  {{ currentDriller.organization.contact_email }}
                 </div>
                 <div class="col-5 col-md-2">
                   Website:
@@ -187,7 +225,7 @@ export default {
     return {
       breadcrumbs: [
         {
-          text: 'Registry Search',
+          text: 'Registry',
           to: { name: 'SearchHome' }
         },
         {
@@ -201,12 +239,25 @@ export default {
     personEmail () {
       // sort a person's contact info into a list of emails
       const email = []
-      this.currentDriller.contact_info.forEach((item) => {
-        if (item.contact_email) {
-          email.push(item.contact_email)
-        }
-      })
+      if (this.currentDriller.contact_info && this.currentDriller.contact_info.length) {
+        this.currentDriller.contact_info.forEach((item) => {
+          if (item.contact_email) {
+            email.push(item.contact_email)
+          }
+        })
+      }
       return email
+    },
+    personTel () {
+      const tel = []
+      if (this.currentDriller.contact_info && this.currentDriller.contact_info.length) {
+        this.currentDriller.contact_info.forEach((item) => {
+          if (item.contact_tel) {
+            tel.push(item.contact_tel)
+          }
+        })
+      }
+      return tel
     },
     company () {
       if (this.currentDriller && this.currentDriller.companies && this.currentDriller.companies.length) {
@@ -245,15 +296,15 @@ export default {
 
             if (app.status_set && app.status_set.length) {
               statusPriority.forEach((code) => {
-                console.log('checking status', code)
                 const statusLevel = app.status_set.findIndex((item) => {
                   return item.status === code
                 })
 
+                // check if statusLevel is a valid array index (e.g. not -1)
+                // note: ~(-1) evaluates to 0, but is truthy for valid array indices
                 if (~statusLevel) {
                   status = app.status_set[statusLevel].description
                   date = app.status_set[statusLevel].effective_date
-                  console.log('found status ', code, status, date)
                 }
               })
             }
@@ -261,8 +312,8 @@ export default {
             // now iterate through classifications that the person has applied for and push onto an array
 
             classifications.push({
-              code: app.subactivity,
-              description: app.subactivity,
+              code: app.subactivity.registries_subactivity_code,
+              description: app.subactivity.description,
               status: status,
               date: date
             })
