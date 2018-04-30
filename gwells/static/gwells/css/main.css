@@ -18,6 +18,16 @@ a {
     line-height: 1.42857143;
 }
 
+#main-content,
+.col-sm-12,
+.col-md-4,
+.col-md-6,
+.col-md-7,
+.col-md-12 {
+    padding-left: 0px;
+    padding-right: 0px;
+}
+
 #main-content h1,
 #main-content h2,
 #main-content h3,
