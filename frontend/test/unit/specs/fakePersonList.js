@@ -7,17 +7,6 @@ const fakePersonList = JSON.parse(JSON.stringify(
         'person_guid': '728c5b91-25aa-44de-8b5d-3b0b7ab115a5',
         'first_name': 'Bob',
         'surname': 'Drillerson',
-        'organization': {
-          'org_guid': '081b3614-286f-4446-a984-88b05677bd45',
-          'name': 'Drillerson Drilling Ltd.',
-          'street_address': '1111 Industrial St',
-          'city': 'Victoria',
-          'province_state': 'BC',
-          'postal_code': 'X9A 1A8',
-          'main_tel': '(250) 555-4123',
-          'fax_tel': '(250) 555-4121',
-          'website_url': null
-        },
         'registrations': [
           {
             'register_guid': '816eca52-7c45-4ff8-a0f0-e907ced6d93b',
@@ -25,6 +14,17 @@ const fakePersonList = JSON.parse(JSON.stringify(
             'activity_description': 'Well Driller',
             'status': 'Active',
             'registration_no': 'WD 95111111',
+            'organization': {
+              'org_guid': '081b3614-286f-4446-a984-88b05677bd45',
+              'name': 'Drillerson Drilling Ltd.',
+              'street_address': '1111 Industrial St',
+              'city': 'Victoria',
+              'province_state': 'BC',
+              'postal_code': 'X9A 1A8',
+              'main_tel': '(250) 555-4123',
+              'fax_tel': '(250) 555-4121',
+              'website_url': null
+            },
             'applications': [
               {
                 'application_guid': 'ae06c5a3-27b4-45b5-afb8-4622eb619855',
@@ -126,17 +126,6 @@ const fakePersonList = JSON.parse(JSON.stringify(
         'person_guid': '728c5b91-25aa-44de-8b5d-3b0b7ab115a1',
         'first_name': 'Don',
         'surname': 'Drillerson',
-        'organization': {
-          'org_guid': '081b3614-286f-4446-a984-88b05677bd45',
-          'name': 'Drillerson Drilling Ltd.',
-          'street_address': '1111 Industrial St',
-          'city': 'Victoria',
-          'province_state': 'BC',
-          'postal_code': 'X9A 1A8',
-          'main_tel': '(250) 555-4123',
-          'fax_tel': '(250) 555-4121',
-          'website_url': null
-        },
         'registrations': [
           {
             'register_guid': '816eca52-7c45-4ff8-a0f0-e907ced6d93a',
@@ -144,6 +133,17 @@ const fakePersonList = JSON.parse(JSON.stringify(
             'activity_description': 'Well Driller',
             'status': 'Active',
             'registration_no': 'WD 95111112',
+            'organization': {
+              'org_guid': '081b3614-286f-4446-a984-88b05677bd45',
+              'name': 'Drillerson Drilling Ltd.',
+              'street_address': '1111 Industrial St',
+              'city': 'Victoria',
+              'province_state': 'BC',
+              'postal_code': 'X9A 1A8',
+              'main_tel': '(250) 555-4123',
+              'fax_tel': '(250) 555-4121',
+              'website_url': null
+            },
             'applications': [
               {
                 'application_guid': 'ae06c5a3-27b4-45b5-afb8-4622eb619819',
