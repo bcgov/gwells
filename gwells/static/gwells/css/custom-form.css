@@ -1,6 +1,6 @@
 /** It's all about forms **/
 
-label {
+#main-content label {
     display: inline-block;
     max-width: 100%;
     margin-bottom: 3px;

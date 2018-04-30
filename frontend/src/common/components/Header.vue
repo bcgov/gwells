@@ -1,12 +1,17 @@
 <template>
   <header>
-    <b-navbar type="dark" class="navbar-expand-lg" bg-variant="primary">
+    <b-navbar type="dark" class="navbar-expand-lg d-print-block" bg-variant="primary">
       <!-- Navbar content -->
       <b-container>
         <a class="navbar-brand" href="https://www2.gov.bc.ca">
           <img
-              class="img-fluid d-none d-sm-block"
+              class="nav-logo img-fluid d-none d-sm-block"
               src="@/common/assets/images/17_gov3_bc_logo.svg"
+              width="152" height="55"
+              alt="B.C. Government Logo">
+          <img
+              class="img-fluid d-none d-sm-block nav-logo-print"
+              src="@/common/assets/images/17_gov3_bc_logo_transparent.svg"
               width="152" height="55"
               alt="B.C. Government Logo">
           <img
@@ -100,5 +105,23 @@ header li + li {
 .lvl2-link a {
   padding-top:0;
   padding-bottom:0;
+}
+.nav-logo-print {
+  height: 0px !important;
+}
+@media print {
+  header nav {
+    background-color: rgba(0,0,0,0) !important;
+    border-bottom: none !important;
+  }
+  .bc-nav-title {
+    color: #000 !important;
+  }
+  .nav-logo-print {
+    height: 55px !important;
+  }
+  .nav-logo {
+    height: 0px !important;
+  }
 }
 </style>
