@@ -10,11 +10,10 @@ properties(
 stage ( 'test' ){
     node ( 'master' )
     {
-    sh 'ls -la'
-    sh 'pwd'
-            dir( 'database' ){
-                sh 'ls -la'
-                sh 'pwd'
-            }
+        dir( 'database' ){
+            sh 'oc --namespace=moe-gwells-tools get pods,svc'
+            sh 'oc exec postgresql-32-lnwqb -n moe-gwells-test -- /bin/bash -c "pg_dump gwells | gzip > /var/lib/pgsql/backup/$( date +%Y-%m-%d-%T ).gz"'
+            sh 'oc exec postgresql-32-lnwqb -n moe-gwells-test -- /bin/bash -c "ls /var/lib/pgsql/backup/*.gz -1p | tail -n +$( expr 1 + 10 )| xargs -r rm --"'
+        }
     }
 }
