@@ -14,7 +14,8 @@
 \copy well_subclass_code (well_subclass_guid,well_subclass_code,description,display_order,well_class_code,create_date,update_date,create_user,update_user) from 'well_subclass_code.csv' with header delimiter ',' CSV ;
 
 --PROVINCE_STATE
-\echo '... loading province_state_code code table'
+\echo '... skipping province_state_code code table, to'
+\echo '    avoid impacting dependent Registries app.'
 \copy province_state_code (province_state_code,description,display_order,create_date,update_date,create_user,update_user) from 'province_state_code.csv' with header delimiter ',' CSV ;
 
 --YIELD UNIT
