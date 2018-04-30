@@ -37,7 +37,7 @@ class SearchRegistrySpecs extends GebReportingSpec {
         "Empty search criteria - Installer"     | ""			| "installer"     | ""	        | "320"
         "Name=John"                 | "John"			| "name"          | ""				    | "18"
         "Name=Alan"                 | "Alan"			| "name"          | ""				    | "2"
-        "Community=Langley"         | "Langley"			| "community"     | ""				    | "7"
+        "Community=Langley"         | "Langley"			| "community"     | ""				    | "8"
         "Community=Aldergrove"      | "Aldergrove"		| "community"     | ""				    | "10"
     }
 }
