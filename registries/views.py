@@ -1,9 +1,23 @@
+"""
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+"""
+
 from collections import OrderedDict
 from django.http import HttpResponse
 from django.utils import timezone
 from django.views.generic import TemplateView
 from django_filters import rest_framework as restfilters
-from rest_framework import filters
+from rest_framework import filters, status
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView
 from rest_framework.pagination import LimitOffsetPagination, PageNumberPagination
 from rest_framework.permissions import IsAdminUser
@@ -18,6 +32,7 @@ from registries.serializers import (
     OrganizationListSerializer,
     OrganizationSerializer,
     OrganizationAdminSerializer,
+    OrganizationNameListSerializer,
     PersonSerializer,
     PersonAdminSerializer,
     PersonListSerializer,
@@ -70,7 +85,8 @@ class PersonFilter(restfilters.FilterSet):
     Allows APIPersonListView to filter response by city, province, or registration status.
     """
     # city = restfilters.MultipleChoiceFilter(name="organization__city")
-    prov = restfilters.CharFilter(name="organization__province_state")
+    prov = restfilters.CharFilter(
+        name="registrations__organization__province_state")
     status = restfilters.CharFilter(name="registrations__status")
     activity = restfilters.CharFilter(
         name="registrations__registries_activity")
@@ -102,10 +118,8 @@ class OrganizationListView(AuditCreateMixin, ListCreateAPIView):
 
     # prefetch related objects for the queryset to prevent duplicate database trips later
     queryset = Organization.objects.all() \
-        .select_related('province_state') \
-        .prefetch_related(
-            'person_set',
-    )
+        .select_related('province_state',) \
+        .prefetch_related('registrations', 'registrations__person')
 
     # Allow searching against fields like organization name, address,
     # name or registration of organization contacts
@@ -114,9 +128,9 @@ class OrganizationListView(AuditCreateMixin, ListCreateAPIView):
         'name',
         'street_address',
         'city',
-        'person_set__first_name',
-        'person_set__surname',
-        'person_set__registrations__applications__file_no'
+        'registrations__person__first_name',
+        'registrations__person__surname',
+        'registrations__applications__file_no'
     )
 
     def get_queryset(self):
@@ -178,10 +192,9 @@ class OrganizationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
 
     # prefetch related province, contacts and person records to prevent future additional database trips
     queryset = Organization.objects.all() \
-        .select_related('province_state') \
-        .prefetch_related(
-            'person_set',
-    )
+        .select_related('province_state',) \
+        .prefetch_related('registrations', 'registrations__person') \
+        .filter(expired_date__isnull=True)
 
     def get_queryset(self):
         """
@@ -190,7 +203,7 @@ class OrganizationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
         qs = self.queryset
         if not self.request.user.is_staff:
             qs = qs \
-                .filter(person_set__registrations__status='ACTIVE') \
+                .filter(registrations__status='ACTIVE') \
                 .distinct()
         return qs
 
@@ -198,6 +211,17 @@ class OrganizationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
         if self.request and self.request.user.is_staff:
             return OrganizationAdminSerializer
         return self.serializer_class
+
+    def destroy(self, request, *args, **kwargs):
+        """
+        Set expired_date to current date
+        """
+
+        instance = self.get_object()
+        instance.expired_date = timezone.now()
+        instance.save()
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class PersonListView(AuditCreateMixin, ListCreateAPIView):
@@ -217,32 +241,36 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
     filter_backends = (restfilters.DjangoFilterBackend,
                        filters.SearchFilter, filters.OrderingFilter)
     filter_class = PersonFilter
-    ordering_fields = ('surname', 'organization__name')
-    ordering = ('surname')
+    ordering_fields = ('surname', 'registrations__organization__name')
+    ordering = ('surname',)
     search_fields = (
         'first_name',
         'surname',
-        'organization__name',
-        'organization__city',
+        'registrations__organization__name',
+        'registrations__organization__city',
         'registrations__registration_no'
     )
 
     # fetch related companies and registration applications (prevent duplicate database trips)
     queryset = Person.objects \
         .all() \
-        .select_related('organization') \
         .prefetch_related(
             'contact_info',
             'registrations',
             'registrations__registries_activity',
             'registrations__status',
+            'registrations__organization',
             'registrations__applications',
+            'registrations__applications__primary_certificate',
+            'registrations__applications__primary_certificate__cert_auth',
             'registrations__applications__status_set',
             'registrations__applications__status_set__status',
             'registrations__applications__subactivity',
             'registrations__applications__subactivity__qualification_set',
-            'registrations__applications__subactivity__qualification_set__well_class') \
-        .distinct()
+            'registrations__applications__subactivity__qualification_set__well_class'
+        ).filter(
+            expired_date__isnull=True
+        ).distinct()
 
     def get_queryset(self):
         """ Returns Person queryset, removing non-active and unregistered drillers for anonymous users """
@@ -253,11 +281,17 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
         cities = self.request.query_params.get('city', None)
         if cities:
             cities = cities.split(',')
-            qs = qs.filter(organization__city__in=cities)
+            qs = qs.filter(registrations__organization__city__in=cities)
 
         # Only show active drillers to non-admin users and public
+        activity = self.request.query_params.get('activity', None)
         if not self.request.user.is_staff:
-            qs = qs.filter(registrations__status='ACTIVE')
+            if activity:
+                qs = qs.filter(registrations__status='ACTIVE',
+                               registrations__registries_activity__registries_activity_code=activity)
+
+            else:
+                qs = qs.filter(registrations__status='ACTIVE')
 
         return qs
 
@@ -304,16 +338,21 @@ class PersonDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
 
     queryset = Person.objects \
         .all() \
-        .select_related('organization') \
         .prefetch_related(
             'registrations',
             'registrations__registries_activity',
+            'registrations__organization',
             'registrations__status',
             'registrations__applications',
+            'registrations__applications__primary_certificate',
+            'registrations__applications__primary_certificate__cert_auth',
             'registrations__applications__status_set',
+            'registrations__applications__status_set__status',
             'registrations__applications__subactivity',
             'registrations__applications__subactivity__qualification_set',
             'registrations__applications__subactivity__qualification_set__well_class'
+        ).filter(
+            expired_date__isnull=True
         ).distinct()
 
     def get_queryset(self):
@@ -330,6 +369,17 @@ class PersonDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
             return PersonAdminSerializer
         return self.serializer_class
 
+    def destroy(self, request, *args, **kwargs):
+        """
+        Set expired_date to current date
+        """
+
+        instance = self.get_object()
+        instance.expired_date = timezone.now()
+        instance.save()
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
 
 class CitiesListView(ListAPIView):
     """
@@ -338,9 +388,9 @@ class CitiesListView(ListAPIView):
     get: returns a list of cities with a qualified, registered operator (driller or installer)
     """
     serializer_class = CityListSerializer
-    lookup_field = 'person_guid'
+    lookup_field = 'register_guid'
     pagination_class = None
-    queryset = Person.objects \
+    queryset = Register.objects \
         .exclude(organization__city__isnull=True) \
         .exclude(organization__city='') \
         .select_related(
@@ -357,16 +407,16 @@ class CitiesListView(ListAPIView):
         """
         qs = self.queryset
         if not self.request.user.is_staff:
-            qs = qs.filter(registrations__status='ACTIVE')
+            qs = qs.filter(status='ACTIVE')
         if self.kwargs['activity'] == 'drill':
-            qs = qs.filter(registrations__registries_activity='DRILL')
+            qs = qs.filter(registries_activity='DRILL')
         if self.kwargs['activity'] == 'install':
-            qs = qs.filter(registrations__registries_activity='PUMP')
+            qs = qs.filter(registries_activity='PUMP')
         return qs
 
 
 class RegistrationListView(AuditCreateMixin, ListCreateAPIView):
-    """ 
+    """
     get:
     List all registration records
 
@@ -381,8 +431,18 @@ class RegistrationListView(AuditCreateMixin, ListCreateAPIView):
             'person',
             'registries_activity',
             'status',
+            'organization',
             'register_removal_reason',) \
-        .prefetch_related('applications')
+        .prefetch_related(
+            'applications',
+            'applications__primary_certificate',
+            'applications__primary_certificate__cert_auth',
+            'applications__status_set',
+            'applications__status_set__status',
+            'applications__subactivity',
+            'applications__subactivity__qualification_set',
+            'applications__subactivity__qualification_set__well_class'
+    )
 
 
 class RegistrationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
@@ -408,8 +468,18 @@ class RegistrationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
             'person',
             'registries_activity',
             'status',
+            'organization',
             'register_removal_reason',) \
-        .prefetch_related('applications')
+        .prefetch_related(
+            'applications',
+            'applications__primary_certificate',
+            'applications__primary_certificate__cert_auth',
+            'applications__status_set',
+            'applications__status_set__status',
+            'applications__subactivity',
+            'applications__subactivity__qualification_set',
+            'applications__subactivity__qualification_set__well_class'
+    )
 
 
 class ApplicationListView(AuditCreateMixin, ListCreateAPIView):
@@ -457,3 +527,15 @@ class ApplicationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
             'registration__status',
             'registration__register_removal_reason')
     lookup_field = "application_guid"
+
+
+class OrganizationNameListView(ListAPIView):
+    """
+    Simple list of organizations with only organization names
+    """
+
+    permission_classes = (IsGwellsAdmin,)
+    serializer_class = OrganizationNameListSerializer
+    queryset = Organization.objects.filter(expired_date__isnull=True)
+    pagination_class = None
+    lookup_field = 'organization_guid'
