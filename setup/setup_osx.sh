@@ -1,15 +1,11 @@
 #!/bin/bash
 
 
-# Halt on errors/unsets, change fail returns, change field separator
+# Halt conditions, verbosity and field separator
 #
 set -euo pipefail
+[ "${VERBOSE:-x}" != true ]|| set -x
 IFS=$'\n\t'
-
-
-# Verbose option
-#
-VERBOSE=${VERBOSE:-false}
 
 
 # Receive a GWells and Wells (legacy) databases to import
@@ -18,19 +14,10 @@ DB_MODERN=${DB_MODERN:-''}
 DB_LEGACY=${DB_LEGACY:-''}
 
 
-# Post deploy option
+# Post deploy and test options
 #
 POST_DEPLOY=${POST_DEPLOY:-false}
-
-
-# Run basic tests
-#
 TEST=${TEST:-false}
-
-
-# Non-standard bash shell script
-#
-BASH_SS=${BASH_SS:-~/.bash_profile}
 
 
 # GWells environment variables
@@ -57,12 +44,6 @@ ENABLE_ADDITIONAL_DOCUMENTS="${ENABLE_ADDITIONAL_DOCUMENTSL:-False}"
 DJANGO_ADMIN_URL="${DJANGO_ADMIN_URL:-admin}"
 
 
-# Verbose option
-#
-[ "${VERBOSE}" == true ]&& \
-	set -x
-
-
 # Check for params, output a message
 #
 if([ "$#" -ne 0 ])
@@ -81,6 +62,7 @@ fi
 
 # Ensure bash shell script exists and store its checksum
 #
+BASH_SS=${BASH_SS:-~/.bash_profile}
 touch "${BASH_SS}"
 BASHSS_CHECKSUM=$( md5 -q "${BASH_SS}" )
 
@@ -128,8 +110,7 @@ done
 	git config --global push.default simple
 [ "$( git config --global --get core.autocrlf)" == "input" ] || \
 	git config --global core.autocrlf input
-[ "$( git config --global --get user.email )" ] && \
-	[ "( git config --global --get user.name)" ] || \
+[ "$( git config --global --get user.email )" ]&&[ "( git config --global --get user.name)" ] || \
 	git config --global --edit
 #
 git remote -v | grep "https://github.com/bcgov/gwells.git (push)" || \
@@ -139,8 +120,7 @@ git remote -v | grep "https://github.com/bcgov/gwells.git (push)" || \
 # Install Homebrew
 #
 which brew || \
-	/usr/bin/ruby -e "$( curl -fsSL \
-	https://raw.githubusercontent.com/Homebrew/install/master/install )"
+	/usr/bin/ruby -e "$( curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install )"
 
 
 # Brew install packages
@@ -175,40 +155,36 @@ psql -U postgres -c \
 	"${CUSER}" -s postgres
 
 
-# Create GWells postgres user and database
+# Create GWells and Wells (legacy) postgres user and database
 #
-psql -U postgres -c \
-        "DROP DATABASE IF EXISTS gwells;"
-psql -U postgres -c \
-        "DROP USER IF EXISTS gwells;"
-psql -U postgres -c \
-        "CREATE USER gwells WITH createdb;"
-psql -U postgres -c \
-        "ALTER USER gwells WITH PASSWORD 'gwells';"
-psql -U postgres -c \
-        "CREATE DATABASE gwells WITH owner='gwells';"
-
-
-# Create Wells (legacy) postgres user and database
-#
-psql -U postgres -c \
-        "DROP DATABASE IF EXISTS wells;"
-psql -U postgres -c \
-        "DROP USER IF EXISTS wells;"
-psql -U postgres -c \
-        "CREATE USER wells;"
-psql -U postgres -c \
-        "ALTER USER wells WITH PASSWORD 'wells';"
-psql -U postgres -c \
-        "CREATE DATABASE wells WITH owner='wells';"
+COMMANDS=(
+	"DROP DATABASE IF EXISTS gwells;"
+	"DROP USER IF EXISTS gwells;"
+	"CREATE USER gwells WITH createdb;"
+	"ALTER USER gwells WITH PASSWORD 'gwells';"
+	"CREATE DATABASE gwells WITH owner='gwells';"
+	"DROP DATABASE IF EXISTS wells;"
+	"DROP USER IF EXISTS wells;"
+	"CREATE USER wells;"
+	"ALTER USER wells WITH PASSWORD 'wells';"
+	"CREATE DATABASE wells WITH owner='wells';"
+)
+for c in ${COMMANDS[@]}
+do
+	psql -U postgres -c $c
+done
 
 
 # Prepare GWells for foreign data wrapper
 #
-psql -U postgres -d gwells -c \
-        "CREATE EXTENSION IF NOT EXISTS pgcrypto;"
-psql -U postgres -d gwells -c \
-        "CREATE EXTENSION IF NOT EXISTS postgres_fdw;"
+COMMANDS=(
+	"CREATE EXTENSION IF NOT EXISTS pgcrypto;"
+	"CREATE EXTENSION IF NOT EXISTS postgres_fdw;"
+)
+for c in ${COMMANDS[@]}
+do
+	psql -U postgres -d gwells -c $c
+done
 
 
 # Restore the legacy database from a database dump
@@ -219,26 +195,21 @@ psql -U postgres -d gwells -c \
 
 # Create foreign data wrapper linking Wells (legacy) to the GWells database
 #
-psql -U postgres -d gwells -c \
-        "DROP SERVER IF EXISTS wells CASCADE;"
-psql -U postgres -d gwells -c \
-        "CREATE SERVER wells FOREIGN DATA WRAPPER postgres_fdw \
-	OPTIONS (host 'localhost', dbname 'wells');"
-psql -U postgres -d gwells -c \
-        "DROP USER MAPPING IF EXISTS FOR public SERVER wells;"
-psql -U postgres -d gwells -c \
-        "CREATE USER MAPPING FOR PUBLIC SERVER wells \
-	OPTIONS (user 'wells', password 'wells');"
-psql -U postgres -d gwells -c \
-        "CREATE SCHEMA IF NOT EXISTS wells;"
-psql -U postgres -d gwells -c \
+COMMANDS=(
+	"DROP SERVER IF EXISTS wells CASCADE;"
+	"CREATE SERVER wells FOREIGN DATA WRAPPER postgres_fdw OPTIONS (host 'localhost', dbname 'wells');"
+	"DROP USER MAPPING IF EXISTS FOR public SERVER wells;"
+	"CREATE USER MAPPING FOR PUBLIC SERVER wells OPTIONS (user 'wells', password 'wells');"
+	"CREATE SCHEMA IF NOT EXISTS wells;"
 	"IMPORT FOREIGN SCHEMA public FROM SERVER wells INTO wells;"
-psql -U postgres -d gwells -c \
-        "GRANT usage ON SCHEMA wells TO gwells;"
-psql -U postgres -d gwells -c \
+	"GRANT usage ON SCHEMA wells TO gwells;"
 	"GRANT select ON ALL TABLES in SCHEMA wells TO wells;"
-psql -U postgres -d gwells -c \
-        "CREATE SCHEMA IF NOT EXISTS wells;"
+	"CREATE SCHEMA IF NOT EXISTS wells;"
+)
+for c in ${COMMANDS[@]}
+do
+	psql -U postgres -d gwells -c $c
+done
 
 
 # Pip3 install virtualenv and virtualenvwrapper

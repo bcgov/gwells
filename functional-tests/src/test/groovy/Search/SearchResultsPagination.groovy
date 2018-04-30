@@ -99,11 +99,11 @@ Given I have <count> search results
           
           if ( "$Testresult" == "enabled" )
           {
-            assert waitFor {(next_button.classes().sort() == ["next", "paginate_button"])}
+            assert waitFor {(next_button.classes().sort() == ["next", "page-item", "paginate_button"])}
           }
           else
           {
-            assert waitFor {(next_button.classes().sort() == ["disabled", "next", "paginate_button"])}
+            assert waitFor {(next_button.classes().sort() == ["disabled", "next", "page-item", "paginate_button"])}
           }
         where:
         TestDesc                                                      | WellId | Address | LegalId | Owner | Page | NumberResult | Testresult
@@ -129,11 +129,11 @@ Given I have <count> search results
           assert waitFor {(previous_button.displayed == true)}  
         if ( "$Testresult" == "enabled" )
           {
-            assert waitFor {(previous_button.classes().sort() == ["paginate_button", "previous"])}
+            assert waitFor {(previous_button.classes().sort() == ["page-item", "paginate_button", "previous"])}
           }
           else
           {
-            assert waitFor {(previous_button.classes().sort() == ["disabled", "paginate_button", "previous"])}
+            assert waitFor {(previous_button.classes().sort() == ["disabled", "page-item", "paginate_button", "previous"])}
           }
         where:
         TestDesc                                                          | WellId | Address | LegalId | Owner | Page | NumberResult | Testresult
