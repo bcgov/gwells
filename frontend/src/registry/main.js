@@ -49,5 +49,3 @@ new Vue({
     })
   }
 })
-
-Vue.config.devtools = true
