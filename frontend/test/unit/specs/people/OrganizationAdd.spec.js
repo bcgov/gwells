@@ -24,7 +24,7 @@ describe('OrganizationAdd.vue', () => {
       store,
       stubs: ['router-link', 'router-view', 'v-select']
     })
-    expect(wrapper.find('h5.modal-title').text()).toEqual('Add an Organization')
+    expect(wrapper.find('h5.modal-title').text()).toEqual('Add a Company')
   })
   it('form has a reset button that clears fields', () => {
     const wrapper = shallow(OrganizationAdd, {
