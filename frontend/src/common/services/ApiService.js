@@ -43,6 +43,9 @@ const ApiService = {
   },
   post (resource, params) {
     return axios.post(resource + '/', params)
+  },
+  patch (resource, record, params) {
+    return axios.patch(`${resource}/${record}/`, params)
   }
 }
 
