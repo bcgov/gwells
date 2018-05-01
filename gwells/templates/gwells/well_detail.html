@@ -13,11 +13,13 @@
 {% block body_block %}
 <fieldset id="summary_information_fieldset">
 
+        <legend>Well Summary 
         {% if settings.ENABLE_GOOGLE_ANALYTICS %}
-                <legend>Well Summary <a onclick="ga('send', 'event', 'Button', 'print', 'Wells Summary Print'); window.print();"><span title="Print" class="glyphicon glyphicon-print pull-right hide-for-print"></span></a></legend>
+                <a onclick="ga('send', 'event', 'Button', 'print', 'Wells Summary Print'); window.print();">
         {% else %}
-                <legend>Well Summary <a onclick="window.print();"><span title="Print" class="glyphicon glyphicon-print pull-right hide-for-print"></span></a></legend>
+                <a onclick="window.print();">
         {% endif %}
+        <span title="Print" class="fas fa-print fa-pull-right button hide-for-print cursor-pointer"></span></a></legend>
 
         <div class="row print-compressed">
 
@@ -204,7 +206,7 @@
         </div>
     </div>
     <div class="row print-compressed">
-        <div class="col-md-6 col-md-offset-6 col-print-offset-6 print-compressed top-margin-8">
+        <div class="col-md-6 offset-md-6 col-print-offset-6 print-compressed top-margin-8">
             <div class="row print-compressed">
                 <div class="col-md-12 col-print-12 print-compressed">
                     <label>Geographic Coordinates - North American Datum of 1983 (NAD 83)</label>
@@ -802,7 +804,7 @@
                     <span id="method_of_closure">{{well.decommission_method.decommission_method_code|default_if_none:'&nbsp;'}}</span>
                 </div>
             </div>
-            <div class="row">
+            <div class="row print-compressed">
                 <div class="col-md-12 col-print-12 print-compressed">
                     <label for="decommission_details">{% verbose_name well "decommission_details" %}:</label>
                     <span id="decommission_details">{{well.decommission_details|default_if_none:'&nbsp;'}}</span>

@@ -186,8 +186,7 @@ app_primary_certificate_no, well_class_list
 from vw_well_driller_reg reg,
      registries_application app
 where reg.reg_register_guid = app.register_guid
-and reg_register_guid = '3c1ed5f5-d2c3-48ef-9826-6d08f94b6249';
-
+order by surname, first_name;
 
 
 */
@@ -400,4 +399,96 @@ ORDER BY per.person_guid, reg.register_guid, app.application_guid, status.effect
 select first_name, surname, reg_registration_no, reg_registration_date, appstatus_code, appstatus_effective_date, appstatus_expired_date
 from vw_well_driller_application;
 */
+
+/*
+
+gwells=> \d registries_certifying_authority_code;
+  Table "public.registries_certifying_authority_code"
+     Column     |           Type           | Modifiers 
+----------------+--------------------------+-----------
+ create_user    | character varying(60)    | not null
+ create_date    | timestamp with time zone | 
+ update_user    | character varying(60)    | 
+ update_date    | timestamp with time zone | 
+ cert_auth_code | character varying(50)    | not null
+ description    | character varying(100)   | 
+ effective_date | date                     | not null
+ expired_date   | date                     | 
+
+
+gwells=> select * from registries_certifying_authority_code ;
+  create_user  |      create_date       |  update_user  |      update_date       | cert_auth_code |            description            | effective_date | expired_date 
+---------------+------------------------+---------------+------------------------+----------------+-----------------------------------+----------------+--------------
+ DATALOAD_USER | 2018-01-01 00:00:00-08 | DATALOAD_USER | 2018-01-01 00:00:00-08 | BC             | Province of B.C.                  | 1970-01-01     | 
+ DATALOAD_USER | 2018-01-01 00:00:00-08 | DATALOAD_USER | 2018-01-01 00:00:00-08 | CGWA           | Canadian Ground Water Association | 1970-01-01     | 
+ DATALOAD_USER | 2018-01-01 00:00:00-08 | DATALOAD_USER | 2018-01-01 00:00:00-08 | AB             | Province of Alberta               | 1970-01-01     | 
+ DATALOAD_USER | 2018-01-01 00:00:00-08 | DATALOAD_USER | 2018-01-01 00:00:00-08 | SK             | Province of Saskatchewan          | 1970-01-01     | 
+ DATALOAD_USER | 2018-01-01 00:00:00-08 | DATALOAD_USER | 2018-01-01 00:00:00-08 | ON             | Province of Ontario               | 1970-01-01     | 
+ DATALOAD_USER | 2018-01-01 00:00:00-08 | DATALOAD_USER | 2018-01-01 00:00:00-08 | N/A            | Grand-fathered                    | 1970-01-01     | 
+(6 rows)
+
+
+gwells=> \d registries_accredited_certificate_code
+      Table "public.registries_accredited_certificate_code"
+          Column          |           Type           | Modifiers 
+--------------------------+--------------------------+-----------
+ create_user              | character varying(60)    | not null
+ create_date              | timestamp with time zone | 
+ update_user              | character varying(60)    | 
+ update_date              | timestamp with time zone | 
+ acc_cert_guid            | uuid                     | not null
+ name                     | character varying(100)   | not null
+ description              | character varying(100)   | 
+ effective_date           | date                     | not null
+ expired_date             | date                     | 
+ cert_auth_code           | character varying(50)    | not null
+ registries_activity_code | character varying(10)    | not null
+
+
+ gwells=> select * from registries_accredited_certificate_code;
+  create_user  |      create_date       |  update_user  |      update_date       |            acc_cert_guid             |                            name                            | description | effective_date | expired_date | cert_auth_code | registries_activity_code 
+---------------+------------------------+---------------+------------------------+--------------------------------------+------------------------------------------------------------+-------------+----------------+--------------+----------------+--------------------------
+ DATALOAD_USER | 2018-01-01 00:00:00-08 | DATALOAD_USER | 2018-01-01 00:00:00-08 | a4b2e41c-3796-4c4c-ae28-eb6ad30202d9 | Water Well Driller Certificate                             |             | 1970-01-01     |              | BC             | DRILL
+ DATALOAD_USER | 2018-01-01 00:00:00-08 | DATALOAD_USER | 2018-01-01 00:00:00-08 | 28bf8730-dbb7-4218-8e9f-06bd51f60161 | Geoexchange Driller Certificate                            |             | 1970-01-01     |              | BC             | DRILL
+ DATALOAD_USER | 2018-01-01 00:00:00-08 | DATALOAD_USER | 2018-01-01 00:00:00-08 | da85087a-9764-410b-908e-b2b65f3dfb48 | Geotechnical/Environmental Driller Certificate             |             | 1970-01-01     |              | BC             | DRILL
+ DATALOAD_USER | 2018-01-01 00:00:00-08 | DATALOAD_USER | 2018-01-01 00:00:00-08 | 4a059930-265f-43f5-9dbb-c71862ccc5b5 | Ground Water Drilling Technician Certificate               |             | 1970-01-01     |              | CGWA           | DRILL
+ DATALOAD_USER | 2018-01-01 00:00:00-08 | DATALOAD_USER | 2018-01-01 00:00:00-08 | 5856eb50-7ea3-45c7-b882-a8863cc36b73 | Water Well Driller, Alberta Journeyman Certificate         |             | 1970-01-01     |              | AB             | DRILL
+ DATALOAD_USER | 2018-01-01 00:00:00-08 | DATALOAD_USER | 2018-01-01 00:00:00-08 | a17cc1f8-62c7-4715-93fb-b4c66986d9a7 | Water Well Driller, Saskatchewan Journeyperson Certificate |             | 1970-01-01     |              | SK             | DRILL
+ DATALOAD_USER | 2018-01-01 00:00:00-08 | DATALOAD_USER | 2018-01-01 00:00:00-08 | 9349a159-6739-4623-9f7d-80b904b8f885 | Well Technician Class 1 Drilling                           |             | 1970-01-01     |              | ON             | DRILL
+ DATALOAD_USER | 2018-01-01 00:00:00-08 | DATALOAD_USER | 2018-01-01 00:00:00-08 | e368e066-137b-491a-af2a-da3bf2936e6d | Grand-parent                                               |             | 1970-01-01     |              | N/A            | DRILL
+ DATALOAD_USER | 2018-01-01 00:00:00-08 | DATALOAD_USER | 2018-01-01 00:00:00-08 | 7bf968aa-c6e0-4f57-b4f4-58723214de80 | Well Pump Installer Certificate                            |             | 1970-01-01     |              | BC             | PUMP
+ DATALOAD_USER | 2018-01-01 00:00:00-08 | DATALOAD_USER | 2018-01-01 00:00:00-08 | 1886daa8-e799-49f0-9034-33d02bad543d | Ground Water Pump Technician Certificate                   |             | 1970-01-01     |              | CGWA           | PUMP
+ DATALOAD_USER | 2018-01-01 00:00:00-08 | DATALOAD_USER | 2018-01-01 00:00:00-08 | 88d5d0aa-d2aa-450a-9708-a911dce42f7f | Well Technician Certificate                                |             | 1970-01-01     |              | ON             | PUMP
+ DATALOAD_USER | 2018-01-01 00:00:00-08 | DATALOAD_USER | 2018-01-01 00:00:00-08 | a53d3f1e-65eb-46b7-8999-e662d654df77 | Grand-parent                                               |             | 1970-01-01     |              | N/A            | PUMP
+(12 rows)
+
+
+
+SELECT auth.cert_auth_code, auth.description,
+cert.registries_activity_code, cert.name, cert.cert_auth_code
+from registries_certifying_authority_code auth
+, registries_accredited_certificate_code cert
+where auth.cert_auth_code = cert.cert_auth_code;
+
+
+ cert_auth_code |            description            | registries_activity_code |                            name                            | cert_auth_code 
+----------------+-----------------------------------+--------------------------+------------------------------------------------------------+----------------
+ BC             | Province of B.C.                  | DRILL                    | Water Well Driller Certificate                             | BC
+ BC             | Province of B.C.                  | DRILL                    | Geoexchange Driller Certificate                            | BC
+ BC             | Province of B.C.                  | DRILL                    | Geotechnical/Environmental Driller Certificate             | BC
+ CGWA           | Canadian Ground Water Association | DRILL                    | Ground Water Drilling Technician Certificate               | CGWA
+ AB             | Province of Alberta               | DRILL                    | Water Well Driller, Alberta Journeyman Certificate         | AB
+ SK             | Province of Saskatchewan          | DRILL                    | Water Well Driller, Saskatchewan Journeyperson Certificate | SK
+ ON             | Province of Ontario               | DRILL                    | Well Technician Class 1 Drilling                           | ON
+ N/A            | Grand-fathered                    | DRILL                    | Grand-parent                                               | N/A
+ BC             | Province of B.C.                  | PUMP                     | Well Pump Installer Certificate                            | BC
+ CGWA           | Canadian Ground Water Association | PUMP                     | Ground Water Pump Technician Certificate                   | CGWA
+ ON             | Province of Ontario               | PUMP                     | Well Technician Certificate                                | ON
+ N/A            | Grand-fathered                    | PUMP                     | Grand-parent                                               | N/A
+(12 rows)
+
+ 
+*/
+
+
 

@@ -4,7 +4,7 @@
 --
 -- psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER -f populate-registries-from-xform.sql
 
--- Companies from Driller Registry (140)
+-- Companies from Driller Registry (272)
 \echo 'Inserting Companies from Driller Registry'
 INSERT INTO registries_organization (
  name
@@ -23,7 +23,7 @@ INSERT INTO registries_organization (
 ,website_url
 ,province_state_code
 ) SELECT
- distinct on (companyname) companyname
+ companyname
 ,'DATALOAD_USER'
 ,'2018-01-01 00:00:00-08'::timestamp
 ,'DATALOAD_USER'
@@ -43,9 +43,14 @@ INSERT INTO registries_organization (
   ELSE companyprov
  END AS province_state_code
 from xform_registries_drillers_reg xform
-where companyname is not null;
+where (companyname,companyaddress,companycity,companyprov)
+IN (SELECT
+ distinct companyname,companyaddress,companycity,companyprov
+from xform_registries_drillers_reg xform
+where companyname is not null);
 
--- Companies from Pump Installer Registry 177
+
+-- Companies from Pump Installer Registry 189
 \echo 'Inserting Companies from Pump Installer Registry'
 INSERT INTO registries_organization (
  name
@@ -84,9 +89,13 @@ INSERT INTO registries_organization (
   ELSE companyprov
  END AS province_state_code
 from xform_registries_pump_installers_reg xform
-where companyname is not null
-and companyname not in (
-SELECT name from registries_organization);
+where (companyname,companyaddress,companycity,companyprov)
+IN (SELECT
+ distinct companyname,companyaddress,companycity,companyprov
+from xform_registries_pump_installers_reg xform
+where companyname is not null)
+and (companyname,companyaddress,companycity) not in (
+SELECT name,street_address,city from registries_organization);
 
 -- Companies from drillers/pump-installers that have been removed
 /*
@@ -364,7 +373,7 @@ SELECT
 ,'ACTIVE'
  from xform_registries_drillers_reg;
 
--- Attach companies for whom the drillers work 252
+-- Attach companies for whom the drillers work 272
 \echo '...Updating Register, attaching companies from Driller Registry'
 UPDATE registries_register reg
 SET organization_guid = org.org_guid
@@ -419,7 +428,7 @@ and   xform.lastname = per.surname;
 --      entered as driller
 
  
--- Attach companies for whom the pump installers work 268
+-- Attach companies for whom the pump installers work 286
 \echo '...Updating Register, attaching companies from Pump Installer Registry'
 UPDATE registries_register reg
 SET organization_guid = org.org_guid
@@ -550,11 +559,20 @@ SELECT
 ,xform.notes
 ,null
 ,COALESCE(xform.certificatenumber, 'N/A')
-, (SELECT acc_cert_guid
-    from registries_accredited_certificate_code
-    where name = 'Grand-parent'
-    and  registries_activity_code = 'DRILL'
-   )
+,CASE typeofcertificate
+  WHEN 'Water Well Driller, Prov. Of BC'                 THEN  'a4b2e41c-3796-4c4c-ae28-eb6ad30202d9'::uuid
+  WHEN 'Geoexchange Driller, Prov. Of BC'                THEN '28bf8730-dbb7-4218-8e9f-06bd51f60161'::uuid 
+  WHEN 'Geotechnical/Envrionmental Driller, Prov. Of BC' THEN 'da85087a-9764-410b-908e-b2b65f3dfb48'::uuid
+  WHEN 'Geotechnical / Environmental, Prov. Of BC'       THEN 'da85087a-9764-410b-908e-b2b65f3dfb48'::uuid
+  WHEN 'Geotechnical/Environmental Driller, Prov. Of BC' THEN 'da85087a-9764-410b-908e-b2b65f3dfb48'::uuid
+  WHEN 'Groundwater Drilling Technician, CGWA4'          THEN '4a059930-265f-43f5-9dbb-c71862ccc5b5'::uuid 
+  WHEN 'Ground Water Drilling Technician, CGWA'          THEN '4a059930-265f-43f5-9dbb-c71862ccc5b5'::uuid 
+  WHEN 'Water Well Driller, Alberta Journeyman Certificate'         THEN '5856eb50-7ea3-45c7-b882-a8863cc36b73'::uuid 
+  WHEN 'Water Well Driller, Saskatchewan Journeyperson Certificate' THEN 'a17cc1f8-62c7-4715-93fb-b4c66986d9a7'::uuid 
+  WHEN 'Well Technician Class 1 Drilling, Ontario Ministry of Environment' THEN '9349a159-6739-4623-9f7d-80b904b8f885'::uuid 
+  WHEN 'Ontario Well Technician Licence'     THEN 'e0d774bd-aba9-4a6c-9d5e-4020cfe82865'::uuid 
+  ELSE 'e368e066-137b-491a-af2a-da3bf2936e6d'::uuid
+ END AS acc_cert_guid
 ,reg.register_guid
 ,'WATER'
 from registries_register reg,
@@ -569,7 +587,7 @@ and xform.registrationdate >  '2016-02-29'
 and xform.classofwelldriller like '%Water Well%';
 
 
--- Pseudo-Applications from "Water Well" Well Drillers, who were
+-- Pseudo-Application Statuses from "Water Well" Well Drillers, who were
 -- grandfathered in  257
 \echo '... Approved entries'
 INSERT INTO registries_application_status (
@@ -648,8 +666,6 @@ and xform.name = concat(per.surname, ', ', per.first_name)
 ;
 
 
-
-
 -- 257
 \echo 'Inserting "Fake" Applications for pre-2016-FEB-29 grandfathered Well Drillers (GEOTECH)'
 INSERT INTO registries_application (
@@ -725,11 +741,20 @@ SELECT
 ,xform.notes
 ,null
 ,COALESCE(xform.certificatenumber, 'N/A')
-, (SELECT acc_cert_guid
-    from registries_accredited_certificate_code
-    where name = 'Grand-parent'
-    and  registries_activity_code = 'DRILL'
-   )
+,CASE typeofcertificate
+  WHEN 'Water Well Driller, Prov. Of BC'                 THEN  'a4b2e41c-3796-4c4c-ae28-eb6ad30202d9'::uuid
+  WHEN 'Geoexchange Driller, Prov. Of BC'                THEN '28bf8730-dbb7-4218-8e9f-06bd51f60161'::uuid 
+  WHEN 'Geotechnical/Envrionmental Driller, Prov. Of BC' THEN 'da85087a-9764-410b-908e-b2b65f3dfb48'::uuid
+  WHEN 'Geotechnical / Environmental, Prov. Of BC'       THEN 'da85087a-9764-410b-908e-b2b65f3dfb48'::uuid
+  WHEN 'Geotechnical/Environmental Driller, Prov. Of BC' THEN 'da85087a-9764-410b-908e-b2b65f3dfb48'::uuid
+  WHEN 'Groundwater Drilling Technician, CGWA4'          THEN '4a059930-265f-43f5-9dbb-c71862ccc5b5'::uuid 
+  WHEN 'Ground Water Drilling Technician, CGWA'          THEN '4a059930-265f-43f5-9dbb-c71862ccc5b5'::uuid 
+  WHEN 'Water Well Driller, Alberta Journeyman Certificate'         THEN '5856eb50-7ea3-45c7-b882-a8863cc36b73'::uuid 
+  WHEN 'Water Well Driller, Saskatchewan Journeyperson Certificate' THEN 'a17cc1f8-62c7-4715-93fb-b4c66986d9a7'::uuid 
+  WHEN 'Well Technician Class 1 Drilling, Ontario Ministry of Environment' THEN '9349a159-6739-4623-9f7d-80b904b8f885'::uuid 
+  WHEN 'Ontario Well Technician Licence'     THEN 'e0d774bd-aba9-4a6c-9d5e-4020cfe82865'::uuid 
+  ELSE 'e368e066-137b-491a-af2a-da3bf2936e6d'::uuid
+ END AS acc_cert_guid
 ,reg.register_guid
 ,'GEOTECH'
 from registries_register reg,
@@ -785,7 +810,7 @@ and xform.name = concat(per.surname, ', ', per.first_name)
 
 
 -- Pseudo-Applications from post-2016-FEB-29 2016 Well Drillers (GEOTECH)
--- 3
+-- 10
 \echo '... Approved entries'
 INSERT INTO registries_application_status (
  create_user
@@ -822,8 +847,6 @@ and app.registries_subactivity_code = 'GEOTECH'
 and xform.registrationdate >  '2016-02-29'
 and xform.name = concat(per.surname, ', ', per.first_name)
 ;
-
-
 
 -- 257
 \echo 'Inserting "Fake" Applications for pre-2016-FEB-29 grandfathered Well Drillers (GEOXCHG)'
@@ -900,11 +923,20 @@ SELECT
 ,xform.notes
 ,null
 ,COALESCE(xform.certificatenumber, 'N/A')
-, (SELECT acc_cert_guid
-    from registries_accredited_certificate_code
-    where name = 'Grand-parent'
-    and  registries_activity_code = 'DRILL'
-   )
+,CASE typeofcertificate
+  WHEN 'Water Well Driller, Prov. Of BC'                 THEN  'a4b2e41c-3796-4c4c-ae28-eb6ad30202d9'::uuid
+  WHEN 'Geoexchange Driller, Prov. Of BC'                THEN '28bf8730-dbb7-4218-8e9f-06bd51f60161'::uuid 
+  WHEN 'Geotechnical/Envrionmental Driller, Prov. Of BC' THEN 'da85087a-9764-410b-908e-b2b65f3dfb48'::uuid
+  WHEN 'Geotechnical / Environmental, Prov. Of BC'       THEN 'da85087a-9764-410b-908e-b2b65f3dfb48'::uuid
+  WHEN 'Geotechnical/Environmental Driller, Prov. Of BC' THEN 'da85087a-9764-410b-908e-b2b65f3dfb48'::uuid
+  WHEN 'Groundwater Drilling Technician, CGWA4'          THEN '4a059930-265f-43f5-9dbb-c71862ccc5b5'::uuid 
+  WHEN 'Ground Water Drilling Technician, CGWA'          THEN '4a059930-265f-43f5-9dbb-c71862ccc5b5'::uuid 
+  WHEN 'Water Well Driller, Alberta Journeyman Certificate'         THEN '5856eb50-7ea3-45c7-b882-a8863cc36b73'::uuid 
+  WHEN 'Water Well Driller, Saskatchewan Journeyperson Certificate' THEN 'a17cc1f8-62c7-4715-93fb-b4c66986d9a7'::uuid 
+  WHEN 'Well Technician Class 1 Drilling, Ontario Ministry of Environment' THEN '9349a159-6739-4623-9f7d-80b904b8f885'::uuid 
+  WHEN 'Ontario Well Technician Licence'     THEN 'e0d774bd-aba9-4a6c-9d5e-4020cfe82865'::uuid 
+  ELSE 'e368e066-137b-491a-af2a-da3bf2936e6d'::uuid
+ END AS acc_cert_guid
 ,reg.register_guid
 ,'GEOXCHG'
 from registries_register reg,
@@ -922,7 +954,7 @@ and (trim(both from xform.classofwelldriller) = 'Geoexchange'
 
 
 \echo '... Approved entries'
--- 320
+-- 257
 INSERT INTO registries_application_status (
  create_user
 ,create_date
@@ -961,7 +993,7 @@ and xform.name = concat(per.surname, ', ', per.first_name)
 
 
 -- Pseudo-Applications from post-2016-FEB-29 2016 Well Drillers (GEOXCHG)
--- 320
+-- 3
 \echo '... Approved entries'
 INSERT INTO registries_application_status (
  create_user
@@ -999,8 +1031,6 @@ and xform.registrationdate >  '2016-02-29'
 and xform.name = concat(per.surname, ', ', per.first_name)
 ;
 
-
-
 -- 320 
 \echo 'Inserting "Fake" Applications for Pump Installers (PUMPINST)'
 \echo '.. to be fixed manually post-migration or via a '
@@ -1032,11 +1062,14 @@ SELECT
 ,CONCAT_WS('. ',xform.notes,'Pseudo-Applications until ACTION_TRACKING tables are fixed. ')
 ,null
 ,'N/A' -- why no cert #?
-, (SELECT acc_cert_guid
-    from registries_accredited_certificate_code
-    where name = 'Grand-parent'
-    and  registries_activity_code = 'PUMP'
-   )
+,CASE typeofcertificate
+  WHEN 'Ground Water Pump Technician, CGWA'           THEN '1886daa8-e799-49f0-9034-33d02bad543d'::uuid
+  WHEN 'Ground Water Pump Technician, Class 2, CGWA'  THEN '1dfd37f5-5082-497a-be4e-6facd1d4dee9'::uuid 
+  WHEN 'Well Pump Installer, Prov. Of BC'             THEN '7bf968aa-c6e0-4f57-b4f4-58723214de80'::uuid
+  WHEN 'ITA'                                          THEN '7bf968aa-c6e0-4f57-b4f4-58723214de80'::uuid
+  WHEN 'Well Technician, Ontario Ministry of Environment' THEN '88d5d0aa-d2aa-450a-9708-a911dce42f7f'::uuid
+  ELSE 'a53d3f1e-65eb-46b7-8999-e662d654df77'::uuid
+ END AS acc_cert_guid
 ,reg.register_guid
 ,'PUMPINST'
 from registries_register reg,
@@ -1086,7 +1119,6 @@ and reg.registries_activity_code = 'PUMP'
 and xform.firstname = per.first_name
 and xform.lastname = per.surname;
 ;
-
 
 
 
