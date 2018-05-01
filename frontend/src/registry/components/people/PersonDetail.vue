@@ -71,7 +71,16 @@
             </div>
             <div class="row mb-2">
               <div class="col-5 col-md-2">
-                ORCS number:
+                Well Driller ORCS:
+              </div>
+              <div class="col-7 col-md-4">
+                {{ currentDriller.well_driller_orcs_no }}
+              </div>
+              <div class="col-5 col-md-2">
+                Pump Installer ORCS:
+              </div>
+              <div class="col-7 col-md-4">
+                {{ currentDriller.pump_installer_orcs_no }}
               </div>
             </div>
           </div>
@@ -112,92 +121,99 @@
         </div>
         <div class="card">
           <div class="card-body p-2 p-md-3">
-            <div class="row">
-              <div class="col-6">
-                <h6 class="card-title mb-3">Current Company</h6>
-              </div>
-              <div class="col-6 text-right">
-                <router-link
-                  class="btn btn-light btn-sm registries-edit-btn"
-                  tag="button"
-                  to="#"
-                  v-if="currentDriller.person_guid"><i class="fa fa-refresh"></i> Change</router-link>
-                <router-link
-                  class="btn btn-light btn-sm registries-edit-btn"
-                  tag="button"
-                  to="#"
-                  v-if="currentDriller.person_guid"><i class="fa fa-edit"></i> Edit</router-link>
-              </div>
-            </div>
-            <div v-if="currentDriller.organization">
-              <div class="row mb-2">
-                <div class="col-5 col-md-2 mb-1 mb-sm-0">
-                  Company name:
+            <div>
+              <div v-for="(registration, index) in currentDriller.registrations"
+                :key="`company information row ${index}`"
+                :class="index > 0 ? 'mt-5' : 'mt-2'">
+                  <div class="row">
+                  <div class="col">
+                    <h6 class="card-title mb-3">{{ registration.activity_description }} Company Information</h6>
+                  </div>
+                  <div class="col text-right">
+                    <button
+                      class="btn btn-light btn-sm registries-edit-btn"
+                      type="button"
+                      @click="editCompany = (editCompany === (index + 1) ? 0 : (index + 1))"
+                      v-if="currentDriller.person_guid"><i class="fa fa-refresh"></i> Add/Change</button>
+                  </div>
                 </div>
-                <div class="col-7 col-md-4">
-                  {{ currentDriller.organization.name }}
-                </div>
-                <div class="col-5 col-md-2">
-                  Street address:
-                </div>
-                <div class="col-7 col-md-4">
-                  {{ currentDriller.organization.street_address }}
-                </div>
-              </div>
-              <div class="row mb-2">
-                <div class="col-5 col-md-2 mb-1 mb-sm-0">
-                  City:
-                </div>
-                <div class="col-7 col-md-4">
-                  {{ currentDriller.organization.city }}
-                </div>
-                <div class="col-5 col-md-2">
-                  Province:
-                </div>
-                <div class="col-7 col-md-4">
-                  {{ currentDriller.organization.province_state }}
-                </div>
-              </div>
-              <div class="row mb-2">
-                <div class="col-5 col-md-2 mb-1 mb-sm-0">
-                  Postal Code:
-                </div>
-                <div class="col-7 col-md-4">
-                  {{ currentDriller.organization.postal_code }}
-                </div>
-                <div class="col-5 col-md-2">
-                  Office number:
-                </div>
-                <div class="col-7 col-md-4">
-                  {{ currentDriller.organization.main_tel }}
-                </div>
-              </div>
-              <div class="row mb-2">
-                <div class="col-5 col-md-2 mb-1 mb-sm-0">
-                  Cell number:
-                </div>
-                <div class="col-7 col-md-4">
-                  {{ currentDriller.surname }}
-                </div>
-                <div class="col-5 col-md-2">
-                  Fax number:
-                </div>
-                <div class="col-7 col-md-4">
-                  {{ currentDriller.organization.fax_tel }}
-                </div>
-              </div>
-              <div class="row mb-2">
-                <div class="col-5 col-md-2 mb-1 mb-sm-0">
-                  Email address:
-                </div>
-                <div class="col-7 col-md-4">
-                  {{ currentDriller.organization.contact_email }}
-                </div>
-                <div class="col-5 col-md-2">
-                  Website:
-                </div>
-                <div class="col-7 col-md-4">
-                  {{ currentDriller.organization.website_url }}
+                <person-edit
+                  section="company"
+                  :record="registration"
+                  v-if="editCompany === (index + 1)"
+                  @updated="editCompany = 0; updateRecord()"
+                  @canceled="editCompany = 0"></person-edit>
+                <div v-if="registration.organization && editCompany !== (index + 1)">
+                  <div class="row mb-2">
+                    <div class="col-5 col-md-2 mb-1 mb-sm-0">
+                      Company name:
+                    </div>
+                    <div class="col-7 col-md-4">
+                      {{ registration.organization.name }}
+                    </div>
+                    <div class="col-5 col-md-2">
+                      Street address:
+                    </div>
+                    <div class="col-7 col-md-4">
+                      {{ registration.organization.street_address }}
+                    </div>
+                  </div>
+                  <div class="row mb-2">
+                    <div class="col-5 col-md-2 mb-1 mb-sm-0">
+                      City:
+                    </div>
+                    <div class="col-7 col-md-4">
+                      {{ registration.organization.city }}
+                    </div>
+                    <div class="col-5 col-md-2">
+                      Province:
+                    </div>
+                    <div class="col-7 col-md-4">
+                      {{ registration.organization.province_state }}
+                    </div>
+                  </div>
+                  <div class="row mb-2">
+                    <div class="col-5 col-md-2 mb-1 mb-sm-0">
+                      Postal Code:
+                    </div>
+                    <div class="col-7 col-md-4">
+                      {{ registration.organization.postal_code }}
+                    </div>
+                    <div class="col-5 col-md-2">
+                      Office number:
+                    </div>
+                    <div class="col-7 col-md-4">
+                      {{ registration.organization.main_tel }}
+                    </div>
+                  </div>
+                  <div class="row mb-2">
+                    <div class="col-5 col-md-2 mb-1 mb-sm-0">
+                      Cell number:
+                    </div>
+                    <div class="col-7 col-md-4">
+                      {{ registration.surname }}
+                    </div>
+                    <div class="col-5 col-md-2">
+                      Fax number:
+                    </div>
+                    <div class="col-7 col-md-4">
+                      {{ registration.organization.fax_tel }}
+                    </div>
+                  </div>
+                  <div class="row mb-2">
+                    <div class="col-5 col-md-2 mb-1 mb-sm-0">
+                      Email address:
+                    </div>
+                    <div class="col-7 col-md-4">
+                      {{ registration.organization.contact_email }}
+                    </div>
+                    <div class="col-5 col-md-2">
+                      Website:
+                    </div>
+                    <div class="col-7 col-md-4">
+                      {{ registration.organization.website_url }}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -210,7 +226,7 @@
 
 <script>
 import APIErrorMessage from '@/common/components/APIErrorMessage'
-import QualCheckbox from '@/common/components/QualCheckbox'
+import PersonEdit from '@/registry/components/people/PersonEdit.vue'
 import { mapGetters } from 'vuex'
 import { SET_DRILLER } from '@/registry/store/mutations.types'
 import { FETCH_DRILLER } from '@/registry/store/actions.types'
@@ -219,7 +235,7 @@ export default {
   name: 'person-detail',
   components: {
     'api-error': APIErrorMessage,
-    'r-checkbox': QualCheckbox
+    'person-edit': PersonEdit
   },
   data () {
     return {
@@ -232,7 +248,8 @@ export default {
           text: 'Person Profile',
           active: true
         }
-      ]
+      ],
+      editCompany: 0
     }
   },
   computed: {
@@ -344,6 +361,11 @@ export default {
       'drillers'
     ])
   },
+  methods: {
+    updateRecord () {
+      this.$store.dispatch(FETCH_DRILLER, this.$route.params.person_guid)
+    }
+  },
   created () {
     if (this.currentDriller.person_guid !== this.$route.params.person_guid) {
       // reset the currentDriller object if another driller was previously loaded
@@ -359,7 +381,7 @@ export default {
       }
     }
     // always fetch up to date record from API when page loads
-    this.$store.dispatch(FETCH_DRILLER, this.$route.params.person_guid)
+    this.updateRecord()
   }
 }
 </script>
