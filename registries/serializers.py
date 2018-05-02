@@ -557,6 +557,8 @@ class PersonAdminSerializer(AuditModelSerializer):
             'first_name',
             'surname',
             'registrations',
+            'well_driller_orcs_no',
+            'pump_installer_orcs_no',
             'contact_info',
             'create_user',
             'create_date',
