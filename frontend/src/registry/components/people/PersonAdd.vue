@@ -85,6 +85,13 @@
                   class="mb-3">
                   <i class="fa fa-plus-square-o"></i> Add a company</b-button>
                   <organization-add @newOrgAdded="newOrgHandler"></organization-add>
+                <b-button
+                  type="button"
+                  v-b-modal.qualificationModal
+                  variant="light"
+                  size="sm"
+                  class="mb-3">Add new classification</b-button>
+                  <qualification-add></qualification-add>
               </b-col>
             </b-row>
             <b-row class="mt-3">
@@ -166,12 +173,14 @@ import APIErrorMessage from '@/common/components/APIErrorMessage'
 import { mapGetters } from 'vuex'
 import ApiService from '@/common/services/ApiService.js'
 import OrganizationAdd from '@/registry/components/people/OrganizationAdd.vue'
+import QualificationAdd from '@/registry/components/people/QualificationAdd.vue'
 
 export default {
   name: 'PersonDetailEdit',
   components: {
     'api-error': APIErrorMessage,
-    'organization-add': OrganizationAdd
+    'organization-add': OrganizationAdd,
+    'qualification-add': QualificationAdd
   },
   data () {
     return {
