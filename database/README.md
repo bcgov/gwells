@@ -109,7 +109,7 @@ ssh-4.2$ psql -t -d $POSTGRESQL_DATABASE -U $POSTGRESQL_USER -c 'SELECT db_repli
 The administrator account details are recorded as an OpenShift Secret (i.e. PROD environment as the secret here under the umbrella gwells-django [secret](https://console.pathfinder.gov.bc.ca:8443/console/project/moe-gwells-prod/browse/secrets/gwells-django) ).
 
 
-Currently, these values are used as part of the manual step to create the admin account, by loging onto the gwells pod:
+Currently, these values are used as part of the manual step to create the admin account, by logging onto the gwells pod:
 ```
 (app-root)sh-4.2$ python manage.py createsuperuser
 REQUIRE_ENV_VARIABLES is set to False
@@ -120,6 +120,6 @@ Password (again): <paste-in-password-from-openshift-secret>
 Superuser created successfully.
 ```
 
-This Opaque secret also records the obfuscated administration screen URL (under `admin_url`).  Each environment (gwells-moe-dev, gwells-moe-test, gwells-moe-prod) has its own values in this secret.
+This opaque secret also records the obfuscated administration screen URL (under `admin_url`).  Each environment (gwells-moe-dev, gwells-moe-test, gwells-moe-prod) has its own values in this secret.
 
 
