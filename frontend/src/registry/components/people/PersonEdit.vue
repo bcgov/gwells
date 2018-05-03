@@ -66,41 +66,30 @@
     </div>
     <div v-if="(section === 'contact' || section === 'all')">
       <b-form @submit.prevent="submitContactForm">
-        <b-row
-            v-for="(contact, contactIndex) in contactInfoForm"
-            :key="`contact set ${contactIndex}`">
+        <b-row>
           <b-col cols="12" md="5">
             <b-form-group
-              :id="`emailInputGroup${contactIndex}`"
+              id="emailInputGroup"
               label="Email address:"
-              :label-for="`emailInput${contactIndex}`">
+              label-for="emailInput">
               <b-form-input
-                :id="`emailInput${contactIndex}`"
+                id="emailInput"
                 type="text"
-                v-model="contactInfoForm[contactIndex].contact_email"
+                v-model="contactInfoForm.contact_email"
                 placeholder="Enter email"/>
             </b-form-group>
           </b-col>
           <b-col cols="12" md="5" offset-md="1">
             <b-form-group
-              :id="`telInputGroup${contactIndex}`"
+              id="telInputGroup"
               label="Telephone:"
-              :label-for="`telInput${contactIndex}`">
+              label-for="telInput">
               <b-form-input
-                :id="`telInput${contactIndex}`"
+                id="telInput"
                 type="text"
-                v-model="contactInfoForm[contactIndex].contact_tel"
+                v-model="contactInfoForm.contact_tel"
                 placeholder="Enter telephone number"/>
             </b-form-group>
-          </b-col>
-        </b-row>
-        <b-row>
-          <b-col>
-          <button
-              class="btn btn-light btn-sm registries-edit-btn mb-3"
-              type="button"
-              @click="addContactSet">
-            <i class="fa fa-plus-square-o"></i> Add more contact info</button>
           </b-col>
         </b-row>
       </b-form>
@@ -180,7 +169,6 @@ export default {
       const personData = JSON.parse(JSON.stringify(this.currentDriller))
 
       this.personalInfoForm = {}
-      this.contactInfoForm = []
       this.registrationCompanyForm = {
         organization: null
       }
@@ -191,16 +179,11 @@ export default {
       this.personalInfoForm.well_driller_orcs_no = personData.well_driller_orcs_no
 
       // add contact info
-      if (personData.contact_info) {
-        for (let i = 0; i < personData.contact_info.length; i++) {
-          this.contactInfoForm.push({
-            contact_tel: personData.contact_info[i].contact_tel,
-            contact_email: personData.contact_info[i].contact_email,
-            contact_cell: personData.contact_info[i].contact_cell,
-            contact_detail_guid: personData.contact_info[i].contact_detail_guid,
-            new: false
-          })
-        }
+
+      this.contactInfoForm = {
+        contact_tel: personData.contact_tel,
+        contact_email: personData.contact_email,
+        contact_cell: personData.contact_cell
       }
 
       // add company info (for the registration record defined by prop 'record' only)
@@ -222,14 +205,6 @@ export default {
       const data = this.personalInfoForm
       ApiService.patch('drillers', this.record, data).then(() => {
         this.$emit('updated')
-      })
-    },
-    addContactSet () {
-      this.contactInfoForm.push({
-        contact_tel: null,
-        contact_email: null,
-        contact_cell: null,
-        new: true
       })
     },
     submitContactForm () {

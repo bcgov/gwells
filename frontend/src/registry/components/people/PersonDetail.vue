@@ -273,12 +273,18 @@ export default {
     personEmail () {
       // sort a person's contact info into a list of emails
       const email = []
+
+      // support for contact_info table (legacy data)
       if (this.currentDriller.contact_info && this.currentDriller.contact_info.length) {
         this.currentDriller.contact_info.forEach((item) => {
           if (item.contact_email) {
             email.push(item.contact_email)
           }
         })
+      }
+
+      if (this.currentDriller.contact_email) {
+        email.push(this.currentDriller.contact_email)
       }
       return email
     },
@@ -290,6 +296,14 @@ export default {
             tel.push(item.contact_tel)
           }
         })
+      }
+
+      // add both tel and cell number to the list of phone numbers
+      if (this.currentDriller.contact_tel) {
+        tel.push(this.currentDriller.contact_tel)
+      }
+      if (this.currentDriller.contact_cell) {
+        tel.push(this.currentDriller.contact_cell)
       }
       return tel
     },
