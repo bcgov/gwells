@@ -1,0 +1,57 @@
+// Cron job for postgres vacuum and replication
+//
+//  Setup in Jenkins:
+//  > Folder > New Item > Pipeline
+//  > Pipeline > Definition > Pipeline script from SCM
+//    SCM: Git
+//      Repository URL: https://github.com/bcgov/gwells
+//      Branches to build: */master
+//      Script path: scripts/Jenkinsfiles/db_vacuum-replicate */
+
+properties(
+    [
+        pipelineTriggers(
+            [
+                cron( 'H 6 * * 1-6' )
+            ]
+        )
+    ]
+)
+def PROJECT = 'moe-gwells-test'
+stage ( 'test' )
+{
+    node ( 'master' )
+    {
+        dir( 'database' ){
+            sh """
+                PODNAME=$( oc get pods -n moe-gwells-prod | grep postgresql | grep Running | head -n 1 | awk '{print $1}' )
+                RESULT=$( oc exec ${PODNAME} -n moe-gwells-prod -- /bin/bash -c 'psql -d $POSTGRESQL_DATABASE  -U $POSTGRESQL_USER -c "SELECT 1 AS online FROM WELLS.WELLS_WELLS LIMIT 1;" | grep -o online' )
+                if [ "$( echo $RESULT | grep -o online )" == "online" ]
+                then
+                    oc patch route gwells -n moe-gwells-prod -p '{ "spec": { "to": { "name": "proxy-caddy"}, "port": { "targetPort": "2015-tcp" }}}'
+                    oc patch route proxy-caddy -n moe-gwells-prod -p '{ "spec": { "to": { "name": "gwells" }, "port": { "targetPort": "web" }}}'
+
+                	oc scale dc gwells --timeout=5s --replicas=0 -n moe-gwells-prod
+                	PODNAME=$(oc get pods -n moe-gwells-prod | grep postgresql | grep Running | head -n 1 | awk '{print $1}')
+                	oc exec ${PODNAME} -n moe-gwells-prod -- /bin/bash -c 'psql -d $POSTGRESQL_DATABASE -c "VACUUM FULL;"'
+                	oc exec ${PODNAME} -n moe-gwells-prod -- /bin/bash -c 'psql -t -d $POSTGRESQL_DATABASE -U $POSTGRESQL_USER -c "SELECT db_replicate_step1(_subset_ind=>false);"'
+                	oc exec ${PODNAME} -n moe-gwells-prod -- /bin/bash -c 'psql -t -d $POSTGRESQL_DATABASE -U $POSTGRESQL_USER -c "SELECT db_replicate_step2 ();"'
+
+                    # Simple completeness check, expecting 112000+ wells
+                    WELL_COUNT=$( oc exec ${PODNAME} -n moe-gwells-prod -- /bin/bash -c 'psql -t -d ${POSTGRESQL_DATABASE} -U ${POSTGRESQL_USER} -c "SELECT count(*) from well;"')
+                    if [ ${WELL_COUNT} -gt 112000 ]
+                    then
+                        oc scale dc gwells --timeout=5s --replicas=1 -n moe-gwells-prod
+                        oc patch route gwells -n moe-gwells-prod -p '{ "spec": { "to": { "name": "gwells" }, "port": { "targetPort": "web" }}}'
+                        oc patch route proxy-caddy -n moe-gwells-prod -p '{ "spec": { "to": { "name": "proxy-caddy" }, "port": { "targetPort": "2015-tcp" }}}'
+                    else
+                        exit 2
+                    fi
+
+                else
+                    exit 1
+                fi
+            """
+        }
+    }
+}
