@@ -1,3 +1,13 @@
+// Cron job for backing up postgresql data to a persistent volume
+//
+//  Setup in Jenkins:
+//  > Folder > New Item > Pipeline
+//  > Pipeline > Definition > Pipeline script from SCM
+//    SCM: Git
+//      Repository URL: https://github.com/bcgov/gwells
+//      Branches to build: */master
+//      Script path: scripts/Jenkinsfiles/cron-pg_dump */
+
 properties(
     [
         pipelineTriggers(
