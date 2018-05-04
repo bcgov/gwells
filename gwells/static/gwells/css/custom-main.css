@@ -378,21 +378,6 @@ button.env-button-custom {
     }
 }
 
-
-/* remove navigation for all but small screens */
-
-@media (min-width: 768px) {
-    #navbar,
-    #navbar ul {
-        visibility: hidden;
-        height: 0;
-    }
-    .navbar-collapse {
-        padding: 0 !important;
-    }
-}
-
-
 /* reset padding for dropdown menu controls */
 
 .contentPageMainColumn ul.dropdown-menu {
