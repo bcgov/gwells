@@ -22,21 +22,19 @@ stage ( 'test' )
 {
     node ( 'master' )
     {
-        dir( 'database' ){
-            String POD_DB = sh(
-                script:
-                    """
-                        oc get pods -n "${PROJECT}" -o name | grep -Eo "postgresql-[0-9]+-[[:alnum:]]+"
-                    """,
-                returnStdout:
-                    true
-            ).trim()
-            sh """
-                oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
-                    'pg_dump gwells | gzip > /var/lib/pgsql/backup/\$( date +%Y-%m-%d-%T ).gz'
-                oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
-                    'ls /var/lib/pgsql/backup/*.gz -1pr | tail -n +\$( expr 1 + 10 ) | xargs -r rm --'
-            """
-        }
+        String POD_DB = sh(
+            script:
+                """
+                    oc get pods -n "${PROJECT}" -o name | grep -Eo "postgresql-[0-9]+-[[:alnum:]]+"
+                """,
+            returnStdout:
+                true
+        ).trim()
+        sh """
+            oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
+                'pg_dump gwells | gzip > /var/lib/pgsql/backup/\$( date +%Y-%m-%d-%T ).gz'
+            oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
+                'ls /var/lib/pgsql/backup/*.gz -1pr | tail -n +\$( expr 1 + 10 ) | xargs -r rm --'
+        """
     }
 }
