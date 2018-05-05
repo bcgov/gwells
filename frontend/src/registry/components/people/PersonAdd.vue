@@ -47,7 +47,7 @@
                   <b-form-input
                     id="contactTelInput"
                     type="text"
-                    v-model="drillerForm.contact_info.contact_tel"
+                    v-model="drillerForm.person.contact_tel"
                     placeholder="Enter telephone number"/>
                 </b-form-group>
               </b-col>
@@ -59,7 +59,7 @@
                   <b-form-input
                     id="contactEmailInput"
                     type="text"
-                    v-model="drillerForm.contact_info.contact_email"
+                    v-model="drillerForm.person.contact_email"
                     placeholder="Enter email address"/>
                 </b-form-group>
               </b-col>
@@ -214,13 +214,12 @@ export default {
       drillerForm: {
         person: {
           surname: '',
-          first_name: ''
+          first_name: '',
+          contact_tel: '',
+          contact_email: '',
+          contact_cell: ''
         },
         regType: [],
-        contact_info: {
-          contact_tel: '',
-          contact_email: ''
-        },
         registrations: {
           drill: {
             registries_activity: 'DRILL',
@@ -265,7 +264,6 @@ export default {
        * is checked (checking a box adds the activity to this.regType).
        */
       const registrations = []
-      const contactInfo = []
       const personData = Object.assign({}, this.drillerForm.person)
       this.submitSuccess = false
       this.submitError = false
@@ -290,11 +288,7 @@ export default {
         registrations.push(this.drillerForm.registrations[item.toLowerCase()])
       })
 
-      // add submitted contact info onto collection of person's contact details
-      contactInfo.push(this.drillerForm.contact_info)
-
       personData['registrations'] = registrations
-      personData['contact_info'] = contactInfo
 
       ApiService.post('drillers', personData).then((response) => {
         this.onFormReset()
@@ -314,10 +308,6 @@ export default {
           pump: null
         },
         regType: [],
-        contact_info: {
-          contact_tel: '',
-          contact_email: ''
-        },
         registrations: {
           drill: {
             registries_activity: 'DRILL',

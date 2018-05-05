@@ -92,13 +92,13 @@
             </b-form-group>
           </b-col>
         </b-row>
+        <b-row>
+          <b-col>
+            <button type="submit" class="btn btn-primary">Submit</button>
+            <button type="button" class="btn btn-light" @click="$emit('canceled')">Cancel</button>
+          </b-col>
+        </b-row>
       </b-form>
-      <b-row>
-        <b-col>
-          <button type="submit" class="btn btn-primary">Submit</button>
-          <button type="button" class="btn btn-light" @click="$emit('canceled')">Cancel</button>
-        </b-col>
-      </b-row>
     </div>
     <div v-if="(section === 'company' || section === 'all') && !!record">
       <b-form @submit.prevent="submitCompanyForm">
@@ -147,9 +147,10 @@ export default {
   data () {
     return {
       personalInfoForm: {},
-      contactInfoForm: [],
+      contactInfoForm: {},
       registrationCompanyForm: {},
-      companies: []
+      companies: [],
+      submitError: null
     }
   },
   computed: {
@@ -196,7 +197,8 @@ export default {
     },
     submitCompanyForm () {
       const regGuid = this.record.register_guid
-      const data = { organization: this.registrationCompanyForm.organization.org_guid }
+      const data = { organization: this.registrationCompanyForm.organization
+        ? this.registrationCompanyForm.organization.org_guid : null }
       ApiService.patch('registrations', regGuid, data).then(() => {
         this.$emit('updated', true)
       })
@@ -208,7 +210,13 @@ export default {
       })
     },
     submitContactForm () {
-      console.log('clicked')
+      const data = this.contactInfoForm
+      console.log(data)
+      ApiService.patch('drillers', this.record, data).then(() => {
+        this.$emit('updated')
+      }).catch((e) => {
+        this.submitError = e.response.data
+      })
     }
   },
   created () {
