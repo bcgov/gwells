@@ -109,11 +109,31 @@
             </div>
             <person-edit
               section="contact"
+              :record="currentDriller.person_guid"
               v-if="editContact"
               @updated="editContact = false; updateRecord()"
               @canceled="editContact = false"></person-edit>
             <div v-if="!editContact">
               <div class="row mb-2">
+                <div class="col-5 col-md-2">
+                  Email address:
+                </div>
+                <div class="col-7 col-md-4">
+                  {{ currentDriller.contact_email }}
+                </div>
+                <div class="col-5 col-md-2">
+                  Telephone:
+                </div>
+                <div class="col-7 col-md-4">
+                  {{ currentDriller.contact_tel }}
+                </div>
+              </div>
+            </div>
+            <div v-if="personTel.length || personEmail.length">
+              <div class="row mb-2 mt-5">
+                <div class="col-12">
+                  <h6 class="card-title mb-3">Additional (Legacy) Contact Information</h6>
+                </div>
                 <div class="col-5 col-md-2">
                   Email address:
                 </div>
@@ -283,9 +303,6 @@ export default {
         })
       }
 
-      if (this.currentDriller.contact_email) {
-        email.push(this.currentDriller.contact_email)
-      }
       return email
     },
     personTel () {
@@ -298,13 +315,6 @@ export default {
         })
       }
 
-      // add both tel and cell number to the list of phone numbers
-      if (this.currentDriller.contact_tel) {
-        tel.push(this.currentDriller.contact_tel)
-      }
-      if (this.currentDriller.contact_cell) {
-        tel.push(this.currentDriller.contact_cell)
-      }
       return tel
     },
     company () {
