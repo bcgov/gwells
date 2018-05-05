@@ -421,7 +421,7 @@ class RegistrationAdminSerializer(AuditModelSerializer):
         Set fields to different serializers for create/update operations.
         """
         self.fields['organization'] = serializers.PrimaryKeyRelatedField(
-            queryset=Organization.objects.all(), required=False)
+            queryset=Organization.objects.all(), required=False, allow_null=True)
         return super(RegistrationAdminSerializer, self).to_internal_value(data)
 
 
