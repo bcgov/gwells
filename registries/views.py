@@ -536,6 +536,8 @@ class OrganizationNameListView(ListAPIView):
 
     permission_classes = (IsGwellsAdmin,)
     serializer_class = OrganizationNameListSerializer
-    queryset = Organization.objects.filter(expired_date__isnull=True)
+    queryset = Organization.objects \
+        .filter(expired_date__isnull=True) \
+        .select_related('province_state')
     pagination_class = None
     lookup_field = 'organization_guid'
