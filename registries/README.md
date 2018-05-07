@@ -18,7 +18,7 @@ Sub-folders follow the standard Django setup.
 ```
 
 NOTE: Related files are under the gwells project folder, with the other files but in the a `registries` subfolder:
-- [database/code-tables/registries/](../database/code-tables/registries/)
+- [database/codetables/registries/](../database/codetables/registries/)
 - [database/scripts/registries/](../database/scripts/registries/)
 
 The [post-deploy.sh](../database/cron/post-deploy.sh) step now automatically includes the setup of the registries app code tables and data tables.
