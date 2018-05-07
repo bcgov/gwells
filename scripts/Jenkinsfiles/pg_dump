@@ -25,7 +25,7 @@ stage ( 'test' )
         String POD_DB = sh(
             script:
                 """
-                    oc get pods -n "${PROJECT}" -o name | grep -Eo "postgresql-[0-9]+-[[:alnum:]]+"
+                    oc get pods -n "${PROJECT}" | grep "Running" | grep -Eo "postgresql-[0-9]+-[[:alnum:]]+"
                 """,
             returnStdout:
                 true
