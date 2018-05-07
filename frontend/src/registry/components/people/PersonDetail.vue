@@ -157,6 +157,9 @@
         <div class="card">
           <div class="card-body p-2 p-md-3">
             <div>
+              <div v-if="currentDriller.registrations && !currentDriller.registrations.length">
+                <h6 class="card-title my-3">Applicant has not yet been added to the register. Submit or approve an application to view or add company information.</h6>
+              </div>
               <div v-for="(registration, index) in currentDriller.registrations"
                 :key="`company information row ${index}`"
                 :class="index > 0 ? 'mt-5' : 'mt-2'">
