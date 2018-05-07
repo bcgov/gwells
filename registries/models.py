@@ -195,7 +195,7 @@ class Person(AuditModel):
         max_length=15,
         verbose_name="Contact cell number")
     contact_email = models.EmailField(
-        blank=True, null=True, verbose_name="Email adddress")
+        blank=True, null=True, verbose_name="Email address")
 
     effective_date = models.DateField(default=datetime.date.today)
     expired_date = models.DateField(blank=True, null=True)
