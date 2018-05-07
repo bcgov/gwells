@@ -119,7 +119,7 @@
                   Email address:
                 </div>
                 <div class="col-7 col-md-4">
-                  {{ currentDriller.contact_email }}
+                  <a :href="`mailto:${currentDriller.contact_email}`">{{ currentDriller.contact_email }}</a>
                 </div>
                 <div class="col-5 col-md-2">
                   Telephone:
@@ -139,7 +139,7 @@
                 </div>
                 <div class="col-7 col-md-4">
                   <div v-for="(email, index) in personEmail" :key="`person email ${index}`">
-                    {{ email }}
+                    <a :href="`mailto:${email}`">{{ email }}</a>
                   </div>
                 </div>
                 <div class="col-5 col-md-2">
