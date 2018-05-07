@@ -19,27 +19,21 @@
 #    
 echo "Running Post-Deploy tasks..."
 export PGPASSWORD=$DATABASE_PASSWORD
-cd /opt/app-root/src/database/scripts/
-echo ". Creating additional DB objects (e.g. spatial indices, stored functions)"
+cd /opt/app-root/src/
+echo ". Creating additional DB objects (e.g. spatial indices, stored procedures)"
 psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER << EOF
-	\i post-deploy.sql
-	\i populate-xform-gwells-well.sql
-	\i replicate_bcgs.sql
-	\i populate-gwells-well-from-xform.sql
-	\i replicate_screens.sql
-	\i replicate_production_data.sql
-	\i replicate_casings.sql
-	\i replicate_perforations.sql
-	\i replicate_aquifer_wells.sql
-	\i replicate_lithology_descriptions.sql
-	\i db_replicate.sql
+	\ir database/scripts/post-deploy.sql
+	\ir database/scripts/wells_replication_stored_functions.sql
 EOF
 
 # $DB_REPLICATE can be one of "None" | "Subset" | "Full"
+# NOTE: TODO clearing and reloading of code tables to be independent of
+#       db_replicate and only part of code migration (and python load ...)
+#       is this the same as fixtures???  don't think so
 if [ "$DB_REPLICATE" = "Subset" -o "$DB_REPLICATE" = "Full" ]
 then
 	# \copy statements in data-load-static-codes.sql required to be in this directory
-	cd /opt/app-root/src/database/code-tables/
+	cd /opt/app-root/src/database/codetables/
 
 	# Refresh Code lookup tables, including the well table
 	psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER  << EOF
@@ -50,28 +44,9 @@ EOF
 	echo ". Running DB Replication from Legacy Database, as per DB_REPLICATION flag"
     cd /opt/app-root/src/database/cron/
     ./db-replicate.sh
-
-
-	# \copy statements in data-load-static-codes.sql required to be in this directory
-# Wed 28 Mar 19:50:16 2018 GW Commented out this section to avoid overwrite of
-#                             one-off Registries replication (from MS Access source)
-#	cd /opt/app-root/src/database/code-tables/registries/
-
-	# @Registries
-	# Temporary setup of Registries (Well Driller only) as part of Code With Us
-	# ,including Test Data loaded into the Registries (Driller) tables
-#	psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER  << EOF
-#	\ir ../../scripts/registries/post-deploy.sql
-#	\i clear-tables.sql
-#	\ir ../../scripts/registries/initialize-xforms-registries.sql
-#	\i data-load-static-codes.sql
-#	\ir ../../scripts/registries/populate-registries-from-xform.sql
-#   EOF
 else
     echo ". Skipping DB Replication from Legacy Database, as per DB_REPLICATION flag"
 fi
-
-# libpython3.5m.so.rh-python35-1.0 => /opt/rh/rh-python35/root/usr/lib64/libpython3.5m.so.rh-python35-1.0 (0x00007f845927b000)
 
 echo ". Running python-related post-deploy tasks."
 export LD_LIBRARY_PATH=/opt/rh/rh-python35/root/usr/lib64/

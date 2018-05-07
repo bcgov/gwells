@@ -46,8 +46,8 @@
 
     <title>Groundwater Wells {% block title %}{% endblock %} - Province of British Columbia</title>
 
-    <!-- BOOTSTRAP (https://github.com/bcgov/bootstrap-theme) -->
-    <link rel="stylesheet" href="{% static 'gwells/css/bootstrap-theme.min.css' %}" />
+    <!-- The Vue header will pull in the Government bootstrap theme (https://github.com/bcgov/bootstrap-theme) -->
+    {% render_bundle 'header' 'css' %}
     <link rel="stylesheet" type="text/css" href="{% static 'gwells/css/datatables.min.css' %}"/>
 
     <!-- FONTS -->
@@ -65,6 +65,10 @@
 
     <!-- LEAFLET CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ==" crossorigin="" />
+
+    {% render_bundle 'footer' 'css' %}
+    {% render_bundle 'manifest' 'css' %}
+    {% render_bundle 'vendor' 'css' %}
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -95,13 +99,8 @@
 </head>
 
 <body>
-    {% render_bundle 'manifest' %}
-    {% render_bundle 'vendor' %}
-    <!-- /PREPARE FOR VUE -->
-
     <!-- HEADER -->
     <div id="header"></div>
-    {% render_bundle 'header' %}
     <!-- /HEADER -->
 
     <!-- BODY CONTENT -->
@@ -142,10 +141,8 @@
     <!-- FOOTER -->
     <img class="back-to-top" src="/gwells/static/gwells/images/back-to-top.png" alt="Back to top" title="Back to top" style="display: inline;">
     <div id="footer"></div>
-    {% render_bundle 'footer' %}
     <!-- /FOOTER -->
-
-
+    
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
@@ -155,6 +152,10 @@
     <script src="{% static 'gwells/js/bootstrap.min.js' %}"></script>
 
     <!-- Misc. gwells javascript -->
+    {% render_bundle 'manifest' 'js' %}
+    {% render_bundle 'vendor' 'js' %}
+    {% render_bundle 'header' 'js' %}
+    {% render_bundle 'footer' 'js' %}
     <script src="{% static 'gwells/js/misc.js' %}"></script>
 
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
