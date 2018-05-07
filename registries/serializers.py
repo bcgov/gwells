@@ -363,7 +363,8 @@ class ApplicationAdminSerializer(AuditModelSerializer):
             if current_status:
                 current_status_code = current_status.status.registries_application_status_code
             else:
-                logger.error('RegistryApplication {} does not have a current status'.format(instance))
+                logger.error(
+                    'RegistryApplication {} does not have a current status'.format(instance))
                 current_status_code = None
 
             if validated_status_code != current_status_code:
@@ -391,6 +392,8 @@ class RegistrationAdminSerializer(AuditModelSerializer):
     applications = ApplicationAdminSerializer(many=True, read_only=True)
     person_name = serializers.StringRelatedField(source='person.name')
     organization = OrganizationListSerializer()
+    activity_description = serializers.StringRelatedField(
+        source='registries_activity.description')
 
     class Meta:
         model = Register
@@ -403,6 +406,7 @@ class RegistrationAdminSerializer(AuditModelSerializer):
             'person',
             'person_name',
             'registries_activity',
+            'activity_description',
             'status',
             'registration_no',
             'registration_date',

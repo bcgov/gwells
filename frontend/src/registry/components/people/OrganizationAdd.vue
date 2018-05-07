@@ -1,5 +1,5 @@
 <template>
-  <b-modal id="orgModal" title="Add an Organization" hide-footer @shown="focusInput()">
+  <b-modal id="orgModal" title="Add a Company" hide-footer @shown="focusInput()">
     <div class="col-xs-12" v-if="error">
       <api-error :error="error" resetter="SET_ERROR"></api-error>
     </div>
@@ -9,14 +9,14 @@
             <b-col cols="12">
               <b-form-group
                 id="orgNameInputGroup"
-                label="Organization name:"
+                label="Company name:"
                 label-for="orgNameInput">
                 <b-form-input
                     id="orgNameInput"
                     type="text"
                     v-model="orgForm.name"
                     required
-                    placeholder="Enter organization name"
+                    placeholder="Enter company name"
                     ref="orgNameInput"/>
               </b-form-group>
             </b-col>
@@ -133,7 +133,7 @@
           </b-row>
         </b-form>
         <b-alert v-if="!!orgSubmitError" show variant="warning" dismissible @dismissed="orgSubmitError=null">
-          Error creating a new organization.
+          Error creating a new company.
           <div v-for="(value, key, index) in orgSubmitError.data" :key="`submit error ${index}`">
               <span class="text-capitalize">{{ key }}</span>:
               <span
