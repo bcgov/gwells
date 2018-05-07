@@ -129,7 +129,7 @@ export default {
           activity: 'all'
         },
         {
-          name: 'Company Name', // temporary placeholder - org sorting needs to be re-implemented on backend
+          name: 'Company Name',
           class: 'col-xs-1',
           visible: 'public',
           sortable: false,
@@ -153,7 +153,7 @@ export default {
           name: 'Class of Driller',
           class: 'col-xs-1',
           visible: 'public',
-          sortable: true,
+          sortable: false,
           activity: 'DRILL'
         },
         {

@@ -23,7 +23,7 @@ Apart from the regular files created by Django (`project/*`, `welcome/*`, `manag
 
 ```
 database/           - Database-specific files
-└── code-tables     - Static code table sql scripts
+└── codetables     - Static code table sql scripts
 └── cron            - Shell scripts
 └── scripts         - PostgrSQL psql scripts
   └── sql-developer - SQL Developer Oracle SQL scripts

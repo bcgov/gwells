@@ -65,36 +65,6 @@
               </b-col>
             </b-row>
             <b-row class="mt-3">
-              <b-col md="5">
-                <b-form-group
-                  id="companyInputGroup"
-                  label="Company:"
-                  label-for="companyInput">
-                  <v-select
-                    v-model="drillerForm.person.organization"
-                    :options="companies"
-                    placeholder="Begin typing a company name"
-                    label="name"
-                    />
-                </b-form-group>
-                <b-button
-                  type="button"
-                  v-b-modal.orgModal
-                  variant="light"
-                  size="sm"
-                  class="mb-3">
-                  <i class="fa fa-plus-square-o"></i> Add a company</b-button>
-                  <organization-add @newOrgAdded="newOrgHandler"></organization-add>
-                <b-button
-                  type="button"
-                  v-b-modal.qualificationModal
-                  variant="light"
-                  size="sm"
-                  class="mb-3">Add new classification</b-button>
-                  <qualification-add></qualification-add>
-              </b-col>
-            </b-row>
-            <b-row class="mt-3">
               <b-col>
                 <b-form-group label="Register as: " label-for="registrationTypeInput">
                   <b-form-checkbox-group id="registrationTypeInput" name="registrationType" v-model="drillerForm.regType">
@@ -105,6 +75,38 @@
               </b-col>
             </b-row>
             <b-card class="mb-3" v-if="drillerForm.regType.some(x => x === 'DRILL' || x === 'PUMP')">
+              <b-row>
+                <b-col>
+                  <b-button
+                    type="button"
+                    v-b-modal.orgModal
+                    variant="light"
+                    size="sm"
+                    class="mb-3">
+                    <i class="fa fa-plus-square-o"></i> Add a company</b-button>
+
+                  <organization-add @newOrgAdded="newOrgHandler"></organization-add>
+                </b-col>
+                <b-col>
+                  <b-button
+                  type="button"
+                  v-b-modal.qualificationModal
+                  variant="light"
+                  size="sm"
+                  class="mb-3">Add new classification</b-button>
+                  <qualification-add></qualification-add>
+                </b-col>
+              </b-row>
+              <b-row>
+                <b-col>
+                  <b-alert :show="newOrgSuccess"
+                        dismissible
+                        variant="success"
+                        @dismissed="newOrgSuccess=false">
+                  Company added.
+                  </b-alert>
+                </b-col>
+              </b-row>
               <b-row v-if="drillerForm.regType.some(x => x === 'DRILL')">
                 <b-col cols="12" md="5">
                   <b-form-group
@@ -116,6 +118,19 @@
                       type="text"
                       v-model="drillerForm.registrations.drill.registration_no"
                       placeholder="Enter registration number"/>
+                  </b-form-group>
+                </b-col>
+                <b-col md="5" offset-md="1">
+                  <b-form-group
+                    id="companyInputGroup"
+                    label="Well drilling company:"
+                    label-for="companyInput">
+                    <v-select
+                      v-model="drillerForm.organizations.drill"
+                      :options="companies"
+                      placeholder="Begin typing a company name"
+                      label="name"
+                      />
                   </b-form-group>
                 </b-col>
               </b-row>
@@ -130,6 +145,19 @@
                       type="text"
                       v-model="drillerForm.registrations.pump.registration_no"
                       placeholder="Enter registration number"/>
+                  </b-form-group>
+                </b-col>
+                <b-col md="5" offset-md="1">
+                  <b-form-group
+                    id="companyInputGroup"
+                    label="Well pump installation company:"
+                    label-for="companyInput">
+                    <v-select
+                      v-model="drillerForm.organizations.pump"
+                      :options="companies"
+                      placeholder="Begin typing a company name"
+                      label="name"
+                      />
                   </b-form-group>
                 </b-col>
               </b-row>
@@ -197,8 +225,7 @@ export default {
       drillerForm: {
         person: {
           surname: '',
-          first_name: '',
-          organization: ''
+          first_name: ''
         },
         regType: [],
         contact_info: {
@@ -209,20 +236,27 @@ export default {
           drill: {
             registries_activity: 'DRILL',
             status: 'ACTIVE',
-            registration_no: ''
+            registration_no: '',
+            organization: ''
           },
           pump: {
             registries_activity: 'PUMP',
             status: 'ACTIVE',
-            registration_no: ''
+            registration_no: '',
+            organization: ''
           }
+        },
+        organizations: {
+          drill: null,
+          pump: null
         }
       },
       companies: [
         { org_guid: '', name: '' }
       ],
       submitSuccess: false,
-      submitError: false
+      submitError: false,
+      newOrgSuccess: false
     }
   },
   computed: {
@@ -233,6 +267,14 @@ export default {
   },
   methods: {
     onFormSubmit () {
+      /**
+       * Submitting a new person record also creates corresponding registration records
+       * for that each activity (driller or pump installer).
+       *
+       * This method collects data from the template's form fields and bundles it for the GWELLS API.
+       * Data for an activity (driller etc.) is only included if the corresponding registration checkbox
+       * is checked (checking a box adds the activity to this.regType).
+       */
       const registrations = []
       const contactInfo = []
       const personData = Object.assign({}, this.drillerForm.person)
@@ -246,9 +288,12 @@ export default {
         }
       })
 
-      // Set organization property to the GUID of the organization selected in the form
-      if (personData.organization) {
-        personData.organization = personData.organization.org_guid
+      // Set organizations for each activity to the GUID of the organization selected in the form
+      if (this.drillerForm.organizations.drill) {
+        this.drillerForm.registrations['drill'].organization = this.drillerForm.organizations.drill.org_guid
+      }
+      if (this.drillerForm.organizations.pump) {
+        this.drillerForm.registrations['pump'].organization = this.drillerForm.organizations.pump.org_guid
       }
 
       // add registration data for activities checked off on form
@@ -273,8 +318,11 @@ export default {
       this.drillerForm = Object.assign({}, {
         person: {
           surname: '',
-          first_name: '',
-          organization: ''
+          first_name: ''
+        },
+        organizations: {
+          drill: null,
+          pump: null
         },
         regType: [],
         contact_info: {
@@ -285,12 +333,14 @@ export default {
           drill: {
             registries_activity: 'DRILL',
             status: 'ACTIVE',
-            registration_no: ''
+            registration_no: '',
+            organization: null
           },
           pump: {
             registries_activity: 'PUMP',
             status: 'ACTIVE',
-            registration_no: ''
+            registration_no: '',
+            organization: null
           }
         }
       })
@@ -300,7 +350,9 @@ export default {
         this.companies = response.data
 
         // Find the new company with the "emitted" organization record UUID
-        this.drillerForm.person.organization = this.companies.find((company) => company.org_guid === orgGuid)
+        // this.drillerForm.person.organization = this.companies.find((company) => company.org_guid === orgGuid)
+
+        this.newOrgSuccess = true
       }).catch(() => {
         this.orgListError = 'Unable to retrieve organization list.'
       })
