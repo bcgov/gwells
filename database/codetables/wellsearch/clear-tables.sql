@@ -15,5 +15,28 @@ TRUNCATE TABLE well,intended_water_use_code,well_class_code,
   
 -- TRUNCATE TABLE province_state_code CASCADE;
 
-
 \echo 'Finished clearing tables.'
+
+/* NOTE that 'real' content data tables are:
+
+activity_submission
+activity_submission_water_quality
+aquifer_well
+bcgs_number
+casing
+driller
+drilling_company
+ltsa_owner
+perforation
+production_data
+registries_contact_detail
+registries_organization
+registries_person
+registries_register
+registries_register_note
+registries_well_qualification
+screen
+water_quality_characteristic
+well
+
+*/
