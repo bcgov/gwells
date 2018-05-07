@@ -22,8 +22,8 @@ export PGPASSWORD=$DATABASE_PASSWORD
 cd /opt/app-root/src/
 echo ". Creating additional DB objects (e.g. spatial indices, stored procedures)"
 psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER << EOF
-	\ir database/scripts/post-deploy.sql
-	\ir database/scripts/wells_replication_stored_functions.sql
+	\ir database/scripts/wellsearch/post-deploy.sql
+	\ir database/scripts/wellsearch/wells_replication_stored_functions.sql
 EOF
 
 # $DB_REPLICATE can be one of "None" | "Subset" | "Full"
@@ -33,7 +33,7 @@ EOF
 if [ "$DB_REPLICATE" = "Subset" -o "$DB_REPLICATE" = "Full" ]
 then
 	# \copy statements in data-load-static-codes.sql required to be in this directory
-	cd /opt/app-root/src/database/codetables/
+	cd /opt/app-root/src/database/codetables/wellsearch
 
 	# Refresh Code lookup tables, including the well table
 	psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER  << EOF
