@@ -112,8 +112,8 @@
             v-model="registrationCompanyForm.organization"
             :options="companies"
             placeholder="Begin typing a company name"
-            label="name"
-            />
+            label="org_verbose_name">
+          </v-select>
         </b-form-group>
         <button type="submit" class="btn btn-primary">Submit</button>
         <button type="button" class="btn btn-light" @click="$emit('canceled')">Cancel</button>
@@ -191,7 +191,8 @@ export default {
       if (this.record && this.record.organization) {
         this.registrationCompanyForm.organization = {
           name: this.record.organization.name,
-          org_guid: this.record.organization.org_guid
+          org_guid: this.record.organization.org_guid,
+          org_verbose_name: this.record.organization.org_verbose_name
         }
       }
     },

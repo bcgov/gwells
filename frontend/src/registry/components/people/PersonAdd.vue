@@ -99,7 +99,7 @@
                 </b-col>
               </b-row>
               <b-row v-if="drillerForm.regType.some(x => x === 'DRILL')">
-                <b-col cols="12" md="5">
+                <b-col cols="12" md="4">
                   <b-form-group
                     id="drillerRegNoInputGroup"
                     label="Well Driller Registration Number:"
@@ -111,7 +111,7 @@
                       placeholder="Enter registration number"/>
                   </b-form-group>
                 </b-col>
-                <b-col md="5" offset-md="1">
+                <b-col md="7" offset-md="1">
                   <b-form-group
                     id="companyInputGroup"
                     label="Well drilling company:"
@@ -120,13 +120,13 @@
                       v-model="drillerForm.organizations.drill"
                       :options="companies"
                       placeholder="Begin typing a company name"
-                      label="name"
-                      />
+                      label="org_verbose_name">
+                    </v-select>
                   </b-form-group>
                 </b-col>
               </b-row>
               <b-row v-if="drillerForm.regType.some(x => x === 'PUMP')">
-                <b-col cols="12" md="5">
+                <b-col cols="12" md="4">
                   <b-form-group
                     id="pumpRegNoInputGroup"
                     label="Well Pump Installer Registration Number:"
@@ -138,7 +138,7 @@
                       placeholder="Enter registration number"/>
                   </b-form-group>
                 </b-col>
-                <b-col md="5" offset-md="1">
+                <b-col md="7" offset-md="1">
                   <b-form-group
                     id="companyInputGroup"
                     label="Well pump installation company:"
@@ -147,8 +147,8 @@
                       v-model="drillerForm.organizations.pump"
                       :options="companies"
                       placeholder="Begin typing a company name"
-                      label="name"
-                      />
+                      label="org_verbose_name">
+                    </v-select>
                   </b-form-group>
                 </b-col>
               </b-row>

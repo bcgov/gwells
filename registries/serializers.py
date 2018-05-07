@@ -143,6 +143,7 @@ class OrganizationListSerializer(AuditModelSerializer):
         fields = (
             'org_guid',
             'name',
+            'org_verbose_name',
             'street_address',
             'city',
             'province_state',
@@ -229,6 +230,7 @@ class OrganizationSerializer(AuditModelSerializer):
         fields = (
             'org_guid',
             'name',
+            'org_verbose_name',
             'street_address',
             'city',
             'province_state',
@@ -255,6 +257,7 @@ class OrganizationAdminSerializer(AuditModelSerializer):
             'update_date',
             'org_guid',
             'name',
+            'org_verbose_name',
             'street_address',
             'city',
             'province_state',
@@ -578,17 +581,6 @@ class OrganizationNameListSerializer(serializers.ModelSerializer):
     Organization list serializer (name of organization only)
     """
 
-    verbose_name = serializers.SerializerMethodField()
-
     class Meta:
         model = Organization
-        fields = ('org_guid', 'name', 'verbose_name')
-
-    def get_verbose_name(self, obj):
-        prov = obj.province_state.province_state_code
-
-        # display either "City, Province" or just "Province"
-        location = '{}, {}'.format(
-            obj.city, prov) if obj.city is not None else prov
-
-        return '{} ({})'.format(obj.name, location)
+        fields = ('org_guid', 'name', 'org_verbose_name')

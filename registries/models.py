@@ -151,6 +151,16 @@ class Organization(AuditModel):
     def __str__(self):
         return self.name
 
+    @property
+    def org_verbose_name(self):
+        prov = self.province_state.province_state_code
+
+        # display either "City, Province" or just "Province"
+        location = '{}, {}'.format(
+            self.city, prov) if self.city is not None else prov
+
+        return '{} ({})'.format(self.name, location)
+
 
 class Person(AuditModel):
     person_guid = models.UUIDField(
