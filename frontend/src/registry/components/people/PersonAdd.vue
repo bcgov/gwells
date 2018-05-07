@@ -21,7 +21,7 @@
                     type="text"
                     v-model="drillerForm.person.surname"
                     required
-                    placeholder="Enter surname"/>
+                    placeholder="Smith"/>
                 </b-form-group>
               </b-col>
               <b-col cols="12" md="5" offset-md="1">
@@ -34,7 +34,7 @@
                     type="text"
                     v-model="drillerForm.person.first_name"
                     required
-                    placeholder="Enter first name"/>
+                    placeholder="John"/>
                 </b-form-group>
               </b-col>
             </b-row>
@@ -48,7 +48,7 @@
                     id="contactTelInput"
                     type="text"
                     v-model="drillerForm.person.contact_tel"
-                    placeholder="Enter telephone number"/>
+                    placeholder="(604) 555 9876"/>
                 </b-form-group>
               </b-col>
               <b-col cols="12" md="5" offset-md="1">
@@ -59,8 +59,15 @@
                   <b-form-input
                     id="contactEmailInput"
                     type="text"
+                    :state="validation.contact_email"
+                    aria-describedby="contactEmailFeedback"
                     v-model="drillerForm.person.contact_email"
-                    placeholder="Enter email address"/>
+                    placeholder="smith@example.com"/>
+                  <b-form-invalid-feedback id="contactEmailFeedback">
+                    <div v-for="(error, index) in fieldErrors.contact_email" :key="`emailInput error ${index}`">
+                      {{ error }}
+                    </div>
+                  </b-form-invalid-feedback>
                 </b-form-group>
               </b-col>
             </b-row>
@@ -108,7 +115,7 @@
                       id="drillerRegNoInput"
                       type="text"
                       v-model="drillerForm.registrations.drill.registration_no"
-                      placeholder="Enter registration number"/>
+                      placeholder="WD 1234"/>
                   </b-form-group>
                 </b-col>
                 <b-col md="7" offset-md="1">
@@ -135,7 +142,7 @@
                       id="pumpRegNoInput"
                       type="text"
                       v-model="drillerForm.registrations.pump.registration_no"
-                      placeholder="Enter registration number"/>
+                      placeholder="WPI 4321"/>
                   </b-form-group>
                 </b-col>
                 <b-col md="7" offset-md="1">
@@ -244,16 +251,29 @@ export default {
       ],
       submitSuccess: false,
       submitError: false,
-      newOrgSuccess: false
+      newOrgSuccess: false,
+      fieldErrors: {
+        contact_email: []
+      }
     }
   },
   computed: {
+    validation () {
+      return {
+        contact_email: (this.fieldErrors.contact_email && this.fieldErrors.contact_email.length) ? false : null
+      }
+    },
     ...mapGetters([
       'loading',
       'error'
     ])
   },
   methods: {
+    clearFieldErrors () {
+      this.fieldErrors = {
+        contact_email: []
+      }
+    },
     onFormSubmit () {
       /**
        * Submitting a new person record also creates corresponding registration records
@@ -293,11 +313,15 @@ export default {
       ApiService.post('drillers', personData).then((response) => {
         this.onFormReset()
         this.$router.push({ name: 'PersonDetail', params: { person_guid: response.data.person_guid } })
-      }).catch((error) => {
-        this.submitError = error.response
+      }).catch((e) => {
+        const errors = e.response.data
+        for (const field in errors) {
+          this.fieldErrors[field] = errors[field]
+        }
       })
     },
     onFormReset () {
+      this.clearFieldErrors()
       this.drillerForm = Object.assign({}, {
         person: {
           surname: '',

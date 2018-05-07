@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-if="section === 'person' || section === 'all'">
-      <b-form @submit.prevent="submitPersonForm">
+      <b-form @submit.prevent="submitPersonForm" @reset.prevent="formReset">
         <b-row>
           <b-col cols="12" md="5">
             <b-form-group
@@ -75,8 +75,15 @@
               <b-form-input
                 id="emailInput"
                 type="text"
+                :state="validation.contact_email"
+                aria-describedby="emailInputFeedback"
                 v-model="contactInfoForm.contact_email"
                 placeholder="Enter email"/>
+              <b-form-invalid-feedback id="emailInputFeedback">
+                <div v-for="(error, index) in fieldErrors.contact_email" :key="`emailInput error ${index}`">
+                  {{ error }}
+                </div>
+              </b-form-invalid-feedback>
             </b-form-group>
           </b-col>
           <b-col cols="12" md="5" offset-md="1">
@@ -150,10 +157,18 @@ export default {
       contactInfoForm: {},
       registrationCompanyForm: {},
       companies: [],
-      submitError: null
+      submitError: null,
+      fieldErrors: {
+        contact_email: []
+      }
     }
   },
   computed: {
+    validation () {
+      return {
+        contact_email: (this.fieldErrors.contact_email && this.fieldErrors.contact_email.length) ? false : null
+      }
+    },
     ...mapGetters([
       'error',
       'currentDriller'
@@ -169,6 +184,7 @@ export default {
       // copy current person object from store
       const personData = JSON.parse(JSON.stringify(this.currentDriller))
 
+      this.resetFieldErrors()
       this.personalInfoForm = {}
       this.registrationCompanyForm = {
         organization: null
@@ -212,16 +228,26 @@ export default {
     },
     submitContactForm () {
       const data = this.contactInfoForm
-      console.log(data)
       ApiService.patch('drillers', this.record, data).then(() => {
         this.$emit('updated')
       }).catch((e) => {
-        this.submitError = e.response.data
+        const errors = e.response.data
+        for (const field in errors) {
+          // errors is an object containing keys corresponding to fields. For each field,
+          // our API generally returns an array of strings
+          this.fieldErrors[field] = errors[field]
+        }
       })
+    },
+    resetFieldErrors () {
+      this.fieldErrors = {
+        contact_email: []
+      }
     }
   },
   created () {
     this.formReset()
+    this.resetFieldErrors()
     if (this.section === 'company') {
       ApiService.query('organizations/names/').then((response) => {
         this.companies = response.data
