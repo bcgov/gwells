@@ -33,9 +33,6 @@ from registries.models import (
 logger = logging.getLogger(__name__)
 
 
-logger = logging.getLogger(__name__)
-
-
 class AuditModelSerializer(serializers.ModelSerializer):
     """
     Serializes AuditModel fields.
