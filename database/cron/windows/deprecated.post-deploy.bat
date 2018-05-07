@@ -21,7 +21,7 @@ psql -d %DATABASE_NAME% -U %DATABASE_USER% -f replicate_aquifer_wells.sql
 psql -d %DATABASE_NAME% -U %DATABASE_USER% -f replicate_lithology_descriptions.sql
 psql -d %DATABASE_NAME% -U %DATABASE_USER% -f db_replicate.sql
 
-cd ..\code-tables\
+cd ..\codetables\
 REM Refresh Code lookup tables, including the well table
 psql -d %DATABASE_NAME% -U %DATABASE_USER% -f clear-tables.sql
 psql -d %DATABASE_NAME% -U %DATABASE_USER% -f data-load-static-codes.sql
