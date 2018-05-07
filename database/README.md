@@ -83,11 +83,12 @@ The data replication is controlled by the environment variable<table>
 `Subset`: Only a subset of data (i.e. `AND wells.well_tag_number between 100001 and 113567`)  
 `Full`  : Full data replication  
 
-Static code tables are maintained in this [GitHub](../../../tree/master/database/code-tables) repo, while dynamic data is replicated.  There are a stored DB procedures that acts as a 'driver' script [full_db_replication.sql](scripts/db_replicate.sql) that run several stored procedures:
+Static code tables are maintained in this [GitHub](../../../tree/master/database/codetables) repo, while dynamic data is replicated.  There are a stored DB procedures that acts as a 'driver' scripts `db_replicate_step1(boolean)` and `db_replicate_step2()` that run the replication:
+
 
 There is also a SQL script `data-load-static-codes.sql`
 - "COPY" into static code tables from deployed CSV files  
-- run on the gwells pod (which has all CSV files under `$VIRTUAL_ENV/src/database/code-tables/`)
+- run on the gwells pod (which has all CSV files under `$VIRTUAL_ENV/src/database/codetables/`)
 
 
 The replicate process can be run ad-hoc on the PostgreSQL pod or on a local developer workstation, passing a parameter to the stored procedure.  

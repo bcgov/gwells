@@ -12,12 +12,12 @@ All files and scripts in this xfer-registries-to-openshift are temporary until w
    - pump_install_reg.sanitized.csv@
 3. Store these two files in a subdirectory outside of the cloned GitHub Repo
 4. Create symlinks to support local testing
-   - cd ./database/code-tables/registries
+   - cd ./database/codetables/registries
    - ln -s <outside of git repo> well_drillers_reg.sanitized.csv
    - ln -s <outside of git repo> pump_install_reg.sanitized.csv
 
 
-Once this local setup is configured, the dev can run the scripts under 	[../../database/code-tables/registries/] to load the Registries data onto their local database.
+Once this local setup is configured, the dev can run the scripts under 	[../../database/codetables/registries/] to load the Registries data onto their local database.
 
 To transfer these files on the OpenShift environments, see [./setup-xfer.sh <openshift-project>].
 
