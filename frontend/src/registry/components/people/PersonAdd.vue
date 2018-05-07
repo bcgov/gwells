@@ -87,15 +87,6 @@
 
                   <organization-add @newOrgAdded="newOrgHandler"></organization-add>
                 </b-col>
-                <b-col>
-                  <b-button
-                  type="button"
-                  v-b-modal.qualificationModal
-                  variant="light"
-                  size="sm"
-                  class="mb-3">Add new classification</b-button>
-                  <qualification-add></qualification-add>
-                </b-col>
               </b-row>
               <b-row>
                 <b-col>
@@ -162,6 +153,24 @@
                 </b-col>
               </b-row>
             </b-card>
+            <b-row>
+              <classification-add
+                class="mb-3"
+                v-for="item in drillerForm.classifications"
+                v-bind:item="item"
+                v-bind:key="item.id"
+                v-on:close="closeClassification (item.id)"/>
+            </b-row>
+            <b-row>
+              <b-col>
+                  <b-button
+                  type="button"
+                  variant="primary"
+                  size="sm"
+                  v-on:click="addClassification()"
+                  class="mb-3"><i class="fa fa-plus-square-o"></i> Add new classification</b-button>
+                </b-col>
+            </b-row>
             <b-row class="mt-3">
               <b-col>
                 <b-button type="submit" class="mr-2" variant="primary">Submit</b-button>
@@ -201,14 +210,16 @@ import APIErrorMessage from '@/common/components/APIErrorMessage'
 import { mapGetters } from 'vuex'
 import ApiService from '@/common/services/ApiService.js'
 import OrganizationAdd from '@/registry/components/people/OrganizationAdd.vue'
-import QualificationAdd from '@/registry/components/people/QualificationAdd.vue'
+import ApplicationAdd from '@/registry/components/people/ApplicationAdd.vue'
+import ClassificationAdd from '@/registry/components/people/ClassificationAdd.vue'
 
 export default {
   name: 'PersonDetailEdit',
   components: {
     'api-error': APIErrorMessage,
     'organization-add': OrganizationAdd,
-    'qualification-add': QualificationAdd
+    'application-add': ApplicationAdd,
+    'classification-add': ClassificationAdd
   },
   data () {
     return {
@@ -249,11 +260,13 @@ export default {
         organizations: {
           drill: null,
           pump: null
-        }
+        },
+        classifications: []
       },
       companies: [
         { org_guid: '', name: '' }
       ],
+      classificationCount: 0,
       submitSuccess: false,
       submitError: false,
       newOrgSuccess: false
@@ -356,6 +369,12 @@ export default {
       }).catch(() => {
         this.orgListError = 'Unable to retrieve organization list.'
       })
+    },
+    addClassification () {
+      this.drillerForm.classifications.push({id: ++this.classificationCount})
+    },
+    closeClassification (id) {
+      this.drillerForm.classifications = this.drillerForm.classifications.filter(item => item.id !== id)
     }
   },
   created () {
