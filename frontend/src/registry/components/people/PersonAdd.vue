@@ -8,8 +8,9 @@
     </div>
     <div class="card">
       <div class="card-body">
-          <h5 class="card-title">Add a Well Driller or Well Pump Installer</h5>
+          <h5 class="card-title">Add new applicant</h5>
           <b-form @submit.prevent="onFormSubmit()" @reset.prevent="onFormReset()">
+            <b-row><b-col><h6>Personal Information</h6></b-col></b-row>
             <b-row>
               <b-col cols="12" md="5">
                 <b-form-group
@@ -38,7 +39,8 @@
                 </b-form-group>
               </b-col>
             </b-row>
-            <b-row class="mt-3">
+            <b-row class="mt-3"><b-col><h6>Contact Information</h6></b-col></b-row>
+            <b-row>
               <b-col cols="12" md="5">
                 <b-form-group
                   id="contactTelInputGroup"
