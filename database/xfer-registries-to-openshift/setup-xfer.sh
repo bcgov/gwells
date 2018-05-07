@@ -71,16 +71,16 @@ PODNAME=$( oc get pods -n ${PROJECT} | grep gwells-[0-9] | grep Running | head -
 #
 oc rsync ${TO_COPY} -n ${PROJECT} ${PODNAME}:/tmp
 COPY_BASE=$( basename ${TO_COPY} )
-oc exec ${PODNAME} -n ${PROJECT} -- /bin/bash -c 'cp --remove-destination /tmp/'${COPY_BASE}'/*.csv  /opt/app-root/src/database/code-tables/registries/'
+oc exec ${PODNAME} -n ${PROJECT} -- /bin/bash -c 'cp --remove-destination /tmp/'${COPY_BASE}'/*.csv  /opt/app-root/src/database/codetables/registries/'
 
 
 # Run post-deploy and other scripts
 #
 SCRIPTS=(
     "/opt/app-root/src/database/scripts/registries/post-deploy.sql"
-    "/opt/app-root/src/database/code-tables/registries/clear-tables.sql"
+    "/opt/app-root/src/database/codetables/registries/clear-tables.sql"
     "/opt/app-root/src/database/scripts/registries/initialize-xforms-registries.sql"
-    "/opt/app-root/src/database/code-tables/registries/data-load-static-codes.sql"
+    "/opt/app-root/src/database/codetables/registries/data-load-static-codes.sql"
     "/opt/app-root/src/database/scripts/registries/populate-registries-from-xform.sql"
 )
 for s in ${SCRIPTS[@]}

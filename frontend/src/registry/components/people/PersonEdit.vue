@@ -1,340 +1,101 @@
 <template>
-  <div class="container">
-    <div class="row" v-if="currentDriller != {}">
-      <div class="col-xs-12 col-sm-7">
-        <h2>{{ currentDriller.first_name }} {{ currentDriller.surname }}</h2>
-      </div>
-      <div class="col-xs-12 col-sm-5 text-center">
-        <router-link :to="{ name: 'PersonDetail', params: { person_guid: currentDriller.person_guid } }" class="btn btn-default">Cancel editing person</router-link>
-      </div>
-      <div class="col-xs-12" v-if="error">
-        <api-error :error="error" resetter="SET_ERROR"></api-error>
-      </div>
-    </div>
-    <div class="card" v-if="editDriller != {}">
-      <div class="card-body">
-        <div class="container-fluid">
-          <div class="table-responsive">
-            <table class="table">
-              <thead>
-                <th>Classification</th>
-                <th>Register Status</th>
-                <th>Date Registered</th>
-              </thead>
-              <tbody>
-                <tr v-if="classifications && classifications.length" v-for="(classification, index) in classifications" :key="`classification ${index}`">
-                  <td>{{ classification.description }}</td>
-                  <td>{{ classification.status }}</td>
-                  <td>{{ classification.date }}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <div class="row">
-            <p class="col-xs-12">
-              <button type="button" class="btn btn-secondary" @click="addClassificationToggle = !addClassificationToggle">
-                <span v-if="!addClassificationToggle"><i class="fa fa-plus-square-o"></i> Add classification</span>
-                <span v-if="addClassificationToggle"><i class="fa fa-minus-square-o"></i> Cancel</span>
-              </button>
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="card" v-if="addClassificationToggle" style="border-color: #1a5a96">
-      <div class="card-body">
-        <application-add/>
-          <button type="button" class="btn btn-primary" @click="addClassificationToggle = !addClassificationToggle">Save</button>
-          <button type="button" class="btn btn-secondary" @click="addClassificationToggle = !addClassificationToggle">
-            <span v-if="addClassificationToggle">Cancel</span>
-          </button>
-      </div>
-    </div>
-    <div class="card" v-if="editDriller != {}">
-      <div class="card-body">
-        <div class="container-fluid">
-          <h3>Personal Information</h3>
-          <form class="form-horizontal">
-            <div class="form-group">
-              <label class="col-xs-12 col-md-2 registry-form-label" for="personLastName">Last name:</label>
-              <div class="col-xs-12 col-md-3 form-spacing">
-                <input type="text" id="personLastName" placeholder="Surname" v-model="editDriller.surname">
-              </div>
-              <label class="col-xs-12 col-md-2 registry-form-label" for="personFirstName">First name:</label>
-              <div class="col-xs-12 col-md-3">
-                <input type="text" id="personFirstName" placeholder="First name" v-model="editDriller.first_name">
-              </div>
-            </div>
-            <div class="form-group">
-              <div class="checkbox col-xs-12 col-sm-5">
-                <label class="form-spacing">
-                  <input type="checkbox" v-model="drillerOver19.value"  style="margin-top: 0px"> <strong>Confirmed applicant is 19 or older</strong>
-                </label>
-              </div>
-              <label class="col-xs-12 col-md-2 registry-form-label" for="identificationSelect">Proof of age: </label>
-              <div class="col-xs-12 col-md-3 form-spacing">
-                <select class="form-control" v-model="drillerOver19.proof" id="identificationSelect">
-                  <option value="">Select identification type</option>
-                  <option v-for="(item, index) in proofOfAgeChoices" :key="`ident ${index}`" :value="item">{{ item }}</option>
-                </select>
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="col-xs-12 col-md-2" for="drillRegNo">Driller registration number:</label>
-              <div class="col-xs-12 col-md-3 form-spacing">
-                <input type="text" id="drillRegNo" placeholder="Enter registration number" v-model="editDrillerReg.drillRegNo">
-              </div>
-              <label class="col-xs-12 col-md-2" for="pumpRegNo">Pump installer registration number:</label>
-              <div class="col-xs-12 col-md-3 form-spacing">
-                <input type="text" id="pumpRegNo" placeholder="Enter registration number" v-model="editDrillerReg.pumpRegNo">
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="col-xs-12 col-md-2" for="drillORCSNo">Driller ORCS number:</label>
-              <div class="col-xs-12 col-md-3">
-                <input type="text" id="drillORCSNo" placeholder="Enter ORCS number" v-model="editDrillerReg.drillORCSNo">
-              </div>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-    <div class="card" v-if="editDriller != {}">
-      <div class="card-body">
-        <div class="container-fluid">
-          <h3>Company Information</h3>
-          <form class="form-horizontal">
-            <div class="form-group">
-              <label class="col-xs-12 col-md-2" for="orgName">Company name:</label>
-              <div class="col-xs-12 col-md-3 form-spacing">
-                <select id="orgName" v-model="editCompany.organization_name">
-                  <option value="">Select company</option>
-                  <option>{{company.organization_name}}</option>
-                </select>
-              </div>
-              <label class="col-xs-12 col-md-2" for="orgAddress">Company address:</label>
-              <div class="col-xs-12 col-md-3 form-spacing">
-                <input type="text" id="orgAddress" placeholder="Enter organization address" v-model="editCompany.street_address">
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="col-xs-12 col-md-2" for="orgCity">City:</label>
-              <div class="col-xs-12 col-md-3 form-spacing">
-                <input type="text" id="orgCity" placeholder="Enter city" v-model="editCompany.city">
-              </div>
-              <label class="col-xs-12 col-md-2" for="orgProvince">Province:</label>
-              <div class="col-xs-12 col-md-3 form-spacing">
-                <input type="text" id="orgProvince" placeholder="Enter organization Province" v-model="editCompany.province_state">
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="col-xs-12 col-md-2" for="orgPostalCode">Postal code:</label>
-              <div class="col-xs-12 col-md-3 form-spacing">
-                <input type="text" id="orgPostalCode" placeholder="Enter postal code" v-model="editCompany.postal_code">
-              </div>
-              <label class="col-xs-12 col-md-2" for="orgPhone">Office number:</label>
-              <div class="col-xs-12 col-md-3 form-spacing">
-                <input type="text" id="orgPhone" placeholder="Enter phone number" v-model="editCompany.contact_tel">
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="col-xs-12 col-md-2" for="orgCell">Cell number:</label>
-              <div class="col-xs-12 col-md-3 form-spacing">
-                <input type="text" id="orgCell" placeholder="Enter cell number">
-              </div>
-              <label class="col-xs-12 col-md-2" for="orgFax">Fax number:</label>
-              <div class="col-xs-12 col-md-3 form-spacing">
-                <input type="text" id="orgFax" placeholder="Enter fax number">
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="col-xs-12 col-md-2" for="orgEmail">Email:</label>
-              <div class="col-xs-12 col-md-3 form-spacing">
-                <input type="text" id="orgEmail" placeholder="Enter email address" v-model="editCompany.contact_email">
-              </div>
-              <label class="col-xs-12 col-md-2" for="orgWebsite">Website:</label>
-              <div class="col-xs-12 col-md-3 form-spacing">
-                <input type="text" id="orgWebsite" placeholder="Enter website address" v-model="editCompany.website_url">
-              </div>
-            </div>
-            <div class="form-group">
-              <div class="col-xs-12">
-                <button class="btn btn-secondary" type="button">Add new company</button>
-              </div>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-    <div class="card" v-if="editDriller != {}">
-      <div class="card-body">
-        <div class="container-fluid">
-          <div class="row registry-item">
-            <div class="col-xs-12">
-              <label for="drillerNotes">Notes:</label>
-              <textarea class="form-control" rows="3" id="drillerNotes" v-model="drillerNote"></textarea>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="card" v-if="editDriller != {}">
-      <div class="card-body">
-        <div class="container-fluid">
-          <div class="row registry-item">
-            <div class="col-xs-12">
-              <button type="button" class="btn btn-primary">Save</button>
-              <router-link :to="{ name: 'PersonDetail', params: { person_guid: currentDriller.person_guid } }" class="btn btn-default">Cancel</router-link>
-            </div>
-          </div>
-          <div class="row registry-item">
-            <div class="col-xs-12">
-              <button type="button" class="btn btn-secondary">View record change history</button>
-            </div>
-          </div>
-          <div class="row registry-item">
-            <div class="col-xs-12">
-              <button type="button" class="btn btn-secondary">Upload attachments</button> <span class="attachment-icon"> <i class="fa fa-paperclip"></i></span>
-            </div>
-          </div>
-        </div>
-      </div>
+  <div>
+    <div v-if="section === 'company' && !!record">
+      <b-form @submit.prevent="submitCompanyForm">
+        <b-form-group
+          id="companyInputGroup"
+          :label="`${record.activity_description} company:`"
+          label-for="companyInput"
+          >
+          <v-select
+            id="companyInput"
+            v-model="registrationCompanyForm.organization"
+            :options="companies"
+            placeholder="Begin typing a company name"
+            label="name"
+            />
+        </b-form-group>
+        <button type="submit" class="btn btn-primary">Submit</button>
+        <button type="button" class="btn btn-light" @click="$emit('canceled')">Cancel</button>
+      </b-form>
     </div>
   </div>
 </template>
 
 <script>
-import APIErrorMessage from '@/common/components/APIErrorMessage'
-import QualCheckbox from '@/common/components/QualCheckbox'
-import ApplicationAdd from '@/registry/components/people/ApplicationAdd'
 import { mapGetters } from 'vuex'
-import { SET_DRILLER } from '@/registry/store/mutations.types'
-import { FETCH_DRILLER } from '@/registry/store/actions.types'
+import ApiService from '@/common/services/ApiService.js'
+import APIErrorMessage from '@/common/components/APIErrorMessage'
 
 export default {
   name: 'PersonDetailEdit',
   components: {
-    'api-error': APIErrorMessage,
-    'r-checkbox': QualCheckbox,
-    'application-add': ApplicationAdd
+    'api-error': APIErrorMessage
   },
+  props: ['section', 'record'],
   data () {
     return {
-      addClassificationToggle: false,
-      editDriller: {},
-      editDrillerReg: {
-        drillRegNo: '',
-        pumpRegNo: '',
-        drillORCSNo: ''
-      },
-      drillerNote: '',
-      editCompany: {},
-      drillerOver19: {
-        value: true,
-        app: 'well',
-        proof: ''
-      },
-      proofOfAgeChoices: [
-        'Driver\'s license',
-        'Passport',
-        'Birth certificate'
-      ]
+      personalInfoForm: {},
+      contactInfoForm: {},
+      registrationCompanyForm: {},
+      companies: []
     }
   },
   computed: {
-    company () {
-      if (this.currentDriller && this.currentDriller.companies && this.currentDriller.companies.length) {
-        return this.currentDriller.companies[0]
-      }
-      return {}
-    },
-    classifications () {
-      const classifications = []
-
-      // classifications are contained within arrays pulled from the application table
-      if (
-        this.currentDriller.applications &&
-        this.currentDriller.applications.length
-      ) {
-        // since each person can have multiple applications, and each application can have multiple
-        // classifications, we need to iterate through several arrays.
-        this.currentDriller.applications.forEach((app) => {
-          let status = null
-          let date = null
-
-          // set date for this application- it will apply to all qualifications/classifications associated
-          // with this application.
-
-          // priority of status codes from lowest to highest
-          const statusPriority = ['P', 'A']
-
-          if (app.registriesapplicationstatus_set && app.registriesapplicationstatus_set.length) {
-            statusPriority.forEach((code) => {
-              const statusLevel = app.registriesapplicationstatus_set.findIndex((item) => {
-                return item.status_code === code
-              })
-
-              if (~statusLevel) {
-                status = app.registriesapplicationstatus_set[statusLevel].status
-                date = app.registriesapplicationstatus_set[statusLevel].effective_date
-              }
-            })
-          }
-
-          // now iterate through classifications that the person has applied for and push onto an array
-          if (app.classificationappliedfor_set &&
-            app.classificationappliedfor_set.length) {
-            app.classificationappliedfor_set.forEach((classification) => {
-              if (
-                classification.registries_subactivity
-              ) {
-                classifications.push({
-                  code: classification.registries_subactivity.code.toLowerCase(),
-                  description: classification.registries_subactivity.description,
-                  status: status,
-                  date: date
-                })
-              }
-            })
-          }
-        })
-      }
-      return classifications
-    },
-    drillerApplicationNotes () {
-      const notes = []
-      if (this.currentDriller.applications && this.currentDriller.applications.length) {
-        this.currentDriller.applications.forEach((app) => {
-          if (app.registrar_notes) {
-            notes.push({
-              note: app.registrar_notes,
-              appKey: `notes ${app.application_guid}`
-            })
-          }
-        })
-      }
-      return notes
-    },
     ...mapGetters([
-      'loading',
       'error',
-      'currentDriller',
-      'drillers'
+      'currentDriller'
     ])
   },
-  watch: {
-    currentDriller: function () {
-      this.editDriller = JSON.parse(JSON.stringify(this.currentDriller))
+  methods: {
+    formReset () {
+      /**
+       * populate form fields from the currentDriller object in store
+       * fields are split up into 3 groups (personal info, contact info and affiliated companies).
+       */
+
+      // copy current person object from store
+      const personData = JSON.parse(JSON.stringify(this.currentDriller))
+
+      this.personalInfoForm = {}
+      this.contactInfoForm = {}
+      this.registrationCompanyForm = {
+        organization: null
+      }
+
+      this.personalInfoForm.first_name = personData.first_name
+      this.personalInfoForm.surname = personData.surname
+
+      // add contact info
+      if (personData.contact_info) {
+        this.contactInfoForm = personData.contact_info
+      }
+
+      // add company info (for the registration record defined by prop 'record' only)
+      if (this.record && this.record.organization) {
+        this.registrationCompanyForm.organization = {
+          name: this.record.organization.name,
+          org_guid: this.record.organization.org_guid
+        }
+      }
     },
-    company: function () {
-      this.editCompany = JSON.parse(JSON.stringify(this.company))
+    submitCompanyForm () {
+      const regGuid = this.record.register_guid
+      const data = { organization: this.registrationCompanyForm.organization.org_guid }
+      ApiService.patch('registrations', regGuid, data).then(() => {
+        this.$emit('updated', true)
+      })
     }
   },
   created () {
-    if (this.currentDriller.person_guid !== this.$route.params.person_guid) {
-      this.$store.commit(SET_DRILLER, {})
+    this.formReset()
+    if (this.section === 'company') {
+      ApiService.query('organizations/names/').then((response) => {
+        this.companies = response.data
+      }).catch(() => {
+        this.orgListError = 'Unable to retrieve organization list.'
+      })
     }
-    this.$store.dispatch(FETCH_DRILLER, this.$route.params.person_guid)
   }
 }
 </script>

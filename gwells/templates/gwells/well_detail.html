@@ -4,45 +4,40 @@
 {% block title %}Well Summary{% endblock %}
 
 {% block introduction_block %}
-<div class="row hide-for-print show-for-screen">
-    <div class="col-sm-12 alert alert-info">
-        <div id="survey-msg" role="alert" aria-atomic="true">Please take a moment to complete a <a href="https://www.surveymonkey.com/r/YZFPV83" target=_blank>short survey</a> to let us know about your well summary page experience.</div>
-    </div>
-</div>
 {% endblock %}
 {% block body_block %}
 <fieldset id="summary_information_fieldset">
 
-        <legend>Well Summary 
-        {% if settings.ENABLE_GOOGLE_ANALYTICS %}
-                <a onclick="ga('send', 'event', 'Button', 'print', 'Wells Summary Print'); window.print();">
-        {% else %}
-                <a onclick="window.print();">
-        {% endif %}
-        <span title="Print" class="fas fa-print fa-pull-right button hide-for-print cursor-pointer"></span></a></legend>
+    <legend>Well Summary
+    {% if settings.ENABLE_GOOGLE_ANALYTICS %}
+            <a onclick="ga('send', 'event', 'Button', 'print', 'Wells Summary Print'); window.print();">
+    {% else %}
+            <a onclick="window.print();">
+    {% endif %}
+    <span title="Print" class="fas fa-print fa-pull-right button hide-for-print cursor-pointer"></span></a></legend>
 
-        <div class="row print-compressed">
+    <div class="row no-gutters print-compressed">
 
         <div class="col-md-4 col-print-4 print-compressed">
-            <div class="row print-compressed">
-                <div class="col-md-12 col-print-12 print-compressed">
+            <div class="row no-gutters print-compressed">
+                <div class="col-md-12 col-print-12 print-compressed ">
                     <label for="well_tag_number">{% verbose_name well "well_tag_number" %}:</label>
                     <span id="well_tag_number">{{well.well_tag_number|default_if_none:'&nbsp;' }}</span>
                 </div>
             </div>
-            <div class="row print-compressed">
+            <div class="row no-gutters print-compressed">
                 <div class="col-md-12 col-print-12 print-compressed">
                     <label for="identification_plate_number">{% verbose_name well "identification_plate_number" %}:</label>
                     <span id="identification_plate_number">{{well.identification_plate_number|default_if_none:'&nbsp;' }}</span>
                 </div>
             </div>
-            <div class="row print-compressed">
+            <div class="row no-gutters print-compressed">
                 <div class="col-md-12 col-print-12 print-compressed">
                     <label for="owner_full_name">{% verbose_name well "owner_full_name" %}:</label>
                     <span id="owner_full_name">{{well.owner_full_name|default_if_none:'&nbsp;' }}</span>
                 </div>
             </div>
-            <div class="row print-compressed">
+            <div class="row no-gutters print-compressed">
                 <div class="col-md-12 col-print-12 print-compressed">
                     <label for="licenced_status">{% verbose_name well "licenced_status" %}:</label>
                     <span id="licenced_status">{{well.licenced_status.licenced_status_code|default_if_none:'&nbsp;' }}</span>
@@ -50,25 +45,25 @@
             </div>
         </div>
         <div class="col-md-4 col-print-4 print-compressed">
-            <div class="row print-compressed">
+            <div class="row no-gutters print-compressed">
                 <div class="col-md-12 col-print-12 print-compressed">
                     <label for="well_well_status">{% verbose_name well "well_status" %}:</label>
                     <span id="well_well_status">{{well.well_status.well_status_code|default_if_none:'&nbsp;' }}</span>
                 </div>
             </div>
-            <div class="row print-compressed">
+            <div class="row no-gutters print-compressed">
                 <div class="col-md-12 col-print-12 print-compressed">
                     <label for="well_class">{% verbose_name well "well_class" %}:</label>
                     <span id="well_class">{{well.well_class|default_if_none:'&nbsp;' }}</span>
                 </div>
             </div>
-            <div class="row print-compressed">
+            <div class="row no-gutters print-compressed">
                 <div class="col-md-12 col-print-12 print-compressed">
                     <label for="well_subclass">{% verbose_name well "well_subclass" %}:</label>
                     <span id="well_subclass">{{well.well_subclass|default_if_none:'&nbsp;' }}</span>
                 </div>
             </div>
-            <div class="row print-compressed">
+            <div class="row no-gutters print-compressed">
                 <div class="col-md-12 col-print-12 print-compressed">
                     <label for="intended_water_use">{% verbose_name well "intended_water_use" %}:</label>
                     <span id="intended_water_use">{{well.intended_water_use|default_if_none:'&nbsp;' }}</span>
@@ -76,7 +71,7 @@
             </div>
         </div>
         <div class="col-md-4 col-print-4 print-compressed">
-            <div class="row print-compressed">
+            <div class="row no-gutters print-compressed">
                 <div class="col-md-12 col-print-12 print-compressed">
                     <label for="obs_well_number">{% verbose_name well "observation_well_number" %}:</label>
 
@@ -88,19 +83,19 @@
 
                 </div>
             </div>
-            <div class="row print-compressed">
+            <div class="row no-gutters print-compressed">
                 <div class="col-md-12 col-print-12 print-compressed">
                     <label for="obs_well_status">{% verbose_name well "observation_well_status" %}:</label>
                     <span id="obs_well_status">{{well.observation_well_status.obs_well_status_code|default_if_none:'&nbsp;' }}</span>
                 </div>
             </div>
-            <div class="row print-compressed">
+            <div class="row no-gutters print-compressed">
                 <div class="col-md-12 col-print-12 print-compressed">
                     <label for="ems_id">{% verbose_name well "ems" %}:</label>
                     <span id="ems_id">{{well.ems|default_if_none:'&nbsp;' }}</span>
                 </div>
             </div>
-            <div class="row print-compressed">
+            <div class="row no-gutters print-compressed">
                 <div class="col-md-12 col-print-12 print-compressed">
                     <label for="aquifer_number">Aquifer Number:</label>
                     <span id="aquifer_number">
@@ -111,7 +106,7 @@
                     </span>
                 </div>
             </div>
-            <div class="row print-compressed">
+            <div class="row no-gutters print-compressed">
                 <div class="col-md-12 col-print-12 print-compressed">
                     <label for="alternate_specs_submitted">{% verbose_name well "alternative_specs_submitted" %}:</label>
                     <span id="alternate_specs_submitted">{{well.get_alternative_specs_submitted_display |default_if_none:'&nbsp;' }}</span>
@@ -124,24 +119,24 @@
 
 <fieldset id="location_information_fieldset">
     <legend>Location Information</legend>
-    <div class="row print-compressed">
+    <div class="row no-gutters print-compressed">
         <div class="col-md-6 col-print-6 print-compressed print-pad5-right">
-            <div class="row print-compressed">
+            <div class="row no-gutters print-compressed">
                 <div class="col-md-12 col-print-12 print-compressed">
                     <label for="address">{% verbose_name well "street_address" %}:</label>
                     <span id="address">{{well.street_address|default_if_none:'&nbsp;' }}</span>
                 </div>
             </div>
-            <div class="row print-compressed">
+            <div class="row no-gutters print-compressed">
                 <div class="col-md-12 col-print-12 print-compressed">
                     <label for="city">{% verbose_name well "city" %}:</label>
                     <span id="city">{{well.city|default_if_none:'&nbsp;' }}</span>
                 </div>
             </div>
-            <div class="row print-compressed">
+            <div class="row no-gutters print-compressed">
                 <div class="col-md-12 print-col-12 print-compressed">
                     <label for="legal">Legal Description:</label>
-                    <div class="row print-compressed">
+                    <div class="row no-gutters print-compressed">
                         <div class="col-md-12 print-col-12 table-responsive print-compressed">
                             <table id="legal" class="table table-condensed table-bordered table-striped">
                                 <tbody>
@@ -187,13 +182,13 @@
                     </div>
                 </div>
             </div>
-            <div class="row print-compressed">
+            <div class="row no-gutters print-compressed">
                 <div class="col-md-12 print-col-12 print-compressed top-margin-8">
                     <label for="location_desc">{% verbose_name well "well_location_description" %}:</label>
                     <span id="location_desc">{{well.well_location_description|default_if_none:'&nbsp;' }}</span>
                 </div>
             </div>
-            <div class="row print-compressed">
+            <div class="row no-gutters print-compressed">
                 <div class="col-md-12 print-compressed">
                     <label for="bcgs_mapsheet_number">{% verbose_name well "bcgs_id" %}:</label>
                     <span id="bcgs_mapsheet_number" data-bcgs-mapsheet-number="{{well.bcgs_id.bcgs_mapsheet_number }}">{{well.bcgs_id.bcgs_number|default_if_none:'&nbsp;' }}</span>
@@ -205,14 +200,14 @@
             <div id="attribution"></div>
         </div>
     </div>
-    <div class="row print-compressed">
+    <div class="row no-gutters print-compressed">
         <div class="col-md-6 offset-md-6 col-print-offset-6 print-compressed top-margin-8">
-            <div class="row print-compressed">
+            <div class="row no-gutters print-compressed">
                 <div class="col-md-12 col-print-12 print-compressed">
                     <label>Geographic Coordinates - North American Datum of 1983 (NAD 83)</label>
                 </div>
             </div>
-            <div class="row print-compressed top-margin-8">
+            <div class="row no-gutters print-compressed top-margin-8">
                 <div class="col-md-6 col-print-6 print-compressed">
                     <label for="latitude">{% verbose_name well "latitude" %}:</label>
                     <span id="latitude" data-latitude="{{well.latitude }}">{{well.latitude|default_if_none:'&nbsp;' }}</span>
@@ -222,7 +217,7 @@
                     <span id="longitude" data-longitude="{{well.longitude }}">{{well.longitude|default_if_none:'&nbsp;' }}</span>
                 </div>
             </div>
-            <div class="row print-compressed">
+            <div class="row no-gutters print-compressed">
                 <div class="col-md-6 col-print-6 print-compressed">
                     <label for="utm_northing">{% verbose_name well "utm_northing" %}:</label>
                     <span id="utm_northing" data-utm-northing="{{well.utm_northing }}">{{well.utm_northing|default_if_none:'&nbsp;' }}</span>
@@ -232,7 +227,7 @@
                     <span id="utm_easting" data-utm-easting="{{well.utm_easting }}">{{well.utm_easting|default_if_none:'&nbsp;' }}</span>
                 </div>
             </div>
-            <div class="row print-compressed">
+            <div class="row no-gutters print-compressed">
                 <div class="col-md-6 col-print-6 print-compressed">
                     <label for="utm_zone_code">{% verbose_name well "utm_zone_code" %}:</label>
                     <span id="utm_zone_code" data-utm-zone-code="{{well.longitude }}">{{well.utm_zone_code|default_if_none:'&nbsp;' }}</span>
@@ -249,7 +244,7 @@
 
 <fieldset id="well_activity_fieldset">
     <legend>Well Activity</legend>
-    <div class="row print-compressed">
+    <div class="row no-gutters print-compressed">
         <div class="col-md-12 col-print-12 table-responsive print-compressed">
             <table id="activities" class="table table-condensed table-bordered table-striped">
                 <thead>
@@ -286,9 +281,9 @@
 
 <fieldset id="well_completion_data_fieldset">
     <legend>Well Completion Data</legend>
-    <div class="row print-compressed">
+    <div class="row no-gutters print-compressed">
         <div class="col-md-4 col-print-4 print-compressed">
-            <div class="row print-compressed">
+            <div class="row no-gutters print-compressed">
                 <div class="col-md-7 col-print-7 print-compressed">
                     <label for="total_depth_drilled">{% verbose_name well "total_depth_drilled" %}:</label>
                 </div>
@@ -302,7 +297,7 @@
                     </span>
                 </div>
             </div>
-            <div class="row print-compressed">
+            <div class="row no-gutters print-compressed">
                 <div class="col-md-7 col-print-7 print-compressed">
                     <label for="finished_well_depth">{% verbose_name well "finished_well_depth" %}:</label>
                 </div>
@@ -316,7 +311,7 @@
                     </span>
                 </div>
             </div>
-            <div class="row print-compressed">
+            <div class="row no-gutters print-compressed">
                 <div class="col-md-7 col-print-7 print-compressed">
                     <label for="final_casing_stickup">{% verbose_name well "final_casing_stick_up" %}:</label>
                 </div>
@@ -330,7 +325,7 @@
                     </span>
                 </div>
             </div>
-            <div class="row print-compressed">
+            <div class="row no-gutters print-compressed">
                 <div class="col-md-7 col-print-7 print-compressed">
                     <label for="bedrock_depth">{% verbose_name well "bedrock_depth" %}:</label>
                 </div>
@@ -344,7 +339,7 @@
                     </span>
                 </div>
             </div>
-            <div class="row print-compressed">
+            <div class="row no-gutters print-compressed">
                 <div class="col-md-7 col-print-7 print-compressed">
                     <label for="ground_elevation">{% verbose_name well "ground_elevation" %}:</label>
                 </div>
@@ -358,7 +353,7 @@
                     </span>
                 </div>
             </div>
-            <div class="row print-compressed">
+            <div class="row no-gutters print-compressed">
                 <div class="col-md-7 col-print-7 print-compressed">
                     <label for="ground_elevation_method">{% verbose_name well "ground_elevation_method" %}:</label>
                 </div>
@@ -368,7 +363,7 @@
             </div>
         </div>
         <div class="col-md-4 col-print-4 print-compressed">
-            <div class="row print-compressed">
+            <div class="row no-gutters print-compressed">
                 <div class="col-md-7 col-print-7 print-compressed">
                     <label for="static_water_level">{% verbose_name well "static_water_level" %}:</label>
                 </div>
@@ -382,7 +377,7 @@
                     </span>
                 </div>
             </div>
-            <div class="row print-compressed">
+            <div class="row no-gutters print-compressed">
                 <div class="col-md-7 col-print-7 print-compressed">
                     <label for="well_yield">{% verbose_name well "well_yield" %}:</label>
                 </div>
@@ -396,7 +391,7 @@
                     </span>
                 </div>
             </div>
-            <div class="row print-compressed">
+            <div class="row no-gutters print-compressed">
                 <div class="col-md-7 col-print-7 print-compressed">
                     <label for="artesian_flow">{% verbose_name well "artesian_flow" %}:</label>
                 </div>
@@ -408,7 +403,7 @@
                     </span>
                 </div>
             </div>
-            <div class="row print-compressed">
+            <div class="row no-gutters print-compressed">
                 <div class="col-md-7 col-print-7 print-compressed">
                     <label for="artesian_pressure">{% verbose_name well "artesian_pressure" %}:</label>
                 </div>
@@ -424,7 +419,7 @@
             </div>
         </div>
         <div class="col-md-4 col-print-4 print-compressed">
-            <div class="row print-compressed">
+            <div class="row no-gutters print-compressed">
                 <div class="col-md-7 col-print-7 print-compressed">
                     <label for="well_cap_type">{% verbose_name well "well_cap_type" %}:</label>
                 </div>
@@ -432,7 +427,7 @@
                     <span id="well_cap_type">{{well.well_cap_type|default_if_none:'&nbsp;'}}</span>
                 </div>
             </div>
-            <div class="row print-compressed">
+            <div class="row no-gutters print-compressed">
                 <div class="col-md-7 col-print-7 print-compressed">
                     <label for="well_disinfected">{% verbose_name well "well_disinfected" %}:</label>
                 </div>
@@ -440,7 +435,7 @@
                     <span id="well_disinfected">{{well.get_well_disinfected_display|default_if_none:'&nbsp;' }}</span>
                 </div>
             </div>
-            <div class="row print-compressed">
+            <div class="row no-gutters print-compressed">
                 <div class="col-md-7 col-print-7 print-compressed">
                     <label for="drilling_method">{% verbose_name well "drilling_method" %}:</label>
                 </div>
@@ -448,7 +443,7 @@
                     <span id="drilling_method">{{well.drilling_method.drilling_method_code|default_if_none:'&nbsp;' }}</span>
                 </div>
             </div>
-            <div class="row print-compressed">
+            <div class="row no-gutters print-compressed">
                 <div class="col-md-7 col-print-7 print-compressed">
                     <label for="orientation">{% verbose_name well "well_orientation" %}:</label>
                 </div>
@@ -458,7 +453,7 @@
             </div>
         </div>
     </div>
-    <div class="row print-compressed">
+    <div class="row no-gutters print-compressed">
         <div class="col-md-12 col-print-12 print-compressed">
             &nbsp;
             <!-- spacer row -->
@@ -468,7 +463,7 @@
 
 <fieldset id="lithology_fieldset">
     <legend>Lithology</legend>
-    <div class="row print-compressed">
+    <div class="row no-gutters print-compressed">
         <div class="col-md-12 col-print-12 table-responsive print-compressed">
           {% if well.lithologydescription_set.all %}
           <table id="lithology" class="table table-condensed table-bordered table-striped">
@@ -510,7 +505,7 @@
 
 <fieldset id="casing_fieldset">
     <legend>Casing Details</legend>
-    <div class="row print-compressed">
+    <div class="row no-gutters print-compressed">
         <div class="col-md-12 col-print-12 table-responsive print-compressed">
             {% if well.lithologydescription_set.all %}
             <table id="casings" class="table table-condensed table-bordered table-striped">
@@ -557,21 +552,21 @@
 
 <fieldset id="surface_seal_fieldset">
     <legend>Surface Seal and Backfill Details</legend>
-    <div class="row print-compressed">
+    <div class="row no-gutters print-compressed">
         <div class="col-md-4 col-print-4 print-compressed">
-            <div class="row print-compressed">
+            <div class="row no-gutters print-compressed">
                 <div class="col-md-12 col-print-12 print-compressed">
                     <label for="surface_seal_material">{% verbose_name well "surface_seal_material" %}:</label>
                     <span id="surface_seal_material">{{well.surface_seal_material|default_if_none:'&nbsp;' }}</span>
                 </div>
             </div>
-            <div class="row print-compressed">
+            <div class="row no-gutters print-compressed">
                 <div class="col-md-12 col-print-12 print-compressed">
                     <label for="surface_seal_method">{% verbose_name well "surface_seal_method" %}:</label>
                     <span id="surface_seal_method">{{well.surface_seal_method|default_if_none:'&nbsp;' }}</span>
                 </div>
             </div>
-            <div class="row print-compressed">
+            <div class="row no-gutters print-compressed">
                 <div class="col-md-12 col-print-12 print-compressed">
                     <label for="surface_seal_thickness">{% verbose_name well "surface_seal_thickness" %}:</label>
                     <span id="surface_seal_thickness">
@@ -582,7 +577,7 @@
                       {% endif %}</span>
                 </div>
             </div>
-            <div class="row print-compressed">
+            <div class="row no-gutters print-compressed">
                 <div class="col-md-12 col-print-12 print-compressed">
                     <label for="surface_seal_length">{% verbose_name well "surface_seal_length" %}:</label>
                     <span id="surface_seal_length">
@@ -595,13 +590,13 @@
             </div>
         </div>
         <div class="col-md-4 col-print-4 print-compressed">
-            <div class="row print-compressed">
+            <div class="row no-gutters print-compressed">
                 <div class="col-md-12 col-print-12 print-compressed">
                     <label for="backfill_type">{% verbose_name well "backfill_type" %}:</label>
                     <span id="backfill_type">{{well.backfill_type|default_if_none:'&nbsp;' }}</span>
                 </div>
             </div>
-            <div class="row print-compressed">
+            <div class="row no-gutters print-compressed">
                 <div class="col-md-6 col-print-6 print-compressed">
                     <label for="backfill_depth">{% verbose_name well "backfill_depth" %}:</label>
                     <span id="backfill_depth">
@@ -619,7 +614,7 @@
 
 <fieldset id="perforations_fieldset">
     <legend>Liner Details</legend>
-    <div class="row print-compressed">
+    <div class="row no-gutters print-compressed">
         <div class="col-md-12 col-print-12 table-responsive print-compressed">
             {% if well.perforation_set.all %}
             <table id="liner_details" class="table table-condensed table-bordered table-striped">
@@ -655,34 +650,34 @@
 
 <fieldset id="screen_details_fieldset">
     <legend>Screen Details</legend>
-    <div class="row print-compressed">
+    <div class="row no-gutters print-compressed">
         <div class="col-md-4 col-print-4 print-compressed">
             &nbsp;
-            <div class="row print-compressed">
+            <div class="row no-gutters print-compressed">
                 <div class="col-md-12 col-print-12 print-compressed">
                     <label for="intake_method">{% verbose_name well "screen_intake_method" %}:</label>
                     <span id="intake_method">{{well.screen_intake_method|default_if_none:'&nbsp;' }}</span>
                 </div>
             </div>
-            <div class="row print-compressed">
+            <div class="row no-gutters print-compressed">
                 <div class="col-md-12 col-print-12 print-compressed">
                     <label for="screen_type">{% verbose_name well "screen_type" %}:</label>
                     <span id="screen_type">{{well.screen_type.description|default_if_none:'&nbsp;' }}</span>
                 </div>
             </div>
-            <div class="row print-compressed">
+            <div class="row no-gutters print-compressed">
                 <div class="col-md-12 col-print-12 print-compressed">
                     <label for="screen_material">{% verbose_name well "screen_material" %}:</label>
                     <span id="screen_material">{{well.screen_material.description|default_if_none:'&nbsp;' }}</span>
                 </div>
             </div>
-            <div class="row print-compressed">
+            <div class="row no-gutters print-compressed">
                 <div class="col-md-12 col-print-12 print-compressed">
                     <label for="screen_opening">{% verbose_name well "screen_opening" %}:</label>
                     <span id="screen_opening">{{well.screen_opening.description|default_if_none:'&nbsp;' }}</span>
                 </div>
             </div>
-            <div class="row print-compressed">
+            <div class="row no-gutters print-compressed">
                 <div class="col-md-12 col-print-12 print-compressed">
                     <label for="screen_bottom">{% verbose_name well "screen_bottom" %}:</label>
                     <span id="screen_bottom">{{well.screen_bottom.description|default_if_none:'&nbsp;' }}</span>
@@ -722,9 +717,9 @@
 
 <fieldset id="well_development_fieldset">
     <legend>Well Development</legend>
-    <div class="row print-compressed">
+    <div class="row no-gutters print-compressed">
         <div class="col-md-4 col-print-4 print-compressed">
-            <div class="row print-compressed">
+            <div class="row no-gutters print-compressed">
                 <div class="col-md-12 col-print-12 print-compressed">
                     <label for="devloped-by">{% verbose_name well "development_method" %}:</label>
                     <span id="developed-by">{{well.development_method.description|default_if_none:'&nbsp;' }}</span>
@@ -732,7 +727,7 @@
             </div>
         </div>
         <div class="col-md-4 col-print-4 print-compressed">
-            <div class="row print-compressed">
+            <div class="row no-gutters print-compressed">
                 <div class="col-md-12 col-print-12 print-compressed">
                     <label for="devlopment-total-duration">{% verbose_name well "development_hours" %}:</label>
                     <span id="devlopment-total-duration">
@@ -750,10 +745,10 @@
 
 <fieldset id="well_yield_fieldset">
     <legend>Well Yield</legend>
-    <div class="row print-compressed">
+    <div class="row no-gutters print-compressed">
         {% for productiondata in well.productiondata_set.all|dictsortreversed:"update_date"|slice:"1" %}
         <div class="col-md-4 col-print-4 print-compressed">
-            <div class="row print-compressed">
+            <div class="row no-gutters print-compressed">
                 <div class="col-md-12 col-print-12 print-compressed">
                     <label for="yield-estimation-method">{% verbose_name productiondata "yield_estimation_method" %}:</label>
                     <span id="yield-estimation-method">{{productiondata.yield_estimation_method.description|default_if_none:'&nbsp;' }}</span>
@@ -761,7 +756,7 @@
             </div>
         </div>
         <div class="col-md-4 col-print-4 print-compressed">
-            <div class="row print-compressed">
+            <div class="row no-gutters print-compressed">
                 <div class="col-md-12 print-col-12 print-compressed">
                     <label for="yield_estimation_rate">{% verbose_name productiondata "yield_estimation_rate" %}:</label>
                     <span id="yield_estimation_rate">
@@ -773,7 +768,7 @@
             </div>
         </div>
         <div class="col-md-4 col-print-12 print-compressed">
-            <div class="row print-compressed">
+            <div class="row no-gutters print-compressed">
                 <div class="col-md-12 col-print-12 print-compressed">
                     <label for="yield_estimation_duration">{% verbose_name productiondata "yield_estimation_duration" %}:</label>
                     <span id="yield_estimation_duration">
@@ -790,21 +785,21 @@
 
 <fieldset id="well_decommissioning_fieldset">
     <legend>Well Decommissioning</legend>
-    <div class="row print-compressed">
+    <div class="row no-gutters print-compressed">
         <div class="col-md-6 col-print-6 print-compressed">
-            <div class="row print-compressed">
+            <div class="row no-gutters print-compressed">
                 <div class="col-md-12 col-print-12 print-compressed">
                     <label for="reason_for_decommission">{% verbose_name well "decommission_reason" %}:</label>
                     <span id="reason_for_decommission">{{well.decommission_reason|default_if_none:'&nbsp;'}}</span>
                 </div>
             </div>
-            <div class="row print-compressed">
+            <div class="row no-gutters print-compressed">
                 <div class="col-md-12 col-print-12 print-compressed">
                     <label for="method_of_closure">{% verbose_name well "decommission_method" %}:</label>
                     <span id="method_of_closure">{{well.decommission_method.decommission_method_code|default_if_none:'&nbsp;'}}</span>
                 </div>
             </div>
-            <div class="row print-compressed">
+            <div class="row no-gutters print-compressed">
                 <div class="col-md-12 col-print-12 print-compressed">
                     <label for="decommission_details">{% verbose_name well "decommission_details" %}:</label>
                     <span id="decommission_details">{{well.decommission_details|default_if_none:'&nbsp;'}}</span>
@@ -812,13 +807,13 @@
             </div>
         </div>
         <div class="col-md-6 col-print-6 print-compressed">
-            <div class="row print-compressed">
+            <div class="row no-gutters print-compressed">
                 <div class="col-md-12 col-print-12 print-compressed">
                     <label for="sealant_material">{% verbose_name well "sealant_material" %}:</label>
                     <span id="sealant_material">{{well.sealant_material|default_if_none:'&nbsp;'}}</span>
                 </div>
             </div>
-            <div class="row print-compressed">
+            <div class="row no-gutters print-compressed">
                 <div class="col-md-12 col-print-12 print-compressed">
                     <label for="backfill_material">{% verbose_name well "backfill_material" %}:</label>
                     <span id="backfill_material">{{well.backfill_material|default_if_none:'&nbsp;'}}</span>
@@ -838,13 +833,13 @@
     <legend>Additional Documentation</legend>
 
     {% if file_client_error %}
-    <div class="row hide-for-print show-for-screen">
+    <div class="row no-gutters hide-for-print show-for-screen">
         <div class="col-sm-12 alert alert-warning">
             <div id="file-client-error-msg-body" role="alert" aria-atomic="true">{{file_client_error}}</div>
         </div>
     </div>
     {% elif documents %}
-    <div class="row">
+    <div class="row no-gutters">
         <div class="col-md-12">
             <table id="additional_documentation_table" class="table table-condensed table-bordered table-striped">
                 <thead>
@@ -863,7 +858,7 @@
         </div>
     </div>
     {% else %}
-    <div class="row hide-for-print show-for-screen">
+    <div class="row no-gutters hide-for-print show-for-screen">
         <div class="col-sm-12">
             <div id="no_documentation_msg">No additional documentation currently available for this well.</div>
         </div>

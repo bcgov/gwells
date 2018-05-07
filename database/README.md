@@ -83,11 +83,12 @@ The data replication is controlled by the environment variable<table>
 `Subset`: Only a subset of data (i.e. `AND wells.well_tag_number between 100001 and 113567`)  
 `Full`  : Full data replication  
 
-Static code tables are maintained in this [GitHub](../../../tree/master/database/code-tables) repo, while dynamic data is replicated.  There are a stored DB procedures that acts as a 'driver' script [full_db_replication.sql](scripts/db_replicate.sql) that run several stored procedures:
+Static code tables are maintained in this [GitHub](../../../tree/master/database/codetables) repo, while dynamic data is replicated.  There are a stored DB procedures that acts as a 'driver' scripts `db_replicate_step1(boolean)` and `db_replicate_step2()` that run the replication:
+
 
 There is also a SQL script `data-load-static-codes.sql`
 - "COPY" into static code tables from deployed CSV files  
-- run on the gwells pod (which has all CSV files under `$VIRTUAL_ENV/src/database/code-tables/`)
+- run on the gwells pod (which has all CSV files under `$VIRTUAL_ENV/src/database/codetables/`)
 
 
 The replicate process can be run ad-hoc on the PostgreSQL pod or on a local developer workstation, passing a parameter to the stored procedure.  
@@ -102,3 +103,24 @@ The logged output includes the number of rows inserted into the main "wells" Pos
 ssh-4.2$ psql -t -d $POSTGRESQL_DATABASE -U $POSTGRESQL_USER -c 'SELECT db_replicate_step1(_subset_ind=>false);'
 ssh-4.2$ psql -t -d $POSTGRESQL_DATABASE -U $POSTGRESQL_USER -c 'SELECT db_replicate_step2 ();'
 ```
+
+# Integration with Django Administrator account
+
+## OpenShift Secrets
+The administrator account details are recorded as an OpenShift Secret (i.e. PROD environment as the secret here under the umbrella gwells-django [secret](https://console.pathfinder.gov.bc.ca:8443/console/project/moe-gwells-prod/browse/secrets/gwells-django) ).
+
+
+Currently, these values are used as part of the manual step to create the admin account, by logging onto the gwells pod:
+```
+(app-root)sh-4.2$ python manage.py createsuperuser
+REQUIRE_ENV_VARIABLES is set to False
+Username: admin
+Email address: xxx@gov.bc.ca
+Password: <paste-in-password-from-openshift-secret>
+Password (again): <paste-in-password-from-openshift-secret>
+Superuser created successfully.
+```
+
+This opaque secret also records the obfuscated administration screen URL (under `admin_url`).  Each environment (gwells-moe-dev, gwells-moe-test, gwells-moe-prod) has its own values in this secret.
+
+
