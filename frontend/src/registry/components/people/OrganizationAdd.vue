@@ -57,7 +57,8 @@
                   :options="provOptions"
                   v-model="orgForm.province_state"
                   placeholder="Select province"
-                  :state="validation.province_state">
+                  :state="validation.province_state"
+                  required>
                   <template slot="first">
                     <option :value="''" disabled>Select a province</option>
                   </template>
