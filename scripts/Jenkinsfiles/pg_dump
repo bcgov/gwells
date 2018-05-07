@@ -6,13 +6,13 @@
 //    SCM: Git
 //      Repository URL: https://github.com/bcgov/gwells
 //      Branches to build: */master
-//      Script path: scripts/Jenkinsfiles/pg_dump */
+//      Script path: scripts/Jenkinsfiles/pg_dump
 
 properties(
     [
         pipelineTriggers(
             [
-                cron( '10 H * * *' )
+                cron( 'H 10 * * *' )
             ]
         )
     ]
