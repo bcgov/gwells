@@ -10,7 +10,7 @@
       <div class="card-body">
           <h5 class="card-title">Add new applicant</h5>
           <b-form @submit.prevent="onFormSubmit()" @reset.prevent="onFormReset()">
-            <b-row><b-col><h6>Personal Information</h6></b-col></b-row>
+            <b-row><b-col><h6 class="font-weight-bold">Personal Information</h6></b-col></b-row>
             <b-row>
               <b-col cols="12" md="5">
                 <b-form-group
@@ -39,7 +39,7 @@
                 </b-form-group>
               </b-col>
             </b-row>
-            <b-row class="mt-3"><b-col><h6>Contact Information</h6></b-col></b-row>
+            <b-row class="mt-3"><b-col><h6 class="font-weight-bold">Contact Information</h6></b-col></b-row>
             <b-row>
               <b-col cols="12" md="5">
                 <b-form-group
@@ -49,8 +49,7 @@
                   <b-form-input
                     id="contactTelInput"
                     type="text"
-                    v-model="drillerForm.person.contact_tel"
-                    placeholder="(604) 555 9876"/>
+                    placeholder="(604) 555-9876"/>
                 </b-form-group>
               </b-col>
               <b-col cols="12" md="5" offset-md="1">
@@ -70,6 +69,33 @@
                       {{ error }}
                     </div>
                   </b-form-invalid-feedback>
+                </b-form-group>
+              </b-col>
+            </b-row>
+            <b-row class="mt-3"><b-col><h6 class="font-weight-bold">Document Control</h6></b-col></b-row>
+            <b-row>
+              <b-col>
+                <b-form-group
+                  id="drillerORCSInputGroup"
+                  label="Well Driller ORCS Number:"
+                  label-for="drillerORCSInput">
+                  <b-form-input
+                    id="drillerORCSInput"
+                    type="text"
+                    v-model="drillerForm.person.well_driller_orcs_no"
+                    placeholder="3800-1111-DRI"/>
+                </b-form-group>
+              </b-col>
+              <b-col>
+                <b-form-group
+                  id="pumpORCSInputGroup"
+                  label="Pump Installer ORCS Number:"
+                  label-for="pumpORCSInput">
+                  <b-form-input
+                    id="pumpORCSInput"
+                    type="text"
+                    v-model="drillerForm.person.pump_installer_orcs_no"
+                    placeholder="3800-1111-PUMP"/>
                 </b-form-group>
               </b-col>
             </b-row>
@@ -107,60 +133,64 @@
                   </b-alert>
                 </b-col>
               </b-row>
-              <b-row v-if="drillerForm.regType.some(x => x === 'DRILL')">
-                <b-col cols="12" md="4">
-                  <b-form-group
-                    id="drillerRegNoInputGroup"
-                    label="Well Driller Registration Number:"
-                    label-for="drillerRegNoInput">
-                    <b-form-input
-                      id="drillerRegNoInput"
-                      type="text"
-                      v-model="drillerForm.registrations.drill.registration_no"
-                      placeholder="WD 1234"/>
-                  </b-form-group>
-                </b-col>
-                <b-col md="7" offset-md="1">
-                  <b-form-group
-                    id="companyInputGroup"
-                    label="Well drilling company:"
-                    label-for="companyInput">
-                    <v-select
-                      v-model="drillerForm.organizations.drill"
-                      :options="companies"
-                      placeholder="Begin typing a company name"
-                      label="org_verbose_name">
-                    </v-select>
-                  </b-form-group>
-                </b-col>
-              </b-row>
-              <b-row v-if="drillerForm.regType.some(x => x === 'PUMP')">
-                <b-col cols="12" md="4">
-                  <b-form-group
-                    id="pumpRegNoInputGroup"
-                    label="Well Pump Installer Registration Number:"
-                    label-for="pumpRegNoInput">
-                    <b-form-input
-                      id="pumpRegNoInput"
-                      type="text"
-                      v-model="drillerForm.registrations.pump.registration_no"
-                      placeholder="WPI 4321"/>
-                  </b-form-group>
-                </b-col>
-                <b-col md="7" offset-md="1">
-                  <b-form-group
-                    id="companyInputGroup"
-                    label="Well pump installation company:"
-                    label-for="companyInput">
-                    <v-select
-                      v-model="drillerForm.organizations.pump"
-                      :options="companies"
-                      placeholder="Begin typing a company name"
-                      label="org_verbose_name">
-                    </v-select>
-                  </b-form-group>
-                </b-col>
-              </b-row>
+              <div v-if="drillerForm.regType.some(x => x === 'DRILL')">
+                <b-row>
+                  <b-col cols="12" md="4">
+                    <b-form-group
+                      id="drillerRegNoInputGroup"
+                      label="Well Driller Registration Number:"
+                      label-for="drillerRegNoInput">
+                      <b-form-input
+                        id="drillerRegNoInput"
+                        type="text"
+                        v-model="drillerForm.registrations.drill.registration_no"
+                        placeholder="WD 1234"/>
+                    </b-form-group>
+                  </b-col>
+                  <b-col md="7" offset-md="1">
+                    <b-form-group
+                      id="companyInputGroup"
+                      label="Well drilling company:"
+                      label-for="companyInput">
+                      <v-select
+                        v-model="drillerForm.organizations.drill"
+                        :options="companies"
+                        placeholder="Begin typing a company name"
+                        label="org_verbose_name">
+                      </v-select>
+                    </b-form-group>
+                  </b-col>
+                </b-row>
+              </div>
+              <div v-if="drillerForm.regType.some(x => x === 'PUMP')">
+                <b-row>
+                  <b-col cols="12" md="4">
+                    <b-form-group
+                      id="pumpRegNoInputGroup"
+                      label="Well Pump Installer Registration Number:"
+                      label-for="pumpRegNoInput">
+                      <b-form-input
+                        id="pumpRegNoInput"
+                        type="text"
+                        v-model="drillerForm.registrations.pump.registration_no"
+                        placeholder="WPI 4321"/>
+                    </b-form-group>
+                  </b-col>
+                  <b-col md="7" offset-md="1">
+                    <b-form-group
+                      id="companyInputGroup"
+                      label="Well pump installation company:"
+                      label-for="companyInput">
+                      <v-select
+                        v-model="drillerForm.organizations.pump"
+                        :options="companies"
+                        placeholder="Begin typing a company name"
+                        label="org_verbose_name">
+                      </v-select>
+                    </b-form-group>
+                  </b-col>
+                </b-row>
+              </div>
             </b-card>
             <b-row class="mt-3">
               <b-col>
@@ -226,7 +256,9 @@ export default {
           first_name: '',
           contact_tel: '',
           contact_email: '',
-          contact_cell: ''
+          contact_cell: '',
+          well_driller_orcs_no: '',
+          pump_installer_orcs_no: ''
         },
         regType: [],
         registrations: {
