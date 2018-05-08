@@ -159,7 +159,8 @@
                 v-for="item in drillerForm.classifications"
                 v-bind:item="item"
                 v-bind:key="item.id"
-                v-on:close="closeClassification (item.id)"/>
+                v-on:close="closeClassification (item.id)"
+                v-model="item.data"/>
             </b-row>
             <b-row>
               <b-col>
@@ -290,6 +291,7 @@ export default {
        */
       const registrations = []
       const contactInfo = []
+      const classifications = []
       const personData = Object.assign({}, this.drillerForm.person)
       this.submitSuccess = false
       this.submitError = false
@@ -314,11 +316,17 @@ export default {
         registrations.push(this.drillerForm.registrations[item.toLowerCase()])
       })
 
+      this.drillerForm.classifications.forEach((item) => {
+        classifications.push(item.data)
+      })
+
       // add submitted contact info onto collection of person's contact details
       contactInfo.push(this.drillerForm.contact_info)
 
       personData['registrations'] = registrations
       personData['contact_info'] = contactInfo
+      personData['classifications'] = classifications
+      console.log('personData', personData)
 
       ApiService.post('drillers', personData).then((response) => {
         this.onFormReset()
@@ -371,7 +379,7 @@ export default {
       })
     },
     addClassification () {
-      this.drillerForm.classifications.push({id: ++this.classificationCount})
+      this.drillerForm.classifications.push({id: ++this.classificationCount, data: null})
     },
     closeClassification (id) {
       this.drillerForm.classifications = this.drillerForm.classifications.filter(item => item.id !== id)
