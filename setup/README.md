@@ -176,9 +176,12 @@ Please use either these steps or the install script.
     python3 ../manage.py migrate
     ```
 
-    Optional: import a Wells database.
-
+    Optional: import a database from python fixtures.
     ```
+    From python:
+    python manage.py loaddata wells registries
+
+    From pg dump:
     pg_restore -U gwells -d gwells --no-owner --no-privileges <path to MODERN_DB_DUMP>
     ```
 
