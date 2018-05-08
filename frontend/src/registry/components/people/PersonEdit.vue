@@ -12,8 +12,7 @@
                 id="surnameInput"
                 type="text"
                 v-model="personalInfoForm.surname"
-                required
-                placeholder="Enter surname"/>
+                required/>
             </b-form-group>
           </b-col>
           <b-col cols="12" md="5" offset-md="1">
@@ -25,8 +24,7 @@
                 id="firstnameInput"
                 type="text"
                 v-model="personalInfoForm.first_name"
-                required
-                placeholder="Enter first name"/>
+                required/>
             </b-form-group>
           </b-col>
         </b-row>
@@ -39,8 +37,7 @@
               <b-form-input
                 id="drillORCSInput"
                 type="text"
-                v-model="personalInfoForm.well_driller_orcs_no"
-                placeholder="Enter well driller ORCS"/>
+                v-model="personalInfoForm.well_driller_orcs_no"/>
             </b-form-group>
           </b-col>
           <b-col cols="12" md="5" offset-md="1">
@@ -51,8 +48,7 @@
               <b-form-input
                 id="pumpORCSInput"
                 type="text"
-                v-model="personalInfoForm.pump_installer_orcs_no"
-                placeholder="Enter pump installer ORCS"/>
+                v-model="personalInfoForm.pump_installer_orcs_no"/>
             </b-form-group>
           </b-col>
         </b-row>
@@ -94,8 +90,7 @@
               <b-form-input
                 id="telInput"
                 type="text"
-                v-model="contactInfoForm.contact_tel"
-                placeholder="Enter telephone number"/>
+                v-model="contactInfoForm.contact_tel"/>
             </b-form-group>
           </b-col>
         </b-row>
