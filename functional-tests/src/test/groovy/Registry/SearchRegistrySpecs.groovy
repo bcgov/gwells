@@ -11,17 +11,22 @@ class SearchRegistrySpecs extends GebReportingSpec {
         when: "I search for a registered driller/installer"
             at RegisterPage
             reset
-            if ( "$SearchType" == "community") {
-                selectcommunity = ["$Search"]
-            }    
-            if ( "$SearchType" == "installer") {
+            switch ("$SearchType") {
+              case "installer":
                 selectinstaller
-            } else {
+                break
+              case "driller":
                 selectdriller
-            }
-            if ( "$SearchType" == "name") {
+                break
+              case "name":
+                selectdriller
                 search.value("$Search")
-            }    
+                break
+              case "community":
+                selectdriller
+                selectcommunity = ["$Search"]
+                break
+            }
             submit
         then: "I should find the result"
             if ( "$NumberResult" == "none" ) {
