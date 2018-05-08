@@ -310,10 +310,11 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "d882b27b-2b02-436f-ac11-d26f1f7bb4b7",
+										"id": "8a8d7d10-e370-4916-9620-b7e7e18932da",
 										"type": "text/javascript",
 										"exec": [
 											"( function() {",
+											"    \"use strict\";",
 											"    pm.test(\"Status code is 200\", function () {",
 											"        pm.response.to.have.status(200);",
 											"    });",
@@ -321,23 +322,11 @@
 											"    var created_guid = pm.environment.get(\"created_guid\");",
 											"    var jsonData = pm.response.json();",
 											"    ",
-											"    pm.test(\"List of drilling companies has valid drilling company objects\", function () {",
-											"        // First check that our GUID resembles a valid UUID (i.e. we are not testing before created_guid is set)",
-											"        pm.expect(created_guid.length).to.eql(36);",
-											"",
-											"        // Then check that created_guid is in the response body",
-											"        pm.expect(jsonData.results.length).to.be.above(0);",
-											"        ",
-											"        for (var i; i < jsonData.results.length; i++) {",
-											"            pm.expect(jsonData.results[i].org_guid.length).to.eql(36);",
-											"            pm.expect(jsonData.results[i].name.length).to.be.ok;",
-											"        }",
-											"    });",
-											"    ",
-											"    pm.test(\"Pagination: if there are more objects than the page limit, provide a link to the next page\", function () {",
-											"        if (jsonData.results.length < jsonData.count) {",
-											"            pm.expect(jsonData.next.length).to.be.ok;",
-											"        }",
+											"    pm.test(\"Test company is in list\", function () {",
+											"        pm.expect(jsonData.length).to.be.ok;",
+											"        pm.expect(jsonData.some(function (org) {",
+											"            return org.org_guid === created_guid",
+											"        })).to.be.ok;",
 											"    });",
 											"})();",
 											"",
@@ -359,7 +348,7 @@
 								],
 								"body": {},
 								"url": {
-									"raw": "{{base_url}}/api/v1/organizations/?format=json",
+									"raw": "{{base_url}}/api/v1/organizations/names/",
 									"host": [
 										"{{base_url}}"
 									],
@@ -367,13 +356,8 @@
 										"api",
 										"v1",
 										"organizations",
+										"names",
 										""
-									],
-									"query": [
-										{
-											"key": "format",
-											"value": "json"
-										}
 									]
 								},
 								"description": "Organization model \"list\" view"
