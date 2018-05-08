@@ -16,7 +16,6 @@
                     type="text"
                     v-model="orgForm.name"
                     required
-                    placeholder="Enter company name"
                     ref="orgNameInput"/>
               </b-form-group>
             </b-col>
@@ -30,8 +29,7 @@
                 <b-form-input
                     id="orgAddressInput"
                     type="text"
-                    v-model="orgForm.street_address"
-                    placeholder="Enter street address"/>
+                    v-model="orgForm.street_address"/>
               </b-form-group>
             </b-col>
           </b-row>
@@ -44,8 +42,7 @@
                 <b-form-input
                     id="orgCityInput"
                     type="text"
-                    v-model="orgForm.city"
-                    placeholder="Enter city"/>
+                    v-model="orgForm.city"/>
               </b-form-group>
             </b-col>
             <b-col cols="12" md="6">
@@ -53,7 +50,20 @@
                 id="provInputGroup"
                 label="Province/State:"
                 label-for="provInput">
-                <v-select :options="provOptions" v-model="orgForm.province_state" placeholder="Select province"/>
+                <b-form-select
+                  :options="provOptions"
+                  v-model="orgForm.province_state"
+                  :state="validation.province_state"
+                  required>
+                  <template slot="first">
+                    <option :value="''" disabled>Select a province</option>
+                  </template>
+                </b-form-select>
+                <b-form-invalid-feedback id="provInputFeedback">
+                  <div v-for="(error, index) in fieldErrors.province_state" :key="`urlInput error ${index}`">
+                    {{ error }}
+                  </div>
+                </b-form-invalid-feedback>
               </b-form-group>
             </b-col>
           </b-row>
@@ -66,8 +76,7 @@
                 <b-form-input
                     id="postalCodeInput"
                     type="text"
-                    v-model="orgForm.postal_code"
-                    placeholder="Enter postal code"/>
+                    v-model="orgForm.postal_code"/>
               </b-form-group>
             </b-col>
           </b-row>
@@ -80,8 +89,7 @@
                 <b-form-input
                     id="telInput"
                     type="text"
-                    v-model="orgForm.main_tel"
-                    placeholder="Enter telephone number"/>
+                    v-model="orgForm.main_tel"/>
               </b-form-group>
             </b-col>
             <b-col cols="12" md="6">
@@ -92,22 +100,7 @@
                 <b-form-input
                     id="faxInput"
                     type="text"
-                    v-model="orgForm.fax_tel"
-                    placeholder="Enter fax number"/>
-              </b-form-group>
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col cols="12">
-              <b-form-group
-                id="emailInputGroup"
-                label="Email:"
-                label-for="emailInput">
-                <b-form-input
-                    id="emailInput"
-                    type="text"
-                    v-model="orgForm.email"
-                    placeholder="Enter email address"/>
+                    v-model="orgForm.fax_tel"/>
               </b-form-group>
             </b-col>
           </b-row>
@@ -120,8 +113,18 @@
                 <b-form-input
                     id="websiteInput"
                     type="text"
+                    :state="validation.website_url"
+                    aria-describedby="websiteInputFeedback websiteInputHelp"
                     v-model="orgForm.website_url"
-                    placeholder="Enter website address (e.g. http://www.example.com)"/>
+                    placeholder="e.g.: http://www.example.com"/>
+                <b-form-invalid-feedback id="websiteInputFeedback">
+                  <div v-for="(error, index) in fieldErrors.website_url" :key="`urlInput error ${index}`">
+                    {{ error }}
+                  </div>
+                </b-form-invalid-feedback>
+                <b-form-text id="websiteInputHelp">
+                  Use a full website address, including http://
+                </b-form-text>
               </b-form-group>
             </b-col>
           </b-row>
@@ -165,14 +168,25 @@ export default {
       },
       provOptions: ['BC', 'AB'],
       orgSubmitLoading: false,
-      orgSubmitError: null
+      orgSubmitError: null,
+      fieldErrors: {
+        province_state: [],
+        website_url: []
+      }
     }
   },
   computed: {
+    validation () {
+      return {
+        province_state: (this.fieldErrors.province_state && this.fieldErrors.province_state.length) ? false : null,
+        website_url: (this.fieldErrors.website_url && this.fieldErrors.website_url.length) ? false : null
+      }
+    },
     ...mapGetters(['error'])
   },
   methods: {
     onFormSubmit () {
+      this.resetFieldErrors()
       const org = {}
       this.orgSubmitLoading = true
 
@@ -186,9 +200,13 @@ export default {
         this.orgSubmitLoading = false
         this.$root.$emit('bv::hide::modal', 'orgModal')
         this.$emit('newOrgAdded', response.data.org_guid)
-      }).catch((error) => {
+      }).catch((e) => {
         this.orgSubmitLoading = false
-        this.orgSubmitError = error.response
+        const errors = e.response.data
+
+        for (const field in errors) {
+          this.fieldErrors[field] = errors[field]
+        }
       })
     },
     onFormReset () {
@@ -206,7 +224,17 @@ export default {
     },
     focusInput () {
       this.$refs.orgNameInput.focus()
+    },
+    resetFieldErrors () {
+      this.fieldErrors = {
+        contact_email: [],
+        province_state: [],
+        website_url: []
+      }
     }
+  },
+  created () {
+    this.resetFieldErrors()
   }
 }
 </script>

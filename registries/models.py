@@ -151,6 +151,16 @@ class Organization(AuditModel):
     def __str__(self):
         return self.name
 
+    @property
+    def org_verbose_name(self):
+        prov = self.province_state.province_state_code
+
+        # display either "City, Province" or just "Province"
+        location = '{}, {}'.format(
+            self.city, prov) if self.city is not None else prov
+
+        return '{} ({})'.format(self.name, location)
+
 
 class Person(AuditModel):
     person_guid = models.UUIDField(
@@ -168,10 +178,24 @@ class Person(AuditModel):
         null=True,
         verbose_name='ORCS File # reference (in context of Well Driller).')
     pump_installer_orcs_no = models.CharField(
-        max_length=25, 
-        blank=True, 
+        max_length=25,
+        blank=True,
         null=True,
         verbose_name='ORCS File # reference (in context of Pump Installer).')
+
+    # contact information
+    contact_tel = models.CharField(
+        blank=True,
+        null=True,
+        max_length=15,
+        verbose_name="Contact telephone number")
+    contact_cell = models.CharField(
+        blank=True,
+        null=True,
+        max_length=15,
+        verbose_name="Contact cell number")
+    contact_email = models.EmailField(
+        blank=True, null=True, verbose_name="Email address")
 
     effective_date = models.DateField(default=datetime.date.today)
     expired_date = models.DateField(blank=True, null=True)
