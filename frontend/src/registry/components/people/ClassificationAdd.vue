@@ -22,88 +22,84 @@
         </button>
       </h5>
       <p class="card-text">
-        <b-form>
-          <b-row>
-            <div class="col-md-2">Select classification:</div>
-            <div class="col-md-8">
-              <b-form-radio-group class="fixed-width" :options="formOptions.classification" @change="changedClassification" v-model="qualificationForm.classification"></b-form-radio-group>
+        <b-row>
+          <div class="col-md-2">Select classification:</div>
+          <div class="col-md-8">
+            <b-form-radio-group class="fixed-width" :options="formOptions.classification" @change="changedClassification" v-model="qualificationForm.classification"></b-form-radio-group>
+          </div>
+        </b-row>
+        <b-form-group label="Certification">
+          <b-row v-for="item in qualificationForm.certifications" :key="item.id">
+            <div class="col-md-1">Issued by</div>
+            <div class="col-md-3">
+                  <b-form-select :options="formOptions.issuer" v-model="item.issuer"></b-form-select>
+            </div>
+            <div class="col-md-2">Certificate number</div>
+            <div class="col-md-3">
+              <b-form-input type="text" placeholder="Enter certificate number" v-model="item.number"></b-form-input>
             </div>
           </b-row>
-          <b-form-group label="Certification">
-            <b-row v-for="item in qualificationForm.certifications" :key="item.id">
-              <div class="col-md-1">Issued by</div>
-              <div class="col-md-3">
-                    <b-form-select :options="formOptions.issuer" v-model="item.issuer"></b-form-select>
-              </div>
-              <div class="col-md-2">Certificate number</div>
-              <div class="col-md-3">
-                <b-form-input type="text" placeholder="Enter certificate number" v-model="item.number"></b-form-input>
-              </div>
-            </b-row>
-            <b-row class="mt-2">
-              <b-col>
-                <b-button variant="primary" v-on:click="addCertification()">Add additional certification</b-button>
-              </b-col>
-            </b-row>
-          </b-form-group>
-          <div v-if="showQualifications">
-            <b-form-group label="Qualified to drill">
-                <b-row>
-                  <div class="col-md-8">
-                    <b-form-checkbox-group class="fixed-width" :options="formOptions.qualifications" v-model="qualificationForm.qualifications">
-                    </b-form-checkbox-group>
-                  </div>
-                </b-row>
-            </b-form-group>
+          <b-row class="mt-2">
+            <b-col>
+              <b-button variant="primary" v-on:click="addCertification()">Add additional certification</b-button>
+            </b-col>
+          </b-row>
+        </b-form-group>
+        <b-form-group label="Qualified to drill">
             <b-row>
-              <div class="col-md-4 pr-0">
-                <span class="pr-1">Step 1</span> Date application received
-                <datepicker :format="formOptions.format" v-model="qualificationForm.applicationReceivedDate" class="pull-right"></datepicker>
+              <div class="col-md-8">
+                <b-form-checkbox-group class="fixed-width" :options="formOptions.qualifications" v-model="qualificationForm.qualifications">
+                </b-form-checkbox-group>
               </div>
             </b-row>
-            <b-row class="mt-2">
-              <div class="col-md-4 pr-0">
-                <span class="pr-1">Step 2</span> Approval outcome date
-                <datepicker :format="formOptions.format" v-model="qualificationForm.approvalOutcomeDate" class="pull-right"></datepicker>
-              </div>
-              <div class="col-md-2">Approval outcome</div>
-              <div class="col-md-2"><b-form-select :options="formOptions.approval_outcome" v-model="qualificationForm.approvalOutcome"></b-form-select></div>
-              <div class="col-md-2">Reason denied</div>
-              <div class="col-md-2"><b-form-input type="text" v-model="qualificationForm.reasonDenied" placeholder="Enter reason denied"/></div>
-            </b-row>
-            <b-row class="mt-2">
-              <div class="col-md-4 pr-0">
-                <span class="pr-1">Step 3</span> Notification date
-                <datepicker :format="formOptions.format" v-model="qualificationForm.notificationDate" class="pull-right"></datepicker>
-              </div>
-            </b-row>
-            <b-row class="mt-2">
-              <div class="col-md-2 pr-0"><span class="pr-1">Step 4 </span>Register status</div>
-              <div class="col-md-2 p-0"><b-form-select :options="formOptions.register_status" v-model="qualificationForm.registerStatus"></b-form-select></div>
-              <div class="col-md-2">Registration date</div>
-              <div class="col-md-2"><datepicker :format="formOptions.format" class="pull-right" v-model="qualificationForm.registrationDate"></datepicker></div>
-            </b-row>
-            <b-row class="mt-2">
-              <div class="col-md-4 pr-0"><span class="pr-1">Step 5 </span>Register removal date
-                  <datepicker :format="formOptions.format" class="pull-right" v-model="qualificationForm.registerRemovalDate"></datepicker>
-              </div>
-              <div class="col-md-2">Removal reason</div>
-              <div class="col-md-6">
-                  <b-form-select :options="formOptions.removal_reason" v-model="qualificationForm.removalReason"></b-form-select>
-              </div>
-            </b-row>
-            <b-row>
-              <div class="col-md-12">
-                <b-form-checkbox value="accepted" unchecked-value="not_accepted" v-model="qualificationForm.approved">
-                  As Deputy Comptoller, I confirm I have reviewed the application or action and approved this registry update
-                </b-form-checkbox>
-              </div>
-            </b-row>
-            <b-row>
-              <b-col>Date/Time and IDIR Stamp</b-col>
-            </b-row>
+        </b-form-group>
+        <b-row>
+          <div class="col-md-4 pr-0">
+            <span class="pr-1">Step 1</span> Date application received
+            <datepicker :format="formOptions.format" v-model="qualificationForm.applicationReceivedDate" class="pull-right"></datepicker>
           </div>
-        </b-form>
+        </b-row>
+        <b-row class="mt-2">
+          <div class="col-md-4 pr-0">
+            <span class="pr-1">Step 2</span> Approval outcome date
+            <datepicker :format="formOptions.format" v-model="qualificationForm.approvalOutcomeDate" class="pull-right"></datepicker>
+          </div>
+          <div class="col-md-2">Approval outcome</div>
+          <div class="col-md-2"><b-form-select :options="formOptions.approval_outcome" v-model="qualificationForm.approvalOutcome"></b-form-select></div>
+          <div class="col-md-2">Reason denied</div>
+          <div class="col-md-2"><b-form-input type="text" v-model="qualificationForm.reasonDenied" placeholder="Enter reason denied"/></div>
+        </b-row>
+        <b-row class="mt-2">
+          <div class="col-md-4 pr-0">
+            <span class="pr-1">Step 3</span> Notification date
+            <datepicker :format="formOptions.format" v-model="qualificationForm.notificationDate" class="pull-right"></datepicker>
+          </div>
+        </b-row>
+        <b-row class="mt-2">
+          <div class="col-md-2 pr-0"><span class="pr-1">Step 4 </span>Register status</div>
+          <div class="col-md-2 p-0"><b-form-select :options="formOptions.register_status" v-model="qualificationForm.registerStatus"></b-form-select></div>
+          <div class="col-md-2">Registration date</div>
+          <div class="col-md-2"><datepicker :format="formOptions.format" class="pull-right" v-model="qualificationForm.registrationDate"></datepicker></div>
+        </b-row>
+        <b-row class="mt-2">
+          <div class="col-md-4 pr-0"><span class="pr-1">Step 5 </span>Register removal date
+              <datepicker :format="formOptions.format" class="pull-right" v-model="qualificationForm.registerRemovalDate"></datepicker>
+          </div>
+          <div class="col-md-2">Removal reason</div>
+          <div class="col-md-6">
+              <b-form-select :options="formOptions.removal_reason" v-model="qualificationForm.removalReason"></b-form-select>
+          </div>
+        </b-row>
+        <b-row>
+          <div class="col-md-12">
+            <b-form-checkbox value="accepted" unchecked-value="not_accepted" v-model="qualificationForm.approved">
+              As Deputy Comptoller, I confirm I have reviewed the application or action and approved this registry update
+            </b-form-checkbox>
+          </div>
+        </b-row>
+        <!-- TODO: <b-row>
+          <b-col>Date/Time and IDIR Stamp</b-col>
+        </b-row> -->
       </p>
     </div>
   </div>
@@ -115,6 +111,7 @@ export default {
   components: {
     Datepicker
   },
+  props: ['value'],
   data () {
     return {
       qualificationForm: {
@@ -167,9 +164,12 @@ export default {
       certificationCount: 1
     }
   },
-  computed: {
-    showQualifications () {
-      return this.qualificationForm.certifications.filter(item => item.issuer !== null).length > 0
+  watch: {
+    qualificationForm: {
+      handler: function (val, oldVal) {
+        this.$emit('input', val)
+      },
+      deep: true
     }
   },
   methods: {
