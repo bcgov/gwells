@@ -21,8 +21,7 @@
                     id="surnameInput"
                     type="text"
                     v-model="drillerForm.person.surname"
-                    required
-                    placeholder="Smith"/>
+                    required/>
                 </b-form-group>
               </b-col>
               <b-col cols="12" md="5" offset-md="1">
@@ -34,8 +33,7 @@
                     id="firstnameInput"
                     type="text"
                     v-model="drillerForm.person.first_name"
-                    required
-                    placeholder="John"/>
+                    required/>
                 </b-form-group>
               </b-col>
             </b-row>
@@ -48,8 +46,7 @@
                   label-for="contactTelInput">
                   <b-form-input
                     id="contactTelInput"
-                    type="text"
-                    placeholder="(604) 555-9876"/>
+                    type="text"/>
                 </b-form-group>
               </b-col>
               <b-col cols="12" md="5" offset-md="1">
@@ -62,8 +59,7 @@
                     type="text"
                     :state="validation.contact_email"
                     aria-describedby="contactEmailFeedback"
-                    v-model="drillerForm.person.contact_email"
-                    placeholder="smith@example.com"/>
+                    v-model="drillerForm.person.contact_email"/>
                   <b-form-invalid-feedback id="contactEmailFeedback">
                     <div v-for="(error, index) in fieldErrors.contact_email" :key="`emailInput error ${index}`">
                       {{ error }}
@@ -83,7 +79,7 @@
                     id="drillerORCSInput"
                     type="text"
                     v-model="drillerForm.person.well_driller_orcs_no"
-                    placeholder="3800-1111-DRI"/>
+                    placeholder="example: 38000-25/DRI SMIT J"/>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -95,7 +91,7 @@
                     id="pumpORCSInput"
                     type="text"
                     v-model="drillerForm.person.pump_installer_orcs_no"
-                    placeholder="3800-1111-PUMP"/>
+                    placeholder="example: 38000-25/PUMP SMIT J"/>
                 </b-form-group>
               </b-col>
             </b-row>
@@ -143,8 +139,7 @@
                       <b-form-input
                         id="drillerRegNoInput"
                         type="text"
-                        v-model="drillerForm.registrations.drill.registration_no"
-                        placeholder="WD 1234"/>
+                        v-model="drillerForm.registrations.drill.registration_no"/>
                     </b-form-group>
                   </b-col>
                   <b-col md="7" offset-md="1">
@@ -172,8 +167,7 @@
                       <b-form-input
                         id="pumpRegNoInput"
                         type="text"
-                        v-model="drillerForm.registrations.pump.registration_no"
-                        placeholder="WPI 4321"/>
+                        v-model="drillerForm.registrations.pump.registration_no"/>
                     </b-form-group>
                   </b-col>
                   <b-col md="7" offset-md="1">
@@ -387,8 +381,10 @@ export default {
         this.companies = response.data
 
         // Find the new company with the "emitted" organization record UUID
-        // this.drillerForm.person.organization = this.companies.find((company) => company.org_guid === orgGuid)
-
+        if (this.drillerForm.regType && this.drillerForm.regType.length === 1) {
+          this.drillerForm.organizations[[this.drillerForm.regType[0].toLowerCase()]] =
+            this.companies.find((company) => company.org_guid === orgGuid)
+        }
         this.newOrgSuccess = true
       }).catch(() => {
         this.orgListError = 'Unable to retrieve organization list.'

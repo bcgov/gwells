@@ -16,7 +16,6 @@
                     type="text"
                     v-model="orgForm.name"
                     required
-                    placeholder="Acme Drilling Corp."
                     ref="orgNameInput"/>
               </b-form-group>
             </b-col>
@@ -30,8 +29,7 @@
                 <b-form-input
                     id="orgAddressInput"
                     type="text"
-                    v-model="orgForm.street_address"
-                    placeholder="1234 East Broadway"/>
+                    v-model="orgForm.street_address"/>
               </b-form-group>
             </b-col>
           </b-row>
@@ -44,8 +42,7 @@
                 <b-form-input
                     id="orgCityInput"
                     type="text"
-                    v-model="orgForm.city"
-                    placeholder="Kamloops"/>
+                    v-model="orgForm.city"/>
               </b-form-group>
             </b-col>
             <b-col cols="12" md="6">
@@ -56,7 +53,6 @@
                 <b-form-select
                   :options="provOptions"
                   v-model="orgForm.province_state"
-                  placeholder="Select province"
                   :state="validation.province_state"
                   required>
                   <template slot="first">
@@ -80,8 +76,7 @@
                 <b-form-input
                     id="postalCodeInput"
                     type="text"
-                    v-model="orgForm.postal_code"
-                    placeholder="A1B 2C3"/>
+                    v-model="orgForm.postal_code"/>
               </b-form-group>
             </b-col>
           </b-row>
@@ -94,8 +89,7 @@
                 <b-form-input
                     id="telInput"
                     type="text"
-                    v-model="orgForm.main_tel"
-                    placeholder="(604) 555-1234"/>
+                    v-model="orgForm.main_tel"/>
               </b-form-group>
             </b-col>
             <b-col cols="12" md="6">
@@ -106,8 +100,7 @@
                 <b-form-input
                     id="faxInput"
                     type="text"
-                    v-model="orgForm.fax_tel"
-                    placeholder="(250) 555-4321"/>
+                    v-model="orgForm.fax_tel"/>
               </b-form-group>
             </b-col>
           </b-row>
@@ -123,7 +116,7 @@
                     :state="validation.website_url"
                     aria-describedby="websiteInputFeedback websiteInputHelp"
                     v-model="orgForm.website_url"
-                    placeholder="http://www.example.com"/>
+                    placeholder="e.g.: http://www.example.com"/>
                 <b-form-invalid-feedback id="websiteInputFeedback">
                   <div v-for="(error, index) in fieldErrors.website_url" :key="`urlInput error ${index}`">
                     {{ error }}
