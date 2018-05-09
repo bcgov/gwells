@@ -310,23 +310,13 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "8a8d7d10-e370-4916-9620-b7e7e18932da",
+										"id": "d279051b-6ac9-4b71-bc3f-cdb4d8a56827",
 										"type": "text/javascript",
 										"exec": [
 											"( function() {",
 											"    \"use strict\";",
 											"    pm.test(\"Status code is 200\", function () {",
 											"        pm.response.to.have.status(200);",
-											"    });",
-											"    ",
-											"    var created_guid = pm.environment.get(\"created_guid\");",
-											"    var jsonData = pm.response.json();",
-											"    ",
-											"    pm.test(\"Test company is in list\", function () {",
-											"        pm.expect(jsonData.length).to.be.ok;",
-											"        pm.expect(jsonData.some(function (org) {",
-											"            return org.org_guid === created_guid",
-											"        })).to.be.ok;",
 											"    });",
 											"})();",
 											"",
@@ -1363,6 +1353,81 @@
 										"v1",
 										"drillers",
 										"{{created_driller_guid}}",
+										""
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json"
+										}
+									]
+								},
+								"description": "Update a driller record"
+							},
+							"response": []
+						},
+						{
+							"name": "Driller add notes",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "dae82277-ba57-4c35-a10c-71fa9a94ae1b",
+										"type": "text/javascript",
+										"exec": [
+											"( function() {",
+											"    pm.test(\"Successful request (201 CREATED)\", function () {",
+											"        pm.expect(pm.response.code).to.eql(201);",
+											"    });",
+											"    ",
+											"    var jsonData = pm.response.json()",
+											"",
+											"    pm.test(\"Author recorded\", function () {",
+											"        pm.expect(jsonData.author).to.be.ok;",
+											"    });",
+											"    ",
+											"    pm.test(\"Date recorded\", function () {",
+											"        pm.expect(jsonData.date).to.be.ok;",
+											"    });",
+											"",
+											"})();",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "note",
+											"value": "Experienced groundwater well driller",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/drillers/{{created_driller_guid}}/notes/?format=json",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"drillers",
+										"{{created_driller_guid}}",
+										"notes",
 										""
 									],
 									"query": [
