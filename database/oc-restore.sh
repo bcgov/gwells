@@ -43,6 +43,17 @@ then
 fi
 
 
+# Verify ${RESTORE} file
+#
+if [ ! -f "${RESTORE}" ]
+then
+	echo
+	echo "Please verify ${RESTORE} exists and is non-empty and try again."
+	echo
+	exit
+fi
+
+
 # Check login
 #
 if ! oc whoami
