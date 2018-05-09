@@ -27,7 +27,8 @@ from registries.models import (
     ActivityCode,
     SubactivityCode,
     Qualification,
-    ApplicationStatusCode
+    ApplicationStatusCode,
+    PersonNote
 )
 
 logger = logging.getLogger(__name__)
@@ -42,6 +43,23 @@ class AuditModelSerializer(serializers.ModelSerializer):
     create_date = serializers.ReadOnlyField()
     update_user = serializers.ReadOnlyField()
     update_date = serializers.ReadOnlyField()
+
+
+class PersonNoteSerializer(serializers.ModelSerializer):
+    """
+    Serializes PersonNote records
+    """
+
+    author = serializers.StringRelatedField()
+    date = serializers.ReadOnlyField()
+
+    class Meta:
+        model = PersonNote
+        fields = (
+            'author',
+            'date',
+            'note'
+        )
 
 
 class QualificationSerializer(serializers.ModelSerializer):
@@ -515,6 +533,7 @@ class PersonAdminSerializer(AuditModelSerializer):
 
     registrations = RegistrationAdminSerializer(many=True)
     contact_info = ContactInfoSerializer(many=True, required=False)
+    notes = PersonNoteSerializer(many=True, read_only=True)
 
     def to_internal_value(self, data):
         """
@@ -566,6 +585,7 @@ class PersonAdminSerializer(AuditModelSerializer):
             'well_driller_orcs_no',
             'pump_installer_orcs_no',
             'registrations',
+            'notes',
             'create_user',
             'create_date',
             'update_user',
