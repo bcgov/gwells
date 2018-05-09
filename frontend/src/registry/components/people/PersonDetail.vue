@@ -154,7 +154,7 @@
             </div>
           </div>
         </div>
-        <div class="card">
+        <div class="card mb-3">
           <div class="card-body p-2 p-md-3">
             <div>
               <div v-if="currentDriller.registrations && !currentDriller.registrations.length">
@@ -257,6 +257,7 @@
             </div>
           </div>
         </div>
+        <person-notes @updated="updateRecord"></person-notes>
       </div>
     </div>
   </div>
@@ -265,6 +266,7 @@
 <script>
 import APIErrorMessage from '@/common/components/APIErrorMessage'
 import PersonEdit from '@/registry/components/people/PersonEdit.vue'
+import PersonNotes from '@/registry/components/people/PersonNotes.vue'
 import { mapGetters } from 'vuex'
 import { SET_DRILLER } from '@/registry/store/mutations.types'
 import { FETCH_DRILLER } from '@/registry/store/actions.types'
@@ -273,7 +275,8 @@ export default {
   name: 'person-detail',
   components: {
     'api-error': APIErrorMessage,
-    'person-edit': PersonEdit
+    'person-edit': PersonEdit,
+    PersonNotes
   },
   data () {
     return {
