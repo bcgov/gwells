@@ -49,7 +49,7 @@ if ! oc whoami
 then
     echo
     echo "Please obtain an OpenShift API token.  A window will open shortly."
-    sleep 3
+    sleep 5
     open https://console.pathfinder.gov.bc.ca:8443/oauth/token/request
     exit
 fi
