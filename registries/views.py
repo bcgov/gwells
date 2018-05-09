@@ -46,8 +46,8 @@ class AuditCreateMixin(CreateModelMixin):
     """
 
     def perform_create(self, serializer):
-        serializer.validated_data['create_user'] = self.request.user.get_username(
-        )
+        serializer.validated_data['create_user'] = (self.request.user.profile.name or
+                                                    self.request.user.get_username())
         serializer.validated_data['create_date'] = timezone.now()
         return super(AuditCreateMixin, self).perform_create(serializer)
 
