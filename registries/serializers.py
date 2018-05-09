@@ -50,7 +50,7 @@ class PersonNoteSerializer(serializers.ModelSerializer):
     Serializes PersonNote records
     """
 
-    author = serializers.StringRelatedField()
+    author = serializers.ReadOnlyField(source='author.profile.name')
     date = serializers.ReadOnlyField()
 
     class Meta:
