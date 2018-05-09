@@ -29,11 +29,6 @@ DB_NAME=${DB_NAME:-${APP_NAME}}
 KEEP_APP_ONLINE=${KEEP_APP_ONLINE:-false}
 
 
-# Repo directory
-#
-REPO_DIR=$( git rev-parse --show-toplevel )
-
-
 # Show message if passed any params
 #
 if [ "${#}" -eq 0 ]||[ "${#}" -gt 2 ]
