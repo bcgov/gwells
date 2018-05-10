@@ -1367,6 +1367,81 @@
 							"response": []
 						},
 						{
+							"name": "Driller add notes",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "dae82277-ba57-4c35-a10c-71fa9a94ae1b",
+										"type": "text/javascript",
+										"exec": [
+											"( function() {",
+											"    pm.test(\"Successful request (201 CREATED)\", function () {",
+											"        pm.expect(pm.response.code).to.eql(201);",
+											"    });",
+											"    ",
+											"    var jsonData = pm.response.json()",
+											"",
+											"    pm.test(\"Author recorded\", function () {",
+											"        pm.expect(jsonData.author).to.be.ok;",
+											"    });",
+											"    ",
+											"    pm.test(\"Date recorded\", function () {",
+											"        pm.expect(jsonData.date).to.be.ok;",
+											"    });",
+											"",
+											"})();",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "note",
+											"value": "Experienced groundwater well driller",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/drillers/{{created_driller_guid}}/notes/?format=json",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"drillers",
+										"{{created_driller_guid}}",
+										"notes",
+										""
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json"
+										}
+									]
+								},
+								"description": "Update a driller record"
+							},
+							"response": []
+						},
+						{
 							"name": "Driller retrieve after update",
 							"event": [
 								{
