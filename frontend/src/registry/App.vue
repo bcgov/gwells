@@ -56,7 +56,7 @@ footer {
   flex: none;
 }
 .h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6 {
-  font-weight: 500;
+  font-weight: 700;
 }
 
 // BC Gov Bootstrap 4 theme override
