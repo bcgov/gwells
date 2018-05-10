@@ -33,9 +33,6 @@ from registries.models import (
 logger = logging.getLogger(__name__)
 
 
-logger = logging.getLogger(__name__)
-
-
 class AuditModelSerializer(serializers.ModelSerializer):
     """
     Serializes AuditModel fields.
@@ -143,6 +140,7 @@ class OrganizationListSerializer(AuditModelSerializer):
         fields = (
             'org_guid',
             'name',
+            'org_verbose_name',
             'street_address',
             'city',
             'province_state',
@@ -229,6 +227,7 @@ class OrganizationSerializer(AuditModelSerializer):
         fields = (
             'org_guid',
             'name',
+            'org_verbose_name',
             'street_address',
             'city',
             'province_state',
@@ -255,6 +254,7 @@ class OrganizationAdminSerializer(AuditModelSerializer):
             'update_date',
             'org_guid',
             'name',
+            'org_verbose_name',
             'street_address',
             'city',
             'province_state',
@@ -421,7 +421,7 @@ class RegistrationAdminSerializer(AuditModelSerializer):
         Set fields to different serializers for create/update operations.
         """
         self.fields['organization'] = serializers.PrimaryKeyRelatedField(
-            queryset=Organization.objects.all(), required=False)
+            queryset=Organization.objects.all(), required=False, allow_null=True)
         return super(RegistrationAdminSerializer, self).to_internal_value(data)
 
 
@@ -478,7 +478,10 @@ class PersonListSerializer(AuditModelSerializer):
             'first_name',
             'surname',
             'registrations',
-            'contact_info'
+            'contact_info',
+            'contact_tel',
+            'contact_cell',
+            'contact_email'
         )
 
     def get_registrations(self, person):
@@ -556,8 +559,13 @@ class PersonAdminSerializer(AuditModelSerializer):
             'person_guid',
             'first_name',
             'surname',
-            'registrations',
+            'contact_tel',
+            'contact_cell',
+            'contact_email',
             'contact_info',
+            'well_driller_orcs_no',
+            'pump_installer_orcs_no',
+            'registrations',
             'create_user',
             'create_date',
             'update_user',
@@ -572,4 +580,4 @@ class OrganizationNameListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Organization
-        fields = ('org_guid', 'name')
+        fields = ('org_guid', 'name', 'org_verbose_name')
