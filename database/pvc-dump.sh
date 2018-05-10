@@ -17,7 +17,7 @@ IFS=$'\n\t'
 # Parameters
 #
 PROJECT=${1:-}
-SAVE_TO=${2:-/var/lib/pgsql/backup/$( date +%Y-%m-%d-%T ).gz}
+SAVE_TO=${2:-/var/lib/pgsql/backup/$( date +%Y-%m-%d-%H%M ).pgCustom}
 
 
 # APP and mode variables
@@ -44,8 +44,8 @@ fi
 # Identify database and take a backup
 #
 POD_DB=$( oc get pods -n ${PROJECT} -o name | grep -Eo "postgresql-[0-9]+-[[:alnum:]]+" )
-oc exec ${POD_DB} -n ${PROJECT} -- /bin/bash -c 'pg_dump '${DB_NAME}' | gzip > '${SAVE_TO}
-
+oc exec ${POD_DB} -n ${PROJECT} -- /bin/bash -c 'pg_dump -Fc '${DB_NAME}' > '${SAVE_TO}
+pg_dump -Fc gwells > /var/lib/pgsql/backup/\$( date +%Y-%m-%d-%H%M ).pgCustom
 
 # Take GWells out of maintenance mode and scale back up (deployment config)
 #
