@@ -228,7 +228,7 @@ Please use either these steps or the install script.
 
     ```
     sudo ln -s <repo root> /opt/app-root/src
-    cd ../database/cron/
+    cd ../openshift/scripts/
     ./post-deploy.sh
     ```
 
