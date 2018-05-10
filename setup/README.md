@@ -176,7 +176,7 @@ Please use either these steps or the install script.
     python3 ../manage.py migrate
     ```
 
-    Optional: import a database from python fixtures.
+    Optional: import a database.
     ```
     From python:
     python manage.py loaddata wells registries
