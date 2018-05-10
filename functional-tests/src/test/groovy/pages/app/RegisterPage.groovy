@@ -18,6 +18,6 @@ class RegisterPage extends Page {
         selectinstaller { $("label[for=activityInstaller]").click() }
         selectdriller { $("label[for=activityDriller]").click() }
         noresults { $("div", text:"No results were found.") }
-        selectcommunity { $("form",id:"drillerSearchForm").$("#cityOptions") }
+        selectcommunity { $("#cityOptions") }
     }
 }
