@@ -291,7 +291,6 @@ export default {
        */
       const registrations = []
       const contactInfo = []
-      const classifications = []
       const personData = Object.assign({}, this.drillerForm.person)
       this.submitSuccess = false
       this.submitError = false
@@ -316,8 +315,19 @@ export default {
         registrations.push(this.drillerForm.registrations[item.toLowerCase()])
       })
 
-      this.drillerForm.classifications.forEach((item) => {
-        classifications.push(item.data)
+      this.drillerForm.classifications.forEach((classification) => {
+        // TODO: It makes more sense to move this into the Registration section so that we don't have to
+        // match things up afterwards.
+        //
+        // Each classification/qualification/adjudication needs to be matched up to the appropriate
+        // registration
+
+        let registration = null
+        if (classification.data.classification === 'PUMPINST') {
+          registration = registrations.filter((item) => item['registries_activity'] === 'PUMP')[0]
+        } else {
+          registration = registrations.filter((item) => item['registries_activity'] !== 'PUMP')[0]
+        }
       })
 
       // add submitted contact info onto collection of person's contact details
@@ -325,7 +335,6 @@ export default {
 
       personData['registrations'] = registrations
       personData['contact_info'] = contactInfo
-      personData['classifications'] = classifications
       console.log('personData', personData)
 
       ApiService.post('drillers', personData).then((response) => {
