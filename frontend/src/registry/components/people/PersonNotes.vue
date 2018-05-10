@@ -1,5 +1,5 @@
 <template>
-  <div class="card">
+  <div class="card" ref="noteSection">
     <div class="card-body p-2 p-md-3">
       <h6 class="card-title" id="notesSectionTitle">Notes</h6>
       <div class="mt-3">
@@ -102,7 +102,7 @@ export default {
       this.submitLoading = true
       ApiService.post(`drillers/${this.currentDriller.person_guid}/notes`, { note: this.noteInput })
         .then((response) => {
-          const notes = this.$refs.notes
+          const notes = this.$refs.noteSection
           this.noteReset()
           this.submitLoading = false
           this.submitSuccess = true
