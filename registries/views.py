@@ -559,7 +559,7 @@ class PersonNoteListView(AuditCreateMixin, ListCreateAPIView):
 
     def get_queryset(self):
         person = self.kwargs['person_guid']
-        return PersonNote.objects.filter(person_guid=person)
+        return PersonNote.objects.filter(person=person)
 
     def perform_create(self, serializer):
         """ Add author to serializer data """
