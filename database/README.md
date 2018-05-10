@@ -30,7 +30,7 @@ gwells=> select * from django_migrations;
 Major changes (e.g. to the User model, or Authentication, or to deletion/renaming of database objects) are not well handled in Django.  In this situation, it is better to 'reset' all the migrations (see [article](https://simpleisbetterthancomplex.com/tutorial/2016/07/26/how-to-reset-migrations.html)).
 
 ## Reset django_migrations table
-We reset ALL the database objects currently, as we are still in the 'replicate from legacy system' mode with no new data.  Until we start entering production data (e.g. Registries) we can reset the target database (DEV, or TEST or PROD) by running [../../openshift/scripts/reset-gwells-all.sh <OpenShift Project>].
+We reset ALL the database objects currently, as we are still in the 'replicate from legacy system' mode with no new data.  Until we start entering production data (e.g. Registries) we can reset the target database (DEV, or TEST or PROD) by running [reset-gwells-all.sh](../../scripts/reset-gwells-all.sh).
 
 It's better to run the reset script on the postgresql pod, as the gwells pod will be brought down as part the 'Recreate' strategy of the rollout.
 
@@ -41,13 +41,13 @@ To work around this, 'pause' the deployment for the specific environment; for ex
 
 NOTE: Do not scale down the pod to 0, as this will not allow the pipline to deploy the reset migration  files to the pod.
 
-Once the deployment has finished, unpause the deployment and then the pod will deploy with the updated /migratinos/000n_xxx files, against an 'empty' database.  Remember that the 'python manage.py migrate' step is configured in the Post-Commit Hook of the [build configuration](https://console.pathfinder.gov.bc.ca:8443/console/project/moe-gwells-tools/edit/builds/gwells-developer).
+Once the deployment has finished, unpause the deployment and then the pod will deploy with the updated /migrations/000n_xxx files, against an 'empty' database.  Remember that the 'python manage.py migrate' step is configured in the Post-Commit Hook of the [build configuration](https://console.pathfinder.gov.bc.ca:8443/console/project/moe-gwells-tools/edit/builds/gwells-developer).
 
 
 
 ## Replicate from the legacy Oracle database
 
-GWELLS uses the PostgreSQL extension oracle-fdw [oracle-fdw](https://github.com/laurenz/oracle_fdw) to read from the
+GWELLS uses the PostgreSQL extension [oracle-fdw](https://github.com/laurenz/oracle_fdw) to read from the
 legacy database (WELLS schema of ENVPROD1.NRS.GOV.BC.CA).  This oracle-fdw extensions connect to the legacy Oracle Database via Environment Variables defined in the [OpenShift Web Console](https://console.pathfinder.gov.bc.ca:8443/console/):
 -- Applications > Deployments
 --- postgresql

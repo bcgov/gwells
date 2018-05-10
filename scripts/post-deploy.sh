@@ -42,7 +42,7 @@ then
 EOF
 
 	echo ". Running DB Replication from Legacy Database, as per DB_REPLICATION flag"
-    cd /opt/app-root/src/openshift/scripts/
+    cd /opt/app-root/src/scripts/
     ./db-replicate.sh
 else
     echo ". Skipping DB Replication from Legacy Database, as per DB_REPLICATION flag"
