@@ -30,7 +30,7 @@ gwells=> select * from django_migrations;
 Major changes (e.g. to the User model, or Authentication, or to deletion/renaming of database objects) are not well handled in Django.  In this situation, it is better to 'reset' all the migrations (see [article](https://simpleisbetterthancomplex.com/tutorial/2016/07/26/how-to-reset-migrations.html)).
 
 ## Reset django_migrations table
-We reset ALL the database objects currently, as we are still in the 'replicate from legacy system' mode with no new data.  Until we start entering production data (e.g. Registries) we can reset the target database (DEV, or TEST or PROD) by running [./reset-gwells-all.sh <OpenShift Project>].
+We reset ALL the database objects currently, as we are still in the 'replicate from legacy system' mode with no new data.  Until we start entering production data (e.g. Registries) we can reset the target database (DEV, or TEST or PROD) by running [../../openshift/scripts/reset-gwells-all.sh <OpenShift Project>].
 
 It's better to run the reset script on the postgresql pod, as the gwells pod will be brought down as part the 'Recreate' strategy of the rollout.
 
@@ -48,12 +48,12 @@ Once the deployment has finished, unpause the deployment and then the pod will d
 ## Replicate from the legacy Oracle database
 
 GWELLS uses the PostgreSQL extension oracle-fdw [oracle-fdw](https://github.com/laurenz/oracle_fdw) to read from the
-legacy database (WELLS schema of ENVPROD1.NRS.GOV.BC.CA).  This oracle-fdw extensions connect to the legacy Oracle Database via Environment Variables defined in the [OpenShift Web Console](https://console.pathfinder.gov.bc.ca:8443/console/):  
--- Applications > Deployments  
---- postgresql  
----- Environment   
+legacy database (WELLS schema of ENVPROD1.NRS.GOV.BC.CA).  This oracle-fdw extensions connect to the legacy Oracle Database via Environment Variables defined in the [OpenShift Web Console](https://console.pathfinder.gov.bc.ca:8443/console/):
+-- Applications > Deployments
+--- postgresql
+---- Environment
 
-<table>   
+<table>
 <tr><td>Name</td><td>Value</td></tr>
 <tr><td>FDW_USER</td><td>proxy_wells_gwells</td></tr>
 <tr><td>FDW_PASS</td><td><i>password</i></td></tr>
@@ -61,40 +61,40 @@ legacy database (WELLS schema of ENVPROD1.NRS.GOV.BC.CA).  This oracle-fdw exten
 <tr><td>FDW_NAME</td><td>wells_oradb</td></tr>
 <tr><td>FDW_SCHEMA</td><td>wells</td></tr>
 <tr><td>FDW_FOREIGN_SERVER</td><td>//nrk1-scan.bcgov/envprod1.nrs.bcgov</td></tr>
-</table>    
+</table>
 
 The image automatic re-deploys if any Environment Variable values are updated, but the oracle-fdw FDW_ * details do NOT get recreated
 unless the lock file is deleted first from the pod (i.e. `rm /var/lib/pgsql/data/userdata/fdw.conf`).
 
 Note that environment variables are also used for the PostgreSQL database connection:
-<table>   
+<table>
 <tr><td>Name</td><td>Value</td></tr>
 <tr><td>POSTGRESQL_USER</td><td><i>username</i></td></tr>
 <tr><td>POSTGRESQL_PASSWORD</td><td><i>password</i></td></tr>
 <tr><td>POSTGRESQL_DATABASE</td><td>gwells</td></tr>
-</table>    
+</table>
 
-The data replication is controlled by the environment variable<table>   
+The data replication is controlled by the environment variable<table>
 <tr><td>Name</td><td>Value</td></tr>
 <tr><td>DB_REPLICATE</td><td><i>None | Subset | Full</i></td></tr>
-</table>    
+</table>
 
-`None`  : No replication  
-`Subset`: Only a subset of data (i.e. `AND wells.well_tag_number between 100001 and 113567`)  
-`Full`  : Full data replication  
+`None`  : No replication
+`Subset`: Only a subset of data (i.e. `AND wells.well_tag_number between 100001 and 113567`)
+`Full`  : Full data replication
 
 Static code tables are maintained in this [GitHub](../../../tree/master/database/codetables) repo, while dynamic data is replicated.  There are a stored DB procedures that acts as a 'driver' scripts `db_replicate_step1(boolean)` and `db_replicate_step2()` that run the replication:
 
 
 There is also a SQL script `data-load-static-codes.sql`
-- "COPY" into static code tables from deployed CSV files  
+- "COPY" into static code tables from deployed CSV files
 - run on the gwells pod (which has all CSV files under `$VIRTUAL_ENV/src/database/codetables/`)
 
 
-The replicate process can be run ad-hoc on the PostgreSQL pod or on a local developer workstation, passing a parameter to the stored procedure.  
+The replicate process can be run ad-hoc on the PostgreSQL pod or on a local developer workstation, passing a parameter to the stored procedure.
 
-`true` : Only a subset of data (i.e. `AND wells.well_tag_number between 100001 and 113567`)  
-`false`: Full data replication  
+`true` : Only a subset of data (i.e. `AND wells.well_tag_number between 100001 and 113567`)
+`false`: Full data replication
 
 
 The logged output includes the number of rows inserted into the main "wells" PostgreSQL database table
