@@ -58,11 +58,11 @@
         </b-form>
       </div>
       <div id="notesList" ref="notes">
-        <div class="mt-5" v-if="!currentDriller.notes || !currentDriller.notes.length">
+        <div class="mt-5" v-if="!sortedNotes || !sortedNotes.length">
           <b-row><b-col>No notes for this person.</b-col></b-row>
         </div>
-        <div class="mt-5" v-if="currentDriller.notes && currentDriller.notes.length">
-          <div class="mt-3" v-for="(note, index) in currentDriller.notes" :key="`note ${index}`" :id="`person-note-${index}`">
+        <div class="mt-5" v-if="sortedNotes && sortedNotes.length">
+          <div class="mt-3" v-for="(note, index) in sortedNotes" :key="`note ${index}`" :id="`person-note-${index}`">
               <span class="font-weight-bold">{{ note.author }}</span> ({{ note.date | moment("MMMM Do YYYY [at] LT") }}):
               {{ note.note }}
           </div>
@@ -88,6 +88,15 @@ export default {
     }
   },
   computed: {
+    sortedNotes () {
+      if (this.currentDriller && this.currentDriller.notes && this.currentDriller.notes.length) {
+        let notes = JSON.parse(JSON.stringify(this.currentDriller.notes)).sort((a, b) => {
+          return (Date(a.date) < Date(b.date)) ? -1 : 1
+        })
+        return notes
+      }
+      return []
+    },
     ...mapGetters(['currentDriller'])
   },
   methods: {
