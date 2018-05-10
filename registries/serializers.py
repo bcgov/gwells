@@ -294,6 +294,7 @@ class ApplicationAdminSerializer(AuditModelSerializer):
         many=True,
         read_only=True)
     subactivity = SubactivitySerializer()
+    registration = serializers.ReadOnlyField()
 
     class Meta:
         model = RegistriesApplication
@@ -320,14 +321,16 @@ class ApplicationAdminSerializer(AuditModelSerializer):
         Set fields to different serializers for create/update operations.
         This method is called on POST/PUT/PATCH requests
         """
+        print('ApplicationAdminSerializer.to_internal_value; data={}'.format(data))
         self.fields['subactivity'] = serializers.PrimaryKeyRelatedField(
             queryset=SubactivityCode.objects.all())
-        return super(ApplicationAdminSerializer, self).to_internal_value(data)
+        return super().to_internal_value(data)
 
     def create(self, validated_data):
         """
         Create an application as well as a default status record of "pending"
         """
+        print('ApplicationAdminSerializer')
         try:
             app = RegistriesApplication.objects.create(**validated_data)
         except TypeError:
@@ -389,7 +392,7 @@ class RegistrationAdminSerializer(AuditModelSerializer):
     status = serializers.PrimaryKeyRelatedField(
         queryset=RegistriesStatusCode.objects.all())
     register_removal_reason = serializers.StringRelatedField(read_only=True)
-    applications = ApplicationAdminSerializer(many=True, read_only=True)
+    applications = ApplicationAdminSerializer(many=True)
     person_name = serializers.StringRelatedField(source='person.name')
     organization = OrganizationListSerializer()
     activity_description = serializers.StringRelatedField(
@@ -422,7 +425,7 @@ class RegistrationAdminSerializer(AuditModelSerializer):
         """
         self.fields['organization'] = serializers.PrimaryKeyRelatedField(
             queryset=Organization.objects.all(), required=False)
-        return super(RegistrationAdminSerializer, self).to_internal_value(data)
+        return super().to_internal_value(data)
 
 
 class CityListSerializer(serializers.ModelSerializer):
@@ -499,10 +502,12 @@ class RegistrationAutoCreateSerializer(AuditModelSerializer):
     Serializer for creating a registration when a Person record is created
     """
 
+    applications = ApplicationAdminSerializer(many=True, required=False)
+
     class Meta:
         model = Register
         fields = ('registries_activity', 'status',
-                  'registration_no', 'organization')
+                  'registration_no', 'organization', 'applications')
 
 
 class PersonAdminSerializer(AuditModelSerializer):
@@ -518,6 +523,7 @@ class PersonAdminSerializer(AuditModelSerializer):
         Set fields to different serializers for create/update operations.
         This method is called on POST/PUT/PATCH requests
         """
+        print('PersonAdminSerializer.to_internal_value')
         self.fields['registrations'] = RegistrationAutoCreateSerializer(
             many=True, required=False)
         return super(PersonAdminSerializer, self).to_internal_value(data)
@@ -534,7 +540,9 @@ class PersonAdminSerializer(AuditModelSerializer):
 
         person = Person.objects.create(**validated_data)
 
+        print('PersonAdminSerializer.create: {}'.format(registrations))
         for reg_data in registrations:
+            print('reg_data: {}'.format(reg_data))
             Register.objects.create(person=person, **reg_data)
         for contact_data in contacts:
             ContactInfo.objects.create(person=person, **contact_data)
