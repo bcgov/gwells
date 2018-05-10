@@ -3,12 +3,12 @@
 # Mon Nov  6 15:03:49 2017 GW Shell script run by 'oc exec' on OpenShift
 #   initiated by Jenkins job, which connects to the application server
 #   pod (gwells-nn-xxxxx which is STATUS = 'Running'):
-#      oc exec gwells-nnn-xxxx $VIRTUAL_ENV/src/database/cron/db-replicate.sh
+#      oc exec gwells-nnn-xxxx $VIRTUAL_ENV/src/openshift/scripts/db-replicate.sh
 #
 #   This deploy is triggered only on the PROD envionments (moe-gwells-prod), or
 #   on local Developer workstations (unit testing).
 #
-#   Example: oc exec gwells-97-69b7z /opt/app-root/src/database/cron/db-replicate.sh
+#   Example: oc exec gwells-97-69b7z /opt/app-root/src/openshift/scripts/db-replicate.sh
 #
 #   If run on local Developer workstation, ensure that you have Environment variables set
 #   for $DATABASE_SERVICE_NAME, $DATABASE_PASSWORD, $DATABASE_NAME, $DATABASE_USER,

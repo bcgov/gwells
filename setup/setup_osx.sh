@@ -354,7 +354,7 @@ fi
 #
 if [ "${POST_DEPLOY}" == "true" ]
 then
-	cd "${START_DIR}"/../database/cron/
+	cd "${START_DIR}"/../openshift/scripts/
 	./post-deploy.sh
 fi
 
