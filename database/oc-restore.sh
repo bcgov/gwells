@@ -19,7 +19,7 @@ IFS=$'\n\t'
 # Parameters
 #
 PROJECT=${1:-}
-RESTORE=${2:-./${PROJECT}-$(date +%Y-%m-%d-%T)}
+RESTORE=${2:-}
 
 
 # APP and mode variables
@@ -48,7 +48,7 @@ fi
 if [ ! -f "${RESTORE}" ]
 then
 	echo
-	echo "Please verify ${RESTORE} exists and is non-empty and try again."
+	echo "Please verify ${RESTORE} exists and is non-empty.  Exiting."
 	echo
 	exit
 fi
@@ -92,11 +92,8 @@ fi
 RESTORE_PATH=$( dirname ${RESTORE} )
 RESTORE_FILE=$( basename ${RESTORE} )
 POD_DB=$( oc get pods -n ${PROJECT} -o name | grep -Eo "postgresql-[0-9]+-[[:alnum:]]+" )
-oc exec ${POD_DB} -n ${PROJECT} -- /bin/bash -c 'mkdir -p /tmp/import/'
-mkdir -p ./tmp
-mv ${RESTORE} ./tmp
-oc rsync ./tmp ${POD_DB}:/tmp/import/ -n ${PROJECT} --progress=true --no-perms=true
-mv ./tmp/${RESTORE_FILE} ${RESTORE_PATH}/${RESTORE}
+oc cp ${RESTORE} "${POD_DB}":/tmp/
+oc exec ${POD_DB} -n ${PROJECT} -- /bin/bash -c 'pg_restore -d '${DB_NAME}' -c /tmp/'${RESTORE_FILE}
 
 
 # Take GWells out of maintenance mode and scale back up (deployment config)
