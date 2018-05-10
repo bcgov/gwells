@@ -78,7 +78,7 @@ fi
 
 # Make sure $SAVE_TO ends in .gz
 #
-[ "$( echo ${SAVE_TO} | tail -c4 )" == ".gz" ]|| SAVE_TO="${SAVE_TO}.gz"
+[ "$( echo ${SAVE_TO} | tail -c4 )" == ".pgCustom" ]|| SAVE_TO="${SAVE_TO}.pgCustom"
 
 
 # Identify database and take a backup
@@ -87,7 +87,7 @@ POD_DB=$( oc get pods -n ${PROJECT} -o name | grep -Eo "postgresql-[0-9]+-[[:aln
 SAVE_FILE=$( basename ${SAVE_TO} )
 SAVE_PATH=$( dirname ${SAVE_TO} )
 mkdir -p ${SAVE_PATH}
-oc exec ${POD_DB} -n ${PROJECT} -- /bin/bash -c 'pg_dump '${DB_NAME}' | gzip > /tmp/'${SAVE_FILE}
+oc exec ${POD_DB} -n ${PROJECT} -- /bin/bash -c 'pg_dump -Fc '${DB_NAME}' > /tmp/'${SAVE_FILE}
 oc rsync ${POD_DB}:/tmp/${SAVE_FILE} ${SAVE_PATH} -n ${PROJECT} --progress=true --no-perms=true
 oc exec ${POD_DB} -n ${PROJECT} -- /bin/bash -c 'rm /tmp/'${SAVE_FILE}
 
