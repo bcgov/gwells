@@ -84,6 +84,6 @@ describe('PersonDetail.vue', () => {
         $route: {params: {person_guid: 'aaaa-4444-bbbb-1111'}}
       }
     })
-    expect(wrapper.vm.classifications)
+    expect(wrapper.vm.classifications.length).toEqual(2)
   })
 })
