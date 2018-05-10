@@ -67,4 +67,9 @@ class JwtOidcAuthentication(JSONWebTokenAuthentication):
             user.is_staff = True
             user.save()
 
+        # get the name from the token and store it in the profile. If name not supplied, use the username.
+        name = payload.get('name') or payload.get('preferred_username')
+        profile.name = name
+        profile.save()
+
         return user

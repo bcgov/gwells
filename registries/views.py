@@ -23,7 +23,7 @@ from rest_framework.pagination import LimitOffsetPagination, PageNumberPaginatio
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from rest_framework.mixins import CreateModelMixin, UpdateModelMixin
-from registries.models import Organization, Person, ContactInfo, RegistriesApplication, Register
+from registries.models import Organization, Person, ContactInfo, RegistriesApplication, Register, PersonNote
 from registries.permissions import IsAdminOrReadOnly, IsGwellsAdmin
 from registries.serializers import (
     ApplicationAdminSerializer,
@@ -36,7 +36,8 @@ from registries.serializers import (
     PersonSerializer,
     PersonAdminSerializer,
     PersonListSerializer,
-    RegistrationAdminSerializer,)
+    RegistrationAdminSerializer,
+    PersonNoteSerializer)
 
 
 class AuditCreateMixin(CreateModelMixin):
@@ -45,10 +46,10 @@ class AuditCreateMixin(CreateModelMixin):
     """
 
     def perform_create(self, serializer):
-        serializer.save(
-            create_user=self.request.user.get_username(),
-            create_date=timezone.now()
-        )
+        serializer.validated_data['create_user'] = (self.request.user.profile.name or
+                                                    self.request.user.get_username())
+        serializer.validated_data['create_date'] = timezone.now()
+        return super(AuditCreateMixin, self).perform_create(serializer)
 
 
 class AuditUpdateMixin(UpdateModelMixin):
@@ -331,7 +332,7 @@ class PersonDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
     Removes the specified person record
     """
 
-    permission_classes = (IsAdminOrReadOnly,)
+    permission_classes = (IsGwellsAdmin,)
     serializer_class = PersonSerializer
 
     # pk field has been replaced by person_guid
@@ -542,3 +543,51 @@ class OrganizationNameListView(ListAPIView):
         .select_related('province_state')
     pagination_class = None
     lookup_field = 'organization_guid'
+
+
+class PersonNoteListView(AuditCreateMixin, ListCreateAPIView):
+    """
+    get:
+    Returns notes associated with a Person record
+
+    post:
+    Adds a note record to the specified Person record
+    """
+
+    permission_classes = (IsGwellsAdmin,)
+    serializer_class = PersonNoteSerializer
+
+    def get_queryset(self):
+        person = self.kwargs['person_guid']
+        return PersonNote.objects.filter(person=person)
+
+    def perform_create(self, serializer):
+        """ Add author to serializer data """
+        person = self.kwargs['person_guid']
+        serializer.validated_data['person'] = Person.objects.get(
+            person_guid=person)
+        serializer.validated_data['author'] = self.request.user
+        return super(PersonNoteListView, self).perform_create(serializer)
+
+
+class PersonNoteDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
+    """
+    get:
+    Returns a PersonNote record
+
+    put:
+    Replaces a PersonNote record with a new one
+
+    patch:
+    Updates a PersonNote record with the set of fields provided in the request body
+
+    delete:
+    Removes a PersonNote record
+    """
+
+    permission_classes = (IsGwellsAdmin,)
+    serializer_class = PersonNoteSerializer
+
+    def get_queryset(self):
+        person = self.kwargs['person']
+        return PersonNote.objects.filter(person=person)
