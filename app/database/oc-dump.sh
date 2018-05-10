@@ -19,7 +19,7 @@ IFS=$'\n\t'
 # Parameters
 #
 PROJECT=${1:-}
-SAVE_TO=${2:-./${PROJECT}-$(date +%Y-%m-%d-%T)}
+SAVE_TO=${2:-./${PROJECT}-$( date +%Y-%m-%d-%H%M )}
 
 
 # APP and mode variables

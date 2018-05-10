@@ -32,7 +32,7 @@ stage ( 'test' )
         ).trim()
         sh """
             oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
-                'pg_dump -Fc gwells > /var/lib/pgsql/backup/\$( date +%Y-%m-%d-%T ).pgCustom'
+                'pg_dump -Fc gwells > /var/lib/pgsql/backup/\$( date +%Y-%m-%d-%H%M ).pgCustom'
             oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
                 'ls /var/lib/pgsql/backup/*.gz -1pr | tail -n +\$( expr 1 + 10 ) | xargs -r rm --'
         """
