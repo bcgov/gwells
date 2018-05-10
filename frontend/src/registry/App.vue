@@ -58,4 +58,11 @@ footer {
 .h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6 {
   font-weight: 500;
 }
+
+// BC Gov Bootstrap 4 theme override
+.custom-select[size]:not([size="0"]) {
+  height:auto;
+  padding-right:.75rem;
+  background-image:none;
+}
 </style>
