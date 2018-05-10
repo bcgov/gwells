@@ -353,7 +353,10 @@ export default {
       this.drillerForm = Object.assign({}, {
         person: {
           surname: '',
-          first_name: ''
+          first_name: '',
+          contact_tel: '',
+          contact_email: '',
+          contact_cell: ''
         },
         organizations: {
           drill: null,
