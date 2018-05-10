@@ -115,6 +115,13 @@ const fakePerson = JSON.parse(JSON.stringify({
       'contact_tel': null,
       'contact_email': 'driller1@example.com'
     }
+  ],
+  'notes': [
+    {
+      'author': 'Test User',
+      'date': '2018-05-09T22:58:34.870114Z',
+      'note': 'A new note'
+    }
   ]
 }))
 
