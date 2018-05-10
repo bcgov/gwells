@@ -46,7 +46,8 @@
                   label-for="contactTelInput">
                   <b-form-input
                     id="contactTelInput"
-                    type="text"/>
+                    type="text"
+                    v-model="drillerForm.person.contact_tel"/>
                 </b-form-group>
               </b-col>
               <b-col cols="12" md="5" offset-md="1">
