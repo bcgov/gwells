@@ -341,6 +341,9 @@ class PersonDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
     queryset = Person.objects \
         .all() \
         .prefetch_related(
+            'notes',
+            'notes__author',
+            'contact_info',
             'registrations',
             'registrations__registries_activity',
             'registrations__organization',

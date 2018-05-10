@@ -46,7 +46,8 @@
                   label-for="contactTelInput">
                   <b-form-input
                     id="contactTelInput"
-                    type="text"/>
+                    type="text"
+                    v-model="drillerForm.person.contact_tel"/>
                 </b-form-group>
               </b-col>
               <b-col cols="12" md="5" offset-md="1">
@@ -353,7 +354,10 @@ export default {
       this.drillerForm = Object.assign({}, {
         person: {
           surname: '',
-          first_name: ''
+          first_name: '',
+          contact_tel: '',
+          contact_email: '',
+          contact_cell: ''
         },
         organizations: {
           drill: null,
