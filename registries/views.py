@@ -260,6 +260,7 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
             'registrations__registries_activity',
             'registrations__status',
             'registrations__organization',
+            'registrations__organization__province_state',
             'registrations__applications',
             'registrations__applications__primary_certificate',
             'registrations__applications__primary_certificate__cert_auth',
@@ -394,7 +395,7 @@ class CitiesListView(ListAPIView):
         .exclude(organization__city__isnull=True) \
         .exclude(organization__city='') \
         .select_related(
-            'organization',
+            'organization', 'organization__province_state'
         ) \
         .distinct('organization__city') \
         .order_by('organization__city')
@@ -536,6 +537,8 @@ class OrganizationNameListView(ListAPIView):
 
     permission_classes = (IsGwellsAdmin,)
     serializer_class = OrganizationNameListSerializer
-    queryset = Organization.objects.filter(expired_date__isnull=True)
+    queryset = Organization.objects \
+        .filter(expired_date__isnull=True) \
+        .select_related('province_state')
     pagination_class = None
     lookup_field = 'organization_guid'

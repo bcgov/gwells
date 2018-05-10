@@ -48,39 +48,47 @@
                 <h6 class="card-title mb-3">Personal Information</h6>
               </div>
               <div class="col-3 text-right">
-                <router-link
+                <button
                   class="btn btn-light btn-sm registries-edit-btn"
-                  tag="button"
-                  to="#"
-                  v-if="currentDriller.person_guid"><i class="fa fa-edit"></i> Edit</router-link>
+                  type="button"
+                  @click="editPerson = !editPerson"
+                  v-if="currentDriller.person_guid"><i class="fa fa-edit"></i> Edit</button>
               </div>
             </div>
-            <div class="row mb-2">
-              <div class="col-5 col-md-2 mb-1 mb-sm-0">
-                Last name:
+            <person-edit
+                  section="person"
+                  v-if="editPerson"
+                  :record="currentDriller.person_guid"
+                  @updated="editPerson = false; updateRecord()"
+                  @canceled="editPerson = false"></person-edit>
+            <div v-if="!editPerson">
+              <div class="row mb-2">
+                <div class="col-5 col-md-2 mb-1 mb-sm-0">
+                  Surname:
+                </div>
+                <div class="col-7 col-md-4">
+                  {{ currentDriller.surname }}
+                </div>
+                <div class="col-5 col-md-2">
+                  First name:
+                </div>
+                <div class="col-7 col-md-4">
+                  {{ currentDriller.first_name }}
+                </div>
               </div>
-              <div class="col-7 col-md-4">
-                {{ currentDriller.surname }}
-              </div>
-              <div class="col-5 col-md-2">
-                First name:
-              </div>
-              <div class="col-7 col-md-4">
-                {{ currentDriller.first_name }}
-              </div>
-            </div>
-            <div class="row mb-2">
-              <div class="col-5 col-md-2">
-                Well Driller ORCS:
-              </div>
-              <div class="col-7 col-md-4">
-                {{ currentDriller.well_driller_orcs_no }}
-              </div>
-              <div class="col-5 col-md-2">
-                Pump Installer ORCS:
-              </div>
-              <div class="col-7 col-md-4">
-                {{ currentDriller.pump_installer_orcs_no }}
+              <div class="row mb-2">
+                <div class="col-5 col-md-2">
+                  Well Driller ORCS:
+                </div>
+                <div class="col-7 col-md-4">
+                  {{ currentDriller.well_driller_orcs_no }}
+                </div>
+                <div class="col-5 col-md-2">
+                  Pump Installer ORCS:
+                </div>
+                <div class="col-7 col-md-4">
+                  {{ currentDriller.pump_installer_orcs_no }}
+                </div>
               </div>
             </div>
           </div>
@@ -92,28 +100,55 @@
                 <h6 class="card-title mb-3">Contact Information</h6>
               </div>
               <div class="col-3 text-right">
-                <router-link
+                <button
                   class="btn btn-light btn-sm registries-edit-btn"
-                  tag="button"
-                  to="#"
-                  v-if="currentDriller.person_guid"><i class="fa fa-edit"></i> Edit</router-link>
+                  type="button"
+                  @click="editContact = !editContact"
+                  v-if="currentDriller.person_guid"><i class="fa fa-edit"></i> Edit</button>
               </div>
             </div>
-            <div class="row mb-2">
-              <div class="col-5 col-md-2">
-                Email address:
-              </div>
-              <div class="col-7 col-md-4">
-                <div v-for="(email, index) in personEmail" :key="`person email ${index}`">
-                  {{ email }}
+            <person-edit
+              section="contact"
+              :record="currentDriller.person_guid"
+              v-if="editContact"
+              @updated="editContact = false; updateRecord()"
+              @canceled="editContact = false"></person-edit>
+            <div v-if="!editContact">
+              <div class="row mb-2">
+                <div class="col-5 col-md-2">
+                  Email address:
+                </div>
+                <div class="col-7 col-md-4">
+                  <a :href="`mailto:${currentDriller.contact_email}`">{{ currentDriller.contact_email }}</a>
+                </div>
+                <div class="col-5 col-md-2">
+                  Telephone:
+                </div>
+                <div class="col-7 col-md-4">
+                  {{ currentDriller.contact_tel }}
                 </div>
               </div>
-              <div class="col-5 col-md-2">
-                Telephone:
-              </div>
-              <div class="col-7 col-md-4">
-                <div v-for="(tel, index) in personTel" :key="`person tel ${index}`">
-                  {{ tel }}
+            </div>
+            <div v-if="personTel.length || personEmail.length">
+              <div class="row mb-2 mt-5">
+                <div class="col-12">
+                  <h6 class="card-title mb-3">Additional (Legacy) Contact Information</h6>
+                </div>
+                <div class="col-5 col-md-2">
+                  Email address:
+                </div>
+                <div class="col-7 col-md-4">
+                  <div v-for="(email, index) in personEmail" :key="`person email ${index}`">
+                    <a :href="`mailto:${email}`">{{ email }}</a>
+                  </div>
+                </div>
+                <div class="col-5 col-md-2">
+                  Telephone:
+                </div>
+                <div class="col-7 col-md-4">
+                  <div v-for="(tel, index) in personTel" :key="`person tel ${index}`">
+                    {{ tel }}
+                  </div>
                 </div>
               </div>
             </div>
@@ -122,6 +157,9 @@
         <div class="card">
           <div class="card-body p-2 p-md-3">
             <div>
+              <div v-if="currentDriller.registrations && !currentDriller.registrations.length">
+                <h6 class="card-title my-3">Applicant has not yet been added to the register. Submit or approve an application to view or add company information.</h6>
+              </div>
               <div v-for="(registration, index) in currentDriller.registrations"
                 :key="`company information row ${index}`"
                 :class="index > 0 ? 'mt-5' : 'mt-2'">
@@ -249,13 +287,17 @@ export default {
           active: true
         }
       ],
-      editCompany: 0
+      editCompany: 0,
+      editPerson: false,
+      editContact: false
     }
   },
   computed: {
     personEmail () {
       // sort a person's contact info into a list of emails
       const email = []
+
+      // support for contact_info table (legacy data)
       if (this.currentDriller.contact_info && this.currentDriller.contact_info.length) {
         this.currentDriller.contact_info.forEach((item) => {
           if (item.contact_email) {
@@ -263,6 +305,7 @@ export default {
           }
         })
       }
+
       return email
     },
     personTel () {
@@ -274,6 +317,7 @@ export default {
           }
         })
       }
+
       return tel
     },
     company () {
