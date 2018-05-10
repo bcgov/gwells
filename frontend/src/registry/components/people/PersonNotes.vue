@@ -9,11 +9,6 @@
               label="Add a note:"
               label-for="noteInput">
             <b-form-textarea id="noteInput" v-model="noteInput" :rows="3" :max-rows="6" :disabled="submitLoading"></b-form-textarea>
-            <!-- <b-form-invalid-feedback id="emailInputFeedback">
-              <div v-for="(error, index) in submitError.note" :key="`noteInput error ${index}`">
-                {{ error }}
-              </div>
-            </b-form-invalid-feedback> -->
           </b-form-group>
           <b-button type="submit" variant="primary" :disabled="!noteInput || submitLoading" ref="noteInputSaveBtn">Save</b-button>
           <b-button type="reset" variant="light" :disabled="!noteInput" ref="noteInputCancelBtn">Cancel</b-button>
