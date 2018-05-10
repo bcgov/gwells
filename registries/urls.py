@@ -50,6 +50,12 @@ urlpatterns = [
         views.OrganizationListView.as_view(),
         name='organization-list'),
 
+    # Person note endpoints
+    url(r'^api/v1/drillers/(?P<person_guid>[-\w]+)/notes/$',
+        views.PersonNoteListView.as_view(), name='person-note-list'),
+    url(r'^api/v1/drillers/(?P<person_guid>[-\w]+)/notes/(?P<note_guid>[-\w]+)/$',
+        views.PersonNoteDetailView.as_view(), name='person-note-detail'),
+
     # Person resource endpoints (drillers, well installers, and other instances of Person model)
     url(r'^api/v1/drillers/(?P<person_guid>[-\w]+)/$',
         views.PersonDetailView.as_view(),

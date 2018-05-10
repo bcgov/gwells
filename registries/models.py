@@ -15,9 +15,10 @@ import uuid
 import datetime
 import logging
 from django.db import models
+from django.contrib.auth import get_user_model
 from gwells.models import AuditModel, ProvinceStateCode
 
-
+User = get_user_model()
 logger = logging.getLogger(__name__)
 
 
@@ -542,6 +543,33 @@ class Register_Note(AuditModel):
         return '%s' % (
             self.notes
         )
+
+
+class PersonNote(AuditModel):
+    person_note_guid = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False,
+        verbose_name="Person note UUID")
+    author = models.ForeignKey(
+        User,
+        db_column='user_guid',
+        on_delete=models.PROTECT,
+        verbose_name='Author reference')
+    person = models.ForeignKey(
+        Person,
+        db_column='person_guid',
+        on_delete=models.PROTECT,
+        verbose_name="Person reference",
+        related_name="notes")
+    date = models.DateTimeField(auto_now_add=True)
+    note = models.TextField(max_length=2000)
+
+    class Meta:
+        db_table = 'registries_person_note'
+
+    def __str__(self):
+        return self.note[:20] + '...' if len(self.note) > 20 else ''
 
 
 """
