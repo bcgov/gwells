@@ -163,8 +163,10 @@ class RegistriesApplicationNoStatusTest(RegistriesApplicationTestBase):
         url = reverse('application-detail',
                       kwargs={'application_guid': self.app.application_guid})
         response = self.client.patch(url, data, format='json')
-        updated_application = RegistriesApplication.objects.get(application_guid=self.app.application_guid)
-        self.assertEqual(updated_application.current_status.status.registries_application_status_code, 'A')
+        updated_application = RegistriesApplication.objects.get(
+            application_guid=self.app.application_guid)
+        self.assertEqual(
+            updated_application.current_status.status.registries_application_status_code, 'A')
 
 
 class RegistriesApplicationWithStatusActiveTest(RegistriesApplicationTestBase):
@@ -187,8 +189,10 @@ class RegistriesApplicationWithStatusActiveTest(RegistriesApplicationTestBase):
         url = reverse('application-detail',
                       kwargs={'application_guid': self.app.application_guid})
         response = self.client.patch(url, data, format='json')
-        updated_application = RegistriesApplication.objects.get(application_guid=self.app.application_guid)
-        self.assertEqual(updated_application.current_status.status.registries_application_status_code, 'A')
+        updated_application = RegistriesApplication.objects.get(
+            application_guid=self.app.application_guid)
+        self.assertEqual(
+            updated_application.current_status.status.registries_application_status_code, 'A')
 
 
 class RegistriesApplicationStatusSubactivityTest(RegistriesApplicationTestBase):
@@ -201,8 +205,10 @@ class RegistriesApplicationStatusSubactivityTest(RegistriesApplicationTestBase):
         url = reverse('application-detail',
                       kwargs={'application_guid': self.app.application_guid})
         response = self.client.patch(url, data, format='json')
-        updated_application = RegistriesApplication.objects.get(application_guid=self.app.application_guid)
-        self.assertEqual(updated_application.subactivity.registries_subactivity_code, 'GEOTECH')
+        updated_application = RegistriesApplication.objects.get(
+            application_guid=self.app.application_guid)
+        self.assertEqual(
+            updated_application.subactivity.registries_subactivity_code, 'GEOTECH')
 
 
 # Django REST Framework tests
@@ -703,6 +709,8 @@ class APIFilteringPaginationTests(APITestCase):
         self.assertNotContains(response, self.unregistered_driller.person_guid)
 
     def test_user_cannot_retrieve_unregistered_person(self):
+        """ unauthorized request to person detail view. Note: now always returns 401 if not staff. """
+
         # setup
         logger = logging.getLogger('django.request')
         previous_level = logger.getEffectiveLevel()
@@ -718,7 +726,7 @@ class APIFilteringPaginationTests(APITestCase):
         self.assertEqual(person.first_name, 'Johnny')
 
         # now make sure API does not return the record if unauthorized
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
         # teardown
         logger.setLevel(previous_level)
