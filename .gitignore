@@ -154,3 +154,4 @@ sonar-runner/.classpath
 
 # DB
 *.dmp
+*.pgCustom
