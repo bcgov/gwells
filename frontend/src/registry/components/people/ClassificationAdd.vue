@@ -25,7 +25,7 @@
         <b-row>
           <div class="col-md-2">Select classification:</div>
           <div class="col-md-8">
-            <b-form-radio-group class="fixed-width" :options="formOptions.classification" @change="changedClassification" v-model="qualificationForm.classification"></b-form-radio-group>
+            <b-form-radio-group class="fixed-width" :options="formOptions.classification" @change="changedClassification" v-model="qualificationForm.subactivity"></b-form-radio-group>
           </div>
         </b-row>
         <b-form-group label="Certification">
@@ -115,7 +115,7 @@ export default {
   data () {
     return {
       qualificationForm: {
-        classification: null,
+        subactivity: null,
         certifications: [
           {id: 0, issuer: null, number: null}
         ],
@@ -150,10 +150,12 @@ export default {
           {text: 'Closed-loop geoexchange wells', value: 'Closed-loop geoexchange wells'}],
         // TODO: Load qualifications from DB ?
         classification: [
-          {text: 'Water Well Driller', value: 'DRILL'},
+          {text: 'Water Well Driller', value: 'WATER'},
           {text: 'Geotechnical/EnvironmentalDriller', value: 'GEOTECH'},
           {text: 'Geoexchange Driller', value: 'GEOXCHG'},
-          {text: 'Pump Installer', value: 'PUMP'}
+          {text: 'Grandparented up to Nov 2006', value: 'PHASE1'},
+          {text: 'Grandparented up to Feb 29, 2016', value: 'PHASE2'},
+          {text: 'Pump Installer', value: 'PUMPINST'}
         ],
         approval_outcome: ['Approved', 'Not approved'],
         register_status: ['Pending'],

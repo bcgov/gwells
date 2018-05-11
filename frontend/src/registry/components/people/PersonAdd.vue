@@ -312,7 +312,9 @@ export default {
 
       // add registration data for activities checked off on form
       this.drillerForm.regType.forEach((item) => {
-        registrations.push(this.drillerForm.registrations[item.toLowerCase()])
+        let registration = this.drillerForm.registrations[item.toLowerCase()]
+        registration.applications = []
+        registrations.push(registration)
       })
 
       this.drillerForm.classifications.forEach((classification) => {
@@ -321,13 +323,13 @@ export default {
         //
         // Each classification/qualification/adjudication needs to be matched up to the appropriate
         // registration
-
         let registration = null
         if (classification.data.classification === 'PUMPINST') {
           registration = registrations.filter((item) => item['registries_activity'] === 'PUMP')[0]
         } else {
           registration = registrations.filter((item) => item['registries_activity'] !== 'PUMP')[0]
         }
+        registration.applications.push(classification.data)
       })
 
       // add submitted contact info onto collection of person's contact details
@@ -338,8 +340,8 @@ export default {
       console.log('personData', personData)
 
       ApiService.post('drillers', personData).then((response) => {
-        this.onFormReset()
-        this.$router.push({ name: 'PersonDetail', params: { person_guid: response.data.person_guid } })
+        // this.onFormReset()
+        // this.$router.push({ name: 'PersonDetail', params: { person_guid: response.data.person_guid } })
       }).catch((error) => {
         this.submitError = error.response
       })
