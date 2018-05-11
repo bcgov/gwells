@@ -27,7 +27,8 @@ from registries.models import (
     ActivityCode,
     SubactivityCode,
     Qualification,
-    ApplicationStatusCode
+    ApplicationStatusCode,
+    AccreditedCertificateCode
 )
 
 logger = logging.getLogger(__name__)
@@ -280,21 +281,22 @@ class ActivitySerializer(serializers.ModelSerializer):
         )
 
 
-class ApplicationAdminSerializer(AuditModelSerializer):
+class ApplicationAutoCreateSerializer(AuditModelSerializer):
     """
-    Serializes RegistryApplication model fields for admin users
+    Serializes RegistryApplication when a Registration
+    record is created
     """
 
     status_set = ApplicationStatusSerializer(many=True, read_only=True)
-    current_status = ApplicationStatusSerializer(required=False)
-    cert_authority = serializers.ReadOnlyField(
-        source="primary_certificate.cert_auth.cert_auth_code")
+    primary_certificate = serializers.PrimaryKeyRelatedField(
+        queryset=AccreditedCertificateCode.objects.all(), required=False)
+    # cert_authority = serializers.ReadOnlyField(
+    #     source="primary_certificate.cert_auth.cert_auth_code")
     qualifications = serializers.StringRelatedField(
         source='subactivity.qualification_set',
         many=True,
         read_only=True)
-    subactivity = SubactivitySerializer()
-    registration = serializers.ReadOnlyField()
+    registration = serializers.StringRelatedField(source='registration.register_guid')
 
     class Meta:
         model = RegistriesApplication
@@ -307,7 +309,47 @@ class ApplicationAdminSerializer(AuditModelSerializer):
             'registration',
             'file_no',
             'over19_ind',
-            'cert_authority',
+            'primary_certificate',
+            'registrar_notes',
+            'reason_denied',
+            'subactivity',
+            'qualifications',
+            'status_set',
+            'current_status'
+        )
+
+
+class ApplicationAdminSerializer(AuditModelSerializer):
+    """
+    Serializes RegistryApplication model fields for admin users
+    """
+
+    status_set = ApplicationStatusSerializer(many=True, read_only=True)
+    current_status = ApplicationStatusSerializer(required=False)
+    # primary_certificate = serializers.ReadOnlyField(
+    #     source="primary_certificate.cert_auth.cert_auth_code")
+    qualifications = serializers.StringRelatedField(
+        source='subactivity.qualification_set',
+        many=True,
+        read_only=True)
+    subactivity = SubactivitySerializer()
+    registration = serializers.StringRelatedField(source='registration.register_guid')
+    primary_certificate = serializers.ChoiceField(choices=list(map((lambda i: (str(i.acc_cert_guid), i.name)),
+                                                                   AccreditedCertificateCode.objects.all())),
+                                                  required=False)
+
+    class Meta:
+        model = RegistriesApplication
+        fields = (
+            'create_user',
+            'create_date',
+            'update_user',
+            'update_date',
+            'application_guid',
+            'registration',
+            'file_no',
+            'over19_ind',
+            'primary_certificate',
             'registrar_notes',
             'reason_denied',
             'subactivity',
@@ -321,16 +363,16 @@ class ApplicationAdminSerializer(AuditModelSerializer):
         Set fields to different serializers for create/update operations.
         This method is called on POST/PUT/PATCH requests
         """
-        print('ApplicationAdminSerializer.to_internal_value; data={}'.format(data))
         self.fields['subactivity'] = serializers.PrimaryKeyRelatedField(
             queryset=SubactivityCode.objects.all())
+        self.fields['registration'] = serializers.PrimaryKeyRelatedField(
+            queryset=Register.objects.all())
         return super().to_internal_value(data)
 
     def create(self, validated_data):
         """
         Create an application as well as a default status record of "pending"
         """
-        print('ApplicationAdminSerializer')
         try:
             app = RegistriesApplication.objects.create(**validated_data)
         except TypeError:
@@ -392,7 +434,7 @@ class RegistrationAdminSerializer(AuditModelSerializer):
     status = serializers.PrimaryKeyRelatedField(
         queryset=RegistriesStatusCode.objects.all())
     register_removal_reason = serializers.StringRelatedField(read_only=True)
-    applications = ApplicationAdminSerializer(many=True)
+    applications = ApplicationAdminSerializer(many=True, read_only=True)
     person_name = serializers.StringRelatedField(source='person.name')
     organization = OrganizationListSerializer()
     activity_description = serializers.StringRelatedField(
@@ -502,7 +544,7 @@ class RegistrationAutoCreateSerializer(AuditModelSerializer):
     Serializer for creating a registration when a Person record is created
     """
 
-    applications = ApplicationAdminSerializer(many=True, required=False)
+    applications = ApplicationAutoCreateSerializer(many=True, required=False)
 
     class Meta:
         model = Register
@@ -523,29 +565,36 @@ class PersonAdminSerializer(AuditModelSerializer):
         Set fields to different serializers for create/update operations.
         This method is called on POST/PUT/PATCH requests
         """
-        print('PersonAdminSerializer.to_internal_value')
         self.fields['registrations'] = RegistrationAutoCreateSerializer(
             many=True, required=False)
-        return super(PersonAdminSerializer, self).to_internal_value(data)
+        return super().to_internal_value(data)
 
     def create(self, validated_data):
         """
         Create Register and ContactInfo records to go along with a new person record
         """
 
-        registrations = validated_data.pop(
-            'registrations') if 'registrations' in validated_data else list()
-        contacts = validated_data.pop(
-            'contact_info') if 'contact_info' in validated_data else list()
+        registrations = validated_data.pop('registrations', list())
+        contacts = validated_data.pop('contact_info', list())
 
         person = Person.objects.create(**validated_data)
+        person.save()
 
-        print('PersonAdminSerializer.create: {}'.format(registrations))
         for reg_data in registrations:
-            print('reg_data: {}'.format(reg_data))
-            Register.objects.create(person=person, **reg_data)
+            applications = reg_data.pop('applications', list())
+            register = Register.objects.create(person=person, **reg_data)
+            register.save()
+            for app_data in applications:
+                print('create application')
+                app = RegistriesApplication.objects.create(registration=register, **app_data)
+                app.save()
         for contact_data in contacts:
-            ContactInfo.objects.create(person=person, **contact_data)
+            contact = ContactInfo.objects.create(person=person, **contact_data)
+            contact.save()
+        print('CREATED PersonAdminSerializer {}'.format(person))
+        print('Loading person...')
+        person = Person.objects.get(person_guid=person.person_guid)
+        print('DONE')
         return person
 
     def update(self, instance, validated_data):
