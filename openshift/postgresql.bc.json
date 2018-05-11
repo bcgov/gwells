@@ -38,8 +38,8 @@
                         "name": "${ENV_NAME}",
                         "annotations": null,
                         "from": {
-                            "kind": "ImageStreamImage",
-                            "name": "postgresql-oracle-fdw@sha256:1acd75e454709062be4feb33dbcbade9fee1969e26963d2e5e1acf27c5cc7a44"
+                            "kind": "ImageStreamTag",
+                            "name": "postgresql-oracle-fdw:9.5-1"
                         },
                         "importPolicy": {},
                         "referencePolicy": {
