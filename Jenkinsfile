@@ -25,12 +25,13 @@ def _stage(String name, Map context, Closure body) {
     echo "Running Stage '${name}' - enabled:${isEnabled}"
     if (isEnabled){
         stage(name) {
+            /*
             waitUntil {
                 boolean isDone=false
                 try{
-                    //stage(name) {
+            */
                         body()
-                    //}
+            /*
                     isDone=true
                 }catch (ex){
                     def inputAction = input(
@@ -43,8 +44,9 @@ def _stage(String name, Map context, Closure body) {
                     }
                 }
                 return isDone
-            }
-        }
+            } //end waitUntil
+            */
+        } //end Stage
     }else{
         stage(name) {
             echo 'Skipping'
@@ -91,8 +93,7 @@ Map context = [
 
 properties([
         buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '', numToKeepStr: '10')),
-        durabilityHint('MAX_SURVIVABILITY'),
-        parameters([string(defaultValue: '', description: '', name: 'run_stages')])
+        durabilityHint('MAX_SURVIVABILITY') /*, parameters([string(defaultValue: '', description: '', name: 'run_stages')]) */
 ])
 
 stage('Prepare') {
@@ -117,7 +118,7 @@ _stage('Build', context) {
 _stage('Unit Test', context) {
     podTemplate(label: "node-${context.uuid}", name:"node-${context.uuid}", serviceAccount: 'jenkins', cloud: 'openshift', containers: [
         containerTemplate(name: 'jnlp', image: 'jenkins/jnlp-slave:3.10-1-alpine', args: '${computer.jnlpmac} ${computer.name}', resourceRequestCpu: '100m',resourceLimitCpu: '1000m'),
-        containerTemplate(name: 'app', image: "172.50.0.2:5000/csnr-devops-lab-tools/gwells${context.buildNameSuffix}:${context.buildEnvName}", ttyEnabled: true, command: 'cat',
+        containerTemplate(name: 'app', image: "172.50.0.2:5000/moe-gwells-tools/gwells${context.buildNameSuffix}:${context.buildEnvName}", ttyEnabled: true, command: 'cat',
             resourceRequestCpu: '1000m',
             resourceLimitCpu: '4000m',
             resourceRequestMemory: '1Gi',

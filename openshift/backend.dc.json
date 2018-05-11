@@ -140,7 +140,7 @@
                                 "command": [
                                     "/bin/sh",
                                     "-c",
-                                    "/opt/app-root/src/database/cron/post-deploy.sh"
+                                    "/opt/app-root/src/scripts/post-deploy.sh"
                                 ],
                                 "containerName": "gwells-app${NAME_SUFFIX}"
                             }
@@ -657,9 +657,7 @@
             "metadata": {
                 "name": "gwells-static${NAME_SUFFIX}",
                 "creationTimestamp": null,
-                "labels": {
-                    "frontend": "true"
-                },
+                "labels": null,
                 "annotations": { }
             },
             "spec": {

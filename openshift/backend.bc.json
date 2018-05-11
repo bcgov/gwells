@@ -72,23 +72,6 @@
             "kind": "ImageStream",
             "apiVersion": "v1",
             "metadata": {
-                "name": "gwells-python-test${NAME_SUFFIX}",
-                "creationTimestamp": null,
-                "annotations": {
-                    "description": "Python Test Image"
-                }
-            },
-            "spec": {
-                "lookupPolicy": {
-                    "local": false
-                },
-                "tags":[ ]
-            }
-        },
-        {
-            "kind": "ImageStream",
-            "apiVersion": "v1",
-            "metadata": {
                 "name": "gwells${NAME_SUFFIX}",
                 "creationTimestamp": null,
                 "labels": {
@@ -172,71 +155,6 @@
                     }
                 },
                 "resources": {},
-                "postCommit": {},
-                "nodeSelector": null,
-                "successfulBuildsHistoryLimit": 5,
-                "failedBuildsHistoryLimit": 5
-            }
-        },
-        {
-            "kind": "BuildConfig",
-            "apiVersion": "v1",
-            "metadata": {
-                "name": "gwells-python-test${NAME_SUFFIX}",
-                "creationTimestamp": null,
-                "labels": {
-                    "build": "gwells-python-test"
-                },
-                "annotations": {
-
-                }
-            },
-            "spec": {
-                "successfulBuildsHistoryLimit": 3,
-                "failedBuildsHistoryLimit": 3,
-                "triggers": [
-                    {
-                        "type": "ImageChange",
-                        "imageChange": {}
-                    },
-                    {
-                        "type": "ConfigChange"
-                    }
-                ],
-                "runPolicy": "SerialLatestOnly",
-                "source": {
-                    "contextDir": "docker-images/gwells-python-test",
-                    "git": {
-                        "ref": "master",
-                        "uri": "${SOURCE_REPOSITORY_URL}"
-                    },
-                    "type": "Git"
-                },
-                "strategy": {
-                    "type": "Docker",
-                    "dockerStrategy": {
-                        "from": {
-                            "kind": "ImageStreamTag",
-                            "name": "gwells-python-runtime${NAME_SUFFIX}:${ENV_NAME}"
-                        }
-                    }
-                },
-                "output": {
-                    "to": {
-                        "kind": "ImageStreamTag",
-                        "name": "gwells-python-test${NAME_SUFFIX}:${ENV_NAME}"
-                    }
-                },
-                "resources": {
-                    "limits": {
-                        "cpu": "2",
-                        "memory": "2Gi"
-                    },
-                    "requests": {
-                        "cpu": "1",
-                        "memory": "1Gi"
-                    }
-                },
                 "postCommit": {},
                 "nodeSelector": null,
                 "successfulBuildsHistoryLimit": 5,
