@@ -1,0 +1,394 @@
+{
+    "kind": "Template",
+    "apiVersion": "v1",
+    "metadata": {
+        "name": "gwells-backend-bc",
+        "creationTimestamp": null
+    },
+    "parameters": [
+      {
+        "name": "NAME_SUFFIX",
+        "displayName": "Name Suffix",
+        "description": "A suffix appended to all objects",
+        "required": true
+      },
+      {
+        "name": "SOURCE_REPOSITORY_URL",
+        "required": true
+      },
+      {
+        "name": "ENV_NAME",
+        "required": true
+      }
+    ],
+    "objects": [
+        {
+            "kind": "ImageStream",
+            "apiVersion": "v1",
+            "metadata": {
+                "name": "gwells-python-35-rhel7${NAME_SUFFIX}",
+                "creationTimestamp": null,
+                "annotations": {
+                    "description": "Python Base Image"
+                }
+            },
+            "spec": {
+                "lookupPolicy": {
+                    "local": false
+                },
+                "tags":[
+                    {
+                        "name": "3.5",
+                        "annotations": null,
+                        "from": {
+                            "kind": "DockerImage",
+                            "name": "registry.access.redhat.com/rhscl/python-35-rhel7:3.5-23"
+                        },
+                        "importPolicy": {},
+                        "referencePolicy": {
+                            "type": "Source"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "kind": "ImageStream",
+            "apiVersion": "v1",
+            "metadata": {
+                "name": "gwells-python-runtime${NAME_SUFFIX}",
+                "creationTimestamp": null,
+                "annotations": {
+                    "description": "Python Runtime Image"
+                }
+            },
+            "spec": {
+                "lookupPolicy": {
+                    "local": false
+                }
+            }
+        },
+        {
+            "kind": "ImageStream",
+            "apiVersion": "v1",
+            "metadata": {
+                "name": "gwells-python-test${NAME_SUFFIX}",
+                "creationTimestamp": null,
+                "annotations": {
+                    "description": "Python Test Image"
+                }
+            },
+            "spec": {
+                "lookupPolicy": {
+                    "local": false
+                },
+                "tags":[ ]
+            }
+        },
+        {
+            "kind": "ImageStream",
+            "apiVersion": "v1",
+            "metadata": {
+                "name": "gwells${NAME_SUFFIX}",
+                "creationTimestamp": null,
+                "labels": {
+                    "base-name":"gwells"
+                },
+                "annotations": {
+                    "description": "Keeps track of changes in the application image"
+                }
+            },
+            "spec": {
+                "lookupPolicy": {
+                    "local": false
+                },
+                "tags":[ ]
+            }
+        },
+        {
+            "kind": "ImageStream",
+            "apiVersion": "v1",
+            "metadata": {
+                "name": "gwells-static${NAME_SUFFIX}",
+                "creationTimestamp": null,
+                "labels": {
+                    "base-name":"gwells-static"
+                },
+                "annotations": { }
+            },
+            "spec": {
+                "lookupPolicy": {
+                    "local": false
+                }
+            }
+        },
+        {
+            "kind": "BuildConfig",
+            "apiVersion": "v1",
+            "metadata": {
+                "name": "gwells-python-runtime${NAME_SUFFIX}",
+                "creationTimestamp": null,
+                "labels": {
+                    "build": "gwells-python-runtime"
+                },
+                "annotations": {
+
+                }
+            },
+            "spec": {
+                "successfulBuildsHistoryLimit": 3,
+                "failedBuildsHistoryLimit": 3,
+                "triggers": [
+                    {
+                        "type": "ImageChange",
+                        "imageChange": {}
+                    },
+                    {
+                        "type": "ConfigChange"
+                    }
+                ],
+                "runPolicy": "SerialLatestOnly",
+                "source": {
+                    "contextDir": "docker-images/gwells-python-runtime",
+                    "git": {
+                        "ref": "master",
+                        "uri": "${SOURCE_REPOSITORY_URL}"
+                    },
+                    "type": "Git"
+                },
+                "strategy": {
+                    "type": "Docker",
+                    "dockerStrategy": {
+                        "from": {
+                            "kind": "ImageStreamTag",
+                            "name": "gwells-python-35-rhel7${NAME_SUFFIX}:3.5"
+                        }
+                    }
+                },
+                "output": {
+                    "to": {
+                        "kind": "ImageStreamTag",
+                        "name": "gwells-python-runtime${NAME_SUFFIX}:${ENV_NAME}"
+                    }
+                },
+                "resources": {},
+                "postCommit": {},
+                "nodeSelector": null,
+                "successfulBuildsHistoryLimit": 5,
+                "failedBuildsHistoryLimit": 5
+            }
+        },
+        {
+            "kind": "BuildConfig",
+            "apiVersion": "v1",
+            "metadata": {
+                "name": "gwells-python-test${NAME_SUFFIX}",
+                "creationTimestamp": null,
+                "labels": {
+                    "build": "gwells-python-test"
+                },
+                "annotations": {
+
+                }
+            },
+            "spec": {
+                "successfulBuildsHistoryLimit": 3,
+                "failedBuildsHistoryLimit": 3,
+                "triggers": [
+                    {
+                        "type": "ImageChange",
+                        "imageChange": {}
+                    },
+                    {
+                        "type": "ConfigChange"
+                    }
+                ],
+                "runPolicy": "SerialLatestOnly",
+                "source": {
+                    "contextDir": "docker-images/gwells-python-test",
+                    "git": {
+                        "ref": "master",
+                        "uri": "${SOURCE_REPOSITORY_URL}"
+                    },
+                    "type": "Git"
+                },
+                "strategy": {
+                    "type": "Docker",
+                    "dockerStrategy": {
+                        "from": {
+                            "kind": "ImageStreamTag",
+                            "name": "gwells-python-runtime${NAME_SUFFIX}:${ENV_NAME}"
+                        }
+                    }
+                },
+                "output": {
+                    "to": {
+                        "kind": "ImageStreamTag",
+                        "name": "gwells-python-test${NAME_SUFFIX}:${ENV_NAME}"
+                    }
+                },
+                "resources": {
+                    "limits": {
+                        "cpu": "2",
+                        "memory": "2Gi"
+                    },
+                    "requests": {
+                        "cpu": "1",
+                        "memory": "1Gi"
+                    }
+                },
+                "postCommit": {},
+                "nodeSelector": null,
+                "successfulBuildsHistoryLimit": 5,
+                "failedBuildsHistoryLimit": 5
+            }
+        },
+        {
+            "kind": "BuildConfig",
+            "apiVersion": "v1",
+            "metadata": {
+                "name": "gwells${NAME_SUFFIX}",
+                "creationTimestamp": null,
+                "annotations": {
+                    "description": "Defines how to build the application"
+                }
+            },
+            "spec": {
+                "successfulBuildsHistoryLimit": 3,
+                "failedBuildsHistoryLimit": 3,
+                "triggers": [
+                    {
+                        "type": "ImageChange"
+                    },
+                    {
+                        "type": "ConfigChange"
+                    }
+                ],
+                "runPolicy": "SerialLatestOnly",
+                "source": {
+                    "type": "Git",
+                    "git": {
+                        "uri": "${SOURCE_REPOSITORY_URL}",
+                        "ref": "master"
+                    },
+                    "contextDir": "app"
+                },
+                "strategy": {
+                    "type": "Source",
+                    "sourceStrategy": {
+                        "from": {
+                            "kind": "ImageStreamTag",
+                            "name": "gwells-python-runtime${NAME_SUFFIX}:${ENV_NAME}"
+                        },
+                        "env": [
+                            {
+                                "name": "BUILD_LOGLEVEL",
+                                "value": "4"
+                            },
+                            {
+                                "name": "PIP_INDEX_URL"
+                            },
+                            {
+                                "name": "UPGRADE_PIP_TO_LATEST",
+                                "value": "true"
+                            },
+                            {
+                                "name": "JWT_PUBLIC_KEY",
+                                "value": "-----BEGIN PUBLIC KEY-----\\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAjpPznS8NO5XNl395Xa/wJyhhMDMJUk8s2wrG/FQ9gZnRaCbm9YFYynZzeehkpTNbb+SsLBnh0Me5DKTSlt0Gm03ULXXW6FZzL3SCE1wTx6Trm+zQ1mx07aGDbv34OtK0HitToajZrnTsGQ0TloVbQladBM74S2K0ooveV7p2qIydFjtR+DTJGiOxSLvts+qsGn/Wr2l939SRpQa/10vpYJgCLsd6Bv/0v23DpmR8WbVkLh8e3rtI0XgsJ0ZFXR80DPt3fXX3gdrNdPRB+hpOR8IZMEUzhqGRg5VXP8Lp+bbaemFanTwlFD3aUfDlOcPekxYqQeEmS6ahA/6vCpjuGwIDAQAB\\n-----END PUBLIC KEY-----"
+                            },
+                            {
+                                "name": "JWT_AUDIENCE",
+                                "value": "webapp-dev-local"
+                            }
+                        ]
+                    }
+                },
+                "output": {
+                    "to": {
+                        "kind": "ImageStreamTag",
+                        "name": "gwells${NAME_SUFFIX}:${ENV_NAME}"
+                    }
+                },
+                "resources": {
+                    "limits": {
+                        "cpu": "2",
+                        "memory": "8Gi"
+                    },
+                    "requests": {
+                        "cpu": "1",
+                        "memory": "4Gi"
+                    }
+                },
+                "nodeSelector": null
+            }
+        },
+        {
+            "kind": "BuildConfig",
+            "apiVersion": "v1",
+            "metadata": {
+                "name": "gwells-static${NAME_SUFFIX}",
+                "creationTimestamp": null,
+                "labels": { },
+                "annotations": { }
+            },
+            "spec": {
+                "successfulBuildsHistoryLimit": 3,
+                "failedBuildsHistoryLimit": 3,
+                "triggers": [
+                    {
+                        "type": "ImageChange",
+                        "imageChange": {
+                            "from": {
+                                "kind": "ImageStreamTag",
+                                "name": "gwells${NAME_SUFFIX}:${ENV_NAME}"
+                            }
+                        }
+                    },
+                    {
+                        "type": "ConfigChange"
+                    }
+                ],
+                "source": {
+                    "type": "Dockerfile",
+                    "dockerfile": "FROM openshift/bcgov-s2i-caddy:latest\nUSER 0\nCOPY staticfiles /var/www/html/gwells/static\nRUN ls -la /var/www/html/gwells/static/\nUSER 1001\nCMD [\"sh\",\"/tmp/scripts/run\"]\n",
+                    "images": [
+                        {
+                            "from": {
+                                "kind": "ImageStreamTag",
+                                "name": "gwells${NAME_SUFFIX}:${ENV_NAME}"
+                            },
+                            "paths": [
+                                {
+                                    "sourcePath": "/opt/app-root/src/staticfiles",
+                                    "destinationDir": "."
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "strategy": {
+                    "type": "Docker",
+                    "dockerStrategy": {
+                        "from": {
+                            "kind": "ImageStreamTag",
+                            "namespace": "openshift",
+                            "name": "bcgov-s2i-caddy:latest"
+                        }
+                    }
+                },
+                "output": {
+                    "to": {
+                        "kind": "ImageStreamTag",
+                        "name": "gwells-static${NAME_SUFFIX}:${ENV_NAME}"
+                    }
+                },
+                "resources": {},
+                "postCommit": {},
+                "nodeSelector": null
+            },
+            "status": {
+                "lastVersion": 0
+            }
+        }
+    ]
+}
