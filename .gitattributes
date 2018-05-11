@@ -24,7 +24,7 @@
 
 # Static files
 # ============
-/gwells/static/**	binary
+/app/gwells/static/**	binary
 
 # Note: .db, .p, and .pkl files are associated
 # with the python modules ``pickle``, ``dbm.*``,
