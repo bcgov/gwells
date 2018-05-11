@@ -154,6 +154,7 @@ drop table if exists xform_registries_drillers_reg                   cascade;
 drop table if exists xform_registries_pump_installers_reg            cascade;
 drop table if exists xform_registries_removed_from                   cascade;
 drop table if exists yield_estimation_method_code                    cascade;
+drop table if exists province_state_code                             cascade;
 
 drop table if exists registries_certifying_authority_code   cascade;
 drop table if exists registries_accredited_certificate_code cascade;
@@ -164,5 +165,7 @@ drop table if exists registries_contact_detail             cascade;
 drop table if exists registries_organization               cascade;
 drop table if exists registries_person                     cascade;
 drop table if exists registries_qualification_code         cascade;
+drop table if exists registries_register_note              cascade;
+drop table if exists registries_person_note                cascade;
 EOF
 '
