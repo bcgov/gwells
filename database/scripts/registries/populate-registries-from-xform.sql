@@ -486,7 +486,7 @@ and   xform.lastname = per.surname;
 
 -- Applications from pre-2016-FEB-29 2016 Well Drillers, who were
 -- grandfathered in 257
-\echo 'Inserting "Fake" Applications for pre-2016-FEB-29 grandfathered Well Drillers'
+\echo 'Inserting "Fake" Applications for pre-2016-FEB-29 grandfathered Well Drillers (WATER)'
 INSERT INTO registries_application (
  create_user
 ,create_date
@@ -519,7 +519,7 @@ SELECT
     and  registries_activity_code = 'DRILL'
    )
 ,reg.register_guid
-,'WELL'
+,'WATER'
 from registries_register reg,
      xform_registries_drillers_reg xform,
      registries_person per
@@ -621,7 +621,7 @@ WHERE per.person_guid = reg.person_guid
 AND   app.register_guid = reg.register_guid
 AND reg.registries_status_code = 'ACTIVE'
 and reg.registries_activity_code = 'DRILL'
-and app.registries_subactivity_code = 'WELL'
+and app.registries_subactivity_code = 'WATER'
 and xform.registrationdate <=  '2016-02-29'
 and xform.name = concat(per.surname, ', ', per.first_name)
 ;
@@ -667,8 +667,6 @@ and xform.name = concat(per.surname, ', ', per.first_name)
 
 
 -- 257
-/* Thu 10 May 12:42:39 2018 GW Commented out with new move to 'WELL' historical well drillers
-
 \echo 'Inserting "Fake" Applications for pre-2016-FEB-29 grandfathered Well Drillers (GEOTECH)'
 INSERT INTO registries_application (
  create_user
@@ -702,7 +700,7 @@ SELECT
     and  registries_activity_code = 'DRILL'
    )
 ,reg.register_guid
-,'WELL'
+,'GEOTECH'
 from registries_register reg,
      xform_registries_drillers_reg xform,
      registries_person per
@@ -712,7 +710,7 @@ and reg.registries_activity_code = 'DRILL'
 and xform.reg_guid = per.person_guid
 and xform.registrationdate <=  '2016-02-29'
 and xform.name = concat(per.surname, ', ', per.first_name);
-*/
+
 
 -- Applications from post-2016-FEB-29 2016 Well Drillers
 -- 10
@@ -851,8 +849,6 @@ and xform.name = concat(per.surname, ', ', per.first_name)
 ;
 
 -- 257
-/* Thu 10 May 12:42:39 2018 GW Commented out with new move to 'WELL' historical well drillers
-
 \echo 'Inserting "Fake" Applications for pre-2016-FEB-29 grandfathered Well Drillers (GEOXCHG)'
 INSERT INTO registries_application (
  create_user
@@ -886,7 +882,7 @@ SELECT
     and  registries_activity_code = 'DRILL'
    )
 ,reg.register_guid
-,'WELL'
+,'GEOXCHG'
 from registries_register reg,
      xform_registries_drillers_reg xform,
      registries_person per
@@ -896,7 +892,7 @@ and reg.registries_activity_code = 'DRILL'
 and xform.reg_guid = per.person_guid
 and xform.registrationdate <=  '2016-02-29'
 and xform.name = concat(per.surname, ', ', per.first_name);
-*/
+
 
 -- Applications from post-2016-FEB-29 2016 Well Drillers
 -- 3
@@ -954,6 +950,7 @@ and xform.name = concat(per.surname, ', ', per.first_name)
 and xform.registrationdate >  '2016-02-29'
 and (trim(both from xform.classofwelldriller) = 'Geoexchange'
      or xform.classofwelldriller like '%Geoexchange%');
+
 
 
 \echo '... Approved entries'
