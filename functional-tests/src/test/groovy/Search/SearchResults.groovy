@@ -10,7 +10,7 @@ import spock.lang.Specification
 import spock.lang.Title
 import spock.lang.Unroll    
 
-
+@Ignore()
 @Narrative('''In order to view search results as a generic user, 
         I want to be able to see the number of matching search results and have these displayed with minimal scrolling.''')
 @Title('Feature: Search Results')

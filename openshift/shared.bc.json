@@ -1,0 +1,86 @@
+{
+    "kind": "Template",
+    "apiVersion": "v1",
+    "metadata": {
+        "name": "postgresql-oracle-fdw",
+        "creationTimestamp": null
+    },
+    "objects": [
+        {
+            "apiVersion": "v1",
+            "kind": "PersistentVolumeClaim",
+            "metadata": {
+                "name": "cache",
+                "annotations":{
+                    "volume.beta.kubernetes.io/storage-class": "gluster-file",
+                    "volume.beta.kubernetes.io/storage-provisioner": "kubernetes.io/glusterfs"
+                }
+            },
+            "spec": {
+                "accessModes": [
+                    "ReadWriteMany"
+                ],
+                "resources": {
+                    "requests": {
+                        "storage": "10Gi"
+                    }
+                }
+            }
+        },
+        {
+            "kind": "ImageStream",
+            "apiVersion": "v1",
+            "metadata": {
+                "name": "postgresql-oracle-fdw",
+                "creationTimestamp": null,
+                "labels": { },
+                "annotations": { }
+            },
+            "spec": {
+                "lookupPolicy": {
+                    "local": false
+                }
+            }
+        },
+        {
+            "kind": "BuildConfig",
+            "apiVersion": "v1",
+            "metadata": {
+                "name": "postgresql-oracle-fdw",
+                "creationTimestamp": null,
+                "labels": {}
+            },
+            "spec": {
+                "triggers": [
+                    {
+                        "type": "ConfigChange"
+                    }
+                ],
+                "runPolicy": "Serial",
+                "source": {
+                    "type": "Git",
+                    "git": {
+                        "uri": "https://github.com/bcgov/openshift-postgresql-oracle_fdw.git",
+                        "ref": "9ad95e15d58b8a6a61769e457610834418a9556e"
+                    }
+                },
+                "strategy": {
+                    "type": "Docker",
+                    "dockerStrategy": {
+                        "noCache": true,
+                        "dockerfilePath": "Dockerfile.rhel7"
+                    }
+                },
+                "output": {
+                    "to": {
+                        "kind": "ImageStreamTag",
+                        "name": "postgresql-oracle-fdw:9.5-1"
+                    }
+                },
+                "resources": {},
+                "postCommit": {},
+                "nodeSelector": null
+            }
+        }
+    ]
+}
