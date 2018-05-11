@@ -1,5 +1,5 @@
 --  Run this script as gwells owner (e.g. psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER)
-\echo 'Copying static code tables from deployed image CSV files'
+\echo 'Copying WellSearch static code tables from deployed image CSV files'
 
 --INTENDED USE
 \echo '... loading intended_water_use_code code table'
@@ -12,11 +12,6 @@
 --SUBCLASS
 \echo '... loading well_subclass_code code table'
 \copy well_subclass_code (well_subclass_guid,well_subclass_code,description,display_order,well_class_code,create_date,update_date,create_user,update_user) from 'well_subclass_code.csv' with header delimiter ',' CSV ;
-
---PROVINCE_STATE
-\echo '... skipping province_state_code code table, to'
-\echo '    avoid impacting dependent Registries app.'
--- \copy province_state_code (province_state_code,description,display_order,create_date,update_date,create_user,update_user) from 'province_state_code.csv' with header delimiter ',' CSV ;
 
 --YIELD UNIT
 \echo '... loading well_yield_unit_code code table'
@@ -130,4 +125,4 @@
 -- \copy bedrock_material_code (bedrock_material_code,description,display_order,create_date,update_date,create_user,update_user) from 'bedrock_material_code.csv' with header delimiter ',' CSV ;
 
 
-\echo 'Finshed copy of static code tables.'
+\echo 'Finshed copy of WellSearch static code tables.'
