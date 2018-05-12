@@ -114,6 +114,12 @@ _stage('Build', context) {
     }
 } //end stage
 
+@NonCPS
+private static String stackTraceAsString(Throwable t) {
+    StringWriter sw = new StringWriter();
+    t.printStackTrace(new PrintWriter(sw));
+    return sw.toString()
+}
 
 _stage('Unit Test', context) {
     podTemplate(label: "node-${context.uuid}", name:"node-${context.uuid}", serviceAccount: 'jenkins', cloud: 'openshift', containers: [
@@ -421,9 +427,7 @@ for(String envKeyName: context.env.keySet() as String[]){
 
                     isDone=true
                 }catch (ex){
-                    StringWriter sw = new StringWriter();
-                    ex.printStackTrace(new PrintWriter(sw));
-                    echo "${sw.toString()}"
+                    echo "${stackTraceAsString(ex)}"
 
                     def inputAction = input(
                         message: "This step has failed! How do your want to proceed?",
