@@ -336,105 +336,110 @@ for(String envKeyName: context.env.keySet() as String[]){
     }
 
     if ("DEV".equalsIgnoreCase(stageDeployName) || isCD){
-        waitUntil {
-            boolean isDone=false
-            try {
-                String testStageName="DEV".equalsIgnoreCase(stageDeployName)?"Full Test - DEV":"Smoke Test - ${stageDeployName}"
-                _stage(testStageName, context){
-                    String baseURL = context.deployments[envKeyName].environmentUrl.substring(0, context.deployments[envKeyName].environmentUrl.indexOf('/', 8) + 1)
-                    podTemplate(label: "bddstack-${context.uuid}", name: "bddstack-${context.uuid}", serviceAccount: 'jenkins', cloud: 'openshift',
-                        containers: [
-                          containerTemplate(
-                            name: 'jnlp',
-                            image: '172.50.0.2:5000/openshift/jenkins-slave-bddstack',
-                            resourceRequestCpu: '500m',
-                            resourceLimitCpu: '4000m',
-                            resourceRequestMemory: '1Gi',
-                            resourceLimitMemory: '4Gi',
-                            workingDir: '/home/jenkins',
-                            command: '',
-                            args: '${computer.jnlpmac} ${computer.name}',
-                            envVars: [
-                                envVar(key:'BASEURL', value: baseURL),
-                                envVar(key:'GRADLE_USER_HOME', value: '/var/cache/artifacts/gradle')
-                               ]
-                          )
-                        ],
-                        volumes: [
-                            persistentVolumeClaim(mountPath: '/var/cache/artifacts', claimName: 'cache', readOnly: false)
-                        ]
-                    ){
-                        node("bddstack-${context.uuid}") {
-                            echo "Build: ${BUILD_ID}"
-                            echo "baseURL: ${baseURL}"
-                            sh 'echo "BASEURL=${BASEURL}"'
-                            sh 'echo "GRADLE_USER_HOME=${GRADLE_USER_HOME}"'
+        String testStageName="DEV".equalsIgnoreCase(stageDeployName)?"Full Test - DEV":"Smoke Test - ${stageDeployName}"
+        _stage(testStageName, context){
+            waitUntil {
+                boolean isDone=false
+                try {
 
-                            //the checkout is mandatory, otherwise functional test would fail
-                            echo "checking out source"
-                            checkout scm
-                            /*
-                            dir('functional-tests/build/test-results') {
+                        String baseURL = context.deployments[envKeyName].environmentUrl.substring(0, context.deployments[envKeyName].environmentUrl.indexOf('/', 8) + 1)
+                        podTemplate(label: "bddstack-${context.uuid}", name: "bddstack-${context.uuid}", serviceAccount: 'jenkins', cloud: 'openshift',
+                            containers: [
+                              containerTemplate(
+                                name: 'jnlp',
+                                image: '172.50.0.2:5000/openshift/jenkins-slave-bddstack',
+                                resourceRequestCpu: '500m',
+                                resourceLimitCpu: '4000m',
+                                resourceRequestMemory: '1Gi',
+                                resourceLimitMemory: '4Gi',
+                                workingDir: '/home/jenkins',
+                                command: '',
+                                args: '${computer.jnlpmac} ${computer.name}',
+                                envVars: [
+                                    envVar(key:'BASEURL', value: baseURL),
+                                    envVar(key:'GRADLE_USER_HOME', value: '/var/cache/artifacts/gradle')
+                                   ]
+                              )
+                            ],
+                            volumes: [
+                                persistentVolumeClaim(mountPath: '/var/cache/artifacts', claimName: 'cache', readOnly: false)
+                            ]
+                        ){
+                            node("bddstack-${context.uuid}") {
+                                echo "Build: ${BUILD_ID}"
+                                echo "baseURL: ${baseURL}"
                                 sh 'echo "BASEURL=${BASEURL}"'
-                                unstash 'coverage'
-                                sh 'rm coverage.xml'
-                                unstash 'nodejunit'
-                            }
-                            */
-                            //dir('app') {
-                            //    sh 'python manage.py loaddata wells registries'
-                            //}
-                            dir('functional-tests') {
-                                try {
-                                    sh './gradlew -q dependencies'
-                                    if ("DEV".equalsIgnoreCase(stageDeployName)){
-                                        sh './gradlew chromeHeadlessTest'
-                                    }else{
-                                        sh './gradlew -DchromeHeadlessTest.single=WellDetails chromeHeadlessTest'
-                                    }
-                                } finally {
-                                        archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/geb/**/*'
-                                        junit testResults:'build/test-results/**/*.xml', allowEmptyResults:true
-                                        publishHTML (target: [
-                                                    allowMissing: true,
-                                                    alwaysLinkToLastBuild: false,
-                                                    keepAll: true,
-                                                    reportDir: 'build/reports/spock',
-                                                    reportFiles: 'index.html',
-                                                    reportName: "Test: BDD Spock Report"
-                                                ])
-                                        publishHTML (target: [
-                                                    allowMissing: true,
-                                                    alwaysLinkToLastBuild: false,
-                                                    keepAll: true,
-                                                    reportDir: 'build/reports/tests/chromeHeadlessTest',
-                                                    reportFiles: 'index.html',
-                                                    reportName: "Test: Full Test Report"
-                                                ])
-                                    //todo: install perf report plugin.
-                                    //perfReport compareBuildPrevious: true, excludeResponseTime: true, ignoreFailedBuilds: true, ignoreUnstableBuilds: true, modeEvaluation: true, modePerformancePerTestCase: true, percentiles: '0,50,90,100', relativeFailedThresholdNegative: 80.0, relativeFailedThresholdPositive: 20.0, relativeUnstableThresholdNegative: 50.0, relativeUnstableThresholdPositive: 50.0, sourceDataFiles: 'build/test-results/**/*.xml'
+                                sh 'echo "GRADLE_USER_HOME=${GRADLE_USER_HOME}"'
+
+                                //the checkout is mandatory, otherwise functional test would fail
+                                echo "checking out source"
+                                checkout scm
+                                /*
+                                dir('functional-tests/build/test-results') {
+                                    sh 'echo "BASEURL=${BASEURL}"'
+                                    unstash 'coverage'
+                                    sh 'rm coverage.xml'
+                                    unstash 'nodejunit'
                                 }
-                            }
-                        } //end node
-                    } //end podTemplate
-                } //end stage
-                isDone=true
-            }catch (ex){
-                def inputAction = input(
-                    message: "This step has failed - ${ex}",
-                    ok: 'Confirm',
-                    parameters: [choice(name: 'action', choices: 'Re-run\nIgnore', description: 'What would you like to do?')]
-                )
-                //echo "inputAction:${inputAction}"
-                if ('Ignore'.equalsIgnoreCase(inputAction)){
+                                */
+                                //dir('app') {
+                                //    sh 'python manage.py loaddata wells registries'
+                                //}
+                                dir('functional-tests') {
+                                    try {
+                                        sh './gradlew -q dependencies'
+                                        if ("DEV".equalsIgnoreCase(stageDeployName)){
+                                            sh './gradlew chromeHeadlessTest'
+                                        }else{
+                                            sh './gradlew -DchromeHeadlessTest.single=WellDetails chromeHeadlessTest'
+                                        }
+                                    } finally {
+                                            archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/geb/**/*'
+                                            junit testResults:'build/test-results/**/*.xml', allowEmptyResults:true
+                                            publishHTML (target: [
+                                                        allowMissing: true,
+                                                        alwaysLinkToLastBuild: false,
+                                                        keepAll: true,
+                                                        reportDir: 'build/reports/spock',
+                                                        reportFiles: 'index.html',
+                                                        reportName: "Test: BDD Spock Report"
+                                                    ])
+                                            publishHTML (target: [
+                                                        allowMissing: true,
+                                                        alwaysLinkToLastBuild: false,
+                                                        keepAll: true,
+                                                        reportDir: 'build/reports/tests/chromeHeadlessTest',
+                                                        reportFiles: 'index.html',
+                                                        reportName: "Test: Full Test Report"
+                                                    ])
+                                        //todo: install perf report plugin.
+                                        //perfReport compareBuildPrevious: true, excludeResponseTime: true, ignoreFailedBuilds: true, ignoreUnstableBuilds: true, modeEvaluation: true, modePerformancePerTestCase: true, percentiles: '0,50,90,100', relativeFailedThresholdNegative: 80.0, relativeFailedThresholdPositive: 20.0, relativeUnstableThresholdNegative: 50.0, relativeUnstableThresholdPositive: 50.0, sourceDataFiles: 'build/test-results/**/*.xml'
+                                    }
+                                }
+                            } //end node
+                        } //end podTemplate
+
                     isDone=true
+                }catch (ex){
+                    StringWriter sw = new StringWriter();
+                    ex.printStackTrace(new PrintWriter(sw));
+                    echo "${sw.toString()}"
+
+                    def inputAction = input(
+                        message: "This step has failed! How do your want to proceed?",
+                        ok: 'Confirm',
+                        parameters: [choice(name: 'action', choices: 'Re-run\nIgnore', description: 'What would you like to do?')]
+                    )
+                    //echo "inputAction:${inputAction}"
+                    if ('Ignore'.equalsIgnoreCase(inputAction)){
+                        isDone=true
+                    }
                 }
-            }
 
-            return isDone
-        }
+                return isDone
+            } //end waitUntil
 
-
+        } //end stage
     } //end if
 } // end for
 
