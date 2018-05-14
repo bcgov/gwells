@@ -32,7 +32,7 @@
 </template>
 
 <script>
-// import ApiService from '@/common/services/ApiService.js'
+import ApiService from '@/common/services/ApiService.js'
 import OrganizationAdd from '@/registry/components/people/OrganizationAdd.vue'
 
 export default {
@@ -42,6 +42,10 @@ export default {
   },
   data () {
     return {
+      // companies list from API
+      companies: [],
+
+      // add company success message
       companyAddSuccess: false
     }
   },
@@ -51,7 +55,9 @@ export default {
     }
   },
   created () {
-    console.log('asdf')
+    ApiService.query('companies/names/').then((response) => {
+
+    })
   }
 }
 </script>
