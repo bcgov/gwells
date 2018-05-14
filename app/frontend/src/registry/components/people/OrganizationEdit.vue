@@ -23,7 +23,7 @@
 
       <!-- Company selector (used to select company to edit) -->
       <b-row>
-        <b-col>
+        <b-col cols="12" md="5">
           <v-select></v-select>
         </b-col>
       </b-row>
