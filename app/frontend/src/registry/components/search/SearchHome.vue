@@ -20,7 +20,7 @@
       <b-card-header header-tag="header" class="p-1" role="tab">
         <b-btn block href="#" v-b-toggle.adminPanel variant="light" class="text-left">Administrator options</b-btn>
       </b-card-header>
-      <b-collapse id="adminPanel">
+      <b-collapse visible id="adminPanel">
         <b-card-body class="pb-1">
           <b-button
             class="mb-2"
@@ -34,7 +34,7 @@
             class="mb-2"
             variant="primary"
             id="manageCompaniesButton"
-            :to="{ name: 'OrganizationAdd' }"
+            :to="{ name: 'OrganizationEdit' }"
           >
             Manage companies
           </b-button>
