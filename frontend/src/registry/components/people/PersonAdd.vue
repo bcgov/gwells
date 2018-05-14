@@ -98,80 +98,105 @@
                   </b-alert>
                 </b-col>
               </b-row>
-              <b-row v-if="drillerForm.regType.some(x => x === 'DRILL')">
-                <b-col cols="12" md="5">
-                  <b-form-group
-                    id="drillerRegNoInputGroup"
-                    label="Well Driller Registration Number:"
-                    label-for="drillerRegNoInput">
-                    <b-form-input
-                      id="drillerRegNoInput"
-                      type="text"
-                      v-model="drillerForm.registrations.drill.registration_no"
-                      placeholder="Enter registration number"/>
-                  </b-form-group>
-                </b-col>
-                <b-col md="5" offset-md="1">
-                  <b-form-group
-                    id="companyInputGroup"
-                    label="Well drilling company:"
-                    label-for="companyInput">
-                    <v-select
-                      v-model="drillerForm.organizations.drill"
-                      :options="companies"
-                      placeholder="Begin typing a company name"
-                      label="name"
-                      />
-                  </b-form-group>
-                </b-col>
-              </b-row>
-              <b-row v-if="drillerForm.regType.some(x => x === 'PUMP')">
-                <b-col cols="12" md="5">
-                  <b-form-group
-                    id="pumpRegNoInputGroup"
-                    label="Well Pump Installer Registration Number:"
-                    label-for="pumpRegNoInput">
-                    <b-form-input
-                      id="pumpRegNoInput"
-                      type="text"
-                      v-model="drillerForm.registrations.pump.registration_no"
-                      placeholder="Enter registration number"/>
-                  </b-form-group>
-                </b-col>
-                <b-col md="5" offset-md="1">
-                  <b-form-group
-                    id="companyInputGroup"
-                    label="Well pump installation company:"
-                    label-for="companyInput">
-                    <v-select
-                      v-model="drillerForm.organizations.pump"
-                      :options="companies"
-                      placeholder="Begin typing a company name"
-                      label="name"
-                      />
-                  </b-form-group>
-                </b-col>
-              </b-row>
+              <template v-if="drillerForm.regType.some(x => x === 'DRILL')">
+                <b-row>
+                  <b-col cols="12" md="5">
+                    <b-form-group
+                      id="drillerRegNoInputGroup"
+                      label="Well Driller Registration Number:"
+                      label-for="drillerRegNoInput">
+                      <b-form-input
+                        id="drillerRegNoInput"
+                        type="text"
+                        v-model="drillerForm.registrations.drill.registration_no"
+                        placeholder="Enter registration number"/>
+                    </b-form-group>
+                  </b-col>
+                  <b-col md="5" offset-md="1">
+                    <b-form-group
+                      id="companyInputGroup"
+                      label="Well drilling company:"
+                      label-for="companyInput">
+                      <v-select
+                        v-model="drillerForm.organizations.drill"
+                        :options="companies"
+                        placeholder="Begin typing a company name"
+                        label="name"
+                        />
+                    </b-form-group>
+                  </b-col>
+                </b-row>
+                <b-row>
+                  <application-add
+                    class="mb-3"
+                    v-for="item in drillApplications"
+                    v-bind:item="item"
+                    v-bind:key="item.id"
+                    v-on:close="closeApplication (drillApplications, item.id)"
+                    v-model="item.data"
+                    activity="DRILL"/>
+                </b-row>
+                <b-row>
+                  <b-col>
+                    <b-button
+                    type="button"
+                    variant="primary"
+                    size="sm"
+                    v-on:click="addApplication(drillApplications)"
+                    class="mb-3"><i class="fa fa-plus-square-o"></i> Add new classification</b-button>
+                  </b-col>
+                </b-row>
+              </template>
+              <template v-if="drillerForm.regType.some(x => x === 'PUMP')">
+                <b-row>
+                  <b-col cols="12" md="5">
+                    <b-form-group
+                      id="pumpRegNoInputGroup"
+                      label="Well Pump Installer Registration Number:"
+                      label-for="pumpRegNoInput">
+                      <b-form-input
+                        id="pumpRegNoInput"
+                        type="text"
+                        v-model="drillerForm.registrations.pump.registration_no"
+                        placeholder="Enter registration number"/>
+                    </b-form-group>
+                  </b-col>
+                  <b-col md="5" offset-md="1">
+                    <b-form-group
+                      id="companyInputGroup"
+                      label="Well pump installation company:"
+                      label-for="companyInput">
+                      <v-select
+                        v-model="drillerForm.organizations.pump"
+                        :options="companies"
+                        placeholder="Begin typing a company name"
+                        label="name"
+                        />
+                    </b-form-group>
+                  </b-col>
+                </b-row>
+                <b-row>
+                  <application-add
+                    class="mb-3"
+                    v-for="item in pumpApplications"
+                    v-bind:item="item"
+                    v-bind:key="item.id"
+                    v-on:close="closeApplication (pumpApplications, item.id)"
+                    v-model="item.data"
+                    activity="PUMP"/>
+                </b-row>
+                <b-row>
+                  <b-col>
+                    <b-button
+                    type="button"
+                    variant="primary"
+                    size="sm"
+                    v-on:click="addApplication(pumpApplications)"
+                    class="mb-3"><i class="fa fa-plus-square-o"></i> Add new classification</b-button>
+                  </b-col>
+                </b-row>
+              </template>
             </b-card>
-            <b-row>
-              <classification-add
-                class="mb-3"
-                v-for="item in drillerForm.classifications"
-                v-bind:item="item"
-                v-bind:key="item.id"
-                v-on:close="closeClassification (item.id)"
-                v-model="item.data"/>
-            </b-row>
-            <b-row>
-              <b-col>
-                  <b-button
-                  type="button"
-                  variant="primary"
-                  size="sm"
-                  v-on:click="addClassification()"
-                  class="mb-3"><i class="fa fa-plus-square-o"></i> Add new classification</b-button>
-                </b-col>
-            </b-row>
             <b-row class="mt-3">
               <b-col>
                 <b-button type="submit" class="mr-2" variant="primary">Submit</b-button>
@@ -212,15 +237,13 @@ import { mapGetters } from 'vuex'
 import ApiService from '@/common/services/ApiService.js'
 import OrganizationAdd from '@/registry/components/people/OrganizationAdd.vue'
 import ApplicationAdd from '@/registry/components/people/ApplicationAdd.vue'
-import ClassificationAdd from '@/registry/components/people/ClassificationAdd.vue'
 
 export default {
   name: 'PersonDetailEdit',
   components: {
     'api-error': APIErrorMessage,
     'organization-add': OrganizationAdd,
-    'application-add': ApplicationAdd,
-    'classification-add': ClassificationAdd
+    'application-add': ApplicationAdd
   },
   data () {
     return {
@@ -261,13 +284,13 @@ export default {
         organizations: {
           drill: null,
           pump: null
-        },
-        classifications: []
+        }
       },
       companies: [
         { org_guid: '', name: '' }
       ],
-      classificationCount: 0,
+      drillApplications: [],
+      pumpApplications: [],
       submitSuccess: false,
       submitError: false,
       newOrgSuccess: false
@@ -310,26 +333,13 @@ export default {
         this.drillerForm.registrations['pump'].organization = this.drillerForm.organizations.pump.org_guid
       }
 
+      // Map applications to registrions
+      this.drillerForm.registrations['drill'].applications = this.drillApplications.map((application) => application.data)
+      this.drillerForm.registrations['pump'].applications = this.pumpApplications.map((application) => application.data)
+
       // add registration data for activities checked off on form
       this.drillerForm.regType.forEach((item) => {
-        let registration = this.drillerForm.registrations[item.toLowerCase()]
-        registration.applications = []
-        registrations.push(registration)
-      })
-
-      this.drillerForm.classifications.forEach((classification) => {
-        // TODO: It makes more sense to move this into the Registration section so that we don't have to
-        // match things up afterwards.
-        //
-        // Each classification/qualification/adjudication needs to be matched up to the appropriate
-        // registration
-        let registration = null
-        if (classification.data.classification === 'PUMPINST') {
-          registration = registrations.filter((item) => item['registries_activity'] === 'PUMP')[0]
-        } else {
-          registration = registrations.filter((item) => item['registries_activity'] !== 'PUMP')[0]
-        }
-        registration.applications.push(classification.data)
+        registrations.push(this.drillerForm.registrations[item.toLowerCase()])
       })
 
       // add submitted contact info onto collection of person's contact details
@@ -389,11 +399,11 @@ export default {
         this.orgListError = 'Unable to retrieve organization list.'
       })
     },
-    addClassification () {
-      this.drillerForm.classifications.push({id: ++this.classificationCount, data: null})
+    addApplication (collection) {
+      collection.push({id: new Date().getUTCMilliseconds(), data: null})
     },
-    closeClassification (id) {
-      this.drillerForm.classifications = this.drillerForm.classifications.filter(item => item.id !== id)
+    closeApplication (collection, id) {
+      collection.splice(collection.findIndex((item) => item.id === id))
     }
   },
   created () {
