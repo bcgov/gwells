@@ -257,6 +257,9 @@ export default {
       const params = this.APISearchParams
       this.lastSearchedActivity = this.searchParams.activity || 'DRILL'
       this.searchLoading = true
+      if (window.ga) {
+        window.ga('send', 'event', 'Button', 'search')
+      }
       this.$store.dispatch(FETCH_DRILLER_LIST, params).then(() => {
         this.$SmoothScroll(table, 100)
         this.drillerSearchReset({keepActivity: true, keepLimit: true})
