@@ -1,14 +1,14 @@
 import { shallowMount, createLocalVue } from '@vue/test-utils'
 import Vuex from 'vuex'
 import VueMoment from 'vue-moment'
-import PersonNotes from '@/registry/components/people/PersonNotes'
+import Notes from '@/registry/components/people/Notes'
 import fakePerson from '../fakePerson'
 
 const localVue = createLocalVue()
 localVue.use(Vuex)
 localVue.use(VueMoment)
 
-describe('PersonNotes.vue', () => {
+describe('Notes.vue', () => {
   let store
   let getters
   let mutations
@@ -26,7 +26,7 @@ describe('PersonNotes.vue', () => {
   })
 
   it('renders and has a title', () => {
-    const wrapper = shallowMount(PersonNotes, {
+    const wrapper = shallowMount(Notes, {
       store,
       localVue,
       stubs: ['router-link', 'router-view'],
@@ -37,8 +37,8 @@ describe('PersonNotes.vue', () => {
     expect(wrapper.find('#notesSectionTitle').text()).toEqual('Notes')
   })
   it('displays notes', () => {
-    // our fake person has 1 note, so $person-note-0 should render
-    const wrapper = shallowMount(PersonNotes, {
+    // our fake person has 1 note, so $note-0 should render
+    const wrapper = shallowMount(Notes, {
       store,
       localVue,
       stubs: ['router-link', 'router-view'],
@@ -46,7 +46,8 @@ describe('PersonNotes.vue', () => {
         $route: {params: {person_guid: 'aaaa-4444-bbbb-1111'}}
       }
     })
-    expect(wrapper.find('#person-note-0').text()).toContain('A new note')
-    expect(wrapper.find('#person-note-0').text()).toContain('Test User')
+    wrapper.setProps({ type: 'person', guid: fakePerson.person_guid, record: fakePerson })
+    expect(wrapper.find('#note-0').text()).toContain('A new note')
+    expect(wrapper.find('#note-0').text()).toContain('Test User')
   })
 })
