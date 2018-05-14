@@ -6,7 +6,7 @@
 //    SCM: Git
 //      Repository URL: https://github.com/bcgov/gwells
 //      Branches to build: */master
-//      Script path: scripts/Jenkinsfiles/db_vacuum-replicate */
+//      Script path: scripts/Jenkinsfiles/db_vacuum-replicate
 
 properties(
     [
@@ -17,41 +17,67 @@ properties(
         )
     ]
 )
-def PROJECT = 'moe-gwells-test'
+def PROJECT = 'moe-gwells-dev'
 stage ( 'test' )
 {
     node ( 'master' )
     {
-        dir( 'database' ){
+        String PODNAME = sh(
+            script:
+                """
+                    oc get pods -n "${PROJECT}" | grep "Running" | grep -Eo "postgresql-[0-9]+-[[:alnum:]]+"
+                """,
+            returnStdout:
+                true
+        ).trim()
+        String STATUS = sh(
+            script:
+                """
+                oc exec "${PODNAME}" -n "${PROJECT}" -- /bin/bash -c \
+                    'psql -d gwells -c \
+                        "SELECT 1 AS online FROM WELLS.WELLS_WELLS LIMIT 1;" | grep -o online'
+                """,
+            returnStdout:
+                true
+        ).trim()
+        if ( STATUS == "online" ){
+            echo POD_NAME +" is online"
             sh """
-                PODNAME=$( oc get pods -n moe-gwells-prod | grep postgresql | grep Running | head -n 1 | awk '{print $1}' )
-                RESULT=$( oc exec ${PODNAME} -n moe-gwells-prod -- /bin/bash -c 'psql -d $POSTGRESQL_DATABASE  -U $POSTGRESQL_USER -c "SELECT 1 AS online FROM WELLS.WELLS_WELLS LIMIT 1;" | grep -o online' )
-                if [ "$( echo $RESULT | grep -o online )" == "online" ]
-                then
-                    oc patch route gwells -n moe-gwells-prod -p '{ "spec": { "to": { "name": "proxy-caddy"}, "port": { "targetPort": "2015-tcp" }}}'
-                    oc patch route proxy-caddy -n moe-gwells-prod -p '{ "spec": { "to": { "name": "gwells" }, "port": { "targetPort": "web" }}}'
+                echo oc patch route gwells -n "${PROJECT}" -p \
+                    '{ "spec": { "to": { "name": "proxy-caddy"}, "port": { "targetPort": "2015-tcp" }}}'
+                echo oc patch route proxy-caddy -n "${PROJECT}" -p \
+                    '{ "spec": { "to": { "name": "gwells" }, "port": { "targetPort": "web" }}}'
 
-                	oc scale dc gwells --timeout=5s --replicas=0 -n moe-gwells-prod
-                	PODNAME=$(oc get pods -n moe-gwells-prod | grep postgresql | grep Running | head -n 1 | awk '{print $1}')
-                	oc exec ${PODNAME} -n moe-gwells-prod -- /bin/bash -c 'psql -d $POSTGRESQL_DATABASE -c "VACUUM FULL;"'
-                	oc exec ${PODNAME} -n moe-gwells-prod -- /bin/bash -c 'psql -t -d $POSTGRESQL_DATABASE -U $POSTGRESQL_USER -c "SELECT db_replicate_step1(_subset_ind=>false);"'
-                	oc exec ${PODNAME} -n moe-gwells-prod -- /bin/bash -c 'psql -t -d $POSTGRESQL_DATABASE -U $POSTGRESQL_USER -c "SELECT db_replicate_step2 ();"'
-
-                    # Simple completeness check, expecting 112000+ wells
-                    WELL_COUNT=$( oc exec ${PODNAME} -n moe-gwells-prod -- /bin/bash -c 'psql -t -d ${POSTGRESQL_DATABASE} -U ${POSTGRESQL_USER} -c "SELECT count(*) from well;"')
-                    if [ ${WELL_COUNT} -gt 112000 ]
-                    then
-                        oc scale dc gwells --timeout=5s --replicas=1 -n moe-gwells-prod
-                        oc patch route gwells -n moe-gwells-prod -p '{ "spec": { "to": { "name": "gwells" }, "port": { "targetPort": "web" }}}'
-                        oc patch route proxy-caddy -n moe-gwells-prod -p '{ "spec": { "to": { "name": "proxy-caddy" }, "port": { "targetPort": "2015-tcp" }}}'
-                    else
-                        exit 2
-                    fi
-
-                else
-                    exit 1
-                fi
+                echo oc scale dc gwells --timeout=5s --replicas=0 -n "${PROJECT}"
+                echo oc exec "${PODNAME}" -n "${PROJECT}" -- /bin/bash -c \
+                    'psql -d gwells -c "VACUUM FULL;"'
+                echo oc exec "${PODNAME}" -n "${PROJECT}" -- /bin/bash -c \
+                    'psql -t -d gwells -U "\${POSTGRESQL_USER}" -c "SELECT db_replicate_step1(_subset_ind=>false);"'
+                echo oc exec "${PODNAME}" -n "${PROJECT}" -- /bin/bash -c \
+                    'psql -t -d gwells -U "\${POSTGRESQL_USER}" -c "SELECT db_replicate_step2 ();"'
             """
+        } else {
+            echo POD_NAME +" is offline"
+        }
+
+
+        String WELL_COUNT = sh(
+            script:
+                """
+                    oc exec "${PODNAME}" -n "${PROJECT}" -- /bin/bash -c \
+                        'psql -t -d gwells -U "\${POSTGRESQL_USER}" -c "SELECT count(*) from well;"'
+                """,
+            returnStdout:
+                true
+        ).trim()
+        echo WELL_COUNT +" is the well count"
+        if ( WELL_COUNT > 112000 ){
+            echo WELL_COUNT +"is enough"
+            //echo oc scale dc gwells --timeout=5s --replicas=1 -n "${PROJECT}"
+            //echo oc patch route gwells -n "${PROJECT}" -p '{ "spec": { "to": { "name": "gwells" }, "port": { "targetPort": "web" }}}'
+            //echo oc patch route proxy-caddy -n "${PROJECT}" -p '{ "spec": { "to": { "name": "proxy-caddy" }, "port": { "targetPort": "2015-tcp" }}}'
+        } else {
+            echo WELL_COUNT +"is not enough"
         }
     }
 }
