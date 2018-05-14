@@ -1,8 +1,21 @@
 <template>
   <div>
-    <b-card no-body class="container p-0 mb-3">
-      <b-alert show variant="info" class="m-0"><p class="m-0">Please take a moment to complete our <a href="https://www.surveymonkey.com/r/Y8DHVPX">short survey</a> to let us know about your Register search page experience.</p></b-alert>
-    </b-card>
+
+    <!-- Active surveys -->
+    <b-alert
+        show
+        variant="info"
+        class="container mb-3"
+        v-for="(survey, index) in surveys"
+        :key="`survey ${index}`">
+      <p class="m-0">
+        <a :href="survey.survey_link">
+          {{ survey.survey_introduction_text }}
+        </a>
+      </p>
+    </b-alert>
+
+    <!-- Admin options -->
     <b-card v-if="userIsAdmin" no-body class="container p-1 mb-3">
       <b-card-header header-tag="header" class="p-1" role="tab">
         <b-btn block href="#" v-b-toggle.adminPanel variant="light" class="text-left">Administrator options</b-btn>
@@ -28,6 +41,8 @@
         </b-card-body>
       </b-collapse>
     </b-card>
+
+    <!-- Main Registries content -->
     <b-card class="container p-1" title="Register of Well Drillers and Well Pump Installers">
       <p>To update contact information or for general enquiries email <a href="mailto:Groundwater@gov.bc.ca">groundwater@gov.bc.ca</a>.</p>
       <p>
@@ -35,6 +50,7 @@
         Learn more about registering as a well driller or well pump installer in B.C.
         </a>
       </p>
+      <!-- Search options -->
       <b-card no-body class="p-3 mb-4">
         <h5>Search for a Well Driller or Well Pump Installer</h5>
         <b-form @submit.prevent="drillerSearch" @reset.prevent="drillerSearchReset({clearDrillers: true})" id="drillerSearchForm">
@@ -124,6 +140,7 @@
           </b-form-row>
         </b-form>
       </b-card>
+      <!-- Search results table -->
       <div ref="registryTableResults">
         <template v-if="!searchLoading">
           <b-row>
@@ -157,6 +174,7 @@
 </template>
 
 <script>
+import ApiService from '@/common/services/ApiService.js'
 import SearchTable from '@/registry/components/search/SearchTable.vue'
 import LegalText from '@/registry/components/Legal.vue'
 import APIErrorMessage from '@/common/components/APIErrorMessage.vue'
@@ -195,7 +213,8 @@ export default {
         ordering: ''
       },
       searchLoading: false,
-      lastSearchedParams: {}
+      lastSearchedParams: {},
+      surveys: []
     }
   },
   computed: {
@@ -293,6 +312,15 @@ export default {
   created () {
     // send request for city list when app is loaded
     this.$store.dispatch(FETCH_CITY_LIST, this.formatActivityForCityList)
+
+    // Fetch current surveys and add 'registries' surveys (if any) to this.surveys to be displayed
+    ApiService.query('surveys/').then((response) => {
+      response.data.forEach((survey) => {
+        if (survey.survey_page === 'r') {
+          this.surveys.push(survey)
+        }
+      })
+    })
   }
 }
 </script>
