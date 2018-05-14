@@ -37,7 +37,6 @@ from registries.models import (
 from registries.permissions import IsAdminOrReadOnly, IsGwellsAdmin
 from registries.serializers import (
     ApplicationAdminSerializer,
-    ApplicationDetailAdminSerializer,
     ApplicationListSerializer,
     CityListSerializer,
     OrganizationListSerializer,
@@ -569,7 +568,7 @@ class ApplicationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
     """
 
     permission_classes = (IsAdminUser,)
-    serializer_class = ApplicationDetailAdminSerializer
+    serializer_class = ApplicationAdminSerializer
     queryset = RegistriesApplication.objects.all() \
         .select_related(
             'registration',

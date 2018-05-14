@@ -665,12 +665,3 @@ class WellClassCodeSerializer(serializers.ModelSerializer):
     class Meta:
         model = WellClassCode
         fields = ('registries_well_class_code', 'description')
-
-
-class ApplicationDetailAdminSerializer(ApplicationAdminSerializer):
-
-    qualifications = serializers.StringRelatedField(
-        source='subactivity.qualification_set',
-        many=True,
-        read_only=True)
-
