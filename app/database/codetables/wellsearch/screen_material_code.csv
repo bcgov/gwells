@@ -1,0 +1,4 @@
+create_user,create_date,update_user,update_date,screen_material_code,description,display_order
+"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","PLASTIC","Plastic","10"
+"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","STNLSS_STL","Stainless Steel","20"
+"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","OTHER","Other","30"

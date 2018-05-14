@@ -1,0 +1,3 @@
+create_user,create_date,update_user,update_date,obs_well_status_code,description,display_order
+ETL_USER,2018-01-08 12:41:41.440024-08,ETL_USER,2018-01-08 12:41:41.440024-08,Inactive,An observation well that no longer part of the provincial observation well network.,0
+ETL_USER,2018-01-08 12:41:41.440024-08,ETL_USER,2018-01-08 12:41:41.440024-08,Active,An observation well that is currently part of the provincial observation well network.,0

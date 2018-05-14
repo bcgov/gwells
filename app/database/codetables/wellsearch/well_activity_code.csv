@@ -1,0 +1,4 @@
+well_activity_code,description,display_order,create_user,create_date,update_user,update_date
+"CON","Construction","2","ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08"
+"ALT","Alteration","4","ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08"
+"DEC","Decommission","6","ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08"

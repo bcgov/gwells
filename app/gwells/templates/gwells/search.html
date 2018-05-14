@@ -1,0 +1,269 @@
+{% extends 'gwells/base.html' %} {% load crispy_forms_tags %}
+
+{% block meta %}{{ block.super }}{% endblock %}
+{% block title %}Search{% endblock %}
+{% block bodyheading_block %}Groundwater Well Search{% endblock %}
+{% block introduction_block %}{% endblock %}
+
+{% block body_block %}
+
+{% if too_many_wells %}
+<div class="row">
+    <div class="col-sm-12 alert alert-warning">
+        <div id="too-many-wells" role="alert" aria-atomic="true">{{ too_many_wells }}</div>
+    </div>
+</div>
+{% elif 'well' in request.GET and not well_list %}
+<div class="row">
+    <div class="col-sm-12 alert alert-warning">
+        <div id="no-records-found" role="alert" aria-atomic="true">No well records could be found.</div>
+    </div>
+</div>
+{% endif %}
+{# 2018/03/27 Moved map error to the same position as other errors. #}
+<div class="row" id="map-errors" hidden>
+    <div class="col-sm-12 alert alert-warning">
+        <div role="alert" aria-atomic="true" class="message"></div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-12">
+        <p>Not all groundwater wells are registered with the province, as registration was voluntary until February 29, 2016. Data quality issues may impact search results.</p>
+        <p>Search by one of the fields below, or zoom to a location on the map and select the "Search Wells in this Area" button.</p>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-5">
+        {% crispy form %}
+        <p>For additional search options, try:</p>
+        <ul>
+            <li><a href="http://maps.gov.bc.ca/ess/hm/wrbc/" id="BCWRAtlas">B.C. Water Resource Atlas</a></li>
+            <li><a href="http://maps.gov.bc.ca/ess/hm/imap4m/" id="iMapBC">iMapBC</a></li>
+        </ul>
+    </div>
+    <div class="col-md-6">
+        <div aria-label="A map associated with GWELLS Search. All well information in this map is accessible via the table of well results that opens below the search form when a search succeeds." id="search-map"></div>
+        <div id="attribution"></div>
+    </div>
+</div>
+<br />
+<div id="wells-json" data-wells-search-json="{{wells_json}}" data-lat-long-box="{{lat_long_box}}"></div>
+
+
+{% if well_list %}
+
+<div class="table-responsive">
+    <table id="results" class="table table-striped">
+        <thead>
+            <tr style="text-align: left;">
+                <th class="numeric">
+                    Well Tag<br/>Number
+                </th>
+                <th class="numeric">
+                    Well ID<br/>Plate Number
+                </th>
+                <th class="html">
+                    Owner Name
+                </th>
+                <th class="html">
+                    Street Address
+                </th>
+                <th class="html">
+                    Lot
+                </th>
+                <th class="html">
+                    Plan
+                </th>
+                <th class="html">
+                    District<br/>Lot
+                </th>
+                <th class="html">
+                    Land<br/>District
+                </th>
+                <th class="numeric">
+                    PID
+                </th>
+                <th class="numeric">
+                    Diameter<br/>(inches)
+                    <!-- TODO: should become a numeric-->
+                </th>
+                <th class="numeric">
+                    Finished Well<br />Depth (feet)
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for well in well_list %}
+            <tr>
+                <td>
+                    <a href="{% url 'well_detail' well.well_tag_number %}">{{ well.well_tag_number }}</a>
+                </td>
+                <td>
+                    {{well.identification_plate_number|default:'&nbsp;' }}
+                </td>
+                <td>
+                    {{ well.owner_full_name|default_if_none:'&nbsp;' }}
+                </td>
+                <td>
+                    {{ well.street_address|default_if_none:'' }} {{ well.city|default_if_none:'&nbsp;' }}
+                </td>
+                <td>
+                    {{ well.legal_lot|default_if_none:'&nbsp;' }}
+                </td>
+                <td>
+                    {{ well.legal_plan|default_if_none:'&nbsp;' }}
+                </td>
+                <td>
+                    {{ well.legal_district_lot|default_if_none:'&nbsp;' }}
+                </td>
+                <td>
+                    {{ land_districts.well.land_district.land_district_code|default_if_none:'&nbsp;' }}
+                </td>
+                <td>
+                    {{ well.legal_pid|stringformat:"09d"|default_if_none:'&nbsp;' }}
+                </td>
+                <td>
+                    {{ well.diameter|default_if_none:'&nbsp;' }}
+                </td>
+                <td>
+                    {{ well.finished_well_depth|default_if_none:'&nbsp;' }}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+    document.getElementById("search-map").scrollIntoView(true);
+</script>
+{% endif %}
+
+{% if 'well' in request.GET %}
+  <br />
+  <p>
+      Can’t find the well you are looking for? Try your search again using a different set of criteria. If you still need more assistance, Contact <a href="https://portal.nrs.gov.bc.ca/web/client/contact">FrontCounterBC</a>.
+  </p>
+{% endif %}
+
+{% endblock %}
+
+{% block jqscript_block %}
+<script>
+    var searchMap = null;
+    var searchMapNodeId = 'search-map';
+    var attribNode = 'attribution'; // The ID of the external node to contain the attribution.
+    var mapErrorsNodeId = 'map-errors'; // The ID of the external node to display map operation errors.
+
+    // Options for creating the searchMap. This map instance has the ability to drive search queries via the
+    // startIdentifyWellsOperation, which allows a user to draw a rectangle, and the endIdentifyWellsOperation,
+    // which bundles opposite corners of this rectangle into the form before submitting it for the server
+    // to process. The map also displays any wells successfully returned from a form search, whether or not
+    // the search was driven by drawing a rectangle or by a user manually submitting the form.
+    // Wells can be clicked to display a subset of their tabulated information in a popup directly on the map.
+    var searchMapOptions = {
+        SEARCH_URL: "{% url 'map_well_search' %}",
+        // The ID of the addMap div.
+        mapNodeId: searchMapNodeId,
+        // Minimum zoom level of the map (i.e., how far it can be zoomed out)
+        minZoom: 4,
+        // Maximum zoom of the map (i.e., how far it can be zoomed in)
+        maxZoom: 17,
+        // Bounding lats and longs of the map, containing the lat/long extremes of BC.
+        mapBounds: {
+            north: 60.4,
+            south: 47.5,
+            west: -139.073671,
+            east: -114.033822,
+            padding: 0.05 // Margin beyond extremes to pad the bounds with, as a ratio of the total bounding box.
+        },
+        // ESRI layers associated with the map
+        esriLayers: [{
+            url: 'https://maps.gov.bc.ca/arcserver/rest/services/Province/roads_wm/MapServer'
+        }],
+        // WMS layers associated with the map
+        wmsLayers: [{
+            rootUrl: 'https://openmaps.gov.bc.ca/geo/pub/WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW/ows?',
+            format: 'image/png',
+            layers: 'pub:WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW',
+            styles: 'PMBC_Parcel_Fabric_Cadastre_Outlined',
+            transparent: true
+        }],
+        initialExtent: null,
+        externalQueryCallback: searchWellsByExtentCallback,
+        externalAttributionNodeId: attribNode,
+        mapErrorsNodeId: mapErrorsNodeId
+    };
+
+    // Hard-coded names for the hidden lat-long fields that delineate a
+    // rectangle drawn by the user as part of an identifyWells operation.
+    var startLatLongFieldName = "start_lat_long";
+    var endLatLongFieldName = "end_lat_long";
+    var latLongDelimiter = ",";
+
+    function searchWellsByExtentCallback(startLatLong, endLatLong) {
+        if (startLatLong && endLatLong) {
+            var startLatLongString = startLatLong.lat + latLongDelimiter + startLatLong.lng;
+            var endLatLongString = endLatLong.lat + latLongDelimiter + endLatLong.lng;
+            $("[name=" + startLatLongFieldName + "]").val(startLatLongString);
+            $("[name=" + endLatLongFieldName + "]").val(endLatLongString);
+        }
+        $("#id-searchForm").submit();
+    }
+
+    $(document).ready(function() {
+        $('[data-toggle="popover"]').popover({
+            'trigger': 'hover'
+        });
+        var wellsJson = $("#wells-json").attr("data-wells-search-json") || null;
+        var wells = JSON.parse(wellsJson);
+        var latLongBox = JSON.parse($("#wells-json").attr("data-lat-long-box") || null);
+        searchMapOptions.initialExtent = latLongBox;
+        searchMapOptions.initialWells = wells;
+        searchMap = new WellsMap(searchMapOptions);
+
+        // Definition for results table
+        $('#results').DataTable({
+            'columnDefs': [{
+                "type": "html-num",
+                "targets": "numeric",
+                "orderSequence": ["asc", "desc"],
+                "render": function(data, type, row) {
+                    var result = data.trim();
+                    return result;
+                }
+            }, {
+                "type": "html",
+                "targets": "html",
+                "render": function(data, type, row) {
+                    result = data.trim();
+                    result = data.replace("\r", "").replace("\n", "");
+                    return result;
+                }
+            }],
+            'rowReorder': true,
+            'searching': false
+        });
+    });
+</script>
+<script>
+    /*  To help show the popup when putting the focus on the question mark icon with keyboard*/
+    document.getElementById("well_tag_question").addEventListener("focusin", trigger_over);
+    document.getElementById("well_tag_question").addEventListener("focusout", trigger_out);
+    document.getElementById("address_question").addEventListener("focusin", trigger_over);
+    document.getElementById("address_question").addEventListener("focusout", trigger_out);
+    document.getElementById("legal_id_question").addEventListener("focusin", trigger_over);
+    document.getElementById("legal_id_question").addEventListener("focusout", trigger_out);
+    document.getElementById("owner_question").addEventListener("focusin", trigger_over);
+    document.getElementById("owner_question").addEventListener("focusout", trigger_out);
+
+    function trigger_over() {
+        $(this).trigger('mouseover');
+    }
+
+    function trigger_out() {
+        $(this).trigger('mouseout');
+    }
+</script>
+{% endblock %}

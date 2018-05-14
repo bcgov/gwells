@@ -1,0 +1,5 @@
+export const FETCH_CITY_LIST = 'FETCH_CITY_LIST'
+export const FETCH_DRILLER_LIST = 'FETCH_DRILLER_LIST'
+export const FETCH_DRILLER = 'FETCH_DRILLER'
+export const LOGIN = 'LOGIN'
+export const LOGOUT = 'LOGOUT'

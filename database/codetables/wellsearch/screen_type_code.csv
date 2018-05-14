@@ -1,4 +1,0 @@
-create_user,create_date,update_user,update_date,screen_type_code,description,display_order
-"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","PIPE_SIZE","Pipe size","10"
-"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","TELESCOPE","Telescope","20"
-"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","OTHER","Other","30"

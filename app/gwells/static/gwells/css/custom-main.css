@@ -1,0 +1,850 @@
+/* BC Gov Font workaround for Cross-Origin Resource Sharing block by CL and RT */
+
+@font-face {
+    font-family: 'Myriad-Pro';
+    src: url('../fonts/MyriadWebPro.ttf');
+}
+
+
+/* background image */
+
+html,
+body {
+    font-size: 13px !important;
+    background-color: #f1f1f1;
+    color: #494949;
+    font-family: Myriad-Pro, Calibri, Arial, sans-serif;
+}
+
+body {
+    font-size: 13px !important;
+}
+
+th {
+    white-space: nowrap;
+    vertical-align: top !important;
+    text-align: left;
+}
+
+#main-content fieldset {
+    page-break-inside: avoid;
+    page-break-after: avoid;
+    padding-bottom: 8px;
+}
+
+.template {
+    font-size: 13px;
+}
+
+#footer {
+    margin-top: -44px;
+}
+
+
+/* Leaflet map styles */
+
+#add-map {
+    height: 360px;
+}
+
+#search-map {
+    height: 400px;
+}
+
+#detail-map {
+    height: 360px;
+}
+
+div .leaflet-area-search {
+    display: inline-block;
+    color: #000;
+    border: 1px solid #ddd;
+    background: #fff;
+    box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.4);
+    padding: 5px;
+    cursor: pointer;
+}
+
+div .leaflet-select-zoom {
+    background-image: url('../icons/select-zoom.png');
+    width: 30px;
+    height: 30px;
+    left: 2px;
+    box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.4);
+    cursor: pointer;
+}
+
+div .leaflet-select-zoom:hover {
+    opacity: 0.8;
+}
+
+div .leaflet-geolocation {
+    background-image: url('../icons/geolocate.png');
+    width: 30px;
+    height: 30px;
+    left: 2px;
+    box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.4);
+    cursor: pointer;
+}
+
+div .leaflet-geolocation:hover {
+    opacity: 0.8;
+}
+
+#header .bcgov-title h1 {
+    color: #fff;
+    font-size: 35px;
+    margin-bottom: 0;
+    margin-left: 15px;
+    margin-top: 20px;
+}
+
+.bcgov-title {
+    margin-left: -35px;
+    padding-bottom: 10px;
+}
+
+#env-user-container {
+    position: relative;
+    text-align: right;
+    width: 50%;
+    float: right;
+}
+
+.header-main-right {
+    margin-top: 16px;
+}
+
+.header-main-right>label {
+    color: #fff;
+    padding-right: 20px;
+}
+
+.navbar-fixed-top {
+    position: absolute;
+}
+
+a.env-authenticate {
+    margin-left: 10px;
+    border: 1px solid #fff;
+}
+
+a.env-pmt-list {
+    border: 1px solid #fff;
+}
+
+a label.env-username {
+    font-style: normal;
+    text-decoration-style: wavy !important;
+    text-decoration: underline;
+    color: #fff;
+    margin-right: 15px;
+    cursor: pointer;
+}
+
+.env-user {
+    margin: 25px 0;
+}
+
+.env-user label {
+    color: #fff;
+}
+
+#breadcrumbContainer {
+    width: 100%;
+    float: left;
+    height: 30px;
+    padding: 0;
+}
+
+.header-main-left {
+    white-space: nowrap;
+}
+
+.top-margin-8 {
+    margin-top: 8px;
+}
+
+@media screen (max-width: 767px) {
+    .env-container {
+        padding-top: 10px !important;
+        position: relative;
+    }
+    #header #screen-logo img {
+        width: 95%;
+        height: 95%;
+        padding-left: 15px;
+    }
+    #breadcrumbContainer {
+        height: auto;
+        padding: 10px 0;
+    }
+}
+
+@media screen (max-width:1200px) {
+    .bcgov-title {
+        margin-left: 0px;
+    }
+}
+
+@media screen (min-width: 768px) {
+    .env-container {
+        padding-top: 150px !important;
+        position: relative;
+    }
+    #breadcrumbContainer {
+        padding: 0;
+    }
+}
+
+@media print {
+    fieldset {
+        page-break-after: avoid;
+        page-break-before: avoid;
+        page-break-inside: avoid;
+    }
+    table {
+        margin: 0px;
+        margin-top: 0px;
+        margin-bottom: 0px !important;
+        padding-top: 0px;
+        padding-bottom: 0px;
+    }
+    legend {
+        margin-bottom: 5px;
+    }
+
+    .template {
+        font-size: 10px !important;
+    }
+
+    .show-for-print {
+        display: block !important;
+    }
+
+    .hide-for-print {
+        display: none !important;
+    }
+
+    .shift-up-navbar-height {
+        top: -40px;
+    }
+    /* need to override this because of a dependency on a media size block in a parent*/
+    .hidden-xs {
+        display: block !important;
+    }
+
+    #header-main {
+        position: relative;
+        border-bottom: none;
+        margin-bottom: 0;
+    }
+    .left {
+        position: relative;
+        left: -60px;
+    }
+    .print-no-break {
+        page-break-after: avoid;
+        page-break-before: avoid;
+        page-break-inside: avoid;
+    }
+    .col-print-1 {
+        width: 8%;
+        float: left;
+    }
+    .col-print-2 {
+        width: 16%;
+        float: left;
+    }
+    .col-print-3 {
+        width: 25%;
+        float: left;
+    }
+    .col-print-4 {
+        width: 33%;
+        float: left;
+    }
+    .col-print-5 {
+        width: 42%;
+        float: left;
+    }
+    .col-print-6 {
+        width: 50%;
+        float: left;
+    }
+    .col-print-offset-6 {
+        margin-left: 50%;
+        width: 50%;
+        float: left;
+    }
+    .col-print-7 {
+        width: 58%;
+        float: left;
+    }
+    .col-print-8 {
+        width: 66%;
+        float: left;
+    }
+    .col-print-9 {
+        width: 75%;
+        float: left;
+    }
+    .col-print-10 {
+        width: 83%;
+        float: left;
+    }
+    .col-print-11 {
+        width: 92%;
+        float: left;
+    }
+    .col-print-12 {
+        width: 100%;
+        float: left;
+    }
+    .margin-left {
+        margin-left: 60px;
+    }
+    #main-content .print-compressed {
+        padding-left: 0px;
+        padding-right: 0px;
+        padding-top: 0px;
+        padding-bottom: 0px;
+    }
+    .print-pad5-right {
+        padding-right: 5px !important;
+        padding-left: 0px !important;
+    }
+    .print-pad5-left {
+        padding-left: 5px !important;
+        padding-right: 0px !important;
+    }
+
+    #header .bcgov-title h1 {
+      font-size: 32px;
+    }
+}
+
+.hide-for-screen {
+    display: none;
+}
+
+
+/* fix navbar button to resemble standard button toggle control */
+
+button.navbar-toggle {
+    background-color: transparent !important;
+}
+
+button.env-button-custom {
+    border: none;
+    right: 30px;
+    padding-bottom: 15px;
+}
+
+
+/* accurate colours for navbar links */
+
+#navbar>ul.nav>li>a {
+    color: #fff;
+}
+
+#navbar>ul.nav>li.active>a {
+    color: #1a5a96;
+}
+
+#navbar>ul.nav>li:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: #1a5a96;
+}
+
+
+/* adjust spacing for small screens */
+
+@media (max-width: 767px) {
+    #env-logo {
+        margin: 5px 0 5px 15px;
+    }
+    .navigationRibbon {
+        visibility: hidden;
+        height: 0;
+    }
+    #navbar {
+        width: 100%;
+        border-top: none;
+    }
+    .navbar-toggle {
+        margin-right: 0;
+        margin-bottom: 0;
+    }
+}
+
+/* reset padding for dropdown menu controls */
+
+.contentPageMainColumn ul.dropdown-menu {
+    padding-left: 0 !important;
+}
+
+.contentPageMainColumn ul.list-group {
+    padding-left: 0;
+}
+
+
+/* remove block image for dropdown menu <li> items */
+
+ul.dropdown-menu>li {
+    background-image: none !important;
+    padding-left: 0 !important;
+}
+
+
+/* Bring back the Bootstrap Column Padding*/
+
+.col-xs-1,
+.col-sm-1,
+.col-md-1,
+.col-lg-1,
+.col-xs-2,
+.col-sm-2,
+.col-md-2,
+.col-lg-2,
+.col-xs-3,
+.col-sm-3,
+.col-md-3,
+.col-lg-3,
+.col-xs-4,
+.col-sm-4,
+.col-md-4,
+.col-lg-4,
+.col-xs-5,
+.col-sm-5,
+.col-md-5,
+.col-lg-5,
+.col-xs-6,
+.col-sm-6,
+.col-md-6,
+.col-lg-6,
+.col-xs-7,
+.col-sm-7,
+.col-md-7,
+.col-lg-7,
+.col-xs-8,
+.col-sm-8,
+.col-md-8,
+.col-lg-8,
+.col-xs-9,
+.col-sm-9,
+.col-md-9,
+.col-lg-9,
+.col-xs-10,
+.col-sm-10,
+.col-md-10,
+.col-lg-10,
+.col-xs-11,
+.col-sm-11,
+.col-md-11,
+.col-lg-11,
+.col-xs-12,
+.col-sm-12,
+.col-md-12,
+.col-lg-12 {
+    position: relative;
+    min-height: 1px;
+    /** padding-right: 10px; **/
+    /** padding-left: 10px; **/
+}
+
+
+/* Modal Window Dressing */
+
+h4.modal-title {
+    color: #ffffff;
+    font-weight: bold;
+}
+
+.modal-header {
+    color: #ffffff;
+    background-color: #003366;
+    border-color: #003366;
+}
+
+.modal-header>button {
+    color: #fff;
+    margin-top: 0 !important;
+    opacity: initial;
+    text-shadow: initial;
+}
+
+.close:focus,
+.close:hover {
+    color: #fcba19;
+    opacity: initial;
+    text-decoration: underline;
+}
+
+
+/* Bring back Responsive Table Responsiveness (e.g., horizonal scroll bar) */
+
+.table-responsive {
+    min-height: 0.01% !important;
+    overflow-x: auto !important;
+}
+
+
+/* Remove bullets from Datatable pagination control <li> items */
+
+div#bs-datatables_paginate>ul>li,
+ul.nav.nav-tabs>li,
+ul.nav.nav-pills>li,
+ul.pagination>li,
+ul.pager>li,
+ul.breadcrumb>li {
+    list-style-type: none !important;
+    list-style-image: none !important;
+    background-image: none !important;
+    padding-left: 0 !important;
+}
+
+
+/* disable wrapping and left-align table header content for prettier responsive tables */
+
+
+/* utility class for sorting */
+
+.numeric {}
+
+
+/* utility class for sorting */
+
+.html {}
+
+
+/* remove bullets from list-group-item <li> items */
+
+ul.list-group>li.list-group-item {
+    list-style-type: none !important;
+    list-style-image: none !important;
+    background-image: none !important;
+    padding-left: 15px;
+    margin-bottom: -1px;
+}
+
+
+/* tweak nav tab spacing */
+
+.nav-tabs>li {
+    margin-bottom: -1px !important;
+}
+
+
+/* restore panel styles */
+
+.panel-heading {
+    cursor: default !important;
+}
+
+.panel-env {
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.4);
+    border: 0px solid #335c85;
+    border-radius: 0 0 5px 5px;
+}
+
+.panel-env>.panel-footer {
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.4) inset;
+    border: 0px solid #335c85;
+    border-radius: 0 0 5px 5px;
+    background-color: #ebebeb;
+}
+
+.panel-env>.panel-heading {
+    color: #ffffff;
+    background-color: #335c85;
+    border-color: #335c85;
+}
+
+.panel-env>.panel-body {
+    background-color: #f1f1f2;
+}
+
+.panel-primary>.panel-heading {
+    color: #ffffff;
+    background-color: #003366;
+    border-color: #003366;
+}
+
+.panel-success>.panel-heading {
+    color: #3c763d;
+    background-color: #dff0d8;
+    border-color: #d6e9c6;
+}
+
+.panel-warning>.panel-heading {
+    color: #8a6d3b;
+    background-color: #fcf8e3;
+    border-color: #faebcc;
+}
+
+.panel-danger>.panel-heading {
+    color: #a94442;
+    background-color: #f2dede;
+    border-color: #ebccd1;
+}
+
+.panel-info>.panel-heading {
+    color: #31708f;
+    background-color: #d9edf7;
+    border-color: #bce8f1;
+}
+
+.panel-info>.panel-body {
+    background-color: #f1f1f2;
+}
+
+.panel-default>.panel-heading {
+    color: #fff;
+    background-color: #666;
+    border-color: #222;
+}
+
+.panel-default>.panel-body {
+    background-color: #f1f1f2;
+}
+
+.panel>.env-payment-list>.dataTables_wrapper {
+    padding-top: 10px;
+    border-top: solid 1px #ddd;
+}
+
+h3.panel-title {
+    padding: 0 15px;
+    font-size: 180%;
+}
+
+#pageIntro {
+    margin-bottom: 20px;
+}
+
+.env-login-options .row {}
+
+.env-login-option {
+    text-align: center;
+    padding-bottom: 30px;
+}
+
+.env-login-option img {
+    box-shadow: rgba(0, 0, 0, 0.4) 0 2px 2px;
+    margin-bottom: 15px;
+}
+
+
+/* env Icons */
+
+i.text-env {
+    color: #f4bd48;
+    text-shadow: 0 1px 0 #000;
+}
+
+.panel-info h3.panel-title small {
+    color: #000;
+}
+
+h3.panel-title small {
+    color: #fff;
+}
+
+.panel>.panel-body+.table,
+.panel>.panel-body+.table-responsive,
+.panel>.table+.panel-body,
+.panel>.table-responsive+.panel-body {
+    border-top: none;
+}
+
+
+/* Payment List */
+
+label {
+    display: inline-block;
+    max-width: 100%;
+    margin-bottom: 5px;
+    font-weight: 700;
+}
+
+
+/*  ALERTS */
+
+#main-content .alert {
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 3px solid transparent;
+}
+
+#main-content .alert a {
+    text-decoration: underline;
+}
+
+#main-content .alert li {
+    list-style-type: none !important;
+    list-style-image: none !important;
+    background-image: none !important;
+}
+
+#main-content .alert h4 {
+    margin-top: 0;
+    color: inherit;
+}
+
+#main-content .alert .alert-link {
+    font-weight: bold;
+}
+
+#main-content .alert>p,
+.alert>ul {
+    margin-bottom: 0;
+}
+
+#main-content .alert>p+p {
+    margin-top: 5px;
+}
+
+#main-content .alert-dismissible {
+    padding-right: 35px;
+}
+
+#main-content .alert-dismissible .close {
+    position: relative;
+    top: -2px;
+    right: -21px;
+    color: inherit;
+}
+
+#main-content .alert-default {
+    color: rgba(0, 0, 0, 0.8);
+    background-color: #ccc;
+    border-color: #999;
+}
+
+#main-content .alert-default hr {
+    border-top-color: #999;
+}
+
+#main-content .alert-default .alert-link {
+    color: rgba(0, 0, 0, 0.8);
+}
+
+#main-content .alert-success {
+    color: #3c763d;
+    background-color: #dff0d8;
+    border-color: #5d884b;
+}
+
+#main-content .alert-success hr {
+    border-top-color: #c9e2b3;
+}
+
+#main-content .alert-success .alert-link {
+    color: #2b542c;
+}
+
+#main-content .alert-info {
+    color: #31708f;
+    background-color: #d9edf7;
+    border-color: #38598a;
+}
+
+#main-content .alert-info hr {
+    border-top-color: #a6e1ec;
+}
+
+#main-content .alert-info .alert-link {
+    color: #245269;
+}
+
+#main-content .alert-warning {
+    color: #8a6d3b;
+    background-color: #fcf8e3;
+    border-color: #f4bd48;
+}
+
+#main-content .alert-warning hr {
+    border-top-color: #f7e1b5;
+}
+
+#main-content .alert-warning .alert-link {
+    color: #66512c;
+}
+
+#main-content .alert-danger {
+    color: #a94442;
+    background-color: #f2dede;
+    border-color: #c81212;
+}
+
+#main-content .alert-danger hr {
+    border-top-color: #e4b9c0;
+}
+
+#main-content .alert-danger .alert-link {
+    color: #843534;
+}
+
+#main-content .text-default {
+    color: #444;
+}
+
+
+/* LEGAL STATEMENT */
+
+.env-legal {
+    height: 300px;
+    overflow: scroll;
+    border: 2px solid #ccc;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: rgba(0, 0, 0, 0.4) -10px 0 20px inset;
+}
+
+.visuallyhidden {
+    border: 0;
+    clip: rect(0 0 0 0);
+    height: 1px;
+    width: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    position: absolute;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.survey-form{
+     /* border-bottom: 1px solid grey; */
+}/* selector anchor */
+
+.survey-form input {/*decendent selector*/
+    margin: 6px;
+}
+
+.survey-form select {/*decendent selector*/
+    margin: 6px;
+}
+
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+
+
+.row.like-table-row {
+    display: table-row;
+}
+.row.like-table-row > div {
+    display: table-cell;
+    vertical-align: middle;
+    border: 1px solid #000;
+}
+.header-row {
+    font-weight: bold;
+}

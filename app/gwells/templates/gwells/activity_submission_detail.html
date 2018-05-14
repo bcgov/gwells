@@ -1,0 +1,94 @@
+{% extends 'gwells/base.html' %}
+
+{% block title %}Well Activity Submission{% endblock %}
+
+{% block bodyheading_block %}Record of work performed on a well{% endblock %}
+
+{% block introduction_block %}
+{% endblock %}
+
+{% block body_block %}
+
+    <div class="row">
+        <div class="col-md-12">
+            <label for="well_activity_type">Type of Work:</label>
+            <span id="well_activity_type">{{ activity_submission.well_activity_type.description }}</span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <label for="well_class">Class of Well:</label>
+            <span id="well_class">{{ activity_submission.well_class.description }}</span>
+        </div>
+        <div class="col-md-6">
+            {% if activity_submission.well_class.well_class_code == 'WATER_SUPL' %}
+            <label for="intended_water_use">Intended water use:</label>
+            <span id="intended_water_use">{{ activity_submission.intended_water_use.description }}</span>
+            {% else %}
+            <label for="well_subclass">Subclass:</label>
+            <span id="well_subclass">{{ activity_submission.well_subclass.description }}</span>
+            {% endif %}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <label for="well_tag_number">Well Tag Number:</label>
+            <span id="well_tag_number">{{ activity_submission.well_tag_number }}</span>
+        </div>
+        <div class="col-md-6">
+            <label for="owner">Owner:</label>
+            <span id="owner">{{ activity_submission.owner_full_name }}</span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <label for="address">Street Address:</label>
+            <span id="address">{{ activity_submission.street_address }}</span>
+        </div>
+        <div class="col-md-6">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <label for="latitude">Latitude:</label>
+            <span id="latitude">{{ activity_submission.latitude }}</span>
+        </div>
+        <div class="col-md-6">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <label for="longitude">Longitude:</label>
+            <span id="longitude">{{ activity_submission.longitude }}</span>
+        </div>
+        <div class="col-md-6">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <label for="identification_plate_number">Identification Plate Number:</label>
+            <span id="identification_plate_number">{{ activity_submission.identification_plate_number }}</span>
+        </div>
+        <div class="col-md-6">
+            <label for="location_desc">Location Description:</label>
+            <span id="location_desc">{{ activity_submission.well_location_description }}</span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <label for="orientation">Orientation is Vertical:</label>
+            <span id="orientation">{{ activity_submission.orientation_vertical }}</span>
+        </div>
+        <div class="col-md-6">
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block jqscript_block %}
+    <script>
+        $(document).ready(function(){
+            $('[data-toggle="popover"]').popover();
+        });
+    </script>
+{% endblock %}

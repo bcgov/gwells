@@ -1,0 +1,304 @@
+{% extends 'gwells/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Activity Submission{% endblock %}
+
+{% block bodyheading_block %}Submit Activity{% endblock %}
+
+{% block introduction_block %}
+{% if wizard.steps.current == 'type_and_class' %}
+    Submit activity on a well that does not exist in the system. Try a <a href="{% url 'search' %}">search</a> to see if the well exists in the system before submitting a report.
+{% else %}
+    {{ wizard_data.well_activity_type }} - {{ wizard_data.well_class }} - {{ wizard_data.work_start_date }}
+{% endif %}
+     <br /><br />
+{% endblock %}
+
+{% block body_block %}
+
+<h4 class="stepheading">Step {{ wizard.steps.step1 }} of {{ wizard.steps.count }}</h4>
+		<form action="" method="post">
+            {% csrf_token %}
+            {{ wizard.management_form }}
+
+            {% if wizard.form.forms %}
+                {{ wizard.form.management_form }}
+                {% for form in wizard.form.forms %}
+                    {% crispy form %}
+                {% endfor %}
+            {% else %}
+                {% crispy wizard.form %}
+            {% endif %}
+
+            <div class="form-group formButtons">
+                <div class="controls">
+                {% if wizard.steps.prev %}
+                    <a class="btn btn-default" id="previous_button" href="javascript:history.go(-1);">Previous Step</a>
+                {% endif %}
+                {% if wizard.steps.next %}
+                    <input type="submit" value="Next Step" class="btn btn-primary" id="submit-id-next" />
+                {% else %}
+                    <input type="submit" value="Submit Report" class="btn btn-primary" id="submit-id-s" />
+                {% endif %}
+                </div>
+            </div>
+		</form>    
+
+{% endblock %}
+
+{% block jqscript_block %}
+{% if wizard.steps.current == 'type_and_class' %}
+<script type="text/javascript">
+  $(function () {
+    $('#id_type_and_class-work_start_date').datepicker({ dateFormat: 'yy-mm-dd' });
+    $('#id_type_and_class-work_end_date').datepicker({ dateFormat: 'yy-mm-dd' });
+    $('#divSubclass').hide();
+    var wherePlateAttached = ['Well Casing', 'Well Cap or Cover', 'Hand Pump', 'Pump House or Vault Wall'];
+    $('#id_type_and_class-where_plate_attached').autocomplete({
+      source: wherePlateAttached
+    });
+  });
+  $('#id_type_and_class-well_class').on('change', function() {
+    if ($('#id_type_and_class-well_class option:selected').val() == '{{ water_supply_well_class_code }}') {
+      $('#id_type_and_class-well_subclass option').prop('selected', false);
+      //$('#divSubclass').hide();
+      $('#divIntendedWaterUseCode').show();
+    } else {
+      $('#id_type_and_class-intended_water_use option').prop('selected', false);
+      $('#divIntendedWaterUseCode').hide();
+      //$('#divSubclass').show();
+    }
+  });
+  $('#id_type_and_class-well_class').trigger('change');
+
+  $('#chkSameAsPersonResponsible').on('change', function() {
+    if ($('#chkSameAsPersonResponsible').is(':checked') && $('#id_type_and_class-driller_responsible').prop('selectedIndex') > 0) {
+      var dvalue = $('#id_type_and_class-driller_responsible option:selected').text();
+      var index = dvalue.indexOf('-');
+      if (index > 0) {
+        dvalue = dvalue.substring(0, index-1);
+      }
+      $('#id_type_and_class-driller_name').val(dvalue);
+      $('#id_type_and_class-driller_name').prop("readonly", true);
+    } else {
+      $('#id_type_and_class-driller_name').prop("readonly", false);
+    }
+  });
+</script>
+{% elif wizard.steps.current == 'location' %}
+<script>
+  $('#chkSameAsOwnerAddress').on('change', function() {
+    if ($('#chkSameAsOwnerAddress').is(':checked')) {
+      $('#id_location-street_address').val('{{ wizard_data.owner_mailing_address }}');
+      $('#id_location-street_address').prop("readonly", true);
+      $('#id_location-city').val('{{ wizard_data.owner_city }}');
+      $('#id_location-city').prop("readonly", true);
+    } else {
+      $('#id_location-street_address').prop("readonly", false);
+      $('#id_location-city').prop("readonly", false);
+    }
+  });
+</script>
+{% elif wizard.steps.current == 'gps' %}
+<script>
+  /** addMap block */
+  var addMap = null;
+  // Options for creating the addMap. This was the first map instance created, and as such the options are more fleshed-out
+  // with alternative examples that were (or might be) considered, and therefore may be used as a template for developing
+  // future out-of-the-box WellsMap instances.
+  // This map instance has the ability to display a pushpin that the user can move by clicking and dragging; through the
+  // wellPushpinMoveCallback, it communicates the latitude and longitude of the pushpin to the form template, which then
+  // triggers the change events on the designated latitude and longitude fields. As with all pushpin map instances, the
+  // map issues AJAX queries every time the map or the pushpin moves, so that the user always sees surrounding wells, and
+  // the map 'forgets' wells that are outside of the bounding box.
+  var addMapOptions = {
+      // The ID of the addMap div.
+      mapNodeId: 'add-map',
+      // ESRI layers associated with the map
+      esriLayers: [
+          /*{ // This is an alternate basemap.
+              url: 'http://maps.gov.bc.ca/arcgis/rest/services/province/web_mercator_cache/MapServer/'
+          },*/
+          {
+              url: 'https://maps.gov.bc.ca/arcserver/rest/services/Province/roads_wm/MapServer'
+          }
+      ],
+      // WMS layers associated with the map
+      wmsLayers: [
+          {
+              rootUrl: 'https://openmaps.gov.bc.ca/geo/pub/WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW/ows?',
+              format: 'image/png',
+              layers: 'pub:WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW',
+              styles: 'PMBC_Parcel_Fabric_Cadastre_Outlined', // TODO: Verify style
+              transparent: true
+          }/*,
+          {   // This is the DataBC Wells layer as viewed in iMap. Its data is updated daily, but not continuously, so it is likely not suitable for the GWELLS application.
+              // It is presented here merely for possible convenience.
+              rootUrl: 'https://openmaps.gov.bc.ca/geo/pub/WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW/ows?',
+              format: 'image/png',
+              layers: 'pub:WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW',
+              styles: 'Water_Wells_All',
+              transparent: true
+          } */
+      ],
+      initCentre: null, // Will be set in $(document).ready(), if lat/long fields are populated
+      // Minimum zoom level of the map (i.e., how far it can be zoomed out)
+      minZoom: 4,
+      // Maximum zoom of the map (i.e., how far it can be zoomed in)
+      maxZoom: 17,
+      // Scrollwheel zooms should be centred to keep pin in view
+      centreZoom: true,
+      // Bounding lats and longs of the map, corresponding to the lat/long extremes of BC.
+      mapBounds: {
+          north:  60.0223,
+          south: 48.204556,
+          west: -139.073671,
+          east: -114.033822,
+          padding: 0.05 // Margin beyond extremes to pad the bounds with, as a ratio of the total bounding box.
+      },
+      wellPushpinInit: null, // Will be set in $(document).ready(), if lat/long fields are populated
+      wellPushpinMoveCallback: pushpinMoveCallback,
+      externalAttributionNodeId: 'attribution' // The ID of the external node to contain the attribution.
+  };
+
+  // Sets the latitude and longitude fields programmatically, rounding to
+  // six decimal places per database standard.
+  function setLatLongFields(lat, long) {
+    var fixedLat = lat.toFixed(6);
+    var fixedLong = long.toFixed(6);
+    $(latNodeSelector).val(fixedLat).trigger(programmaticChangeEventName);
+    $(longNodeSelector).val(fixedLong).trigger(programmaticChangeEventName);
+  }
+
+  // Updates the latitude and longitude fields with the position of the pushpin
+  // for the prospective well when the pushpin is moved.
+  // newLatLng is a Leaflet LatLng object.
+  function pushpinMoveCallback (newLatLng) {
+    setLatLongFields(newLatLng.lat, newLatLng.lng);
+  }
+
+  // Places a well pushpin on the map based on the coordinates of the lat/long fields (in decimal degrees),
+  // passing these coordinates along to the map for it to generate or move the pushpin as it sees fit.
+  function placeWellPushpin () {
+    var lat = parseFloat($(latNodeSelector).val());
+    var long = parseFloat($(longNodeSelector).val());
+    if (lat !== void 0 && long !== void 0) {
+      addMap.placeWellPushpin([lat, long]);
+    }
+  };
+
+  /** CoordSync block */
+
+  // JQuery selectors for the appropriate spatial coordinate DOM nodes.
+  var latNodeSelector = '#id_gps-latitude';
+  var longNodeSelector = '#id_gps-longitude';
+  var latDMSDegreeNodeSelector = '#id_gps-latitude_d';
+  var latDMSMinuteNodeSelector = '#id_gps-latitude_m';
+  var latDMSSecondNodeSelector = '#id_gps-latitude_s';
+  var longDMSDegreeNodeSelector = '#id_gps-longitude_d';
+  var longDMSMinuteNodeSelector = '#id_gps-longitude_m';
+  var longDMSSecondNodeSelector = '#id_gps-longitude_s';
+  var zoneUTMNodeSelector  = '#id_gps-zone';
+  var eastingUTMNodeSelector  = '#id_gps-utm_easting';
+  var northingUTMNodeSelector  = '#id_gps-utm_northing';
+
+  // The precision of the coordinates
+  var latLongDDPrecision = 6;
+  var latLongDMSSecondPrecision = 2;
+  var utmEastingPrecision = 0;
+  var utmNorthingPrecision = 0;
+
+  // The name of the programmatic change event.
+  var programmaticChangeEventName = 'programmatic-change';
+
+  // CSS selector for the geographic warning pane
+  var coordErrorPaneSelector = '#coord-error-pane'
+
+  // Callback sent to coordSync, to be run when users manually change coordinate fields.
+  function validationErrorCallback (error) {
+    if (error === '') {
+      // If the error message was empty, hide the error pane and clear it.
+      $(coordErrorPaneSelector).hide();
+      $(coordErrorPaneSelector).text('');
+    } else {
+      // If the error message exists, remove the well pushpin and display the message in the error pane.
+      addMap.removeWellPushpin();
+      $(coordErrorPaneSelector).text(error);
+      $(coordErrorPaneSelector).show();
+    }
+  }
+
+  var coordSyncOptions = {
+      progChangeEvent: programmaticChangeEventName,
+      latDDNodeSelector: latNodeSelector, 
+      longDDNodeSelector: longNodeSelector,
+      latDMSDegreeNodeSelector: latDMSDegreeNodeSelector,
+      latDMSMinuteNodeSelector: latDMSMinuteNodeSelector,
+      latDMSSecondNodeSelector: latDMSSecondNodeSelector,
+      longDMSDegreeNodeSelector: longDMSDegreeNodeSelector,
+      longDMSMinuteNodeSelector: longDMSMinuteNodeSelector,
+      longDMSSecondNodeSelector: longDMSSecondNodeSelector,
+      zoneUTMNodeSelector: zoneUTMNodeSelector,
+      eastingUTMNodeSelector: eastingUTMNodeSelector,
+      northingUTMNodeSelector: northingUTMNodeSelector,
+      latLongDDBoundingBox: addMapOptions.mapBounds,
+      latLongDDPrecision: latLongDDPrecision,
+      latLongDMSSecondPrecision: latLongDMSSecondPrecision,
+      utmEastingPrecision: utmEastingPrecision,
+      utmNorthingPrecision: utmNorthingPrecision,
+      validationErrorCallback: validationErrorCallback,
+      validationSuccessCallback: placeWellPushpin      
+    };
+
+  // On page load, we generate addMap and initiate CoordSync to individually manage map behaviour and
+  // the coordination of the coordinate input fields.
+  $(document).ready(function (){
+    var lat = parseFloat($(latNodeSelector).val());
+    var long = parseFloat($(longNodeSelector).val());
+    if (lat !== null && !isNaN(lat) && long !== null && !isNaN(long)) {
+      addMapOptions.initCentre = [lat, long];
+      addMapOptions.wellPushpinInit = {lat: lat, long: long};
+    }
+    addMap = new WellsMap(addMapOptions);
+    CoordSync.init(coordSyncOptions);
+  });
+</script>
+
+{% elif wizard.steps.current == 'surface_seal' %}
+<script type="text/javascript">
+    $(function () {
+        var material = ['Bentonite Grout', 'Bentonite Chips', 'Drill Cuttings', 'Gravel', 'Sand', 'Native Material'];
+        $('#id_surface_seal-backfill_above_surface_seal').autocomplete({
+            source: material
+        });
+        var thickness = ['0.125', '0.188', '0.248', '0.250'];
+        $('#id_liner-liner_thickness').autocomplete({
+            source: thickness
+        });
+    });
+</script>
+
+{% elif wizard.steps.current == 'well_completion' %}
+<script type="text/javascript">
+    $(function () {
+        var capType = ['Well seal'
+            , 'Water tight well cap'
+            , 'Vented water tight well cap'
+            , 'Standard well cap'
+            , 'Concrete cover'
+            , 'Metal cover'
+            , 'J-plug'
+            , 'Locking well cap'
+            , 'Welded'
+            , 'Plastic cover'
+            , 'Hand pump'
+            , 'None'
+        ];
+        $('#id_well_completion-well_cap_type').autocomplete({
+            source: capType
+        });
+    });
+</script>
+
+{% endif %}
+{% endblock %}

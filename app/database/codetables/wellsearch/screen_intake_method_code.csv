@@ -1,0 +1,4 @@
+create_user,create_date,update_user,update_date,screen_intake_code,description,display_order
+WELLS,2006-12-14 09:58:29-08,,,OPEN_HOLE,Open Bottom,100
+WELLS,2006-12-14 09:58:29-08,,,SCREEN,Screen,100
+WELLS,2006-12-14 09:58:29-08,,,UNCASD_HLE,Uncased Hole,100

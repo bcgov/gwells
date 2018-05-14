@@ -1,0 +1,6 @@
+registries_subactivity_code,registries_activity_code,description,display_order,create_date,update_date,create_user,update_user,effective_date,expired_date
+"WATER","DRILL","Water Well Driller","2","2018-01-01 00:00:00-08","2018-01-01 00:00:00-08","DATALOAD_USER","DATALOAD_USER","2018-01-01 00:00:00-08",
+"GEOTECH","DRILL","Geotechnical/Environmental Driller","4","2018-01-01 00:00:00-08","2018-01-01 00:00:00-08","DATALOAD_USER","DATALOAD_USER","2018-01-01 00:00:00-08",
+"GEOXCHG","DRILL","Geoexchange Driller","6","2018-01-01 00:00:00-08","2018-01-01 00:00:00-08","DATALOAD_USER","DATALOAD_USER","2018-01-01 00:00:00-08",
+"PUMPINST","PUMP","Pump Installer","8","2018-01-01 00:00:00-08","2018-01-01 00:00:00-08","DATALOAD_USER","DATALOAD_USER","2018-01-01 00:00:00-08",
+"WELL","DRILL","Exempted Well Driller","2","2018-01-01 00:00:00-08","2018-01-01 00:00:00-08","DATALOAD_USER","DATALOAD_USER","2018-01-01 00:00:00-08","2018-05-01 00:00:00-08"

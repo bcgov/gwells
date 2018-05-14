@@ -1,5 +1,0 @@
-lithology_moisture_code,description,display_order,create_date,update_date,create_user,update_user
-"Dry","Dry","10","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
-"Wet","Wet","20","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
-"Moist","Moist","30","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
-"Water Bear","Water Bearing","40","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
