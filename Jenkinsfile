@@ -34,8 +34,9 @@ def _stage(String name, Map context, Closure body) {
             /*
                     isDone=true
                 }catch (ex){
+                    echo "${stackTraceAsString(ex)}"
                     def inputAction = input(
-                        message: "This step (${name}) has failed - ${ex}",
+                        message: "This step (${name}) has failed. See error above.",
                         ok: 'Confirm',
                         parameters: [choice(name: 'action', choices: 'Re-run\nIgnore', description: 'What would you like to do?')]
                     )
@@ -124,7 +125,7 @@ private static String stackTraceAsString(Throwable t) {
 _stage('Unit Test', context) {
     podTemplate(label: "node-${context.uuid}", name:"node-${context.uuid}", serviceAccount: 'jenkins', cloud: 'openshift', containers: [
         containerTemplate(name: 'jnlp', image: 'jenkins/jnlp-slave:3.10-1-alpine', args: '${computer.jnlpmac} ${computer.name}', resourceRequestCpu: '100m',resourceLimitCpu: '1000m'),
-        containerTemplate(name: 'app', image: "172.50.0.2:5000/moe-gwells-tools/gwells${context.buildNameSuffix}:${context.buildEnvName}", ttyEnabled: true, command: 'cat',
+        containerTemplate(name: 'app', image: "docker-registry.default.svc:5000/moe-gwells-tools/gwells${context.buildNameSuffix}:${context.buildEnvName}", ttyEnabled: true, command: 'cat',
             resourceRequestCpu: '1000m',
             resourceLimitCpu: '4000m',
             resourceRequestMemory: '1Gi',
@@ -256,7 +257,7 @@ for(String envKeyName: context.env.keySet() as String[]){
         }
     }
 
-    if ("DEV".equalsIgnoreCase(stageDeployName) || "TEST".equalsIgnoreCase(stageDeployName)){
+    if ("DEV".equalsIgnoreCase(stageDeployName) || (isCD && "TEST".equalsIgnoreCase(stageDeployName))){
         _stage("Load Fixtures - ${stageDeployName}", context) {
             node('master'){
                 String podName=null
@@ -353,7 +354,7 @@ for(String envKeyName: context.env.keySet() as String[]){
                             containers: [
                               containerTemplate(
                                 name: 'jnlp',
-                                image: '172.50.0.2:5000/openshift/jenkins-slave-bddstack',
+                                image: 'docker-registry.default.svc:5000/openshift/jenkins-slave-bddstack',
                                 resourceRequestCpu: '500m',
                                 resourceLimitCpu: '4000m',
                                 resourceRequestMemory: '1Gi',
