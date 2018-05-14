@@ -1,218 +1,135 @@
+/*
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+    TODO: Add a note re. popup for warning when classification and qualifications is removed.
+*/
 <template>
-  <div class="container-fluid no-pad">
-    <div class="row no-pad">
-      <div class="col-xs-12">
-        <form class="form-horizontal">
-          <h3 id="classificationAddHeading">Classification and Qualifications</h3>
-          <div class="form-group">
-            <div class="col-xs-12">
-              <label>Select qualification: &nbsp;</label>
-            </div>
-            <div class="col-xs-12">
-              <div class="radio form-group">
-                <label class="col-xs-12">
-                  <input type="radio" name="activitySelector" id="activityDriller" v-model="qualType" value="DRILL" style="margin-top: 0px"> Water Well Driller
-                </label>
-                <label class="col-xs-12">
-                  <input type="radio" name="activitySelector" id="activityInstaller" v-model="qualType" value="PUMP" style="margin-top: 0px"> Pump Installer
-                </label>
-                <label class="col-xs-12">
-                  <input type="radio" name="activitySelector" id="activityDriller" v-model="qualType" value="GEOTHERM" style="margin-top: 0px"> Geoexchange Driller
-                </label>
-                <label class="col-xs-12">
-                  <input type="radio" name="activitySelector" id="activityInstaller" v-model="qualType" value="GEOTECH" style="margin-top: 0px"> Geotechnical/Environmental Driller
-                </label>
-              </div>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="col-xs-12 col-md-1 registry-form-label" for="issuedByOrg">Issued by: </label>
-            <div class="col-xs-12 col-md-3 form-spacing">
-              <select class="form-control" v-model="editClassification.issuedBy" id="issuedByOrg">
-                <option value="">Select issuing authority</option>
-                <option v-for="(item, index) in issuerOrgs" :key="`ident ${index}`" :value="item">{{ item }}</option>
-              </select>
-            </div>
-            <label class="col-xs-12 col-md-2 col-md-offset-1" for="certNumber">Certificate number:</label>
-            <div class="col-xs-12 col-md-3 form-spacing">
-              <input type="text" id="certNumber" placeholder="Enter certificate number" v-model="editClassification.certNo">
-            </div>
-          </div>
-          <div class="form-group">
-            <h4>Qualified to drill under this classification</h4>
-          </div>
-          <div class="form-group">
-            <div class="col-xs-12 col-sm-4 col-md-3">
-              <div class="checkbox">
-                <label>
-                  <input type="checkbox" v-model="editClassification.qualCodes.wat"> Water supply wells
-                </label>
-              </div>
-              <div class="checkbox">
-                <label>
-                  <input type="checkbox" v-model="editClassification.qualCodes.mon"> Monitoring wells
-                </label>
-              </div>
-              <div class="checkbox">
-                <label>
-                  <input type="checkbox" v-model="editClassification.qualCodes.rech"> Recharge wells
-                </label>
-              </div>
-              <div class="checkbox">
-                <label>
-                  <input type="checkbox" v-model="editClassification.qualCodes.inj"> Injection wells
-                </label>
-              </div>
-            </div>
-            <div class="col-xs-12 col-sm-4 col-md-3 registry-item">
-              <div class="checkbox">
-                <label>
-                  <input type="checkbox" v-model="editClassification.qualCodes.dewat"> Dewatering wells
-                </label>
-              </div>
-              <div class="checkbox">
-                <label>
-                  <input type="checkbox" v-model="editClassification.qualCodes.rem"> Remediation wells
-                </label>
-              </div>
-              <div class="checkbox">
-                <label>
-                  <input type="checkbox" v-model="editClassification.qualCodes.geo"> Geotechnical wells
-                </label>
-              </div>
-              <div class="checkbox">
-                <label>
-                  <input type="checkbox" v-model="editClassification.qualCodes.clos"> Closed-loop geoexchange wells
-                </label>
-              </div>
-            </div>
-          </div>
-        </form>
-      </div>
+  <div v-if="loaded" class="card">
+    <div class="card-body">
+      <h5 class="card-title">Classification, Qualifications &amp; Adjudication
+        <button type="button" class="close pull-right" aria-label="Close" v-on:click="$emit('close')">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </h5>
+      <p class="card-text">
+        <b-form-group label="Certification">
+          <b-row>
+            <b-col md="2">Issued by</b-col>
+            <b-col md="3">
+                  <b-form-select :options="formOptions.issuer" v-model="qualificationForm.primary_certificate"></b-form-select>
+            </b-col>
+            <b-col md="2">Certificate number</b-col>
+            <b-col md="3">
+              <b-form-input type="text" placeholder="Enter certificate number" v-model="qualificationForm.primary_certificate_no"></b-form-input>
+            </b-col>
+          </b-row>
+        </b-form-group>
+        <b-row>
+          <b-col md="2">Select classification</b-col>
+          <b-col md="8">
+            <b-form-radio-group class="fixed-width" :options="formOptions.classification" @change="changedClassification" v-model="qualificationForm.subactivity"></b-form-radio-group>
+          </b-col>
+        </b-row>
+        <b-form-group label="Qualified to drill">
+            <b-row>
+              <b-col md="8">
+                <b-form-checkbox-group class="fixed-width" :options="formOptions.qualifications" v-model="qualificationForm.qualifications" disabled>
+                </b-form-checkbox-group>
+              </b-col>
+            </b-row>
+        </b-form-group>
+        <b-form-group label="Date application received">
+          <b-row>
+            <b-col>
+              <datepicker :format="formOptions.format" v-model="qualificationForm.applicationReceivedDate"></datepicker>
+            </b-col>
+          </b-row>
+        </b-form-group>
+      </p>
     </div>
-    <fieldset class="registry-section">
-      <legend>Adjudication</legend>
-      <form class="form-horizontal">
-        <div class="form-group">
-          <label class="col-xs-12 col-md-1" for="dateAppReceived">Date application received:</label>
-          <div class="col-xs-12 col-md-3 form-spacing">
-            <input type="text" id="dateAppReceived" placeholder="Select date" v-model="editClassification.application.receivedDate">
-          </div>
-        </div>
-        <div class="form-group">
-          <label class="col-xs-12 col-md-1" for="approvalOutcomeDate">Approval outcome date:</label>
-          <div class="col-xs-12 col-md-3 form-spacing">
-            <input type="text" id="approvalOutcomeDate" placeholder="Select date" v-model="editClassification.application.approvalOutcomeDate">
-          </div>
-          <label class="col-xs-12 col-md-1" for="approvalOutcome">Approval outcome:</label>
-          <div class="col-xs-12 col-md-3 form-spacing">
-            <input type="text" id="approvalOutcome" placeholder="Enter approval outcome" v-model="editClassification.application.approvalOutcome">
-          </div>
-            <label class="col-xs-12 col-md-1" for="reasonDenied">Reason not approved:</label>
-            <div class="col-xs-12 col-md-3 form-spacing">
-              <input type="text" id="reasonDenied" placeholder="Enter reason not approved" v-model="editClassification.application.reasonDenied">
-            </div>
-        </div>
-        <div class="form-group">
-          <label class="col-xs-12 col-md-1" for="removalDate">Register removal date:</label>
-          <div class="col-xs-12 col-md-3 form-spacing">
-            <input type="text" id="removalDate" placeholder="Select removal date" v-model="editClassification.application.removalDate">
-          </div>
-        </div>
-      </form>
-    </fieldset>
   </div>
 </template>
 
 <script>
+import Datepicker from 'vuejs-datepicker'
+import ApiService from '@/common/services/ApiService.js'
 export default {
+  components: {
+    Datepicker
+  },
+  props: ['value', 'activity'],
   data () {
     return {
-      editClassification: {
-        issuedBy: '',
-        qualCodes: {
-          wat: false,
-          mon: false,
-          rech: false,
-          inj: false,
-          dewat: false,
-          rem: false,
-          geo: false,
-          clos: false
-        },
-        application: {
-          receivedDate: '',
-          approvalOutcomeDate: '',
-          approvalOutcome: '',
-          reasonDenied: '',
-          removalDate: ''
-        }
+      qualificationForm: {
+        subactivity: null,
+        primary_certificate_no: null,
+        primary_certificate: null,
+        applicationReceivedDate: null,
+        qualifications: []
       },
-      issuerOrgs: [
-        'Canadian Groundwater Association',
-        'Province of BC',
-        'N/A'
-      ],
-      qualCodes: [
-        {
-          activity: 'DRILL',
-          quals: ['WAT', 'MON', 'RECH', 'DEWAT', 'REM', 'GEO']
-        },
-        {
-          activity: 'GEOTECH',
-          quals: ['MON', 'REM', 'GEO']
-        },
-        {
-          activity: 'GEOTHERM',
-          quals: ['CLOS']
-        },
-        {
-          activity: 'PUMP',
-          quals: []
-        }
-      ],
-      qualType: 'DRILL'
-    }
-  },
-  computed: {
-    quals () {
-      const quals = []
-      const activity = this.qualCodes.find(item => item.activity === this.qualType)
-      return activity ? activity.quals : quals
+      formOptions: {
+        format: 'yyyy-MM-dd',
+        issuer: [
+          {value: null, text: 'Please select an option'}],
+        qualifications: [],
+        classification: [],
+        approval_outcome: ['Approved', 'Not approved'],
+        register_status: ['Pending'],
+        removal_reason: ['No longer active',
+          'Failed to maintain requirement of registration',
+          'Did not meet the requirement of registration']
+      },
+      certificationCount: 1,
+      loaded: false
     }
   },
   watch: {
-    qualType: function () {
-      const qualList = this.quals.map(item => item.toLowerCase())
-      for (let key in this.editClassification.qualCodes) {
-        this.editClassification.qualCodes[key] = false
-      }
-      for (let i = 0; i < qualList.length; i++) {
-        if (qualList[i] in this.editClassification.qualCodes) {
-          this.editClassification.qualCodes[qualList[i]] = true
-        }
-      }
+    qualificationForm: {
+      handler: function (val, oldVal) {
+        this.$emit('input', val)
+      },
+      deep: true
     }
+  },
+  methods: {
+    changedClassification (value) {
+      const match = this.subactivityMap.filter(item => item.registries_subactivity_code === value)[0]
+      this.qualificationForm.qualifications = match.qualification_set.map(item => item.well_class)
+    }
+  },
+  computed: {
+    something: function () {
+      return 'something'
+    }
+  },
+  beforeCreate () {
+    // This could also be placed on PersonAdd, but it's nice having this component exists on it's own and bootstrap itself.
+    ApiService.query('drillers/options/', {'activity': this.$options.propsData.activity}).then((response) => {
+      this.subactivityMap = response.data.SubactivityCode
+      this.formOptions.issuer = this.formOptions.issuer.concat(response.data.AccreditedCertificateCode.map((item) => { return {'text': item.name + ' (' + item.cert_auth + ')', 'value': item.name} }))
+      this.formOptions.classification = this.subactivityMap.map((item) => { return {'text': item.description, 'value': item.registries_subactivity_code} })
+      this.formOptions.qualifications = response.data.WellClassCode.map((item) => { return {'text': item.description, 'value': item.registries_well_class_code} })
+      this.loaded = true
+    })
   }
 }
 </script>
 
 <style>
-.registry-section {
-  margin-top: 25px;
-  margin-bottom: 20px;
+.vdp-datepicker input {
+  width: 80px;
 }
-.registry-item {
-  margin-bottom: 20px;
-}
-.registry-disabled-item {
-  color: #808080;
-  cursor: auto!important;
-}
-.qualification-item {
-  margin-bottom: 5px;
-}
-.registry-subtle {
-  font-size: 0.9rem;
+.fixed-width .custom-control-label {
+  width: 220px;
 }
 </style>
