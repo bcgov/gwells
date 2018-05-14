@@ -12,10 +12,10 @@
     limitations under the License.
 """
 import logging
-from django.utils import timezone
+from django.utils import timezone, six
 from django.db import transaction
 import logging
-from rest_framework import serializers
+from rest_framework import serializers, fields
 from registries.models import (
     Organization,
     ContactInfo,
@@ -28,7 +28,8 @@ from registries.models import (
     SubactivityCode,
     Qualification,
     ApplicationStatusCode,
-    AccreditedCertificateCode
+    AccreditedCertificateCode,
+    WellClassCode
 )
 
 logger = logging.getLogger(__name__)
@@ -48,19 +49,16 @@ class AuditModelSerializer(serializers.ModelSerializer):
     update_date = serializers.ReadOnlyField()
 
 
-class QualificationSerializer(serializers.ModelSerializer):
-    """
-    Serializes Qualification model
-    Qualification records form a related set of a SubactivityCode object
-    """
+class AccreditedCertificateCodeSerializer(serializers.ModelSerializer):
 
-    description = serializers.ReadOnlyField(source='well_class.description')
+    # CertifyingAuthorityCode
+    cert_auth = serializers.ReadOnlyField(source='cert_auth.description')
 
     class Meta:
-        model = Qualification
+        model = AccreditedCertificateCode
         fields = (
-            'well_class',
-            'description',
+            'name',
+            'cert_auth'
         )
 
 
@@ -77,13 +75,47 @@ class ContactInfoSerializer(AuditModelSerializer):
         )
 
 
+class QualificationAutoCreateSerializer(serializers.ModelSerializer):
+    """
+    Serializes Qualification model
+    Qualification records form a related set of a SubactivityCode object
+    """
+
+    description = serializers.ReadOnlyField(source='well_class.description')
+
+    class Meta:
+        model = Qualification
+        fields = (
+            'well_class',
+            'description',
+        )
+
+
+class QualificationSerializer(serializers.ModelSerializer):
+    """
+    Serializes Qualification model
+    Qualification records form a related set of a SubactivityCode object
+    """
+
+    description = serializers.ReadOnlyField(source='well_class.description')
+
+    class Meta:
+        model = Qualification
+        fields = (
+            'well_class',
+            'description',
+        )
+
+
 class SubactivitySerializer(serializers.ModelSerializer):
     """
     Serializes SubactivityCode model
     SubactivityCode records form a related set of an ActivityCode object
     """
 
-    qualification_set = QualificationSerializer(many=True, read_only=True)
+    qualification_set = QualificationSerializer(
+        many=True,
+        read_only=True)
 
     class Meta:
         model = SubactivityCode
@@ -117,8 +149,11 @@ class ApplicationListSerializer(AuditModelSerializer):
     Serializes RegistryApplication model fields for anonymous users
     """
 
-    qualifications = serializers.StringRelatedField(
-        source='subactivity.qualification_set',
+    # qualifications = serializers.StringRelatedField(
+    #     source='subactivity.qualification_set',
+    #     many=True,
+    #     read_only=True)
+    qualifications = QualificationSerializer(
         many=True,
         read_only=True)
     subactivity = SubactivitySerializer()
@@ -288,12 +323,14 @@ class ApplicationAutoCreateSerializer(AuditModelSerializer):
     """
 
     status_set = ApplicationStatusSerializer(many=True, read_only=True)
+    # acc_cert_guid
     primary_certificate = serializers.PrimaryKeyRelatedField(
         queryset=AccreditedCertificateCode.objects.all(), required=False)
-    # cert_authority = serializers.ReadOnlyField(
-    #     source="primary_certificate.cert_auth.cert_auth_code")
-    qualifications = serializers.StringRelatedField(
-        source='subactivity.qualification_set',
+    # qualifications = serializers.StringRelatedField(
+    #     source='subactivity.qualification_set',
+    #     many=True,
+    #     read_only=True)
+    qualifications = QualificationAutoCreateSerializer(
         many=True,
         read_only=True)
     registration = serializers.StringRelatedField(source='registration.register_guid')
@@ -310,6 +347,7 @@ class ApplicationAutoCreateSerializer(AuditModelSerializer):
             'file_no',
             'over19_ind',
             'primary_certificate',
+            'primary_certificate_no',
             'registrar_notes',
             'reason_denied',
             'subactivity',
@@ -326,17 +364,15 @@ class ApplicationAdminSerializer(AuditModelSerializer):
 
     status_set = ApplicationStatusSerializer(many=True, read_only=True)
     current_status = ApplicationStatusSerializer(required=False)
-    # primary_certificate = serializers.ReadOnlyField(
-    #     source="primary_certificate.cert_auth.cert_auth_code")
     qualifications = serializers.StringRelatedField(
         source='subactivity.qualification_set',
         many=True,
         read_only=True)
     subactivity = SubactivitySerializer()
     registration = serializers.StringRelatedField(source='registration.register_guid')
-    primary_certificate = serializers.ChoiceField(choices=list(map((lambda i: (str(i.acc_cert_guid), i.name)),
-                                                                   AccreditedCertificateCode.objects.all())),
-                                                  required=False)
+    # We need choices here in order to popuplate an OPTIONS request with
+    # valid values.
+    primary_certificate = AccreditedCertificateCodeSerializer(required=False)
 
     class Meta:
         model = RegistriesApplication
@@ -350,6 +386,7 @@ class ApplicationAdminSerializer(AuditModelSerializer):
             'file_no',
             'over19_ind',
             'primary_certificate',
+            'primary_certificate_no',
             'registrar_notes',
             'reason_denied',
             'subactivity',
@@ -425,6 +462,14 @@ class ApplicationAdminSerializer(AuditModelSerializer):
                     status=new_status)
 
         return super().update(instance, validated_data)
+
+
+class ApplicationDetailAdminSerializer(ApplicationAdminSerializer):
+
+    qualifications = serializers.StringRelatedField(
+        source='subactivity.qualification_set',
+        many=True,
+        read_only=True)
 
 
 class RegistrationAdminSerializer(AuditModelSerializer):
@@ -560,11 +605,16 @@ class PersonAdminSerializer(AuditModelSerializer):
     registrations = RegistrationAdminSerializer(many=True)
     contact_info = ContactInfoSerializer(many=True, required=False)
 
+    def to_representation(self, instance):
+        print('to representation')
+        return super().to_representation(instance)
+
     def to_internal_value(self, data):
         """
         Set fields to different serializers for create/update operations.
         This method is called on POST/PUT/PATCH requests
         """
+        print('replacing registrations with RegistrationAutoCreateSerializer')
         self.fields['registrations'] = RegistrationAutoCreateSerializer(
             many=True, required=False)
         return super().to_internal_value(data)
@@ -578,24 +628,15 @@ class PersonAdminSerializer(AuditModelSerializer):
         contacts = validated_data.pop('contact_info', list())
 
         person = Person.objects.create(**validated_data)
-        person.save()
 
         for reg_data in registrations:
             applications = reg_data.pop('applications', list())
             register = Register.objects.create(person=person, **reg_data)
-            register.save()
             for app_data in applications:
-                print('create application')
                 app = RegistriesApplication.objects.create(registration=register, **app_data)
-                app.save()
         for contact_data in contacts:
             contact = ContactInfo.objects.create(person=person, **contact_data)
-            contact.save()
-        print('CREATED PersonAdminSerializer {}'.format(person))
-        print('Loading person...')
-        person = Person.objects.get(person_guid=person.person_guid)
-        print('DONE')
-        return person
+        return Person.objects.get(person_guid=person.person_guid)
 
     def update(self, instance, validated_data):
         """
@@ -630,3 +671,13 @@ class OrganizationNameListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Organization
         fields = ('org_guid', 'name')
+
+
+class WellClassCodeSerializer(serializers.ModelSerializer):
+    """
+    Well class code serializer
+    """
+
+    class Meta:
+        model = WellClassCode
+        fields = ('registries_well_class_code', 'description')
