@@ -160,6 +160,7 @@
 import SearchTable from '@/registry/components/search/SearchTable.vue'
 import LegalText from '@/registry/components/Legal.vue'
 import APIErrorMessage from '@/common/components/APIErrorMessage.vue'
+import querystring from 'querystring'
 import { mapGetters } from 'vuex'
 import { FETCH_CITY_LIST, FETCH_DRILLER_LIST } from '@/registry/store/actions.types'
 import { SET_DRILLER_LIST } from '@/registry/store/mutations.types'
@@ -258,7 +259,12 @@ export default {
       this.lastSearchedActivity = this.searchParams.activity || 'DRILL'
       this.searchLoading = true
       if (window.ga) {
-        window.ga('send', 'event', 'Button', 'search')
+        window.ga('send', {
+          hitType: 'event',
+          eventCategory: 'Button',
+          eventAction: 'RegistrySearch',
+          eventLabel: querystring.stringify(params)
+        })
       }
       this.$store.dispatch(FETCH_DRILLER_LIST, params).then(() => {
         this.$SmoothScroll(table, 100)
