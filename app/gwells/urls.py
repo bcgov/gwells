@@ -21,6 +21,7 @@ from django.views.generic import TemplateView
 from . import views
 from gwells.views import *
 from gwells.views.admin import *
+from gwells.views import APIViews
 from gwells.settings.base import get_env_variable
 
 # Creating 2 versions of the app_root. One without and one with trailing slash
@@ -42,22 +43,28 @@ DJANGO_ADMIN_URL = get_env_variable(
 urlpatterns = [
     # url(r'^'+ app_root +'$', views.HomeView.as_view(), name='home'),
     url(r'^' + app_root_slash + 'robots\.txt$',
-        TemplateView.as_view(template_name='robots.txt', content_type='text/plain'),
+        TemplateView.as_view(template_name='robots.txt',
+                             content_type='text/plain'),
         name='robots'),
     url(r'^' + app_root_slash + '$', SearchView.well_search, name='home'),
-    url(r'^' + app_root_slash + 'search$', SearchView.well_search, name='search'),
+    url(r'^' + app_root_slash + 'search$',
+        SearchView.well_search, name='search'),
     # url(r'^(?P<pk>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/$',
     #     views.DetailView.as_view(), name='detail'),
-    url(r'^' + app_root_slash + 'well/(?P<pk>[0-9]+)$', WellDetailView.as_view(), name='well_detail'),
-    url(r'^' + app_root_slash + 'registry-legacy$', RegistryView.as_view(), name='registry-legacy'),
+    url(r'^' + app_root_slash + \
+        'well/(?P<pk>[0-9]+)$', WellDetailView.as_view(), name='well_detail'),
+    url(r'^' + app_root_slash + 'registry-legacy$',
+        RegistryView.as_view(), name='registry-legacy'),
     url(r'^' + app_root_slash + 'submission/(?P<pk>[0-9]+)$',
         ActivitySubmissionDetailView.as_view(),
         name='activity_submission_detail'),
     url(r'^' + app_root_slash + 'health$', HealthView.health, name='health'),
     url(r'^' + app_root_slash + 'groundwater-information',
-        TemplateView.as_view(template_name='gwells/groundwater_information.html'),
+        TemplateView.as_view(
+            template_name='gwells/groundwater_information.html'),
         name='groundwater_information'),
-    url(r'^' + app_root_slash + 'ajax/map_well_search/$', SearchView.map_well_search, name='map_well_search'),
+    url(r'^' + app_root_slash + 'ajax/map_well_search/$',
+        SearchView.map_well_search, name='map_well_search'),
     url(r'^' +
         app_root_slash +
         'site_admin/survey/(?P<pk>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$',
@@ -67,8 +74,11 @@ urlpatterns = [
     url(r'^' + app_root_slash + 'site_admin',
         AdminView.as_view(),
         name='site_admin'),  # editable list view of surveys and other site admin features
+    url(r'^' + app_root_slash + 'api/v1/surveys/$',
+        APIViews.SurveyListView.as_view(), name='survey-list'),
     url(r'^' + app_root_slash + DJANGO_ADMIN_URL + '/', admin.site.urls),
-    url(r'^' + app_root_slash + 'accounts/', include('django.contrib.auth.urls')),
+    url(r'^' + app_root_slash + 'accounts/',
+        include('django.contrib.auth.urls')),
     url(r'^' + app_root_slash, include('registries.urls')),
 ]
 
