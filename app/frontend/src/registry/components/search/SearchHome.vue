@@ -1,5 +1,8 @@
 <template>
   <div>
+    <b-card no-body class="container p-0 mb-3">
+      <b-alert show variant="info" class="m-0"><p class="m-0">Please take a moment to complete our <a href="https://www.surveymonkey.com/r/Y8DHVPX">short survey</a> to let us know about your Register search page experience.</p></b-alert>
+    </b-card>
     <b-card v-if="userIsAdmin" no-body class="container p-1 mb-3">
       <b-card-header header-tag="header" class="p-1" role="tab">
         <b-btn block href="#" v-b-toggle.adminPanel variant="light" class="text-left">Administrator options</b-btn>
@@ -26,8 +29,8 @@
       </b-collapse>
     </b-card>
     <b-card class="container p-1" title="Register of Well Drillers and Well Pump Installers">
-      To update contact information or for general enquiries email <a href="mailto:Groundwater@gov.bc.ca">groundwater@gov.bc.ca</a>.
-      <p class="mt-1">
+      <p>To update contact information or for general enquiries email <a href="mailto:Groundwater@gov.bc.ca">groundwater@gov.bc.ca</a>.</p>
+      <p>
         <a href="https://www2.gov.bc.ca/gov/content/environment/air-land-water/water/groundwater-wells/information-for-well-drillers-well-pump-installers/what-you-need-to-practice-in-bc">
         Learn more about registering as a well driller or well pump installer in B.C.
         </a>
