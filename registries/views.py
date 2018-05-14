@@ -350,7 +350,7 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
         """ Returns the appropriate serializer for the user """
         if self.request and self.request.user.is_staff:
             return PersonAdminSerializer
-        retirm self.serializer_class
+        return self.serializer_class
 
     def list(self, request):
         """ List response using serializer with reduced number of fields """
@@ -429,7 +429,7 @@ class PersonDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
         instance.expired_date = timezone.now()
         instance.save()
 
-        return Response(status=status.HTTP_204_NO_CONTENT)    
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class CitiesListView(ListAPIView):
