@@ -51,6 +51,7 @@ urlpatterns = [
         name='organization-list'),
 
     # Person resource endpoints (drillers, well installers, and other instances of Person model)
+    url(r'^api/v1/drillers/options/$', views.PersonOptionsView.as_view(), name='person-options'),
     url(r'^api/v1/drillers/(?P<person_guid>[-\w]+)/$',
         views.PersonDetailView.as_view(),
         name='person-detail'),

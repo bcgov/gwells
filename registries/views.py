@@ -23,10 +23,21 @@ from rest_framework.pagination import LimitOffsetPagination, PageNumberPaginatio
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from rest_framework.mixins import CreateModelMixin, UpdateModelMixin
-from registries.models import Organization, Person, ContactInfo, RegistriesApplication, Register
+from rest_framework.metadata import SimpleMetadata
+from drf_multiple_model.views import ObjectMultipleModelAPIView
+from registries.models import (
+    Organization,
+    Person,
+    ContactInfo,
+    RegistriesApplication,
+    Register,
+    SubactivityCode,
+    WellClassCode,
+    AccreditedCertificateCode)
 from registries.permissions import IsAdminOrReadOnly, IsGwellsAdmin
 from registries.serializers import (
     ApplicationAdminSerializer,
+    ApplicationDetailAdminSerializer,
     ApplicationListSerializer,
     CityListSerializer,
     OrganizationListSerializer,
@@ -36,7 +47,10 @@ from registries.serializers import (
     PersonSerializer,
     PersonAdminSerializer,
     PersonListSerializer,
-    RegistrationAdminSerializer,)
+    RegistrationAdminSerializer,
+    SubactivitySerializer,
+    WellClassCodeSerializer,
+    AccreditedCertificateCodeSerializer)
 
 
 class AuditCreateMixin(CreateModelMixin):
@@ -224,6 +238,43 @@ class OrganizationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+class PersonOptionsView(ObjectMultipleModelAPIView):
+    """
+    get:
+    Returns available options for creating a person record
+    """
+
+    # We shouldn't need pagination, there should never be that many options!
+    pagination_class = None
+
+    def get_querylist(self):
+        activity = self.request.query_params['activity']
+        # TODO: Replace this with an ORM query
+        raw_well_class = str('select wcc.* from registries_well_class_code as wcc '
+                             'inner join registries_well_qualification as wq on '
+                             'wq.registries_well_class_code = wcc.registries_well_class_code '
+                             'inner join registries_subactivity_code as sc on '
+                             'sc.registries_subactivity_code = wq.registries_subactivity_code '
+                             'and sc.registries_activity_code = \'{}\' '
+                             'group by wcc.registries_well_class_code').format(activity)
+        querylist = [
+            {
+                'queryset': WellClassCode.objects.raw(raw_well_class),
+                'serializer_class': WellClassCodeSerializer
+                },
+            {
+                'queryset': SubactivityCode.objects.filter(
+                    registries_activity=activity).order_by('display_order'),
+                'serializer_class': SubactivitySerializer
+            },
+            {
+                'queryset': AccreditedCertificateCode.objects.all().order_by('name'),
+                'serializer_class': AccreditedCertificateCodeSerializer
+            },
+        ]
+        return querylist
+
+
 class PersonListView(AuditCreateMixin, ListCreateAPIView):
     """
     get:
@@ -299,7 +350,7 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
         """ Returns the appropriate serializer for the user """
         if self.request and self.request.user.is_staff:
             return PersonAdminSerializer
-        return self.serializer_class
+        retirm self.serializer_class
 
     def list(self, request):
         """ List response using serializer with reduced number of fields """
@@ -378,7 +429,7 @@ class PersonDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
         instance.expired_date = timezone.now()
         instance.save()
 
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_204_NO_CONTENT)    
 
 
 class CitiesListView(ListAPIView):
@@ -518,7 +569,7 @@ class ApplicationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
     """
 
     permission_classes = (IsAdminUser,)
-    serializer_class = ApplicationAdminSerializer
+    serializer_class = ApplicationDetailAdminSerializer
     queryset = RegistriesApplication.objects.all() \
         .select_related(
             'registration',
