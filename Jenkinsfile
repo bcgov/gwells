@@ -253,7 +253,7 @@ for(String envKeyName: context.env.keySet() as String[]){
         }
     }
 
-    if ("DEV".equalsIgnoreCase(stageDeployName) || (isCD && "TEST".equalsIgnoreCase(stageDeployName))){
+    if ("DEV".equalsIgnoreCase(stageDeployName)){
         _stage("Load Fixtures - ${stageDeployName}", context) {
             node('master'){
                 String podName=null
