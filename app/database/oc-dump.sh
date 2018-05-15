@@ -3,7 +3,7 @@
 # Dumps from a GWells database and stores locally.  Project namespace required.
 #
 # Based on TFRS' process:
-#	https://github.com/bcgov/gwells/tree/developer/database/xfer-registries-to-openshift
+#	https://github.com/bcgov/gwells/tree/developer/app/database/xfer-registries-to-openshift
 #
 # NOTE: You need to be logged in with a token, via:
 #       https://console.pathfinder.gov.bc.ca:8443/oauth/token/request
