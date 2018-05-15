@@ -394,11 +394,11 @@
                                     },
                                     {
                                         "name": "WEB_CONCURRENCY",
-                                        "value": "1"
+                                        "value": "4"
                                     },
                                     {
                                         "name": "GUNICORN_WORKERS",
-                                        "value": "1"
+                                        "value": "4"
                                     },
                                     {
                                         "name": "ENFORCE_ENV_VARIABLES",
