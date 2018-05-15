@@ -51,7 +51,7 @@
         <b-form-group label="Date application received">
           <b-row>
             <b-col>
-              <datepicker :format="formOptions.format" v-model="qualificationForm.applicationReceivedDate"></datepicker>
+              <datepicker :format="formOptions.format" v-model="qualificationForm.status_set[0].effective_date" required></datepicker>
             </b-col>
           </b-row>
         </b-form-group>
@@ -83,27 +83,28 @@ export default {
         subactivity: null,
         primary_certificate_no: null,
         primary_certificate: null,
-        applicationReceivedDate: null,
+        status_set: [
+          {
+            effective_date: null,
+            status: 'P'
+          }
+        ],
         qualifications: []
       },
       formOptions: {
         format: 'yyyy-MM-dd',
+        // The issuer, qualifications and classifications options are all loaded from the API.
         issuer: [
           {value: null, text: 'Please select an option'}],
         qualifications: [],
-        classification: [],
-        approval_outcome: ['Approved', 'Not approved'],
-        register_status: ['Pending'],
-        removal_reason: ['No longer active',
-          'Failed to maintain requirement of registration',
-          'Did not meet the requirement of registration']
+        classification: []
       },
-      certificationCount: 1,
       loaded: false
     }
   },
   watch: {
-    qualificationForm: {
+    // Watching the entire object is expensive, but we need some way of notifying the parent.
+    computedQualificationForm: {
       handler: function (val, oldVal) {
         this.$emit('input', val)
       },
@@ -117,8 +118,13 @@ export default {
     }
   },
   computed: {
-    something: function () {
-      return 'something'
+    computedQualificationForm: function () {
+      // We need to transform the bound dates to something that is acceptable to the API without affecting
+      // the values to which the form are bound.
+      // Make a deep copy, and transform the date fields.
+      const transformed = JSON.parse(JSON.stringify(this.qualificationForm))
+      transformed.status_set.forEach((status) => { status.effective_date = status.effective_date && status.effective_date.length >= 10 ? status.effective_date.substring(0, 10) : status.effective_date })
+      return transformed
     }
   },
   beforeCreate () {
@@ -128,6 +134,7 @@ export default {
       this.formOptions.issuer = this.formOptions.issuer.concat(response.data.AccreditedCertificateCode.map((item) => { return {'text': item.name + ' (' + item.cert_auth + ')', 'value': item.acc_cert_guid} }))
       this.formOptions.classification = this.subactivityMap.map((item) => { return {'text': item.description, 'value': item.registries_subactivity_code} })
       this.formOptions.qualifications = response.data.WellClassCode.map((item) => { return {'text': item.description, 'value': item.registries_well_class_code} })
+      // Set loaded flag to true, indicating that the view is now ready to show.
       this.loaded = true
     })
   }
