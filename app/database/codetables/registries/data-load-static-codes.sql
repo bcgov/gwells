@@ -53,7 +53,7 @@
 \echo '... loading pump_installers_reg'
 \copy xform_registries_pump_installers_reg (name,lastname,firstname,wellpumpinstallerregno,registrationdate,companyname,companyaddress,companycity,companyprov,companypostalcode,companyphone,companyfax,companyemail,classofwellpumpinstaller,typeofcertificate,classofpump,sizeofpump,moeregion,file_number,cell_phone,notes,website) from 'pump_install_reg.csv' with header delimiter ',' CSV ;
 
-\echo '... skipping Removed From Registry'
---\copy xform_registries_removed_from (name,lastname,firstname,registrationnumber,registrationdate,companyname,companyaddress,companycity,companyprov,companypostalcode,companyphone,companyfax,companyemail,classofwelldriller,reason,removed_from_registry) from 'RemovedFromRegistry.csv' with header delimiter ',' CSV ;
+\echo '... skipping Removed From Registry (pending data cleanup)'
+-- \copy xform_registries_removed_from (name,lastname,firstname,registrationnumber,registrationdate,companyname,companyaddress,companycity,companyprov,companypostalcode,companyphone,companyfax,companyemail,classofwelldriller,reason,removed_from_registry) from 'removed_from_registry.csv' with header delimiter ',' CSV ;
 
 \echo 'Registries - Finshed loading of test data.'
