@@ -37,7 +37,6 @@ def _stage(String name, Map context, Closure body) {
                 try{
                     body()
                     isDone=true
-                    currentBuild.result = null
                 }catch (ex){
                     echo "${stackTraceAsString(ex)}"
                     def inputAction = input(
