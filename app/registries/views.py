@@ -114,8 +114,8 @@ class OrganizationListView(AuditCreateMixin, ListCreateAPIView):
     """
 
     permission_classes = (IsGwellsAdmin,)
-    serializer_class = OrganizationSerializer
-    pagination_class = APILimitOffsetPagination
+    serializer_class = OrganizationListSerializer
+    pagination_class = None
 
     # prefetch related objects for the queryset to prevent duplicate database trips later
     queryset = Organization.objects.all() \
@@ -138,7 +138,7 @@ class OrganizationListView(AuditCreateMixin, ListCreateAPIView):
         """
         Filter out organizations with no registered drillers if user is anonymous
         """
-        qs = self.queryset
+        qs = super().get_queryset()
         if not self.request.user.is_staff:
             qs = qs \
                 .filter(person_set__registrations__status='ACTIVE')
@@ -152,22 +152,6 @@ class OrganizationListView(AuditCreateMixin, ListCreateAPIView):
         if self.request and self.request.user.is_staff:
             return OrganizationAdminSerializer
         return self.serializer_class
-
-    # override list() in order to use a modified serializer (with fewer fields) for the list view
-    def list(self, request):
-        """
-        Returns the list response, using the list serializer class (serializes fewer fields than detail view)
-        """
-        queryset = self.get_queryset()
-        filtered_queryset = self.filter_queryset(queryset)
-
-        page = self.paginate_queryset(filtered_queryset)
-        if page is not None:
-            serializer = OrganizationListSerializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-
-        serializer = OrganizationListSerializer(filtered_queryset)
-        return Response(serializer.data)
 
 
 class OrganizationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
