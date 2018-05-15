@@ -407,7 +407,7 @@
                                 ],
                                 "resources": {
                                     "limits": {
-                                        "cpu": "500m",
+                                        "cpu": "100m",
                                         "memory": "2Gi"
                                     },
                                     "requests": {
