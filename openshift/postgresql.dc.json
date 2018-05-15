@@ -295,7 +295,12 @@
                                     "timeoutSeconds": 1
                                 },
                                 "resources": {
+                                    "requests": {
+                                        "cpu": "100m",
+                                        "memory": "1Gi"
+                                    },
                                     "limits": {
+                                        "cpu": "1000m",
                                         "memory": "${MEMORY_LIMIT}"
                                     }
                                 },
