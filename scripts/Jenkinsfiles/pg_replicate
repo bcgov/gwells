@@ -25,7 +25,8 @@ stage ( 'test' )
         String PODNAME = sh(
             script:
                 """
-                    oc get pods -n "${PROJECT}" | grep "Running" | grep -Eo "postgresql-[0-9]+-[[:alnum:]]+"
+                    oc get pods -n "${PROJECT}" | grep "Running" | grep -Eo \
+                        "gwells-pgsql-[[:alpha:]]+-[[:alpha:]]+-[[:digit:]]+-[[:digit:]]+-[[:alpha:]]+"
                 """,
             returnStdout:
                 true
