@@ -394,11 +394,11 @@
                                     },
                                     {
                                         "name": "WEB_CONCURRENCY",
-                                        "value": "2"
+                                        "value": "1"
                                     },
                                     {
                                         "name": "GUNICORN_WORKERS",
-                                        "value": "4"
+                                        "value": "1"
                                     },
                                     {
                                         "name": "ENFORCE_ENV_VARIABLES",
@@ -407,7 +407,7 @@
                                 ],
                                 "resources": {
                                     "limits": {
-                                        "cpu": "100m",
+                                        "cpu": "200m",
                                         "memory": "2Gi"
                                     },
                                     "requests": {
