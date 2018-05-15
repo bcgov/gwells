@@ -14,39 +14,39 @@
     TODO: Add a note re. popup for warning when classification and qualifications is removed.
 */
 <template>
-  <div v-if="loaded" class="card">
+  <div class="card w-100">
     <div class="card-body">
       <h5 class="card-title">Classification, Qualifications &amp; Adjudication
         <button type="button" class="close pull-right" aria-label="Close" v-on:click="$emit('close')">
           <span aria-hidden="true">&times;</span>
         </button>
       </h5>
-      <p class="card-text">
+      <p v-if="loaded" class="card-text">
         <b-form-group label="Certification">
           <b-row>
             <b-col md="2">Issued by</b-col>
             <b-col md="3">
-                  <b-form-select :options="formOptions.issuer" v-model="qualificationForm.primary_certificate"></b-form-select>
+                  <b-form-select :options="formOptions.issuer" v-model="qualificationForm.primary_certificate" required></b-form-select>
             </b-col>
             <b-col md="2">Certificate number</b-col>
             <b-col md="3">
-              <b-form-input type="text" placeholder="Enter certificate number" v-model="qualificationForm.primary_certificate_no"></b-form-input>
+              <b-form-input type="text" placeholder="Enter certificate number" v-model="qualificationForm.primary_certificate_no" required></b-form-input>
             </b-col>
           </b-row>
         </b-form-group>
         <b-row>
           <b-col md="2">Select classification</b-col>
           <b-col md="8">
-            <b-form-radio-group class="fixed-width" :options="formOptions.classification" @change="changedClassification" v-model="qualificationForm.subactivity"></b-form-radio-group>
+            <b-form-radio-group class="fixed-width" :options="formOptions.classification" @change="changedClassification" v-model="qualificationForm.subactivity" required></b-form-radio-group>
           </b-col>
         </b-row>
         <b-form-group label="Qualified to drill">
-            <b-row>
-              <b-col md="8">
-                <b-form-checkbox-group class="fixed-width" :options="formOptions.qualifications" v-model="qualificationForm.qualifications" disabled>
-                </b-form-checkbox-group>
-              </b-col>
-            </b-row>
+          <b-row>
+            <b-col md="8">
+              <b-form-checkbox-group class="fixed-width" :options="formOptions.qualifications" v-model="qualificationForm.qualifications" disabled>
+              </b-form-checkbox-group>
+            </b-col>
+          </b-row>
         </b-form-group>
         <b-form-group label="Date application received">
           <b-row>
@@ -55,6 +55,15 @@
             </b-col>
           </b-row>
         </b-form-group>
+      </p>
+      <p v-else class="card-text">
+        <b-row>
+          <b-col md="12">
+            <div class="fa-2x text-center">
+              <i class="fa fa-circle-o-notch fa-spin"></i>
+            </div>
+          </b-col>
+        </b-row>
       </p>
     </div>
   </div>
@@ -116,7 +125,7 @@ export default {
     // This could also be placed on PersonAdd, but it's nice having this component exists on it's own and bootstrap itself.
     ApiService.query('drillers/options/', {'activity': this.$options.propsData.activity}).then((response) => {
       this.subactivityMap = response.data.SubactivityCode
-      this.formOptions.issuer = this.formOptions.issuer.concat(response.data.AccreditedCertificateCode.map((item) => { return {'text': item.name + ' (' + item.cert_auth + ')', 'value': item.name} }))
+      this.formOptions.issuer = this.formOptions.issuer.concat(response.data.AccreditedCertificateCode.map((item) => { return {'text': item.name + ' (' + item.cert_auth + ')', 'value': item.acc_cert_guid} }))
       this.formOptions.classification = this.subactivityMap.map((item) => { return {'text': item.description, 'value': item.registries_subactivity_code} })
       this.formOptions.qualifications = response.data.WellClassCode.map((item) => { return {'text': item.description, 'value': item.registries_well_class_code} })
       this.loaded = true

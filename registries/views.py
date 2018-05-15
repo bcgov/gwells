@@ -248,17 +248,10 @@ class PersonOptionsView(ObjectMultipleModelAPIView):
 
     def get_querylist(self):
         activity = self.request.query_params['activity']
-        # TODO: Replace this with an ORM query
-        raw_well_class = str('select wcc.* from registries_well_class_code as wcc '
-                             'inner join registries_well_qualification as wq on '
-                             'wq.registries_well_class_code = wcc.registries_well_class_code '
-                             'inner join registries_subactivity_code as sc on '
-                             'sc.registries_subactivity_code = wq.registries_subactivity_code '
-                             'and sc.registries_activity_code = \'{}\' '
-                             'group by wcc.registries_well_class_code').format(activity)
         querylist = [
             {
-                'queryset': WellClassCode.objects.raw(raw_well_class),
+                'queryset': WellClassCode.objects.filter(
+                    qualification__subactivity__registries_activity=activity),
                 'serializer_class': WellClassCodeSerializer
                 },
             {
