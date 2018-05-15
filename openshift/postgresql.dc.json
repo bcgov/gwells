@@ -10,13 +10,6 @@
     },
     "parameters": [
         {
-            "description": "Maximum amount of memory the container can use.",
-            "displayName": "Memory Limit",
-            "name": "MEMORY_LIMIT",
-            "required": true,
-            "value": "512Mi"
-        },
-        {
             "description": "The OpenShift ImageStream name.",
             "displayName": "IMAGE_STREAM_NAME",
             "name": "IMAGE_STREAM_NAME",
@@ -295,8 +288,13 @@
                                     "timeoutSeconds": 1
                                 },
                                 "resources": {
+                                    "requests": {
+                                        "cpu": "100m",
+                                        "memory": "512Mi"
+                                    },
                                     "limits": {
-                                        "memory": "${MEMORY_LIMIT}"
+                                        "cpu": "1000m",
+                                        "memory": "1Gi"
                                     }
                                 },
                                 "securityContext": {

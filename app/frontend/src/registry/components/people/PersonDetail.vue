@@ -172,7 +172,10 @@
                       class="btn btn-light btn-sm registries-edit-btn"
                       type="button"
                       @click="editCompany = (editCompany === (index + 1) ? 0 : (index + 1))"
-                      v-if="currentDriller.person_guid"><i class="fa fa-refresh"></i> Add/Change</button>
+                      v-if="currentDriller.person_guid">
+                      <span v-if="!registration.organization"><i class="fa fa-plus"></i> Add</span>
+                      <span v-else><i class="fa fa-refresh"></i> Change</span>
+                      </button>
                   </div>
                 </div>
                 <person-edit
