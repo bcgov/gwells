@@ -442,7 +442,7 @@
                                 ],
                                 "resources": {
                                     "limits": {
-                                        "cpu": "200m",
+                                        "cpu": "300m",
                                         "memory": "768Mi"
                                     },
                                     "requests": {
