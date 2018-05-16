@@ -19,8 +19,7 @@ class Command(BaseCommand):
             raise CommandError('Please set DJANGO_ADMIN_USER and DJANGO_ADMIN_PASSWORD')
 
         elif ADMIN_USER and ADMIN_PASSWD and not User.objects.filter(username=ADMIN_USER).exists():
-            user = User.objects.create_user(ADMIN_USER, 'test@example.com', ADMIN_PASSWD)
-            user.is_staff = True
+            user = User.objects.create_superuser(ADMIN_USER, 'gwells@gov.bc.ca', ADMIN_PASSWD)
             user.save()
             self.stdout.write(self.style.SUCCESS('Successfully created Admin user "%s"' % user.username))
 
