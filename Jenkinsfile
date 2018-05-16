@@ -387,9 +387,9 @@ for(String envKeyName: context.env.keySet() as String[]){
                     //}
                     dir('functional-tests') {
                         try {
-                            sh './gradlew -q dependencies'
+                            //sh './gradlew -q dependencies'
                             if ("DEV".equalsIgnoreCase(stageDeployName)){
-                                sh './gradlew chromeHeadlessTest'
+                                sh './gradlew --info --no-daemon chromeHeadlessTest'
                             }else{
                                 sh './gradlew -DchromeHeadlessTest.single=WellDetails chromeHeadlessTest'
                             }

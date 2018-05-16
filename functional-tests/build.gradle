@@ -69,6 +69,8 @@ drivers.each { driver ->
 
         outputs.upToDateWhen { false }  // Always run tests
 
+        maxParallelForks = 2
+
         systemProperty "geb.build.reportsDir", reporting.file("geb/$name")
         systemProperty "geb.env", driver
     }
