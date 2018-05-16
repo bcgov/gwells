@@ -95,10 +95,17 @@
                   <b-form-select
                     :disabled="!selectedCompany"
                     id="companyProvinceInput"
+                    :state="validation.province_state"
                     :options="provCodes"
+                    aria-describedby="provInputFeedback"
                     v-model="companyForm.province_state">
                     <option value="" disabled>Select a province</option>
                   </b-form-select>
+                  <b-form-invalid-feedback id="provInputFeedback">
+                    <div v-for="(error, index) in fieldErrors.province_state" :key="`provInput error ${index}`">
+                      {{ error }}
+                    </div>
+                  </b-form-invalid-feedback>
                 </b-form-group>
             </b-col>
           </b-row>
@@ -149,8 +156,15 @@
                   <b-form-input
                     :disabled="!selectedCompany"
                     id="companyWebsiteInput"
+                    :state="validation.website_url"
+                    aria-describedby="websiteInputFeedback"
                     type="text"
                     v-model="companyForm.website_url"/>
+                  <b-form-invalid-feedback id="websiteInputFeedback">
+                      <div v-for="(error, index) in fieldErrors.website_url" :key="`websiteInput error ${index}`">
+                        {{ error }}
+                      </div>
+                  </b-form-invalid-feedback>
                 </b-form-group>
             </b-col>
           </b-row>
@@ -170,8 +184,8 @@
           </b-row> -->
           <b-row>
             <b-col>
-              <button type="submit" class="btn btn-primary" ref="orgUpdateSaveBtn" :disabled="!selectedCompany">Update</button>
-              <button type="reset" class="btn btn-light" ref="orgUpdateCancelBtn" :disabled="!selectedCompany">Cancel</button>
+              <button type="submit" class="btn btn-primary" ref="orgUpdateSaveBtn" :disabled="!selectedCompany || !formChanged">Update</button>
+              <button type="reset" class="btn btn-light" ref="orgUpdateCancelBtn" :disabled="!selectedCompany || !formChanged">Cancel</button>
             </b-col>
           </b-row>
           <b-row class="mt-3">
@@ -265,10 +279,33 @@ export default {
       companyAddSuccess: false,
       companyUpdateSuccess: false,
       companyListError: false,
+      fieldErrors: {},
 
       // confirm popups
       confirmSubmitModal: false,
       confirmCancelModal: false
+    }
+  },
+  computed: {
+    validation () {
+      return {
+        website_url: (this.fieldErrors.website_url && this.fieldErrors.website_url.length) ? false : null,
+        province_state: (this.fieldErrors.province_state && this.fieldErrors.province_state.length) ? false : null
+      }
+    },
+    fieldsChanged () {
+      const fields = {}
+      if (this.selectedCompany) {
+        Object.keys(this.companyForm).forEach((key) => {
+          // sets a field as true if it has changed
+          // need to convert empty strings to null to compare to null/blank values from API
+          fields[key] = ((this.companyForm[key] ? this.companyForm[key] : null) !== this.selectedCompany[key])
+        })
+      }
+      return fields
+    },
+    formChanged () {
+      return (Object.keys(this.fieldsChanged).map(x => this.fieldsChanged[x]).includes(true))
     }
   },
   watch: {
@@ -292,6 +329,7 @@ export default {
       // popup confirmation for form submit
       // also clear 'company add' success message if it is still active
       this.companyAddSuccess = false
+      this.companyUpdateSuccess = false
       this.confirmSubmitModal = true
     },
     submitForm () {
@@ -307,12 +345,16 @@ export default {
         this.loadCompanies().then((response) => {
           this.selectedCompany = this.companies.find((company) => company.org_guid === this.selectedCompany.org_guid)
           this.companyUpdateSuccess = true
+          this.resetFieldErrors()
         })
+      }).catch((error) => {
+        this.fieldErrors = error.response.data
       })
     },
     cancelConfirm () {
       // also clear 'company add' success message if it is still active
       this.companyAddSuccess = false
+      this.companyUpdateSuccess = false
       this.confirmCancelModal = true
     },
     focusSubmitModal () {
@@ -333,6 +375,10 @@ export default {
       this.companyForm.main_tel = company.main_tel || ''
       this.companyForm.fax_tel = company.fax_tel || ''
       this.companyForm.website_url = company.website_url || ''
+      this.resetFieldErrors()
+    },
+    resetFieldErrors () {
+      this.fieldErrors = {}
     },
     loadCompanies () {
       // load full list of companies when page loads (for dropdown picker)
