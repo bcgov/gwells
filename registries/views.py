@@ -54,25 +54,25 @@ from registries.serializers import (
 
 class AuditCreateMixin(CreateModelMixin):
     """
-    Adds create_user and create_date fields when instances are created
+    Adds create_user when instances are created.
+    Create date is inserted in the model, and not required here.
     """
 
     def perform_create(self, serializer):
         serializer.save(
-            create_user=self.request.user.get_username(),
-            create_date=timezone.now()
+            create_user=self.request.user.get_username()
         )
 
 
 class AuditUpdateMixin(UpdateModelMixin):
     """
-    Adds update_user and update_date fields when instances are updated
+    Adds update_user when instances are updated
+    Update date is inserted in the model, and not required here.
     """
 
     def perform_update(self, serializer):
         serializer.save(
-            update_user=self.request.user.get_username(),
-            update_date=timezone.now()
+            update_user=self.request.user.get_username()
         )
 
 
