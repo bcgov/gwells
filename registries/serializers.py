@@ -191,7 +191,7 @@ class RegistrationsListSerializer(serializers.ModelSerializer):
             'status',
             'registration_no',
             'applications',
-            'organization'
+            'organization',
         )
 
     def get_applications(self, registration):
@@ -328,6 +328,7 @@ class ApplicationAdminSerializer(AuditModelSerializer):
     # We need choices here in order to popuplate an OPTIONS request with
     # valid values.
     primary_certificate = AccreditedCertificateCodeSerializer(required=False)
+    primary_certificate_no = serializers.CharField(required=False)
 
     class Meta:
         model = RegistriesApplication
@@ -601,8 +602,15 @@ class RegistrationAutoCreateSerializer(AuditModelSerializer):
 
     class Meta:
         model = Register
-        fields = ('registries_activity', 'status',
-                  'registration_no', 'organization', 'applications')
+        fields = (
+            'registries_activity',
+            'status',
+            'registration_no',
+            'organization',
+            'applications',
+            'create_user',
+            'create_date',
+        )
 
 
 class PersonAdminSerializer(AuditModelSerializer):
@@ -614,7 +622,6 @@ class PersonAdminSerializer(AuditModelSerializer):
     contact_info = ContactInfoSerializer(many=True, required=False)
 
     def __init__(self, *args, **kwargs):
-        print('PersonAdminSerializer.__init__')
         super().__init__(*args, **kwargs)
 
     def to_internal_value(self, data):
@@ -622,7 +629,6 @@ class PersonAdminSerializer(AuditModelSerializer):
         Set fields to different serializers for create/update operations.
         This method is called on POST/PUT/PATCH requests
         """
-        print('PersonAdminSerializer.to_internal_value')
         self.fields['registrations'] = RegistrationAutoCreateSerializer(
             many=True, required=False)
         return super().to_internal_value(data)
@@ -631,34 +637,36 @@ class PersonAdminSerializer(AuditModelSerializer):
         """
         Create Register and ContactInfo records to go along with a new person record
         """
-        print('PersonAdminSerializer.create')
-
         registrations = validated_data.pop('registrations', list())
         contacts = validated_data.pop('contact_info', list())
+        # The audit information has to be applied to all child records.
+        audit_info = {'create_user': validated_data.get('create_user')}
 
         person = Person.objects.create(**validated_data)
 
         for reg_data in registrations:
+            reg_data = {**reg_data, **audit_info}
             applications = reg_data.pop('applications', list())
             register = Register.objects.create(person=person, **reg_data)
             for app_data in applications:
+                app_data = {**app_data, **audit_info}
                 status_set = app_data.pop('status_set', list())
                 app = RegistriesApplication.objects.create(
                     registration=register, **app_data)
                 for status_data in status_set:
+                    staus_data = {**status_data, **audit_info}
                     RegistriesApplicationStatus.objects.create(
                         application=app, **status_data)
         for contact_data in contacts:
+            contact_data = {**contact_data, **audit_info}
             contact = ContactInfo.objects.create(person=person, **contact_data)
 
-        print('done create, now returning person')
         return Person.objects.get(person_guid=person.person_guid)
 
     def update(self, instance, validated_data):
         """
         Remove nested serializers before updating Person instance
         """
-        print('PersonAdminSerializer.update')
         if 'registrations' in validated_data:
             validated_data.pop('registrations')
         if 'contact_info' in validated_data:
