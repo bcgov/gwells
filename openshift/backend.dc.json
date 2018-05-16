@@ -442,11 +442,11 @@
                                 ],
                                 "resources": {
                                     "limits": {
-                                        "cpu": "300m",
+                                        "cpu": "250m",
                                         "memory": "768Mi"
                                     },
                                     "requests": {
-                                        "cpu": "100m",
+                                        "cpu": "200m",
                                         "memory": "512Mi"
                                     }
                                 },
@@ -504,7 +504,7 @@
                     "kind": "DeploymentConfig",
                     "name": "gwells${NAME_SUFFIX}"
                 },
-                "targetCPUUtilizationPercentage": 85
+                "targetCPUUtilizationPercentage": 90
             }
         },
         {
