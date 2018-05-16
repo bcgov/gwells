@@ -613,7 +613,7 @@
                                 ],
                                 "resources": {
                                     "limits": {
-                                        "cpu": "5m",
+                                        "cpu": "50m",
                                         "memory": "128Mi"
                                     },
                                     "requests": {
