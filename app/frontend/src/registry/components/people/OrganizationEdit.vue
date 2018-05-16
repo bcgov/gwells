@@ -1,11 +1,15 @@
 <template>
   <b-container>
-    <b-card title="Manage Organizations">
+    <b-card no-body class="mb-3">
+      <b-breadcrumb :items="breadcrumbs" class="py-0 my-2"></b-breadcrumb>
+    </b-card>
+    <b-card title="Manage Companies">
 
       <!-- Add company button (opens 'add company' modal) and success feedback -->
       <b-row>
         <b-col>
           <b-button
+              id="addNewOrgButton"
               type="button"
               v-b-modal.orgModal
               variant="light"
@@ -43,7 +47,7 @@
 
       <!-- Selected company details -->
       <b-card>
-        <b-form @submit.prevent="console.log('submitted')">
+        <b-form @submit.prevent="submitConfirm" @reset.prevent="cancelConfirm">
           <b-row>
             <b-col cols="12" md="5">
                 <b-form-group
@@ -51,6 +55,7 @@
                   label="Company name:"
                   label-for="companyNameInput">
                   <b-form-input
+                    :disabled="!selectedCompany"
                     id="companyNameInput"
                     type="text"
                     v-model="companyForm.name"/>
@@ -62,6 +67,7 @@
                   label="Street address:"
                   label-for="companyAddressInput">
                   <b-form-input
+                    :disabled="!selectedCompany"
                     id="companyAddressInput"
                     type="text"
                     v-model="companyForm.street_address"/>
@@ -75,6 +81,7 @@
                   label="City:"
                   label-for="companyCityInput">
                   <b-form-input
+                    :disabled="!selectedCompany"
                     id="companyCityInput"
                     type="text"
                     v-model="companyForm.city"/>
@@ -86,6 +93,7 @@
                   label="Province:"
                   label-for="companyProvinceInput">
                   <b-form-select
+                    :disabled="!selectedCompany"
                     id="companyProvinceInput"
                     :options="provCodes"
                     v-model="companyForm.province_state">
@@ -101,6 +109,7 @@
                   label="Postal code:"
                   label-for="postalCodeInput">
                   <b-form-input
+                    :disabled="!selectedCompany"
                     id="postalCodeInput"
                     type="text"
                     v-model="companyForm.postal_code"/>
@@ -112,6 +121,7 @@
                   label="Office number:"
                   label-for="companyTelInput">
                   <b-form-input
+                    :disabled="!selectedCompany"
                     id="companyTelInput"
                     type="text"
                     v-model="companyForm.main_tel"/>
@@ -125,6 +135,7 @@
                   label="Fax number:"
                   label-for="companyFaxInput">
                   <b-form-input
+                    :disabled="!selectedCompany"
                     id="companyFaxInput"
                     type="text"
                     v-model="companyForm.fax_tel"/>
@@ -136,13 +147,14 @@
                   label="Website:"
                   label-for="companyWebsiteInput">
                   <b-form-input
+                    :disabled="!selectedCompany"
                     id="companyWebsiteInput"
                     type="text"
                     v-model="companyForm.website_url"/>
                 </b-form-group>
             </b-col>
           </b-row>
-          <b-row>
+          <!-- <b-row>
             <b-col cols="12" md="11">
                 <b-form-group
                   id="companyNotesInputGroup"
@@ -155,7 +167,52 @@
                     v-model="companyNotesForm"/>
                 </b-form-group>
             </b-col>
+          </b-row> -->
+          <b-row>
+            <b-col>
+              <button type="submit" class="btn btn-primary" ref="orgUpdateSaveBtn" :disabled="!selectedCompany">Update</button>
+              <button type="reset" class="btn btn-light" ref="orgUpdateCancelBtn" :disabled="!selectedCompany">Cancel</button>
+            </b-col>
           </b-row>
+          <b-row class="mt-3">
+            <b-col>
+              <b-alert variant="success" :show="companyUpdateSuccess" dismissible @dismissed="companyUpdateSuccess=false">
+                Successfully updated company information.
+              </b-alert>
+            </b-col>
+          </b-row>
+          <b-modal
+              v-model="confirmSubmitModal"
+              centered
+              title="Confirm save"
+              @shown="focusSubmitModal"
+              :return-focus="$refs.orgUpdateSaveBtn">
+            Are you sure you want to save these changes?
+            <div slot="modal-footer">
+              <b-btn variant="primary" @click="confirmSubmitModal=false;submitForm()" ref="confirmSubmitConfirmBtn">
+                Save
+              </b-btn>
+              <b-btn variant="light" @click="confirmSubmitModal=false">
+                Cancel
+              </b-btn>
+            </div>
+          </b-modal>
+          <b-modal
+              v-model="confirmCancelModal"
+              centered
+              title="Confirm cancel"
+              @shown="focusCancelModal"
+              :return-focus="$refs.orgUpdateCancelBtn">
+            Are you sure you want to discard your changes?
+            <div slot="modal-footer">
+              <b-btn variant="secondary" @click="confirmCancelModal=false" ref="cancelSubmitCancelBtn">
+                Cancel
+              </b-btn>
+              <b-btn variant="danger" @click="confirmCancelModal=false;formReset()">
+                Discard
+              </b-btn>
+            </div>
+          </b-modal>
         </b-form>
       </b-card>
     </b-card>
@@ -173,8 +230,19 @@ export default {
   },
   data () {
     return {
+      breadcrumbs: [
+        {
+          text: 'Registry',
+          to: { name: 'SearchHome' }
+        },
+        {
+          text: 'Manage Companies',
+          active: true
+        }
+      ],
+
       // companies list from API
-      companies: [{ name: '', org_guid: '' }],
+      companies: [{ name: '', org_guid: '', org_verbose_name: '' }],
       selectedCompany: null,
       provCodes: [
         'BC', 'AB'
@@ -193,40 +261,90 @@ export default {
       },
       companyNotesForm: '',
 
-      // add company success message
+      // add/update company success messages
       companyAddSuccess: false,
-      companyListError: false
+      companyUpdateSuccess: false,
+      companyListError: false,
+
+      // confirm popups
+      confirmSubmitModal: false,
+      confirmCancelModal: false
     }
   },
   watch: {
     selectedCompany () {
-      this.companyForm.name = this.selectedCompany.name || ''
-      this.companyForm.street_address = this.selectedCompany.street_address || ''
-      this.companyForm.city = this.selectedCompany.city || ''
-      this.companyForm.province_state = this.selectedCompany.province_state || ''
-      this.companyForm.postal_code = this.selectedCompany.postal_code || ''
-      this.companyForm.main_tel = this.selectedCompany.main_tel || ''
-      this.companyForm.fax_tel = this.selectedCompany.fax_tel || ''
-      this.companyForm.website_url = this.selectedCompany.website_url || ''
+      // reset form whenever selectedCompany (dropdown)
+      this.formReset()
     }
   },
   methods: {
     newOrgHandler (orgGuid) {
+      // called when a new company created
+      // shows a success message and sets currently selected company to the new one
+      this.companyUpdateSuccess = false
       this.companyAddSuccess = true
-      ApiService.query('organizations/').then((response) => {
-        this.companies = response.data
+      this.loadCompanies().then(() => {
         this.selectedCompany = this.companies.find((company) => company.org_guid === orgGuid)
+        this.companyAddSuccess = true
+      })
+    },
+    submitConfirm () {
+      // popup confirmation for form submit
+      // also clear 'company add' success message if it is still active
+      this.companyAddSuccess = false
+      this.confirmSubmitModal = true
+    },
+    submitForm () {
+      const data = {}
+
+      // remove null & empty string values, and the guid (not needed in data object)
+      Object.keys(this.companyForm).forEach((key) => {
+        if (this.companyForm[key] && this.companyForm[key] !== '' && key !== 'org_guid') {
+          data[key] = this.companyForm[key]
+        }
+      })
+      ApiService.patch('organizations', this.selectedCompany.org_guid, data).then((response) => {
+        this.loadCompanies().then((response) => {
+          this.selectedCompany = this.companies.find((company) => company.org_guid === this.selectedCompany.org_guid)
+          this.companyUpdateSuccess = true
+        })
+      })
+    },
+    cancelConfirm () {
+      // also clear 'company add' success message if it is still active
+      this.companyAddSuccess = false
+      this.confirmCancelModal = true
+    },
+    focusSubmitModal () {
+      // focus the "submit" button in the confirm save note popup
+      this.$refs.confirmSubmitConfirmBtn.focus()
+    },
+    focusCancelModal () {
+      // focus the "cancel" button in the confirm discard popup
+      this.$refs.cancelSubmitCancelBtn.focus()
+    },
+    formReset () {
+      const company = this.selectedCompany || {}
+      this.companyForm.name = company.name || ''
+      this.companyForm.street_address = company.street_address || ''
+      this.companyForm.city = company.city || ''
+      this.companyForm.province_state = company.province_state || ''
+      this.companyForm.postal_code = company.postal_code || ''
+      this.companyForm.main_tel = company.main_tel || ''
+      this.companyForm.fax_tel = company.fax_tel || ''
+      this.companyForm.website_url = company.website_url || ''
+    },
+    loadCompanies () {
+      // load full list of companies when page loads (for dropdown picker)
+      return ApiService.query('organizations/').then((response) => {
+        this.companies = response.data
       }).catch((e) => {
         this.companyListError = e.response
       })
     }
   },
   created () {
-    ApiService.query('organizations/').then((response) => {
-      this.companies = response.data
-    }).catch((e) => {
-      this.companyListError = e.response
-    })
+    this.loadCompanies()
   }
 }
 </script>
