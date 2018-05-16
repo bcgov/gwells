@@ -73,7 +73,7 @@
                 "name": "minio-access-parameters${NAME_SUFFIX}",
                 "creationTimestamp": null,
                 "annotations": {
-                    "template.openshift.io.bcgov/create": "true"
+                    "as-copy-of": "gwells-minio-secrets"
                 }
             },
             "data": {
@@ -91,7 +91,7 @@
                 "creationTimestamp": null,
                 "name": "gwells-django${NAME_SUFFIX}",
                 "annotations": {
-                    "template.openshift.io.bcgov/create": "true"
+                    "as-copy-of": "gwells-django-secrets"
                 }
             },
             "data": {
@@ -116,6 +116,21 @@
                 "password": null,
                 "postgres_admin_password": null,
                 "username": null
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "data": {
+                "DB_REPLICATE": "None",
+                "DJANGO_DEBUG": "False"
+            },
+            "kind": "ConfigMap",
+            "metadata": {
+                "creationTimestamp": null,
+                "name": "gwells-global-config${NAME_SUFFIX}",
+                "annotations": {
+                    "as-copy-of": "gwells-global-config"
+                }
             }
         },
         {
@@ -326,7 +341,12 @@
                                     },
                                     {
                                         "name": "DJANGO_DEBUG",
-                                        "value": "True"
+                                        "valueFrom": {
+                                            "configMapKeyRef": {
+                                                "key": "DJANGO_DEBUG",
+                                                "name": "gwells-global-config${NAME_SUFFIX}"
+                                            }
+                                        }
                                     },
                                     {
                                         "name": "ENABLE_GOOGLE_ANALYTICS",
@@ -354,7 +374,12 @@
                                     },
                                     {
                                         "name": "DB_REPLICATE",
-                                        "value": "Subset"
+                                        "valueFrom": {
+                                            "configMapKeyRef": {
+                                                "key": "DB_REPLICATE",
+                                                "name": "gwells-global-config${NAME_SUFFIX}"
+                                            }
+                                        }
                                     },
                                     {
                                         "name": "MINIO_ACCESS_KEY",
