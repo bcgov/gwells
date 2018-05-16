@@ -293,7 +293,7 @@
                                         "memory": "512Mi"
                                     },
                                     "limits": {
-                                        "cpu": "1000m",
+                                        "cpu": "200m",
                                         "memory": "1Gi"
                                     }
                                 },

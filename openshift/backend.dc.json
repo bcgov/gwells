@@ -73,7 +73,7 @@
                 "name": "minio-access-parameters${NAME_SUFFIX}",
                 "creationTimestamp": null,
                 "annotations": {
-                    "template.openshift.io.bcgov/create": "true"
+                    "as-copy-of": "gwells-minio-secrets"
                 }
             },
             "data": {
@@ -91,7 +91,7 @@
                 "creationTimestamp": null,
                 "name": "gwells-django${NAME_SUFFIX}",
                 "annotations": {
-                    "template.openshift.io.bcgov/create": "true"
+                    "as-copy-of": "gwells-django-secrets"
                 }
             },
             "data": {
@@ -116,6 +116,21 @@
                 "password": null,
                 "postgres_admin_password": null,
                 "username": null
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "data": {
+                "DB_REPLICATE": "None",
+                "DJANGO_DEBUG": "False"
+            },
+            "kind": "ConfigMap",
+            "metadata": {
+                "creationTimestamp": null,
+                "name": "gwells-global-config${NAME_SUFFIX}",
+                "annotations": {
+                    "as-copy-of": "gwells-global-config"
+                }
             }
         },
         {
@@ -222,7 +237,17 @@
                                         "name": "PGHOST",
                                         "value": "gwells-pgsql${NAME_SUFFIX}"
                                     }
-                                ]
+                                ],
+                                "resources": {
+                                    "limits": {
+                                        "cpu": "50m",
+                                        "memory": "256Mi"
+                                    },
+                                    "requests": {
+                                        "cpu": "10m",
+                                        "memory": "128Mi"
+                                    }
+                                }
                             }
                         ],
                         "containers": [
@@ -326,7 +351,12 @@
                                     },
                                     {
                                         "name": "DJANGO_DEBUG",
-                                        "value": "True"
+                                        "valueFrom": {
+                                            "configMapKeyRef": {
+                                                "key": "DJANGO_DEBUG",
+                                                "name": "gwells-global-config${NAME_SUFFIX}"
+                                            }
+                                        }
                                     },
                                     {
                                         "name": "ENABLE_GOOGLE_ANALYTICS",
@@ -354,7 +384,12 @@
                                     },
                                     {
                                         "name": "DB_REPLICATE",
-                                        "value": "Subset"
+                                        "valueFrom": {
+                                            "configMapKeyRef": {
+                                                "key": "DB_REPLICATE",
+                                                "name": "gwells-global-config${NAME_SUFFIX}"
+                                            }
+                                        }
                                     },
                                     {
                                         "name": "MINIO_ACCESS_KEY",
@@ -407,12 +442,12 @@
                                 ],
                                 "resources": {
                                     "limits": {
-                                        "cpu": "300m",
-                                        "memory": "2Gi"
+                                        "cpu": "250m",
+                                        "memory": "768Mi"
                                     },
                                     "requests": {
                                         "cpu": "200m",
-                                        "memory": "1Gi"
+                                        "memory": "512Mi"
                                     }
                                 },
                                 "livenessProbe": {
@@ -433,11 +468,11 @@
                                         "port": 8080,
                                         "scheme": "HTTP"
                                     },
-                                    "initialDelaySeconds": 60,
-                                    "timeoutSeconds": 5,
-                                    "periodSeconds": 10,
+                                    "initialDelaySeconds": 5,
+                                    "timeoutSeconds": 2,
+                                    "periodSeconds": 5,
                                     "successThreshold": 1,
-                                    "failureThreshold": 6
+                                    "failureThreshold": 10
                                 },
                                 "terminationMessagePath": "/dev/termination-log",
                                 "terminationMessagePolicy": "File",
@@ -451,6 +486,25 @@
                         "schedulerName": "default-scheduler"
                     }
                 }
+            }
+        },
+        {
+            "apiVersion": "autoscaling/v1",
+            "kind": "HorizontalPodAutoscaler",
+            "metadata": {
+                "creationTimestamp": null,
+                "labels": { },
+                "name": "gwells${NAME_SUFFIX}"
+            },
+            "spec": {
+                "maxReplicas": 5,
+                "minReplicas": 1,
+                "scaleTargetRef": {
+                    "apiVersion": "v1",
+                    "kind": "DeploymentConfig",
+                    "name": "gwells${NAME_SUFFIX}"
+                },
+                "targetCPUUtilizationPercentage": 90
             }
         },
         {
@@ -578,11 +632,11 @@
                                 ],
                                 "resources": {
                                     "limits": {
-                                        "cpu": "100m",
+                                        "cpu": "50m",
                                         "memory": "128Mi"
                                     },
                                     "requests": {
-                                        "cpu": "50m",
+                                        "cpu": "10m",
                                         "memory": "64Mi"
                                     }
                                 },
@@ -604,11 +658,11 @@
                                         "port": 2015,
                                         "scheme": "HTTP"
                                     },
-                                    "initialDelaySeconds": 60,
-                                    "timeoutSeconds": 5,
-                                    "periodSeconds": 10,
+                                    "initialDelaySeconds": 5,
+                                    "timeoutSeconds": 2,
+                                    "periodSeconds": 5,
                                     "successThreshold": 1,
-                                    "failureThreshold": 6
+                                    "failureThreshold": 10
                                 },
                                 "terminationMessagePath": "/dev/termination-log",
                                 "terminationMessagePolicy": "File",

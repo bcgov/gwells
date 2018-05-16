@@ -233,7 +233,7 @@ for(String envKeyName: context.env.keySet() as String[]){
     }
 
     if (!"DEV".equalsIgnoreCase(stageDeployName) && isCD){
-        stage("Approve - ${stageDeployName}") {
+        _stage("Approve - ${stageDeployName}", context) {
             def inputResponse = null;
             try{
                 inputResponse = input(id: "deploy_${stageDeployName.toLowerCase()}", message: "Deploy to ${stageDeployName}?", ok: 'Approve', submitterParameter: 'approved_by')
@@ -253,7 +253,7 @@ for(String envKeyName: context.env.keySet() as String[]){
         }
     }
 
-    if ("DEV".equalsIgnoreCase(stageDeployName) || (isCD && "TEST".equalsIgnoreCase(stageDeployName))){
+    if ("DEV".equalsIgnoreCase(stageDeployName)){
         _stage("Load Fixtures - ${stageDeployName}", context) {
             node('master'){
                 String podName=null
@@ -387,7 +387,7 @@ for(String envKeyName: context.env.keySet() as String[]){
                     //}
                     dir('functional-tests') {
                         try {
-                            sh './gradlew -q dependencies'
+                            //sh './gradlew -q dependencies'
                             if ("DEV".equalsIgnoreCase(stageDeployName)){
                                 sh './gradlew chromeHeadlessTest'
                             }else{
@@ -423,7 +423,7 @@ for(String envKeyName: context.env.keySet() as String[]){
 } // end for
 
 
-stage('Cleanup') {
+_stage('Cleanup', context) {
     def inputResponse = null
     try{
         inputResponse=input(id: 'close_pr', message: "Ready to Accept/Merge, and Close pull-request #${env.CHANGE_ID}?", ok: 'Yes', submitter: 'authenticated', submitterParameter: 'approver')
