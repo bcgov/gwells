@@ -53,11 +53,11 @@
         </b-form>
       </div>
       <div id="notesList" ref="notes">
-        <div class="mt-5" v-if="!sortedNotes || !sortedNotes.length">
+        <div class="mt-5" v-if="!notes || !notes.length">
           <b-row><b-col>No notes for this person.</b-col></b-row>
         </div>
-        <div class="mt-5" v-if="sortedNotes && sortedNotes.length">
-          <div class="mt-3" v-for="(note, index) in sortedNotes" :key="`note ${index}`" :id="`person-note-${index}`">
+        <div class="mt-5" v-if="notes && notes.length">
+          <div class="mt-3" v-for="(note, index) in notes" :key="`note ${index}`" :id="`person-note-${index}`">
               <span class="font-weight-bold">{{ note.author }}</span> ({{ note.date | moment("MMMM Do YYYY [at] LT") }}):
               {{ note.note }}
           </div>
@@ -83,7 +83,7 @@ export default {
     }
   },
   computed: {
-    sortedNotes () {
+    notes () {
       if (this.currentDriller && this.currentDriller.notes && this.currentDriller.notes.length) {
         return this.currentDriller.notes
       }
