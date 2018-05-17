@@ -44,24 +44,24 @@ stage ( 'test' )
         if ( STATUS == "online" ){
             echo POD_DB +" is online"
             sh """
-                echo oc patch route gwells -n "${PROJECT}" -p \
+                oc patch route gwells -n "${PROJECT}" -p \
                     '{ "spec": { "to": { "name": "proxy-caddy"}, "port": { "targetPort": "2015-tcp" }}}'
-                echo oc patch route proxy-caddy -n "${PROJECT}" -p \
+                oc patch route proxy-caddy -n "${PROJECT}" -p \
                     '{ "spec": { "to": { "name": "gwells" }, "port": { "targetPort": "web" }}}'
 
-                echo oc scale dc gwells --timeout=5s --replicas=0 -n "${PROJECT}"
-                echo oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
+                oc scale dc gwells --timeout=5s --replicas=0 -n "${PROJECT}"
+                oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
                     'psql -d gwells -c "VACUUM FULL;"'
-                echo oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
-                    'psql -t -d gwells -U "\${POSTGRESQL_USER}" -c "SELECT db_replicate_step1(_subset_ind=>false);"'
-                echo oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
-                    'psql -t -d gwells -U "\${POSTGRESQL_USER}" -c "SELECT db_replicate_step2 ();"'
+                oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
+                    'psql -t -d gwells -U "\${POSTGRESQL_USER}" -c \
+                        "SELECT db_replicate_step1(_subset_ind=>false);"'
+                oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
+                    'psql -t -d gwells -U "\${POSTGRESQL_USER}" -c \
+                        "SELECT db_replicate_step2 ();"'
             """
         } else {
             echo POD_DB +" is offline"
         }
-
-
         int WELL_COUNT = sh(
             script:
                 """
@@ -71,16 +71,16 @@ stage ( 'test' )
             returnStdout:
                 true
         ).trim()
-        echo WELL_COUNT +" is the well count"
-        if ( WELL_COUNT > 12000 ){
+        if ( WELL_COUNT > 120000 ){
             sh """
-                echo WELL_COUNT +" is enough"
-                echo oc scale dc gwells --timeout=5s --replicas=1 -n "${PROJECT}"
-                echo oc patch route gwells -n "${PROJECT}" -p '{ "spec": { "to": { "name": "gwells" }, "port": { "targetPort": "web" }}}'
-                echo oc patch route proxy-caddy -n "${PROJECT}" -p '{ "spec": { "to": { "name": "proxy-caddy" }, "port": { "targetPort": "2015-tcp" }}}'
+                oc scale dc gwells --timeout=5s --replicas=1 -n "${PROJECT}"
+                oc patch route gwells -n "${PROJECT}" -p \
+                    '{ "spec": { "to": { "name": "gwells" }, "port": { "targetPort": "web" }}}'
+                oc patch route proxy-caddy -n "${PROJECT}" -p \
+                    '{ "spec": { "to": { "name": "proxy-caddy" }, "port": { "targetPort": "2015-tcp" }}}'
             """
         } else {
-            echo WELL_COUNT +" is not enough"
+            echo WELL_COUNT +" <= 120000, well count too low"
         }
     }
 }
