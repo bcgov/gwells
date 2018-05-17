@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "ca547e9d-cc46-4795-97f8-33d359c17843",
+		"_postman_id": "040a51d3-6494-4cfa-be50-cc7b7112035f",
 		"name": "GWELLS API (Keycloak)",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -66,19 +66,16 @@
 										{
 											"key": "grant_type",
 											"value": "password",
-											"description": "",
 											"type": "text"
 										},
 										{
 											"key": "client_id",
 											"value": "{{client_id}}",
-											"description": "",
 											"type": "text"
 										},
 										{
 											"key": "client_secret",
 											"value": "{{client_secret}}",
-											"description": "",
 											"type": "text"
 										}
 									]
@@ -2493,7 +2490,6 @@
 										{
 											"key": "province_state",
 											"value": "BC",
-											"description": "",
 											"type": "text"
 										}
 									]
@@ -2565,13 +2561,11 @@
 										{
 											"key": "registration_no",
 											"value": "12345",
-											"description": "",
 											"type": "text"
 										},
 										{
 											"key": "organization",
 											"value": "{{created_guid}}",
-											"description": "",
 											"type": "text"
 										}
 									]
