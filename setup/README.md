@@ -176,9 +176,12 @@ Please use either these steps or the install script.
     python3 ../manage.py migrate
     ```
 
-    Optional: import a Wells database.
-
+    Optional: import a database.
     ```
+    From python:
+    python manage.py loaddata wells registries
+
+    From pg dump:
     pg_restore -U gwells -d gwells --no-owner --no-privileges <path to MODERN_DB_DUMP>
     ```
 
@@ -225,7 +228,7 @@ Please use either these steps or the install script.
 
     ```
     sudo ln -s <repo root> /opt/app-root/src
-    cd ../database/cron/
+    cd ../openshift/scripts/
     ./post-deploy.sh
     ```
 
