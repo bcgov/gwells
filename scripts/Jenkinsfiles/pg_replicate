@@ -22,7 +22,7 @@ stage ( 'test' )
 {
     node ( 'master' )
     {
-        String PODNAME = sh(
+        String POD_DB = sh(
             script:
                 """
                     oc get pods -n "${PROJECT}" | grep "Running" | grep -Eo \
@@ -34,7 +34,7 @@ stage ( 'test' )
         String STATUS = sh(
             script:
                 """
-                oc exec "${PODNAME}" -n "${PROJECT}" -- /bin/bash -c \
+                oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
                     'psql -d gwells -c \
                         "SELECT 1 AS online FROM WELLS.WELLS_WELLS LIMIT 1;" | grep -o online'
                 """,
@@ -42,7 +42,7 @@ stage ( 'test' )
                 true
         ).trim()
         if ( STATUS == "online" ){
-            echo POD_NAME +" is online"
+            echo POD_DB +" is online"
             sh """
                 echo oc patch route gwells -n "${PROJECT}" -p \
                     '{ "spec": { "to": { "name": "proxy-caddy"}, "port": { "targetPort": "2015-tcp" }}}'
@@ -50,22 +50,22 @@ stage ( 'test' )
                     '{ "spec": { "to": { "name": "gwells" }, "port": { "targetPort": "web" }}}'
 
                 echo oc scale dc gwells --timeout=5s --replicas=0 -n "${PROJECT}"
-                echo oc exec "${PODNAME}" -n "${PROJECT}" -- /bin/bash -c \
+                echo oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
                     'psql -d gwells -c "VACUUM FULL;"'
-                echo oc exec "${PODNAME}" -n "${PROJECT}" -- /bin/bash -c \
+                echo oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
                     'psql -t -d gwells -U "\${POSTGRESQL_USER}" -c "SELECT db_replicate_step1(_subset_ind=>false);"'
-                echo oc exec "${PODNAME}" -n "${PROJECT}" -- /bin/bash -c \
+                echo oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
                     'psql -t -d gwells -U "\${POSTGRESQL_USER}" -c "SELECT db_replicate_step2 ();"'
             """
         } else {
-            echo POD_NAME +" is offline"
+            echo POD_DB +" is offline"
         }
 
 
         String WELL_COUNT = sh(
             script:
                 """
-                    oc exec "${PODNAME}" -n "${PROJECT}" -- /bin/bash -c \
+                    oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
                         'psql -t -d gwells -U "\${POSTGRESQL_USER}" -c "SELECT count(*) from well;"'
                 """,
             returnStdout:
