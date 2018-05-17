@@ -498,7 +498,7 @@
             },
             "spec": {
                 "maxReplicas": 5,
-                "minReplicas": 1,
+                "minReplicas": 2,
                 "scaleTargetRef": {
                     "apiVersion": "v1",
                     "kind": "DeploymentConfig",
@@ -632,12 +632,12 @@
                                 ],
                                 "resources": {
                                     "limits": {
-                                        "cpu": "50m",
-                                        "memory": "128Mi"
+                                        "cpu": "8m",
+                                        "memory": "24Mi"
                                     },
                                     "requests": {
-                                        "cpu": "10m",
-                                        "memory": "64Mi"
+                                        "cpu": "5m",
+                                        "memory": "16Mi"
                                     }
                                 },
                                 "livenessProbe": {
@@ -730,7 +730,25 @@
                 },
                 "wildcardPolicy": "None"
             }
+        },
+        {
+            "apiVersion": "autoscaling/v1",
+            "kind": "HorizontalPodAutoscaler",
+            "metadata": {
+                "creationTimestamp": null,
+                "labels": { },
+                "name": "gwells-static${NAME_SUFFIX}"
+            },
+            "spec": {
+                "maxReplicas": 5,
+                "minReplicas": 2,
+                "scaleTargetRef": {
+                    "apiVersion": "v1",
+                    "kind": "DeploymentConfig",
+                    "name": "gwells-static${NAME_SUFFIX}"
+                },
+                "targetCPUUtilizationPercentage": 90
+            }
         }
-
     ]
 }
