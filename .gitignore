@@ -139,7 +139,7 @@ x.sh
 # Frontend files
 frontend/node_modules/
 frontend/webpack-stats.json
-gwells/static/vue
+app/gwells/static/vue
 
 sonar-runner/.gradle
 *.patch
