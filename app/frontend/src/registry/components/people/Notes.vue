@@ -98,6 +98,8 @@ export default {
       return []
     },
     resourceType () {
+      // map 'resource' names (e.g. organization, person) to API friendly plural versions
+      // - this is also the list of resources that currently accept notes
       const typeMap = {
         organization: 'organizations',
         person: 'people'
@@ -114,6 +116,8 @@ export default {
       ApiService.post(`${this.resourceType}/${this.guid}/notes`, { note: this.noteInput })
         .then((response) => {
           const notes = this.$refs.noteSection
+
+          // Note submitted, set loading/success indicators and scroll down to the new note
           this.noteReset()
           this.submitLoading = false
           this.submitSuccess = true
