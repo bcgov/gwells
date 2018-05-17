@@ -589,6 +589,7 @@ class PersonAdminSerializer(AuditModelSerializer):
         Get sorted notes
         """
         notes = PersonNote.objects \
+            .filter(person=obj.person_guid) \
             .order_by('-date') \
             .select_related('author', 'author__profile')
         serializer = PersonNoteSerializer(instance=notes, many=True)
