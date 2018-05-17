@@ -62,7 +62,7 @@ stage ( 'test' )
         }
 
 
-        String WELL_COUNT = sh(
+        int WELL_COUNT = sh(
             script:
                 """
                     oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
@@ -72,13 +72,15 @@ stage ( 'test' )
                 true
         ).trim()
         echo WELL_COUNT +" is the well count"
-        if ( WELL_COUNT > 112000 ){
-            echo WELL_COUNT +"is enough"
-            //echo oc scale dc gwells --timeout=5s --replicas=1 -n "${PROJECT}"
-            //echo oc patch route gwells -n "${PROJECT}" -p '{ "spec": { "to": { "name": "gwells" }, "port": { "targetPort": "web" }}}'
-            //echo oc patch route proxy-caddy -n "${PROJECT}" -p '{ "spec": { "to": { "name": "proxy-caddy" }, "port": { "targetPort": "2015-tcp" }}}'
+        if ( WELL_COUNT > 12000 ){
+            sh """
+                echo WELL_COUNT +" is enough"
+                echo oc scale dc gwells --timeout=5s --replicas=1 -n "${PROJECT}"
+                echo oc patch route gwells -n "${PROJECT}" -p '{ "spec": { "to": { "name": "gwells" }, "port": { "targetPort": "web" }}}'
+                echo oc patch route proxy-caddy -n "${PROJECT}" -p '{ "spec": { "to": { "name": "proxy-caddy" }, "port": { "targetPort": "2015-tcp" }}}'
+            """
         } else {
-            echo WELL_COUNT +"is not enough"
+            echo WELL_COUNT +" is not enough"
         }
     }
 }
