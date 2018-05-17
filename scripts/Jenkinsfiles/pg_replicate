@@ -17,7 +17,7 @@ properties(
         )
     ]
 )
-def PROJECT = 'moe-gwells-dev'
+def PROJECT = 'moe-gwells-test'
 stage ( 'test' )
 {
     node ( 'master' )
@@ -25,8 +25,8 @@ stage ( 'test' )
         String POD_DB = sh(
             script:
                 """
-                    oc get pods -n "${PROJECT}" | grep "Running" | grep -Eo \
-                        "gwells-pgsql-[[:alpha:]]+-[[:alpha:]]+-[[:digit:]]+-[[:digit:]]+-[[:alpha:]]+"
+                    oc get pods -n "${PROJECT}" | grep -i "Running" | grep -Eo \
+                        "gwells-pgsql-[[:alpha:]]+-[[:digit:]]+-[[:alnum:]]+"
                 """,
             returnStdout:
                 true
