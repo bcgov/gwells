@@ -11,6 +11,7 @@ import PersonAdd from '@/registry/components/people/PersonAdd.vue'
 import ApplicationDetail from '@/registry/components/people/ApplicationDetail.vue'
 
 import OrganizationAdd from '@/registry/components/people/OrganizationAdd.vue'
+import OrganizationEdit from '@/registry/components/people/OrganizationEdit.vue'
 
 Vue.use(Router)
 
@@ -54,6 +55,12 @@ export default new Router({
       meta: {
         view: 'person'
       }
+    },
+    {
+      path: '/organizations/manage',
+      name: 'OrganizationEdit',
+      component: OrganizationEdit,
+      beforeEnter: AuthGuard
     },
     {
       path: '/organizations/add',

@@ -143,6 +143,8 @@ class Organization(AuditModel):
     website_url = models.URLField(null=True, verbose_name="Website")
     effective_date = models.DateField(default=datetime.date.today)
     expired_date = models.DateField(blank=True, null=True)
+    email = models.EmailField(
+        blank=True, null=True, verbose_name="Email adddress")
 
     class Meta:
         db_table = 'registries_organization'
@@ -545,6 +547,33 @@ class Register_Note(AuditModel):
         )
 
 
+class OrganizationNote(AuditModel):
+    org_note_guid = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False,
+        verbose_name="Company note UUID")
+    author = models.ForeignKey(
+        User,
+        db_column='user_guid',
+        on_delete=models.PROTECT,
+        verbose_name='Author reference')
+    organization = models.ForeignKey(
+        Organization,
+        db_column='org_guid',
+        on_delete=models.PROTECT,
+        verbose_name="Company reference",
+        related_name="notes")
+    date = models.DateTimeField(auto_now_add=True)
+    note = models.TextField(max_length=2000)
+
+    class Meta:
+        db_table = 'registries_organization_note'
+
+    def __str__(self):
+        return self.note[:20] + ('...' if len(self.note) > 20 else '')
+
+
 class PersonNote(AuditModel):
     person_note_guid = models.UUIDField(
         primary_key=True,
@@ -569,7 +598,7 @@ class PersonNote(AuditModel):
         db_table = 'registries_person_note'
 
     def __str__(self):
-        return self.note[:20] + '...' if len(self.note) > 20 else ''
+        return self.note[:20] + ('...' if len(self.note) > 20 else '')
 
 
 """

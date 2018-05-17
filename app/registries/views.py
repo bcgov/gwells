@@ -23,7 +23,14 @@ from rest_framework.pagination import LimitOffsetPagination, PageNumberPaginatio
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from rest_framework.mixins import CreateModelMixin, UpdateModelMixin
-from registries.models import Organization, Person, ContactInfo, RegistriesApplication, Register, PersonNote
+from registries.models import (
+    Organization,
+    Person,
+    ContactInfo,
+    RegistriesApplication,
+    Register,
+    PersonNote,
+    OrganizationNote)
 from registries.permissions import IsAdminOrReadOnly, IsGwellsAdmin
 from registries.serializers import (
     ApplicationAdminSerializer,
@@ -37,7 +44,8 @@ from registries.serializers import (
     PersonAdminSerializer,
     PersonListSerializer,
     RegistrationAdminSerializer,
-    PersonNoteSerializer)
+    PersonNoteSerializer,
+    OrganizationNoteSerializer)
 
 
 class AuditCreateMixin(CreateModelMixin):
@@ -114,13 +122,14 @@ class OrganizationListView(AuditCreateMixin, ListCreateAPIView):
     """
 
     permission_classes = (IsGwellsAdmin,)
-    serializer_class = OrganizationSerializer
-    pagination_class = APILimitOffsetPagination
+    serializer_class = OrganizationListSerializer
+    pagination_class = None
 
     # prefetch related objects for the queryset to prevent duplicate database trips later
     queryset = Organization.objects.all() \
         .select_related('province_state',) \
-        .prefetch_related('registrations', 'registrations__person')
+        .prefetch_related('registrations', 'registrations__person') \
+        .filter(expired_date__isnull=True)
 
     # Allow searching against fields like organization name, address,
     # name or registration of organization contacts
@@ -138,36 +147,11 @@ class OrganizationListView(AuditCreateMixin, ListCreateAPIView):
         """
         Filter out organizations with no registered drillers if user is anonymous
         """
-        qs = self.queryset
+        qs = super().get_queryset()
         if not self.request.user.is_staff:
             qs = qs \
                 .filter(person_set__registrations__status='ACTIVE')
         return qs
-
-    def get_serializer_class(self):
-        """
-        Return appropriate serializer for user
-        Admin serializers have more fields, including audit fields
-        """
-        if self.request and self.request.user.is_staff:
-            return OrganizationAdminSerializer
-        return self.serializer_class
-
-    # override list() in order to use a modified serializer (with fewer fields) for the list view
-    def list(self, request):
-        """
-        Returns the list response, using the list serializer class (serializes fewer fields than detail view)
-        """
-        queryset = self.get_queryset()
-        filtered_queryset = self.filter_queryset(queryset)
-
-        page = self.paginate_queryset(filtered_queryset)
-        if page is not None:
-            serializer = OrganizationListSerializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-
-        serializer = OrganizationListSerializer(filtered_queryset)
-        return Response(serializer.data)
 
 
 class OrganizationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
@@ -185,11 +169,11 @@ class OrganizationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
     Removes the specified drilling organization record
     """
 
-    permission_classes = (IsAdminOrReadOnly,)
+    permission_classes = (IsGwellsAdmin,)
 
     # 'pk' and 'id' have been replaced by 'org_guid' as primary key for Organization model
     lookup_field = "org_guid"
-    serializer_class = OrganizationSerializer
+    serializer_class = OrganizationAdminSerializer
 
     # prefetch related province, contacts and person records to prevent future additional database trips
     queryset = Organization.objects.all() \
@@ -207,11 +191,6 @@ class OrganizationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
                 .filter(registrations__status='ACTIVE') \
                 .distinct()
         return qs
-
-    def get_serializer_class(self):
-        if self.request and self.request.user.is_staff:
-            return OrganizationAdminSerializer
-        return self.serializer_class
 
     def destroy(self, request, *args, **kwargs):
         """
@@ -562,7 +541,7 @@ class PersonNoteListView(AuditCreateMixin, ListCreateAPIView):
 
     def get_queryset(self):
         person = self.kwargs['person_guid']
-        return PersonNote.objects.filter(person=person)
+        return PersonNote.objects.filter(person=person).order_by('-date')
 
     def perform_create(self, serializer):
         """ Add author to serializer data """
@@ -594,3 +573,51 @@ class PersonNoteDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
     def get_queryset(self):
         person = self.kwargs['person']
         return PersonNote.objects.filter(person=person)
+
+
+class OrganizationNoteListView(AuditCreateMixin, ListCreateAPIView):
+    """
+    get:
+    Returns notes associated with a Organization record
+
+    post:
+    Adds a note record to the specified Organization record
+    """
+
+    permission_classes = (IsGwellsAdmin,)
+    serializer_class = OrganizationNoteSerializer
+
+    def get_queryset(self):
+        org = self.kwargs['org_guid']
+        return OrganizationNote.objects.filter(organization=org).order_by('-date')
+
+    def perform_create(self, serializer):
+        """ Add author to serializer data """
+        org = self.kwargs['org_guid']
+        serializer.validated_data['organization'] = Organization.objects.get(
+            org_guid=org)
+        serializer.validated_data['author'] = self.request.user
+        return super(OrganizationNoteListView, self).perform_create(serializer)
+
+
+class OrganizationNoteDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
+    """
+    get:
+    Returns a OrganizationNote record
+
+    put:
+    Replaces a OrganizationNote record with a new one
+
+    patch:
+    Updates a OrganizationNote record with the set of fields provided in the request body
+
+    delete:
+    Removes a OrganizationNote record
+    """
+
+    permission_classes = (IsGwellsAdmin,)
+    serializer_class = OrganizationNoteSerializer
+
+    def get_queryset(self):
+        org = self.kwargs['org_guid']
+        return OrganizationNote.objects.filter(organization=org)
