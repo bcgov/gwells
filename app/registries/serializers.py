@@ -28,12 +28,9 @@ from registries.models import (
     SubactivityCode,
     Qualification,
     ApplicationStatusCode,
-<<<<<<< HEAD:registries/serializers.py
     AccreditedCertificateCode,
-    WellClassCode
-=======
+    WellClassCode,
     PersonNote
->>>>>>> developer:app/registries/serializers.py
 )
 
 logger = logging.getLogger(__name__)

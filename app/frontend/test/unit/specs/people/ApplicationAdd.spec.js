@@ -1,4 +1,4 @@
-import { shallow, createLocalVue } from '@vue/test-utils'
+import { shallowMount, createLocalVue } from '@vue/test-utils'
 import Vuex from 'vuex'
 import ApplicationAdd from '@/registry/components/people/ApplicationAdd'
 import fakeOptions from '../fakeDrillerOptions'
@@ -24,7 +24,7 @@ describe('ApplicationAdd.vue', () => {
 
   it('Has the correct title', () => {
     const activity = 'DRILL'
-    const wrapper = shallow(ApplicationAdd, {
+    const wrapper = shallowMount(ApplicationAdd, {
       store,
       propsData: { activity },
       localVue
@@ -33,7 +33,7 @@ describe('ApplicationAdd.vue', () => {
   })
   it('Loads driller options correctly', () => {
     const activity = 'DRILL'
-    const wrapper = shallow(ApplicationAdd, {
+    const wrapper = shallowMount(ApplicationAdd, {
       store,
       propsData: { activity },
       localVue
@@ -44,7 +44,7 @@ describe('ApplicationAdd.vue', () => {
   })
   it('Changing classification, results in qualifications changing', () => {
     const activity = 'DRILL'
-    const wrapper = shallow(ApplicationAdd, {
+    const wrapper = shallowMount(ApplicationAdd, {
       store,
       propsData: { activity },
       localVue
@@ -53,27 +53,4 @@ describe('ApplicationAdd.vue', () => {
     option.trigger('click')
     expect(wrapper.vm.qualificationForm.qualifications).toEqual(['MON', 'REM', 'GEO'])
   })
-  // it('has a property quals that contains a list of qualification codes', () => {
-  //   const wrapper = shallow(ApplicationAdd, { localVue })
-  //   // the default is DRILL, which has 6 qualification codes
-  //   expect(wrapper.vm.qualType).toEqual('DRILL')
-  //   expect(wrapper.vm.quals).toEqual(['WAT', 'MON', 'RECH', 'DEWAT', 'REM', 'GEO'])
-  // })
-  // it('updates editClassification.qualCodes when classification changes', () => {
-  //   const wrapper = shallow(ApplicationAdd, { localVue })
-  //   // the default is DRILL, which has 6 qualification codes
-  //   expect(wrapper.vm.qualType).toEqual('DRILL')
-  //   wrapper.setData({ qualType: 'GEOTECH' })
-  //   expect(wrapper.vm.quals).toEqual(['MON', 'REM', 'GEO'])
-  //   expect(wrapper.vm.editClassification.qualCodes).toEqual({
-  //     wat: false,
-  //     mon: true,
-  //     rech: false,
-  //     inj: false,
-  //     dewat: false,
-  //     rem: true,
-  //     geo: true,
-  //     clos: false
-  //   })
-  // })
 })
