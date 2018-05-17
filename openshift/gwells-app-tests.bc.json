@@ -1,0 +1,107 @@
+{
+    "kind": "Template",
+    "apiVersion": "v1",
+    "metadata": {
+        "name": "gwells-app-tests",
+        "creationTimestamp": null
+    },
+    "parameters": [
+        {
+            "name": "NAME_SUFFIX",
+            "displayName": "Name Suffix",
+            "description": "A suffix appended to all objects",
+            "required": true
+        },
+        {
+            "name": "ENV_NAME",
+            "required": true
+        }
+    ],
+    "objects": [
+        {
+            "kind": "ImageStream",
+            "apiVersion": "v1",
+            "metadata": {
+                "name": "gwells-app-test${NAME_SUFFIX}",
+                "generation": 1,
+                "creationTimestamp": null,
+                "labels": {
+                    "build": "gwells-app-test"
+                },
+                "annotations": {
+                    "openshift.io/generated-by": "OpenShiftNewBuild"
+                }
+            },
+            "spec": {
+                "lookupPolicy": {
+                    "local": false
+                }
+            }
+        },
+        {
+            "kind": "BuildConfig",
+            "apiVersion": "v1",
+            "metadata": {
+                "name": "gwells-app-test${NAME_SUFFIX}",
+                "creationTimestamp": null,
+                "labels": {
+                    "build": "gwells-app-test"
+                },
+                "annotations": {
+
+                }
+            },
+            "spec": {
+                "triggers": [
+                    {
+                        "type": "ImageChange",
+                        "imageChange": {}
+                    },
+                    {
+                        "type": "ConfigChange"
+                    }
+                ],
+                "runPolicy": "Serial",
+                "source": {
+                    "type": "Dockerfile",
+                    "dockerfile": "FROM openshift/python:3.5\nUSER 0\n\nRUN yum -y --setopt=tsflags=nodocs install wget nano Xvfb  xorg-x11-xauth java-1.8.0-openjdk-devel git firefox unzip lsof rsync tar which zip bzip2 \u0026\u0026 \\\n    wget -q -O /tmp/google-chrome.rpm https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm \u0026\u0026 \\\n    yum -y localinstall /tmp/google-chrome.rpm \u0026\u0026 rm -f /tmp/google-chrome.rpm \u0026\u0026  yum clean all -y \u0026\u0026 rm -rf /var/cache/yum \u0026\u0026 \\\n    java -version \u0026\u0026 git version \u0026\u0026 google-chrome --product-version\n\nRUN wget -q -O /tmp/gradle.zip https://services.gradle.org/distributions/gradle-4.2-bin.zip \u0026\u0026 \\\n    mkdir /opt/gradle \u0026\u0026 \\\n    unzip -q -d /opt/gradle /tmp/gradle.zip \u0026\u0026 rm -f /tmp/gradle.zip \u0026\u0026 \\\n    /opt/gradle/gradle-4.2/bin/gradle -v\n\nRUN wget -q -O /usr/local/bin/generate_container_user https://raw.githubusercontent.com/openshift/jenkins/aeb38cc208214e090002a425211e2e83e2c36be5/slave-base/contrib/bin/generate_container_user \u0026\u0026 \\\n    wget -q -O /usr/local/bin/run-jnlp-client https://raw.githubusercontent.com/openshift/jenkins/aeb38cc208214e090002a425211e2e83e2c36be5/slave-base/contrib/bin/run-jnlp-client \u0026\u0026 \\\n    chmod -R 775 /usr/local/bin \u0026\u0026 \\\n    mkdir -p /home/jenkins  \u0026\u0026 \\\n    chown -R 1001:0 /home/jenkins \u0026\u0026 \\\n    chmod -R g+w /home/jenkins\n\nUSER 1001\n\nRUN mkdir -p /tmp/sonar-runner/src/main/java \u0026\u0026 \\\necho '' \u003e /tmp/sonar-runner/src/main/java/HelloWorld.java \u0026\u0026 \\\necho 'public class HelloWorld {' \u003e\u003e /tmp/sonar-runner/src/main/java/HelloWorld.java \u0026\u0026 \\\necho '  public static void main(String[] args) {' \u003e\u003e /tmp/sonar-runner/src/main/java/HelloWorld.java \u0026\u0026 \\\necho '      System.out.println(\"Hello, World\");' \u003e\u003e /tmp/sonar-runner/src/main/java/HelloWorld.java \u0026\u0026 \\\necho '  }' \u003e\u003e /tmp/sonar-runner/src/main/java/HelloWorld.java \u0026\u0026 \\\necho '}' \u003e\u003e /tmp/sonar-runner/src/main/java/HelloWorld.java \u0026\u0026 \\\necho '' \u003e /tmp/sonar-runner/build.gradle \u0026\u0026 \\\necho 'plugins { ' \u003e\u003e /tmp/sonar-runner/build.gradle \u0026\u0026 \\\necho '  id \"java\" ' \u003e\u003e /tmp/sonar-runner/build.gradle \u0026\u0026 \\\necho '  id \"jacoco\" ' \u003e\u003e /tmp/sonar-runner/build.gradle \u0026\u0026 \\\necho '  id \"org.sonarqube\" version \"2.6.1\" ' \u003e\u003e /tmp/sonar-runner/build.gradle \u0026\u0026 \\\necho '  id \"groovy\"' \u003e\u003e /tmp/sonar-runner/build.gradle \u0026\u0026 \\\necho '  id \"com.energizedwork.webdriver-binaries\" version \"1.0\"' \u003e\u003e /tmp/sonar-runner/build.gradle \u0026\u0026 \\\necho '  id \"net.foragerr.jmeter\" version \"1.0.10-3.3\"' \u003e\u003e /tmp/sonar-runner/build.gradle \u0026\u0026 \\\necho '} ' \u003e\u003e /tmp/sonar-runner/build.gradle \u0026\u0026 \\\necho '' \u003e\u003e /tmp/sonar-runner/build.gradle \u0026\u0026 \\\necho 'ext {' \u003e\u003e /tmp/sonar-runner/build.gradle \u0026\u0026 \\\necho '    // The drivers we want to use' \u003e\u003e /tmp/sonar-runner/build.gradle \u0026\u0026 \\\necho '    drivers = [\"firefox\", \"firefoxHeadless\", \"chrome\", \"chromeHeadless\",\"ie\",\"edge\",\"safari\"]' \u003e\u003e /tmp/sonar-runner/build.gradle \u0026\u0026 \\\necho '' \u003e\u003e /tmp/sonar-runner/build.gradle \u0026\u0026 \\\necho '    ext {' \u003e\u003e /tmp/sonar-runner/build.gradle \u0026\u0026 \\\necho '        groovyVersion = \"2.4.12\"' \u003e\u003e /tmp/sonar-runner/build.gradle \u0026\u0026 \\\necho '        gebVersion = \"2.1\"' \u003e\u003e /tmp/sonar-runner/build.gradle \u0026\u0026 \\\necho '        seleniumVersion = \"3.6.0\"' \u003e\u003e /tmp/sonar-runner/build.gradle \u0026\u0026 \\\necho '        chromeDriverVersion = \"2.36\"' \u003e\u003e /tmp/sonar-runner/build.gradle \u0026\u0026 \\\necho '        geckoDriverVersion = \"0.18.0\"' \u003e\u003e /tmp/sonar-runner/build.gradle \u0026\u0026 \\\necho '        ieDriverVersion = \"3.6\"' \u003e\u003e /tmp/sonar-runner/build.gradle \u0026\u0026 \\\necho '        edgeDriverVersion = seleniumVersion' \u003e\u003e /tmp/sonar-runner/build.gradle \u0026\u0026 \\\necho '        safariDriverVersion = seleniumVersion' \u003e\u003e /tmp/sonar-runner/build.gradle \u0026\u0026 \\\necho '    }' \u003e\u003e /tmp/sonar-runner/build.gradle \u0026\u0026 \\\necho '}' \u003e\u003e /tmp/sonar-runner/build.gradle \u0026\u0026 \\\necho '' \u003e\u003e /tmp/sonar-runner/build.gradle \u0026\u0026 \\\necho 'dependencies { ' \u003e\u003e /tmp/sonar-runner/build.gradle \u0026\u0026 \\\necho '    compile \"junit:junit:4.12\" ' \u003e\u003e /tmp/sonar-runner/build.gradle \u0026\u0026 \\\necho '    // If using Spock, need to depend on geb-spock' \u003e\u003e /tmp/sonar-runner/build.gradle \u0026\u0026 \\\necho '    testCompile \"org.gebish:geb-spock:$gebVersion\"' \u003e\u003e /tmp/sonar-runner/build.gradle \u0026\u0026 \\\necho '    testCompile(\"org.spockframework:spock-core:1.1-groovy-2.4\") {' \u003e\u003e /tmp/sonar-runner/build.gradle \u0026\u0026 \\\necho '        exclude group: \"org.codehaus.groovy\"' \u003e\u003e /tmp/sonar-runner/build.gradle \u0026\u0026 \\\necho '    }' \u003e\u003e /tmp/sonar-runner/build.gradle \u0026\u0026 \\\necho '    testCompile \"org.codehaus.groovy:groovy-all:$groovyVersion\"' \u003e\u003e /tmp/sonar-runner/build.gradle \u0026\u0026 \\\necho '' \u003e\u003e /tmp/sonar-runner/build.gradle \u0026\u0026 \\\necho '    // If using JUnit, need to depend on geb-junit (3 or 4)' \u003e\u003e /tmp/sonar-runner/build.gradle \u0026\u0026 \\\necho '    testCompile \"org.gebish:geb-junit4:$gebVersion\"' \u003e\u003e /tmp/sonar-runner/build.gradle \u0026\u0026 \\\necho '' \u003e\u003e /tmp/sonar-runner/build.gradle \u0026\u0026 \\\necho '    //Support' \u003e\u003e /tmp/sonar-runner/build.gradle \u0026\u0026 \\\necho '    testCompile \"org.seleniumhq.selenium:selenium-support:$seleniumVersion\"' \u003e\u003e /tmp/sonar-runner/build.gradle \u0026\u0026 \\\necho '' \u003e\u003e /tmp/sonar-runner/build.gradle \u0026\u0026 \\\necho '    // Drivers' \u003e\u003e /tmp/sonar-runner/build.gradle \u0026\u0026 \\\necho '    testCompile \"org.seleniumhq.selenium:selenium-safari-driver:$seleniumVersion\"' \u003e\u003e /tmp/sonar-runner/build.gradle \u0026\u0026 \\\necho '    testCompile \"org.seleniumhq.selenium:selenium-chrome-driver:$seleniumVersion\"' \u003e\u003e /tmp/sonar-runner/build.gradle \u0026\u0026 \\\necho '    testCompile \"org.seleniumhq.selenium:selenium-firefox-driver:$seleniumVersion\"' \u003e\u003e /tmp/sonar-runner/build.gradle \u0026\u0026 \\\necho '    testCompile \"org.seleniumhq.selenium:selenium-ie-driver:$seleniumVersion\"' \u003e\u003e /tmp/sonar-runner/build.gradle \u0026\u0026 \\\necho '    testCompile \"org.seleniumhq.selenium:selenium-edge-driver:$seleniumVersion\"' \u003e\u003e /tmp/sonar-runner/build.gradle \u0026\u0026 \\\necho '' \u003e\u003e /tmp/sonar-runner/build.gradle \u0026\u0026 \\\necho '    // Spock reports' \u003e\u003e /tmp/sonar-runner/build.gradle \u0026\u0026 \\\necho '    testCompile( \"com.athaydes:spock-reports:1.4.0\" ) {' \u003e\u003e /tmp/sonar-runner/build.gradle \u0026\u0026 \\\necho '        transitive = false // this avoids affecting your version of Groovy/Spock' \u003e\u003e /tmp/sonar-runner/build.gradle \u0026\u0026 \\\necho '    }' \u003e\u003e /tmp/sonar-runner/build.gradle \u0026\u0026 \\\necho '    testCompile \"org.slf4j:slf4j-api:1.7.13\"' \u003e\u003e /tmp/sonar-runner/build.gradle \u0026\u0026 \\\necho '    testCompile \"org.slf4j:slf4j-simple:1.7.13\"' \u003e\u003e /tmp/sonar-runner/build.gradle \u0026\u0026 \\\necho '} ' \u003e\u003e /tmp/sonar-runner/build.gradle \u0026\u0026 \\\necho ' ' \u003e\u003e /tmp/sonar-runner/build.gradle \u0026\u0026 \\\necho 'repositories { ' \u003e\u003e /tmp/sonar-runner/build.gradle \u0026\u0026 \\\necho '  repositories { ' \u003e\u003e /tmp/sonar-runner/build.gradle \u0026\u0026 \\\necho '    maven { ' \u003e\u003e /tmp/sonar-runner/build.gradle \u0026\u0026 \\\necho '      url \"http://repo1.maven.org/maven2/\" ' \u003e\u003e /tmp/sonar-runner/build.gradle \u0026\u0026 \\\necho '    } ' \u003e\u003e /tmp/sonar-runner/build.gradle \u0026\u0026 \\\necho '    maven { ' \u003e\u003e /tmp/sonar-runner/build.gradle \u0026\u0026 \\\necho '      url \"https://plugins.gradle.org/m2/\" ' \u003e\u003e /tmp/sonar-runner/build.gradle \u0026\u0026 \\\necho '    } ' \u003e\u003e /tmp/sonar-runner/build.gradle \u0026\u0026 \\\necho '  } ' \u003e\u003e /tmp/sonar-runner/build.gradle \u0026\u0026 \\\necho '} ' \u003e\u003e /tmp/sonar-runner/build.gradle \u0026\u0026 \\\necho ' ' \u003e\u003e /tmp/sonar-runner/build.gradle \u0026\u0026 \\\necho 'task hello {' \u003e\u003e /tmp/sonar-runner/build.gradle \u0026\u0026 \\\necho '  doLast {' \u003e\u003e /tmp/sonar-runner/build.gradle \u0026\u0026 \\\necho '    println \"Hello world!\"' \u003e\u003e /tmp/sonar-runner/build.gradle \u0026\u0026 \\\necho '  }' \u003e\u003e /tmp/sonar-runner/build.gradle \u0026\u0026 \\\necho '} ' \u003e\u003e /tmp/sonar-runner/build.gradle \u0026\u0026 \\\n(cd /tmp/sonar-runner \u0026\u0026 /opt/gradle/gradle-4.2/bin/gradle --no-daemon --info -S dependencies) \u0026\u0026 \\\nrm -rf /tmp/sonar-runner\n\nUSER 0\nCOPY bin/ /usr/local/bin/\nRUN chmod -R 775 /usr/local/bin\nUSER 1001\n#COPY app-root/ /opt/app-root/\n#RUN chmod -R 775 /opt/app-root",
+                    "images": [
+                        {
+                            "from": {
+                                "kind": "ImageStreamTag",
+                                "namespace": "openshift",
+                                "name": "jenkins-slave-base-rhel7:latest"
+                            },
+                            "paths": [
+                                {
+                                    "sourcePath": "/usr/local/bin",
+                                    "destinationDir": "."
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "strategy": {
+                    "type": "Docker",
+                    "dockerStrategy": {
+                        "from": {
+                            "kind": "ImageStreamTag",
+                            "name": "gwells${NAME_SUFFIX}:${ENV_NAME}"
+                        }
+                    }
+                },
+                "output": {
+                    "to": {
+                        "kind": "ImageStreamTag",
+                        "name": "gwells-app-test${NAME_SUFFIX}:${ENV_NAME}"
+                    }
+                },
+                "resources": {},
+                "postCommit": {},
+                "nodeSelector": null,
+                "successfulBuildsHistoryLimit": 5,
+                "failedBuildsHistoryLimit": 5
+            }
+        }
+    ]
+}
