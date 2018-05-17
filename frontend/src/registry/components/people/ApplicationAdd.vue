@@ -10,8 +10,6 @@
     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     See the License for the specific language governing permissions and
     limitations under the License.
-
-    TODO: Add a note re. popup for warning when classification and qualifications is removed.
 */
 <template>
   <div class="card w-100">
@@ -21,12 +19,21 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </h5>
-      <p v-if="loaded" class="card-text">
+      <p v-if="loading" class="card-text">
+        <b-row>
+          <b-col md="12">
+            <div class="fa-2x text-center">
+              <i class="fa fa-circle-o-notch fa-spin"></i>
+            </div>
+          </b-col>
+        </b-row>
+      </p>
+      <p v-else class="card-text">
         <b-form-group label="Certification">
           <b-row>
             <b-col md="2">Issued by</b-col>
             <b-col md="3">
-                  <b-form-select :options="formOptions.issuer" v-model="qualificationForm.primary_certificate" required></b-form-select>
+                  <b-form-select id="issuer" :options="formOptions.issuer" v-model="qualificationForm.primary_certificate" required></b-form-select>
             </b-col>
             <b-col md="2">Certificate number</b-col>
             <b-col md="3">
@@ -37,7 +44,7 @@
         <b-row>
           <b-col md="2">Select classification</b-col>
           <b-col md="8">
-            <b-form-radio-group class="fixed-width" :options="formOptions.classification" @change="changedClassification" v-model="qualificationForm.subactivity" required></b-form-radio-group>
+            <b-form-radio-group class="fixed-width" :options="formOptions.classifications" @change="changedClassification" v-model="qualificationForm.subactivity" required></b-form-radio-group>
           </b-col>
         </b-row>
         <b-form-group label="Qualified to drill">
@@ -51,19 +58,10 @@
         <b-form-group label="Date application received">
           <b-row>
             <b-col>
-              <datepicker :format="formOptions.format" v-model="qualificationForm.status_set[0].effective_date" required></datepicker>
+              <datepicker format="yyyy-MM-dd" v-model="qualificationForm.status_set[0].effective_date" required></datepicker>
             </b-col>
           </b-row>
         </b-form-group>
-      </p>
-      <p v-else class="card-text">
-        <b-row>
-          <b-col md="12">
-            <div class="fa-2x text-center">
-              <i class="fa fa-circle-o-notch fa-spin"></i>
-            </div>
-          </b-col>
-        </b-row>
       </p>
     </div>
   </div>
@@ -71,7 +69,8 @@
 
 <script>
 import Datepicker from 'vuejs-datepicker'
-import ApiService from '@/common/services/ApiService.js'
+import { mapGetters, mapActions } from 'vuex'
+// import ApiService from '@/common/services/ApiService.js'
 export default {
   components: {
     Datepicker
@@ -90,16 +89,7 @@ export default {
           }
         ],
         qualifications: []
-      },
-      formOptions: {
-        format: 'yyyy-MM-dd',
-        // The issuer, qualifications and classifications options are all loaded from the API.
-        issuer: [
-          {value: null, text: 'Please select an option'}],
-        qualifications: [],
-        classification: []
-      },
-      loaded: false
+      }
     }
   },
   watch: {
@@ -115,7 +105,10 @@ export default {
     changedClassification (value) {
       const match = this.subactivityMap.filter(item => item.registries_subactivity_code === value)[0]
       this.qualificationForm.qualifications = match.qualification_set.map(item => item.well_class)
-    }
+    },
+    ...mapActions([
+      'fetchDrillerOptions'
+    ])
   },
   computed: {
     computedQualificationForm: function () {
@@ -125,18 +118,30 @@ export default {
       const transformed = JSON.parse(JSON.stringify(this.qualificationForm))
       transformed.status_set.forEach((status) => { status.effective_date = status.effective_date && status.effective_date.length >= 10 ? status.effective_date.substring(0, 10) : status.effective_date })
       return transformed
+    },
+    ...mapGetters([
+      'loading'
+    ]),
+    formOptions () {
+      let result = {
+        issuer: [{value: null, text: 'Please select an option'}],
+        classifications: [],
+        qualifications: []
+      }
+      if (this.$options.propsData.activity in this.$store.getters.drillerOptions) {
+        const options = this.$store.getters.drillerOptions[this.$options.propsData.activity]
+        result.issuer = result.issuer.concat(options.AccreditedCertificateCode.map((item) => { return {'text': item.name + ' (' + item.cert_auth + ')', 'value': item.acc_cert_guid} }))
+        result.classifications = options.SubactivityCode.map((item) => { return {'text': item.description, 'value': item.registries_subactivity_code} })
+        result.qualifications = options.WellClassCode.map((item) => { return {'text': item.description, 'value': item.registries_well_class_code} })
+      }
+      return result
+    },
+    subactivityMap () {
+      return this.$options.propsData.activity in this.$store.getters.drillerOptions ? this.$store.getters.drillerOptions[this.$options.propsData.activity].SubactivityCode : []
     }
   },
-  beforeCreate () {
-    // This could also be placed on PersonAdd, but it's nice having this component exists on it's own and bootstrap itself.
-    ApiService.query('drillers/options/', {'activity': this.$options.propsData.activity}).then((response) => {
-      this.subactivityMap = response.data.SubactivityCode
-      this.formOptions.issuer = this.formOptions.issuer.concat(response.data.AccreditedCertificateCode.map((item) => { return {'text': item.name + ' (' + item.cert_auth + ')', 'value': item.acc_cert_guid} }))
-      this.formOptions.classification = this.subactivityMap.map((item) => { return {'text': item.description, 'value': item.registries_subactivity_code} })
-      this.formOptions.qualifications = response.data.WellClassCode.map((item) => { return {'text': item.description, 'value': item.registries_well_class_code} })
-      // Set loaded flag to true, indicating that the view is now ready to show.
-      this.loaded = true
-    })
+  created () {
+    this.fetchDrillerOptions({activity: this.$options.propsData.activity})
   }
 }
 </script>
