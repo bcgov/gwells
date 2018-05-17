@@ -85,10 +85,7 @@ export default {
   computed: {
     sortedNotes () {
       if (this.currentDriller && this.currentDriller.notes && this.currentDriller.notes.length) {
-        let notes = JSON.parse(JSON.stringify(this.currentDriller.notes)).sort((a, b) => {
-          return (Date(a.date) < Date(b.date)) ? -1 : 1
-        })
-        return notes
+        return this.currentDriller.notes
       }
       return []
     },
