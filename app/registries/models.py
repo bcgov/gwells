@@ -143,7 +143,7 @@ class Organization(AuditModel):
     website_url = models.URLField(null=True, verbose_name="Website")
     effective_date = models.DateField(default=datetime.date.today)
     expired_date = models.DateField(blank=True, null=True)
-    contact_email = models.EmailField(
+    email = models.EmailField(
         blank=True, null=True, verbose_name="Email adddress")
 
     class Meta:

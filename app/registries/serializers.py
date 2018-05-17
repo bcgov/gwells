@@ -322,6 +322,7 @@ class OrganizationAdminSerializer(AuditModelSerializer):
         Get sorted notes
         """
         notes = OrganizationNote.objects \
+            .filter(organization=obj.org_guid) \
             .order_by('-date') \
             .select_related('author', 'author__profile')
         serializer = OrganizationNoteSerializer(instance=notes, many=True)

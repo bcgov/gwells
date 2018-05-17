@@ -1,5 +1,5 @@
 <template>
-  <b-container>
+  <b-container class="p-1 p-md-3">
     <b-card no-body class="mb-3">
       <b-breadcrumb :items="breadcrumbs" class="py-0 my-2"></b-breadcrumb>
     </b-card>
@@ -46,7 +46,7 @@
       </b-row>
 
       <!-- Selected company details -->
-      <b-card>
+      <b-card no-body class="p-2 p-md-3">
         <b-form @submit.prevent="submitConfirm" @reset.prevent="cancelConfirm">
           <b-row>
             <b-col cols="12" md="5">
@@ -215,6 +215,13 @@
           </b-modal>
         </b-form>
       </b-card>
+      <notes
+          class="mt-3"
+          v-if="!!companyDetails"
+          type="organization"
+          @updated="loadCompanyDetails()"
+          :guid="companyDetails.org_guid"
+          :record="companyDetails"></notes>
       <div v-if="!!selectedCompany">
         <p class="mt-3">
           There {{ selectedCompany.registrations_count === 1 ? 'is': 'are' }}
@@ -232,11 +239,13 @@
 <script>
 import ApiService from '@/common/services/ApiService.js'
 import OrganizationAdd from '@/registry/components/people/OrganizationAdd.vue'
+import Notes from '@/registry/components/people/Notes.vue'
 
 export default {
   name: 'OrganizationEdit',
   components: {
-    OrganizationAdd
+    OrganizationAdd,
+    Notes
   },
   data () {
     return {
@@ -257,6 +266,9 @@ export default {
       provCodes: [
         'BC', 'AB'
       ],
+
+      // company details from API (loaded after selecting a company)
+      companyDetails: null,
 
       // company form fields
       companyForm: {
@@ -306,8 +318,12 @@ export default {
   },
   watch: {
     selectedCompany () {
-      // reset form whenever selectedCompany (dropdown)
+      // reset form whenever selectedCompany (dropdown) changes
       this.formReset()
+
+      // fetch extra company data
+      this.companyDetails = null
+      this.loadCompanyDetails()
     }
   },
   methods: {
@@ -382,6 +398,13 @@ export default {
         this.companies = response.data
       }).catch((e) => {
         this.companyListError = e.response
+      })
+    },
+    loadCompanyDetails () {
+      return ApiService.get('organizations', this.selectedCompany.org_guid).then((response) => {
+        this.companyDetails = response.data
+      }).catch((e) => {
+        this.companyListError = e.response.data
       })
     }
   },
