@@ -246,6 +246,50 @@ for(String envKeyName: context.env.keySet() as String[]){
         }
     }
 
+    // Backup (w/ pg_dump) before deploying
+    //if (("DEV".equalsIgnoreCase(stageDeployName) || isCD) {
+    if (isCI || isCD) {
+        _stage("Pre-deploy db backup - ${stageDeployName}", context){
+            node('master') {
+
+                String projectName = context.deployments[envKeyName].projectName
+
+                String MAKE_DIR = sh (
+                    script:
+                        """
+                            echo sh "oc exec gwells-pgsql'${deploy.dcSuffix}' -n '${projectName}' -- bash -c \
+                                'mkdir -p /pgsql-backup/gwells-pgsql-prod'"
+                        """,
+                    returnStdout:
+                        true
+                ).trim()
+                echo "Make directory: "+ MAKE_DIR
+
+                String PG_DUMP = sh (
+                    script:
+                        """
+                            echo sh "oc exec gwells-pgsql'${deploy.dcSuffix}' -n '${projectName}' -- bash -c \
+                                'pg_dump -Fc gwells > /pgsql-backup/gwells-pgsql-prod/$( date +%Y-%m-%d-%H%M ).bak'"
+                        """,
+                    returnStdout:
+                        true
+                ).trim()
+                echo "Run pg_dump: "+ PG_DUMP
+
+                String BK_PURGE = sh (
+                    script:
+                        """
+                            echo sh "oc exec gwells-pgsql'${deploy.dcSuffix}' -n '${projectName}' -- bash -c \
+                                'ls /pgsql-backup/gwells-pgsql-prod/*.bak -1pr | tail -n +11 | xargs -r rm --'"
+                        """,
+                    returnStdout:
+                        true
+                ).trim()
+                echo "Purge old bks: "+ BK_PURGE
+            }
+        }
+    }
+
     if ("DEV".equalsIgnoreCase(stageDeployName) || isCD){
         _stage("Deploy - ${stageDeployName}", context) {
             node('master') {
@@ -436,9 +480,3 @@ _stage('Cleanup', context) {
     new OpenShiftHelper().cleanup(this, context)
     GitHubHelper.mergeAndClosePullRequest(this)
 }
-
-
-
-
-
-
