@@ -251,7 +251,8 @@ class PersonOptionsView(ObjectMultipleModelAPIView):
         querylist = [
             {
                 'queryset': WellClassCode.objects.filter(
-                    qualification__subactivity__registries_activity=activity),
+                    qualification__subactivity__registries_activity=activity).order_by(
+                        'registries_well_class_code').distinct('registries_well_class_code'),
                 'serializer_class': WellClassCodeSerializer
                 },
             {
