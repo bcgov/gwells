@@ -23,7 +23,6 @@ from rest_framework.pagination import LimitOffsetPagination, PageNumberPaginatio
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from rest_framework.mixins import CreateModelMixin, UpdateModelMixin
-from rest_framework.metadata import SimpleMetadata
 from drf_multiple_model.views import ObjectMultipleModelAPIView
 from registries.models import (
     Organization,

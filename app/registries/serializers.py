@@ -148,10 +148,6 @@ class ApplicationListSerializer(AuditModelSerializer):
     Serializes RegistryApplication model fields for anonymous users
     """
 
-    # qualifications = serializers.StringRelatedField(
-    #     source='subactivity.qualification_set',
-    #     many=True,
-    #     read_only=True)
     qualifications = QualificationSerializer(
         many=True,
         read_only=True)
