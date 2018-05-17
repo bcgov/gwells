@@ -269,7 +269,7 @@ for(String envKeyName: context.env.keySet() as String[]){
                     script:
                         """
                             echo sh "oc exec gwells-pgsql'${deploy.dcSuffix}' -n '${projectName}' -- bash -c \
-                                'pg_dump -Fc gwells > /pgsql-backup/gwells-pgsql-prod/$( date +%Y-%m-%d-%H%M ).bak'"
+                                'pg_dump -Fc gwells > /pgsql-backup/gwells-pgsql-prod/\$( date +%Y-%m-%d-%H%M ).bak'"
                         """,
                     returnStdout:
                         true
