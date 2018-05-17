@@ -319,7 +319,9 @@
                         "volumes": [
                             {
                                 "name": "${DATABASE_SERVICE_NAME}-data",
-                                "emptyDir": {}
+                                "persistentVolumeClaim": {
+                                    "claimName": "${DATABASE_SERVICE_NAME}"
+                                }
 
                             },
                             {
