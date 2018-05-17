@@ -347,11 +347,10 @@ export default {
 
       personData['registrations'] = registrations
       personData['contact_info'] = contactInfo
-      console.log('personData', personData)
 
       ApiService.post('drillers', personData).then((response) => {
-        // this.onFormReset()
-        // this.$router.push({ name: 'PersonDetail', params: { person_guid: response.data.person_guid } })
+        this.onFormReset()
+        this.$router.push({ name: 'PersonDetail', params: { person_guid: response.data.person_guid } })
       }).catch((error) => {
         this.submitError = error.response
       })
