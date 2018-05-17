@@ -1,5 +1,7 @@
 import geb.spock.GebReportingSpec
 import spock.lang.*
+import pages.app.RegisterPage
+import pages.external.SSO
 
 @Title("Login")
 @Narrative("""As an authorized groundwater staff, I need a log in link in order to have access to files (e.g., the well driller registry, edit) 
@@ -15,12 +17,14 @@ class LoginSpecs extends GebReportingSpec {
         then: "I should see a sign in link at the top right of the navigation bar."
      }
 
-    @Ignore("TODO")
     @Issue("https://trello.com/c/Uz8PvC8k")
     def "Scenario: 2 - Login"(){
         given: "that I am an an authorized GWELLS user"
+            to RegisterPage
         when: "I select the sign in link at the top right if the navigation bar"
+            waitFor { $("#gwells-sso-login").click() }
         then: "I should sign in using my IDIR."
+            at SSO
      }
 
     @Ignore("TODO")
