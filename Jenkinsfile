@@ -64,7 +64,7 @@ Map context = [
   'env': [
       'dev':[:],
       'test':[:],
-      'prod':['params':['_host':'']]
+      'prod':['params':['host':'gwells-prod.pathfinder.gov.bc.ca', 'DB_PVC_SIZE':'5Gi']]
   ],
   'templates': [
       'build':[
@@ -78,7 +78,8 @@ Map context = [
                   'IMAGE_STREAM_NAMESPACE':'',
                   'IMAGE_STREAM_NAME':'gwells-postgresql${deploy.dcSuffix}',
                   'IMAGE_STREAM_VERSION':'${deploy.envName}',
-                  'POSTGRESQL_DATABASE':'gwells'
+                  'POSTGRESQL_DATABASE':'gwells',
+                  'VOLUME_CAPACITY':'${env[DEPLOY_ENV_NAME]?.params?.DB_PVC_SIZE?:"1Gi"}'
               ]
           ],
           ['file':'openshift/backend.dc.json', 'params':['HOST':'${env[DEPLOY_ENV_NAME]?.params?.host?:("gwells" + deployments[DEPLOY_ENV_NAME].dcSuffix + "-" + deployments[DEPLOY_ENV_NAME].projectName + ".pathfinder.gov.bc.ca")}']]
