@@ -1,0 +1,90 @@
+{
+    "apiVersion": "batch/v2alpha1",
+    "kind": "CronJob",
+    "metadata": {
+        "creationTimestamp": null,
+        "labels": {
+            "run": "psql-backup"
+        },
+        "name": "psql-backup"
+    },
+    "spec": {
+        "concurrencyPolicy": "Replace",
+        "successfulJobsHistoryLimit": 3,
+        "failedJobsHistoryLimit": 3,
+        "jobTemplate": {
+            "metadata": {
+                "creationTimestamp": null
+            },
+            "spec": {
+                "template": {
+                    "metadata": {
+                        "creationTimestamp": null,
+                        "labels": {
+                            "run": "psql-backup"
+                        }
+                    },
+                    "spec": {
+                        "containers": [
+                            {
+                                "env": [
+                                    {
+                                        "name": "DATABASE_SERVICE_NAME",
+                                        "value": "gwells-pgsql-pr1"
+                                    },
+                                    {
+                                        "name": "DATABASE_NAME",
+                                        "valueFrom": {
+                                            "secretKeyRef": {
+                                                "name": "gwells-pgsql-dev-pr-1",
+                                                "key": "database-name"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "DATABASE_USER",
+                                        "valueFrom": {
+                                            "secretKeyRef": {
+                                                "name": "gwells-pgsql-dev-pr-1",
+                                                "key": "database-user"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "DATABASE_PASSWORD",
+                                        "valueFrom": {
+                                            "secretKeyRef": {
+                                                "name": "gwells-pgsql-dev-pr-1",
+                                                "key": "database-password"
+                                            }
+                                        }
+                                    }
+                                ],
+                                "command": [
+                                    "bash",
+                                    "-c",
+                                    "psql --version"
+                                ],
+                                "image": "172.50.0.2:5000/csnr-devops-lab-deploy/gwells-postgresql-dev-pr-1@sha256:b8a574fc474b5d0195b5657927f30363dc184977f2d151a7fc73e904810f526f",
+                                "imagePullPolicy": "Always",
+                                "name": "psql-backup",
+                                "resources": {},
+                                "terminationMessagePath": "/dev/termination-log",
+                                "terminationMessagePolicy": "File"
+                            }
+                        ],
+                        "dnsPolicy": "ClusterFirst",
+                        "restartPolicy": "Never",
+                        "backoffLimit": 2,
+                        "schedulerName": "default-scheduler",
+                        "securityContext": {},
+                        "terminationGracePeriodSeconds": 30
+                    }
+                }
+            }
+        },
+        "schedule": "*/1 * * * *",
+        "suspend": false
+    },
+    "status": {}
+}

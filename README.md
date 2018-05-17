@@ -40,6 +40,9 @@ requirements.txt    - list of dependencies
 
 Setup scripts, OpenShift deployment and development details are located in the [setup](./setup/) folder.  Please see the relevant [README.md](../setup/README.md).
 
+## Issues
+Issues are tracked on the [GWELLS Trello board](https://trello.com/b/2UQZgXHR/wells-project-board).
+
 ## License
 
 Code released under the [Apache License, Version 2.0](https://github.com/bcgov/gwells/blob/master/LICENSE).

@@ -15,11 +15,12 @@ import org.openqa.selenium.safari.SafariDriver
 import org.openqa.selenium.remote.DesiredCapabilities
 
 waiting {
-	timeout = 20
+	timeout = 5
 	retryInterval = 1
 }
 
-atCheckWaiting = [20, 1]
+//Using default waiting configuration
+atCheckWaiting = true
 
 environments {
 	
