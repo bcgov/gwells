@@ -153,6 +153,8 @@ class OrganizationListSerializer(AuditModelSerializer):
     Serializes Organization model fields for "list" view.
     """
 
+    registrations_count = serializers.SerializerMethodField()
+
     class Meta:
         model = Organization
         fields = (
@@ -166,7 +168,12 @@ class OrganizationListSerializer(AuditModelSerializer):
             'main_tel',
             'fax_tel',
             'website_url',
+            'registrations_count'
         )
+
+    def get_registrations_count(self, obj):
+        """ count registration records """
+        return obj.registrations.count()
 
 
 class RegistrationsListSerializer(serializers.ModelSerializer):
@@ -262,6 +269,7 @@ class OrganizationAdminSerializer(AuditModelSerializer):
     """
 
     person_set = PersonSerializer(many=True, read_only=True)
+    registrations_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Organization
@@ -281,7 +289,12 @@ class OrganizationAdminSerializer(AuditModelSerializer):
             'fax_tel',
             'website_url',
             'person_set',
+            'registrations_count'
         )
+
+    def get_registrations_count(self, obj):
+        """ count registration records """
+        return obj.registrations.count()
 
 
 class ActivitySerializer(serializers.ModelSerializer):

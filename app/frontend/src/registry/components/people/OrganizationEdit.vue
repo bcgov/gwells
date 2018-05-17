@@ -168,20 +168,6 @@
                 </b-form-group>
             </b-col>
           </b-row>
-          <!-- <b-row>
-            <b-col cols="12" md="11">
-                <b-form-group
-                  id="companyNotesInputGroup"
-                  label="Notes:"
-                  label-for="companyNotesInput">
-                  <b-form-textarea
-                    id="companyNotesInput"
-                    :rows="3"
-                    :max-rows="6"
-                    v-model="companyNotesForm"/>
-                </b-form-group>
-            </b-col>
-          </b-row> -->
           <b-row>
             <b-col>
               <button type="submit" class="btn btn-primary" ref="orgUpdateSaveBtn" :disabled="!selectedCompany || !formChanged">Update</button>
@@ -229,6 +215,16 @@
           </b-modal>
         </b-form>
       </b-card>
+      <div v-if="!!selectedCompany">
+        <p class="mt-3">
+          There {{ selectedCompany.registrations_count === 1 ? 'is': 'are' }}
+          {{ selectedCompany.registrations_count }}
+          {{ selectedCompany.registrations_count === 1 ? 'registrant': 'registrants' }}
+          listed under
+          {{ selectedCompany.name }}{{ selectedCompany.name.slice(-1) === '.' ? '' : '.' }}
+        </p>
+        <b-button variant="warning">Delete this company</b-button>
+      </div>
     </b-card>
   </b-container>
 </template>
