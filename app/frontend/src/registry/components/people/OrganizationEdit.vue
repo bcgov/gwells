@@ -235,10 +235,13 @@
             v-if="!selectedCompany.registrations_count"
             @click="companyDeleteConfirm()"
             >Delete this company</b-button>
-        <b-button
-            variant="warning"
-            v-else disabled
-            title="Company has registrants">Delete this company</b-button>
+            <div v-else>
+              <b-button
+                  variant="warning"
+                  disabled
+                  title="Company has registrants">Delete this company</b-button>
+                  <p>You must remove registrants from this company before deleting.</p>
+            </div>
       </div>
       <b-modal
           v-model="companyDeleteModal"
@@ -256,8 +259,8 @@
           </b-btn>
       </div>
       </b-modal>
-      <b-alert variant="success" class="mt-3" :show="companyDeleted" dismissible @dismissed="companyDeleted=false">
-          Successfully deleted company.
+      <b-alert variant="success" class="mt-3" :show="!!companyDeleted" dismissible @dismissed="companyDeleted=false">
+          {{ companyDeleted }} removed.
       </b-alert>
     </b-card>
   </b-container>
@@ -447,8 +450,10 @@ export default {
     },
     companyDelete () {
       return ApiService.delete('organizations', this.selectedCompany.org_guid).then((response) => {
-        this.companyDeleted = true
+        this.companyDeleted = this.selectedCompany.name
         this.selectedCompany = null
+        this.companyUpdateSuccess = false
+        this.companyAddSuccess = false
         this.loadCompanies()
       }).catch((e) => {
         this.companyDeleteError = e.response.data
