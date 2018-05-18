@@ -1,4 +1,4 @@
-import { shallow, mount, createLocalVue } from '@vue/test-utils'
+import { shallowMount, mount, createLocalVue } from '@vue/test-utils'
 import Vuex from 'vuex'
 import OrganizationEdit from '@/registry/components/people/OrganizationEdit.vue'
 import fakeCompanyList from '../fakeCompanyList'
@@ -20,7 +20,7 @@ describe('OrganizationEdit.vue', () => {
     store = new Vuex.Store({ getters, actions, mutations })
   })
   it('has a title', () => {
-    const wrapper = shallow(OrganizationEdit, {
+    const wrapper = shallowMount(OrganizationEdit, {
       localVue,
       store,
       stubs: ['router-link', 'router-view', 'v-select']
@@ -28,7 +28,7 @@ describe('OrganizationEdit.vue', () => {
     expect(wrapper.find('h4.card-title').text()).toEqual('Manage Companies')
   })
   it('loads company details in the form when a company is selected', () => {
-    const wrapper = shallow(OrganizationEdit, {
+    const wrapper = shallowMount(OrganizationEdit, {
       localVue,
       store,
       stubs: ['router-link', 'router-view', 'v-select']
