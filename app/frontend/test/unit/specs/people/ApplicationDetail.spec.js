@@ -1,4 +1,4 @@
-import { shallow, createLocalVue } from '@vue/test-utils'
+import { shallowMount, createLocalVue } from '@vue/test-utils'
 import Vuex from 'vuex'
 import ApplicationDetail from '@/registry/components/people/ApplicationDetail'
 import { SET_DRILLER } from '@/registry/store/mutations.types'
@@ -140,7 +140,7 @@ describe('ApplicationDetail.vue', () => {
     store = new Vuex.Store({ getters, actions, mutations })
   })
   it('loads the currentDriller and renders the person name as the page title', () => {
-    const wrapper = shallow(ApplicationDetail, {
+    const wrapper = shallowMount(ApplicationDetail, {
       localVue,
       store,
       stubs: ['router-link', 'router-view'],
@@ -151,7 +151,7 @@ describe('ApplicationDetail.vue', () => {
     expect(wrapper.find('#titlePersonName').text()).toBe(`${fakePerson.first_name} ${fakePerson.surname}`)
   })
   it('gets the list of qualified well/hole types from the driller profile for this application', () => {
-    const wrapper = shallow(ApplicationDetail, {
+    const wrapper = shallowMount(ApplicationDetail, {
       localVue,
       store,
       stubs: ['router-link', 'router-view'],
@@ -162,7 +162,7 @@ describe('ApplicationDetail.vue', () => {
     expect(wrapper.vm.qualCodeList.length).toBe(3)
   })
   it('removes current driller from store if we need to fetch another driller (prevent momentarily showing previous driller', () => {
-    shallow(ApplicationDetail, {
+    shallowMount(ApplicationDetail, {
       localVue,
       store,
       stubs: ['router-link', 'router-view'],

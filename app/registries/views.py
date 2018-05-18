@@ -17,7 +17,7 @@ from django.http import HttpResponse
 from django.utils import timezone
 from django.views.generic import TemplateView
 from django_filters import rest_framework as restfilters
-from rest_framework import filters, status
+from rest_framework import filters, status, exceptions
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView
 from rest_framework.pagination import LimitOffsetPagination, PageNumberPagination
 from rest_framework.permissions import IsAdminUser
@@ -198,6 +198,11 @@ class OrganizationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
         """
 
         instance = self.get_object()
+        for reg in instance.registrations.all():
+            print(reg.person.expired_date)
+            if reg.person.expired_date is None:
+                raise exceptions.ValidationError(
+                    'Organization has registrations associated with it. Remove this organization from registration records first.')
         instance.expired_date = timezone.now()
         instance.save()
 
