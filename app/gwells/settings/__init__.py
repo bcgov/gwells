@@ -95,6 +95,7 @@ INSTALLED_APPS = (
     'webpack_loader',
     'django_filters',
     'django_extensions',
+    'drf_multiple_model',
 )
 
 MIDDLEWARE = (

@@ -28,6 +28,8 @@ from registries.models import (
     SubactivityCode,
     Qualification,
     ApplicationStatusCode,
+    AccreditedCertificateCode,
+    WellClassCode,
     PersonNote
 )
 
@@ -97,7 +99,9 @@ class SubactivitySerializer(serializers.ModelSerializer):
     SubactivityCode records form a related set of an ActivityCode object
     """
 
-    qualification_set = QualificationSerializer(many=True, read_only=True)
+    qualification_set = QualificationSerializer(
+        many=True,
+        read_only=True)
 
     class Meta:
         model = SubactivityCode
@@ -105,6 +109,19 @@ class SubactivitySerializer(serializers.ModelSerializer):
             'registries_subactivity_code',
             'description',
             'qualification_set',
+        )
+
+
+class ApplicationStatusAutoCreateSerializer(serializers.ModelSerializer):
+
+    # status = serializers.PrimaryKeyRelatedField(
+        # queryset=ApplicationStatusCode.objects.all())
+
+    class Meta:
+        model = RegistriesApplicationStatus
+        fields = (
+            'effective_date',
+            'status',
         )
 
 
@@ -131,8 +148,7 @@ class ApplicationListSerializer(AuditModelSerializer):
     Serializes RegistryApplication model fields for anonymous users
     """
 
-    qualifications = serializers.StringRelatedField(
-        source='subactivity.qualification_set',
+    qualifications = QualificationSerializer(
         many=True,
         read_only=True)
     subactivity = SubactivitySerializer()
@@ -190,7 +206,7 @@ class RegistrationsListSerializer(serializers.ModelSerializer):
             'status',
             'registration_no',
             'applications',
-            'organization'
+            'organization',
         )
 
     def get_applications(self, registration):
@@ -298,6 +314,20 @@ class ActivitySerializer(serializers.ModelSerializer):
         )
 
 
+class AccreditedCertificateCodeSerializer(serializers.ModelSerializer):
+
+    # CertifyingAuthorityCode
+    cert_auth = serializers.ReadOnlyField(source='cert_auth.description')
+
+    class Meta:
+        model = AccreditedCertificateCode
+        fields = (
+            'acc_cert_guid',
+            'name',
+            'cert_auth'
+        )
+
+
 class ApplicationAdminSerializer(AuditModelSerializer):
     """
     Serializes RegistryApplication model fields for admin users
@@ -305,13 +335,17 @@ class ApplicationAdminSerializer(AuditModelSerializer):
 
     status_set = ApplicationStatusSerializer(many=True, read_only=True)
     current_status = ApplicationStatusSerializer(required=False)
-    cert_authority = serializers.ReadOnlyField(
-        source="primary_certificate.cert_auth.cert_auth_code")
     qualifications = serializers.StringRelatedField(
         source='subactivity.qualification_set',
         many=True,
         read_only=True)
     subactivity = SubactivitySerializer()
+    registration = serializers.StringRelatedField(
+        source='registration.register_guid')
+    # We need choices here in order to popuplate an OPTIONS request with
+    # valid values.
+    primary_certificate = AccreditedCertificateCodeSerializer(required=False)
+    primary_certificate_no = serializers.CharField(required=False)
 
     class Meta:
         model = RegistriesApplication
@@ -324,7 +358,8 @@ class ApplicationAdminSerializer(AuditModelSerializer):
             'registration',
             'file_no',
             'over19_ind',
-            'cert_authority',
+            'primary_certificate',
+            'primary_certificate_no',
             'registrar_notes',
             'reason_denied',
             'subactivity',
@@ -340,7 +375,9 @@ class ApplicationAdminSerializer(AuditModelSerializer):
         """
         self.fields['subactivity'] = serializers.PrimaryKeyRelatedField(
             queryset=SubactivityCode.objects.all())
-        return super(ApplicationAdminSerializer, self).to_internal_value(data)
+        self.fields['registration'] = serializers.PrimaryKeyRelatedField(
+            queryset=Register.objects.all())
+        return super().to_internal_value(data)
 
     def create(self, validated_data):
         """
@@ -440,7 +477,7 @@ class RegistrationAdminSerializer(AuditModelSerializer):
         """
         self.fields['organization'] = serializers.PrimaryKeyRelatedField(
             queryset=Organization.objects.all(), required=False, allow_null=True)
-        return super(RegistrationAdminSerializer, self).to_internal_value(data)
+        return super().to_internal_value(data)
 
 
 class CityListSerializer(serializers.ModelSerializer):
@@ -515,15 +552,85 @@ class PersonListSerializer(AuditModelSerializer):
         return serializer.data
 
 
+class QualificationAutoCreateSerializer(serializers.ModelSerializer):
+    """
+    Serializes Qualification model
+    Qualification records form a related set of a SubactivityCode object
+    """
+
+    description = serializers.ReadOnlyField(source='well_class.description')
+
+    class Meta:
+        model = Qualification
+        fields = (
+            'well_class',
+            'description',
+        )
+
+
+class ApplicationAutoCreateSerializer(AuditModelSerializer):
+    """
+    Serializes RegistryApplication when a Registration
+    record is created
+    """
+
+    status_set = ApplicationStatusAutoCreateSerializer(
+        many=True, read_only=False)
+    # acc_cert_guid
+    primary_certificate = serializers.PrimaryKeyRelatedField(
+        queryset=AccreditedCertificateCode.objects.all(), required=False)
+    # qualifications = serializers.StringRelatedField(
+    #     source='subactivity.qualification_set',
+    #     many=True,
+    #     read_only=True)
+    qualifications = QualificationAutoCreateSerializer(
+        many=True,
+        read_only=True)
+    registration = serializers.StringRelatedField(
+        source='registration.register_guid')
+
+    current_status = ApplicationStatusSerializer(read_only=True)
+
+    class Meta:
+        model = RegistriesApplication
+        fields = (
+            'create_user',
+            'create_date',
+            'update_user',
+            'update_date',
+            'application_guid',
+            'registration',
+            'file_no',
+            'over19_ind',
+            'primary_certificate',
+            'primary_certificate_no',
+            'registrar_notes',
+            'reason_denied',
+            'subactivity',
+            'qualifications',
+            'status_set',
+            'current_status'
+        )
+
+
 class RegistrationAutoCreateSerializer(AuditModelSerializer):
     """
     Serializer for creating a registration when a Person record is created
     """
 
+    applications = ApplicationAutoCreateSerializer(many=True, required=False)
+
     class Meta:
         model = Register
-        fields = ('registries_activity', 'status',
-                  'registration_no', 'organization')
+        fields = (
+            'registries_activity',
+            'status',
+            'registration_no',
+            'organization',
+            'applications',
+            'create_user',
+            'create_date',
+        )
 
 
 class PersonAdminSerializer(AuditModelSerializer):
@@ -535,6 +642,9 @@ class PersonAdminSerializer(AuditModelSerializer):
     contact_info = ContactInfoSerializer(many=True, required=False)
     notes = PersonNoteSerializer(many=True, read_only=True)
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
     def to_internal_value(self, data):
         """
         Set fields to different serializers for create/update operations.
@@ -542,25 +652,37 @@ class PersonAdminSerializer(AuditModelSerializer):
         """
         self.fields['registrations'] = RegistrationAutoCreateSerializer(
             many=True, required=False)
-        return super(PersonAdminSerializer, self).to_internal_value(data)
+        return super().to_internal_value(data)
 
     def create(self, validated_data):
         """
         Create Register and ContactInfo records to go along with a new person record
         """
-
-        registrations = validated_data.pop(
-            'registrations') if 'registrations' in validated_data else list()
-        contacts = validated_data.pop(
-            'contact_info') if 'contact_info' in validated_data else list()
+        registrations = validated_data.pop('registrations', list())
+        contacts = validated_data.pop('contact_info', list())
+        # The audit information has to be applied to all child records.
+        audit_info = {'create_user': validated_data.get('create_user')}
 
         person = Person.objects.create(**validated_data)
 
         for reg_data in registrations:
-            Register.objects.create(person=person, **reg_data)
+            reg_data = {**reg_data, **audit_info}
+            applications = reg_data.pop('applications', list())
+            register = Register.objects.create(person=person, **reg_data)
+            for app_data in applications:
+                app_data = {**app_data, **audit_info}
+                status_set = app_data.pop('status_set', list())
+                app = RegistriesApplication.objects.create(
+                    registration=register, **app_data)
+                for status_data in status_set:
+                    staus_data = {**status_data, **audit_info}
+                    RegistriesApplicationStatus.objects.create(
+                        application=app, **status_data)
         for contact_data in contacts:
-            ContactInfo.objects.create(person=person, **contact_data)
-        return person
+            contact_data = {**contact_data, **audit_info}
+            contact = ContactInfo.objects.create(person=person, **contact_data)
+
+        return Person.objects.get(person_guid=person.person_guid)
 
     def update(self, instance, validated_data):
         """
@@ -601,3 +723,13 @@ class OrganizationNameListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Organization
         fields = ('org_guid', 'name', 'org_verbose_name')
+
+
+class WellClassCodeSerializer(serializers.ModelSerializer):
+    """
+    Well class code serializer
+    """
+
+    class Meta:
+        model = WellClassCode
+        fields = ('registries_well_class_code', 'description')
