@@ -46,6 +46,9 @@ const ApiService = {
   },
   patch (resource, record, params) {
     return axios.patch(`${resource}/${record}/`, params)
+  },
+  delete (resource, record) {
+    return axios.delete(`${resource}/${record}/`)
   }
 }
 

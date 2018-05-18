@@ -54,10 +54,10 @@
       </div>
       <div id="notesList" ref="notes">
         <div class="mt-5" v-if="!notes || !notes.length">
-          <b-row><b-col>No notes for this person.</b-col></b-row>
+          <b-row><b-col>No notes for this record.</b-col></b-row>
         </div>
         <div class="mt-5" v-if="notes && notes.length">
-          <div class="mt-3" v-for="(note, index) in notes" :key="`note ${index}`" :id="`person-note-${index}`">
+          <div class="mt-3" v-for="(note, index) in notes" :key="`note ${index}`" :id="`note-${index}`">
               <span class="font-weight-bold">{{ note.author }}</span> ({{ note.date | moment("MMMM Do YYYY [at] LT") }}):
               {{ note.note }}
           </div>
@@ -68,10 +68,18 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
 import ApiService from '@/common/services/ApiService.js'
 export default {
-  name: 'PersonNotes',
+  name: 'Notes',
+
+  /**
+   * This component accepts props:
+   * type (string): the type of resource (person or organization)
+   * guid (uuid string): the individual person or company record guid to attach notes to
+   * record (object): the person or company's object (with a 'notes' property as an array of notes)
+   */
+  props: ['type', 'guid', 'record'],
+
   data () {
     return {
       noteInput: '',
@@ -84,12 +92,20 @@ export default {
   },
   computed: {
     notes () {
-      if (this.currentDriller && this.currentDriller.notes && this.currentDriller.notes.length) {
-        return this.currentDriller.notes
+      if (this.record && this.record.notes && this.record.notes.length) {
+        return this.record.notes
       }
       return []
     },
-    ...mapGetters(['currentDriller'])
+    resourceType () {
+      // map 'resource' names (e.g. organization, person) to API friendly plural versions
+      // - this is also the list of resources that currently accept notes
+      const typeMap = {
+        organization: 'organizations',
+        person: 'people'
+      }
+      return typeMap[this.type]
+    }
   },
   methods: {
     noteSubmit () {
@@ -97,9 +113,11 @@ export default {
       this.submitSuccess = false
       this.submitError = false
       this.submitLoading = true
-      ApiService.post(`drillers/${this.currentDriller.person_guid}/notes`, { note: this.noteInput })
+      ApiService.post(`${this.resourceType}/${this.guid}/notes`, { note: this.noteInput })
         .then((response) => {
           const notes = this.$refs.noteSection
+
+          // Note submitted, set loading/success indicators and scroll down to the new note
           this.noteReset()
           this.submitLoading = false
           this.submitSuccess = true

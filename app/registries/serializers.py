@@ -28,7 +28,8 @@ from registries.models import (
     SubactivityCode,
     Qualification,
     ApplicationStatusCode,
-    PersonNote
+    PersonNote,
+    OrganizationNote
 )
 
 logger = logging.getLogger(__name__)
@@ -45,6 +46,24 @@ class AuditModelSerializer(serializers.ModelSerializer):
     update_date = serializers.ReadOnlyField()
 
 
+class OrganizationNoteSerializer(serializers.ModelSerializer):
+    """
+    Serializes OrganizationNote records
+    """
+
+    author = serializers.ReadOnlyField(source='author.profile.name')
+    date = serializers.ReadOnlyField()
+
+    class Meta:
+        model = OrganizationNote
+        fields = (
+            'org_note_guid',
+            'author',
+            'date',
+            'note'
+        )
+
+
 class PersonNoteSerializer(serializers.ModelSerializer):
     """
     Serializes PersonNote records
@@ -56,6 +75,7 @@ class PersonNoteSerializer(serializers.ModelSerializer):
     class Meta:
         model = PersonNote
         fields = (
+            'person_note_guid',
             'author',
             'date',
             'note'
@@ -153,6 +173,8 @@ class OrganizationListSerializer(AuditModelSerializer):
     Serializes Organization model fields for "list" view.
     """
 
+    registrations_count = serializers.SerializerMethodField()
+
     class Meta:
         model = Organization
         fields = (
@@ -165,8 +187,14 @@ class OrganizationListSerializer(AuditModelSerializer):
             'postal_code',
             'main_tel',
             'fax_tel',
+            'email',
             'website_url',
+            'registrations_count',
         )
+
+    def get_registrations_count(self, obj):
+        """ count registration records """
+        return obj.registrations.count()
 
 
 class RegistrationsListSerializer(serializers.ModelSerializer):
@@ -252,6 +280,7 @@ class OrganizationSerializer(AuditModelSerializer):
             'postal_code',
             'main_tel',
             'fax_tel',
+            'email',
             'website_url',
         )
 
@@ -262,6 +291,8 @@ class OrganizationAdminSerializer(AuditModelSerializer):
     """
 
     person_set = PersonSerializer(many=True, read_only=True)
+    registrations_count = serializers.SerializerMethodField()
+    notes = serializers.SerializerMethodField()
 
     class Meta:
         model = Organization
@@ -279,9 +310,27 @@ class OrganizationAdminSerializer(AuditModelSerializer):
             'postal_code',
             'main_tel',
             'fax_tel',
+            'email',
             'website_url',
             'person_set',
+            'notes',
+            'registrations_count'
         )
+
+    def get_notes(self, obj):
+        """
+        Get sorted notes
+        """
+        notes = OrganizationNote.objects \
+            .filter(organization=obj.org_guid) \
+            .order_by('-date') \
+            .select_related('author', 'author__profile')
+        serializer = OrganizationNoteSerializer(instance=notes, many=True)
+        return serializer.data
+
+    def get_registrations_count(self, obj):
+        """ count registration records """
+        return obj.registrations.count()
 
 
 class ActivitySerializer(serializers.ModelSerializer):
@@ -533,7 +582,18 @@ class PersonAdminSerializer(AuditModelSerializer):
 
     registrations = RegistrationAdminSerializer(many=True)
     contact_info = ContactInfoSerializer(many=True, required=False)
-    notes = PersonNoteSerializer(many=True, read_only=True)
+    notes = serializers.SerializerMethodField()
+
+    def get_notes(self, obj):
+        """
+        Get sorted notes
+        """
+        notes = PersonNote.objects \
+            .filter(person=obj.person_guid) \
+            .order_by('-date') \
+            .select_related('author', 'author__profile')
+        serializer = PersonNoteSerializer(instance=notes, many=True)
+        return serializer.data
 
     def to_internal_value(self, data):
         """

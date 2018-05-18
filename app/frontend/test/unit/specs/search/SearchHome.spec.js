@@ -1,4 +1,4 @@
-import { shallow, createLocalVue } from '@vue/test-utils'
+import { shallowMount, createLocalVue } from '@vue/test-utils'
 import Vuex from 'vuex'
 import SearchHome from '@/registry/components/search/SearchHome'
 import SearchTable from '@/registry/components/search/SearchTable'
@@ -88,7 +88,7 @@ describe('SearchHome.vue', () => {
   })
 
   it('loads the table component', () => {
-    const wrapper = shallow(SearchHome, {
+    const wrapper = shallowMount(SearchHome, {
       store,
       localVue
     })
@@ -107,7 +107,7 @@ describe('SearchHome.vue', () => {
       cityList: () => []
     }
     const store = new Vuex.Store({ getters, actions })
-    const wrapper = shallow(SearchHome, {
+    const wrapper = shallowMount(SearchHome, {
       store,
       localVue
     })
@@ -116,7 +116,7 @@ describe('SearchHome.vue', () => {
   })
 
   it('doesn\'t load the error component if there is no error', () => {
-    const wrapper = shallow(SearchHome, {
+    const wrapper = shallowMount(SearchHome, {
       store,
       localVue
     })
@@ -124,7 +124,7 @@ describe('SearchHome.vue', () => {
       .toEqual(0)
   })
   it('resets search params when reset button is clicked', () => {
-    const wrapper = shallow(SearchHome, {
+    const wrapper = shallowMount(SearchHome, {
       store,
       localVue
     })
@@ -157,7 +157,7 @@ describe('SearchHome.vue', () => {
     })
   })
   it('calls sort method when register table component emits a sort code', () => {
-    const wrapper = shallow(SearchHome, {
+    const wrapper = shallowMount(SearchHome, {
       store,
       localVue
     })
@@ -167,7 +167,7 @@ describe('SearchHome.vue', () => {
     expect(wrapper.vm.lastSearchedParams.ordering).toEqual('-surname')
   })
   it('has a list of cities for drillers', () => {
-    const wrapper = shallow(SearchHome, {
+    const wrapper = shallowMount(SearchHome, {
       store,
       localVue
     })
@@ -179,7 +179,7 @@ describe('SearchHome.vue', () => {
     expect(cityOptions.at(3).text()).toEqual('Jasper')
   })
   it('clears driller list when reset is clicked', () => {
-    const wrapper = shallow(SearchHome, {
+    const wrapper = shallowMount(SearchHome, {
       store,
       localVue
     })
