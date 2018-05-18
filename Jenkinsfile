@@ -252,13 +252,22 @@ for(String envKeyName: context.env.keySet() as String[]){
         _stage("Pre-deploy db backup - ${stageDeployName}", context){
             node('master') {
 
-                String projectName = context.deployments[envKeyName].projectName
+                String PROJECT = 'moe-gwells-test'
+                String POD_DB = sh(
+                    script:
+                        """
+                            oc get pods -n "${PROJECT}" | grep -i "Running" | grep -Eo \
+                                "gwells-pgsql-[[:alpha:]]+-[[:digit:]]+-[[:alnum:]]+"
+                        """,
+                    returnStdout:
+                        true
+                ).trim()
 
                 String MAKE_DIR = sh (
                     script:
                         """
-                            echo sh "oc exec gwells-pgsql'${deploy.dcSuffix}' -n '${projectName}' -- bash -c \
-                                'mkdir -p /pgsql-backup/gwells-pgsql-prod'"
+                            echo oc exec "${POD_DB}" -n "${PROJECT}" -- bash -c \
+                                'mkdir -p /pgsql-backup/gwells-pgsql-prod'
                         """,
                     returnStdout:
                         true
@@ -268,8 +277,8 @@ for(String envKeyName: context.env.keySet() as String[]){
                 String PG_DUMP = sh (
                     script:
                         """
-                            echo sh "oc exec gwells-pgsql'${deploy.dcSuffix}' -n '${projectName}' -- bash -c \
-                                'pg_dump -Fc gwells > /pgsql-backup/gwells-pgsql-prod/\$( date +%Y-%m-%d-%H%M ).bak'"
+                            echo oc exec "${POD_DB}" -n "${PROJECT}" -- bash -c \
+                                'pg_dump -Fc gwells > /pgsql-backup/gwells-pgsql-prod/\$( date +%Y-%m-%d-%H%M ).bak'
                         """,
                     returnStdout:
                         true
@@ -279,7 +288,7 @@ for(String envKeyName: context.env.keySet() as String[]){
                 String BK_PURGE = sh (
                     script:
                         """
-                            echo sh "oc exec gwells-pgsql'${deploy.dcSuffix}' -n '${projectName}' -- bash -c \
+                            echo sh "oc exec "${POD_DB}" -n "${PROJECT}" -- bash -c \
                                 'ls /pgsql-backup/gwells-pgsql-prod/*.bak -1pr | tail -n +11 | xargs -r rm --'"
                         """,
                     returnStdout:
