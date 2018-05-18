@@ -230,8 +230,35 @@
           listed under
           {{ selectedCompany.name }}{{ selectedCompany.name.slice(-1) === '.' ? '' : '.' }}
         </p>
-        <b-button variant="warning">Delete this company</b-button>
+        <b-button
+            variant="warning"
+            v-if="!selectedCompany.registrations_count"
+            @click="companyDeleteConfirm()"
+            >Delete this company</b-button>
+        <b-button
+            variant="warning"
+            v-else disabled
+            title="Company has registrants">Delete this company</b-button>
       </div>
+      <b-modal
+          v-model="companyDeleteModal"
+          centered
+          title="Confirm delete"
+          @shown="focusDeleteModal"
+          :return-focus="$refs.orgDeleteBtn">
+        Are you sure you want to delete this company?
+        <div slot="modal-footer">
+          <b-btn variant="secondary" @click="companyDeleteModal=false" ref="companyDeleteCancelBtn">
+            Cancel
+          </b-btn>
+          <b-btn variant="danger" @click="companyDeleteModal=false;companyDelete()">
+            Delete
+          </b-btn>
+      </div>
+      </b-modal>
+      <b-alert variant="success" class="mt-3" :show="companyDeleted" dismissible @dismissed="companyDeleted=false">
+          Successfully deleted company.
+      </b-alert>
     </b-card>
   </b-container>
 </template>
@@ -287,11 +314,14 @@ export default {
       companyAddSuccess: false,
       companyUpdateSuccess: false,
       companyListError: false,
+      companyDeleted: false,
+      companyDeleteError: false,
       fieldErrors: {},
 
       // confirm popups
       confirmSubmitModal: false,
-      confirmCancelModal: false
+      confirmCancelModal: false,
+      companyDeleteModal: false
     }
   },
   computed: {
@@ -317,13 +347,15 @@ export default {
     }
   },
   watch: {
-    selectedCompany () {
+    selectedCompany (val) {
       // reset form whenever selectedCompany (dropdown) changes
       this.formReset()
 
       // fetch extra company data
       this.companyDetails = null
-      this.loadCompanyDetails()
+      if (val) {
+        this.loadCompanyDetails()
+      }
     }
   },
   methods: {
@@ -377,6 +409,9 @@ export default {
       // focus the "cancel" button in the confirm discard popup
       this.$refs.cancelSubmitCancelBtn.focus()
     },
+    focusDeleteModal () {
+      this.$refs.companyDeleteCancelBtn.focus()
+    },
     formReset () {
       const company = this.selectedCompany || {}
       this.companyForm.name = company.name || ''
@@ -405,6 +440,18 @@ export default {
         this.companyDetails = response.data
       }).catch((e) => {
         this.companyListError = e.response.data
+      })
+    },
+    companyDeleteConfirm () {
+      this.companyDeleteModal = true
+    },
+    companyDelete () {
+      return ApiService.delete('organizations', this.selectedCompany.org_guid).then((response) => {
+        this.companyDeleted = true
+        this.selectedCompany = null
+        this.loadCompanies()
+      }).catch((e) => {
+        this.companyDeleteError = e.response.data
       })
     }
   },
