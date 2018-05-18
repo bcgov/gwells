@@ -17,6 +17,7 @@ class LoginSpecs extends GebReportingSpec {
         then: "I should see a sign in link at the top right of the navigation bar."
      }
 
+    @Ignore("SSO will not accept redirects from our test instances")
     @Issue("https://trello.com/c/Uz8PvC8k")
     def "Scenario: 2 - Login"(){
         given: "that I am an an authorized GWELLS user"
