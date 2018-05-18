@@ -34,7 +34,7 @@ class AuditModel(models.Model):
         self.update_date = timezone.now()
 
         ''' For "new" content, populate "Add" fields '''
-        if self._state.adding == True:
+        if self._state.adding is True:
             self.create_date = timezone.now()
 
         return super(AuditModel, self).save(*args, **kwargs)

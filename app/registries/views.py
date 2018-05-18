@@ -23,7 +23,17 @@ from rest_framework.pagination import LimitOffsetPagination, PageNumberPaginatio
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from rest_framework.mixins import CreateModelMixin, UpdateModelMixin
-from registries.models import Organization, Person, ContactInfo, RegistriesApplication, Register, PersonNote
+from drf_multiple_model.views import ObjectMultipleModelAPIView
+from registries.models import (
+    Organization,
+    Person,
+    ContactInfo,
+    RegistriesApplication,
+    Register,
+    PersonNote,
+    SubactivityCode,
+    WellClassCode,
+    AccreditedCertificateCode)
 from registries.permissions import IsAdminOrReadOnly, IsGwellsAdmin
 from registries.serializers import (
     ApplicationAdminSerializer,
@@ -37,30 +47,33 @@ from registries.serializers import (
     PersonAdminSerializer,
     PersonListSerializer,
     RegistrationAdminSerializer,
-    PersonNoteSerializer)
+    PersonNoteSerializer,
+    SubactivitySerializer,
+    WellClassCodeSerializer,
+    AccreditedCertificateCodeSerializer)
 
 
 class AuditCreateMixin(CreateModelMixin):
     """
-    Adds create_user and create_date fields when instances are created
+    Adds create_user when instances are created.
+    Create date is inserted in the model, and not required here.
     """
 
     def perform_create(self, serializer):
         serializer.validated_data['create_user'] = (self.request.user.profile.name or
                                                     self.request.user.get_username())
-        serializer.validated_data['create_date'] = timezone.now()
-        return super(AuditCreateMixin, self).perform_create(serializer)
+        return super().perform_create(serializer)
 
 
 class AuditUpdateMixin(UpdateModelMixin):
     """
-    Adds update_user and update_date fields when instances are updated
+    Adds update_user when instances are updated
+    Update date is inserted in the model, and not required here.
     """
 
     def perform_update(self, serializer):
         serializer.save(
-            update_user=self.request.user.get_username(),
-            update_date=timezone.now()
+            update_user=self.request.user.get_username()
         )
 
 
@@ -223,6 +236,37 @@ class OrganizationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
         instance.save()
 
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class PersonOptionsView(ObjectMultipleModelAPIView):
+    """
+    get:
+    Returns available options for creating a person record
+    """
+
+    # We shouldn't need pagination, there should never be that many options!
+    pagination_class = None
+
+    def get_querylist(self):
+        activity = self.request.query_params['activity']
+        querylist = [
+            {
+                'queryset': WellClassCode.objects.filter(
+                    qualification__subactivity__registries_activity=activity).order_by(
+                        'registries_well_class_code').distinct('registries_well_class_code'),
+                'serializer_class': WellClassCodeSerializer
+                },
+            {
+                'queryset': SubactivityCode.objects.filter(
+                    registries_activity=activity).order_by('display_order'),
+                'serializer_class': SubactivitySerializer
+            },
+            {
+                'queryset': AccreditedCertificateCode.objects.all().order_by('name'),
+                'serializer_class': AccreditedCertificateCodeSerializer
+            },
+        ]
+        return querylist
 
 
 class PersonListView(AuditCreateMixin, ListCreateAPIView):
