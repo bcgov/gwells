@@ -51,8 +51,11 @@ elif [[ -f setup.py ]]; then
 fi
 
 cd frontend
-npm set progress=false
-npm install  ${APP_ROOT}/npm-packages.tar.gz
+#npm set progress=false
+#restore node_modules
+mkdir -p ${APP_ROOT}/node_modules
+tar xzf ${APP_ROOT}/npm-packages.tar.gz -C ${APP_ROOT}/node_modules
+#npm install  ${APP_ROOT}/npm-packages.tar.gz
 npm run build
 cd ..
 
