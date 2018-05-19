@@ -53,8 +53,9 @@ fi
 cd frontend
 #npm set progress=false
 #restore node_modules
-mkdir -p ${APP_ROOT}/node_modules
-tar xzf ${APP_ROOT}/npm-packages.tar.gz -C ${APP_ROOT}/node_modules
+mkdir -p ${APP_ROOT}/src/frontend/node_modules
+echo "Restoring node_modules - ${APP_ROOT}/src/frontend/node_modules"
+tar xzf ${APP_ROOT}/npm-packages.tar.gz -C ${APP_ROOT}/src/frontend/node_modules
 #npm install  ${APP_ROOT}/npm-packages.tar.gz
 npm run build
 cd ..
