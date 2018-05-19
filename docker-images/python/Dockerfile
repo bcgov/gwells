@@ -8,7 +8,7 @@ source ${APP_ROOT}/bin/activate && \
 set -x && \
 pip install -U pip setuptools wheel && \
 pip install -r /tmp/contrib/requirements.txt && \
-( cd /tmp/contrib &&  npm install && mv node_modules ${APP_ROOT}/) && \
+( cd /tmp/contrib &&  npm install -g ) && \
 chown -R 1001:0 /opt/app-root && chmod -R og+rwx /opt/app-root
 
 USER 1001
