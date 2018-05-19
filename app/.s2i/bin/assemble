@@ -51,7 +51,7 @@ elif [[ -f setup.py ]]; then
 fi
 
 cd frontend
-npm install
+npm install --link
 npm run build
 cd ..
 
