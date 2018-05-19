@@ -8,6 +8,7 @@ source ${APP_ROOT}/bin/activate && \
 set -x && \
 pip install -U pip setuptools wheel && \
 pip install -r /tmp/contrib/requirements.txt && \
+npm install -g npm && \
 ( cd /tmp/contrib &&  npm set progress=false && npm install --no-bin-link && tar zcvf ${APP_ROOT}/npm-packages.tar.gz -C /tmp/contrib/node_modules/ .) && \
 chown -R 1001:0 /opt/app-root && chmod -R og+rwx /opt/app-root && \
 rm -rf /tmp/contrib
