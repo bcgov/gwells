@@ -9,8 +9,8 @@ set -x && \
 pip install -U pip setuptools wheel && \
 pip install -r /tmp/contrib/requirements.txt && \
 mv /opt/app-root/src /opt/app-root/_src && \
-mkdir -p /opt/app-root/src/frontend/ && cp /tmp/contrib/* /opt/app-root/src/frontend/ &&\
-( cd /opt/app-root/src/frontend/ &&  npm set progress=false && mkdir node_modules && npm install --no-bin-link ||  npm install --no-bin-link && tar zcf ${APP_ROOT}/npm-packages.tar.gz -C /opt/app-root/src/frontend/node_modules/ .) && \
+mkdir -p /opt/app-root/src/frontend/node_modules && cp /tmp/contrib/* /opt/app-root/src/frontend/ && \
+( cd /opt/app-root/src/frontend/ &&  npm set progress=false && npm install && tar zcf ${APP_ROOT}/npm-packages.tar.gz -C /opt/app-root/src/frontend/node_modules/ .) && \
 rm -rf /opt/app-root/src && mv /opt/app-root/_src /opt/app-root/src && \
 chown -R 1001:0 /opt/app-root && chmod -R og+rwx /opt/app-root && \
 rm -rf /tmp/contrib
