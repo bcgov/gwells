@@ -1,4 +1,4 @@
-FROM openshift/python:3.5
+FROM registry.access.redhat.com/rhscl/python-35-rhel7:3.5-24
 
 COPY contrib/ /tmp/contrib/
 
@@ -7,4 +7,3 @@ source ${APP_ROOT}/bin/activate && \
 pip install -U pip setuptools wheel && \
 pip install -r /tmp/contrib/requirements.txt && \
 ( cd /tmp/contrib &&  npm install && mv node_modules ${APP_ROOT}/)
-
