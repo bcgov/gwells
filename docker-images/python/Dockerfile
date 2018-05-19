@@ -2,7 +2,7 @@ FROM registry.access.redhat.com/rhscl/python-35-rhel7:3.5-24
 
 COPY contrib/ /tmp/contrib/
 
-RUN source scl_source enable rh-python35 && \
+RUN source scl_source enable rh-python35 rh-nodejs6 && \
 source ${APP_ROOT}/bin/activate && \
 pip install -U pip setuptools wheel && \
 pip install -r /tmp/contrib/requirements.txt && \
