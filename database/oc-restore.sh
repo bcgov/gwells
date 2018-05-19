@@ -19,7 +19,7 @@ IFS=$'\n\t'
 # Parameters
 #
 PROJECT=${1:-}
-SAVE_TO=${2:-./${PROJECT}-$( date +%Y-%m-%d-%H%M )}
+RESTORE=${2:-}
 
 
 # APP and mode variables
@@ -31,13 +31,24 @@ KEEP_APP_ONLINE=${KEEP_APP_ONLINE:-false}
 
 # Show message if passed any params
 #
-if [ "${#}" -eq 0 ]||[ "${#}" -gt 2 ]
+if [ "${#}" -ne 2 ]
 then
 	echo
-    echo "Dumps from a GWells database to store locally"
+    echo "Restores a GWells database from a local file"
     echo
 	echo "Provide a project name."
-	echo " './oc-dump.sh <project_name> <optional:output_file>'"
+	echo " './oc-restore.sh <project_name> <input_file>'"
+	echo
+	exit
+fi
+
+
+# Verify ${RESTORE} file
+#
+if [ ! -f "${RESTORE}" ]
+then
+	echo
+	echo "Please verify ${RESTORE} exists and is non-empty.  Exiting."
 	echo
 	exit
 fi
@@ -49,7 +60,7 @@ if ! oc whoami
 then
     echo
     echo "Please obtain an OpenShift API token.  A window will open shortly."
-    sleep 5
+    sleep 3
     open https://console.pathfinder.gov.bc.ca:8443/oauth/token/request
     exit
 fi
@@ -76,20 +87,13 @@ then
 fi
 
 
-# Make sure $SAVE_TO ends in .gz
-#
-[ "$( echo ${SAVE_TO} | tail -c4 )" == ".pgCustom" ]|| SAVE_TO="${SAVE_TO}.pgCustom"
-
-
 # Identify database and take a backup
 #
+RESTORE_PATH=$( dirname ${RESTORE} )
+RESTORE_FILE=$( basename ${RESTORE} )
 POD_DB=$( oc get pods -n ${PROJECT} -o name | grep -Eo "postgresql-[0-9]+-[[:alnum:]]+" )
-SAVE_FILE=$( basename ${SAVE_TO} )
-SAVE_PATH=$( dirname ${SAVE_TO} )
-mkdir -p ${SAVE_PATH}
-oc exec ${POD_DB} -n ${PROJECT} -- /bin/bash -c 'pg_dump -Fc '${DB_NAME}' > /tmp/'${SAVE_FILE}
-oc rsync ${POD_DB}:/tmp/${SAVE_FILE} ${SAVE_PATH} -n ${PROJECT} --progress=true --no-perms=true
-oc exec ${POD_DB} -n ${PROJECT} -- /bin/bash -c 'rm /tmp/'${SAVE_FILE}
+oc cp ${RESTORE} "${POD_DB}":/tmp/
+oc exec ${POD_DB} -n ${PROJECT} -- /bin/bash -c 'pg_restore -d '${DB_NAME}' -c /tmp/'${RESTORE_FILE}
 
 
 # Take GWells out of maintenance mode and scale back up (deployment config)
@@ -106,6 +110,6 @@ fi
 #
 echo
 echo "DB:   ${DB_NAME}"
-echo "Size: $( du -h ${SAVE_TO} | awk '{ print $1 }' )"
-echo "Name: ${SAVE_TO}"
+echo "Size: $( du -h ${RESTORE} | awk '{ print $1 }' )"
+echo "Name: ${RESTORE}"
 echo
