@@ -52,7 +52,7 @@ fi
 
 cd frontend
 npm set progress=false
-npm install --verbose ${APP_ROOT}/npm-packages.tar.gz
+npm install  ${APP_ROOT}/npm-packages.tar.gz
 npm run build
 cd ..
 
