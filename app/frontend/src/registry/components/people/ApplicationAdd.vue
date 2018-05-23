@@ -12,61 +12,79 @@
     limitations under the License.
 */
 <template>
-  <div class="card w-100">
-    <div class="card-body">
-      <h5 class="card-title">Classification, Qualifications &amp; Adjudication
-        <button type="button" class="close pull-right" aria-label="Close" v-on:click="$emit('close')">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </h5>
-      <p v-if="loading" class="card-text">
-        <b-row>
-          <b-col md="12">
-            <div class="fa-2x text-center">
-              <i class="fa fa-circle-o-notch fa-spin"></i>
-            </div>
-          </b-col>
-        </b-row>
-      </p>
-      <p v-else class="card-text">
-        <b-row>
-          <b-col class="font-weight-bold">Certification</b-col>
-        </b-row>
-        <b-row>
-          <b-col md="6">
-            <b-form-group label="Issued by" horizontal :label-cols="3" label-for="issuer">
-              <b-form-select id="issuer" :options="formOptions.issuer" v-model="qualificationForm.primary_certificate" required></b-form-select>
-            </b-form-group>
-          </b-col>
-          <b-col md="6">
-            <b-form-group label="Certificate number" label-for="primary_certificate_no" horizontal :label-cols="3">
-              <b-form-input id="primary_certificate_no" type="text" placeholder="Enter certificate number" v-model="qualificationForm.primary_certificate_no" required></b-form-input>
-            </b-form-group>
-          </b-col>
-        </b-row>
-        <b-row class="mt-3">
-          <b-col md="12">
-            <b-form-group label="Select classification" label-for="classifications" horizontal :label-cols="2" class="font-weight-bold">
-              <b-form-radio-group id="classifications" class="fixed-width font-weight-normal" :options="formOptions.classifications" @change="changedClassification" v-model="qualificationForm.subactivity" required></b-form-radio-group>
-            </b-form-group>
-          </b-col>
-        </b-row>
-        <b-row>
-          <b-col md="8">
-            <b-form-group label="Qualified to drill" label-for="qualifications" class="font-weight-bold">
-              <b-form-checkbox-group id="qualifications" class="fixed-width font-weight-normal" :options="formOptions.qualifications" v-model="qualificationForm.qualifications" disabled>
-              </b-form-checkbox-group>
-            </b-form-group>
-          </b-col>
-        </b-row>
-        <b-row>
-          <b-col>
-            <b-form-group label="Date application received" label-for="effective_date" class="font-weight-bold">
-              <datepicker id="effective_date" format="yyyy-MM-dd" v-model="qualificationForm.status_set[0].effective_date" required></datepicker>
-            </b-form-group>
-          </b-col>
-        </b-row>
-      </p>
+  <div>
+    <div class="card w-100">
+      <div class="card-body">
+        <h5 class="card-title">Classification, Qualifications
+          <button type="button" class="close pull-right" aria-label="Close" v-on:click="$emit('close')">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </h5>
+        <p v-if="loading" class="card-text">
+          <b-row>
+            <b-col md="12">
+              <div class="fa-2x text-center">
+                <i class="fa fa-circle-o-notch fa-spin"></i>
+              </div>
+            </b-col>
+          </b-row>
+        </p>
+        <p v-else class="card-text">
+          <b-row>
+            <b-col class="font-weight-bold">Certification</b-col>
+          </b-row>
+          <b-row>
+            <b-col md="6">
+              <b-form-group label="Issued by" horizontal :label-cols="3" label-for="issuer">
+                <b-form-select id="issuer" :options="formOptions.issuer" v-model="qualificationForm.primary_certificate" required></b-form-select>
+              </b-form-group>
+            </b-col>
+            <b-col md="6">
+              <b-form-group label="Certificate number" label-for="primary_certificate_no" horizontal :label-cols="3">
+                <b-form-input id="primary_certificate_no" type="text" placeholder="Enter certificate number" v-model="qualificationForm.primary_certificate_no" required></b-form-input>
+              </b-form-group>
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col md="12">
+              <b-form-group label="Select classification" label-for="classifications" horizontal :label-cols="2" class="font-weight-bold">
+                <b-form-radio-group id="classifications" class="fixed-width font-weight-normal pt-2" :options="formOptions.classifications" @change="changedClassification" v-model="qualificationForm.subactivity" required></b-form-radio-group>
+              </b-form-group>
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col md="8">
+              <b-form-group label="Qualified to drill" label-for="qualifications" class="font-weight-bold">
+                <b-form-checkbox-group id="qualifications" class="fixed-width font-weight-normal" :options="formOptions.qualifications" v-model="qualificationForm.qualifications" disabled>
+                </b-form-checkbox-group>
+              </b-form-group>
+            </b-col>
+          </b-row>
+        </p>
+      </div>
+    </div>
+    <div class="card w-100">
+      <div class="card-body">
+        <h5 class="card-title">Adjudication</h5>
+        <p v-if="loading" class="card-text">
+          <b-row>
+            <b-col md="12">
+              <div class="fa-2x text-center">
+                <i class="fa fa-circle-o-notch fa-spin"></i>
+              </div>
+            </b-col>
+          </b-row>
+        </p>
+        <p v-else class="card-text">
+          <b-row>
+            <b-col>
+              <b-form-group label="Date application received" label-for="effective_date" class="font-weight-bold">
+                <datepicker id="effective_date" format="yyyy-MM-dd" v-model="qualificationForm.status_set[0].effective_date" required></datepicker>
+              </b-form-group>
+            </b-col>
+          </b-row>
+        </p>
+      </div>
     </div>
   </div>
 </template>
