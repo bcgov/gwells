@@ -21,3 +21,27 @@ Optional: Set nano as default command line editor.
 ```
 git config --global core.editor "nano"
 ```
+
+#### Clone, Branch and Push
+
+Clone and navigate into your repository.
+
+```
+git clone https://github.com/<github name>/gwells
+cd gwells
+```
+
+Create a feature branch with a meaningful name and push it to your repo.  Pick a name that describes the feature.
+
+```
+git checkout -b <feature branch>
+git push --set-upstream origin <feature branch>
+```
+
+Add and push files as required.
+
+```
+git add <this file or path>
+git commit -m "<meaningful message>"
+git push
+```
