@@ -102,3 +102,31 @@ https://github.com/bcgov/gwells/pulls
 Verify that all tests have passed.  If you have access to Jenkins, then accept that pull request when successful.  If not, then please wait to hear from someone in the GWells team.
 
 Please be aware that no code can be accepted without receiving at least one review from a GWells team member.
+
+#### Cleanup
+
+We recommend that feature branches be deleted after acceptance into our release branch.
+
+View existing branches.
+
+```
+git branch -avv
+```
+
+Delete local branches.  May not be the default or current branch.
+```
+git branch -d <feature branch>
+```
+
+Delete stale remote branches.
+
+```
+git push -d origin <feature branch>
+```
+
+Update remote and local branches.  Local, unpushed branches must be cleaned up manually.
+
+```
+git remote update origin --prune
+git remote update upstream --prune
+```
