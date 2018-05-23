@@ -1,13 +1,12 @@
 import geb.spock.GebReportingSpec
 import spock.lang.*
 
-@Title("Register of Well Drillers and Well Pump Installers - Add Registrant - Classification and
-Qualifications")
+@Title("Register of Well Drillers and Well Pump Installers - Add Registrant - Classification and Qualifications")
 @Narrative("""As an authorized user, I need to be able to track the classification and qualification
 information related to a well driller or well pump installer within the registers in order to facilitate
 better management and processing of applications.""")
 @See("https://trello.com/c/5xbTW0Fz")
-class AddRegistrantAdjudicationSpecs extends GebReportingSpec {
+class AddRegistrantClassificationQualificationsSpecs extends GebReportingSpec {
 
     @Unroll
     @Ignore("TODO")
