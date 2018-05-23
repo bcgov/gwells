@@ -65,7 +65,7 @@ def _stage(String name, Map context, Closure body) {
 
 Map context = [
   'name': 'gwells',
-  'uuid' : UUID.randomUUID().toString(),
+  'uuid' : "${env.JOB_BASE_NAME}-${env.BUILD_NUMBER}-${env.CHANGE_ID},
   'env': [
       'dev':[:],
       'test':[:],
