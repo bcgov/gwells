@@ -67,14 +67,21 @@ Pull from the upstream release branch at least daily.
 git pull upstream release/<release version> --rebase
 ```
 
+Rebasing requires a forced push.  Be very mindful of this operation!
+
+```
+git push -f
+```
+
 #### Submit Code
 
 We prefer single commit pull requests.  Do this by squashing commits and providing a single summary message.
 
-Squash those changes with an interactive rebase.
+Squash those changes with an interactive rebase and perform a forced push.
 
 ```
 git rebase -i upstream/release/<release number>
+git push -f
 ```
 
 Squash directions:
