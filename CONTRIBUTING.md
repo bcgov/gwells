@@ -45,3 +45,24 @@ git add <this file or path>
 git commit -m "<meaningful message>"
 git push
 ```
+
+#### Upstream Updates
+
+
+GWells uses a master and a release branch, which is replaced regularly.
+
+* master
+* release -> ```release/1.<sprint number>.<hotfix number>```
+
+Set that repository as your upstream remote and verify.
+
+```
+git remote add upstream https://github.com/bcgov/gwells
+git remote -v
+```
+
+Pull from the upstream release branch at least daily.
+
+```
+git pull upstream release/<release version> --rebase
+```
