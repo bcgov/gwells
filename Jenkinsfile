@@ -30,14 +30,19 @@ def _stage(String name, Map context, Closure body) {
     boolean isEnabled=(stageOpt == null || stageOpt == true)
     //echo "Stage - ${stage}"
     echo "Running Stage '${name}' - enabled:${isEnabled}"
+
+
     if (isEnabled){
         stage(name) {
             waitUntil {
+                GitHubHelper.createCommitStatus(this, context.pullRequest.head, 'PENDING', "${env.BUILD_URL}", "Stage '${name}''", "stages/${name.toLowerCase()}")
                 boolean isDone=false
                 try{
                     body()
                     isDone=true
+                    GitHubHelper.createCommitStatus(this, context.pullRequest.head, 'SUCCESS', "${env.BUILD_URL}", "Stage '${name}''", "stages/${name.toLowerCase()}")
                 }catch (ex){
+                    GitHubHelper.createCommitStatus(this, context.pullRequest.head, 'FAILURE', "${env.BUILD_URL}", "Stage '${name}''", "stages/${name.toLowerCase()}")
                     echo "${stackTraceAsString(ex)}"
                     def inputAction = input(
                         message: "This step (${name}) has failed. See error above.",
@@ -92,8 +97,15 @@ Map context = [
     'Readiness - DEV': true,
     'Deploy - DEV': true,
     'Full Test - DEV': true
+  ],
+  pullRequest:[
+    'id': env.CHANGE_ID,
+    'head': GitHubHelper.getPullRequestLastCommitId(this)
   ]
 ]
+
+def isCI = !"master".equalsIgnoreCase(env.CHANGE_TARGET)
+def isCD = "master".equalsIgnoreCase(env.CHANGE_TARGET)
 
 
 properties([
@@ -217,10 +229,6 @@ _stage('Code Quality', context) {
 
 } //end stage
 
-
-
-def isCI = !"master".equalsIgnoreCase(env.CHANGE_TARGET)
-def isCD = "master".equalsIgnoreCase(env.CHANGE_TARGET)
 
 for(String envKeyName: context.env.keySet() as String[]){
     String stageDeployName=envKeyName.toUpperCase()
@@ -426,15 +434,16 @@ for(String envKeyName: context.env.keySet() as String[]){
 
 _stage('Cleanup', context) {
     def inputResponse = null
+    String mergeMethod=isCI?'squash':'merge'
+
     try{
-        inputResponse=input(id: 'close_pr', message: "Ready to Accept/Merge, and Close pull-request #${env.CHANGE_ID}?", ok: 'Yes', submitter: 'authenticated', submitterParameter: 'approver')
+        inputResponse=input(id: 'close_pr', message: "Ready to Accept/Merge (using '${mergeMethod}' methog), and Close pull-request #${env.CHANGE_ID}?", ok: 'Yes', submitter: 'authenticated', submitterParameter: 'approver')
+        echo "inputResponse:${inputResponse}"
+        new OpenShiftHelper().cleanup(this, context)
+        GitHubHelper.mergeAndClosePullRequest(this, mergeMethod)
     }catch(ex){
         error "Pipeline has been aborted. - ${ex}"
     }
-
-    echo "inputResponse:${inputResponse}"
-    new OpenShiftHelper().cleanup(this, context)
-    GitHubHelper.mergeAndClosePullRequest(this)
 }
 
 
