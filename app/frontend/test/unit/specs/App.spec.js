@@ -1,4 +1,4 @@
-import { shallow, createLocalVue } from '@vue/test-utils'
+import { shallowMount, createLocalVue } from '@vue/test-utils'
 import Vuex from 'vuex'
 import App from '@/registry/App.vue'
 import Header from '@/common/components/Header.vue'
@@ -19,7 +19,7 @@ describe('App.vue', () => {
     store = new Vuex.Store({ getters, actions, mutations })
   })
   it('loads header and footer', () => {
-    const wrapper = shallow(App, {
+    const wrapper = shallowMount(App, {
       store,
       localVue,
       stubs: ['router-link', 'router-view']

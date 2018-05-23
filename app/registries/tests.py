@@ -764,7 +764,7 @@ class APIFilteringPaginationTests(APITestCase):
         url = reverse('organization-detail',
                       kwargs={'org_guid': self.company_with_no_driller.org_guid})
         response = self.client.get(url, format='json')
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
         # teardown
         logger.setLevel(previous_level)
