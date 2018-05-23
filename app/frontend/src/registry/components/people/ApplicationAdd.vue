@@ -60,22 +60,11 @@
               </b-form-group>
             </b-col>
           </b-row>
-        </p>
-      </div>
-    </div>
-    <div class="card w-100">
-      <div class="card-body">
-        <h5 class="card-title">Adjudication</h5>
-        <p v-if="loading" class="card-text">
           <b-row>
-            <b-col md="12">
-              <div class="fa-2x text-center">
-                <i class="fa fa-circle-o-notch fa-spin"></i>
-              </div>
+            <b-col md="8">
+              <h5>Adjudication</h5>
             </b-col>
           </b-row>
-        </p>
-        <p v-else class="card-text">
           <b-row>
             <b-col>
               <b-form-group label="Date application received" label-for="effective_date" class="font-weight-bold">
