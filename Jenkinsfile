@@ -442,10 +442,12 @@ _stage('Cleanup', context) {
 
     inputResponse=input(id: 'close_pr', message: "Ready to Accept/Merge (using '${mergeMethod}' method), and Close pull-request #${env.CHANGE_ID}?", ok: 'Yes', submitter: 'authenticated', submitterParameter: 'approver')
     echo "inputResponse:${inputResponse}"
-    new OpenShiftHelper().cleanup(this, context)
 
     GitHubHelper.createCommitStatus(this, context.pullRequest.head, 'SUCCESS', "${env.BUILD_URL}", "Stage 'Cleanup'", stageStatusContext('Cleanup'))
     GitHubHelper.mergeAndClosePullRequest(this, mergeMethod)
+
+    //Do cleanup after pull request has been successfully closed/merged
+    new OpenShiftHelper().cleanup(this, context)
 }
 
 
