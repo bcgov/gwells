@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-if="!keycloak || (keycloak && !keycloak.authenticated)">
-      <button type="button" class="btn btn-light btn-sm" @click="keyCloakLogin()">Log in</button>
+      <button type="button" id="gwells-sso-login" class="btn btn-light btn-sm" @click="keyCloakLogin()">Log in</button>
     </div>
     <div v-if="keycloak && keycloak.authenticated">
       <span class="userLoggedInText text-light">{{ keycloak.tokenParsed.name }}</span>
