@@ -34,38 +34,38 @@
         </b-row>
         <b-row>
           <b-col md="6">
-            <b-form-group label="Issued by" horizontal :label-cols="3">
-              <b-form-select :options="formOptions.issuer" v-model="qualificationForm.primary_certificate" required></b-form-select>
+            <b-form-group label="Issued by" horizontal :label-cols="3" label-for="issuer">
+              <b-form-select id="issuer" :options="formOptions.issuer" v-model="qualificationForm.primary_certificate" required></b-form-select>
             </b-form-group>
           </b-col>
           <b-col md="6">
-            <b-form-group label="Certificate number" horizontal :label-cols="3">
-              <b-form-input type="text" placeholder="Enter certificate number" v-model="qualificationForm.primary_certificate_no" required></b-form-input>
+            <b-form-group label="Certificate number" label-for="primary_certificate_no" horizontal :label-cols="3">
+              <b-form-input id="primary_certificate_no" type="text" placeholder="Enter certificate number" v-model="qualificationForm.primary_certificate_no" required></b-form-input>
             </b-form-group>
           </b-col>
         </b-row>
         <b-row class="mt-3">
           <b-col md="12">
-            <b-form-group label="Select classification" horizontal :label-cols="2">
-              <b-form-radio-group class="fixed-width" :options="formOptions.classifications" @change="changedClassification" v-model="qualificationForm.subactivity" required></b-form-radio-group>
+            <b-form-group label="Select classification" label-for="classifications" horizontal :label-cols="2">
+              <b-form-radio-group id="classifications" class="fixed-width" :options="formOptions.classifications" @change="changedClassification" v-model="qualificationForm.subactivity" required></b-form-radio-group>
             </b-form-group>
           </b-col>
         </b-row>
-        <b-form-group label="Qualified to drill" label-for="qualifications">
-          <b-row>
-            <b-col md="8">
+        <b-row>
+          <b-col md="8">
+            <b-form-group label="Qualified to drill" label-for="qualifications">
               <b-form-checkbox-group id="qualifications" class="fixed-width" :options="formOptions.qualifications" v-model="qualificationForm.qualifications" disabled>
               </b-form-checkbox-group>
-            </b-col>
-          </b-row>
-        </b-form-group>
-        <b-form-group label="Date application received" label-for="effective_date">
-          <b-row>
-            <b-col>
+            </b-form-group>
+          </b-col>
+        </b-row>
+        <b-row>
+          <b-col>
+            <b-form-group label="Date application received" label-for="effective_date">
               <datepicker id="effective_date" format="yyyy-MM-dd" v-model="qualificationForm.status_set[0].effective_date" required></datepicker>
-            </b-col>
-          </b-row>
-        </b-form-group>
+            </b-form-group>
+          </b-col>
+        </b-row>
       </p>
     </div>
   </div>
