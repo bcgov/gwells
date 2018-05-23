@@ -66,3 +66,27 @@ Pull from the upstream release branch at least daily.
 ```
 git pull upstream release/<release version> --rebase
 ```
+
+#### Submit Code
+
+We prefer single commit pull requests.  Do this by squashing commits and providing a single summary message.
+
+Squash those changes with an interactive rebase.
+
+```
+git rebase -i upstream/release/<release number>
+```
+
+Squash directions:
+
+* Remote unwanted commits by entering 'd'
+* Squash commits by entering 's'
+  * The top commit may not be squashed
+* After saving/closing another editor will handle the summary commit message
+
+Create a pull request.
+
+```
+git request-pull ...FINISH THIS!...
+git request-pull origin/release https://github.com/bcgov/gwells:release/1.32.0
+```
