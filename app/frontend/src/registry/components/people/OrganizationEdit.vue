@@ -5,26 +5,6 @@
     </b-card>
     <b-card title="Manage Companies">
 
-      <!-- Add company button (opens 'add company' modal) and success feedback -->
-      <b-row>
-        <b-col>
-          <b-button
-              id="addNewOrgButton"
-              type="button"
-              v-b-modal.orgModal
-              variant="primary"
-              size="sm"
-              class="mb-3">
-            <i class="fa fa-plus-square-o"></i> Add new company</b-button>
-          <organization-add @newOrgAdded="newOrgHandler"></organization-add>
-        </b-col>
-      </b-row>
-      <b-row>
-        <b-col>
-          <b-alert variant="success" :show="companyAddSuccess" dismissible @dismissed="companyAddSuccess=false">Company added.</b-alert>
-        </b-col>
-      </b-row>
-
       <!-- Company selector (used to select company to edit) -->
       <b-row>
         <b-col cols="12" md="7">
@@ -45,8 +25,28 @@
         </b-col>
       </b-row>
 
+      <!-- Add company button (opens 'add company' modal) and success feedback -->
+      <b-row>
+        <b-col>
+          <b-button
+              id="addNewOrgButton"
+              type="button"
+              v-b-modal.orgModal
+              variant="primary"
+              size="sm"
+              class="my-3">
+            <i class="fa fa-plus-square-o"></i> Add new company</b-button>
+          <organization-add @newOrgAdded="newOrgHandler"></organization-add>
+        </b-col>
+      </b-row>
+      <b-row>
+        <b-col>
+          <b-alert variant="success" :show="companyAddSuccess" dismissible @dismissed="companyAddSuccess=false">Company added.</b-alert>
+        </b-col>
+      </b-row>
+
       <!-- Selected company details and edit form fields -->
-      <b-card no-body class="p-2 p-md-3">
+      <b-card no-body class="p-2 p-md-3" v-if="!!selectedCompany">
         <h6 class="card-subtitle mb-3">Company Information</h6>
         <b-form @submit.prevent="submitConfirm" @reset.prevent="cancelConfirm">
           <b-row>
