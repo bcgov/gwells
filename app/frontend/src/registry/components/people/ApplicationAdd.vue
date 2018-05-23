@@ -15,7 +15,7 @@
   <div>
     <div class="card w-100">
       <div class="card-body">
-        <h5 class="card-title">Classification, Qualifications
+        <h5 class="card-title">Classification &amp; Qualifications
           <button type="button" class="close pull-right" aria-label="Close" v-on:click="$emit('close')">
             <span aria-hidden="true">&times;</span>
           </button>
