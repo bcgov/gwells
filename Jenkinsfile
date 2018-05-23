@@ -437,7 +437,7 @@ _stage('Cleanup', context) {
     String mergeMethod=isCI?'squash':'merge'
 
     try{
-        inputResponse=input(id: 'close_pr', message: "Ready to Accept/Merge (using '${mergeMethod}' methog), and Close pull-request #${env.CHANGE_ID}?", ok: 'Yes', submitter: 'authenticated', submitterParameter: 'approver')
+        inputResponse=input(id: 'close_pr', message: "Ready to Accept/Merge (using '${mergeMethod}' method), and Close pull-request #${env.CHANGE_ID}?", ok: 'Yes', submitter: 'authenticated', submitterParameter: 'approver')
         echo "inputResponse:${inputResponse}"
         new OpenShiftHelper().cleanup(this, context)
         GitHubHelper.mergeAndClosePullRequest(this, mergeMethod)
