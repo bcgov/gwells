@@ -29,36 +29,40 @@
         </b-row>
       </p>
       <p v-else class="card-text">
-        <b-form-group label="Certification">
-          <b-row>
-            <b-col md="2">Issued by</b-col>
-            <b-col md="3">
-                  <b-form-select id="issuer" :options="formOptions.issuer" v-model="qualificationForm.primary_certificate" required></b-form-select>
-            </b-col>
-            <b-col md="2">Certificate number</b-col>
-            <b-col md="3">
-              <b-form-input type="text" placeholder="Enter certificate number" v-model="qualificationForm.primary_certificate_no" required></b-form-input>
-            </b-col>
-          </b-row>
-        </b-form-group>
         <b-row>
-          <b-col md="2">Select classification</b-col>
-          <b-col md="8">
-            <b-form-radio-group class="fixed-width" :options="formOptions.classifications" @change="changedClassification" v-model="qualificationForm.subactivity" required></b-form-radio-group>
+          <b-col>Certification</b-col>
+        </b-row>
+        <b-row>
+          <b-col md="6">
+            <b-form-group label="Issued by" horizontal :label-cols="3">
+              <b-form-select :options="formOptions.issuer" v-model="qualificationForm.primary_certificate" required></b-form-select>
+            </b-form-group>
+          </b-col>
+          <b-col md="6">
+            <b-form-group label="Certificate number" horizontal :label-cols="3">
+              <b-form-input type="text" placeholder="Enter certificate number" v-model="qualificationForm.primary_certificate_no" required></b-form-input>
+            </b-form-group>
           </b-col>
         </b-row>
-        <b-form-group label="Qualified to drill">
+        <b-row class="mt-3">
+          <b-col md="12">
+            <b-form-group label="Select classification" horizontal :label-cols="2">
+              <b-form-radio-group class="fixed-width" :options="formOptions.classifications" @change="changedClassification" v-model="qualificationForm.subactivity" required></b-form-radio-group>
+            </b-form-group>
+          </b-col>
+        </b-row>
+        <b-form-group label="Qualified to drill" label-for="qualifications">
           <b-row>
             <b-col md="8">
-              <b-form-checkbox-group class="fixed-width" :options="formOptions.qualifications" v-model="qualificationForm.qualifications" disabled>
+              <b-form-checkbox-group id="qualifications" class="fixed-width" :options="formOptions.qualifications" v-model="qualificationForm.qualifications" disabled>
               </b-form-checkbox-group>
             </b-col>
           </b-row>
         </b-form-group>
-        <b-form-group label="Date application received">
+        <b-form-group label="Date application received" label-for="effective_date">
           <b-row>
             <b-col>
-              <datepicker format="yyyy-MM-dd" v-model="qualificationForm.status_set[0].effective_date" required></datepicker>
+              <datepicker id="effective_date" format="yyyy-MM-dd" v-model="qualificationForm.status_set[0].effective_date" required></datepicker>
             </b-col>
           </b-row>
         </b-form-group>
@@ -70,7 +74,6 @@
 <script>
 import Datepicker from 'vuejs-datepicker'
 import { mapGetters, mapActions } from 'vuex'
-// import ApiService from '@/common/services/ApiService.js'
 export default {
   components: {
     Datepicker
@@ -120,7 +123,8 @@ export default {
       return transformed
     },
     ...mapGetters([
-      'loading'
+      'loading',
+      'drillerOptions'
     ]),
     formOptions () {
       let result = {
@@ -128,8 +132,8 @@ export default {
         classifications: [],
         qualifications: []
       }
-      if (this.$options.propsData.activity in this.$store.getters.drillerOptions) {
-        const options = this.$store.getters.drillerOptions[this.$options.propsData.activity]
+      if (this.activity in this.drillerOptions) {
+        const options = this.drillerOptions[this.activity]
         result.issuer = result.issuer.concat(options.AccreditedCertificateCode.map((item) => { return {'text': item.name + ' (' + item.cert_auth + ')', 'value': item.acc_cert_guid} }))
         result.classifications = options.SubactivityCode.map((item) => { return {'text': item.description, 'value': item.registries_subactivity_code} })
         result.qualifications = options.WellClassCode.map((item) => { return {'text': item.description, 'value': item.registries_well_class_code} })
@@ -137,11 +141,11 @@ export default {
       return result
     },
     subactivityMap () {
-      return this.$options.propsData.activity in this.$store.getters.drillerOptions ? this.$store.getters.drillerOptions[this.$options.propsData.activity].SubactivityCode : []
+      return this.activity in this.drillerOptions ? this.drillerOptions[this.activity].SubactivityCode : []
     }
   },
   created () {
-    this.fetchDrillerOptions({activity: this.$options.propsData.activity})
+    this.fetchDrillerOptions({activity: this.activity})
   }
 }
 </script>
