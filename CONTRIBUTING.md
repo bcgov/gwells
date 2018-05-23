@@ -90,3 +90,15 @@ Create a pull request.
 git request-pull ...FINISH THIS!...
 git request-pull origin/release https://github.com/bcgov/gwells:release/1.32.0
 ```
+
+#### Continuous Integration and Continuous Deployment
+
+We use continuous integration to test, build and accept code into the release branch.  We use continuous integration and continuous deployment to get that code from the release branch into master branch eventually deployed into [production]().
+
+Pull requests trigger a Jenkins pipeline.  View the status of any [existing pull requests](https://github.com/bcgov/gwells/pulls) from the link below.
+
+https://github.com/bcgov/gwells/pulls
+
+Verify that all tests have passed.  If you have access to Jenkins, then accept that pull request when successful.  If not, then please wait to hear from someone in the GWells team.
+
+Please be aware that no code can be accepted without receiving at least one review from a GWells team member.
