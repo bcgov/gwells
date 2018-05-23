@@ -40,6 +40,14 @@ obtain_jwt_token_noswagger = swagger_auto_schema(
     method='post', auto_schema=None)(obtain_jwt_token)
 
 urlpatterns = [
+
+    # Organization note endpoints
+    url(r'^api/v1/organizations/(?P<org_guid>[-\w]+)/notes/$',
+        views.OrganizationNoteListView.as_view(), name='org-note-list'),
+    url(r'^api/v1/organizations/(?P<org_guid>[-\w]+)/notes/(?P<note_guid>[-\w]+)/$',
+        views.OrganizationNoteDetailView.as_view(), name='org-note-detail'),
+
+    # Organization endpoints
     url(r'^api/v1/organizations/names/$',
         views.OrganizationNameListView.as_view(),
         name='organization-names'),

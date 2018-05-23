@@ -14,8 +14,9 @@ from .models import (
     ApplicationStatusCode,
     RegistriesApplicationStatus,
     WellClassCode,
-    Qualification
-
+    Qualification,
+    PersonNote,
+    OrganizationNote
 )
 
 # Register your models here.
@@ -35,3 +36,5 @@ admin.site.register(ApplicationStatusCode)
 admin.site.register(RegistriesApplicationStatus)
 admin.site.register(WellClassCode)
 admin.site.register(Qualification)
+admin.site.register(PersonNote)
+admin.site.register(OrganizationNote)
