@@ -1,4 +1,4 @@
-import { shallow, createLocalVue } from '@vue/test-utils'
+import { shallowMount, createLocalVue } from '@vue/test-utils'
 import Legal from '@/registry/components/Legal'
 
 const localVue = createLocalVue()
@@ -6,7 +6,7 @@ const localVue = createLocalVue()
 describe('Legal.vue', () => {
   it('renders Well Driller text when activity prop is DRILL', () => {
     const activity = 'DRILL'
-    const wrapper = shallow(Legal, {
+    const wrapper = shallowMount(Legal, {
       propsData: { activity },
       localVue
     })
@@ -14,7 +14,7 @@ describe('Legal.vue', () => {
   })
   it('renders pump installer text when activity prop is PUMP', () => {
     const activity = 'PUMP'
-    const wrapper = shallow(Legal, {
+    const wrapper = shallowMount(Legal, {
       propsData: { activity },
       localVue
     })
