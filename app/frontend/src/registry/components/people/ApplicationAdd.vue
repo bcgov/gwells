@@ -30,7 +30,7 @@
       </p>
       <p v-else class="card-text">
         <b-row>
-          <b-col>Certification</b-col>
+          <b-col class="font-weight-bold">Certification</b-col>
         </b-row>
         <b-row>
           <b-col md="6">
@@ -46,22 +46,22 @@
         </b-row>
         <b-row class="mt-3">
           <b-col md="12">
-            <b-form-group label="Select classification" label-for="classifications" horizontal :label-cols="2">
-              <b-form-radio-group id="classifications" class="fixed-width" :options="formOptions.classifications" @change="changedClassification" v-model="qualificationForm.subactivity" required></b-form-radio-group>
+            <b-form-group label="Select classification" label-for="classifications" horizontal :label-cols="2" class="font-weight-bold">
+              <b-form-radio-group id="classifications" class="fixed-width font-weight-normal" :options="formOptions.classifications" @change="changedClassification" v-model="qualificationForm.subactivity" required></b-form-radio-group>
             </b-form-group>
           </b-col>
         </b-row>
         <b-row>
           <b-col md="8">
-            <b-form-group label="Qualified to drill" label-for="qualifications">
-              <b-form-checkbox-group id="qualifications" class="fixed-width" :options="formOptions.qualifications" v-model="qualificationForm.qualifications" disabled>
+            <b-form-group label="Qualified to drill" label-for="qualifications" class="font-weight-bold">
+              <b-form-checkbox-group id="qualifications" class="fixed-width font-weight-normal" :options="formOptions.qualifications" v-model="qualificationForm.qualifications" disabled>
               </b-form-checkbox-group>
             </b-form-group>
           </b-col>
         </b-row>
         <b-row>
           <b-col>
-            <b-form-group label="Date application received" label-for="effective_date">
+            <b-form-group label="Date application received" label-for="effective_date" class="font-weight-bold">
               <datepicker id="effective_date" format="yyyy-MM-dd" v-model="qualificationForm.status_set[0].effective_date" required></datepicker>
             </b-form-group>
           </b-col>
