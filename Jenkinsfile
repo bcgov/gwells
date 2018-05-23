@@ -25,7 +25,11 @@ private static String stackTraceAsString(Throwable t) {
     return sw.toString()
 }
 
-def _stage(String name, Map context, Closure body) {
+String stageStatusContext(String stageName){
+    return "stages/${stageName.toLowerCase()}"
+}
+
+def _stage(String name, Map context, boolean retry=0, boolean withCommitStatus=true, Closure body) {
     def stageOpt =(context?.stages?:[:])[name]
     boolean isEnabled=(stageOpt == null || stageOpt == true)
     //echo "Stage - ${stage}"
@@ -35,14 +39,14 @@ def _stage(String name, Map context, Closure body) {
     if (isEnabled){
         stage(name) {
             waitUntil {
-                GitHubHelper.createCommitStatus(this, context.pullRequest.head, 'PENDING', "${env.BUILD_URL}", "Stage '${name}''", "stages/${name.toLowerCase()}")
+                GitHubHelper.createCommitStatus(this, context.pullRequest.head, 'PENDING', "${env.BUILD_URL}", "Stage '${name}'", stageStatusContext(name))
                 boolean isDone=false
                 try{
                     body()
                     isDone=true
-                    GitHubHelper.createCommitStatus(this, context.pullRequest.head, 'SUCCESS', "${env.BUILD_URL}", "Stage '${name}''", "stages/${name.toLowerCase()}")
+                    GitHubHelper.createCommitStatus(this, context.pullRequest.head, 'SUCCESS', "${env.BUILD_URL}", "Stage '${name}'", stageStatusContext(name))
                 }catch (ex){
-                    GitHubHelper.createCommitStatus(this, context.pullRequest.head, 'FAILURE', "${env.BUILD_URL}", "Stage '${name}''", "stages/${name.toLowerCase()}")
+                    GitHubHelper.createCommitStatus(this, context.pullRequest.head, 'FAILURE', "${env.BUILD_URL}", "Stage '${name}'", stageStatusContext(name))
                     echo "${stackTraceAsString(ex)}"
                     def inputAction = input(
                         message: "This step (${name}) has failed. See error above.",
@@ -436,14 +440,12 @@ _stage('Cleanup', context) {
     def inputResponse = null
     String mergeMethod=isCI?'squash':'merge'
 
-    try{
-        inputResponse=input(id: 'close_pr', message: "Ready to Accept/Merge (using '${mergeMethod}' method), and Close pull-request #${env.CHANGE_ID}?", ok: 'Yes', submitter: 'authenticated', submitterParameter: 'approver')
-        echo "inputResponse:${inputResponse}"
-        new OpenShiftHelper().cleanup(this, context)
-        GitHubHelper.mergeAndClosePullRequest(this, mergeMethod)
-    }catch(ex){
-        error "Pipeline has been aborted. - ${ex}"
-    }
+    inputResponse=input(id: 'close_pr', message: "Ready to Accept/Merge (using '${mergeMethod}' method), and Close pull-request #${env.CHANGE_ID}?", ok: 'Yes', submitter: 'authenticated', submitterParameter: 'approver')
+    echo "inputResponse:${inputResponse}"
+    new OpenShiftHelper().cleanup(this, context)
+
+    GitHubHelper.createCommitStatus(this, context.pullRequest.head, 'SUCCESS', "${env.BUILD_URL}", "Stage 'Cleanup'", stageStatusContext('Cleanup'))
+    GitHubHelper.mergeAndClosePullRequest(this, mergeMethod)
 }
 
 
