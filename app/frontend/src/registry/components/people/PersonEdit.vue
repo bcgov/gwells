@@ -54,7 +54,7 @@
         </b-row>
         <b-row>
           <b-col>
-            <button type="submit" class="btn btn-primary">Submit</button>
+            <button type="submit" class="btn btn-primary">Save</button>
             <button type="button" class="btn btn-light" @click="$emit('canceled')">Cancel</button>
           </b-col>
         </b-row>
@@ -90,13 +90,15 @@
               <b-form-input
                 id="telInput"
                 type="text"
+                :formatter="formatTel"
+                lazy-formatter
                 v-model="contactInfoForm.contact_tel"/>
             </b-form-group>
           </b-col>
         </b-row>
         <b-row>
           <b-col>
-            <button type="submit" class="btn btn-primary">Submit</button>
+            <button type="submit" class="btn btn-primary">Save</button>
             <button type="button" class="btn btn-light" @click="$emit('canceled')">Cancel</button>
           </b-col>
         </b-row>
@@ -117,7 +119,7 @@
             label="org_verbose_name">
           </v-select>
         </b-form-group>
-        <button type="submit" class="btn btn-primary">Submit</button>
+        <button type="submit" class="btn btn-primary">Save</button>
         <button type="button" class="btn btn-light" @click="$emit('canceled')">Cancel</button>
       </b-form>
     </div>
@@ -238,6 +240,9 @@ export default {
       this.fieldErrors = {
         contact_email: []
       }
+    },
+    formatTel (value) {
+      return value.replace(/[^0-9]/g, '').replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3')
     }
   },
   created () {

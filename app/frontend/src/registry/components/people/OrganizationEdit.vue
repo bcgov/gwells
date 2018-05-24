@@ -134,6 +134,8 @@
                   :disabled="!selectedCompany"
                   id="companyTelInput"
                   type="text"
+                  :formatter="formatTel"
+                  lazy-formatter
                   v-model="companyForm.main_tel"/>
               </b-form-group>
             </b-col>
@@ -146,6 +148,8 @@
                     :disabled="!selectedCompany"
                     id="companyFaxInput"
                     type="text"
+                    :formatter="formatTel"
+                    lazy-formatter
                     v-model="companyForm.fax_tel"/>
                 </b-form-group>
             </b-col>
@@ -501,6 +505,9 @@ export default {
       }).catch((e) => {
         this.companyDeleteError = e.response.data
       })
+    },
+    formatTel (value) {
+      return value.replace(/[^0-9]/g, '').replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3')
     }
   },
   created () {

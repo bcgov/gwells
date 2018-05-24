@@ -2,7 +2,7 @@
   <div class="card" ref="noteSection">
     <div class="card-body p-2 p-md-3">
       <h6 class="card-title" id="notesSectionTitle">Notes</h6>
-      <div class="mt-3">
+      <div class="mt-3 mb-4" v-if="userRoles.edit">
         <b-form @submit.prevent="noteSubmitHandler" @reset.prevent="noteCancelHandler">
           <b-form-group
               id="noteInputGroup"
@@ -53,10 +53,10 @@
         </b-form>
       </div>
       <div id="notesList" ref="notes">
-        <div class="mt-5" v-if="!notes || !notes.length">
+        <div v-if="!notes || !notes.length">
           <b-row><b-col>No notes for this person.</b-col></b-row>
         </div>
-        <div class="mt-5" v-if="notes && notes.length">
+        <div v-if="notes && notes.length">
           <div class="mt-3" v-for="(note, index) in notes" :key="`note ${index}`" :id="`person-note-${index}`">
               <span class="font-weight-bold">{{ note.author }}</span> ({{ note.date | moment("MMMM Do YYYY [at] LT") }}):
               {{ note.note }}
@@ -89,7 +89,7 @@ export default {
       }
       return []
     },
-    ...mapGetters(['currentDriller'])
+    ...mapGetters(['currentDriller', 'userRoles'])
   },
   methods: {
     noteSubmit () {

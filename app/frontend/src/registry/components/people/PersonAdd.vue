@@ -37,7 +37,7 @@
                 </b-form-group>
               </b-col>
             </b-row>
-            <b-row class="mt-3"><b-col><h6 class="font-weight-bold">Contact Information</h6></b-col></b-row>
+            <b-row class="mt-3"><b-col><h6 class="font-weight-bold">Contact Information at Company</h6></b-col></b-row>
             <b-row>
               <b-col cols="12" md="5">
                 <b-form-group
@@ -47,6 +47,8 @@
                   <b-form-input
                     id="contactTelInput"
                     type="text"
+                    :formatter="formatTel"
+                    lazy-formatter
                     v-model="drillerForm.person.contact_tel"/>
                 </b-form-group>
               </b-col>
@@ -71,7 +73,7 @@
             </b-row>
             <b-row class="mt-3"><b-col><h6 class="font-weight-bold">Document Control</h6></b-col></b-row>
             <b-row>
-              <b-col>
+              <b-col cols="5">
                 <b-form-group
                   id="drillerORCSInputGroup"
                   label="Well Driller ORCS Number:"
@@ -83,7 +85,7 @@
                     placeholder="example: 38000-25/DRI SMIT J"/>
                 </b-form-group>
               </b-col>
-              <b-col>
+              <b-col cols="5" offset-md="1">
                 <b-form-group
                   id="pumpORCSInputGroup"
                   label="Pump Installer ORCS Number:"
@@ -132,7 +134,7 @@
               </b-row>
               <div v-if="drillerForm.regType.some(x => x === 'DRILL')">
                 <b-row>
-                  <b-col cols="12" md="4">
+                  <!-- <b-col cols="12" md="4">
                     <b-form-group
                       id="drillerRegNoInputGroup"
                       label="Well Driller Registration Number:"
@@ -142,8 +144,8 @@
                         type="text"
                         v-model="drillerForm.registrations.drill.registration_no"/>
                     </b-form-group>
-                  </b-col>
-                  <b-col md="7" offset-md="1">
+                  </b-col> -->
+                  <b-col md="7">
                     <b-form-group
                       id="companyInputGroup"
                       label="Well drilling company:"
@@ -180,7 +182,7 @@
               </div>
               <div v-if="drillerForm.regType.some(x => x === 'PUMP')">
                 <b-row>
-                  <b-col cols="12" md="4">
+                  <!-- <b-col cols="12" md="4">
                     <b-form-group
                       id="pumpRegNoInputGroup"
                       label="Well Pump Installer Registration Number:"
@@ -190,8 +192,8 @@
                         type="text"
                         v-model="drillerForm.registrations.pump.registration_no"/>
                     </b-form-group>
-                  </b-col>
-                  <b-col md="7" offset-md="1">
+                  </b-col> -->
+                  <b-col md="7">
                     <b-form-group
                       id="companyInputGroup"
                       label="Well pump installation company:"
@@ -229,7 +231,7 @@
             </b-card>
             <b-row class="mt-3">
               <b-col>
-                <b-button type="submit" class="mr-2" variant="primary">Submit</b-button>
+                <b-button type="submit" class="mr-2" variant="primary">Save</b-button>
                 <b-button type="reset" variant="light">Reset</b-button>
               </b-col>
             </b-row>
@@ -447,6 +449,9 @@ export default {
     },
     closeApplication (collection, id) {
       collection.splice(collection.findIndex((item) => item.id === id))
+    },
+    formatTel (value) {
+      return value.replace(/[^0-9]/g, '').replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3')
     }
   },
   created () {

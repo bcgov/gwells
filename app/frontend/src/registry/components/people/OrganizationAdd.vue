@@ -4,7 +4,7 @@
       <api-error :error="error" resetter="SET_ERROR"></api-error>
     </div>
     <div class="container">
-        <b-form @submit.prevent="onFormSubmit()" @reset.prevent="onFormReset()">
+        <b-form autocomplete="off" @submit.prevent="onFormSubmit()" @reset.prevent="onFormReset()">
           <b-row>
             <b-col cols="12">
               <b-form-group
@@ -89,6 +89,8 @@
                 <b-form-input
                     id="telInput"
                     type="text"
+                    :formatter="formatTel"
+                    lazy-formatter
                     v-model="orgForm.main_tel"/>
               </b-form-group>
             </b-col>
@@ -100,6 +102,8 @@
                 <b-form-input
                     id="faxInput"
                     type="text"
+                    :formatter="formatTel"
+                    lazy-formatter
                     v-model="orgForm.fax_tel"/>
               </b-form-group>
             </b-col>
@@ -148,7 +152,7 @@
           </b-row>
           <b-row class="my-3">
             <b-col>
-              <b-button type="submit" class="mr-2" variant="primary" :disabled="orgSubmitLoading">Submit</b-button>
+              <b-button type="submit" class="mr-2" variant="primary" :disabled="orgSubmitLoading">Save</b-button>
               <b-button type="reset" variant="light" id="orgFormResetButton">Cancel</b-button>
             </b-col>
           </b-row>
@@ -253,6 +257,9 @@ export default {
         website_url: [],
         email: []
       }
+    },
+    formatTel (value) {
+      return value.replace(/[^0-9]/g, '').replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3')
     }
   },
   created () {
