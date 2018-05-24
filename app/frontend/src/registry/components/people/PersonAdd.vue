@@ -112,7 +112,7 @@
                   <b-button
                     type="button"
                     v-b-modal.orgModal
-                    variant="light"
+                    variant="primary"
                     size="sm"
                     class="mb-3">
                     <i class="fa fa-plus-square-o"></i> Add a company</b-button>
