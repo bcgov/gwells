@@ -123,8 +123,8 @@ def isCD = "master".equalsIgnoreCase(env.CHANGE_TARGET)
 
 
 properties([
-        buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '', numToKeepStr: '10')),
-        durabilityHint('MAX_SURVIVABILITY') /*, parameters([string(defaultValue: '', description: '', name: 'run_stages')]) */
+        buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '', numToKeepStr: '5')),
+        durabilityHint('PERFORMANCE_OPTIMIZED') /*, parameters([string(defaultValue: '', description: '', name: 'run_stages')]) */
 ])
 
 stage('Prepare') {
