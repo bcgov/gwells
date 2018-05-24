@@ -8,7 +8,8 @@ from django.utils.six import StringIO
 from rest_framework import status
 from rest_framework.test import APITestCase, APIRequestFactory
 from gwells.models.ProvinceStateCode import ProvinceStateCode
-from django.contrib.auth.models import User
+from gwells.models.Profile import Profile
+from django.contrib.auth.models import User, Group
 from registries.models import (
     ApplicationStatusCode,
     Organization,
@@ -21,6 +22,7 @@ from registries.models import (
     SubactivityCode)
 from registries.views import PersonListView, PersonDetailView
 from django.contrib.auth.models import Group
+from gwells.permissions import roles_to_groups
 
 # Note: see postman/newman for more API tests.
 # Postman API tests include making requests with incomplete data, missing required fields etc.
@@ -37,13 +39,15 @@ class AuthenticatedAPITestCase(APITestCase):
     """
 
     def setUp(self):
-        """
-        Set up authenticated test cases.
-        """
-
-        self.user = User.objects.create_user(
-            'testuser', 'test@example.com', 'douglas')
+        self.user, created = User.objects.get_or_create(username='testuser')
+        if created:
+            Profile.objects.get_or_create(user=self.user)
         self.user.is_staff = True
+        self.user.profile.is_gwells_admin = True
+        self.user.save()
+        self.user.profile.save()
+
+        roles_to_groups(self.user, ['gwells_admin'])
         self.client.force_authenticate(self.user)
 
 

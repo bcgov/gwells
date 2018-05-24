@@ -16,6 +16,7 @@ from django.contrib.auth import get_user_model
 from rest_framework import exceptions
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from gwells.models.Profile import Profile
+from gwells.permissions import roles_to_groups
 
 
 class JwtOidcAuthentication(JSONWebTokenAuthentication):
@@ -61,11 +62,13 @@ class JwtOidcAuthentication(JSONWebTokenAuthentication):
         except:
             raise exceptions.AuthenticationFailed('Failed to retrieve roles')
 
-        if 'gwells_admin' in roles:
-            profile.is_gwells_admin = True
-            profile.save()
-            user.is_staff = True
-            user.save()
+        # if 'gwells_admin' in roles:
+        #     profile.is_gwells_admin = True
+        #     profile.save()
+        #     user.is_staff = True
+        #     user.save()
+        # put user in groups based on role
+        roles_to_groups(user, roles)
 
         # get the name from the token and store it in the profile. If name not supplied, use the username.
         name = payload.get('name') or payload.get('preferred_username')

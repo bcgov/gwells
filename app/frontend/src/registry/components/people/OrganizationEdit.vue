@@ -34,7 +34,7 @@
               v-b-modal.orgModal
               variant="primary"
               size="sm"
-              class="my-3">
+              class="mb-5">
             <i class="fa fa-plus-square-o"></i> Add new company</b-button>
           <organization-add @newOrgAdded="newOrgHandler"></organization-add>
         </b-col>

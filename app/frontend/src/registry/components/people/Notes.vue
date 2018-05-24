@@ -2,7 +2,7 @@
   <div class="card" ref="noteSection">
     <div class="card-body p-2 p-md-3">
       <h6 class="card-title" id="notesSectionTitle">Notes</h6>
-      <div class="mt-3">
+      <div class="mt-3" v-if="userRoles.edit">
         <b-form @submit.prevent="noteSubmitHandler" @reset.prevent="noteCancelHandler">
           <b-form-group
               id="noteInputGroup"
@@ -68,6 +68,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import ApiService from '@/common/services/ApiService.js'
 export default {
   name: 'Notes',
@@ -105,7 +106,8 @@ export default {
         person: 'people'
       }
       return typeMap[this.type]
-    }
+    },
+    ...mapGetters(['userRoles'])
   },
   methods: {
     noteSubmit () {

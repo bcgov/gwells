@@ -226,6 +226,23 @@ export const store = new Vuex.Store({
       }
       return false
     },
+    userRoles (state) {
+      if (state.keycloak && state.keycloak.authenticated) {
+        return {
+          view: (state.keycloak.hasRealmRole('gwells_admin') ||
+            state.keycloak.hasRealmRole('gwells_statutory_authority') ||
+            state.keycloak.hasRealmRole('gwells_viewer') ||
+            state.keycloak.hasRealmRole('gwells_adjudicator')),
+          edit: (state.keycloak.hasRealmRole('gwells_admin') ||
+            state.keycloak.hasRealmRole('gwells_statutory_authority') ||
+            state.keycloak.hasRealmRole('gwells_adjudicator')),
+          approve: (state.keycloak.hasRealmRole('gwells_admin') ||
+            state.keycloak.hasRealmRole('gwells_statutory_authority'))
+        }
+      } else {
+        return {}
+      }
+    },
     drillerOptions: state => {
       return state.drillerOptions
     }

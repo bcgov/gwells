@@ -2,7 +2,7 @@
 Registries view permission classes
 """
 
-from rest_framework.permissions import BasePermission, IsAdminUser, SAFE_METHODS
+from rest_framework.permissions import BasePermission, IsAdminUser, SAFE_METHODS, DjangoModelPermissions
 
 
 class IsAdminOrReadOnly(IsAdminUser):
@@ -35,3 +35,19 @@ class IsGwellsAdmin(BasePermission):
             request.user.is_staff)
 
         return is_gwells_admin or is_system_admin
+
+
+class GwellsPermissions(DjangoModelPermissions):
+    """
+    Grants permissions to users based on Django model permissions, with additional check for
+    user's status as GWELLS staff
+    """
+
+    def has_permission(self, request, view):
+        """
+        Refuse permission entirely if user is not GWELLS staff, else continue to check model-level permissions
+        This is used to refuse permission for viewing data for non-staff (but authenticated) users
+        """
+        if not request.user or not request.user.is_authenticated or not request.user.profile.is_gwells_admin:
+            return False
+        return super(GwellsPermissions, self).has_permission(request, view)

@@ -20,7 +20,7 @@ from django_filters import rest_framework as restfilters
 from rest_framework import filters, status, exceptions
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView
 from rest_framework.pagination import LimitOffsetPagination, PageNumberPagination
-from rest_framework.permissions import IsAdminUser
+from rest_framework.permissions import IsAdminUser, DjangoModelPermissionsOrAnonReadOnly
 from rest_framework.response import Response
 from rest_framework.mixins import CreateModelMixin, UpdateModelMixin
 from rest_framework.views import APIView
@@ -39,7 +39,7 @@ from registries.models import (
     RegistriesApplication,
     SubactivityCode,
     WellClassCode)
-from registries.permissions import IsAdminOrReadOnly, IsGwellsAdmin
+from registries.permissions import IsAdminOrReadOnly, IsGwellsAdmin, GwellsPermissions
 from registries.serializers import (
     ApplicationAdminSerializer,
     ApplicationListSerializer,
@@ -133,7 +133,7 @@ class OrganizationListView(AuditCreateMixin, ListCreateAPIView):
     Creates a new drilling organization record
     """
 
-    permission_classes = (IsGwellsAdmin,)
+    permission_classes = (GwellsPermissions,)
     serializer_class = OrganizationListSerializer
     pagination_class = None
 
@@ -181,7 +181,7 @@ class OrganizationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
     Removes the specified drilling organization record
     """
 
-    permission_classes = (IsGwellsAdmin,)
+    permission_classes = (GwellsPermissions,)
 
     # 'pk' and 'id' have been replaced by 'org_guid' as primary key for Organization model
     lookup_field = "org_guid"
@@ -242,11 +242,14 @@ class PersonOptionsView(APIView):
 
             result[activity.registries_activity_code] = {
                 'WellClassCode':
-                    list(map(lambda item: WellClassCodeSerializer(item).data, well_class_query)),
+                    list(map(lambda item: WellClassCodeSerializer(
+                        item).data, well_class_query)),
                 'SubactivityCode':
-                    list(map(lambda item: SubactivitySerializer(item).data, sub_activity_query)),
+                    list(map(lambda item: SubactivitySerializer(
+                        item).data, sub_activity_query)),
                 'AccreditedCertificateCode':
-                    list(map(lambda item: AccreditedCertificateCodeSerializer(item).data, cert_code_query))
+                    list(map(lambda item: AccreditedCertificateCodeSerializer(
+                        item).data, cert_code_query))
             }
         result['ProofOfAgeCode'] = \
             list(map(lambda item: ProofOfAgeCodeSerializer(item).data,
@@ -263,7 +266,7 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
     Creates a new person record
     """
 
-    permission_classes = (IsAdminOrReadOnly,)
+    permission_classes = (DjangoModelPermissionsOrAnonReadOnly,)
     serializer_class = PersonSerializer
     pagination_class = APILimitOffsetPagination
 
@@ -361,7 +364,7 @@ class PersonDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
     Removes the specified person record
     """
 
-    permission_classes = (IsGwellsAdmin,)
+    permission_classes = (GwellsPermissions,)
     serializer_class = PersonSerializer
 
     # pk field has been replaced by person_guid
@@ -568,7 +571,7 @@ class OrganizationNameListView(ListAPIView):
     Simple list of organizations with only organization names
     """
 
-    permission_classes = (IsGwellsAdmin,)
+    permission_classes = (GwellsPermissions,)
     serializer_class = OrganizationNameListSerializer
     queryset = Organization.objects \
         .filter(expired_date__isnull=True) \
@@ -586,7 +589,7 @@ class PersonNoteListView(AuditCreateMixin, ListCreateAPIView):
     Adds a note record to the specified Person record
     """
 
-    permission_classes = (IsGwellsAdmin,)
+    permission_classes = (GwellsPermissions,)
     serializer_class = PersonNoteSerializer
 
     def get_queryset(self):
@@ -617,7 +620,7 @@ class PersonNoteDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
     Removes a PersonNote record
     """
 
-    permission_classes = (IsGwellsAdmin,)
+    permission_classes = (GwellsPermissions,)
     serializer_class = PersonNoteSerializer
 
     def get_queryset(self):
@@ -634,7 +637,7 @@ class OrganizationNoteListView(AuditCreateMixin, ListCreateAPIView):
     Adds a note record to the specified Organization record
     """
 
-    permission_classes = (IsGwellsAdmin,)
+    permission_classes = (GwellsPermissions,)
     serializer_class = OrganizationNoteSerializer
 
     def get_queryset(self):
@@ -665,7 +668,7 @@ class OrganizationNoteDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView)
     Removes a OrganizationNote record
     """
 
-    permission_classes = (IsGwellsAdmin,)
+    permission_classes = (GwellsPermissions,)
     serializer_class = OrganizationNoteSerializer
 
     def get_queryset(self):
