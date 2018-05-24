@@ -49,6 +49,9 @@ const ApiService = {
   },
   options (resource) {
     return axios.options(resource)
+  },
+  delete (resource, record) {
+    return axios.delete(`${resource}/${record}/`)
   }
 }
 

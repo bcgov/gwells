@@ -16,30 +16,22 @@
 #     ./local_newman.sh
 
 
-if [ -z ${GWELLS_API_TEST_USER+x} ]; then 
-    echo "GWELLS_API_TEST_USER is unset"
-    exit
-fi
-if [ -z ${GWELLS_API_TEST_PASSWORD+x} ]; then 
-    echo "GWELLS_API_TEST_PASSWORD is unset"
-    exit
-fi
-if [ -z ${GWELLS_API_BASE_URL+x} ]; then 
-    echo "GWELLS_API_BASE_URL is unset"
-    exit
-fi
-if [ -z ${GWELLS_API_TEST_AUTH_SERVER+x} ]; then 
-    echo "GWELLS_API_TEST_AUTH_SERVER is unset"
-    exit
-fi
-if [ -z ${GWELLS_API_TEST_CLIENT_ID+x} ]; then 
-    echo "GWELLS_API_TEST_CLIENT_ID is unset"
-    exit
-fi
-if [ -z ${GWELLS_API_TEST_CLIENT_SECRET+x} ]; then 
-    echo "GWELLS_API_TEST_CLIENT_SECRET is unset"
-    exit
-fi
+ENV_VARS=(
+    "GWELLS_API_TEST_USER"
+    "GWELLS_API_TEST_PASSWORD"
+    "GWELLS_API_BASE_URL"
+    "GWELLS_API_TEST_AUTH_SERVER"
+    "GWELLS_API_TEST_CLIENT_ID"
+    "GWELLS_API_TEST_CLIENT_SECRET"
+)
+
+for env_var in ${ENV_VARS[@]}
+do
+    if [ -z ${!env_var+x} ]; then 
+        echo "$env_var is unset"
+        exit
+    fi
+done
 
 echo "Remember to install newman (npm install -g newman) and set GWELLS_API_TEST_USER,"
 echo "GWELLS_API_TEST_PASSWORD, GWELLS_API_BASE_URL and Keycloak credentials"

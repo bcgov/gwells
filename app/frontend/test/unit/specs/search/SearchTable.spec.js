@@ -1,5 +1,5 @@
 import {
-  shallow,
+  shallowMount,
   mount,
   createLocalVue
 } from '@vue/test-utils'
@@ -37,7 +37,7 @@ describe('SearchTable.vue', () => {
   })
 
   it('has a row for every person', () => {
-    const wrapper = shallow(SearchTable, {
+    const wrapper = shallowMount(SearchTable, {
       store,
       localVue,
       stubs: ['router-link', 'router-view']
@@ -47,7 +47,7 @@ describe('SearchTable.vue', () => {
   })
 
   it('has the right people in each row', () => {
-    const wrapper = shallow(SearchTable, {
+    const wrapper = shallowMount(SearchTable, {
       store,
       localVue,
       stubs: ['router-link', 'router-view']
@@ -66,7 +66,7 @@ describe('SearchTable.vue', () => {
       .not.toContain('Bob')
   })
   it('shows the pagination button for next page when a link is returned by API', () => {
-    const wrapper = shallow(SearchTable, {
+    const wrapper = shallowMount(SearchTable, {
       store,
       localVue,
       stubs: ['router-link', 'router-view']
@@ -74,7 +74,7 @@ describe('SearchTable.vue', () => {
     expect(wrapper.find('#table-pagination-next').text()).toEqual('Next')
   })
   it('shows the pagination button for previous page when a link is returned by API', () => {
-    const wrapper = shallow(SearchTable, {
+    const wrapper = shallowMount(SearchTable, {
       store,
       localVue,
       stubs: ['router-link', 'router-view']
@@ -82,7 +82,7 @@ describe('SearchTable.vue', () => {
     expect(wrapper.find('#table-pagination-prev').text()).toEqual('Previous')
   })
   it('dispatches fetch driller list with correct querystring when pagination next clicked', () => {
-    const wrapper = shallow(SearchTable, {
+    const wrapper = shallowMount(SearchTable, {
       store,
       localVue,
       stubs: ['router-link', 'router-view']
@@ -94,7 +94,7 @@ describe('SearchTable.vue', () => {
     })
   })
   it('dispatches fetch driller list with correct querystring when pagination prev clicked', () => {
-    const wrapper = shallow(SearchTable, {
+    const wrapper = shallowMount(SearchTable, {
       store,
       localVue,
       stubs: ['router-link', 'router-view']
@@ -106,7 +106,7 @@ describe('SearchTable.vue', () => {
     })
   })
   it('emits the column code (e.g. surname) to be sorted when column sort button clicked', () => {
-    const wrapper = shallow(SearchTable, {
+    const wrapper = shallowMount(SearchTable, {
       store,
       localVue,
       stubs: ['router-link', 'router-view']
@@ -117,7 +117,7 @@ describe('SearchTable.vue', () => {
     ])
   })
   it('has the right columns when searching for drillers', () => {
-    const wrapper = shallow(SearchTable, {
+    const wrapper = shallowMount(SearchTable, {
       store,
       localVue,
       stubs: ['router-link', 'router-view']
@@ -141,7 +141,7 @@ describe('SearchTable.vue', () => {
     }
   })
   it('has the right columns when searching for well pump installers', () => {
-    const wrapper = shallow(SearchTable, {
+    const wrapper = shallowMount(SearchTable, {
       store,
       localVue,
       stubs: ['router-link', 'router-view']
