@@ -1,14 +1,8 @@
 ## How to contribute
 
-Government employees, public and members of the private sector are encouraged to contribute to the repository by **forking and submitting a pull request**.
+Government employees, the public and members of the private sector are encouraged to contribute.
 
-(If you are new to GitHub, you might start with a [basic tutorial](https://help.github.com/articles/set-up-git) and check out a more detailed [guide to pull requests](https://help.github.com/articles/using-pull-requests/).)
-
-Pull requests will be evaluated by the repository guardians on a schedule and if deemed beneficial will be committed to the master.
-
-All contributors retain the original copyright to their stuff, but by contributing to this project, you grant a world-wide, royalty-free, perpetual, irrevocable, non-exclusive, transferable license to all users **under the terms of the [license](https://github.com/bcgov/gwells/blob/master/LICENSE) under which this project is distributed**.
-
----
+All contributors retain original copyright, but are granting a world-wide, royalty-free, perpetual, irrevocable, non-exclusive, transferable license to all users.  This project is covered by an [Apache v2.0 license](https://github.com/bcgov/gwells/blob/master/LICENSE).
 
 ### Prerequisites
 
@@ -64,28 +58,14 @@ GWells members are responsible for integrating their own code in through Jenkins
 
 ### Cleanup
 
-We recommend that feature branches be deleted after acceptance into our release branch.
-
 View existing branches.
 
 ```
 git branch -avv
 ```
 
-Delete local branches.  May not be the default or current branch.
+Delete local and remote branches once they have been merged.
 ```
 git branch -d <feature branch>
-```
-
-Delete stale remote branches.
-
-```
 git push -d origin <feature branch>
-```
-
-Prune remote and local branches.  Local, unpushed branches must be cleaned up manually.
-
-```
-git remote update origin --prune
-git remote update upstream --prune
 ```
