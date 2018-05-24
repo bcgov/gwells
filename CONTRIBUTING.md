@@ -9,27 +9,35 @@ All contributors retain original copyright, but are granting a world-wide, royal
 * [GitHub account](https://github.com/join)
 * [Your own fork](https://github.com/bcgov/gwells/fork)
 
+### Assumptions
+
+For convenience this guide will use the following:
+
+* GitHub username = stinkypete
+* Current release = 1.32.0
+* Feature branch = myFeature
+
 ### Clone, Branch and Push
 
 Clone and navigate into your repository.
 
 ```
-git clone https://github.com/<github name>/gwells
+git clone https://github.com/stinkypete/gwells
 cd gwells
 ```
 
 Create a feature branch with a meaningful name and push it to your repo.  Pick a name that describes the feature.
 
 ```
-git checkout -b <feature branch>
-git push --set-upstream origin <feature branch>
+git checkout -b myFeature
+git push --set-upstream origin myFeature
 ```
 
 Add and push files as required.
 
 ```
-git add <this file or path>
-git commit -m "<meaningful message>"
+git add CONTRIBUTING.md
+git commit -m "This line was copied and pasted from CONTRIBUTING.md!"
 git push
 ```
 
@@ -44,7 +52,7 @@ git remote add upstream https://github.com/bcgov/gwells
 Pull from the current release branch at least daily.
 
 ```
-git pull upstream/<release branch> --rebase
+git pull upstream release/1.32.0 --rebase
 git push origin -f
 ```
 
@@ -70,6 +78,6 @@ git branch -avv
 
 Delete local and remote branches once they have been merged.
 ```
-git branch -d <feature branch>
-git push -d origin <feature branch>
+git branch -d myFeature
+git push -d origin myFeature
 ```
