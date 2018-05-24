@@ -62,6 +62,7 @@ def _stage(String name, Map context, boolean retry=0, boolean withCommitStatus=t
         } //end Stage
     }else{
         stage(name) {
+            GitHubHelper.createCommitStatus(this, context.pullRequest.head, 'SUCCESS', "${env.BUILD_URL}", "Stage '${name}'", stageStatusContext(name))
             echo 'Skipping'
         }
     }
