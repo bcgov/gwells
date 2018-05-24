@@ -9,6 +9,26 @@
 #
 # Running on postgres database pod, as DB root access not enabled on gwells application pod
 # DEV
+# Thu 17 May 10:24:20 2018 GW Until we refactor with new folder names (new pipeline), here are the
+# manual notes to do this:
+#
+# garywong@air:app (registries_removed)$ oc rsync /Users/garywong/projects/registry-gwells-export -n moe-gwells-prod gwells-prod-4-bwxps:/tmp
+# garywong@air:app (registries_removed)$ oc exec gwells-prod-4-bwxps -n moe-gwells-prod  -- /bin/bash -c 'cp --remove-destination /tmp/registry-gwells-export/*.csv /opt/app-root/src/database/codetables/registries/'
+# --
+# (app-root)sh-4.2$ cd /opt/app-root/src/database/codetables/registries/
+# (app-root)sh-4.2$ export PGPASSWORD=$DATABASE_PASSWORD;
+# (app-root)sh-4.2$ psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER
+# psql (9.2.23, server 9.5.9)
+# WARNING: psql version 9.2, server version 9.5.
+#          Some psql features might not work.
+# Type "help" for help.
+#
+# gwells=> \ir ../../scripts/registries/post-deploy.sql
+# gwells=> \i clear-tables.sql
+# gwells=> \ir ../../scripts/registries/initialize-xforms-registries.sql
+# gwells=> \i data-load-static-codes.sql
+# gwells=> \ir ../../scripts/registries/populate-registries-from-xform.sql
+#
 
 
 # Halt conditions, verbosity and field separator
