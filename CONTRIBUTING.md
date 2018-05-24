@@ -8,19 +8,12 @@ Pull requests will be evaluated by the repository guardians on a schedule and if
 
 All contributors retain the original copyright to their stuff, but by contributing to this project, you grant a world-wide, royalty-free, perpetual, irrevocable, non-exclusive, transferable license to all users **under the terms of the [license](https://github.com/bcgov/gwells/blob/master/LICENSE) under which this project is distributed**.
 
+---
+
 ### Prerequisites
 
-Fork our repository.
-
-* Create a [GitHub account](https://github.com/join)
-* Visit our [repository](https://github.com/bcgov/gwells)
-* Create your [own fork](https://github.com/bcgov/gwells/fork)
-
-Optional: Set nano as default command line editor.
-
-```
-git config --global core.editor "nano"
-```
+* [GitHub account](https://github.com/join)
+* [Your own fork](https://github.com/bcgov/gwells/fork)
 
 ### Clone, Branch and Push
 
@@ -48,38 +41,26 @@ git push
 
 ### Upstream Updates
 
-
-GWells uses a master and a release branch, which is replaced regularly.
-
-* master
-* release -> ```release/1.<sprint number>.<hotfix number>```
-
-Set that repository as your upstream remote and verify.
+Set the upstream repository.
 
 ```
 git remote add upstream https://github.com/bcgov/gwells
-git remote -v
 ```
 
-Pull from the upstream release branch at least daily.
+Pull from and send pull requests to the temporary release branch.
 
 ```
-git merge upstream/release/1.32.0 --no-commit
+git pull upstream/<release branch> --rebase
+git push origin -f
 ```
 
-When ready create a pull request into the release branch.
+* release branch = ```release/<major release>.<sprint number>.<hotfix number>```
 
 ### Continuous Integration and Continuous Deployment
 
-We use continuous integration to test, build and accept code into the release branch.  We use continuous integration and continuous deployment to get that code from the release branch into master branch eventually deployed into [production]().
+We use a Jenkins pipleline to test, build and integrate pull requests into temporary release branches.  Those branches are merged into master and deployed into production approximately every two weeks, coinciding with the end of an agile sprint.
 
-Pull requests trigger a Jenkins pipeline.  View the status of any [existing pull requests](https://github.com/bcgov/gwells/pulls) from the link below.
-
-https://github.com/bcgov/gwells/pulls
-
-Verify that all tests have passed.  If you have access to Jenkins, then accept that pull request when successful.  If not, then please wait to hear from someone in the GWells team.
-
-Please be aware that no code can be accepted without receiving at least one review from a GWells team member.
+GWells members are responsible for integrating their own code in through Jenkins.  Outside collaborators, please submit pull requests and watch the build and tests statuses.  All pull requests require a review.
 
 ### Cleanup
 
@@ -102,7 +83,7 @@ Delete stale remote branches.
 git push -d origin <feature branch>
 ```
 
-Update remote and local branches.  Local, unpushed branches must be cleaned up manually.
+Prune remote and local branches.  Local, unpushed branches must be cleaned up manually.
 
 ```
 git remote update origin --prune
