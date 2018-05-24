@@ -96,11 +96,13 @@ Map context = [
   ],
   stages:[
     'Build': true,
-    'Unit Test': true,
+    'Unit Test': false,
     'Code Quality': false,
     'Readiness - DEV': true,
-    'Deploy - DEV': true,
-    'Full Test - DEV': true
+    'Deploy - DEV': false,
+    'Load Fixtures - DEV': false,
+    'API Test': false,
+    'Full Test - DEV': false
   ],
   pullRequest:[
     'id': env.CHANGE_ID,
