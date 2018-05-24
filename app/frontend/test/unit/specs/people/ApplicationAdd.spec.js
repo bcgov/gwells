@@ -29,7 +29,7 @@ describe('ApplicationAdd.vue', () => {
       propsData: { activity },
       localVue
     })
-    expect(wrapper.find('.card-title').text()).toContain('Classification, Qualifications & Adjudication')
+    expect(wrapper.find('.card-title').text()).toContain('Classification & Qualifications')
   })
   it('Loads driller options correctly', () => {
     const activity = 'DRILL'
