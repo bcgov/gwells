@@ -41,7 +41,7 @@ Set the upstream repository.
 git remote add upstream https://github.com/bcgov/gwells
 ```
 
-Pull from and send pull requests to the temporary release branch.
+Pull from the current release branch at least daily.
 
 ```
 git pull upstream/<release branch> --rebase
@@ -50,9 +50,13 @@ git push origin -f
 
 * release branch = ```release/<major release>.<sprint number>.<hotfix number>```
 
+### Pull Requests
+
+When a feature is ready for testing please send a pull request to our current release branch.
+
 ### Continuous Integration and Continuous Deployment
 
-We use a Jenkins pipleline to test, build and integrate pull requests into temporary release branches.  Those branches are merged into master and deployed into production approximately every two weeks, coinciding with the end of an agile sprint.
+We use a Jenkins pipleline to test, build and integrate pull requests into release branches.  Those branches are merged into master and deployed into production approximately every two weeks, coinciding with the end of an agile sprint.
 
 GWells members are responsible for integrating their own code in through Jenkins.  Outside collaborators, please submit pull requests and watch the build and tests statuses.  All pull requests require a review.
 
