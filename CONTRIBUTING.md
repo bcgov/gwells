@@ -8,7 +8,7 @@ Pull requests will be evaluated by the repository guardians on a schedule and if
 
 All contributors retain the original copyright to their stuff, but by contributing to this project, you grant a world-wide, royalty-free, perpetual, irrevocable, non-exclusive, transferable license to all users **under the terms of the [license](https://github.com/bcgov/gwells/blob/master/LICENSE) under which this project is distributed**.
 
-#### Prerequisites
+### Prerequisites
 
 Fork our repository.
 
@@ -22,7 +22,7 @@ Optional: Set nano as default command line editor.
 git config --global core.editor "nano"
 ```
 
-#### Clone, Branch and Push
+### Clone, Branch and Push
 
 Clone and navigate into your repository.
 
@@ -46,7 +46,7 @@ git commit -m "<meaningful message>"
 git push
 ```
 
-#### Upstream Updates
+### Upstream Updates
 
 
 GWells uses a master and a release branch, which is replaced regularly.
@@ -69,7 +69,7 @@ git merge upstream/release/1.32.0 --no-commit
 
 When ready create a pull request into the release branch.
 
-#### Continuous Integration and Continuous Deployment
+### Continuous Integration and Continuous Deployment
 
 We use continuous integration to test, build and accept code into the release branch.  We use continuous integration and continuous deployment to get that code from the release branch into master branch eventually deployed into [production]().
 
@@ -81,7 +81,7 @@ Verify that all tests have passed.  If you have access to Jenkins, then accept t
 
 Please be aware that no code can be accepted without receiving at least one review from a GWells team member.
 
-#### Cleanup
+### Cleanup
 
 We recommend that feature branches be deleted after acceptance into our release branch.
 
