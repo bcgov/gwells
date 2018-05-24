@@ -64,13 +64,7 @@ git remote -v
 Pull from the upstream release branch at least daily.
 
 ```
-git pull upstream release/<release version> --rebase
-```
-
-Rebasing requires a forced push.  Be very mindful of this operation!
-
-```
-git push -f
+git merge upstream/release/1.32.0 --no-commit
 ```
 
 #### Submit Code
