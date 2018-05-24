@@ -17,6 +17,7 @@ from django.db import transaction
 import logging
 from rest_framework import serializers
 from registries.models import (
+    ProofOfAgeCode,
     Organization,
     ContactInfo,
     Person,
@@ -47,6 +48,19 @@ class AuditModelSerializer(serializers.ModelSerializer):
     create_date = serializers.ReadOnlyField()
     update_user = serializers.ReadOnlyField()
     update_date = serializers.ReadOnlyField()
+
+
+class ProofOfAgeCodeSerializer(serializers.ModelSerializer):
+    """
+    Serializes ProofOfAgeCode fields.
+    """
+
+    class Meta:
+        model = ProofOfAgeCode
+        fields = (
+            'registries_proof_of_age_code',
+            'description'
+        )
 
 
 class OrganizationNoteSerializer(serializers.ModelSerializer):
@@ -400,7 +414,7 @@ class ApplicationAdminSerializer(AuditModelSerializer):
             'application_guid',
             'registration',
             'file_no',
-            'over19_ind',
+            'proof_of_age',
             'primary_certificate',
             'primary_certificate_no',
             'registrar_notes',
@@ -644,7 +658,7 @@ class ApplicationAutoCreateSerializer(AuditModelSerializer):
             'application_guid',
             'registration',
             'file_no',
-            'over19_ind',
+            'proof_of_age',
             'primary_certificate',
             'primary_certificate_no',
             'registrar_notes',
