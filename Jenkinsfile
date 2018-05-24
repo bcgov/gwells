@@ -151,8 +151,8 @@ _stage('Unit Test', context) {
         containerTemplate(name: 'app', image: "docker-registry.default.svc:5000/moe-gwells-tools/gwells${context.buildNameSuffix}:${context.buildEnvName}", ttyEnabled: true, command: 'cat',
             resourceRequestCpu: '2000m',
             resourceLimitCpu: '2000m',
-            resourceRequestMemory: '1Gi',
-            resourceLimitMemory: '1Gi')
+            resourceRequestMemory: '2Gi',
+            resourceLimitMemory: '2Gi')
       ]
     ) {
         node("node-${context.uuid}") {
