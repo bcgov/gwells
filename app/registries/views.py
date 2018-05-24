@@ -20,7 +20,7 @@ from django_filters import rest_framework as restfilters
 from rest_framework import filters, status, exceptions
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView
 from rest_framework.pagination import LimitOffsetPagination, PageNumberPagination
-from rest_framework.permissions import IsAdminUser, DjangoModelPermissionsOrAnonReadOnly
+from rest_framework.permissions import DjangoModelPermissionsOrAnonReadOnly, AllowAny
 from rest_framework.response import Response
 from rest_framework.mixins import CreateModelMixin, UpdateModelMixin
 from rest_framework.views import APIView
@@ -427,6 +427,7 @@ class CitiesListView(ListAPIView):
     serializer_class = CityListSerializer
     lookup_field = 'register_guid'
     pagination_class = None
+    permission_classes = (IsAdminOrReadOnly,)
     queryset = Register.objects \
         .exclude(organization__city__isnull=True) \
         .exclude(organization__city='') \
@@ -461,7 +462,7 @@ class RegistrationListView(AuditCreateMixin, ListCreateAPIView):
     Create a new well driller or well pump installer registration record for a person
     """
 
-    permission_classes = (IsAdminUser,)
+    permission_classes = (GwellsPermissions,)
     serializer_class = RegistrationAdminSerializer
     queryset = Register.objects.all() \
         .select_related(
@@ -497,7 +498,7 @@ class RegistrationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
     Removes the specified registration record from the database
     """
 
-    permission_classes = (IsAdminUser,)
+    permission_classes = (GwellsPermissions,)
     serializer_class = RegistrationAdminSerializer
     lookup_field = 'register_guid'
     queryset = Register.objects.all() \
@@ -528,7 +529,7 @@ class ApplicationListView(AuditCreateMixin, ListCreateAPIView):
     Creates a new registries application
     """
 
-    permission_classes = (IsAdminUser,)
+    permission_classes = (GwellsPermissions,)
     serializer_class = ApplicationAdminSerializer
     queryset = RegistriesApplication.objects.all() \
         .select_related(
@@ -554,7 +555,7 @@ class ApplicationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
     Removes the specified drilling application record
     """
 
-    permission_classes = (IsAdminUser,)
+    permission_classes = (GwellsPermissions,)
     serializer_class = ApplicationAdminSerializer
     queryset = RegistriesApplication.objects.all() \
         .select_related(

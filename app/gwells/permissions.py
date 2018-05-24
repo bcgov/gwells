@@ -25,7 +25,6 @@ AUTHORITY_GROUP_NAME = 'gwells_authority'
 ADMIN_GROUP_NAME = 'gwells_admin'
 VIEWER_GROUP_NAME = 'gwells_viewer'
 
-
 # Default permissions for Application Administrators
 ADMIN_PERMISSIONS = [
     Permission.objects.get(codename='add_person'),
@@ -48,9 +47,31 @@ ADMIN_PERMISSIONS = [
     Permission.objects.get(codename='delete_organizationnote'),
 ]
 
-# Default permissions for Data Entry Specialists and Deputy Comptrollers
+# Default permissions for Adjudicator and Statutory Authority roles
 ADJUDICATOR_PERMISSIONS = ADMIN_PERMISSIONS
 AUTHORITY_PERMISSIONS = ADMIN_PERMISSIONS
+VIEWER_PERMISSIONS = []
+
+ROLE_MAP = {
+    ADJUDICATOR_ROLE: ADJUDICATOR_GROUP_NAME,
+    AUTHORITY_ROLE: AUTHORITY_GROUP_NAME,
+    ADMIN_ROLE: ADMIN_GROUP_NAME,
+    VIEWER_ROLE: VIEWER_GROUP_NAME
+}
+PERMISSION_MAP = {
+    ADJUDICATOR_ROLE: ADJUDICATOR_PERMISSIONS,
+    AUTHORITY_ROLE: AUTHORITY_PERMISSIONS,
+    ADMIN_ROLE: ADMIN_PERMISSIONS,
+    VIEWER_ROLE: VIEWER_PERMISSIONS
+}
+
+GWELLS_ROLES = (ADJUDICATOR_ROLE, AUTHORITY_ROLE, ADMIN_ROLE, VIEWER_ROLE)
+GWELLS_ROLE_GROUPS = (
+    ROLE_MAP[ADJUDICATOR_ROLE],
+    ROLE_MAP[AUTHORITY_ROLE],
+    ROLE_MAP[ADMIN_ROLE],
+    ROLE_MAP[VIEWER_ROLE]
+)
 
 
 def roles_to_groups(user, roles=None):
@@ -64,7 +85,7 @@ def roles_to_groups(user, roles=None):
 
       authority: e.g. Deputy Comptroller
         Approves changes to application or registration status
-          read/write access to: Person, Organization, Application, Registration, 
+          read/write access to: Person, Organization, Application, Registration,
             ApplicationStatus, RegistrationStatus
 
       admin: Application Administrator
@@ -76,67 +97,38 @@ def roles_to_groups(user, roles=None):
 
     """
 
-    # create/retrieve groups and, if group is new, set permissions for groups
-    authority_group, authority_group_created = Group.objects.get_or_create(
-        name=AUTHORITY_GROUP_NAME)
-    if authority_group_created:
-        authority_group.permissions.set(AUTHORITY_PERMISSIONS)
-
-    adjudicator_group, adjudicator_group_created = Group.objects.get_or_create(
-        name=ADJUDICATOR_GROUP_NAME)
-    if adjudicator_group_created:
-        adjudicator_group.permissions.set(ADJUDICATOR_PERMISSIONS)
-
-    admin_group, admin_group_created = Group.objects.get_or_create(
-        name=ADMIN_GROUP_NAME)
-    if admin_group_created:
-        admin_group.permissions.set(ADMIN_PERMISSIONS)
-
-    viewer_group, viewer_group_created = Group.objects.get_or_create(
-        name=VIEWER_GROUP_NAME)
-
     if user is None:
-        raise exceptions.AuthenticationFailed('User groups not configured')
+        raise exceptions.AuthenticationFailed(
+            'Failed to retrieve user to apply roles to')
 
-    # user_is_staff will be set to True if user in one of the staff groups
     user_is_staff = False
 
-    # add or remove user from Comptroller group
-    if AUTHORITY_ROLE in roles:
-        authority_group.user_set.add(user)
-        user_is_staff = True
+    user_group_names = [group.name for group in user.groups.all()]
 
-    elif user.groups.filter(name=authority_group.name).exists():
-        authority_group.user_set.remove(user)
+    for role in roles:
+        # if user has a valid GWELLS role, indicate that they are staff
+        if role in GWELLS_ROLES:
+            user_is_staff = True
 
-    # add or remove user from Data Specialist group
-    if ADJUDICATOR_ROLE in roles:
-        adjudicator_group.user_set.add(user)
-        user_is_staff = True
+        # if user is not in their role group, add them
+        if role in GWELLS_ROLES and ROLE_MAP.get(role) not in user_group_names:
+            group, created = Group.objects.get_or_create(
+                name=ROLE_MAP.get(role))
+            group.user_set.add(user)
+            if created:
+                group.permissions.set(PERMISSION_MAP.get(role))
 
-    elif user.groups.filter(name=adjudicator_group.name).exists():
-        adjudicator_group.user_set.remove(user)
+    # check if user has been removed from their SSO (Keycloak) group
+    for group in user_group_names:
+        if (group in GWELLS_ROLE_GROUPS and
+                group not in [ROLE_MAP.get(role) for role in roles] and
+                user.groups.filter(name=group).exists()):
+            user.groups.get(name=group).user_set.remove(user)
 
-    # add or remove user from Admin group
-    if ADMIN_ROLE in roles:
-        admin_group.user_set.add(user)
-        user_is_staff = True
-
-    elif user.groups.filter(name=admin_group.name).exists():
-        admin_group.user_set.remove(user)
-
-    # add or remove user from Officer group
-    if VIEWER_ROLE in roles:
-        viewer_group.user_set.add(user)
-        user_is_staff = True
-
-    elif user.groups.filter(name=viewer_group.name).exists():
-        viewer_group.user_set.remove(user)
-
-    if user_is_staff:
+    # update profile based on SSO (Keycloak) staff role status
+    if user_is_staff and not user.profile.is_gwells_admin:
         user.profile.is_gwells_admin = True
         user.profile.save()
-
-    else:
+    elif not user_is_staff and user.profile.is_gwells_admin:
         user.profile.is_gwells_admin = False
         user.profile.save()
