@@ -7,3 +7,4 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         management.call_command('createtestuser', verbosity=0, interactive=False)
         management.call_command('creategroups', verbosity=0, interactive=False)
+        management.call_command('createadminuser', verbosity=0, interactive=False)
