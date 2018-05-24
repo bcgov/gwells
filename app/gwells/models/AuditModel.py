@@ -19,6 +19,7 @@ from model_utils import FieldTracker
 from django.core import serializers
 import json
 
+
 class AuditModel(models.Model):
     """
     An abstract base class model that provides audit fields.
