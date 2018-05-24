@@ -7,23 +7,23 @@ Django stores an object-oriented via of the persistent data, for example the [Re
 The database has several metadata tables that record the current 'state' of the database structures (in relation to the Django 'state' stored in the ORM and migration files), specifically the django_migrations table, for example:
 ```
 gwells=> select * from django_migrations;
- id |     app      |                   name                  
+ id |     app      |                   name
 ----+--------------+-----------------------------------------
-  1 | contenttypes | 0001_initial                            
-  2 | auth         | 0001_initial                            
-  3 | admin        | 0001_initial                            
-  4 | admin        | 0002_logentry_remove_auto_add           
-  5 | contenttypes | 0002_remove_content_type_name           
-  6 | auth         | 0002_alter_permission_name_max_length   
-  7 | auth         | 0003_alter_user_email_max_length        
-  8 | auth         | 0004_alter_user_username_opts           
-  9 | auth         | 0005_alter_user_last_login_null         
- 10 | auth         | 0006_require_contenttypes_0002          
+  1 | contenttypes | 0001_initial
+  2 | auth         | 0001_initial
+  3 | admin        | 0001_initial
+  4 | admin        | 0002_logentry_remove_auto_add
+  5 | contenttypes | 0002_remove_content_type_name
+  6 | auth         | 0002_alter_permission_name_max_length
+  7 | auth         | 0003_alter_user_email_max_length
+  8 | auth         | 0004_alter_user_username_opts
+  9 | auth         | 0005_alter_user_last_login_null
+ 10 | auth         | 0006_require_contenttypes_0002
  11 | auth         | 0007_alter_validators_add_error_messages
- 12 | auth         | 0008_alter_user_username_max_length     
- 13 | gwells       | 0001_initial                            
- 14 | registries   | 0001_initial                            
- 15 | sessions     | 0001_initial                            
+ 12 | auth         | 0008_alter_user_username_max_length
+ 13 | gwells       | 0001_initial
+ 14 | registries   | 0001_initial
+ 15 | sessions     | 0001_initial
 (15 rows)
 ```
 
@@ -83,12 +83,12 @@ The data replication is controlled by the environment variable<table>
 `Subset`: Only a subset of data (i.e. `AND wells.well_tag_number between 100001 and 113567`)
 `Full`  : Full data replication
 
-Static code tables are maintained in this [GitHub](../../../tree/master/database/codetables) repo, while dynamic data is replicated.  There are a stored DB procedures that acts as a 'driver' scripts `db_replicate_step1(boolean)` and `db_replicate_step2()` that run the replication:
+Static code tables are maintained in this [GitHub](../../../tree/master/app/database/codetables) repo, while dynamic data is replicated.  There are a stored DB procedures that acts as a 'driver' scripts `db_replicate_step1(boolean)` and `db_replicate_step2()` that run the replication:
 
 
 There is also a SQL script `data-load-static-codes.sql`
 - "COPY" into static code tables from deployed CSV files
-- run on the gwells pod (which has all CSV files under `$VIRTUAL_ENV/src/database/codetables/`)
+- run on the gwells pod (which has all CSV files under `$VIRTUAL_ENV/src/app/database/codetables/`)
 
 
 The replicate process can be run ad-hoc on the PostgreSQL pod or on a local developer workstation, passing a parameter to the stored procedure.
