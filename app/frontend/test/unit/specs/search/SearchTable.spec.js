@@ -25,7 +25,8 @@ describe('SearchTable.vue', () => {
       userIsAdmin: () => false,
       loading: () => false,
       listError: () => null,
-      drillers: jest.fn().mockReturnValue(fakePersonList)
+      drillers: jest.fn().mockReturnValue(fakePersonList),
+      userRoles: () => ({ edit: false, view: false, approve: false })
     }
     actions = {
       [FETCH_DRILLER_LIST]: jest.fn()
@@ -232,7 +233,8 @@ describe('SearchTable.vue', () => {
       user: () => 'user',
       loading: () => false,
       listError: () => null,
-      drillers: jest.fn().mockReturnValue(fakePersonList)
+      drillers: jest.fn().mockReturnValue(fakePersonList),
+      userRoles: () => ({ edit: true, view: true, approve: true })
     }
     store = new Vuex.Store({
       getters,

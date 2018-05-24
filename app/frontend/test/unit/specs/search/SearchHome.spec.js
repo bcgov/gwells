@@ -73,7 +73,8 @@ describe('SearchHome.vue', () => {
             }
           ]
         }
-      }
+      },
+      userRoles: () => ({ edit: false, view: false, approve: false })
     }
     actions = {
       [FETCH_CITY_LIST]: jest.fn(),
