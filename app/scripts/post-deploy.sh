@@ -16,7 +16,7 @@
 #   Optionally, set $DB_REPLICATE (None|Subset|Full).
 #
 #   Example: ./post-deploy.sh
-#    
+#
 echo "Running Post-Deploy tasks..."
 export PGPASSWORD=$DATABASE_PASSWORD
 cd /opt/app-root/src/

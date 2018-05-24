@@ -106,7 +106,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "e5dfd37f-33f2-4c2f-9b47-cf9d178bfda9",
+										"id": "2ce89229-b4af-45c3-8645-ef507a84011c",
 										"type": "text/javascript",
 										"exec": [
 											"( function() {",
@@ -141,10 +141,6 @@
 											"        pm.expect(jsonData.city, \"city field has unexpected value\").to.not.be.ok;",
 											"    });",
 											"    ",
-											"    pm.test(\"Audit fields (who_created, when_created) were filled in by backend\", function () {",
-											"        pm.expect(jsonData.create_user.length, \"create_user not present\").to.be.ok;",
-											"        pm.expect(jsonData.create_date.length, \"create_date not present\").to.be.ok;",
-											"    });",
 											"})();",
 											""
 										]
@@ -204,6 +200,12 @@
 											"key": "province_state",
 											"value": "BC",
 											"type": "text"
+										},
+										{
+											"key": "email",
+											"value": "company@example.com",
+											"description": "",
+											"type": "text"
 										}
 									]
 								},
@@ -234,7 +236,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "d882b27b-2b02-436f-ac11-d26f1f7bb4b7",
+										"id": "5410792d-f57e-4e98-914d-53d126c2ee76",
 										"type": "text/javascript",
 										"exec": [
 											"( function() {",
@@ -250,17 +252,11 @@
 											"        pm.expect(created_guid.length).to.eql(36);",
 											"",
 											"        // Then check that created_guid is in the response body",
-											"        pm.expect(jsonData.results.length).to.be.above(0);",
+											"        pm.expect(jsonData.length).to.be.above(0);",
 											"        ",
-											"        for (var i; i < jsonData.results.length; i++) {",
-											"            pm.expect(jsonData.results[i].org_guid.length).to.eql(36);",
-											"            pm.expect(jsonData.results[i].name.length).to.be.ok;",
-											"        }",
-											"    });",
-											"    ",
-											"    pm.test(\"Pagination: if there are more objects than the page limit, provide a link to the next page\", function () {",
-											"        if (jsonData.results.length < jsonData.count) {",
-											"            pm.expect(jsonData.next.length).to.be.ok;",
+											"        for (var i; i < jsonData.length; i++) {",
+											"            pm.expect(jsonData[i].org_guid.length).to.eql(36);",
+											"            pm.expect(jsonData[i].name.length).to.be.ok;",
 											"        }",
 											"    });",
 											"})();",
@@ -351,6 +347,81 @@
 									]
 								},
 								"description": "Organization model \"list\" view"
+							},
+							"response": []
+						},
+						{
+							"name": "Company add notes",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "dae82277-ba57-4c35-a10c-71fa9a94ae1b",
+										"type": "text/javascript",
+										"exec": [
+											"( function() {",
+											"    pm.test(\"Successful request (201 CREATED)\", function () {",
+											"        pm.expect(pm.response.code).to.eql(201);",
+											"    });",
+											"    ",
+											"    var jsonData = pm.response.json()",
+											"",
+											"    pm.test(\"Author recorded\", function () {",
+											"        pm.expect(jsonData.author).to.be.ok;",
+											"    });",
+											"    ",
+											"    pm.test(\"Date recorded\", function () {",
+											"        pm.expect(jsonData.date).to.be.ok;",
+											"    });",
+											"",
+											"})();",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "note",
+											"value": "This is a company note!",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/organizations/{{created_guid}}/notes/?format=json",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"organizations",
+										"{{created_guid}}",
+										"notes",
+										""
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json"
+										}
+									]
+								},
+								"description": "Update a driller record"
 							},
 							"response": []
 						},
@@ -991,6 +1062,230 @@
 					"name": "Drillers",
 					"description": "Tests for drillers endpoint\n/registries/drillers/",
 					"item": [
+						{
+							"name": "Driller get options",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "19e46f4c-30fe-4cd1-bbe1-26fe5a2713ff",
+										"type": "text/javascript",
+										"exec": [
+											"( function() {",
+											"    pm.test(\"Successful GET request\", function () {",
+											"        pm.expect(pm.response.code).to.eql(200);",
+											"    });",
+											"    ",
+											"    var jsonData = pm.response.json()",
+											"    ",
+											"    pm.test(\"Well class code list exists\", function () {",
+											"        pm.expect(jsonData.WellClassCode.length).to.be.ok;",
+											"    });",
+											"    ",
+											"    pm.test(\"Subactivity code list exists\", function () {",
+											"        pm.expect(jsonData.SubactivityCode.length).to.be.ok;",
+											"    });",
+											"    ",
+											"    pm.test(\"AccreditedCertificateCode code list exists\", function () {",
+											"        pm.expect(jsonData.AccreditedCertificateCode.length).to.be.ok;",
+											"    });",
+											"})();",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/drillers/options/?format=json&activity=DRILL",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"drillers",
+										"options",
+										""
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json"
+										},
+										{
+											"key": "activity",
+											"value": "DRILL"
+										}
+									]
+								},
+								"description": "Create a new driller"
+							},
+							"response": []
+						},
+						{
+							"name": "Driller create new - with registration and applications",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "0796ed98-bf24-4dcf-833b-bfcac1539e62",
+										"type": "text/javascript",
+										"exec": [
+											"( function() {",
+											"    pm.test(\"Successful POST request\", function () {",
+											"        pm.expect(pm.response.code).to.be.oneOf([201,202]);",
+											"    });",
+											"    ",
+											"    var jsonData = pm.response.json()",
+											"    pm.environment.set(\"created_driller_guid\", jsonData.person_guid);",
+											"    pm.environment.set(\"driller_audit_name\", jsonData.create_user);",
+											"    var applications = jsonData.registrations[0].applications;",
+											"    ",
+											"    pm.test(\"The registration contains audit fields (create_user, create_date)\", function() {",
+											"        pm.expect(jsonData.registrations[0].create_user.length).to.be.ok;",
+											"        pm.expect(jsonData.registrations[0].create_date.length).to.be.ok;",
+											"    });",
+											"    ",
+											"    pm.test(\"The registration contains an application\", function() {",
+											"        pm.expect(applications.length).to.eql(2);",
+											"    });",
+											"    ",
+											"    pm.test(\"Audit fields (create_user, create_date) on the application were filled in by backend\", function () {",
+											"        pm.expect(applications[0].create_user.length).to.be.ok;",
+											"        pm.expect(applications[0].create_date.length).to.be.ok;",
+											"    });",
+											"    ",
+											"    pm.test(\"The application has the specified primary certificate\", function() {",
+											"        pm.expect(applications[0].primary_certificate).to.eql(\"28bf8730-dbb7-4218-8e9f-06bd51f60161\");",
+											"    });",
+											"    ",
+											"    pm.test(\"The application has the specified certificate no\", function() {",
+											"        pm.expect(applications[0].primary_certificate_no).to.eql(\"12345\");",
+											"    });",
+											"    ",
+											"    pm.test(\"The application has a subactivity associated\", function() {",
+											"        pm.expect(applications[0].subactivity).to.eql(\"WATER\");",
+											"    });",
+											"    ",
+											"    pm.test(\"The application has a pending status set, with the specified date\", function() {",
+											"        pm.expect(applications[0].status_set[0].status).to.eql(\"P\");",
+											"        pm.expect(applications[0].status_set[0].effective_date).to.eql(\"2018-05-02\");",
+											"    });",
+											"})();",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"first_name\": \"Bobby\",\n  \"surname\": \"Driller\",\n  \"registrations\": [\n  \t{\n  \t\t\"registries_activity\": \"DRILL\", \n  \t\t\"status\": \"ACTIVE\",\n  \t\t\"organization\": \"{{created_guid}}\",\n  \t\t\"applications\": [\n  \t\t{\n  \t\t\t\"subactivity\": \"WATER\", \n  \t\t\t\"primary_certificate\": \"28bf8730-dbb7-4218-8e9f-06bd51f60161\", \n  \t\t\t\"primary_certificate_no\": \"12345\",\n  \t\t\t\"status_set\": [\n  \t\t\t\t{\n  \t\t\t\t\t\"effective_date\": \"2018-05-02\",\n  \t\t\t\t\t\"status\": \"P\"\n  \t\t\t\t}\n  \t\t\t]\n  \t\t},\n  \t\t{\n  \t\t\t\"subactivity\": \"WATER\", \n  \t\t\t\"primary_certificate\": \"28bf8730-dbb7-4218-8e9f-06bd51f60161\", \n  \t\t\t\"primary_certificate_no\": \"67890\",\n  \t\t\t\"status_set\": [\n  \t\t\t\t{\n  \t\t\t\t\t\"effective_date\": \"2018-05-02\",\n  \t\t\t\t\t\"status\": \"P\"\n  \t\t\t\t}\n  \t\t\t]\n  \t\t}\n\t\t]\n  }],\n  \"contact_info\": [{\"contact_tel\": \"555-1234\"}]\n}\n"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/drillers/?format=json",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"drillers",
+										""
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json"
+										}
+									]
+								},
+								"description": "Create a new driller, with registrations and applications in one go."
+							},
+							"response": []
+						},
+						{
+							"name": "Driller delete",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "a743a15a-6712-486a-9310-5d1261bb03c1",
+										"type": "text/javascript",
+										"exec": [
+											"pm.test(\"Status code is 204\", function () {",
+											"    pm.response.to.have.status(204);",
+											"});",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}"
+									}
+								],
+								"body": {},
+								"url": {
+									"raw": "{{base_url}}/api/v1/drillers/{{created_driller_guid}}/?format=json",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"drillers",
+										"{{created_driller_guid}}",
+										""
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json"
+										}
+									]
+								},
+								"description": "Delete driller specified by GUID."
+							},
+							"response": []
+						},
 						{
 							"name": "Driller create new",
 							"event": [
@@ -2295,7 +2590,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "720af7d5-bc68-454f-ad0b-e8bc1f569bf3",
+										"id": "2d48d1ed-c85e-414b-b644-394fb538720c",
 										"type": "text/javascript",
 										"exec": [
 											"( function() {",
@@ -2324,11 +2619,6 @@
 											"    ",
 											"    pm.test(\"Postal code equals value supplied in request\", function () {",
 											"        pm.expect(jsonData.postal_code, \"postal code does not match\").to.eql(\"a1a 1a1\");",
-											"    });",
-											"    ",
-											"    pm.test(\"Audit fields (who_created, when_created) were filled in by backend\", function () {",
-											"        pm.expect(jsonData.create_user.length, \"create_user not present\").to.be.ok;",
-											"        pm.expect(jsonData.create_date.length, \"create_date not present\").to.be.ok;",
 											"    });",
 											"})();",
 											""

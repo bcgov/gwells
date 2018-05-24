@@ -5,12 +5,33 @@
 #     export GWELLS_API_BASE_URL="http://localhost:8000/gwells/registries"
 #     export GWELLS_API_TEST_USER="testuser"
 #     export GWELLS_API_TEST_PASSWORD="secret"
+#     export GWELLS_API_TEST_AUTH_SERVER=""
+#     export GWELLS_API_TEST_CLIENT_ID=""
+#     export GWELLS_API_TEST_CLIENT_SECRET"""
 # - Create Django test user (requires env variables from previous step):
 #     python manage.py createtestuser
 # - Install newman:
 #     npm install -g newman
 # - Run script:
 #     ./local_newman.sh
+
+
+ENV_VARS=(
+    "GWELLS_API_TEST_USER"
+    "GWELLS_API_TEST_PASSWORD"
+    "GWELLS_API_BASE_URL"
+    "GWELLS_API_TEST_AUTH_SERVER"
+    "GWELLS_API_TEST_CLIENT_ID"
+    "GWELLS_API_TEST_CLIENT_SECRET"
+)
+
+for env_var in ${ENV_VARS[@]}
+do
+    if [ -z ${!env_var+x} ]; then 
+        echo "$env_var is unset"
+        exit
+    fi
+done
 
 echo "Remember to install newman (npm install -g newman) and set GWELLS_API_TEST_USER,"
 echo "GWELLS_API_TEST_PASSWORD, GWELLS_API_BASE_URL and Keycloak credentials"
