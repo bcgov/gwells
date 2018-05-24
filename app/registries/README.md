@@ -18,8 +18,8 @@ Sub-folders follow the standard Django setup.
 ```
 
 NOTE: Related files are under the gwells project folder, with the other files but in the a `registries` subfolder:
-- [database/codetables/registries/](../database/codetables/registries/)
-- [database/scripts/registries/](../database/scripts/registries/)
+- [app/database/codetables/registries/](../app/database/codetables/registries/)
+- [app.database/scripts/registries/](../app/database/scripts/registries/)
 
 The [post-deploy.sh](../openshift/scripts/post-deploy.sh) step now automatically includes the setup of the registries app code tables and data tables.
 ```
@@ -34,7 +34,7 @@ psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER  << EOF
 \i data-load-static-codes.sql
 ```
 
-Please note that the [populate-registries-from-xform.sql](../database/scripts/registries/populate-registries-from-xform.sql) is *not* automatically called as part of any deployment.  Instead, it is meant to be run locally from the developer's workstation, and that workstation must have the files:
+Please note that the [populate-registries-from-xform.sql](../app/database/scripts/registries/populate-registries-from-xform.sql) is *not* automatically called as part of any deployment.  Instead, it is meant to be run locally from the developer's workstation, and that workstation must have the files:
 - Registration Action Tracking_Driller.sanitized.csv
 - Registry.sanitized.csv
 - well_drillers_reg.sanitized.csv
