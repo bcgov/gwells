@@ -53,4 +53,13 @@ describe('ApplicationAdd.vue', () => {
     option.trigger('click')
     expect(wrapper.vm.qualificationForm.qualifications).toEqual(['MON', 'REM', 'GEO'])
   })
+  it('Has loaded proof of age options', () => {
+    const activity = 'DRILL'
+    const wrapper = shallowMount(ApplicationAdd, {
+      store,
+      propsData: { activity },
+      localVue
+    })
+    expect(wrapper.vm.formOptions.proofOfAge.length).toBeGreaterThan(0)
+  })
 })
