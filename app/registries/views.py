@@ -25,6 +25,7 @@ from rest_framework.response import Response
 from rest_framework.mixins import CreateModelMixin, UpdateModelMixin
 from drf_multiple_model.views import ObjectMultipleModelAPIView
 from registries.models import (
+    ProofOfAgeCode,
     Organization,
     Person,
     ContactInfo,
@@ -40,6 +41,7 @@ from registries.serializers import (
     ApplicationAdminSerializer,
     ApplicationListSerializer,
     CityListSerializer,
+    ProofOfAgeCodeSerializer,
     OrganizationListSerializer,
     OrganizationSerializer,
     OrganizationAdminSerializer,
@@ -242,6 +244,10 @@ class PersonOptionsView(ObjectMultipleModelAPIView):
                 'queryset': AccreditedCertificateCode.objects.all().order_by('name'),
                 'serializer_class': AccreditedCertificateCodeSerializer
             },
+            {
+                'queryset': ProofOfAgeCode.objects.all().order_by('display_order'),
+                'serializer_class': ProofOfAgeCodeSerializer
+            }
         ]
         return querylist
 

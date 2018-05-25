@@ -181,6 +181,20 @@ const fakeOptions = JSON.parse(JSON.stringify({
         'name': 'Well Technician Class 1 Drilling',
         'cert_auth': 'Province of Ontario'
       }
+    ],
+    'ProofOfAgeCode': [
+      {
+        'registries_proof_of_age_code': 'DRIVERS',
+        'description': "Driver's license"
+      },
+      {
+        'registries_proof_of_age_code': 'BIRTH',
+        'description': 'Birth Certificate'
+      },
+      {
+        'registries_proof_of_age_code': 'PASSPORT',
+        'description': 'Passport'
+      }
     ]
   }
 }))
