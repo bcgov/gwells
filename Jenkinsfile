@@ -80,7 +80,7 @@ Map context = [
   'uuid' : "${env.JOB_BASE_NAME}-${env.BUILD_NUMBER}-${env.CHANGE_ID}",
   'env': [
       'dev':[:],
-      'test':[:],
+      'test':['params':['host':'gwells-test.pathfinder.gov.bc.ca']],
       'prod':['params':['host':'gwells-prod.pathfinder.gov.bc.ca', 'DB_PVC_SIZE':'5Gi']]
   ],
   'templates': [
