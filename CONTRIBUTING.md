@@ -1,9 +1,83 @@
 ## How to contribute
 
-Government employees, public and members of the private sector are encouraged to contribute to the repository by **forking and submitting a pull request**.
+Government employees, the public and members of the private sector are encouraged to contribute.
 
-(If you are new to GitHub, you might start with a [basic tutorial](https://help.github.com/articles/set-up-git) and check out a more detailed [guide to pull requests](https://help.github.com/articles/using-pull-requests/).)
+All contributors retain original copyright, but are granting a world-wide, royalty-free, perpetual, irrevocable, non-exclusive, transferable license to all users.  This project is covered by an [Apache v2.0 license](https://github.com/bcgov/gwells/blob/master/LICENSE).
 
-Pull requests will be evaluated by the repository guardians on a schedule and if deemed beneficial will be committed to the master.
+### Prerequisites
 
-All contributors retain the original copyright to their stuff, but by contributing to this project, you grant a world-wide, royalty-free, perpetual, irrevocable, non-exclusive, transferable license to all users **under the terms of the [license](https://github.com/bcgov/gwells/blob/master/LICENSE) under which this project is distributed**.
+* [GitHub account](https://github.com/join)
+* [Your own fork](https://github.com/bcgov/gwells/fork)
+
+### Assumptions
+
+For convenience this guide will use the following:
+
+* GitHub username = stinkypete
+* Current release = 1.32.0
+* Feature branch = myFeature
+
+### Clone, Branch and Push
+
+Clone and navigate into your repository.
+
+```
+git clone https://github.com/stinkypete/gwells
+cd gwells
+```
+
+Create a feature branch with a meaningful name and push it to your repo.  Pick a name that describes the feature.
+
+```
+git checkout -b myFeature
+git push --set-upstream origin myFeature
+```
+
+Add and push files as required.
+
+```
+git add CONTRIBUTING.md
+git commit -m "This line was copied and pasted from CONTRIBUTING.md!"
+git push
+```
+
+### Upstream Updates
+
+Set the upstream repository.
+
+```
+git remote add upstream https://github.com/bcgov/gwells
+```
+
+Pull from the current release branch at least daily.
+
+```
+git pull upstream release/1.32.0 --rebase
+git push origin -f
+```
+
+* release branch = ```release/<major release>.<sprint number>.<hotfix number>```
+
+### Pull Requests
+
+When a feature is ready for testing please send a pull request to our current release branch.
+
+### Continuous Integration and Continuous Deployment
+
+We use a Jenkins pipleline to test, build and integrate pull requests into release branches.  Those branches are merged into master and deployed into production approximately every two weeks, coinciding with the end of an agile sprint.
+
+GWells members are responsible for integrating their own code in through Jenkins.  Outside collaborators, please submit pull requests and watch the build and tests statuses.  All pull requests require a review.
+
+### Cleanup
+
+View existing branches.
+
+```
+git branch -avv
+```
+
+Delete local and remote branches once they have been merged.
+```
+git branch -d myFeature
+git push -d origin myFeature
+```
