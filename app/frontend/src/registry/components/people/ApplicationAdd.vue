@@ -67,7 +67,14 @@
           </b-row>
           <b-row>
             <b-col>
-              <b-form-group label="Date application received" label-for="effective_date" class="font-weight-bold">
+              <b-form-group horizontal :label-cols="5" label="Confirmed applicant is 19 years of age or older by reviewing" label-for="proofOfAge" class="font-weight-bold">
+                <b-form-select id="proofOfAge" :options="formOptions.proofOfAge" v-model="qualificationForm.proof_of_age" required></b-form-select>
+              </b-form-group>
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col>
+              <b-form-group horizontal :label-cols="2" label="Date application received" label-for="effective_date" class="font-weight-bold">
                 <datepicker id="effective_date" format="yyyy-MM-dd" v-model="qualificationForm.status_set[0].effective_date" required></datepicker>
               </b-form-group>
             </b-col>
@@ -137,13 +144,15 @@ export default {
       let result = {
         issuer: [{value: null, text: 'Please select an option'}],
         classifications: [],
-        qualifications: []
+        qualifications: [],
+        proofOfAge: [{value: null, text: 'Please select an option'}]
       }
       if (this.activity in this.drillerOptions) {
         const options = this.drillerOptions[this.activity]
         result.issuer = result.issuer.concat(options.AccreditedCertificateCode.map((item) => { return {'text': item.name + ' (' + item.cert_auth + ')', 'value': item.acc_cert_guid} }))
         result.classifications = options.SubactivityCode.map((item) => { return {'text': item.description, 'value': item.registries_subactivity_code} })
         result.qualifications = options.WellClassCode.map((item) => { return {'text': item.description, 'value': item.registries_well_class_code} })
+        result.proofOfAge = result.proofOfAge.concat(options.ProofOfAgeCode.map((item) => { return {'text': item.description, 'value': item.registries_proof_of_age_code} }))
       }
       return result
     },

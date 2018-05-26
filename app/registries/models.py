@@ -416,6 +416,26 @@ class ApplicationStatusCode(AuditModel):
         return self.description
 
 
+class ProofOfAgeCode(AuditModel):
+    """
+    List of documents that can be used to indentify (the age) of an application
+    """
+    registries_proof_of_age_code = models.CharField(
+        primary_key=True, max_length=10, editable=False)
+    description = models.CharField(max_length=100)
+    display_order = models.PositiveIntegerField()
+    effective_date = models.DateField(default=datetime.date.today)
+    expired_date = models.DateField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'registries_proof_of_age_code'
+        ordering = ['display_order', 'description']
+        verbose_name_plural = 'ProofOfAgeCodes'
+
+    def __str__(self):
+        return self.registries_proof_of_age_code
+
+
 class RegistriesApplication(AuditModel):
     """
     Application from a well driller or pump installer to be on the GWELLS Register.
@@ -438,7 +458,13 @@ class RegistriesApplication(AuditModel):
         related_name="applications")
     file_no = models.CharField(
         max_length=25, blank=True, null=True, verbose_name='ORCS File # reference.')
-    over19_ind = models.BooleanField(default=True)
+    proof_of_age = models.ForeignKey(
+        ProofOfAgeCode,
+        db_column='registries_proof_of_age_code',
+        on_delete=models.PROTECT,
+        verbose_name="Proof of age.",
+        null=True
+    )
     registrar_notes = models.CharField(
         max_length=255,
         blank=True,

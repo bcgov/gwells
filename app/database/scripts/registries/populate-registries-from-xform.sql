@@ -494,7 +494,6 @@ INSERT INTO registries_application (
 ,update_date
 ,application_guid
 ,file_no
-,over19_ind
 ,registrar_notes
 ,reason_denied
 ,primary_certificate_no
@@ -509,7 +508,6 @@ SELECT
 ,'2018-01-01 00:00:00-08'
 ,gen_random_uuid()
 ,xform.file_number
-,TRUE
 ,CONCAT_WS('. ',xform.notes,'Registered prior to 2016-FEB-29, assigned all Driller Classes and qualified to drill ')
 ,null
 ,COALESCE(xform.certificatenumber, 'N/A')
@@ -540,7 +538,6 @@ INSERT INTO registries_application (
 ,update_date
 ,application_guid
 ,file_no
-,over19_ind
 ,registrar_notes
 ,reason_denied
 ,primary_certificate_no
@@ -555,7 +552,6 @@ SELECT
 ,'2018-01-01 00:00:00-08'
 ,gen_random_uuid()
 ,xform.file_number
-,TRUE
 ,xform.notes
 ,null
 ,COALESCE(xform.certificatenumber, 'N/A')
@@ -675,7 +671,6 @@ INSERT INTO registries_application (
 ,update_date
 ,application_guid
 ,file_no
-,over19_ind
 ,registrar_notes
 ,reason_denied
 ,primary_certificate_no
@@ -690,7 +685,6 @@ SELECT
 ,'2018-01-01 00:00:00-08'
 ,gen_random_uuid()
 ,xform.file_number
-,TRUE
 ,xform.notes
 ,null
 ,COALESCE(xform.certificatenumber, 'N/A')
@@ -722,7 +716,6 @@ INSERT INTO registries_application (
 ,update_date
 ,application_guid
 ,file_no
-,over19_ind
 ,registrar_notes
 ,reason_denied
 ,primary_certificate_no
@@ -737,7 +730,6 @@ SELECT
 ,'2018-01-01 00:00:00-08'
 ,gen_random_uuid()
 ,xform.file_number
-,TRUE
 ,xform.notes
 ,null
 ,COALESCE(xform.certificatenumber, 'N/A')
@@ -857,7 +849,6 @@ INSERT INTO registries_application (
 ,update_date
 ,application_guid
 ,file_no
-,over19_ind
 ,registrar_notes
 ,reason_denied
 ,primary_certificate_no
@@ -872,7 +863,6 @@ SELECT
 ,'2018-01-01 00:00:00-08'
 ,gen_random_uuid()
 ,xform.file_number
-,TRUE
 ,xform.notes
 ,null
 ,COALESCE(xform.certificatenumber, 'N/A')
@@ -904,7 +894,6 @@ INSERT INTO registries_application (
 ,update_date
 ,application_guid
 ,file_no
-,over19_ind
 ,registrar_notes
 ,reason_denied
 ,primary_certificate_no
@@ -919,7 +908,6 @@ SELECT
 ,'2018-01-01 00:00:00-08'
 ,gen_random_uuid()
 ,xform.file_number
-,TRUE
 ,xform.notes
 ,null
 ,COALESCE(xform.certificatenumber, 'N/A')
@@ -1043,7 +1031,6 @@ INSERT INTO registries_application (
 ,update_date
 ,application_guid
 ,file_no
-,over19_ind
 ,registrar_notes
 ,reason_denied
 ,primary_certificate_no
@@ -1058,7 +1045,6 @@ SELECT
 ,'2018-01-01 00:00:00-08'
 ,gen_random_uuid()
 ,xform.file_number
-,TRUE
 ,CONCAT_WS('. ',xform.notes,'Pseudo-Applications until ACTION_TRACKING tables are fixed. ')
 ,null
 ,'N/A' -- why no cert #?
@@ -1176,7 +1162,6 @@ INSERT INTO registries_application (
 ,update_date
 ,application_guid
 ,file_no
-,over19_ind
 ,registrar_notes
 ,reason_denied
 ,primary_certificate_no
@@ -1191,7 +1176,6 @@ SELECT
 ,'2018-01-01 00:00:00-08'
 ,gen_random_uuid()
 ,xform.file_number
-,TRUE
 ,xform.notes
 ,null
 ,xform.certificatenumber
@@ -1223,7 +1207,6 @@ INSERT INTO registries_application (
 ,update_date
 ,application_guid
 ,file_no
-,over19_ind
 ,registrar_notes
 ,reason_denied
 ,primary_certificate_no
@@ -1238,7 +1221,6 @@ SELECT
 ,'2018-01-01 00:00:00-08'
 ,gen_random_uuid()
 ,xform.file_number
-,TRUE
 ,xform.notes
 ,null
 ,xform.certificatenumber
@@ -1270,7 +1252,6 @@ INSERT INTO registries_application (
 ,update_date
 ,application_guid
 ,file_no
-,over19_ind
 ,registrar_notes
 ,reason_denied
 ,primary_certificate_no
@@ -1285,7 +1266,6 @@ SELECT
 ,'2018-01-01 00:00:00-08'
 ,gen_random_uuid()
 ,xform.file_number
-,TRUE
 ,xform.notes
 ,null
 ,xform.wellpumpinstallerregno

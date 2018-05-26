@@ -1,7 +1,7 @@
 {
 	"info": {
-		"_postman_id": "ca547e9d-cc46-4795-97f8-33d359c17843",
-		"name": "GWELLS API (Keycloak)",
+		"_postman_id": "78c45691-2533-486f-af0c-78cac2d05f53",
+		"name": "GWELLS API remote",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -66,19 +66,16 @@
 										{
 											"key": "grant_type",
 											"value": "password",
-											"description": "",
 											"type": "text"
 										},
 										{
 											"key": "client_id",
 											"value": "{{client_id}}",
-											"description": "",
 											"type": "text"
 										},
 										{
 											"key": "client_secret",
 											"value": "{{client_secret}}",
-											"description": "",
 											"type": "text"
 										}
 									]
@@ -204,7 +201,6 @@
 										{
 											"key": "email",
 											"value": "company@example.com",
-											"description": "",
 											"type": "text"
 										}
 									]
@@ -277,7 +273,10 @@
 										"value": "JWT {{token}}"
 									}
 								],
-								"body": {},
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/organizations/?format=json",
 									"host": [
@@ -332,7 +331,10 @@
 										"value": "JWT {{token}}"
 									}
 								],
-								"body": {},
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/organizations/names/",
 									"host": [
@@ -473,7 +475,10 @@
 										"value": "JWT {{token}}"
 									}
 								],
-								"body": {},
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/organizations/{{created_guid}}/?format=json",
 									"host": [
@@ -609,7 +614,10 @@
 										"value": "JWT {{token}}"
 									}
 								],
-								"body": {},
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/organizations/?format=json",
 									"host": [
@@ -666,7 +674,10 @@
 										"value": "JWT {{token}}"
 									}
 								],
-								"body": {},
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/organizations/{{created_guid}}/?format=json",
 									"host": [
@@ -1031,7 +1042,10 @@
 										"value": "JWT {{token}}"
 									}
 								],
-								"body": {},
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/organizations/{{created_guid_bad_input}}/?format=json",
 									"host": [
@@ -1068,7 +1082,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "19e46f4c-30fe-4cd1-bbe1-26fe5a2713ff",
+										"id": "025709c0-6fa2-43f6-b8c6-489e814f6d48",
 										"type": "text/javascript",
 										"exec": [
 											"( function() {",
@@ -1088,6 +1102,10 @@
 											"    ",
 											"    pm.test(\"AccreditedCertificateCode code list exists\", function () {",
 											"        pm.expect(jsonData.AccreditedCertificateCode.length).to.be.ok;",
+											"    });",
+											"    ",
+											"    pm.test(\"Proof of age list exists\", function () {",
+											"        pm.expect(jsonData.ProofOfAgeCode.length).to.be.ok;",
 											"    });",
 											"})();",
 											""
@@ -1147,7 +1165,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "0796ed98-bf24-4dcf-833b-bfcac1539e62",
+										"id": "72d6077c-34eb-4804-b67d-9c6150c47b29",
 										"type": "text/javascript",
 										"exec": [
 											"( function() {",
@@ -1190,6 +1208,10 @@
 											"        pm.expect(applications[0].status_set[0].status).to.eql(\"P\");",
 											"        pm.expect(applications[0].status_set[0].effective_date).to.eql(\"2018-05-02\");",
 											"    });",
+											"    ",
+											"    pm.test(\"The application has proof of age\", function() {",
+											"        pm.expect(applications[0].proof_of_age).to.eql(\"PASSPORT\");",
+											"    });",
 											"})();",
 											""
 										]
@@ -1213,7 +1235,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n  \"first_name\": \"Bobby\",\n  \"surname\": \"Driller\",\n  \"registrations\": [\n  \t{\n  \t\t\"registries_activity\": \"DRILL\", \n  \t\t\"status\": \"ACTIVE\",\n  \t\t\"organization\": \"{{created_guid}}\",\n  \t\t\"applications\": [\n  \t\t{\n  \t\t\t\"subactivity\": \"WATER\", \n  \t\t\t\"primary_certificate\": \"28bf8730-dbb7-4218-8e9f-06bd51f60161\", \n  \t\t\t\"primary_certificate_no\": \"12345\",\n  \t\t\t\"status_set\": [\n  \t\t\t\t{\n  \t\t\t\t\t\"effective_date\": \"2018-05-02\",\n  \t\t\t\t\t\"status\": \"P\"\n  \t\t\t\t}\n  \t\t\t]\n  \t\t},\n  \t\t{\n  \t\t\t\"subactivity\": \"WATER\", \n  \t\t\t\"primary_certificate\": \"28bf8730-dbb7-4218-8e9f-06bd51f60161\", \n  \t\t\t\"primary_certificate_no\": \"67890\",\n  \t\t\t\"status_set\": [\n  \t\t\t\t{\n  \t\t\t\t\t\"effective_date\": \"2018-05-02\",\n  \t\t\t\t\t\"status\": \"P\"\n  \t\t\t\t}\n  \t\t\t]\n  \t\t}\n\t\t]\n  }],\n  \"contact_info\": [{\"contact_tel\": \"555-1234\"}]\n}\n"
+									"raw": "{\n  \"first_name\": \"Bobby\",\n  \"surname\": \"Driller\",\n  \"registrations\": [\n  \t{\n  \t\t\"registries_activity\": \"DRILL\", \n  \t\t\"status\": \"ACTIVE\",\n  \t\t\"organization\": \"{{created_guid}}\",\n  \t\t\"applications\": [\n  \t\t{\n  \t\t\t\"subactivity\": \"WATER\", \n  \t\t\t\"primary_certificate\": \"28bf8730-dbb7-4218-8e9f-06bd51f60161\", \n  \t\t\t\"primary_certificate_no\": \"12345\",\n  \t\t\t\"status_set\": [\n  \t\t\t\t{\n  \t\t\t\t\t\"effective_date\": \"2018-05-02\",\n  \t\t\t\t\t\"status\": \"P\"\n  \t\t\t\t}\n  \t\t\t],\n  \t\t\t\"proof_of_age\": \"PASSPORT\"\n  \t\t},\n  \t\t{\n  \t\t\t\"subactivity\": \"WATER\", \n  \t\t\t\"primary_certificate\": \"28bf8730-dbb7-4218-8e9f-06bd51f60161\", \n  \t\t\t\"primary_certificate_no\": \"67890\",\n  \t\t\t\"status_set\": [\n  \t\t\t\t{\n  \t\t\t\t\t\"effective_date\": \"2018-05-02\",\n  \t\t\t\t\t\"status\": \"P\"\n  \t\t\t\t}\n  \t\t\t]\n  \t\t}\n\t\t]\n  }],\n  \"contact_info\": [{\"contact_tel\": \"555-1234\"}]\n}\n"
 								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/drillers/?format=json",
@@ -1262,7 +1284,10 @@
 										"value": "JWT {{token}}"
 									}
 								],
-								"body": {},
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/drillers/{{created_driller_guid}}/?format=json",
 									"host": [
@@ -1424,7 +1449,10 @@
 										"value": "JWT {{token}}"
 									}
 								],
-								"body": {},
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/drillers/?format=json",
 									"host": [
@@ -1493,7 +1521,10 @@
 										"value": "JWT {{token}}"
 									}
 								],
-								"body": {},
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/drillers/{{created_driller_guid}}/?format=json",
 									"host": [
@@ -1563,7 +1594,10 @@
 										"value": "JWT {{token}}"
 									}
 								],
-								"body": {},
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/drillers/{{created_driller_guid}}/?format=json",
 									"host": [
@@ -1782,7 +1816,10 @@
 										"value": "JWT {{token}}"
 									}
 								],
-								"body": {},
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/drillers/{{created_driller_guid}}/?format=json",
 									"host": [
@@ -1924,7 +1961,10 @@
 										"value": "JWT {{token}}"
 									}
 								],
-								"body": {},
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/drillers/?format=json",
 									"host": [
@@ -1981,7 +2021,10 @@
 										"value": "JWT {{token}}"
 									}
 								],
-								"body": {},
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/drillers/{{created_driller_guid}}/?format=json",
 									"host": [
@@ -2030,7 +2073,10 @@
 										"value": "JWT {{token}}"
 									}
 								],
-								"body": {},
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/drillers/{{created_driller_guid}}/?format=json",
 									"host": [
@@ -2079,7 +2125,10 @@
 										"value": "JWT {{token}}"
 									}
 								],
-								"body": {},
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/organizations/{{created_guid}}/?format=json",
 									"host": [
@@ -2143,7 +2192,10 @@
 										"value": "JWT {{token}}"
 									}
 								],
-								"body": {},
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/organizations/?format=json",
 									"host": [
@@ -2196,7 +2248,10 @@
 										"value": "JWT {{token}}"
 									}
 								],
-								"body": {},
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/organizations/{{created_guid}}/?format=json",
 									"host": [
@@ -2250,7 +2305,10 @@
 										"value": "JWT {{token}}"
 									}
 								],
-								"body": {},
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/drillers/{{created_driller_guid}}/?format=json",
 									"host": [
@@ -2314,7 +2372,10 @@
 										"value": "JWT {{token}}"
 									}
 								],
-								"body": {},
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/drillers/?format=json",
 									"host": [
@@ -2371,7 +2432,10 @@
 										"value": "JWT {{token}}"
 									}
 								],
-								"body": {},
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/drillers/?format=json",
 									"host": [
@@ -2678,7 +2742,6 @@
 										{
 											"key": "province_state",
 											"value": "BC",
-											"description": "",
 											"type": "text"
 										}
 									]
@@ -2750,13 +2813,11 @@
 										{
 											"key": "registration_no",
 											"value": "12345",
-											"description": "",
 											"type": "text"
 										},
 										{
 											"key": "organization",
 											"value": "{{created_guid}}",
-											"description": "",
 											"type": "text"
 										}
 									]
@@ -2823,7 +2884,10 @@
 										"value": "JWT {{token}}"
 									}
 								],
-								"body": {},
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/registrations/?format=json",
 									"host": [
@@ -2880,7 +2944,10 @@
 										"value": "JWT {{token}}"
 									}
 								],
-								"body": {},
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/drillers/{{created_driller_guid}}/?format=json",
 									"host": [
@@ -2947,7 +3014,10 @@
 										"value": "JWT {{token}}"
 									}
 								],
-								"body": {},
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/registrations/?format=json",
 									"host": [
@@ -3297,7 +3367,10 @@
 										"value": "JWT {{token}}"
 									}
 								],
-								"body": {},
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/applications/{{created_application_guid}}/?format=json",
 									"host": [
@@ -3346,7 +3419,10 @@
 										"value": "JWT {{token}}"
 									}
 								],
-								"body": {},
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/registrations/{{created_registration_guid}}/?format=json",
 									"host": [
@@ -3395,7 +3471,10 @@
 										"value": "JWT {{token}}"
 									}
 								],
-								"body": {},
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/drillers/{{created_driller_guid}}/?format=json",
 									"host": [
@@ -3444,7 +3523,10 @@
 										"value": "JWT {{token}}"
 									}
 								],
-								"body": {},
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/organizations/{{created_guid}}/?format=json",
 									"host": [
