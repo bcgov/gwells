@@ -32,36 +32,11 @@ EOF
 #       is this the same as fixtures???  don't think so
 if [ "$DB_REPLICATE" = "Subset" -o "$DB_REPLICATE" = "Full" ]
 then
-	# \copy statements in data-load-static-codes.sql required to be in this directory
-	# NOTE: this will clear out Registries app tables too
-	cd /opt/app-root/src/database/codetables/gwells
-
-	# Refresh Code lookup tables
-	psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER  << EOF
-	\i clear-tables.sql
-	\i data-load-static-codes.sql
-EOF
-
-	# \copy statements in data-load-static-codes.sql required to be in this directory
-	cd /opt/app-root/src/database/codetables/wellsearch
-
-	# Refresh WellSearch Code lookup tables, including the well table
-	psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER  << EOF
-	\i clear-tables.sql
-	\i data-load-static-codes.sql
-EOF
-
-	# \copy statements in data-load-static-codes.sql required to be in this directory
-	cd /opt/app-root/src/database/codetables/registries
-
-	# Refresh Registries app code lookup tables
-	psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER  << EOF
-	\ir ../../scripts/registries/post-deploy.sql
-	\i clear-tables.sql
-	\ir ../../scripts/registries/initialize-xforms-registries.sql
-	\i data-load-static-codes.sql
-	\ir ../../scripts/registries/populate-registries-from-xform.sql
-EOF
+	# NOTE: this will clear out Registries app tables too, since the ProvinceStateCode table
+	#       is also a parent table of Registries tables
+	cd /opt/app-root/src/
+	python manage.py flush --noinput
+	python manage.py loaddata gwells/fixtures/codetables.ProvinceStateCode.json gwells/fixtures/codetables.json registries/fixtures/codetables.json
 
 	echo ". Running DB Replication from Legacy Database, as per DB_REPLICATION flag"
     cd /opt/app-root/src/scripts/
