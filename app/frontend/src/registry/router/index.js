@@ -39,7 +39,7 @@ export default new Router({
       }
     },
     {
-      path: '/people/:person_guid/applications/:classCode',
+      path: '/people/:person_guid/applications/:application_guid',
       name: 'ApplicationDetail',
       component: ApplicationDetail,
       beforeEnter: AuthGuard,

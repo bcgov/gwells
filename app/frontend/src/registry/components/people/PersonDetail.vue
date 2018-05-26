@@ -28,7 +28,7 @@
               <tr v-if="classifications && classifications.length" v-for="(item, index) in classifications" :key="`classification ${index}`">
                 <td><router-link :to="{
                   name: 'ApplicationDetail',
-                  params: { person_guid: currentDriller.person_guid, classCode: item.code } }">
+                  params: { person_guid: currentDriller.person_guid, application_guid: item.application_guid } }">
                 {{ item.description }}</router-link></td>
                 <td>{{ item.status }}</td>
                 <td>{{ item.date }}</td>
@@ -382,7 +382,8 @@ export default {
               code: app.subactivity.registries_subactivity_code,
               description: app.subactivity.description,
               status: status,
-              date: date
+              date: date,
+              application_guid: app.application_guid
             })
           })
         })
