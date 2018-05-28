@@ -4,7 +4,7 @@
 --
 -- psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER -f populate-registries-from-xform.sql
 
--- Companies from Driller Registry (272)
+-- Companies from Driller Registry (271 / 272)
 \echo 'Inserting Companies from Driller Registry'
 INSERT INTO registries_organization (
  name
@@ -50,7 +50,7 @@ from xform_registries_drillers_reg xform
 where companyname is not null);
 
 
--- Companies from Pump Installer Registry 189
+-- Companies from Pump Installer Registry 178 / 189
 \echo 'Inserting Companies from Pump Installer Registry'
 INSERT INTO registries_organization (
  name
@@ -141,7 +141,7 @@ and companyname not in (
 SELECT name from registries_organization);
 */
 
--- Drillers 285
+-- Drillers 286 / 285
 \echo 'Inserting People from Driller Registry'
 INSERT INTO registries_person (
  first_name
@@ -166,7 +166,7 @@ SELECT
 ,'2018-01-01 00:00:00-08' 
 from xform_registries_drillers_reg xform;
 
--- Driller Contact details 285
+-- Driller Contact details 286 / 285
 \echo '...Updating people, attaching contact details from Driller Registry'
 INSERT INTO registries_contact_detail (
  create_user
@@ -342,7 +342,7 @@ and not exists (
 */
 -- TODO Why no  entries above, when 'not exists' is inserted?
 
--- Driller Register (Active) 285
+-- Driller Register (Active) 286 / 285
 \echo 'Inserting Entries into Driller Registry'
 INSERT INTO registries_register (
  create_user
@@ -373,7 +373,7 @@ SELECT
 ,'ACTIVE'
  from xform_registries_drillers_reg;
 
--- Attach companies for whom the drillers work 272
+-- Attach companies for whom the drillers work 271 / 272
 \echo '...Updating Register, attaching companies from Driller Registry'
 UPDATE registries_register reg
 SET organization_guid = org.org_guid
@@ -428,7 +428,7 @@ and   xform.lastname = per.surname;
 --      entered as driller
 
  
--- Attach companies for whom the pump installers work 286
+-- Attach companies for whom the pump installers work 295 / 286
 \echo '...Updating Register, attaching companies from Pump Installer Registry'
 UPDATE registries_register reg
 SET organization_guid = org.org_guid
@@ -529,7 +529,7 @@ and xform.registrationdate <=  '2016-02-29'
 and xform.name = concat(per.surname, ', ', per.first_name);
 
 -- Applications from post-2016-FEB-29 2016 Well Drillers
--- 17
+-- 18 / 17
 \echo 'Inserting "Fake" Applications for post-2016-FEB-29  Well Drillers (WATER)'
 INSERT INTO registries_application (
  create_user
@@ -623,7 +623,7 @@ and xform.name = concat(per.surname, ', ', per.first_name)
 ;
 
 -- Pseudo-Applications from post-2016-FEB-29 2016 Well Drillers (WATER)
--- 17
+-- 18 / 17
 \echo '... Approved entries'
 INSERT INTO registries_application_status (
  create_user
@@ -707,7 +707,7 @@ and xform.name = concat(per.surname, ', ', per.first_name);
 
 
 -- Applications from post-2016-FEB-29 2016 Well Drillers
--- 10
+-- 11 / 10
 \echo 'Inserting "Fake" Applications for post-2016-FEB-29  Well Drillers (GEOTECH)'
 INSERT INTO registries_application (
  create_user
@@ -802,7 +802,7 @@ and xform.name = concat(per.surname, ', ', per.first_name)
 
 
 -- Pseudo-Applications from post-2016-FEB-29 2016 Well Drillers (GEOTECH)
--- 10
+-- 11 / 10
 \echo '... Approved entries'
 INSERT INTO registries_application_status (
  create_user
@@ -885,7 +885,7 @@ and xform.name = concat(per.surname, ', ', per.first_name);
 
 
 -- Applications from post-2016-FEB-29 2016 Well Drillers
--- 3
+-- 4 / 3
 \echo 'Inserting "Fake" Applications for post-2016-FEB-29  Well Drillers (GEOXCHG)'
 INSERT INTO registries_application (
  create_user
@@ -939,8 +939,6 @@ and xform.registrationdate >  '2016-02-29'
 and (trim(both from xform.classofwelldriller) = 'Geoexchange'
      or xform.classofwelldriller like '%Geoexchange%');
 
-
-
 \echo '... Approved entries'
 -- 257
 INSERT INTO registries_application_status (
@@ -981,7 +979,7 @@ and xform.name = concat(per.surname, ', ', per.first_name)
 
 
 -- Pseudo-Applications from post-2016-FEB-29 2016 Well Drillers (GEOXCHG)
--- 3
+-- 4 / 3
 \echo '... Approved entries'
 INSERT INTO registries_application_status (
  create_user
