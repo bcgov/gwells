@@ -17,8 +17,10 @@
 #
 #   Example: ./post-deploy.sh
 #
+set -e
 echo "Running Post-Deploy tasks..."
 export PGPASSWORD=$DATABASE_PASSWORD
+set -x
 cd /opt/app-root/src/
 echo ". Creating additional DB objects (e.g. spatial indices, stored procedures)"
 psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER << EOF
