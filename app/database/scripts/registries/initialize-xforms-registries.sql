@@ -54,7 +54,7 @@ CREATE unlogged TABLE IF NOT EXISTS xform_registries_drillers_reg (
 ,Registrationdate date
 ,CompanyName character varying(100)
 ,CompanyAddress character varying(100)
-,CompanyCity character varying(20)
+,CompanyCity character varying(50)
 ,CompanyProv character varying(20)
 ,CompanyPostalCode character varying(20)
 ,CompanyPhone  character varying(20)
@@ -90,7 +90,7 @@ CREATE unlogged TABLE IF NOT EXISTS xform_registries_pump_installers_reg (
 ,Registrationdate date
 ,CompanyName character varying(100)
 ,CompanyAddress character varying(100)
-,CompanyCity character varying(20)
+,CompanyCity character varying(50)
 ,CompanyProv character varying(20)
 ,CompanyPostalCode character varying(20)
 ,CompanyPhone  character varying(20)
@@ -119,7 +119,7 @@ CREATE unlogged TABLE IF NOT EXISTS xform_registries_removed_from (
 ,Registrationdate character varying(20) -- should be date
 ,CompanyName character varying(100)
 ,CompanyAddress character varying(100)
-,CompanyCity character varying(20)
+,CompanyCity character varying(50)
 ,CompanyProv character varying(20)
 ,CompanyPostalCode character varying(20)
 ,CompanyPhone  character varying(20)

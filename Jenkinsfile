@@ -291,7 +291,12 @@ for(String envKeyName: context.env.keySet() as String[]){
                     podName=openshift.selector('pod', ['deploymentconfig':deploymentConfigName]).objects()[0].metadata.name
                 }
                 sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src && pwd && python manage.py flush --no-input'"
-                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src && pwd && python manage.py loaddata wells registries'"
+                // Lookup tables common to all system components (e.g. Django apps)
+                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src && pwd && python manage.py loaddata gwells/fixtures/codetables.ProvinceStateCode.json'"
+                // Lookup tables for the Wellsearch component (not yet a Django app) and Registries app
+                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src && pwd && python manage.py loaddata gwells/fixtures/codetables.json registries/fixtures/codetables.json'"
+                // Test data for the Wellsearch component (not yet a Django app) and Registries app
+                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src && pwd && python manage.py loaddata gwells/fixtures/wellsearch.json.gz registries/fixtures/registries.json'"
             }
         }
     }
