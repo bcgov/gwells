@@ -434,6 +434,9 @@ class ApplicationAdminSerializer(AuditModelSerializer):
             queryset=SubactivityCode.objects.all())
         self.fields['registration'] = serializers.PrimaryKeyRelatedField(
             queryset=Register.objects.all())
+        self.fields['primary_certificate'] = serializers.PrimaryKeyRelatedField(
+            required=False,
+            queryset=AccreditedCertificateCode.objects.all())
         return super().to_internal_value(data)
 
     def create(self, validated_data):

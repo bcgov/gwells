@@ -23,19 +23,22 @@ from rest_framework.pagination import LimitOffsetPagination, PageNumberPaginatio
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from rest_framework.mixins import CreateModelMixin, UpdateModelMixin
+from rest_framework.views import APIView
+
 from drf_multiple_model.views import ObjectMultipleModelAPIView
 from registries.models import (
-    ProofOfAgeCode,
-    Organization,
-    Person,
-    ContactInfo,
-    RegistriesApplication,
-    Register,
-    PersonNote,
-    SubactivityCode,
-    WellClassCode,
     AccreditedCertificateCode,
-    OrganizationNote)
+    ActivityCode,
+    ContactInfo,
+    Organization,
+    OrganizationNote,
+    Person,
+    PersonNote,
+    ProofOfAgeCode,
+    Register,
+    RegistriesApplication,
+    SubactivityCode,
+    WellClassCode)
 from registries.permissions import IsAdminOrReadOnly, IsGwellsAdmin
 from registries.serializers import (
     ApplicationAdminSerializer,
@@ -217,39 +220,34 @@ class OrganizationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class PersonOptionsView(ObjectMultipleModelAPIView):
-    """
-    get:
-    Returns available options for creating a person record
-    """
+class PersonOptionsView(APIView):
 
-    # We shouldn't need pagination, there should never be that many options!
-    pagination_class = None
+    def get(self, request, format=None):
+        result = {}
+        for activity in ActivityCode.objects.all():
+            # Well class query
+            well_class_query = WellClassCode \
+                .objects.filter(
+                    qualification__subactivity__registries_activity=activity.registries_activity_code) \
+                .order_by('registries_well_class_code').distinct('registries_well_class_code')
+            # Sub activity query
+            sub_activity_query = SubactivityCode \
+                .objects.filter(
+                    registries_activity=activity).order_by('display_order')
 
-    def get_querylist(self):
-        activity = self.request.query_params['activity']
-        querylist = [
-            {
-                'queryset': WellClassCode.objects.filter(
-                    qualification__subactivity__registries_activity=activity).order_by(
-                        'registries_well_class_code').distinct('registries_well_class_code'),
-                'serializer_class': WellClassCodeSerializer
-            },
-            {
-                'queryset': SubactivityCode.objects.filter(
-                    registries_activity=activity).order_by('display_order'),
-                'serializer_class': SubactivitySerializer
-            },
-            {
-                'queryset': AccreditedCertificateCode.objects.all().order_by('name'),
-                'serializer_class': AccreditedCertificateCodeSerializer
-            },
-            {
-                'queryset': ProofOfAgeCode.objects.all().order_by('display_order'),
-                'serializer_class': ProofOfAgeCodeSerializer
+            result[activity.registries_activity_code] = {
+                'WellClassCode':
+                    list(map(lambda item: WellClassCodeSerializer(item).data, well_class_query)),
+                'SubactivityCode':
+                    list(map(lambda item: SubactivitySerializer(item).data, sub_activity_query))
             }
-        ]
-        return querylist
+        result['AccreditedCertificateCode'] = \
+            list(map(lambda item: AccreditedCertificateCodeSerializer(item).data,
+                     AccreditedCertificateCode.objects.all().order_by('name')))
+        result['ProofOfAgeCode'] = \
+            list(map(lambda item: ProofOfAgeCodeSerializer(item).data,
+                     ProofOfAgeCode.objects.all().order_by('display_order')))
+        return Response(result)
 
 
 class PersonListView(AuditCreateMixin, ListCreateAPIView):

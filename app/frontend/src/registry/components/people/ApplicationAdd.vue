@@ -88,6 +88,7 @@
 <script>
 import Datepicker from 'vuejs-datepicker'
 import { mapGetters, mapActions } from 'vuex'
+import { FETCH_DRILLER_OPTIONS } from '@/registry/store/actions.types'
 export default {
   components: {
     Datepicker
@@ -124,7 +125,7 @@ export default {
       this.qualificationForm.qualifications = match.qualification_set.map(item => item.well_class)
     },
     ...mapActions([
-      'fetchDrillerOptions'
+      FETCH_DRILLER_OPTIONS
     ])
   },
   computed: {
@@ -147,12 +148,15 @@ export default {
         qualifications: [],
         proofOfAge: [{value: null, text: 'Please select an option'}]
       }
-      if (this.activity in this.drillerOptions) {
-        const options = this.drillerOptions[this.activity]
-        result.issuer = result.issuer.concat(options.AccreditedCertificateCode.map((item) => { return {'text': item.name + ' (' + item.cert_auth + ')', 'value': item.acc_cert_guid} }))
-        result.classifications = options.SubactivityCode.map((item) => { return {'text': item.description, 'value': item.registries_subactivity_code} })
-        result.qualifications = options.WellClassCode.map((item) => { return {'text': item.description, 'value': item.registries_well_class_code} })
-        result.proofOfAge = result.proofOfAge.concat(options.ProofOfAgeCode.map((item) => { return {'text': item.description, 'value': item.registries_proof_of_age_code} }))
+      if (this.drillerOptions) {
+        // If driller options have loaded, prepare the form options.
+        result.issuer = result.issuer.concat(this.drillerOptions.AccreditedCertificateCode.map((item) => { return {'text': item.name + ' (' + item.cert_auth + ')', 'value': item.acc_cert_guid} }))
+        result.proofOfAge = result.proofOfAge.concat(this.drillerOptions.ProofOfAgeCode.map((item) => { return {'text': item.description, 'value': item.registries_proof_of_age_code} }))
+        if (this.activity in this.drillerOptions) {
+          // Different activities have different options.
+          result.classifications = this.drillerOptions[this.activity].SubactivityCode.map((item) => { return {'text': item.description, 'value': item.registries_subactivity_code} })
+          result.qualifications = this.drillerOptions[this.activity].WellClassCode.map((item) => { return {'text': item.description, 'value': item.registries_well_class_code} })
+        }
       }
       return result
     },
@@ -161,7 +165,7 @@ export default {
     }
   },
   created () {
-    this.fetchDrillerOptions({activity: this.activity})
+    this.FETCH_DRILLER_OPTIONS()
   }
 }
 </script>
