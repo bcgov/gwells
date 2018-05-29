@@ -48,7 +48,6 @@ else
 fi
 
 echo ". Running python-related post-deploy tasks."
-export LD_LIBRARY_PATH=/opt/rh/rh-python35/root/usr/lib64/
 cd /opt/app-root/src/
 set +e
 python manage.py post-deploy
