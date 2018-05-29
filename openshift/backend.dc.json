@@ -153,8 +153,7 @@
                             "failurePolicy": "Abort",
                             "execNewPod": {
                                 "command": [
-                                    "/bin/sh",
-                                    "-c",
+                                    "/usr/bin/container-entrypoint",
                                     "/opt/app-root/src/scripts/post-deploy.sh"
                                 ],
                                 "containerName": "gwells-app${NAME_SUFFIX}"
