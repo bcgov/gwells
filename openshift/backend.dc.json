@@ -149,6 +149,50 @@
                     "type": "Recreate",
                     "recreateParams": {
                         "timeoutSeconds": 180,
+                        "pre": {
+                            "failurePolicy": "Retry",
+                            "execNewPod": {
+                                "command": [
+                                    "/bin/bash",
+                                    "-c",
+                                    "psql -qtAX -c 'select 1'"
+                                ],
+                                "containerName": "gwells-app${NAME_SUFFIX}",
+                                "env": [
+                                    {
+                                        "name": "PGDATABASE",
+                                        "valueFrom": {
+                                            "secretKeyRef": {
+                                                "name": "gwells-pgsql${NAME_SUFFIX}",
+                                                "key": "database-name"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "PGUSER",
+                                        "valueFrom": {
+                                            "secretKeyRef": {
+                                                "name": "gwells-pgsql${NAME_SUFFIX}",
+                                                "key": "database-user"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "PGPASSWORD",
+                                        "valueFrom": {
+                                            "secretKeyRef": {
+                                                "name": "gwells-pgsql${NAME_SUFFIX}",
+                                                "key": "database-password"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "PGHOST",
+                                        "value": "gwells-pgsql${NAME_SUFFIX}"
+                                    }
+                                ]
+                            }
+                        },
                         "mid": {
                             "failurePolicy": "Abort",
                             "execNewPod": {
