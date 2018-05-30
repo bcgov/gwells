@@ -62,11 +62,6 @@ class JwtOidcAuthentication(JSONWebTokenAuthentication):
         except:
             raise exceptions.AuthenticationFailed('Failed to retrieve roles')
 
-        # if 'gwells_admin' in roles:
-        #     profile.is_gwells_admin = True
-        #     profile.save()
-        #     user.is_staff = True
-        #     user.save()
         # put user in groups based on role
         roles_to_groups(user, roles)
 

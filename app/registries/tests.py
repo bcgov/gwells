@@ -22,7 +22,8 @@ from registries.models import (
     SubactivityCode)
 from registries.views import PersonListView, PersonDetailView
 from django.contrib.auth.models import Group
-from gwells.permissions import roles_to_groups
+from gwells.roles import (roles_to_groups, GWELLS_ROLE_GROUPS, GWELLS_ROLES,
+                          ADJUDICATOR_ROLE, ADMIN_ROLE, AUTHORITY_ROLE, VIEWER_ROLE)
 
 # Note: see postman/newman for more API tests.
 # Postman API tests include making requests with incomplete data, missing required fields etc.
@@ -772,3 +773,18 @@ class APIFilteringPaginationTests(APITestCase):
 
         # teardown
         logger.setLevel(previous_level)
+
+
+class RegistriesRolesTests(TestCase):
+    """
+    Tests GWELLS "SSO role"-based groups for Registries API
+    """
+
+    def setUp(self):
+        """
+        Set up user for each test case
+        """
+        self.test_user, _ = User.objects.get_or_create(
+            username='Test_User', email='example@example.com', password='123456789')
+        self.test_profile, _ = Profile.objects.get_or_create(
+            user=self.test_user)
