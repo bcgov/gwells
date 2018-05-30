@@ -11,7 +11,7 @@
 # Related GitHub issues:
 # - https://github.com/GoogleCloudPlatform/kubernetes/issues/8876
 # - https://github.com/openshift/origin/issues/2001
-
+set -e
 
 # Usage examples:
 #

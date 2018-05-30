@@ -173,8 +173,8 @@
                       type="button"
                       @click="editCompany = (editCompany === (index + 1) ? 0 : (index + 1))"
                       v-if="currentDriller.person_guid">
-                      <span v-if="!registration.organization"><i class="fa fa-plus"></i> Add</span>
-                      <span v-else><i class="fa fa-refresh"></i> Change</span>
+                      <span v-if="!registration.organization"><i class="fa fa-plus"></i> Add company</span>
+                      <span v-else><i class="fa fa-refresh"></i> Change company</span>
                       </button>
                   </div>
                 </div>
@@ -246,7 +246,7 @@
                       Email address:
                     </div>
                     <div class="col-7 col-md-4">
-                      {{ registration.organization.contact_email }}
+                      {{ registration.organization.email }}
                     </div>
                     <div class="col-5 col-md-2">
                       Website:

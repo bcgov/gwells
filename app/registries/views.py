@@ -17,18 +17,31 @@ from django.http import HttpResponse
 from django.utils import timezone
 from django.views.generic import TemplateView
 from django_filters import rest_framework as restfilters
-from rest_framework import filters, status
+from rest_framework import filters, status, exceptions
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView
 from rest_framework.pagination import LimitOffsetPagination, PageNumberPagination
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from rest_framework.mixins import CreateModelMixin, UpdateModelMixin
-from registries.models import Organization, Person, ContactInfo, RegistriesApplication, Register, PersonNote
+from drf_multiple_model.views import ObjectMultipleModelAPIView
+from registries.models import (
+    ProofOfAgeCode,
+    Organization,
+    Person,
+    ContactInfo,
+    RegistriesApplication,
+    Register,
+    PersonNote,
+    SubactivityCode,
+    WellClassCode,
+    AccreditedCertificateCode,
+    OrganizationNote)
 from registries.permissions import IsAdminOrReadOnly, IsGwellsAdmin
 from registries.serializers import (
     ApplicationAdminSerializer,
     ApplicationListSerializer,
     CityListSerializer,
+    ProofOfAgeCodeSerializer,
     OrganizationListSerializer,
     OrganizationSerializer,
     OrganizationAdminSerializer,
@@ -37,30 +50,34 @@ from registries.serializers import (
     PersonAdminSerializer,
     PersonListSerializer,
     RegistrationAdminSerializer,
-    PersonNoteSerializer)
+    PersonNoteSerializer,
+    SubactivitySerializer,
+    WellClassCodeSerializer,
+    AccreditedCertificateCodeSerializer,
+    OrganizationNoteSerializer)
 
 
 class AuditCreateMixin(CreateModelMixin):
     """
-    Adds create_user and create_date fields when instances are created
+    Adds create_user when instances are created.
+    Create date is inserted in the model, and not required here.
     """
 
     def perform_create(self, serializer):
         serializer.validated_data['create_user'] = (self.request.user.profile.name or
                                                     self.request.user.get_username())
-        serializer.validated_data['create_date'] = timezone.now()
-        return super(AuditCreateMixin, self).perform_create(serializer)
+        return super().perform_create(serializer)
 
 
 class AuditUpdateMixin(UpdateModelMixin):
     """
-    Adds update_user and update_date fields when instances are updated
+    Adds update_user when instances are updated
+    Update date is inserted in the model, and not required here.
     """
 
     def perform_update(self, serializer):
         serializer.save(
-            update_user=self.request.user.get_username(),
-            update_date=timezone.now()
+            update_user=self.request.user.get_username()
         )
 
 
@@ -114,13 +131,14 @@ class OrganizationListView(AuditCreateMixin, ListCreateAPIView):
     """
 
     permission_classes = (IsGwellsAdmin,)
-    serializer_class = OrganizationSerializer
-    pagination_class = APILimitOffsetPagination
+    serializer_class = OrganizationListSerializer
+    pagination_class = None
 
     # prefetch related objects for the queryset to prevent duplicate database trips later
     queryset = Organization.objects.all() \
         .select_related('province_state',) \
-        .prefetch_related('registrations', 'registrations__person')
+        .prefetch_related('registrations', 'registrations__person') \
+        .filter(expired_date__isnull=True)
 
     # Allow searching against fields like organization name, address,
     # name or registration of organization contacts
@@ -138,36 +156,11 @@ class OrganizationListView(AuditCreateMixin, ListCreateAPIView):
         """
         Filter out organizations with no registered drillers if user is anonymous
         """
-        qs = self.queryset
+        qs = super().get_queryset()
         if not self.request.user.is_staff:
             qs = qs \
                 .filter(person_set__registrations__status='ACTIVE')
         return qs
-
-    def get_serializer_class(self):
-        """
-        Return appropriate serializer for user
-        Admin serializers have more fields, including audit fields
-        """
-        if self.request and self.request.user.is_staff:
-            return OrganizationAdminSerializer
-        return self.serializer_class
-
-    # override list() in order to use a modified serializer (with fewer fields) for the list view
-    def list(self, request):
-        """
-        Returns the list response, using the list serializer class (serializes fewer fields than detail view)
-        """
-        queryset = self.get_queryset()
-        filtered_queryset = self.filter_queryset(queryset)
-
-        page = self.paginate_queryset(filtered_queryset)
-        if page is not None:
-            serializer = OrganizationListSerializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-
-        serializer = OrganizationListSerializer(filtered_queryset)
-        return Response(serializer.data)
 
 
 class OrganizationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
@@ -185,11 +178,11 @@ class OrganizationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
     Removes the specified drilling organization record
     """
 
-    permission_classes = (IsAdminOrReadOnly,)
+    permission_classes = (IsGwellsAdmin,)
 
     # 'pk' and 'id' have been replaced by 'org_guid' as primary key for Organization model
     lookup_field = "org_guid"
-    serializer_class = OrganizationSerializer
+    serializer_class = OrganizationAdminSerializer
 
     # prefetch related province, contacts and person records to prevent future additional database trips
     queryset = Organization.objects.all() \
@@ -208,21 +201,55 @@ class OrganizationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
                 .distinct()
         return qs
 
-    def get_serializer_class(self):
-        if self.request and self.request.user.is_staff:
-            return OrganizationAdminSerializer
-        return self.serializer_class
-
     def destroy(self, request, *args, **kwargs):
         """
         Set expired_date to current date
         """
 
         instance = self.get_object()
+        for reg in instance.registrations.all():
+            if reg.person.expired_date is None:
+                raise exceptions.ValidationError(
+                    'Organization has registrations associated with it. Remove this organization from registration records first.')
         instance.expired_date = timezone.now()
         instance.save()
 
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class PersonOptionsView(ObjectMultipleModelAPIView):
+    """
+    get:
+    Returns available options for creating a person record
+    """
+
+    # We shouldn't need pagination, there should never be that many options!
+    pagination_class = None
+
+    def get_querylist(self):
+        activity = self.request.query_params['activity']
+        querylist = [
+            {
+                'queryset': WellClassCode.objects.filter(
+                    qualification__subactivity__registries_activity=activity).order_by(
+                        'registries_well_class_code').distinct('registries_well_class_code'),
+                'serializer_class': WellClassCodeSerializer
+            },
+            {
+                'queryset': SubactivityCode.objects.filter(
+                    registries_activity=activity).order_by('display_order'),
+                'serializer_class': SubactivitySerializer
+            },
+            {
+                'queryset': AccreditedCertificateCode.objects.all().order_by('name'),
+                'serializer_class': AccreditedCertificateCodeSerializer
+            },
+            {
+                'queryset': ProofOfAgeCode.objects.all().order_by('display_order'),
+                'serializer_class': ProofOfAgeCodeSerializer
+            }
+        ]
+        return querylist
 
 
 class PersonListView(AuditCreateMixin, ListCreateAPIView):
@@ -562,7 +589,7 @@ class PersonNoteListView(AuditCreateMixin, ListCreateAPIView):
 
     def get_queryset(self):
         person = self.kwargs['person_guid']
-        return PersonNote.objects.filter(person=person)
+        return PersonNote.objects.filter(person=person).order_by('-date')
 
     def perform_create(self, serializer):
         """ Add author to serializer data """
@@ -594,3 +621,51 @@ class PersonNoteDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
     def get_queryset(self):
         person = self.kwargs['person']
         return PersonNote.objects.filter(person=person)
+
+
+class OrganizationNoteListView(AuditCreateMixin, ListCreateAPIView):
+    """
+    get:
+    Returns notes associated with a Organization record
+
+    post:
+    Adds a note record to the specified Organization record
+    """
+
+    permission_classes = (IsGwellsAdmin,)
+    serializer_class = OrganizationNoteSerializer
+
+    def get_queryset(self):
+        org = self.kwargs['org_guid']
+        return OrganizationNote.objects.filter(organization=org).order_by('-date')
+
+    def perform_create(self, serializer):
+        """ Add author to serializer data """
+        org = self.kwargs['org_guid']
+        serializer.validated_data['organization'] = Organization.objects.get(
+            org_guid=org)
+        serializer.validated_data['author'] = self.request.user
+        return super(OrganizationNoteListView, self).perform_create(serializer)
+
+
+class OrganizationNoteDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
+    """
+    get:
+    Returns a OrganizationNote record
+
+    put:
+    Replaces a OrganizationNote record with a new one
+
+    patch:
+    Updates a OrganizationNote record with the set of fields provided in the request body
+
+    delete:
+    Removes a OrganizationNote record
+    """
+
+    permission_classes = (IsGwellsAdmin,)
+    serializer_class = OrganizationNoteSerializer
+
+    def get_queryset(self):
+        org = self.kwargs['org_guid']
+        return OrganizationNote.objects.filter(organization=org)

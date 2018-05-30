@@ -21,6 +21,8 @@
 *.pyd		binary
 *.pyo 		binary
 *.ttf		binary
+*.gz		binary
+
 
 # Static files
 # ============

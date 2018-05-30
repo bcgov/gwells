@@ -105,7 +105,25 @@
             </b-col>
           </b-row>
           <b-row>
-            <b-col cols="12">
+            <b-col cols="12" md="6">
+              <b-form-group
+                id="emailInputGroup"
+                label="Email:"
+                label-for="emailInput">
+                <b-form-input
+                    id="emailInput"
+                    type="text"
+                    :state="validation.email"
+                    aria-describedby="emailInputFeedback"
+                    v-model="orgForm.email"/>
+                <b-form-invalid-feedback id="emailInputFeedback">
+                  <div v-for="(error, index) in fieldErrors.email" :key="`urlInput error ${index}`">
+                    {{ error }}
+                  </div>
+                </b-form-invalid-feedback>
+              </b-form-group>
+            </b-col>
+            <b-col cols="12" md="6">
               <b-form-group
                 id="websiteInputGroup"
                 label="Website:"
@@ -162,11 +180,12 @@ export default {
         city: '',
         province_state: '',
         postal_code: '',
+        email: '',
         main_tel: '',
         fax_tel: '',
         website_url: ''
       },
-      provOptions: ['BC', 'AB'],
+      provOptions: ['BC', 'AB', 'ON', 'SK', 'YT', 'WA'],
       orgSubmitLoading: false,
       orgSubmitError: null,
       fieldErrors: {
@@ -179,7 +198,8 @@ export default {
     validation () {
       return {
         province_state: (this.fieldErrors.province_state && this.fieldErrors.province_state.length) ? false : null,
-        website_url: (this.fieldErrors.website_url && this.fieldErrors.website_url.length) ? false : null
+        website_url: (this.fieldErrors.website_url && this.fieldErrors.website_url.length) ? false : null,
+        email: (this.fieldErrors.email && this.fieldErrors.email.length) ? false : null
       }
     },
     ...mapGetters(['error'])
@@ -216,6 +236,7 @@ export default {
         city: '',
         province_state: '',
         postal_code: '',
+        email: '',
         main_tel: '',
         fax_tel: '',
         website_url: ''
@@ -229,7 +250,8 @@ export default {
       this.fieldErrors = {
         contact_email: [],
         province_state: [],
-        website_url: []
+        website_url: [],
+        email: []
       }
     }
   },

@@ -1,4 +1,4 @@
-import { shallow, createLocalVue } from '@vue/test-utils'
+import { shallowMount, createLocalVue } from '@vue/test-utils'
 import Vuex from 'vuex'
 import APIErrorMessage from '@/common/components/APIErrorMessage'
 import { SET_ERROR } from '@/registry/store/mutations.types'
@@ -19,7 +19,7 @@ describe('APIErrorMessage.vue', () => {
   })
   it('renders error text when error prop has an object', () => {
     const error = { status: '400', statusText: 'Error!', data: { detail: 'Whoa there! that\'s an error.' } }
-    const wrapper = shallow(APIErrorMessage, {
+    const wrapper = shallowMount(APIErrorMessage, {
       propsData: { error },
       localVue
     })
@@ -30,7 +30,7 @@ describe('APIErrorMessage.vue', () => {
   })
   it('tells store to remove error when the alert is clicked', () => {
     const error = { status: '400', statusText: 'Error!', data: { detail: 'Whoa there! that\'s an error.' } }
-    const wrapper = shallow(APIErrorMessage, {
+    const wrapper = shallowMount(APIErrorMessage, {
       propsData: { error, resetter: 'SET_ERROR' },
       store,
       localVue

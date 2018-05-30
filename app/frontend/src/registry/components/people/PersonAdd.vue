@@ -112,7 +112,7 @@
                   <b-button
                     type="button"
                     v-b-modal.orgModal
-                    variant="light"
+                    variant="primary"
                     size="sm"
                     class="mb-3">
                     <i class="fa fa-plus-square-o"></i> Add a company</b-button>
@@ -157,6 +157,26 @@
                     </b-form-group>
                   </b-col>
                 </b-row>
+                <b-row>
+                  <application-add
+                    class="mb-3"
+                    v-for="item in drillApplications"
+                    v-bind:item="item"
+                    v-bind:key="item.id"
+                    v-on:close="closeApplication (drillApplications, item.id)"
+                    v-model="item.data"
+                    activity="DRILL"/>
+                </b-row>
+                <b-row>
+                  <b-col>
+                    <b-button
+                    type="button"
+                    variant="primary"
+                    size="sm"
+                    v-on:click="addApplication(drillApplications)"
+                    class="mb-3"><i class="fa fa-plus-square-o"></i> Add new classification</b-button>
+                  </b-col>
+                </b-row>
               </div>
               <div v-if="drillerForm.regType.some(x => x === 'PUMP')">
                 <b-row>
@@ -183,6 +203,26 @@
                         label="org_verbose_name">
                       </v-select>
                     </b-form-group>
+                  </b-col>
+                </b-row>
+                <b-row>
+                  <application-add
+                    class="mb-3"
+                    v-for="item in pumpApplications"
+                    v-bind:item="item"
+                    v-bind:key="item.id"
+                    v-on:close="closeApplication (pumpApplications, item.id)"
+                    v-model="item.data"
+                    activity="PUMP"/>
+                </b-row>
+                <b-row>
+                  <b-col>
+                    <b-button
+                    type="button"
+                    variant="primary"
+                    size="sm"
+                    v-on:click="addApplication(pumpApplications)"
+                    class="mb-3"><i class="fa fa-plus-square-o"></i> Add new classification</b-button>
                   </b-col>
                 </b-row>
               </div>
@@ -226,12 +266,14 @@ import APIErrorMessage from '@/common/components/APIErrorMessage'
 import { mapGetters } from 'vuex'
 import ApiService from '@/common/services/ApiService.js'
 import OrganizationAdd from '@/registry/components/people/OrganizationAdd.vue'
+import ApplicationAdd from '@/registry/components/people/ApplicationAdd.vue'
 
 export default {
   name: 'PersonDetailEdit',
   components: {
     'api-error': APIErrorMessage,
-    'organization-add': OrganizationAdd
+    'organization-add': OrganizationAdd,
+    'application-add': ApplicationAdd
   },
   data () {
     return {
@@ -278,6 +320,8 @@ export default {
       companies: [
         { org_guid: '', name: '' }
       ],
+      drillApplications: [],
+      pumpApplications: [],
       submitSuccess: false,
       submitError: false,
       newOrgSuccess: false,
@@ -331,6 +375,10 @@ export default {
       if (this.drillerForm.organizations.pump) {
         this.drillerForm.registrations['pump'].organization = this.drillerForm.organizations.pump.org_guid
       }
+
+      // Map applications to registrions
+      this.drillerForm.registrations['drill'].applications = this.drillApplications.map((application) => application.data)
+      this.drillerForm.registrations['pump'].applications = this.pumpApplications.map((application) => application.data)
 
       // add registration data for activities checked off on form
       this.drillerForm.regType.forEach((item) => {
@@ -393,6 +441,12 @@ export default {
       }).catch(() => {
         this.orgListError = 'Unable to retrieve organization list.'
       })
+    },
+    addApplication (collection) {
+      collection.push({id: new Date().getUTCMilliseconds(), data: null})
+    },
+    closeApplication (collection, id) {
+      collection.splice(collection.findIndex((item) => item.id === id))
     }
   },
   created () {

@@ -25,19 +25,36 @@ private static String stackTraceAsString(Throwable t) {
     return sw.toString()
 }
 
-def _stage(String name, Map context, Closure body) {
+String stageStatusContext(String stageName){
+    return "stages/${stageName.toLowerCase()}"
+}
+
+void setStageStatus(Map context, String name, String status) {
+     GitHubHelper.createCommitStatus(this, context.pullRequest.head, status, "${env.BUILD_URL}", "Stage '${name}'", stageStatusContext(name))
+}
+
+void notifyStageStatus(Map context, String name, String status) {
+    setStageStatus(context, name, status)
+}
+
+def _stage(String name, Map context, boolean retry=0, boolean withCommitStatus=true, Closure body) {
     def stageOpt =(context?.stages?:[:])[name]
     boolean isEnabled=(stageOpt == null || stageOpt == true)
     //echo "Stage - ${stage}"
     echo "Running Stage '${name}' - enabled:${isEnabled}"
+
+
     if (isEnabled){
         stage(name) {
             waitUntil {
+                notifyStageStatus(context, name, 'PENDING')
                 boolean isDone=false
                 try{
                     body()
                     isDone=true
+                    notifyStageStatus(context, name, 'SUCCESS')
                 }catch (ex){
+                    notifyStageStatus(context, name, 'FAILURE')
                     echo "${stackTraceAsString(ex)}"
                     def inputAction = input(
                         message: "This step (${name}) has failed. See error above.",
@@ -60,10 +77,10 @@ def _stage(String name, Map context, Closure body) {
 
 Map context = [
   'name': 'gwells',
-  'uuid' : UUID.randomUUID().toString(),
+  'uuid' : "${env.JOB_BASE_NAME}-${env.BUILD_NUMBER}-${env.CHANGE_ID}",
   'env': [
       'dev':[:],
-      'test':[:],
+      'test':['params':['host':'gwells-test.pathfinder.gov.bc.ca']],
       'prod':['params':['host':'gwells-prod.pathfinder.gov.bc.ca', 'DB_PVC_SIZE':'5Gi']]
   ],
   'templates': [
@@ -91,14 +108,23 @@ Map context = [
     'Code Quality': false,
     'Readiness - DEV': true,
     'Deploy - DEV': true,
+    'Load Fixtures - DEV': true,
+    'API Test': true,
     'Full Test - DEV': true
+  ],
+  pullRequest:[
+    'id': env.CHANGE_ID,
+    'head': GitHubHelper.getPullRequestLastCommitId(this)
   ]
 ]
 
+def isCI = !"master".equalsIgnoreCase(env.CHANGE_TARGET)
+def isCD = "master".equalsIgnoreCase(env.CHANGE_TARGET)
+
 
 properties([
-        buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '', numToKeepStr: '10')),
-        durabilityHint('MAX_SURVIVABILITY') /*, parameters([string(defaultValue: '', description: '', name: 'run_stages')]) */
+        buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '', numToKeepStr: '5')),
+        durabilityHint('PERFORMANCE_OPTIMIZED') /*, parameters([string(defaultValue: '', description: '', name: 'run_stages')]) */
 ])
 
 stage('Prepare') {
@@ -116,17 +142,18 @@ _stage('Build', context) {
         if ("master".equalsIgnoreCase(env.CHANGE_TARGET)) {
             new OpenShiftHelper().prepareForCD(this, context)
         }
+        deleteDir()
     }
 } //end stage
 
 _stage('Unit Test', context) {
     podTemplate(label: "node-${context.uuid}", name:"node-${context.uuid}", serviceAccount: 'jenkins', cloud: 'openshift', containers: [
-        containerTemplate(name: 'jnlp', image: 'jenkins/jnlp-slave:3.10-1-alpine', args: '${computer.jnlpmac} ${computer.name}', resourceRequestCpu: '100m',resourceLimitCpu: '1000m'),
+        containerTemplate(name: 'jnlp', image: 'jenkins/jnlp-slave:3.10-1-alpine', args: '${computer.jnlpmac} ${computer.name}', resourceRequestCpu: '100m',resourceLimitCpu: '100m'),
         containerTemplate(name: 'app', image: "docker-registry.default.svc:5000/moe-gwells-tools/gwells${context.buildNameSuffix}:${context.buildEnvName}", ttyEnabled: true, command: 'cat',
-            resourceRequestCpu: '1000m',
-            resourceLimitCpu: '4000m',
-            resourceRequestMemory: '1Gi',
-            resourceLimitMemory: '4Gi')
+            resourceRequestCpu: '2000m',
+            resourceLimitCpu: '2000m',
+            resourceRequestMemory: '2Gi',
+            resourceLimitMemory: '2Gi')
       ]
     ) {
         node("node-${context.uuid}") {
@@ -218,10 +245,6 @@ _stage('Code Quality', context) {
 } //end stage
 
 
-
-def isCI = !"master".equalsIgnoreCase(env.CHANGE_TARGET)
-def isCD = "master".equalsIgnoreCase(env.CHANGE_TARGET)
-
 for(String envKeyName: context.env.keySet() as String[]){
     String stageDeployName=envKeyName.toUpperCase()
 
@@ -269,7 +292,12 @@ for(String envKeyName: context.env.keySet() as String[]){
                     podName=openshift.selector('pod', ['deploymentconfig':deploymentConfigName]).objects()[0].metadata.name
                 }
                 sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src && pwd && python manage.py flush --no-input'"
-                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src && pwd && python manage.py loaddata wells registries'"
+                // Lookup tables common to all system components (e.g. Django apps)
+                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src && pwd && python manage.py loaddata gwells/fixtures/codetables.ProvinceStateCode.json'"
+                // Lookup tables for the Wellsearch component (not yet a Django app) and Registries app
+                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src && pwd && python manage.py loaddata gwells/fixtures/codetables.json registries/fixtures/codetables.json'"
+                // Test data for the Wellsearch component (not yet a Django app) and Registries app
+                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src && pwd && python manage.py loaddata gwells/fixtures/wellsearch.json.gz registries/fixtures/registries.json'"
             }
         }
     }
@@ -281,10 +309,10 @@ for(String envKeyName: context.env.keySet() as String[]){
               containerTemplate(
                 name: 'jnlp',
                 image: 'registry.access.redhat.com/openshift3/jenkins-slave-nodejs-rhel7',
-                resourceRequestCpu: '500m',
-                resourceLimitCpu: '1000m',
+                resourceRequestCpu: '800m',
+                resourceLimitCpu: '800m',
                 resourceRequestMemory: '1Gi',
-                resourceLimitMemory: '4Gi',
+                resourceLimitMemory: '1Gi',
                 workingDir: '/tmp',
                 command: '',
                 args: '${computer.jnlpmac} ${computer.name}',
@@ -349,10 +377,10 @@ for(String envKeyName: context.env.keySet() as String[]){
                   containerTemplate(
                      name: 'jnlp',
                      image: 'docker-registry.default.svc:5000/openshift/jenkins-slave-bddstack',
-                     resourceRequestCpu: '500m',
-                     resourceLimitCpu: '2000m',
-                     resourceRequestMemory: '2Gi',
-                     resourceLimitMemory: '4Gi',
+                     resourceRequestCpu: '800m',
+                     resourceLimitCpu: '800m',
+                     resourceRequestMemory: '3Gi',
+                     resourceLimitMemory: '3Gi',
                      workingDir: '/home/jenkins',
                      command: '',
                      args: '${computer.jnlpmac} ${computer.name}',
@@ -423,18 +451,40 @@ for(String envKeyName: context.env.keySet() as String[]){
     } //end if
 } // end for
 
+stage('Cleanup') {
 
-_stage('Cleanup', context) {
     def inputResponse = null
-    try{
-        inputResponse=input(id: 'close_pr', message: "Ready to Accept/Merge, and Close pull-request #${env.CHANGE_ID}?", ok: 'Yes', submitter: 'authenticated', submitterParameter: 'approver')
-    }catch(ex){
-        error "Pipeline has been aborted. - ${ex}"
-    }
+    String mergeMethod=isCI?'squash':'merge'
 
-    echo "inputResponse:${inputResponse}"
-    new OpenShiftHelper().cleanup(this, context)
-    GitHubHelper.mergeAndClosePullRequest(this)
+    waitUntil {
+        boolean isDone=false
+        try{
+            inputResponse=input(id: 'close_pr', message: "Ready to Accept/Merge (using '${mergeMethod}' method), and Close pull-request #${env.CHANGE_ID}?", ok: 'Yes', submitter: 'authenticated', submitterParameter: 'approver')
+            echo "inputResponse:${inputResponse}"
+
+            echo "Merging and Closing PR"
+            GitHubHelper.mergeAndClosePullRequest(this, mergeMethod)
+
+            echo "Clearing OpenShift resources"
+            new OpenShiftHelper().cleanup(this, context)
+
+            //echo "Clearing OpenShift resources"
+            //setStageStatus(context, 'Cleanup', 'SUCCESS')
+            isDone=true
+        }catch (ex){
+            echo "${stackTraceAsString(ex)}"
+            def inputAction = input(
+                message: "This 'Cleanup' stage has failed. See error above.",
+                ok: 'Confirm',
+                submitter: 'authenticated',
+                parameters: [choice(name: 'action', choices: 'Re-run\nIgnore', description: 'What would you like to do?')]
+            )
+            if ('Ignore'.equalsIgnoreCase(inputAction)){
+                isDone=true
+            }
+        }
+        return isDone
+    }
 }
 
 

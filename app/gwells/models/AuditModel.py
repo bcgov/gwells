@@ -19,6 +19,7 @@ from model_utils import FieldTracker
 from django.core import serializers
 import json
 
+
 class AuditModel(models.Model):
     """
     An abstract base class model that provides audit fields.
@@ -34,7 +35,7 @@ class AuditModel(models.Model):
         self.update_date = timezone.now()
 
         ''' For "new" content, populate "Add" fields '''
-        if self._state.adding == True:
+        if self._state.adding is True:
             self.create_date = timezone.now()
 
         return super(AuditModel, self).save(*args, **kwargs)

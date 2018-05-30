@@ -6,7 +6,7 @@ import {
   LOGOUT,
   FETCH_CITY_LIST,
   FETCH_DRILLER,
-  FETCH_DRILLER_LIST } from './actions.types.js'
+  FETCH_DRILLER_LIST} from './actions.types.js'
 import {
   SET_ERROR,
   SET_LOADING,
@@ -15,7 +15,8 @@ import {
   SET_CITY_LIST,
   SET_DRILLER,
   SET_DRILLER_LIST,
-  SET_KEYCLOAK } from './mutations.types.js'
+  SET_KEYCLOAK,
+  SET_DRILLER_OPTIONS } from './mutations.types.js'
 
 Vue.use(Vuex)
 
@@ -28,7 +29,8 @@ export const store = new Vuex.Store({
     cityList: {},
     drillerList: [],
     currentDriller: {},
-    keycloak: {}
+    keycloak: {},
+    drillerOptions: {}
   },
   mutations: {
     [SET_LOADING] (state, payload) {
@@ -54,6 +56,9 @@ export const store = new Vuex.Store({
     },
     [SET_KEYCLOAK] (state, payload) {
       state.keycloak = payload
+    },
+    [SET_DRILLER_OPTIONS] (state, payload) {
+      state.drillerOptions[payload.activity] = payload.data
     }
   },
   actions: {
@@ -159,6 +164,23 @@ export const store = new Vuex.Store({
             reject(error)
           })
       })
+    },
+    fetchDrillerOptions ({commit}, params) {
+      // We only fetch driller options if we don't already have a copy cached
+      if (!(params.activity in this.state.drillerOptions)) {
+        return new Promise((resolve, reject) => {
+          commit(SET_LOADING, true)
+          ApiService.query('drillers/options/', params)
+            .then((response) => {
+              commit(SET_LOADING, false)
+              commit(SET_DRILLER_OPTIONS, {activity: params.activity, data: response.data})
+            })
+            .catch((error) => {
+              commit(SET_LOADING, false)
+              reject(error)
+            })
+        })
+      }
     }
   },
   getters: {
@@ -191,6 +213,9 @@ export const store = new Vuex.Store({
         return state.keycloak.hasRealmRole('gwells_admin')
       }
       return false
+    },
+    drillerOptions: state => {
+      return state.drillerOptions
     }
   }
 })
