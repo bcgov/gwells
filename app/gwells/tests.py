@@ -1,7 +1,7 @@
 from django.core.management import call_command
 from django.test import TestCase
 from django.utils.six import StringIO
-from gwells.permissions import (
+from gwells.roles import (
     roles_to_groups,
     ADMIN_ROLE,
     AUTHORITY_ROLE,
@@ -39,7 +39,7 @@ class CreateGroupsTest(TestCase):
         self.assertIn('Group registries_staff_viewer exists', out.getvalue())
 
 
-class GwellsRoleGroups(TestCase):
+class GwellsRoleGroupsTests(TestCase):
     """
     Tests GWELLS "SSO role"-based groups
     """
