@@ -422,6 +422,14 @@ for(String envKeyName: context.env.keySet() as String[]){
                             }else{
                                 sh './gradlew -DchromeHeadlessTest.single=WellDetails chromeHeadlessTest'
                             }
+                        } catch (ex) {
+                            echo "${stackTraceAsString(ex)}"
+                            echo "DEV - Functional Tests Failed - Wait 1 minute and retry once"
+                            if ("DEV".equalsIgnoreCase(stageDeployName)){
+                                sh 'sleep 60; ./gradlew chromeHeadlessTest'
+                            }else{
+                                sh 'sleep 60; ./gradlew -DchromeHeadlessTest.single=WellDetails chromeHeadlessTest'
+                            }
                         } finally {
                                 archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/geb/**/*'
                                 junit testResults:'build/test-results/**/*.xml', allowEmptyResults:true
@@ -486,9 +494,3 @@ stage('Cleanup') {
         return isDone
     }
 }
-
-
-
-
-
-
