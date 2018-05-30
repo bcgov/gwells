@@ -142,6 +142,7 @@ _stage('Build', context) {
         if ("master".equalsIgnoreCase(env.CHANGE_TARGET)) {
             new OpenShiftHelper().prepareForCD(this, context)
         }
+        deleteDir()
     }
 } //end stage
 
