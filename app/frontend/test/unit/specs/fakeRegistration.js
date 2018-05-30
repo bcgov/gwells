@@ -24,7 +24,7 @@ const fakeRegistration = JSON.parse(JSON.stringify(
         'registration': '6cc9df51-5c59-4c91-9190-2127448cf2fe',
         'file_no': null,
         'proof_of_age': null,
-        'primary_certificate': null,
+        'primary_certificate': '28bf8730-dbb7-4218-8e9f-06bd51f60161',
         'primary_certificate_no': '',
         'registrar_notes': null,
         'reason_denied': null,

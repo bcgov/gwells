@@ -39,7 +39,36 @@
               <h5>Certification - {{ classification }}</h5>
             </b-col>
           </div>
-          <application-edit v-if="editClassification" :activity="activity"/>
+          <div v-if="editClassification">
+            <b-modal
+                v-model="confirmCancelModal"
+                centered
+                title="Confirm cancel"
+                @shown="focusCancelModal"
+                :return-focus="$refs.cancelClassification">
+              Your changes are not save. Are you sure you want to discard your changes?
+              <div slot="modal-footer">
+                <b-btn variant="secondary" @click="confirmCancelModal=false" ref="cancelSubmitCancelBtn">
+                  Cancel
+                </b-btn>
+                <b-btn variant="danger" @click="confirmCancelModal=false;editClassification=false;applicationReset();">
+                  Discard
+                </b-btn>
+              </div>
+            </b-modal>
+            <b-row>
+              <application-edit
+                :activity="activity"
+                :value="application"
+                v-on:close="confirmCancelModal=true"/>
+            </b-row>
+            <b-row class="mt-3">
+              <b-col>
+                <button type="submit" class="btn btn-primary" id="saveClassification">Save</button>
+                <button type="submit" class="btn btn-primary" id="cancelClassification" v-on:click="confirmCancelModal=true">Cancel</button>
+              </b-col>
+            </b-row>
+          </div>
           <div v-else>
             <div class="card">
               <div class="card-body">
@@ -53,7 +82,7 @@
                       type="button"
                       @click="editClassification = !editClassification"
                       id="editClassification"
-                      v-if="userIsAdmin"><i class="fa fa-edit"></i> Edit</button>
+                      v-if="userIsAdmin"><i class="fa fa-edit" id="editClassification"></i> Edit</button>
                   </b-col>
                 </b-row>
                 <b-row class="row" v-if="classification && classification.registries_subactivity">
@@ -126,8 +155,8 @@
 import APIErrorMessage from '@/common/components/APIErrorMessage'
 import QualCheckbox from '@/common/components/QualCheckbox'
 import { mapGetters, mapActions } from 'vuex'
-import { SET_DRILLER, SET_ERROR } from '@/registry/store/mutations.types'
-import { FETCH_DRILLER, FETCH_DRILLER_OPTIONS } from '@/registry/store/actions.types'
+import { SET_ERROR } from '@/registry/store/mutations.types'
+import { FETCH_DRILLER_OPTIONS } from '@/registry/store/actions.types'
 import ApplicationAdd from '@/registry/components/people/ApplicationAdd.vue'
 import ApiService from '@/common/services/ApiService.js'
 
@@ -155,13 +184,30 @@ export default {
         }
       ],
       editClassification: false,
-      registration: null
+      registration: null,
+      confirmCancelModal: false
     }
   },
   methods: {
     ...mapActions([
       FETCH_DRILLER_OPTIONS
-    ])
+    ]),
+    applicationReset () {
+      this.registration = null
+      // We fetch the entire registration with all applications because we need a reference to the registration
+      // activity.
+      ApiService.get('registrations', this.$route.params.registration_guid)
+        .then((response) => {
+          this.registration = response.data
+        })
+        .catch((error) => {
+          this.$store.commit(SET_ERROR, error.response)
+        })
+    },
+    focusCancelModal () {
+      // focus the "cancel" button in the confirm discard popup
+      this.$refs.cancelSubmitCancelBtn.focus()
+    }
   },
   computed: {
     classification () {
@@ -210,22 +256,8 @@ export default {
     ])
   },
   created () {
-    // if (this.currentDriller.person_guid !== this.$route.params.person_guid) {
-    //   this.$store.commit(SET_DRILLER, {})
-    // }
-    // this.$store.dispatch(FETCH_DRILLER, this.$route.params.person_guid)
-
     this.FETCH_DRILLER_OPTIONS()
-
-    // We fetch the entire registration with all applications because we need a reference to the registration
-    // activity.
-    ApiService.get('registrations', this.$route.params.registration_guid)
-      .then((response) => {
-        this.registration = response.data
-      })
-      .catch((error) => {
-        this.$store.commit(SET_ERROR, error.response)
-      })
+    this.applicationReset()
   }
 }
 </script>

@@ -36,7 +36,7 @@
           <b-row>
             <b-col md="6">
               <b-form-group label="Issued by" horizontal :label-cols="3" label-for="issuer">
-                <b-form-select id="issuer" :options="formOptions.issuer" v-model="qualificationForm.primary_certificate" required></b-form-select>
+                <b-form-select id="issuer" :options="formOptions.issuer" v-model="qualificationForm.primary_certificate.acc_cert_guid" required></b-form-select>
               </b-form-group>
             </b-col>
             <b-col md="6">
@@ -48,7 +48,7 @@
           <b-row>
             <b-col md="12">
               <b-form-group label="Select classification" label-for="classifications" horizontal :label-cols="2" class="font-weight-bold">
-                <b-form-radio-group id="classifications" class="fixed-width font-weight-normal pt-2" :options="formOptions.classifications" @change="changedClassification" v-model="qualificationForm.subactivity" required></b-form-radio-group>
+                <b-form-radio-group id="classifications" class="fixed-width font-weight-normal pt-2" :options="formOptions.classifications" @change="changedClassification" v-model="qualificationForm.subactivity.registries_subactivity_code" required></b-form-radio-group>
               </b-form-group>
             </b-col>
           </b-row>
@@ -95,19 +95,26 @@ export default {
   },
   props: ['value', 'activity'],
   data () {
+    // We need a default data structure when we're creating an application. If we're editing an
+    // application, we can piggy back off the value being passed in.
+    const defaultData = {
+      subactivity: {
+        registries_subactivity_code: null
+      },
+      primary_certificate_no: null,
+      primary_certificate: {
+        acc_cert_guid: null
+      },
+      status_set: [
+        {
+          effective_date: null,
+          status: 'P'
+        }
+      ],
+      qualifications: []
+    }
     return {
-      qualificationForm: {
-        subactivity: null,
-        primary_certificate_no: null,
-        primary_certificate: null,
-        status_set: [
-          {
-            effective_date: null,
-            status: 'P'
-          }
-        ],
-        qualifications: []
-      }
+      qualificationForm: this.value ? this.value : defaultData
     }
   },
   watch: {
