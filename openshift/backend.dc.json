@@ -194,7 +194,7 @@
                             }
                         },
                         "mid": {
-                            "failurePolicy": "Abort",
+                            "failurePolicy": "Retry",
                             "execNewPod": {
                                 "command": [
                                     "/usr/bin/container-entrypoint",
