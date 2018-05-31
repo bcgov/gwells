@@ -21,7 +21,8 @@ describe('PersonDetail.vue', () => {
       error: () => null,
       user: () => null,
       currentDriller: jest.fn().mockReturnValue(fakePerson),
-      drillers: () => []
+      drillers: () => [],
+      userIsAdmin: () => true
     }
     mutations = {
       [SET_DRILLER]: jest.fn()
@@ -51,7 +52,8 @@ describe('PersonDetail.vue', () => {
         return { status: '400', statusText: 'error!' }
       },
       currentDriller: jest.fn().mockReturnValue(fakePerson),
-      drillers: () => []
+      drillers: () => [],
+      userIsAdmin: () => true
     }
     const storeError = new Vuex.Store({ getters, actions, mutations })
     const wrapper = shallowMount(PersonDetail, {

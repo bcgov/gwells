@@ -3,7 +3,16 @@
     <b-card no-body class="mb-3">
         <b-breadcrumb :items="breadcrumbs" class="py-0 my-2"></b-breadcrumb>
     </b-card>
-    <div class="card">
+    <div v-if="showSpinner">
+      <b-row>
+        <b-col md="12">
+          <div class="fa-2x text-center">
+            <i class="fa fa-circle-o-notch fa-spin"></i>
+          </div>
+        </b-col>
+      </b-row>
+    </div>
+    <div v-else class="card">
       <div class="card-body p-2 p-md-3">
         <div v-if="currentDriller != {}">
           <div class="row">
@@ -36,11 +45,32 @@
             </tbody>
           </table>
         </div>
-        <router-link
-          class="btn btn-light btn-sm registries-edit-btn mb-3"
-          tag="button"
-          to="#"
-          v-if="currentDriller.person_guid"><i class="fa fa-plus-square-o"></i> Add application</router-link>
+        <b-row v-if="showAddApplication">
+          <b-col>
+            <b-form @submit.prevent="saveApplication">
+              <!-- TODO: Attach appropriate activity -->
+              <application-add
+                  class="mb-3"
+                  v-on:close="closeApplication()"
+                  v-model="application"
+                  activity="DRILL">
+                  <button type="submit" class="btn btn-primary" variant="primary">Save</button>
+                  <button type="button" class="btn btn-light" @click="closeApplication()">Cancel</button>
+              </application-add>
+            </b-form>
+          </b-col>
+        </b-row>
+        <b-row v-else>
+          <b-col>
+            <b-button
+                    v-if="userIsAdmin"
+                    type="button"
+                    variant="primary"
+                    size="sm"
+                    v-on:click="addApplication()"
+                    class="mb-3"><i class="fa fa-plus-square-o"></i> Add classification</b-button>
+          </b-col>
+        </b-row>
         <div class="card mb-3">
           <div class="card-body p-2 p-md-3">
             <div class="row">
@@ -270,6 +300,8 @@
 import APIErrorMessage from '@/common/components/APIErrorMessage'
 import PersonEdit from '@/registry/components/people/PersonEdit.vue'
 import PersonNotes from '@/registry/components/people/PersonNotes.vue'
+import ApplicationAdd from '@/registry/components/people/ApplicationAdd.vue'
+import ApiService from '@/common/services/ApiService.js'
 import { mapGetters } from 'vuex'
 import { SET_DRILLER } from '@/registry/store/mutations.types'
 import { FETCH_DRILLER } from '@/registry/store/actions.types'
@@ -279,6 +311,7 @@ export default {
   components: {
     'api-error': APIErrorMessage,
     'person-edit': PersonEdit,
+    'application-add': ApplicationAdd,
     PersonNotes
   },
   data () {
@@ -295,10 +328,16 @@ export default {
       ],
       editCompany: 0,
       editPerson: false,
-      editContact: false
+      editContact: false,
+      showAddApplication: false,
+      application: null,
+      savingApplication: false
     }
   },
   computed: {
+    showSpinner () {
+      return this.currentDriller == null || this.loading || this.savingApplication
+    },
     personEmail () {
       // sort a person's contact info into a list of emails
       const email = []
@@ -410,12 +449,30 @@ export default {
       'user',
       'error',
       'currentDriller',
-      'drillers'
+      'drillers',
+      'userIsAdmin'
     ])
   },
   methods: {
     updateRecord () {
       this.$store.dispatch(FETCH_DRILLER, this.$route.params.person_guid)
+    },
+    addApplication () {
+      this.application = null
+      this.showAddApplication = true
+    },
+    closeApplication () {
+      this.application = null
+      this.showAddApplication = false
+    },
+    saveApplication () {
+      this.application.registration = this.currentDriller.registrations[0].register_guid
+      this.savingApplication = true
+      ApiService.post('applications', this.application).then(() => {
+        this.closeApplication()
+        this.savingApplication = false
+        this.updateRecord()
+      })
     }
   },
   created () {

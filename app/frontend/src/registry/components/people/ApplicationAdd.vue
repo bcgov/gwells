@@ -79,6 +79,7 @@
               </b-form-group>
             </b-col>
           </b-row>
+          <slot></slot>
         </p>
       </div>
     </div>
