@@ -134,17 +134,6 @@
               </b-row>
               <div v-if="drillerForm.regType.some(x => x === 'DRILL')">
                 <b-row>
-                  <!-- <b-col cols="12" md="4">
-                    <b-form-group
-                      id="drillerRegNoInputGroup"
-                      label="Well Driller Registration Number:"
-                      label-for="drillerRegNoInput">
-                      <b-form-input
-                        id="drillerRegNoInput"
-                        type="text"
-                        v-model="drillerForm.registrations.drill.registration_no"/>
-                    </b-form-group>
-                  </b-col> -->
                   <b-col md="7">
                     <b-form-group
                       id="companyInputGroup"
@@ -182,17 +171,6 @@
               </div>
               <div v-if="drillerForm.regType.some(x => x === 'PUMP')">
                 <b-row>
-                  <!-- <b-col cols="12" md="4">
-                    <b-form-group
-                      id="pumpRegNoInputGroup"
-                      label="Well Pump Installer Registration Number:"
-                      label-for="pumpRegNoInput">
-                      <b-form-input
-                        id="pumpRegNoInput"
-                        type="text"
-                        v-model="drillerForm.registrations.pump.registration_no"/>
-                    </b-form-group>
-                  </b-col> -->
                   <b-col md="7">
                     <b-form-group
                       id="companyInputGroup"
