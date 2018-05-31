@@ -156,3 +156,6 @@ sonar-runner/.classpath
 # DB
 *.dmp
 *.pgCustom
+
+# Exceptions
+!app/*/fixtures/*.gz

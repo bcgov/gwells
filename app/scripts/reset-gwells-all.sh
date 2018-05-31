@@ -10,6 +10,7 @@
 # Halt conditions, verbosity and field separator
 #
 set -euo pipefail
+set -x
 [ "${VERBOSE:-x}" != true ]|| set -x
 IFS=$'\n\t'
 

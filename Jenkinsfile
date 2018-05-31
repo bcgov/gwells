@@ -80,7 +80,7 @@ Map context = [
   'uuid' : "${env.JOB_BASE_NAME}-${env.BUILD_NUMBER}-${env.CHANGE_ID}",
   'env': [
       'dev':[:],
-      'test':[:],
+      'test':['params':['host':'gwells-test.pathfinder.gov.bc.ca']],
       'prod':['params':['host':'gwells-prod.pathfinder.gov.bc.ca', 'DB_PVC_SIZE':'5Gi']]
   ],
   'templates': [
@@ -142,6 +142,7 @@ _stage('Build', context) {
         if ("master".equalsIgnoreCase(env.CHANGE_TARGET)) {
             new OpenShiftHelper().prepareForCD(this, context)
         }
+        deleteDir()
     }
 } //end stage
 
@@ -291,7 +292,12 @@ for(String envKeyName: context.env.keySet() as String[]){
                     podName=openshift.selector('pod', ['deploymentconfig':deploymentConfigName]).objects()[0].metadata.name
                 }
                 sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src && pwd && python manage.py flush --no-input'"
-                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src && pwd && python manage.py loaddata wells registries'"
+                // Lookup tables common to all system components (e.g. Django apps)
+                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src && pwd && python manage.py loaddata gwells/fixtures/codetables.ProvinceStateCode.json'"
+                // Lookup tables for the Wellsearch component (not yet a Django app) and Registries app
+                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src && pwd && python manage.py loaddata gwells/fixtures/codetables.json registries/fixtures/codetables.json'"
+                // Test data for the Wellsearch component (not yet a Django app) and Registries app
+                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src && pwd && python manage.py loaddata gwells/fixtures/wellsearch.json.gz registries/fixtures/registries.json'"
             }
         }
     }
