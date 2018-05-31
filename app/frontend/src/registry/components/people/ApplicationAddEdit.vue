@@ -133,16 +133,6 @@ export default {
       const match = this.subactivityMap.filter(item => item.registries_subactivity_code === value)[0]
       this.qualificationForm.qualifications = match.qualification_set.map(item => item.well_class)
     },
-    cloneStatusSet (status) {
-      let result = []
-      status.forEach((item) => {
-        result.push({
-          effective_date: item.effective_date,
-          status: item.status
-        })
-      })
-      return result
-    },
     ...mapActions([
       FETCH_DRILLER_OPTIONS
     ])
