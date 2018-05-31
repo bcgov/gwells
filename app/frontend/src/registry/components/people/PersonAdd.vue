@@ -266,14 +266,14 @@ import APIErrorMessage from '@/common/components/APIErrorMessage'
 import { mapGetters } from 'vuex'
 import ApiService from '@/common/services/ApiService.js'
 import OrganizationAdd from '@/registry/components/people/OrganizationAdd.vue'
-import ApplicationAdd from '@/registry/components/people/ApplicationAdd.vue'
+import ApplicationAddEdit from '@/registry/components/people/ApplicationAddEdit.vue'
 
 export default {
   name: 'PersonDetailEdit',
   components: {
     'api-error': APIErrorMessage,
     'organization-add': OrganizationAdd,
-    'application-add': ApplicationAdd
+    'application-add': ApplicationAddEdit
   },
   data () {
     return {

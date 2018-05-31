@@ -1,13 +1,13 @@
 import { shallowMount, createLocalVue } from '@vue/test-utils'
 import Vuex from 'vuex'
-import ApplicationAdd from '@/registry/components/people/ApplicationAdd'
+import ApplicationAddEdit from '@/registry/components/people/ApplicationAddEdit'
 import { FETCH_DRILLER_OPTIONS } from '@/registry/store/actions.types'
 import fakeOptions from '../fakeDrillerOptions'
 
 const localVue = createLocalVue()
 localVue.use(Vuex)
 
-describe('ApplicationAdd.vue', () => {
+describe('ApplicationAddEdit.vue', () => {
   describe('When loaded', () => {
     const getters = {
       drillerOptions: jest.fn().mockReturnValue(fakeOptions),
@@ -19,7 +19,7 @@ describe('ApplicationAdd.vue', () => {
     const store = new Vuex.Store({ getters, actions })
     const activity = 'DRILL'
 
-    const wrapper = shallowMount(ApplicationAdd, {
+    const wrapper = shallowMount(ApplicationAddEdit, {
       store,
       propsData: { activity },
       localVue

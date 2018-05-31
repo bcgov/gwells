@@ -300,7 +300,7 @@
 import APIErrorMessage from '@/common/components/APIErrorMessage'
 import PersonEdit from '@/registry/components/people/PersonEdit.vue'
 import PersonNotes from '@/registry/components/people/PersonNotes.vue'
-import ApplicationAdd from '@/registry/components/people/ApplicationAdd.vue'
+import ApplicationAddEdit from '@/registry/components/people/ApplicationAddEdit.vue'
 import ApiService from '@/common/services/ApiService.js'
 import { mapGetters } from 'vuex'
 import { SET_DRILLER } from '@/registry/store/mutations.types'
@@ -311,7 +311,7 @@ export default {
   components: {
     'api-error': APIErrorMessage,
     'person-edit': PersonEdit,
-    'application-add': ApplicationAdd,
+    'application-add': ApplicationAddEdit,
     PersonNotes
   },
   data () {

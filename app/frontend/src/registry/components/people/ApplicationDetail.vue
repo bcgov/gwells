@@ -157,7 +157,7 @@ import QualCheckbox from '@/common/components/QualCheckbox'
 import { mapGetters, mapActions } from 'vuex'
 import { SET_ERROR } from '@/registry/store/mutations.types'
 import { FETCH_DRILLER_OPTIONS } from '@/registry/store/actions.types'
-import ApplicationAdd from '@/registry/components/people/ApplicationAdd.vue'
+import ApplicationAddEdit from '@/registry/components/people/ApplicationAddEdit.vue'
 import ApiService from '@/common/services/ApiService.js'
 
 export default {
@@ -165,7 +165,7 @@ export default {
   components: {
     'api-error': APIErrorMessage,
     'r-checkbox': QualCheckbox,
-    'application-edit': ApplicationAdd
+    'application-edit': ApplicationAddEdit
   },
   data () {
     return {
