@@ -1,4 +1,5 @@
 let response = null
+let patch = null
 
 const ApiService = {
   query: function () {
@@ -11,8 +12,19 @@ const ApiService = {
       resolve({ data: response })
     })
   },
+  patch: function (resource, record, params) {
+    patch = {
+      record, params
+    }
+    return new Promise((resolve, reject) => {
+      resolve({data: response})
+    })
+  },
   __setMockResponse: function (newResponse) {
     response = newResponse
+  },
+  __getMockPatch: function () {
+    return patch
   }
 
 }

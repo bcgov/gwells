@@ -113,6 +113,7 @@ export default {
       ],
       qualifications: []
     }
+
     return {
       qualificationForm: this.value ? this.value : defaultData
     }
@@ -130,6 +131,16 @@ export default {
     changedClassification (value) {
       const match = this.subactivityMap.filter(item => item.registries_subactivity_code === value)[0]
       this.qualificationForm.qualifications = match.qualification_set.map(item => item.well_class)
+    },
+    cloneStatusSet (status) {
+      let result = []
+      status.forEach((item) => {
+        result.push({
+          effective_date: item.effective_date,
+          status: item.status
+        })
+      })
+      return result
     },
     ...mapActions([
       FETCH_DRILLER_OPTIONS
@@ -157,12 +168,12 @@ export default {
       }
       if (this.drillerOptions) {
         // If driller options have loaded, prepare the form options.
-        result.issuer = result.issuer.concat(this.drillerOptions.AccreditedCertificateCode.map((item) => { return {'text': item.name + ' (' + item.cert_auth + ')', 'value': item.acc_cert_guid} }))
         result.proofOfAge = result.proofOfAge.concat(this.drillerOptions.ProofOfAgeCode.map((item) => { return {'text': item.description, 'value': item.registries_proof_of_age_code} }))
         if (this.activity in this.drillerOptions) {
           // Different activities have different options.
           result.classifications = this.drillerOptions[this.activity].SubactivityCode.map((item) => { return {'text': item.description, 'value': item.registries_subactivity_code} })
           result.qualifications = this.drillerOptions[this.activity].WellClassCode.map((item) => { return {'text': item.description, 'value': item.registries_well_class_code} })
+          result.issuer = result.issuer.concat(this.drillerOptions[this.activity].AccreditedCertificateCode.map((item) => { return {'text': item.name + ' (' + item.cert_auth + ')', 'value': item.acc_cert_guid} }))
         }
       }
       return result

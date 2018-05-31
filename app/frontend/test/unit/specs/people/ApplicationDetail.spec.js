@@ -29,7 +29,6 @@ describe('ApplicationDetail.vue', () => {
       drillerOptions: () => jest.fn().mockReturnValue(fakeDrillerOptions)
     }
     mutations = {
-      // [SET_DRILLER]: jest.fn()
     }
     actions = {
       [FETCH_DRILLER_OPTIONS]: jest.fn()
@@ -75,7 +74,6 @@ describe('ApplicationDetail.vue', () => {
       userIsAdmin: () => true
     }
     let mutations = {
-      // [SET_DRILLER]: jest.fn()
     }
     let actions = {
       [FETCH_DRILLER_OPTIONS]: jest.fn()
@@ -106,11 +104,6 @@ describe('ApplicationDetail.vue', () => {
         const issuer = wrapper.find('#issuer')
         expect(issuer.value).toBe(fakeRegistration.applications[0].primary_certificate.acc_cert_guid)
       })
-      // it('has the current classification selected', () => {
-      //   const classifications = wrapper.find('#classifications')
-      //   // NO IDEA HOW TO CHECK THIS!
-      //   expect(classifications.selected).toBe(fakeRegistration.applications[0].subactivity.registries_subactivity_code)
-      // })
       const cancel = wrapper.find('#cancelClassification')
       it('has a cancel button', () => {
         expect(cancel.exists()).toBe(true)
@@ -120,40 +113,40 @@ describe('ApplicationDetail.vue', () => {
         it('show are you sure dialog', () => {
           expect(wrapper.find('#confirmCancelModal')).toBeTruthy()
         })
-        // TODO: add user clicking discard and cancel
-        it('has changed back to view', () => {
-          expect(wrapper.find('#editClassification').exists()).toBe(true)
-        })
+        // Get rid of the modal
+        wrapper.find('#confirmCancel').trigger('click')
       })
-
-      // TODO: Close button
-    //   describe('User has clicked save', () => {
-    //     // TODO: When you get here, write test to enter data
-    //     save.trigger('click')
-    //     it('dispatches mutation when save/update is clicked', () => {
-    //       expect(mutations.UPDATE_APPLICATION).toHaveBeenCalled()
-    //     })
-    //   })
-    })
-    describe('User has clicked edit', () => {
-
     })
   })
-  // // describe('User can\'t edit', () => {
-  // //   const wrapper = shallowMount(ApplicationDetail, {
-  // //     localVue,
-  // //     store,
-  // //     stubs: ['router-link', 'router-view'],
-  // //     mocks: {
-  // //       $route: {params: {person_guid: fakePerson.person_guid, classCode: 'geotech'}}
-  // //     }
-  // //   })
-  // //   it('doesn\'t show edit button if user doesn\'t have appropriate rights', () => {
-  // //     expect(wrapper.find('input[type="button"][id="edit"]').exists()).toBe(false)
-  // //   })
-
-  // //   it('doesn\'t have a save button when not in edit mode', () => {
-  // //     expect(wrapper.find('input[type="button"][id="save"]').exists()).toFalse(true)
-  // //   })
-  // })
+  describe('User can\'t edit', () => {
+    let getters = {
+      loading: () => false,
+      error: () => null,
+      user: () => null,
+      currentDriller: jest.fn().mockReturnValue(fakePerson),
+      drillerOptions: jest.fn().mockReturnValue(fakeDrillerOptions),
+      drillers: () => [],
+      userIsAdmin: () => false
+    }
+    let mutations = {
+    }
+    let actions = {
+      [FETCH_DRILLER_OPTIONS]: jest.fn()
+    }
+    let store = new Vuex.Store({ getters, actions, mutations })
+    const wrapper = shallowMount(ApplicationDetail, {
+      localVue,
+      store,
+      stubs: ['router-link', 'router-view'],
+      mocks: {
+        $route: {params: {person_guid: fakePerson.person_guid, application_guid: fakeRegistration.applications[0].application_guid}}
+      }
+    })
+    it('doesn\'t show edit button if user doesn\'t have appropriate rights', () => {
+      expect(wrapper.find('#editClassification').exists()).toBe(false)
+    })
+    it('doesn\'t have a save button when not in edit mode', () => {
+      expect(wrapper.find('#saveClassification').exists()).toBe(false)
+    })
+  })
 })

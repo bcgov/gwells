@@ -6,19 +6,14 @@ const ApiService = {
   init () {
     axios.defaults.baseURL = process.env.AXIOS_BASE_URL
     if (logging) {
-      console.log('turning on interceptors')
       axios.interceptors.request.use(function (request) {
-        console.log(request)
         return request
       }, function (error) {
-        console.log(error)
         return Promise.reject(error)
       })
       axios.interceptors.response.use(function (response) {
-        console.log(response)
         return response
       }, function (error) {
-        console.log(error)
         return Promise.reject(error)
       })
     }

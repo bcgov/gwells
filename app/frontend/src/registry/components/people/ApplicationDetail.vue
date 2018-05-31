@@ -48,10 +48,10 @@
                 :return-focus="$refs.cancelClassification">
               Your changes are not save. Are you sure you want to discard your changes?
               <div slot="modal-footer">
-                <b-btn variant="secondary" @click="confirmCancelModal=false" ref="cancelSubmitCancelBtn">
+                <b-btn variant="secondary" id="confirmCancel" @click="confirmCancelModal=false" ref="cancelSubmitCancelBtn">
                   Cancel
                 </b-btn>
-                <b-btn variant="danger" @click="confirmCancelModal=false;editClassification=false;applicationReset();">
+                <b-btn variant="danger" id="discardChanges" @click="confirmCancelModal=false;editClassification=false;applicationReset();">
                   Discard
                 </b-btn>
               </div>
@@ -59,12 +59,12 @@
             <b-row>
               <application-edit
                 :activity="activity"
-                :value="application"
+                :value="applicationFormValue"
                 v-on:close="confirmCancelModal=true"/>
             </b-row>
             <b-row class="mt-3">
               <b-col>
-                <button type="submit" class="btn btn-primary" id="saveClassification">Save</button>
+                <button type="submit" class="btn btn-primary" id="saveClassification" v-on:click="saveApplication">Save</button>
                 <button type="submit" class="btn btn-primary" id="cancelClassification" v-on:click="confirmCancelModal=true">Cancel</button>
               </b-col>
             </b-row>
@@ -183,8 +183,9 @@ export default {
           active: true
         }
       ],
-      editClassification: false,
       registration: null,
+      applicationFormValue: null,
+      editClassification: false,
       confirmCancelModal: false
     }
   },
@@ -194,11 +195,28 @@ export default {
     ]),
     applicationReset () {
       this.registration = null
+      this.applicationFormValue = null
       // We fetch the entire registration with all applications because we need a reference to the registration
       // activity.
       ApiService.get('registrations', this.$route.params.registration_guid)
         .then((response) => {
           this.registration = response.data
+
+          if (this.registration) {
+            let application = this.registration.applications.find((item) => item.application_guid === this.$route.params.application_guid)
+            this.applicationFormValue = {
+              subactivity: {
+                registries_subactivity_code: application.subactivity.registries_subactivity_code
+              },
+              primary_certificate_no: application.primary_certificate_no,
+              primary_certificate: {
+                acc_cert_guid: application.primary_certificate.acc_cert_guid
+              },
+              status_set: application.status_set,
+              qualifications: application.qualifications,
+              proof_of_age: application.proof_of_age
+            }
+          }
         })
         .catch((error) => {
           this.$store.commit(SET_ERROR, error.response)
@@ -207,14 +225,22 @@ export default {
     focusCancelModal () {
       // focus the "cancel" button in the confirm discard popup
       this.$refs.cancelSubmitCancelBtn.focus()
+    },
+    saveApplication () {
+      this.loading = true
+      const copy = Object.assign(this.applicationFormValue)
+      delete copy['status_set'] // TODO: implement this during adjudication
+      delete copy['qualifications'] // This section is read-only. No point pushing it to server.
+      ApiService.patch('applications', this.$route.params.application_guid, copy).then(() => {
+        this.loading = false
+        this.editClassification = false
+        this.applicationReset()
+      })
     }
   },
   computed: {
     classification () {
       return this.application ? this.application.subactivity.description : null
-    },
-    application () {
-      return this.registration ? this.registration.applications.find((item) => item.application_guid === this.$route.params.application_guid) : null
     },
     activity () {
       return this.registration ? this.registration.registries_activity : null
@@ -230,6 +256,9 @@ export default {
         return this.application.qualifications
       }
       return []
+    },
+    application () {
+      return this.registration ? this.registration.applications.find((item) => item.application_guid === this.$route.params.application_guid) : null
     },
     applicationLoading () {
       return this.loading || this.drillerOptions === null || this.registration === null || this.application === null
