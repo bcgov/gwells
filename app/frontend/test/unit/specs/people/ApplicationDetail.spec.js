@@ -2,7 +2,7 @@ import { shallowMount, createLocalVue } from '@vue/test-utils'
 import Vuex from 'vuex'
 import ApplicationDetail from '@/registry/components/people/ApplicationDetail'
 import { FETCH_DRILLER_OPTIONS } from '@/registry/store/actions.types'
-import fakePerson from '../fakePerson2' // TODO: rename this! or use a single one!
+import fakePerson from '../fakePerson' // TODO: rename this! or use a single one!
 import fakeDrillerOptions from '../fakeDrillerOptions'
 import fakeRegistration from '../fakeRegistration'
 import ApiService from '@/common/services/ApiService.js'
