@@ -25,44 +25,11 @@ AUTHORITY_GROUP_NAME = 'gwells_authority'
 ADMIN_GROUP_NAME = 'gwells_admin'
 VIEWER_GROUP_NAME = 'gwells_viewer'
 
-# Default permissions for Application Administrators
-ADMIN_PERMISSIONS = [
-    Permission.objects.get(codename='add_person'),
-    Permission.objects.get(codename='change_person'),
-    Permission.objects.get(codename='delete_person'),
-    Permission.objects.get(codename='add_organization'),
-    Permission.objects.get(codename='change_organization'),
-    Permission.objects.get(codename='delete_organization'),
-    Permission.objects.get(codename='add_registriesapplication'),
-    Permission.objects.get(codename='change_registriesapplication'),
-    Permission.objects.get(codename='delete_registriesapplication'),
-    Permission.objects.get(codename='add_register'),
-    Permission.objects.get(codename='change_register'),
-    Permission.objects.get(codename='delete_register'),
-    Permission.objects.get(codename='add_personnote'),
-    Permission.objects.get(codename='change_personnote'),
-    Permission.objects.get(codename='delete_personnote'),
-    Permission.objects.get(codename='add_organizationnote'),
-    Permission.objects.get(codename='change_organizationnote'),
-    Permission.objects.get(codename='delete_organizationnote'),
-]
-
-# Default permissions for Adjudicator and Statutory Authority roles
-ADJUDICATOR_PERMISSIONS = ADMIN_PERMISSIONS
-AUTHORITY_PERMISSIONS = ADMIN_PERMISSIONS
-VIEWER_PERMISSIONS = []
-
 ROLE_MAP = {
     ADJUDICATOR_ROLE: ADJUDICATOR_GROUP_NAME,
     AUTHORITY_ROLE: AUTHORITY_GROUP_NAME,
     ADMIN_ROLE: ADMIN_GROUP_NAME,
     VIEWER_ROLE: VIEWER_GROUP_NAME
-}
-PERMISSION_MAP = {
-    ADJUDICATOR_ROLE: ADJUDICATOR_PERMISSIONS,
-    AUTHORITY_ROLE: AUTHORITY_PERMISSIONS,
-    ADMIN_ROLE: ADMIN_PERMISSIONS,
-    VIEWER_ROLE: VIEWER_PERMISSIONS
 }
 
 GWELLS_ROLES = (ADJUDICATOR_ROLE, AUTHORITY_ROLE, ADMIN_ROLE, VIEWER_ROLE)
@@ -97,18 +64,47 @@ def roles_to_groups(user, roles=None):
 
     """
 
+    # Default permissions for Application Administrators
+    ADMIN_PERMISSIONS = [
+        Permission.objects.filter(codename__in=['add_person',
+                                                'change_person',
+                                                'delete_person',
+                                                'add_organization',
+                                                'change_organization',
+                                                'delete_organization',
+                                                'add_registriesapplication',
+                                                'change_registriesapplication',
+                                                'delete_registriesapplication',
+                                                'add_register',
+                                                'change_register',
+                                                'delete_register',
+                                                'add_personnote',
+                                                'change_personnote',
+                                                'delete_personnote',
+                                                'add_organizationnote',
+                                                'change_organizationnote',
+                                                'delete_organizationnote'])
+    ]
+
+    # Default permissions for Adjudicator and Statutory Authority roles
+    ADJUDICATOR_PERMISSIONS = ADMIN_PERMISSIONS
+    AUTHORITY_PERMISSIONS = ADMIN_PERMISSIONS
+    VIEWER_PERMISSIONS = []
+
+    PERMISSION_MAP = {
+        ADJUDICATOR_ROLE: ADJUDICATOR_PERMISSIONS,
+        AUTHORITY_ROLE: AUTHORITY_PERMISSIONS,
+        ADMIN_ROLE: ADMIN_PERMISSIONS,
+        VIEWER_ROLE: VIEWER_PERMISSIONS
+    }
+
     if user is None:
         raise exceptions.AuthenticationFailed(
             'Failed to retrieve user to apply roles to')
 
-    user_is_staff = False
-
     user_group_names = [group.name for group in user.groups.all()]
 
     for role in roles:
-        # if user has a valid GWELLS role, indicate that they are staff
-        if role in GWELLS_ROLES:
-            user_is_staff = True
 
         # if user is not in their role group, add them
         if role in GWELLS_ROLES and ROLE_MAP.get(role) not in user_group_names:
@@ -124,11 +120,3 @@ def roles_to_groups(user, roles=None):
                 group not in [ROLE_MAP.get(role) for role in roles] and
                 user.groups.filter(name=group).exists()):
             user.groups.get(name=group).user_set.remove(user)
-
-    # update profile based on SSO (Keycloak) staff role status
-    if user_is_staff and not user.profile.is_gwells_admin:
-        user.profile.is_gwells_admin = True
-        user.profile.save()
-    elif not user_is_staff and user.profile.is_gwells_admin:
-        user.profile.is_gwells_admin = False
-        user.profile.save()

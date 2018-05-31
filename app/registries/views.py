@@ -26,6 +26,7 @@ from rest_framework.mixins import CreateModelMixin, UpdateModelMixin
 from rest_framework.views import APIView
 
 from drf_multiple_model.views import ObjectMultipleModelAPIView
+from gwells.roles import GWELLS_ROLE_GROUPS
 from registries.models import (
     AccreditedCertificateCode,
     ActivityCode,
@@ -46,10 +47,8 @@ from registries.serializers import (
     CityListSerializer,
     ProofOfAgeCodeSerializer,
     OrganizationListSerializer,
-    OrganizationSerializer,
     OrganizationAdminSerializer,
     OrganizationNameListSerializer,
-    PersonSerializer,
     PersonAdminSerializer,
     PersonListSerializer,
     RegistrationAdminSerializer,
@@ -155,16 +154,6 @@ class OrganizationListView(AuditCreateMixin, ListCreateAPIView):
         'registrations__applications__file_no'
     )
 
-    def get_queryset(self):
-        """
-        Filter out organizations with no registered drillers if user is anonymous
-        """
-        qs = super().get_queryset()
-        if not self.request.user.is_staff:
-            qs = qs \
-                .filter(person_set__registrations__status='ACTIVE')
-        return qs
-
 
 class OrganizationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
     """
@@ -192,17 +181,6 @@ class OrganizationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
         .select_related('province_state',) \
         .prefetch_related('registrations', 'registrations__person') \
         .filter(expired_date__isnull=True)
-
-    def get_queryset(self):
-        """
-        Filter out organizations with no registered drillers if user is anonymous
-        """
-        qs = self.queryset
-        if not self.request.user.is_staff:
-            qs = qs \
-                .filter(registrations__status='ACTIVE') \
-                .distinct()
-        return qs
 
     def destroy(self, request, *args, **kwargs):
         """
@@ -267,7 +245,7 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
     """
 
     permission_classes = (DjangoModelPermissionsOrAnonReadOnly,)
-    serializer_class = PersonSerializer
+    serializer_class = PersonAdminSerializer
     pagination_class = APILimitOffsetPagination
 
     # Allow searching on name fields, names of related companies, etc.
@@ -319,7 +297,8 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
 
         # Only show active drillers to non-admin users and public
         activity = self.request.query_params.get('activity', None)
-        if not self.request.user.is_staff:
+
+        if not self.request.user.groups.filter(name__in=GWELLS_ROLE_GROUPS).exists():
             if activity:
                 qs = qs.filter(registrations__status='ACTIVE',
                                registrations__registries_activity__registries_activity_code=activity)
@@ -328,12 +307,6 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
                 qs = qs.filter(registrations__status='ACTIVE')
 
         return qs
-
-    def get_serializer_class(self):
-        """ Returns the appropriate serializer for the user """
-        if self.request and self.request.user.is_staff:
-            return PersonAdminSerializer
-        return self.serializer_class
 
     def list(self, request):
         """ List response using serializer with reduced number of fields """
@@ -365,7 +338,7 @@ class PersonDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
     """
 
     permission_classes = (GwellsPermissions,)
-    serializer_class = PersonSerializer
+    serializer_class = PersonAdminSerializer
 
     # pk field has been replaced by person_guid
     lookup_field = "person_guid"
@@ -397,14 +370,9 @@ class PersonDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
         Returns only registered people (i.e. drillers with active registration) to anonymous users
         """
         qs = self.queryset
-        if not self.request.user.is_staff:
+        if not self.request.user.groups.filter(name__in=GWELLS_ROLE_GROUPS).exists():
             qs = qs.filter(registrations__status='ACTIVE')
         return qs
-
-    def get_serializer_class(self):
-        if self.request and self.request.user.is_staff:
-            return PersonAdminSerializer
-        return self.serializer_class
 
     def destroy(self, request, *args, **kwargs):
         """
@@ -427,7 +395,7 @@ class CitiesListView(ListAPIView):
     serializer_class = CityListSerializer
     lookup_field = 'register_guid'
     pagination_class = None
-    permission_classes = (IsAdminOrReadOnly,)
+    permission_classes = (AllowAny,)
     queryset = Register.objects \
         .exclude(organization__city__isnull=True) \
         .exclude(organization__city='') \
@@ -444,7 +412,7 @@ class CitiesListView(ListAPIView):
         will filter for that activity
         """
         qs = self.queryset
-        if not self.request.user.is_staff:
+        if not self.request.user.groups.filter(name__in=GWELLS_ROLE_GROUPS).exists():
             qs = qs.filter(status='ACTIVE')
         if self.kwargs['activity'] == 'drill':
             qs = qs.filter(registries_activity='DRILL')

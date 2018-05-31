@@ -428,6 +428,8 @@ class APIPersonTests(AuthenticatedAPITestCase):
             'first_name': 'Bobby',
             'surname': 'Driller'
         }
+        self.prov, _ = ProvinceStateCode.objects.get_or_create(
+            province_state_code='BC', display_order=1)
         super().setUp()
 
     def test_create_person(self):
@@ -588,6 +590,20 @@ class APIPersonTests(AuthenticatedAPITestCase):
         response = self.client.post(url, data, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_create_person_wrong_role(self):
+        user, created = User.objects.get_or_create(username='test_viewer')
+        if created:
+            Profile.objects.get_or_create(user=user)
+
+        roles_to_groups(user, VIEWER_ROLE)
+        self.client.force_authenticate(user=user)
+        url = reverse('person-list')
+        data = {'first_name': 'Bobby', 'surname': 'Driller'}
+
+        response = self.client.post(url, data, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_unsafe_methods_by_unauthorized_users(self):
         """
@@ -774,17 +790,16 @@ class APIFilteringPaginationTests(APITestCase):
         # teardown
         logger.setLevel(previous_level)
 
+    def test_anon_user_cannot_create_driller(self):
+        # setup
+        logger = logging.getLogger('django.request')
+        previous_level = logger.getEffectiveLevel()
+        logger.setLevel(logging.ERROR)
 
-class RegistriesRolesTests(TestCase):
-    """
-    Tests GWELLS "SSO role"-based groups for Registries API
-    """
+        self.client.force_authenticate(user=None)
+        url = reverse('person-list')
+        response = self.client.post(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    def setUp(self):
-        """
-        Set up user for each test case
-        """
-        self.test_user, _ = User.objects.get_or_create(
-            username='Test_User', email='example@example.com', password='123456789')
-        self.test_profile, _ = Profile.objects.get_or_create(
-            user=self.test_user)
+        # teardown
+        logger.setLevel(previous_level)

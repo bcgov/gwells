@@ -66,12 +66,6 @@ class GwellsRoleGroupsTests(TestCase):
         self.assertEquals(self.test_user.groups.filter(
             name=VIEWER_GROUP_NAME).exists(), True)
 
-    def test_user_added_to_staff(self):
-        roles = [VIEWER_ROLE]
-        roles_to_groups(self.test_user, roles)
-
-        self.assertEquals(self.test_user.profile.is_gwells_admin, True)
-
     def test_user_removed_from_groups(self):
         """ Test that a user is removed from a group when their role is updated """
         roles = [ADMIN_ROLE, AUTHORITY_ROLE]
