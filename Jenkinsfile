@@ -425,10 +425,11 @@ for(String envKeyName: context.env.keySet() as String[]){
                         } catch (ex) {
                             echo "${stackTraceAsString(ex)}"
                             echo "DEV - Functional Tests Failed - Wait 1 minute and retry once"
+                            sleep 60
                             if ("DEV".equalsIgnoreCase(stageDeployName)){
-                                sh 'sleep 60; ./gradlew chromeHeadlessTest'
+                                sh './gradlew chromeHeadlessTest'
                             }else{
-                                sh 'sleep 60; ./gradlew -DchromeHeadlessTest.single=WellDetails chromeHeadlessTest'
+                                sh './gradlew -DchromeHeadlessTest.single=WellDetails chromeHeadlessTest'
                             }
                         } finally {
                                 archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/geb/**/*'
