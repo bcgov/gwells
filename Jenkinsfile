@@ -415,21 +415,28 @@ for(String envKeyName: context.env.keySet() as String[]){
                     //    sh 'python manage.py loaddata wells registries'
                     //}
                     dir('functional-tests') {
+                        Integer attempts = 0
+                        Integer attemptsMax = 2
                         try {
-                            //sh './gradlew -q dependencies'
-                            if ("DEV".equalsIgnoreCase(stageDeployName)){
-                                sh './gradlew chromeHeadlessTest'
-                            }else{
-                                sh './gradlew -DchromeHeadlessTest.single=WellDetails chromeHeadlessTest'
-                            }
-                        } catch (ex) {
-                            echo "${stackTraceAsString(ex)}"
-                            echo "DEV - Functional Tests Failed - Wait 1 minute and retry once"
-                            sleep 60
-                            if ("DEV".equalsIgnoreCase(stageDeployName)){
-                                sh './gradlew chromeHeadlessTest'
-                            }else{
-                                sh './gradlew -DchromeHeadlessTest.single=WellDetails chromeHeadlessTest'
+                            waitUntil {
+                                boolean isDone=false
+                                attempts++
+                                try{
+                                    if ("DEV".equalsIgnoreCase(stageDeployName)){
+                                        sh './gradlew chromeHeadlessTest'
+                                    }else{
+                                        sh './gradlew -DchromeHeadlessTest.single=WellDetails chromeHeadlessTest'
+                                    }
+                                    isDone=true
+                                } catch (ex) {
+                                    echo "${stackTraceAsString(ex)}"
+                                    echo "DEV - Functional Tests Failed - Wait one minute and retry once"
+                                    sleep 60
+                                }
+                                if ( attempts >= attemptsMax ){
+                                    isDone=true
+                                }
+                                return isDone
                             }
                         } finally {
                                 archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/geb/**/*'
@@ -453,7 +460,7 @@ for(String envKeyName: context.env.keySet() as String[]){
                             //todo: install perf report plugin.
                             //perfReport compareBuildPrevious: true, excludeResponseTime: true, ignoreFailedBuilds: true, ignoreUnstableBuilds: true, modeEvaluation: true, modePerformancePerTestCase: true, percentiles: '0,50,90,100', relativeFailedThresholdNegative: 80.0, relativeFailedThresholdPositive: 20.0, relativeUnstableThresholdNegative: 50.0, relativeUnstableThresholdPositive: 50.0, sourceDataFiles: 'build/test-results/**/*.xml'
                         }
-                    }
+                    } //end dir
                 } //end node
             } //end podTemplate
         } //end stage
