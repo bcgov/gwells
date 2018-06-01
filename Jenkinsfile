@@ -422,19 +422,21 @@ for(String envKeyName: context.env.keySet() as String[]){
                                 boolean isDone=false
                                 attempts++
                                 try{
-                                    if ("DEV".equalsIgnoreCase(stageDeployName)){
+                                    if ("DEV".equalsIgnoreCase(stageDeployName)) {
                                         sh './gradlew chromeHeadlessTest'
-                                    }else{
+                                    } else {
                                         sh './gradlew -DchromeHeadlessTest.single=WellDetails chromeHeadlessTest'
                                     }
                                     isDone=true
                                 } catch (ex) {
                                     echo "${stackTraceAsString(ex)}"
-                                    echo "DEV - Functional Tests Failed - Wait one minute and retry once"
-                                    sleep 60
-                                }
-                                if ( attempts >= attemptsMax ){
-                                    isDone=true
+                                    if ( attempts < attemptsMax ){
+                                        echo "DEV - Functional Tests Failed - Wait one minute and retry once"
+                                        sleep 60
+                                    } else {
+                                        echo "DEV - Functional Tests Failed - Retry Failed"
+                                        isDone=true
+                                    }
                                 }
                                 return isDone
                             }
