@@ -1,7 +1,0 @@
-create_user,create_date,update_user,update_date,cert_auth_code,description,effective_date,expired_date
-"DATALOAD_USER","2018-01-01 00:00:00-08","DATALOAD_USER","2018-01-01 00:00:00-08","BC","Province of B.C.","1970-01-01 00:00:00-08",
-"DATALOAD_USER","2018-01-01 00:00:00-08","DATALOAD_USER","2018-01-01 00:00:00-08","CGWA","Canadian Ground Water Association","1970-01-01 00:00:00-08",
-"DATALOAD_USER","2018-01-01 00:00:00-08","DATALOAD_USER","2018-01-01 00:00:00-08","AB","Province of Alberta","1970-01-01 00:00:00-08",
-"DATALOAD_USER","2018-01-01 00:00:00-08","DATALOAD_USER","2018-01-01 00:00:00-08","SK","Province of Saskatchewan","1970-01-01 00:00:00-08",
-"DATALOAD_USER","2018-01-01 00:00:00-08","DATALOAD_USER","2018-01-01 00:00:00-08","ON","Province of Ontario","1970-01-01 00:00:00-08",
-"DATALOAD_USER","2018-01-01 00:00:00-08","DATALOAD_USER","2018-01-01 00:00:00-08","N/A","Grand-fathered","1970-01-01 00:00:00-08",
