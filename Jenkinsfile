@@ -435,7 +435,7 @@ for(String envKeyName: context.env.keySet() as String[]){
                                         sleep 60
                                     } else {
                                         echo "DEV - Functional Tests Failed - Retry Failed"
-                                        isDone=true
+                                        throw ex
                                     }
                                 }
                                 return isDone
