@@ -94,8 +94,8 @@
                   </b-col>
                 </b-row>
                 <b-row>
-                  <b-col md="2"><span class="registry-label">Issued by:</span></b-col>
-                  <b-col md="3">{{ primaryCertificateName }} ({{ primaryCertificateAuth }})</b-col>
+                  <b-col md="1"><span class="registry-label">Issued by:</span></b-col>
+                  <b-col md="4">{{ primaryCertificateName }} ({{ primaryCertificateAuth }})</b-col>
                   <b-col md="2"><span class="registry-label">Certificate number:</span></b-col>
                   <b-col md="3">{{ application.primary_certificate_no }}</b-col>
                 </b-row>
@@ -113,24 +113,57 @@
               <div class="card-body">
                 <h5>Adjudication</h5>
                 <b-row>
-                  <b-col md="12" class="registry-item">
-                    <span class="registry-label">Date application received:</span>
-                    {{ applicationReceivedDate }}
+                  <b-col>
+                    Confirmed applicant is 19 years of age or older by reviewing: {{ proofOfAge }}
                   </b-col>
                 </b-row>
-                <div class="row">
-                  <b-col md="4" class="registry-item">
+                <b-row>
+                  <b-col md="2" class="registry-item pr-0">
+                    <span class="registry-label">Date application received:</span>
+                  </b-col>
+                  <b-col v-if="applicationReceivedDate" md="2">
+                      {{ applicationReceivedDate }}
+                  </b-col>
+                  <b-col v-else>Unknown</b-col>
+                </b-row>
+                <b-row>
+                  <b-col md="2" class="registry-item">
                     <span class="registry-label">Approval outcome date:</span>
+                  </b-col>
+                  <b-col md="2">
                     {{ approvalOutcomeDate }}
                   </b-col>
-                  <b-col md="4" class="registry-item">
+                  <b-col md="2" class="registry-item">
                     <span class="registry-label">Approval outcome:</span>
+                  </b-col>
+                  <b-col md="2">
                     {{ approvalOutcome }}
                   </b-col>
-                  <b-col v-if="approvalStatus.status === 'NA'" md="4" class="registry-item">
+                  <b-col v-if="approvalStatus.status === 'NA'" md="2" class="registry-item">
                     <span class="registry-label">Reason denied:</span>
                   </b-col>
-                </div>
+                  <b-col v-if="approvalStatus.status === 'NA'" md="2">
+                    {{ reasonDenied }}
+                  </b-col>
+                </b-row>
+                <b-row>
+                  <b-col md="2" class="registry-item">
+                    <span class="registry-label">Notification date:</span>
+                  </b-col>
+                  <b-col md="2">
+                    {{ notificationDate }}
+                  </b-col>
+                </b-row>
+                <b-row v-if="registerRemovalDate || registerRemovalReason">
+                  <b-col class="pt-3"><h6>Removal from register</h6></b-col>
+                </b-row>
+                <b-row v-if="registerRemovalDate || registerRemovalReason">
+                  <b-col><span class="registry-label">Register removal date</span></b-col>
+                  <b-col>{{registerRemovalReason}}</b-col>
+                  <b-col><span class="registry-label">Removal reason</span></b-col>
+                  <b-col>{{registerRemovalDate}}</b-col>
+                </b-row>
+
                 <!--
                 <div class="row">
                   <div class="col-12 col-sm-4 registry-item">
@@ -294,11 +327,20 @@ export default {
     approvalOutcome () {
       return this.approvalStatus ? this.approvalStatus.description : null
     },
-    reasonDeniend () {
+    reasonDenied () {
       return this.approvalStatus ? this.application.reason_denied : null
     },
     notificationDate () {
       return this.approvalStatus ? this.approvalStatus.notified_date : null
+    },
+    proofOfAge () {
+      return this.application.proof_of_age ? this.application.proof_of_age.description : null
+    },
+    registerRemovalDate () {
+      return this.registration.register_removal_date
+    },
+    registerRemovalReason () {
+      return this.registration.register_removal_reason
     },
     ...mapGetters([
       'loading',
