@@ -46,7 +46,7 @@
                 title="Confirm cancel"
                 @shown="focusCancelModal"
                 :return-focus="$refs.cancelClassification">
-              Your changes are not save. Are you sure you want to discard your changes?
+              Your changes are not saved. Are you sure you want to discard your changes?
               <div slot="modal-footer">
                 <b-btn variant="secondary" id="confirmCancel" @click="confirmCancelModal=false" ref="cancelSubmitCancelBtn">
                   Cancel
@@ -70,7 +70,7 @@
             </b-row>
           </div>
           <div v-else>
-            <div class="card">
+            <div class="card mb-3">
               <div class="card-body">
                 <b-row>
                   <b-col md="9">
@@ -228,7 +228,7 @@ export default {
     },
     saveApplication () {
       this.loading = true
-      const copy = Object.assign(this.applicationFormValue)
+      const copy = Object.assign({}, this.applicationFormValue)
       delete copy['status_set'] // TODO: implement this during adjudication
       delete copy['qualifications'] // This section is read-only. No point pushing it to server.
       ApiService.patch('applications', this.$route.params.application_guid, copy).then(() => {
