@@ -17,7 +17,7 @@
         <div v-if="currentDriller != {}">
           <div class="row">
             <div class="col-12">
-              <h5 class="card-title">{{ currentDriller.first_name }} {{ currentDriller.surname }}</h5>
+              <h4 class="card-title">{{ currentDriller.first_name }} {{ currentDriller.surname }}</h4>
             </div>
           </div>
         </div>
@@ -26,56 +26,13 @@
             <api-error :error="error" resetter="SET_ERROR"></api-error>
           </div>
         </div>
-        <div class="table-responsive">
-          <table id="classification-table" class="table">
-            <thead>
-              <th>Classification</th>
-              <th>Register Status</th>
-              <th>Date Registered</th>
-            </thead>
-            <tbody>
-              <tr v-for="(item, index) in classifications" :key="`classification ${index}`">
-                <td><router-link :to="{
-                  name: 'ApplicationDetail',
-                  params: { person_guid: currentDriller.person_guid, registration_guid: item.registration_guid, application_guid: item.application_guid } }">
-                {{ item.description }}</router-link></td>
-                <td>{{ item.status }}</td>
-                <td>{{ item.date }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <b-row v-if="showAddApplication">
-          <b-col>
-            <b-form @submit.prevent="saveApplication">
-              <!-- TODO: Attach appropriate activity -->
-              <application-add
-                  class="mb-3"
-                  v-on:close="closeApplication()"
-                  v-model="application"
-                  activity="DRILL">
-                  <button type="submit" class="btn btn-primary" variant="primary">Save</button>
-                  <button type="button" class="btn btn-light" @click="closeApplication()">Cancel</button>
-              </application-add>
-            </b-form>
-          </b-col>
-        </b-row>
-        <b-row v-else>
-          <b-col>
-            <b-button
-                    v-if="userRoles.edit"
-                    type="button"
-                    variant="primary"
-                    size="sm"
-                    v-on:click="addApplication()"
-                    class="mb-3"><i class="fa fa-plus-square-o"></i> Add classification</b-button>
-          </b-col>
-        </b-row>
+
+        <!-- Personal information -->
         <div class="card mb-3">
           <div class="card-body p-2 p-md-3">
             <div class="row">
               <div class="col-9">
-                <h6 class="card-title mb-3">Personal Information</h6>
+                <h5 class="card-title mb-3">Personal Information</h5>
               </div>
               <div class="col-3 text-right">
                 <button
@@ -124,109 +81,208 @@
           </div>
         </div>
 
-        <!-- Company information -->
-        <div class="card mb-3">
+        <!-- Registrations -->
+        <div class="card mb-3"
+            v-for="(registration, index) in currentDriller.registrations" :key="`registration ${index}`">
+          <div class="card-body p-2 p-md-3">
+            <h5 class="card-title">{{ registration.activity_description }} Registration</h5>
+
+            <!-- Classifications -->
+            <h6>Classifications</h6>
+            <div class="mb-3">
+              <div class="table-responsive">
+                <table id="classification-table" class="table">
+                  <thead>
+                    <th>Classification</th>
+                    <th>Register Status</th>
+                    <th>Date Registered</th>
+                  </thead>
+                  <tbody>
+                    <tr
+                        v-if="item.activity === registration.registries_activity"
+                        v-for="(item, index_c) in classifications" :key="`reg ${index} class ${index_c}`">
+                      <td><router-link :to="{
+                        name: 'ApplicationDetail',
+                        params: { person_guid: currentDriller.person_guid, registration_guid: item.registration_guid, application_guid: item.application_guid } }">
+                      {{ item.description }}</router-link></td>
+                      <td>{{ item.status }}</td>
+                      <td>{{ item.date }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <b-row v-if="showAddApplication">
+                <b-col>
+                  <b-form @submit.prevent="saveApplication">
+                    <!-- TODO: Attach appropriate activity -->
+                    <application-add
+                        class="mb-3"
+                        v-on:close="closeApplication()"
+                        v-model="application"
+                        activity="DRILL">
+                        <button type="submit" class="btn btn-primary" variant="primary">Save</button>
+                        <button type="button" class="btn btn-light" @click="closeApplication()">Cancel</button>
+                    </application-add>
+                  </b-form>
+                </b-col>
+              </b-row>
+              <b-row v-else>
+                <b-col>
+                  <b-button
+                          v-if="userRoles.edit"
+                          type="button"
+                          variant="primary"
+                          size="sm"
+                          v-on:click="addApplication()"
+                          class="mb-3"><i class="fa fa-plus-square-o"></i> Add classification</b-button>
+                </b-col>
+              </b-row>
+              <router-link
+                class="btn btn-light btn-sm registries-edit-btn mb-3"
+                tag="button"
+                to="#"
+                v-if="currentDriller.person_guid && userRoles.edit"><i class="fa fa-plus-square-o"></i> Add {{ registration.activity_description }} application</router-link>
+            </div>
+
+            <!-- Registration information -->
+            <div class="row">
+              <div class="col">
+                <h6 class="card-title mb-3">{{ registration.activity_description }} Registration Details</h6>
+              </div>
+              <div class="col text-right">
+                <button
+                  class="btn btn-light btn-sm registries-edit-btn"
+                  type="button"
+                  @click="editRegistration = (editRegistration === (index + 1) ? 0 : (index + 1))"
+                  v-if="userRoles.edit">
+                  <span><i class="fa fa-edit"></i> Edit</span>
+                  </button>
+              </div>
+            </div>
+            <person-edit
+              class="mb-4"
+              section="registration"
+              :record="registration"
+              v-if="editRegistration === (index + 1) && userRoles.edit"
+              @updated="editRegistration = 0; updateRecord()"
+              @canceled="editRegistration = 0"></person-edit>
+            <div v-if="editRegistration !== (index + 1)">
+              <div class="row mb-4">
+                <div class="col-5 col-md-2">
+                  Registration number:
+                </div>
+                <div class="col-7 col-md-4">
+                  {{ registration.registration_no }}
+                </div>
+              </div>
+            </div>
+
+            <!-- Company information -->
+            <div class="row">
+              <div class="col">
+                <h6 class="card-title mb-3">{{ registration.activity_description }} Company Information</h6>
+              </div>
+              <div class="col text-right">
+                <button
+                  class="btn btn-light btn-sm registries-edit-btn"
+                  type="button"
+                  @click="editCompany = (editCompany === (index + 1) ? 0 : (index + 1))"
+                  v-if="currentDriller.person_guid && userRoles.edit">
+                  <span v-if="!registration.organization"><i class="fa fa-plus"></i> Add company</span>
+                  <span v-else><i class="fa fa-refresh"></i> Change company</span>
+                  </button>
+              </div>
+            </div>
+            <person-edit
+              section="company"
+              :record="registration"
+              v-if="editCompany === (index + 1) && userRoles.edit"
+              @updated="editCompany = 0; updateRecord()"
+              @canceled="editCompany = 0"></person-edit>
+            <div v-if="registration.organization && editCompany !== (index + 1)">
+              <div class="row mb-2">
+                <div class="col-5 col-md-2 mb-1 mb-sm-0">
+                  Company name:
+                </div>
+                <div class="col-7 col-md-4">
+                  {{ registration.organization.name }}
+                </div>
+                <div class="col-5 col-md-2">
+                  Street address:
+                </div>
+                <div class="col-7 col-md-4">
+                  {{ registration.organization.street_address }}
+                </div>
+              </div>
+              <div class="row mb-2">
+                <div class="col-5 col-md-2 mb-1 mb-sm-0">
+                  City:
+                </div>
+                <div class="col-7 col-md-4">
+                  {{ registration.organization.city }}
+                </div>
+                <div class="col-5 col-md-2">
+                  Province:
+                </div>
+                <div class="col-7 col-md-4">
+                  {{ registration.organization.province_state }}
+                </div>
+              </div>
+              <div class="row mb-2">
+                <div class="col-5 col-md-2 mb-1 mb-sm-0">
+                  Postal Code:
+                </div>
+                <div class="col-7 col-md-4">
+                  {{ registration.organization.postal_code }}
+                </div>
+                <div class="col-5 col-md-2">
+                  Office number:
+                </div>
+                <div class="col-7 col-md-4">
+                  {{ registration.organization.main_tel }}
+                </div>
+              </div>
+              <div class="row mb-2">
+                <div class="col-5 col-md-2 mb-1 mb-sm-0">
+                  Cell number:
+                </div>
+                <div class="col-7 col-md-4">
+                  {{ registration.surname }}
+                </div>
+                <div class="col-5 col-md-2">
+                  Fax number:
+                </div>
+                <div class="col-7 col-md-4">
+                  {{ registration.organization.fax_tel }}
+                </div>
+              </div>
+              <div class="row mb-2">
+                <div class="col-5 col-md-2 mb-1 mb-sm-0">
+                  Email address:
+                </div>
+                <div class="col-7 col-md-4">
+                  {{ registration.organization.email }}
+                </div>
+                <div class="col-5 col-md-2">
+                  Website:
+                </div>
+                <div class="col-7 col-md-4">
+                  {{ registration.organization.website_url }}
+                </div>
+              </div>
+            </div>
+            <div v-else-if="!registration.organization && editCompany !== (index + 1)">
+              No {{ registration.activity_description }} company.
+            </div>
+          </div>
+        </div>
+
+        <!-- If person has no registrations, display a message -->
+        <div class="card mb-3" v-if="currentDriller.registrations && !currentDriller.registrations.length">
           <div class="card-body p-2 p-md-3">
             <div>
-              <div v-if="currentDriller.registrations && !currentDriller.registrations.length">
+              <div >
                 <h6 class="card-title my-3">Applicant has not yet been added to the register. Submit or approve an application to view or add company information.</h6>
-              </div>
-              <div v-for="(registration, index) in currentDriller.registrations"
-                :key="`company information row ${index}`"
-                :class="index > 0 ? 'mt-5' : 'mt-2'">
-                  <div class="row">
-                  <div class="col">
-                    <h6 class="card-title mb-3">{{ registration.activity_description }} Company Information</h6>
-                  </div>
-                  <div class="col text-right">
-                    <button
-                      class="btn btn-light btn-sm registries-edit-btn"
-                      type="button"
-                      @click="editCompany = (editCompany === (index + 1) ? 0 : (index + 1))"
-                      v-if="currentDriller.person_guid && userRoles.edit">
-                      <span v-if="!registration.organization"><i class="fa fa-plus"></i> Add company</span>
-                      <span v-else><i class="fa fa-refresh"></i> Change company</span>
-                      </button>
-                  </div>
-                </div>
-                <person-edit
-                  section="company"
-                  :record="registration"
-                  v-if="editCompany === (index + 1) && userRoles.edit"
-                  @updated="editCompany = 0; updateRecord()"
-                  @canceled="editCompany = 0"></person-edit>
-                <div v-if="registration.organization && editCompany !== (index + 1)">
-                  <div class="row mb-2">
-                    <div class="col-5 col-md-2 mb-1 mb-sm-0">
-                      Company name:
-                    </div>
-                    <div class="col-7 col-md-4">
-                      {{ registration.organization.name }}
-                    </div>
-                    <div class="col-5 col-md-2">
-                      Street address:
-                    </div>
-                    <div class="col-7 col-md-4">
-                      {{ registration.organization.street_address }}
-                    </div>
-                  </div>
-                  <div class="row mb-2">
-                    <div class="col-5 col-md-2 mb-1 mb-sm-0">
-                      City:
-                    </div>
-                    <div class="col-7 col-md-4">
-                      {{ registration.organization.city }}
-                    </div>
-                    <div class="col-5 col-md-2">
-                      Province:
-                    </div>
-                    <div class="col-7 col-md-4">
-                      {{ registration.organization.province_state }}
-                    </div>
-                  </div>
-                  <div class="row mb-2">
-                    <div class="col-5 col-md-2 mb-1 mb-sm-0">
-                      Postal Code:
-                    </div>
-                    <div class="col-7 col-md-4">
-                      {{ registration.organization.postal_code }}
-                    </div>
-                    <div class="col-5 col-md-2">
-                      Office number:
-                    </div>
-                    <div class="col-7 col-md-4">
-                      {{ registration.organization.main_tel }}
-                    </div>
-                  </div>
-                  <div class="row mb-2">
-                    <div class="col-5 col-md-2 mb-1 mb-sm-0">
-                      Cell number:
-                    </div>
-                    <div class="col-7 col-md-4">
-                      {{ registration.surname }}
-                    </div>
-                    <div class="col-5 col-md-2">
-                      Fax number:
-                    </div>
-                    <div class="col-7 col-md-4">
-                      {{ registration.organization.fax_tel }}
-                    </div>
-                  </div>
-                  <div class="row mb-2">
-                    <div class="col-5 col-md-2 mb-1 mb-sm-0">
-                      Email address:
-                    </div>
-                    <div class="col-7 col-md-4">
-                      {{ registration.organization.email }}
-                    </div>
-                    <div class="col-5 col-md-2">
-                      Website:
-                    </div>
-                    <div class="col-7 col-md-4">
-                      {{ registration.organization.website_url }}
-                    </div>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
@@ -333,6 +389,7 @@ export default {
         }
       ],
       editCompany: 0,
+      editRegistration: 0,
       editPerson: false,
       editContact: false,
       showAddApplication: false,
@@ -429,7 +486,8 @@ export default {
               status: status,
               date: date,
               registration_guid: reg.register_guid,
-              application_guid: app.application_guid
+              application_guid: app.application_guid,
+              activity: reg.registries_activity
             })
           })
         })
