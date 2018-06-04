@@ -48,7 +48,10 @@ body {
   display: flex;
   flex-direction: column;
   height: 100%;
-  background-color: #f1f1f1!important
+  background-color: #f1f1f1
+}
+body.registries-body {
+  background-color: #f1f1f1
 }
 main {
   margin-bottom: 45px;
