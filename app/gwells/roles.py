@@ -65,26 +65,26 @@ def roles_to_groups(user, roles=None):
     """
 
     # Default permissions for Application Administrators
-    ADMIN_PERMISSIONS = [
-        Permission.objects.filter(codename__in=['add_person',
-                                                'change_person',
-                                                'delete_person',
-                                                'add_organization',
-                                                'change_organization',
-                                                'delete_organization',
-                                                'add_registriesapplication',
-                                                'change_registriesapplication',
-                                                'delete_registriesapplication',
-                                                'add_register',
-                                                'change_register',
-                                                'delete_register',
-                                                'add_personnote',
-                                                'change_personnote',
-                                                'delete_personnote',
-                                                'add_organizationnote',
-                                                'change_organizationnote',
-                                                'delete_organizationnote'])
-    ]
+    ADMIN_PERMISSIONS = [x for x in
+                         Permission.objects.filter(codename__in=['add_person',
+                                                                 'change_person',
+                                                                 'delete_person',
+                                                                 'add_organization',
+                                                                 'change_organization',
+                                                                 'delete_organization',
+                                                                 'add_registriesapplication',
+                                                                 'change_registriesapplication',
+                                                                 'delete_registriesapplication',
+                                                                 'add_register',
+                                                                 'change_register',
+                                                                 'delete_register',
+                                                                 'add_personnote',
+                                                                 'change_personnote',
+                                                                 'delete_personnote',
+                                                                 'add_organizationnote',
+                                                                 'change_organizationnote',
+                                                                 'delete_organizationnote'])
+                         ]
 
     # Default permissions for Adjudicator and Statutory Authority roles
     ADJUDICATOR_PERMISSIONS = ADMIN_PERMISSIONS
