@@ -48,7 +48,7 @@ body {
   display: flex;
   flex-direction: column;
   height: 100%;
-  background-color: #f1f1f1
+  background-color: #f1f1f1!important
 }
 main {
   margin-bottom: 45px;
