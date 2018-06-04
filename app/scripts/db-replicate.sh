@@ -16,7 +16,10 @@
 #
 #   Example: ./db-replicate.sh
 #
-set -e
+# Halt conditions, verbosity and field separator
+#
+set -euo pipefail
+IFS=$'\n\t'
 export PGPASSWORD=$DATABASE_PASSWORD
 set -x 
 

@@ -17,7 +17,10 @@
 #
 #   Example: ./post-deploy.sh
 #
-set -e
+# Halt conditions, verbosity and field separator
+#
+set -euo pipefail
+IFS=$'\n\t'
 echo "Running Post-Deploy tasks..."
 export PGPASSWORD=$DATABASE_PASSWORD
 set -x
@@ -49,8 +52,9 @@ fi
 
 echo ". Running python-related post-deploy tasks."
 cd /opt/app-root/src/
-set +e
-python manage.py post-deploy
-set -e
+(
+	set +e;
+	python manage.py post-deploy
+)
 
 echo "Completed Post-Deploy tasks."
