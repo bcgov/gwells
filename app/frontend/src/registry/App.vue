@@ -5,7 +5,9 @@
       <b-container v-if="error">
         <api-error :error="error" resetter="SET_ERROR"/>
       </b-container>
-      <router-view/>
+      <keep-alive>
+        <router-view/>
+      </keep-alive>
     </main>
     <gwells-footer/>
   </div>
