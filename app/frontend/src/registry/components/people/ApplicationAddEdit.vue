@@ -35,27 +35,27 @@
           </b-row>
           <b-row>
             <b-col md="6">
-              <b-form-group label="Issued by" horizontal :label-cols="3" label-for="issuer">
-                <b-form-select id="issuer" :options="formOptions.issuer" v-model="qualificationForm.primary_certificate.acc_cert_guid" required></b-form-select>
+              <b-form-group label="Issued by" horizontal :label-cols="3">
+                <b-form-select :options="formOptions.issuer" v-model="qualificationForm.primary_certificate.acc_cert_guid" required></b-form-select>
               </b-form-group>
             </b-col>
             <b-col md="6">
-              <b-form-group label="Certificate number" label-for="primary_certificate_no" horizontal :label-cols="3">
-                <b-form-input id="primary_certificate_no" type="text" placeholder="Enter certificate number" v-model="qualificationForm.primary_certificate_no" required></b-form-input>
+              <b-form-group label="Certificate number" horizontal :label-cols="3">
+                <b-form-input type="text" placeholder="Enter certificate number" v-model="qualificationForm.primary_certificate_no" required></b-form-input>
               </b-form-group>
             </b-col>
           </b-row>
           <b-row>
             <b-col md="12">
-              <b-form-group label="Select classification" label-for="classifications" horizontal :label-cols="2" class="font-weight-bold">
-                <b-form-radio-group id="classifications" class="fixed-width font-weight-normal pt-2" :options="formOptions.classifications" @change="changedClassification" v-model="qualificationForm.subactivity.registries_subactivity_code" required></b-form-radio-group>
+              <b-form-group label="Select classification" horizontal :label-cols="2" class="font-weight-bold">
+                <b-form-radio-group class="fixed-width font-weight-normal pt-2" :options="formOptions.classifications" @change="changedClassification" v-model="qualificationForm.subactivity.registries_subactivity_code" required></b-form-radio-group>
               </b-form-group>
             </b-col>
           </b-row>
           <b-row>
             <b-col md="8">
-              <b-form-group label="Qualified to drill" label-for="qualifications" class="font-weight-bold">
-                <b-form-checkbox-group id="qualifications" class="fixed-width font-weight-normal" :options="formOptions.qualifications" v-model="qualificationForm.qualifications" disabled>
+              <b-form-group label="Qualified to drill" class="font-weight-bold">
+                <b-form-checkbox-group class="fixed-width font-weight-normal" :options="formOptions.qualifications" v-model="qualificationForm.qualifications" disabled>
                 </b-form-checkbox-group>
               </b-form-group>
             </b-col>
@@ -67,15 +67,15 @@
           </b-row>
           <b-row>
             <b-col>
-              <b-form-group horizontal :label-cols="5" label="Confirmed applicant is 19 years of age or older by reviewing" label-for="proofOfAge" class="font-weight-bold">
-                <b-form-select id="proofOfAge" :options="formOptions.proofOfAge" v-model="qualificationForm.proof_of_age" required></b-form-select>
+              <b-form-group horizontal :label-cols="5" label="Confirmed applicant is 19 years of age or older by reviewing" class="font-weight-bold">
+                <b-form-select :options="formOptions.proofOfAge" v-model="qualificationForm.proof_of_age" required></b-form-select>
               </b-form-group>
             </b-col>
           </b-row>
           <b-row>
             <b-col>
-              <b-form-group horizontal :label-cols="2" label="Date application received" label-for="effective_date" class="font-weight-bold">
-                <datepicker id="effective_date" format="yyyy-MM-dd" v-model="qualificationForm.status_set[0].effective_date" required></datepicker>
+              <b-form-group horizontal :label-cols="2" label="Date application received" class="font-weight-bold">
+                <datepicker format="yyyy-MM-dd" v-model="qualificationForm.status_set[0].effective_date" required></datepicker>
               </b-form-group>
             </b-col>
           </b-row>
@@ -114,9 +114,8 @@ export default {
       ],
       qualifications: []
     }
-
     return {
-      qualificationForm: this.value ? this.value : defaultData
+      qualificationForm: {...JSON.parse(JSON.stringify(defaultData)), ...this.value}
     }
   },
   watch: {

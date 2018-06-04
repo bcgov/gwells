@@ -173,7 +173,7 @@
                     type="button"
                     variant="primary"
                     size="sm"
-                    v-on:click="addApplication(drillApplications)"
+                    v-on:click="addApplication (drillApplications)"
                     class="mb-3"><i class="fa fa-plus-square-o"></i> Add new classification</b-button>
                   </b-col>
                 </b-row>
@@ -443,7 +443,7 @@ export default {
       })
     },
     addApplication (collection) {
-      collection.push({id: new Date().getUTCMilliseconds(), data: null})
+      collection.push({id: new Date().getUTCMilliseconds(), data: {}})
     },
     closeApplication (collection, id) {
       collection.splice(collection.findIndex((item) => item.id === id))
