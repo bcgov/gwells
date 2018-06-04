@@ -230,14 +230,14 @@ export const store = new Vuex.Store({
       if (state.keycloak && state.keycloak.authenticated) {
         return {
           view: (state.keycloak.hasRealmRole('gwells_admin') ||
-            state.keycloak.hasRealmRole('gwells_statutory_authority') ||
-            state.keycloak.hasRealmRole('gwells_viewer') ||
-            state.keycloak.hasRealmRole('gwells_adjudicator')),
+            state.keycloak.hasRealmRole('registries_statutory_authority') ||
+            state.keycloak.hasRealmRole('registries_viewer') ||
+            state.keycloak.hasRealmRole('registries_adjudicator')),
           edit: (state.keycloak.hasRealmRole('gwells_admin') ||
-            state.keycloak.hasRealmRole('gwells_statutory_authority') ||
-            state.keycloak.hasRealmRole('gwells_adjudicator')),
+            state.keycloak.hasRealmRole('registries_statutory_authority') ||
+            state.keycloak.hasRealmRole('registries_adjudicator')),
           approve: (state.keycloak.hasRealmRole('gwells_admin') ||
-            state.keycloak.hasRealmRole('gwells_statutory_authority'))
+            state.keycloak.hasRealmRole('registries_statutory_authority'))
         }
       } else {
         return {}

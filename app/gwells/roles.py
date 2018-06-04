@@ -15,15 +15,15 @@
 from django.contrib.auth.models import Group, Permission
 
 # Keycloak/SSO groups:
-ADJUDICATOR_ROLE = 'gwells_adjudicator'
-AUTHORITY_ROLE = 'gwells_statutory_authority'
+ADJUDICATOR_ROLE = 'registries_adjudicator'
+AUTHORITY_ROLE = 'registries_statutory_authority'
 ADMIN_ROLE = 'gwells_admin'
-VIEWER_ROLE = 'gwells_viewer'
+VIEWER_ROLE = 'registries_viewer'
 
-ADJUDICATOR_GROUP_NAME = 'gwells_adjudicator'
-AUTHORITY_GROUP_NAME = 'gwells_authority'
+ADJUDICATOR_GROUP_NAME = 'registries_adjudicator'
+AUTHORITY_GROUP_NAME = 'registries_authority'
 ADMIN_GROUP_NAME = 'gwells_admin'
-VIEWER_GROUP_NAME = 'gwells_viewer'
+VIEWER_GROUP_NAME = 'registries_viewer'
 
 ROLE_MAP = {
     ADJUDICATOR_ROLE: ADJUDICATOR_GROUP_NAME,
