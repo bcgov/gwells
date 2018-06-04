@@ -112,27 +112,31 @@
             <div class="card">
               <div class="card-body">
                 <h5>Adjudication</h5>
-                <div class="row">
-                  <div class="col-12 registry-item">
+                <b-row>
+                  <b-col md="12" class="registry-item">
                     <span class="registry-label">Date application received:</span>
-                  </div>
-                </div>
+                    {{ applicationReceivedDate }}
+                  </b-col>
+                </b-row>
                 <div class="row">
-                  <div class="col-12 col-sm-4 registry-item">
+                  <b-col md="4" class="registry-item">
                     <span class="registry-label">Approval outcome date:</span>
-                  </div>
-                  <div class="col-12 col-sm-4 registry-item">
+                    {{ approvalOutcomeDate }}
+                  </b-col>
+                  <b-col md="4" class="registry-item">
                     <span class="registry-label">Approval outcome:</span>
-                  </div>
-                  <div class="col-12 col-sm-4 registry-item">
-                    <span class="registry-label">Reason not approved:</span>
-                  </div>
+                    {{ approvalOutcome }}
+                  </b-col>
+                  <b-col v-if="approvalStatus.status === 'NA'" md="4" class="registry-item">
+                    <span class="registry-label">Reason denied:</span>
+                  </b-col>
                 </div>
+                <!--
                 <div class="row">
                   <div class="col-12 col-sm-4 registry-item">
                     <span class="registry-label">Register removal date:</span>
                   </div>
-                </div>
+                </div>-->
                 <!-- <div class="row">
                   <div class="col-12 registry-item">
                     <div class="checkbox form-inline">
@@ -275,6 +279,26 @@ export default {
         title += ` - ${this.registration.registration_no}`
       }
       return title
+    },
+    approvalStatus () {
+      return this.application.status_set.find(item => ['A', 'NA'].includes(item.status))
+    },
+    applicationReceivedDate () {
+      // This is the date on which a record became pending.
+      const pendingStatus = this.application.status_set.find(item => item.status === 'P')
+      return pendingStatus ? pendingStatus.effective_date : null
+    },
+    approvalOutcomeDate () {
+      return this.approvalStatus ? this.approvalStatus.effective_date : null
+    },
+    approvalOutcome () {
+      return this.approvalStatus ? this.approvalStatus.description : null
+    },
+    reasonDeniend () {
+      return this.approvalStatus ? this.application.reason_denied : null
+    },
+    notificationDate () {
+      return this.approvalStatus ? this.approvalStatus.notified_date : null
     },
     ...mapGetters([
       'loading',
