@@ -43,13 +43,17 @@
                 <b-form-group
                   id="contactTelInputGroup"
                   label="Telephone number:"
+                  aria-describedby="drillerTelExample"
                   label-for="contactTelInput">
                   <b-form-input
                     id="contactTelInput"
-                    type="text"
+                    type="tel"
                     :formatter="formatTel"
                     lazy-formatter
                     v-model="drillerForm.person.contact_tel"/>
+                  <b-form-text id="drillerTelExample">
+                    Example: (250) 555-1234
+                  </b-form-text>
                 </b-form-group>
               </b-col>
               <b-col cols="12" md="5" offset-md="1">
@@ -59,7 +63,7 @@
                   label-for="contactEmailInput">
                   <b-form-input
                     id="contactEmailInput"
-                    type="text"
+                    type="email"
                     :state="validation.contact_email"
                     aria-describedby="contactEmailFeedback"
                     v-model="drillerForm.person.contact_email"/>
@@ -116,6 +120,15 @@
             </b-row>
             <b-card class="mb-3 p-1 px-md-2" v-if="drillerForm.regType.some(x => x === 'DRILL' || x === 'PUMP')">
               <b-row>
+                  <b-col>
+                    <b-alert :show="newOrgSuccess"
+                          dismissible
+                          variant="success"
+                          @dismissed="newOrgSuccess=false"
+                          class="mb-3">
+                    Company added.
+                    </b-alert>
+                  </b-col>
                   <b-col class="text-right">
                       <b-button
                         type="button"
@@ -124,19 +137,9 @@
                         size="sm"
                         class="py-0">
                         <i class="fa fa-plus-square-o"></i> Add a company</b-button>
-                    <organization-add @newOrgAdded="newOrgHandler"></organization-add>
                   </b-col>
               </b-row>
-              <b-row>
-                <b-col>
-                  <b-alert :show="newOrgSuccess"
-                        dismissible
-                        variant="success"
-                        @dismissed="newOrgSuccess=false">
-                  Company added.
-                  </b-alert>
-                </b-col>
-              </b-row>
+              <organization-add @newOrgAdded="newOrgHandler"></organization-add>
               <div v-if="drillerForm.regType.some(x => x === 'DRILL')" :class="drillerForm.regType.some(x => x === 'PUMP') ? 'mb-5' : 'mb-1' ">
                 <b-row>
                   <b-col>
