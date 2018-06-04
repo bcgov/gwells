@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="container p-1 p-md-3">
     <b-card no-body class="mb-3">
       <b-breadcrumb :items="breadcrumbs" class="py-0 my-2"></b-breadcrumb>
     </b-card>
@@ -7,7 +7,7 @@
       <api-error :error="error" resetter="SET_ERROR"></api-error>
     </div>
     <div class="card">
-      <div class="card-body">
+      <div class="card-body p-md-3 p-2">
           <h5 class="card-title">Add new applicant</h5>
           <b-form @submit.prevent="onFormSubmit()" @reset.prevent="onFormReset()">
             <b-row><b-col><h6 class="font-weight-bold">Personal Information</h6></b-col></b-row>
@@ -71,30 +71,36 @@
                 </b-form-group>
               </b-col>
             </b-row>
-            <b-row class="mt-3"><b-col><h6 class="font-weight-bold">Document Control</h6></b-col></b-row>
+            <b-row class="mt-3"><b-col><h6 class="font-weight-bold">ORCS File Number</h6></b-col></b-row>
             <b-row>
-              <b-col cols="5">
+              <b-col cols="12" md="5">
                 <b-form-group
                   id="drillerORCSInputGroup"
                   label="Well Driller ORCS Number:"
+                  aria-describedby="drillerORCSExample"
                   label-for="drillerORCSInput">
                   <b-form-input
                     id="drillerORCSInput"
                     type="text"
-                    v-model="drillerForm.person.well_driller_orcs_no"
-                    placeholder="example: 38000-25/DRI SMIT J"/>
+                    v-model="drillerForm.person.well_driller_orcs_no"/>
+                  <b-form-text id="drillerORCSExample">
+                  Example: 38000-25/DRI SMIT J
+                  </b-form-text>
                 </b-form-group>
               </b-col>
-              <b-col cols="5" offset-md="1">
+              <b-col cols="12" md="5" offset-md="1">
                 <b-form-group
                   id="pumpORCSInputGroup"
                   label="Pump Installer ORCS Number:"
-                  label-for="pumpORCSInput">
+                  label-for="pumpORCSInput"
+                  aria-describedby="pumpORCSExample">
                   <b-form-input
                     id="pumpORCSInput"
                     type="text"
-                    v-model="drillerForm.person.pump_installer_orcs_no"
-                    placeholder="example: 38000-25/PUMP SMIT J"/>
+                    v-model="drillerForm.person.pump_installer_orcs_no"/>
+                  <b-form-text id="pumpORCSExample">
+                    example: 38000-25/PUMP SMIT J
+                  </b-form-text>
                 </b-form-group>
               </b-col>
             </b-row>
@@ -108,19 +114,18 @@
                 </b-form-group>
               </b-col>
             </b-row>
-            <b-card class="mb-3" v-if="drillerForm.regType.some(x => x === 'DRILL' || x === 'PUMP')">
+            <b-card class="mb-3 p-1 px-md-2" v-if="drillerForm.regType.some(x => x === 'DRILL' || x === 'PUMP')">
               <b-row>
-                <b-col>
-                  <b-button
-                    type="button"
-                    v-b-modal.orgModal
-                    variant="primary"
-                    size="sm"
-                    class="mb-3">
-                    <i class="fa fa-plus-square-o"></i> Add a company</b-button>
-
-                  <organization-add @newOrgAdded="newOrgHandler"></organization-add>
-                </b-col>
+                  <b-col class="text-right">
+                      <b-button
+                        type="button"
+                        v-b-modal.orgModal
+                        variant="primary"
+                        size="sm"
+                        class="py-0">
+                        <i class="fa fa-plus-square-o"></i> Add a company</b-button>
+                    <organization-add @newOrgAdded="newOrgHandler"></organization-add>
+                  </b-col>
               </b-row>
               <b-row>
                 <b-col>
@@ -132,9 +137,14 @@
                   </b-alert>
                 </b-col>
               </b-row>
-              <div v-if="drillerForm.regType.some(x => x === 'DRILL')">
+              <div v-if="drillerForm.regType.some(x => x === 'DRILL')" :class="drillerForm.regType.some(x => x === 'PUMP') ? 'mb-5' : 'mb-1' ">
                 <b-row>
-                  <b-col md="7">
+                  <b-col>
+                    <h6>Well Driller Registration</h6>
+                  </b-col>
+                </b-row>
+                <b-row class="mb-3">
+                  <b-col cols="12" md="7">
                     <b-form-group
                       id="companyInputGroup"
                       label="Well drilling company:"
@@ -149,6 +159,7 @@
                   </b-col>
                 </b-row>
                 <b-row>
+                  <h6 class="font-weight-normal ml-3">Well Driller Classifications</h6>
                   <application-add
                     class="mb-3"
                     v-for="item in drillApplications"
@@ -165,12 +176,17 @@
                     variant="primary"
                     size="sm"
                     v-on:click="addApplication (drillApplications)"
-                    class="mb-3"><i class="fa fa-plus-square-o"></i> Add new classification</b-button>
+                    class="mb-3"><i class="fa fa-plus-square-o"></i> Add new well driller classification</b-button>
                   </b-col>
                 </b-row>
               </div>
-              <div v-if="drillerForm.regType.some(x => x === 'PUMP')">
+              <div v-if="drillerForm.regType.some(x => x === 'PUMP')" class="my-2">
                 <b-row>
+                  <b-col>
+                    <h6>Well Pump Installer Registration</h6>
+                  </b-col>
+                </b-row>
+                <b-row class="mb-3">
                   <b-col md="7">
                     <b-form-group
                       id="companyInputGroup"
@@ -186,6 +202,7 @@
                   </b-col>
                 </b-row>
                 <b-row>
+                  <h6 class="font-weight-normal ml-3">Well Pump Installer Classifications</h6>
                   <application-add
                     class="mb-3"
                     v-for="item in pumpApplications"
@@ -202,7 +219,7 @@
                     variant="primary"
                     size="sm"
                     v-on:click="addApplication(pumpApplications)"
-                    class="mb-3"><i class="fa fa-plus-square-o"></i> Add new classification</b-button>
+                    class="mb-3"><i class="fa fa-plus-square-o"></i> Add new pump installer classification</b-button>
                   </b-col>
                 </b-row>
               </div>
