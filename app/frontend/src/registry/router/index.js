@@ -79,5 +79,8 @@ export default new Router({
     }
   ],
   mode: 'history',
-  base: process.env.APPLICATION_ROOT
+  base: process.env.APPLICATION_ROOT,
+  scrollBehavior (to, from, savedPosition) {
+    return { x: 0, y: 0 }
+  }
 })
