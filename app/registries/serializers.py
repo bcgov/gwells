@@ -55,10 +55,12 @@ class ProofOfAgeCodeSerializer(serializers.ModelSerializer):
     Serializes ProofOfAgeCode fields.
     """
 
+    code = serializers.ReadOnlyField(source='registries_proof_of_age_code')
+
     class Meta:
         model = ProofOfAgeCode
         fields = (
-            'registries_proof_of_age_code',
+            'code',
             'description'
         )
 
@@ -413,6 +415,7 @@ class ApplicationAdminSerializer(AuditModelSerializer):
     # valid values.
     primary_certificate = AccreditedCertificateCodeSerializer(required=False)
     primary_certificate_no = serializers.CharField(required=False)
+    proof_of_age = ProofOfAgeCodeSerializer(required=False)
 
     class Meta:
         model = RegistriesApplication
@@ -643,6 +646,7 @@ class ApplicationAutoCreateSerializer(AuditModelSerializer):
         many=True, read_only=False)
     primary_certificate = AccreditedCertificateCodeSerializer(
         required=False)
+    proof_of_age = ProofOfAgeCodeSerializer(required=False)
     qualifications = QualificationAutoCreateSerializer(
         many=True,
         read_only=True)
@@ -651,7 +655,6 @@ class ApplicationAutoCreateSerializer(AuditModelSerializer):
     subactivity = SubactivitySerializer(
         required=False
     )
-
     current_status = ApplicationStatusSerializer(read_only=True)
 
     class Meta:
