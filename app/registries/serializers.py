@@ -146,6 +146,11 @@ class SubactivitySerializer(serializers.ModelSerializer):
             'qualification_set',
         )
 
+    def to_internal_value(self, data):
+        if 'registries_subactivity_code' in data:
+            return SubactivityCode.objects.get(registries_subactivity_code=data['registries_subactivity_code'])
+        return super().to_internal_value(data)
+
 
 class ApplicationStatusAutoCreateSerializer(serializers.ModelSerializer):
 
@@ -384,6 +389,11 @@ class AccreditedCertificateCodeSerializer(serializers.ModelSerializer):
             'cert_auth'
         )
 
+    def to_internal_value(self, data):
+        if 'acc_cert_guid' in data:
+            return AccreditedCertificateCode.objects.get(acc_cert_guid=data['acc_cert_guid'])
+        return super().to_internal_value(data)
+
 
 class ApplicationAdminSerializer(AuditModelSerializer):
     """
@@ -430,8 +440,6 @@ class ApplicationAdminSerializer(AuditModelSerializer):
         Set fields to different serializers for create/update operations.
         This method is called on POST/PUT/PATCH requests
         """
-        self.fields['subactivity'] = serializers.PrimaryKeyRelatedField(
-            queryset=SubactivityCode.objects.all())
         self.fields['registration'] = serializers.PrimaryKeyRelatedField(
             queryset=Register.objects.all())
         return super().to_internal_value(data)
@@ -633,18 +641,16 @@ class ApplicationAutoCreateSerializer(AuditModelSerializer):
 
     status_set = ApplicationStatusAutoCreateSerializer(
         many=True, read_only=False)
-    # acc_cert_guid
-    primary_certificate = serializers.PrimaryKeyRelatedField(
-        queryset=AccreditedCertificateCode.objects.all(), required=False)
-    # qualifications = serializers.StringRelatedField(
-    #     source='subactivity.qualification_set',
-    #     many=True,
-    #     read_only=True)
+    primary_certificate = AccreditedCertificateCodeSerializer(
+        required=False)
     qualifications = QualificationAutoCreateSerializer(
         many=True,
         read_only=True)
     registration = serializers.StringRelatedField(
         source='registration.register_guid')
+    subactivity = SubactivitySerializer(
+        required=False
+    )
 
     current_status = ApplicationStatusSerializer(read_only=True)
 

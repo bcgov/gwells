@@ -2,48 +2,36 @@ const fakeOptions = JSON.parse(JSON.stringify({
   'DRILL': {
     'WellClassCode': [
       {
-        'registries_well_class_code': 'WAT',
-        'description': 'Water supply well'
-      },
-      {
-        'registries_well_class_code': 'MON',
-        'description': 'Monitoring well'
-      },
-      {
-        'registries_well_class_code': 'MON',
-        'description': 'Monitoring well'
-      },
-      {
-        'registries_well_class_code': 'RECH',
-        'description': 'Recharge/Injection well'
+        'registries_well_class_code': 'CLOS',
+        'description': 'Closed loop geoexchange well'
       },
       {
         'registries_well_class_code': 'DEWAT',
         'description': 'Dewatering well'
       },
       {
-        'registries_well_class_code': 'REM',
-        'description': 'Remediatation well'
-      },
-      {
-        'registries_well_class_code': 'REM',
-        'description': 'Remediatation well'
-      },
-      {
         'registries_well_class_code': 'GEO',
         'description': 'Geotechnical well'
       },
       {
-        'registries_well_class_code': 'GEO',
-        'description': 'Geotechnical well'
-      },
-      {
-        'registries_well_class_code': 'CLOS',
-        'description': 'Closed loop geoexchange well'
+        'registries_well_class_code': 'MON',
+        'description': 'Monitoring well'
       },
       {
         'registries_well_class_code': 'PUMP',
         'description': 'Install pump in Water supply, Recharge/Injection, or Dewatering well'
+      },
+      {
+        'registries_well_class_code': 'RECH',
+        'description': 'Recharge/Injection well'
+      },
+      {
+        'registries_well_class_code': 'REM',
+        'description': 'Remediatation well'
+      },
+      {
+        'registries_well_class_code': 'WAT',
+        'description': 'Water supply well'
       }
     ],
     'SubactivityCode': [
@@ -132,11 +120,6 @@ const fakeOptions = JSON.parse(JSON.stringify({
         'cert_auth': 'Province of B.C.'
       },
       {
-        'acc_cert_guid': 'a53d3f1e-65eb-46b7-8999-e662d654df77',
-        'name': 'Grand-parent',
-        'cert_auth': 'Grand-fathered'
-      },
-      {
         'acc_cert_guid': 'e368e066-137b-491a-af2a-da3bf2936e6d',
         'name': 'Grand-parent',
         'cert_auth': 'Grand-fathered'
@@ -144,11 +127,6 @@ const fakeOptions = JSON.parse(JSON.stringify({
       {
         'acc_cert_guid': '4a059930-265f-43f5-9dbb-c71862ccc5b5',
         'name': 'Ground Water Drilling Technician Certificate',
-        'cert_auth': 'Canadian Ground Water Association'
-      },
-      {
-        'acc_cert_guid': '1886daa8-e799-49f0-9034-33d02bad543d',
-        'name': 'Ground Water Pump Technician Certificate',
         'cert_auth': 'Canadian Ground Water Association'
       },
       {
@@ -167,6 +145,43 @@ const fakeOptions = JSON.parse(JSON.stringify({
         'cert_auth': 'Province of Saskatchewan'
       },
       {
+        'acc_cert_guid': '9349a159-6739-4623-9f7d-80b904b8f885',
+        'name': 'Well Technician Class 1 Drilling',
+        'cert_auth': 'Province of Ontario'
+      }
+    ]
+  },
+  'PUMP': {
+    'WellClassCode': [
+      {
+        'registries_well_class_code': 'PUMP',
+        'description': 'Install pump in Water supply, Recharge/Injection, or Dewatering well'
+      }
+    ],
+    'SubactivityCode': [
+      {
+        'registries_subactivity_code': 'PUMPINST',
+        'description': 'Pump Installer',
+        'qualification_set': [
+          {
+            'well_class': 'PUMP',
+            'description': 'Install pump in Water supply, Recharge/Injection, or Dewatering well'
+          }
+        ]
+      }
+    ],
+    'AccreditedCertificateCode': [
+      {
+        'acc_cert_guid': 'a53d3f1e-65eb-46b7-8999-e662d654df77',
+        'name': 'Grand-parent',
+        'cert_auth': 'Grand-fathered'
+      },
+      {
+        'acc_cert_guid': '1886daa8-e799-49f0-9034-33d02bad543d',
+        'name': 'Ground Water Pump Technician Certificate',
+        'cert_auth': 'Canadian Ground Water Association'
+      },
+      {
         'acc_cert_guid': '7bf968aa-c6e0-4f57-b4f4-58723214de80',
         'name': 'Well Pump Installer Certificate',
         'cert_auth': 'Province of B.C.'
@@ -175,28 +190,23 @@ const fakeOptions = JSON.parse(JSON.stringify({
         'acc_cert_guid': '88d5d0aa-d2aa-450a-9708-a911dce42f7f',
         'name': 'Well Technician Certificate',
         'cert_auth': 'Province of Ontario'
-      },
-      {
-        'acc_cert_guid': '9349a159-6739-4623-9f7d-80b904b8f885',
-        'name': 'Well Technician Class 1 Drilling',
-        'cert_auth': 'Province of Ontario'
-      }
-    ],
-    'ProofOfAgeCode': [
-      {
-        'registries_proof_of_age_code': 'DRIVERS',
-        'description': "Driver's license"
-      },
-      {
-        'registries_proof_of_age_code': 'BIRTH',
-        'description': 'Birth Certificate'
-      },
-      {
-        'registries_proof_of_age_code': 'PASSPORT',
-        'description': 'Passport'
       }
     ]
-  }
+  },
+  'ProofOfAgeCode': [
+    {
+      'registries_proof_of_age_code': 'DRIVERS',
+      'description': "Driver's license"
+    },
+    {
+      'registries_proof_of_age_code': 'BIRTH',
+      'description': 'Birth Certificate'
+    },
+    {
+      'registries_proof_of_age_code': 'PASSPORT',
+      'description': 'Passport'
+    }
+  ]
 }))
 
 export default fakeOptions

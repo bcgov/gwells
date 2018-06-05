@@ -1,4 +1,4 @@
-import { shallowMount, mount, createLocalVue } from '@vue/test-utils'
+import { shallowMount, createLocalVue } from '@vue/test-utils'
 import Vuex from 'vuex'
 import OrganizationEdit from '@/registry/components/people/OrganizationEdit.vue'
 import fakeCompanyList from '../fakeCompanyList'
