@@ -40,7 +40,7 @@ from registries.models import (
     RegistriesApplication,
     SubactivityCode,
     WellClassCode)
-from registries.permissions import IsAdminOrReadOnly, IsGwellsAdmin, GwellsPermissions
+from registries.permissions import IsAdminOrReadOnly, GwellsPermissions
 from registries.serializers import (
     ApplicationAdminSerializer,
     ApplicationListSerializer,
