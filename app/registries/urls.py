@@ -61,7 +61,7 @@ urlpatterns = [
 
     # Person note endpoints
     url(r'^api/v1/drillers/(?P<person_guid>[-\w]+)/notes/$',
-        views.PersonNoteListView.as_view(), name='person-note-list'),
+        never_cache(views.PersonNoteListView.as_view()), name='person-note-list'),
     url(r'^api/v1/drillers/(?P<person_guid>[-\w]+)/notes/(?P<note_guid>[-\w]+)/$',
         views.PersonNoteDetailView.as_view(), name='person-note-detail'),
 
@@ -76,16 +76,16 @@ urlpatterns = [
 
     # Registration endpoints (a person may register as a driller or well pump installer)
     url(r'api/v1/registrations/(?P<register_guid>[-\w]+)/$',
-        views.RegistrationDetailView.as_view(),
+        never_cache(views.RegistrationDetailView.as_view()),
         name='register-detail'),
     url(r'api/v1/registrations/',
-        views.RegistrationListView.as_view(), name='register-list'),
+        never_cache(views.RegistrationListView.as_view()), name='register-list'),
 
     # Applications (applications to be qualified for a drilling activity)
     url(r'api/v1/applications/(?P<application_guid>[-\w]+)/$',
-        views.ApplicationDetailView.as_view(),
+        never_cache(views.ApplicationDetailView.as_view()),
         name='application-detail'),
-    url(r'api/v1/applications/', views.ApplicationListView.as_view(),
+    url(r'api/v1/applications/', never_cache(views.ApplicationListView.as_view()),
         name='application-list'),
 
     # List of cities that currently have registered drillers, pump installers etc.
