@@ -12,6 +12,7 @@
     limitations under the License.
 """
 from django.conf.urls import url
+from django.views.decorators.cache import never_cache
 from rest_framework.documentation import include_docs_urls
 from rest_framework_jwt.views import obtain_jwt_token
 from drf_yasg.views import get_schema_view
@@ -49,10 +50,10 @@ urlpatterns = [
 
     # Organization endpoints
     url(r'^api/v1/organizations/names/$',
-        views.OrganizationNameListView.as_view(),
+        never_cache(views.OrganizationNameListView.as_view()),
         name='organization-names'),
     url(r'^api/v1/organizations/(?P<org_guid>[-\w]+)/$',
-        views.OrganizationDetailView.as_view(),
+        never_cache(views.OrganizationDetailView.as_view()),
         name='organization-detail'),
     url(r'^api/v1/organizations/$',
         views.OrganizationListView.as_view(),
@@ -68,9 +69,10 @@ urlpatterns = [
     url(r'api/v1/drillers/options/',
         views.PersonOptionsView.as_view(), name='person-options'),
     url(r'^api/v1/drillers/(?P<person_guid>[-\w]+)/$',
-        views.PersonDetailView.as_view(),
+        never_cache(views.PersonDetailView.as_view()),
         name='person-detail'),
-    url(r'^api/v1/drillers/$', views.PersonListView.as_view(), name='person-list'),
+    url(r'^api/v1/drillers/$',
+        never_cache(views.PersonListView.as_view()), name='person-list'),
 
     # Registration endpoints (a person may register as a driller or well pump installer)
     url(r'api/v1/registrations/(?P<register_guid>[-\w]+)/$',
@@ -88,11 +90,11 @@ urlpatterns = [
 
     # List of cities that currently have registered drillers, pump installers etc.
     url(r'^api/v1/cities/drillers/$',
-        views.CitiesListView.as_view(),
+        never_cache(views.CitiesListView.as_view()),
         {'activity': 'drill'},
         name='city-list-drillers'),
     url(r'^api/v1/cities/installers/$',
-        views.CitiesListView.as_view(),
+        never_cache(views.CitiesListView.as_view()),
         {'activity': 'install'},
         name='city-list-installers'),
 
