@@ -1,4 +1,0 @@
-registries_removal_reason_code,description,display_order,create_date,update_date,create_user,update_user
-"NLACT","No longer active","2","2018-01-01 00:00:00-08","2018-01-01 00:00:00-08","DATALOAD_USER","DATALOAD_USER"
-"FAILTM","Failed to maintain requirement of registration","4","2018-01-01 00:00:00-08","2018-01-01 00:00:00-08","DATALOAD_USER","DATALOAD_USER"
-"NMEET","Did not meet the requirement of registration","6","2018-01-01 00:00:00-08","2018-01-01 00:00:00-08","DATALOAD_USER","DATALOAD_USER"
