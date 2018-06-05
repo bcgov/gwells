@@ -39,7 +39,7 @@ if [ "$DB_REPLICATE" = "Subset" -o "$DB_REPLICATE" = "Full" ]
 then
 	# NOTE: this will clear out Registries app tables too, since the ProvinceStateCode table
 	#       is also a parent table of Registries tables
-	cd $APP_ROOT/app
+	cd $APP_ROOT/src
 	python manage.py flush --noinput
 	python manage.py loaddata gwells/fixtures/codetables.ProvinceStateCode.json gwells/fixtures/codetables.json registries/fixtures/codetables.json
 
@@ -51,7 +51,7 @@ else
 fi
 
 echo ". Running python-related post-deploy tasks."
-cd $APP_ROOT/app
+cd $APP_ROOT/src
 (
 	set +e;
 	python manage.py post-deploy
