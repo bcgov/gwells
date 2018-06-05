@@ -173,7 +173,7 @@
                     type="button"
                     variant="primary"
                     size="sm"
-                    v-on:click="addApplication(drillApplications)"
+                    v-on:click="addApplication (drillApplications)"
                     class="mb-3"><i class="fa fa-plus-square-o"></i> Add new classification</b-button>
                   </b-col>
                 </b-row>
@@ -266,14 +266,14 @@ import APIErrorMessage from '@/common/components/APIErrorMessage'
 import { mapGetters } from 'vuex'
 import ApiService from '@/common/services/ApiService.js'
 import OrganizationAdd from '@/registry/components/people/OrganizationAdd.vue'
-import ApplicationAdd from '@/registry/components/people/ApplicationAdd.vue'
+import ApplicationAddEdit from '@/registry/components/people/ApplicationAddEdit.vue'
 
 export default {
   name: 'PersonDetailEdit',
   components: {
     'api-error': APIErrorMessage,
     'organization-add': OrganizationAdd,
-    'application-add': ApplicationAdd
+    'application-add': ApplicationAddEdit
   },
   data () {
     return {
@@ -443,7 +443,7 @@ export default {
       })
     },
     addApplication (collection) {
-      collection.push({id: new Date().getUTCMilliseconds(), data: null})
+      collection.push({id: new Date().getUTCMilliseconds(), data: {}})
     },
     closeApplication (collection, id) {
       collection.splice(collection.findIndex((item) => item.id === id))

@@ -35,27 +35,27 @@
           </b-row>
           <b-row>
             <b-col md="6">
-              <b-form-group label="Issued by" horizontal :label-cols="3" label-for="issuer">
-                <b-form-select id="issuer" :options="formOptions.issuer" v-model="qualificationForm.primary_certificate" required></b-form-select>
+              <b-form-group label="Issued by" horizontal :label-cols="3">
+                <b-form-select :options="formOptions.issuer" v-model="qualificationForm.primary_certificate.acc_cert_guid" required></b-form-select>
               </b-form-group>
             </b-col>
             <b-col md="6">
-              <b-form-group label="Certificate number" label-for="primary_certificate_no" horizontal :label-cols="3">
-                <b-form-input id="primary_certificate_no" type="text" placeholder="Enter certificate number" v-model="qualificationForm.primary_certificate_no" required></b-form-input>
+              <b-form-group label="Certificate number" horizontal :label-cols="3">
+                <b-form-input type="text" placeholder="Enter certificate number" v-model="qualificationForm.primary_certificate_no" required></b-form-input>
               </b-form-group>
             </b-col>
           </b-row>
           <b-row>
             <b-col md="12">
-              <b-form-group label="Select classification" label-for="classifications" horizontal :label-cols="2" class="font-weight-bold">
-                <b-form-radio-group id="classifications" class="fixed-width font-weight-normal pt-2" :options="formOptions.classifications" @change="changedClassification" v-model="qualificationForm.subactivity" required></b-form-radio-group>
+              <b-form-group label="Select classification" horizontal :label-cols="2" class="font-weight-bold">
+                <b-form-radio-group class="fixed-width font-weight-normal pt-2" :options="formOptions.classifications" @change="changedClassification" v-model="qualificationForm.subactivity.registries_subactivity_code" required></b-form-radio-group>
               </b-form-group>
             </b-col>
           </b-row>
           <b-row>
             <b-col md="8">
-              <b-form-group label="Qualified to drill" label-for="qualifications" class="font-weight-bold">
-                <b-form-checkbox-group id="qualifications" class="fixed-width font-weight-normal" :options="formOptions.qualifications" v-model="qualificationForm.qualifications" disabled>
+              <b-form-group label="Qualified to drill" class="font-weight-bold">
+                <b-form-checkbox-group class="fixed-width font-weight-normal" :options="formOptions.qualifications" v-model="qualificationForm.qualifications" disabled>
                 </b-form-checkbox-group>
               </b-form-group>
             </b-col>
@@ -67,18 +67,19 @@
           </b-row>
           <b-row>
             <b-col>
-              <b-form-group horizontal :label-cols="5" label="Confirmed applicant is 19 years of age or older by reviewing" label-for="proofOfAge" class="font-weight-bold">
-                <b-form-select id="proofOfAge" :options="formOptions.proofOfAge" v-model="qualificationForm.proof_of_age" required></b-form-select>
+              <b-form-group horizontal :label-cols="5" label="Confirmed applicant is 19 years of age or older by reviewing" class="font-weight-bold">
+                <b-form-select :options="formOptions.proofOfAge" v-model="qualificationForm.proof_of_age" required></b-form-select>
               </b-form-group>
             </b-col>
           </b-row>
           <b-row>
             <b-col>
-              <b-form-group horizontal :label-cols="2" label="Date application received" label-for="effective_date" class="font-weight-bold">
-                <datepicker id="effective_date" format="yyyy-MM-dd" v-model="qualificationForm.status_set[0].effective_date" required></datepicker>
+              <b-form-group horizontal :label-cols="2" label="Date application received" class="font-weight-bold">
+                <datepicker format="yyyy-MM-dd" v-model="qualificationForm.status_set[0].effective_date" required></datepicker>
               </b-form-group>
             </b-col>
           </b-row>
+          <slot></slot>
         </p>
       </div>
     </div>
@@ -88,25 +89,33 @@
 <script>
 import Datepicker from 'vuejs-datepicker'
 import { mapGetters, mapActions } from 'vuex'
+import { FETCH_DRILLER_OPTIONS } from '@/registry/store/actions.types'
 export default {
   components: {
     Datepicker
   },
   props: ['value', 'activity'],
   data () {
+    // We need a default data structure when we're creating an application. If we're editing an
+    // application, we can piggy back off the value being passed in.
+    const defaultData = {
+      subactivity: {
+        registries_subactivity_code: null
+      },
+      primary_certificate_no: null,
+      primary_certificate: {
+        acc_cert_guid: null
+      },
+      status_set: [
+        {
+          effective_date: null,
+          status: 'P'
+        }
+      ],
+      qualifications: []
+    }
     return {
-      qualificationForm: {
-        subactivity: null,
-        primary_certificate_no: null,
-        primary_certificate: null,
-        status_set: [
-          {
-            effective_date: null,
-            status: 'P'
-          }
-        ],
-        qualifications: []
-      }
+      qualificationForm: {...JSON.parse(JSON.stringify(defaultData)), ...this.value}
     }
   },
   watch: {
@@ -124,7 +133,7 @@ export default {
       this.qualificationForm.qualifications = match.qualification_set.map(item => item.well_class)
     },
     ...mapActions([
-      'fetchDrillerOptions'
+      FETCH_DRILLER_OPTIONS
     ])
   },
   computed: {
@@ -147,12 +156,15 @@ export default {
         qualifications: [],
         proofOfAge: [{value: null, text: 'Please select an option'}]
       }
-      if (this.activity in this.drillerOptions) {
-        const options = this.drillerOptions[this.activity]
-        result.issuer = result.issuer.concat(options.AccreditedCertificateCode.map((item) => { return {'text': item.name + ' (' + item.cert_auth + ')', 'value': item.acc_cert_guid} }))
-        result.classifications = options.SubactivityCode.map((item) => { return {'text': item.description, 'value': item.registries_subactivity_code} })
-        result.qualifications = options.WellClassCode.map((item) => { return {'text': item.description, 'value': item.registries_well_class_code} })
-        result.proofOfAge = result.proofOfAge.concat(options.ProofOfAgeCode.map((item) => { return {'text': item.description, 'value': item.registries_proof_of_age_code} }))
+      if (this.drillerOptions) {
+        // If driller options have loaded, prepare the form options.
+        result.proofOfAge = result.proofOfAge.concat(this.drillerOptions.ProofOfAgeCode.map((item) => { return {'text': item.description, 'value': item.registries_proof_of_age_code} }))
+        if (this.activity in this.drillerOptions) {
+          // Different activities have different options.
+          result.classifications = this.drillerOptions[this.activity].SubactivityCode.map((item) => { return {'text': item.description, 'value': item.registries_subactivity_code} })
+          result.qualifications = this.drillerOptions[this.activity].WellClassCode.map((item) => { return {'text': item.description, 'value': item.registries_well_class_code} })
+          result.issuer = result.issuer.concat(this.drillerOptions[this.activity].AccreditedCertificateCode.map((item) => { return {'text': item.name + ' (' + item.cert_auth + ')', 'value': item.acc_cert_guid} }))
+        }
       }
       return result
     },
@@ -161,7 +173,7 @@ export default {
     }
   },
   created () {
-    this.fetchDrillerOptions({activity: this.activity})
+    this.FETCH_DRILLER_OPTIONS()
   }
 }
 </script>
