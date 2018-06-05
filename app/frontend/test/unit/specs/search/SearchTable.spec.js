@@ -26,7 +26,8 @@ describe('SearchTable.vue', () => {
       loading: () => false,
       listError: () => null,
       drillers: jest.fn().mockReturnValue(fakePersonList),
-      userRoles: () => ({ edit: false, view: false, approve: false })
+      userRoles: () => ({ edit: false, view: false, approve: false }),
+      activity: () => 'DRILL'
     }
     actions = {
       [FETCH_DRILLER_LIST]: jest.fn()
@@ -123,9 +124,6 @@ describe('SearchTable.vue', () => {
       localVue,
       stubs: ['router-link', 'router-view']
     })
-    wrapper.setProps({
-      activity: 'DRILL'
-    })
     const tableHeaders = wrapper.findAll('th')
     const expectedHeaders = [
       'Name',
@@ -142,13 +140,23 @@ describe('SearchTable.vue', () => {
     }
   })
   it('has the right columns when searching for well pump installers', () => {
+    getters = {
+      userIsAdmin: () => true,
+      user: () => 'user',
+      loading: () => false,
+      listError: () => null,
+      drillers: jest.fn().mockReturnValue(fakePersonList),
+      userRoles: () => ({ edit: true, view: true, approve: true }),
+      activity: () => 'PUMP'
+    }
+    store = new Vuex.Store({
+      getters,
+      actions
+    })
     const wrapper = shallowMount(SearchTable, {
       store,
       localVue,
       stubs: ['router-link', 'router-view']
-    })
-    wrapper.setProps({
-      activity: 'PUMP'
     })
     const tableHeaders = wrapper.findAll('th')
     const expectedHeaders = [
@@ -234,7 +242,8 @@ describe('SearchTable.vue', () => {
       loading: () => false,
       listError: () => null,
       drillers: jest.fn().mockReturnValue(fakePersonList),
-      userRoles: () => ({ edit: true, view: true, approve: true })
+      userRoles: () => ({ edit: true, view: true, approve: true }),
+      activity: () => 'DRILL'
     }
     store = new Vuex.Store({
       getters,

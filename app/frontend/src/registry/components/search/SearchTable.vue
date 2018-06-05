@@ -104,7 +104,6 @@ const querystring = require('querystring')
 
 export default {
   name: 'RegisterTable',
-  props: ['activity'],
   components: {
     'driller-subactivity': DrillerSubactivity,
     'driller-registration-status': DrillerRegistrationStatus,
@@ -178,7 +177,8 @@ export default {
       'loading',
       'listError',
       'userRoles',
-      'drillers'
+      'drillers',
+      'activity'
     ])
   },
   methods: {
