@@ -26,8 +26,8 @@ export PGPASSWORD=$DATABASE_PASSWORD
 cd $APP_ROOT
 echo ". Creating additional DB objects (e.g. spatial indices, stored procedures)"
 psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER << EOF
-	\ir scripts/database/scripts/wellsearch/post-deploy.sql
-	\ir scripts/database/scripts/wellsearch/wells_replication_stored_functions.sql
+	\i scripts/database/scripts/wellsearch/post-deploy.sql
+	\i scripts/database/scripts/wellsearch/wells_replication_stored_functions.sql
 EOF
 set -x
 
