@@ -31,43 +31,43 @@
         <!-- Display application detail once loaded -->
         <div v-else>
           <div v-if="currentDriller != {} && registration != null">
-              <h5 class="card-title" id="titlePersonName">{{ titlePersonName }}</h5>
-            <div class="col-12" v-if="error">
-              <api-error :error="error" resetter="SET_ERROR"></api-error>
-            </div>
+            <h5 class="card-title" id="titlePersonName">{{ titlePersonName }}</h5>
             <b-col md="12" class="pl-0" v-if="classification">
               <h5>Certification - {{ classification }}</h5>
             </b-col>
           </div>
           <div v-if="editClassification">
-            <b-modal
-                v-model="confirmCancelModal"
-                centered
-                title="Confirm cancel"
-                @shown="focusCancelModal"
-                :return-focus="$refs.cancelClassification">
-              Your changes are not saved. Are you sure you want to discard your changes?
-              <div slot="modal-footer">
-                <b-btn variant="secondary" id="confirmCancel" @click="confirmCancelModal=false" ref="cancelSubmitCancelBtn">
-                  Cancel
-                </b-btn>
-                <b-btn variant="danger" id="discardChanges" @click="confirmCancelModal=false;editClassification=false;applicationReset();">
-                  Discard
-                </b-btn>
-              </div>
-            </b-modal>
-            <b-row>
-              <application-edit
-                :activity="activity"
-                :value="applicationFormValue"
-                v-on:close="confirmCancelModal=true"/>
-            </b-row>
-            <b-row class="mt-3">
-              <b-col>
-                <button type="submit" class="btn btn-primary" id="saveClassification" v-on:click="saveApplication">Save</button>
-                <button type="submit" class="btn btn-primary" id="cancelClassification" v-on:click="confirmCancelModal=true">Cancel</button>
-              </b-col>
-            </b-row>
+            <b-form @submit.prevent="saveApplication()" @reset.prevent="applicationReset()">
+              <b-modal
+                  v-model="confirmCancelModal"
+                  centered
+                  title="Confirm cancel"
+                  @shown="focusCancelModal"
+                  :return-focus="$refs.cancelClassification">
+                Your changes are not saved. Are you sure you want to discard your changes?
+                <div slot="modal-footer">
+                  <b-btn variant="secondary" id="confirmCancel" @click="confirmCancelModal=false" ref="cancelSubmitCancelBtn">
+                    Cancel
+                  </b-btn>
+                  <b-btn variant="danger" id="discardChanges" @click="confirmCancelModal=false;editClassification=false;applicationReset();">
+                    Discard
+                  </b-btn>
+                </div>
+              </b-modal>
+              <b-row>
+                <application-edit
+                  :activity="activity"
+                  :value="applicationFormValue"
+                  v-on:isValid="onApplicationIsValid"
+                  v-on:close="confirmCancelModal=true"/>
+              </b-row>
+              <b-row class="mt-3">
+                <b-col>
+                  <button type="submit" class="btn btn-primary" id="saveClassification">Save</button>
+                  <button type="button" class="btn btn-primary" id="cancelClassification" v-on:click="confirmCancelModal=true">Cancel</button>
+                </b-col>
+              </b-row>
+            </b-form>
           </div>
           <div v-else>
             <div class="card mb-3">
@@ -107,11 +107,11 @@
                     </b-form-group>
                   </b-col>
                 </b-row>
-              </div>
-            </div>
-            <div class="card">
-              <div class="card-body">
-                <h5>Adjudication</h5>
+                <b-row>
+                  <b-col>
+                    <h5>Adjudication</h5>
+                  </b-col>
+                </b-row>
                 <b-row>
                   <b-col>
                     Confirmed applicant is 19 years of age or older by reviewing: {{ proofOfAge }}
@@ -139,10 +139,10 @@
                   <b-col md="2">
                     {{ approvalOutcome }}
                   </b-col>
-                  <b-col v-if="approvalStatus.status === 'NA'" md="2" class="registry-item">
+                  <b-col v-if="approvalStatus && approvalStatus.status === 'NA'" md="2" class="registry-item">
                     <span class="registry-label">Reason denied:</span>
                   </b-col>
-                  <b-col v-if="approvalStatus.status === 'NA'" md="2">
+                  <b-col v-if="approvalStatus && approvalStatus.status === 'NA'" md="2">
                     {{ reasonDenied }}
                   </b-col>
                 </b-row>
@@ -154,6 +154,7 @@
                     {{ notificationDate }}
                   </b-col>
                 </b-row>
+                <!-- Waiting for decision on how removal of the registry is going to happen:
                 <b-row v-if="registerRemovalDate || registerRemovalReason">
                   <b-col class="pt-3"><h6>Removal from register</h6></b-col>
                 </b-row>
@@ -162,8 +163,7 @@
                   <b-col>{{registerRemovalReason}}</b-col>
                   <b-col><span class="registry-label">Removal reason</span></b-col>
                   <b-col>{{registerRemovalDate}}</b-col>
-                </b-row>
-
+                </b-row> -->
                 <!--
                 <div class="row">
                   <div class="col-12 col-sm-4 registry-item">
@@ -223,7 +223,9 @@ export default {
       registration: null,
       applicationFormValue: null,
       editClassification: false,
-      confirmCancelModal: false
+      confirmCancelModal: false,
+      applicationSaving: false,
+      formValid: true
     }
   },
   methods: {
@@ -231,15 +233,19 @@ export default {
       FETCH_DRILLER_OPTIONS
     ]),
     applicationReset () {
+      // console.log('application reset')
       this.registration = null
       this.applicationFormValue = null
+      this.formValid = true
       // We fetch the entire registration with all applications because we need a reference to the registration
       // activity.
       ApiService.get('registrations', this.$route.params.registration_guid)
         .then((response) => {
+          // console.log('ApiService response', response)
           this.registration = response.data
 
           if (this.registration) {
+            // console.log('registration set to: ', this.registration)
             let application = this.registration.applications.find((item) => item.application_guid === this.$route.params.application_guid)
             this.applicationFormValue = {
               subactivity: {
@@ -256,6 +262,7 @@ export default {
           }
         })
         .catch((error) => {
+          console.log('ApiService error')
           this.$store.commit(SET_ERROR, error.response)
         })
     },
@@ -264,15 +271,22 @@ export default {
       this.$refs.cancelSubmitCancelBtn.focus()
     },
     saveApplication () {
-      this.loading = true
-      const copy = Object.assign({}, this.applicationFormValue)
-      delete copy['status_set'] // TODO: implement this during adjudication
-      delete copy['qualifications'] // This section is read-only. No point pushing it to server.
-      ApiService.patch('applications', this.$route.params.application_guid, copy).then(() => {
-        this.loading = false
-        this.editClassification = false
-        this.applicationReset()
-      })
+      if (this.formValid) {
+        this.applicationSaving = true
+        const copy = Object.assign({}, this.applicationFormValue)
+        delete copy['qualifications'] // This section is read-only. No point pushing it to server.
+        ApiService.patch('applications', this.$route.params.application_guid, copy).then(() => {
+          this.editClassification = false
+          this.applicationSaving = false
+          this.applicationReset()
+        }).catch((error) => {
+          this.applicationSaving = false
+          this.$store.commit(SET_ERROR, error.response)
+        })
+      }
+    },
+    onApplicationIsValid (event) {
+      this.formValid = event
     }
   },
   computed: {
@@ -298,7 +312,7 @@ export default {
       return this.registration ? this.registration.applications.find((item) => item.application_guid === this.$route.params.application_guid) : null
     },
     applicationLoading () {
-      return this.loading || this.drillerOptions === null || this.registration === null || this.application === null
+      return this.loading || this.drillerOptions === null || this.registration === null || this.application === null || this.applicationSaving === true
     },
     primaryCertificateName () {
       return this.application && this.application.primary_certificate ? this.application.primary_certificate.name : null
@@ -336,12 +350,13 @@ export default {
     proofOfAge () {
       return this.application.proof_of_age ? this.application.proof_of_age.description : null
     },
-    registerRemovalDate () {
-      return this.registration.register_removal_date
-    },
-    registerRemovalReason () {
-      return this.registration.register_removal_reason
-    },
+    // Waiting for decision on how removal from the registry is going to happen:
+    // registerRemovalDate () {
+    //   return this.registration.register_removal_date
+    // },
+    // registerRemovalReason () {
+    //   return this.registration.register_removal_reason
+    // },
     ...mapGetters([
       'loading',
       'error',

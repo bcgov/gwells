@@ -488,6 +488,7 @@ class RegistriesApplication(AuditModel):
 
     @property
     def current_status(self):
+        print('getting the current status for {}'.format(self.application_guid))
         try:
             return RegistriesApplicationStatus.objects.get(
                 application=self.application_guid,

@@ -64,6 +64,11 @@ class ProofOfAgeCodeSerializer(serializers.ModelSerializer):
             'description'
         )
 
+    def to_internal_value(self, data):
+        if 'code' in data:
+            return ProofOfAgeCode.objects.get(registries_proof_of_age_code=data['code'])
+        return super().to_internal_value(data)
+
 
 class OrganizationNoteSerializer(serializers.ModelSerializer):
     """
@@ -402,7 +407,7 @@ class ApplicationAdminSerializer(AuditModelSerializer):
     Serializes RegistryApplication model fields for admin users
     """
 
-    status_set = ApplicationStatusSerializer(many=True, read_only=True)
+    status_set = ApplicationStatusSerializer(many=True, required=False)
     current_status = ApplicationStatusSerializer(required=False)
     qualifications = serializers.StringRelatedField(
         source='subactivity.qualification_set',
@@ -476,11 +481,11 @@ class ApplicationAdminSerializer(AuditModelSerializer):
         """
         # We pop the current status, as the update method on the base
         # class cannot serialize nested fields.
-        validated_status = validated_data.pop('current_status', None)
+        current_status = validated_data.pop('current_status', None)
 
-        if validated_status:
+        if current_status:
             # Validated_status is an OrderedDict at this point.
-            validated_status_code = validated_status.get(
+            current_status_code = current_status.get(
                 'status').registries_application_status_code
             current_status = instance.current_status
             if current_status:
@@ -490,7 +495,7 @@ class ApplicationAdminSerializer(AuditModelSerializer):
                     'RegistryApplication {} does not have a current status'.format(instance))
                 current_status_code = None
 
-            if validated_status_code != current_status_code:
+            if current_status_code != current_status_code:
                 if current_status:
                     # Expire existing status.
                     current_status.expired_date = timezone.now()
@@ -502,7 +507,42 @@ class ApplicationAdminSerializer(AuditModelSerializer):
                     application=instance,
                     status=new_status)
 
-        return super().update(instance, validated_data)
+        print('validated_data {}'.format(validated_data))
+        validated_status_set = validated_data.pop('status_set', None)
+
+        application = super().update(instance, validated_data)
+
+        if validated_status_set:
+            for validated_status_data in validated_status_set:
+                # This could be an update, get or create
+                status = validated_status_data.get('status')
+                application_status = RegistriesApplicationStatus.objects.filter(
+                    application=application,
+                    status=status).first()
+                effective_date = validated_status_data.get('effective_date')
+                if application_status:
+                    # We're doing an update
+                    application_status.effective_date = effective_date
+                    application_status.save()
+                if not application_status:
+                    # This is a create
+                    application_status = RegistriesApplicationStatus.objects.create(
+                        application=application,
+                        status=status,
+                        effective_date=effective_date)
+                # As such, we need to ensure the the Pending status get's an expired date
+                if status.registries_application_status_code != 'P':
+                    # Any state that isn't a 'P', implies we may be moving to A, I or NA.
+                    # Valid transitions are: P -> A, P -> I, P -> NA
+                    # We need to ensure that the existing pending status has an end date
+                    pending = RegistriesApplicationStatus.objects.filter(
+                        application=application,
+                        status__registries_application_status_code='P').first()
+                    if pending and not pending.expired_date:
+                        pending.expired_date = effective_date
+                        pending.save()
+
+        return application
 
 
 class RegistrationAdminSerializer(AuditModelSerializer):

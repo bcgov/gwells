@@ -68,17 +68,25 @@
           <b-row>
             <b-col>
               <b-form-group horizontal :label-cols="5" label="Confirmed applicant is 19 years of age or older by reviewing" class="font-weight-bold">
-                <b-form-select :options="formOptions.proofOfAge" v-model="qualificationForm.proof_of_age" required></b-form-select>
+                <b-form-select :options="formOptions.proofOfAge" v-model="qualificationForm.proof_of_age.code" required></b-form-select>
               </b-form-group>
             </b-col>
           </b-row>
           <b-row>
-            <b-col>
-              <b-form-group horizontal :label-cols="2" label="Date application received" class="font-weight-bold">
-                <datepicker format="yyyy-MM-dd" v-model="qualificationForm.status_set[0].effective_date" required></datepicker>
+            <b-col md="6">
+              <b-form-group horizontal :label-cols="4" label="Date application received (yyyy-mm-dd)" class="font-weight-bold" invalid-feedback="Invalid date format">
+                <b-form-input type="date" v-model="pendingStatusEffectiveDate" :state="pendingDateState"/>
               </b-form-group>
             </b-col>
           </b-row>
+          <b-row>
+            <b-col md="6">
+              <b-form-group horizontal :label-cols="4" label="Approval date outcome (yyyy-mm-dd)" class="font-weight-bold" invalid-feedback="Invalid date format">
+                <b-form-input type="date" v-model="approvedStatusEffectiveDate" :state="approvedDateState"/>
+              </b-form-group>
+            </b-col>
+          </b-row>
+          <!-- slot for child elements to be added by parent component -->
           <slot></slot>
         </p>
       </div>
@@ -87,35 +95,14 @@
 </template>
 
 <script>
-import Datepicker from 'vuejs-datepicker'
 import { mapGetters, mapActions } from 'vuex'
+import moment from 'moment'
 import { FETCH_DRILLER_OPTIONS } from '@/registry/store/actions.types'
 export default {
-  components: {
-    Datepicker
-  },
   props: ['value', 'activity'],
   data () {
-    // We need a default data structure when we're creating an application. If we're editing an
-    // application, we can piggy back off the value being passed in.
-    const defaultData = {
-      subactivity: {
-        registries_subactivity_code: null
-      },
-      primary_certificate_no: null,
-      primary_certificate: {
-        acc_cert_guid: null
-      },
-      status_set: [
-        {
-          effective_date: null,
-          status: 'P'
-        }
-      ],
-      qualifications: []
-    }
     return {
-      qualificationForm: {...JSON.parse(JSON.stringify(defaultData)), ...this.value}
+      qualificationForm: this.copyFormData(this.value)
     }
   },
   watch: {
@@ -131,6 +118,47 @@ export default {
     changedClassification (value) {
       const match = this.subactivityMap.filter(item => item.registries_subactivity_code === value)[0]
       this.qualificationForm.qualifications = match.qualification_set.map(item => item.well_class)
+    },
+    copyFormData (input) {
+      // We need a default data structure when we're creating an application. If we're editing an
+      // application, we can piggy back off the value being passed in.
+      const defaultData = {
+        subactivity: {
+          registries_subactivity_code: null
+        },
+        primary_certificate_no: null,
+        primary_certificate: {
+          acc_cert_guid: null
+        },
+        proof_of_age: {
+          code: null
+        },
+        status_set: [
+          {
+            effective_date: null,
+            status: 'P'
+          }
+        ],
+        qualifications: []
+      }
+      const result = {...JSON.parse(JSON.stringify(defaultData)), ...input}
+      // We need the qualification to contain a pending status that we can attach to
+      const pendingStatus = result.status_set.find(item => item.status === 'P')
+      if (!pendingStatus) {
+        result.status_set.push({
+          effective_date: null,
+          status: 'P'
+        })
+      }
+      return result
+    },
+    isDateValid (input) {
+      // We accept null, undefined, '' as valid dates, in addition to correctly formatted dates
+      return input ? moment(input, 'YYYY-MM-DD', true).isValid() : true
+    },
+    isAllDatesValid () {
+      return (!this.approvedStatus || this.isDateValid(this.approvedStatus.effective_date)) &&
+        (!this.pendingStatus || this.isDateValid(this.pendingStatus.effective_date))
     },
     ...mapActions([
       FETCH_DRILLER_OPTIONS
@@ -158,7 +186,7 @@ export default {
       }
       if (this.drillerOptions) {
         // If driller options have loaded, prepare the form options.
-        result.proofOfAge = result.proofOfAge.concat(this.drillerOptions.ProofOfAgeCode.map((item) => { return {'text': item.description, 'value': item.registries_proof_of_age_code} }))
+        result.proofOfAge = result.proofOfAge.concat(this.drillerOptions.ProofOfAgeCode.map((item) => { return {'text': item.description, 'value': item.code} }))
         if (this.activity in this.drillerOptions) {
           // Different activities have different options.
           result.classifications = this.drillerOptions[this.activity].SubactivityCode.map((item) => { return {'text': item.description, 'value': item.registries_subactivity_code} })
@@ -170,6 +198,43 @@ export default {
     },
     subactivityMap () {
       return this.activity in this.drillerOptions ? this.drillerOptions[this.activity].SubactivityCode : []
+    },
+    approvedDateState () {
+      this.$emit('isValid', this.isAllDatesValid())
+      return !this.approvedStatus || this.isDateValid(this.approvedStatus.effective_date)
+    },
+    pendingDateState () {
+      this.$emit('isValid', this.isAllDatesValid())
+      return !this.pendingStatus || this.isDateValid(this.pendingStatus.effective_date)
+    },
+    pendingStatus () {
+      // This is the date on which a record became pending.
+      return this.qualificationForm.status_set.find(item => item.status === 'P')
+    },
+    pendingStatusEffectiveDate: {
+      get () {
+        return this.pendingStatus ? this.pendingStatus.effective_date : null
+      },
+      set (newValue) {
+        if (!this.pendingStatus) {
+          this.pendingStatus = {}
+        }
+        this.pendingStatus.effective_date = newValue
+      }
+    },
+    approvedStatus () {
+      return this.qualificationForm.status_set.find(item => item.status === 'A')
+    },
+    approvedStatusEffectiveDate: {
+      get () {
+        return this.approvedStatus ? this.approvedStatus.effective_date : null
+      },
+      set (newValue) {
+        if (!this.approvedStatus) {
+          this.approvedStatus = {}
+        }
+        this.approvedStatus.effective_date = newValue
+      }
     }
   },
   created () {
