@@ -19,30 +19,34 @@ import bcgov.OpenShiftHelper
 import bcgov.GitHubHelper
 
 @NonCPS
+// Print stack trace of error
 private static String stackTraceAsString(Throwable t) {
     StringWriter sw = new StringWriter();
     t.printStackTrace(new PrintWriter(sw));
     return sw.toString()
 }
 
+// Return stage name
 String stageStatusContext(String stageName){
     return "stages/${stageName.toLowerCase()}"
 }
 
+// Set stage status
 void setStageStatus(Map context, String name, String status) {
-     GitHubHelper.createCommitStatus(this, context.pullRequest.head, status, "${env.BUILD_URL}", "Stage '${name}'", stageStatusContext(name))
+    GitHubHelper.createCommitStatus(this, context.pullRequest.head, status, "${env.BUILD_URL}", "Stage '${name}'", stageStatusContext(name))
 }
 
+// Set stage status - adds a broadcast to the Slack channel
+// TODO: broadcast status/result to Slack channel
 void notifyStageStatus(Map context, String name, String status) {
     setStageStatus(context, name, status)
 }
 
+// Stage - primary function for pipeline stages and results
 def _stage(String name, Map context, boolean retry=0, boolean withCommitStatus=true, Closure body) {
     def stageOpt =(context?.stages?:[:])[name]
     boolean isEnabled=(stageOpt == null || stageOpt == true)
-    //echo "Stage - ${stage}"
     echo "Running Stage '${name}' - enabled:${isEnabled}"
-
 
     if (isEnabled){
         stage(name) {
@@ -75,6 +79,7 @@ def _stage(String name, Map context, boolean retry=0, boolean withCommitStatus=t
     }
 }
 
+// Context object contains names, templates and stages to run
 Map context = [
   'name': 'gwells',
   'uuid' : "${env.JOB_BASE_NAME}-${env.BUILD_NUMBER}-${env.CHANGE_ID}",
@@ -118,23 +123,24 @@ Map context = [
   ]
 ]
 
+// Constant integration - tests and deploys into development environments, merges into sprint release branches
 def isCI = !"master".equalsIgnoreCase(env.CHANGE_TARGET)
+// Constant deployment - tests and promotes to TEST and PROD environments, merges into master branch
 def isCD = "master".equalsIgnoreCase(env.CHANGE_TARGET)
 
-
+// ?
 properties([
         buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '', numToKeepStr: '5')),
         durabilityHint('PERFORMANCE_OPTIMIZED') /*, parameters([string(defaultValue: '', description: '', name: 'run_stages')]) */
 ])
 
+// Clean out any pld builds
 stage('Prepare') {
     abortAllPreviousBuildInProgress(currentBuild)
     echo "BRANCH_NAME=${env.BRANCH_NAME}\nCHANGE_ID=${env.CHANGE_ID}\nCHANGE_TARGET=${env.CHANGE_TARGET}\nBUILD_URL=${env.BUILD_URL}"
 }
 
-/**
-This function wrapper allows stages to be optional/skipped.
-*/
+// This function wrapper allows stages to be optional/skipped
 _stage('Build', context) {
     node('master') {
         checkout scm
@@ -146,6 +152,7 @@ _stage('Build', context) {
     }
 } //end stage
 
+// This function wrapper allows stages to be optional/skipped
 _stage('Unit Test', context) {
     podTemplate(label: "node-${context.uuid}", name:"node-${context.uuid}", serviceAccount: 'jenkins', cloud: 'openshift', containers: [
         containerTemplate(name: 'jnlp', image: 'jenkins/jnlp-slave:3.10-1-alpine', args: '${computer.jnlpmac} ${computer.name}', resourceRequestCpu: '100m',resourceLimitCpu: '100m'),
@@ -195,8 +202,7 @@ _stage('Unit Test', context) {
     }
 } //end stage
 
-
-
+// This function wrapper allows stages to be optional/skipped
 _stage('Code Quality', context) {
     podTemplate(
         name: "sonar-runner${context.uuid}",
@@ -244,7 +250,7 @@ _stage('Code Quality', context) {
 
 } //end stage
 
-
+// Cycle through stages and excuse as appropriate
 for(String envKeyName: context.env.keySet() as String[]){
     String stageDeployName=envKeyName.toUpperCase()
 
@@ -264,7 +270,6 @@ for(String envKeyName: context.env.keySet() as String[]){
             }catch(ex){
                 error "Pipeline has been aborted. - ${ex}"
             }
-            //echo "inputResponse:${inputResponse}"
             GitHubHelper.getPullRequest(this).comment("User '${inputResponse}' has approved deployment to '${stageDeployName}'")
         }
     }
@@ -335,7 +340,7 @@ for(String envKeyName: context.env.keySet() as String[]){
             ])
             {
                 node("nodejs-${context.uuid}") {
-                //the checkout is mandatory, otherwise functional test would fail
+                    // Checkout is mandatory, otherwise functional test would fail
                     echo "checking out source"
                     echo "Build: ${BUILD_ID}"
                     echo "baseURL: ${baseURL}"
@@ -469,6 +474,7 @@ for(String envKeyName: context.env.keySet() as String[]){
     } //end if
 } // end for
 
+// Merge and delete branches, prompt user, remove openshift resources
 stage('Cleanup') {
 
     def inputResponse = null
@@ -486,8 +492,9 @@ stage('Cleanup') {
             echo "Clearing OpenShift resources"
             new OpenShiftHelper().cleanup(this, context)
 
-            //echo "Clearing OpenShift resources"
-            //setStageStatus(context, 'Cleanup', 'SUCCESS')
+            // TODO: broadcast status/result to Slack channel
+            // echo "Clearing OpenShift resources"
+            // setStageStatus(context, 'Cleanup', 'SUCCESS')
             isDone=true
         }catch (ex){
             echo "${stackTraceAsString(ex)}"
