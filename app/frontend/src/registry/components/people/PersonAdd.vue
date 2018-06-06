@@ -118,7 +118,7 @@
                 </b-form-group>
               </b-col>
             </b-row>
-            <b-card class="mb-3 p-1 px-md-2" v-if="drillerForm.regType.some(x => x === 'DRILL' || x === 'PUMP')">
+            <b-card no-body class="mb-3 p-1 p-md-3" v-if="drillerForm.regType.some(x => x === 'DRILL' || x === 'PUMP')">
               <b-row>
                   <b-col>
                     <b-alert :show="newOrgSuccess"
@@ -143,7 +143,7 @@
               <div v-if="drillerForm.regType.some(x => x === 'DRILL')" :class="drillerForm.regType.some(x => x === 'PUMP') ? 'mb-5' : 'mb-1' ">
                 <b-row>
                   <b-col>
-                    <h6>Well Driller Registration</h6>
+                    <h5>Well Driller Registration</h5>
                   </b-col>
                 </b-row>
                 <b-row class="mb-3">
@@ -162,15 +162,17 @@
                   </b-col>
                 </b-row>
                 <b-row>
-                  <h6 class="font-weight-normal ml-3">Well Driller Classifications</h6>
-                  <application-add
-                    class="mb-3"
-                    v-for="item in drillApplications"
-                    v-bind:item="item"
-                    v-bind:key="item.id"
-                    v-on:close="closeApplication (drillApplications, item.id)"
-                    v-model="item.data"
-                    activity="DRILL"/>
+                  <b-col>
+                    <h6 class="font-weight-normal">Well Driller Classifications</h6>
+                    <application-add
+                      class="mb-3"
+                      v-for="item in drillApplications"
+                      v-bind:item="item"
+                      v-bind:key="item.id"
+                      v-on:close="closeApplication (drillApplications, item.id)"
+                      v-model="item.data"
+                      activity="DRILL"/>
+                  </b-col>
                 </b-row>
                 <b-row>
                   <b-col>
@@ -186,7 +188,7 @@
               <div v-if="drillerForm.regType.some(x => x === 'PUMP')" class="my-2">
                 <b-row>
                   <b-col>
-                    <h6>Well Pump Installer Registration</h6>
+                    <h5>Well Pump Installer Registration</h5>
                   </b-col>
                 </b-row>
                 <b-row class="mb-3">
@@ -205,15 +207,17 @@
                   </b-col>
                 </b-row>
                 <b-row>
-                  <h6 class="font-weight-normal ml-3">Well Pump Installer Classifications</h6>
-                  <application-add
-                    class="mb-3"
-                    v-for="item in pumpApplications"
-                    v-bind:item="item"
-                    v-bind:key="item.id"
-                    v-on:close="closeApplication (pumpApplications, item.id)"
-                    v-model="item.data"
-                    activity="PUMP"/>
+                  <b-col>
+                    <h6 class="font-weight-normal">Well Pump Installer Classifications</h6>
+                    <application-add
+                      class="mb-3"
+                      v-for="item in pumpApplications"
+                      v-bind:item="item"
+                      v-bind:key="item.id"
+                      v-on:close="closeApplication (pumpApplications, item.id)"
+                      v-model="item.data"
+                      activity="PUMP"/>
+                  </b-col>
                 </b-row>
                 <b-row>
                   <b-col>
