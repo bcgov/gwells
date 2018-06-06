@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="container p-1 p-md-3">
     <b-card no-body class="mb-3">
       <b-breadcrumb :items="breadcrumbs" class="py-0 my-2"></b-breadcrumb>
     </b-card>
@@ -7,7 +7,7 @@
       <api-error :error="error" resetter="SET_ERROR"></api-error>
     </div>
     <div class="card">
-      <div class="card-body">
+      <div class="card-body p-md-3 p-2">
           <h5 class="card-title">Add new applicant</h5>
           <b-form @submit.prevent="onFormSubmit()" @reset.prevent="onFormReset()">
             <b-row><b-col><h6 class="font-weight-bold">Personal Information</h6></b-col></b-row>
@@ -37,17 +37,23 @@
                 </b-form-group>
               </b-col>
             </b-row>
-            <b-row class="mt-3"><b-col><h6 class="font-weight-bold">Contact Information</h6></b-col></b-row>
+            <b-row class="mt-3"><b-col><h6 class="font-weight-bold">Contact Information at Company</h6></b-col></b-row>
             <b-row>
               <b-col cols="12" md="5">
                 <b-form-group
                   id="contactTelInputGroup"
                   label="Telephone number:"
+                  aria-describedby="drillerTelExample"
                   label-for="contactTelInput">
                   <b-form-input
                     id="contactTelInput"
-                    type="text"
+                    type="tel"
+                    :formatter="formatTel"
+                    lazy-formatter
                     v-model="drillerForm.person.contact_tel"/>
+                  <b-form-text id="drillerTelExample">
+                    Example: (250) 555-1234
+                  </b-form-text>
                 </b-form-group>
               </b-col>
               <b-col cols="12" md="5" offset-md="1">
@@ -57,7 +63,7 @@
                   label-for="contactEmailInput">
                   <b-form-input
                     id="contactEmailInput"
-                    type="text"
+                    type="email"
                     :state="validation.contact_email"
                     aria-describedby="contactEmailFeedback"
                     v-model="drillerForm.person.contact_email"/>
@@ -69,30 +75,36 @@
                 </b-form-group>
               </b-col>
             </b-row>
-            <b-row class="mt-3"><b-col><h6 class="font-weight-bold">Document Control</h6></b-col></b-row>
+            <b-row class="mt-3"><b-col><h6 class="font-weight-bold">ORCS File Number</h6></b-col></b-row>
             <b-row>
-              <b-col>
+              <b-col cols="12" md="5">
                 <b-form-group
                   id="drillerORCSInputGroup"
                   label="Well Driller ORCS Number:"
+                  aria-describedby="drillerORCSExample"
                   label-for="drillerORCSInput">
                   <b-form-input
                     id="drillerORCSInput"
                     type="text"
-                    v-model="drillerForm.person.well_driller_orcs_no"
-                    placeholder="example: 38000-25/DRI SMIT J"/>
+                    v-model="drillerForm.person.well_driller_orcs_no"/>
+                  <b-form-text id="drillerORCSExample">
+                  Example: 38000-25/DRI SMIT J
+                  </b-form-text>
                 </b-form-group>
               </b-col>
-              <b-col>
+              <b-col cols="12" md="5" offset-md="1">
                 <b-form-group
                   id="pumpORCSInputGroup"
                   label="Pump Installer ORCS Number:"
-                  label-for="pumpORCSInput">
+                  label-for="pumpORCSInput"
+                  aria-describedby="pumpORCSExample">
                   <b-form-input
                     id="pumpORCSInput"
                     type="text"
-                    v-model="drillerForm.person.pump_installer_orcs_no"
-                    placeholder="example: 38000-25/PUMP SMIT J"/>
+                    v-model="drillerForm.person.pump_installer_orcs_no"/>
+                  <b-form-text id="pumpORCSExample">
+                    example: 38000-25/PUMP SMIT J
+                  </b-form-text>
                 </b-form-group>
               </b-col>
             </b-row>
@@ -106,44 +118,36 @@
                 </b-form-group>
               </b-col>
             </b-row>
-            <b-card class="mb-3" v-if="drillerForm.regType.some(x => x === 'DRILL' || x === 'PUMP')">
+            <b-card class="mb-3 p-1 px-md-2" v-if="drillerForm.regType.some(x => x === 'DRILL' || x === 'PUMP')">
               <b-row>
-                <b-col>
-                  <b-button
-                    type="button"
-                    v-b-modal.orgModal
-                    variant="primary"
-                    size="sm"
-                    class="mb-3">
-                    <i class="fa fa-plus-square-o"></i> Add a company</b-button>
-
-                  <organization-add @newOrgAdded="newOrgHandler"></organization-add>
-                </b-col>
-              </b-row>
-              <b-row>
-                <b-col>
-                  <b-alert :show="newOrgSuccess"
-                        dismissible
-                        variant="success"
-                        @dismissed="newOrgSuccess=false">
-                  Company added.
-                  </b-alert>
-                </b-col>
-              </b-row>
-              <div v-if="drillerForm.regType.some(x => x === 'DRILL')">
-                <b-row>
-                  <b-col cols="12" md="4">
-                    <b-form-group
-                      id="drillerRegNoInputGroup"
-                      label="Well Driller Registration Number:"
-                      label-for="drillerRegNoInput">
-                      <b-form-input
-                        id="drillerRegNoInput"
-                        type="text"
-                        v-model="drillerForm.registrations.drill.registration_no"/>
-                    </b-form-group>
+                  <b-col>
+                    <b-alert :show="newOrgSuccess"
+                          dismissible
+                          variant="success"
+                          @dismissed="newOrgSuccess=false"
+                          class="mb-3">
+                    Company added.
+                    </b-alert>
                   </b-col>
-                  <b-col md="7" offset-md="1">
+                  <b-col class="text-right">
+                      <b-button
+                        type="button"
+                        v-b-modal.orgModal
+                        variant="primary"
+                        size="sm"
+                        class="py-0">
+                        <i class="fa fa-plus-square-o"></i> Add a company</b-button>
+                  </b-col>
+              </b-row>
+              <organization-add @newOrgAdded="newOrgHandler"></organization-add>
+              <div v-if="drillerForm.regType.some(x => x === 'DRILL')" :class="drillerForm.regType.some(x => x === 'PUMP') ? 'mb-5' : 'mb-1' ">
+                <b-row>
+                  <b-col>
+                    <h6>Well Driller Registration</h6>
+                  </b-col>
+                </b-row>
+                <b-row class="mb-3">
+                  <b-col cols="12" md="7">
                     <b-form-group
                       id="companyInputGroup"
                       label="Well drilling company:"
@@ -158,6 +162,7 @@
                   </b-col>
                 </b-row>
                 <b-row>
+                  <h6 class="font-weight-normal ml-3">Well Driller Classifications</h6>
                   <application-add
                     class="mb-3"
                     v-for="item in drillApplications"
@@ -174,24 +179,18 @@
                     variant="primary"
                     size="sm"
                     v-on:click="addApplication (drillApplications)"
-                    class="mb-3"><i class="fa fa-plus-square-o"></i> Add new classification</b-button>
+                    class="mb-3"><i class="fa fa-plus-square-o"></i> Add new well driller classification</b-button>
                   </b-col>
                 </b-row>
               </div>
-              <div v-if="drillerForm.regType.some(x => x === 'PUMP')">
+              <div v-if="drillerForm.regType.some(x => x === 'PUMP')" class="my-2">
                 <b-row>
-                  <b-col cols="12" md="4">
-                    <b-form-group
-                      id="pumpRegNoInputGroup"
-                      label="Well Pump Installer Registration Number:"
-                      label-for="pumpRegNoInput">
-                      <b-form-input
-                        id="pumpRegNoInput"
-                        type="text"
-                        v-model="drillerForm.registrations.pump.registration_no"/>
-                    </b-form-group>
+                  <b-col>
+                    <h6>Well Pump Installer Registration</h6>
                   </b-col>
-                  <b-col md="7" offset-md="1">
+                </b-row>
+                <b-row class="mb-3">
+                  <b-col md="7">
                     <b-form-group
                       id="companyInputGroup"
                       label="Well pump installation company:"
@@ -206,6 +205,7 @@
                   </b-col>
                 </b-row>
                 <b-row>
+                  <h6 class="font-weight-normal ml-3">Well Pump Installer Classifications</h6>
                   <application-add
                     class="mb-3"
                     v-for="item in pumpApplications"
@@ -222,14 +222,14 @@
                     variant="primary"
                     size="sm"
                     v-on:click="addApplication(pumpApplications)"
-                    class="mb-3"><i class="fa fa-plus-square-o"></i> Add new classification</b-button>
+                    class="mb-3"><i class="fa fa-plus-square-o"></i> Add new pump installer classification</b-button>
                   </b-col>
                 </b-row>
               </div>
             </b-card>
             <b-row class="mt-3">
               <b-col>
-                <b-button type="submit" class="mr-2" variant="primary">Submit</b-button>
+                <b-button type="submit" class="mr-2" variant="primary">Save</b-button>
                 <b-button type="reset" variant="light">Reset</b-button>
               </b-col>
             </b-row>
@@ -267,6 +267,7 @@ import { mapGetters } from 'vuex'
 import ApiService from '@/common/services/ApiService.js'
 import OrganizationAdd from '@/registry/components/people/OrganizationAdd.vue'
 import ApplicationAddEdit from '@/registry/components/people/ApplicationAddEdit.vue'
+import inputFormatMixin from '@/common/inputFormatMixin.js'
 
 export default {
   name: 'PersonDetailEdit',
@@ -275,6 +276,7 @@ export default {
     'organization-add': OrganizationAdd,
     'application-add': ApplicationAddEdit
   },
+  mixins: [inputFormatMixin],
   data () {
     return {
       breadcrumbs: [

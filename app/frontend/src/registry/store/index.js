@@ -28,7 +28,8 @@ import {
   SET_DRILLER,
   SET_DRILLER_LIST,
   SET_KEYCLOAK,
-  SET_DRILLER_OPTIONS } from './mutations.types.js'
+  SET_DRILLER_OPTIONS,
+  SET_LAST_SEARCHED_ACTIVITY } from './mutations.types.js'
 
 Vue.use(Vuex)
 
@@ -42,7 +43,8 @@ export const store = new Vuex.Store({
     drillerList: [],
     currentDriller: {},
     keycloak: {},
-    drillerOptions: null
+    drillerOptions: null,
+    lastSearchedActivity: 'DRILL'
   },
   mutations: {
     [SET_LOADING] (state, payload) {
@@ -71,6 +73,9 @@ export const store = new Vuex.Store({
     },
     [SET_DRILLER_OPTIONS] (state, payload) {
       state.drillerOptions = payload
+    },
+    [SET_LAST_SEARCHED_ACTIVITY] (state, payload) {
+      state.lastSearchedActivity = payload
     }
   },
   actions: {
@@ -220,14 +225,31 @@ export const store = new Vuex.Store({
     keycloak (state) {
       return state.keycloak
     },
-    userIsAdmin (state) {
+    userRoles (state) {
       if (state.keycloak && state.keycloak.authenticated) {
-        return state.keycloak.hasRealmRole('gwells_admin')
+        return {
+          view: (state.keycloak.hasRealmRole('gwells_admin') ||
+            state.keycloak.hasRealmRole('registries_statutory_authority') ||
+            state.keycloak.hasRealmRole('registries_viewer') ||
+            state.keycloak.hasRealmRole('registries_adjudicator')),
+          edit: (state.keycloak.hasRealmRole('gwells_admin') ||
+            state.keycloak.hasRealmRole('registries_statutory_authority') ||
+            state.keycloak.hasRealmRole('registries_adjudicator')),
+          approve: (state.keycloak.hasRealmRole('gwells_admin') ||
+            state.keycloak.hasRealmRole('registries_statutory_authority'))
+        }
+      } else {
+        return {}
       }
-      return false
     },
-    drillerOptions: state => {
+    drillerOptions (state) {
       return state.drillerOptions
+    },
+    activity (state) {
+      /**
+       * last searched activity, exposed to components as "activity"
+       */
+      return state.lastSearchedActivity
     }
   }
 })

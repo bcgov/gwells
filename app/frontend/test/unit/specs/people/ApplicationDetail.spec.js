@@ -25,8 +25,8 @@ describe('ApplicationDetail.vue', () => {
       user: () => null,
       currentDriller: jest.fn().mockReturnValue(fakePerson),
       drillers: () => [],
-      userIsAdmin: () => false,
-      drillerOptions: () => jest.fn().mockReturnValue(fakeDrillerOptions)
+      drillerOptions: () => jest.fn().mockReturnValue(fakeDrillerOptions),
+      userRoles: () => ({ edit: true, view: true, approve: true })
     }
     mutations = {
     }
@@ -71,7 +71,7 @@ describe('ApplicationDetail.vue', () => {
       currentDriller: jest.fn().mockReturnValue(fakePerson),
       drillerOptions: jest.fn().mockReturnValue(fakeDrillerOptions),
       drillers: () => [],
-      userIsAdmin: () => true
+      userRoles: () => ({ edit: true, view: true, approve: true })
     }
     let mutations = {
     }
@@ -126,7 +126,7 @@ describe('ApplicationDetail.vue', () => {
       currentDriller: jest.fn().mockReturnValue(fakePerson),
       drillerOptions: jest.fn().mockReturnValue(fakeDrillerOptions),
       drillers: () => [],
-      userIsAdmin: () => false
+      userRoles: () => ({ edit: false, view: true, approve: false })
     }
     let mutations = {
     }

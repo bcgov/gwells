@@ -16,7 +16,7 @@
     </b-alert>
 
     <!-- Admin options -->
-    <b-card v-if="userIsAdmin" no-body class="container p-1 mb-3">
+    <b-card v-if="userRoles.edit" no-body class="container p-1 mb-3">
       <b-card-header header-tag="header" class="p-1" role="tab">
         <b-btn block href="#" v-b-toggle.adminPanel variant="light" class="text-left">Administrator options</b-btn>
       </b-card-header>
@@ -65,7 +65,7 @@
             </b-col>
           </b-form-row>
           <b-form-row>
-            <b-col cols="12" md="6" class="pr-md-5">
+            <b-col cols="12" md="6">
               <b-form-group label="Community:" label-for="cityOptions">
                 <b-form-select
                     multiple="multiple"
@@ -85,7 +85,7 @@
                 </b-form-select>
               </b-form-group>
             </b-col>
-            <b-col cols="12" md="6" v-if="userIsAdmin">
+            <b-col cols="12" md="6" v-if="userRoles.view" class="pl-md-5">
               <b-form-group label="Registration status" label-for="registrationStatusSelect">
                 <b-form-select
                     v-model="searchParams.status"
@@ -159,12 +159,12 @@
               To update contact information email <a href="mailto:Groundwater@gov.bc.ca">groundwater@gov.bc.ca</a>.
             </b-col>
             <b-col cols="12" class="mt-2">
-              <registry-table @sort="sortTable" :activity="lastSearchedActivity"/>
+              <registry-table @sort="sortTable"/>
             </b-col>
           </b-row>
           <b-row v-if="drillers.results && drillers.results.length" class="mt-5">
             <b-col cols="12">
-              <register-legal-text class="register-legal" :activity="lastSearchedActivity"/>
+              <register-legal-text class="register-legal" :activity="activity"/>
             </b-col>
           </b-row>
         </template>
@@ -181,7 +181,7 @@ import APIErrorMessage from '@/common/components/APIErrorMessage.vue'
 import querystring from 'querystring'
 import { mapGetters } from 'vuex'
 import { FETCH_CITY_LIST, FETCH_DRILLER_LIST } from '@/registry/store/actions.types'
-import { SET_DRILLER_LIST } from '@/registry/store/mutations.types'
+import { SET_DRILLER_LIST, SET_LAST_SEARCHED_ACTIVITY } from '@/registry/store/mutations.types'
 
 export default {
   components: {
@@ -193,7 +193,6 @@ export default {
     return {
       adminPanelToggle: false,
       loginPanelToggle: false,
-      lastSearchedActivity: 'DRILL',
       regStatusOptions: [
         { value: '', text: 'All', public: false },
         { value: 'PENDING', text: 'Pending', public: false },
@@ -235,8 +234,8 @@ export default {
         DRILL: 'Well Driller',
         PUMP: 'Well Pump Installer'
       }
-      if (activityMap[this.lastSearchedActivity]) {
-        return activityMap[this.lastSearchedActivity]
+      if (activityMap[this.activity]) {
+        return activityMap[this.activity]
       }
       return ''
     },
@@ -253,11 +252,12 @@ export default {
       }
     },
     ...mapGetters([
-      'userIsAdmin',
+      'userRoles',
       'loading',
       'listError',
       'cityList',
-      'drillers'
+      'drillers',
+      'activity'
     ])
   },
   watch: {
@@ -275,7 +275,11 @@ export default {
     drillerSearch () {
       const table = this.$refs.registryTableResults
       const params = this.APISearchParams
-      this.lastSearchedActivity = this.searchParams.activity || 'DRILL'
+
+      // save the last searched activity in the store for reference by table components
+      // (e.g. for formatting table for pump installer searches)
+      this.$store.commit(SET_LAST_SEARCHED_ACTIVITY, this.searchParams.activity || 'DRILL')
+
       this.searchLoading = true
       if (window.ga) {
         window.ga('send', {
