@@ -1,48 +1,73 @@
 // Jenkinsfile (Scripted Pipeline)
 
-/* Gotchas
+/* Gotchas:
+    - PodTemplate name/label has to be unique to ensure proper caching/validation
+    - https://gist.github.com/matthiasbalke/3c9ecccbea1d460ee4c3fbc5843ede4a
 
-- PodTemplate name/label has to be unique.
-    otherwise,there is some configuration caching that won't actually take the latest configuration
-    e.g.: Changing image, envvars, so on.
-    maybe only when overwriting global templates?
-
-References:
-- https://gist.github.com/matthiasbalke/3c9ecccbea1d460ee4c3fbc5843ede4a
-
+   Libraries:
+    - https://github.com/BCDevOps/jenkins-pipeline-shared-lib
+    - http://github-api.kohsuke.org/apidocs/index.html
 */
-
 import hudson.model.Result;
 import jenkins.model.CauseOfInterruption.UserInterruption;
 import org.kohsuke.github.*
 import bcgov.OpenShiftHelper
 import bcgov.GitHubHelper
 
-@NonCPS
+
+/* Jenkins properties can be set on a pipeline-by-pipeline basis
+   Includes:
+    - build discarder
+    - build concurrency
+    - master node failure handling
+    - throttling
+    - parameters
+    - build triggers
+    See Jenkin's Pipeline Systax for generation
+    Globally equivalent to Jenkins > Manage Jenkins > Configure System
+*/
+properties([
+    buildDiscarder(
+        logRotator(
+            artifactDaysToKeepStr: '',
+            artifactNumToKeepStr: '',
+            daysToKeepStr: '',
+            numToKeepStr: '5'
+        )
+    ),
+    durabilityHint('PERFORMANCE_OPTIMIZED') /*, parameters([string(defaultValue: '', description: '', name: 'run_stages')]) */
+])
+
+
 // Print stack trace of error
+@NonCPS
 private static String stackTraceAsString(Throwable t) {
     StringWriter sw = new StringWriter();
     t.printStackTrace(new PrintWriter(sw));
     return sw.toString()
 }
 
-// Return stage name
-String stageStatusContext(String stageName){
-    return "stages/${stageName.toLowerCase()}"
+
+// Notify stage status and pass to Jenkins-GitHub library
+void notifyStageStatus (Map context, String name, String status) {
+    // TODO: broadcast status/result to Slack channel
+    GitHubHelper.createCommitStatus(
+        this,
+        context.pullRequest.head,
+        status,
+        "${env.BUILD_URL}",
+        "Stage '${name}'",
+        "stages/${name.toLowerCase()}"
+    )
 }
 
-// Set stage status
-void setStageStatus(Map context, String name, String status) {
-    GitHubHelper.createCommitStatus(this, context.pullRequest.head, status, "${env.BUILD_URL}", "Stage '${name}'", stageStatusContext(name))
-}
 
-// Set stage status - adds a broadcast to the Slack channel
-// TODO: broadcast status/result to Slack channel
-void notifyStageStatus(Map context, String name, String status) {
-    setStageStatus(context, name, status)
-}
-
-// Stage wrapper/context for pipeline stages and results
+/* _Stage wrapper:
+    - primary means of running stages
+    - reads which stages are to be run
+    - handles stages defined separately in closures (body)
+    - catches errors and provides output
+*/
 def _stage(String name, Map context, boolean retry=0, boolean withCommitStatus=true, Closure body) {
     def stageOpt =(context?.stages?:[:])[name]
     boolean isEnabled=(stageOpt == null || stageOpt == true)
@@ -74,12 +99,21 @@ def _stage(String name, Map context, boolean retry=0, boolean withCommitStatus=t
         } //end Stage
     }else{
         stage(name) {
-            echo 'Skipping'
+            echo 'Skipping Stage ${name}'
         }
     }
 }
 
-// Context object contains names, templates and stages to run
+
+/* Map context:
+    - project name
+    - uuid
+    - web path (dev|test|prod)
+    - build config templates (*.bc)
+    - deployment config templates (*.dc) and parameters
+    - stage names and enabled status (true|false)
+    - git pull request details
+*/
 Map context = [
   'name': 'gwells',
   'uuid' : "${env.JOB_BASE_NAME}-${env.BUILD_NUMBER}-${env.CHANGE_ID}",
@@ -123,6 +157,7 @@ Map context = [
   ]
 ]
 
+
 /* Continuous integration (CI)
    Triggers when a PR targets a sprint release branch
     - prepare OpenShift environment
@@ -134,10 +169,8 @@ Map context = [
     - API tests
     - functional tests
     - merge PR into sprint release branch
-*/
-def isCI = !"master".equalsIgnoreCase(env.CHANGE_TARGET)
 
-/* Continuous deployment (CD)
+   Continuous deployment (CD)
    Triggers when a PR targets the master branch, reserved for release branches and hotfixes
     - All CI steps
     - [prompt/stop]
@@ -151,21 +184,21 @@ def isCI = !"master".equalsIgnoreCase(env.CHANGE_TARGET)
       - close PR
       - delete branch
 */
+def isCI = !"master".equalsIgnoreCase(env.CHANGE_TARGET)
 def isCD = "master".equalsIgnoreCase(env.CHANGE_TARGET)
 
-// Set job properties
-properties([
-        buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '', numToKeepStr: '5')),
-        durabilityHint('PERFORMANCE_OPTIMIZED') /*, parameters([string(defaultValue: '', description: '', name: 'run_stages')]) */
-])
 
-// Clean out any old builds
+/* Prepare stage
+    - abort any existing builds
+    - echo pull request number
+*/
 stage('Prepare') {
     abortAllPreviousBuildInProgress(currentBuild)
     echo "BRANCH_NAME=${env.BRANCH_NAME}\nCHANGE_ID=${env.CHANGE_ID}\nCHANGE_TARGET=${env.CHANGE_TARGET}\nBUILD_URL=${env.BUILD_URL}"
 }
 
-/* Build stage - pipeline step/closure
+
+/* Build stage
     - applying OpenShift build configs
     - creating OpenShift imagestreams, annotations and builds
     - build time optimizations (e.g. image reuse, build scheduling/readiness)
@@ -522,7 +555,6 @@ stage('Cleanup') {
             new OpenShiftHelper().cleanup(this, context)
 
             // TODO: broadcast status/result to Slack channel
-            // echo "Clearing OpenShift resources"
             // setStageStatus(context, 'Cleanup', 'SUCCESS')
             isDone=true
         }catch (ex){
