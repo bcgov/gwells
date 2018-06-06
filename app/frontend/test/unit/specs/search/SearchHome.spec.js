@@ -74,7 +74,8 @@ describe('SearchHome.vue', () => {
           ]
         }
       },
-      userRoles: () => ({ edit: false, view: false, approve: false })
+      userRoles: () => ({ edit: false, view: false, approve: false }),
+      activity: () => 'DRILL'
     }
     actions = {
       [FETCH_CITY_LIST]: jest.fn(),
@@ -105,7 +106,8 @@ describe('SearchHome.vue', () => {
       listError: () => {
         return { status: '400', statusText: 'error!' }
       },
-      cityList: () => []
+      cityList: () => [],
+      activity: () => 'DRILL'
     }
     const store = new Vuex.Store({ getters, actions })
     const wrapper = shallowMount(SearchHome, {

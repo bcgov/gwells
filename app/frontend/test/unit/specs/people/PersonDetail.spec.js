@@ -3,7 +3,7 @@ import Vuex from 'vuex'
 import PersonDetail from '@/registry/components/people/PersonDetail'
 import APIErrorMessage from '@/common/components/APIErrorMessage'
 import { SET_DRILLER } from '@/registry/store/mutations.types'
-import { FETCH_DRILLER } from '@/registry/store/actions.types'
+import { FETCH_DRILLER, FETCH_DRILLER_OPTIONS } from '@/registry/store/actions.types'
 import fakePerson from '../fakePerson'
 
 const localVue = createLocalVue()
@@ -28,7 +28,8 @@ describe('PersonDetail.vue', () => {
       [SET_DRILLER]: jest.fn()
     }
     actions = {
-      [FETCH_DRILLER]: jest.fn()
+      [FETCH_DRILLER]: jest.fn(),
+      [FETCH_DRILLER_OPTIONS]: jest.fn()
     }
     store = new Vuex.Store({ getters, actions, mutations })
   })
