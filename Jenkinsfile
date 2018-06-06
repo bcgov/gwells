@@ -42,7 +42,7 @@ void notifyStageStatus(Map context, String name, String status) {
     setStageStatus(context, name, status)
 }
 
-// Stage - primary function for pipeline stages and results
+// Stage wrapper/context for pipeline stages and results
 def _stage(String name, Map context, boolean retry=0, boolean withCommitStatus=true, Closure body) {
     def stageOpt =(context?.stages?:[:])[name]
     boolean isEnabled=(stageOpt == null || stageOpt == true)
@@ -123,24 +123,53 @@ Map context = [
   ]
 ]
 
-// Constant integration - tests and deploys into development environments, merges into sprint release branches
+/* Continuous integration (CI)
+   Triggers when a PR targets a sprint release branch
+    - prepare OpenShift environment
+    - build (build configs, imagestreams)
+    - unit tests
+    - code quality (SonarQube)
+    - deployment to transient dev environment
+    - load fixtures
+    - API tests
+    - functional tests
+    - merge PR into sprint release branch
+*/
 def isCI = !"master".equalsIgnoreCase(env.CHANGE_TARGET)
-// Constant deployment - tests and promotes to TEST and PROD environments, merges into master branch
+
+/* Continuous deployment (CD)
+   Triggers when a PR targets the master branch, reserved for release branches and hotfixes
+    - All CI steps
+    - [prompt/stop]
+      - deployment to persistent test environment
+      - smoke tests
+      - deployment
+    - [prompt/stop]
+      - deployment to persistent production environment
+    - [prompt/stop]
+      - merge sprint release or hotfix branch into master
+      - close PR
+      - delete branch
+*/
 def isCD = "master".equalsIgnoreCase(env.CHANGE_TARGET)
 
-// ?
+// Set job properties
 properties([
         buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '', numToKeepStr: '5')),
         durabilityHint('PERFORMANCE_OPTIMIZED') /*, parameters([string(defaultValue: '', description: '', name: 'run_stages')]) */
 ])
 
-// Clean out any pld builds
+// Clean out any old builds
 stage('Prepare') {
     abortAllPreviousBuildInProgress(currentBuild)
     echo "BRANCH_NAME=${env.BRANCH_NAME}\nCHANGE_ID=${env.CHANGE_ID}\nCHANGE_TARGET=${env.CHANGE_TARGET}\nBUILD_URL=${env.BUILD_URL}"
 }
 
-// This function wrapper allows stages to be optional/skipped
+/* Build stage - pipeline step/closure
+    - applying OpenShift build configs
+    - creating OpenShift imagestreams, annotations and builds
+    - build time optimizations (e.g. image reuse, build scheduling/readiness)
+*/
 _stage('Build', context) {
     node('master') {
         checkout scm
@@ -152,7 +181,11 @@ _stage('Build', context) {
     }
 } //end stage
 
-// This function wrapper allows stages to be optional/skipped
+/* Unit test stage - pipeline step/closure
+    - use Django's manage.py to run python unit tests (w/ nose.cfg)
+    - use 'npm run unit' to run JavaScript unit tests
+    - stash test results for code quality stage
+*/
 _stage('Unit Test', context) {
     podTemplate(label: "node-${context.uuid}", name:"node-${context.uuid}", serviceAccount: 'jenkins', cloud: 'openshift', containers: [
         containerTemplate(name: 'jnlp', image: 'jenkins/jnlp-slave:3.10-1-alpine', args: '${computer.jnlpmac} ${computer.name}', resourceRequestCpu: '100m',resourceLimitCpu: '100m'),
@@ -202,7 +235,10 @@ _stage('Unit Test', context) {
     }
 } //end stage
 
-// This function wrapper allows stages to be optional/skipped
+/* Code quality stage - pipeline step/closure
+    - unstash unit test results (previous stage)
+    - use SonarQube to consume results (*.xml)
+*/
 _stage('Code Quality', context) {
     podTemplate(
         name: "sonar-runner${context.uuid}",
@@ -250,7 +286,10 @@ _stage('Code Quality', context) {
 
 } //end stage
 
-// Cycle through stages and excuse as appropriate
+/* Primary stage execution block
+   - iterates through stages, set in context (Map)
+   - _stage wrapper adds functionality, stability
+*/
 for(String envKeyName: context.env.keySet() as String[]){
     String stageDeployName=envKeyName.toUpperCase()
 
@@ -408,17 +447,7 @@ for(String envKeyName: context.env.keySet() as String[]){
                     //the checkout is mandatory, otherwise functional test would fail
                     echo "checking out source"
                     checkout scm
-                    /*
-                    dir('functional-tests/build/test-results') {
-                        sh 'echo "BASEURL=${BASEURL}"'
-                        unstash 'coverage'
-                        sh 'rm coverage.xml'
-                        unstash 'nodejunit'
-                    }
-                    */
-                    //dir('app') {
-                    //    sh 'python manage.py loaddata wells registries'
-                    //}
+
                     dir('functional-tests') {
                         Integer attempts = 0
                         Integer attemptsMax = 2
