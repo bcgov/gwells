@@ -267,6 +267,7 @@ import { mapGetters } from 'vuex'
 import ApiService from '@/common/services/ApiService.js'
 import OrganizationAdd from '@/registry/components/people/OrganizationAdd.vue'
 import ApplicationAddEdit from '@/registry/components/people/ApplicationAddEdit.vue'
+import inputFormatMixin from '@/common/inputFormatMixin.js'
 
 export default {
   name: 'PersonDetailEdit',
@@ -275,6 +276,7 @@ export default {
     'organization-add': OrganizationAdd,
     'application-add': ApplicationAddEdit
   },
+  mixins: [inputFormatMixin],
   data () {
     return {
       breadcrumbs: [
@@ -447,9 +449,6 @@ export default {
     },
     closeApplication (collection, id) {
       collection.splice(collection.findIndex((item) => item.id === id))
-    },
-    formatTel (value) {
-      return value.replace(/[^0-9]/g, '').replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3')
     }
   },
   created () {

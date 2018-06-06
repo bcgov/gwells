@@ -173,9 +173,11 @@
 <script>
 import ApiService from '@/common/services/ApiService.js'
 import { mapGetters } from 'vuex'
+import inputFormatMixin from '@/common/inputFormatMixin.js'
 
 export default {
   name: 'OrganizationAdd',
+  mixins: [inputFormatMixin],
   data () {
     return {
       orgForm: {
@@ -257,9 +259,6 @@ export default {
         website_url: [],
         email: []
       }
-    },
-    formatTel (value) {
-      return value.replace(/[^0-9]/g, '').replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3')
     }
   },
   created () {

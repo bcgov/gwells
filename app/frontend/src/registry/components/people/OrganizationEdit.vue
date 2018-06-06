@@ -302,6 +302,7 @@
 import ApiService from '@/common/services/ApiService.js'
 import OrganizationAdd from '@/registry/components/people/OrganizationAdd.vue'
 import Notes from '@/registry/components/people/Notes.vue'
+import inputFormatMixin from '@/common/inputFormatMixin.js'
 
 export default {
   name: 'OrganizationEdit',
@@ -309,6 +310,7 @@ export default {
     OrganizationAdd,
     Notes
   },
+  mixins: [inputFormatMixin],
   data () {
     return {
       breadcrumbs: [
@@ -505,9 +507,6 @@ export default {
       }).catch((e) => {
         this.companyDeleteError = e.response.data
       })
-    },
-    formatTel (value) {
-      return value.replace(/[^0-9]/g, '').replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3')
     }
   },
   created () {

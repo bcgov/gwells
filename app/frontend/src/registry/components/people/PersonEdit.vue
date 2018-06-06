@@ -155,12 +155,14 @@
 import { mapGetters } from 'vuex'
 import ApiService from '@/common/services/ApiService.js'
 import APIErrorMessage from '@/common/components/APIErrorMessage'
+import inputFormatMixin from '@/common/inputFormatMixin.js'
 
 export default {
   name: 'PersonDetailEdit',
   components: {
     'api-error': APIErrorMessage
   },
+  mixins: [inputFormatMixin],
 
   /**
    * This component accepts two props: section and record.
@@ -285,9 +287,6 @@ export default {
       this.fieldErrors = {
         contact_email: []
       }
-    },
-    formatTel (value) {
-      return value.replace(/[^0-9]/g, '').replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3')
     }
   },
   created () {
