@@ -11,7 +11,11 @@
 # Related GitHub issues:
 # - https://github.com/GoogleCloudPlatform/kubernetes/issues/8876
 # - https://github.com/openshift/origin/issues/2001
-set -e
+# Halt conditions, verbosity and field separator
+#
+set -euo pipefail
+[ "${VERBOSE:-x}" != true ]|| set -x
+IFS=$'\n\t'
 
 # Usage examples:
 #
