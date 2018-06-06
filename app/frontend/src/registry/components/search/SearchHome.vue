@@ -16,7 +16,7 @@
     </b-alert>
 
     <!-- Admin options -->
-    <b-card v-if="userIsAdmin" no-body class="container p-1 mb-3">
+    <b-card v-if="userRoles.edit" no-body class="container p-1 mb-3">
       <b-card-header header-tag="header" class="p-1" role="tab">
         <b-btn block href="#" v-b-toggle.adminPanel variant="light" class="text-left">Administrator options</b-btn>
       </b-card-header>
@@ -65,7 +65,7 @@
             </b-col>
           </b-form-row>
           <b-form-row>
-            <b-col cols="12" md="6" class="pr-md-5">
+            <b-col cols="12" md="6">
               <b-form-group label="Community:" label-for="cityOptions">
                 <b-form-select
                     multiple="multiple"
@@ -85,7 +85,7 @@
                 </b-form-select>
               </b-form-group>
             </b-col>
-            <b-col cols="12" md="6" v-if="userIsAdmin">
+            <b-col cols="12" md="6" v-if="userRoles.view" class="pl-md-5">
               <b-form-group label="Registration status" label-for="registrationStatusSelect">
                 <b-form-select
                     v-model="searchParams.status"
@@ -252,7 +252,7 @@ export default {
       }
     },
     ...mapGetters([
-      'userIsAdmin',
+      'userRoles',
       'loading',
       'listError',
       'cityList',

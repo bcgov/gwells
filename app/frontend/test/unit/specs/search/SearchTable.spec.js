@@ -22,7 +22,6 @@ describe('SearchTable.vue', () => {
 
   beforeEach(() => {
     getters = {
-      userIsAdmin: () => false,
       loading: () => false,
       listError: () => null,
       drillers: jest.fn().mockReturnValue(fakePersonList),
@@ -139,7 +138,6 @@ describe('SearchTable.vue', () => {
   })
   it('has the right columns when searching for well pump installers', () => {
     getters = {
-      userIsAdmin: () => true,
       user: () => 'user',
       loading: () => false,
       listError: () => null,
@@ -225,7 +223,6 @@ describe('SearchTable.vue', () => {
   })
   it('shows the driller\'s registration status', () => {
     getters = {
-      userIsAdmin: () => true,
       user: () => 'user',
       loading: () => false,
       listError: () => null,
