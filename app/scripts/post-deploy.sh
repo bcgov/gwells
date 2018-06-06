@@ -23,11 +23,11 @@ set -euo pipefail
 IFS=$'\n\t'
 echo "Running Post-Deploy tasks..."
 export PGPASSWORD=$DATABASE_PASSWORD
-cd $APP_ROOT
+cd $APP_ROOT/scripts/database/scripts/wellsearch/
 echo ". Creating additional DB objects (e.g. spatial indices, stored procedures)"
 psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER << EOF
-	\i scripts/database/scripts/wellsearch/post-deploy.sql
-	\i scripts/database/scripts/wellsearch/wells_replication_stored_functions.sql
+	\i post-deploy.sql
+	\i wells_replication_stored_functions.sql
 EOF
 set -x
 
