@@ -274,7 +274,7 @@
         </div>
 
         <!-- new registrations -->
-        <div class="card mb-3" v-if="!currentDriller.registrations || currentDriller.registrations.length !== 2">
+        <div class="card mb-3" v-if="userRoles.edit && (!currentDriller.registrations || currentDriller.registrations.length !== 2)">
           <div class="card-body p-2 p-md-3">
             <div
                 v-for="(item, index) in registrationOptions"
