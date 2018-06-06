@@ -701,7 +701,8 @@ class PersonAdminSerializer(AuditModelSerializer):
     Serializes the Person model (admin user fields)
     """
 
-    registrations = RegistrationAdminSerializer(many=True)
+    # registrations = RegistrationAdminSerializer(many=True)
+    registrations = serializers.SerializerMethodField()
     contact_info = ContactInfoSerializer(many=True, required=False)
     notes = serializers.SerializerMethodField()
 
@@ -767,6 +768,16 @@ class PersonAdminSerializer(AuditModelSerializer):
         if 'contact_info' in validated_data:
             validated_data.pop('contact_info')
         return super(PersonAdminSerializer, self).update(instance, validated_data)
+
+    def get_registrations(self, person):
+        """
+        Get sorted list of registrations
+        """
+        registrations = [
+            reg for reg in person.registrations.order_by('registries_activity')]
+        serializer = RegistrationAdminSerializer(
+            instance=registrations, many=True)
+        return serializer.data
 
     class Meta:
         model = Person

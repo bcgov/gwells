@@ -83,7 +83,8 @@
 
         <!-- Registrations -->
         <div class="card mb-3"
-            v-for="(registration, index) in currentDriller.registrations" :key="`registration ${index}`">
+            v-for="(registration, index) in currentDriller.registrations"
+            :key="`registration ${index}`">
           <div class="card-body p-2 p-md-3">
             <h5 class="card-title">{{ registration.activity_description }} Registration</h5>
 
@@ -119,7 +120,7 @@
                         class="mb-3"
                         v-on:close="closeApplication()"
                         v-model="application"
-                        activity="DRILL">
+                        :activity="registration.registries_activity">
                         <button type="submit" class="btn btn-primary" variant="primary">Save</button>
                         <button type="button" class="btn btn-light" @click="closeApplication()">Cancel</button>
                     </application-add>
@@ -137,11 +138,6 @@
                           class="mb-3"><i class="fa fa-plus-square-o"></i> Add classification</b-button>
                 </b-col>
               </b-row>
-              <router-link
-                class="btn btn-light btn-sm registries-edit-btn mb-3"
-                tag="button"
-                to="#"
-                v-if="currentDriller.person_guid && userRoles.edit"><i class="fa fa-plus-square-o"></i> Add {{ registration.activity_description }} application</router-link>
             </div>
 
             <!-- Registration information -->
@@ -277,13 +273,35 @@
           </div>
         </div>
 
-        <!-- If person has no registrations, display a message -->
-        <div class="card mb-3" v-if="currentDriller.registrations && !currentDriller.registrations.length">
+        <!-- new registrations -->
+        <div class="card mb-3" v-if="!currentDriller.registrations || currentDriller.registrations.length !== 2">
           <div class="card-body p-2 p-md-3">
-            <div>
-              <div >
-                <h6 class="card-title my-3">Applicant has not yet been added to the register. Submit or approve an application to view or add company information.</h6>
-              </div>
+            <div
+                v-for="(item, index) in registrationOptions"
+                :key="`unregistered activity ${index}`"
+                v-if="!currentDriller.registrations.some(reg => reg.registries_activity === item.code)">
+              <b-button variant="primary" class="my-1" :ref="`registerButton${item.code}`" @click="confirmRegisterModal[item.code]=true">
+                Register as a {{ item.desc }}
+              </b-button>
+              <b-modal
+                  v-model="confirmRegisterModal[item.code]"
+                  centered
+                  :title="`Confirm register as ${item.desc}`"
+                  @shown="$refs[`confirmRegisterConfirmBtn${item.code}`][0].focus()"
+                  :return-focus="$refs[`registerButton${item.code}`]">
+                Are you sure you want to register {{ currentDriller.first_name }} {{ currentDriller.surname }} as a {{ item.desc }}?
+                <div slot="modal-footer">
+                  <b-btn
+                      variant="primary"
+                      @click="confirmRegisterModal[item.code]=false;submitRegistration(item.code)"
+                      :ref="`confirmRegisterConfirmBtn${item.code}`">
+                    Confirm
+                  </b-btn>
+                  <b-btn variant="light" @click="confirmRegisterModal[item.code]=false">
+                    Cancel
+                  </b-btn>
+                </div>
+              </b-modal>
             </div>
           </div>
         </div>
@@ -366,7 +384,7 @@ import ApplicationAddEdit from '@/registry/components/people/ApplicationAddEdit.
 import ApiService from '@/common/services/ApiService.js'
 import { mapGetters } from 'vuex'
 import { SET_DRILLER } from '@/registry/store/mutations.types'
-import { FETCH_DRILLER } from '@/registry/store/actions.types'
+import { FETCH_DRILLER, FETCH_DRILLER_OPTIONS } from '@/registry/store/actions.types'
 
 export default {
   name: 'person-detail',
@@ -394,7 +412,21 @@ export default {
       editContact: false,
       showAddApplication: false,
       application: null,
-      savingApplication: false
+      savingApplication: false,
+      registrationOptions: [
+        {
+          code: 'DRILL',
+          desc: 'Well Driller'
+        },
+        {
+          code: 'PUMP',
+          desc: 'Well Pump Installer'
+        }
+      ],
+      confirmRegisterModal: {
+        DRILL: false,
+        PUMP: false
+      }
     }
   },
   computed: {
@@ -537,6 +569,16 @@ export default {
         this.savingApplication = false
         this.updateRecord()
       })
+    },
+    submitRegistration (activity) {
+      const data = {
+        person: this.currentDriller.person_guid,
+        registries_activity: activity,
+        status: 'ACTIVE'
+      }
+      ApiService.post('registrations', data).then(() => {
+        this.updateRecord()
+      })
     }
   },
   created () {
@@ -555,6 +597,7 @@ export default {
     }
     // always fetch up to date record from API when page loads
     this.updateRecord()
+    this.$store.dispatch(FETCH_DRILLER_OPTIONS)
   }
 }
 </script>
