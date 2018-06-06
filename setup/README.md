@@ -179,9 +179,9 @@ Please use either these steps or the install script.
     Optional: import a database.
     ```
     From python:
-    python manage.py loaddata gwells/fixtures/codetables.ProvinceStateCode.json
-    python manage.py loaddata gwells/fixtures/codetables.json registries/fixtures/codetables.json
-    python manage.py loaddata gwells/fixtures/wellsearch.json registries/fixtures/registries.json
+    python manage.py loaddata gwells.codetables.json
+    python manage.py loaddata wellsearch.codetables.json registries.codetables.json
+    python manage.py loaddata wellsearch.json registries.json
 
     From pg dump:
     pg_restore -U gwells -d gwells --no-owner --no-privileges <path to MODERN_DB_DUMP>

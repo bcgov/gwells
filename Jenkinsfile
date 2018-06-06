@@ -293,11 +293,11 @@ for(String envKeyName: context.env.keySet() as String[]){
                 }
                 sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src && pwd && python manage.py flush --no-input'"
                 // Lookup tables common to all system components (e.g. Django apps)
-                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src && pwd && python manage.py loaddata gwells/fixtures/codetables.ProvinceStateCode.json'"
+                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src && pwd && python manage.py loaddata gwells.codetables.json'"
                 // Lookup tables for the Wellsearch component (not yet a Django app) and Registries app
-                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src && pwd && python manage.py loaddata gwells/fixtures/codetables.json registries/fixtures/codetables.json'"
+                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src && pwd && python manage.py loaddata wellsearch.codetables.json registries.codetables.json'"
                 // Test data for the Wellsearch component (not yet a Django app) and Registries app
-                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src && pwd && python manage.py loaddata gwells/fixtures/wellsearch.json.gz registries/fixtures/registries.json'"
+                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src && pwd && python manage.py loaddata wellsearch.json.gz registries.json'"
             }
         }
     }
