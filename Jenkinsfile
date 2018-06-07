@@ -271,7 +271,7 @@ _stage('Unit Test', context) {
             try {
                 container('app') {
                     sh script: '''#!/usr/bin/container-entrypoint /bin/sh
-                        set -x
+                        set -ex
                         python --version
                         pip --version
                         node --version
