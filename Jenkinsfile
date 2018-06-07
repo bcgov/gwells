@@ -9,7 +9,6 @@
 
 References:
 - https://gist.github.com/matthiasbalke/3c9ecccbea1d460ee4c3fbc5843ede4a
-
 */
 
 import hudson.model.Result;
