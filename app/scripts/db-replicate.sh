@@ -18,7 +18,6 @@
 #
 set -e
 export PGPASSWORD=$DATABASE_PASSWORD
-set -x 
 
 if [ "$DB_REPLICATE" = "Subset" ]
 then
