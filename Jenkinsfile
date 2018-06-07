@@ -91,7 +91,7 @@ Map context = [
     - throttling
     - parameters
     - build triggers
-    See Jenkin's Pipeline Systax for generation
+    See Jenkins' Pipeline Systax for generation
     Globally equivalent to Jenkins > Manage Jenkins > Configure System
 */
 properties([
@@ -156,7 +156,13 @@ def _stage(String name, Map context, boolean retry=0, boolean withCommitStatus=t
                     def inputAction = input(
                         message: "This step (${name}) has failed. See error above.",
                         ok: 'Confirm',
-                        parameters: [choice(name: 'action', choices: 'Re-run\nIgnore', description: 'What would you like to do?')]
+                        parameters: [
+                            choice(
+                                name: 'action',
+                                choices: 'Re-run\nIgnore',
+                                description: 'What would you like to do?'
+                            )
+                        ]
                     )
                     if ('Ignore'.equalsIgnoreCase(inputAction)){
                         isDone=true
@@ -229,20 +235,37 @@ _stage('Build', context) {
     }
 } //end stage
 
+
 /* Unit test stage - pipeline step/closure
     - use Django's manage.py to run python unit tests (w/ nose.cfg)
     - use 'npm run unit' to run JavaScript unit tests
     - stash test results for code quality stage
 */
 _stage('Unit Test', context) {
-    podTemplate(label: "node-${context.uuid}", name:"node-${context.uuid}", serviceAccount: 'jenkins', cloud: 'openshift', containers: [
-        containerTemplate(name: 'jnlp', image: 'jenkins/jnlp-slave:3.10-1-alpine', args: '${computer.jnlpmac} ${computer.name}', resourceRequestCpu: '100m',resourceLimitCpu: '100m'),
-        containerTemplate(name: 'app', image: "docker-registry.default.svc:5000/moe-gwells-tools/gwells${context.buildNameSuffix}:${context.buildEnvName}", ttyEnabled: true, command: 'cat',
-            resourceRequestCpu: '2000m',
-            resourceLimitCpu: '2000m',
-            resourceRequestMemory: '2.5Gi',
-            resourceLimitMemory: '2.5Gi')
-      ]
+    podTemplate(
+        label: "node-${context.uuid}",
+        name:"node-${context.uuid}",
+        serviceAccount: 'jenkins',
+        cloud: 'openshift',
+        containers: [
+            containerTemplate(
+                name: 'jnlp',
+                image: 'jenkins/jnlp-slave:3.10-1-alpine',
+                args: '${computer.jnlpmac} ${computer.name}',
+                resourceRequestCpu: '100m',
+                resourceLimitCpu: '100m'
+            ),
+            containerTemplate(
+                name: 'app',
+                image: "docker-registry.default.svc:5000/moe-gwells-tools/gwells${context.buildNameSuffix}:${context.buildEnvName}",
+                ttyEnabled: true,
+                command: 'cat',
+                resourceRequestCpu: '2000m',
+                resourceLimitCpu: '2000m',
+                resourceRequestMemory: '2.5Gi',
+                resourceLimitMemory: '2.5Gi'
+            )
+        ]
     ) {
         node("node-${context.uuid}") {
             try {
@@ -446,17 +469,32 @@ for(String envKeyName: context.env.keySet() as String[]){
 
         _stage('API Test', context) {
             String baseURL = context.deployments[envKeyName].environmentUrl.substring(0, context.deployments[envKeyName].environmentUrl.indexOf('/', 8) + 1)
-            podTemplate(label: "nodejs-${context.uuid}", name: "nodejs-${context.uuid}", serviceAccount: 'jenkins', cloud: 'openshift', containers: [
-              containerTemplate(
-                name: 'jnlp',
-                image: 'registry.access.redhat.com/openshift3/jenkins-slave-nodejs-rhel7',
-                resourceRequestCpu: '800m',
-                resourceLimitCpu: '800m',
-                resourceRequestMemory: '1Gi',
-                resourceLimitMemory: '1Gi',
-                workingDir: '/tmp',
-                command: '',
-                args: '${computer.jnlpmac} ${computer.name}',
+            podTemplate(
+                label: "nodejs-${context.uuid}",
+                name: "nodejs-${context.uuid}",
+                serviceAccount: 'jenkins',
+                cloud: 'openshift',
+                containers: [
+                  containerTemplate(
+                    name: 'jnlp',
+                    image: 'registry.access.redhat.com/openshift3/jenkins-slave-nodejs-rhel7',
+                    resourceRequestCpu: '800m',
+                    resourceLimitCpu: '800m',
+                    resourceRequestMemory: '1Gi',
+                    resourceLimitMemory: '1Gi',
+                    workingDir: '/tmp',
+                    command: '',
+                    args: '${computer.jnlpmac} ${computer.name}',
+                    envVars: [
+                        envVar(key:'BASEURL', value: "${baseURL}gwells"),
+                        secretEnvVar(key: 'GWELLS_API_TEST_USER', secretName: 'apitest-secrets', secretKey: 'username'),
+                        secretEnvVar(key: 'GWELLS_API_TEST_PASSWORD', secretName: 'apitest-secrets', secretKey: 'password'),
+                        secretEnvVar(key: 'GWELLS_API_TEST_AUTH_SERVER', secretName: 'apitest-secrets', secretKey: 'auth_server'),
+                        secretEnvVar(key: 'GWELLS_API_TEST_CLIENT_ID', secretName: 'apitest-secrets', secretKey: 'client_id'),
+                        secretEnvVar(key: 'GWELLS_API_TEST_CLIENT_SECRET', secretName: 'apitest-secrets', secretKey: 'client_secret')
+                    ]
+                  )
+                ],
                 envVars: [
                     envVar(key:'BASEURL', value: "${baseURL}gwells"),
                     secretEnvVar(key: 'GWELLS_API_TEST_USER', secretName: 'apitest-secrets', secretKey: 'username'),
@@ -465,15 +503,7 @@ for(String envKeyName: context.env.keySet() as String[]){
                     secretEnvVar(key: 'GWELLS_API_TEST_CLIENT_ID', secretName: 'apitest-secrets', secretKey: 'client_id'),
                     secretEnvVar(key: 'GWELLS_API_TEST_CLIENT_SECRET', secretName: 'apitest-secrets', secretKey: 'client_secret')
                 ]
-              )
-            ],envVars: [
-                envVar(key:'BASEURL', value: "${baseURL}gwells"),
-                secretEnvVar(key: 'GWELLS_API_TEST_USER', secretName: 'apitest-secrets', secretKey: 'username'),
-                secretEnvVar(key: 'GWELLS_API_TEST_PASSWORD', secretName: 'apitest-secrets', secretKey: 'password'),
-                secretEnvVar(key: 'GWELLS_API_TEST_AUTH_SERVER', secretName: 'apitest-secrets', secretKey: 'auth_server'),
-                secretEnvVar(key: 'GWELLS_API_TEST_CLIENT_ID', secretName: 'apitest-secrets', secretKey: 'client_id'),
-                secretEnvVar(key: 'GWELLS_API_TEST_CLIENT_SECRET', secretName: 'apitest-secrets', secretKey: 'client_secret')
-            ])
+            )
             {
                 node("nodejs-${context.uuid}") {
                     // Checkout is mandatory, otherwise functional test would fail
@@ -513,7 +543,11 @@ for(String envKeyName: context.env.keySet() as String[]){
         String testStageName="DEV".equalsIgnoreCase(stageDeployName)?"Full Test - DEV":"Smoke Test - ${stageDeployName}"
         _stage(testStageName, context){
             String baseURL = context.deployments[envKeyName].environmentUrl.substring(0, context.deployments[envKeyName].environmentUrl.indexOf('/', 8) + 1)
-            podTemplate(label: "bddstack-${context.uuid}", name: "bddstack-${context.uuid}", serviceAccount: 'jenkins', cloud: 'openshift',
+            podTemplate(
+                label: "bddstack-${context.uuid}",
+                name: "bddstack-${context.uuid}",
+                serviceAccount: 'jenkins',
+                cloud: 'openshift',
                 containers: [
                   containerTemplate(
                      name: 'jnlp',
@@ -532,7 +566,11 @@ for(String envKeyName: context.env.keySet() as String[]){
                   )
                 ],
                 volumes: [
-                    persistentVolumeClaim(mountPath: '/var/cache/artifacts', claimName: 'cache', readOnly: false)
+                    persistentVolumeClaim(
+                        mountPath: '/var/cache/artifacts',
+                        claimName: 'cache',
+                        readOnly: false
+                    )
                 ]
             ){
                 node("bddstack-${context.uuid}") {
@@ -591,7 +629,19 @@ for(String envKeyName: context.env.keySet() as String[]){
                                             reportName: "Test: Full Test Report"
                                         ])
                             //todo: install perf report plugin.
-                            //perfReport compareBuildPrevious: true, excludeResponseTime: true, ignoreFailedBuilds: true, ignoreUnstableBuilds: true, modeEvaluation: true, modePerformancePerTestCase: true, percentiles: '0,50,90,100', relativeFailedThresholdNegative: 80.0, relativeFailedThresholdPositive: 20.0, relativeUnstableThresholdNegative: 50.0, relativeUnstableThresholdPositive: 50.0, sourceDataFiles: 'build/test-results/**/*.xml'
+                            /*  perfReport compareBuildPrevious: true,
+                                excludeResponseTime: true,
+                                ignoreFailedBuilds: true,
+                                ignoreUnstableBuilds: true,
+                                modeEvaluation: true,
+                                modePerformancePerTestCase: true,
+                                percentiles: '0,50,90,100',
+                                relativeFailedThresholdNegative: 80.0,
+                                relativeFailedThresholdPositive: 20.0,
+                                relativeUnstableThresholdNegative: 50.0,
+                                relativeUnstableThresholdPositive: 50.0,
+                                sourceDataFiles: 'build/test-results/**/*.xml'
+                            */
                         }
                     } //end dir
                 } //end node
@@ -609,7 +659,13 @@ stage('Cleanup') {
     waitUntil {
         boolean isDone=false
         try{
-            inputResponse=input(id: 'close_pr', message: "Ready to Accept/Merge (using '${mergeMethod}' method), and Close pull-request #${env.CHANGE_ID}?", ok: 'Yes', submitter: 'authenticated', submitterParameter: 'approver')
+            inputResponse=input(
+                id: 'close_pr',
+                message: "Ready to Accept/Merge (using '${mergeMethod}' method), and Close pull-request #${env.CHANGE_ID}?",
+                ok: 'Yes',
+                submitter: 'authenticated',
+                submitterParameter: 'approver'
+            )
             echo "inputResponse:${inputResponse}"
 
             echo "Merging and Closing PR"
@@ -627,7 +683,13 @@ stage('Cleanup') {
                 message: "This 'Cleanup' stage has failed. See error above.",
                 ok: 'Confirm',
                 submitter: 'authenticated',
-                parameters: [choice(name: 'action', choices: 'Re-run\nIgnore', description: 'What would you like to do?')]
+                parameters: [
+                    choice(
+                        name: 'action',
+                        choices: 'Re-run\nIgnore',
+                        description: 'What would you like to do?'
+                    )
+                ]
             )
             if ('Ignore'.equalsIgnoreCase(inputAction)){
                 isDone=true
