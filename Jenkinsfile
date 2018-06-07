@@ -580,19 +580,19 @@ for(String envKeyName: context.env.keySet() as String[]){
                                             reportName: "Test: Full Test Report"
                                         ])
                             //todo: install perf report plugin.
-                            /*  perfReport compareBuildPrevious: true,
-                                excludeResponseTime: true,
-                                ignoreFailedBuilds: true,
-                                ignoreUnstableBuilds: true,
-                                modeEvaluation: true,
-                                modePerformancePerTestCase: true,
-                                percentiles: '0,50,90,100',
-                                relativeFailedThresholdNegative: 80.0,
-                                relativeFailedThresholdPositive: 20.0,
-                                relativeUnstableThresholdNegative: 50.0,
-                                relativeUnstableThresholdPositive: 50.0,
-                                sourceDataFiles: 'build/test-results/**/*.xml'
-                            */
+                            //    perfReport compareBuildPrevious: true,
+                            //    excludeResponseTime: true,
+                            //    ignoreFailedBuilds: true,
+                            //    ignoreUnstableBuilds: true,
+                            //    modeEvaluation: true,
+                            //    modePerformancePerTestCase: true,
+                            //    percentiles: '0,50,90,100',
+                            //    relativeFailedThresholdNegative: 80.0,
+                            //    relativeFailedThresholdPositive: 20.0,
+                            //    relativeUnstableThresholdNegative: 50.0,
+                            //    relativeUnstableThresholdPositive: 50.0,
+                            //    sourceDataFiles: 'build/test-results/**/*.xml'
+
                         }
                     } //end dir
                 } //end node
