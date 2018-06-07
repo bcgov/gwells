@@ -396,6 +396,12 @@ class Register(AuditModel):
         )
 
 
+class ApplicationStatusCodeManager(models.Manager):
+
+    def get_queryset(self):
+        return super().get_queryset().filter(expired_date__isnull=True)
+
+
 class ApplicationStatusCode(AuditModel):
     """
     Status of Applications for the Well Driller and Pump Installer Registries
@@ -406,6 +412,8 @@ class ApplicationStatusCode(AuditModel):
     display_order = models.PositiveIntegerField()
     effective_date = models.DateField(default=datetime.date.today)
     expired_date = models.DateField(blank=True, null=True)
+
+    objects = ApplicationStatusCodeManager()
 
     class Meta:
         db_table = 'registries_application_status_code'
@@ -475,7 +483,6 @@ class RegistriesApplication(AuditModel):
         blank=True,
         null=True,
         verbose_name='Free form text explaining reason for denial.')
-
     # TODO Support multiple certificates
     primary_certificate = models.ForeignKey(
         AccreditedCertificateCode,
@@ -485,18 +492,19 @@ class RegistriesApplication(AuditModel):
         on_delete=models.PROTECT,
         verbose_name="Certificate")
     primary_certificate_no = models.CharField(max_length=50)
-
-    @property
-    def current_status(self):
-        print('getting the current status for {}'.format(self.application_guid))
-        try:
-            return RegistriesApplicationStatus.objects.get(
-                application=self.application_guid,
-                expired_date=None)
-        except:
-            logger.error('Could not find the current status for application: {}'.format(
-                self.application_guid))
-            return None
+    current_status = models.ForeignKey(
+        ApplicationStatusCode,
+        blank=True,
+        null=True,
+        db_column='registries_application_status_code',
+        on_delete=models.PROTECT,
+        verbose_name="Application Status Code Reference")
+    application_recieved_date = models.DateField(
+        blank=True, null=True)
+    application_outcome_date = models.DateField(
+        blank=True, null=True)
+    application_outcome_notification_date = models.DateField(
+        blank=True, null=True)
 
     class Meta:
         db_table = 'registries_application'
@@ -506,44 +514,6 @@ class RegistriesApplication(AuditModel):
         return '%s : %s' % (
             self.registration,
             self.file_no)
-
-
-class RegistriesApplicationStatus(AuditModel):
-    """
-    Status of a specific Application for the Well Driller and Pump Installer Registries, at a point in time
-    """
-    application_status_guid = models.UUIDField(
-        primary_key=True,
-        default=uuid.uuid4,
-        editable=False,
-        verbose_name="Register Application Status UUID")
-    application = models.ForeignKey(
-        RegistriesApplication,
-        db_column='application_guid',
-        on_delete=models.CASCADE,
-        verbose_name="Application Reference",
-        related_name="status_set")
-    status = models.ForeignKey(
-        ApplicationStatusCode,
-        db_column='registries_application_status_code',
-        on_delete=models.PROTECT,
-        verbose_name="Application Status Code Reference")
-    notified_date = models.DateField(
-        blank=True, null=True, default=datetime.date.today)
-    effective_date = models.DateField(default=datetime.date.today)
-    expired_date = models.DateField(blank=True, null=True)
-
-    class Meta:
-        db_table = 'registries_application_status'
-        ordering = ['application', 'effective_date']
-        verbose_name_plural = 'Application status'
-
-    def __str__(self):
-        return '%s - %s - %s (exp %s)' % (
-            self.application,
-            self.status.description,
-            self.effective_date,
-            self.expired_date)
 
 
 class Register_Note(AuditModel):

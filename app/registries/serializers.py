@@ -23,7 +23,6 @@ from registries.models import (
     Person,
     Register,
     RegistriesApplication,
-    RegistriesApplicationStatus,
     RegistriesStatusCode,
     ActivityCode,
     SubactivityCode,
@@ -159,34 +158,15 @@ class SubactivitySerializer(serializers.ModelSerializer):
         return super().to_internal_value(data)
 
 
-class ApplicationStatusAutoCreateSerializer(serializers.ModelSerializer):
+class ApplicationStatusCodeSerializer(serializers.ModelSerializer):
 
-    # status = serializers.PrimaryKeyRelatedField(
-        # queryset=ApplicationStatusCode.objects.all())
-
-    class Meta:
-        model = RegistriesApplicationStatus
-        fields = (
-            'effective_date',
-            'status',
-        )
-
-
-class ApplicationStatusSerializer(serializers.ModelSerializer):
-    """
-    Serializes RegistriesApplicationStatus for admin users
-    ApplicationStatus objects form a related set for an Application object.
-    """
-    description = serializers.StringRelatedField(source='status.description')
+    code = serializers.ReadOnlyField(source='registries_application_status_code')
 
     class Meta:
-        model = RegistriesApplicationStatus
+        model = ApplicationStatusCode
         fields = (
-            'status',
-            'description',
-            'notified_date',
-            'effective_date',
-            'expired_date',
+            'code',
+            'description'
         )
 
 
@@ -262,13 +242,9 @@ class RegistrationsListSerializer(serializers.ModelSerializer):
         Filter for approved applications (application has an 'approved' status that is not expired)
         """
 
-        applications = [
-            app for app in registration.applications.all()
-            if any((x.status.registries_application_status_code == 'A' and x.expired_date is None)
-                   for x in app.status_set.all())]
-
         serializer = ApplicationListSerializer(
-            instance=applications, many=True)
+            instance=registration.applications.filter(current_status__registries_application_status_code='A'),
+            many=True)
         return serializer.data
 
 
@@ -407,8 +383,6 @@ class ApplicationAdminSerializer(AuditModelSerializer):
     Serializes RegistryApplication model fields for admin users
     """
 
-    status_set = ApplicationStatusSerializer(many=True, required=False)
-    current_status = ApplicationStatusSerializer(required=False)
     qualifications = serializers.StringRelatedField(
         source='subactivity.qualification_set',
         many=True,
@@ -439,7 +413,6 @@ class ApplicationAdminSerializer(AuditModelSerializer):
             'reason_denied',
             'subactivity',
             'qualifications',
-            'status_set',
             'current_status'
         )
 
@@ -461,88 +434,80 @@ class ApplicationAdminSerializer(AuditModelSerializer):
         except TypeError:
             raise TypeError('A field may need to be made read only.')
 
-        # make a status record to go with the new application
-        # by default we set the ApplicationStatus to P(ending).
-        pending = ApplicationStatusCode.objects.get(
-            registries_application_status_code='P')
-        RegistriesApplicationStatus.objects.create(
-            application=app,
-            status=pending)
-
         return app
 
-    @transaction.atomic
-    def update(self, instance, validated_data):
-        """
-        The update is wrapped inside a transaction since we're changing a few
-        records and creating one. We want to avoid a state where where a partial
-        change occurs, especially if it leaves an application without a current
-        status.
-        """
+    # @transaction.atomic
+    # def update(self, instance, validated_data):
+    #     """
+    #     The update is wrapped inside a transaction since we're changing a few
+    #     records and creating one. We want to avoid a state where where a partial
+    #     change occurs, especially if it leaves an application without a current
+    #     status.
+    #     """
         # We pop the current status, as the update method on the base
         # class cannot serialize nested fields.
-        current_status = validated_data.pop('current_status', None)
+        # current_status = validated_data.pop('current_status', None)
 
-        if current_status:
-            # Validated_status is an OrderedDict at this point.
-            current_status_code = current_status.get(
-                'status').registries_application_status_code
-            current_status = instance.current_status
-            if current_status:
-                current_status_code = current_status.status.registries_application_status_code
-            else:
-                logger.error(
-                    'RegistryApplication {} does not have a current status'.format(instance))
-                current_status_code = None
+        # if current_status:
+        #     # Validated_status is an OrderedDict at this point.
+        #     current_status_code = current_status.get(
+        #         'status').registries_application_status_code
+        #     current_status = instance.current_status
+        #     if current_status:
+        #         current_status_code = current_status.status.registries_application_status_code
+        #     else:
+        #         logger.error(
+        #             'RegistryApplication {} does not have a current status'.format(instance))
+        #         current_status_code = None
 
-            if current_status_code != current_status_code:
-                if current_status:
-                    # Expire existing status.
-                    current_status.expired_date = timezone.now()
-                    current_status.save()
-                new_status = ApplicationStatusCode.objects.get(
-                    registries_application_status_code=validated_status_code)
-                # Create a new status.
-                RegistriesApplicationStatus.objects.create(
-                    application=instance,
-                    status=new_status)
+        #     if current_status_code != current_status_code:
+        #         if current_status:
+        #             # Expire existing status.
+        #             current_status.expired_date = timezone.now()
+        #             current_status.save()
+        #         new_status = ApplicationStatusCode.objects.get(
+        #             registries_application_status_code=validated_status_code)
+        #         # Create a new status.
+        #         RegistriesApplicationStatus.objects.create(
+        #             application=instance,
+        #             status=new_status)
 
-        print('validated_data {}'.format(validated_data))
-        validated_status_set = validated_data.pop('status_set', None)
+        # print('validated_data {}'.format(validated_data))
+        # validated_status_set = validated_data.pop('status_set', None)
 
-        application = super().update(instance, validated_data)
+        # application = super().update(instance, validated_data)
 
-        if validated_status_set:
-            for validated_status_data in validated_status_set:
-                # This could be an update, get or create
-                status = validated_status_data.get('status')
-                application_status = RegistriesApplicationStatus.objects.filter(
-                    application=application,
-                    status=status).first()
-                effective_date = validated_status_data.get('effective_date')
-                if application_status:
-                    # We're doing an update
-                    application_status.effective_date = effective_date
-                    application_status.save()
-                if not application_status:
-                    # This is a create
-                    application_status = RegistriesApplicationStatus.objects.create(
-                        application=application,
-                        status=status,
-                        effective_date=effective_date)
-                # As such, we need to ensure the the Pending status get's an expired date
-                if status.registries_application_status_code != 'P':
-                    # Any state that isn't a 'P', implies we may be moving to A, I or NA.
-                    # Valid transitions are: P -> A, P -> I, P -> NA
-                    # We need to ensure that the existing pending status has an end date
-                    pending = RegistriesApplicationStatus.objects.filter(
-                        application=application,
-                        status__registries_application_status_code='P').first()
-                    if pending and not pending.expired_date:
-                        pending.expired_date = effective_date
-                        pending.save()
+        # if validated_status_set:
+        #     for validated_status_data in validated_status_set:
+        #         # This could be an update, get or create
+        #         status = validated_status_data.get('status')
+        #         application_status = RegistriesApplicationStatus.objects.filter(
+        #             application=application,
+        #             status=status).first()
+        #         effective_date = validated_status_data.get('effective_date')
+        #         if application_status:
+        #             # We're doing an update
+        #             application_status.effective_date = effective_date
+        #             application_status.save()
+        #         if not application_status:
+        #             # This is a create
+        #             application_status = RegistriesApplicationStatus.objects.create(
+        #                 application=application,
+        #                 status=status,
+        #                 effective_date=effective_date)
+        #         # As such, we need to ensure the the Pending status get's an expired date
+        #         if status.registries_application_status_code != 'P':
+        #             # Any state that isn't a 'P', implies we may be moving to A, I or NA.
+        #             # Valid transitions are: P -> A, P -> I, P -> NA
+        #             # We need to ensure that the existing pending status has an end date
+        #             pending = RegistriesApplicationStatus.objects.filter(
+        #                 application=application,
+        #                 status__registries_application_status_code='P').first()
+        #             if pending and not pending.expired_date:
+        #                 pending.expired_date = effective_date
+        #                 pending.save()
 
-        return application
+        # return application
 
 
 class RegistrationAdminSerializer(AuditModelSerializer):
@@ -682,8 +647,6 @@ class ApplicationAutoCreateSerializer(AuditModelSerializer):
     record is created
     """
 
-    status_set = ApplicationStatusAutoCreateSerializer(
-        many=True, read_only=False)
     primary_certificate = AccreditedCertificateCodeSerializer(
         required=False)
     proof_of_age = ProofOfAgeCodeSerializer(required=False)
@@ -695,13 +658,14 @@ class ApplicationAutoCreateSerializer(AuditModelSerializer):
     subactivity = SubactivitySerializer(
         required=False
     )
-    current_status = ApplicationStatusSerializer(read_only=True)
 
     class Meta:
         model = RegistriesApplication
         fields = (
+            'application_recieved_date',
             'create_user',
             'create_date',
+            'current_status',
             'update_user',
             'update_date',
             'application_guid',
@@ -713,9 +677,7 @@ class ApplicationAutoCreateSerializer(AuditModelSerializer):
             'registrar_notes',
             'reason_denied',
             'subactivity',
-            'qualifications',
-            'status_set',
-            'current_status'
+            'qualifications'
         )
 
 
@@ -788,13 +750,8 @@ class PersonAdminSerializer(AuditModelSerializer):
             register = Register.objects.create(person=person, **reg_data)
             for app_data in applications:
                 app_data = {**app_data, **audit_info}
-                status_set = app_data.pop('status_set', list())
                 app = RegistriesApplication.objects.create(
                     registration=register, **app_data)
-                for status_data in status_set:
-                    staus_data = {**status_data, **audit_info}
-                    RegistriesApplicationStatus.objects.create(
-                        application=app, **status_data)
         for contact_data in contacts:
             contact_data = {**contact_data, **audit_info}
             contact = ContactInfo.objects.create(person=person, **contact_data)

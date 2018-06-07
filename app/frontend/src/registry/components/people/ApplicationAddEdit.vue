@@ -73,16 +73,33 @@
             </b-col>
           </b-row>
           <b-row>
-            <b-col md="6">
+            <b-col md="4">
               <b-form-group horizontal :label-cols="4" label="Date application received (yyyy-mm-dd)" class="font-weight-bold" invalid-feedback="Invalid date format">
                 <b-form-input type="date" v-model="pendingStatusEffectiveDate" :state="pendingDateState"/>
               </b-form-group>
             </b-col>
           </b-row>
           <b-row>
-            <b-col md="6">
+            <b-col md="4">
               <b-form-group horizontal :label-cols="4" label="Approval date outcome (yyyy-mm-dd)" class="font-weight-bold" invalid-feedback="Invalid date format">
-                <b-form-input type="date" v-model="approvedStatusEffectiveDate" :state="approvedDateState"/>
+                <b-form-input type="date" v-model="approvalStatusEffectiveDate" :state="approvalDateState"/>
+              </b-form-group>
+            </b-col>
+            <b-col md="4">
+              <b-form-group horizontal :label-cols="4" label="Approval outcome" class="font-weight-bold">
+                <b-form-select :options="formOptions.approvalOutcome" v-model="approvalStatusOutcome"/>
+              </b-form-group>
+            </b-col>
+            <b-col md="4">
+              <b-form-group horizontal :label-cols="4" label="Reason denied" class="font-weight-bold">
+                <b-form-input type="text" v-model="qualificationForm.reason_denied"/>
+              </b-form-group>
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col md="4">
+              <b-form-group horizontal :label-cols="4" label="Notification date" class="font-weight-bold">
+                <b-form-input type="date" v-model="approvalStatusNotificationDate" :state="notificationDateState"/>
               </b-form-group>
             </b-col>
           </b-row>
@@ -139,9 +156,13 @@ export default {
             status: 'P'
           }
         ],
-        qualifications: []
+        qualifications: [],
+        reason_denied: null
       }
-      const result = {...JSON.parse(JSON.stringify(defaultData)), ...input}
+      // It is important that we preserve the reference to the input variable, as the parent
+      // component may be bound to it.
+      const defaultCopy = JSON.parse(JSON.stringify(defaultData))
+      const result = input ? Object.assign(input, ...defaultCopy) : defaultCopy
       // We need the qualification to contain a pending status that we can attach to
       const pendingStatus = result.status_set.find(item => item.status === 'P')
       if (!pendingStatus) {
@@ -157,8 +178,9 @@ export default {
       return input ? moment(input, 'YYYY-MM-DD', true).isValid() : true
     },
     isAllDatesValid () {
-      return (!this.approvedStatus || this.isDateValid(this.approvedStatus.effective_date)) &&
-        (!this.pendingStatus || this.isDateValid(this.pendingStatus.effective_date))
+      return (!this.approvalStatus || this.isDateValid(this.approvalStatus.effective_date)) &&
+        (!this.pendingStatus || this.isDateValid(this.pendingStatus.effective_date)) &&
+        (!this.approvalStatus || this.isDateValid(this.approvalStatus.notified_date))
     },
     ...mapActions([
       FETCH_DRILLER_OPTIONS
@@ -182,7 +204,8 @@ export default {
         issuer: [{value: null, text: 'Please select an option'}],
         classifications: [],
         qualifications: [],
-        proofOfAge: [{value: null, text: 'Please select an option'}]
+        proofOfAge: [{value: null, text: 'Please select an option'}],
+        approvalOutcome: [{value: null, text: 'Please select an option'}]
       }
       if (this.drillerOptions) {
         // If driller options have loaded, prepare the form options.
@@ -192,6 +215,7 @@ export default {
           result.classifications = this.drillerOptions[this.activity].SubactivityCode.map((item) => { return {'text': item.description, 'value': item.registries_subactivity_code} })
           result.qualifications = this.drillerOptions[this.activity].WellClassCode.map((item) => { return {'text': item.description, 'value': item.registries_well_class_code} })
           result.issuer = result.issuer.concat(this.drillerOptions[this.activity].AccreditedCertificateCode.map((item) => { return {'text': item.name + ' (' + item.cert_auth + ')', 'value': item.acc_cert_guid} }))
+          result.approvalOutcome = result.approvalOutcome.concat(this.drillerOptions.ApprovalOutcome.map((item) => { return {'text': item.description, 'value': item.code} }))
         }
       }
       return result
@@ -199,13 +223,17 @@ export default {
     subactivityMap () {
       return this.activity in this.drillerOptions ? this.drillerOptions[this.activity].SubactivityCode : []
     },
-    approvedDateState () {
+    approvalDateState () {
       this.$emit('isValid', this.isAllDatesValid())
-      return !this.approvedStatus || this.isDateValid(this.approvedStatus.effective_date)
+      return !this.approvalStatus || this.isDateValid(this.approvalStatus.effective_date)
     },
     pendingDateState () {
       this.$emit('isValid', this.isAllDatesValid())
       return !this.pendingStatus || this.isDateValid(this.pendingStatus.effective_date)
+    },
+    notificationDateState () {
+      this.$emit('isValid', this.isAllDatesValid())
+      return !this.approvalStatus || this.isDateValid(this.approvalStatus.notified_date)
     },
     pendingStatus () {
       // This is the date on which a record became pending.
@@ -222,18 +250,40 @@ export default {
         this.pendingStatus.effective_date = newValue
       }
     },
-    approvedStatus () {
-      return this.qualificationForm.status_set.find(item => item.status === 'A')
+    approvalStatus () {
+      return this.qualificationForm.status_set.find(item => item.status !== 'P')
     },
-    approvedStatusEffectiveDate: {
+    approvalStatusEffectiveDate: {
       get () {
-        return this.approvedStatus ? this.approvedStatus.effective_date : null
+        return this.approvalStatus ? this.approvalStatus.effective_date : null
       },
       set (newValue) {
-        if (!this.approvedStatus) {
-          this.approvedStatus = {}
+        if (!this.approvalStatus) {
+          this.approvalStatus = {}
         }
-        this.approvedStatus.effective_date = newValue
+        this.approvalStatus.effective_date = newValue
+      }
+    },
+    approvalStatusOutcome: {
+      get () {
+        return this.approvalStatus ? this.approvalStatus.status : null
+      },
+      set (newValue) {
+        if (!this.approvalStatus) {
+          this.approvalStatus = {}
+        }
+        this.approvalStatus.status = newValue
+      }
+    },
+    approvalStatusNotificationDate: {
+      get () {
+        return this.approvalStatus ? this.approvalStatus.notified_date : null
+      },
+      set (newValue) {
+        if (!this.approvalStatus) {
+          this.approvalStatus = {}
+        }
+        this.approvalStatus.notified_date = newValue
       }
     }
   },
@@ -244,6 +294,11 @@ export default {
 </script>
 
 <style>
+input[type='date'] {
+  width: 150px;
+  padding-right: 0px;
+  margin-right: 0px;
+}
 .vdp-datepicker input {
   width: 80px;
 }

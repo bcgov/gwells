@@ -90,7 +90,8 @@
                     <h4>Qualification: {{ classification.registries_subactivity.description }}&nbsp;
                     <span class="registry-subtle">
                       (<router-link :to="{ name: 'PersonDetail', params: { person_guid: currentDriller.person_guid }}">change</router-link>)
-                    </span></h4>
+                    </span>
+                    </h4>
                   </b-col>
                 </b-row>
                 <b-row>
@@ -233,7 +234,6 @@ export default {
       FETCH_DRILLER_OPTIONS
     ]),
     applicationReset () {
-      // console.log('application reset')
       this.registration = null
       this.applicationFormValue = null
       this.formValid = true
@@ -241,11 +241,9 @@ export default {
       // activity.
       ApiService.get('registrations', this.$route.params.registration_guid)
         .then((response) => {
-          // console.log('ApiService response', response)
           this.registration = response.data
 
           if (this.registration) {
-            // console.log('registration set to: ', this.registration)
             let application = this.registration.applications.find((item) => item.application_guid === this.$route.params.application_guid)
             this.applicationFormValue = {
               subactivity: {
@@ -257,12 +255,12 @@ export default {
               },
               status_set: application.status_set,
               qualifications: application.qualifications,
-              proof_of_age: application.proof_of_age
+              proof_of_age: application.proof_of_age,
+              reason_denied: application.reason_denied
             }
           }
         })
         .catch((error) => {
-          console.log('ApiService error')
           this.$store.commit(SET_ERROR, error.response)
         })
     },
@@ -272,6 +270,7 @@ export default {
     },
     saveApplication () {
       if (this.formValid) {
+        console.log(JSON.parse(JSON.stringify(this.applicationFormValue)))
         this.applicationSaving = true
         const copy = Object.assign({}, this.applicationFormValue)
         delete copy['qualifications'] // This section is read-only. No point pushing it to server.

@@ -29,6 +29,7 @@ from drf_multiple_model.views import ObjectMultipleModelAPIView
 from registries.models import (
     AccreditedCertificateCode,
     ActivityCode,
+    ApplicationStatusCode,
     ContactInfo,
     Organization,
     OrganizationNote,
@@ -42,6 +43,7 @@ from registries.models import (
 from registries.permissions import IsAdminOrReadOnly, IsGwellsAdmin
 from registries.serializers import (
     ApplicationAdminSerializer,
+    ApplicationStatusCodeSerializer,
     ApplicationListSerializer,
     CityListSerializer,
     ProofOfAgeCodeSerializer,
@@ -251,6 +253,9 @@ class PersonOptionsView(APIView):
         result['ProofOfAgeCode'] = \
             list(map(lambda item: ProofOfAgeCodeSerializer(item).data,
                      ProofOfAgeCode.objects.all().order_by('display_order')))
+        result['ApprovalOutcome'] = \
+            list(map(lambda item: ApplicationStatusCodeSerializer(item).data,
+                     ApplicationStatusCode.objects.exclude(registries_application_status_code='P')))
         return Response(result)
 
 
@@ -294,8 +299,6 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
             'registrations__applications',
             'registrations__applications__primary_certificate',
             'registrations__applications__primary_certificate__cert_auth',
-            'registrations__applications__status_set',
-            'registrations__applications__status_set__status',
             'registrations__applications__subactivity',
             'registrations__applications__subactivity__qualification_set',
             'registrations__applications__subactivity__qualification_set__well_class'
@@ -380,8 +383,6 @@ class PersonDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
             'registrations__applications',
             'registrations__applications__primary_certificate',
             'registrations__applications__primary_certificate__cert_auth',
-            'registrations__applications__status_set',
-            'registrations__applications__status_set__status',
             'registrations__applications__subactivity',
             'registrations__applications__subactivity__qualification_set',
             'registrations__applications__subactivity__qualification_set__well_class'
@@ -471,8 +472,6 @@ class RegistrationListView(AuditCreateMixin, ListCreateAPIView):
             'applications',
             'applications__primary_certificate',
             'applications__primary_certificate__cert_auth',
-            'applications__status_set',
-            'applications__status_set__status',
             'applications__subactivity',
             'applications__subactivity__qualification_set',
             'applications__subactivity__qualification_set__well_class'
@@ -508,8 +507,6 @@ class RegistrationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
             'applications',
             'applications__primary_certificate',
             'applications__primary_certificate__cert_auth',
-            'applications__status_set',
-            'applications__status_set__status',
             'applications__subactivity',
             'applications__subactivity__qualification_set',
             'applications__subactivity__qualification_set__well_class'

@@ -206,6 +206,20 @@ const fakeOptions = JSON.parse(JSON.stringify({
       'registries_proof_of_age_code': 'PASSPORT',
       'description': 'Passport'
     }
+  ],
+  'ApprovalOutcome': [
+    {
+      'code': 'A',
+      'description': 'Approved'
+    },
+    {
+      'code': 'NA',
+      'description': 'Not Approved'
+    },
+    {
+      'code': 'I',
+      'description': 'Incomplete'
+    }
   ]
 }))
 

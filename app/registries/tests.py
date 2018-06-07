@@ -16,7 +16,6 @@ from registries.models import (
     RegistriesApplication,
     Register,
     RegistriesStatusCode,
-    RegistriesApplicationStatus,
     ActivityCode,
     SubactivityCode)
 from registries.views import PersonListView, PersonDetailView
@@ -173,9 +172,6 @@ class RegistriesApplicationWithStatusActiveTest(RegistriesApplicationTestBase):
 
     def setUp(self):
         super().setUp()
-        RegistriesApplicationStatus.objects.create(
-            application=self.app,
-            status=self.application_status_pending)
 
     def test_update_application_status_to_active(self):
         """ Test that an application created with a Pending status can be updated to Active
@@ -192,7 +188,7 @@ class RegistriesApplicationWithStatusActiveTest(RegistriesApplicationTestBase):
         updated_application = RegistriesApplication.objects.get(
             application_guid=self.app.application_guid)
         self.assertEqual(
-            updated_application.current_status.status.registries_application_status_code, 'A')
+            updated_application.current_status.registries_application_status_code, 'A')
 
 
 class RegistriesApplicationStatusSubactivityTest(RegistriesApplicationTestBase):
