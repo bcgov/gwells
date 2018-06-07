@@ -97,7 +97,7 @@
                     :disabled="!selectedCompany"
                     id="companyProvinceInput"
                     :state="validation.province_state"
-                    :options="provCodes"
+                    :options="provinceStateOptions"
                     aria-describedby="provInputFeedback"
                     v-model="companyForm.province_state">
                     <option value="" disabled>Select a province</option>
@@ -299,10 +299,12 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import ApiService from '@/common/services/ApiService.js'
 import OrganizationAdd from '@/registry/components/people/OrganizationAdd.vue'
 import Notes from '@/registry/components/people/Notes.vue'
 import inputFormatMixin from '@/common/inputFormatMixin.js'
+import { FETCH_DRILLER_OPTIONS } from '@/registry/store/actions.types'
 
 export default {
   name: 'OrganizationEdit',
@@ -327,9 +329,6 @@ export default {
       // companies list from API
       companies: [{ name: '', org_guid: '', org_verbose_name: '' }],
       selectedCompany: null,
-      provCodes: [
-        'BC', 'AB', 'SK', 'ON', 'YT', 'WA'
-      ],
 
       // company details from API (loaded after selecting a company)
       companyDetails: null,
@@ -387,7 +386,8 @@ export default {
     formChanged () {
       // returns true or false if any of the fields changed. Uses fieldsChanged() method above
       return (Object.keys(this.fieldsChanged).map(x => this.fieldsChanged[x]).includes(true))
-    }
+    },
+    ...mapGetters(['provinceStateOptions'])
   },
   watch: {
     selectedCompany (val) {
@@ -511,6 +511,7 @@ export default {
   },
   created () {
     this.loadCompanies()
+    this.$store.dispatch(FETCH_DRILLER_OPTIONS)
   }
 }
 </script>
