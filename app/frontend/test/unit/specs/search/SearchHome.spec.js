@@ -17,7 +17,6 @@ describe('SearchHome.vue', () => {
 
   beforeEach(() => {
     getters = {
-      userIsAdmin: () => false,
       drillers: () => {
         return {
           results: [
@@ -73,7 +72,9 @@ describe('SearchHome.vue', () => {
             }
           ]
         }
-      }
+      },
+      userRoles: () => ({ edit: false, view: false, approve: false }),
+      activity: () => 'DRILL'
     }
     actions = {
       [FETCH_CITY_LIST]: jest.fn(),
@@ -98,13 +99,14 @@ describe('SearchHome.vue', () => {
 
   it('loads the error component if there is an error', () => {
     const getters = {
-      userIsAdmin: () => false,
       drillers: () => [],
       loading: () => false,
       listError: () => {
         return { status: '400', statusText: 'error!' }
       },
-      cityList: () => []
+      cityList: () => [],
+      activity: () => 'DRILL',
+      userRoles: () => ({ edit: false, view: false, approve: false })
     }
     const store = new Vuex.Store({ getters, actions })
     const wrapper = shallowMount(SearchHome, {

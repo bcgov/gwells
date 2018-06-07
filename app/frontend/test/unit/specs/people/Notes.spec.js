@@ -20,7 +20,8 @@ describe('Notes.vue', () => {
       error: () => null,
       user: () => null,
       currentDriller: jest.fn().mockReturnValue(fakePerson),
-      drillers: () => []
+      drillers: () => [],
+      userRoles: () => ({ edit: true, view: true, approve: true })
     }
     store = new Vuex.Store({ getters, actions, mutations })
   })
