@@ -37,7 +37,7 @@ then
 	#       is also a parent table of Registries tables
 	cd $APP_ROOT/src/
 	python manage.py flush --noinput
-	python manage.py loaddata gwells.codetables.json wellsearch.codetables.json registries.codetables.json
+	python manage.py loaddata gwells-codetables wellsearch-codetables registries-codetables
 
 	echo ". Running DB Replication from Legacy Database, as per DB_REPLICATION flag"
     cd $APP_ROOT/src/scripts/
