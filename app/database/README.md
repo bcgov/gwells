@@ -87,14 +87,14 @@ Static code tables are maintained in this [GitHub](../../../tree/master/app/data
 
 There are also Django fixtures that hold the code table records:
 - gwells/fixtures/gwells-codetables.json
-	- gwells/fixtures/wellsearch.codetables.json (codetables that pertain to the wellsearch component); NOTE that this will be moved to wellsearch/fixtures/wellsearch.codetables.json at a later date
+	- gwells/fixtures/wellsearch-codetables.json (codetables that pertain to the wellsearch component); NOTE that this will be moved to wellsearch/fixtures/wellsearch.codetables.json at a later date
 	- registries/fixtures/registries-codetables.json (codetables that pertain to the registries app)
 	- (not created yet) wellsubmission/fixtures/*  (cleanly separated wellsubmission Django app)
 
 To load code tables on a fresh GWELLS database:
 ```
 cd $VIRTUAL_ENV/src/
-python manage.py loaddata gwells.codetables wellsearch.codetables registries.codetables
+python manage.py loaddata gwells.codetables wellsearch-codetables registries-codetables
 
 ```
 
