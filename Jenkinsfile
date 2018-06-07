@@ -15,6 +15,66 @@ import bcgov.OpenShiftHelper
 import bcgov.GitHubHelper
 
 
+/* Project and pipeline-specific settings
+   Includes:
+    - project name
+    - uuid
+    - web path (dev|test|prod)
+    - build config templates (*.bc)
+    - deployment config templates (*.dc) and parameters
+    - stage names and enabled status (true|false)
+    - git pull request details
+*/
+Map context = [
+    'name': 'gwells',
+    'uuid' : "${env.JOB_BASE_NAME}-${env.BUILD_NUMBER}-${env.CHANGE_ID}",
+    'env': [
+        'dev':[:],
+        'test':['params':['host':'gwells-test.pathfinder.gov.bc.ca']],
+        'prod':['params':['host':'gwells-prod.pathfinder.gov.bc.ca', 'DB_PVC_SIZE':'5Gi']]
+    ],
+    'templates': [
+        'build':[
+            ['file':'openshift/postgresql.bc.json'],
+            ['file':'openshift/backend.bc.json']
+        ],
+        'deployment':[
+            [
+                'file':'openshift/postgresql.dc.json',
+                'params':[
+                    'DATABASE_SERVICE_NAME':'gwells-pgsql${deploy.dcSuffix}',
+                    'IMAGE_STREAM_NAMESPACE':'',
+                    'IMAGE_STREAM_NAME':'gwells-postgresql${deploy.dcSuffix}',
+                    'IMAGE_STREAM_VERSION':'${deploy.envName}',
+                    'POSTGRESQL_DATABASE':'gwells',
+                    'VOLUME_CAPACITY':'${env[DEPLOY_ENV_NAME]?.params?.DB_PVC_SIZE?:"1Gi"}'
+                ]
+            ],
+            [
+                'file':'openshift/backend.dc.json',
+                'params':[
+                    'HOST':'${env[DEPLOY_ENV_NAME]?.params?.host?:("gwells" + deployments[DEPLOY_ENV_NAME].dcSuffix + "-" + deployments[DEPLOY_ENV_NAME].projectName + ".pathfinder.gov.bc.ca")}'
+                ]
+            ]
+        ]
+    ],
+    stages:[
+    'Build': true,
+    'Unit Test': true,
+    'Code Quality': false,
+    'Readiness - DEV': true,
+    'Deploy - DEV': true,
+    'Load Fixtures - DEV': true,
+    'API Test': true,
+    'Full Test - DEV': true
+    ],
+    pullRequest:[
+    'id': env.CHANGE_ID,
+    'head': GitHubHelper.getPullRequestLastCommitId(this)
+    ]
+]
+
+
 /* Jenkins properties can be set on a pipeline-by-pipeline basis
    Includes:
     - build discarder
@@ -35,7 +95,7 @@ properties([
             numToKeepStr: '5'
         )
     ),
-    durabilityHint('PERFORMANCE_OPTIMIZED') /*, parameters([string(defaultValue: '', description: '', name: 'run_stages')]) */
+    durabilityHint('PERFORMANCE_OPTIMIZED')
 ])
 
 
@@ -103,59 +163,6 @@ def _stage(String name, Map context, boolean retry=0, boolean withCommitStatus=t
         }
     }
 }
-
-
-/* Map context:
-    - project name
-    - uuid
-    - web path (dev|test|prod)
-    - build config templates (*.bc)
-    - deployment config templates (*.dc) and parameters
-    - stage names and enabled status (true|false)
-    - git pull request details
-*/
-Map context = [
-  'name': 'gwells',
-  'uuid' : "${env.JOB_BASE_NAME}-${env.BUILD_NUMBER}-${env.CHANGE_ID}",
-  'env': [
-      'dev':[:],
-      'test':['params':['host':'gwells-test.pathfinder.gov.bc.ca']],
-      'prod':['params':['host':'gwells-prod.pathfinder.gov.bc.ca', 'DB_PVC_SIZE':'5Gi']]
-  ],
-  'templates': [
-      'build':[
-          ['file':'openshift/postgresql.bc.json'],
-          ['file':'openshift/backend.bc.json']
-      ],
-      'deployment':[
-          ['file':'openshift/postgresql.dc.json',
-              'params':[
-                  'DATABASE_SERVICE_NAME':'gwells-pgsql${deploy.dcSuffix}',
-                  'IMAGE_STREAM_NAMESPACE':'',
-                  'IMAGE_STREAM_NAME':'gwells-postgresql${deploy.dcSuffix}',
-                  'IMAGE_STREAM_VERSION':'${deploy.envName}',
-                  'POSTGRESQL_DATABASE':'gwells',
-                  'VOLUME_CAPACITY':'${env[DEPLOY_ENV_NAME]?.params?.DB_PVC_SIZE?:"1Gi"}'
-              ]
-          ],
-          ['file':'openshift/backend.dc.json', 'params':['HOST':'${env[DEPLOY_ENV_NAME]?.params?.host?:("gwells" + deployments[DEPLOY_ENV_NAME].dcSuffix + "-" + deployments[DEPLOY_ENV_NAME].projectName + ".pathfinder.gov.bc.ca")}']]
-      ]
-  ],
-  stages:[
-    'Build': true,
-    'Unit Test': true,
-    'Code Quality': false,
-    'Readiness - DEV': true,
-    'Deploy - DEV': true,
-    'Load Fixtures - DEV': true,
-    'API Test': true,
-    'Full Test - DEV': true
-  ],
-  pullRequest:[
-    'id': env.CHANGE_ID,
-    'head': GitHubHelper.getPullRequestLastCommitId(this)
-  ]
-]
 
 
 /* Continuous integration (CI)
