@@ -173,6 +173,7 @@ class ApplicationStatusCodeSerializer(serializers.ModelSerializer):
     def to_internal_value(self, data):
         if 'code' in data:
             return ApplicationStatusCode.objects.get(registries_application_status_code=data['code'])
+        return super().to_internal_value(self)
 
 
 class ApplicationListSerializer(AuditModelSerializer):
@@ -445,13 +446,17 @@ class ApplicationAdminSerializer(AuditModelSerializer):
         """
         Create an application as well as a default status record of "pending"
         """
+        if 'current_status' not in validated_data:
+            # By default we set the ApplicationStatus to P(ending).
+            validated_data['current_status'] = ApplicationStatusCode.objects.get(
+                registries_application_status_code='P')
         try:
             app = RegistriesApplication.objects.create(**validated_data)
         except TypeError:
             raise TypeError('A field may need to be made read only.')
 
         return app
-    
+
 
 class RegistrationAdminSerializer(AuditModelSerializer):
     """
