@@ -142,11 +142,16 @@
                     {{ application.current_status.description }}
                   </b-col>
                   <b-col v-else md="2">Unknown</b-col>
-                  <b-col v-if="application && application.current_status === 'NA'" md="2" class="registry-item">
+                  <b-col v-if="application && application.current_status && application.current_status.code === 'NA'" md="2" class="registry-item">
                     <span class="registry-label">Reason denied:</span>
                   </b-col>
-                  <b-col v-if="application && application.current_status === 'NA'" md="2">
-                    {{ application.reason_denied }}
+                  <b-col v-if="application && application.current_status && application.current_status.code === 'NA'" md="2">
+                    <span v-if="application.reason_denied">
+                      {{ application.reason_denied }}
+                    </span>
+                    <span v-else>
+                      Unknown
+                    </span>
                   </b-col>
                 </b-row>
                 <b-row>
@@ -245,7 +250,6 @@ export default {
       ApiService.get('registrations', this.$route.params.registration_guid)
         .then((response) => {
           this.registration = response.data
-
           if (this.registration) {
             let application = this.registration.applications.find((item) => item.application_guid === this.$route.params.application_guid)
             this.applicationFormValue = {

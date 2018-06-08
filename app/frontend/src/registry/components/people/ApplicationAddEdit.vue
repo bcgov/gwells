@@ -85,19 +85,19 @@
                 <b-form-input type="date" v-model="qualificationForm.application_outcome_date" :state="approvalDateState"/>
               </b-form-group>
             </b-col>
-            <b-col md="4" v-if="qualificationForm.application_outcome_date">
+            <b-col md="4" v-if="showApprovalOutcome">
               <b-form-group horizontal :label-cols="4" label="Approval outcome" class="font-weight-bold">
-                <b-form-select :options="formOptions.approvalOutcome" v-model="currentStatusCode"/>
+                <b-form-select :options="formOptions.approvalOutcome" v-model="qualificationForm.current_status.code"/>
               </b-form-group>
             </b-col>
-            <b-col md="4" v-if="qualificationForm.reason_denied || (qualificationForm.application_outcome_date && qualificationForm.current_status.code ==='NA')">
+            <b-col md="4" v-if="showReasonDenied">
               <b-form-group horizontal :label-cols="4" label="Reason denied" class="font-weight-bold">
                 <b-form-input type="text" v-model="qualificationForm.reason_denied"/>
               </b-form-group>
             </b-col>
           </b-row>
           <b-row>
-            <b-col md="4" v-if="qualificationForm.application_outcome_notification_date || (qualificationForm.application_outcome_date && qualificationForm.current_status.code !== 'P')">
+            <b-col md="4" v-if="showNotificationDate">
               <b-form-group horizontal :label-cols="4" label="Notification date" class="font-weight-bold">
                 <b-form-input type="date" v-model="qualificationForm.application_outcome_notification_date" :state="notificationDateState"/>
               </b-form-group>
@@ -151,12 +151,21 @@ export default {
           code: null
         },
         qualifications: [],
-        reason_denied: null
+        reason_denied: null,
+        current_status: {
+          code: 'P' // We default to Pending approval
+        }
       }
       // It is important that we preserve the reference to the input variable, as the parent
       // component may be bound to it.
       const defaultCopy = JSON.parse(JSON.stringify(defaultData))
-      return input ? Object.assign(input, ...defaultCopy) : defaultCopy
+      const result = input ? Object.assign(input, ...defaultCopy) : defaultCopy
+      if (result.current_status == null) {
+        // In very exceptional cases, a current status can be null - this is problematic in terms of
+        // data binding, so we attach a default value here.
+        result.current_status = defaultCopy.current_status
+      }
+      return result
     },
     isDateValid (input) {
       // We accept null, undefined, '' as valid dates, in addition to correctly formatted dates
@@ -186,11 +195,11 @@ export default {
     ]),
     formOptions () {
       let result = {
-        issuer: [{value: null, text: 'Please select an option'}],
+        issuer: [{value: {code: null}, text: 'Please select an option'}],
         classifications: [],
         qualifications: [],
         proofOfAge: [{value: null, text: 'Please select an option'}],
-        approvalOutcome: [{value: null, text: 'Please select an option'}]
+        approvalOutcome: [{value: 'P', text: 'Please select an option'}]
       }
       if (this.drillerOptions) {
         // If driller options have loaded, prepare the form options.
@@ -220,13 +229,18 @@ export default {
       this.$emit('isValid', this.isAllDatesValid())
       return this.isDateValid(this.qualificationForm.application_outcome_notification_date)
     },
-    currentStatusCode: {
-      get () {
-        return this.qualificationForm.current_status ? this.qualificationForm.current_status.code : null
-      },
-      set (newValue) {
-        this.qualificationForm.current_status = {code: newValue}
-      }
+    thing () {
+      return this.qualificationForm.current_status
+    },
+    showApprovalOutcome () {
+      return this.qualificationForm.application_outcome_date
+    },
+    showReasonDenied () {
+      return !!this.qualificationForm.reason_denied ||
+        (!!this.qualificationForm.application_outcome_date && this.qualificationForm.current_status.code === 'NA')
+    },
+    showNotificationDate () {
+      return !!this.qualificationForm.application_outcome_notification_date || (this.qualificationForm.application_outcome_date && this.qualificationForm.current_status.code !== 'P')
     }
   },
   created () {

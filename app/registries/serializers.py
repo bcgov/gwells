@@ -599,6 +599,7 @@ class ApplicationAutoCreateSerializer(AuditModelSerializer):
     subactivity = SubactivitySerializer(
         required=False
     )
+    current_status = ApplicationStatusCodeSerializer(required=False)
 
     class Meta:
         model = RegistriesApplication

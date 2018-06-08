@@ -443,7 +443,7 @@ export default {
       })
     },
     addApplication (collection) {
-      collection.push({id: new Date().getUTCMilliseconds(), data: {}})
+      collection.push({id: new Date().getUTCMilliseconds(), data: null})
     },
     closeApplication (collection, id) {
       collection.splice(collection.findIndex((item) => item.id === id))
