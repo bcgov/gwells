@@ -6,7 +6,7 @@ import spock.lang.*
 This story excludes functionality relating to the removal from the register.
 """)
 @See("https://trello.com/c/zaa4JSn8")
-class AddRegistrantClassificationQualificationsSpecs extends GebReportingSpec {
+class AddRegistrantEditAdjudicationSpecs extends GebReportingSpec {
 
     @Unroll
     @Ignore("TODO")
