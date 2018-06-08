@@ -110,7 +110,8 @@ Map context = [
     'Deploy - DEV': true,
     'Load Fixtures - DEV': true,
     'API Test': true,
-    'Full Test - DEV': true
+    'Full Test - DEV': true,
+    'ZAP Security Scan': true
   ],
   pullRequest:[
     'id': env.CHANGE_ID,
@@ -243,6 +244,41 @@ _stage('Code Quality', context) {
     }
 
 } //end stage
+
+
+_stage('ZAP Security Scan', context) {
+    podTemplate(
+        label: 'owasp-zap${context.uuid}',
+        name: 'owasp-zap${context.uuid}',
+        serviceAccount: 'jenkins',
+        cloud: 'openshift',
+        containers: [
+            containerTemplate(
+                name: 'jnlp',
+                image: '172.50.0.2:5000/openshift/jenkins-slave-zap',
+                resourceRequestCpu: '500m',
+                resourceLimitCpu: '1000m',
+                resourceRequestMemory: '3Gi',
+                resourceLimitMemory: '4Gi',
+                workingDir: '/home/jenkins',
+                command: '',
+                args: '${computer.jnlpmac} ${computer.name}'
+            )
+        ]
+    ) {
+        node('owasp-zap') {
+            //the checkout is mandatory
+            echo "checking out source"
+            echo "Build: ${BUILD_ID}"
+            checkout scm
+            dir('zap') {
+                def retVal = sh returnStatus: true, script: './runzap.sh'
+                publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: true, reportDir: '/zap/wrk', reportFiles: 'index.html', reportName: 'ZAP Full Scan', reportTitles: 'ZAP Full Scan'])
+                echo "Return value is: ${retVal}"
+            }
+        }
+    }
+}
 
 
 for(String envKeyName: context.env.keySet() as String[]){
