@@ -14,6 +14,7 @@
 from .AuditModel import AuditModel
 from django.db import models
 
+
 class ProvinceStateCode(AuditModel):
     """
     Lookup of Provinces/States.
@@ -21,7 +22,7 @@ class ProvinceStateCode(AuditModel):
     It provides for a standard commonly understood code and description for provinces and states.
     Some examples include: BC, AB, WA
     """
-    province_state_code = models.CharField(primary_key=True, max_length=10, editable=False)
+    province_state_code = models.CharField(primary_key=True, max_length=10)
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
 

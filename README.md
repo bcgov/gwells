@@ -16,29 +16,9 @@ This is a [Django](http://www.djangoproject.com) project based on the [Openshift
 
 It uses the Openshift Source-to-Image (S2I) strategy with Python 3.5 on centos7.  See requirements.txt for Django and dependency versions.
 
-
-## Special files in this repository
-
-Apart from the regular files created by Django (`project/*`, `welcome/*`, `manage.py`), this repository contains:
-
-```
-database/           - Database-specific files
-└── codetables     - Static code table sql scripts
-└── cron            - Shell scripts
-└── scripts         - PostgrSQL psql scripts
-  └── sql-developer - SQL Developer Oracle SQL scripts
-
-openshift/          - OpenShift-specific files
-├── scripts         - helper scripts
-└── templates       - application templates
-
-requirements.txt    - list of dependencies
-
-```
-
 ## Development and Deployment
 
-Setup scripts, OpenShift deployment and development details are located in the [setup](./setup/) folder.  Please see the relevant [README.md](../setup/README.md).
+Setup scripts, OpenShift deployment and development details are located in the [setup](./setup/) folder.  Please see the relevant [README.md](./setup/README.md).
 
 ## Issues
 Issues are tracked on the [GWELLS Trello board](https://trello.com/b/2UQZgXHR/wells-project-board).

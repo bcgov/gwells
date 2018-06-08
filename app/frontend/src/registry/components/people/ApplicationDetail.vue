@@ -82,7 +82,7 @@
                       type="button"
                       @click="editClassification = !editClassification"
                       id="editClassification"
-                      v-if="userIsAdmin"><i class="fa fa-edit" id="editClassification"></i> Edit</button>
+                      v-if="userRoles.edit"><i class="fa fa-edit" id="editClassification"></i> Edit</button>
                   </b-col>
                 </b-row>
                 <b-row class="row" v-if="classification && classification.registries_subactivity">
@@ -343,8 +343,8 @@ export default {
       'loading',
       'error',
       'currentDriller',
-      'userIsAdmin',
-      'drillerOptions'
+      'drillerOptions',
+      'userRoles'
     ])
   },
   created () {

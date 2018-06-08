@@ -8,7 +8,8 @@ from django.utils.six import StringIO
 from rest_framework import status
 from rest_framework.test import APITestCase, APIRequestFactory
 from gwells.models.ProvinceStateCode import ProvinceStateCode
-from django.contrib.auth.models import User
+from gwells.models.Profile import Profile
+from django.contrib.auth.models import User, Group
 from registries.models import (
     ApplicationStatusCode,
     Organization,
@@ -20,6 +21,8 @@ from registries.models import (
     SubactivityCode)
 from registries.views import PersonListView, PersonDetailView
 from django.contrib.auth.models import Group
+from gwells.roles import (roles_to_groups, GWELLS_ROLE_GROUPS, GWELLS_ROLES,
+                          ADJUDICATOR_ROLE, ADMIN_ROLE, AUTHORITY_ROLE, VIEWER_ROLE)
 
 # Note: see postman/newman for more API tests.
 # Postman API tests include making requests with incomplete data, missing required fields etc.
@@ -36,13 +39,15 @@ class AuthenticatedAPITestCase(APITestCase):
     """
 
     def setUp(self):
-        """
-        Set up authenticated test cases.
-        """
-
-        self.user = User.objects.create_user(
-            'testuser', 'test@example.com', 'douglas')
+        self.user, created = User.objects.get_or_create(username='testuser')
+        if created:
+            Profile.objects.get_or_create(user=self.user)
         self.user.is_staff = True
+        self.user.profile.is_gwells_admin = True
+        self.user.save()
+        self.user.profile.save()
+
+        roles_to_groups(self.user, ['gwells_admin'])
         self.client.force_authenticate(self.user)
 
 
@@ -419,6 +424,8 @@ class APIPersonTests(AuthenticatedAPITestCase):
             'first_name': 'Bobby',
             'surname': 'Driller'
         }
+        self.prov, _ = ProvinceStateCode.objects.get_or_create(
+            province_state_code='BC', display_order=1)
         super().setUp()
 
     def test_create_person(self):
@@ -579,6 +586,20 @@ class APIPersonTests(AuthenticatedAPITestCase):
         response = self.client.post(url, data, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_create_person_wrong_role(self):
+        user, created = User.objects.get_or_create(username='test_viewer')
+        if created:
+            Profile.objects.get_or_create(user=user)
+
+        roles_to_groups(user, VIEWER_ROLE)
+        self.client.force_authenticate(user=user)
+        url = reverse('person-list')
+        data = {'first_name': 'Bobby', 'surname': 'Driller'}
+
+        response = self.client.post(url, data, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_unsafe_methods_by_unauthorized_users(self):
         """
@@ -760,6 +781,20 @@ class APIFilteringPaginationTests(APITestCase):
         url = reverse('organization-detail',
                       kwargs={'org_guid': self.company_with_no_driller.org_guid})
         response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+        # teardown
+        logger.setLevel(previous_level)
+
+    def test_anon_user_cannot_create_driller(self):
+        # setup
+        logger = logging.getLogger('django.request')
+        previous_level = logger.getEffectiveLevel()
+        logger.setLevel(logging.ERROR)
+
+        self.client.force_authenticate(user=None)
+        url = reverse('person-list')
+        response = self.client.post(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
         # teardown

@@ -129,6 +129,7 @@ functional-tests/src/test/groovy/testtamplet.txt
 
 # Custom GW
 activate
+src
 x.sh
 
 #virtual env

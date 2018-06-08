@@ -86,15 +86,15 @@ The data replication is controlled by the environment variable<table>
 Static code tables are maintained in this [GitHub](../../../tree/master/app/database/codetables) repo, while dynamic data is replicated.  There are a stored DB procedures that acts as a 'driver' scripts `db_replicate_step1(boolean)` and `db_replicate_step2()` that run the replication:
 
 There are also Django fixtures that hold the code table records:
-- gwells/fixtures/codetables.ProvinceStateCode.json
-	- gwells/fixtures/wellsearch.json.gz (codetables that pertain to the wellsearch component); NOTE that this will be moved to wellsearch/fixtures/codetables.json at a later date
-	- registries/fixtures/codetables.json (codetables that pertain to the registries app)
-	- (not created yet) wellsubmission/fixtures/codetables.jon (codetables that pertain to the upcoming wellsubmission app)
+- gwells/fixtures/gwells-codetables.json
+	- gwells/fixtures/wellsearch-codetables.json (codetables that pertain to the wellsearch component); NOTE that this will be moved to wellsearch/fixtures/wellsearch.codetables.json at a later date
+	- registries/fixtures/registries-codetables.json (codetables that pertain to the registries app)
+	- (not created yet) wellsubmission/fixtures/*  (cleanly separated wellsubmission Django app)
 
 To load code tables on a fresh GWELLS database:
 ```
 cd $VIRTUAL_ENV/src/
-python manage.py loaddata gwells/fixtures/codetables.ProvinceStateCode.json gwells/fixtures/codetables.json registries/fixtures/codetables.json
+python manage.py loaddata gwells.codetables wellsearch-codetables registries-codetables
 
 ```
 
