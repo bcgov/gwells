@@ -1161,7 +1161,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "c5e86fa7-1282-45a6-9868-a9fc99a4d835",
+										"id": "a3a60ebd-f4a3-40b6-9fa4-876b1e71f95d",
 										"type": "text/javascript",
 										"exec": [
 											"( function() {",
@@ -1201,12 +1201,12 @@
 											"    });",
 											"    ",
 											"    pm.test(\"The application has a pending status set, with the specified date\", function() {",
-											"        pm.expect(applications[0].status_set[0].status).to.eql(\"P\");",
-											"        pm.expect(applications[0].status_set[0].effective_date).to.eql(\"2018-05-02\");",
+											"        pm.expect(applications[0].current_status.code).to.eql(\"P\");",
+											"        pm.expect(applications[0].application_recieved_date).to.eql(\"2018-05-02\");",
 											"    });",
 											"    ",
 											"    pm.test(\"The application has proof of age\", function() {",
-											"        pm.expect(applications[0].proof_of_age).to.eql(\"PASSPORT\");",
+											"        pm.expect(applications[0].proof_of_age.code).to.eql(\"PASSPORT\");",
 											"    });",
 											"})();",
 											""
@@ -1231,7 +1231,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n  \"first_name\": \"Bobby\",\n  \"surname\": \"Driller\",\n  \"registrations\": [\n  \t{\n  \t\t\"registries_activity\": \"DRILL\", \n  \t\t\"status\": \"ACTIVE\",\n  \t\t\"organization\": \"{{created_guid}}\",\n  \t\t\"applications\": [\n  \t\t{\n  \t\t\t\"subactivity\": {\n  \t\t\t\t\"registries_subactivity_code\": \"WATER\"\n  \t\t\t}, \n  \t\t\t\"primary_certificate\": {\n  \t\t\t\t\"acc_cert_guid\": \"28bf8730-dbb7-4218-8e9f-06bd51f60161\"\n  \t\t\t}, \n  \t\t\t\"primary_certificate_no\": \"12345\",\n  \t\t\t\"status_set\": [\n  \t\t\t\t{\n  \t\t\t\t\t\"effective_date\": \"2018-05-02\",\n  \t\t\t\t\t\"status\": \"P\"\n  \t\t\t\t}\n  \t\t\t],\n  \t\t\t\"proof_of_age\": \"PASSPORT\"\n  \t\t},\n  \t\t{\n  \t\t\t\"subactivity\": {\n  \t\t\t\t\"registries_subactivity_code\": \"WATER\"\n  \t\t\t},\n  \t\t\t\"primary_certificate\": {\n  \t\t\t\t\"acc_cert_guid\": \"28bf8730-dbb7-4218-8e9f-06bd51f60161\"\n  \t\t\t},\n  \t\t\t\"primary_certificate_no\": \"67890\",\n  \t\t\t\"status_set\": [\n  \t\t\t\t{\n  \t\t\t\t\t\"effective_date\": \"2018-05-02\",\n  \t\t\t\t\t\"status\": \"P\"\n  \t\t\t\t}\n  \t\t\t]\n  \t\t}\n\t\t]\n  }],\n  \"contact_info\": [{\"contact_tel\": \"555-1234\"}]\n}\n"
+									"raw": "{\n  \"first_name\": \"Bobby\",\n  \"surname\": \"Driller\",\n  \"registrations\": [\n  \t{\n  \t\t\"registries_activity\": \"DRILL\", \n  \t\t\"status\": \"ACTIVE\",\n  \t\t\"organization\": \"{{created_guid}}\",\n  \t\t\"applications\": [\n  \t\t{\n  \t\t\t\"subactivity\": {\n  \t\t\t\t\"registries_subactivity_code\": \"WATER\"\n  \t\t\t}, \n  \t\t\t\"primary_certificate\": {\n  \t\t\t\t\"acc_cert_guid\": \"28bf8730-dbb7-4218-8e9f-06bd51f60161\"\n  \t\t\t}, \n  \t\t\t\"primary_certificate_no\": \"12345\",\n  \t\t\t\"current_status\": {\"code\": \"P\"},\n  \t\t\t\"application_recieved_date\": \"2018-05-02\",\n  \t\t\t\"proof_of_age\": { \"code\": \"PASSPORT\"}\n  \t\t},\n  \t\t{\n  \t\t\t\"subactivity\": {\n  \t\t\t\t\"registries_subactivity_code\": \"WATER\"\n  \t\t\t},\n  \t\t\t\"primary_certificate\": {\n  \t\t\t\t\"acc_cert_guid\": \"28bf8730-dbb7-4218-8e9f-06bd51f60161\"\n  \t\t\t},\n  \t\t\t\"primary_certificate_no\": \"67890\",\n  \t\t\t\"current_status\": {\"code\" : \"P\"}\n  \t\t}\n\t\t]\n  }],\n  \"contact_info\": [{\"contact_tel\": \"555-1234\"}]\n}\n"
 								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/drillers/?format=json",
@@ -3042,7 +3042,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "4f553fb0-fe72-4e5b-9281-cf0f51929ff5",
+										"id": "057a38f0-186d-4185-8756-817da5e2860c",
 										"type": "text/javascript",
 										"exec": [
 											"( function() {",
@@ -3062,8 +3062,7 @@
 											"    });",
 											"    ",
 											"    pm.test(\"Application is pending\", function () {",
-											"        pm.expect(jsonData.status_set.length, \"application status set not valid\").to.eql(1);",
-											"        pm.expect(jsonData.status_set[0].description).to.eql('Pending')",
+											"        pm.expect(jsonData.current_status.code).to.eql('P')",
 											"    });",
 											"    ",
 											"    pm.test(\"Audit fields (who_created, when_created) were filled in by backend\", function () {",
@@ -3123,7 +3122,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "e3e619bb-6459-484f-9562-3519e10d6e53",
+										"id": "0830db16-5679-4af2-9fe5-13912c8122d2",
 										"type": "text/javascript",
 										"exec": [
 											"( function() {",
@@ -3133,7 +3132,7 @@
 											"    var jsonData = pm.response.json();",
 											"    ",
 											"    pm.test(\"The record's current status is Pending\", function () {",
-											"        pm.expect(jsonData.current_status.status, \"current status not P\").to.eql(\"P\");",
+											"        pm.expect(jsonData.current_status.code, \"current status not P\").to.eql(\"P\");",
 											"    });",
 											"    ",
 											"    pm.test(\"The record's subactivity is WATER\", function () {",
@@ -3162,7 +3161,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n  \"subactivity\": {\n\t\"registries_subactivity_code\":\"WATER\"\n  },\n  \"current_status\": {\n    \"status\": \"P\"\n  }\n}"
+									"raw": "{\n  \"subactivity\": {\n\t\"registries_subactivity_code\":\"WATER\"\n  },\n  \"current_status\": {\n    \"code\": \"P\"\n  }\n}"
 								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/applications/{{created_application_guid}}/?format=json",
@@ -3193,7 +3192,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "dc7f1bfc-9a98-4ca6-ba63-0b56b13e222f",
+										"id": "24086669-1849-4506-99cb-5d6f095d79bf",
 										"type": "text/javascript",
 										"exec": [
 											"( function() {",
@@ -3203,7 +3202,7 @@
 											"    var jsonData = pm.response.json();",
 											"    ",
 											"    pm.test(\"The record's current status is Active\", function () {",
-											"        pm.expect(jsonData.current_status.status, \"current status not A\").to.eql(\"A\");",
+											"        pm.expect(jsonData.current_status.code, \"current status not A\").to.eql(\"A\");",
 											"    });",
 											"    ",
 											"    pm.test(\"The record's subactivity is GEOTECH\", function () {",
@@ -3232,7 +3231,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n\t\"subactivity\": \n\t{\n\t\t\"registries_subactivity_code\":\"GEOTECH\"\n\t},\n\t\"current_status\": {\n\t\t\"status\": \"A\"\n\t}\n}"
+									"raw": "{\n\t\"subactivity\": \n\t{\n\t\t\"registries_subactivity_code\":\"GEOTECH\"\n\t},\n\t\"current_status\": {\n\t\t\"code\": \"A\"\n\t}\n}"
 								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/applications/{{created_application_guid}}/?format=json",
@@ -3263,7 +3262,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "75538c8a-cf81-43d2-8902-12d56606bd7a",
+										"id": "28c548a6-75c6-481f-bfba-b93de721d3e6",
 										"type": "text/javascript",
 										"exec": [
 											"( function() {",
@@ -3285,7 +3284,7 @@
 											"    });",
 											"    ",
 											"    pm.test(\"The records proof of age is correct\", function() {",
-											"        pm.expect(jsonData.proof_of_age, \"proof_of_age not correct\").to.eql(\"PASSPORT\");",
+											"        pm.expect(jsonData.proof_of_age.code, \"proof_of_age not correct\").to.eql(\"PASSPORT\");",
 											"    });",
 											"",
 											"})();",
@@ -3311,7 +3310,98 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n  \t\"subactivity\": {\n\t\t\"registries_subactivity_code\":\"WATER\"\n\t},\n\t\"primary_certificate\":\n\t{\n\t\t\"acc_cert_guid\":\"28bf8730-dbb7-4218-8e9f-06bd51f60161\"\n\t},\n  \t\"primary_certificate_no\": \"12345\",\n  \t\"proof_of_age\": \"PASSPORT\"\n  }"
+									"raw": "{\n  \t\"subactivity\": {\n\t\t\"registries_subactivity_code\":\"WATER\"\n\t},\n\t\"primary_certificate\":\n\t{\n\t\t\"acc_cert_guid\":\"28bf8730-dbb7-4218-8e9f-06bd51f60161\"\n\t},\n  \t\"primary_certificate_no\": \"12345\",\n  \t\"proof_of_age\": {\n  \t\t\"code\": \"PASSPORT\"\n  \t}\n  }"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/applications/{{created_application_guid}}/?format=json",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"applications",
+										"{{created_application_guid}}",
+										""
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json"
+										}
+									]
+								},
+								"description": "Update an application for a registration."
+							},
+							"response": []
+						},
+						{
+							"name": "Update application - Adjudication",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "2dd32c74-c4f9-4cc7-a353-7ffd628d08b0",
+										"type": "text/javascript",
+										"exec": [
+											"( function() {",
+											"    pm.test(\"Successful POST request\", function () {",
+											"        pm.expect(pm.response.code, \"response code not 200\").to.eql(200);",
+											"    });",
+											"    var jsonData = pm.response.json();",
+											"    ",
+											"    pm.test(\"The record's subactivity is WATER\", function () {",
+											"        pm.expect(jsonData.subactivity.registries_subactivity_code, \"current status not WATER\").to.eql(\"WATER\");",
+											"    });",
+											"    ",
+											"    pm.test(\"The records primary certificate is correct\", function() {",
+											"        pm.expect(jsonData.primary_certificate.acc_cert_guid, \"primary_certificate not correct\").to.eql(\"28bf8730-dbb7-4218-8e9f-06bd51f60161\");",
+											"    });",
+											"    ",
+											"    pm.test(\"The records primary certificate no is correct\", function() {",
+											"        pm.expect(jsonData.primary_certificate_no, \"primary_certificate_no not correct\").to.eql(\"12345\");",
+											"    });",
+											"    ",
+											"    pm.test(\"The records proof of age is correct\", function() {",
+											"        pm.expect(jsonData.proof_of_age.code, \"proof_of_age not correct\").to.eql(\"PASSPORT\");",
+											"    });",
+											"    ",
+											"    pm.test(\"Application recieved date set correctly\", function() {",
+											"        pm.expect(jsonData.application_recieved_date, \"application_recieved_date\").to.eql(\"2018-01-01\")",
+											"    })",
+											"    ",
+											"    pm.test(\"Current state is correct\", function() {",
+											"        pm.expect(jsonData.current_status.code).to.eql(\"A\")",
+											"    });",
+											"    ",
+											"    pm.test(\"Reason denied populated\", function() {",
+											"       pm.expect(jsonData.reason_denied).to.eql(\"Something\") ",
+											"    });",
+											"",
+											"})();",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \t\"subactivity\": {\n\t\t\"registries_subactivity_code\":\"WATER\"\n\t},\n\t\"primary_certificate\":\n\t{\n\t\t\"acc_cert_guid\":\"28bf8730-dbb7-4218-8e9f-06bd51f60161\"\n\t},\n  \t\"primary_certificate_no\": \"12345\",\n  \t\"proof_of_age\": {\n  \t\t\"code\": \"PASSPORT\"\n  \t},\n  \t\"current_status\": {\"code\": \"A\"},\n  \t\"reason_denied\": \"Something\",\n  \t\"application_recieved_date\": \"2018-01-01\"\n}"
 								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/applications/{{created_application_guid}}/?format=json",
