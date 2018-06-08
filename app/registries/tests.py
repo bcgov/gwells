@@ -155,7 +155,7 @@ class RegistriesApplicationNoStatusTest(RegistriesApplicationTestBase):
         """
         data = {
             'current_status': {
-                'status': 'A'
+                'code': 'A'
             }
         }
 
@@ -165,7 +165,7 @@ class RegistriesApplicationNoStatusTest(RegistriesApplicationTestBase):
         updated_application = RegistriesApplication.objects.get(
             application_guid=self.app.application_guid)
         self.assertEqual(
-            updated_application.current_status.status.registries_application_status_code, 'A')
+            updated_application.current_status.registries_application_status_code, 'A')
 
 
 class RegistriesApplicationWithStatusActiveTest(RegistriesApplicationTestBase):
@@ -178,7 +178,7 @@ class RegistriesApplicationWithStatusActiveTest(RegistriesApplicationTestBase):
         """
         data = {
             'current_status': {
-                'status': 'A'
+                'code': 'A'
             }
         }
 
