@@ -298,6 +298,7 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
             'registrations__organization',
             'registrations__organization__province_state',
             'registrations__applications',
+            'registrations__applications__current_status',
             'registrations__applications__primary_certificate',
             'registrations__applications__primary_certificate__cert_auth',
             'registrations__applications__subactivity',

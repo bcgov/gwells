@@ -262,7 +262,7 @@ export default {
               },
               current_status: application.current_status,
               qualifications: application.qualifications,
-              proof_of_age: application.proof_of_age,
+              proof_of_age: application.proof_of_age ? application.proof_of_age : {},
               reason_denied: application.reason_denied,
               application_outcome_date: application.application_outcome_date,
               application_outcome_notification_date: application.application_outcome_notification_date,
