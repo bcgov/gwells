@@ -250,9 +250,6 @@ input[type='date'] {
   padding-right: 0px;
   margin-right: 0px;
 }
-.vdp-datepicker input {
-  width: 80px;
-}
 .fixed-width .custom-control-label {
   width: 220px;
 }
