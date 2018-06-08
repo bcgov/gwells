@@ -215,7 +215,8 @@ class OrganizationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
         for reg in instance.registrations.all():
             if reg.person.expired_date is None:
                 raise exceptions.ValidationError(
-                    'Organization has registrations associated with it. Remove this organization from registration records first.')
+                    ('Organization has registrations associated with it. ')
+                    ('Remove this organization from registration records first.'))
         instance.expired_date = timezone.now()
         instance.save()
 

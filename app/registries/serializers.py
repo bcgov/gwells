@@ -154,7 +154,8 @@ class SubactivitySerializer(serializers.ModelSerializer):
 
     def to_internal_value(self, data):
         if 'registries_subactivity_code' in data:
-            return SubactivityCode.objects.get(registries_subactivity_code=data['registries_subactivity_code'])
+            return SubactivityCode.objects.get(
+                registries_subactivity_code=data['registries_subactivity_code'])
         return super().to_internal_value(data)
 
 
@@ -433,7 +434,8 @@ class ApplicationAdminSerializer(AuditModelSerializer):
             queryset=Register.objects.all())
         if 'application_outcome_date' in data and data['application_outcome_date'] == '':
             data['application_outcome_date'] = None
-        if 'application_outcome_notification_date' in data and data['application_outcome_notification_date'] == '':
+        if ('application_outcome_notification_date' in data and
+                data['application_outcome_notification_date'] == ''):
             data['application_outcome_notification_date'] = None
         if 'application_recieved_date' in data and data['application_recieved_date'] == '':
             data['application_recieved_date'] = None
