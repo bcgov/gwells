@@ -120,7 +120,7 @@ gwells.pyproj*
 .vscode
 *.ipynb
 
-#functional-tests
+# functional-tests
 functional-tests/.gradle/
 functional-tests/build
 functional-tests/.project
@@ -131,7 +131,7 @@ functional-tests/src/test/groovy/testtamplet.txt
 
 # Custom GW
 activate
-src
+# src <-- this was also blocking functional-tests/src
 x.sh
 
 #virtual env
