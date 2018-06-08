@@ -90,14 +90,14 @@
                 <b-form-select :options="formOptions.approvalOutcome" v-model="currentStatusCode"/>
               </b-form-group>
             </b-col>
-            <b-col md="4" v-if="qualificationForm.reason_denied || (qualificationForm.application_outcome_date && qualificationForm.current_status ==='NA')">
+            <b-col md="4" v-if="qualificationForm.reason_denied || (qualificationForm.application_outcome_date && qualificationForm.current_status.code ==='NA')">
               <b-form-group horizontal :label-cols="4" label="Reason denied" class="font-weight-bold">
                 <b-form-input type="text" v-model="qualificationForm.reason_denied"/>
               </b-form-group>
             </b-col>
           </b-row>
           <b-row>
-            <b-col md="4" v-if="qualificationForm.application_outcome_notification_date || (qualificationForm.application_outcome_date && qualificationForm.current_status !== 'P')">
+            <b-col md="4" v-if="qualificationForm.application_outcome_notification_date || (qualificationForm.application_outcome_date && qualificationForm.current_status.code !== 'P')">
               <b-form-group horizontal :label-cols="4" label="Notification date" class="font-weight-bold">
                 <b-form-input type="date" v-model="qualificationForm.application_outcome_notification_date" :state="notificationDateState"/>
               </b-form-group>
