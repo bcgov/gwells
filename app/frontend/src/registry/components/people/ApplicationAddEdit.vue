@@ -75,31 +75,31 @@
           <b-row>
             <b-col md="4">
               <b-form-group horizontal :label-cols="4" label="Date application received (yyyy-mm-dd)" class="font-weight-bold" invalid-feedback="Invalid date format">
-                <b-form-input type="date" v-model="pendingStatusEffectiveDate" :state="pendingDateState"/>
+                <b-form-input type="date" v-model="qualificationForm.application_recieved_date" :state="pendingDateState"/>
               </b-form-group>
             </b-col>
           </b-row>
           <b-row>
-            <b-col md="4">
+            <b-col md="4" v-if="qualificationForm.application_recieved_date">
               <b-form-group horizontal :label-cols="4" label="Approval date outcome (yyyy-mm-dd)" class="font-weight-bold" invalid-feedback="Invalid date format">
-                <b-form-input type="date" v-model="approvalStatusEffectiveDate" :state="approvalDateState"/>
+                <b-form-input type="date" v-model="qualificationForm.application_outcome_date" :state="approvalDateState"/>
               </b-form-group>
             </b-col>
-            <b-col md="4">
+            <b-col md="4" v-if="qualificationForm.application_outcome_date">
               <b-form-group horizontal :label-cols="4" label="Approval outcome" class="font-weight-bold">
-                <b-form-select :options="formOptions.approvalOutcome" v-model="approvalStatusOutcome"/>
+                <b-form-select :options="formOptions.approvalOutcome" v-model="currentStatusCode"/>
               </b-form-group>
             </b-col>
-            <b-col md="4">
+            <b-col md="4" v-if="qualificationForm.reason_denied || (qualificationForm.application_outcome_date && qualificationForm.current_status ==='NA')">
               <b-form-group horizontal :label-cols="4" label="Reason denied" class="font-weight-bold">
                 <b-form-input type="text" v-model="qualificationForm.reason_denied"/>
               </b-form-group>
             </b-col>
           </b-row>
           <b-row>
-            <b-col md="4">
+            <b-col md="4" v-if="qualificationForm.application_outcome_notification_date || (qualificationForm.application_outcome_date && qualificationForm.current_status !== 'P')">
               <b-form-group horizontal :label-cols="4" label="Notification date" class="font-weight-bold">
-                <b-form-input type="date" v-model="approvalStatusNotificationDate" :state="notificationDateState"/>
+                <b-form-input type="date" v-model="qualificationForm.application_outcome_notification_date" :state="notificationDateState"/>
               </b-form-group>
             </b-col>
           </b-row>
@@ -150,37 +150,22 @@ export default {
         proof_of_age: {
           code: null
         },
-        status_set: [
-          {
-            effective_date: null,
-            status: 'P'
-          }
-        ],
         qualifications: [],
         reason_denied: null
       }
       // It is important that we preserve the reference to the input variable, as the parent
       // component may be bound to it.
       const defaultCopy = JSON.parse(JSON.stringify(defaultData))
-      const result = input ? Object.assign(input, ...defaultCopy) : defaultCopy
-      // We need the qualification to contain a pending status that we can attach to
-      const pendingStatus = result.status_set.find(item => item.status === 'P')
-      if (!pendingStatus) {
-        result.status_set.push({
-          effective_date: null,
-          status: 'P'
-        })
-      }
-      return result
+      return input ? Object.assign(input, ...defaultCopy) : defaultCopy
     },
     isDateValid (input) {
       // We accept null, undefined, '' as valid dates, in addition to correctly formatted dates
       return input ? moment(input, 'YYYY-MM-DD', true).isValid() : true
     },
     isAllDatesValid () {
-      return (!this.approvalStatus || this.isDateValid(this.approvalStatus.effective_date)) &&
-        (!this.pendingStatus || this.isDateValid(this.pendingStatus.effective_date)) &&
-        (!this.approvalStatus || this.isDateValid(this.approvalStatus.notified_date))
+      return (!this.approvalStatus || this.isDateValid(this.qualificationForm.application_outcome_date)) &&
+        (!this.pendingStatus || this.isDateValid(this.qualificationForm.application_outcome_notification_date)) &&
+        (!this.approvalStatus || this.isDateValid(this.qualificationForm.application_recieved_date))
     },
     ...mapActions([
       FETCH_DRILLER_OPTIONS
@@ -191,9 +176,9 @@ export default {
       // We need to transform the bound dates to something that is acceptable to the API without affecting
       // the values to which the form are bound.
       // Make a deep copy, and transform the date fields.
-      const transformed = JSON.parse(JSON.stringify(this.qualificationForm))
-      transformed.status_set.forEach((status) => { status.effective_date = status.effective_date && status.effective_date.length >= 10 ? status.effective_date.substring(0, 10) : status.effective_date })
-      return transformed
+      // TODO: do I have to transform the date fields?
+      return JSON.parse(JSON.stringify(this.qualificationForm))
+      // transformed.status_set.forEach((status) => { status.effective_date = status.effective_date && status.effective_date.length >= 10 ? status.effective_date.substring(0, 10) : status.effective_date })
     },
     ...mapGetters([
       'loading',
@@ -225,65 +210,22 @@ export default {
     },
     approvalDateState () {
       this.$emit('isValid', this.isAllDatesValid())
-      return !this.approvalStatus || this.isDateValid(this.approvalStatus.effective_date)
+      return this.isDateValid(this.qualificationForm.application_outcome_date)
     },
     pendingDateState () {
       this.$emit('isValid', this.isAllDatesValid())
-      return !this.pendingStatus || this.isDateValid(this.pendingStatus.effective_date)
+      return this.isDateValid(this.qualificationForm.application_recieved_date)
     },
     notificationDateState () {
       this.$emit('isValid', this.isAllDatesValid())
-      return !this.approvalStatus || this.isDateValid(this.approvalStatus.notified_date)
+      return this.isDateValid(this.qualificationForm.application_outcome_notification_date)
     },
-    pendingStatus () {
-      // This is the date on which a record became pending.
-      return this.qualificationForm.status_set.find(item => item.status === 'P')
-    },
-    pendingStatusEffectiveDate: {
+    currentStatusCode: {
       get () {
-        return this.pendingStatus ? this.pendingStatus.effective_date : null
+        return this.qualificationForm.current_status ? this.qualificationForm.current_status.code : null
       },
       set (newValue) {
-        if (!this.pendingStatus) {
-          this.pendingStatus = {}
-        }
-        this.pendingStatus.effective_date = newValue
-      }
-    },
-    approvalStatus () {
-      return this.qualificationForm.status_set.find(item => item.status !== 'P')
-    },
-    approvalStatusEffectiveDate: {
-      get () {
-        return this.approvalStatus ? this.approvalStatus.effective_date : null
-      },
-      set (newValue) {
-        if (!this.approvalStatus) {
-          this.approvalStatus = {}
-        }
-        this.approvalStatus.effective_date = newValue
-      }
-    },
-    approvalStatusOutcome: {
-      get () {
-        return this.approvalStatus ? this.approvalStatus.status : null
-      },
-      set (newValue) {
-        if (!this.approvalStatus) {
-          this.approvalStatus = {}
-        }
-        this.approvalStatus.status = newValue
-      }
-    },
-    approvalStatusNotificationDate: {
-      get () {
-        return this.approvalStatus ? this.approvalStatus.notified_date : null
-      },
-      set (newValue) {
-        if (!this.approvalStatus) {
-          this.approvalStatus = {}
-        }
-        this.approvalStatus.notified_date = newValue
+        this.qualificationForm.current_status = {code: newValue}
       }
     }
   },

@@ -391,37 +391,11 @@ export default {
         // classifications, we need to iterate through several arrays.
         this.currentDriller.registrations.forEach((reg) => {
           reg.applications.forEach((app) => {
-            let status
-            let date
-
-            // set date for this application- it will apply to all qualifications/classifications associated
-            // with this application.
-
-            // priority of status codes from lowest to highest
-            const statusPriority = ['P', 'A']
-
-            if (app.status_set && app.status_set.length) {
-              statusPriority.forEach((code) => {
-                const statusLevel = app.status_set.findIndex((item) => {
-                  return item.status === code
-                })
-
-                // check if statusLevel is a valid array index (e.g. not -1)
-                // note: ~(-1) evaluates to 0, but is truthy for valid array indices
-                if (~statusLevel) {
-                  status = app.status_set[statusLevel].description
-                  date = app.status_set[statusLevel].effective_date
-                }
-              })
-            }
-
-            // now iterate through classifications that the person has applied for and push onto an array
-
             classifications.push({
               code: app.subactivity.registries_subactivity_code,
               description: app.subactivity.description,
-              status: status,
-              date: date,
+              status: app.current_status ? app.current_status.description : null,
+              date: app.application_outcome_date,
               registration_guid: reg.register_guid,
               application_guid: app.application_guid
             })

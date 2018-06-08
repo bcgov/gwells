@@ -122,8 +122,8 @@
                   <b-col md="2" class="registry-item pr-0">
                     <span class="registry-label">Date application received:</span>
                   </b-col>
-                  <b-col v-if="applicationReceivedDate" md="2">
-                      {{ applicationReceivedDate }}
+                  <b-col v-if="application && application.application_recieved_date" md="2">
+                      {{ application.application_recieved_date }}
                   </b-col>
                   <b-col v-else>Unknown</b-col>
                 </b-row>
@@ -131,29 +131,32 @@
                   <b-col md="2" class="registry-item">
                     <span class="registry-label">Approval outcome date:</span>
                   </b-col>
-                  <b-col md="2">
-                    {{ approvalOutcomeDate }}
+                  <b-col v-if="application && application.application_outcome_date" md="2">
+                    {{ application.application_outcome_date }}
                   </b-col>
+                  <b-col v-else md="2">Unknown</b-col>
                   <b-col md="2" class="registry-item">
                     <span class="registry-label">Approval outcome:</span>
                   </b-col>
-                  <b-col md="2">
-                    {{ approvalOutcome }}
+                  <b-col v-if="application && application.current_status" md="2">
+                    {{ application.current_status.description }}
                   </b-col>
-                  <b-col v-if="approvalStatus && approvalStatus.status === 'NA'" md="2" class="registry-item">
+                  <b-col v-else md="2">Unknown</b-col>
+                  <b-col v-if="application && application.current_status === 'NA'" md="2" class="registry-item">
                     <span class="registry-label">Reason denied:</span>
                   </b-col>
-                  <b-col v-if="approvalStatus && approvalStatus.status === 'NA'" md="2">
-                    {{ reasonDenied }}
+                  <b-col v-if="application && application.current_status === 'NA'" md="2">
+                    {{ application.reason_denied }}
                   </b-col>
                 </b-row>
                 <b-row>
                   <b-col md="2" class="registry-item">
                     <span class="registry-label">Notification date:</span>
                   </b-col>
-                  <b-col md="2">
-                    {{ notificationDate }}
+                  <b-col v-if="application && application.application_outcome_notification_date" md="2">
+                    {{ application.application_outcome_notification_date }}
                   </b-col>
+                  <b-col v-else md="2">Unknown</b-col>
                 </b-row>
                 <!-- Waiting for decision on how removal of the registry is going to happen:
                 <b-row v-if="registerRemovalDate || registerRemovalReason">
@@ -253,10 +256,13 @@ export default {
               primary_certificate: {
                 acc_cert_guid: application.primary_certificate.acc_cert_guid
               },
-              status_set: application.status_set,
+              current_status: application.current_status,
               qualifications: application.qualifications,
               proof_of_age: application.proof_of_age,
-              reason_denied: application.reason_denied
+              reason_denied: application.reason_denied,
+              application_outcome_date: application.application_outcome_date,
+              application_outcome_notification_date: application.application_outcome_notification_date,
+              application_recieved_date: application.application_recieved_date
             }
           }
         })
@@ -326,36 +332,9 @@ export default {
       }
       return title
     },
-    approvalStatus () {
-      return this.application.status_set.find(item => ['A', 'NA'].includes(item.status))
-    },
-    applicationReceivedDate () {
-      // This is the date on which a record became pending.
-      const pendingStatus = this.application.status_set.find(item => item.status === 'P')
-      return pendingStatus ? pendingStatus.effective_date : null
-    },
-    approvalOutcomeDate () {
-      return this.approvalStatus ? this.approvalStatus.effective_date : null
-    },
-    approvalOutcome () {
-      return this.approvalStatus ? this.approvalStatus.description : null
-    },
-    reasonDenied () {
-      return this.approvalStatus ? this.application.reason_denied : null
-    },
-    notificationDate () {
-      return this.approvalStatus ? this.approvalStatus.notified_date : null
-    },
     proofOfAge () {
       return this.application.proof_of_age ? this.application.proof_of_age.description : null
     },
-    // Waiting for decision on how removal from the registry is going to happen:
-    // registerRemovalDate () {
-    //   return this.registration.register_removal_date
-    // },
-    // registerRemovalReason () {
-    //   return this.registration.register_removal_reason
-    // },
     ...mapGetters([
       'loading',
       'error',
