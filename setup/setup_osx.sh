@@ -113,7 +113,7 @@ done
 [ "$( git config --global --get user.email )" ]&&[ "( git config --global --get user.name)" ] || \
 	git config --global --edit
 #
-git remote -v | grep "bcgov/gwells.git (push)" || \
+git remote -v | grep "bcgov/gwells (push)" || \
 	git remote add upstream https://github.com/bcgov/gwells.git
 
 
