@@ -9,7 +9,7 @@ sonarqube {
     properties {
         //property "sonar.host.url", "https://sonarqube-moe-gwells-tools.pathfinder.gov.bc.ca"
         property "sonar.projectName", "GWells"
-        property "sonar.projectKey", "ca.bc.gov.gwells:bcgov-gwells"
+        property "sonar.projectKey", "org.sonarqube:bcgov-gwells"
         property "sonar.projectBaseDir", "../app/"
         property "sonar.sources", "./gwells,./registries,./frontend"
         property "sonar.lanuage", "py"
