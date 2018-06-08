@@ -301,9 +301,9 @@ fi
 
 # Install requirements with PIP3 and NPM
 #
-cd "${START_DIR}"/..
+cd "${START_DIR}"/../app
 pip3 install -U -r requirements.txt
-cd "${START_DIR}"/../frontend
+cd "${START_DIR}"/../app/frontend
 source /usr/local/opt/nvm/nvm.sh
 nvm install v6.11.3
 nvm alias default 6.11.3
