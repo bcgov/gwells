@@ -359,6 +359,7 @@ class PersonDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
             'registrations__organization',
             'registrations__status',
             'registrations__applications',
+            'registrations__applications__current_status',
             'registrations__applications__primary_certificate',
             'registrations__applications__primary_certificate__cert_auth',
             'registrations__applications__subactivity',
@@ -444,6 +445,7 @@ class RegistrationListView(AuditCreateMixin, ListCreateAPIView):
             'register_removal_reason',) \
         .prefetch_related(
             'applications',
+            'applications__current_status',
             'applications__primary_certificate',
             'applications__primary_certificate__cert_auth',
             'applications__subactivity',
@@ -479,6 +481,7 @@ class RegistrationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
             'register_removal_reason',) \
         .prefetch_related(
             'applications',
+            'applications__current_status',
             'applications__primary_certificate',
             'applications__primary_certificate__cert_auth',
             'applications__subactivity',

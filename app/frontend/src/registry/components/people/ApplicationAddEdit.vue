@@ -182,12 +182,7 @@ export default {
   },
   computed: {
     computedQualificationForm: function () {
-      // We need to transform the bound dates to something that is acceptable to the API without affecting
-      // the values to which the form are bound.
-      // Make a deep copy, and transform the date fields.
-      // TODO: do I have to transform the date fields?
       return JSON.parse(JSON.stringify(this.qualificationForm))
-      // transformed.status_set.forEach((status) => { status.effective_date = status.effective_date && status.effective_date.length >= 10 ? status.effective_date.substring(0, 10) : status.effective_date })
     },
     ...mapGetters([
       'loading',
