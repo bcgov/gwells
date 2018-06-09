@@ -3,7 +3,8 @@ import Vuex from 'vuex'
 import SearchHome from '@/registry/components/search/SearchHome'
 import SearchTable from '@/registry/components/search/SearchTable'
 import APIErrorMessage from '@/common/components/APIErrorMessage'
-import { FETCH_CITY_LIST, FETCH_DRILLER_LIST, LOGIN, LOGOUT } from '@/registry/store/actions.types'
+import fakeDrillerOptions from '../fakeDrillerOptions'
+import { FETCH_CITY_LIST, FETCH_DRILLER_LIST, LOGIN, LOGOUT, FETCH_DRILLER_OPTIONS } from '@/registry/store/actions.types'
 import { SET_DRILLER_LIST } from '@/registry/store/mutations.types'
 
 const localVue = createLocalVue()
@@ -17,6 +18,7 @@ describe('SearchHome.vue', () => {
 
   beforeEach(() => {
     getters = {
+      drillerOptions: jest.fn().mockReturnValue(fakeDrillerOptions),
       drillers: () => {
         return {
           results: [
@@ -79,6 +81,7 @@ describe('SearchHome.vue', () => {
     actions = {
       [FETCH_CITY_LIST]: jest.fn(),
       [FETCH_DRILLER_LIST]: jest.fn(),
+      [FETCH_DRILLER_OPTIONS]: jest.fn(),
       [LOGIN]: jest.fn(),
       [LOGOUT]: jest.fn()
     }
@@ -153,7 +156,7 @@ describe('SearchHome.vue', () => {
       search: '',
       city: [''],
       activity: 'DRILL',
-      status: 'ACTIVE',
+      status: 'A',
       limit: '10',
       ordering: ''
     })

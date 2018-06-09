@@ -109,7 +109,7 @@ class PersonFilter(restfilters.FilterSet):
     # city = restfilters.MultipleChoiceFilter(name="organization__city")
     prov = restfilters.CharFilter(
         name="registrations__organization__province_state")
-    status = restfilters.CharFilter(name="registrations__status")
+    status = restfilters.CharFilter(name="registrations__applications__current_status")
     activity = restfilters.CharFilter(
         name="registrations__registries_activity")
 
@@ -237,7 +237,7 @@ class PersonOptionsView(APIView):
                      ProofOfAgeCode.objects.all().order_by('display_order')))
         result['ApprovalOutcome'] = \
             list(map(lambda item: ApplicationStatusCodeSerializer(item).data,
-                     ApplicationStatusCode.objects.exclude(registries_application_status_code='P')))
+                     ApplicationStatusCode.objects.all()))
         return Response(result)
 
 
@@ -300,22 +300,28 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
             cities = cities.split(',')
             qs = qs.filter(registrations__organization__city__in=cities)
 
-        # Only show active drillers to non-admin users and public
         activity = self.request.query_params.get('activity', None)
+        if activity:
+            qs = qs.filter(registrations__registries_activity__registries_activity_code=activity)
 
         if not self.request.user.groups.filter(name__in=GWELLS_ROLE_GROUPS).exists():
-            if activity:
-                qs = qs.filter(registrations__status='ACTIVE',
-                               registrations__registries_activity__registries_activity_code=activity)
-
-            else:
-                qs = qs.filter(registrations__status='ACTIVE')
+            # User is not logged in
+            # Only show active drillers to non-admin users and public
+            qs = qs.filter(
+                registrations__applications__current_status__registries_application_status_code='A')
+        else:
+            # User is logged in
+            status = self.request.query_params.get('status', None)
+            if status:
+                print('filtering on status code: {}'.format(status))
+                qs = qs.filter(
+                    registrations__applications__current_status__registries_application_status_code=status)
 
         return qs
 
     def list(self, request):
         """ List response using serializer with reduced number of fields """
-        queryset = self.get_queryset()
+        queryset = self.get_queryset()        
         filtered_queryset = self.filter_queryset(queryset)
 
         page = self.paginate_queryset(filtered_queryset)
@@ -324,6 +330,7 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
             return self.get_paginated_response(serializer.data)
 
         serializer = PersonListSerializer(filtered_queryset, many=True)
+        print('doing a list on filtered qs {}'.format(filtered_queryset))
         return Response(serializer.data)
 
 

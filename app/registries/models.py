@@ -347,7 +347,6 @@ class RegistriesRemovalReason(AuditModel):
 
 
 class Register(AuditModel):
-    PENDING = 'P'
 
     register_guid = models.UUIDField(
         primary_key=True,
@@ -365,12 +364,14 @@ class Register(AuditModel):
         db_column='organization_guid',
         null=True, on_delete=models.PROTECT,
         related_name="registrations")
+    # TODO: Remove this column, it's not being used
     status = models.ForeignKey(
         RegistriesStatusCode,
         db_column='registries_status_code',
         on_delete=models.PROTECT,
-        default=PENDING,
-        verbose_name="Register Entry Status")
+        verbose_name="Register Entry Status",
+        blank=True,
+        null=True)
     registration_no = models.CharField(max_length=15, blank=True, null=True)
     registration_date = models.DateField(blank=True, null=True)
     register_removal_reason = models.ForeignKey(
@@ -493,6 +494,7 @@ class RegistriesApplication(AuditModel):
         on_delete=models.PROTECT,
         verbose_name="Certificate")
     primary_certificate_no = models.CharField(max_length=50)
+    # TODO Should probably force this to have a default value of Pending!
     current_status = models.ForeignKey(
         ApplicationStatusCode,
         blank=True,

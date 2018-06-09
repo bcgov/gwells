@@ -33,4 +33,9 @@ class Migration(migrations.Migration):
             name='current_status',
             field=models.ForeignKey(blank=True, db_column='registries_application_status_code', null=True, on_delete=django.db.models.deletion.PROTECT, to='registries.ApplicationStatusCode', verbose_name='Application Status Code Reference'),
         ),
+        migrations.AlterField(
+            model_name='register',
+            name='status',
+            field=models.ForeignKey(blank=True, db_column='registries_status_code', null=True, on_delete=django.db.models.deletion.PROTECT, to='registries.RegistriesStatusCode', verbose_name='Register Entry Status'),
+        ),
     ]
