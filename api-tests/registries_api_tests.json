@@ -1472,6 +1472,82 @@
 							"response": []
 						},
 						{
+							"name": "Driller Search",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "166b3bf2-247f-45ab-b5b1-4f726c9e6ffd",
+										"type": "text/javascript",
+										"exec": [
+											"( function() {",
+											"    pm.test(\"Status code is 200\", function () {",
+											"        pm.response.to.have.status(200);",
+											"    });",
+											"})();",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/drillers/?search=&city=&status=&limit=10&activity=DRILL&ordering=0",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"drillers",
+										""
+									],
+									"query": [
+										{
+											"key": "search",
+											"value": ""
+										},
+										{
+											"key": "city",
+											"value": ""
+										},
+										{
+											"key": "status",
+											"value": ""
+										},
+										{
+											"key": "limit",
+											"value": "10"
+										},
+										{
+											"key": "activity",
+											"value": "DRILL"
+										},
+										{
+											"key": "ordering",
+											"value": "0"
+										}
+									]
+								},
+								"description": "Driller model \"list\" view"
+							},
+							"response": []
+						},
+						{
 							"name": "Driller retrieve (single driller detail)",
 							"event": [
 								{
