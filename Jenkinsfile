@@ -272,8 +272,22 @@ _stage('ZAP Security Scan', context) {
             echo "Build: ${BUILD_ID}"
             checkout scm
             dir('zap') {
-                def retVal = sh returnStatus: true, script: './runzap.sh'
-                publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: true, reportDir: '/zap/wrk', reportFiles: 'index.html', reportName: 'ZAP Full Scan', reportTitles: 'ZAP Full Scan'])
+                def retVal = sh (
+                    script: """
+                        set -eux
+                        ./runzap.sh
+                    """,
+                    returnStatus: true
+                )
+                publishHTML([
+                    allowMissing: false,
+                    alwaysLinkToLastBuild: false,
+                    keepAll: true,
+                    reportDir: '/zap/wrk',
+                    reportFiles: 'index.html',
+                    reportName: 'ZAP Full Scan',
+                    reportTitles: 'ZAP Full Scan'
+                ])
                 echo "Return value is: ${retVal}"
             }
         }
