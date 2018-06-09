@@ -303,7 +303,6 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
         activity = self.request.query_params.get('activity', None)
         if activity:
             qs = qs.filter(registrations__registries_activity__registries_activity_code=activity)
-
         if not self.request.user.groups.filter(name__in=GWELLS_ROLE_GROUPS).exists():
             # User is not logged in
             # Only show active drillers to non-admin users and public
@@ -313,10 +312,8 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
             # User is logged in
             status = self.request.query_params.get('status', None)
             if status:
-                print('filtering on status code: {}'.format(status))
                 qs = qs.filter(
                     registrations__applications__current_status__registries_application_status_code=status)
-
         return qs
 
     def list(self, request):

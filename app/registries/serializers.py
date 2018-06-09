@@ -564,10 +564,9 @@ class PersonListSerializer(AuditModelSerializer):
         """
         Filter for active registrations
         """
-
         registrations = [
             reg for reg in person.registrations.filter(
-                applications__current_status__registries_application_status_code='A')]
+                applications__current_status__registries_application_status_code='A').distinct()]
 
         serializer = RegistrationsListSerializer(
             instance=registrations, many=True)
