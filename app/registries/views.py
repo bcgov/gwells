@@ -39,6 +39,7 @@ from registries.models import (
     ProofOfAgeCode,
     Register,
     RegistriesApplication,
+    RegistriesRemovalReason,
     SubactivityCode,
     WellClassCode)
 from registries.permissions import IsAdminOrReadOnly, GwellsPermissions
@@ -54,6 +55,7 @@ from registries.serializers import (
     PersonAdminSerializer,
     PersonListSerializer,
     RegistrationAdminSerializer,
+    RegistriesRemovalReasonSerializer,
     PersonNoteSerializer,
     SubactivitySerializer,
     WellClassCodeSerializer,
@@ -238,6 +240,9 @@ class PersonOptionsView(APIView):
         result['ApprovalOutcome'] = \
             list(map(lambda item: ApplicationStatusCodeSerializer(item).data,
                      ApplicationStatusCode.objects.all()))
+        result['ReasonRemoved'] = \
+            list(map(lambda item: RegistriesRemovalReasonSerializer(item).data,
+                     RegistriesRemovalReason.objects.all()))
         return Response(result)
 
 

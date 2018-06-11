@@ -23,6 +23,7 @@ from registries.models import (
     Person,
     Register,
     RegistriesApplication,
+    RegistriesRemovalReason,
     RegistriesStatusCode,
     ActivityCode,
     SubactivityCode,
@@ -362,6 +363,18 @@ class ActivitySerializer(serializers.ModelSerializer):
         fields = (
             'registries_activity_code',
             'description',
+        )
+
+
+class RegistriesRemovalReasonSerializer(serializers.ModelSerializer):
+
+    code = serializers.ReadOnlyField(source='registries_removal_reason_code')
+
+    class Meta:
+        model = RegistriesRemovalReason
+        fields = (
+            'code',
+            'description'
         )
 
 

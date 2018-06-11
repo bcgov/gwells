@@ -163,22 +163,15 @@
                   </b-col>
                   <b-col v-else md="2">Unknown</b-col>
                 </b-row>
-                <!-- Waiting for decision on how removal of the registry is going to happen:
-                <b-row v-if="registerRemovalDate || registerRemovalReason">
-                  <b-col class="pt-3"><h6>Removal from register</h6></b-col>
+                <b-row v-if="removalDate || removalReason">
+                  <b-col class="pt-3"><h6>Removal of classification from register</h6></b-col>
                 </b-row>
-                <b-row v-if="registerRemovalDate || registerRemovalReason">
-                  <b-col><span class="registry-label">Register removal date</span></b-col>
-                  <b-col>{{registerRemovalReason}}</b-col>
+                <b-row v-if="removalDate || removalReason">
+                  <b-col><span class="registry-label">Removal date</span></b-col>
+                  <b-col>{{removalDate}}</b-col>
                   <b-col><span class="registry-label">Removal reason</span></b-col>
-                  <b-col>{{registerRemovalDate}}</b-col>
-                </b-row> -->
-                <!--
-                <div class="row">
-                  <div class="col-12 col-sm-4 registry-item">
-                    <span class="registry-label">Register removal date:</span>
-                  </div>
-                </div>-->
+                  <b-col>{{removalReason}}</b-col>
+                </b-row>
                 <!-- <div class="row">
                   <div class="col-12 registry-item">
                     <div class="checkbox form-inline">
@@ -338,6 +331,12 @@ export default {
     },
     proofOfAge () {
       return this.application.proof_of_age ? this.application.proof_of_age.description : null
+    },
+    removalDate () {
+      return this.application ? this.application.removal_date : null
+    },
+    removalReason () {
+      return this.application ? this.application.removal_reason : null
     },
     ...mapGetters([
       'loading',

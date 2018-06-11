@@ -103,15 +103,20 @@
               </b-form-group>
             </b-col>
           </b-row>
-          <b-row>
+          <b-row v-if="showRemoval">
             <b-col>
-              <h5>Removal from register</h5>
+              <h5>Removal of classification from Register</h5>
             </b-col>
           </b-row>
-          <b-row>
+          <b-row v-if="showRemoval">
             <b-col md="4">
-              <b-form-group horizontal :label-cols="4" label="Notification date" class="font-weight-bold"> -->
+              <b-form-group horizontal :label-cols="4" label="Removal date" class="font-weight-bold">
                 <b-form-input type="date" v-model="qualificationForm.removal_date" :state="removalDateState"/>
+              </b-form-group>
+            </b-col>
+            <b-col md="4" v-if="showRemovalReason">
+              <b-form-group horizontal :label-cols="4" label="Removal reason" class="font-weight-bold">
+                <b-form-select :options="formOptions.removalReasons" v-model="qualificationForm.removal_reason.code"/>
               </b-form-group>
             </b-col>
           </b-row>
@@ -166,6 +171,9 @@ export default {
         reason_denied: null,
         current_status: {
           code: 'P' // We default to Pending approval
+        },
+        removal_reason: {
+          code: null
         }
       }
       // It is important that we preserve the reference to the input variable, as the parent
@@ -176,6 +184,9 @@ export default {
         // In very exceptional cases, a current status can be null - this is problematic in terms of
         // data binding, so we attach a default value here.
         result.current_status = defaultCopy.current_status
+      }
+      if (result.removal_reason == null) {
+        result.removal_reason = defaultCopy.removal_reason
       }
       return result
     },
@@ -207,7 +218,8 @@ export default {
         classifications: [],
         qualifications: [],
         proofOfAge: [{value: null, text: 'Please select an option'}],
-        approvalOutcome: [{value: 'P', text: 'Please select an option'}]
+        approvalOutcome: [{value: 'P', text: 'Please select an option'}],
+        removalReasons: [{value: null, text: 'Please select an option'}]
       }
       if (this.drillerOptions) {
         // If driller options have loaded, prepare the form options.
@@ -218,6 +230,7 @@ export default {
           result.qualifications = this.drillerOptions[this.activity].WellClassCode.map((item) => { return {'text': item.description, 'value': item.registries_well_class_code} })
           result.issuer = result.issuer.concat(this.drillerOptions[this.activity].AccreditedCertificateCode.map((item) => { return {'text': item.name + ' (' + item.cert_auth + ')', 'value': item.acc_cert_guid} }))
           result.approvalOutcome = result.approvalOutcome.concat(this.drillerOptions.ApprovalOutcome.map((item) => { return {'text': item.description, 'value': item.code} }))
+          result.removalReasons = result.removalReasons.concat(this.drillerOptions.ReasonRemoved.map((item) => { return {'text': item.description, 'value': item.code} }))
         }
       }
       return result
@@ -241,18 +254,21 @@ export default {
       this.$emit('isValid', this.isAllDatesValid())
       return this.isDateValid(this.qualificationForm.removal_date)
     },
-    thing () {
-      return this.qualificationForm.current_status
-    },
     showApprovalOutcome () {
-      return this.qualificationForm.application_outcome_date
+      return !!this.qualificationForm.application_outcome_date && !!this.qualificationForm.application_recieved_date
     },
     showReasonDenied () {
       return !!this.qualificationForm.reason_denied ||
         (!!this.qualificationForm.application_outcome_date && this.qualificationForm.current_status.code === 'NA')
     },
     showNotificationDate () {
-      return !!this.qualificationForm.application_outcome_notification_date || (this.qualificationForm.application_outcome_date && this.qualificationForm.current_status.code !== 'P')
+      return !!this.qualificationForm.application_outcome_notification_date || (!!this.qualificationForm.application_outcome_date && this.qualificationForm.current_status.code !== 'P')
+    },
+    showRemoval () {
+      return !!this.qualificationForm.application_outcome_notification_date || !!this.qualificationForm.removal_date
+    },
+    showRemovalReason () {
+      return !!this.qualificationForm.removal_date || !!this.qualificationForm.removal_reason.code
     }
   },
   created () {
