@@ -74,14 +74,14 @@
           </b-row>
           <b-row>
             <b-col md="4">
-              <b-form-group horizontal :label-cols="4" label="Date application received (yyyy-mm-dd)" class="font-weight-bold" invalid-feedback="Invalid date format">
+              <b-form-group horizontal :label-cols="4" description="format: yyy-mm-dd" label="Date application received" class="font-weight-bold" invalid-feedback="Invalid date format">
                 <b-form-input type="date" v-model="qualificationForm.application_recieved_date" :state="pendingDateState"/>
               </b-form-group>
             </b-col>
           </b-row>
           <b-row>
             <b-col md="4" v-if="qualificationForm.application_recieved_date">
-              <b-form-group horizontal :label-cols="4" label="Approval date outcome (yyyy-mm-dd)" class="font-weight-bold" invalid-feedback="Invalid date format">
+              <b-form-group horizontal :label-cols="4" description="format: yyyy-mm-dd" label="Approval date outcome" class="font-weight-bold" invalid-feedback="Invalid date format">
                 <b-form-input type="date" v-model="qualificationForm.application_outcome_date" :state="approvalDateState"/>
               </b-form-group>
             </b-col>
@@ -98,7 +98,7 @@
           </b-row>
           <b-row>
             <b-col md="4" v-if="showNotificationDate">
-              <b-form-group horizontal :label-cols="4" label="Notification date" class="font-weight-bold">
+              <b-form-group horizontal :label-cols="4" description="format: yyyy-mm-dd" label="Notification date" class="font-weight-bold">
                 <b-form-input type="date" v-model="qualificationForm.application_outcome_notification_date" :state="notificationDateState"/>
               </b-form-group>
             </b-col>
@@ -141,7 +141,7 @@ export default {
   },
   watch: {
     // Watching the entire object is expensive, but we need some way of notifying the parent.
-    computedQualificationForm: {
+    qualificationForm: {
       handler: function (val, oldVal) {
         this.$emit('input', val)
       },
@@ -160,7 +160,7 @@ export default {
         subactivity: {
           registries_subactivity_code: null
         },
-        primary_certificate_no: null,
+        primary_certificate_no: '',
         primary_certificate: {
           acc_cert_guid: null
         },
@@ -168,7 +168,7 @@ export default {
           code: null
         },
         qualifications: [],
-        reason_denied: null,
+        reason_denied: '',
         current_status: {
           code: 'P' // We default to Pending approval
         },
@@ -205,9 +205,6 @@ export default {
     ])
   },
   computed: {
-    computedQualificationForm: function () {
-      return JSON.parse(JSON.stringify(this.qualificationForm))
-    },
     ...mapGetters([
       'loading',
       'drillerOptions'
@@ -223,20 +220,20 @@ export default {
       }
       if (this.drillerOptions) {
         // If driller options have loaded, prepare the form options.
-        result.proofOfAge = result.proofOfAge.concat(this.drillerOptions.ProofOfAgeCode.map((item) => { return {'text': item.description, 'value': item.code} }))
+        result.proofOfAge = result.proofOfAge.concat(this.drillerOptions.proof_of_age_codes.map((item) => { return {'text': item.description, 'value': item.code} }))
         if (this.activity in this.drillerOptions) {
           // Different activities have different options.
-          result.classifications = this.drillerOptions[this.activity].SubactivityCode.map((item) => { return {'text': item.description, 'value': item.registries_subactivity_code} })
-          result.qualifications = this.drillerOptions[this.activity].WellClassCode.map((item) => { return {'text': item.description, 'value': item.registries_well_class_code} })
-          result.issuer = result.issuer.concat(this.drillerOptions[this.activity].AccreditedCertificateCode.map((item) => { return {'text': item.name + ' (' + item.cert_auth + ')', 'value': item.acc_cert_guid} }))
-          result.approvalOutcome = result.approvalOutcome.concat(this.drillerOptions.ApprovalOutcome.map((item) => { return {'text': item.description, 'value': item.code} }))
-          result.removalReasons = result.removalReasons.concat(this.drillerOptions.ReasonRemoved.map((item) => { return {'text': item.description, 'value': item.code} }))
+          result.classifications = this.drillerOptions[this.activity].subactivity_codes.map((item) => { return {'text': item.description, 'value': item.registries_subactivity_code} })
+          result.qualifications = this.drillerOptions[this.activity].well_class_codes.map((item) => { return {'text': item.description, 'value': item.registries_well_class_code} })
+          result.issuer = result.issuer.concat(this.drillerOptions[this.activity].accredited_certificate_codes.map((item) => { return {'text': item.name + ' (' + item.cert_auth + ')', 'value': item.acc_cert_guid} }))
+          result.approvalOutcome = result.approvalOutcome.concat(this.drillerOptions.approval_outcome_codes.map((item) => { return {'text': item.description, 'value': item.code} }))
+          result.removalReasons = result.removalReasons.concat(this.drillerOptions.reason_removed_codes.map((item) => { return {'text': item.description, 'value': item.code} }))
         }
       }
       return result
     },
     subactivityMap () {
-      return this.activity in this.drillerOptions ? this.drillerOptions[this.activity].SubactivityCode : []
+      return this.activity in this.drillerOptions ? this.drillerOptions[this.activity].subactivity_codes : []
     },
     approvalDateState () {
       this.$emit('isValid', this.isAllDatesValid())

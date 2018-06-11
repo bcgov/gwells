@@ -273,7 +273,6 @@ export default {
     },
     saveApplication () {
       if (this.formValid) {
-        console.log(JSON.parse(JSON.stringify(this.applicationFormValue)))
         this.applicationSaving = true
         const copy = Object.assign({}, this.applicationFormValue)
         delete copy['qualifications'] // This section is read-only. No point pushing it to server.
@@ -283,7 +282,8 @@ export default {
           this.applicationReset()
         }).catch((error) => {
           this.applicationSaving = false
-          this.$store.commit(SET_ERROR, error.response)
+          this.$store.commit(SET_ERROR, 'Error saving application')
+          console.error(error)
         })
       }
     },
@@ -300,7 +300,7 @@ export default {
     },
     qualificationOptions () {
       if (this.drillerOptions && this.activity in this.drillerOptions) {
-        return this.drillerOptions[this.activity].WellClassCode.map((item) => { return {'text': item.description, 'value': item.registries_well_class_code} })
+        return this.drillerOptions[this.activity].well_class_codes.map((item) => { return {'text': item.description, 'value': item.registries_well_class_code} })
       }
       return []
     },

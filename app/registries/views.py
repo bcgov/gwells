@@ -24,9 +24,9 @@ from rest_framework.permissions import DjangoModelPermissionsOrAnonReadOnly, All
 from rest_framework.response import Response
 from rest_framework.mixins import CreateModelMixin, UpdateModelMixin
 from rest_framework.views import APIView
-
 from drf_multiple_model.views import ObjectMultipleModelAPIView
 from gwells.roles import GWELLS_ROLE_GROUPS
+from gwells.models.ProvinceStateCode import ProvinceStateCode
 from registries.models import (
     AccreditedCertificateCode,
     ActivityCode,
@@ -57,6 +57,7 @@ from registries.serializers import (
     RegistrationAdminSerializer,
     RegistriesRemovalReasonSerializer,
     PersonNoteSerializer,
+    ProvinceStateCodeSerializer,
     SubactivitySerializer,
     WellClassCodeSerializer,
     AccreditedCertificateCodeSerializer,
@@ -224,25 +225,29 @@ class PersonOptionsView(APIView):
                 .order_by('name')
 
             result[activity.registries_activity_code] = {
-                'WellClassCode':
+                'well_class_codes':
                     list(map(lambda item: WellClassCodeSerializer(
                         item).data, well_class_query)),
-                'SubactivityCode':
+                'subactivity_codes':
                     list(map(lambda item: SubactivitySerializer(
                         item).data, sub_activity_query)),
-                'AccreditedCertificateCode':
+                'accredited_certificate_codes':
                     list(map(lambda item: AccreditedCertificateCodeSerializer(
                         item).data, cert_code_query))
             }
-        result['ProofOfAgeCode'] = \
+        result['proof_of_age_codes'] = \
             list(map(lambda item: ProofOfAgeCodeSerializer(item).data,
                      ProofOfAgeCode.objects.all().order_by('display_order')))
-        result['ApprovalOutcome'] = \
+        result['approval_outcome_code'] = \
             list(map(lambda item: ApplicationStatusCodeSerializer(item).data,
                      ApplicationStatusCode.objects.all()))
-        result['ReasonRemoved'] = \
+        result['reason_removed_codes'] = \
             list(map(lambda item: RegistriesRemovalReasonSerializer(item).data,
                      RegistriesRemovalReason.objects.all()))
+        result['province_state_codes'] = \
+            list(map(lambda item: ProvinceStateCodeSerializer(item).data,
+                     ProvinceStateCode.objects.all().order_by('display_order')))
+
         return Response(result)
 
 
@@ -312,13 +317,13 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
             # User is not logged in
             # Only show active drillers to non-admin users and public
             qs = qs.filter(
-                registrations__applications__current_status__registries_application_status_code='A')
+                registrations__applications__current_status__code='A')
         else:
             # User is logged in
             status = self.request.query_params.get('status', None)
             if status:
                 qs = qs.filter(
-                    registrations__applications__current_status__registries_application_status_code=status)
+                    registrations__applications__current_status__code=status)
         return qs
 
     def list(self, request):
@@ -332,7 +337,6 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
             return self.get_paginated_response(serializer.data)
 
         serializer = PersonListSerializer(filtered_queryset, many=True)
-        print('doing a list on filtered qs {}'.format(filtered_queryset))
         return Response(serializer.data)
 
 
