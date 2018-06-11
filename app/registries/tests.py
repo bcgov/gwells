@@ -131,12 +131,12 @@ class RegistriesApplicationTestBase(AuthenticatedAPITestCase):
             display_order=1)
         # Create application status
         self.application_status_active = ApplicationStatusCode.objects.create(
-            registries_application_status_code='A',
+            code='A',
             description='Active',
             display_order=1
         )
         self.application_status_pending = ApplicationStatusCode.objects.create(
-            registries_application_status_code='P',
+            code='P',
             description='Pending',
             display_order=1
         )
@@ -163,7 +163,7 @@ class RegistriesApplicationNoStatusTest(RegistriesApplicationTestBase):
         updated_application = RegistriesApplication.objects.get(
             application_guid=self.app.application_guid)
         self.assertEqual(
-            updated_application.current_status.registries_application_status_code, 'A')
+            updated_application.current_status.code, 'A')
 
 
 class RegistriesApplicationWithStatusActiveTest(RegistriesApplicationTestBase):
@@ -186,7 +186,7 @@ class RegistriesApplicationWithStatusActiveTest(RegistriesApplicationTestBase):
         updated_application = RegistriesApplication.objects.get(
             application_guid=self.app.application_guid)
         self.assertEqual(
-            updated_application.current_status.registries_application_status_code, 'A')
+            updated_application.current_status.code, 'A')
 
 
 class RegistriesApplicationStatusSubactivityTest(RegistriesApplicationTestBase):
@@ -637,11 +637,11 @@ class APIFilteringPaginationTests(APITestCase):
             province_state_code='BC',
             display_order=1)
         self.status_active = ApplicationStatusCode.objects.create(
-            registries_application_status_code="A",
+            code="A",
             description="active",
             display_order="1")
         self.status_inactive = ApplicationStatusCode.objects.create(
-            registries_application_status_code="NA",
+            code="NA",
             description="inactive",
             display_order="2")
         self.activity_drill = ActivityCode.objects.create(

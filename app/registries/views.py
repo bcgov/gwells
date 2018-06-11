@@ -307,13 +307,13 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
             # User is not logged in
             # Only show active drillers to non-admin users and public
             qs = qs.filter(
-                registrations__applications__current_status__registries_application_status_code='A')
+                registrations__applications__current_status__code='A')
         else:
             # User is logged in
             status = self.request.query_params.get('status', None)
             if status:
                 qs = qs.filter(
-                    registrations__applications__current_status__registries_application_status_code=status)
+                    registrations__applications__current_status__code=status)
         return qs
 
     def list(self, request):
@@ -327,7 +327,6 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
             return self.get_paginated_response(serializer.data)
 
         serializer = PersonListSerializer(filtered_queryset, many=True)
-        print('doing a list on filtered qs {}'.format(filtered_queryset))
         return Response(serializer.data)
 
 

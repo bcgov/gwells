@@ -407,8 +407,8 @@ class ApplicationStatusCode(AuditModel):
     """
     Status of Applications for the Well Driller and Pump Installer Registries
     """
-    registries_application_status_code = models.CharField(
-        primary_key=True, max_length=10, editable=False)
+    code = models.CharField(
+        primary_key=True, max_length=10, editable=False, db_column='registries_application_status_code')
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
     effective_date = models.DateField(default=datetime.date.today)
@@ -429,8 +429,8 @@ class ProofOfAgeCode(AuditModel):
     """
     List of documents that can be used to indentify (the age) of an application
     """
-    registries_proof_of_age_code = models.CharField(
-        primary_key=True, max_length=10, editable=False)
+    code = models.CharField(
+        primary_key=True, max_length=10, editable=False, db_column='registries_proof_of_age_code')
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
     effective_date = models.DateField(default=datetime.date.today)
@@ -442,7 +442,7 @@ class ProofOfAgeCode(AuditModel):
         verbose_name_plural = 'ProofOfAgeCodes'
 
     def __str__(self):
-        return self.registries_proof_of_age_code
+        return self.code
 
 
 class RegistriesApplication(AuditModel):

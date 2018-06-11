@@ -74,14 +74,14 @@
           </b-row>
           <b-row>
             <b-col md="4">
-              <b-form-group horizontal :label-cols="4" label="Date application received (yyyy-mm-dd)" class="font-weight-bold" invalid-feedback="Invalid date format">
+              <b-form-group horizontal :label-cols="4" description="format: yyy-mm-dd" label="Date application received" class="font-weight-bold" invalid-feedback="Invalid date format">
                 <b-form-input type="date" v-model="qualificationForm.application_recieved_date" :state="pendingDateState"/>
               </b-form-group>
             </b-col>
           </b-row>
           <b-row>
             <b-col md="4" v-if="qualificationForm.application_recieved_date">
-              <b-form-group horizontal :label-cols="4" label="Approval date outcome (yyyy-mm-dd)" class="font-weight-bold" invalid-feedback="Invalid date format">
+              <b-form-group horizontal :label-cols="4" description="format: yyyy-mm-dd" label="Approval date outcome" class="font-weight-bold" invalid-feedback="Invalid date format">
                 <b-form-input type="date" v-model="qualificationForm.application_outcome_date" :state="approvalDateState"/>
               </b-form-group>
             </b-col>
@@ -98,7 +98,7 @@
           </b-row>
           <b-row>
             <b-col md="4" v-if="showNotificationDate">
-              <b-form-group horizontal :label-cols="4" label="Notification date" class="font-weight-bold">
+              <b-form-group horizontal :label-cols="4" description="format: yyyy-mm-dd" label="Notification date" class="font-weight-bold">
                 <b-form-input type="date" v-model="qualificationForm.application_outcome_notification_date" :state="notificationDateState"/>
               </b-form-group>
             </b-col>
@@ -124,7 +124,7 @@ export default {
   },
   watch: {
     // Watching the entire object is expensive, but we need some way of notifying the parent.
-    computedQualificationForm: {
+    qualificationForm: {
       handler: function (val, oldVal) {
         this.$emit('input', val)
       },
@@ -143,7 +143,7 @@ export default {
         subactivity: {
           registries_subactivity_code: null
         },
-        primary_certificate_no: null,
+        primary_certificate_no: '',
         primary_certificate: {
           acc_cert_guid: null
         },
@@ -151,7 +151,7 @@ export default {
           code: null
         },
         qualifications: [],
-        reason_denied: null,
+        reason_denied: '',
         current_status: {
           code: 'P' // We default to Pending approval
         }
@@ -181,9 +181,6 @@ export default {
     ])
   },
   computed: {
-    computedQualificationForm: function () {
-      return JSON.parse(JSON.stringify(this.qualificationForm))
-    },
     ...mapGetters([
       'loading',
       'drillerOptions'

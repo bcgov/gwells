@@ -280,7 +280,6 @@ export default {
     },
     saveApplication () {
       if (this.formValid) {
-        console.log(JSON.parse(JSON.stringify(this.applicationFormValue)))
         this.applicationSaving = true
         const copy = Object.assign({}, this.applicationFormValue)
         delete copy['qualifications'] // This section is read-only. No point pushing it to server.
@@ -290,7 +289,8 @@ export default {
           this.applicationReset()
         }).catch((error) => {
           this.applicationSaving = false
-          this.$store.commit(SET_ERROR, error.response)
+          this.$store.commit(SET_ERROR, 'Error saving application')
+          console.error(error)
         })
       }
     },
