@@ -120,7 +120,8 @@
                         class="mb-3"
                         v-on:close="closeApplication()"
                         v-model="application"
-                        :activity="registration.registries_activity">
+                        :activity="registration.registries_activity"
+                        mode="edit">
                         <button type="submit" class="btn btn-primary" variant="primary">Save</button>
                         <button type="button" class="btn btn-light" @click="closeApplication()">Cancel</button>
                     </application-add>

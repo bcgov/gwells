@@ -79,7 +79,7 @@
               </b-form-group>
             </b-col>
           </b-row>
-          <b-row>
+          <b-row v-if="isEditMode">
             <b-col md="4" v-if="qualificationForm.application_recieved_date">
               <b-form-group horizontal :label-cols="4" description="format: yyyy-mm-dd" label="Approval date outcome" class="font-weight-bold" invalid-feedback="Invalid date format">
                 <b-form-input type="date" v-model="qualificationForm.application_outcome_date" :state="approvalDateState"/>
@@ -96,19 +96,19 @@
               </b-form-group>
             </b-col>
           </b-row>
-          <b-row>
+          <b-row v-if="isEditMode">
             <b-col md="4" v-if="showNotificationDate">
               <b-form-group horizontal :label-cols="4" description="format: yyyy-mm-dd" label="Notification date" class="font-weight-bold">
                 <b-form-input type="date" v-model="qualificationForm.application_outcome_notification_date" :state="notificationDateState"/>
               </b-form-group>
             </b-col>
           </b-row>
-          <b-row v-if="showRemoval">
+          <b-row v-if="showRemoval && isEditMode">
             <b-col>
               <h5>Removal of classification from Register</h5>
             </b-col>
           </b-row>
-          <b-row v-if="showRemoval">
+          <b-row v-if="showRemoval && isEditMode">
             <b-col md="4">
               <b-form-group horizontal :label-cols="4" label="Removal date" class="font-weight-bold">
                 <b-form-input type="date" v-model="qualificationForm.removal_date" :state="removalDateState"/>
@@ -133,7 +133,23 @@ import { mapGetters, mapActions } from 'vuex'
 import moment from 'moment'
 import { FETCH_DRILLER_OPTIONS } from '@/registry/store/actions.types'
 export default {
-  props: ['value', 'activity'],
+  props: {
+    value: Object,
+    activity: {
+      required: true,
+      type: String,
+      validator: (val) => {
+        return ['DRILL', 'PUMP'].includes(val)
+      }
+    },
+    mode: {
+      required: true,
+      type: String,
+      validator: (val) => {
+        return ['edit', 'add'].includes(val)
+      }
+    }
+  },
   data () {
     return {
       qualificationForm: this.copyFormData(this.value)
@@ -266,6 +282,9 @@ export default {
     },
     showRemovalReason () {
       return !!this.qualificationForm.removal_date || !!this.qualificationForm.removal_reason.code
+    },
+    isEditMode () {
+      return this.mode === 'edit'
     }
   },
   created () {

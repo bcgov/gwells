@@ -64,7 +64,7 @@ class ProofOfAgeCodeSerializer(serializers.ModelSerializer):
         )
 
     def to_internal_value(self, data):
-        if 'code' in data:
+        if 'code' in data and data['code'] is not None:
             return ProofOfAgeCode.objects.get(code=data['code'])
         return super().to_internal_value(data)
 
@@ -153,7 +153,7 @@ class SubactivitySerializer(serializers.ModelSerializer):
         )
 
     def to_internal_value(self, data):
-        if 'registries_subactivity_code' in data:
+        if 'registries_subactivity_code' in data and data['registries_subactivity_code'] is not None:
             return SubactivityCode.objects.get(
                 registries_subactivity_code=data['registries_subactivity_code'])
         return super().to_internal_value(data)
@@ -169,7 +169,7 @@ class ApplicationStatusCodeSerializer(serializers.ModelSerializer):
         )
 
     def to_internal_value(self, data):
-        if 'code' in data:
+        if 'code' in data and data['code'] is not None:
             return ApplicationStatusCode.objects.get(code=data['code'])
         return super().to_internal_value(self)
 
@@ -373,7 +373,7 @@ class RegistriesRemovalReasonSerializer(serializers.ModelSerializer):
         )
 
     def to_internal_value(self, data):
-        if 'code' in data:
+        if 'code' in data and data['code'] is not None:
             return RegistriesRemovalReason.objects.get(code=data['code'])
         return super().to_internal_value(data)
 
@@ -392,7 +392,7 @@ class AccreditedCertificateCodeSerializer(serializers.ModelSerializer):
         )
 
     def to_internal_value(self, data):
-        if 'acc_cert_guid' in data:
+        if 'acc_cert_guid' in data and data['acc_cert_guid'] is not None:
             return AccreditedCertificateCode.objects.get(acc_cert_guid=data['acc_cert_guid'])
         return super().to_internal_value(data)
 
