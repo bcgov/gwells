@@ -105,7 +105,7 @@ Map context = [
   stages:[
     'Build': true,
     'Unit Test': true,
-    'Code Quality': false,
+    'Code Quality': true,
     'Readiness - DEV': true,
     'Deploy - DEV': true,
     'Load Fixtures - DEV': true,
