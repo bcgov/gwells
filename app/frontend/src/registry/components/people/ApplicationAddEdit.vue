@@ -103,6 +103,18 @@
               </b-form-group>
             </b-col>
           </b-row>
+          <b-row>
+            <b-col>
+              <h5>Removal from register</h5>
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col md="4">
+              <b-form-group horizontal :label-cols="4" label="Notification date" class="font-weight-bold"> -->
+                <b-form-input type="date" v-model="qualificationForm.removal_date" :state="removalDateState"/>
+              </b-form-group>
+            </b-col>
+          </b-row>
           <!-- slot for child elements to be added by parent component -->
           <slot></slot>
         </p>
@@ -174,7 +186,8 @@ export default {
     isAllDatesValid () {
       return (!this.approvalStatus || this.isDateValid(this.qualificationForm.application_outcome_date)) &&
         (!this.pendingStatus || this.isDateValid(this.qualificationForm.application_outcome_notification_date)) &&
-        (!this.approvalStatus || this.isDateValid(this.qualificationForm.application_recieved_date))
+        (!this.approvalStatus || this.isDateValid(this.qualificationForm.application_recieved_date)) &&
+        this.isDateValid(this.qualificationForm.removal_date)
     },
     ...mapActions([
       FETCH_DRILLER_OPTIONS
@@ -223,6 +236,10 @@ export default {
     notificationDateState () {
       this.$emit('isValid', this.isAllDatesValid())
       return this.isDateValid(this.qualificationForm.application_outcome_notification_date)
+    },
+    removalDateState () {
+      this.$emit('isValid', this.isAllDatesValid())
+      return this.isDateValid(this.qualificationForm.removal_date)
     },
     thing () {
       return this.qualificationForm.current_status

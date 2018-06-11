@@ -326,6 +326,7 @@ class RegistriesStatusCode(AuditModel):
         return self.description
 
 
+# TODO: Remove this table
 class RegistriesRemovalReason(AuditModel):
     """
     Possible Reasons for Removal from either of the Registers
@@ -374,6 +375,7 @@ class Register(AuditModel):
         null=True)
     registration_no = models.CharField(max_length=15, blank=True, null=True)
     registration_date = models.DateField(blank=True, null=True)
+    # TODO: Remove this column
     register_removal_reason = models.ForeignKey(
         RegistriesRemovalReason,
         db_column='registries_removal_reason_code',
@@ -381,6 +383,7 @@ class Register(AuditModel):
         blank=True,
         null=True,
         verbose_name="Removal Reason")
+    # TODO: Remove this column.
     register_removal_date = models.DateField(
         blank=True,
         null=True,
@@ -508,6 +511,17 @@ class RegistriesApplication(AuditModel):
         blank=True, null=True)
     application_outcome_notification_date = models.DateField(
         blank=True, null=True)
+    # The "removal_date" refers to the date on which a certification is "removed" from the register.
+    # Removing a certificication may result in a person being removed from the public register as a whole,
+    # only if there are no other Approved certifications.
+    removal_date = models.DateField(
+        blank=True, null=True
+    )
+    removal_reason = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        verbose_name='Free form text explaining reason for removal.')
 
     class Meta:
         db_table = 'registries_application'
