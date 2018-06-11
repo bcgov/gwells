@@ -14,7 +14,8 @@ describe('OrganizationEdit.vue', () => {
 
   beforeEach(() => {
     getters = {
-      error: () => null
+      error: () => null,
+      provinceStateOptions: () => ['BC', 'AB']
     }
 
     store = new Vuex.Store({ getters, actions, mutations })

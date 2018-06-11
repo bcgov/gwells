@@ -51,7 +51,7 @@
                 label="Province/State:"
                 label-for="provInput">
                 <b-form-select
-                  :options="provOptions"
+                  :options="provinceStateOptions"
                   v-model="orgForm.province_state"
                   :state="validation.province_state"
                   required>
@@ -174,6 +174,7 @@
 import ApiService from '@/common/services/ApiService.js'
 import { mapGetters } from 'vuex'
 import inputFormatMixin from '@/common/inputFormatMixin.js'
+import { FETCH_DRILLER_OPTIONS } from '@/registry/store/actions.types'
 
 export default {
   name: 'OrganizationAdd',
@@ -191,7 +192,6 @@ export default {
         fax_tel: '',
         website_url: ''
       },
-      provOptions: ['BC', 'AB', 'ON', 'SK', 'YT', 'WA'],
       orgSubmitLoading: false,
       orgSubmitError: null,
       fieldErrors: {
@@ -208,7 +208,7 @@ export default {
         email: (this.fieldErrors.email && this.fieldErrors.email.length) ? false : null
       }
     },
-    ...mapGetters(['error'])
+    ...mapGetters(['error', 'provinceStateOptions'])
   },
   methods: {
     onFormSubmit () {
@@ -263,6 +263,7 @@ export default {
   },
   created () {
     this.resetFieldErrors()
+    this.$store.dispatch(FETCH_DRILLER_OPTIONS)
   }
 }
 </script>
