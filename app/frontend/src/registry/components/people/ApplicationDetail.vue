@@ -167,10 +167,10 @@
                   <b-col class="pt-3"><h6>Removal of classification from register</h6></b-col>
                 </b-row>
                 <b-row v-if="removalDate || removalReason">
-                  <b-col><span class="registry-label">Removal date</span></b-col>
-                  <b-col>{{removalDate}}</b-col>
-                  <b-col><span class="registry-label">Removal reason</span></b-col>
-                  <b-col>{{removalReason}}</b-col>
+                  <b-col md="2"><span class="registry-label">Removal date:</span></b-col>
+                  <b-col md="2">{{removalDate}}</b-col>
+                  <b-col md="2"><span class="registry-label">Removal reason:</span></b-col>
+                  <b-col>{{removalReason.description}}</b-col>
                 </b-row>
                 <!-- <div class="row">
                   <div class="col-12 registry-item">

@@ -1,6 +1,8 @@
 import { shallowMount, createLocalVue } from '@vue/test-utils'
 import Vuex from 'vuex'
 import OrganizationAdd from '@/registry/components/people/OrganizationAdd.vue'
+import { FETCH_DRILLER_OPTIONS } from '@/registry/store/actions.types'
+import fakeOptions from '../fakeDrillerOptions'
 
 const localVue = createLocalVue()
 localVue.use(Vuex)
@@ -9,12 +11,15 @@ describe('OrganizationAdd.vue', () => {
   let store
   let getters
   let mutations
-  let actions
+  let actions = {
+    [FETCH_DRILLER_OPTIONS]: jest.fn()
+  }
 
   beforeEach(() => {
     getters = {
       error: () => null,
-      provinceStateOptions: () => ['BC', 'AB']
+      provinceStateOptions: () => ['BC', 'AB'],
+      drillerOptions: jest.fn().mockReturnValue(fakeOptions)
     }
 
     store = new Vuex.Store({ getters, actions, mutations })

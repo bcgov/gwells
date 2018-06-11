@@ -238,7 +238,7 @@ class PersonOptionsView(APIView):
         result['proof_of_age_codes'] = \
             list(map(lambda item: ProofOfAgeCodeSerializer(item).data,
                      ProofOfAgeCode.objects.all().order_by('display_order')))
-        result['approval_outcome_code'] = \
+        result['approval_outcome_codes'] = \
             list(map(lambda item: ApplicationStatusCodeSerializer(item).data,
                      ApplicationStatusCode.objects.all()))
         result['reason_removed_codes'] = \
