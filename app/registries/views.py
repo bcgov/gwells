@@ -24,9 +24,9 @@ from rest_framework.permissions import DjangoModelPermissionsOrAnonReadOnly, All
 from rest_framework.response import Response
 from rest_framework.mixins import CreateModelMixin, UpdateModelMixin
 from rest_framework.views import APIView
-
 from drf_multiple_model.views import ObjectMultipleModelAPIView
 from gwells.roles import GWELLS_ROLE_GROUPS
+from gwells.models.ProvinceStateCode import ProvinceStateCode
 from registries.models import (
     AccreditedCertificateCode,
     ActivityCode,
@@ -53,6 +53,7 @@ from registries.serializers import (
     PersonListSerializer,
     RegistrationAdminSerializer,
     PersonNoteSerializer,
+    ProvinceStateCodeSerializer,
     SubactivitySerializer,
     WellClassCodeSerializer,
     AccreditedCertificateCodeSerializer,
@@ -232,6 +233,11 @@ class PersonOptionsView(APIView):
         result['ProofOfAgeCode'] = \
             list(map(lambda item: ProofOfAgeCodeSerializer(item).data,
                      ProofOfAgeCode.objects.all().order_by('display_order')))
+
+        result['province_state_codes'] = \
+            list(map(lambda item: ProvinceStateCodeSerializer(item).data,
+                     ProvinceStateCode.objects.all().order_by('display_order')))
+
         return Response(result)
 
 

@@ -250,6 +250,15 @@ export const store = new Vuex.Store({
        * last searched activity, exposed to components as "activity"
        */
       return state.lastSearchedActivity
+    },
+    provinceStateOptions (state) {
+      const options = []
+      if (state.drillerOptions && state.drillerOptions.province_state_codes) {
+        state.drillerOptions.province_state_codes.forEach((item) => {
+          options.push(item.province_state_code)
+        })
+      }
+      return options
     }
   }
 })
