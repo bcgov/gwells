@@ -426,7 +426,7 @@ export default {
 
       // remove null & empty string values, and the guid (not needed in data object)
       Object.keys(this.companyForm).forEach((key) => {
-        if (this.companyForm[key] && this.companyForm[key] !== '' && key !== 'org_guid') {
+        if (key !== 'org_guid') {
           data[key] = this.companyForm[key]
         }
       })
