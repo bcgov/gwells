@@ -58,7 +58,7 @@ urlpatterns = [
         never_cache(views.OrganizationDetailView.as_view()),
         name='organization-detail'),
     url(r'^api/v1/organizations/$',
-        views.OrganizationListView.as_view(),
+        never_cache(views.OrganizationListView.as_view()),
         name='organization-list'),
 
     # Person note endpoints
