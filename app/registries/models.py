@@ -14,8 +14,11 @@
 import uuid
 import datetime
 import logging
+import reversion
 from django.db import models
 from django.contrib.auth import get_user_model
+from django.contrib.contenttypes.fields import GenericRelation
+from reversion.models import Version
 from gwells.models import AuditModel, ProvinceStateCode
 
 User = get_user_model()
@@ -118,6 +121,7 @@ class AccreditedCertificateCode(AuditModel):
         return '%s %s %s' % (self.cert_auth, self.registries_activity, self.name)
 
 
+@reversion.register()
 class Organization(AuditModel):
     org_guid = models.UUIDField(
         primary_key=True,
@@ -126,8 +130,9 @@ class Organization(AuditModel):
         verbose_name="Organization UUID")
     name = models.CharField(max_length=200)
     street_address = models.CharField(
-        max_length=100, null=True, verbose_name='Street Address')
-    city = models.CharField(max_length=50, null=True, verbose_name='Town/City')
+        max_length=100, null=True, blank=True, verbose_name='Street Address')
+    city = models.CharField(max_length=50, null=True,
+                            blank=True, verbose_name='Town/City')
     province_state = models.ForeignKey(
         ProvinceStateCode,
         db_column='province_state_code',
@@ -135,16 +140,19 @@ class Organization(AuditModel):
         verbose_name='Province/State',
         related_name="companies")
     postal_code = models.CharField(
-        max_length=10, null=True, verbose_name='Postal Code')
+        max_length=10, null=True, blank=True, verbose_name='Postal Code')
     main_tel = models.CharField(
-        null=True, max_length=15, verbose_name="Telephone number")
+        null=True, blank=True, max_length=15, verbose_name="Telephone number")
     fax_tel = models.CharField(
-        null=True, max_length=15, verbose_name="Fax number")
-    website_url = models.URLField(null=True, verbose_name="Website")
+        null=True, blank=True, max_length=15, verbose_name="Fax number")
+    website_url = models.URLField(
+        null=True, blank=True, verbose_name="Website")
     effective_date = models.DateField(default=datetime.date.today)
     expired_date = models.DateField(blank=True, null=True)
     email = models.EmailField(
         blank=True, null=True, verbose_name="Email adddress")
+
+    history = GenericRelation(Version)
 
     class Meta:
         db_table = 'registries_organization'

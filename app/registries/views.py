@@ -12,12 +12,14 @@
     limitations under the License.
 """
 
+import reversion
 from collections import OrderedDict
 from django.db.models import Q
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from django.utils import timezone
 from django.views.generic import TemplateView
 from django_filters import rest_framework as restfilters
+from reversion.views import RevisionMixin
 from rest_framework import filters, status, exceptions
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView
 from rest_framework.pagination import LimitOffsetPagination, PageNumberPagination
@@ -28,6 +30,7 @@ from rest_framework.views import APIView
 from drf_multiple_model.views import ObjectMultipleModelAPIView
 from gwells.roles import GWELLS_ROLE_GROUPS
 from gwells.models.ProvinceStateCode import ProvinceStateCode
+from reversion.models import Version
 from registries.models import (
     AccreditedCertificateCode,
     ActivityCode,
@@ -84,9 +87,9 @@ class AuditUpdateMixin(UpdateModelMixin):
     """
 
     def perform_update(self, serializer):
-        serializer.save(
-            update_user=self.request.user.get_username()
-        )
+        serializer.validated_data['update_user'] = (self.request.user.profile.name or
+                                                    self.request.user.get_username())
+        return super().perform_update(serializer)
 
 
 class APILimitOffsetPagination(LimitOffsetPagination):
@@ -113,7 +116,7 @@ class RegistriesIndexView(TemplateView):
     template_name = 'registries/registries.html'
 
 
-class OrganizationListView(AuditCreateMixin, ListCreateAPIView):
+class OrganizationListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
     """
     get:
     Returns a list of all registered drilling organizations
@@ -145,7 +148,7 @@ class OrganizationListView(AuditCreateMixin, ListCreateAPIView):
     )
 
 
-class OrganizationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
+class OrganizationDetailView(RevisionMixin, AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
     """
     get:
     Returns the specified drilling organization
@@ -171,6 +174,11 @@ class OrganizationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
         .select_related('province_state',) \
         .prefetch_related('registrations', 'registrations__person') \
         .filter(expired_date__isnull=True)
+
+    def update(self, request, *args, **kwargs):
+        reversion.set_comment("{} updated company {}".format(
+            self.request.user.profile.name, self.get_object().name))
+        return super(OrganizationDetailView, self).update(request, *args, **kwargs)
 
     def destroy(self, request, *args, **kwargs):
         """
@@ -291,7 +299,8 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
                                Q(registrations__isnull=True))
             else:
                 # For all other searches, we strictly filter on activity.
-                qs = qs.filter(registrations__registries_activity__registries_activity_code=activity)
+                qs = qs.filter(
+                    registrations__registries_activity__registries_activity_code=activity)
         if not self.request.user.groups.filter(name__in=GWELLS_ROLE_GROUPS).exists():
             # User is not logged in
             # Only show active drillers to non-admin users and public
@@ -304,7 +313,8 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
                 if status == 'Removed':
                     # Things are a bit more complicated if we're looking for removed, as the current
                     # status doesn't come in to play.
-                    qs = qs.filter(registrations__applications__removal_date__isnull=False)
+                    qs = qs.filter(
+                        registrations__applications__removal_date__isnull=False)
                 else:
                     if status == 'P':
                         # If the status is pending, we also pull in any people without registrations
@@ -651,3 +661,50 @@ class OrganizationNoteDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView)
     def get_queryset(self):
         org = self.kwargs['org_guid']
         return OrganizationNote.objects.filter(organization=org)
+
+
+class OrganizationHistory(APIView):
+    """
+    get: returns a history of changes to an Organization model record
+    """
+
+    permission_classes = (GwellsPermissions,)
+    queryset = Organization.objects.all()
+
+    def get(self, request, org_guid):
+        org_guid = self.kwargs['org_guid']
+        try:
+            organization = Organization.objects.get(org_guid=org_guid)
+        except Organization.DoesNotExist:
+            raise Http404("Organization not found")
+
+        # query records in history for this model.
+        # note: limiting to 50 for initial user testing
+        history = [obj.field_dict for obj in organization.history.all().order_by(
+            '-revision__date_created')[:50]]
+
+        history_diff = []
+
+        for i in range(len(history) - 1):
+            changed = False
+            cur = history[i]
+            prev = history[i+1]
+            diff = {
+                "diff": {},
+                "user": cur['update_user'],
+                "date": cur['update_date']
+            }
+            for key, value in prev.items():
+                # loop through the previous record and add changed fields to the 'diff' dict
+                # leave out update/create stamps
+                if (cur[key] != value and
+                        key != "update_date" and
+                        key != "update_user" and
+                        key != "create_date" and
+                        key != "create_user"):
+                    diff['diff'][key] = cur[key]
+                    changed = True
+            if changed:
+                history_diff.append(diff)
+
+        return Response(history_diff)

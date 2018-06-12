@@ -52,6 +52,8 @@ urlpatterns = [
     url(r'^api/v1/organizations/names/$',
         never_cache(views.OrganizationNameListView.as_view()),
         name='organization-names'),
+    url(r'^api/v1/organizations/(?P<org_guid>[-\w]+)/history/$',
+        views.OrganizationHistory.as_view(), name='organization-history'),
     url(r'^api/v1/organizations/(?P<org_guid>[-\w]+)/$',
         never_cache(views.OrganizationDetailView.as_view()),
         name='organization-detail'),

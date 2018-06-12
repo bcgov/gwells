@@ -1,4 +1,5 @@
 from django.contrib import admin
+from reversion.admin import VersionAdmin
 from .models import (
     Person,
     ContactInfo,
@@ -20,11 +21,16 @@ from .models import (
 
 # Register your models here.
 
+
+class OrganizationModelAdmin(VersionAdmin):
+    pass
+
+
 admin.site.register(AccreditedCertificateCode)
 admin.site.register(CertifyingAuthorityCode)
 admin.site.register(ContactInfo)
 admin.site.register(Person)
-admin.site.register(Organization)
+admin.site.register(Organization, OrganizationModelAdmin)
 admin.site.register(ActivityCode)
 admin.site.register(SubactivityCode)
 admin.site.register(RegistriesApplication)
