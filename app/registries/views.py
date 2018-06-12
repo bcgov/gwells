@@ -693,15 +693,15 @@ class OrganizationHistory(APIView):
             if i < (len(history) - 1):
                 prev = history[i+1]
 
-            diff = {
+            item = {
                 "diff": {},
                 "prev": {},
                 "user": cur['update_user'] or cur['create_user'],
                 "date": cur['update_date'] or cur['create_date']
             }
             if prev is None:
-                diff['created'] = True
-                history_diff.append(diff)
+                item['created'] = True
+                history_diff.append(item)
 
             else:
                 for key, value in prev.items():
@@ -712,10 +712,10 @@ class OrganizationHistory(APIView):
                             key != "update_user" and
                             key != "create_date" and
                             key != "create_user"):
-                        diff['diff'][key] = cur[key]
-                        diff['prev'][key] = value
+                        item['diff'][key] = cur[key]
+                        item['prev'][key] = value
                         changed = True
                 if changed:
-                    history_diff.append(diff)
+                    history_diff.append(item)
 
         return Response(history_diff)
