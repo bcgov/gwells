@@ -266,7 +266,7 @@ _stage('ZAP Security Scan', context) {
             )
         ]
     ) {
-        node('master') {
+        node('owasp-zap') {
             //the checkout is mandatory
             echo "checking out source"
             echo "Build: ${BUILD_ID}"
