@@ -46,9 +46,10 @@ describe('ApplicationDetail.vue', () => {
         $route: {params: {person_guid: fakePerson.person_guid, application_guid: fakeRegistration.applications[0].application_guid}}
       }
     })
-    wrapper.setData({registration: fakeRegistration})
-    wrapper.vm.$forceUpdate()
-    expect(wrapper.find('#titlePersonName').text()).toBe(`${fakePerson.first_name} ${fakePerson.surname}`)
+    wrapper.vm.$nextTick(() => {
+      const titlePersonName = wrapper.find('#titlePersonName')
+      expect(titlePersonName.text()).toBe(`${fakePerson.first_name} ${fakePerson.surname}`)
+    })
   })
   it('gets the list of qualified well/hole types from the driller profile for this application', () => {
     const wrapper = shallowMount(ApplicationDetail, {
@@ -59,9 +60,9 @@ describe('ApplicationDetail.vue', () => {
         $route: {params: {person_guid: fakePerson.person_guid, application_guid: fakeRegistration.applications[0].application_guid}}
       }
     })
-    wrapper.setData({registration: fakeRegistration})
-    wrapper.vm.$forceUpdate()
-    expect(wrapper.vm.qualifications.length).toBe(7)
+    wrapper.vm.$nextTick(() => {
+      expect(wrapper.vm.qualifications.length).toBe(7)
+    })
   })
   describe('User has edit rights', () => {
     let getters = {
@@ -87,34 +88,33 @@ describe('ApplicationDetail.vue', () => {
         $route: {params: {person_guid: fakePerson.person_guid, application_guid: fakeRegistration.applications[0].application_guid}}
       }
     })
-    wrapper.setData({registration: fakeRegistration})
-    wrapper.vm.$forceUpdate()
-
-    const edit = wrapper.find('#editClassification')
-    it('show edit button if user has appropriate rights', () => {
-      expect(edit.exists()).toBe(true)
-    })
-    describe('User has clicked edit', () => {
-      edit.trigger('click')
-      const save = wrapper.find('#saveClassification')
-      it('has a save button', () => {
-        expect(save.exists()).toBe(true)
+    wrapper.vm.$nextTick(() => {
+      const edit = wrapper.find('#editClassification')
+      it('show edit button if user has appropriate rights', () => {
+        expect(edit.exists()).toBe(true)
       })
-      it('has current issuer selected', () => {
-        const issuer = wrapper.find('#issuer')
-        expect(issuer.value).toBe(fakeRegistration.applications[0].primary_certificate.acc_cert_guid)
-      })
-      const cancel = wrapper.find('#cancelClassification')
-      it('has a cancel button', () => {
-        expect(cancel.exists()).toBe(true)
-      })
-      describe('User has clicked cancel', () => {
-        cancel.trigger('click')
-        it('show are you sure dialog', () => {
-          expect(wrapper.find('#confirmCancelModal')).toBeTruthy()
+      describe('User has clicked edit', () => {
+        edit.trigger('click')
+        const save = wrapper.find('#saveClassification')
+        it('has a save button', () => {
+          expect(save.exists()).toBe(true)
         })
-        // Get rid of the modal
-        wrapper.find('#confirmCancel').trigger('click')
+        it('has current issuer selected', () => {
+          const issuer = wrapper.find('#issuer')
+          expect(issuer.value).toBe(fakeRegistration.applications[0].primary_certificate.acc_cert_guid)
+        })
+        const cancel = wrapper.find('#cancelClassification')
+        it('has a cancel button', () => {
+          expect(cancel.exists()).toBe(true)
+        })
+        describe('User has clicked cancel', () => {
+          cancel.trigger('click')
+          it('show are you sure dialog', () => {
+            expect(wrapper.find('#confirmCancelModal')).toBeTruthy()
+          })
+          // Get rid of the modal
+          wrapper.find('#confirmCancel').trigger('click')
+        })
       })
     })
   })
