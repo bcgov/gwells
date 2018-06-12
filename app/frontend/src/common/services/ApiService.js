@@ -52,6 +52,9 @@ const ApiService = {
   },
   delete (resource, record) {
     return axios.delete(`${resource}/${record}/`)
+  },
+  history (resource, record) {
+    return axios.get(`${resource}/${record}/history/`)
   }
 }
 
