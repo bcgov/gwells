@@ -255,7 +255,7 @@ _stage('ZAP Security Scan', context) {
         containers: [
             containerTemplate(
                 name: 'jnlp',
-                image: '172.50.0.2:5000/openshift/jenkins-slave-zap',
+                image: 'docker-registry.default.svc:5000/openshift/jenkins-slave-zap',
                 resourceRequestCpu: '500m',
                 resourceLimitCpu: '1000m',
                 resourceRequestMemory: '3Gi',
