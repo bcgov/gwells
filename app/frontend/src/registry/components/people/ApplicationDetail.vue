@@ -171,7 +171,8 @@
                   <b-col md="2"><span class="registry-label">Removal date:</span></b-col>
                   <b-col md="2">{{removalDate}}</b-col>
                   <b-col md="2"><span class="registry-label">Removal reason:</span></b-col>
-                  <b-col>{{removalReason.description}}</b-col>
+                  <b-col v-if="removalReason">{{removalReason.description}}</b-col>
+                  <b-col v-else>Unknown</b-col>
                 </b-row>
                 <!-- <div class="row">
                   <div class="col-12 registry-item">
@@ -192,7 +193,6 @@
 </template>
 
 <script>
-import APIErrorMessage from '@/common/components/APIErrorMessage'
 import QualCheckbox from '@/common/components/QualCheckbox'
 import { mapGetters, mapActions } from 'vuex'
 import { SET_ERROR } from '@/registry/store/mutations.types'
@@ -203,7 +203,6 @@ import ApiService from '@/common/services/ApiService.js'
 export default {
   name: 'PersonApplicationDetail',
   components: {
-    'api-error': APIErrorMessage,
     'r-checkbox': QualCheckbox,
     'application-edit': ApplicationAddEdit
   },
@@ -260,7 +259,9 @@ export default {
               reason_denied: application.reason_denied,
               application_outcome_date: application.application_outcome_date,
               application_outcome_notification_date: application.application_outcome_notification_date,
-              application_recieved_date: application.application_recieved_date
+              application_recieved_date: application.application_recieved_date,
+              removal_reason: application.removal_reason,
+              removal_date: application.removal_date
             }
           }
         })
@@ -283,7 +284,7 @@ export default {
           this.applicationReset()
         }).catch((error) => {
           this.applicationSaving = false
-          this.$store.commit(SET_ERROR, 'Error saving application')
+          this.$store.commit(SET_ERROR, {status: 'Error saving application'})
           console.error(error)
         })
       }
@@ -294,7 +295,11 @@ export default {
   },
   computed: {
     classification () {
-      return this.application ? this.application.subactivity.description : null
+      let description = null
+      if (this.application && this.application.subactivity) {
+        description = this.application.subactivity.description
+      }
+      return description
     },
     activity () {
       return this.registration ? this.registration.registries_activity : null
@@ -331,7 +336,11 @@ export default {
       return title
     },
     proofOfAge () {
-      return this.application.proof_of_age ? this.application.proof_of_age.description : null
+      let description = null
+      if (this.application && this.application.proof_of_age) {
+        description = this.application.proof_of_age.description
+      }
+      return description
     },
     removalDate () {
       return this.application ? this.application.removal_date : null

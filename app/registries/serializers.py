@@ -414,7 +414,7 @@ class ApplicationAdminSerializer(AuditModelSerializer):
     primary_certificate = AccreditedCertificateCodeSerializer(required=False)
     primary_certificate_no = serializers.CharField(required=False)
     proof_of_age = ProofOfAgeCodeSerializer(required=False)
-    removal_reason = RegistriesRemovalReasonSerializer(required=False)
+    removal_reason = RegistriesRemovalReasonSerializer(required=False, allow_null=True)
     current_status = ApplicationStatusCodeSerializer(required=False)
 
     class Meta:
@@ -458,6 +458,9 @@ class ApplicationAdminSerializer(AuditModelSerializer):
             data['application_recieved_date'] = None
         if 'removal_date' in data and data['removal_date'] == '':
             data['removal_date'] = None
+        if 'removal_reason' in data and data['removal_reason'] is not None:
+            if 'code' in data['removal_reason'] and data['removal_reason']['code'] is None:
+                data['removal_reason'] = None
         return super().to_internal_value(data)
 
     def create(self, validated_data):

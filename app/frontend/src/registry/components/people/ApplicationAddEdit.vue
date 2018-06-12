@@ -242,7 +242,7 @@ export default {
         classifications: [],
         qualifications: [],
         proofOfAge: [{value: null, text: 'Please select an option'}],
-        approvalOutcome: [{value: 'P', text: 'Please select an option'}],
+        approvalOutcome: [],
         removalReasons: [{value: null, text: 'Please select an option'}]
       }
       if (this.drillerOptions) {
@@ -253,7 +253,7 @@ export default {
           result.classifications = this.drillerOptions[this.activity].subactivity_codes.map((item) => { return {'text': item.description, 'value': item.registries_subactivity_code} })
           result.qualifications = this.drillerOptions[this.activity].well_class_codes.map((item) => { return {'text': item.description, 'value': item.registries_well_class_code} })
           result.issuer = result.issuer.concat(this.drillerOptions[this.activity].accredited_certificate_codes.map((item) => { return {'text': item.name + ' (' + item.cert_auth + ')', 'value': item.acc_cert_guid} }))
-          result.approvalOutcome = result.approvalOutcome.concat(this.drillerOptions.approval_outcome_codes.map((item) => { return {'text': item.description, 'value': item.code} }))
+          result.approvalOutcome = result.approvalOutcome.concat(this.drillerOptions.approval_outcome_codes.map((item) => { return {'text': item.code === 'P' ? 'Please select an option' : item.description, 'value': item.code} }))
           result.removalReasons = result.removalReasons.concat(this.drillerOptions.reason_removed_codes.map((item) => { return {'text': item.description, 'value': item.code} }))
         }
       }
