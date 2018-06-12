@@ -681,30 +681,41 @@ class OrganizationHistory(APIView):
         # query records in history for this model.
         # note: limiting to 50 for initial user testing
         history = [obj.field_dict for obj in organization.history.all().order_by(
-            '-revision__date_created')[:50]]
+            '-revision__date_created')]
 
         history_diff = []
 
-        for i in range(len(history) - 1):
+        for i in range(len(history)):
             changed = False
             cur = history[i]
-            prev = history[i+1]
+            prev = None
+
+            if i < (len(history) - 1):
+                prev = history[i+1]
+
             diff = {
                 "diff": {},
-                "user": cur['update_user'],
-                "date": cur['update_date']
+                "prev": {},
+                "user": cur['update_user'] or cur['create_user'],
+                "date": cur['update_date'] or cur['create_date']
             }
-            for key, value in prev.items():
-                # loop through the previous record and add changed fields to the 'diff' dict
-                # leave out update/create stamps
-                if (cur[key] != value and
-                        key != "update_date" and
-                        key != "update_user" and
-                        key != "create_date" and
-                        key != "create_user"):
-                    diff['diff'][key] = cur[key]
-                    changed = True
-            if changed:
+            if prev is None:
+                diff['created'] = True
                 history_diff.append(diff)
+
+            else:
+                for key, value in prev.items():
+                    # loop through the previous record and add changed fields to the 'diff' dict
+                    # leave out update/create stamps
+                    if (cur[key] != value and
+                            key != "update_date" and
+                            key != "update_user" and
+                            key != "create_date" and
+                            key != "create_user"):
+                        diff['diff'][key] = cur[key]
+                        diff['prev'][key] = value
+                        changed = True
+                if changed:
+                    history_diff.append(diff)
 
         return Response(history_diff)

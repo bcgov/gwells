@@ -168,7 +168,7 @@ class Organization(AuditModel):
 
         # display either "City, Province" or just "Province"
         location = '{}, {}'.format(
-            self.city, prov) if self.city is not None else prov
+            self.city, prov) if (self.city is not None and len(self.city) is not 0) else prov
 
         return '{} ({})'.format(self.name, location)
 
