@@ -12,15 +12,15 @@ describe('OrganizationEdit.vue', () => {
   let store
   let getters
   let mutations
-  let actions = {
+  const actions = {
     [FETCH_DRILLER_OPTIONS]: jest.fn()
   }
 
   beforeEach(() => {
     getters = {
       error: () => null,
-      provinceStateOptions: () => ['BC', 'AB'],
-      drillerOptions: jest.fn().mockReturnValue(fakeOptions)
+      drillerOptions: jest.fn().mockReturnValue(fakeOptions),
+      provinceStateOptions: () => ['BC', 'AB']
     }
 
     store = new Vuex.Store({ getters, actions, mutations })
