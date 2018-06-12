@@ -159,7 +159,18 @@ export default {
       // It is important that we preserve the reference to the input variable, as the parent
       // component may be bound to it.
       const defaultCopy = JSON.parse(JSON.stringify(defaultData))
-      const result = input ? Object.assign(input, ...defaultCopy) : defaultCopy
+      // Object.assign doesn't work correctly with the vue Observer object correctly.
+      let result = null
+      if (input) {
+        Object.keys(defaultCopy).forEach((key) => {
+          if (!(key in input)) {
+            input[key] = defaultCopy[key]
+          }
+        })
+        result = input
+      } else {
+        result = defaultCopy
+      }
       if (result.current_status == null) {
         // In very exceptional cases, a current status can be null - this is problematic in terms of
         // data binding, so we attach a default value here.
