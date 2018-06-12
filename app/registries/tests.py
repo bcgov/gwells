@@ -16,8 +16,6 @@ from registries.models import (
     Person,
     RegistriesApplication,
     Register,
-    RegistriesStatusCode,
-    RegistriesApplicationStatus,
     ActivityCode,
     SubactivityCode)
 from registries.views import PersonListView, PersonDetailView
@@ -111,17 +109,11 @@ class RegistriesApplicationTestBase(AuthenticatedAPITestCase):
             registries_activity_code="DRILL",
             description="driller",
             display_order="1")
-        # Create registries status
-        self.status_active = RegistriesStatusCode.objects.create(
-            registries_status_code="ACTIVE",
-            description="active",
-            display_order="1")
         # Create new registrations
         # Create registered driller 1
         self.driller = Person.objects.create(
             first_name='Wendy', surname="Well")
         self.registration = Register.objects.create(
-            status=self.status_active,
             person=self.driller,
             registries_activity=self.activity_drill,
             registration_no="F12345",
@@ -139,12 +131,12 @@ class RegistriesApplicationTestBase(AuthenticatedAPITestCase):
             display_order=1)
         # Create application status
         self.application_status_active = ApplicationStatusCode.objects.create(
-            registries_application_status_code='A',
+            code='A',
             description='Active',
             display_order=1
         )
         self.application_status_pending = ApplicationStatusCode.objects.create(
-            registries_application_status_code='P',
+            code='P',
             description='Pending',
             display_order=1
         )
@@ -161,7 +153,7 @@ class RegistriesApplicationNoStatusTest(RegistriesApplicationTestBase):
         """
         data = {
             'current_status': {
-                'status': 'A'
+                'code': 'A'
             }
         }
 
@@ -171,23 +163,20 @@ class RegistriesApplicationNoStatusTest(RegistriesApplicationTestBase):
         updated_application = RegistriesApplication.objects.get(
             application_guid=self.app.application_guid)
         self.assertEqual(
-            updated_application.current_status.status.registries_application_status_code, 'A')
+            updated_application.current_status.code, 'A')
 
 
 class RegistriesApplicationWithStatusActiveTest(RegistriesApplicationTestBase):
 
     def setUp(self):
         super().setUp()
-        RegistriesApplicationStatus.objects.create(
-            application=self.app,
-            status=self.application_status_pending)
 
     def test_update_application_status_to_active(self):
         """ Test that an application created with a Pending status can be updated to Active
         """
         data = {
             'current_status': {
-                'status': 'A'
+                'code': 'A'
             }
         }
 
@@ -197,7 +186,7 @@ class RegistriesApplicationWithStatusActiveTest(RegistriesApplicationTestBase):
         updated_application = RegistriesApplication.objects.get(
             application_guid=self.app.application_guid)
         self.assertEqual(
-            updated_application.current_status.status.registries_application_status_code, 'A')
+            updated_application.current_status.code, 'A')
 
 
 class RegistriesApplicationStatusSubactivityTest(RegistriesApplicationTestBase):
@@ -647,12 +636,12 @@ class APIFilteringPaginationTests(APITestCase):
         self.province = ProvinceStateCode.objects.create(
             province_state_code='BC',
             display_order=1)
-        self.status_active = RegistriesStatusCode.objects.create(
-            registries_status_code="ACTIVE",
+        self.status_active = ApplicationStatusCode.objects.create(
+            code="A",
             description="active",
             display_order="1")
-        self.status_inactive = RegistriesStatusCode.objects.create(
-            registries_status_code="INACTIVE",
+        self.status_inactive = ApplicationStatusCode.objects.create(
+            code="NA",
             description="inactive",
             display_order="2")
         self.activity_drill = ActivityCode.objects.create(
@@ -668,7 +657,6 @@ class APIFilteringPaginationTests(APITestCase):
         self.driller = Person.objects.create(
             first_name='Wendy', surname="Well")
         self.registration = Register.objects.create(
-            status=self.status_active,
             person=self.driller,
             registries_activity=self.activity_drill,
             registration_no="F12345",
@@ -680,13 +668,13 @@ class APIFilteringPaginationTests(APITestCase):
             display_order=1)
         self.app = RegistriesApplication.objects.create(
             registration=self.registration,
+            current_status=self.status_active,
             subactivity=self.subactivity)
 
         # Create registered driller 2
         self.driller2 = Person.objects.create(
             first_name='Debbie', surname="Driller")
         self.registration2 = Register.objects.create(
-            status=self.status_active,
             person=self.driller2,
             registries_activity=self.activity_drill,
             registration_no="F54321",
@@ -694,6 +682,7 @@ class APIFilteringPaginationTests(APITestCase):
 
         self.app2 = RegistriesApplication.objects.create(
             registration=self.registration2,
+            current_status=self.status_active,
             subactivity=self.subactivity)
 
         # Create unregistered driller
@@ -704,7 +693,6 @@ class APIFilteringPaginationTests(APITestCase):
         self.inactive_driller = Person.objects.create(
             first_name="Billy", surname="Retired")
         self.retired_registration = Register.objects.create(
-            status=self.status_inactive,
             person=self.inactive_driller,
             registries_activity=self.activity_drill,
             registration_no="R55555"

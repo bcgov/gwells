@@ -112,17 +112,16 @@
                   </tbody>
                 </table>
               </div>
-              <b-row v-if="showAddApplication">
+              <b-row v-if="show(registration.registries_activity)">
                 <b-col>
-                  <b-form @submit.prevent="saveApplication">
-                    <!-- TODO: Attach appropriate activity -->
+                  <b-form @submit.prevent="saveApplication(registration.registries_activity)">
                     <application-add
                         class="mb-3"
-                        v-on:close="closeApplication()"
-                        v-model="application"
+                        v-on:close="closeApplication(registration.registries_activity)"
+                        :value="getApplication(registration.registries_activity)"
                         :activity="registration.registries_activity">
                         <button type="submit" class="btn btn-primary" variant="primary">Save</button>
-                        <button type="button" class="btn btn-light" @click="closeApplication()">Cancel</button>
+                        <button type="button" class="btn btn-light" @click="closeApplication(registration.registries_activity)">Cancel</button>
                     </application-add>
                   </b-form>
                 </b-col>
@@ -134,7 +133,7 @@
                           type="button"
                           variant="primary"
                           size="sm"
-                          v-on:click="addApplication()"
+                          v-on:click="addApplication(registration)"
                           class="mb-3"><i class="fa fa-plus-square-o"></i> Add classification</b-button>
                 </b-col>
               </b-row>
@@ -396,6 +395,8 @@ export default {
   },
   data () {
     return {
+      drillApplication: null,
+      pumpApplication: null,
       breadcrumbs: [
         {
           text: 'Registry',
@@ -410,8 +411,6 @@ export default {
       editRegistration: 0,
       editPerson: false,
       editContact: false,
-      showAddApplication: false,
-      application: null,
       savingApplication: false,
       registrationOptions: [
         {
@@ -486,37 +485,11 @@ export default {
         // classifications, we need to iterate through several arrays.
         this.currentDriller.registrations.forEach((reg) => {
           reg.applications.forEach((app) => {
-            let status
-            let date
-
-            // set date for this application- it will apply to all qualifications/classifications associated
-            // with this application.
-
-            // priority of status codes from lowest to highest
-            const statusPriority = ['P', 'A']
-
-            if (app.status_set && app.status_set.length) {
-              statusPriority.forEach((code) => {
-                const statusLevel = app.status_set.findIndex((item) => {
-                  return item.status === code
-                })
-
-                // check if statusLevel is a valid array index (e.g. not -1)
-                // note: ~(-1) evaluates to 0, but is truthy for valid array indices
-                if (~statusLevel) {
-                  status = app.status_set[statusLevel].description
-                  date = app.status_set[statusLevel].effective_date
-                }
-              })
-            }
-
-            // now iterate through classifications that the person has applied for and push onto an array
-
             classifications.push({
               code: app.subactivity.registries_subactivity_code,
               description: app.subactivity.description,
-              status: status,
-              date: date,
+              status: app.current_status ? app.current_status.description : null,
+              date: app.application_outcome_date,
               registration_guid: reg.register_guid,
               application_guid: app.application_guid,
               activity: reg.registries_activity
@@ -550,22 +523,42 @@ export default {
     ])
   },
   methods: {
+    show (key) {
+      return ((key === 'PUMP' && this.pumpApplication) || (key === 'DRILL' && this.drillApplication))
+    },
+    getApplication (key) {
+      if (key === 'PUMP') {
+        return this.pumpApplication
+      } else if (key === 'DRILL') {
+        return this.drillApplication
+      }
+      return null
+    },
     updateRecord () {
       this.$store.dispatch(FETCH_DRILLER, this.$route.params.person_guid)
     },
-    addApplication () {
-      this.application = null
-      this.showAddApplication = true
+    addApplication (registration) {
+      const newClassification = {
+        registration: registration.register_guid
+      }
+      if (registration.registries_activity === 'PUMP') {
+        this.pumpApplication = newClassification
+      } else if (registration.registries_activity === 'DRILL') {
+        this.drillApplication = newClassification
+      }
     },
-    closeApplication () {
-      this.application = null
-      this.showAddApplication = false
+    closeApplication (key) {
+      if (key === 'PUMP') {
+        this.pumpApplication = null
+      } else if (key === 'DRILL') {
+        this.drillApplication = null
+      }
     },
-    saveApplication () {
-      this.application.registration = this.currentDriller.registrations[0].register_guid
+    saveApplication (key) {
+      let application = this.getApplication(key)
       this.savingApplication = true
-      ApiService.post('applications', this.application).then(() => {
-        this.closeApplication()
+      ApiService.post('applications', application).then(() => {
+        this.closeApplication(key)
         this.savingApplication = false
         this.updateRecord()
       })

@@ -30,6 +30,7 @@ from gwells.models.ProvinceStateCode import ProvinceStateCode
 from registries.models import (
     AccreditedCertificateCode,
     ActivityCode,
+    ApplicationStatusCode,
     ContactInfo,
     Organization,
     OrganizationNote,
@@ -43,6 +44,7 @@ from registries.models import (
 from registries.permissions import IsAdminOrReadOnly, GwellsPermissions
 from registries.serializers import (
     ApplicationAdminSerializer,
+    ApplicationStatusCodeSerializer,
     ApplicationListSerializer,
     CityListSerializer,
     ProofOfAgeCodeSerializer,
@@ -108,7 +110,7 @@ class PersonFilter(restfilters.FilterSet):
     # city = restfilters.MultipleChoiceFilter(name="organization__city")
     prov = restfilters.CharFilter(
         name="registrations__organization__province_state")
-    status = restfilters.CharFilter(name="registrations__status")
+    status = restfilters.CharFilter(name="registrations__applications__current_status")
     activity = restfilters.CharFilter(
         name="registrations__registries_activity")
 
@@ -192,7 +194,8 @@ class OrganizationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
         for reg in instance.registrations.all():
             if reg.person.expired_date is None:
                 raise exceptions.ValidationError(
-                    'Organization has registrations associated with it. Remove this organization from registration records first.')
+                    ('Organization has registrations associated with it. ')
+                    ('Remove this organization from registration records first.'))
         instance.expired_date = timezone.now()
         instance.save()
 
@@ -233,7 +236,9 @@ class PersonOptionsView(APIView):
         result['ProofOfAgeCode'] = \
             list(map(lambda item: ProofOfAgeCodeSerializer(item).data,
                      ProofOfAgeCode.objects.all().order_by('display_order')))
-
+        result['ApprovalOutcome'] = \
+            list(map(lambda item: ApplicationStatusCodeSerializer(item).data,
+                     ApplicationStatusCode.objects.all()))
         result['province_state_codes'] = \
             list(map(lambda item: ProvinceStateCodeSerializer(item).data,
                      ProvinceStateCode.objects.all().order_by('display_order')))
@@ -279,10 +284,9 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
             'registrations__organization',
             'registrations__organization__province_state',
             'registrations__applications',
+            'registrations__applications__current_status',
             'registrations__applications__primary_certificate',
             'registrations__applications__primary_certificate__cert_auth',
-            'registrations__applications__status_set',
-            'registrations__applications__status_set__status',
             'registrations__applications__subactivity',
             'registrations__applications__subactivity__qualification_set',
             'registrations__applications__subactivity__qualification_set__well_class'
@@ -301,22 +305,25 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
             cities = cities.split(',')
             qs = qs.filter(registrations__organization__city__in=cities)
 
-        # Only show active drillers to non-admin users and public
         activity = self.request.query_params.get('activity', None)
-
+        if activity:
+            qs = qs.filter(registrations__registries_activity__registries_activity_code=activity)
         if not self.request.user.groups.filter(name__in=GWELLS_ROLE_GROUPS).exists():
-            if activity:
-                qs = qs.filter(registrations__status='ACTIVE',
-                               registrations__registries_activity__registries_activity_code=activity)
-
-            else:
-                qs = qs.filter(registrations__status='ACTIVE')
-
+            # User is not logged in
+            # Only show active drillers to non-admin users and public
+            qs = qs.filter(
+                registrations__applications__current_status__code='A')
+        else:
+            # User is logged in
+            status = self.request.query_params.get('status', None)
+            if status:
+                qs = qs.filter(
+                    registrations__applications__current_status__code=status)
         return qs
 
     def list(self, request):
         """ List response using serializer with reduced number of fields """
-        queryset = self.get_queryset()
+        queryset = self.get_queryset()        
         filtered_queryset = self.filter_queryset(queryset)
 
         page = self.paginate_queryset(filtered_queryset)
@@ -360,10 +367,9 @@ class PersonDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
             'registrations__organization',
             'registrations__status',
             'registrations__applications',
+            'registrations__applications__current_status',
             'registrations__applications__primary_certificate',
             'registrations__applications__primary_certificate__cert_auth',
-            'registrations__applications__status_set',
-            'registrations__applications__status_set__status',
             'registrations__applications__subactivity',
             'registrations__applications__subactivity__qualification_set',
             'registrations__applications__subactivity__qualification_set__well_class'
@@ -447,10 +453,9 @@ class RegistrationListView(AuditCreateMixin, ListCreateAPIView):
             'register_removal_reason',) \
         .prefetch_related(
             'applications',
+            'applications__current_status',
             'applications__primary_certificate',
             'applications__primary_certificate__cert_auth',
-            'applications__status_set',
-            'applications__status_set__status',
             'applications__subactivity',
             'applications__subactivity__qualification_set',
             'applications__subactivity__qualification_set__well_class'
@@ -484,10 +489,9 @@ class RegistrationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
             'register_removal_reason',) \
         .prefetch_related(
             'applications',
+            'applications__current_status',
             'applications__primary_certificate',
             'applications__primary_certificate__cert_auth',
-            'applications__status_set',
-            'applications__status_set__status',
             'applications__subactivity',
             'applications__subactivity__qualification_set',
             'applications__subactivity__qualification_set__well_class'

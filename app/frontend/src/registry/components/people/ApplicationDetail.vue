@@ -31,43 +31,43 @@
         <!-- Display application detail once loaded -->
         <div v-else>
           <div v-if="currentDriller != {} && registration != null">
-              <h5 class="card-title" id="titlePersonName">{{ titlePersonName }}</h5>
-            <div class="col-12" v-if="error">
-              <api-error :error="error" resetter="SET_ERROR"></api-error>
-            </div>
+            <h5 class="card-title" id="titlePersonName">{{ titlePersonName }}</h5>
             <b-col md="12" class="pl-0" v-if="classification">
               <h5>Certification - {{ classification }}</h5>
             </b-col>
           </div>
           <div v-if="editClassification">
-            <b-modal
-                v-model="confirmCancelModal"
-                centered
-                title="Confirm cancel"
-                @shown="focusCancelModal"
-                :return-focus="$refs.cancelClassification">
-              Your changes are not saved. Are you sure you want to discard your changes?
-              <div slot="modal-footer">
-                <b-btn variant="secondary" id="confirmCancel" @click="confirmCancelModal=false" ref="cancelSubmitCancelBtn">
-                  Cancel
-                </b-btn>
-                <b-btn variant="danger" id="discardChanges" @click="confirmCancelModal=false;editClassification=false;applicationReset();">
-                  Discard
-                </b-btn>
-              </div>
-            </b-modal>
-            <b-row>
-              <application-edit
-                :activity="activity"
-                :value="applicationFormValue"
-                v-on:close="confirmCancelModal=true"/>
-            </b-row>
-            <b-row class="mt-3">
-              <b-col>
-                <button type="submit" class="btn btn-primary" id="saveClassification" v-on:click="saveApplication">Save</button>
-                <button type="submit" class="btn btn-primary" id="cancelClassification" v-on:click="confirmCancelModal=true">Cancel</button>
-              </b-col>
-            </b-row>
+            <b-form @submit.prevent="saveApplication()" @reset.prevent="applicationReset()">
+              <b-modal
+                  v-model="confirmCancelModal"
+                  centered
+                  title="Confirm cancel"
+                  @shown="focusCancelModal"
+                  :return-focus="$refs.cancelClassification">
+                Your changes are not saved. Are you sure you want to discard your changes?
+                <div slot="modal-footer">
+                  <b-btn variant="secondary" id="confirmCancel" @click="confirmCancelModal=false" ref="cancelSubmitCancelBtn">
+                    Cancel
+                  </b-btn>
+                  <b-btn variant="danger" id="discardChanges" @click="confirmCancelModal=false;editClassification=false;applicationReset();">
+                    Discard
+                  </b-btn>
+                </div>
+              </b-modal>
+              <b-row>
+                <application-edit
+                  :activity="activity"
+                  :value="applicationFormValue"
+                  v-on:isValid="onApplicationIsValid"
+                  v-on:close="confirmCancelModal=true"/>
+              </b-row>
+              <b-row class="mt-3">
+                <b-col>
+                  <button type="submit" class="btn btn-primary" id="saveClassification">Save</button>
+                  <button type="button" class="btn btn-primary" id="cancelClassification" v-on:click="confirmCancelModal=true">Cancel</button>
+                </b-col>
+              </b-row>
+            </b-form>
           </div>
           <div v-else>
             <div class="card mb-3">
@@ -90,12 +90,13 @@
                     <h4>Qualification: {{ classification.registries_subactivity.description }}&nbsp;
                     <span class="registry-subtle">
                       (<router-link :to="{ name: 'PersonDetail', params: { person_guid: currentDriller.person_guid }}">change</router-link>)
-                    </span></h4>
+                    </span>
+                    </h4>
                   </b-col>
                 </b-row>
                 <b-row>
-                  <b-col md="2"><span class="registry-label">Issued by:</span></b-col>
-                  <b-col md="3">{{ primaryCertificateName }} ({{ primaryCertificateAuth }})</b-col>
+                  <b-col md="1"><span class="registry-label">Issued by:</span></b-col>
+                  <b-col md="4">{{ primaryCertificateName }} ({{ primaryCertificateAuth }})</b-col>
                   <b-col md="2"><span class="registry-label">Certificate number:</span></b-col>
                   <b-col md="3">{{ application.primary_certificate_no }}</b-col>
                 </b-row>
@@ -107,32 +108,77 @@
                     </b-form-group>
                   </b-col>
                 </b-row>
-              </div>
-            </div>
-            <div class="card">
-              <div class="card-body">
-                <h5>Adjudication</h5>
-                <div class="row">
-                  <div class="col-12 registry-item">
+                <b-row>
+                  <b-col>
+                    <h5>Adjudication</h5>
+                  </b-col>
+                </b-row>
+                <b-row>
+                  <b-col>
+                    Confirmed applicant is 19 years of age or older by reviewing: {{ proofOfAge }}
+                  </b-col>
+                </b-row>
+                <b-row>
+                  <b-col md="2" class="registry-item pr-0">
                     <span class="registry-label">Date application received:</span>
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col-12 col-sm-4 registry-item">
+                  </b-col>
+                  <b-col v-if="application && application.application_recieved_date" md="2">
+                      {{ application.application_recieved_date }}
+                  </b-col>
+                  <b-col v-else>Unknown</b-col>
+                </b-row>
+                <b-row>
+                  <b-col md="2" class="registry-item">
                     <span class="registry-label">Approval outcome date:</span>
-                  </div>
-                  <div class="col-12 col-sm-4 registry-item">
+                  </b-col>
+                  <b-col v-if="application && application.application_outcome_date" md="2">
+                    {{ application.application_outcome_date }}
+                  </b-col>
+                  <b-col v-else md="2">Unknown</b-col>
+                  <b-col md="2" class="registry-item">
                     <span class="registry-label">Approval outcome:</span>
-                  </div>
-                  <div class="col-12 col-sm-4 registry-item">
-                    <span class="registry-label">Reason not approved:</span>
-                  </div>
-                </div>
+                  </b-col>
+                  <b-col v-if="application && application.current_status" md="2">
+                    {{ application.current_status.description }}
+                  </b-col>
+                  <b-col v-else md="2">Unknown</b-col>
+                  <b-col v-if="application && application.current_status && application.current_status.code === 'NA'" md="2" class="registry-item">
+                    <span class="registry-label">Reason denied:</span>
+                  </b-col>
+                  <b-col v-if="application && application.current_status && application.current_status.code === 'NA'" md="2">
+                    <span v-if="application.reason_denied">
+                      {{ application.reason_denied }}
+                    </span>
+                    <span v-else>
+                      Unknown
+                    </span>
+                  </b-col>
+                </b-row>
+                <b-row>
+                  <b-col md="2" class="registry-item">
+                    <span class="registry-label">Notification date:</span>
+                  </b-col>
+                  <b-col v-if="application && application.application_outcome_notification_date" md="2">
+                    {{ application.application_outcome_notification_date }}
+                  </b-col>
+                  <b-col v-else md="2">Unknown</b-col>
+                </b-row>
+                <!-- Waiting for decision on how removal of the registry is going to happen:
+                <b-row v-if="registerRemovalDate || registerRemovalReason">
+                  <b-col class="pt-3"><h6>Removal from register</h6></b-col>
+                </b-row>
+                <b-row v-if="registerRemovalDate || registerRemovalReason">
+                  <b-col><span class="registry-label">Register removal date</span></b-col>
+                  <b-col>{{registerRemovalReason}}</b-col>
+                  <b-col><span class="registry-label">Removal reason</span></b-col>
+                  <b-col>{{registerRemovalDate}}</b-col>
+                </b-row> -->
+                <!--
                 <div class="row">
                   <div class="col-12 col-sm-4 registry-item">
                     <span class="registry-label">Register removal date:</span>
                   </div>
-                </div>
+                </div>-->
                 <!-- <div class="row">
                   <div class="col-12 registry-item">
                     <div class="checkbox form-inline">
@@ -186,7 +232,9 @@ export default {
       registration: null,
       applicationFormValue: null,
       editClassification: false,
-      confirmCancelModal: false
+      confirmCancelModal: false,
+      applicationSaving: false,
+      formValid: true
     }
   },
   methods: {
@@ -196,12 +244,12 @@ export default {
     applicationReset () {
       this.registration = null
       this.applicationFormValue = null
+      this.formValid = true
       // We fetch the entire registration with all applications because we need a reference to the registration
       // activity.
       ApiService.get('registrations', this.$route.params.registration_guid)
         .then((response) => {
           this.registration = response.data
-
           if (this.registration) {
             let application = this.registration.applications.find((item) => item.application_guid === this.$route.params.application_guid)
             this.applicationFormValue = {
@@ -212,9 +260,13 @@ export default {
               primary_certificate: {
                 acc_cert_guid: application.primary_certificate.acc_cert_guid
               },
-              status_set: application.status_set,
+              current_status: application.current_status,
               qualifications: application.qualifications,
-              proof_of_age: application.proof_of_age
+              proof_of_age: application.proof_of_age ? application.proof_of_age : {},
+              reason_denied: application.reason_denied,
+              application_outcome_date: application.application_outcome_date,
+              application_outcome_notification_date: application.application_outcome_notification_date,
+              application_recieved_date: application.application_recieved_date
             }
           }
         })
@@ -227,15 +279,23 @@ export default {
       this.$refs.cancelSubmitCancelBtn.focus()
     },
     saveApplication () {
-      this.loading = true
-      const copy = Object.assign({}, this.applicationFormValue)
-      delete copy['status_set'] // TODO: implement this during adjudication
-      delete copy['qualifications'] // This section is read-only. No point pushing it to server.
-      ApiService.patch('applications', this.$route.params.application_guid, copy).then(() => {
-        this.loading = false
-        this.editClassification = false
-        this.applicationReset()
-      })
+      if (this.formValid) {
+        this.applicationSaving = true
+        const copy = Object.assign({}, this.applicationFormValue)
+        delete copy['qualifications'] // This section is read-only. No point pushing it to server.
+        ApiService.patch('applications', this.$route.params.application_guid, copy).then(() => {
+          this.editClassification = false
+          this.applicationSaving = false
+          this.applicationReset()
+        }).catch((error) => {
+          this.applicationSaving = false
+          this.$store.commit(SET_ERROR, 'Error saving application')
+          console.error(error)
+        })
+      }
+    },
+    onApplicationIsValid (event) {
+      this.formValid = event
     }
   },
   computed: {
@@ -261,7 +321,7 @@ export default {
       return this.registration ? this.registration.applications.find((item) => item.application_guid === this.$route.params.application_guid) : null
     },
     applicationLoading () {
-      return this.loading || this.drillerOptions === null || this.registration === null || this.application === null
+      return this.loading || this.drillerOptions === null || this.registration === null || this.application === null || this.applicationSaving === true
     },
     primaryCertificateName () {
       return this.application && this.application.primary_certificate ? this.application.primary_certificate.name : null
@@ -275,6 +335,9 @@ export default {
         title += ` - ${this.registration.registration_no}`
       }
       return title
+    },
+    proofOfAge () {
+      return this.application.proof_of_age ? this.application.proof_of_age.description : null
     },
     ...mapGetters([
       'loading',

@@ -347,7 +347,6 @@ class RegistriesRemovalReason(AuditModel):
 
 
 class Register(AuditModel):
-    PENDING = 'P'
 
     register_guid = models.UUIDField(
         primary_key=True,
@@ -365,12 +364,14 @@ class Register(AuditModel):
         db_column='organization_guid',
         null=True, on_delete=models.PROTECT,
         related_name="registrations")
+    # TODO: Remove this column, it's not being used
     status = models.ForeignKey(
         RegistriesStatusCode,
         db_column='registries_status_code',
         on_delete=models.PROTECT,
-        default=PENDING,
-        verbose_name="Register Entry Status")
+        verbose_name="Register Entry Status",
+        blank=True,
+        null=True)
     registration_no = models.CharField(max_length=15, blank=True, null=True)
     registration_date = models.DateField(blank=True, null=True)
     register_removal_reason = models.ForeignKey(
@@ -396,16 +397,24 @@ class Register(AuditModel):
         )
 
 
+class ApplicationStatusCodeManager(models.Manager):
+
+    def get_queryset(self):
+        return super().get_queryset().filter(expired_date__isnull=True)
+
+
 class ApplicationStatusCode(AuditModel):
     """
     Status of Applications for the Well Driller and Pump Installer Registries
     """
-    registries_application_status_code = models.CharField(
-        primary_key=True, max_length=10, editable=False)
+    code = models.CharField(
+        primary_key=True, max_length=10, editable=False, db_column='registries_application_status_code')
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
     effective_date = models.DateField(default=datetime.date.today)
     expired_date = models.DateField(blank=True, null=True)
+
+    objects = ApplicationStatusCodeManager()
 
     class Meta:
         db_table = 'registries_application_status_code'
@@ -420,8 +429,8 @@ class ProofOfAgeCode(AuditModel):
     """
     List of documents that can be used to indentify (the age) of an application
     """
-    registries_proof_of_age_code = models.CharField(
-        primary_key=True, max_length=10, editable=False)
+    code = models.CharField(
+        primary_key=True, max_length=10, editable=False, db_column='registries_proof_of_age_code')
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
     effective_date = models.DateField(default=datetime.date.today)
@@ -433,7 +442,7 @@ class ProofOfAgeCode(AuditModel):
         verbose_name_plural = 'ProofOfAgeCodes'
 
     def __str__(self):
-        return self.registries_proof_of_age_code
+        return self.code
 
 
 class RegistriesApplication(AuditModel):
@@ -485,17 +494,20 @@ class RegistriesApplication(AuditModel):
         on_delete=models.PROTECT,
         verbose_name="Certificate")
     primary_certificate_no = models.CharField(max_length=50)
-
-    @property
-    def current_status(self):
-        try:
-            return RegistriesApplicationStatus.objects.get(
-                application=self.application_guid,
-                expired_date=None)
-        except:
-            logger.error('Could not find the current status for application: {}'.format(
-                self.application_guid))
-            return None
+    # TODO Should probably force this to have a default value of Pending!
+    current_status = models.ForeignKey(
+        ApplicationStatusCode,
+        blank=True,
+        null=True,
+        db_column='registries_application_status_code',
+        on_delete=models.PROTECT,
+        verbose_name="Application Status Code Reference")
+    application_recieved_date = models.DateField(
+        blank=True, null=True)
+    application_outcome_date = models.DateField(
+        blank=True, null=True)
+    application_outcome_notification_date = models.DateField(
+        blank=True, null=True)
 
     class Meta:
         db_table = 'registries_application'
@@ -507,6 +519,8 @@ class RegistriesApplication(AuditModel):
             self.file_no)
 
 
+# DO NOT USE! THIS IS DEPRECATED!
+# TODO: Remove data from DB
 class RegistriesApplicationStatus(AuditModel):
     """
     Status of a specific Application for the Well Driller and Pump Installer Registries, at a point in time

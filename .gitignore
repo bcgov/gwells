@@ -78,6 +78,8 @@ var/
 *.egg
 webpack-stats.json
 api-tests/.envrc
+functional-tests/.envrc
+app/.env
 
 # PyInstaller and Pip install files
 #  Usually these files are written by a python script from a template
@@ -118,7 +120,7 @@ gwells.pyproj*
 .vscode
 *.ipynb
 
-#functional-tests
+# functional-tests
 functional-tests/.gradle/
 functional-tests/build
 functional-tests/.project
@@ -129,7 +131,7 @@ functional-tests/src/test/groovy/testtamplet.txt
 
 # Custom GW
 activate
-src
+# src <-- this was also blocking functional-tests/src
 x.sh
 
 #virtual env
@@ -141,6 +143,7 @@ x.sh
 frontend/node_modules/
 frontend/webpack-stats.json
 app/gwells/static/vue
+api-tests/node_modules/
 
 sonar-runner/.gradle
 *.patch
