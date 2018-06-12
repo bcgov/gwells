@@ -12,7 +12,6 @@ from .models import (
     RegistriesRemovalReason,
     Register,
     ApplicationStatusCode,
-    RegistriesApplicationStatus,
     WellClassCode,
     Qualification,
     PersonNote,
@@ -33,7 +32,6 @@ admin.site.register(RegistriesStatusCode)
 admin.site.register(RegistriesRemovalReason)
 admin.site.register(Register)
 admin.site.register(ApplicationStatusCode)
-admin.site.register(RegistriesApplicationStatus)
 admin.site.register(WellClassCode)
 admin.site.register(Qualification)
 admin.site.register(PersonNote)

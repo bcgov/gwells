@@ -36,7 +36,8 @@ SECRET_KEY = get_env_variable(
 # Security Settings
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
-SESSION_COOKIE_SECURE = get_env_variable('SESSION_COOKIE_SECURE', 'False') == 'True'
+SESSION_COOKIE_SECURE = get_env_variable(
+    'SESSION_COOKIE_SECURE', 'False') == 'True'
 CSRF_COOKIE_SECURE = get_env_variable('CSRF_COOKIE_SECURE', 'False') == 'True'
 CSRF_COOKIE_HTTPONLY = True
 SESSION_COOKIE_HTTPONLY = True
@@ -45,13 +46,16 @@ SESSION_COOKIE_HTTPONLY = True
 DEBUG = get_env_variable('DJANGO_DEBUG', 'False') == 'True'
 
 # Controls availability of the data entry functionality
-ENABLE_DATA_ENTRY = get_env_variable('ENABLE_DATA_ENTRY', 'False', strict=True) == 'True'
+ENABLE_DATA_ENTRY = get_env_variable(
+    'ENABLE_DATA_ENTRY', 'False', strict=True) == 'True'
 
 # Controls availability of Google Analytics
-ENABLE_GOOGLE_ANALYTICS = get_env_variable('ENABLE_GOOGLE_ANALYTICS', 'False', strict=True) == 'True'
+ENABLE_GOOGLE_ANALYTICS = get_env_variable(
+    'ENABLE_GOOGLE_ANALYTICS', 'False', strict=True) == 'True'
 
 # Additional Documents Feature Flag
-ENABLE_ADDITIONAL_DOCUMENTS = get_env_variable('ENABLE_ADDITIONAL_DOCUMENTS', 'False', strict=True) == 'True'
+ENABLE_ADDITIONAL_DOCUMENTS = get_env_variable(
+    'ENABLE_ADDITIONAL_DOCUMENTS', 'False', strict=True) == 'True'
 
 # Controls app context
 APP_CONTEXT_ROOT = get_env_variable('APP_CONTEXT_ROOT', 'gwells')
@@ -66,8 +70,10 @@ FIXTURES_DIRS = [FIXTURES_DIR]
 SETTINGS_EXPORT = [
     'ENABLE_DATA_ENTRY',            # To temporarily disable report submissions
     'ENABLE_GOOGLE_ANALYTICS',      # This is only enabled for production
-    'ENABLE_ADDITIONAL_DOCUMENTS',  # To temporarily disable additional documents feature
-    'APP_CONTEXT_ROOT',             # This allows for moving the app around without code changes
+    # To temporarily disable additional documents feature
+    'ENABLE_ADDITIONAL_DOCUMENTS',
+    # This allows for moving the app around without code changes
+    'APP_CONTEXT_ROOT',
     'FIXTURES_DIRS'
 ]
 

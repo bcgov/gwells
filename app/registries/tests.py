@@ -8,19 +8,20 @@ from django.utils.six import StringIO
 from rest_framework import status
 from rest_framework.test import APITestCase, APIRequestFactory
 from gwells.models.ProvinceStateCode import ProvinceStateCode
-from django.contrib.auth.models import User
+from gwells.models.Profile import Profile
+from django.contrib.auth.models import User, Group
 from registries.models import (
     ApplicationStatusCode,
     Organization,
     Person,
     RegistriesApplication,
     Register,
-    RegistriesStatusCode,
-    RegistriesApplicationStatus,
     ActivityCode,
     SubactivityCode)
 from registries.views import PersonListView, PersonDetailView
 from django.contrib.auth.models import Group
+from gwells.roles import (roles_to_groups, GWELLS_ROLE_GROUPS, GWELLS_ROLES,
+                          ADJUDICATOR_ROLE, ADMIN_ROLE, AUTHORITY_ROLE, VIEWER_ROLE)
 
 # Note: see postman/newman for more API tests.
 # Postman API tests include making requests with incomplete data, missing required fields etc.
@@ -37,13 +38,15 @@ class AuthenticatedAPITestCase(APITestCase):
     """
 
     def setUp(self):
-        """
-        Set up authenticated test cases.
-        """
-
-        self.user = User.objects.create_user(
-            'testuser', 'test@example.com', 'douglas')
+        self.user, created = User.objects.get_or_create(username='testuser')
+        if created:
+            Profile.objects.get_or_create(user=self.user)
         self.user.is_staff = True
+        self.user.profile.is_gwells_admin = True
+        self.user.save()
+        self.user.profile.save()
+
+        roles_to_groups(self.user, ['gwells_admin'])
         self.client.force_authenticate(self.user)
 
 
@@ -106,17 +109,11 @@ class RegistriesApplicationTestBase(AuthenticatedAPITestCase):
             registries_activity_code="DRILL",
             description="driller",
             display_order="1")
-        # Create registries status
-        self.status_active = RegistriesStatusCode.objects.create(
-            registries_status_code="ACTIVE",
-            description="active",
-            display_order="1")
         # Create new registrations
         # Create registered driller 1
         self.driller = Person.objects.create(
             first_name='Wendy', surname="Well")
         self.registration = Register.objects.create(
-            status=self.status_active,
             person=self.driller,
             registries_activity=self.activity_drill,
             registration_no="F12345",
@@ -134,12 +131,12 @@ class RegistriesApplicationTestBase(AuthenticatedAPITestCase):
             display_order=1)
         # Create application status
         self.application_status_active = ApplicationStatusCode.objects.create(
-            registries_application_status_code='A',
+            code='A',
             description='Active',
             display_order=1
         )
         self.application_status_pending = ApplicationStatusCode.objects.create(
-            registries_application_status_code='P',
+            code='P',
             description='Pending',
             display_order=1
         )
@@ -156,7 +153,7 @@ class RegistriesApplicationNoStatusTest(RegistriesApplicationTestBase):
         """
         data = {
             'current_status': {
-                'status': 'A'
+                'code': 'A'
             }
         }
 
@@ -166,23 +163,20 @@ class RegistriesApplicationNoStatusTest(RegistriesApplicationTestBase):
         updated_application = RegistriesApplication.objects.get(
             application_guid=self.app.application_guid)
         self.assertEqual(
-            updated_application.current_status.status.registries_application_status_code, 'A')
+            updated_application.current_status.code, 'A')
 
 
 class RegistriesApplicationWithStatusActiveTest(RegistriesApplicationTestBase):
 
     def setUp(self):
         super().setUp()
-        RegistriesApplicationStatus.objects.create(
-            application=self.app,
-            status=self.application_status_pending)
 
     def test_update_application_status_to_active(self):
         """ Test that an application created with a Pending status can be updated to Active
         """
         data = {
             'current_status': {
-                'status': 'A'
+                'code': 'A'
             }
         }
 
@@ -192,7 +186,7 @@ class RegistriesApplicationWithStatusActiveTest(RegistriesApplicationTestBase):
         updated_application = RegistriesApplication.objects.get(
             application_guid=self.app.application_guid)
         self.assertEqual(
-            updated_application.current_status.status.registries_application_status_code, 'A')
+            updated_application.current_status.code, 'A')
 
 
 class RegistriesApplicationStatusSubactivityTest(RegistriesApplicationTestBase):
@@ -423,6 +417,8 @@ class APIPersonTests(AuthenticatedAPITestCase):
             'first_name': 'Bobby',
             'surname': 'Driller'
         }
+        self.prov, _ = ProvinceStateCode.objects.get_or_create(
+            province_state_code='BC', display_order=1)
         super().setUp()
 
     def test_create_person(self):
@@ -584,6 +580,20 @@ class APIPersonTests(AuthenticatedAPITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
+    def test_create_person_wrong_role(self):
+        user, created = User.objects.get_or_create(username='test_viewer')
+        if created:
+            Profile.objects.get_or_create(user=user)
+
+        roles_to_groups(user, VIEWER_ROLE)
+        self.client.force_authenticate(user=user)
+        url = reverse('person-list')
+        data = {'first_name': 'Bobby', 'surname': 'Driller'}
+
+        response = self.client.post(url, data, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
     def test_unsafe_methods_by_unauthorized_users(self):
         """
         Ensure that users who are not authenticated cannot perform "unsafe" actions
@@ -626,12 +636,12 @@ class APIFilteringPaginationTests(APITestCase):
         self.province = ProvinceStateCode.objects.create(
             province_state_code='BC',
             display_order=1)
-        self.status_active = RegistriesStatusCode.objects.create(
-            registries_status_code="ACTIVE",
+        self.status_active = ApplicationStatusCode.objects.create(
+            code="A",
             description="active",
             display_order="1")
-        self.status_inactive = RegistriesStatusCode.objects.create(
-            registries_status_code="INACTIVE",
+        self.status_inactive = ApplicationStatusCode.objects.create(
+            code="NA",
             description="inactive",
             display_order="2")
         self.activity_drill = ActivityCode.objects.create(
@@ -647,7 +657,6 @@ class APIFilteringPaginationTests(APITestCase):
         self.driller = Person.objects.create(
             first_name='Wendy', surname="Well")
         self.registration = Register.objects.create(
-            status=self.status_active,
             person=self.driller,
             registries_activity=self.activity_drill,
             registration_no="F12345",
@@ -659,13 +668,13 @@ class APIFilteringPaginationTests(APITestCase):
             display_order=1)
         self.app = RegistriesApplication.objects.create(
             registration=self.registration,
+            current_status=self.status_active,
             subactivity=self.subactivity)
 
         # Create registered driller 2
         self.driller2 = Person.objects.create(
             first_name='Debbie', surname="Driller")
         self.registration2 = Register.objects.create(
-            status=self.status_active,
             person=self.driller2,
             registries_activity=self.activity_drill,
             registration_no="F54321",
@@ -673,6 +682,7 @@ class APIFilteringPaginationTests(APITestCase):
 
         self.app2 = RegistriesApplication.objects.create(
             registration=self.registration2,
+            current_status=self.status_active,
             subactivity=self.subactivity)
 
         # Create unregistered driller
@@ -683,7 +693,6 @@ class APIFilteringPaginationTests(APITestCase):
         self.inactive_driller = Person.objects.create(
             first_name="Billy", surname="Retired")
         self.retired_registration = Register.objects.create(
-            status=self.status_inactive,
             person=self.inactive_driller,
             registries_activity=self.activity_drill,
             registration_no="R55555"
@@ -764,6 +773,20 @@ class APIFilteringPaginationTests(APITestCase):
         url = reverse('organization-detail',
                       kwargs={'org_guid': self.company_with_no_driller.org_guid})
         response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+        # teardown
+        logger.setLevel(previous_level)
+
+    def test_anon_user_cannot_create_driller(self):
+        # setup
+        logger = logging.getLogger('django.request')
+        previous_level = logger.getEffectiveLevel()
+        logger.setLevel(logging.ERROR)
+
+        self.client.force_authenticate(user=None)
+        url = reverse('person-list')
+        response = self.client.post(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
         # teardown

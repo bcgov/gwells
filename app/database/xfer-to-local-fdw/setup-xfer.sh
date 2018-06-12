@@ -10,7 +10,7 @@
 # Running on postgres database pod, as DB root access not enabled on gwells application pod
 
 oc project moe-gwells-test
-podname=$(oc get pods -n moe-gwells-test | grep postgresql | grep Running | head -n 1 | awk '{print $1}')
+podname=$(oc get pods -n moe-gwells-test | grep gwells-pgsql | grep Running | head -n 1 | awk '{print $1}')
 oc exec ${podname} -n moe-gwells-test -- /bin/bash -c 'psql -d $POSTGRESQL_DATABASE -U $POSTGRESQL_USER << EOF
 drop schema if exists xfer_wells cascade;create schema xfer_wells;
 CREATE TABLE xfer_wells.gw_aquifer_attrs AS SELECT * FROM wells.gw_aquifer_attrs;

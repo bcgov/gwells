@@ -1,8 +1,0 @@
-well_yield_unit_code,description,display_order,create_date,update_date,create_user,update_user
-"GPH","Gallons per Hour (U.S./Imperial)","100","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
-"GPM","Gallons per Minute (U.S./Imperial)","2","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
-"IGM","Imperial Gallons per Minute","100","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
-"LPS","Litres Per Second","100","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
-"UNK","Unknown Yield","100","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
-"USGPM","U.S. Gallons per Minute","1","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
-"DRY","Dry Hole","100","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"

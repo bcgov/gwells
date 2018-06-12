@@ -16,7 +16,7 @@
     </b-alert>
 
     <!-- Admin options -->
-    <b-card v-if="userIsAdmin" no-body class="container p-1 mb-3">
+    <b-card v-if="userRoles.edit" no-body class="container p-1 mb-3">
       <b-card-header header-tag="header" class="p-1" role="tab">
         <b-btn block href="#" v-b-toggle.adminPanel variant="light" class="text-left">Administrator options</b-btn>
       </b-card-header>
@@ -65,7 +65,7 @@
             </b-col>
           </b-form-row>
           <b-form-row>
-            <b-col cols="12" md="6" class="pr-md-5">
+            <b-col cols="12" md="6">
               <b-form-group label="Community:" label-for="cityOptions">
                 <b-form-select
                     multiple="multiple"
@@ -85,18 +85,13 @@
                 </b-form-select>
               </b-form-group>
             </b-col>
-            <b-col cols="12" md="6" v-if="userIsAdmin">
+            <b-col cols="12" md="6" v-if="userRoles.view" class="pl-md-5">
               <b-form-group label="Registration status" label-for="registrationStatusSelect">
                 <b-form-select
+                    :options="regStatusOptions"
                     v-model="searchParams.status"
                     id="registrationStatusSelect"
-                    name="registryStatuses">
-                  <option value="">All</option>
-                  <option value="PENDING">Pending</option>
-                  <option value="INACTIVE">Not registered</option>
-                  <option value="ACTIVE">Registered</option>
-                  <option value="REMOVED">Removed</option>
-                </b-form-select>
+                    name="registryStatuses"/>
               </b-form-group>
             </b-col>
           </b-form-row>
@@ -159,12 +154,12 @@
               To update contact information email <a href="mailto:Groundwater@gov.bc.ca">groundwater@gov.bc.ca</a>.
             </b-col>
             <b-col cols="12" class="mt-2">
-              <registry-table @sort="sortTable" :activity="lastSearchedActivity"/>
+              <registry-table @sort="sortTable"/>
             </b-col>
           </b-row>
           <b-row v-if="drillers.results && drillers.results.length" class="mt-5">
             <b-col cols="12">
-              <register-legal-text class="register-legal" :activity="lastSearchedActivity"/>
+              <register-legal-text class="register-legal" :activity="activity"/>
             </b-col>
           </b-row>
         </template>
@@ -179,9 +174,9 @@ import SearchTable from '@/registry/components/search/SearchTable.vue'
 import LegalText from '@/registry/components/Legal.vue'
 import APIErrorMessage from '@/common/components/APIErrorMessage.vue'
 import querystring from 'querystring'
-import { mapGetters } from 'vuex'
-import { FETCH_CITY_LIST, FETCH_DRILLER_LIST } from '@/registry/store/actions.types'
-import { SET_DRILLER_LIST } from '@/registry/store/mutations.types'
+import { mapGetters, mapActions } from 'vuex'
+import { FETCH_CITY_LIST, FETCH_DRILLER_LIST, FETCH_DRILLER_OPTIONS } from '@/registry/store/actions.types'
+import { SET_DRILLER_LIST, SET_LAST_SEARCHED_ACTIVITY } from '@/registry/store/mutations.types'
 
 export default {
   components: {
@@ -193,14 +188,6 @@ export default {
     return {
       adminPanelToggle: false,
       loginPanelToggle: false,
-      lastSearchedActivity: 'DRILL',
-      regStatusOptions: [
-        { value: '', text: 'All', public: false },
-        { value: 'PENDING', text: 'Pending', public: false },
-        { value: 'INACTIVE', text: 'Not registered', public: true },
-        { value: 'ACTIVE', text: 'Registered', public: true },
-        { value: 'REMOVED', text: 'Removed', public: false }
-      ],
       credentials: {
         username: null,
         password: null
@@ -209,7 +196,7 @@ export default {
         search: '',
         city: [''],
         activity: 'DRILL',
-        status: 'ACTIVE',
+        status: 'A',
         limit: '10',
         ordering: ''
       },
@@ -219,6 +206,15 @@ export default {
     }
   },
   computed: {
+    regStatusOptions () {
+      let result = [
+        { value: '', text: 'All' }
+      ]
+      if (this.drillerOptions && this.drillerOptions.ApprovalOutcome) {
+        result = result.concat(this.drillerOptions.ApprovalOutcome.map((item) => { return {'text': item.description, 'value': item.code} }))
+      }
+      return result
+    },
     formatActivityForCityList () {
       // converts activity code to a plural string compatible with cities list endpoint
       if (this.searchParams.activity === 'DRILL') {
@@ -235,8 +231,8 @@ export default {
         DRILL: 'Well Driller',
         PUMP: 'Well Pump Installer'
       }
-      if (activityMap[this.lastSearchedActivity]) {
-        return activityMap[this.lastSearchedActivity]
+      if (activityMap[this.activity]) {
+        return activityMap[this.activity]
       }
       return ''
     },
@@ -253,11 +249,13 @@ export default {
       }
     },
     ...mapGetters([
-      'userIsAdmin',
+      'userRoles',
+      'drillerOptions',
       'loading',
       'listError',
       'cityList',
-      'drillers'
+      'drillers',
+      'activity'
     ])
   },
   watch: {
@@ -275,7 +273,11 @@ export default {
     drillerSearch () {
       const table = this.$refs.registryTableResults
       const params = this.APISearchParams
-      this.lastSearchedActivity = this.searchParams.activity || 'DRILL'
+
+      // save the last searched activity in the store for reference by table components
+      // (e.g. for formatting table for pump installer searches)
+      this.$store.commit(SET_LAST_SEARCHED_ACTIVITY, this.searchParams.activity || 'DRILL')
+
       this.searchLoading = true
       if (window.ga) {
         window.ga('send', {
@@ -297,7 +299,7 @@ export default {
     drillerSearchReset (options = {}) {
       this.searchParams.search = ''
       this.searchParams.city = ['']
-      this.searchParams.status = 'ACTIVE'
+      this.searchParams.status = 'A'
       this.searchParams.ordering = ''
       if (options.clearDrillers) {
         this.$store.commit(SET_DRILLER_LIST, [])
@@ -316,11 +318,15 @@ export default {
         this.lastSearchedParams['ordering'] = `${sortCode}`
       }
       this.$store.dispatch(FETCH_DRILLER_LIST, this.lastSearchedParams)
-    }
+    },
+    ...mapActions([
+      FETCH_DRILLER_OPTIONS
+    ])
   },
   created () {
     // send request for city list when app is loaded
     this.$store.dispatch(FETCH_CITY_LIST, this.formatActivityForCityList)
+    this.FETCH_DRILLER_OPTIONS()
 
     // Fetch current surveys and add 'registries' surveys (if any) to this.surveys to be displayed
     ApiService.query('surveys/').then((response) => {

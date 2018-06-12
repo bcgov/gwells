@@ -1,5 +1,0 @@
-create_user,create_date,update_user,update_date,screen_bottom_code,description,display_order 
-"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","BAIL","Bail","10"
-"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","PLATE","Plate","20"
-"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","PLUG","Plug","30"
-"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","OTHER","Other","40"

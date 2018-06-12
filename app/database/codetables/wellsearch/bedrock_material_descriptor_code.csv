@@ -1,9 +1,0 @@
-bedrock_material_descriptor_code,description,display_order,create_date,update_date,create_user,update_user
-"Weathered","Weathered","10","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
-"Competent","Competent","20","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
-"Fractured","Fractured","30","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
-"Jointed","Jointed","40","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
-"Interbed","Interbedded","50","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
-"Fault","Fault","60","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
-"Fault Open","Fault Open","70","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"
-"Fault Goug","Fault Gouge","80","2017-07-01 00:00:00-08","2017-07-01 00:00:00-08","ETL_USER","ETL_USER"

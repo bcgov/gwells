@@ -16,6 +16,7 @@ from django.utils import timezone
 from django.db import transaction
 import logging
 from rest_framework import serializers
+from gwells.models.ProvinceStateCode import ProvinceStateCode
 from registries.models import (
     ProofOfAgeCode,
     Organization,
@@ -23,7 +24,6 @@ from registries.models import (
     Person,
     Register,
     RegistriesApplication,
-    RegistriesApplicationStatus,
     RegistriesStatusCode,
     ActivityCode,
     SubactivityCode,
@@ -58,9 +58,14 @@ class ProofOfAgeCodeSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProofOfAgeCode
         fields = (
-            'registries_proof_of_age_code',
+            'code',
             'description'
         )
+
+    def to_internal_value(self, data):
+        if 'code' in data:
+            return ProofOfAgeCode.objects.get(code=data['code'])
+        return super().to_internal_value(data)
 
 
 class OrganizationNoteSerializer(serializers.ModelSerializer):
@@ -146,36 +151,26 @@ class SubactivitySerializer(serializers.ModelSerializer):
             'qualification_set',
         )
 
-
-class ApplicationStatusAutoCreateSerializer(serializers.ModelSerializer):
-
-    # status = serializers.PrimaryKeyRelatedField(
-        # queryset=ApplicationStatusCode.objects.all())
-
-    class Meta:
-        model = RegistriesApplicationStatus
-        fields = (
-            'effective_date',
-            'status',
-        )
+    def to_internal_value(self, data):
+        if 'registries_subactivity_code' in data:
+            return SubactivityCode.objects.get(
+                registries_subactivity_code=data['registries_subactivity_code'])
+        return super().to_internal_value(data)
 
 
-class ApplicationStatusSerializer(serializers.ModelSerializer):
-    """
-    Serializes RegistriesApplicationStatus for admin users
-    ApplicationStatus objects form a related set for an Application object.
-    """
-    description = serializers.StringRelatedField(source='status.description')
+class ApplicationStatusCodeSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = RegistriesApplicationStatus
+        model = ApplicationStatusCode
         fields = (
-            'status',
-            'description',
-            'notified_date',
-            'effective_date',
-            'expired_date',
+            'code',
+            'description'
         )
+
+    def to_internal_value(self, data):
+        if 'code' in data:
+            return ApplicationStatusCode.objects.get(code=data['code'])
+        return super().to_internal_value(self)
 
 
 class ApplicationListSerializer(AuditModelSerializer):
@@ -250,13 +245,9 @@ class RegistrationsListSerializer(serializers.ModelSerializer):
         Filter for approved applications (application has an 'approved' status that is not expired)
         """
 
-        applications = [
-            app for app in registration.applications.all()
-            if any((x.status.registries_application_status_code == 'A' and x.expired_date is None)
-                   for x in app.status_set.all())]
-
         serializer = ApplicationListSerializer(
-            instance=applications, many=True)
+            instance=registration.applications.filter(current_status__code='A'),
+            many=True)
         return serializer.data
 
 
@@ -384,14 +375,17 @@ class AccreditedCertificateCodeSerializer(serializers.ModelSerializer):
             'cert_auth'
         )
 
+    def to_internal_value(self, data):
+        if 'acc_cert_guid' in data:
+            return AccreditedCertificateCode.objects.get(acc_cert_guid=data['acc_cert_guid'])
+        return super().to_internal_value(data)
+
 
 class ApplicationAdminSerializer(AuditModelSerializer):
     """
     Serializes RegistryApplication model fields for admin users
     """
 
-    status_set = ApplicationStatusSerializer(many=True, read_only=True)
-    current_status = ApplicationStatusSerializer(required=False)
     qualifications = serializers.StringRelatedField(
         source='subactivity.qualification_set',
         many=True,
@@ -403,10 +397,15 @@ class ApplicationAdminSerializer(AuditModelSerializer):
     # valid values.
     primary_certificate = AccreditedCertificateCodeSerializer(required=False)
     primary_certificate_no = serializers.CharField(required=False)
+    proof_of_age = ProofOfAgeCodeSerializer(required=False)
+    current_status = ApplicationStatusCodeSerializer(required=False)
 
     class Meta:
         model = RegistriesApplication
         fields = (
+            'application_outcome_date',
+            'application_outcome_notification_date',
+            'application_recieved_date',
             'create_user',
             'create_date',
             'update_user',
@@ -421,7 +420,6 @@ class ApplicationAdminSerializer(AuditModelSerializer):
             'reason_denied',
             'subactivity',
             'qualifications',
-            'status_set',
             'current_status'
         )
 
@@ -430,68 +428,30 @@ class ApplicationAdminSerializer(AuditModelSerializer):
         Set fields to different serializers for create/update operations.
         This method is called on POST/PUT/PATCH requests
         """
-        self.fields['subactivity'] = serializers.PrimaryKeyRelatedField(
-            queryset=SubactivityCode.objects.all())
         self.fields['registration'] = serializers.PrimaryKeyRelatedField(
             queryset=Register.objects.all())
+        if 'application_outcome_date' in data and data['application_outcome_date'] == '':
+            data['application_outcome_date'] = None
+        if ('application_outcome_notification_date' in data and
+                data['application_outcome_notification_date'] == ''):
+            data['application_outcome_notification_date'] = None
+        if 'application_recieved_date' in data and data['application_recieved_date'] == '':
+            data['application_recieved_date'] = None
         return super().to_internal_value(data)
 
     def create(self, validated_data):
         """
         Create an application as well as a default status record of "pending"
         """
+        if 'current_status' not in validated_data:
+            # By default we set the ApplicationStatus to P(ending).
+            validated_data['current_status'] = ApplicationStatusCode.objects.get(code='P')
         try:
             app = RegistriesApplication.objects.create(**validated_data)
         except TypeError:
             raise TypeError('A field may need to be made read only.')
 
-        # make a status record to go with the new application
-        # by default we set the ApplicationStatus to P(ending).
-        pending = ApplicationStatusCode.objects.get(
-            registries_application_status_code='P')
-        RegistriesApplicationStatus.objects.create(
-            application=app,
-            status=pending)
-
         return app
-
-    @transaction.atomic
-    def update(self, instance, validated_data):
-        """
-        The update is wrapped inside a transaction since we're changing a few
-        records and creating one. We want to avoid a state where where a partial
-        change occurs, especially if it leaves an application without a current
-        status.
-        """
-        # We pop the current status, as the update method on the base
-        # class cannot serialize nested fields.
-        validated_status = validated_data.pop('current_status', None)
-
-        if validated_status:
-            # Validated_status is an OrderedDict at this point.
-            validated_status_code = validated_status.get(
-                'status').registries_application_status_code
-            current_status = instance.current_status
-            if current_status:
-                current_status_code = current_status.status.registries_application_status_code
-            else:
-                logger.error(
-                    'RegistryApplication {} does not have a current status'.format(instance))
-                current_status_code = None
-
-            if validated_status_code != current_status_code:
-                if current_status:
-                    # Expire existing status.
-                    current_status.expired_date = timezone.now()
-                    current_status.save()
-                new_status = ApplicationStatusCode.objects.get(
-                    registries_application_status_code=validated_status_code)
-                # Create a new status.
-                RegistriesApplicationStatus.objects.create(
-                    application=instance,
-                    status=new_status)
-
-        return super().update(instance, validated_data)
 
 
 class RegistrationAdminSerializer(AuditModelSerializer):
@@ -600,9 +560,9 @@ class PersonListSerializer(AuditModelSerializer):
         """
         Filter for active registrations
         """
-
         registrations = [
-            reg for reg in person.registrations.all() if reg.status.registries_status_code == 'ACTIVE']
+            reg for reg in person.registrations.filter(
+                applications__current_status__code='A').distinct()]
 
         serializer = RegistrationsListSerializer(
             instance=registrations, many=True)
@@ -631,28 +591,26 @@ class ApplicationAutoCreateSerializer(AuditModelSerializer):
     record is created
     """
 
-    status_set = ApplicationStatusAutoCreateSerializer(
-        many=True, read_only=False)
-    # acc_cert_guid
-    primary_certificate = serializers.PrimaryKeyRelatedField(
-        queryset=AccreditedCertificateCode.objects.all(), required=False)
-    # qualifications = serializers.StringRelatedField(
-    #     source='subactivity.qualification_set',
-    #     many=True,
-    #     read_only=True)
+    primary_certificate = AccreditedCertificateCodeSerializer(
+        required=False)
+    proof_of_age = ProofOfAgeCodeSerializer(required=False)
     qualifications = QualificationAutoCreateSerializer(
         many=True,
         read_only=True)
     registration = serializers.StringRelatedField(
         source='registration.register_guid')
-
-    current_status = ApplicationStatusSerializer(read_only=True)
+    subactivity = SubactivitySerializer(
+        required=False
+    )
+    current_status = ApplicationStatusCodeSerializer(required=False)
 
     class Meta:
         model = RegistriesApplication
         fields = (
+            'application_recieved_date',
             'create_user',
             'create_date',
+            'current_status',
             'update_user',
             'update_date',
             'application_guid',
@@ -664,9 +622,7 @@ class ApplicationAutoCreateSerializer(AuditModelSerializer):
             'registrar_notes',
             'reason_denied',
             'subactivity',
-            'qualifications',
-            'status_set',
-            'current_status'
+            'qualifications'
         )
 
 
@@ -695,7 +651,8 @@ class PersonAdminSerializer(AuditModelSerializer):
     Serializes the Person model (admin user fields)
     """
 
-    registrations = RegistrationAdminSerializer(many=True)
+    # registrations = RegistrationAdminSerializer(many=True)
+    registrations = serializers.SerializerMethodField()
     contact_info = ContactInfoSerializer(many=True, required=False)
     notes = serializers.SerializerMethodField()
 
@@ -739,13 +696,8 @@ class PersonAdminSerializer(AuditModelSerializer):
             register = Register.objects.create(person=person, **reg_data)
             for app_data in applications:
                 app_data = {**app_data, **audit_info}
-                status_set = app_data.pop('status_set', list())
                 app = RegistriesApplication.objects.create(
                     registration=register, **app_data)
-                for status_data in status_set:
-                    staus_data = {**status_data, **audit_info}
-                    RegistriesApplicationStatus.objects.create(
-                        application=app, **status_data)
         for contact_data in contacts:
             contact_data = {**contact_data, **audit_info}
             contact = ContactInfo.objects.create(person=person, **contact_data)
@@ -761,6 +713,16 @@ class PersonAdminSerializer(AuditModelSerializer):
         if 'contact_info' in validated_data:
             validated_data.pop('contact_info')
         return super(PersonAdminSerializer, self).update(instance, validated_data)
+
+    def get_registrations(self, person):
+        """
+        Get sorted list of registrations
+        """
+        registrations = [
+            reg for reg in person.registrations.order_by('registries_activity')]
+        serializer = RegistrationAdminSerializer(
+            instance=registrations, many=True)
+        return serializer.data
 
     class Meta:
         model = Person
@@ -801,3 +763,13 @@ class WellClassCodeSerializer(serializers.ModelSerializer):
     class Meta:
         model = WellClassCode
         fields = ('registries_well_class_code', 'description')
+
+
+class ProvinceStateCodeSerializer(serializers.ModelSerializer):
+    """
+    Serializes ProvinceStateCodes
+    """
+
+    class Meta:
+        model = ProvinceStateCode
+        fields = ('province_state_code', 'description', 'display_order')

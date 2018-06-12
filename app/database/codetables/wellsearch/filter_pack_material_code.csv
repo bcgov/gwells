@@ -1,4 +1,0 @@
-create_user,create_date,update_user,update_date,filter_pack_material_code,description,display_order 
-"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","VCSAND","Very Coarse Sand","10"
-"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","VFGRAV","Very Fine Gravel","20"
-"ETL_USER","2017-07-01 00:00:00-08","ETL_USER","2017-07-01 00:00:00-08","FGRAV","Fine Gravel","30"

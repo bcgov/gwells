@@ -1,5 +1,7 @@
 <template>
   <div>
+
+    <!-- Person details -->
     <div v-if="section === 'person' || section === 'all'">
       <b-form @submit.prevent="submitPersonForm" @reset.prevent="formReset">
         <b-row>
@@ -54,12 +56,14 @@
         </b-row>
         <b-row>
           <b-col>
-            <button type="submit" class="btn btn-primary">Submit</button>
+            <button type="submit" class="btn btn-primary">Save</button>
             <button type="button" class="btn btn-light" @click="$emit('canceled')">Cancel</button>
           </b-col>
         </b-row>
       </b-form>
     </div>
+
+    <!-- Contact information -->
     <div v-if="(section === 'contact' || section === 'all')">
       <b-form @submit.prevent="submitContactForm">
         <b-row>
@@ -70,7 +74,7 @@
               label-for="emailInput">
               <b-form-input
                 id="emailInput"
-                type="text"
+                type="email"
                 :state="validation.contact_email"
                 aria-describedby="emailInputFeedback"
                 v-model="contactInfoForm.contact_email"
@@ -89,19 +93,23 @@
               label-for="telInput">
               <b-form-input
                 id="telInput"
-                type="text"
+                type="tel"
+                :formatter="formatTel"
+                lazy-formatter
                 v-model="contactInfoForm.contact_tel"/>
             </b-form-group>
           </b-col>
         </b-row>
         <b-row>
           <b-col>
-            <button type="submit" class="btn btn-primary">Submit</button>
+            <button type="submit" class="btn btn-primary">Save</button>
             <button type="button" class="btn btn-light" @click="$emit('canceled')">Cancel</button>
           </b-col>
         </b-row>
       </b-form>
     </div>
+
+    <!-- Company -->
     <div v-if="(section === 'company' || section === 'all') && !!record">
       <b-form @submit.prevent="submitCompanyForm">
         <b-form-group
@@ -117,10 +125,29 @@
             label="org_verbose_name">
           </v-select>
         </b-form-group>
-        <button type="submit" class="btn btn-primary">Submit</button>
+        <button type="submit" class="btn btn-primary">Save</button>
         <button type="button" class="btn btn-light" @click="$emit('canceled')">Cancel</button>
       </b-form>
     </div>
+
+    <!-- Registration -->
+    <div v-if="(section === 'registration' || section === 'all') && !!record">
+      <b-form @submit.prevent="submitRegistrationForm">
+        <b-form-group
+          id="registrationInputGroup"
+          label="Registration number:"
+          label-for="registrationInput"
+          >
+          <b-form-input
+            v-model="registrationForm.registration_no"
+            id="registrationInput"
+          ></b-form-input>
+        </b-form-group>
+        <button type="submit" class="btn btn-primary">Save</button>
+        <button type="button" class="btn btn-light" @click="$emit('canceled')">Cancel</button>
+      </b-form>
+    </div>
+
   </div>
 </template>
 
@@ -128,12 +155,14 @@
 import { mapGetters } from 'vuex'
 import ApiService from '@/common/services/ApiService.js'
 import APIErrorMessage from '@/common/components/APIErrorMessage'
+import inputFormatMixin from '@/common/inputFormatMixin.js'
 
 export default {
   name: 'PersonDetailEdit',
   components: {
     'api-error': APIErrorMessage
   },
+  mixins: [inputFormatMixin],
 
   /**
    * This component accepts two props: section and record.
@@ -151,6 +180,7 @@ export default {
       personalInfoForm: {},
       contactInfoForm: {},
       registrationCompanyForm: {},
+      registrationForm: {},
       companies: [],
       submitError: null,
       fieldErrors: {
@@ -206,6 +236,12 @@ export default {
           org_verbose_name: this.record.organization.org_verbose_name
         }
       }
+
+      if (this.record) {
+        this.registrationForm = {
+          registration_no: this.record.registration_no
+        }
+      }
     },
     submitCompanyForm () {
       const regGuid = this.record.register_guid
@@ -224,6 +260,19 @@ export default {
     submitContactForm () {
       const data = this.contactInfoForm
       ApiService.patch('drillers', this.record, data).then(() => {
+        this.$emit('updated')
+      }).catch((e) => {
+        const errors = e.response.data
+        for (const field in errors) {
+          // errors is an object containing keys corresponding to fields. For each field,
+          // our API generally returns an array of strings
+          this.fieldErrors[field] = errors[field]
+        }
+      })
+    },
+    submitRegistrationForm () {
+      const data = this.registrationForm
+      ApiService.patch('registrations', this.record.register_guid, data).then(() => {
         this.$emit('updated')
       }).catch((e) => {
         const errors = e.response.data
