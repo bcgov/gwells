@@ -322,13 +322,18 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
             # User is logged in
             status = self.request.query_params.get('status', None)
             if status:
-                qs = qs.filter(
-                    registrations__applications__current_status__code=status)
+                if status == 'Removed':
+                    # Things are a bit more complicated if we're looking for removed, as the current
+                    # status doesn't come in to play.
+                    qs = qs.exclude(registrations__applications__removal_date__isnull=True)
+                else:
+                    qs = qs.filter(
+                        registrations__applications__current_status__code=status)
         return qs
 
     def list(self, request):
         """ List response using serializer with reduced number of fields """
-        queryset = self.get_queryset()        
+        queryset = self.get_queryset()
         filtered_queryset = self.filter_queryset(queryset)
 
         page = self.paginate_queryset(filtered_queryset)
