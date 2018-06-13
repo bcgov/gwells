@@ -160,7 +160,7 @@ _stage('Unit Test', context) {
             try {
                 container('app') {
                     sh script: '''#!/usr/bin/container-entrypoint /bin/sh
-                        set -euo nounset
+                        set -eou pipefail
                         python --version
                         pip --version
                         node --version
