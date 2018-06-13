@@ -20,37 +20,42 @@ from django_filters import rest_framework as restfilters
 from rest_framework import filters, status, exceptions
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView
 from rest_framework.pagination import LimitOffsetPagination, PageNumberPagination
-from rest_framework.permissions import IsAdminUser
+from rest_framework.permissions import DjangoModelPermissionsOrAnonReadOnly, AllowAny
 from rest_framework.response import Response
 from rest_framework.mixins import CreateModelMixin, UpdateModelMixin
+from rest_framework.views import APIView
 from drf_multiple_model.views import ObjectMultipleModelAPIView
+from gwells.roles import GWELLS_ROLE_GROUPS
+from gwells.models.ProvinceStateCode import ProvinceStateCode
 from registries.models import (
-    ProofOfAgeCode,
-    Organization,
-    Person,
-    ContactInfo,
-    RegistriesApplication,
-    Register,
-    PersonNote,
-    SubactivityCode,
-    WellClassCode,
     AccreditedCertificateCode,
-    OrganizationNote)
-from registries.permissions import IsAdminOrReadOnly, IsGwellsAdmin
+    ActivityCode,
+    ApplicationStatusCode,
+    ContactInfo,
+    Organization,
+    OrganizationNote,
+    Person,
+    PersonNote,
+    ProofOfAgeCode,
+    Register,
+    RegistriesApplication,
+    SubactivityCode,
+    WellClassCode)
+from registries.permissions import IsAdminOrReadOnly, GwellsPermissions
 from registries.serializers import (
     ApplicationAdminSerializer,
+    ApplicationStatusCodeSerializer,
     ApplicationListSerializer,
     CityListSerializer,
     ProofOfAgeCodeSerializer,
     OrganizationListSerializer,
-    OrganizationSerializer,
     OrganizationAdminSerializer,
     OrganizationNameListSerializer,
-    PersonSerializer,
     PersonAdminSerializer,
     PersonListSerializer,
     RegistrationAdminSerializer,
     PersonNoteSerializer,
+    ProvinceStateCodeSerializer,
     SubactivitySerializer,
     WellClassCodeSerializer,
     AccreditedCertificateCodeSerializer,
@@ -105,7 +110,7 @@ class PersonFilter(restfilters.FilterSet):
     # city = restfilters.MultipleChoiceFilter(name="organization__city")
     prov = restfilters.CharFilter(
         name="registrations__organization__province_state")
-    status = restfilters.CharFilter(name="registrations__status")
+    status = restfilters.CharFilter(name="registrations__applications__current_status")
     activity = restfilters.CharFilter(
         name="registrations__registries_activity")
 
@@ -130,7 +135,7 @@ class OrganizationListView(AuditCreateMixin, ListCreateAPIView):
     Creates a new drilling organization record
     """
 
-    permission_classes = (IsGwellsAdmin,)
+    permission_classes = (GwellsPermissions,)
     serializer_class = OrganizationListSerializer
     pagination_class = None
 
@@ -152,16 +157,6 @@ class OrganizationListView(AuditCreateMixin, ListCreateAPIView):
         'registrations__applications__file_no'
     )
 
-    def get_queryset(self):
-        """
-        Filter out organizations with no registered drillers if user is anonymous
-        """
-        qs = super().get_queryset()
-        if not self.request.user.is_staff:
-            qs = qs \
-                .filter(person_set__registrations__status='ACTIVE')
-        return qs
-
 
 class OrganizationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
     """
@@ -178,7 +173,7 @@ class OrganizationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
     Removes the specified drilling organization record
     """
 
-    permission_classes = (IsGwellsAdmin,)
+    permission_classes = (GwellsPermissions,)
 
     # 'pk' and 'id' have been replaced by 'org_guid' as primary key for Organization model
     lookup_field = "org_guid"
@@ -190,17 +185,6 @@ class OrganizationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
         .prefetch_related('registrations', 'registrations__person') \
         .filter(expired_date__isnull=True)
 
-    def get_queryset(self):
-        """
-        Filter out organizations with no registered drillers if user is anonymous
-        """
-        qs = self.queryset
-        if not self.request.user.is_staff:
-            qs = qs \
-                .filter(registrations__status='ACTIVE') \
-                .distinct()
-        return qs
-
     def destroy(self, request, *args, **kwargs):
         """
         Set expired_date to current date
@@ -210,46 +194,56 @@ class OrganizationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
         for reg in instance.registrations.all():
             if reg.person.expired_date is None:
                 raise exceptions.ValidationError(
-                    'Organization has registrations associated with it. Remove this organization from registration records first.')
+                    ('Organization has registrations associated with it. ')
+                    ('Remove this organization from registration records first.'))
         instance.expired_date = timezone.now()
         instance.save()
 
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class PersonOptionsView(ObjectMultipleModelAPIView):
-    """
-    get:
-    Returns available options for creating a person record
-    """
+class PersonOptionsView(APIView):
 
-    # We shouldn't need pagination, there should never be that many options!
-    pagination_class = None
+    def get(self, request, format=None):
+        result = {}
+        for activity in ActivityCode.objects.all():
+            # Well class query
+            well_class_query = WellClassCode \
+                .objects.filter(
+                    qualification__subactivity__registries_activity=activity.registries_activity_code) \
+                .order_by('registries_well_class_code').distinct('registries_well_class_code')
+            # Sub activity query
+            sub_activity_query = SubactivityCode \
+                .objects.filter(
+                    registries_activity=activity).order_by('display_order')
+            # Certificate code query
+            cert_code_query = AccreditedCertificateCode \
+                .objects.filter(
+                    registries_activity=activity.registries_activity_code) \
+                .order_by('name')
 
-    def get_querylist(self):
-        activity = self.request.query_params['activity']
-        querylist = [
-            {
-                'queryset': WellClassCode.objects.filter(
-                    qualification__subactivity__registries_activity=activity).order_by(
-                        'registries_well_class_code').distinct('registries_well_class_code'),
-                'serializer_class': WellClassCodeSerializer
-            },
-            {
-                'queryset': SubactivityCode.objects.filter(
-                    registries_activity=activity).order_by('display_order'),
-                'serializer_class': SubactivitySerializer
-            },
-            {
-                'queryset': AccreditedCertificateCode.objects.all().order_by('name'),
-                'serializer_class': AccreditedCertificateCodeSerializer
-            },
-            {
-                'queryset': ProofOfAgeCode.objects.all().order_by('display_order'),
-                'serializer_class': ProofOfAgeCodeSerializer
+            result[activity.registries_activity_code] = {
+                'WellClassCode':
+                    list(map(lambda item: WellClassCodeSerializer(
+                        item).data, well_class_query)),
+                'SubactivityCode':
+                    list(map(lambda item: SubactivitySerializer(
+                        item).data, sub_activity_query)),
+                'AccreditedCertificateCode':
+                    list(map(lambda item: AccreditedCertificateCodeSerializer(
+                        item).data, cert_code_query))
             }
-        ]
-        return querylist
+        result['ProofOfAgeCode'] = \
+            list(map(lambda item: ProofOfAgeCodeSerializer(item).data,
+                     ProofOfAgeCode.objects.all().order_by('display_order')))
+        result['ApprovalOutcome'] = \
+            list(map(lambda item: ApplicationStatusCodeSerializer(item).data,
+                     ApplicationStatusCode.objects.all()))
+        result['province_state_codes'] = \
+            list(map(lambda item: ProvinceStateCodeSerializer(item).data,
+                     ProvinceStateCode.objects.all().order_by('display_order')))
+
+        return Response(result)
 
 
 class PersonListView(AuditCreateMixin, ListCreateAPIView):
@@ -261,8 +255,8 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
     Creates a new person record
     """
 
-    permission_classes = (IsAdminOrReadOnly,)
-    serializer_class = PersonSerializer
+    permission_classes = (DjangoModelPermissionsOrAnonReadOnly,)
+    serializer_class = PersonAdminSerializer
     pagination_class = APILimitOffsetPagination
 
     # Allow searching on name fields, names of related companies, etc.
@@ -290,10 +284,9 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
             'registrations__organization',
             'registrations__organization__province_state',
             'registrations__applications',
+            'registrations__applications__current_status',
             'registrations__applications__primary_certificate',
             'registrations__applications__primary_certificate__cert_auth',
-            'registrations__applications__status_set',
-            'registrations__applications__status_set__status',
             'registrations__applications__subactivity',
             'registrations__applications__subactivity__qualification_set',
             'registrations__applications__subactivity__qualification_set__well_class'
@@ -312,27 +305,25 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
             cities = cities.split(',')
             qs = qs.filter(registrations__organization__city__in=cities)
 
-        # Only show active drillers to non-admin users and public
         activity = self.request.query_params.get('activity', None)
-        if not self.request.user.is_staff:
-            if activity:
-                qs = qs.filter(registrations__status='ACTIVE',
-                               registrations__registries_activity__registries_activity_code=activity)
-
-            else:
-                qs = qs.filter(registrations__status='ACTIVE')
-
+        if activity:
+            qs = qs.filter(registrations__registries_activity__registries_activity_code=activity)
+        if not self.request.user.groups.filter(name__in=GWELLS_ROLE_GROUPS).exists():
+            # User is not logged in
+            # Only show active drillers to non-admin users and public
+            qs = qs.filter(
+                registrations__applications__current_status__code='A')
+        else:
+            # User is logged in
+            status = self.request.query_params.get('status', None)
+            if status:
+                qs = qs.filter(
+                    registrations__applications__current_status__code=status)
         return qs
-
-    def get_serializer_class(self):
-        """ Returns the appropriate serializer for the user """
-        if self.request and self.request.user.is_staff:
-            return PersonAdminSerializer
-        return self.serializer_class
 
     def list(self, request):
         """ List response using serializer with reduced number of fields """
-        queryset = self.get_queryset()
+        queryset = self.get_queryset()        
         filtered_queryset = self.filter_queryset(queryset)
 
         page = self.paginate_queryset(filtered_queryset)
@@ -359,8 +350,8 @@ class PersonDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
     Removes the specified person record
     """
 
-    permission_classes = (IsGwellsAdmin,)
-    serializer_class = PersonSerializer
+    permission_classes = (GwellsPermissions,)
+    serializer_class = PersonAdminSerializer
 
     # pk field has been replaced by person_guid
     lookup_field = "person_guid"
@@ -376,10 +367,9 @@ class PersonDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
             'registrations__organization',
             'registrations__status',
             'registrations__applications',
+            'registrations__applications__current_status',
             'registrations__applications__primary_certificate',
             'registrations__applications__primary_certificate__cert_auth',
-            'registrations__applications__status_set',
-            'registrations__applications__status_set__status',
             'registrations__applications__subactivity',
             'registrations__applications__subactivity__qualification_set',
             'registrations__applications__subactivity__qualification_set__well_class'
@@ -392,14 +382,9 @@ class PersonDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
         Returns only registered people (i.e. drillers with active registration) to anonymous users
         """
         qs = self.queryset
-        if not self.request.user.is_staff:
+        if not self.request.user.groups.filter(name__in=GWELLS_ROLE_GROUPS).exists():
             qs = qs.filter(registrations__status='ACTIVE')
         return qs
-
-    def get_serializer_class(self):
-        if self.request and self.request.user.is_staff:
-            return PersonAdminSerializer
-        return self.serializer_class
 
     def destroy(self, request, *args, **kwargs):
         """
@@ -422,6 +407,7 @@ class CitiesListView(ListAPIView):
     serializer_class = CityListSerializer
     lookup_field = 'register_guid'
     pagination_class = None
+    permission_classes = (AllowAny,)
     queryset = Register.objects \
         .exclude(organization__city__isnull=True) \
         .exclude(organization__city='') \
@@ -438,7 +424,7 @@ class CitiesListView(ListAPIView):
         will filter for that activity
         """
         qs = self.queryset
-        if not self.request.user.is_staff:
+        if not self.request.user.groups.filter(name__in=GWELLS_ROLE_GROUPS).exists():
             qs = qs.filter(status='ACTIVE')
         if self.kwargs['activity'] == 'drill':
             qs = qs.filter(registries_activity='DRILL')
@@ -456,7 +442,7 @@ class RegistrationListView(AuditCreateMixin, ListCreateAPIView):
     Create a new well driller or well pump installer registration record for a person
     """
 
-    permission_classes = (IsAdminUser,)
+    permission_classes = (GwellsPermissions,)
     serializer_class = RegistrationAdminSerializer
     queryset = Register.objects.all() \
         .select_related(
@@ -467,10 +453,9 @@ class RegistrationListView(AuditCreateMixin, ListCreateAPIView):
             'register_removal_reason',) \
         .prefetch_related(
             'applications',
+            'applications__current_status',
             'applications__primary_certificate',
             'applications__primary_certificate__cert_auth',
-            'applications__status_set',
-            'applications__status_set__status',
             'applications__subactivity',
             'applications__subactivity__qualification_set',
             'applications__subactivity__qualification_set__well_class'
@@ -492,7 +477,7 @@ class RegistrationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
     Removes the specified registration record from the database
     """
 
-    permission_classes = (IsAdminUser,)
+    permission_classes = (GwellsPermissions,)
     serializer_class = RegistrationAdminSerializer
     lookup_field = 'register_guid'
     queryset = Register.objects.all() \
@@ -504,10 +489,9 @@ class RegistrationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
             'register_removal_reason',) \
         .prefetch_related(
             'applications',
+            'applications__current_status',
             'applications__primary_certificate',
             'applications__primary_certificate__cert_auth',
-            'applications__status_set',
-            'applications__status_set__status',
             'applications__subactivity',
             'applications__subactivity__qualification_set',
             'applications__subactivity__qualification_set__well_class'
@@ -523,7 +507,7 @@ class ApplicationListView(AuditCreateMixin, ListCreateAPIView):
     Creates a new registries application
     """
 
-    permission_classes = (IsAdminUser,)
+    permission_classes = (GwellsPermissions,)
     serializer_class = ApplicationAdminSerializer
     queryset = RegistriesApplication.objects.all() \
         .select_related(
@@ -549,7 +533,7 @@ class ApplicationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
     Removes the specified drilling application record
     """
 
-    permission_classes = (IsAdminUser,)
+    permission_classes = (GwellsPermissions,)
     serializer_class = ApplicationAdminSerializer
     queryset = RegistriesApplication.objects.all() \
         .select_related(
@@ -566,7 +550,7 @@ class OrganizationNameListView(ListAPIView):
     Simple list of organizations with only organization names
     """
 
-    permission_classes = (IsGwellsAdmin,)
+    permission_classes = (GwellsPermissions,)
     serializer_class = OrganizationNameListSerializer
     queryset = Organization.objects \
         .filter(expired_date__isnull=True) \
@@ -584,7 +568,7 @@ class PersonNoteListView(AuditCreateMixin, ListCreateAPIView):
     Adds a note record to the specified Person record
     """
 
-    permission_classes = (IsGwellsAdmin,)
+    permission_classes = (GwellsPermissions,)
     serializer_class = PersonNoteSerializer
 
     def get_queryset(self):
@@ -615,7 +599,7 @@ class PersonNoteDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
     Removes a PersonNote record
     """
 
-    permission_classes = (IsGwellsAdmin,)
+    permission_classes = (GwellsPermissions,)
     serializer_class = PersonNoteSerializer
 
     def get_queryset(self):
@@ -632,7 +616,7 @@ class OrganizationNoteListView(AuditCreateMixin, ListCreateAPIView):
     Adds a note record to the specified Organization record
     """
 
-    permission_classes = (IsGwellsAdmin,)
+    permission_classes = (GwellsPermissions,)
     serializer_class = OrganizationNoteSerializer
 
     def get_queryset(self):
@@ -663,7 +647,7 @@ class OrganizationNoteDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView)
     Removes a OrganizationNote record
     """
 
-    permission_classes = (IsGwellsAdmin,)
+    permission_classes = (GwellsPermissions,)
     serializer_class = OrganizationNoteSerializer
 
     def get_queryset(self):

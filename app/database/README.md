@@ -85,17 +85,23 @@ The data replication is controlled by the environment variable<table>
 
 Static code tables are maintained in this [GitHub](../../../tree/master/app/database/codetables) repo, while dynamic data is replicated.  There are a stored DB procedures that acts as a 'driver' scripts `db_replicate_step1(boolean)` and `db_replicate_step2()` that run the replication:
 
+There are also Django fixtures that hold the code table records:
+- gwells/fixtures/gwells-codetables.json
+	- gwells/fixtures/wellsearch-codetables.json (codetables that pertain to the wellsearch component); NOTE that this will be moved to wellsearch/fixtures/wellsearch.codetables.json at a later date
+	- registries/fixtures/registries-codetables.json (codetables that pertain to the registries app)
+	- (not created yet) wellsubmission/fixtures/*  (cleanly separated wellsubmission Django app)
 
-There is also a SQL script `data-load-static-codes.sql`
-- "COPY" into static code tables from deployed CSV files
-- run on the gwells pod (which has all CSV files under `$VIRTUAL_ENV/src/app/database/codetables/`)
+To load code tables on a fresh GWELLS database:
+```
+cd $VIRTUAL_ENV/src/
+python manage.py loaddata gwells.codetables wellsearch-codetables registries-codetables
 
+```
 
 The replicate process can be run ad-hoc on the PostgreSQL pod or on a local developer workstation, passing a parameter to the stored procedure.
 
 `true` : Only a subset of data (i.e. `AND wells.well_tag_number between 100001 and 113567`)
 `false`: Full data replication
-
 
 The logged output includes the number of rows inserted into the main "wells" PostgreSQL database table
 
@@ -110,17 +116,7 @@ ssh-4.2$ psql -t -d $POSTGRESQL_DATABASE -U $POSTGRESQL_USER -c 'SELECT db_repli
 The administrator account details are recorded as an OpenShift Secret (i.e. PROD environment as the secret here under the umbrella gwells-django [secret](https://console.pathfinder.gov.bc.ca:8443/console/project/moe-gwells-prod/browse/secrets/gwells-django) ).
 
 
-Currently, these values are used as part of the manual step to create the admin account, by logging onto the gwells pod:
-```
-(app-root)sh-4.2$ python manage.py createsuperuser
-REQUIRE_ENV_VARIABLES is set to False
-Username: admin
-Email address: xxx@gov.bc.ca
-Password: <paste-in-password-from-openshift-secret>
-Password (again): <paste-in-password-from-openshift-secret>
-Superuser created successfully.
-```
+Currently, these values are used as part of the automatic step to create the admin account:
+`python manage.py post-deploy`
 
-This opaque secret also records the obfuscated administration screen URL (under `admin_url`).  Each environment (gwells-moe-dev, gwells-moe-test, gwells-moe-prod) has its own values in this secret.
-
-
+This is currently in the ./scripts/post-deploy.sh script and called in the mid-lifecycle hook; this will be moved into the Pipeline, at the approate Stage.

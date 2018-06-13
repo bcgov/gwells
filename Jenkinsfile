@@ -105,7 +105,7 @@ Map context = [
   stages:[
     'Build': true,
     'Unit Test': true,
-    'Code Quality': false,
+    'Code Quality': true,
     'Readiness - DEV': true,
     'Deploy - DEV': true,
     'Load Fixtures - DEV': true,
@@ -293,11 +293,11 @@ for(String envKeyName: context.env.keySet() as String[]){
                 }
                 sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src && pwd && python manage.py flush --no-input'"
                 // Lookup tables common to all system components (e.g. Django apps)
-                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src && pwd && python manage.py loaddata gwells/fixtures/codetables.ProvinceStateCode.json'"
+                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src && pwd && python manage.py loaddata gwells-codetables.json'"
                 // Lookup tables for the Wellsearch component (not yet a Django app) and Registries app
-                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src && pwd && python manage.py loaddata gwells/fixtures/codetables.json registries/fixtures/codetables.json'"
+                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src && pwd && python manage.py loaddata wellsearch-codetables.json registries-codetables.json'"
                 // Test data for the Wellsearch component (not yet a Django app) and Registries app
-                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src && pwd && python manage.py loaddata gwells/fixtures/wellsearch.json.gz registries/fixtures/registries.json'"
+                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src && pwd && python manage.py loaddata wellsearch.json.gz registries.json'"
             }
         }
     }
@@ -415,12 +415,30 @@ for(String envKeyName: context.env.keySet() as String[]){
                     //    sh 'python manage.py loaddata wells registries'
                     //}
                     dir('functional-tests') {
+                        Integer attempts = 0
+                        Integer attemptsMax = 2
                         try {
-                            //sh './gradlew -q dependencies'
-                            if ("DEV".equalsIgnoreCase(stageDeployName)){
-                                sh './gradlew chromeHeadlessTest'
-                            }else{
-                                sh './gradlew -DchromeHeadlessTest.single=WellDetails chromeHeadlessTest'
+                            waitUntil {
+                                boolean isDone=false
+                                attempts++
+                                try{
+                                    if ("DEV".equalsIgnoreCase(stageDeployName)) {
+                                        sh './gradlew chromeHeadlessTest'
+                                    } else {
+                                        sh './gradlew -DchromeHeadlessTest.single=WellDetails chromeHeadlessTest'
+                                    }
+                                    isDone=true
+                                } catch (ex) {
+                                    echo "${stackTraceAsString(ex)}"
+                                    if ( attempts < attemptsMax ){
+                                        echo "DEV - Functional Tests Failed - Wait one minute and retry once"
+                                        sleep 60
+                                    } else {
+                                        echo "DEV - Functional Tests Failed - Retry Failed"
+                                        throw ex
+                                    }
+                                }
+                                return isDone
                             }
                         } finally {
                                 archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/geb/**/*'
@@ -444,7 +462,7 @@ for(String envKeyName: context.env.keySet() as String[]){
                             //todo: install perf report plugin.
                             //perfReport compareBuildPrevious: true, excludeResponseTime: true, ignoreFailedBuilds: true, ignoreUnstableBuilds: true, modeEvaluation: true, modePerformancePerTestCase: true, percentiles: '0,50,90,100', relativeFailedThresholdNegative: 80.0, relativeFailedThresholdPositive: 20.0, relativeUnstableThresholdNegative: 50.0, relativeUnstableThresholdPositive: 50.0, sourceDataFiles: 'build/test-results/**/*.xml'
                         }
-                    }
+                    } //end dir
                 } //end node
             } //end podTemplate
         } //end stage
@@ -486,9 +504,3 @@ stage('Cleanup') {
         return isDone
     }
 }
-
-
-
-
-
-

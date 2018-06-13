@@ -12,6 +12,7 @@
     limitations under the License.
 """
 from django.conf.urls import url
+from django.views.decorators.cache import never_cache
 from rest_framework.documentation import include_docs_urls
 from rest_framework_jwt.views import obtain_jwt_token
 from drf_yasg.views import get_schema_view
@@ -32,7 +33,7 @@ schema_view = get_schema_view(
                                 url="https://www2.gov.bc.ca/gov/content?id=A519A56BC2BF44E4A008B33FCF527F61"),
     ),
     public=False,
-    permission_classes=(permissions.IsAdminOrReadOnly,),
+    permission_classes=(permissions.GwellsPermissions,),
 )
 
 # wrap obtain_jwt_token view in a function that excludes it from swagger documentation.
@@ -49,10 +50,10 @@ urlpatterns = [
 
     # Organization endpoints
     url(r'^api/v1/organizations/names/$',
-        views.OrganizationNameListView.as_view(),
+        never_cache(views.OrganizationNameListView.as_view()),
         name='organization-names'),
     url(r'^api/v1/organizations/(?P<org_guid>[-\w]+)/$',
-        views.OrganizationDetailView.as_view(),
+        never_cache(views.OrganizationDetailView.as_view()),
         name='organization-detail'),
     url(r'^api/v1/organizations/$',
         views.OrganizationListView.as_view(),
@@ -60,38 +61,40 @@ urlpatterns = [
 
     # Person note endpoints
     url(r'^api/v1/drillers/(?P<person_guid>[-\w]+)/notes/$',
-        views.PersonNoteListView.as_view(), name='person-note-list'),
+        never_cache(views.PersonNoteListView.as_view()), name='person-note-list'),
     url(r'^api/v1/drillers/(?P<person_guid>[-\w]+)/notes/(?P<note_guid>[-\w]+)/$',
         views.PersonNoteDetailView.as_view(), name='person-note-detail'),
 
     # Person resource endpoints (drillers, well installers, and other instances of Person model)
-    url(r'api/v1/drillers/options/', views.PersonOptionsView.as_view(), name='person-options'),
+    url(r'api/v1/drillers/options/',
+        views.PersonOptionsView.as_view(), name='person-options'),
     url(r'^api/v1/drillers/(?P<person_guid>[-\w]+)/$',
-        views.PersonDetailView.as_view(),
+        never_cache(views.PersonDetailView.as_view()),
         name='person-detail'),
-    url(r'^api/v1/drillers/$', views.PersonListView.as_view(), name='person-list'),
+    url(r'^api/v1/drillers/$',
+        never_cache(views.PersonListView.as_view()), name='person-list'),
 
     # Registration endpoints (a person may register as a driller or well pump installer)
     url(r'api/v1/registrations/(?P<register_guid>[-\w]+)/$',
-        views.RegistrationDetailView.as_view(),
+        never_cache(views.RegistrationDetailView.as_view()),
         name='register-detail'),
     url(r'api/v1/registrations/',
-        views.RegistrationListView.as_view(), name='register-list'),
+        never_cache(views.RegistrationListView.as_view()), name='register-list'),
 
     # Applications (applications to be qualified for a drilling activity)
     url(r'api/v1/applications/(?P<application_guid>[-\w]+)/$',
-        views.ApplicationDetailView.as_view(),
+        never_cache(views.ApplicationDetailView.as_view()),
         name='application-detail'),
-    url(r'api/v1/applications/', views.ApplicationListView.as_view(),
+    url(r'api/v1/applications/', never_cache(views.ApplicationListView.as_view()),
         name='application-list'),
 
     # List of cities that currently have registered drillers, pump installers etc.
     url(r'^api/v1/cities/drillers/$',
-        views.CitiesListView.as_view(),
+        never_cache(views.CitiesListView.as_view()),
         {'activity': 'drill'},
         name='city-list-drillers'),
     url(r'^api/v1/cities/installers/$',
-        views.CitiesListView.as_view(),
+        never_cache(views.CitiesListView.as_view()),
         {'activity': 'install'},
         name='city-list-installers'),
 

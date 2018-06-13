@@ -20,7 +20,8 @@ describe('Notes.vue', () => {
       error: () => null,
       user: () => null,
       currentDriller: jest.fn().mockReturnValue(fakePerson),
-      drillers: () => []
+      drillers: () => [],
+      userRoles: () => ({ edit: true, view: true, approve: true })
     }
     store = new Vuex.Store({ getters, actions, mutations })
   })
@@ -44,9 +45,10 @@ describe('Notes.vue', () => {
       stubs: ['router-link', 'router-view'],
       mocks: {
         $route: {params: {person_guid: 'aaaa-4444-bbbb-1111'}}
-      }
+      },
+      propsData: { type: 'person', guid: fakePerson.person_guid, record: fakePerson }
     })
-    wrapper.setProps({ type: 'person', guid: fakePerson.person_guid, record: fakePerson })
+
     expect(wrapper.find('#note-0').text()).toContain('A new note')
     expect(wrapper.find('#note-0').text()).toContain('Test User')
   })

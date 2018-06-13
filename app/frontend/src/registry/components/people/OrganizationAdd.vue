@@ -4,7 +4,7 @@
       <api-error :error="error" resetter="SET_ERROR"></api-error>
     </div>
     <div class="container">
-        <b-form @submit.prevent="onFormSubmit()" @reset.prevent="onFormReset()">
+        <b-form autocomplete="off" @submit.prevent="onFormSubmit()" @reset.prevent="onFormReset()">
           <b-row>
             <b-col cols="12">
               <b-form-group
@@ -51,7 +51,7 @@
                 label="Province/State:"
                 label-for="provInput">
                 <b-form-select
-                  :options="provOptions"
+                  :options="provinceStateOptions"
                   v-model="orgForm.province_state"
                   :state="validation.province_state"
                   required>
@@ -89,6 +89,8 @@
                 <b-form-input
                     id="telInput"
                     type="text"
+                    :formatter="formatTel"
+                    lazy-formatter
                     v-model="orgForm.main_tel"/>
               </b-form-group>
             </b-col>
@@ -100,6 +102,8 @@
                 <b-form-input
                     id="faxInput"
                     type="text"
+                    :formatter="formatTel"
+                    lazy-formatter
                     v-model="orgForm.fax_tel"/>
               </b-form-group>
             </b-col>
@@ -148,7 +152,7 @@
           </b-row>
           <b-row class="my-3">
             <b-col>
-              <b-button type="submit" class="mr-2" variant="primary" :disabled="orgSubmitLoading">Submit</b-button>
+              <b-button type="submit" class="mr-2" variant="primary" :disabled="orgSubmitLoading">Save</b-button>
               <b-button type="reset" variant="light" id="orgFormResetButton">Cancel</b-button>
             </b-col>
           </b-row>
@@ -169,9 +173,12 @@
 <script>
 import ApiService from '@/common/services/ApiService.js'
 import { mapGetters } from 'vuex'
+import inputFormatMixin from '@/common/inputFormatMixin.js'
+import { FETCH_DRILLER_OPTIONS } from '@/registry/store/actions.types'
 
 export default {
   name: 'OrganizationAdd',
+  mixins: [inputFormatMixin],
   data () {
     return {
       orgForm: {
@@ -185,7 +192,6 @@ export default {
         fax_tel: '',
         website_url: ''
       },
-      provOptions: ['BC', 'AB', 'ON', 'SK', 'YT', 'WA'],
       orgSubmitLoading: false,
       orgSubmitError: null,
       fieldErrors: {
@@ -202,7 +208,7 @@ export default {
         email: (this.fieldErrors.email && this.fieldErrors.email.length) ? false : null
       }
     },
-    ...mapGetters(['error'])
+    ...mapGetters(['error', 'provinceStateOptions'])
   },
   methods: {
     onFormSubmit () {
@@ -257,6 +263,7 @@ export default {
   },
   created () {
     this.resetFieldErrors()
+    this.$store.dispatch(FETCH_DRILLER_OPTIONS)
   }
 }
 </script>

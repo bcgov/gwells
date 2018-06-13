@@ -1,3 +1,14 @@
+/**
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+      http://www.apache.org/licenses/LICENSE-2.0
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+ */
 import Vue from 'vue'
 import Vuex from 'vuex'
 import ApiService from '@/common/services/ApiService.js'
@@ -6,7 +17,8 @@ import {
   LOGOUT,
   FETCH_CITY_LIST,
   FETCH_DRILLER,
-  FETCH_DRILLER_LIST} from './actions.types.js'
+  FETCH_DRILLER_LIST,
+  FETCH_DRILLER_OPTIONS} from './actions.types.js'
 import {
   SET_ERROR,
   SET_LOADING,
@@ -16,7 +28,8 @@ import {
   SET_DRILLER,
   SET_DRILLER_LIST,
   SET_KEYCLOAK,
-  SET_DRILLER_OPTIONS } from './mutations.types.js'
+  SET_DRILLER_OPTIONS,
+  SET_LAST_SEARCHED_ACTIVITY } from './mutations.types.js'
 
 Vue.use(Vuex)
 
@@ -30,7 +43,8 @@ export const store = new Vuex.Store({
     drillerList: [],
     currentDriller: {},
     keycloak: {},
-    drillerOptions: {}
+    drillerOptions: null,
+    lastSearchedActivity: 'DRILL'
   },
   mutations: {
     [SET_LOADING] (state, payload) {
@@ -58,7 +72,10 @@ export const store = new Vuex.Store({
       state.keycloak = payload
     },
     [SET_DRILLER_OPTIONS] (state, payload) {
-      state.drillerOptions[payload.activity] = payload.data
+      state.drillerOptions = payload
+    },
+    [SET_LAST_SEARCHED_ACTIVITY] (state, payload) {
+      state.lastSearchedActivity = payload
     }
   },
   actions: {
@@ -165,15 +182,15 @@ export const store = new Vuex.Store({
           })
       })
     },
-    fetchDrillerOptions ({commit}, params) {
+    [FETCH_DRILLER_OPTIONS] ({commit}, params) {
       // We only fetch driller options if we don't already have a copy cached
-      if (!(params.activity in this.state.drillerOptions)) {
+      if (!this.state.drillerOptions) {
         return new Promise((resolve, reject) => {
           commit(SET_LOADING, true)
           ApiService.query('drillers/options/', params)
             .then((response) => {
               commit(SET_LOADING, false)
-              commit(SET_DRILLER_OPTIONS, {activity: params.activity, data: response.data})
+              commit(SET_DRILLER_OPTIONS, response.data)
             })
             .catch((error) => {
               commit(SET_LOADING, false)
@@ -208,14 +225,40 @@ export const store = new Vuex.Store({
     keycloak (state) {
       return state.keycloak
     },
-    userIsAdmin (state) {
+    userRoles (state) {
       if (state.keycloak && state.keycloak.authenticated) {
-        return state.keycloak.hasRealmRole('gwells_admin')
+        return {
+          view: (state.keycloak.hasRealmRole('gwells_admin') ||
+            state.keycloak.hasRealmRole('registries_statutory_authority') ||
+            state.keycloak.hasRealmRole('registries_viewer') ||
+            state.keycloak.hasRealmRole('registries_adjudicator')),
+          edit: (state.keycloak.hasRealmRole('gwells_admin') ||
+            state.keycloak.hasRealmRole('registries_statutory_authority') ||
+            state.keycloak.hasRealmRole('registries_adjudicator')),
+          approve: (state.keycloak.hasRealmRole('gwells_admin') ||
+            state.keycloak.hasRealmRole('registries_statutory_authority'))
+        }
+      } else {
+        return {}
       }
-      return false
     },
-    drillerOptions: state => {
+    drillerOptions (state) {
       return state.drillerOptions
+    },
+    activity (state) {
+      /**
+       * last searched activity, exposed to components as "activity"
+       */
+      return state.lastSearchedActivity
+    },
+    provinceStateOptions (state) {
+      const options = []
+      if (state.drillerOptions && state.drillerOptions.province_state_codes) {
+        state.drillerOptions.province_state_codes.forEach((item) => {
+          options.push(item.province_state_code)
+        })
+      }
+      return options
     }
   }
 })

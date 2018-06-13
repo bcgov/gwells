@@ -20,12 +20,11 @@
 set -e
 echo "Running Post-Deploy tasks..."
 export PGPASSWORD=$DATABASE_PASSWORD
-set -x
-cd /opt/app-root/src/
+cd $APP_ROOT/src/database/scripts/wellsearch/
 echo ". Creating additional DB objects (e.g. spatial indices, stored procedures)"
 psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER << EOF
-	\ir database/scripts/wellsearch/post-deploy.sql
-	\ir database/scripts/wellsearch/wells_replication_stored_functions.sql
+	\i post-deploy.sql
+	\i wells_replication_stored_functions.sql
 EOF
 
 # $DB_REPLICATE can be one of "None" | "Subset" | "Full"
@@ -36,19 +35,20 @@ if [ "$DB_REPLICATE" = "Subset" -o "$DB_REPLICATE" = "Full" ]
 then
 	# NOTE: this will clear out Registries app tables too, since the ProvinceStateCode table
 	#       is also a parent table of Registries tables
-	cd /opt/app-root/src/
+	cd $APP_ROOT/src/
 	python manage.py flush --noinput
-	python manage.py loaddata gwells/fixtures/codetables.ProvinceStateCode.json gwells/fixtures/codetables.json registries/fixtures/codetables.json
+	python manage.py loaddata gwells-codetables wellsearch-codetables registries-codetables
 
 	echo ". Running DB Replication from Legacy Database, as per DB_REPLICATION flag"
-    cd /opt/app-root/src/scripts/
+    cd $APP_ROOT/src/scripts/
     ./db-replicate.sh
 else
     echo ". Skipping DB Replication from Legacy Database, as per DB_REPLICATION flag"
 fi
+set -x
 
 echo ". Running python-related post-deploy tasks."
-cd /opt/app-root/src/
+cd $APP_ROOT/src/
 set +e
 python manage.py post-deploy
 set -e

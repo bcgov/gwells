@@ -6,7 +6,7 @@
           <th v-for="field in fields"
               :key="field.name"
               :class="field.class"
-              v-if="(field.visible === 'public' || userIsAdmin) && (field.activity === activity || field.activity == 'all')">
+              v-if="(field.visible === 'public' || userRoles.view) && (field.activity === activity || field.activity == 'all')">
             {{field.name}} <i class="fa fa-sort" v-if="field.sortable && field.sortCode" @click="sortBy(field.sortCode)"></i>
           </th>
         </thead>
@@ -16,7 +16,7 @@
               :key="`tr ${driller.person_guid} ${index}`" :id="`registry-table-row-${index}`">
             <td :id="`drillerName${index}`">
               <router-link
-                v-if="userIsAdmin"
+                v-if="userRoles.view"
                 :to="{ name: 'PersonDetail', params: { person_guid: driller.person_guid } }">
                   {{ driller.surname }}, {{ driller.first_name }}
               </router-link>
@@ -47,7 +47,7 @@
             <td :id="`certAuth${index}`">
               <driller-certificate-authority :driller="driller" :activity="activity"/>
             </td>
-            <td v-if="userIsAdmin && activity === 'DRILL'" :id="`personRegStatus${index}`">
+            <td v-if="userRoles.view && activity === 'DRILL'" :id="`personRegStatus${index}`">
               <driller-registration-status :driller="driller" :activity="activity"/>
             </td>
           </tr>
@@ -104,7 +104,6 @@ const querystring = require('querystring')
 
 export default {
   name: 'RegisterTable',
-  props: ['activity'],
   components: {
     'driller-subactivity': DrillerSubactivity,
     'driller-registration-status': DrillerRegistrationStatus,
@@ -177,8 +176,9 @@ export default {
     ...mapGetters([
       'loading',
       'listError',
-      'userIsAdmin',
-      'drillers'
+      'userRoles',
+      'drillers',
+      'activity'
     ])
   },
   methods: {
