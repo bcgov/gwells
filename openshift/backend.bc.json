@@ -144,7 +144,7 @@
                     "dockerStrategy": {
                         "from": {
                             "kind": "ImageStreamTag",
-                            "name": "gwells-python-35-rhel7${NAME_SUFFIX}:3.5"
+                            "name": "gwells-python:3.5"
                         }
                     }
                 },
@@ -208,7 +208,7 @@
                             },
                             {
                                 "name": "UPGRADE_PIP_TO_LATEST",
-                                "value": "true"
+                                "value": "false"
                             },
                             {
                                 "name": "JWT_PUBLIC_KEY",
