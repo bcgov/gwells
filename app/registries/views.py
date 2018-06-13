@@ -238,12 +238,18 @@ class PersonOptionsView(APIView):
         result['proof_of_age_codes'] = \
             list(map(lambda item: ProofOfAgeCodeSerializer(item).data,
                      ProofOfAgeCode.objects.all().order_by('display_order')))
+<<<<<<< HEAD
         result['approval_outcome_codes'] = \
             list(map(lambda item: ApplicationStatusCodeSerializer(item).data,
                      ApplicationStatusCode.objects.all()))
         result['reason_removed_codes'] = \
             list(map(lambda item: RegistriesRemovalReasonSerializer(item).data,
                      RegistriesRemovalReason.objects.all()))
+=======
+        result['ApprovalOutcome'] = \
+            list(map(lambda item: ApplicationStatusCodeSerializer(item).data,
+                     ApplicationStatusCode.objects.all()))
+>>>>>>> release/1.33.0
         result['province_state_codes'] = \
             list(map(lambda item: ProvinceStateCodeSerializer(item).data,
                      ProvinceStateCode.objects.all().order_by('display_order')))
@@ -333,7 +339,7 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
 
     def list(self, request):
         """ List response using serializer with reduced number of fields """
-        queryset = self.get_queryset()
+        queryset = self.get_queryset()        
         filtered_queryset = self.filter_queryset(queryset)
 
         page = self.paginate_queryset(filtered_queryset)

@@ -497,7 +497,10 @@ class RegistriesApplication(AuditModel):
         verbose_name="Certificate")
     primary_certificate_no = models.CharField(max_length=50)
     # TODO Should probably force this to have a default value of Pending!
+<<<<<<< HEAD
     # This field should really be called "Approval Outcome"
+=======
+>>>>>>> release/1.33.0
     current_status = models.ForeignKey(
         ApplicationStatusCode,
         blank=True,

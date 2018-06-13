@@ -24,7 +24,10 @@ from registries.models import (
     Person,
     Register,
     RegistriesApplication,
+<<<<<<< HEAD
     RegistriesRemovalReason,
+=======
+>>>>>>> release/1.33.0
     RegistriesStatusCode,
     ActivityCode,
     SubactivityCode,
@@ -153,7 +156,11 @@ class SubactivitySerializer(serializers.ModelSerializer):
         )
 
     def to_internal_value(self, data):
+<<<<<<< HEAD
         if 'registries_subactivity_code' in data and data['registries_subactivity_code'] is not None:
+=======
+        if 'registries_subactivity_code' in data:
+>>>>>>> release/1.33.0
             return SubactivityCode.objects.get(
                 registries_subactivity_code=data['registries_subactivity_code'])
         return super().to_internal_value(data)
@@ -169,7 +176,11 @@ class ApplicationStatusCodeSerializer(serializers.ModelSerializer):
         )
 
     def to_internal_value(self, data):
+<<<<<<< HEAD
         if 'code' in data and data['code'] is not None:
+=======
+        if 'code' in data:
+>>>>>>> release/1.33.0
             return ApplicationStatusCode.objects.get(code=data['code'])
         return super().to_internal_value(self)
 
@@ -414,7 +425,10 @@ class ApplicationAdminSerializer(AuditModelSerializer):
     primary_certificate = AccreditedCertificateCodeSerializer(required=False)
     primary_certificate_no = serializers.CharField(required=False)
     proof_of_age = ProofOfAgeCodeSerializer(required=False)
+<<<<<<< HEAD
     removal_reason = RegistriesRemovalReasonSerializer(required=False, allow_null=True)
+=======
+>>>>>>> release/1.33.0
     current_status = ApplicationStatusCodeSerializer(required=False)
 
     class Meta:
@@ -439,7 +453,11 @@ class ApplicationAdminSerializer(AuditModelSerializer):
             'removal_reason',
             'subactivity',
             'qualifications',
+<<<<<<< HEAD
             'current_status',
+=======
+            'current_status'
+>>>>>>> release/1.33.0
         )
 
     def to_internal_value(self, data):
@@ -456,11 +474,14 @@ class ApplicationAdminSerializer(AuditModelSerializer):
             data['application_outcome_notification_date'] = None
         if 'application_recieved_date' in data and data['application_recieved_date'] == '':
             data['application_recieved_date'] = None
+<<<<<<< HEAD
         if 'removal_date' in data and data['removal_date'] == '':
             data['removal_date'] = None
         if 'removal_reason' in data and data['removal_reason'] is not None:
             if 'code' in data['removal_reason'] and data['removal_reason']['code'] is None:
                 data['removal_reason'] = None
+=======
+>>>>>>> release/1.33.0
         return super().to_internal_value(data)
 
     def create(self, validated_data):
