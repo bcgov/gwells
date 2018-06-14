@@ -279,7 +279,8 @@ export default {
       return this.isDateValid(this.qualificationForm.removal_date)
     },
     showApprovalOutcome () {
-      return !!this.qualificationForm.application_outcome_date && !!this.qualificationForm.application_recieved_date
+      return ((!!this.qualificationForm.application_outcome_date && !!this.qualificationForm.application_recieved_date) ||
+        (this.qualificationForm.qualificationForm && this.qualificationForm.qualificationForm.current_status && this.qualificationForm.qualificationForm.current_status.code))
     },
     showReasonDenied () {
       return !!this.qualificationForm.reason_denied ||
@@ -289,7 +290,7 @@ export default {
       return !!this.qualificationForm.application_outcome_notification_date || (!!this.qualificationForm.application_outcome_date && this.qualificationForm.current_status.code !== 'P')
     },
     showRemoval () {
-      return !!this.qualificationForm.application_outcome_notification_date || !!this.qualificationForm.removal_date
+      return !!this.qualificationForm.application_outcome_notification_date || !!this.qualificationForm.removal_date || (this.qualificationForm.removal_reason && this.qualificationForm.removal_reason.code)
     },
     showRemovalReason () {
       return !!this.qualificationForm.removal_date || !!this.qualificationForm.removal_reason.code
