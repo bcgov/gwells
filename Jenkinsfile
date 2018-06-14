@@ -248,10 +248,10 @@ _stage('Code Quality', context) {
 
 _stage('ZAP Security Scan', context) {
     podTemplate(
-        label: 'owasp-zap${context.uuid}',
-        name: 'owasp-zap${context.uuid}',
-        serviceAccount: 'jenkins',
-        cloud: 'openshift',
+        label: "owasp-zap${context.uuid}",
+        name: "owasp-zap${context.uuid}",
+        serviceAccount: "jenkins",
+        cloud: "openshift",
         containers: [
             containerTemplate(
                 name: 'jnlp',
