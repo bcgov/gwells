@@ -110,7 +110,7 @@ Map context = [
     'Deploy - DEV': true,
     'Load Fixtures - DEV': true,
     'API Test': true,
-    'Full Test - DEV': true,
+    'Full Test - DEV': false,
     'ZAP Security Scan': false
   ],
   pullRequest:[
