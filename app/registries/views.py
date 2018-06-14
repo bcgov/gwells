@@ -39,6 +39,7 @@ from registries.models import (
     ProofOfAgeCode,
     Register,
     RegistriesApplication,
+    RegistriesRemovalReason,
     SubactivityCode,
     WellClassCode)
 from registries.permissions import IsAdminOrReadOnly, GwellsPermissions
@@ -54,6 +55,7 @@ from registries.serializers import (
     PersonAdminSerializer,
     PersonListSerializer,
     RegistrationAdminSerializer,
+    RegistriesRemovalReasonSerializer,
     PersonNoteSerializer,
     ProvinceStateCodeSerializer,
     SubactivitySerializer,
@@ -223,22 +225,25 @@ class PersonOptionsView(APIView):
                 .order_by('name')
 
             result[activity.registries_activity_code] = {
-                'WellClassCode':
+                'well_class_codes':
                     list(map(lambda item: WellClassCodeSerializer(
                         item).data, well_class_query)),
-                'SubactivityCode':
+                'subactivity_codes':
                     list(map(lambda item: SubactivitySerializer(
                         item).data, sub_activity_query)),
-                'AccreditedCertificateCode':
+                'accredited_certificate_codes':
                     list(map(lambda item: AccreditedCertificateCodeSerializer(
                         item).data, cert_code_query))
             }
-        result['ProofOfAgeCode'] = \
+        result['proof_of_age_codes'] = \
             list(map(lambda item: ProofOfAgeCodeSerializer(item).data,
                      ProofOfAgeCode.objects.all().order_by('display_order')))
-        result['ApprovalOutcome'] = \
+        result['approval_outcome_codes'] = \
             list(map(lambda item: ApplicationStatusCodeSerializer(item).data,
                      ApplicationStatusCode.objects.all()))
+        result['reason_removed_codes'] = \
+            list(map(lambda item: RegistriesRemovalReasonSerializer(item).data,
+                     RegistriesRemovalReason.objects.all()))
         result['province_state_codes'] = \
             list(map(lambda item: ProvinceStateCodeSerializer(item).data,
                      ProvinceStateCode.objects.all().order_by('display_order')))
@@ -317,8 +322,13 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
             # User is logged in
             status = self.request.query_params.get('status', None)
             if status:
-                qs = qs.filter(
-                    registrations__applications__current_status__code=status)
+                if status == 'Removed':
+                    # Things are a bit more complicated if we're looking for removed, as the current
+                    # status doesn't come in to play.
+                    qs = qs.exclude(registrations__applications__removal_date__isnull=True)
+                else:
+                    qs = qs.filter(
+                        registrations__applications__current_status__code=status)
         return qs
 
     def list(self, request):
