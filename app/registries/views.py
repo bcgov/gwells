@@ -304,7 +304,7 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
                 if status == 'Removed':
                     # Things are a bit more complicated if we're looking for removed, as the current
                     # status doesn't come in to play.
-                    qs = qs.exclude(registrations__applications__removal_date__isnull=True)
+                    qs = qs.filter(registrations__applications__removal_date__isnull=False)
                 else:
                     if status == 'P':
                         # If the status is pending, we also pull in any people without registrations
@@ -317,7 +317,6 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
                         qs = qs.filter(
                             Q(registrations__applications__current_status__code=status),
                             Q(registrations__applications__removal_date__isnull=True))
-
         return qs
 
     def list(self, request):

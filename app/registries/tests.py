@@ -874,6 +874,22 @@ class TestAuthenticatedSearch(AuthenticatedAPITestCase):
             registration=self.registration,
             current_status=self.status_not_approved,
             subactivity=self.subactivity)
+        # A person with an approved application, AND a removed application
+        self.person_approved_and_removed = Person.objects.create(
+            first_name='Wendy', surname="ApprovedAndRemoved")
+        self.registration = Register.objects.create(
+            person=self.person_approved_and_removed,
+            registries_activity=self.activity_drill,
+            registration_no="F12345")
+        self.app = RegistriesApplication.objects.create(
+            registration=self.registration,
+            current_status=self.status_approved,
+            removal_date='2018-01-01',
+            subactivity=self.subactivity)
+        self.app = RegistriesApplication.objects.create(
+            registration=self.registration,
+            current_status=self.status_approved,
+            subactivity=self.subactivity)
 
     def test_search_all_no_registration(self):
         # We expect a person that has no registration whatsoever to show up when searching for all.
@@ -952,3 +968,14 @@ class TestAuthenticatedSearch(AuthenticatedAPITestCase):
             self.status_not_approved.code)
         response = self.client.get(url, format='json')
         self.assertNotContains(response, self.person_removed.surname)
+
+    def test_search_for_not_approved_returns_someone_with_approved_and_removed(self):
+        url = reverse('person-list') + '?search=&limit=10&activity=DRILL&status=Removed'
+        response = self.client.get(url, format='json')
+        self.assertContains(response, self.person_approved_and_removed.surname)
+
+    def test_search_approved_returns_someone_with_approved_and_removed(self):
+        url = reverse('person-list') + '?search=&limit=10&activity=DRILL&status={}'.format(
+            self.status_approved.code)
+        response = self.client.get(url, format='json')
+        self.assertContains(response, self.person_approved_and_removed.surname)
