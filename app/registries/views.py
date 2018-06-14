@@ -109,6 +109,23 @@ class APILimitOffsetPagination(LimitOffsetPagination):
         ]))
 
 
+class PersonFilter(restfilters.FilterSet):
+    """
+    Allows APIPersonListView to filter response by city, province, or registration status.
+    """
+    # city = restfilters.MultipleChoiceFilter(name="organization__city")
+    prov = restfilters.CharFilter(
+        name="registrations__organization__province_state")
+    status = restfilters.CharFilter(
+        name="registrations__applications__current_status")
+    activity = restfilters.CharFilter(
+        name="registrations__registries_activity")
+
+    class Meta:
+        model = Person
+        fields = ('prov', 'status')
+
+
 class RegistriesIndexView(TemplateView):
     """
     Index page for Registries app - contains js frontend web app
@@ -293,6 +310,9 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
         status = self.request.query_params.get('status', None)
 
         if activity:
+
+
+<< << << < HEAD
             if status == 'P' or not status:
                 # For pending, or all, we also return search where there is no registration.
                 qs = qs.filter(Q(registrations__registries_activity__registries_activity_code=activity) |
@@ -301,6 +321,10 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
                 # For all other searches, we strictly filter on activity.
                 qs = qs.filter(
                     registrations__registries_activity__registries_activity_code=activity)
+== == == =
+            qs = qs.filter(
+                registrations__registries_activity__registries_activity_code=activity)
+>>>>>> > improvements to orm queries
         if not self.request.user.groups.filter(name__in=GWELLS_ROLE_GROUPS).exists():
             # User is not logged in
             # Only show active drillers to non-admin users and public
