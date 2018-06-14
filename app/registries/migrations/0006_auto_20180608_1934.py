@@ -4,10 +4,10 @@ from __future__ import unicode_literals
 
 from django.db import migrations
 
-from registries.models import RegistriesApplicationStatus, RegistriesApplication
-
 
 def update_application_status(apps, schema_editor):
+    RegistriesApplicationStatus = apps.get_model('registries', 'RegistriesApplicationStatus')
+    RegistriesApplication = apps.get_model('registries', 'RegistriesApplication')
     for application in RegistriesApplication.objects.all():
         pending = RegistriesApplicationStatus\
             .objects.filter(application=application,
@@ -41,7 +41,7 @@ def update_application_status(apps, schema_editor):
 
 
 def revert(apps, schema_editor):
-    for application in RegistriesApplication.objects.all():
+    RegistriesApplication = apps.get_model('registries', 'RegistriesApplication')
         application.current_status = None
         application.application_recieved_date = None
         application.application_outcome_date = None
