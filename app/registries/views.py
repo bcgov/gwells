@@ -106,19 +106,6 @@ class APILimitOffsetPagination(LimitOffsetPagination):
         ]))
 
 
-# class PersonFilter(restfilters.FilterSet):
-#     """
-#     Allows APIPersonListView to filter response by city, province, or registration status.
-#     """
-#     # city = restfilters.MultipleChoiceFilter(name="organization__city")
-#     prov = restfilters.CharFilter(
-#         name="registrations__organization__province_state")
-
-#     class Meta:
-#         model = Person
-#         fields = ('prov')
-
-
 class RegistriesIndexView(TemplateView):
     """
     Index page for Registries app - contains js frontend web app
@@ -265,7 +252,6 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
     # Allow searching on name fields, names of related companies, etc.
     filter_backends = (restfilters.DjangoFilterBackend,
                        filters.SearchFilter, filters.OrderingFilter)
-    # filter_class = PersonFilter
     ordering_fields = ('surname', 'registrations__organization__name')
     ordering = ('surname',)
     search_fields = (
@@ -300,8 +286,6 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
     def get_queryset(self):
         """ Returns Person queryset, removing non-active and unregistered drillers for anonymous users """
         qs = self.queryset
-        print('BEGIN: qs at start {}'.format(qs))
-
         # Search for cities (split list and return all matches)
         # search comes in as a comma-separated querystring param e.g: ?city=Atlin,Lake Windermere,Duncan
         cities = self.request.query_params.get('city', None)
@@ -313,17 +297,13 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
         status = self.request.query_params.get('status', None)
 
         if activity:
-            print('qs before activity {}'.format(qs))
             if status == 'P' or not status:
-                print('status is {} or false'.format(status))
                 # For pending, or all, we also return search where there is no registration.
                 qs = qs.filter(Q(registrations__registries_activity__registries_activity_code=activity) |
                                Q(registrations__isnull=True))
             else:
-                print('status is {}'.format(status))
                 # For all other searches, we strictly filter on activity.
                 qs = qs.filter(registrations__registries_activity__registries_activity_code=activity)
-            print('qs after activity: {}'.format(qs))
         if not self.request.user.groups.filter(name__in=GWELLS_ROLE_GROUPS).exists():
             # User is not logged in
             # Only show active drillers to non-admin users and public
@@ -332,13 +312,11 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
                 Q(registrations__applications__removal_date__isnull=True))
         else:
             # User is logged in
-            print('user is logged in')
             if status:
                 if status == 'Removed':
                     # Things are a bit more complicated if we're looking for removed, as the current
                     # status doesn't come in to play.
                     qs = qs.exclude(registrations__applications__removal_date__isnull=True)
-                    print('after removed filter {}'.format(qs))
                 else:
                     if status == 'P':
                         # If the status is pending, we also pull in any people without registrations
@@ -352,13 +330,11 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
                             Q(registrations__applications__current_status__code=status),
                             Q(registrations__applications__removal_date__isnull=True))
 
-        print('END: at end of get_queryset {}'.format(qs))
         return qs
 
     def list(self, request):
         """ List response using serializer with reduced number of fields """
         queryset = self.get_queryset()
-        print('qs at start of list {}'.format(queryset))
         filtered_queryset = self.filter_queryset(queryset)
 
         page = self.paginate_queryset(filtered_queryset)
