@@ -791,3 +791,10 @@ class APIFilteringPaginationTests(APITestCase):
 
         # teardown
         logger.setLevel(previous_level)
+
+
+class PipelineTests(TestCase):
+    """ Pipeline test """
+
+    def test_invalid_test(self):
+        self.assertEqual(0, 1)
