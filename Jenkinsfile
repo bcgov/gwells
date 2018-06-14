@@ -105,7 +105,7 @@ Map context = [
   stages:[
     'Build': true,
     'Unit Test': true,
-    'Code Quality': true,
+    'Code Quality': false,
     'Readiness - DEV': true,
     'Deploy - DEV': true,
     'Load Fixtures - DEV': true,
@@ -160,14 +160,14 @@ _stage('Unit Test', context) {
             try {
                 container('app') {
                     sh script: '''#!/usr/bin/container-entrypoint /bin/sh
-                        set -x
+                        set -eou pipefail
                         python --version
                         pip --version
                         node --version
                         npm --version
 
                         (cd /opt/app-root/src && python manage.py migrate)
-                        (cd /opt/app-root/src && export ENABLE_DATA_ENTRY="True" && export NOSE_PROCESSES=4 && python manage.py test -c nose.cfg)
+                        (cd /opt/app-root/src && export ENABLE_DATA_ENTRY="True" && python manage.py test -c nose.cfg)
                         (cd /opt/app-root/src/frontend && npm test)
                         mkdir -p frontend/test/
                         cp -R /opt/app-root/src/frontend/test/unit ./frontend/test/
