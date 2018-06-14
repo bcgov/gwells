@@ -266,19 +266,7 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
     queryset = Person.objects \
         .all() \
         .prefetch_related(
-            'contact_info',
-            'registrations',
-            'registrations__registries_activity',
-            'registrations__status',
-            'registrations__organization',
-            'registrations__organization__province_state',
-            'registrations__applications',
-            'registrations__applications__current_status',
-            'registrations__applications__primary_certificate',
-            'registrations__applications__primary_certificate__cert_auth',
-            'registrations__applications__subactivity',
-            'registrations__applications__subactivity__qualification_set',
-            'registrations__applications__subactivity__qualification_set__well_class'
+            'contact_info'
         ).filter(
             expired_date__isnull=True
         ).distinct()
