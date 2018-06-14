@@ -245,8 +245,21 @@ class RegistrationsListSerializer(serializers.ModelSerializer):
         Filter for approved applications (application has an 'approved' status that is not expired)
         """
 
+        instance = registration.applications \
+            .select_related(
+                'current_status',
+                'primary_certificate',
+                'primary_certificate__cert_auth',
+                'subactivity',
+            ) \
+            .prefetch_related(
+                'subactivity__qualification_set',
+                'subactivity__qualification_set__well_class'
+            ) \
+            .filter(current_status__code='A')
+
         serializer = ApplicationListSerializer(
-            instance=registration.applications.filter(current_status__code='A'),
+            instance=instance,
             many=True)
         return serializer.data
 
@@ -445,7 +458,8 @@ class ApplicationAdminSerializer(AuditModelSerializer):
         """
         if 'current_status' not in validated_data:
             # By default we set the ApplicationStatus to P(ending).
-            validated_data['current_status'] = ApplicationStatusCode.objects.get(code='P')
+            validated_data['current_status'] = ApplicationStatusCode.objects.get(
+                code='P')
         try:
             app = RegistriesApplication.objects.create(**validated_data)
         except TypeError:
@@ -561,7 +575,12 @@ class PersonListSerializer(AuditModelSerializer):
         Filter for active registrations
         """
         registrations = [
-            reg for reg in person.registrations.filter(
+            reg for reg in person.registrations
+            .select_related(
+                'registries_activity',
+                'status',
+                'organization__province_state')
+            .filter(
                 applications__current_status__code='A').distinct()]
 
         serializer = RegistrationsListSerializer(
@@ -719,7 +738,18 @@ class PersonAdminSerializer(AuditModelSerializer):
         Get sorted list of registrations
         """
         registrations = [
-            reg for reg in person.registrations.order_by('registries_activity')]
+            reg for reg in person.registrations.order_by('registries_activity')
+            .select_related('registries_activity', 'organization', 'organization__province_state')
+            .prefetch_related(
+                'applications',
+                'applications__current_status',
+                'applications__primary_certificate',
+                'applications__primary_certificate__cert_auth',
+                'applications__subactivity',
+                'applications__subactivity__qualification_set',
+                'applications__subactivity__qualification_set__well_class'
+            )
+        ]
         serializer = RegistrationAdminSerializer(
             instance=registrations, many=True)
         return serializer.data

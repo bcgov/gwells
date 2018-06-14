@@ -110,7 +110,8 @@ class PersonFilter(restfilters.FilterSet):
     # city = restfilters.MultipleChoiceFilter(name="organization__city")
     prov = restfilters.CharFilter(
         name="registrations__organization__province_state")
-    status = restfilters.CharFilter(name="registrations__applications__current_status")
+    status = restfilters.CharFilter(
+        name="registrations__applications__current_status")
     activity = restfilters.CharFilter(
         name="registrations__registries_activity")
 
@@ -277,19 +278,7 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
     queryset = Person.objects \
         .all() \
         .prefetch_related(
-            'contact_info',
-            'registrations',
-            'registrations__registries_activity',
-            'registrations__status',
-            'registrations__organization',
-            'registrations__organization__province_state',
-            'registrations__applications',
-            'registrations__applications__current_status',
-            'registrations__applications__primary_certificate',
-            'registrations__applications__primary_certificate__cert_auth',
-            'registrations__applications__subactivity',
-            'registrations__applications__subactivity__qualification_set',
-            'registrations__applications__subactivity__qualification_set__well_class'
+            'contact_info'
         ).filter(
             expired_date__isnull=True
         ).distinct()
@@ -307,7 +296,8 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
 
         activity = self.request.query_params.get('activity', None)
         if activity:
-            qs = qs.filter(registrations__registries_activity__registries_activity_code=activity)
+            qs = qs.filter(
+                registrations__registries_activity__registries_activity_code=activity)
         if not self.request.user.groups.filter(name__in=GWELLS_ROLE_GROUPS).exists():
             # User is not logged in
             # Only show active drillers to non-admin users and public
@@ -323,7 +313,7 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
 
     def list(self, request):
         """ List response using serializer with reduced number of fields """
-        queryset = self.get_queryset()        
+        queryset = self.get_queryset()
         filtered_queryset = self.filter_queryset(queryset)
 
         page = self.paginate_queryset(filtered_queryset)
