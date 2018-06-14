@@ -644,7 +644,7 @@
     },
     {
         "model": "registries.registriesremovalreason",
-        "pk": "MEET_REQ",
+        "pk": "NMEET",
         "fields": {
             "create_user": "DATALOAD_USER",
             "create_date": "2018-01-01T08:00:00Z",
@@ -658,7 +658,7 @@
     },
     {
         "model": "registries.registriesremovalreason",
-        "pk": "MAINT_REQ",
+        "pk": "FAILTM",
         "fields": {
             "create_user": "DATALOAD_USER",
             "create_date": "2018-01-01T08:00:00Z",
@@ -672,7 +672,7 @@
     },
     {
         "model": "registries.registriesremovalreason",
-        "pk": "NOT_WORK",
+        "pk": "NLACT",
         "fields": {
             "create_user": "DATALOAD_USER",
             "create_date": "2018-01-01T08:00:00Z",

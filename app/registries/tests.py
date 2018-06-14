@@ -791,3 +791,164 @@ class APIFilteringPaginationTests(APITestCase):
 
         # teardown
         logger.setLevel(previous_level)
+
+
+class TestAuthenticatedSearch(AuthenticatedAPITestCase):
+
+    def setUp(self):
+        super().setUp()
+        self.activity_drill = ActivityCode.objects.create(
+            registries_activity_code="DRILL",
+            description="driller",
+            display_order="1")
+        self.status_pending = ApplicationStatusCode.objects.create(
+            code="P",
+            description="Pending",
+            display_order="2")
+        self.status_approved = ApplicationStatusCode.objects.create(
+            code="A",
+            description="Approved",
+            display_order="3")
+        self.status_not_approved = ApplicationStatusCode.objects.create(
+            code="NA",
+            description="Not Approved",
+            display_order="4")
+        # Create subactivities
+        self.subactivity = SubactivityCode.objects.create(
+            registries_activity=self.activity_drill,
+            registries_subactivity_code='WATER',
+            description='water',
+            display_order=1)
+        # A person with no registration associated
+        self.person_without_registration = Person.objects.create(
+            first_name='Wendy', surname="NoRegistration")
+        # A person with a registration, but no application associated
+        self.person_without_application = Person.objects.create(
+            first_name='Wendy', surname="NoApplication")
+        self.registration = Register.objects.create(
+            person=self.person_without_application,
+            registries_activity=self.activity_drill,
+            registration_no="F12345")
+        # A person with a registration, and an application, with status set to P
+        self.person_pending = Person.objects.create(
+            first_name='Wendy', surname="PersonPending")
+        self.registration = Register.objects.create(
+            person=self.person_pending,
+            registries_activity=self.activity_drill,
+            registration_no="F12345")
+        self.app = RegistriesApplication.objects.create(
+            registration=self.registration,
+            current_status=self.status_pending,
+            subactivity=self.subactivity)
+        # A person with an approved application
+        self.person_approved = Person.objects.create(
+            first_name='Wendy', surname="PersonApproved")
+        self.registration = Register.objects.create(
+            person=self.person_approved,
+            registries_activity=self.activity_drill,
+            registration_no="F12345")
+        self.app = RegistriesApplication.objects.create(
+            registration=self.registration,
+            current_status=self.status_approved,
+            subactivity=self.subactivity)
+        # A person with a removed application
+        self.person_removed = Person.objects.create(
+            first_name='Wendy', surname="PersonRemoved")
+        self.registration = Register.objects.create(
+            person=self.person_removed,
+            registries_activity=self.activity_drill,
+            registration_no="F12345")
+        self.app = RegistriesApplication.objects.create(
+            registration=self.registration,
+            current_status=self.status_approved,
+            removal_date='2018-01-01',
+            subactivity=self.subactivity)
+        # A person with a "not approved" state
+        self.person_not_approved = Person.objects.create(
+            first_name='Wendy', surname='NotApproved')
+        self.registration = Register.objects.create(
+            person=self.person_not_approved,
+            registries_activity=self.activity_drill,
+            registration_no="F12345")
+        self.app = RegistriesApplication.objects.create(
+            registration=self.registration,
+            current_status=self.status_not_approved,
+            subactivity=self.subactivity)
+
+    def test_search_all_no_registration(self):
+        # We expect a person that has no registration whatsoever to show up when searching for all.
+        url = reverse('person-list') + '?search=&limit=10&activity=DRILL'
+        response = self.client.get(url, format='json')
+        self.assertContains(response, self.person_without_registration.surname)
+
+    def test_search_all_no_application(self):
+        # We expect a person that has a registration, but no application to show up when searching for all.
+        url = reverse('person-list') + '?search=&limit=10&activity=DRILL'
+        response = self.client.get(url, format='json')
+        self.assertContains(response, self.person_without_application.surname)
+
+    def test_search_pending_no_registration(self):
+        # We expect a person that has no registrations whatsoever to show up in any
+        # pending search.
+        url = reverse('person-list') + '?search=&limit=10&activity=DRILL&status={}'.format(
+            self.status_pending.code)
+        response = self.client.get(url, format='json')
+        self.assertContains(response, self.person_without_registration.surname)
+
+    def test_search_pending_no_application(self):
+        # We expect a person that has a registration, but no application to show up when searching for all.
+        url = reverse('person-list') + '?search=&limit=10&activity=DRILL&status={}'.format(
+            self.status_pending.code)
+        response = self.client.get(url, format='json')
+        self.assertContains(response, self.person_without_application.surname)
+
+    def test_search_pending_with_pending_application(self):
+        # We expect a person that has a registration, and a pending application to show up when searching for
+        # pending.
+        url = reverse('person-list') + '?search=&limit=10&activity=DRILL&status={}'.format(
+            self.status_pending.code)
+        response = self.client.get(url, format='json')
+        self.assertContains(response, self.person_pending.surname)
+
+    def test_search_approved_does_not_return_pending_person(self):
+        # Test that when we search for approved person, we don't get pending persons
+        url = reverse('person-list') + '?search=&limit=10&activity=DRILL&status={}'.format(
+            self.status_approved.code)
+        response = self.client.get(url, format='json')
+        self.assertNotContains(response, self.person_pending.surname)
+        self.assertNotContains(response, self.person_without_application.surname)
+        self.assertNotContains(response, self.person_without_registration.surname)
+
+    def test_search_approved_returns_approved_person(self):
+        url = reverse('person-list') + '?search=&limit=10&activity=DRILL&status={}'.format(
+            self.status_approved.code)
+        response = self.client.get(url, format='json')
+        self.assertContains(response, self.person_approved.surname)
+
+    def test_search_approved_does_not_return_removed(self):
+        url = reverse('person-list') + '?search=&limit=10&activity=DRILL&status={}'.format(
+            self.status_approved.code)
+        response = self.client.get(url, format='json')
+        self.assertNotContains(response, self.person_removed.surname)
+
+    def test_search_for_removed_returns_removed(self):
+        url = reverse('person-list') + '?search=&limit=10&activity=DRILL&status=Removed'
+        response = self.client.get(url, format='json')
+        self.assertContains(response, self.person_removed.surname)
+
+    def test_search_for_removed_does_not_return_approved(self):
+        url = reverse('person-list') + '?search=&limit=10&activity=DRILL&status=Removed'
+        response = self.client.get(url, format='json')
+        self.assertNotContains(response, self.person_approved.surname)
+
+    def test_search_for_not_approved_returns_not_approved(self):
+        url = reverse('person-list') + '?search=&limit=10&activity=DRILL&status={}'.format(
+            self.status_not_approved.code)
+        response = self.client.get(url, format='json')
+        self.assertContains(response, self.person_not_approved.surname)
+
+    def test_search_for_not_approved_does_not_return_removed(self):
+        url = reverse('person-list') + '?search=&limit=10&activity=DRILL&status={}'.format(
+            self.status_not_approved.code)
+        response = self.client.get(url, format='json')
+        self.assertNotContains(response, self.person_removed.surname)
