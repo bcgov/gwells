@@ -261,7 +261,7 @@ class PersonOptionsView(APIView):
         return Response(result)
 
 
-class PersonListView(AuditCreateMixin, ListCreateAPIView):
+class PersonListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
     """
     get:
     Returns a list of all person records
@@ -367,7 +367,7 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
         return Response(serializer.data)
 
 
-class PersonDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
+class PersonDetailView(RevisionMixin, AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
     """
     get:
     Returns the specified person
@@ -465,7 +465,7 @@ class CitiesListView(ListAPIView):
         return qs
 
 
-class RegistrationListView(AuditCreateMixin, ListCreateAPIView):
+class RegistrationListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
     """
     get:
     List all registration records
@@ -494,7 +494,7 @@ class RegistrationListView(AuditCreateMixin, ListCreateAPIView):
     )
 
 
-class RegistrationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
+class RegistrationDetailView(RevisionMixin, AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
     """
     get:
     Returns a well driller or well pump installer registration record
@@ -530,7 +530,7 @@ class RegistrationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
     )
 
 
-class ApplicationListView(AuditCreateMixin, ListCreateAPIView):
+class ApplicationListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
     """
     get:
     Returns a list of all registration applications
@@ -550,7 +550,7 @@ class ApplicationListView(AuditCreateMixin, ListCreateAPIView):
             'registration__register_removal_reason')
 
 
-class ApplicationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
+class ApplicationDetailView(RevisionMixin, AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
     """
     get:
     Returns the specified drilling application

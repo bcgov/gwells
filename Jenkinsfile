@@ -297,7 +297,8 @@ for(String envKeyName: context.env.keySet() as String[]){
                 // Lookup tables for the Wellsearch component (not yet a Django app) and Registries app
                 sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src && pwd && python manage.py loaddata wellsearch-codetables.json registries-codetables.json'"
                 // Test data for the Wellsearch component (not yet a Django app) and Registries app
-                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src && pwd && python manage.py loaddata wellsearch.json.gz registries.json'"
+                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src && pwd && python manage.py createinitialrevisions'"
+                // Reversion 
             }
         }
     }

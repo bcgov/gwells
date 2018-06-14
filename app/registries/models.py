@@ -212,6 +212,8 @@ class Person(AuditModel):
     effective_date = models.DateField(default=datetime.date.today)
     expired_date = models.DateField(blank=True, null=True)
 
+    history = GenericRelation(Version)
+
     class Meta:
         db_table = 'registries_person'
         ordering = ['first_name', 'surname']
@@ -399,6 +401,8 @@ class Register(AuditModel):
         null=True,
         verbose_name="Date of Removal from Register")
 
+    history = GenericRelation(Version)
+
     class Meta:
         db_table = 'registries_register'
         verbose_name_plural = 'Registrations'
@@ -536,6 +540,8 @@ class RegistriesApplication(AuditModel):
         blank=True,
         null=True,
         verbose_name="Removal Reason")
+
+    history = GenericRelation(Version)
 
     class Meta:
         db_table = 'registries_application'
