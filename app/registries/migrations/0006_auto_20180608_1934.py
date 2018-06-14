@@ -42,6 +42,7 @@ def update_application_status(apps, schema_editor):
 
 def revert(apps, schema_editor):
     RegistriesApplication = apps.get_model('registries', 'RegistriesApplication')
+    for application in RegistriesApplication.objects.all():
         application.current_status = None
         application.application_recieved_date = None
         application.application_outcome_date = None
