@@ -52,4 +52,40 @@ class AddRegistrantEditAdjudicationSpecs extends GebReportingSpec {
        	when "I enter an approval outcome of approved"
        	then "the record must be publicaly published on the register search page."
      }
+
+    @Unroll
+    @Ignore("TODO")
+    @Issue("https://trello.com/c/YC7XcY9a")
+    def "Scenario: 6 - Removal Date"(){
+        given "that I am an authorized user"
+       	when "I enter a register removal date"
+       	then "the removal reason must be selected."
+     }
+
+    @Unroll
+    @Ignore("TODO")
+    @Issue("https://trello.com/c/YC7XcY9a")
+    def "Scenario: 7 - Removal Reason"(){
+        given "that I am an authorized user"
+       	when "I enter a register removal date"
+       	then "the removal reason must be selected."
+     }
+
+    @Unroll
+    @Ignore("TODO")
+    @Issue("https://trello.com/c/YC7XcY9a")
+    def "Scenario: 8 - Save"(){
+        given "that I am an authorized user"
+       	when "I save the record"
+       	then "all my changes will be saved."
+     }
+
+    @Unroll
+    @Ignore("TODO")
+    @Issue("https://trello.com/c/YC7XcY9a")
+    def "Scenario: 8 - Cancel"(){
+        given "that I am an authorized user"
+       	when "I cancel before saving the record"
+       	then "a popup message should be displayed confirming that I want to cancel."
+     }
 }
