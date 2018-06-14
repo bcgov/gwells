@@ -173,6 +173,7 @@ class Organization(AuditModel):
         return '{} ({})'.format(self.name, location)
 
 
+@reversion.register()
 class Person(AuditModel):
     person_guid = models.UUIDField(
         primary_key=True,
@@ -224,6 +225,7 @@ class Person(AuditModel):
         return '%s %s' % (self.first_name, self.surname)
 
 
+# deprecated - to be removed
 class ContactInfo(AuditModel):
     contact_detail_guid = models.UUIDField(
         primary_key=True,
@@ -354,6 +356,7 @@ class RegistriesRemovalReason(AuditModel):
         return self.description
 
 
+@reversion.register()
 class Register(AuditModel):
 
     register_guid = models.UUIDField(
@@ -455,6 +458,7 @@ class ProofOfAgeCode(AuditModel):
         return self.code
 
 
+@reversion.register()
 class RegistriesApplication(AuditModel):
     """
     Application from a well driller or pump installer to be on the GWELLS Register.
