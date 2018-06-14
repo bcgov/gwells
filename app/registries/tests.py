@@ -568,6 +568,22 @@ class APIPersonTests(AuthenticatedAPITestCase):
 
         self.assertEqual(person.create_user, self.user.username)
 
+    def test_person_history(self):
+        """
+        Test that a version history is created when Person objects are created.
+        """
+        call_command('createinitialrevisions')
+        view = PersonListView.as_view()
+        post_url = reverse('person-list')
+        request = self.factory.post(post_url, self.initial_data)
+        request.user = self.user
+        response = view(request)
+        created_guid = response.data['person_guid']
+
+        person = Person.objects.get(person_guid=created_guid)
+
+        self.assertEqual(person.history.count(), 1)
+
     def test_create_person_not_authenticated(self):
         """
         Ensure that users who are not authenticated cannot create Person objects
@@ -791,6 +807,14 @@ class APIFilteringPaginationTests(APITestCase):
 
         # teardown
         logger.setLevel(previous_level)
+
+    def test_history_enabled_for_models(self):
+        """ test that history is enabled for models (not a test that it is turned on!)"""
+        call_command("createinitialrevisions")
+
+        self.assertEqual(self.driller.history.count(), 1)
+        self.assertEqual(self.app.history.count(), 1)
+        self.assertEqual(self.registration.history.count(), 1)
 
 
 class TestAuthenticatedSearch(AuthenticatedAPITestCase):
