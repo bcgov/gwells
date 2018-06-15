@@ -357,8 +357,8 @@ class PersonListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
 
     @swagger_auto_schema(responses={200: PersonListSerializer(many=True)})
     def get(self, request, *args, **kwargs):
-        """ Returns self.list - decorated for schema documentation """
-        return super(PersonListView, self).list(request, *args, **kwargs)
+        # Returns self.list - overridden for schema documentation
+        return self.list(request, *args, **kwargs)
 
     def list(self, request):
         """ List response using serializer with reduced number of fields """
