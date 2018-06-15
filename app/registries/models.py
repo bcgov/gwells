@@ -330,8 +330,8 @@ class RegistriesRemovalReason(AuditModel):
     """
     Possible Reasons for Removal from either of the Registers
     """
-    registries_removal_reason_code = models.CharField(
-        primary_key=True, max_length=10, editable=False)
+    code = models.CharField(
+        primary_key=True, max_length=10, editable=False, db_column='registries_removal_reason_code')
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
     effective_date = models.DateField(default=datetime.date.today)
@@ -374,6 +374,7 @@ class Register(AuditModel):
         null=True)
     registration_no = models.CharField(max_length=15, blank=True, null=True)
     registration_date = models.DateField(blank=True, null=True)
+    # TODO: Remove this column
     register_removal_reason = models.ForeignKey(
         RegistriesRemovalReason,
         db_column='registries_removal_reason_code',
@@ -381,6 +382,7 @@ class Register(AuditModel):
         blank=True,
         null=True,
         verbose_name="Removal Reason")
+    # TODO: Remove this column.
     register_removal_date = models.DateField(
         blank=True,
         null=True,
@@ -495,6 +497,7 @@ class RegistriesApplication(AuditModel):
         verbose_name="Certificate")
     primary_certificate_no = models.CharField(max_length=50)
     # TODO Should probably force this to have a default value of Pending!
+    # This field should really be called "Approval Outcome"
     current_status = models.ForeignKey(
         ApplicationStatusCode,
         blank=True,
@@ -508,6 +511,19 @@ class RegistriesApplication(AuditModel):
         blank=True, null=True)
     application_outcome_notification_date = models.DateField(
         blank=True, null=True)
+    # The "removal_date" refers to the date on which a classification is "removed" from the register.
+    # Removing a classification may result in a person being removed from the public register as a whole,
+    # only if there are no other Approved classification.
+    removal_date = models.DateField(
+        blank=True, null=True
+    )
+    removal_reason = models.ForeignKey(
+        RegistriesRemovalReason,
+        db_column='registries_removal_reason_code',
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+        verbose_name="Removal Reason")
 
     class Meta:
         db_table = 'registries_application'

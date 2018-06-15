@@ -3,8 +3,9 @@
     <div v-for="(reg, regIndex) in driller.registrations"
         v-if="reg.activity === activity"
         :key="`reg status ${driller.person_guid} ${regIndex}`">
-      <div v-if="user !== null || reg.status === 'Active'">
-        {{ reg.status }}
+      <div v-for="(app, appIndex) in reg.applications" :key="`app ${driller.person_guid} ${regIndex} ${appIndex}`">
+        <div v-if="!!app.removal_date">Removed</div>
+        <div v-else>{{reg.status}}</div>
       </div>
     </div>
   </div>

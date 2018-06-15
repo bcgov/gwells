@@ -13,6 +13,7 @@
 """
 
 from collections import OrderedDict
+from django.db.models import Q
 from django.http import HttpResponse
 from django.utils import timezone
 from django.views.generic import TemplateView
@@ -39,6 +40,7 @@ from registries.models import (
     ProofOfAgeCode,
     Register,
     RegistriesApplication,
+    RegistriesRemovalReason,
     SubactivityCode,
     WellClassCode)
 from registries.permissions import IsAdminOrReadOnly, GwellsPermissions
@@ -54,6 +56,7 @@ from registries.serializers import (
     PersonAdminSerializer,
     PersonListSerializer,
     RegistrationAdminSerializer,
+    RegistriesRemovalReasonSerializer,
     PersonNoteSerializer,
     ProvinceStateCodeSerializer,
     SubactivitySerializer,
@@ -101,22 +104,6 @@ class APILimitOffsetPagination(LimitOffsetPagination):
             ('offset', self.offset),
             ('results', data)
         ]))
-
-
-class PersonFilter(restfilters.FilterSet):
-    """
-    Allows APIPersonListView to filter response by city, province, or registration status.
-    """
-    # city = restfilters.MultipleChoiceFilter(name="organization__city")
-    prov = restfilters.CharFilter(
-        name="registrations__organization__province_state")
-    status = restfilters.CharFilter(name="registrations__applications__current_status")
-    activity = restfilters.CharFilter(
-        name="registrations__registries_activity")
-
-    class Meta:
-        model = Person
-        fields = ('prov', 'status')
 
 
 class RegistriesIndexView(TemplateView):
@@ -223,22 +210,25 @@ class PersonOptionsView(APIView):
                 .order_by('name')
 
             result[activity.registries_activity_code] = {
-                'WellClassCode':
+                'well_class_codes':
                     list(map(lambda item: WellClassCodeSerializer(
                         item).data, well_class_query)),
-                'SubactivityCode':
+                'subactivity_codes':
                     list(map(lambda item: SubactivitySerializer(
                         item).data, sub_activity_query)),
-                'AccreditedCertificateCode':
+                'accredited_certificate_codes':
                     list(map(lambda item: AccreditedCertificateCodeSerializer(
                         item).data, cert_code_query))
             }
-        result['ProofOfAgeCode'] = \
+        result['proof_of_age_codes'] = \
             list(map(lambda item: ProofOfAgeCodeSerializer(item).data,
                      ProofOfAgeCode.objects.all().order_by('display_order')))
-        result['ApprovalOutcome'] = \
+        result['approval_outcome_codes'] = \
             list(map(lambda item: ApplicationStatusCodeSerializer(item).data,
                      ApplicationStatusCode.objects.all()))
+        result['reason_removed_codes'] = \
+            list(map(lambda item: RegistriesRemovalReasonSerializer(item).data,
+                     RegistriesRemovalReason.objects.all()))
         result['province_state_codes'] = \
             list(map(lambda item: ProvinceStateCodeSerializer(item).data,
                      ProvinceStateCode.objects.all().order_by('display_order')))
@@ -262,7 +252,6 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
     # Allow searching on name fields, names of related companies, etc.
     filter_backends = (restfilters.DjangoFilterBackend,
                        filters.SearchFilter, filters.OrderingFilter)
-    filter_class = PersonFilter
     ordering_fields = ('surname', 'registrations__organization__name')
     ordering = ('surname',)
     search_fields = (
@@ -277,19 +266,7 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
     queryset = Person.objects \
         .all() \
         .prefetch_related(
-            'contact_info',
-            'registrations',
-            'registrations__registries_activity',
-            'registrations__status',
-            'registrations__organization',
-            'registrations__organization__province_state',
-            'registrations__applications',
-            'registrations__applications__current_status',
-            'registrations__applications__primary_certificate',
-            'registrations__applications__primary_certificate__cert_auth',
-            'registrations__applications__subactivity',
-            'registrations__applications__subactivity__qualification_set',
-            'registrations__applications__subactivity__qualification_set__well_class'
+            'contact_info'
         ).filter(
             expired_date__isnull=True
         ).distinct()
@@ -297,7 +274,6 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
     def get_queryset(self):
         """ Returns Person queryset, removing non-active and unregistered drillers for anonymous users """
         qs = self.queryset
-
         # Search for cities (split list and return all matches)
         # search comes in as a comma-separated querystring param e.g: ?city=Atlin,Lake Windermere,Duncan
         cities = self.request.query_params.get('city', None)
@@ -306,24 +282,46 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
             qs = qs.filter(registrations__organization__city__in=cities)
 
         activity = self.request.query_params.get('activity', None)
+        status = self.request.query_params.get('status', None)
+
         if activity:
-            qs = qs.filter(registrations__registries_activity__registries_activity_code=activity)
+            if status == 'P' or not status:
+                # For pending, or all, we also return search where there is no registration.
+                qs = qs.filter(Q(registrations__registries_activity__registries_activity_code=activity) |
+                               Q(registrations__isnull=True))
+            else:
+                # For all other searches, we strictly filter on activity.
+                qs = qs.filter(registrations__registries_activity__registries_activity_code=activity)
         if not self.request.user.groups.filter(name__in=GWELLS_ROLE_GROUPS).exists():
             # User is not logged in
             # Only show active drillers to non-admin users and public
             qs = qs.filter(
-                registrations__applications__current_status__code='A')
+                Q(registrations__applications__current_status__code='A'),
+                Q(registrations__applications__removal_date__isnull=True))
         else:
             # User is logged in
-            status = self.request.query_params.get('status', None)
             if status:
-                qs = qs.filter(
-                    registrations__applications__current_status__code=status)
+                if status == 'Removed':
+                    # Things are a bit more complicated if we're looking for removed, as the current
+                    # status doesn't come in to play.
+                    qs = qs.filter(registrations__applications__removal_date__isnull=False)
+                else:
+                    if status == 'P':
+                        # If the status is pending, we also pull in any people without registrations
+                        # or applications.
+                        qs = qs.filter(Q(registrations__applications__current_status__code=status) |
+                                       Q(registrations__isnull=True) |
+                                       Q(registrations__applications__isnull=True),
+                                       Q(registrations__applications__removal_date__isnull=True))
+                    else:
+                        qs = qs.filter(
+                            Q(registrations__applications__current_status__code=status),
+                            Q(registrations__applications__removal_date__isnull=True))
         return qs
 
     def list(self, request):
         """ List response using serializer with reduced number of fields """
-        queryset = self.get_queryset()        
+        queryset = self.get_queryset()
         filtered_queryset = self.filter_queryset(queryset)
 
         page = self.paginate_queryset(filtered_queryset)
