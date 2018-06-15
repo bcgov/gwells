@@ -602,6 +602,7 @@ class PersonNoteListView(AuditCreateMixin, ListCreateAPIView):
 
     permission_classes = (GwellsPermissions,)
     serializer_class = PersonNoteSerializer
+    swagger_schema = None
 
     def get_queryset(self):
         person = self.kwargs['person_guid']
@@ -633,6 +634,7 @@ class PersonNoteDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
 
     permission_classes = (GwellsPermissions,)
     serializer_class = PersonNoteSerializer
+    swagger_schema = None
 
     def get_queryset(self):
         person = self.kwargs['person']
@@ -650,6 +652,7 @@ class OrganizationNoteListView(AuditCreateMixin, ListCreateAPIView):
 
     permission_classes = (GwellsPermissions,)
     serializer_class = OrganizationNoteSerializer
+    swagger_schema = None
 
     def get_queryset(self):
         org = self.kwargs['org_guid']
@@ -681,6 +684,7 @@ class OrganizationNoteDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView)
 
     permission_classes = (GwellsPermissions,)
     serializer_class = OrganizationNoteSerializer
+    swagger_schema = None
 
     def get_queryset(self):
         org = self.kwargs['org_guid']
@@ -694,6 +698,7 @@ class OrganizationHistory(APIView):
 
     permission_classes = (GwellsPermissions,)
     queryset = Organization.objects.all()
+    swagger_schema = None
 
     def get(self, request, org_guid):
         org_guid = self.kwargs['org_guid']
@@ -703,8 +708,70 @@ class OrganizationHistory(APIView):
             raise Http404("Organization not found")
 
         # query records in history for this model.
-        # note: limiting to 50 for initial user testing
         history = [obj.field_dict for obj in organization.history.all().order_by(
+            '-revision__date_created')]
+
+        history_diff = []
+
+        for i in range(len(history)):
+            changed = False
+            cur = history[i]
+            prev = None
+
+            if i < (len(history) - 1):
+                prev = history[i+1]
+
+            item = {
+                "diff": {},
+                "prev": {},
+                "user": cur['update_user'] or cur['create_user'],
+                "date": cur['update_date'] or cur['create_date']
+            }
+            if prev is None:
+                item['created'] = True
+                history_diff.append(item)
+
+            else:
+                for key, value in prev.items():
+                    # loop through the previous record and add changed fields to the 'diff' dict
+                    # leave out update/create stamps
+                    if (cur[key] != value and
+                            key != "update_date" and
+                            key != "update_user" and
+                            key != "create_date" and
+                            key != "create_user"):
+                        item['diff'][key] = cur[key]
+                        item['prev'][key] = value
+                        changed = True
+                if changed:
+                    history_diff.append(item)
+
+        return Response(history_diff)
+
+
+class PersonHistory(APIView):
+    """
+    get: returns a history of changes to a Person model record
+    """
+
+    permission_classes = (GwellsPermissions,)
+    queryset = Person.objects.all()
+    swagger_schema = None
+
+    def get(self, request, person_guid):
+        """
+        Retrieves version history for the specified Person record and creates a list of diffs
+        for each revision.
+        """
+
+        person_guid = self.kwargs['person_guid']
+        try:
+            person = Person.objects.get(person_guid=person_guid)
+        except Person.DoesNotExist:
+            raise Http404("Person not found")
+
+        # query records in history for this model.
+        history = [obj.field_dict for obj in person.history.all().order_by(
             '-revision__date_created')]
 
         history_diff = []
