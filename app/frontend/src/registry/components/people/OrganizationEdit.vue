@@ -505,7 +505,9 @@ export default {
       })
 
       // update changeHistory when company is updated
-      this.$refs.changeHistory.update()
+      if (this.$refs.changeHistory) {
+        this.$refs.changeHistory.update()
+      }
     },
     companyDeleteConfirm () {
       this.companyDeleteModal = true
