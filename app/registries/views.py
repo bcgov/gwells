@@ -67,6 +67,7 @@ from registries.serializers import (
     WellClassCodeSerializer,
     AccreditedCertificateCodeSerializer,
     OrganizationNoteSerializer)
+from registries.utils import generate_history_diff
 
 
 class AuditCreateMixin(CreateModelMixin):
@@ -715,43 +716,10 @@ class OrganizationHistory(APIView):
             raise Http404("Organization not found")
 
         # query records in history for this model.
-        history = [obj.field_dict for obj in organization.history.all().order_by(
+        organization_history = [obj.field_dict for obj in organization.history.all().order_by(
             '-revision__date_created')]
 
-        history_diff = []
-
-        for i in range(len(history)):
-            changed = False
-            cur = history[i]
-            prev = None
-
-            if i < (len(history) - 1):
-                prev = history[i+1]
-
-            item = {
-                "diff": {},
-                "prev": {},
-                "user": cur['update_user'] or cur['create_user'],
-                "date": cur['update_date'] or cur['create_date']
-            }
-            if prev is None:
-                item['created'] = True
-                history_diff.append(item)
-
-            else:
-                for key, value in prev.items():
-                    # loop through the previous record and add changed fields to the 'diff' dict
-                    # leave out update/create stamps
-                    if (cur[key] != value and
-                            key != "update_date" and
-                            key != "update_user" and
-                            key != "create_date" and
-                            key != "create_user"):
-                        item['diff'][key] = cur[key]
-                        item['prev'][key] = value
-                        changed = True
-                if changed:
-                    history_diff.append(item)
+        history_diff = generate_history_diff(organization_history)
 
         return Response(history_diff)
 
@@ -778,42 +746,36 @@ class PersonHistory(APIView):
             raise Http404("Person not found")
 
         # query records in history for this model.
-        history = [obj.field_dict for obj in person.history.all().order_by(
+        person_history = [obj.field_dict for obj in person.history.all().order_by(
             '-revision__date_created')]
 
-        history_diff = []
+        person_history_diff = generate_history_diff(
+            person_history, 'Person profile')
 
-        for i in range(len(history)):
-            changed = False
-            cur = history[i]
-            prev = None
+        registration_history = []
+        registration_history_diff = []
 
-            if i < (len(history) - 1):
-                prev = history[i+1]
+        application_history = []
+        application_history_diff = []
 
-            item = {
-                "diff": {},
-                "prev": {},
-                "user": cur['update_user'] or cur['create_user'],
-                "date": cur['update_date'] or cur['create_date']
-            }
-            if prev is None:
-                item['created'] = True
-                history_diff.append(item)
+        # generate diffs for version history in each of the individual's registrations
+        for reg in person.registrations.all():
+            registration_history = [
+                obj.field_dict for obj in reg.history.all()]
+            registration_history_diff += generate_history_diff(
+                registration_history, reg.registries_activity.description + ' registration')
 
-            else:
-                for key, value in prev.items():
-                    # loop through the previous record and add changed fields to the 'diff' dict
-                    # leave out update/create stamps
-                    if (cur[key] != value and
-                            key != "update_date" and
-                            key != "update_user" and
-                            key != "create_date" and
-                            key != "create_user"):
-                        item['diff'][key] = cur[key]
-                        item['prev'][key] = value
-                        changed = True
-                if changed:
-                    history_diff.append(item)
+            for app in reg.applications.all():
+                application_history = [
+                    obj.field_dict for obj in app.history.all()]
+                application_history_diff += generate_history_diff(
+                    application_history, app.subactivity.description + ' application')
+
+        # generate application diffs
+
+        history_diff = sorted(
+            person_history_diff +
+            registration_history_diff +
+            application_history_diff, key=lambda x: x['date'], reverse=True)
 
         return Response(history_diff)
