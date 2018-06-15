@@ -192,7 +192,8 @@ class ApplicationListSerializer(AuditModelSerializer):
             'qualifications',
             'subactivity',
             'qualifications',
-            'cert_authority')
+            'cert_authority',
+            'removal_date')
 
 
 class OrganizationListSerializer(AuditModelSerializer):
