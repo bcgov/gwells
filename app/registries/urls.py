@@ -15,6 +15,7 @@ from django.conf.urls import url
 from django.views.decorators.cache import never_cache
 from rest_framework.documentation import include_docs_urls
 from rest_framework_jwt.views import obtain_jwt_token
+from rest_framework.permissions import DjangoModelPermissionsOrAnonReadOnly
 from drf_yasg.views import get_schema_view
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
@@ -33,7 +34,7 @@ schema_view = get_schema_view(
                                 url="https://www2.gov.bc.ca/gov/content?id=A519A56BC2BF44E4A008B33FCF527F61"),
     ),
     public=False,
-    permission_classes=(permissions.GwellsPermissions,),
+    permission_classes=(DjangoModelPermissionsOrAnonReadOnly,)
 )
 
 # wrap obtain_jwt_token view in a function that excludes it from swagger documentation.
@@ -70,6 +71,8 @@ urlpatterns = [
     # Person resource endpoints (drillers, well installers, and other instances of Person model)
     url(r'api/v1/drillers/options/',
         views.PersonOptionsView.as_view(), name='person-options'),
+    url(r'^api/v1/drillers/(?P<person_guid>[-\w]+)/history/$',
+        views.PersonHistory.as_view(), name='person-history'),
     url(r'^api/v1/drillers/(?P<person_guid>[-\w]+)/$',
         never_cache(views.PersonDetailView.as_view()),
         name='person-detail'),

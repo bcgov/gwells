@@ -19,6 +19,7 @@ from django.http import HttpResponse, Http404
 from django.utils import timezone
 from django.views.generic import TemplateView
 from django_filters import rest_framework as restfilters
+from drf_yasg.utils import swagger_auto_schema
 from reversion.views import RevisionMixin
 from rest_framework import filters, status, exceptions
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView
@@ -216,6 +217,7 @@ class OrganizationDetailView(RevisionMixin, AuditUpdateMixin, RetrieveUpdateDest
 
 class PersonOptionsView(APIView):
 
+    @swagger_auto_schema(auto_schema=None)
     def get(self, request, format=None):
         result = {}
         for activity in ActivityCode.objects.all():
@@ -352,6 +354,11 @@ class PersonListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
                             Q(registrations__applications__current_status__code=status),
                             Q(registrations__applications__removal_date__isnull=True))
         return qs
+
+    @swagger_auto_schema(responses={200: PersonListSerializer(many=True)})
+    def get(self, request, *args, **kwargs):
+        """ Returns self.list - decorated for schema documentation """
+        return super(PersonListView, self).list(request, *args, **kwargs)
 
     def list(self, request):
         """ List response using serializer with reduced number of fields """
