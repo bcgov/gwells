@@ -37,7 +37,7 @@
               <driller-org-address :driller="driller" :activity="activity"></driller-org-address>
             </td>
             <td :id="`personContact${index}`">
-              <div v-if="driller.contact_info && driller.contact_info.length">
+              <div>
                 <driller-contact-info :driller="driller"/>
               </div>
             </td>
