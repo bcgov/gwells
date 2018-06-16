@@ -119,7 +119,8 @@
                         class="mb-3"
                         v-on:close="closeApplication(registration.registries_activity)"
                         :value="getApplication(registration.registries_activity)"
-                        :activity="registration.registries_activity">
+                        :activity="registration.registries_activity"
+                        mode="edit">
                         <button type="submit" class="btn btn-primary" variant="primary">Save</button>
                         <button type="button" class="btn btn-light" @click="closeApplication(registration.registries_activity)">Cancel</button>
                     </application-add>
@@ -485,10 +486,16 @@ export default {
         // classifications, we need to iterate through several arrays.
         this.currentDriller.registrations.forEach((reg) => {
           reg.applications.forEach((app) => {
+            let status = null
+            if (app.removal_date) {
+              status = 'Removed'
+            } else if (app.current_status) {
+              status = app.current_status.description
+            }
             classifications.push({
               code: app.subactivity.registries_subactivity_code,
               description: app.subactivity.description,
-              status: app.current_status ? app.current_status.description : null,
+              status: status,
               date: app.application_outcome_date,
               registration_guid: reg.register_guid,
               application_guid: app.application_guid,
