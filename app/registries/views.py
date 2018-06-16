@@ -313,9 +313,6 @@ class PersonListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
         status = self.request.query_params.get('status', None)
 
         if activity:
-
-
-<< << << < HEAD
             if status == 'P' or not status:
                 # For pending, or all, we also return search where there is no registration.
                 qs = qs.filter(Q(registrations__registries_activity__registries_activity_code=activity) |
@@ -324,10 +321,10 @@ class PersonListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
                 # For all other searches, we strictly filter on activity.
                 qs = qs.filter(
                     registrations__registries_activity__registries_activity_code=activity)
-== == == =
+
             qs = qs.filter(
                 registrations__registries_activity__registries_activity_code=activity)
->>>>>> > improvements to orm queries
+
         if not self.request.user.groups.filter(name__in=GWELLS_ROLE_GROUPS).exists():
             # User is not logged in
             # Only show active drillers to non-admin users and public
