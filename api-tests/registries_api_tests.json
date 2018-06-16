@@ -1,7 +1,7 @@
 {
 	"info": {
-		"_postman_id": "78c45691-2533-486f-af0c-78cac2d05f53",
-		"name": "GWELLS API remote",
+		"_postman_id": "4e69cb6c-770f-4ff3-a298-f37095fcee23",
+		"name": "GWELLS API remote copy",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -572,6 +572,73 @@
 										}
 									]
 								}
+							},
+							"response": []
+						},
+						{
+							"name": "Company history",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ce7ad4d6-a09e-4a43-8dc4-05d02e58c305",
+										"type": "text/javascript",
+										"exec": [
+											"( function() {",
+											"    pm.test(\"Status code is 200\", function () {",
+											"        pm.response.to.have.status(200);",
+											"    });",
+											"    ",
+											"    var jsonData = pm.response.json()",
+											"    ",
+											"    pm.test(\"History shows city changed to Victoria\", function () {",
+											"        pm.expect(jsonData[0].diff.city).to.eql(\"Victoria\");",
+											"    });",
+											"    pm.test(\"Username is logged for recent update\", function () {",
+											"        pm.expect(jsonData[0].user).to.eql(\"testuser\");",
+											"    });",
+											"})();",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/organizations/{{created_guid}}/history/?format=json",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"organizations",
+										"{{created_guid}}",
+										"history",
+										""
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json"
+										}
+									]
+								},
+								"description": "Retrieve single organization details"
 							},
 							"response": []
 						},
@@ -1840,6 +1907,71 @@
 									]
 								},
 								"description": "Update a driller record"
+							},
+							"response": []
+						},
+						{
+							"name": "Driller history",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "c474786d-b0e0-4ffa-8f79-8048fa042b7e",
+										"type": "text/javascript",
+										"exec": [
+											"( function() {",
+											"    pm.test(\"Status code is 200\", function () {",
+											"        pm.response.to.have.status(200);",
+											"    });",
+											"    ",
+											"    var jsonData = pm.response.json()",
+											"    ",
+											"    pm.test(\"History shows name changed in most recent update\", function () {",
+											"        pm.expect(jsonData[0].diff.surname).to.eql(\"Drillerson\");",
+											"    });",
+											"",
+											"})();",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/drillers/{{created_driller_guid}}/history/?format=json",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"drillers",
+										"{{created_driller_guid}}",
+										"history",
+										""
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json"
+										}
+									]
+								},
+								"description": "Driller model detail view - single driller"
 							},
 							"response": []
 						},
