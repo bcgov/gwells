@@ -8,7 +8,6 @@ from .models import (
     CertifyingAuthorityCode,
     SubactivityCode,
     RegistriesApplication,
-    RegistriesStatusCode,
     RegistriesRemovalReason,
     Register,
     ApplicationStatusCode,
@@ -28,7 +27,6 @@ admin.site.register(Organization)
 admin.site.register(ActivityCode)
 admin.site.register(SubactivityCode)
 admin.site.register(RegistriesApplication)
-admin.site.register(RegistriesStatusCode)
 admin.site.register(RegistriesRemovalReason)
 admin.site.register(Register)
 admin.site.register(ApplicationStatusCode)

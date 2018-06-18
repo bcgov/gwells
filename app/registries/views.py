@@ -363,7 +363,6 @@ class PersonDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
             'registrations',
             'registrations__registries_activity',
             'registrations__organization',
-            'registrations__status',
             'registrations__applications',
             'registrations__applications__current_status',
             'registrations__applications__primary_certificate',
@@ -381,7 +380,8 @@ class PersonDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
         """
         qs = self.queryset
         if not self.request.user.groups.filter(name__in=GWELLS_ROLE_GROUPS).exists():
-            qs = qs.filter(registrations__status='ACTIVE')
+            qs = qs.filter(Q(applications__current_status__code='A'),
+                           Q(applications__removal_date__isnull=True))
         return qs
 
     def destroy(self, request, *args, **kwargs):
@@ -423,7 +423,9 @@ class CitiesListView(ListAPIView):
         """
         qs = self.queryset
         if not self.request.user.groups.filter(name__in=GWELLS_ROLE_GROUPS).exists():
-            qs = qs.filter(status='ACTIVE')
+            qs = qs.filter(
+                Q(applications__current_status__code='A'),
+                Q(applications__removal_date__isnull=True))
         if self.kwargs['activity'] == 'drill':
             qs = qs.filter(registries_activity='DRILL')
         if self.kwargs['activity'] == 'install':
@@ -481,7 +483,6 @@ class RegistrationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
         .select_related(
             'person',
             'registries_activity',
-            'status',
             'organization',) \
         .prefetch_related(
             'applications',
