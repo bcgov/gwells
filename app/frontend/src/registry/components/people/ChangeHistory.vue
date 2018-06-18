@@ -55,7 +55,7 @@ export default {
         organization: 'organizations',
         person: 'drillers'
       }
-      return endpointMap[this.resource] ? endpointMap[this.resource] : this.resource
+      return endpointMap[this.resource] || this.resource
     }
   },
   watch: {
