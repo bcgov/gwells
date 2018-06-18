@@ -111,7 +111,7 @@ Map context = [
     'Load Fixtures - DEV': true,
     'API Test': true,
     'Full Test - DEV': false,
-    'ZAP Security Scan': false
+    'ZAP Security Scan': true
   ],
   pullRequest:[
     'id': env.CHANGE_ID,
