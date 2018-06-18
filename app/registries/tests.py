@@ -808,14 +808,6 @@ class APIFilteringPaginationTests(APITestCase):
         # teardown
         logger.setLevel(previous_level)
 
-    def test_history_enabled_for_models(self):
-        """ test that history is enabled for models (not a test that it is turned on!)"""
-        call_command("createinitialrevisions")
-
-        self.assertEqual(self.driller.history.count(), 1)
-        self.assertEqual(self.app.history.count(), 1)
-        self.assertEqual(self.registration.history.count(), 1)
-
 
 class TestAuthenticatedSearch(AuthenticatedAPITestCase):
 
@@ -1003,3 +995,9 @@ class TestAuthenticatedSearch(AuthenticatedAPITestCase):
             self.status_approved.code)
         response = self.client.get(url, format='json')
         self.assertContains(response, self.person_approved_and_removed.surname)
+
+    def test_person_history_endpoint(self):
+        url = reverse('person-history', kwargs={'person_guid': self.person_approved.person_guid})
+        response = self.client.get(url, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
