@@ -681,7 +681,6 @@ class OrganizationHistory(APIView):
     swagger_schema = None
 
     def get(self, request, org_guid):
-        org_guid = self.kwargs['org_guid']
         try:
             organization = Organization.objects.get(org_guid=org_guid)
         except Organization.DoesNotExist:
@@ -711,7 +710,6 @@ class PersonHistory(APIView):
         for each revision.
         """
 
-        person_guid = self.kwargs['person_guid']
         try:
             person = Person.objects.get(person_guid=person_guid)
         except Person.DoesNotExist:
