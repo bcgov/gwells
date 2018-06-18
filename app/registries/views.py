@@ -177,11 +177,6 @@ class OrganizationDetailView(RevisionMixin, AuditUpdateMixin, RetrieveUpdateDest
         .prefetch_related('registrations', 'registrations__person') \
         .filter(expired_date__isnull=True)
 
-    def update(self, request, *args, **kwargs):
-        reversion.set_comment("{} updated company {}".format(
-            self.request.user.profile.name, self.get_object().name))
-        return super(OrganizationDetailView, self).update(request, *args, **kwargs)
-
     def destroy(self, request, *args, **kwargs):
         """
         Set expired_date to current date
