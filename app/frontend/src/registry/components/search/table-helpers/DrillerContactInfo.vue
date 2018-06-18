@@ -19,6 +19,7 @@ export default {
   methods: {
     contactSort (driller) {
       // sort a person's contact info into groups (tel numbers followed by emails)
+      // for old contact info only (will be removed at a later date)
       const tel = []
       const email = []
       if (driller.contact_info) {
