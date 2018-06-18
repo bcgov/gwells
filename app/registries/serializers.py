@@ -185,6 +185,9 @@ class ApplicationListSerializer(AuditModelSerializer):
     subactivity = SubactivitySerializer()
     cert_authority = serializers.ReadOnlyField(
         source="primary_certificate.cert_auth.cert_auth_code")
+    certificate = serializers.ReadOnlyField(
+        source="primary_certificate.name"
+    )
 
     class Meta:
         model = RegistriesApplication
@@ -193,7 +196,8 @@ class ApplicationListSerializer(AuditModelSerializer):
             'subactivity',
             'qualifications',
             'cert_authority',
-            'removal_date')
+            'removal_date',
+            'certificate')
 
 
 class OrganizationListSerializer(AuditModelSerializer):
@@ -428,7 +432,8 @@ class ApplicationAdminSerializer(AuditModelSerializer):
     primary_certificate = AccreditedCertificateCodeSerializer(required=False)
     primary_certificate_no = serializers.CharField(required=False)
     proof_of_age = ProofOfAgeCodeSerializer(required=False)
-    removal_reason = RegistriesRemovalReasonSerializer(required=False, allow_null=True)
+    removal_reason = RegistriesRemovalReasonSerializer(
+        required=False, allow_null=True)
     current_status = ApplicationStatusCodeSerializer(required=False)
 
     class Meta:
