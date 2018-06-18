@@ -448,7 +448,6 @@ class RegistrationListView(AuditCreateMixin, ListCreateAPIView):
         .select_related(
             'person',
             'registries_activity',
-            'status',
             'organization',) \
         .prefetch_related(
             'applications',

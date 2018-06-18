@@ -513,7 +513,6 @@ class RegistrationAdminSerializer(AuditModelSerializer):
             'registries_activity',
             'activity_description',
             'registration_no',
-            'registration_date',
             'applications',
             'organization'
         )
