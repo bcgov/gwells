@@ -7,7 +7,7 @@
           v-for="(app, appIndex) in reg.applications"
           :key="`app cert ${driller.person_guid} ${app.application_guid} ${appIndex}`">
         <div v-if="app.subactivity">
-          {{ app.cert_authority }}
+          <span v-if="app.certificate">{{ app.certificate }} - </span>{{ app.cert_authority }}
         </div>
       </div>
     </div>
