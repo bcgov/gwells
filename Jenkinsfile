@@ -276,7 +276,9 @@ _stage('ZAP Security Scan', context) {
                     script: """
                         set -eux
                         ./runzap.sh
-                    """
+                    """,
+                    returnStdout:
+                        true
                 )
                 publishHTML([
                     allowMissing: false,
