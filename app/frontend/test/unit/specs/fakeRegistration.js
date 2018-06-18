@@ -9,11 +9,8 @@ const fakeRegistration = JSON.parse(JSON.stringify(
     'person_name': 'Bobby Driller',
     'registries_activity': 'DRILL',
     'activity_description': 'Well Driller',
-    'status': 'ACTIVE',
     'registration_no': null,
     'registration_date': null,
-    'register_removal_reason': null,
-    'register_removal_date': null,
     'applications': [
       {
         'create_user': 'testuser',

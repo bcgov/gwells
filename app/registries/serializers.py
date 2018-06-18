@@ -25,7 +25,6 @@ from registries.models import (
     Register,
     RegistriesApplication,
     RegistriesRemovalReason,
-    RegistriesStatusCode,
     ActivityCode,
     SubactivityCode,
     Qualification,
@@ -223,7 +222,6 @@ class RegistrationsListSerializer(serializers.ModelSerializer):
     Serializes Register model for public/non authenticated users
     Register items form a related set of an Application object
     """
-    status = serializers.ReadOnlyField(source='status.description')
     activity_description = serializers.ReadOnlyField(
         source='registries_activity.description')
     activity = serializers.ReadOnlyField(
@@ -236,7 +234,6 @@ class RegistrationsListSerializer(serializers.ModelSerializer):
         fields = (
             'activity',
             'activity_description',
-            'status',
             'registration_no',
             'applications',
             'organization',
@@ -497,9 +494,6 @@ class RegistrationAdminSerializer(AuditModelSerializer):
     """
     Serializes Register model for admin users
     """
-    status = serializers.PrimaryKeyRelatedField(
-        queryset=RegistriesStatusCode.objects.all())
-    register_removal_reason = serializers.StringRelatedField(read_only=True)
     applications = ApplicationAdminSerializer(many=True, read_only=True)
     person_name = serializers.StringRelatedField(source='person.name')
     organization = OrganizationAdminSerializer()
@@ -518,11 +512,8 @@ class RegistrationAdminSerializer(AuditModelSerializer):
             'person_name',
             'registries_activity',
             'activity_description',
-            'status',
             'registration_no',
             'registration_date',
-            'register_removal_reason',
-            'register_removal_date',
             'applications',
             'organization'
         )
@@ -603,7 +594,6 @@ class PersonListSerializer(AuditModelSerializer):
             reg for reg in person.registrations
             .select_related(
                 'registries_activity',
-                'status',
                 'organization__province_state')
             .filter(
                 applications__current_status__code='A').distinct()]
@@ -681,7 +671,6 @@ class RegistrationAutoCreateSerializer(AuditModelSerializer):
         model = Register
         fields = (
             'registries_activity',
-            'status',
             'registration_no',
             'organization',
             'applications',
