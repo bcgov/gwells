@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "78c45691-2533-486f-af0c-78cac2d05f53",
+		"_postman_id": "6a106a50-8336-46a5-9396-6c4efd95ee81",
 		"name": "GWELLS API remote",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -2711,7 +2711,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "4f9d5aeb-c509-41f6-8043-fe9cdfc8f4df",
+										"id": "e5244e01-168a-4ad5-8716-d4a63559d55e",
 										"type": "text/javascript",
 										"exec": [
 											"( function() {",
@@ -2728,10 +2728,6 @@
 											"        pm.expect(match, \"primary key not in UUID format\").to.be.ok;",
 											"        pm.expect(match.length).to.be.ok;",
 											"        pm.expect(match[0]).to.eql(jsonData.register_guid);",
-											"    });",
-											"    ",
-											"    pm.test(\"Registration is active\", function () {",
-											"        pm.expect(jsonData.status, \"not active\").to.eql(\"ACTIVE\");",
 											"    });",
 											"    ",
 											"    pm.test(\"Audit fields (who_created, when_created) were filled in by backend\", function () {",
