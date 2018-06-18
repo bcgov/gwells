@@ -687,7 +687,7 @@ class OrganizationHistory(APIView):
             raise Http404("Organization not found")
 
         # query records in history for this model.
-        organization_history = [obj.field_dict for obj in organization.history.all().order_by(
+        organization_history = [obj for obj in organization.history.all().order_by(
             '-revision__date_created')]
 
         history_diff = generate_history_diff(organization_history)
@@ -716,7 +716,7 @@ class PersonHistory(APIView):
             raise Http404("Person not found")
 
         # query records in history for this model.
-        person_history = [obj.field_dict for obj in person.history.all().order_by(
+        person_history = [obj for obj in person.history.all().order_by(
             '-revision__date_created')]
 
         person_history_diff = generate_history_diff(
@@ -731,13 +731,13 @@ class PersonHistory(APIView):
         # generate diffs for version history in each of the individual's registrations
         for reg in person.registrations.all():
             registration_history = [
-                obj.field_dict for obj in reg.history.all()]
+                obj for obj in reg.history.all()]
             registration_history_diff += generate_history_diff(
                 registration_history, reg.registries_activity.description + ' registration')
 
             for app in reg.applications.all():
                 application_history = [
-                    obj.field_dict for obj in app.history.all()]
+                    obj for obj in app.history.all()]
                 application_history_diff += generate_history_diff(
                     application_history, app.subactivity.description + ' application')
 

@@ -25,6 +25,7 @@ User = get_user_model()
 logger = logging.getLogger(__name__)
 
 
+@reversion.register()
 class ActivityCode(AuditModel):
     """
     Restricted Activity related to drilling wells and installing well pumps.
@@ -45,6 +46,7 @@ class ActivityCode(AuditModel):
         return self.description
 
 
+@reversion.register()
 class SubactivityCode(AuditModel):
     """
     Restricted Activity Subtype related to drilling wells and installing well pumps.
@@ -71,6 +73,7 @@ class SubactivityCode(AuditModel):
         return self.description
 
 
+@reversion.register()
 class CertifyingAuthorityCode(AuditModel):
     cert_auth_code = models.CharField(
         primary_key=True,
@@ -91,6 +94,7 @@ class CertifyingAuthorityCode(AuditModel):
         return self.cert_auth_code
 
 
+@reversion.register()
 class AccreditedCertificateCode(AuditModel):
     acc_cert_guid = models.UUIDField(
         primary_key=True,
@@ -287,6 +291,7 @@ class WellClassCode(AuditModel):
         return self.registries_well_class_code
 
 
+@reversion.register()
 class Qualification(AuditModel):
     """
     Qualification of Well Class for a given Activity/SubActivity.
@@ -318,6 +323,7 @@ class Qualification(AuditModel):
         return self.well_class.registries_well_class_code
 
 
+@reversion.register()
 class RegistriesStatusCode(AuditModel):
     """
     Status of the Register Entry
@@ -338,6 +344,7 @@ class RegistriesStatusCode(AuditModel):
         return self.description
 
 
+@reversion.register()
 class RegistriesRemovalReason(AuditModel):
     """
     Possible Reasons for Removal from either of the Registers
@@ -358,7 +365,7 @@ class RegistriesRemovalReason(AuditModel):
         return self.description
 
 
-@reversion.register()
+@reversion.register(follow=('organization', 'register_removal_reason', 'status'))
 class Register(AuditModel):
 
     register_guid = models.UUIDField(
@@ -420,6 +427,7 @@ class ApplicationStatusCodeManager(models.Manager):
         return super().get_queryset().filter(expired_date__isnull=True)
 
 
+@reversion.register()
 class ApplicationStatusCode(AuditModel):
     """
     Status of Applications for the Well Driller and Pump Installer Registries
@@ -442,6 +450,7 @@ class ApplicationStatusCode(AuditModel):
         return self.description
 
 
+@reversion.register()
 class ProofOfAgeCode(AuditModel):
     """
     List of documents that can be used to indentify (the age) of an application
@@ -462,7 +471,15 @@ class ProofOfAgeCode(AuditModel):
         return self.code
 
 
-@reversion.register()
+@reversion.register(
+    follow=(
+        'proof_of_age',
+        'subactivity',
+        'current_status',
+        'primary_certificate',
+        'removal_reason'
+    )
+)
 class RegistriesApplication(AuditModel):
     """
     Application from a well driller or pump installer to be on the GWELLS Register.
