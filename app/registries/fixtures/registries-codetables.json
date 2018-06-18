@@ -524,7 +524,7 @@
             "create_date": "2018-01-01T08:00:00Z",
             "update_user": "DATALOAD_USER",
             "update_date": "2018-01-01T08:00:00Z",
-            "description": "Approved",
+            "description": "Registered",
             "display_order": 4,
             "effective_date": "2018-05-25",
             "expired_date": null
