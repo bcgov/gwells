@@ -345,7 +345,6 @@ class Register(AuditModel):
         null=True, on_delete=models.PROTECT,
         related_name="registrations")
     registration_no = models.CharField(max_length=15, blank=True, null=True)
-    registration_date = models.DateField(blank=True, null=True)
 
     class Meta:
         db_table = 'registries_register'
