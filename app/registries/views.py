@@ -111,23 +111,6 @@ class APILimitOffsetPagination(LimitOffsetPagination):
         ]))
 
 
-class PersonFilter(restfilters.FilterSet):
-    """
-    Allows APIPersonListView to filter response by city, province, or registration status.
-    """
-    # city = restfilters.MultipleChoiceFilter(name="organization__city")
-    prov = restfilters.CharFilter(
-        name="registrations__organization__province_state")
-    status = restfilters.CharFilter(
-        name="registrations__applications__current_status")
-    activity = restfilters.CharFilter(
-        name="registrations__registries_activity")
-
-    class Meta:
-        model = Person
-        fields = ('prov', 'status')
-
-
 class RegistriesIndexView(TemplateView):
     """
     Index page for Registries app - contains js frontend web app
@@ -321,9 +304,6 @@ class PersonListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
                 # For all other searches, we strictly filter on activity.
                 qs = qs.filter(
                     registrations__registries_activity__registries_activity_code=activity)
-
-            qs = qs.filter(
-                registrations__registries_activity__registries_activity_code=activity)
 
         if not self.request.user.groups.filter(name__in=GWELLS_ROLE_GROUPS).exists():
             # User is not logged in
