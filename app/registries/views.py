@@ -13,7 +13,7 @@
 """
 
 from collections import OrderedDict
-from django.db.models import Q
+from django.db.models import Q, Prefetch
 from django.http import HttpResponse
 from django.utils import timezone
 from django.views.generic import TemplateView
@@ -263,23 +263,24 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
     )
 
     # fetch related companies and registration applications (prevent duplicate database trips)
-    queryset = Person.objects \
-        .all() \
-        .prefetch_related(
-            'contact_info'
-        ).filter(
-            expired_date__isnull=True
-        ).distinct()
+    queryset = Person.objects.all()
 
     def get_queryset(self):
         """ Returns Person queryset, removing non-active and unregistered drillers for anonymous users """
         qs = self.queryset
+
+        # base registration and application querysets
+        registrations_qs = Register.objects.all()
+        applications_qs = RegistriesApplication.objects.all()
+
         # Search for cities (split list and return all matches)
         # search comes in as a comma-separated querystring param e.g: ?city=Atlin,Lake Windermere,Duncan
         cities = self.request.query_params.get('city', None)
         if cities:
             cities = cities.split(',')
             qs = qs.filter(registrations__organization__city__in=cities)
+            registrations_qs = registrations_qs.filter(
+                organization__city__in=cities)
 
         activity = self.request.query_params.get('activity', None)
         status = self.request.query_params.get('status', None)
@@ -292,12 +293,22 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
             else:
                 # For all other searches, we strictly filter on activity.
                 qs = qs.filter(registrations__registries_activity__registries_activity_code=activity)
+                registrations_qs = registrations_qs.filter(
+                    registries_activity__registries_activity_code=activity)
+
         if not self.request.user.groups.filter(name__in=GWELLS_ROLE_GROUPS).exists():
             # User is not logged in
             # Only show active drillers to non-admin users and public
             qs = qs.filter(
                 Q(registrations__applications__current_status__code='A'),
                 Q(registrations__applications__removal_date__isnull=True))
+
+            registrations_qs = registrations_qs.filter(
+                Q(applications__current_status__code='A'),
+                Q(applications__removal_date__isnull=True))
+
+            applications_qs = applications_qs.filter(
+                current_status='A', removal_date__isnull=True)
         else:
             # User is logged in
             if status:
@@ -317,7 +328,38 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
                         qs = qs.filter(
                             Q(registrations__applications__current_status__code=status),
                             Q(registrations__applications__removal_date__isnull=True))
-        return qs
+
+        # generate applications queryset
+        applications_qs = applications_qs \
+            .select_related(
+                'current_status',
+                'primary_certificate',
+                'primary_certificate__cert_auth',
+                'subactivity',
+            ) \
+            .prefetch_related(
+                'subactivity__qualification_set',
+                'subactivity__qualification_set__well_class'
+            ).distinct()
+
+        # generate registrations queryset, inserting filtered applications queryset defined above
+        registrations_qs = registrations_qs \
+            .select_related(
+                'registries_activity',
+                'organization',
+                'organization__province_state',
+            ) \
+            .prefetch_related(
+                Prefetch('applications', queryset=applications_qs)
+            ).distinct()
+
+        # insert filtered registrations set
+        qs = qs \
+            .prefetch_related(
+                Prefetch('registrations', queryset=registrations_qs)
+            )
+
+        return qs.distinct()
 
     def list(self, request):
         """ List response using serializer with reduced number of fields """

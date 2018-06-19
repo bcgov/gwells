@@ -793,6 +793,58 @@ class APIFilteringPaginationTests(APITestCase):
         logger.setLevel(previous_level)
 
 
+class TestPublicSearch(TestCase):
+
+    def setUp(self):
+        super().setUp()
+        self.activity_drill = ActivityCode.objects.create(
+            registries_activity_code="DRILL",
+            description="driller",
+            display_order="1")
+        self.status_pending = ApplicationStatusCode.objects.create(
+            code="P",
+            description="Pending",
+            display_order="2")
+        self.status_approved = ApplicationStatusCode.objects.create(
+            code="A",
+            description="Approved",
+            display_order="3")
+        # Create subactivities
+        self.subactivity = SubactivityCode.objects.create(
+            registries_activity=self.activity_drill,
+            registries_subactivity_code='WATER',
+            description='water',
+            display_order=1)
+        # Person with Pending, Removed and Approved
+        # A person with a removed application
+        self.person_removed = Person.objects.create(
+            first_name='Wendy', surname="Schmoo")
+        self.registration = Register.objects.create(
+            person=self.person_removed,
+            registries_activity=self.activity_drill,
+            registration_no="F12345")
+        RegistriesApplication.objects.create(
+            registration=self.registration,
+            current_status=self.status_approved,
+            subactivity=self.subactivity)
+        RegistriesApplication.objects.create(
+            registration=self.registration,
+            current_status=self.status_pending,
+            subactivity=self.subactivity)
+        RegistriesApplication.objects.create(
+            registration=self.registration,
+            current_status=self.status_approved,
+            removal_date='2018-01-01',
+            subactivity=self.subactivity)
+
+    def test_search_only_returns_approved(self):
+        # Test that when searching, only the active applications are returned
+        url = reverse('person-list') + '?search=&limit=10&activity=DRILL&status=Removed'
+        response = self.client.get(url, format='json')
+        self.assertNotContains(response, 'Pending')
+        self.assertContains(response, 'Approved', 1)
+
+
 class TestAuthenticatedSearch(AuthenticatedAPITestCase):
 
     def setUp(self):

@@ -39,15 +39,10 @@ const fakePersonList = JSON.parse(JSON.stringify(
                   'GEO',
                   'PUMP'
                 ],
-                'status_set': [
-                  {
-                    'status': 'A',
-                    'description': 'Approved',
-                    'notified_date': '2018-04-12',
-                    'effective_date': '2018-04-12',
-                    'expired_date': null
-                  }
-                ],
+                'current_status': {
+                  'code': 'A',
+                  'description': 'Active'
+                },
                 'subactivity': {
                   'registries_subactivity_code': 'WATER',
                   'description': 'Water Well Driller',
@@ -90,15 +85,6 @@ const fakePersonList = JSON.parse(JSON.stringify(
                 'reason_denied': null,
                 'qualifications': [
                   'CLOS'
-                ],
-                'status_set': [
-                  {
-                    'status': 'A',
-                    'description': 'Approved',
-                    'notified_date': '2018-04-12',
-                    'effective_date': '2018-04-12',
-                    'expired_date': null
-                  }
                 ],
                 'subactivity': {
                   'registries_subactivity_code': 'GEOXCHG',
@@ -158,15 +144,6 @@ const fakePersonList = JSON.parse(JSON.stringify(
                   'GEO',
                   'PUMP'
                 ],
-                'status_set': [
-                  {
-                    'status': 'A',
-                    'description': 'Approved',
-                    'notified_date': '2018-04-12',
-                    'effective_date': '2018-04-12',
-                    'expired_date': null
-                  }
-                ],
                 'subactivity': {
                   'registries_subactivity_code': 'WATER',
                   'description': 'Water Well Driller',
@@ -209,15 +186,6 @@ const fakePersonList = JSON.parse(JSON.stringify(
                 'reason_denied': null,
                 'qualifications': [
                   'CLOS'
-                ],
-                'status_set': [
-                  {
-                    'status': 'A',
-                    'description': 'Approved',
-                    'notified_date': '2018-04-12',
-                    'effective_date': '2018-04-12',
-                    'expired_date': null
-                  }
                 ],
                 'subactivity': {
                   'registries_subactivity_code': 'GEOXCHG',
