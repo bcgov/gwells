@@ -19,22 +19,25 @@ export default {
   methods: {
     contactSort (driller) {
       // sort a person's contact info into groups (tel numbers followed by emails)
+      // for old contact info only (will be removed at a later date)
       const tel = []
       const email = []
-      driller.contact_info.forEach((item) => {
-        if (item.contact_tel) {
-          tel.push({
-            type: 'tel',
-            value: item.contact_tel
-          })
-        }
-        if (item.contact_email) {
-          email.push({
-            type: 'email',
-            value: item.contact_email
-          })
-        }
-      })
+      if (driller.contact_info) {
+        driller.contact_info.forEach((item) => {
+          if (item.contact_tel) {
+            tel.push({
+              type: 'tel',
+              value: item.contact_tel
+            })
+          }
+          if (item.contact_email) {
+            email.push({
+              type: 'email',
+              value: item.contact_email
+            })
+          }
+        })
+      }
       return tel.concat(email)
     }
   }
