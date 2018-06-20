@@ -55,12 +55,14 @@
                 </div>
               </b-modal>
               <b-row>
-                <application-edit
-                  :activity="activity"
-                  :value="applicationFormValue"
-                  mode="edit"
-                  v-on:isValid="onApplicationIsValid"
-                  v-on:close="confirmCancelModal=true"/>
+                <b-col>
+                  <application-edit
+                    :activity="activity"
+                    :value="applicationFormValue"
+                    mode="edit"
+                    v-on:isValid="onApplicationIsValid"
+                    v-on:close="confirmCancelModal=true"/>
+                </b-col>
               </b-row>
               <b-row class="mt-3">
                 <b-col>
