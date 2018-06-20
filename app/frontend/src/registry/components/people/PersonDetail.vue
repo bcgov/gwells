@@ -329,17 +329,14 @@
               @canceled="editContact = false"></person-edit>
             <div v-if="!editContact">
               <div class="row mb-2">
-                <div class="col-5 col-md-2">
-                  Email address:
+                <div class="col-12 col-md-4">
+                  <span class="contact-label">Email address: </span><a :href="`mailto:${currentDriller.contact_email}`">{{ currentDriller.contact_email }}</a>
                 </div>
-                <div class="col-7 col-md-4">
-                  <a :href="`mailto:${currentDriller.contact_email}`">{{ currentDriller.contact_email }}</a>
+                <div class="col-12 col-md-4">
+                  <span class="contact-label">Telephone: </span>{{ currentDriller.contact_tel }}
                 </div>
-                <div class="col-5 col-md-2">
-                  Telephone:
-                </div>
-                <div class="col-7 col-md-4">
-                  {{ currentDriller.contact_tel }}
+                <div class="col-12 col-md-4">
+                  <span class="contact-label">Cell: </span>{{ currentDriller.contact_cell }}
                 </div>
               </div>
             </div>
@@ -623,5 +620,8 @@ export default {
 }
 .registries-edit-btn {
   margin-top: -5px;
+}
+.contact-label {
+  margin-right: 1rem;
 }
 </style>
