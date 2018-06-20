@@ -5,6 +5,36 @@ from __future__ import unicode_literals
 from django.db import migrations
 
 
+def insert_remove_reasons(apps, schema_editor):
+    data = {
+        'FAILTM': {
+            'description': 'Fails to maintain a requirement for registration',
+            'display_order': 1
+        },
+        'NLACT': {
+            'description': 'No longer actively working in Canada',
+            'display_order': 2
+        },
+        'NMEET': {
+            'description': 'Fails to meet a requirement for registration',
+            'display_order': 3
+        },
+        'BOO': {
+            'description': 'Bop',
+            'display_order': 4
+        }
+    }
+    RegistriesRemovalReason = apps.get_model('registries', 'RegistriesRemovalReason')
+
+    for (key, value) in data.items():
+        RegistriesRemovalReason.objects.update_or_create(code=key, defaults=value)
+
+
+def revert(apps, schema_editor):
+    # We don't need to do anything on revert
+    pass
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -42,4 +72,5 @@ class Migration(migrations.Migration):
         migrations.DeleteModel(
             name='RegistriesStatusCode',
         ),
+        migrations.RunPython(insert_remove_reasons, revert),
     ]
