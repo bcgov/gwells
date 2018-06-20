@@ -344,7 +344,7 @@ class RegistriesRemovalReason(AuditModel):
         return self.description
 
 
-@reversion.register(follow=('organization'))
+@reversion.register(follow=('organization',))
 class Register(AuditModel):
 
     register_guid = models.UUIDField(
