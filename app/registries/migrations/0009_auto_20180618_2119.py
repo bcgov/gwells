@@ -18,10 +18,6 @@ def insert_remove_reasons(apps, schema_editor):
         'NMEET': {
             'description': 'Fails to meet a requirement for registration',
             'display_order': 3
-        },
-        'BOO': {
-            'description': 'Bop',
-            'display_order': 4
         }
     }
     RegistriesRemovalReason = apps.get_model('registries', 'RegistriesRemovalReason')
