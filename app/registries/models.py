@@ -323,6 +323,7 @@ class Qualification(AuditModel):
         return self.well_class.registries_well_class_code
 
 
+@reversion.register()
 class RegistriesRemovalReason(AuditModel):
     """
     Possible Reasons for Removal from either of the Registers
@@ -343,7 +344,7 @@ class RegistriesRemovalReason(AuditModel):
         return self.description
 
 
-@reversion.register(follow=('organization', 'register_removal_reason', 'status'))
+@reversion.register(follow=('organization'))
 class Register(AuditModel):
 
     register_guid = models.UUIDField(
