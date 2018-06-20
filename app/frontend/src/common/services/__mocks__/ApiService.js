@@ -20,6 +20,26 @@ const ApiService = {
       resolve({data: response})
     })
   },
+  post (resource, params) {
+    return new Promise((resolve, reject) => {
+      resolve({data: response})
+    })
+  },
+  options (resource) {
+    return new Promise((resolve, reject) => {
+      resolve({data: response})
+    })
+  },
+  delete (resource, record) {
+    return new Promise((resolve, reject) => {
+      resolve({data: response})
+    })
+  },
+  history (resource, record) {
+    return new Promise((resolve, reject) => {
+      resolve({data: response})
+    })
+  },
   __setMockResponse: function (newResponse) {
     response = newResponse
   },
