@@ -368,6 +368,15 @@
 
         <!-- Notes -->
         <person-notes @updated="updateRecord"></person-notes>
+
+        <!-- Change history for this record -->
+        <change-history
+          ref="changeHistory"
+          class="my-3"
+          v-if="!!currentDriller"
+          resource="person"
+          :id="currentDriller.person_guid"></change-history>
+
       </div>
     </div>
   </div>
@@ -377,6 +386,7 @@
 import APIErrorMessage from '@/common/components/APIErrorMessage'
 import PersonEdit from '@/registry/components/people/PersonEdit.vue'
 import PersonNotes from '@/registry/components/people/PersonNotes.vue'
+import ChangeHistory from '@/registry/components/people/ChangeHistory.vue'
 import ApplicationAddEdit from '@/registry/components/people/ApplicationAddEdit.vue'
 import ApiService from '@/common/services/ApiService.js'
 import { mapGetters } from 'vuex'
@@ -389,6 +399,7 @@ export default {
     'api-error': APIErrorMessage,
     'person-edit': PersonEdit,
     'application-add': ApplicationAddEdit,
+    ChangeHistory,
     PersonNotes
   },
   data () {
@@ -540,6 +551,10 @@ export default {
     },
     updateRecord () {
       this.$store.dispatch(FETCH_DRILLER, this.$route.params.person_guid)
+      // update changeHistory when company is updated
+      if (this.currentDriller && this.$refs.changeHistory) {
+        this.$refs.changeHistory.update()
+      }
     },
     addApplication (registration) {
       const newClassification = {

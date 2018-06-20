@@ -252,6 +252,16 @@
           @updated="loadCompanyDetails()"
           :guid="companyDetails.org_guid"
           :record="companyDetails"></notes>
+
+      <!-- Change history for this record -->
+      <change-history
+          ref="changeHistory"
+          class="my-3"
+          v-if="!!selectedCompany"
+          resource="organization"
+          :id="selectedCompany.org_guid"></change-history>
+
+      <!-- Delete company button and confirmation modals -->
       <div v-if="!!companyDetails">
         <p class="mt-3">
           There {{ companyDetails.registrations_count === 1 ? 'is': 'are' }}
@@ -261,7 +271,6 @@
           {{ selectedCompany.name }}{{ selectedCompany.name.slice(-1) === '.' ? '' : '.' }}
         </p>
 
-        <!-- Delete company button and confirmation modals -->
         <b-button
             variant="warning"
             v-if="!companyDetails.registrations_count"
@@ -303,6 +312,7 @@ import { mapGetters } from 'vuex'
 import ApiService from '@/common/services/ApiService.js'
 import OrganizationAdd from '@/registry/components/people/OrganizationAdd.vue'
 import Notes from '@/registry/components/people/Notes.vue'
+import ChangeHistory from '@/registry/components/people/ChangeHistory.vue'
 import inputFormatMixin from '@/common/inputFormatMixin.js'
 import { FETCH_DRILLER_OPTIONS } from '@/registry/store/actions.types'
 
@@ -310,7 +320,8 @@ export default {
   name: 'OrganizationEdit',
   components: {
     OrganizationAdd,
-    Notes
+    Notes,
+    ChangeHistory
   },
   mixins: [inputFormatMixin],
   data () {
@@ -426,7 +437,7 @@ export default {
 
       // remove null & empty string values, and the guid (not needed in data object)
       Object.keys(this.companyForm).forEach((key) => {
-        if (this.companyForm[key] && this.companyForm[key] !== '' && key !== 'org_guid') {
+        if (key !== 'org_guid') {
           data[key] = this.companyForm[key]
         }
       })
@@ -487,11 +498,16 @@ export default {
     loadCompanyDetails () {
       // List of companies only contains basic details. When one is selected, get the full set of details
       // plus all notes for that company
-      return ApiService.get('organizations', this.selectedCompany.org_guid).then((response) => {
+      ApiService.get('organizations', this.selectedCompany.org_guid).then((response) => {
         this.companyDetails = response.data
       }).catch((e) => {
         this.companyListError = e.response.data
       })
+
+      // update changeHistory when company is updated
+      if (this.$refs.changeHistory) {
+        this.$refs.changeHistory.update()
+      }
     },
     companyDeleteConfirm () {
       this.companyDeleteModal = true

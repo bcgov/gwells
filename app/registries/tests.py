@@ -568,6 +568,22 @@ class APIPersonTests(AuthenticatedAPITestCase):
 
         self.assertEqual(person.create_user, self.user.username)
 
+    def test_person_history(self):
+        """
+        Test that a version history is created when Person objects are created.
+        """
+        call_command('createinitialrevisions')
+        view = PersonListView.as_view()
+        post_url = reverse('person-list')
+        request = self.factory.post(post_url, self.initial_data)
+        request.user = self.user
+        response = view(request)
+        created_guid = response.data['person_guid']
+
+        person = Person.objects.get(person_guid=created_guid)
+
+        self.assertEqual(person.history.count(), 1)
+
     def test_create_person_not_authenticated(self):
         """
         Ensure that users who are not authenticated cannot create Person objects
@@ -979,3 +995,9 @@ class TestAuthenticatedSearch(AuthenticatedAPITestCase):
             self.status_approved.code)
         response = self.client.get(url, format='json')
         self.assertContains(response, self.person_approved_and_removed.surname)
+
+    def test_person_history_endpoint(self):
+        url = reverse('person-history', kwargs={'person_guid': self.person_approved.person_guid})
+        response = self.client.get(url, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
