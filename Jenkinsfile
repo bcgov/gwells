@@ -308,8 +308,8 @@ for(String envKeyName: context.env.keySet() as String[]){
     if ("DEV".equalsIgnoreCase(stageDeployName)){
         _stage('ZAP Security Scan', context) {
             podTemplate(
-                label: "owasp-zap${context.uuid}",
-                name: "owasp-zap${context.uuid}",
+                label: "zap-${context.uuid}",
+                name: "zap-${context.uuid}",
                 serviceAccount: "jenkins",
                 cloud: "openshift",
                 containers: [
@@ -326,7 +326,7 @@ for(String envKeyName: context.env.keySet() as String[]){
                     )
                 ]
             ) {
-                node('owasp-zap${context.uuid}') {
+                node("zap-${context.uuid}") {
                     //the checkout is mandatory
                     echo "checking out source"
                     echo "Build: ${BUILD_ID}"
