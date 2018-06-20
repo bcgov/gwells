@@ -34,7 +34,7 @@ def revert(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('registries', '0008_auto_20180613_2304'),
+        ('registries', '0009_auto_20180616_0022'),
     ]
 
     operations = [

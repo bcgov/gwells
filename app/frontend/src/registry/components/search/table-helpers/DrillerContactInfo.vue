@@ -3,7 +3,7 @@
     <div v-if="driller.contact_tel">{{driller.contact_tel}}</div>
     <div v-if="driller.contact_cell">{{driller.contact_cell}}</div>
 
-    <!-- contact_info dataset: exists in database but new applicants use driller.contact_tel  -->
+    <!-- for backwards compatibility - new applicants use driller.contact_tel  -->
     <div v-for="(contact, contactIndex) in contactSort(driller)" :key="`contact ${driller.person_guid} ${contactIndex}`">
       <span v-if="contact.type === 'tel'">{{ contact.value }}</span>
       <span v-if="contact.type === 'email'"><a :href="`mailto:${contact.value}`">{{contact.value}}</a></span>

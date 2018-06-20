@@ -14,14 +14,18 @@
 import uuid
 import datetime
 import logging
+import reversion
 from django.db import models
 from django.contrib.auth import get_user_model
+from django.contrib.contenttypes.fields import GenericRelation
+from reversion.models import Version
 from gwells.models import AuditModel, ProvinceStateCode
 
 User = get_user_model()
 logger = logging.getLogger(__name__)
 
 
+@reversion.register()
 class ActivityCode(AuditModel):
     """
     Restricted Activity related to drilling wells and installing well pumps.
@@ -42,6 +46,7 @@ class ActivityCode(AuditModel):
         return self.description
 
 
+@reversion.register()
 class SubactivityCode(AuditModel):
     """
     Restricted Activity Subtype related to drilling wells and installing well pumps.
@@ -68,6 +73,7 @@ class SubactivityCode(AuditModel):
         return self.description
 
 
+@reversion.register()
 class CertifyingAuthorityCode(AuditModel):
     cert_auth_code = models.CharField(
         primary_key=True,
@@ -88,6 +94,7 @@ class CertifyingAuthorityCode(AuditModel):
         return self.cert_auth_code
 
 
+@reversion.register()
 class AccreditedCertificateCode(AuditModel):
     acc_cert_guid = models.UUIDField(
         primary_key=True,
@@ -118,6 +125,7 @@ class AccreditedCertificateCode(AuditModel):
         return '%s %s %s' % (self.cert_auth, self.registries_activity, self.name)
 
 
+@reversion.register()
 class Organization(AuditModel):
     org_guid = models.UUIDField(
         primary_key=True,
@@ -126,8 +134,9 @@ class Organization(AuditModel):
         verbose_name="Organization UUID")
     name = models.CharField(max_length=200)
     street_address = models.CharField(
-        max_length=100, null=True, verbose_name='Street Address')
-    city = models.CharField(max_length=50, null=True, verbose_name='Town/City')
+        max_length=100, null=True, blank=True, verbose_name='Street Address')
+    city = models.CharField(max_length=50, null=True,
+                            blank=True, verbose_name='Town/City')
     province_state = models.ForeignKey(
         ProvinceStateCode,
         db_column='province_state_code',
@@ -135,16 +144,19 @@ class Organization(AuditModel):
         verbose_name='Province/State',
         related_name="companies")
     postal_code = models.CharField(
-        max_length=10, null=True, verbose_name='Postal Code')
+        max_length=10, null=True, blank=True, verbose_name='Postal Code')
     main_tel = models.CharField(
-        null=True, max_length=15, verbose_name="Telephone number")
+        null=True, blank=True, max_length=15, verbose_name="Telephone number")
     fax_tel = models.CharField(
-        null=True, max_length=15, verbose_name="Fax number")
-    website_url = models.URLField(null=True, verbose_name="Website")
+        null=True, blank=True, max_length=15, verbose_name="Fax number")
+    website_url = models.URLField(
+        null=True, blank=True, verbose_name="Website")
     effective_date = models.DateField(default=datetime.date.today)
     expired_date = models.DateField(blank=True, null=True)
     email = models.EmailField(
         blank=True, null=True, verbose_name="Email adddress")
+
+    history = GenericRelation(Version)
 
     class Meta:
         db_table = 'registries_organization'
@@ -160,11 +172,12 @@ class Organization(AuditModel):
 
         # display either "City, Province" or just "Province"
         location = '{}, {}'.format(
-            self.city, prov) if self.city is not None else prov
+            self.city, prov) if (self.city is not None and len(self.city) is not 0) else prov
 
         return '{} ({})'.format(self.name, location)
 
 
+@reversion.register()
 class Person(AuditModel):
     person_guid = models.UUIDField(
         primary_key=True,
@@ -203,6 +216,8 @@ class Person(AuditModel):
     effective_date = models.DateField(default=datetime.date.today)
     expired_date = models.DateField(blank=True, null=True)
 
+    history = GenericRelation(Version)
+
     class Meta:
         db_table = 'registries_person'
         ordering = ['first_name', 'surname']
@@ -216,6 +231,7 @@ class Person(AuditModel):
         return '%s %s' % (self.first_name, self.surname)
 
 
+# deprecated - to be removed
 class ContactInfo(AuditModel):
     contact_detail_guid = models.UUIDField(
         primary_key=True,
@@ -275,6 +291,7 @@ class WellClassCode(AuditModel):
         return self.registries_well_class_code
 
 
+@reversion.register()
 class Qualification(AuditModel):
     """
     Qualification of Well Class for a given Activity/SubActivity.
@@ -326,6 +343,7 @@ class RegistriesRemovalReason(AuditModel):
         return self.description
 
 
+@reversion.register(follow=('organization', 'register_removal_reason', 'status'))
 class Register(AuditModel):
 
     register_guid = models.UUIDField(
@@ -346,6 +364,8 @@ class Register(AuditModel):
         related_name="registrations")
     registration_no = models.CharField(max_length=15, blank=True, null=True)
 
+    history = GenericRelation(Version)
+
     class Meta:
         db_table = 'registries_register'
         verbose_name_plural = 'Registrations'
@@ -363,6 +383,7 @@ class ApplicationStatusCodeManager(models.Manager):
         return super().get_queryset().filter(expired_date__isnull=True)
 
 
+@reversion.register()
 class ApplicationStatusCode(AuditModel):
     """
     Status of Applications for the Well Driller and Pump Installer Registries
@@ -385,6 +406,7 @@ class ApplicationStatusCode(AuditModel):
         return self.description
 
 
+@reversion.register()
 class ProofOfAgeCode(AuditModel):
     """
     List of documents that can be used to indentify (the age) of an application
@@ -405,6 +427,15 @@ class ProofOfAgeCode(AuditModel):
         return self.code
 
 
+@reversion.register(
+    follow=(
+        'proof_of_age',
+        'subactivity',
+        'current_status',
+        'primary_certificate',
+        'removal_reason'
+    )
+)
 class RegistriesApplication(AuditModel):
     """
     Application from a well driller or pump installer to be on the GWELLS Register.
@@ -495,6 +526,8 @@ class RegistriesApplication(AuditModel):
         blank=True,
         null=True,
         verbose_name="Removal Reason")
+
+    history = GenericRelation(Version)
 
     class Meta:
         db_table = 'registries_application'
