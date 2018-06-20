@@ -39,6 +39,7 @@ const fakePersonList = JSON.parse(JSON.stringify(
                   'GEO',
                   'PUMP'
                 ],
+                'display_status': 'Active',
                 'current_status': {
                   'code': 'A',
                   'description': 'Active'

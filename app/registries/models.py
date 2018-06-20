@@ -454,6 +454,19 @@ class RegistriesApplication(AuditModel):
         on_delete=models.PROTECT,
         verbose_name="Certificate")
     primary_certificate_no = models.CharField(max_length=50)
+
+    @property
+    def display_status(self):
+        # When an application is removed, it's status remains "Active", and only the removal date is
+        # populated. We spare the front-end from having to know about this, by generating a human
+        # readable property on this level.
+        status = None
+        if self.removal_date:
+            status = 'Removed'
+        elif self.current_status:
+            status = self.current_status.description
+        return status
+
     # TODO Should probably force this to have a default value of Pending!
     # This field should really be called "Approval Outcome"
     current_status = models.ForeignKey(

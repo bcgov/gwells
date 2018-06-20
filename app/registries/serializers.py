@@ -198,6 +198,7 @@ class ApplicationListSerializer(AuditModelSerializer):
             'cert_authority',
             'removal_date',
             'certificate',
+            'display_status',
             'current_status')
 
 
@@ -434,6 +435,7 @@ class ApplicationAdminSerializer(AuditModelSerializer):
             'removal_reason',
             'subactivity',
             'qualifications',
+            'display_status',
             'current_status',
         )
 
