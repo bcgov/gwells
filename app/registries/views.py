@@ -285,31 +285,23 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
         activity = self.request.query_params.get('activity', None)
         status = self.request.query_params.get('status', None)
 
+        user_is_staff = self.request.user.groups.filter(name__in=GWELLS_ROLE_GROUPS).exists()
+
         if activity:
-            if status == 'P' or not status:
+            if (status == 'P' or not status) and user_is_staff:
+                # We only allow staff to filter on status
                 # For pending, or all, we also return search where there is no registration.
                 qs = qs.filter(Q(registrations__registries_activity__registries_activity_code=activity) |
                                Q(registrations__isnull=True))
+                registrations_qs = registrations_qs.filter(
+                    registries_activity__registries_activity_code=activity)
             else:
                 # For all other searches, we strictly filter on activity.
                 qs = qs.filter(registrations__registries_activity__registries_activity_code=activity)
                 registrations_qs = registrations_qs.filter(
                     registries_activity__registries_activity_code=activity)
 
-        if not self.request.user.groups.filter(name__in=GWELLS_ROLE_GROUPS).exists():
-            # User is not logged in
-            # Only show active drillers to non-admin users and public
-            qs = qs.filter(
-                Q(registrations__applications__current_status__code='A'),
-                Q(registrations__applications__removal_date__isnull=True))
-
-            registrations_qs = registrations_qs.filter(
-                Q(applications__current_status__code='A'),
-                Q(applications__removal_date__isnull=True))
-
-            applications_qs = applications_qs.filter(
-                current_status='A', removal_date__isnull=True)
-        else:
+        if user_is_staff:
             # User is logged in
             if status:
                 if status == 'Removed':
@@ -328,6 +320,19 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
                         qs = qs.filter(
                             Q(registrations__applications__current_status__code=status),
                             Q(registrations__applications__removal_date__isnull=True))
+        else:
+            # User is not logged in
+            # Only show active drillers to non-admin users and public
+            qs = qs.filter(
+                Q(registrations__applications__current_status__code='A'),
+                Q(registrations__applications__removal_date__isnull=True))
+
+            registrations_qs = registrations_qs.filter(
+                Q(applications__current_status__code='A'),
+                Q(applications__removal_date__isnull=True))
+
+            applications_qs = applications_qs.filter(
+                current_status='A', removal_date__isnull=True)
 
         # generate applications queryset
         applications_qs = applications_qs \

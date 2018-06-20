@@ -838,11 +838,14 @@ class TestPublicSearch(TestCase):
             subactivity=self.subactivity)
 
     def test_search_only_returns_approved(self):
-        # Test that when searching, only the active applications are returned
+        # Test that when searching, only the active applications are returned.
         url = reverse('person-list') + '?search=&limit=10&activity=DRILL&status=Removed'
         response = self.client.get(url, format='json')
+        # We expect no pending records to have been returned.
         self.assertNotContains(response, 'Pending')
-        self.assertContains(response, 'Approved', 1)
+        # We expect only one Approved record, as the other record has a removal_date.
+        # The word approved appears twice. Once in the current_status and once in the display status.
+        self.assertContains(response, 'Approved', 2)
 
 
 class TestAuthenticatedSearch(AuthenticatedAPITestCase):
