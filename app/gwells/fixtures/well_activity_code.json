@@ -1,0 +1,11 @@
+[
+    {
+        "model": "gwells.wellactivitycode",
+        "pk": "CON",
+        "fields": {
+            "well_activity_type_code": "CON",
+            "description": "Construction",
+            "display_order": 1
+        }
+    }
+]
