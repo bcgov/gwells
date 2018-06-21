@@ -315,7 +315,7 @@ for(String envKeyName: context.env.keySet() as String[]){
                 containers: [
                     containerTemplate(
                         name: 'jnlp',
-                        image: 'docker-registry.default.svc:5000/openshift/jenkins-slave-zap',
+                        image: 'docker-registry.default.svc:5000/moe-gwells-dev/owasp-zap-openshift',
                         resourceRequestCpu: '500m',
                         resourceLimitCpu: '1000m',
                         resourceRequestMemory: '3Gi',
