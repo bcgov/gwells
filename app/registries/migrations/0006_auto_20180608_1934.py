@@ -6,8 +6,10 @@ from django.db import migrations
 
 
 def update_application_status(apps, schema_editor):
-    RegistriesApplicationStatus = apps.get_model('registries', 'RegistriesApplicationStatus')
-    RegistriesApplication = apps.get_model('registries', 'RegistriesApplication')
+    RegistriesApplicationStatus = apps.get_model(
+        'registries', 'RegistriesApplicationStatus')
+    RegistriesApplication = apps.get_model(
+        'registries', 'RegistriesApplication')
     for application in RegistriesApplication.objects.all():
         pending = RegistriesApplicationStatus\
             .objects.filter(application=application,
@@ -41,7 +43,8 @@ def update_application_status(apps, schema_editor):
 
 
 def revert(apps, schema_editor):
-    RegistriesApplication = apps.get_model('registries', 'RegistriesApplication')
+    RegistriesApplication = apps.get_model(
+        'registries', 'RegistriesApplication')
     for application in RegistriesApplication.objects.all():
         application.current_status = None
         application.application_recieved_date = None

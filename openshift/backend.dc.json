@@ -403,7 +403,12 @@
                                     },
                                     {
                                         "name": "ENABLE_GOOGLE_ANALYTICS",
-                                        "value": "False"
+                                        "valueFrom": {
+                                            "configMapKeyRef": {
+                                                "key": "ENABLE_GOOGLE_ANALYTICS",
+                                                "name": "gwells-global-config${NAME_SUFFIX}"
+                                            }
+                                        }
                                     },
                                     {
                                         "name": "ENABLE_DATA_ENTRY",

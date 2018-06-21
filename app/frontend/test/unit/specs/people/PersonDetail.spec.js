@@ -1,4 +1,4 @@
-import { shallowMount, createLocalVue } from '@vue/test-utils'
+import { mount, createLocalVue } from '@vue/test-utils'
 import Vuex from 'vuex'
 import PersonDetail from '@/registry/components/people/PersonDetail'
 import APIErrorMessage from '@/common/components/APIErrorMessage'
@@ -35,7 +35,7 @@ describe('PersonDetail.vue', () => {
   })
 
   it('dispatches the fetch driller action when page loads', () => {
-    shallowMount(PersonDetail, {
+    mount(PersonDetail, {
       store,
       localVue,
       stubs: ['router-link', 'router-view'],
@@ -57,7 +57,7 @@ describe('PersonDetail.vue', () => {
       userRoles: () => ({ edit: true, view: true, approve: true })
     }
     const storeError = new Vuex.Store({ getters, actions, mutations })
-    const wrapper = shallowMount(PersonDetail, {
+    const wrapper = mount(PersonDetail, {
       store: storeError,
       localVue,
       stubs: ['router-link', 'router-view'],
@@ -68,7 +68,7 @@ describe('PersonDetail.vue', () => {
     expect(wrapper.findAll(APIErrorMessage).length).toEqual(1)
   })
   it('doesn\'t load the error component if there is no error', () => {
-    const wrapper = shallowMount(PersonDetail, {
+    const wrapper = mount(PersonDetail, {
       store,
       localVue,
       stubs: ['router-link', 'router-view'],
@@ -79,7 +79,7 @@ describe('PersonDetail.vue', () => {
     expect(wrapper.findAll(APIErrorMessage).length).toEqual(0)
   })
   it('has a classifications property (based on the currentDriller loaded)', () => {
-    const wrapper = shallowMount(PersonDetail, {
+    const wrapper = mount(PersonDetail, {
       store,
       localVue,
       stubs: ['router-link', 'router-view'],
