@@ -12,6 +12,7 @@
     limitations under the License.
 """
 
+import logging
 from django import forms
 from django.utils.safestring import mark_safe
 from crispy_forms.helper import FormHelper
@@ -20,6 +21,10 @@ from crispy_forms.bootstrap import FormActions, AppendedText, InlineRadios
 from django.forms.models import inlineformset_factory
 from ..models import *
 from datetime import date
+
+
+logger = logging.getLogger(__name__)
+
 
 class ActivitySubmissionTypeAndClassForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
@@ -69,7 +74,8 @@ class ActivitySubmissionTypeAndClassForm(forms.ModelForm):
             self.initial['well_activity_type'] = con
             self.fields['well_activity_type'].empty_label = None
         except Exception as e:
-            pass
+            print(__name__)
+            logger.error(e)
 
     def clean_work_start_date(self):
         work_start_date = self.cleaned_data.get('work_start_date')

@@ -190,11 +190,6 @@ STATICFILES_DIR = (
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
-    'filters': {
-        'require_debug_false': {
-            '()': 'django.utils.log.RequireDebugFalse'
-        }
-    },
     'formatters': {
         'verbose': {
             'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
@@ -204,21 +199,46 @@ LOGGING = {
         },
     },
     'handlers': {
-        'console_handler': {
+        'console': {
+            'level': 'INFO',
             'class': 'logging.StreamHandler',
-            'level': 'DEBUG',
-            'formatter': 'verbose',
-            'filters': ['require_debug_false']
-        }
+            'formatter': 'simple'
+        },
     },
     'loggers': {
-        'django.request': {
-            'handlers': ['console_handler'],
-            'level': 'DEBUG',
+        '': {
+            'handlers': ['console'],
             'propagate': True,
-        },
-    }
+        }
+    },
 }
+
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'formatters': {
+#         'verbose': {
+#             'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+#         },
+#         'simple': {
+#             'format': '%(levelname)s %(message)s'
+#         },
+#     },
+#     'handlers': {
+#         'console_handler': {
+#             'class': 'logging.StreamHandler',
+#             'level': 'DEBUG',
+#             'formatter': 'verbose',
+#         }
+#     },
+#     'loggers': {
+#         'django.request': {
+#             'handlers': ['console_handler'],
+#             'level': 'DEBUG',
+#             'propagate': True,
+#         },
+#     }
+# }
 
 JWT_AUTH = {
     'JWT_PUBLIC_KEY': """-----BEGIN PUBLIC KEY-----
