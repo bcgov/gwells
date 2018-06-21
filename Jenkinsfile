@@ -109,7 +109,7 @@ Map context = [
     'Readiness - DEV': true,
     'Deploy - DEV': true,
     'Load Fixtures - DEV': true,
-    'ZAP Security Scan': true,
+    'ZAP Security Scan': false,
     'API Test': true,
     'Full Test - DEV': false
   ],
