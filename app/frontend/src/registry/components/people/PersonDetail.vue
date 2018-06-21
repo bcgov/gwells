@@ -119,7 +119,8 @@
                         class="mb-3"
                         v-on:close="closeApplication(registration.registries_activity)"
                         :value="getApplication(registration.registries_activity)"
-                        :activity="registration.registries_activity">
+                        :activity="registration.registries_activity"
+                        mode="edit">
                         <button type="submit" class="btn btn-primary" variant="primary">Save</button>
                         <button type="button" class="btn btn-light" @click="closeApplication(registration.registries_activity)">Cancel</button>
                     </application-add>
@@ -328,17 +329,14 @@
               @canceled="editContact = false"></person-edit>
             <div v-if="!editContact">
               <div class="row mb-2">
-                <div class="col-5 col-md-2">
-                  Email address:
+                <div class="col-12 col-md-4">
+                  <span class="contact-label">Email address: </span><a :href="`mailto:${currentDriller.contact_email}`">{{ currentDriller.contact_email }}</a>
                 </div>
-                <div class="col-7 col-md-4">
-                  <a :href="`mailto:${currentDriller.contact_email}`">{{ currentDriller.contact_email }}</a>
+                <div class="col-12 col-md-4">
+                  <span class="contact-label">Telephone: </span>{{ currentDriller.contact_tel }}
                 </div>
-                <div class="col-5 col-md-2">
-                  Telephone:
-                </div>
-                <div class="col-7 col-md-4">
-                  {{ currentDriller.contact_tel }}
+                <div class="col-12 col-md-4">
+                  <span class="contact-label">Cell: </span>{{ currentDriller.contact_cell }}
                 </div>
               </div>
             </div>
@@ -370,6 +368,15 @@
 
         <!-- Notes -->
         <person-notes @updated="updateRecord"></person-notes>
+
+        <!-- Change history for this record -->
+        <change-history
+          ref="changeHistory"
+          class="my-3"
+          v-if="!!currentDriller"
+          resource="person"
+          :id="currentDriller.person_guid"></change-history>
+
       </div>
     </div>
   </div>
@@ -379,6 +386,7 @@
 import APIErrorMessage from '@/common/components/APIErrorMessage'
 import PersonEdit from '@/registry/components/people/PersonEdit.vue'
 import PersonNotes from '@/registry/components/people/PersonNotes.vue'
+import ChangeHistory from '@/registry/components/people/ChangeHistory.vue'
 import ApplicationAddEdit from '@/registry/components/people/ApplicationAddEdit.vue'
 import ApiService from '@/common/services/ApiService.js'
 import { mapGetters } from 'vuex'
@@ -391,6 +399,7 @@ export default {
     'api-error': APIErrorMessage,
     'person-edit': PersonEdit,
     'application-add': ApplicationAddEdit,
+    ChangeHistory,
     PersonNotes
   },
   data () {
@@ -485,10 +494,16 @@ export default {
         // classifications, we need to iterate through several arrays.
         this.currentDriller.registrations.forEach((reg) => {
           reg.applications.forEach((app) => {
+            let status = null
+            if (app.removal_date) {
+              status = 'Removed'
+            } else if (app.current_status) {
+              status = app.current_status.description
+            }
             classifications.push({
               code: app.subactivity.registries_subactivity_code,
               description: app.subactivity.description,
-              status: app.current_status ? app.current_status.description : null,
+              status: status,
               date: app.application_outcome_date,
               registration_guid: reg.register_guid,
               application_guid: app.application_guid,
@@ -536,6 +551,10 @@ export default {
     },
     updateRecord () {
       this.$store.dispatch(FETCH_DRILLER, this.$route.params.person_guid)
+      // update changeHistory when company is updated
+      if (this.currentDriller && this.$refs.changeHistory) {
+        this.$refs.changeHistory.update()
+      }
     },
     addApplication (registration) {
       const newClassification = {
@@ -601,5 +620,8 @@ export default {
 }
 .registries-edit-btn {
   margin-top: -5px;
+}
+.contact-label {
+  margin-right: 1rem;
 }
 </style>

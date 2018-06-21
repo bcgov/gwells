@@ -24,6 +24,7 @@ from registries.models import (
     Person,
     Register,
     RegistriesApplication,
+    RegistriesRemovalReason,
     RegistriesStatusCode,
     ActivityCode,
     SubactivityCode,
@@ -63,7 +64,7 @@ class ProofOfAgeCodeSerializer(serializers.ModelSerializer):
         )
 
     def to_internal_value(self, data):
-        if 'code' in data:
+        if 'code' in data and data['code'] is not None:
             return ProofOfAgeCode.objects.get(code=data['code'])
         return super().to_internal_value(data)
 
@@ -152,7 +153,7 @@ class SubactivitySerializer(serializers.ModelSerializer):
         )
 
     def to_internal_value(self, data):
-        if 'registries_subactivity_code' in data:
+        if 'registries_subactivity_code' in data and data['registries_subactivity_code'] is not None:
             return SubactivityCode.objects.get(
                 registries_subactivity_code=data['registries_subactivity_code'])
         return super().to_internal_value(data)
@@ -168,7 +169,7 @@ class ApplicationStatusCodeSerializer(serializers.ModelSerializer):
         )
 
     def to_internal_value(self, data):
-        if 'code' in data:
+        if 'code' in data and data['code'] is not None:
             return ApplicationStatusCode.objects.get(code=data['code'])
         return super().to_internal_value(self)
 
@@ -184,6 +185,9 @@ class ApplicationListSerializer(AuditModelSerializer):
     subactivity = SubactivitySerializer()
     cert_authority = serializers.ReadOnlyField(
         source="primary_certificate.cert_auth.cert_auth_code")
+    certificate = serializers.ReadOnlyField(
+        source="primary_certificate.name"
+    )
 
     class Meta:
         model = RegistriesApplication
@@ -191,7 +195,9 @@ class ApplicationListSerializer(AuditModelSerializer):
             'qualifications',
             'subactivity',
             'qualifications',
-            'cert_authority')
+            'cert_authority',
+            'removal_date',
+            'certificate')
 
 
 class OrganizationListSerializer(AuditModelSerializer):
@@ -245,8 +251,21 @@ class RegistrationsListSerializer(serializers.ModelSerializer):
         Filter for approved applications (application has an 'approved' status that is not expired)
         """
 
+        instance = registration.applications \
+            .select_related(
+                'current_status',
+                'primary_certificate',
+                'primary_certificate__cert_auth',
+                'subactivity',
+            ) \
+            .prefetch_related(
+                'subactivity__qualification_set',
+                'subactivity__qualification_set__well_class'
+            ) \
+            .filter(current_status__code='A')
+
         serializer = ApplicationListSerializer(
-            instance=registration.applications.filter(current_status__code='A'),
+            instance=instance,
             many=True)
         return serializer.data
 
@@ -362,6 +381,21 @@ class ActivitySerializer(serializers.ModelSerializer):
         )
 
 
+class RegistriesRemovalReasonSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = RegistriesRemovalReason
+        fields = (
+            'code',
+            'description'
+        )
+
+    def to_internal_value(self, data):
+        if 'code' in data and data['code'] is not None:
+            return RegistriesRemovalReason.objects.get(code=data['code'])
+        return super().to_internal_value(data)
+
+
 class AccreditedCertificateCodeSerializer(serializers.ModelSerializer):
 
     # CertifyingAuthorityCode
@@ -376,7 +410,7 @@ class AccreditedCertificateCodeSerializer(serializers.ModelSerializer):
         )
 
     def to_internal_value(self, data):
-        if 'acc_cert_guid' in data:
+        if 'acc_cert_guid' in data and data['acc_cert_guid'] is not None:
             return AccreditedCertificateCode.objects.get(acc_cert_guid=data['acc_cert_guid'])
         return super().to_internal_value(data)
 
@@ -398,6 +432,8 @@ class ApplicationAdminSerializer(AuditModelSerializer):
     primary_certificate = AccreditedCertificateCodeSerializer(required=False)
     primary_certificate_no = serializers.CharField(required=False)
     proof_of_age = ProofOfAgeCodeSerializer(required=False)
+    removal_reason = RegistriesRemovalReasonSerializer(
+        required=False, allow_null=True)
     current_status = ApplicationStatusCodeSerializer(required=False)
 
     class Meta:
@@ -418,9 +454,11 @@ class ApplicationAdminSerializer(AuditModelSerializer):
             'primary_certificate_no',
             'registrar_notes',
             'reason_denied',
+            'removal_date',
+            'removal_reason',
             'subactivity',
             'qualifications',
-            'current_status'
+            'current_status',
         )
 
     def to_internal_value(self, data):
@@ -437,6 +475,11 @@ class ApplicationAdminSerializer(AuditModelSerializer):
             data['application_outcome_notification_date'] = None
         if 'application_recieved_date' in data and data['application_recieved_date'] == '':
             data['application_recieved_date'] = None
+        if 'removal_date' in data and data['removal_date'] == '':
+            data['removal_date'] = None
+        if 'removal_reason' in data and data['removal_reason'] is not None:
+            if 'code' in data['removal_reason'] and data['removal_reason']['code'] is None:
+                data['removal_reason'] = None
         return super().to_internal_value(data)
 
     def create(self, validated_data):
@@ -445,7 +488,8 @@ class ApplicationAdminSerializer(AuditModelSerializer):
         """
         if 'current_status' not in validated_data:
             # By default we set the ApplicationStatus to P(ending).
-            validated_data['current_status'] = ApplicationStatusCode.objects.get(code='P')
+            validated_data['current_status'] = ApplicationStatusCode.objects.get(
+                code='P')
         try:
             app = RegistriesApplication.objects.create(**validated_data)
         except TypeError:
@@ -561,7 +605,12 @@ class PersonListSerializer(AuditModelSerializer):
         Filter for active registrations
         """
         registrations = [
-            reg for reg in person.registrations.filter(
+            reg for reg in person.registrations
+            .select_related(
+                'registries_activity',
+                'status',
+                'organization__province_state')
+            .filter(
                 applications__current_status__code='A').distinct()]
 
         serializer = RegistrationsListSerializer(
@@ -719,7 +768,18 @@ class PersonAdminSerializer(AuditModelSerializer):
         Get sorted list of registrations
         """
         registrations = [
-            reg for reg in person.registrations.order_by('registries_activity')]
+            reg for reg in person.registrations.order_by('registries_activity')
+            .select_related('registries_activity', 'organization', 'organization__province_state')
+            .prefetch_related(
+                'applications',
+                'applications__current_status',
+                'applications__primary_certificate',
+                'applications__primary_certificate__cert_auth',
+                'applications__subactivity',
+                'applications__subactivity__qualification_set',
+                'applications__subactivity__qualification_set__well_class'
+            )
+        ]
         serializer = RegistrationAdminSerializer(
             instance=registrations, many=True)
         return serializer.data

@@ -109,8 +109,9 @@ Map context = [
     'Readiness - DEV': true,
     'Deploy - DEV': true,
     'Load Fixtures - DEV': true,
+    'ZAP Security Scan': false,
     'API Test': true,
-    'Full Test - DEV': true
+    'Full Test - DEV': false
   ],
   pullRequest:[
     'id': env.CHANGE_ID,
@@ -152,8 +153,8 @@ _stage('Unit Test', context) {
         containerTemplate(name: 'app', image: "docker-registry.default.svc:5000/moe-gwells-tools/gwells${context.buildNameSuffix}:${context.buildEnvName}", ttyEnabled: true, command: 'cat',
             resourceRequestCpu: '2000m',
             resourceLimitCpu: '2000m',
-            resourceRequestMemory: '2Gi',
-            resourceLimitMemory: '2Gi')
+            resourceRequestMemory: '2.5Gi',
+            resourceLimitMemory: '2.5Gi')
       ]
     ) {
         node("node-${context.uuid}") {
@@ -298,11 +299,60 @@ for(String envKeyName: context.env.keySet() as String[]){
                 sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src && pwd && python manage.py loaddata wellsearch-codetables.json registries-codetables.json'"
                 // Test data for the Wellsearch component (not yet a Django app) and Registries app
                 sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src && pwd && python manage.py loaddata wellsearch.json.gz registries.json'"
+                // Reversion
+                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src && pwd && python manage.py createinitialrevisions'"
             }
         }
     }
 
     if ("DEV".equalsIgnoreCase(stageDeployName)){
+        _stage('ZAP Security Scan', context) {
+            podTemplate(
+                label: "zap-${context.uuid}",
+                name: "zap-${context.uuid}",
+                serviceAccount: "jenkins",
+                cloud: "openshift",
+                containers: [
+                    containerTemplate(
+                        name: 'jnlp',
+                        image: 'docker-registry.default.svc:5000/moe-gwells-dev/owasp-zap-openshift',
+                        resourceRequestCpu: '500m',
+                        resourceLimitCpu: '1000m',
+                        resourceRequestMemory: '3Gi',
+                        resourceLimitMemory: '4Gi',
+                        workingDir: '/home/jenkins',
+                        command: '',
+                        args: '${computer.jnlpmac} ${computer.name}'
+                    )
+                ]
+            ) {
+                node("zap-${context.uuid}") {
+                    //the checkout is mandatory
+                    echo "checking out source"
+                    echo "Build: ${BUILD_ID}"
+                    checkout scm
+                    dir('zap') {
+                        def retVal = sh (
+                            script: """
+                                set -eux
+                                ./runzap.sh
+                            """
+                        )
+                        publishHTML([
+                            allowMissing: false,
+                            alwaysLinkToLastBuild: false,
+                            keepAll: true,
+                            reportDir: '/zap/wrk',
+                            reportFiles: 'index.html',
+                            reportName: 'ZAP Full Scan',
+                            reportTitles: 'ZAP Full Scan'
+                        ])
+                        echo "Return value is: ${retVal}"
+                    }
+                }
+            }
+        }
+
         _stage('API Test', context) {
             String baseURL = context.deployments[envKeyName].environmentUrl.substring(0, context.deployments[envKeyName].environmentUrl.indexOf('/', 8) + 1)
             podTemplate(label: "nodejs-${context.uuid}", name: "nodejs-${context.uuid}", serviceAccount: 'jenkins', cloud: 'openshift', containers: [

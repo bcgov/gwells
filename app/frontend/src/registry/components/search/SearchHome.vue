@@ -210,9 +210,10 @@ export default {
       let result = [
         { value: '', text: 'All' }
       ]
-      if (this.drillerOptions && this.drillerOptions.ApprovalOutcome) {
-        result = result.concat(this.drillerOptions.ApprovalOutcome.map((item) => { return {'text': item.description, 'value': item.code} }))
+      if (this.drillerOptions && this.drillerOptions.approval_outcome_codes) {
+        result = result.concat(this.drillerOptions.approval_outcome_codes.map((item) => { return {'text': item.description, 'value': item.code} }))
       }
+      result = result.concat({'text': 'Removed', 'value': 'Removed'})
       return result
     },
     formatActivityForCityList () {
