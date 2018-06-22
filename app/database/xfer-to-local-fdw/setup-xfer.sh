@@ -251,6 +251,6 @@ EOF
 #  EOF
 
 # To verify that the fdw is set up correctly and visible from gwells 
-psql -d $POSTGRESQL_DATABASE -U $POSTGRESQL_USER -c "\d wells.*"
+psql -d gwells -U gwells -c "\d wells.*"
 
 

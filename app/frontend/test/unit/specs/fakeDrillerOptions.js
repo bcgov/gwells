@@ -205,7 +205,7 @@ const fakeOptions = JSON.parse(JSON.stringify({
     },
     {
       'code': 'DRIVERS',
-      'description': "Driver's licence"
+      'description': "Driver's Licence"
     },
     {
       'code': 'PASSPORT',

@@ -579,7 +579,7 @@
             "create_date": "2018-01-01T08:00:00Z",
             "update_user": "DATALOAD_USER",
             "update_date": "2018-01-01T08:00:00Z",
-            "description": "Driver's licence",
+            "description": "Driver's Licence",
             "display_order": 1,
             "effective_date": "2018-04-26",
             "expired_date": null
