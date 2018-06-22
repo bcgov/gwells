@@ -324,27 +324,6 @@ class Qualification(AuditModel):
 
 
 @reversion.register()
-class RegistriesStatusCode(AuditModel):
-    """
-    Status of the Register Entry
-    """
-    registries_status_code = models.CharField(
-        primary_key=True, max_length=10, editable=False)
-    description = models.CharField(max_length=100)
-    display_order = models.PositiveIntegerField()
-    effective_date = models.DateField(default=datetime.date.today)
-    expired_date = models.DateField(blank=True, null=True)
-
-    class Meta:
-        db_table = 'registries_status_code'
-        ordering = ['display_order', 'description']
-        verbose_name_plural = 'Registry Status Codes'
-
-    def __str__(self):
-        return self.description
-
-
-@reversion.register()
 class RegistriesRemovalReason(AuditModel):
     """
     Possible Reasons for Removal from either of the Registers
@@ -365,7 +344,7 @@ class RegistriesRemovalReason(AuditModel):
         return self.description
 
 
-@reversion.register(follow=('organization', 'register_removal_reason', 'status'))
+@reversion.register(follow=('organization',))
 class Register(AuditModel):
 
     register_guid = models.UUIDField(
@@ -384,29 +363,7 @@ class Register(AuditModel):
         db_column='organization_guid',
         null=True, on_delete=models.PROTECT,
         related_name="registrations")
-    # TODO: Remove this column, it's not being used
-    status = models.ForeignKey(
-        RegistriesStatusCode,
-        db_column='registries_status_code',
-        on_delete=models.PROTECT,
-        verbose_name="Register Entry Status",
-        blank=True,
-        null=True)
     registration_no = models.CharField(max_length=15, blank=True, null=True)
-    registration_date = models.DateField(blank=True, null=True)
-    # TODO: Remove this column
-    register_removal_reason = models.ForeignKey(
-        RegistriesRemovalReason,
-        db_column='registries_removal_reason_code',
-        on_delete=models.PROTECT,
-        blank=True,
-        null=True,
-        verbose_name="Removal Reason")
-    # TODO: Remove this column.
-    register_removal_date = models.DateField(
-        blank=True,
-        null=True,
-        verbose_name="Date of Removal from Register")
 
     history = GenericRelation(Version)
 
@@ -529,6 +486,19 @@ class RegistriesApplication(AuditModel):
         on_delete=models.PROTECT,
         verbose_name="Certificate")
     primary_certificate_no = models.CharField(max_length=50)
+
+    @property
+    def display_status(self):
+        # When an application is removed, it's status remains "Active", and only the removal date is
+        # populated. We spare the front-end from having to know about this, by generating a human
+        # readable property on this level.
+        status = None
+        if self.removal_date:
+            status = 'Removed'
+        elif self.current_status:
+            status = self.current_status.description
+        return status
+
     # TODO Should probably force this to have a default value of Pending!
     # This field should really be called "Approval Outcome"
     current_status = models.ForeignKey(
@@ -568,46 +538,6 @@ class RegistriesApplication(AuditModel):
         return '%s : %s' % (
             self.registration,
             self.file_no)
-
-
-# DO NOT USE! THIS IS DEPRECATED!
-# TODO: Remove data from DB
-class RegistriesApplicationStatus(AuditModel):
-    """
-    Status of a specific Application for the Well Driller and Pump Installer Registries, at a point in time
-    """
-    application_status_guid = models.UUIDField(
-        primary_key=True,
-        default=uuid.uuid4,
-        editable=False,
-        verbose_name="Register Application Status UUID")
-    application = models.ForeignKey(
-        RegistriesApplication,
-        db_column='application_guid',
-        on_delete=models.CASCADE,
-        verbose_name="Application Reference",
-        related_name="status_set")
-    status = models.ForeignKey(
-        ApplicationStatusCode,
-        db_column='registries_application_status_code',
-        on_delete=models.PROTECT,
-        verbose_name="Application Status Code Reference")
-    notified_date = models.DateField(
-        blank=True, null=True, default=datetime.date.today)
-    effective_date = models.DateField(default=datetime.date.today)
-    expired_date = models.DateField(blank=True, null=True)
-
-    class Meta:
-        db_table = 'registries_application_status'
-        ordering = ['application', 'effective_date']
-        verbose_name_plural = 'Application status'
-
-    def __str__(self):
-        return '%s - %s - %s (exp %s)' % (
-            self.application,
-            self.status.description,
-            self.effective_date,
-            self.expired_date)
 
 
 class Register_Note(AuditModel):

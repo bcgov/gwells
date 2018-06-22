@@ -9,7 +9,6 @@ from .models import (
     CertifyingAuthorityCode,
     SubactivityCode,
     RegistriesApplication,
-    RegistriesStatusCode,
     RegistriesRemovalReason,
     Register,
     ApplicationStatusCode,
@@ -46,7 +45,6 @@ admin.site.register(Organization, OrganizationModelAdmin)
 admin.site.register(ActivityCode)
 admin.site.register(SubactivityCode)
 admin.site.register(RegistriesApplication, RegistriesApplicationModelAdmin)
-admin.site.register(RegistriesStatusCode)
 admin.site.register(RegistriesRemovalReason)
 admin.site.register(Register, RegisterModelAdmin)
 admin.site.register(ApplicationStatusCode)

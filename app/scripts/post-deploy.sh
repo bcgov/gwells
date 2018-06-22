@@ -27,26 +27,6 @@ psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER << EOF
 	\i wells_replication_stored_functions.sql
 EOF
 
-# $DB_REPLICATE can be one of "None" | "Subset" | "Full"
-# NOTE: TODO clearing and reloading of code tables to be independent of
-#       db_replicate and only part of code migration (and python load ...)
-#       is this the same as fixtures???  don't think so
-if [ "$DB_REPLICATE" = "Subset" -o "$DB_REPLICATE" = "Full" ]
-then
-	# NOTE: this will clear out Registries app tables too, since the ProvinceStateCode table
-	#       is also a parent table of Registries tables
-	cd $APP_ROOT/src/
-	python manage.py flush --noinput
-	python manage.py loaddata gwells-codetables wellsearch-codetables registries-codetables
-
-	echo ". Running DB Replication from Legacy Database, as per DB_REPLICATION flag"
-    cd $APP_ROOT/src/scripts/
-    ./db-replicate.sh
-else
-    echo ". Skipping DB Replication from Legacy Database, as per DB_REPLICATION flag"
-fi
-set -x
-
 echo ". Running python-related post-deploy tasks."
 cd $APP_ROOT/src/
 set +e
