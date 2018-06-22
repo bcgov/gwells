@@ -502,34 +502,6 @@
         }
     },
     {
-        "model": "registries.registriesstatuscode",
-        "pk": "ACTIVE",
-        "fields": {
-            "create_user": "DATALOAD_USER",
-            "create_date": "2018-01-01T08:00:00Z",
-            "update_user": "DATALOAD_USER",
-            "update_date": "2018-01-01T08:00:00Z",
-            "description": "Active",
-            "display_order": 2,
-            "effective_date": "2018-05-25",
-            "expired_date": null
-        }
-    },
-    {
-        "model": "registries.registriesstatuscode",
-        "pk": "REMOVED",
-        "fields": {
-            "create_user": "DATALOAD_USER",
-            "create_date": "2018-01-01T08:00:00Z",
-            "update_user": "DATALOAD_USER",
-            "update_date": "2018-01-01T08:00:00Z",
-            "description": "Removed",
-            "display_order": 4,
-            "effective_date": "2018-05-25",
-            "expired_date": null
-        }
-    },
-    {
         "model": "registries.applicationstatuscode",
         "pk": "A",
         "fields": {

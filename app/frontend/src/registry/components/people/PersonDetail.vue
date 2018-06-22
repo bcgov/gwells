@@ -585,8 +585,7 @@ export default {
     submitRegistration (activity) {
       const data = {
         person: this.currentDriller.person_guid,
-        registries_activity: activity,
-        status: 'ACTIVE'
+        registries_activity: activity
       }
       ApiService.post('registrations', data).then(() => {
         this.updateRecord()

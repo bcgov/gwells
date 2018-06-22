@@ -14,8 +14,8 @@
 
 import reversion
 from collections import OrderedDict
-from django.db.models import Q
-from django.http import HttpResponse, Http404
+from django.db.models import Q, Prefetch
+from django.http import HttpResponse
 from django.utils import timezone
 from django.views.generic import TemplateView
 from django_filters import rest_framework as restfilters
@@ -269,44 +269,45 @@ class PersonListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
     )
 
     # fetch related companies and registration applications (prevent duplicate database trips)
-    queryset = Person.objects \
-        .all() \
-        .prefetch_related(
-            'contact_info'
-        ).filter(
-            expired_date__isnull=True
-        ).distinct()
+    queryset = Person.objects.all()
 
     def get_queryset(self):
         """ Returns Person queryset, removing non-active and unregistered drillers for anonymous users """
         qs = self.queryset
+
+        # base registration and application querysets
+        registrations_qs = Register.objects.all()
+        applications_qs = RegistriesApplication.objects.all()
+
         # Search for cities (split list and return all matches)
         # search comes in as a comma-separated querystring param e.g: ?city=Atlin,Lake Windermere,Duncan
         cities = self.request.query_params.get('city', None)
         if cities:
             cities = cities.split(',')
             qs = qs.filter(registrations__organization__city__in=cities)
+            registrations_qs = registrations_qs.filter(
+                organization__city__in=cities)
 
         activity = self.request.query_params.get('activity', None)
         status = self.request.query_params.get('status', None)
 
+        user_is_staff = self.request.user.groups.filter(name__in=GWELLS_ROLE_GROUPS).exists()
+
         if activity:
-            if status == 'P' or not status:
+            if (status == 'P' or not status) and user_is_staff:
+                # We only allow staff to filter on status
                 # For pending, or all, we also return search where there is no registration.
                 qs = qs.filter(Q(registrations__registries_activity__registries_activity_code=activity) |
                                Q(registrations__isnull=True))
+                registrations_qs = registrations_qs.filter(
+                    registries_activity__registries_activity_code=activity)
             else:
                 # For all other searches, we strictly filter on activity.
-                qs = qs.filter(
-                    registrations__registries_activity__registries_activity_code=activity)
+                qs = qs.filter(registrations__registries_activity__registries_activity_code=activity)
+                registrations_qs = registrations_qs.filter(
+                    registries_activity__registries_activity_code=activity)
 
-        if not self.request.user.groups.filter(name__in=GWELLS_ROLE_GROUPS).exists():
-            # User is not logged in
-            # Only show active drillers to non-admin users and public
-            qs = qs.filter(
-                Q(registrations__applications__current_status__code='A'),
-                Q(registrations__applications__removal_date__isnull=True))
-        else:
+        if user_is_staff:
             # User is logged in
             if status:
                 if status == 'Removed':
@@ -326,7 +327,51 @@ class PersonListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
                         qs = qs.filter(
                             Q(registrations__applications__current_status__code=status),
                             Q(registrations__applications__removal_date__isnull=True))
-        return qs
+        else:
+            # User is not logged in
+            # Only show active drillers to non-admin users and public
+            qs = qs.filter(
+                Q(registrations__applications__current_status__code='A'),
+                Q(registrations__applications__removal_date__isnull=True))
+
+            registrations_qs = registrations_qs.filter(
+                Q(applications__current_status__code='A'),
+                Q(applications__removal_date__isnull=True))
+
+            applications_qs = applications_qs.filter(
+                current_status='A', removal_date__isnull=True)
+
+        # generate applications queryset
+        applications_qs = applications_qs \
+            .select_related(
+                'current_status',
+                'primary_certificate',
+                'primary_certificate__cert_auth',
+                'subactivity',
+            ) \
+            .prefetch_related(
+                'subactivity__qualification_set',
+                'subactivity__qualification_set__well_class'
+            ).distinct()
+
+        # generate registrations queryset, inserting filtered applications queryset defined above
+        registrations_qs = registrations_qs \
+            .select_related(
+                'registries_activity',
+                'organization',
+                'organization__province_state',
+            ) \
+            .prefetch_related(
+                Prefetch('applications', queryset=applications_qs)
+            ).distinct()
+
+        # insert filtered registrations set
+        qs = qs \
+            .prefetch_related(
+                Prefetch('registrations', queryset=registrations_qs)
+            )
+
+        return qs.distinct()
 
     @swagger_auto_schema(responses={200: PersonListSerializer(many=True)})
     def get(self, request, *args, **kwargs):
@@ -377,7 +422,6 @@ class PersonDetailView(RevisionMixin, AuditUpdateMixin, RetrieveUpdateDestroyAPI
             'registrations',
             'registrations__registries_activity',
             'registrations__organization',
-            'registrations__status',
             'registrations__applications',
             'registrations__applications__current_status',
             'registrations__applications__primary_certificate',
@@ -395,7 +439,8 @@ class PersonDetailView(RevisionMixin, AuditUpdateMixin, RetrieveUpdateDestroyAPI
         """
         qs = self.queryset
         if not self.request.user.groups.filter(name__in=GWELLS_ROLE_GROUPS).exists():
-            qs = qs.filter(registrations__status='ACTIVE')
+            qs = qs.filter(Q(applications__current_status__code='A'),
+                           Q(applications__removal_date__isnull=True))
         return qs
 
     def destroy(self, request, *args, **kwargs):
@@ -437,7 +482,9 @@ class CitiesListView(ListAPIView):
         """
         qs = self.queryset
         if not self.request.user.groups.filter(name__in=GWELLS_ROLE_GROUPS).exists():
-            qs = qs.filter(status='ACTIVE')
+            qs = qs.filter(
+                Q(applications__current_status__code='A'),
+                Q(applications__removal_date__isnull=True))
         if self.kwargs['activity'] == 'drill':
             qs = qs.filter(registries_activity='DRILL')
         if self.kwargs['activity'] == 'install':
@@ -460,9 +507,7 @@ class RegistrationListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
         .select_related(
             'person',
             'registries_activity',
-            'status',
-            'organization',
-            'register_removal_reason',) \
+            'organization',) \
         .prefetch_related(
             'applications',
             'applications__current_status',
@@ -496,9 +541,7 @@ class RegistrationDetailView(RevisionMixin, AuditUpdateMixin, RetrieveUpdateDest
         .select_related(
             'person',
             'registries_activity',
-            'status',
-            'organization',
-            'register_removal_reason',) \
+            'organization',) \
         .prefetch_related(
             'applications',
             'applications__current_status',
@@ -525,9 +568,7 @@ class ApplicationListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
         .select_related(
             'registration',
             'registration__person',
-            'registration__registries_activity',
-            'registration__status',
-            'registration__register_removal_reason')
+            'registration__registries_activity')
 
 
 class ApplicationDetailView(RevisionMixin, AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
@@ -551,9 +592,7 @@ class ApplicationDetailView(RevisionMixin, AuditUpdateMixin, RetrieveUpdateDestr
         .select_related(
             'registration',
             'registration__person',
-            'registration__registries_activity',
-            'registration__status',
-            'registration__register_removal_reason')
+            'registration__registries_activity')
     lookup_field = "application_guid"
 
 
