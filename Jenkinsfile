@@ -1,23 +1,22 @@
 // Jenkinsfile (Scripted Pipeline)
 
-/* Gotchas
+/* Gotchas:
+    - PodTemplate name/label has to be unique to ensure proper caching/validation
+    - https://gist.github.com/matthiasbalke/3c9ecccbea1d460ee4c3fbc5843ede4a
 
-- PodTemplate name/label has to be unique.
-    otherwise,there is some configuration caching that won't actually take the latest configuration
-    e.g.: Changing image, envvars, so on.
-    maybe only when overwriting global templates?
-
-References:
-- https://gist.github.com/matthiasbalke/3c9ecccbea1d460ee4c3fbc5843ede4a
-
+   Libraries:
+    - https://github.com/BCDevOps/jenkins-pipeline-shared-lib
+    - http://github-api.kohsuke.org/apidocs/index.html
 */
-
 import hudson.model.Result;
 import jenkins.model.CauseOfInterruption.UserInterruption;
 import org.kohsuke.github.*
 import bcgov.OpenShiftHelper
 import bcgov.GitHubHelper
 
+
+
+// Print stack trace of error
 @NonCPS
 private static String stackTraceAsString(Throwable t) {
     StringWriter sw = new StringWriter();
@@ -25,18 +24,29 @@ private static String stackTraceAsString(Throwable t) {
     return sw.toString()
 }
 
+
 String stageStatusContext(String stageName){
     return "stages/${stageName.toLowerCase()}"
 }
+
 
 void setStageStatus(Map context, String name, String status) {
      GitHubHelper.createCommitStatus(this, context.pullRequest.head, status, "${env.BUILD_URL}", "Stage '${name}'", stageStatusContext(name))
 }
 
+
+// Notify stage status and pass to Jenkins-GitHub library
 void notifyStageStatus(Map context, String name, String status) {
     setStageStatus(context, name, status)
 }
 
+
+/* _Stage wrapper:
+    - primary means of running stages
+    - reads which stages are to be run
+    - handles stages defined separately in closures (body)
+    - catches errors and provides output
+*/
 def _stage(String name, Map context, boolean retry=0, boolean withCommitStatus=true, Closure body) {
     def stageOpt =(context?.stages?:[:])[name]
     boolean isEnabled=(stageOpt == null || stageOpt == true)
@@ -75,6 +85,17 @@ def _stage(String name, Map context, boolean retry=0, boolean withCommitStatus=t
     }
 }
 
+
+/* Project and pipeline-specific settings
+   Includes:
+    - project name
+    - uuid
+    - web path (dev|test|prod)
+    - build config templates (*.bc)
+    - deployment config templates (*.dc) and parameters
+    - stage names and enabled status (true|false)
+    - git pull request details
+*/
 Map context = [
   'name': 'gwells',
   'uuid' : "${env.JOB_BASE_NAME}-${env.BUILD_NUMBER}-${env.CHANGE_ID}",
@@ -119,22 +140,68 @@ Map context = [
   ]
 ]
 
+
+/* Continuous integration (CI)
+   Triggers when a PR targets a sprint release branch
+    - prepare OpenShift environment
+    - build (build configs, imagestreams)
+    - unit tests
+    - code quality (SonarQube)
+    - deployment to transient dev environment
+    - load fixtures
+    - API tests
+    - functional tests
+    - merge PR into sprint release branch
+
+   Continuous deployment (CD)
+   Triggers when a PR targets the master branch, reserved for release branches and hotfixes
+    - All CI steps
+    - [prompt/stop]
+      - deployment to persistent test environment
+      - smoke tests
+      - deployment
+    - [prompt/stop]
+      - deployment to persistent production environment
+    - [prompt/stop]
+      - merge sprint release or hotfix branch into master
+      - close PR
+      - delete branch
+*/
 def isCI = !"master".equalsIgnoreCase(env.CHANGE_TARGET)
 def isCD = "master".equalsIgnoreCase(env.CHANGE_TARGET)
 
 
+/* Jenkins properties can be set on a pipeline-by-pipeline basis
+   Includes:
+    - build discarder
+    - build concurrency
+    - master node failure handling
+    - throttling
+    - parameters
+    - build triggers
+    See Jenkins' Pipeline Systax for generation
+    Globally equivalent to Jenkins > Manage Jenkins > Configure System
+*/
 properties([
         buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '', numToKeepStr: '5')),
         durabilityHint('PERFORMANCE_OPTIMIZED') /*, parameters([string(defaultValue: '', description: '', name: 'run_stages')]) */
 ])
 
+
+/* Prepare stage
+    - abort any existing builds
+    - echo pull request number
+*/
 stage('Prepare') {
     abortAllPreviousBuildInProgress(currentBuild)
     echo "BRANCH_NAME=${env.BRANCH_NAME}\nCHANGE_ID=${env.CHANGE_ID}\nCHANGE_TARGET=${env.CHANGE_TARGET}\nBUILD_URL=${env.BUILD_URL}"
 }
 
-/**
-This function wrapper allows stages to be optional/skipped.
+
+/* Build stage
+    - applying OpenShift build configs
+    - creating OpenShift imagestreams, annotations and builds
+    - build time optimizations (e.g. image reuse, build scheduling/readiness)
 */
 _stage('Build', context) {
     node('master') {
@@ -147,6 +214,12 @@ _stage('Build', context) {
     }
 } //end stage
 
+
+/* Unit test stage - pipeline step/closure
+    - use Django's manage.py to run python unit tests (w/ nose.cfg)
+    - use 'npm run unit' to run JavaScript unit tests
+    - stash test results for code quality stage
+*/
 _stage('Unit Test', context) {
     podTemplate(label: "node-${context.uuid}", name:"node-${context.uuid}", serviceAccount: 'jenkins', cloud: 'openshift', containers: [
         containerTemplate(name: 'jnlp', image: 'jenkins/jnlp-slave:3.10-1-alpine', args: '${computer.jnlpmac} ${computer.name}', resourceRequestCpu: '100m',resourceLimitCpu: '100m'),
@@ -197,7 +270,10 @@ _stage('Unit Test', context) {
 } //end stage
 
 
-
+/* Code quality stage - pipeline step/closure
+    - unstash unit test results (previous stage)
+    - use SonarQube to consume results (*.xml)
+*/
 _stage('Code Quality', context) {
     podTemplate(
         name: "sonar-runner${context.uuid}",
@@ -246,6 +322,10 @@ _stage('Code Quality', context) {
 } //end stage
 
 
+/* Primary stage execution block
+   - iterates through stages, set in context (Map)
+   - _stage wrapper adds functionality, stability
+*/
 for(String envKeyName: context.env.keySet() as String[]){
     String stageDeployName=envKeyName.toUpperCase()
 
@@ -519,6 +599,12 @@ for(String envKeyName: context.env.keySet() as String[]){
     } //end if
 } // end for
 
+
+/* Cleanup stage - pipeline step/closure
+    - Prompt user to continue
+    - Remove temporary OpenShift resources (moe-gwells-dev)
+    - Merge and delete branches
+*/
 stage('Cleanup') {
 
     def inputResponse = null
