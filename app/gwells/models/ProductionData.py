@@ -11,16 +11,15 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
-from .AuditModel import AuditModel
-from .Well import Well
+from decimal import Decimal
+import uuid
+from django.db import models
+from django.core.validators import MinValueValidator
+
+from gwells.models import AuditModel, Well
 from .ActivitySubmission import ActivitySubmission
 from .YieldEstimationMethodCode import YieldEstimationMethodCode
 from .WellYieldUnitCode import WellYieldUnitCode
-
-from django.db import models
-from django.core.validators import MinValueValidator
-from decimal import Decimal
-import uuid
 
 
 class ProductionData(AuditModel):

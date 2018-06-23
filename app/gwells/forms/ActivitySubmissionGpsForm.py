@@ -11,14 +11,24 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
+from datetime import date
+import logging
+
 from django import forms
 from django.utils.safestring import mark_safe
+from django.forms.models import inlineformset_factory
+
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Div, Submit, Hidden, HTML, Field
 from crispy_forms.bootstrap import FormActions, AppendedText, InlineRadios
-from django.forms.models import inlineformset_factory
+
+
+# TODO: Change to specific imports
 from ..models import *
-from datetime import date
+
+
+logger = logging.getLogger(__name__)
+
 
 class ActivitySubmissionGpsForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
@@ -35,12 +45,15 @@ class ActivitySubmissionGpsForm(forms.ModelForm):
                 Div(
                     Div(
                         Div(
-                            Div(HTML('<div id="coord-error-pane" class="alert alert-warning" style="display:none"></div>')),
+                            Div(HTML(
+                                '<div id="coord-error-pane" class="alert alert-warning" style="display:none"></div>')),
                             css_class='row',
                         ),
                         Div(
-                            Div(AppendedText('latitude', 'decimal degrees'), css_class='col-md-4'),
-                            Div(AppendedText('longitude', 'decimal degrees'), css_class='col-md-4'),
+                            Div(AppendedText('latitude', 'decimal degrees'),
+                                css_class='col-md-4'),
+                            Div(AppendedText('longitude', 'decimal degrees'),
+                                css_class='col-md-4'),
                             css_class='row',
                         ),
                         Div(
@@ -81,7 +94,7 @@ class ActivitySubmissionGpsForm(forms.ModelForm):
                             id='attribution'
                         ),
                         Div(HTML('<br />After the GPS coordinates are entered, the pushpin can be moved by clicking and dragging it on the map. The GPS coordinates will be updated automatically.')
-                        ),
+                            ),
                         css_class='col-md-4',
                     ),
                     css_class='row',
@@ -90,7 +103,8 @@ class ActivitySubmissionGpsForm(forms.ModelForm):
             Fieldset(
                 'Method of Drilling',
                 Div(
-                    Div(AppendedText('ground_elevation', 'ft (asl)'), css_class='col-md-2'),
+                    Div(AppendedText('ground_elevation',
+                                     'ft (asl)'), css_class='col-md-2'),
                     Div('ground_elevation_method', css_class='col-md-3'),
                     css_class='row',
                 ),
@@ -120,11 +134,13 @@ class ActivitySubmissionGpsForm(forms.ModelForm):
         latitude = self.cleaned_data.get('latitude')
 
         if latitude < 48.204555 or latitude > 60.0223:
-            raise forms.ValidationError('Latitude must be between 48.204556 and 60.02230.')
+            raise forms.ValidationError(
+                'Latitude must be between 48.204556 and 60.02230.')
 
-        decimal_places =  max(0,-latitude.as_tuple().exponent)
+        decimal_places = max(0, -latitude.as_tuple().exponent)
         if decimal_places < 5:
-            raise forms.ValidationError('Latitude must be specified to at least 5 decimal places.')
+            raise forms.ValidationError(
+                'Latitude must be specified to at least 5 decimal places.')
 
         return latitude
 
@@ -132,11 +148,13 @@ class ActivitySubmissionGpsForm(forms.ModelForm):
         longitude = self.cleaned_data.get('longitude')
 
         if longitude < -139.073671 or longitude > -114.033822:
-            raise forms.ValidationError('Longitude must be between -139.073671 and -114.033822.')
+            raise forms.ValidationError(
+                'Longitude must be between -139.073671 and -114.033822.')
 
-        decimal_places =  max(0,-longitude.as_tuple().exponent)
+        decimal_places = max(0, -longitude.as_tuple().exponent)
         if decimal_places < 5:
-            raise forms.ValidationError('Longitude must be specified to at least 5 decimal places.')
+            raise forms.ValidationError(
+                'Longitude must be specified to at least 5 decimal places.')
 
         return longitude
 
@@ -150,13 +168,16 @@ class ActivitySubmissionGpsForm(forms.ModelForm):
         errors = []
 
         if ground_elevation and not ground_elevation_method:
-            errors.append('Method for Determining Ground Elevation is required when specifying Ground Elevation.')
+            errors.append(
+                'Method for Determining Ground Elevation is required when specifying Ground Elevation.')
 
         try:
-            if drilling_method == DrillingMethodCode.objects.get(code='OTHER') and not other_drilling_method:
+            if drilling_method == DrillingMethodCode.objects.get(drilling_method_code='OTHER') and not other_drilling_method:
                 errors.append('Specify Other Drilling Method.')
         except Exception as e:
-            errors.append('Configuration error: Other Drilling Method does not exist, please contact the administrator.')
+            logger.error(e)
+            errors.append(
+                'Configuration error: Other Drilling Method does not exist, please contact the administrator.')
 
         if len(errors) > 0:
             raise forms.ValidationError(errors)
@@ -165,7 +186,8 @@ class ActivitySubmissionGpsForm(forms.ModelForm):
 
     class Meta:
         model = ActivitySubmission
-        fields = ['latitude', 'longitude', 'ground_elevation', 'ground_elevation_method', 'drilling_method', 'other_drilling_method', 'well_orientation']
+        fields = ['latitude', 'longitude', 'ground_elevation', 'ground_elevation_method',
+                  'drilling_method', 'other_drilling_method', 'well_orientation']
         widgets = {'well_orientation': forms.RadioSelect,
                    'latitude': forms.TextInput(attrs={'type': 'number', 'min': '48.20456', 'max': '60.0222', 'step': 'any'}),
                    'longitude': forms.TextInput(attrs={'type': 'number', 'min': '-139.07367', 'max': '-114.03383', 'step': 'any'})}

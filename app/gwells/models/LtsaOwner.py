@@ -11,14 +11,13 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
-from .AuditModel import AuditModel
-from .Well import Well
-from .ProvinceStateCode import ProvinceStateCode
-
-from model_utils import FieldTracker
+import uuid
 
 from django.db import models
-import uuid
+from model_utils import FieldTracker
+
+from gwells.models import AuditModel, Well, ProvinceStateCode
+
 
 class LtsaOwner(AuditModel):
     """

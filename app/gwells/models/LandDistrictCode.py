@@ -11,19 +11,22 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
-from .AuditModel import AuditModel
 from django.db import models
+
+from gwells.models.audit_model import AuditModel
+
 
 class LandDistrictCode(AuditModel):
     """
     Lookup of Legal Land Districts.
     """
-    land_district_code = models.CharField(primary_key=True, max_length=10, editable=False)
+    land_district_code = models.CharField(
+        primary_key=True, max_length=10, editable=False)
     name = models.CharField(max_length=255)
     display_order = models.PositiveIntegerField()
 
     effective_date = models.DateTimeField(blank=True, null=True)
-    expiry_date    = models.DateTimeField(blank=True, null=True)
+    expiry_date = models.DateTimeField(blank=True, null=True)
 
     class Meta:
         db_table = 'land_district_code'

@@ -190,6 +190,11 @@ STATICFILES_DIR = (
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse'
+        }
+    },
     'formatters': {
         'verbose': {
             'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
@@ -197,48 +202,29 @@ LOGGING = {
         'simple': {
             'format': '%(levelname)s %(message)s'
         },
-    },
-    'handlers': {
-        'console': {
-            'level': 'INFO',
-            'class': 'logging.StreamHandler',
-            'formatter': 'simple'
-        },
-    },
-    'loggers': {
-        '': {
-            'handlers': ['console'],
-            'propagate': True,
+        'debug': {
+            'format': '%(levelname)s %(asctime)s %(filename)s[%(lineno)d]:%(module)s::%(funcName)s %(message)s'
         }
     },
+    'handlers': {
+        'console_handler': {
+            'class': 'logging.StreamHandler',
+            'level': 'DEBUG',
+            'formatter': 'debug',
+        }
+    },
+    'loggers': {
+        'django.request': {
+            'handlers': ['console_handler'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        '': {
+            'handlers': ['console_handler'],
+            'propagate': True,
+        }
+    }
 }
-
-# LOGGING = {
-#     'version': 1,
-#     'disable_existing_loggers': False,
-#     'formatters': {
-#         'verbose': {
-#             'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
-#         },
-#         'simple': {
-#             'format': '%(levelname)s %(message)s'
-#         },
-#     },
-#     'handlers': {
-#         'console_handler': {
-#             'class': 'logging.StreamHandler',
-#             'level': 'DEBUG',
-#             'formatter': 'verbose',
-#         }
-#     },
-#     'loggers': {
-#         'django.request': {
-#             'handlers': ['console_handler'],
-#             'level': 'DEBUG',
-#             'propagate': True,
-#         },
-#     }
-# }
 
 JWT_AUTH = {
     'JWT_PUBLIC_KEY': """-----BEGIN PUBLIC KEY-----

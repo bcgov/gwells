@@ -11,19 +11,22 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
-from .AuditModel import AuditModel
-from django.db import models
 import uuid
 
-"""
-  Not a Code table, but a representative sample of data to support search
-"""
+from django.db import models
+
+from gwells.models.audit_model import AuditModel
+
+
+# Not a Code table, but a representative sample of data to support search
 class DrillingCompany(AuditModel):
     """
     Companies who perform drilling.
     """
-    drilling_company_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    drilling_company_code = models.CharField(max_length=10, blank=True, null=True)
+    drilling_company_guid = models.UUIDField(
+        primary_key=True, default=uuid.uuid4, editable=False)
+    drilling_company_code = models.CharField(
+        max_length=10, blank=True, null=True)
     name = models.CharField(max_length=200)
 
     class Meta:

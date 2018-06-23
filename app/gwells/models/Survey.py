@@ -1,7 +1,9 @@
-from django.db import models
-from gwells.models.AuditModel import AuditModel
-from django.urls import reverse
 import uuid
+
+from django.urls import reverse
+from django.db import models
+
+from gwells.models import AuditModel
 
 
 class Survey(AuditModel):

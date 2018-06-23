@@ -11,11 +11,12 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
-from .AuditModel import AuditModel
-from .Well import Well
+from gwells.models.audit_model import AuditModel
+from gwells.models import Well
 
 from django.db import models
 import uuid
+
 
 class AquiferWell(AuditModel):
     """

@@ -36,12 +36,16 @@ class ActivitySubmissionTypeAndClassForm(forms.ModelForm):
                 'Type of Work and Well Class',
                 Div(
                     Div('well_activity_type', css_class='col-md-4'),
-                    Div(HTML('<label for="units">Measurement units for data entry</label><br /><input type="radio" name="units" value="Imperial" checked /> Imperial<br /><input type="radio" name="units" value="Metric" disabled /> Metric<br /><br />'), css_class='col-md-4'),
+                    Div(HTML('<label for="units">Measurement units for data entry</label><br />'
+                             '<input type="radio" name="units" value="Imperial" checked /> Imperial<br />'
+                             '<input type="radio" name="units" value="Metric" disabled /> Metric<br /><br />'
+                             ), css_class='col-md-4'),
                     css_class='row',
                 ),
                 Div(
                     Div('well_class', css_class='col-md-4'),
-                    Div(Div('well_subclass', id='divSubclass'), Div('intended_water_use', id='divIntendedWaterUseCode'), css_class='col-md-4'),
+                    Div(Div('well_subclass', id='divSubclass'), Div(
+                        'intended_water_use', id='divIntendedWaterUseCode'), css_class='col-md-4'),
                     css_class='row',
                 ),
                 Div(
@@ -52,7 +56,9 @@ class ActivitySubmissionTypeAndClassForm(forms.ModelForm):
                 Div(
                     Div('driller_responsible', css_class='col-md-4'),
                     Div('driller_name', css_class='col-md-4'),
-                    Div(HTML('<input type="checkbox" id="chkSameAsPersonResponsible" /> <label for="chkSameAsPersonResponsible">Same as Person Responsible for Drilling</label>'), css_class='col-md-4'),
+                    Div(HTML('<input type="checkbox" id="chkSameAsPersonResponsible" />'
+                             '<label for="chkSameAsPersonResponsible">'
+                             'Same as Person Responsible for Drilling</label>'), css_class='col-md-4'),
                     css_class='row',
                 ),
                 Div(
@@ -67,25 +73,27 @@ class ActivitySubmissionTypeAndClassForm(forms.ModelForm):
                 ),
             )
         )
-        super(ActivitySubmissionTypeAndClassForm, self).__init__(*args, **kwargs)
+        super(ActivitySubmissionTypeAndClassForm,
+              self).__init__(*args, **kwargs)
 
         try:
-            con = WellActivityCode.objects.get(code='CON')
+            con = WellActivityCode.objects.get(well_activity_type_code='CON')
             self.initial['well_activity_type'] = con
             self.fields['well_activity_type'].empty_label = None
         except Exception as e:
-            print(__name__)
             logger.error(e)
 
     def clean_work_start_date(self):
         work_start_date = self.cleaned_data.get('work_start_date')
         if work_start_date > date.today():
-            raise forms.ValidationError('Work start date cannot be in the future.')
+            raise forms.ValidationError(
+                'Work start date cannot be in the future.')
         return work_start_date
 
     def clean(self):
         cleaned_data = super(ActivitySubmissionTypeAndClassForm, self).clean()
-        identification_plate_number = cleaned_data.get('identification_plate_number')
+        identification_plate_number = cleaned_data.get(
+            'identification_plate_number')
         well = cleaned_data.get('well_plate_attached')
         work_start_date = cleaned_data.get('work_start_date')
         work_end_date = cleaned_data.get('work_end_date')
@@ -93,10 +101,12 @@ class ActivitySubmissionTypeAndClassForm(forms.ModelForm):
         errors = []
 
         if identification_plate_number and not well:
-            errors.append('Well Identification Plate Is Attached is required when specifying Identification Plate Number.')
+            errors.append('Well Identification Plate Is Attached is required when specifying Identification'
+                          ' Plate Number.')
 
         if work_start_date and work_end_date and work_end_date < work_start_date:
-            errors.append('Work End Date cannot be earlier than Work Start Date.')
+            errors.append(
+                'Work End Date cannot be earlier than Work Start Date.')
 
         if len(errors) > 0:
             raise forms.ValidationError(errors)
@@ -104,7 +114,8 @@ class ActivitySubmissionTypeAndClassForm(forms.ModelForm):
         return cleaned_data
 
     def save(self, commit=True):
-        instance = super(ActivitySubmissionTypeAndClassForm, self).save(commit=False)
+        instance = super(ActivitySubmissionTypeAndClassForm,
+                         self).save(commit=False)
         # Force subclass to None for closed loop geo-exchange
         if instance.well_class.well_class_code == 'CLS_LP_GEO':
             instance.well_subclass = None
@@ -114,6 +125,18 @@ class ActivitySubmissionTypeAndClassForm(forms.ModelForm):
 
     class Meta:
         model = ActivitySubmission
-        fields = ['well_activity_type', 'well_class', 'well_subclass', 'intended_water_use', 'identification_plate_number', 'well_plate_attached', 'driller_responsible', 'driller_name', 'consultant_name', 'consultant_company', 'work_start_date', 'work_end_date']
-        help_texts = {'work_start_date': "yyyy-mm-dd", 'work_end_date': "yyyy-mm-dd",}
+        fields = ['well_activity_type',
+                  'well_class',
+                  'well_subclass',
+                  'intended_water_use',
+                  'identification_plate_number',
+                  'well_plate_attached',
+                  'driller_responsible',
+                  'driller_name',
+                  'consultant_name',
+                  'consultant_company',
+                  'work_start_date',
+                  'work_end_date']
+        help_texts = {'work_start_date': "yyyy-mm-dd",
+                      'work_end_date': "yyyy-mm-dd", }
         widgets = {'well_activity_type': forms.RadioSelect}

@@ -12,7 +12,7 @@
     limitations under the License.
 """
 
-from .AuditModel import AuditModel
+from gwells.models.audit_model import AuditModel
 from django.db import models
 import uuid
 

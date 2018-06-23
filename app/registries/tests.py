@@ -7,7 +7,7 @@ from django.core.management import call_command
 from django.utils.six import StringIO
 from rest_framework import status
 from rest_framework.test import APITestCase, APIRequestFactory
-from gwells.models.ProvinceStateCode import ProvinceStateCode
+from gwells.models import ProvinceStateCode
 from gwells.models.Profile import Profile
 from django.contrib.auth.models import User, Group
 from registries.models import (

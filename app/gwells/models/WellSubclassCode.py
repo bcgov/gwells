@@ -12,23 +12,26 @@
     limitations under the License.
 """
 
-from .AuditModel import AuditModel
-from .WellClassCode import WellClassCode
 from django.db import models
 import uuid
+
+from gwells.models.audit_model import AuditModel
+from gwells.models.well_class_code import WellClassCode
+
 
 class WellSubclassCode(AuditModel):
     """
     Subclass of Well type; we use GUID here as Django doesn't support multi-column PK's
     """
     well_subclass_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    well_class = models.ForeignKey(WellClassCode, null=True, db_column='well_class_code', on_delete=models.CASCADE, blank=True)
+    well_class = models.ForeignKey(WellClassCode, null=True, db_column='well_class_code',
+                                   on_delete=models.PROTECT, blank=True)
     well_subclass_code = models.CharField(max_length=10)
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
 
     effective_date = models.DateTimeField(blank=True, null=True)
-    expiry_date    = models.DateTimeField(blank=True, null=True)
+    expiry_date = models.DateTimeField(blank=True, null=True)
 
     class Meta:
         db_table = 'well_subclass_code'

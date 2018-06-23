@@ -11,19 +11,22 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
-from .AuditModel import AuditModel
 from django.db import models
+
+from gwells.models.audit_model import AuditModel
+
 
 class WellStatusCode(AuditModel):
     """
     Well Status.
     """
-    well_status_code = models.CharField(primary_key=True, max_length=10,editable=False)
+    well_status_code = models.CharField(
+        primary_key=True, max_length=10, editable=False)
     description = models.CharField(max_length=255)
     display_order = models.PositiveIntegerField()
 
     effective_date = models.DateTimeField(blank=True, null=True)
-    expiry_date    = models.DateTimeField(blank=True, null=True)
+    expiry_date = models.DateTimeField(blank=True, null=True)
 
     class Meta:
         db_table = 'well_status_code'

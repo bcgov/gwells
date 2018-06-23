@@ -21,6 +21,7 @@ from django.forms.models import inlineformset_factory
 from ..models import *
 from datetime import date
 
+
 class WellOwnerForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
@@ -61,8 +62,9 @@ class WellOwnerForm(forms.ModelForm):
 
     @staticmethod
     def label_from_instance_code(obj):
-        return obj.code
+        return obj.province_state_code
 
     class Meta:
         model = ActivitySubmission
-        fields = ['owner_full_name', 'owner_mailing_address', 'owner_city', 'owner_province_state', 'owner_postal_code']
+        fields = ['owner_full_name', 'owner_mailing_address',
+                  'owner_city', 'owner_province_state', 'owner_postal_code']

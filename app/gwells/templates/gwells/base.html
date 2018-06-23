@@ -151,6 +151,8 @@
     <script src="{% static 'gwells/js/popper.js/popper.min.js' %}"></script>
     <script src="{% static 'gwells/js/bootstrap.min.js' %}"></script>
 
+    {% block additional_js %} {% endblock %}
+
     <!-- Misc. gwells javascript -->
     {% render_bundle 'manifest' 'js' %}
     {% render_bundle 'vendor' 'js' %}

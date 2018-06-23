@@ -11,18 +11,22 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
-from .AuditModel import AuditModel
+from gwells.models.audit_model import AuditModel
 from .DrillingCompany import DrillingCompany
 
 from django.db import models
 import uuid
 
+
+# TODO: Remove this model - it's duplicated in registries.person
 class Driller(AuditModel):
     """
     People responsible for drilling.
     """
-    driller_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    drilling_company = models.ForeignKey(DrillingCompany, db_column='drilling_company_guid', on_delete=models.CASCADE, verbose_name='Drilling Company')
+    driller_guid = models.UUIDField(
+        primary_key=True, default=uuid.uuid4, editable=False)
+    drilling_company = models.ForeignKey(DrillingCompany, db_column='drilling_company_guid',
+                                         on_delete=models.CASCADE, verbose_name='Drilling Company')
     first_name = models.CharField(max_length=100)
     surname = models.CharField(max_length=100)
     registration_number = models.CharField(max_length=100)

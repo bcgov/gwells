@@ -11,29 +11,38 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
-from .AuditModel import AuditModel
-from .Well import Well
-
+import uuid
 
 from django.db import models
-import uuid
+
+from gwells.models import AuditModel, Well
+
 
 class Perforation(AuditModel):
     """
     Liner Details
     """
-    perforation_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    well_tag_number = models.ForeignKey(Well, db_column='well_tag_number', on_delete=models.CASCADE, blank=True, null=True)
-    liner_thickness = models.DecimalField(max_digits=5, decimal_places=3, blank=True, null=True, verbose_name='Liner Thickness')
-    liner_diameter = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Liner Diameter')
-    liner_from = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Liner From')
-    liner_to = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Liner To')
-    liner_perforation_from = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Perforation From')
-    liner_perforation_to = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Perforation To')
+    perforation_guid = models.UUIDField(
+        primary_key=True, default=uuid.uuid4, editable=False)
+    well_tag_number = models.ForeignKey(
+        Well, db_column='well_tag_number', on_delete=models.CASCADE, blank=True, null=True)
+    liner_thickness = models.DecimalField(
+        max_digits=5, decimal_places=3, blank=True, null=True, verbose_name='Liner Thickness')
+    liner_diameter = models.DecimalField(
+        max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Liner Diameter')
+    liner_from = models.DecimalField(
+        max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Liner From')
+    liner_to = models.DecimalField(
+        max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Liner To')
+    liner_perforation_from = models.DecimalField(
+        max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Perforation From')
+    liner_perforation_to = models.DecimalField(
+        max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Perforation To')
 
     class Meta:
         db_table = 'perforation'
-        ordering = ['liner_from', 'liner_to', 'liner_perforation_from', 'liner_perforation_to', 'perforation_guid']
+        ordering = ['liner_from', 'liner_to', 'liner_perforation_from',
+                    'liner_perforation_to', 'perforation_guid']
 
     def __str__(self):
         return self.description

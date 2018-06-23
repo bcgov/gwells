@@ -13,32 +13,35 @@
 """
 
 from django.test import TestCase
+# TODO import * bad, remove
 from gwells.models import *
 from django.contrib.auth.models import User
 
-#TODO split the tests into one test file per class
+# TODO split the tests into one test file per class
+
 
 class ModelsTestCase(TestCase):
 
     def test_activity_submission_instantiation(self):
-        activity_submission = ActivitySubmission();
+        activity_submission = ActivitySubmission()
         self.assertIsInstance(activity_submission, ActivitySubmission)
 
     def test_aquifer_well_instantiation(self):
-        aquifer_well = AquiferWell();
+        aquifer_well = AquiferWell()
         self.assertIsInstance(aquifer_well, AquiferWell)
 
     def test_bcgs_numbers_instantiation(self):
-        bcgs_numbers = BCGS_Numbers();
+        bcgs_numbers = BCGS_Numbers()
         self.assertIsInstance(bcgs_numbers, BCGS_Numbers)
 
     def test_bedrock_material_instantiation(self):
-        bedrock_material= BedrockMaterialCode()
+        bedrock_material = BedrockMaterialCode()
         self.assertIsInstance(bedrock_material, BedrockMaterialCode)
 
     def test_bedrock_material_descriptor_instantiation(self):
         bedrock_material_descriptor = BedrockMaterialDescriptorCode()
-        self.assertIsInstance(bedrock_material_descriptor, BedrockMaterialDescriptorCode)
+        self.assertIsInstance(bedrock_material_descriptor,
+                              BedrockMaterialDescriptorCode)
 
     def test_casing_instantiation(self):
         casing = Casing()
@@ -78,11 +81,13 @@ class ModelsTestCase(TestCase):
 
     def test_filter_pack_material_size_instantiation(self):
         filter_pack_material_size = FilterPackMaterialSizeCode()
-        self.assertIsInstance(filter_pack_material_size, FilterPackMaterialSizeCode)
+        self.assertIsInstance(filter_pack_material_size,
+                              FilterPackMaterialSizeCode)
 
     def test_ground_elevation_method_instantiation(self):
         ground_elevation_method = GroundElevationMethodCode()
-        self.assertIsInstance(ground_elevation_method, GroundElevationMethodCode)
+        self.assertIsInstance(ground_elevation_method,
+                              GroundElevationMethodCode)
 
     def test_intended_water_use_instantiation(self):
         intended_water_use = IntendedWaterUseCode()
@@ -114,7 +119,8 @@ class ModelsTestCase(TestCase):
 
     def test_lithology_description_code_instantiation(self):
         lithology_description_code = LithologyDescriptionCode()
-        self.assertIsInstance(lithology_description_code, LithologyDescriptionCode)
+        self.assertIsInstance(lithology_description_code,
+                              LithologyDescriptionCode)
 
     def test_lithology_hardness_instantiation(self):
         lithology_hardness = LithologyHardnessCode()
@@ -194,7 +200,8 @@ class ModelsTestCase(TestCase):
 
     def test_water_quality_characteristic_instantiation(self):
         water_quality_characteristic = WaterQualityCharacteristic()
-        self.assertIsInstance(water_quality_characteristic, WaterQualityCharacteristic)
+        self.assertIsInstance(water_quality_characteristic,
+                              WaterQualityCharacteristic)
 
     def test_well_instantiation(self):
         well = Well()
@@ -222,7 +229,8 @@ class ModelsTestCase(TestCase):
 
     def test_yield_estimation_method_instantiation(self):
         yield_estimation_method = YieldEstimationMethodCode()
-        self.assertIsInstance(yield_estimation_method, YieldEstimationMethodCode)
+        self.assertIsInstance(yield_estimation_method,
+                              YieldEstimationMethodCode)
 
     def test_profile(self):
         user = User.objects.create(username="foo")
