@@ -25,11 +25,6 @@ private static String stackTraceAsString(Throwable t) {
 }
 
 
-String stageStatusContext(String stageName){
-    return "stages/${stageName.toLowerCase()}"
-}
-
-
 // Notify stage status and pass to Jenkins-GitHub library
 void notifyStageStatus (Map context, String name, String status) {
     // TODO: broadcast status/result to Slack channel
