@@ -17,15 +17,54 @@ import uuid
 from django.db import models
 from django.core.validators import MinValueValidator
 
-from gwells.models import AuditModel, Well, ActivitySubmission, WellYieldUnitCode, BedrockMaterialCode,\
-    BedrockMaterialDescriptorCode
+from gwells.models import AuditModel, Well, ActivitySubmission, WellYieldUnitCode
+
+
+class BedrockMaterialDescriptorCode(AuditModel):
+    """
+    Further descriptor of the bedrock material encountered in lithology
+    """
+    bedrock_material_descriptor_code = models.CharField(primary_key=True, max_length=10, editable=False)
+    description = models.CharField(max_length=100)
+    display_order = models.PositiveIntegerField()
+
+    effective_date = models.DateTimeField(blank=True, null=True)
+    expiry_date = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'bedrock_material_descriptor_code'
+        ordering = ['display_order', 'description']
+
+    def __str__(self):
+        return self.description
+
+
+class BedrockMaterialCode(AuditModel):
+    """
+    The bedrock material encountered in lithology
+    """
+    bedrock_material_code = models.CharField(
+        primary_key=True, max_length=10, editable=False,)
+    description = models.CharField(max_length=100)
+    display_order = models.PositiveIntegerField()
+
+    effective_date = models.DateTimeField(blank=True, null=True)
+    expiry_date = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'bedrock_material_code'
+        ordering = ['display_order', 'description']
+
+    def __str__(self):
+        return self.description
 
 
 class SurficialMaterialCode(AuditModel):
     """
     The surficial material encountered in lithology
     """
-    surficial_material_code = models.CharField(primary_key=True, max_length=10, editable=False)
+    surficial_material_code = models.CharField(
+        primary_key=True, max_length=10, editable=False)
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
 

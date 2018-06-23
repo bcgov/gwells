@@ -11,13 +11,21 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
+import logging
+
 from django import forms
 from django.utils.safestring import mark_safe
+from django.forms.models import inlineformset_factory
+
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Div, Submit, Hidden, HTML, Field
 from crispy_forms.bootstrap import FormActions, AppendedText, InlineRadios
-from django.forms.models import inlineformset_factory
+
 from ..models import *
+
+
+logger = logging.getLogger(__name__)
+
 
 class ActivitySubmissionScreenIntakeForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
@@ -65,6 +73,7 @@ class ActivitySubmissionScreenIntakeForm(forms.ModelForm):
             screen_intake_method = ScreenIntakeMethodCode.objects.get(code='SCREEN')
         except Exception as e:
             errors.append('Configuration error: Intake Method for Screen does not exist, please contact the administrator.')
+            logger.error(e)
 
         if screen_intake_method:
             if screen_intake_method == screen_screen_intake and not screen_type:
@@ -84,13 +93,14 @@ class ActivitySubmissionScreenIntakeForm(forms.ModelForm):
                 self.add_error('other_screen_material', 'This field is required.')
         except Exception as e:
             errors.append('Configuration error: Other Screen Material does not exist, please contact the administrator.')
+            logger.error(e)
 
         try:
             if screen_bottom == ScreenBottomCode.objects.get(code='OTHER') and not other_screen_bottom:
                 self.add_error('other_screen_bottom', 'This field is required.')
         except Exception as e:
             errors.append('Configuration error: Other Screen Bottom does not exist, please contact the administrator.')
-
+            logger.error(e)
 
         if len(errors) > 0:
             raise forms.ValidationError(errors)

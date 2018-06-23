@@ -1,0 +1,57 @@
+[
+    {
+        "model": "gwells.surficialmaterialcode",
+        "pk": "MUCK",
+        "fields": {
+            "create_user": "ETL_USER",
+            "create_date": "2017-07-01T08:00:00Z",
+            "update_user": "ETL_USER",
+            "update_date": "2017-07-01T08:00:00Z",
+            "description": "Brownish muck",
+            "display_order": 1
+        }
+    },
+    {
+        "model": "gwells.wellactivitycode",
+        "pk": "CON",
+        "fields": {
+            "description": "Construction",
+            "display_order": 1
+        }
+    },
+    {
+        "model": "gwells.bedrockmaterialcode",
+        "pk": "GRANITE",
+        "fields": {
+            "description": "Granite",
+            "display_order": 1
+        }
+    },
+    {
+        "model": "gwells.bedrockmaterialdescriptorcode",
+        "pk": "GREEN",
+        "fields": {
+            "description": "Greenish",
+            "display_order": 1
+        }
+    },
+    {
+        "model": "gwells.lithologystructurecode",
+        "pk": "SOFT",
+        "fields": {
+            "description": "Softish",
+            "display_order": 1
+        }
+    },
+    {
+        "model": "gwells.lithologymoisturecode",
+        "pk": "WET",
+        "fields": {
+            "description": "Wet",
+            "display_order": 1
+        }
+    }
+
+
+    
+]

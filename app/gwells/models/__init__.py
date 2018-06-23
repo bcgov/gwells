@@ -10,8 +10,6 @@ from .well import Well
 from gwells.models.ActivitySubmission import ActivitySubmission
 from gwells.models.AquiferWell import AquiferWell
 from gwells.models.BCGS_Numbers import BCGS_Numbers
-from gwells.models.BedrockMaterialCode import BedrockMaterialCode
-from gwells.models.BedrockMaterialDescriptorCode import BedrockMaterialDescriptorCode
 from gwells.models.Casing import Casing
 from gwells.models.CasingCode import CasingCode
 from gwells.models.CasingMaterialCode import CasingMaterialCode
@@ -30,8 +28,9 @@ from gwells.models.LinerMaterialCode import LinerMaterialCode
 from gwells.models.LinerPerforation import LinerPerforation
 from gwells.models.WellYieldUnitCode import WellYieldUnitCode
 # This is ok:
-from .lithology import SurficialMaterialCode, LithologyColourCode, LithologyDescription, LithologyDescriptionCode,\
-    LithologyHardnessCode, LithologyMaterialCode, LithologyMoistureCode, LithologyStructureCode
+from .lithology import SurficialMaterialCode, BedrockMaterialCode, LithologyColourCode, LithologyDescription,\
+    LithologyDescriptionCode, LithologyHardnessCode, LithologyMaterialCode, LithologyMoistureCode,\
+    LithologyStructureCode, BedrockMaterialDescriptorCode
 # This is all wrong:
 from gwells.models.LtsaOwner import LtsaOwner
 from gwells.models.ObsWellStatusCode import ObsWellStatusCode
