@@ -30,14 +30,17 @@ String stageStatusContext(String stageName){
 }
 
 
-void setStageStatus(Map context, String name, String status) {
-     GitHubHelper.createCommitStatus(this, context.pullRequest.head, status, "${env.BUILD_URL}", "Stage '${name}'", stageStatusContext(name))
-}
-
-
 // Notify stage status and pass to Jenkins-GitHub library
-void notifyStageStatus(Map context, String name, String status) {
-    setStageStatus(context, name, status)
+void notifyStageStatus (Map context, String name, String status) {
+    // TODO: broadcast status/result to Slack channel
+    GitHubHelper.createCommitStatus(
+        this,
+        context.pullRequest.head,
+        status,
+        "${env.BUILD_URL}",
+        "Stage '${name}'",
+        "stages/${name.toLowerCase()}"
+    )
 }
 
 
