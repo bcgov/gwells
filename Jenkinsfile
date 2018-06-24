@@ -48,9 +48,7 @@ void notifyStageStatus (Map context, String name, String status) {
 def _stage(String name, Map context, boolean retry=0, boolean withCommitStatus=true, Closure body) {
     def stageOpt =(context?.stages?:[:])[name]
     boolean isEnabled=(stageOpt == null || stageOpt == true)
-    //echo "Stage - ${stage}"
     echo "Running Stage '${name}' - enabled:${isEnabled}"
-
 
     if (isEnabled){
         stage(name) {
@@ -67,7 +65,13 @@ def _stage(String name, Map context, boolean retry=0, boolean withCommitStatus=t
                     def inputAction = input(
                         message: "This step (${name}) has failed. See error above.",
                         ok: 'Confirm',
-                        parameters: [choice(name: 'action', choices: 'Re-run\nIgnore', description: 'What would you like to do?')]
+                        parameters: [
+                            choice(
+                                name: 'action',
+                                choices: 'Re-run\nIgnore',
+                                description: 'What would you like to do?'
+                            )
+                        ]
                     )
                     if ('Ignore'.equalsIgnoreCase(inputAction)){
                         isDone=true
@@ -95,47 +99,62 @@ def _stage(String name, Map context, boolean retry=0, boolean withCommitStatus=t
     - git pull request details
 */
 Map context = [
-  'name': 'gwells',
-  'uuid' : "${env.JOB_BASE_NAME}-${env.BUILD_NUMBER}-${env.CHANGE_ID}",
-  'env': [
-      'dev':[:],
-      'test':['params':['host':'gwells-test.pathfinder.gov.bc.ca']],
-      'prod':['params':['host':'gwells-prod.pathfinder.gov.bc.ca', 'DB_PVC_SIZE':'5Gi']]
-  ],
-  'templates': [
-      'build':[
-          ['file':'openshift/postgresql.bc.json'],
-          ['file':'openshift/backend.bc.json']
-      ],
-      'deployment':[
-          ['file':'openshift/postgresql.dc.json',
-              'params':[
-                  'DATABASE_SERVICE_NAME':'gwells-pgsql${deploy.dcSuffix}',
-                  'IMAGE_STREAM_NAMESPACE':'',
-                  'IMAGE_STREAM_NAME':'gwells-postgresql${deploy.dcSuffix}',
-                  'IMAGE_STREAM_VERSION':'${deploy.envName}',
-                  'POSTGRESQL_DATABASE':'gwells',
-                  'VOLUME_CAPACITY':'${env[DEPLOY_ENV_NAME]?.params?.DB_PVC_SIZE?:"1Gi"}'
-              ]
-          ],
-          ['file':'openshift/backend.dc.json', 'params':['HOST':'${env[DEPLOY_ENV_NAME]?.params?.host?:("gwells" + deployments[DEPLOY_ENV_NAME].dcSuffix + "-" + deployments[DEPLOY_ENV_NAME].projectName + ".pathfinder.gov.bc.ca")}']]
-      ]
-  ],
-  stages:[
-    'Build': true,
-    'Unit Test': true,
-    'Code Quality': false,
-    'Readiness - DEV': true,
-    'Deploy - DEV': true,
-    'Load Fixtures - DEV': true,
-    'ZAP Security Scan': false,
-    'API Test': true,
-    'Full Test - DEV': false
-  ],
-  pullRequest:[
-    'id': env.CHANGE_ID,
-    'head': GitHubHelper.getPullRequestLastCommitId(this)
-  ]
+    'name': 'gwells',
+    'uuid' : "${env.JOB_BASE_NAME}-${env.BUILD_NUMBER}-${env.CHANGE_ID}",
+    'env': [
+        'dev':[:],
+        'test':[
+            'params':[
+                'host':'gwells-test.pathfinder.gov.bc.ca'
+            ]
+        ],
+        'prod':[
+            'params':[
+                'host':'gwells-prod.pathfinder.gov.bc.ca',
+                'DB_PVC_SIZE':'5Gi'
+            ]
+        ]
+    ],
+    'templates': [
+        'build':[
+            ['file':'openshift/postgresql.bc.json'],
+            ['file':'openshift/backend.bc.json']
+        ],
+        'deployment':[
+            [
+                'file':'openshift/postgresql.dc.json',
+                'params':[
+                    'DATABASE_SERVICE_NAME':'gwells-pgsql${deploy.dcSuffix}',
+                    'IMAGE_STREAM_NAMESPACE':'',
+                    'IMAGE_STREAM_NAME':'gwells-postgresql${deploy.dcSuffix}',
+                    'IMAGE_STREAM_VERSION':'${deploy.envName}',
+                    'POSTGRESQL_DATABASE':'gwells',
+                    'VOLUME_CAPACITY':'${env[DEPLOY_ENV_NAME]?.params?.DB_PVC_SIZE?:"1Gi"}'
+                ]
+            ],
+            [
+                'file':'openshift/backend.dc.json',
+                'params':[
+                    'HOST':'${env[DEPLOY_ENV_NAME]?.params?.host?:("gwells" + deployments[DEPLOY_ENV_NAME].dcSuffix + "-" + deployments[DEPLOY_ENV_NAME].projectName + ".pathfinder.gov.bc.ca")}'
+                ]
+            ]
+        ]
+    ],
+    stages:[
+        'Build': true,
+        'Unit Test': true,
+        'Code Quality': false,
+        'Readiness - DEV': true,
+        'Deploy - DEV': true,
+        'Load Fixtures - DEV': true,
+        'ZAP Security Scan': false,
+        'API Test': true,
+        'Full Test - DEV': false
+    ],
+    pullRequest:[
+        'id': env.CHANGE_ID,
+        'head': GitHubHelper.getPullRequestLastCommitId(this)
+    ]
 ]
 
 
@@ -181,8 +200,17 @@ def isCD = "master".equalsIgnoreCase(env.CHANGE_TARGET)
     Globally equivalent to Jenkins > Manage Jenkins > Configure System
 */
 properties([
-        buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '', numToKeepStr: '5')),
-        durabilityHint('PERFORMANCE_OPTIMIZED') /*, parameters([string(defaultValue: '', description: '', name: 'run_stages')]) */
+    buildDiscarder(
+        logRotator(
+            artifactDaysToKeepStr: '',
+            artifactNumToKeepStr: '',
+            daysToKeepStr: '',
+            numToKeepStr: '5'
+        )
+    ),
+    durabilityHint(
+        'PERFORMANCE_OPTIMIZED'
+    )
 ])
 
 
@@ -219,14 +247,30 @@ _stage('Build', context) {
     - stash test results for code quality stage
 */
 _stage('Unit Test', context) {
-    podTemplate(label: "node-${context.uuid}", name:"node-${context.uuid}", serviceAccount: 'jenkins', cloud: 'openshift', containers: [
-        containerTemplate(name: 'jnlp', image: 'jenkins/jnlp-slave:3.10-1-alpine', args: '${computer.jnlpmac} ${computer.name}', resourceRequestCpu: '100m',resourceLimitCpu: '100m'),
-        containerTemplate(name: 'app', image: "docker-registry.default.svc:5000/moe-gwells-tools/gwells${context.buildNameSuffix}:${context.buildEnvName}", ttyEnabled: true, command: 'cat',
-            resourceRequestCpu: '2000m',
-            resourceLimitCpu: '2000m',
-            resourceRequestMemory: '2.5Gi',
-            resourceLimitMemory: '2.5Gi')
-      ]
+    podTemplate(
+        label: "node-${context.uuid}",
+        name:"node-${context.uuid}",
+        serviceAccount: 'jenkins',
+        cloud: 'openshift',
+        containers: [
+            containerTemplate(
+                name: 'jnlp',
+                image: 'jenkins/jnlp-slave:3.10-1-alpine',
+                args: '${computer.jnlpmac} ${computer.name}',
+                resourceRequestCpu: '100m',
+                resourceLimitCpu: '100m'
+            ),
+            containerTemplate(
+                name: 'app',
+                image: "docker-registry.default.svc:5000/moe-gwells-tools/gwells${context.buildNameSuffix}:${context.buildEnvName}",
+                ttyEnabled: true,
+                command: 'cat',
+                resourceRequestCpu: '2000m',
+                resourceLimitCpu: '2000m',
+                resourceRequestMemory: '2.5Gi',
+                resourceLimitMemory: '2.5Gi'
+            )
+        ]
     ) {
         node("node-${context.uuid}") {
             try {
@@ -463,7 +507,7 @@ for(String envKeyName: context.env.keySet() as String[]){
             ])
             {
                 node("nodejs-${context.uuid}") {
-                //the checkout is mandatory, otherwise functional test would fail
+                  //the checkout is mandatory, otherwise functional test would fail
                     echo "checking out source"
                     echo "Build: ${BUILD_ID}"
                     echo "baseURL: ${baseURL}"
@@ -471,7 +515,7 @@ for(String envKeyName: context.env.keySet() as String[]){
                         echo BASEURL=$BASEURL
                     '''
 
-                    //input(message: "Verify Environment variables. Continue?")
+                    //TODO:? input(message: "Verify Environment variables. Continue?")
                     checkout scm
                     dir('api-tests') {
                         sh 'npm install -g newman'
@@ -620,7 +664,7 @@ stage('Cleanup') {
             echo "Clearing OpenShift resources"
             new OpenShiftHelper().cleanup(this, context)
 
-            //echo "Clearing OpenShift resources"
+            // TODO: broadcast status/result to Slack channel
             //setStageStatus(context, 'Cleanup', 'SUCCESS')
             isDone=true
         }catch (ex){
@@ -636,5 +680,5 @@ stage('Cleanup') {
             }
         }
         return isDone
-    }
+    } //end waitUntil
 }
