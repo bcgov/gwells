@@ -14,15 +14,20 @@
 
 from django import forms
 from django.utils.safestring import mark_safe
+from django.forms.models import inlineformset_factory
+
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Div, Submit, Hidden, HTML, Field
 from crispy_forms.bootstrap import FormActions, AppendedText, InlineRadios
-from django.forms.models import inlineformset_factory
+
 from ..search import Search
+from gwells.models import Screen
+
 
 class SearchForm(forms.Form):
     well = forms.IntegerField(
-        label=mark_safe('Well Tag Number or Well Identification Plate Number <a id="well_tag_question" href="#" data-toggle="popover" data-container="body" data-placement="right" \
+        label=mark_safe('Well Tag Number or Well Identification Plate Number <a id="well_tag_question" \
+            href="#" data-toggle="popover" data-container="body" data-placement="right" \
             data-content="Well electronic filing number or physical identification plate number"> \
             <em class="fa fa-question-circle" style="color:blue"></em></a>'),
         required=False,
@@ -30,7 +35,8 @@ class SearchForm(forms.Form):
     )
 
     addr = forms.CharField(
-        label=mark_safe('Street Address <a id="address_question" href="#" data-toggle="popover" data-container="body" data-placement="right" \
+        label=mark_safe('Street Address <a id="address_question" href="#" data-toggle="popover" \
+            data-container="body" data-placement="right" \
             data-content="For best results, try searching using the street name only."> \
             <em class="fa fa-question-circle" style="color:blue"></em></a>'),
         max_length=100,
@@ -39,8 +45,11 @@ class SearchForm(forms.Form):
     )
 
     legal = forms.CharField(
-        label=mark_safe('Legal Plan or District Lot or Parcel Identification Number (PID) <a id="legal_id_question" href="#" data-toggle="popover" data-container="body" data-placement="right" \
-            data-content="Find the legal plan, district lot, or 9-digit PID (parcel identifier) on the property assessment, property tax notice, or real estate transaction."> \
+        label=mark_safe('Legal Plan or District Lot or Parcel Identification Number (PID) \
+            <a id="legal_id_question" href="#" data-toggle="popover" data-container="body" \
+            data-placement="right" data-content="Find the legal plan, district lot, or 9-digit PID \
+            (parcel identifier) on the \
+            property assessment, property tax notice, or real estate transaction."> \
             <em class="fa fa-question-circle" style="color:blue"></em></a>'),
         max_length=100,
         required=False,
@@ -48,7 +57,8 @@ class SearchForm(forms.Form):
     )
 
     owner = forms.CharField(
-        label=mark_safe('Owner Name <a id="owner_question" href="#" data-toggle="popover" data-container="body" data-placement="right" \
+        label=mark_safe('Owner Name <a id="owner_question" href="#" data-toggle="popover" \
+            data-container="body" data-placement="right" \
             data-content="The owner name is usually the name of the well owner at time of drilling."> \
             <em class="fa fa-question-circle" style="color:blue"></em></a>'),
         max_length=100,
@@ -94,7 +104,6 @@ class SearchForm(forms.Form):
         )
 
         return helper
-
 
     def clean(self):
         cleaned_data = super(SearchForm, self).clean()

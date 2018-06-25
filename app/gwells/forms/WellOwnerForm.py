@@ -11,15 +11,17 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
+from datetime import date
 
 from django import forms
 from django.utils.safestring import mark_safe
+from django.forms.models import inlineformset_factory
+
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Div, Submit, Hidden, HTML, Field
 from crispy_forms.bootstrap import FormActions, AppendedText, InlineRadios
-from django.forms.models import inlineformset_factory
-from ..models import *
-from datetime import date
+
+from gwells.models import ActivitySubmission
 
 
 class WellOwnerForm(forms.ModelForm):

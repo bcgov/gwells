@@ -11,14 +11,18 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
+from datetime import date
+
 from django import forms
 from django.utils.safestring import mark_safe
+from django.forms.models import inlineformset_factory
+
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Div, Submit, Hidden, HTML, Field
 from crispy_forms.bootstrap import FormActions, AppendedText, InlineRadios
-from django.forms.models import inlineformset_factory
-from ..models import *
-from datetime import date
+
+from gwells.models import Casing
+
 
 class CasingForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
@@ -74,7 +78,8 @@ class CasingForm(forms.ModelForm):
         try:
             open_casing_code = CasingCode.objects.get(code='OPEN')
         except Exception as e:
-            errors.append('Configuration error: Open Hole Casing Code does not exist, please contact the administrator.')
+            errors.append('Configuration error: Open Hole Casing Code does not exist, please contact the '
+                          'administrator.')
 
         if open_casing_code:
             if casing_code != open_casing_code and not casing_material:
@@ -86,7 +91,6 @@ class CasingForm(forms.ModelForm):
             if casing_code == open_casing_code and casing_material:
                 self.add_error('casing_material', 'Open Hole cannot have a casing material.')
 
-
         if len(errors) > 0:
             raise forms.ValidationError(errors)
 
@@ -94,4 +98,5 @@ class CasingForm(forms.ModelForm):
 
     class Meta:
         model = Casing
-        fields = ['casing_from', 'casing_to', 'diameter', 'casing_code', 'casing_material', 'wall_thickness', 'drive_shoe']
+        fields = ['casing_from', 'casing_to', 'diameter', 'casing_code', 'casing_material', 'wall_thickness',
+                  'drive_shoe']

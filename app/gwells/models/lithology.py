@@ -17,7 +17,8 @@ import uuid
 from django.db import models
 from django.core.validators import MinValueValidator
 
-from gwells.models import AuditModel, Well, ActivitySubmission, WellYieldUnitCode
+from gwells.models import AuditModel, Well, ActivitySubmission, WellYieldUnitCode, ActivitySubmission,\
+    WellYieldUnitCode
 
 
 class BedrockMaterialDescriptorCode(AuditModel):

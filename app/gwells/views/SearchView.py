@@ -11,12 +11,13 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
+import json
 
 from django.views import generic
 from django.core.serializers.json import DjangoJSONEncoder
 from django.shortcuts import render
 from django.http import JsonResponse
-import json
+
 from gwells.forms import SearchForm
 from gwells.models import LandDistrictCode
 from gwells.models import Survey

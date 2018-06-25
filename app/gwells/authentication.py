@@ -15,7 +15,7 @@
 from django.contrib.auth import get_user_model
 from rest_framework import exceptions
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
-from gwells.models.Profile import Profile
+from gwells.models import Profile
 from gwells.roles import roles_to_groups
 
 
