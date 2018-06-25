@@ -281,10 +281,10 @@ _stage('Unit Test', context) {
                     sh script: '''#!/usr/bin/container-entrypoint /bin/sh
                         set -euo pipefail
 
-                        printf "Python version:"&& python --version
-                        printf "Pip version:   "&& pip --version
-                        printf "Node version:  "&& node --version
-                        printf "NPM version:   "&& npm --version
+                        printf "Python version: "&& python --version
+                        printf "Pip version:    "&& pip --version
+                        printf "Node version:   "&& node --version
+                        printf "NPM version:    "&& npm --version
 
                         (
                             cd /opt/app-root/src
