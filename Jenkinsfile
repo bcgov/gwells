@@ -220,7 +220,10 @@ properties([
 */
 stage('Prepare') {
     abortAllPreviousBuildInProgress(currentBuild)
-    echo "BRANCH_NAME=${env.BRANCH_NAME}\nCHANGE_ID=${env.CHANGE_ID}\nCHANGE_TARGET=${env.CHANGE_TARGET}\nBUILD_URL=${env.BUILD_URL}"
+    echo "BRANCH_NAME=${env.BRANCH_NAME}"
+    echo "CHANGE_ID=${env.CHANGE_ID}"
+    echo "CHANGE_TARGET=${env.CHANGE_TARGET}"
+    echo "BUILD_URL=${env.BUILD_URL}"
 }
 
 
@@ -276,19 +279,25 @@ _stage('Unit Test', context) {
             try {
                 container('app') {
                     sh script: '''#!/usr/bin/container-entrypoint /bin/sh
-                        set -eou pipefail
-                        python --version
-                        pip --version
-                        node --version
-                        npm --version
+                        set -euo pipefail
 
-                        (cd /opt/app-root/src && python manage.py migrate)
-                        (cd /opt/app-root/src && export ENABLE_DATA_ENTRY="True" && python manage.py test -c nose.cfg)
-                        (cd /opt/app-root/src/frontend && npm test)
+                        printf "Python version:"&& python --version
+                        printf "Pip version:   "&& pip --version
+                        printf "Node version:  "&& node --version
+                        printf "NPM version:   "&& npm --version
+
+                        (
+                            cd /opt/app-root/src
+                            python manage.py migrate
+                            ENABLE_DATA_ENTRY="True" python manage.py test -c nose.cfg
+                        )
+                        (
+                            cd /opt/app-root/src/frontend
+                            npm test
+                        )
                         mkdir -p frontend/test/
                         cp -R /opt/app-root/src/frontend/test/unit ./frontend/test/
-                        cp /opt/app-root/src/nosetests.xml ./
-                        cp /opt/app-root/src/coverage.xml ./
+                        cp /opt/app-root/src/nosetests.xml /opt/app-root/src/coverage.xml ./
                         cp /opt/app-root/src/frontend/junit.xml ./frontend/
                     '''
                 }
@@ -298,14 +307,16 @@ _stage('Unit Test', context) {
                 stash includes: 'frontend/test/unit/coverage/clover.xml', name: 'nodecoverage'
                 stash includes: 'frontend/junit.xml', name: 'nodejunit'
                 junit 'nosetests.xml,frontend/junit.xml'
-                publishHTML (target: [
-                    allowMissing: false,
-                    alwaysLinkToLastBuild: false,
-                    keepAll: true,
-                    reportDir: 'frontend/test/unit/coverage/lcov-report/',
-                    reportFiles: 'index.html',
-                    reportName: "Node Coverage Report"
-                ])
+                publishHTML (
+                    target: [
+                        allowMissing: false,
+                        alwaysLinkToLastBuild: false,
+                        keepAll: true,
+                        reportDir: 'frontend/test/unit/coverage/lcov-report/',
+                        reportFiles: 'index.html',
+                        reportName: "Node Coverage Report"
+                    ]
+                )
             }
         }
     }
@@ -338,7 +349,11 @@ _stage('Code Quality', context) {
             )
         ],
         volumes: [
-            persistentVolumeClaim(mountPath: '/var/cache/artifacts', claimName: 'cache', readOnly: false)
+            persistentVolumeClaim(
+                mountPath: '/var/cache/artifacts',
+                claimName: 'cache',
+                readOnly: false
+            )
         ]
     ){
         node("sonar-runner${context.uuid}") {
@@ -355,8 +370,13 @@ _stage('Code Quality', context) {
             }
             dir('sonar-runner') {
                 unstash 'coverage'
-                sh './gradlew -q dependencies'
-                sh returnStdout: true, script: "./gradlew sonarqube -Dsonar.host.url=${SONARQUBE_URL} -Dsonar.verbose=true --stacktrace --info  -Dsonar.sources=.."
+                sh script:
+                    """
+                        ./gradlew -q dependencies
+                        ./gradlew sonarqube -Dsonar.host.url=${SONARQUBE_URL} -Dsonar.verbose=true \
+                            --stacktrace --info  -Dsonar.sources=..
+                    """,
+                    returnStdout: true
             }
         }
     }
@@ -383,12 +403,18 @@ for(String envKeyName: context.env.keySet() as String[]){
         _stage("Approve - ${stageDeployName}", context) {
             def inputResponse = null;
             try{
-                inputResponse = input(id: "deploy_${stageDeployName.toLowerCase()}", message: "Deploy to ${stageDeployName}?", ok: 'Approve', submitterParameter: 'approved_by')
+                inputResponse = input(
+                    id: "deploy_${stageDeployName.toLowerCase()}",
+                    message: "Deploy to ${stageDeployName}?",
+                    ok: 'Approve',
+                    submitterParameter: 'approved_by'
+                )
             }catch(ex){
                 error "Pipeline has been aborted. - ${ex}"
             }
-            //echo "inputResponse:${inputResponse}"
-            GitHubHelper.getPullRequest(this).comment("User '${inputResponse}' has approved deployment to '${stageDeployName}'")
+            GitHubHelper.getPullRequest(this).comment(
+                "User '${inputResponse}' has approved deployment to '${stageDeployName}'"
+            )
         }
     }
 
@@ -414,6 +440,7 @@ for(String envKeyName: context.env.keySet() as String[]){
                 openshift.withProject(projectName){
                     podName=openshift.selector('pod', ['deploymentconfig':deploymentConfigName]).objects()[0].metadata.name
                 }
+                // Flush database
                 sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src && pwd && python manage.py flush --no-input'"
                 // Lookup tables common to all system components (e.g. Django apps)
                 sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src && pwd && python manage.py loaddata gwells-codetables.json'"
@@ -460,15 +487,17 @@ for(String envKeyName: context.env.keySet() as String[]){
                                 ./runzap.sh
                             """
                         )
-                        publishHTML([
-                            allowMissing: false,
-                            alwaysLinkToLastBuild: false,
-                            keepAll: true,
-                            reportDir: '/zap/wrk',
-                            reportFiles: 'index.html',
-                            reportName: 'ZAP Full Scan',
-                            reportTitles: 'ZAP Full Scan'
-                        ])
+                        publishHTML(
+                            target: [
+                                allowMissing: false,
+                                alwaysLinkToLastBuild: false,
+                                keepAll: true,
+                                reportDir: '/zap/wrk',
+                                reportFiles: 'index.html',
+                                reportName: 'ZAP Full Scan',
+                                reportTitles: 'ZAP Full Scan'
+                            ]
+                        )
                         echo "Return value is: ${retVal}"
                     }
                 }
@@ -477,37 +506,44 @@ for(String envKeyName: context.env.keySet() as String[]){
 
         _stage('API Test', context) {
             String baseURL = context.deployments[envKeyName].environmentUrl.substring(0, context.deployments[envKeyName].environmentUrl.indexOf('/', 8) + 1)
-            podTemplate(label: "nodejs-${context.uuid}", name: "nodejs-${context.uuid}", serviceAccount: 'jenkins', cloud: 'openshift', containers: [
-              containerTemplate(
-                name: 'jnlp',
-                image: 'registry.access.redhat.com/openshift3/jenkins-slave-nodejs-rhel7',
-                resourceRequestCpu: '800m',
-                resourceLimitCpu: '800m',
-                resourceRequestMemory: '1Gi',
-                resourceLimitMemory: '1Gi',
-                workingDir: '/tmp',
-                command: '',
-                args: '${computer.jnlpmac} ${computer.name}',
-                envVars: [
-                    envVar(key:'BASEURL', value: "${baseURL}gwells"),
-                    secretEnvVar(key: 'GWELLS_API_TEST_USER', secretName: 'apitest-secrets', secretKey: 'username'),
-                    secretEnvVar(key: 'GWELLS_API_TEST_PASSWORD', secretName: 'apitest-secrets', secretKey: 'password'),
-                    secretEnvVar(key: 'GWELLS_API_TEST_AUTH_SERVER', secretName: 'apitest-secrets', secretKey: 'auth_server'),
-                    secretEnvVar(key: 'GWELLS_API_TEST_CLIENT_ID', secretName: 'apitest-secrets', secretKey: 'client_id'),
-                    secretEnvVar(key: 'GWELLS_API_TEST_CLIENT_SECRET', secretName: 'apitest-secrets', secretKey: 'client_secret')
-                ]
-              )
-            ],envVars: [
+            podTemplate(
+                label: "nodejs-${context.uuid}",
+                name: "nodejs-${context.uuid}",
+                serviceAccount: 'jenkins',
+                cloud: 'openshift',
+                containers: [
+                    containerTemplate(
+                        name: 'jnlp',
+                        image: 'registry.access.redhat.com/openshift3/jenkins-slave-nodejs-rhel7',
+                        resourceRequestCpu: '800m',
+                        resourceLimitCpu: '800m',
+                        resourceRequestMemory: '1Gi',
+                        resourceLimitMemory: '1Gi',
+                        workingDir: '/tmp',
+                        command: '',
+                        args: '${computer.jnlpmac} ${computer.name}',
+                        envVars: [
+                            envVar(key:'BASEURL', value: "${baseURL}gwells"),
+                            secretEnvVar(key: 'GWELLS_API_TEST_USER', secretName: 'apitest-secrets', secretKey: 'username'),
+                            secretEnvVar(key: 'GWELLS_API_TEST_PASSWORD', secretName: 'apitest-secrets', secretKey: 'password'),
+                            secretEnvVar(key: 'GWELLS_API_TEST_AUTH_SERVER', secretName: 'apitest-secrets', secretKey: 'auth_server'),
+                            secretEnvVar(key: 'GWELLS_API_TEST_CLIENT_ID', secretName: 'apitest-secrets', secretKey: 'client_id'),
+                            secretEnvVar(key: 'GWELLS_API_TEST_CLIENT_SECRET', secretName: 'apitest-secrets', secretKey: 'client_secret')
+                        ]
+                    )
+            ],
+            envVars: [
                 envVar(key:'BASEURL', value: "${baseURL}gwells"),
                 secretEnvVar(key: 'GWELLS_API_TEST_USER', secretName: 'apitest-secrets', secretKey: 'username'),
                 secretEnvVar(key: 'GWELLS_API_TEST_PASSWORD', secretName: 'apitest-secrets', secretKey: 'password'),
                 secretEnvVar(key: 'GWELLS_API_TEST_AUTH_SERVER', secretName: 'apitest-secrets', secretKey: 'auth_server'),
                 secretEnvVar(key: 'GWELLS_API_TEST_CLIENT_ID', secretName: 'apitest-secrets', secretKey: 'client_id'),
                 secretEnvVar(key: 'GWELLS_API_TEST_CLIENT_SECRET', secretName: 'apitest-secrets', secretKey: 'client_secret')
-            ])
+            ]
+        )
             {
                 node("nodejs-${context.uuid}") {
-                  //the checkout is mandatory, otherwise functional test would fail
+                    //the checkout is mandatory, otherwise functional test would fail
                     echo "checking out source"
                     echo "Build: ${BUILD_ID}"
                     echo "baseURL: ${baseURL}"
@@ -521,17 +557,28 @@ for(String envKeyName: context.env.keySet() as String[]){
                         sh 'npm install -g newman'
 
                         try {
-                            sh 'newman run ./registries_api_tests.json --global-var test_user=$GWELLS_API_TEST_USER --global-var test_password=$GWELLS_API_TEST_PASSWORD --global-var base_url="${BASEURL}" --global-var auth_server=$GWELLS_API_TEST_AUTH_SERVER --global-var client_id=$GWELLS_API_TEST_CLIENT_ID --global-var client_secret=$GWELLS_API_TEST_CLIENT_SECRET -r cli,junit,html;'
+                            sh '''
+                                newman run ./registries_api_tests.json \
+                                    --global-var test_user=$GWELLS_API_TEST_USER \
+                                    --global-var test_password=$GWELLS_API_TEST_PASSWORD \
+                                    --global-var base_url="${BASEURL}" \
+                                    --global-var auth_server=$GWELLS_API_TEST_AUTH_SERVER \
+                                    --global-var client_id=$GWELLS_API_TEST_CLIENT_ID \
+                                    --global-var client_secret=$GWELLS_API_TEST_CLIENT_SECRET \
+                                    -r cli,junit,html;
+                            '''
                         } finally {
                                 junit 'newman/*.xml'
-                                publishHTML (target: [
-                                            allowMissing: false,
-                                            alwaysLinkToLastBuild: false,
-                                            keepAll: true,
-                                            reportDir: 'newman',
-                                            reportFiles: 'newman*.html',
-                                            reportName: "API Test Report"
-                                        ])
+                                publishHTML (
+                                    target: [
+                                        allowMissing: false,
+                                        alwaysLinkToLastBuild: false,
+                                        keepAll: true,
+                                        reportDir: 'newman',
+                                        reportFiles: 'newman*.html',
+                                        reportName: "API Test Report"
+                                    ]
+                                )
                                 stash includes: 'newman/*.xml', name: 'api-tests'
                         }
                     } // end dir
@@ -615,22 +662,26 @@ for(String envKeyName: context.env.keySet() as String[]){
                         } finally {
                                 archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/geb/**/*'
                                 junit testResults:'build/test-results/**/*.xml', allowEmptyResults:true
-                                publishHTML (target: [
-                                            allowMissing: true,
-                                            alwaysLinkToLastBuild: false,
-                                            keepAll: true,
-                                            reportDir: 'build/reports/spock',
-                                            reportFiles: 'index.html',
-                                            reportName: "Test: BDD Spock Report"
-                                        ])
-                                publishHTML (target: [
-                                            allowMissing: true,
-                                            alwaysLinkToLastBuild: false,
-                                            keepAll: true,
-                                            reportDir: 'build/reports/tests/chromeHeadlessTest',
-                                            reportFiles: 'index.html',
-                                            reportName: "Test: Full Test Report"
-                                        ])
+                                publishHTML (
+                                    target: [
+                                        allowMissing: true,
+                                        alwaysLinkToLastBuild: false,
+                                        keepAll: true,
+                                        reportDir: 'build/reports/spock',
+                                        reportFiles: 'index.html',
+                                        reportName: "Test: BDD Spock Report"
+                                    ]
+                                )
+                                publishHTML (
+                                    target: [
+                                        allowMissing: true,
+                                        alwaysLinkToLastBuild: false,
+                                        keepAll: true,
+                                        reportDir: 'build/reports/tests/chromeHeadlessTest',
+                                        reportFiles: 'index.html',
+                                        reportName: "Test: Full Test Report"
+                                    ]
+                                )
                             //todo: install perf report plugin.
                             //perfReport compareBuildPrevious: true, excludeResponseTime: true, ignoreFailedBuilds: true, ignoreUnstableBuilds: true, modeEvaluation: true, modePerformancePerTestCase: true, percentiles: '0,50,90,100', relativeFailedThresholdNegative: 80.0, relativeFailedThresholdPositive: 20.0, relativeUnstableThresholdNegative: 50.0, relativeUnstableThresholdPositive: 50.0, sourceDataFiles: 'build/test-results/**/*.xml'
                         }
