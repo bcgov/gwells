@@ -580,6 +580,8 @@ export default {
         this.closeApplication(key)
         this.savingApplication = false
         this.updateRecord()
+      }).catch(() => {
+        this.savingApplication = false
       })
     },
     submitRegistration (activity) {

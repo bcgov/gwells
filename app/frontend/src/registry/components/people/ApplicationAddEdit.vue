@@ -54,7 +54,7 @@
           </b-row>
           <b-row>
             <b-col md="8">
-              <b-form-group label="Qualified to drill" class="font-weight-bold">
+              <b-form-group :label="`Qualified${activity === 'DRILL' ? ' to drill' : '' }`" class="font-weight-bold">
                 <b-form-checkbox-group class="fixed-width font-weight-normal" :options="formOptions.qualifications" v-model="qualificationForm.qualifications" disabled>
                 </b-form-checkbox-group>
               </b-form-group>

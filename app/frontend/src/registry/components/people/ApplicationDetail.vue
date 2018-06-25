@@ -105,7 +105,10 @@
                 </b-row>
                 <b-row>
                   <b-col md="8" class="pl-3 pt-3">
-                    <b-form-group label="Qualified to drill under this classification" label-for="qualifications" class="font-weight-bold">
+                      <b-form-group
+                          :label="`Qualified ${activity === 'DRILL' ? 'to drill ' : ''}under this classification`"
+                          label-for="qualifications"
+                          class="font-weight-bold">
                       <b-form-checkbox-group id="qualifications" class="fixed-width font-weight-normal" :options="qualificationOptions" v-model="qualifications" disabled>
                       </b-form-checkbox-group>
                     </b-form-group>
