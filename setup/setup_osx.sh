@@ -324,14 +324,9 @@ npm install
 npm run build
 
 
-# Dev only - adapt schema for GWells
-#
-cd "${START_DIR}"/..
-python3 manage.py makemigrations
-
-
 # Migrate data from Wells (legacy) to GWells schema
 #
+cd "${START_DIR}"/../app
 python3 manage.py migrate
 
 
