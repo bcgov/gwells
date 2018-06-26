@@ -336,13 +336,15 @@ python3 manage.py migrate
 	pg_restore -U gwells -d gwells --no-owner --no-privileges "${DB_MODERN}"
 
 
-# Collect static files and run tests
+# Collect static files
 #
-if [ "${TEST}" == "true" ]
-then
-	python3 manage.py collectstatic
+python3 manage.py collectstatic
+
+
+# Run unit tests
+#
+[ "${TEST}" != "true" ]|| \
 	python3 manage.py test -c nose.cfg
-fi
 
 
 # Link to resemble OpenShift's /app-root/src directory
