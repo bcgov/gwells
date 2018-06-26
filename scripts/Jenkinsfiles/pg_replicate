@@ -17,8 +17,8 @@ properties(
         )
     ]
 )
-def PROJECT = 'moe-gwells-prod'
-stage ( 'test' )
+def PROJECT = 'moe-gwells-test'
+stage ( 'run' )
 {
     node ( 'master' )
     {
@@ -44,12 +44,12 @@ stage ( 'test' )
         if ( STATUS == "online" ){
             echo POD_DB +" is online"
             sh """
-                oc patch route gwells -n "${PROJECT}" -p \
+                oc patch route gwells-test -n "${PROJECT}" -p \
                     '{ "spec": { "to": { "name": "proxy-caddy"}, "port": { "targetPort": "2015-tcp" }}}'
                 oc patch route proxy-caddy -n "${PROJECT}" -p \
-                    '{ "spec": { "to": { "name": "gwells" }, "port": { "targetPort": "web" }}}'
+                    '{ "spec": { "to": { "name": "gwells-test" }, "port": { "targetPort": "web" }}}'
 
-                oc scale dc gwells --timeout=5s --replicas=0 -n "${PROJECT}"
+                oc scale dc gwells-test --timeout=5s --replicas=0 -n "${PROJECT}"
                 oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
                     'psql -d gwells -c "VACUUM FULL;"'
                 oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
@@ -73,9 +73,9 @@ stage ( 'test' )
         ).trim()
         if ( WELL_COUNT > 120000 ){
             sh """
-                oc scale dc gwells --timeout=5s --replicas=1 -n "${PROJECT}"
+                oc scale dc gwells-test --timeout=5s --replicas=1 -n "${PROJECT}"
                 oc patch route gwells -n "${PROJECT}" -p \
-                    '{ "spec": { "to": { "name": "gwells" }, "port": { "targetPort": "web" }}}'
+                    '{ "spec": { "to": { "name": "gwells-test" }, "port": { "targetPort": "web" }}}'
                 oc patch route proxy-caddy -n "${PROJECT}" -p \
                     '{ "spec": { "to": { "name": "proxy-caddy" }, "port": { "targetPort": "2015-tcp" }}}'
             """
