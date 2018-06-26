@@ -523,22 +523,68 @@ for(String envKeyName: context.env.keySet() as String[]){
                         command: '',
                         args: '${computer.jnlpmac} ${computer.name}',
                         envVars: [
-                            envVar(key:'BASEURL', value: "${baseURL}gwells"),
-                            secretEnvVar(key: 'GWELLS_API_TEST_USER', secretName: 'apitest-secrets', secretKey: 'username'),
-                            secretEnvVar(key: 'GWELLS_API_TEST_PASSWORD', secretName: 'apitest-secrets', secretKey: 'password'),
-                            secretEnvVar(key: 'GWELLS_API_TEST_AUTH_SERVER', secretName: 'apitest-secrets', secretKey: 'auth_server'),
-                            secretEnvVar(key: 'GWELLS_API_TEST_CLIENT_ID', secretName: 'apitest-secrets', secretKey: 'client_id'),
-                            secretEnvVar(key: 'GWELLS_API_TEST_CLIENT_SECRET', secretName: 'apitest-secrets', secretKey: 'client_secret')
+                            envVar(
+                                key:'BASEURL',
+                                value: "${baseURL}gwells"
+                            ),
+                            secretEnvVar(
+                                key: 'GWELLS_API_TEST_USER',
+                                secretName: 'apitest-secrets',
+                                secretKey: 'username'
+                            ),
+                            secretEnvVar(
+                                key: 'GWELLS_API_TEST_PASSWORD',
+                                secretName: 'apitest-secrets',
+                                secretKey: 'password'
+                            ),
+                            secretEnvVar(
+                                key: 'GWELLS_API_TEST_AUTH_SERVER',
+                                secretName: 'apitest-secrets',
+                                secretKey: 'auth_server'
+                            ),
+                            secretEnvVar(
+                                key: 'GWELLS_API_TEST_CLIENT_ID',
+                                secretName: 'apitest-secrets',
+                                secretKey: 'client_id'
+                            ),
+                            secretEnvVar(
+                                key: 'GWELLS_API_TEST_CLIENT_SECRET',
+                                secretName: 'apitest-secrets',
+                                secretKey: 'client_secret'
+                            )
                         ]
                     )
             ],
             envVars: [
-                envVar(key:'BASEURL', value: "${baseURL}gwells"),
-                secretEnvVar(key: 'GWELLS_API_TEST_USER', secretName: 'apitest-secrets', secretKey: 'username'),
-                secretEnvVar(key: 'GWELLS_API_TEST_PASSWORD', secretName: 'apitest-secrets', secretKey: 'password'),
-                secretEnvVar(key: 'GWELLS_API_TEST_AUTH_SERVER', secretName: 'apitest-secrets', secretKey: 'auth_server'),
-                secretEnvVar(key: 'GWELLS_API_TEST_CLIENT_ID', secretName: 'apitest-secrets', secretKey: 'client_id'),
-                secretEnvVar(key: 'GWELLS_API_TEST_CLIENT_SECRET', secretName: 'apitest-secrets', secretKey: 'client_secret')
+                envVar(
+                    key:'BASEURL',
+                    value: "${baseURL}gwells"
+                ),
+                secretEnvVar(
+                    key: 'GWELLS_API_TEST_USER',
+                    secretName: 'apitest-secrets',
+                    secretKey: 'username'
+                ),
+                secretEnvVar(
+                    key: 'GWELLS_API_TEST_PASSWORD',
+                    secretName: 'apitest-secrets',
+                    secretKey: 'password'
+                ),
+                secretEnvVar(
+                    key: 'GWELLS_API_TEST_AUTH_SERVER',
+                    secretName: 'apitest-secrets',
+                    secretKey: 'auth_server'
+                ),
+                secretEnvVar(
+                    key: 'GWELLS_API_TEST_CLIENT_ID',
+                    secretName: 'apitest-secrets',
+                    secretKey: 'client_id'
+                ),
+                secretEnvVar(
+                    key: 'GWELLS_API_TEST_CLIENT_SECRET',
+                    secretName: 'apitest-secrets',
+                    secretKey: 'client_secret'
+                )
             ]
         )
             {
@@ -590,8 +636,15 @@ for(String envKeyName: context.env.keySet() as String[]){
     if ("DEV".equalsIgnoreCase(stageDeployName) || isCD){
         String testStageName="DEV".equalsIgnoreCase(stageDeployName)?"Full Test - DEV":"Smoke Test - ${stageDeployName}"
         _stage(testStageName, context){
-            String baseURL = context.deployments[envKeyName].environmentUrl.substring(0, context.deployments[envKeyName].environmentUrl.indexOf('/', 8) + 1)
-            podTemplate(label: "bddstack-${context.uuid}", name: "bddstack-${context.uuid}", serviceAccount: 'jenkins', cloud: 'openshift',
+            String baseURL = context.deployments[envKeyName].environmentUrl.substring(
+                0,
+                context.deployments[envKeyName].environmentUrl.indexOf('/', 8) + 1
+            )
+            podTemplate(
+                label: "bddstack-${context.uuid}",
+                name: "bddstack-${context.uuid}",
+                serviceAccount: 'jenkins',
+                cloud: 'openshift',
                 containers: [
                   containerTemplate(
                      name: 'jnlp',
@@ -610,7 +663,11 @@ for(String envKeyName: context.env.keySet() as String[]){
                   )
                 ],
                 volumes: [
-                    persistentVolumeClaim(mountPath: '/var/cache/artifacts', claimName: 'cache', readOnly: false)
+                    persistentVolumeClaim(
+                        mountPath: '/var/cache/artifacts',
+                        claimName: 'cache',
+                        readOnly: false
+                    )
                 ]
             ){
                 node("bddstack-${context.uuid}") {
@@ -622,17 +679,6 @@ for(String envKeyName: context.env.keySet() as String[]){
                     //the checkout is mandatory, otherwise functional test would fail
                     echo "checking out source"
                     checkout scm
-                    /*
-                    dir('functional-tests/build/test-results') {
-                        sh 'echo "BASEURL=${BASEURL}"'
-                        unstash 'coverage'
-                        sh 'rm coverage.xml'
-                        unstash 'nodejunit'
-                    }
-                    */
-                    //dir('app') {
-                    //    sh 'python manage.py loaddata wells registries'
-                    //}
                     dir('functional-tests') {
                         Integer attempts = 0
                         Integer attemptsMax = 2
@@ -683,7 +729,18 @@ for(String envKeyName: context.env.keySet() as String[]){
                                     ]
                                 )
                             //todo: install perf report plugin.
-                            //perfReport compareBuildPrevious: true, excludeResponseTime: true, ignoreFailedBuilds: true, ignoreUnstableBuilds: true, modeEvaluation: true, modePerformancePerTestCase: true, percentiles: '0,50,90,100', relativeFailedThresholdNegative: 80.0, relativeFailedThresholdPositive: 20.0, relativeUnstableThresholdNegative: 50.0, relativeUnstableThresholdPositive: 50.0, sourceDataFiles: 'build/test-results/**/*.xml'
+                            //perfReport compareBuildPrevious: true,
+                            //    excludeResponseTime: true,
+                            //    ignoreFailedBuilds: true,
+                            //    ignoreUnstableBuilds: true,
+                            //    modeEvaluation: true,
+                            //    modePerformancePerTestCase: true,
+                            //    percentiles: '0,50,90,100',
+                            //    relativeFailedThresholdNegative: 80.0,
+                            //    relativeFailedThresholdPositive: 20.0,
+                            //    relativeUnstableThresholdNegative: 50.0,
+                            //    relativeUnstableThresholdPositive: 50.0,
+                            //    sourceDataFiles: 'build/test-results/**/*.xml'
                         }
                     } //end dir
                 } //end node
@@ -706,7 +763,13 @@ stage('Cleanup') {
     waitUntil {
         boolean isDone=false
         try{
-            inputResponse=input(id: 'close_pr', message: "Ready to Accept/Merge (using '${mergeMethod}' method), and Close pull-request #${env.CHANGE_ID}?", ok: 'Yes', submitter: 'authenticated', submitterParameter: 'approver')
+            inputResponse=input(
+                id: 'close_pr',
+                message: "Ready to Accept/Merge (using '${mergeMethod}' method), and Close pull-request #${env.CHANGE_ID}?",
+                ok: 'Yes',
+                submitter: 'authenticated',
+                submitterParameter: 'approver'
+            )
             echo "inputResponse:${inputResponse}"
 
             echo "Merging and Closing PR"
@@ -716,7 +779,6 @@ stage('Cleanup') {
             new OpenShiftHelper().cleanup(this, context)
 
             // TODO: broadcast status/result to Slack channel
-            //setStageStatus(context, 'Cleanup', 'SUCCESS')
             isDone=true
         }catch (ex){
             echo "${stackTraceAsString(ex)}"
@@ -724,7 +786,13 @@ stage('Cleanup') {
                 message: "This 'Cleanup' stage has failed. See error above.",
                 ok: 'Confirm',
                 submitter: 'authenticated',
-                parameters: [choice(name: 'action', choices: 'Re-run\nIgnore', description: 'What would you like to do?')]
+                parameters: [
+                    choice(
+                        name: 'action',
+                        choices: 'Re-run\nIgnore',
+                        description: 'What would you like to do?'
+                    )
+                ]
             )
             if ('Ignore'.equalsIgnoreCase(inputAction)){
                 isDone=true
