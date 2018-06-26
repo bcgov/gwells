@@ -375,13 +375,16 @@ fi
 
 # Open browser window after delay
 #
-( sleep 3 && open http://127.0.0.1:8000/gwells ) &
+(
+	sleep 3 && \
+	open http://127.0.0.1:8000/gwells
+) &
 
 
 # Run server
 #
 cd "${START_DIR}"
-python3 ../manage.py runserver || true
+python3 ../app/manage.py runserver || true
 
 
 # Recommend sourcing ~/.bash_profile if the file has changed
