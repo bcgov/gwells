@@ -299,11 +299,24 @@ then 	(
 fi
 
 
+# Set NVM requirements in bash profile
+#
+grep --quiet "source /usr/local/opt/nvm/nvm.sh" ~/.bash_profile || \
+	(
+		echo ;
+		echo "# NVM requirements";
+		echo "#";
+		echo 'export NVM_DIR="$HOME/.nvm"';
+		echo "source /usr/local/opt/nvm/nvm.sh";
+	) >> ~/.bash_profile
+
+
 # Install requirements with PIP3 and NPM
 #
 cd "${START_DIR}"/../app
 pip3 install -U -r requirements.txt
 cd "${START_DIR}"/../app/frontend
+export NVM_DIR="$HOME/.nvm"
 source /usr/local/opt/nvm/nvm.sh
 nvm install v6.11.3
 nvm alias default 6.11.3
@@ -311,14 +324,9 @@ npm install
 npm run build
 
 
-# Dev only - adapt schema for GWells
-#
-cd "${START_DIR}"/..
-python3 manage.py makemigrations
-
-
 # Migrate data from Wells (legacy) to GWells schema
 #
+cd "${START_DIR}"/../app
 python3 manage.py migrate
 
 
@@ -328,13 +336,15 @@ python3 manage.py migrate
 	pg_restore -U gwells -d gwells --no-owner --no-privileges "${DB_MODERN}"
 
 
-# Collect static files and run tests
+# Collect static files
 #
-if [ "${TEST}" == "true" ]
-then
-	python3 manage.py collectstatic
+python3 manage.py collectstatic
+
+
+# Run unit tests
+#
+[ "${TEST}" != "true" ]|| \
 	python3 manage.py test -c nose.cfg
-fi
 
 
 # Link to resemble OpenShift's /app-root/src directory
@@ -365,13 +375,16 @@ fi
 
 # Open browser window after delay
 #
-( sleep 3 && open http://127.0.0.1:8000/gwells ) &
+(
+	sleep 3 && \
+	open http://127.0.0.1:8000/gwells
+) &
 
 
 # Run server
 #
 cd "${START_DIR}"
-python3 ../manage.py runserver || true
+python3 ../app/manage.py runserver || true
 
 
 # Recommend sourcing ~/.bash_profile if the file has changed

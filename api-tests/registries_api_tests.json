@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "78c45691-2533-486f-af0c-78cac2d05f53",
+		"_postman_id": "9b0a045a-2d4d-487d-9a62-c98e6cc5e851",
 		"name": "GWELLS API remote",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -576,6 +576,73 @@
 							"response": []
 						},
 						{
+							"name": "Company history",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ce7ad4d6-a09e-4a43-8dc4-05d02e58c305",
+										"type": "text/javascript",
+										"exec": [
+											"( function() {",
+											"    pm.test(\"Status code is 200\", function () {",
+											"        pm.response.to.have.status(200);",
+											"    });",
+											"    ",
+											"    var jsonData = pm.response.json()",
+											"    ",
+											"    pm.test(\"History shows city changed to Victoria\", function () {",
+											"        pm.expect(jsonData[0].diff.city).to.eql(\"Victoria\");",
+											"    });",
+											"    pm.test(\"Username is logged for recent update\", function () {",
+											"        pm.expect(jsonData[0].user).to.eql(\"testuser\");",
+											"    });",
+											"})();",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/organizations/{{created_guid}}/history/?format=json",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"organizations",
+										"{{created_guid}}",
+										"history",
+										""
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json"
+										}
+									]
+								},
+								"description": "Retrieve single organization details"
+							},
+							"response": []
+						},
+						{
 							"name": "Company ListCreate Options",
 							"event": [
 								{
@@ -1082,7 +1149,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "5e528dbd-6f1f-4068-b331-ab7e576292ba",
+										"id": "0831e40b-ed31-4044-b114-87f148e2764e",
 										"type": "text/javascript",
 										"exec": [
 											"( function() {",
@@ -1093,19 +1160,19 @@
 											"    var jsonData = pm.response.json()",
 											"    ",
 											"    pm.test(\"Well class code list exists\", function () {",
-											"        pm.expect(jsonData['DRILL'].WellClassCode.length).to.be.ok;",
+											"        pm.expect(jsonData['DRILL'].well_class_codes.length).to.be.ok;",
 											"    });",
 											"    ",
 											"    pm.test(\"Subactivity code list exists\", function () {",
-											"        pm.expect(jsonData['DRILL'].SubactivityCode.length).to.be.ok;",
+											"        pm.expect(jsonData['DRILL'].subactivity_codes.length).to.be.ok;",
 											"    });",
 											"    ",
 											"    pm.test(\"AccreditedCertificateCode code list exists\", function () {",
-											"        pm.expect(jsonData['DRILL'].AccreditedCertificateCode.length).to.be.ok;",
+											"        pm.expect(jsonData['DRILL'].accredited_certificate_codes.length).to.be.ok;",
 											"    });",
 											"    ",
 											"    pm.test(\"Proof of age list exists\", function () {",
-											"        pm.expect(jsonData.ProofOfAgeCode.length).to.be.ok;",
+											"        pm.expect(jsonData.proof_of_age_codes.length).to.be.ok;",
 											"    });",
 											"})();",
 											""
@@ -1548,6 +1615,82 @@
 							"response": []
 						},
 						{
+							"name": "Driller Search Removed",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "166b3bf2-247f-45ab-b5b1-4f726c9e6ffd",
+										"type": "text/javascript",
+										"exec": [
+											"( function() {",
+											"    pm.test(\"Status code is 200\", function () {",
+											"        pm.response.to.have.status(200);",
+											"    });",
+											"})();",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/drillers/?search=&city=&status=Removed&limit=10&activity=DRILL&ordering=0",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"drillers",
+										""
+									],
+									"query": [
+										{
+											"key": "search",
+											"value": ""
+										},
+										{
+											"key": "city",
+											"value": ""
+										},
+										{
+											"key": "status",
+											"value": "Removed"
+										},
+										{
+											"key": "limit",
+											"value": "10"
+										},
+										{
+											"key": "activity",
+											"value": "DRILL"
+										},
+										{
+											"key": "ordering",
+											"value": "0"
+										}
+									]
+								},
+								"description": "Driller model \"list\" view"
+							},
+							"response": []
+						},
+						{
 							"name": "Driller retrieve (single driller detail)",
 							"event": [
 								{
@@ -1764,6 +1907,71 @@
 									]
 								},
 								"description": "Update a driller record"
+							},
+							"response": []
+						},
+						{
+							"name": "Driller history",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "c474786d-b0e0-4ffa-8f79-8048fa042b7e",
+										"type": "text/javascript",
+										"exec": [
+											"( function() {",
+											"    pm.test(\"Status code is 200\", function () {",
+											"        pm.response.to.have.status(200);",
+											"    });",
+											"    ",
+											"    var jsonData = pm.response.json()",
+											"    ",
+											"    pm.test(\"History shows name changed in most recent update\", function () {",
+											"        pm.expect(jsonData[0].diff.surname).to.eql(\"Drillerson\");",
+											"    });",
+											"",
+											"})();",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/drillers/{{created_driller_guid}}/history/?format=json",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"drillers",
+										"{{created_driller_guid}}",
+										"history",
+										""
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json"
+										}
+									]
+								},
+								"description": "Driller model detail view - single driller"
 							},
 							"response": []
 						},
@@ -2635,7 +2843,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "4f9d5aeb-c509-41f6-8043-fe9cdfc8f4df",
+										"id": "e5244e01-168a-4ad5-8716-d4a63559d55e",
 										"type": "text/javascript",
 										"exec": [
 											"( function() {",
@@ -2652,10 +2860,6 @@
 											"        pm.expect(match, \"primary key not in UUID format\").to.be.ok;",
 											"        pm.expect(match.length).to.be.ok;",
 											"        pm.expect(match[0]).to.eql(jsonData.register_guid);",
-											"    });",
-											"    ",
-											"    pm.test(\"Registration is active\", function () {",
-											"        pm.expect(jsonData.status, \"not active\").to.eql(\"ACTIVE\");",
 											"    });",
 											"    ",
 											"    pm.test(\"Audit fields (who_created, when_created) were filled in by backend\", function () {",
@@ -3417,7 +3621,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "2dd32c74-c4f9-4cc7-a353-7ffd628d08b0",
+										"id": "0b7800e7-0118-4d99-ad80-53504e81245a",
 										"type": "text/javascript",
 										"exec": [
 											"( function() {",
@@ -3453,6 +3657,14 @@
 											"    pm.test(\"Reason denied populated\", function() {",
 											"       pm.expect(jsonData.reason_denied).to.eql(\"Something\") ",
 											"    });",
+											"    ",
+											"    pm.test(\"Removal date is correct\", function() {",
+											"        pm.expect(jsonData.removal_date).to.eql(\"2018-01-01\")",
+											"    });",
+											"    ",
+											"    pm.test(\"Removal reason is correct\", function() {",
+											"        pm.expect(jsonData.removal_reason.code).to.eql(\"NLACT\")",
+											"    });",
 											"",
 											"})();",
 											""
@@ -3477,7 +3689,106 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n  \t\"subactivity\": {\n\t\t\"registries_subactivity_code\":\"WATER\"\n\t},\n\t\"primary_certificate\":\n\t{\n\t\t\"acc_cert_guid\":\"28bf8730-dbb7-4218-8e9f-06bd51f60161\"\n\t},\n  \t\"primary_certificate_no\": \"12345\",\n  \t\"proof_of_age\": {\n  \t\t\"code\": \"PASSPORT\"\n  \t},\n  \t\"current_status\": {\"code\": \"A\"},\n  \t\"reason_denied\": \"Something\",\n  \t\"application_recieved_date\": \"2018-01-01\"\n}"
+									"raw": "{\n    \"subactivity\": {\n    \"registries_subactivity_code\":\"WATER\"\n  },\n  \"primary_certificate\":\n  {\n    \"acc_cert_guid\":\"28bf8730-dbb7-4218-8e9f-06bd51f60161\"\n  },\n    \"primary_certificate_no\": \"12345\",\n    \"proof_of_age\": {\n      \"code\": \"PASSPORT\"\n    },\n    \"current_status\": {\"code\": \"A\"},\n    \"reason_denied\": \"Something\",\n    \"application_recieved_date\": \"2018-01-01\",\n    \"removal_date\": \"2018-01-01\",\n    \"removal_reason\": {\"code\": \"NLACT\"}\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/applications/{{created_application_guid}}/?format=json",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"applications",
+										"{{created_application_guid}}",
+										""
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json"
+										}
+									]
+								},
+								"description": "Update an application for a registration."
+							},
+							"response": []
+						},
+						{
+							"name": "Update application - Adjudication No Removal Reason",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "6286180b-7d36-4867-accf-2ab0183dd146",
+										"type": "text/javascript",
+										"exec": [
+											"( function() {",
+											"    pm.test(\"Successful POST request\", function () {",
+											"        pm.expect(pm.response.code, \"response code not 200\").to.eql(200);",
+											"    });",
+											"    var jsonData = pm.response.json();",
+											"    ",
+											"    pm.test(\"The record's subactivity is WATER\", function () {",
+											"        pm.expect(jsonData.subactivity.registries_subactivity_code, \"current status not WATER\").to.eql(\"WATER\");",
+											"    });",
+											"    ",
+											"    pm.test(\"The records primary certificate is correct\", function() {",
+											"        pm.expect(jsonData.primary_certificate.acc_cert_guid, \"primary_certificate not correct\").to.eql(\"28bf8730-dbb7-4218-8e9f-06bd51f60161\");",
+											"    });",
+											"    ",
+											"    pm.test(\"The records primary certificate no is correct\", function() {",
+											"        pm.expect(jsonData.primary_certificate_no, \"primary_certificate_no not correct\").to.eql(\"12345\");",
+											"    });",
+											"    ",
+											"    pm.test(\"The records proof of age is correct\", function() {",
+											"        pm.expect(jsonData.proof_of_age.code, \"proof_of_age not correct\").to.eql(\"PASSPORT\");",
+											"    });",
+											"    ",
+											"    pm.test(\"Application recieved date set correctly\", function() {",
+											"        pm.expect(jsonData.application_recieved_date, \"application_recieved_date\").to.eql(\"2018-01-01\")",
+											"    })",
+											"    ",
+											"    pm.test(\"Current state is correct\", function() {",
+											"        pm.expect(jsonData.current_status.code).to.eql(\"A\")",
+											"    });",
+											"    ",
+											"    pm.test(\"Reason denied populated\", function() {",
+											"       pm.expect(jsonData.reason_denied).to.eql(\"Something\") ",
+											"    });",
+											"    ",
+											"    pm.test(\"Removal date is correct\", function() {",
+											"        pm.expect(jsonData.removal_date).to.eql(\"2018-01-01\")",
+											"    });",
+											"    ",
+											"    pm.test(\"Removal reason is correct\", function() {",
+											"        pm.expect(jsonData.removal_reason).to.eql(null)",
+											"    });",
+											"",
+											"})();",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \t\"subactivity\": {\n\t\t\"registries_subactivity_code\":\"WATER\"\n\t},\n\t\"primary_certificate\":\n\t{\n\t\t\"acc_cert_guid\":\"28bf8730-dbb7-4218-8e9f-06bd51f60161\"\n\t},\n  \t\"primary_certificate_no\": \"12345\",\n  \t\"proof_of_age\": {\n  \t\t\"code\": \"PASSPORT\"\n  \t},\n  \t\"current_status\": {\"code\": \"A\"},\n  \t\"reason_denied\": \"Something\",\n  \t\"application_recieved_date\": \"2018-01-01\",\n  \t\"removal_date\": \"2018-01-01\",\n  \t\"removal_reason\": {\"code\": null}\n}"
 								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/applications/{{created_application_guid}}/?format=json",

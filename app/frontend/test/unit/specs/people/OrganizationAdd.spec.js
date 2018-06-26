@@ -11,15 +11,15 @@ describe('OrganizationAdd.vue', () => {
   let store
   let getters
   let mutations
-  const actions = {
+  let actions = {
     [FETCH_DRILLER_OPTIONS]: jest.fn()
   }
 
   beforeEach(() => {
     getters = {
       error: () => null,
-      drillerOptions: jest.fn().mockReturnValue(fakeOptions),
-      provinceStateOptions: () => ['BC', 'AB']
+      provinceStateOptions: () => ['BC', 'AB'],
+      drillerOptions: jest.fn().mockReturnValue(fakeOptions)
     }
 
     store = new Vuex.Store({ getters, actions, mutations })

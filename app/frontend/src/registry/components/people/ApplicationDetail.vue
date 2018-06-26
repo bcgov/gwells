@@ -55,11 +55,14 @@
                 </div>
               </b-modal>
               <b-row>
-                <application-edit
-                  :activity="activity"
-                  :value="applicationFormValue"
-                  v-on:isValid="onApplicationIsValid"
-                  v-on:close="confirmCancelModal=true"/>
+                <b-col>
+                  <application-edit
+                    :activity="activity"
+                    :value="applicationFormValue"
+                    mode="edit"
+                    v-on:isValid="onApplicationIsValid"
+                    v-on:close="confirmCancelModal=true"/>
+                </b-col>
               </b-row>
               <b-row class="mt-3">
                 <b-col>
@@ -102,7 +105,10 @@
                 </b-row>
                 <b-row>
                   <b-col md="8" class="pl-3 pt-3">
-                    <b-form-group label="Qualified to drill under this classification" label-for="qualifications" class="font-weight-bold">
+                      <b-form-group
+                          :label="`Qualified ${activity === 'DRILL' ? 'to drill ' : ''}under this classification`"
+                          label-for="qualifications"
+                          class="font-weight-bold">
                       <b-form-checkbox-group id="qualifications" class="fixed-width font-weight-normal" :options="qualificationOptions" v-model="qualifications" disabled>
                       </b-form-checkbox-group>
                     </b-form-group>
@@ -163,22 +169,16 @@
                   </b-col>
                   <b-col v-else md="2">Unknown</b-col>
                 </b-row>
-                <!-- Waiting for decision on how removal of the registry is going to happen:
-                <b-row v-if="registerRemovalDate || registerRemovalReason">
-                  <b-col class="pt-3"><h6>Removal from register</h6></b-col>
+                <b-row v-if="removalDate || removalReason">
+                  <b-col class="pt-3"><h6>Removal of classification from register</h6></b-col>
                 </b-row>
-                <b-row v-if="registerRemovalDate || registerRemovalReason">
-                  <b-col><span class="registry-label">Register removal date</span></b-col>
-                  <b-col>{{registerRemovalReason}}</b-col>
-                  <b-col><span class="registry-label">Removal reason</span></b-col>
-                  <b-col>{{registerRemovalDate}}</b-col>
-                </b-row> -->
-                <!--
-                <div class="row">
-                  <div class="col-12 col-sm-4 registry-item">
-                    <span class="registry-label">Register removal date:</span>
-                  </div>
-                </div>-->
+                <b-row v-if="removalDate || removalReason">
+                  <b-col md="2"><span class="registry-label">Removal date:</span></b-col>
+                  <b-col md="2">{{removalDate}}</b-col>
+                  <b-col md="2"><span class="registry-label">Removal reason:</span></b-col>
+                  <b-col v-if="removalReason">{{removalReason.description}}</b-col>
+                  <b-col v-else>Unknown</b-col>
+                </b-row>
                 <!-- <div class="row">
                   <div class="col-12 registry-item">
                     <div class="checkbox form-inline">
@@ -198,7 +198,6 @@
 </template>
 
 <script>
-import APIErrorMessage from '@/common/components/APIErrorMessage'
 import QualCheckbox from '@/common/components/QualCheckbox'
 import { mapGetters, mapActions } from 'vuex'
 import { SET_ERROR } from '@/registry/store/mutations.types'
@@ -209,7 +208,6 @@ import ApiService from '@/common/services/ApiService.js'
 export default {
   name: 'PersonApplicationDetail',
   components: {
-    'api-error': APIErrorMessage,
     'r-checkbox': QualCheckbox,
     'application-edit': ApplicationAddEdit
   },
@@ -266,7 +264,9 @@ export default {
               reason_denied: application.reason_denied,
               application_outcome_date: application.application_outcome_date,
               application_outcome_notification_date: application.application_outcome_notification_date,
-              application_recieved_date: application.application_recieved_date
+              application_recieved_date: application.application_recieved_date,
+              removal_reason: application.removal_reason,
+              removal_date: application.removal_date
             }
           }
         })
@@ -289,7 +289,7 @@ export default {
           this.applicationReset()
         }).catch((error) => {
           this.applicationSaving = false
-          this.$store.commit(SET_ERROR, 'Error saving application')
+          this.$store.commit(SET_ERROR, {status: 'Error saving application'})
           console.error(error)
         })
       }
@@ -300,14 +300,18 @@ export default {
   },
   computed: {
     classification () {
-      return this.application ? this.application.subactivity.description : null
+      let description = null
+      if (this.application && this.application.subactivity) {
+        description = this.application.subactivity.description
+      }
+      return description
     },
     activity () {
       return this.registration ? this.registration.registries_activity : null
     },
     qualificationOptions () {
       if (this.drillerOptions && this.activity in this.drillerOptions) {
-        return this.drillerOptions[this.activity].WellClassCode.map((item) => { return {'text': item.description, 'value': item.registries_well_class_code} })
+        return this.drillerOptions[this.activity].well_class_codes.map((item) => { return {'text': item.description, 'value': item.registries_well_class_code} })
       }
       return []
     },
@@ -337,7 +341,17 @@ export default {
       return title
     },
     proofOfAge () {
-      return this.application.proof_of_age ? this.application.proof_of_age.description : null
+      let description = null
+      if (this.application && this.application.proof_of_age) {
+        description = this.application.proof_of_age.description
+      }
+      return description
+    },
+    removalDate () {
+      return this.application ? this.application.removal_date : null
+    },
+    removalReason () {
+      return this.application ? this.application.removal_reason : null
     },
     ...mapGetters([
       'loading',

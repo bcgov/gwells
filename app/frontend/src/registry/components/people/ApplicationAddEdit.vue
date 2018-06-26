@@ -54,7 +54,7 @@
           </b-row>
           <b-row>
             <b-col md="8">
-              <b-form-group label="Qualified to drill" class="font-weight-bold">
+              <b-form-group :label="`Qualified${activity === 'DRILL' ? ' to drill' : '' }`" class="font-weight-bold">
                 <b-form-checkbox-group class="fixed-width font-weight-normal" :options="formOptions.qualifications" v-model="qualificationForm.qualifications" disabled>
                 </b-form-checkbox-group>
               </b-form-group>
@@ -79,7 +79,7 @@
               </b-form-group>
             </b-col>
           </b-row>
-          <b-row>
+          <b-row v-if="isEditMode">
             <b-col md="4" v-if="qualificationForm.application_recieved_date">
               <b-form-group horizontal :label-cols="4" description="format: yyyy-mm-dd" label="Approval date outcome" class="font-weight-bold" invalid-feedback="Invalid date format">
                 <b-form-input type="date" v-model="qualificationForm.application_outcome_date" :state="approvalDateState"/>
@@ -96,10 +96,27 @@
               </b-form-group>
             </b-col>
           </b-row>
-          <b-row>
+          <b-row v-if="isEditMode">
             <b-col md="4" v-if="showNotificationDate">
               <b-form-group horizontal :label-cols="4" description="format: yyyy-mm-dd" label="Notification date" class="font-weight-bold">
                 <b-form-input type="date" v-model="qualificationForm.application_outcome_notification_date" :state="notificationDateState"/>
+              </b-form-group>
+            </b-col>
+          </b-row>
+          <b-row v-if="showRemoval && isEditMode">
+            <b-col>
+              <h5>Removal of classification from Register</h5>
+            </b-col>
+          </b-row>
+          <b-row v-if="showRemoval && isEditMode">
+            <b-col md="4">
+              <b-form-group horizontal :label-cols="4" label="Removal date" class="font-weight-bold">
+                <b-form-input type="date" v-model="qualificationForm.removal_date" :state="removalDateState"/>
+              </b-form-group>
+            </b-col>
+            <b-col md="4" v-if="showRemovalReason">
+              <b-form-group horizontal :label-cols="4" label="Removal reason" class="font-weight-bold">
+                <b-form-select :options="formOptions.removalReasons" v-model="qualificationForm.removal_reason.code"/>
               </b-form-group>
             </b-col>
           </b-row>
@@ -116,7 +133,23 @@ import { mapGetters, mapActions } from 'vuex'
 import moment from 'moment'
 import { FETCH_DRILLER_OPTIONS } from '@/registry/store/actions.types'
 export default {
-  props: ['value', 'activity'],
+  props: {
+    value: Object,
+    activity: {
+      required: true,
+      type: String,
+      validator: (val) => {
+        return ['DRILL', 'PUMP'].includes(val)
+      }
+    },
+    mode: {
+      required: true,
+      type: String,
+      validator: (val) => {
+        return ['edit', 'add'].includes(val)
+      }
+    }
+  },
   data () {
     return {
       qualificationForm: this.copyFormData(this.value)
@@ -154,6 +187,9 @@ export default {
         reason_denied: '',
         current_status: {
           code: 'P' // We default to Pending approval
+        },
+        removal_reason: {
+          code: null
         }
       }
       // It is important that we preserve the reference to the input variable, as the parent
@@ -176,6 +212,9 @@ export default {
         // data binding, so we attach a default value here.
         result.current_status = defaultCopy.current_status
       }
+      if (result.removal_reason == null) {
+        result.removal_reason = defaultCopy.removal_reason
+      }
       return result
     },
     isDateValid (input) {
@@ -185,7 +224,8 @@ export default {
     isAllDatesValid () {
       return (!this.approvalStatus || this.isDateValid(this.qualificationForm.application_outcome_date)) &&
         (!this.pendingStatus || this.isDateValid(this.qualificationForm.application_outcome_notification_date)) &&
-        (!this.approvalStatus || this.isDateValid(this.qualificationForm.application_recieved_date))
+        (!this.approvalStatus || this.isDateValid(this.qualificationForm.application_recieved_date)) &&
+        this.isDateValid(this.qualificationForm.removal_date)
     },
     ...mapActions([
       FETCH_DRILLER_OPTIONS
@@ -202,23 +242,25 @@ export default {
         classifications: [],
         qualifications: [],
         proofOfAge: [{value: null, text: 'Please select an option'}],
-        approvalOutcome: [{value: 'P', text: 'Please select an option'}]
+        approvalOutcome: [],
+        removalReasons: [{value: null, text: 'Please select an option'}]
       }
       if (this.drillerOptions) {
         // If driller options have loaded, prepare the form options.
-        result.proofOfAge = result.proofOfAge.concat(this.drillerOptions.ProofOfAgeCode.map((item) => { return {'text': item.description, 'value': item.code} }))
+        result.proofOfAge = result.proofOfAge.concat(this.drillerOptions.proof_of_age_codes.map((item) => { return {'text': item.description, 'value': item.code} }))
         if (this.activity in this.drillerOptions) {
           // Different activities have different options.
-          result.classifications = this.drillerOptions[this.activity].SubactivityCode.map((item) => { return {'text': item.description, 'value': item.registries_subactivity_code} })
-          result.qualifications = this.drillerOptions[this.activity].WellClassCode.map((item) => { return {'text': item.description, 'value': item.registries_well_class_code} })
-          result.issuer = result.issuer.concat(this.drillerOptions[this.activity].AccreditedCertificateCode.map((item) => { return {'text': item.name + ' (' + item.cert_auth + ')', 'value': item.acc_cert_guid} }))
-          result.approvalOutcome = result.approvalOutcome.concat(this.drillerOptions.ApprovalOutcome.map((item) => { return {'text': item.description, 'value': item.code} }))
+          result.classifications = this.drillerOptions[this.activity].subactivity_codes.map((item) => { return {'text': item.description, 'value': item.registries_subactivity_code} })
+          result.qualifications = this.drillerOptions[this.activity].well_class_codes.map((item) => { return {'text': item.description, 'value': item.registries_well_class_code} })
+          result.issuer = result.issuer.concat(this.drillerOptions[this.activity].accredited_certificate_codes.map((item) => { return {'text': item.name + ' (' + item.cert_auth + ')', 'value': item.acc_cert_guid} }))
+          result.approvalOutcome = result.approvalOutcome.concat(this.drillerOptions.approval_outcome_codes.map((item) => { return {'text': item.code === 'P' ? 'Please select an option' : item.description, 'value': item.code} }))
+          result.removalReasons = result.removalReasons.concat(this.drillerOptions.reason_removed_codes.map((item) => { return {'text': item.description, 'value': item.code} }))
         }
       }
       return result
     },
     subactivityMap () {
-      return this.activity in this.drillerOptions ? this.drillerOptions[this.activity].SubactivityCode : []
+      return this.activity in this.drillerOptions ? this.drillerOptions[this.activity].subactivity_codes : []
     },
     approvalDateState () {
       this.$emit('isValid', this.isAllDatesValid())
@@ -232,18 +274,29 @@ export default {
       this.$emit('isValid', this.isAllDatesValid())
       return this.isDateValid(this.qualificationForm.application_outcome_notification_date)
     },
-    thing () {
-      return this.qualificationForm.current_status
+    removalDateState () {
+      this.$emit('isValid', this.isAllDatesValid())
+      return this.isDateValid(this.qualificationForm.removal_date)
     },
     showApprovalOutcome () {
-      return this.qualificationForm.application_outcome_date
+      return ((!!this.qualificationForm.application_outcome_date && !!this.qualificationForm.application_recieved_date) ||
+        (this.qualificationForm.qualificationForm && this.qualificationForm.qualificationForm.current_status && this.qualificationForm.qualificationForm.current_status.code))
     },
     showReasonDenied () {
       return !!this.qualificationForm.reason_denied ||
         (!!this.qualificationForm.application_outcome_date && this.qualificationForm.current_status.code === 'NA')
     },
     showNotificationDate () {
-      return !!this.qualificationForm.application_outcome_notification_date || (this.qualificationForm.application_outcome_date && this.qualificationForm.current_status.code !== 'P')
+      return !!this.qualificationForm.application_outcome_notification_date || (!!this.qualificationForm.application_outcome_date && this.qualificationForm.current_status.code !== 'P')
+    },
+    showRemoval () {
+      return !!this.qualificationForm.application_outcome_notification_date || !!this.qualificationForm.removal_date || (this.qualificationForm.removal_reason && this.qualificationForm.removal_reason.code)
+    },
+    showRemovalReason () {
+      return !!this.qualificationForm.removal_date || !!this.qualificationForm.removal_reason.code
+    },
+    isEditMode () {
+      return this.mode === 'edit'
     }
   },
   created () {

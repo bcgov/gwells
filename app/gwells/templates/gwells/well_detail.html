@@ -119,8 +119,8 @@
 
 <fieldset id="location_information_fieldset">
     <legend>Location Information</legend>
-    <div class="row no-gutters print-compressed">
-        <div class="col-md-6 col-print-6 print-compressed print-pad5-right">
+    <div class="row pt-3 print-compressed">
+        <div class="col-md-6 col-print-6 pl-1 print-compressed print-pad5-right">
             <div class="row no-gutters print-compressed">
                 <div class="col-md-12 col-print-12 print-compressed">
                     <label for="address">{% verbose_name well "street_address" %}:</label>
@@ -138,7 +138,7 @@
                     <label for="legal">Legal Description:</label>
                     <div class="row no-gutters print-compressed">
                         <div class="col-md-12 print-col-12 table-responsive print-compressed">
-                            <table id="legal" class="table table-condensed table-bordered table-striped">
+                            <table id="legal" class="table table-sm table-bordered table-striped">
                                 <tbody>
                                     <tr>
                                         <th scope="row">{% verbose_name well "legal_lot" %}</th>
@@ -246,7 +246,7 @@
     <legend>Well Activity</legend>
     <div class="row no-gutters print-compressed">
         <div class="col-md-12 col-print-12 table-responsive print-compressed">
-            <table id="activities" class="table table-condensed table-bordered table-striped">
+            <table id="activities" class="table table-sm table-bordered table-striped">
                 <thead>
                     <tr>
                         <th>{% verbose_name well "construction_end_date" %}<br>(YYYY-MM-DD)</th>
@@ -466,7 +466,7 @@
     <div class="row no-gutters print-compressed">
         <div class="col-md-12 col-print-12 table-responsive print-compressed">
           {% if well.lithologydescription_set.all %}
-          <table id="lithology" class="table table-condensed table-bordered table-striped">
+          <table id="lithology" class="table table-sm table-bordered table-striped">
               <thead>
                     <th>From (feet)</th>
                     <th>To (feet)</th>
@@ -508,7 +508,7 @@
     <div class="row no-gutters print-compressed">
         <div class="col-md-12 col-print-12 table-responsive print-compressed">
             {% if well.lithologydescription_set.all %}
-            <table id="casings" class="table table-condensed table-bordered table-striped">
+            <table id="casings" class="table table-sm table-bordered table-striped">
                 <thead>
                     <th>From (feet)</th>
                     <th>To (feet)</th>
@@ -617,7 +617,7 @@
     <div class="row no-gutters print-compressed">
         <div class="col-md-12 col-print-12 table-responsive print-compressed">
             {% if well.perforation_set.all %}
-            <table id="liner_details" class="table table-condensed table-bordered table-striped">
+            <table id="liner_details" class="table table-sm table-bordered table-striped">
                 <thead>
                     <th>Liner Material</th>
                     <th>Liner Diameter</th>
@@ -686,7 +686,7 @@
         </div>
         <div class="col-md-8 col-print-8 table-responsive print-compressed">
             {% if well.screen_set.all %}
-            <table id="screens" class="table table-condensed table-bordered table-striped">
+            <table id="screens" class="table table-sm table-bordered table-striped">
                 <thead>
                     <tr>
                         <th><span class="pull-right">From (feet)</span></th>
@@ -841,7 +841,7 @@
     {% elif documents %}
     <div class="row no-gutters">
         <div class="col-md-12">
-            <table id="additional_documentation_table" class="table table-condensed table-bordered table-striped">
+            <table id="additional_documentation_table" class="table table-sm table-bordered table-striped">
                 <thead>
                     <th>Document Link</th>
                 </thead>

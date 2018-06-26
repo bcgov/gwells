@@ -82,7 +82,7 @@ oc exec ${podname} -n moe-gwells-test -- /bin/bash -c 'psql -d $POSTGRESQL_DATAB
 
 # Running on postgres database pod, as DB root access not enabled on gwells application pod
 mkdir -p ~/tmp/xfer
-oc rsync ${podname}:/tmp/xfer ~/tmp
+oc rsync -n moe-gwells-test ${podname}:/tmp/xfer ~/tmp
 
 # NOTE
 #   psql -U postgres << EOF
@@ -104,7 +104,7 @@ psql -d wells -U wells << EOF
 DROP SCHEMA IF EXISTS xfer_wells CASCADE;
 EOF
 
-pg_restore -d wells --v --no-owner --no-privileges -U wells ~/tmp/xfer/wells-legacy.$(date +"%m_%d_%Y").dmp
+pg_restore -d wells --v --no-owner --no-privileges -U wells ~/tmp/xfer/wells-legacy.$(TZ=UTM date +"%m_%d_%Y").dmp
 
 # Empty out FDW home schema
 psql -d wells -U wells << EOF
@@ -251,6 +251,6 @@ EOF
 #  EOF
 
 # To verify that the fdw is set up correctly and visible from gwells 
-psql -d $POSTGRESQL_DATABASE -U $POSTGRESQL_USER -c "\d wells.*"
+psql -d gwells -U gwells -c "\d wells.*"
 
 

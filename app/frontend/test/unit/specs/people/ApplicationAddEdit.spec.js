@@ -21,7 +21,7 @@ describe('ApplicationAddEdit.vue', () => {
 
     const wrapper = shallowMount(ApplicationAddEdit, {
       store,
-      propsData: { activity },
+      propsData: { activity, mode: 'add' },
       localVue
     })
     it('Has the correct title', () => {
