@@ -268,21 +268,7 @@
                 ],
                 "source": {
                     "type": "Dockerfile",
-                    "dockerfile": "FROM openshift/bcgov-s2i-caddy:latest\nUSER 0\nCOPY staticfiles /var/www/html/gwells/static\nRUN ls -la /var/www/html/gwells/static/\nUSER 1001\nCMD [\"sh\",\"/tmp/scripts/run\"]\n",
-                    "images": [
-                        {
-                            "from": {
-                                "kind": "ImageStreamTag",
-                                "name": "gwells${NAME_SUFFIX}:${ENV_NAME}"
-                            },
-                            "paths": [
-                                {
-                                    "sourcePath": "/opt/app-root/src/staticfiles",
-                                    "destinationDir": "."
-                                }
-                            ]
-                        }
-                    ]
+                    "dockerfile": "FROM openshift/bcgov-s2i-caddy:latest\nCMD [\"sh\",\"/tmp/scripts/run\"]\n"
                 },
                 "strategy": {
                     "type": "Docker",
