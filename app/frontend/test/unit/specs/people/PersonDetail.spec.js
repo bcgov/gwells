@@ -1,5 +1,6 @@
 import { mount, createLocalVue } from '@vue/test-utils'
 import Vuex from 'vuex'
+import VueMoment from 'vue-moment'
 import PersonDetail from '@/registry/components/people/PersonDetail'
 import APIErrorMessage from '@/common/components/APIErrorMessage'
 import { SET_DRILLER } from '@/registry/store/mutations.types'
@@ -8,6 +9,7 @@ import fakePerson from '../fakePerson'
 
 const localVue = createLocalVue()
 localVue.use(Vuex)
+localVue.use(VueMoment)
 
 describe('PersonDetail.vue', () => {
   let store
