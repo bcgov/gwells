@@ -105,7 +105,8 @@ Map context = [
         'dev':[:],
         'test':[
             'params':[
-                'host':'gwells-test.pathfinder.gov.bc.ca'
+                'host':'gwells-test.pathfinder.gov.bc.ca',
+                'DB_PVC_SIZE':'5Gi'
             ]
         ],
         'prod':[
