@@ -299,6 +299,18 @@ then 	(
 fi
 
 
+# Set NVM requirements in bash profile
+#
+grep --quiet "source /usr/local/opt/nvm/nvm.sh" ~/.bash_profile || \
+	(
+		echo ;
+		echo "# NVM requirements";
+		echo "#";
+		echo 'export NVM_DIR="$HOME/.nvm"';
+		echo "source /usr/local/opt/nvm/nvm.sh";
+	) >> ~/.bash_profile
+
+
 # Install requirements with PIP3 and NPM
 #
 cd "${START_DIR}"/../app
