@@ -316,6 +316,7 @@ grep --quiet "source /usr/local/opt/nvm/nvm.sh" ~/.bash_profile || \
 cd "${START_DIR}"/../app
 pip3 install -U -r requirements.txt
 cd "${START_DIR}"/../app/frontend
+export NVM_DIR="$HOME/.nvm"
 source /usr/local/opt/nvm/nvm.sh
 nvm install v6.11.3
 nvm alias default 6.11.3
