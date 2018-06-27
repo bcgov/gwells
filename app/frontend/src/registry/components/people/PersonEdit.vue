@@ -67,7 +67,7 @@
     <div v-if="(section === 'contact' || section === 'all')">
       <b-form @submit.prevent="submitContactForm">
         <b-row>
-          <b-col cols="12" md="5">
+          <b-col cols="12" md="4">
             <b-form-group
               id="emailInputGroup"
               label="Email address:"
@@ -77,8 +77,7 @@
                 type="email"
                 :state="validation.contact_email"
                 aria-describedby="emailInputFeedback"
-                v-model="contactInfoForm.contact_email"
-                placeholder="Enter email"/>
+                v-model="contactInfoForm.contact_email"/>
               <b-form-invalid-feedback id="emailInputFeedback">
                 <div v-for="(error, index) in fieldErrors.contact_email" :key="`emailInput error ${index}`">
                   {{ error }}
@@ -86,7 +85,7 @@
               </b-form-invalid-feedback>
             </b-form-group>
           </b-col>
-          <b-col cols="12" md="5" offset-md="1">
+          <b-col cols="12" md="4">
             <b-form-group
               id="telInputGroup"
               label="Telephone:"
@@ -97,6 +96,19 @@
                 :formatter="formatTel"
                 lazy-formatter
                 v-model="contactInfoForm.contact_tel"/>
+            </b-form-group>
+          </b-col>
+          <b-col cols="12" md="4">
+            <b-form-group
+              id="cellInputGroup"
+              label="Cell:"
+              label-for="cellInput">
+              <b-form-input
+                id="cellInput"
+                type="tel"
+                :formatter="formatTel"
+                lazy-formatter
+                v-model="contactInfoForm.contact_cell"/>
             </b-form-group>
           </b-col>
         </b-row>

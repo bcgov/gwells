@@ -171,7 +171,8 @@
                       v-bind:key="item.id"
                       v-on:close="closeApplication (drillApplications, item.id)"
                       v-model="item.data"
-                      activity="DRILL"/>
+                      activity="DRILL"
+                      mode="add"/>
                   </b-col>
                 </b-row>
                 <b-row>
@@ -216,7 +217,8 @@
                       v-bind:key="item.id"
                       v-on:close="closeApplication (pumpApplications, item.id)"
                       v-model="item.data"
-                      activity="PUMP"/>
+                      activity="PUMP"
+                      mode="add"/>
                   </b-col>
                 </b-row>
                 <b-row>

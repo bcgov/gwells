@@ -12,11 +12,15 @@
     limitations under the License.
 """
 
+import reversion
 from collections import OrderedDict
+from django.db.models import Q, Prefetch
 from django.http import HttpResponse
 from django.utils import timezone
 from django.views.generic import TemplateView
 from django_filters import rest_framework as restfilters
+from drf_yasg.utils import swagger_auto_schema
+from reversion.views import RevisionMixin
 from rest_framework import filters, status, exceptions
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView
 from rest_framework.pagination import LimitOffsetPagination, PageNumberPagination
@@ -27,6 +31,7 @@ from rest_framework.views import APIView
 from drf_multiple_model.views import ObjectMultipleModelAPIView
 from gwells.roles import GWELLS_ROLE_GROUPS
 from gwells.models.ProvinceStateCode import ProvinceStateCode
+from reversion.models import Version
 from registries.models import (
     AccreditedCertificateCode,
     ActivityCode,
@@ -39,6 +44,7 @@ from registries.models import (
     ProofOfAgeCode,
     Register,
     RegistriesApplication,
+    RegistriesRemovalReason,
     SubactivityCode,
     WellClassCode)
 from registries.permissions import IsAdminOrReadOnly, GwellsPermissions
@@ -54,12 +60,14 @@ from registries.serializers import (
     PersonAdminSerializer,
     PersonListSerializer,
     RegistrationAdminSerializer,
+    RegistriesRemovalReasonSerializer,
     PersonNoteSerializer,
     ProvinceStateCodeSerializer,
     SubactivitySerializer,
     WellClassCodeSerializer,
     AccreditedCertificateCodeSerializer,
     OrganizationNoteSerializer)
+from registries.utils import generate_history_diff
 
 
 class AuditCreateMixin(CreateModelMixin):
@@ -81,9 +89,9 @@ class AuditUpdateMixin(UpdateModelMixin):
     """
 
     def perform_update(self, serializer):
-        serializer.save(
-            update_user=self.request.user.get_username()
-        )
+        serializer.validated_data['update_user'] = (self.request.user.profile.name or
+                                                    self.request.user.get_username())
+        return super().perform_update(serializer)
 
 
 class APILimitOffsetPagination(LimitOffsetPagination):
@@ -103,22 +111,6 @@ class APILimitOffsetPagination(LimitOffsetPagination):
         ]))
 
 
-class PersonFilter(restfilters.FilterSet):
-    """
-    Allows APIPersonListView to filter response by city, province, or registration status.
-    """
-    # city = restfilters.MultipleChoiceFilter(name="organization__city")
-    prov = restfilters.CharFilter(
-        name="registrations__organization__province_state")
-    status = restfilters.CharFilter(name="registrations__applications__current_status")
-    activity = restfilters.CharFilter(
-        name="registrations__registries_activity")
-
-    class Meta:
-        model = Person
-        fields = ('prov', 'status')
-
-
 class RegistriesIndexView(TemplateView):
     """
     Index page for Registries app - contains js frontend web app
@@ -126,7 +118,7 @@ class RegistriesIndexView(TemplateView):
     template_name = 'registries/registries.html'
 
 
-class OrganizationListView(AuditCreateMixin, ListCreateAPIView):
+class OrganizationListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
     """
     get:
     Returns a list of all registered drilling organizations
@@ -158,7 +150,7 @@ class OrganizationListView(AuditCreateMixin, ListCreateAPIView):
     )
 
 
-class OrganizationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
+class OrganizationDetailView(RevisionMixin, AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
     """
     get:
     Returns the specified drilling organization
@@ -204,6 +196,7 @@ class OrganizationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
 
 class PersonOptionsView(APIView):
 
+    @swagger_auto_schema(auto_schema=None)
     def get(self, request, format=None):
         result = {}
         for activity in ActivityCode.objects.all():
@@ -223,22 +216,25 @@ class PersonOptionsView(APIView):
                 .order_by('name')
 
             result[activity.registries_activity_code] = {
-                'WellClassCode':
+                'well_class_codes':
                     list(map(lambda item: WellClassCodeSerializer(
                         item).data, well_class_query)),
-                'SubactivityCode':
+                'subactivity_codes':
                     list(map(lambda item: SubactivitySerializer(
                         item).data, sub_activity_query)),
-                'AccreditedCertificateCode':
+                'accredited_certificate_codes':
                     list(map(lambda item: AccreditedCertificateCodeSerializer(
                         item).data, cert_code_query))
             }
-        result['ProofOfAgeCode'] = \
+        result['proof_of_age_codes'] = \
             list(map(lambda item: ProofOfAgeCodeSerializer(item).data,
                      ProofOfAgeCode.objects.all().order_by('display_order')))
-        result['ApprovalOutcome'] = \
+        result['approval_outcome_codes'] = \
             list(map(lambda item: ApplicationStatusCodeSerializer(item).data,
                      ApplicationStatusCode.objects.all()))
+        result['reason_removed_codes'] = \
+            list(map(lambda item: RegistriesRemovalReasonSerializer(item).data,
+                     RegistriesRemovalReason.objects.all()))
         result['province_state_codes'] = \
             list(map(lambda item: ProvinceStateCodeSerializer(item).data,
                      ProvinceStateCode.objects.all().order_by('display_order')))
@@ -246,7 +242,7 @@ class PersonOptionsView(APIView):
         return Response(result)
 
 
-class PersonListView(AuditCreateMixin, ListCreateAPIView):
+class PersonListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
     """
     get:
     Returns a list of all person records
@@ -262,7 +258,6 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
     # Allow searching on name fields, names of related companies, etc.
     filter_backends = (restfilters.DjangoFilterBackend,
                        filters.SearchFilter, filters.OrderingFilter)
-    filter_class = PersonFilter
     ordering_fields = ('surname', 'registrations__organization__name')
     ordering = ('surname',)
     search_fields = (
@@ -274,29 +269,15 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
     )
 
     # fetch related companies and registration applications (prevent duplicate database trips)
-    queryset = Person.objects \
-        .all() \
-        .prefetch_related(
-            'contact_info',
-            'registrations',
-            'registrations__registries_activity',
-            'registrations__status',
-            'registrations__organization',
-            'registrations__organization__province_state',
-            'registrations__applications',
-            'registrations__applications__current_status',
-            'registrations__applications__primary_certificate',
-            'registrations__applications__primary_certificate__cert_auth',
-            'registrations__applications__subactivity',
-            'registrations__applications__subactivity__qualification_set',
-            'registrations__applications__subactivity__qualification_set__well_class'
-        ).filter(
-            expired_date__isnull=True
-        ).distinct()
+    queryset = Person.objects.all()
 
     def get_queryset(self):
         """ Returns Person queryset, removing non-active and unregistered drillers for anonymous users """
         qs = self.queryset
+
+        # base registration and application querysets
+        registrations_qs = Register.objects.all()
+        applications_qs = RegistriesApplication.objects.all()
 
         # Search for cities (split list and return all matches)
         # search comes in as a comma-separated querystring param e.g: ?city=Atlin,Lake Windermere,Duncan
@@ -304,26 +285,102 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
         if cities:
             cities = cities.split(',')
             qs = qs.filter(registrations__organization__city__in=cities)
+            registrations_qs = registrations_qs.filter(
+                organization__city__in=cities)
 
         activity = self.request.query_params.get('activity', None)
+        status = self.request.query_params.get('status', None)
+
+        user_is_staff = self.request.user.groups.filter(name__in=GWELLS_ROLE_GROUPS).exists()
+
         if activity:
-            qs = qs.filter(registrations__registries_activity__registries_activity_code=activity)
-        if not self.request.user.groups.filter(name__in=GWELLS_ROLE_GROUPS).exists():
+            if (status == 'P' or not status) and user_is_staff:
+                # We only allow staff to filter on status
+                # For pending, or all, we also return search where there is no registration.
+                qs = qs.filter(Q(registrations__registries_activity__registries_activity_code=activity) |
+                               Q(registrations__isnull=True))
+                registrations_qs = registrations_qs.filter(
+                    registries_activity__registries_activity_code=activity)
+            else:
+                # For all other searches, we strictly filter on activity.
+                qs = qs.filter(registrations__registries_activity__registries_activity_code=activity)
+                registrations_qs = registrations_qs.filter(
+                    registries_activity__registries_activity_code=activity)
+
+        if user_is_staff:
+            # User is logged in
+            if status:
+                if status == 'Removed':
+                    # Things are a bit more complicated if we're looking for removed, as the current
+                    # status doesn't come in to play.
+                    qs = qs.filter(
+                        registrations__applications__removal_date__isnull=False)
+                else:
+                    if status == 'P':
+                        # If the status is pending, we also pull in any people without registrations
+                        # or applications.
+                        qs = qs.filter(Q(registrations__applications__current_status__code=status) |
+                                       Q(registrations__isnull=True) |
+                                       Q(registrations__applications__isnull=True),
+                                       Q(registrations__applications__removal_date__isnull=True))
+                    else:
+                        qs = qs.filter(
+                            Q(registrations__applications__current_status__code=status),
+                            Q(registrations__applications__removal_date__isnull=True))
+        else:
             # User is not logged in
             # Only show active drillers to non-admin users and public
             qs = qs.filter(
-                registrations__applications__current_status__code='A')
-        else:
-            # User is logged in
-            status = self.request.query_params.get('status', None)
-            if status:
-                qs = qs.filter(
-                    registrations__applications__current_status__code=status)
-        return qs
+                Q(registrations__applications__current_status__code='A'),
+                Q(registrations__applications__removal_date__isnull=True))
+
+            registrations_qs = registrations_qs.filter(
+                Q(applications__current_status__code='A'),
+                Q(applications__removal_date__isnull=True))
+
+            applications_qs = applications_qs.filter(
+                current_status='A', removal_date__isnull=True)
+
+        # generate applications queryset
+        applications_qs = applications_qs \
+            .select_related(
+                'current_status',
+                'primary_certificate',
+                'primary_certificate__cert_auth',
+                'subactivity',
+            ) \
+            .prefetch_related(
+                'subactivity__qualification_set',
+                'subactivity__qualification_set__well_class'
+            ).distinct()
+
+        # generate registrations queryset, inserting filtered applications queryset defined above
+        registrations_qs = registrations_qs \
+            .select_related(
+                'registries_activity',
+                'organization',
+                'organization__province_state',
+            ) \
+            .prefetch_related(
+                Prefetch('applications', queryset=applications_qs)
+            ).distinct()
+
+        # insert filtered registrations set
+        qs = qs \
+            .prefetch_related(
+                Prefetch('registrations', queryset=registrations_qs)
+            )
+
+        return qs.distinct()
+
+    @swagger_auto_schema(responses={200: PersonListSerializer(many=True)})
+    def get(self, request, *args, **kwargs):
+        # Returns self.list - overridden for schema documentation
+        return self.list(request, *args, **kwargs)
 
     def list(self, request):
         """ List response using serializer with reduced number of fields """
-        queryset = self.get_queryset()        
+        queryset = self.get_queryset()
         filtered_queryset = self.filter_queryset(queryset)
 
         page = self.paginate_queryset(filtered_queryset)
@@ -335,7 +392,7 @@ class PersonListView(AuditCreateMixin, ListCreateAPIView):
         return Response(serializer.data)
 
 
-class PersonDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
+class PersonDetailView(RevisionMixin, AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
     """
     get:
     Returns the specified person
@@ -365,7 +422,6 @@ class PersonDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
             'registrations',
             'registrations__registries_activity',
             'registrations__organization',
-            'registrations__status',
             'registrations__applications',
             'registrations__applications__current_status',
             'registrations__applications__primary_certificate',
@@ -383,7 +439,8 @@ class PersonDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
         """
         qs = self.queryset
         if not self.request.user.groups.filter(name__in=GWELLS_ROLE_GROUPS).exists():
-            qs = qs.filter(registrations__status='ACTIVE')
+            qs = qs.filter(Q(applications__current_status__code='A'),
+                           Q(applications__removal_date__isnull=True))
         return qs
 
     def destroy(self, request, *args, **kwargs):
@@ -425,7 +482,9 @@ class CitiesListView(ListAPIView):
         """
         qs = self.queryset
         if not self.request.user.groups.filter(name__in=GWELLS_ROLE_GROUPS).exists():
-            qs = qs.filter(status='ACTIVE')
+            qs = qs.filter(
+                Q(applications__current_status__code='A'),
+                Q(applications__removal_date__isnull=True))
         if self.kwargs['activity'] == 'drill':
             qs = qs.filter(registries_activity='DRILL')
         if self.kwargs['activity'] == 'install':
@@ -433,7 +492,7 @@ class CitiesListView(ListAPIView):
         return qs
 
 
-class RegistrationListView(AuditCreateMixin, ListCreateAPIView):
+class RegistrationListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
     """
     get:
     List all registration records
@@ -448,9 +507,7 @@ class RegistrationListView(AuditCreateMixin, ListCreateAPIView):
         .select_related(
             'person',
             'registries_activity',
-            'status',
-            'organization',
-            'register_removal_reason',) \
+            'organization',) \
         .prefetch_related(
             'applications',
             'applications__current_status',
@@ -462,7 +519,7 @@ class RegistrationListView(AuditCreateMixin, ListCreateAPIView):
     )
 
 
-class RegistrationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
+class RegistrationDetailView(RevisionMixin, AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
     """
     get:
     Returns a well driller or well pump installer registration record
@@ -484,9 +541,7 @@ class RegistrationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
         .select_related(
             'person',
             'registries_activity',
-            'status',
-            'organization',
-            'register_removal_reason',) \
+            'organization',) \
         .prefetch_related(
             'applications',
             'applications__current_status',
@@ -498,7 +553,7 @@ class RegistrationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
     )
 
 
-class ApplicationListView(AuditCreateMixin, ListCreateAPIView):
+class ApplicationListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
     """
     get:
     Returns a list of all registration applications
@@ -513,12 +568,10 @@ class ApplicationListView(AuditCreateMixin, ListCreateAPIView):
         .select_related(
             'registration',
             'registration__person',
-            'registration__registries_activity',
-            'registration__status',
-            'registration__register_removal_reason')
+            'registration__registries_activity')
 
 
-class ApplicationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
+class ApplicationDetailView(RevisionMixin, AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
     """
     get:
     Returns the specified drilling application
@@ -539,9 +592,7 @@ class ApplicationDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
         .select_related(
             'registration',
             'registration__person',
-            'registration__registries_activity',
-            'registration__status',
-            'registration__register_removal_reason')
+            'registration__registries_activity')
     lookup_field = "application_guid"
 
 
@@ -570,6 +621,7 @@ class PersonNoteListView(AuditCreateMixin, ListCreateAPIView):
 
     permission_classes = (GwellsPermissions,)
     serializer_class = PersonNoteSerializer
+    swagger_schema = None
 
     def get_queryset(self):
         person = self.kwargs['person_guid']
@@ -601,6 +653,7 @@ class PersonNoteDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
 
     permission_classes = (GwellsPermissions,)
     serializer_class = PersonNoteSerializer
+    swagger_schema = None
 
     def get_queryset(self):
         person = self.kwargs['person']
@@ -618,6 +671,7 @@ class OrganizationNoteListView(AuditCreateMixin, ListCreateAPIView):
 
     permission_classes = (GwellsPermissions,)
     serializer_class = OrganizationNoteSerializer
+    swagger_schema = None
 
     def get_queryset(self):
         org = self.kwargs['org_guid']
@@ -649,7 +703,88 @@ class OrganizationNoteDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView)
 
     permission_classes = (GwellsPermissions,)
     serializer_class = OrganizationNoteSerializer
+    swagger_schema = None
 
     def get_queryset(self):
         org = self.kwargs['org_guid']
         return OrganizationNote.objects.filter(organization=org)
+
+
+class OrganizationHistory(APIView):
+    """
+    get: returns a history of changes to an Organization model record
+    """
+
+    permission_classes = (GwellsPermissions,)
+    queryset = Organization.objects.all()
+    swagger_schema = None
+
+    def get(self, request, org_guid):
+        try:
+            organization = Organization.objects.get(org_guid=org_guid)
+        except Organization.DoesNotExist:
+            raise Http404("Organization not found")
+
+        # query records in history for this model.
+        organization_history = [obj for obj in organization.history.all().order_by(
+            '-revision__date_created')]
+
+        history_diff = generate_history_diff(organization_history)
+
+        return Response(history_diff)
+
+
+class PersonHistory(APIView):
+    """
+    get: returns a history of changes to a Person model record
+    """
+
+    permission_classes = (GwellsPermissions,)
+    queryset = Person.objects.all()
+    swagger_schema = None
+
+    def get(self, request, person_guid):
+        """
+        Retrieves version history for the specified Person record and creates a list of diffs
+        for each revision.
+        """
+
+        try:
+            person = Person.objects.get(person_guid=person_guid)
+        except Person.DoesNotExist:
+            raise Http404("Person not found")
+
+        # query records in history for this model.
+        person_history = [obj for obj in person.history.all().order_by(
+            '-revision__date_created')]
+
+        person_history_diff = generate_history_diff(
+            person_history, 'Person profile')
+
+        registration_history = []
+        registration_history_diff = []
+
+        application_history = []
+        application_history_diff = []
+
+        # generate diffs for version history in each of the individual's registrations
+        for reg in person.registrations.all():
+            registration_history = [
+                obj for obj in reg.history.all()]
+            registration_history_diff += generate_history_diff(
+                registration_history, reg.registries_activity.description + ' registration')
+
+            for app in reg.applications.all():
+                application_history = [
+                    obj for obj in app.history.all()]
+                application_history_diff += generate_history_diff(
+                    application_history, app.subactivity.description + ' application')
+
+        # generate application diffs
+
+        history_diff = sorted(
+            person_history_diff +
+            registration_history_diff +
+            application_history_diff, key=lambda x: x['date'], reverse=True)
+
+        return Response(history_diff)
