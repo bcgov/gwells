@@ -24,7 +24,8 @@ module.exports = {
   entry: {
     registry: './src/registry/main.js',
     footer: './src/footer/main.js',
-    header: './src/header/main.js'
+    header: './src/header/main.js',
+    storage: './src/storage/main.js'
   },
   output: {
     path: config.build.assetsRoot,
