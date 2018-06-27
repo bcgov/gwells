@@ -754,32 +754,6 @@
             }
         },
         {
-            "kind": "Route",
-            "apiVersion": "v1",
-            "metadata": {
-                "name": "gwells-static${NAME_SUFFIX}",
-                "creationTimestamp": null,
-                "labels": null,
-                "annotations": { }
-            },
-            "spec": {
-                "host": "${HOST}",
-                "path": "/gwells/static/",
-                "to": {
-                    "kind": "Service",
-                    "name": "gwells-static${NAME_SUFFIX}",
-                    "weight": 100
-                },
-                "port": {
-                    "targetPort": "web"
-                },
-                "tls": {
-                    "termination": "edge"
-                },
-                "wildcardPolicy": "None"
-            }
-        },
-        {
             "apiVersion": "autoscaling/v1",
             "kind": "HorizontalPodAutoscaler",
             "metadata": {
