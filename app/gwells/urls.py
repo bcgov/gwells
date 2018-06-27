@@ -18,7 +18,6 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from django.views.generic import TemplateView
 
-from . import views
 from gwells.views import WellDetailView, SurveyListView, SearchView, RegistryView,\
     ActivitySubmissionDetailView, HealthView, ActivitySubmissionWizardView, ActivitySubmissionListView
 from gwells.views.admin import *

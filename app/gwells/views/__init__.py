@@ -19,7 +19,7 @@ from gwells.views.activity_submission import ActivitySubmissionDetailView, Activ
 from gwells.views.health_view import HealthView
 from gwells.views.registry_view import RegistryView
 from gwells.views.search_view import SearchView
-from gwells.views.survery_list_view import SurveyListView
+from gwells.views.survey_list_view import SurveyListView
 
 FORMS = [('type_and_class', ActivitySubmissionTypeAndClassForm),
          ('owner', WellOwnerForm),
