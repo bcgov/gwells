@@ -35,11 +35,20 @@ stage ( 'run' )
             script:
                 """
                     oc get pods -n "${PROJECT}" | grep -i "Running" | grep -Eo \
-                        "gwells-(test|prod)-[[:digit:]]+-[[:alnum:]]+" | head -n 1
+                        "gwells-(test|prod)-[[:digit:]]+-[[:alnum:]]+" | head -1
                 """,
             returnStdout:
                 true
         ).trim()
+        String DC_APP = sh(
+            script:
+                """
+                    oc get dc -n "${PROJECT}" | grep -Eo "gwells-(test|prod)" | head -1
+                """,
+            returnStdout:
+                true
+        ).trim()
+
         String STATUS = sh(
             script:
                 """
@@ -58,7 +67,7 @@ stage ( 'run' )
                 oc patch route proxy-caddy -n "${PROJECT}" -p \
                     '{ "spec": { "to": { "name": ""${POD_APP}"" }, "port": { "targetPort": "web" }}}'
 
-                oc scale dc gwells-test --timeout=5s --replicas=0 -n "${PROJECT}"
+                oc scale dc "${DC_APP}" --timeout=5s --replicas=0 -n "${PROJECT}"
                 oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
                     'psql -d gwells -c "VACUUM FULL;"'
                 oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
@@ -82,7 +91,7 @@ stage ( 'run' )
         ).trim()
         if ( WELL_COUNT > 120000 ){
             sh """
-                oc scale dc "${POD_APP}" --timeout=5s --replicas=1 -n "${PROJECT}"
+                oc scale dc "${DC_APP}" --timeout=5s --replicas=1 -n "${PROJECT}"
                 oc patch route gwells -n "${PROJECT}" -p \
                     '{ "spec": { "to": { "name": ""${POD_APP}"" }, "port": { "targetPort": "web" }}}'
                 oc patch route proxy-caddy -n "${PROJECT}" -p \
