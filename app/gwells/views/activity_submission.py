@@ -11,12 +11,37 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
-
+from django.views import generic
 from formtools.wizard.views import SessionWizardView
 
-from ..models import *
-from ..views import ActivitySubmissionDetailView
-from ..views import TEMPLATES
+from gwells.models import ActivitySubmission
+
+
+class ActivitySubmissionDetailView(generic.DetailView):
+    model = ActivitySubmission
+    context_object_name = 'activity_submission'
+    template_name = 'gwells/activity_submission_detail.html'
+
+    def get_context_data(self, **kwargs):
+        """
+        Return the context for the page.
+        """
+        context = super(ActivitySubmissionDetailView, self).get_context_data(**kwargs)
+        return context
+
+
+class ActivitySubmissionListView(generic.ListView):
+    model = ActivitySubmission
+    context_object_name = 'activity_submission_list'
+    template_name = 'gwells/activity_submission_list.html'
+
+    def get_context_data(self, **kwargs):
+        """
+        Return the context for the page.
+        """
+        context = super(ActivitySubmissionListView, self).get_context_data(**kwargs)
+        return context
+
 
 class ActivitySubmissionWizardView(SessionWizardView):
     instance = None

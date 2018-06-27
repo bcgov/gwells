@@ -19,9 +19,9 @@ from django.contrib import admin
 from django.views.generic import TemplateView
 
 from . import views
-from gwells.views import *
+from gwells.views import WellDetailView, SurveyListView, SearchView, RegistryView,\
+    ActivitySubmissionDetailView, HealthView, ActivitySubmissionWizardView, ActivitySubmissionListView
 from gwells.views.admin import *
-from gwells.views import APIViews
 from gwells.settings.base import get_env_variable
 
 # Creating 2 versions of the app_root. One without and one with trailing slash
@@ -75,7 +75,7 @@ urlpatterns = [
         AdminView.as_view(),
         name='site_admin'),  # editable list view of surveys and other site admin features
     url(r'^' + app_root_slash + 'api/v1/surveys/$',
-        APIViews.SurveyListView.as_view(), name='survey-list'),
+        SurveyListView.as_view(), name='survey-list'),
     url(r'^' + app_root_slash + DJANGO_ADMIN_URL + '/', admin.site.urls),
     url(r'^' + app_root_slash + 'accounts/',
         include('django.contrib.auth.urls')),

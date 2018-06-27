@@ -21,6 +21,7 @@ from django.core.urlresolvers import reverse_lazy
 from django.contrib.auth.models import Group
 from django.contrib.auth.models import User
 
+
 class AdminView(UserPassesTestMixin, generic.TemplateView):
     login_url = reverse_lazy('admin:login')
     context_object_name = 'context'
@@ -42,10 +43,13 @@ class AdminView(UserPassesTestMixin, generic.TemplateView):
 
         context = super(AdminView, self).get_context_data(**kwargs)
 
-        survey_form_set = modelformset_factory(Survey, fields=('survey_introduction_text','survey_link', 'survey_page', 'survey_enabled'), extra=0)
+        survey_form_set = modelformset_factory(Survey, fields=(
+            'survey_introduction_text', 'survey_link', 'survey_page', 'survey_enabled'), extra=0)
 
-        survey_forms = survey_form_set(queryset=Survey.objects.all().order_by('-update_date'))
-        survey_form = modelform_factory(Survey, fields=('survey_introduction_text', 'survey_link', 'survey_page', 'survey_enabled'))
+        survey_forms = survey_form_set(
+            queryset=Survey.objects.all().order_by('-update_date'))
+        survey_form = modelform_factory(Survey, fields=(
+            'survey_introduction_text', 'survey_link', 'survey_page', 'survey_enabled'))
 
         context['forms'] = survey_forms
 

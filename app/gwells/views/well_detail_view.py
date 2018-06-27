@@ -6,6 +6,7 @@ from ..settings import *
 
 from ..minioClient import MinioClient
 
+
 class WellDetailView(generic.DetailView):
     model = Well
     context_object_name = 'well'
@@ -22,24 +23,27 @@ class WellDetailView(generic.DetailView):
         context['page'] = 'w'
 
         if ENABLE_ADDITIONAL_DOCUMENTS:
-            #Generic error Handling for now
+            # Generic error Handling for now
             try:
 
                 minio_client = MinioClient()
 
-                context['host'] = minio_client.host;
-                context['documents'] = [];
+                context['host'] = minio_client.host
+                context['documents'] = []
 
-                documents = minio_client.get_documents(context['well'].well_tag_number)
+                documents = minio_client.get_documents(
+                    context['well'].well_tag_number)
 
-                for doc in documents :
+                for doc in documents:
                     document = {}
                     document['bucket_name'] = doc.bucket_name
-                    object_name = doc.object_name;
+                    object_name = doc.object_name
                     document['object_name'] = object_name.replace(' ', '+')
-                    document['display_name'] = object_name[ object_name.find('/')+1 : object_name.find('/') + 1 + len(object_name)]
+                    document['display_name'] = object_name[object_name.find(
+                        '/')+1: object_name.find('/') + 1 + len(object_name)]
                     context['documents'].append(document)
-                    context['documents'] = sorted(context['documents'], key=lambda k: k['display_name'])
+                    context['documents'] = sorted(
+                        context['documents'], key=lambda k: k['display_name'])
             except Exception as exception:
                 context['file_client_error'] = 'Error retrieving documents.'
                 print("Document access exception: " + str(exception))
