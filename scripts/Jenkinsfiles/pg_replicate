@@ -67,8 +67,6 @@ stage ( 'run' )
             sh """
                 oc patch route "${DC_APP}" -n "${PROJECT}" -p \
                     '{ "spec": { "to": { "name": "proxy-caddy"}, "port": { "targetPort": "2015-tcp" }}}'
-                oc patch route proxy-caddy -n "${PROJECT}" -p \
-                    '{ "spec": { "to": { "name": "${DC_APP}" }, "port": { "targetPort": "web" }}}'
 
                 oc scale dc "${DC_APP}" --timeout=5s --replicas=0 -n "${PROJECT}"
                 oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
@@ -97,8 +95,6 @@ stage ( 'run' )
                 oc scale dc "${DC_APP}" --timeout=5s --replicas=1 -n "${PROJECT}"
                 oc patch route "${DC_APP}" -n "${PROJECT}" -p \
                     '{ "spec": { "to": { "name": "${DC_APP}" }, "port": { "targetPort": "web" }}}'
-                oc patch route proxy-caddy -n "${PROJECT}" -p \
-                    '{ "spec": { "to": { "name": "proxy-caddy" }, "port": { "targetPort": "2015-tcp" }}}'
             """
         } else {
             echo WELL_COUNT +" <= 120000, well count too low"
