@@ -8,6 +8,15 @@
 //      Branches to build: */master
 //      Script path: scripts/Jenkinsfiles/pg_replicate
 
+
+// Project name (moe-gwells-test|moe-gwells-prod)
+String PROJECT = 'moe-gwells-prod'
+
+// Minimum well count for success
+int WELL_CHECK = 100000
+
+
+// Cronjob time (in UTC)
 properties(
     [
         pipelineTriggers(
@@ -17,22 +26,25 @@ properties(
         )
     ]
 )
-String PROJECT = 'moe-gwells-prod'
-int WELL_CHECK = 100000
+
+
+// Cronjob commands to execute
 stage ( 'run' )
 {
     node ( 'master' )
     {
+        // Regex for a database pod
         String POD_DB = sh(
             script:
                 """
                     oc get pods -n "${PROJECT}" | grep -i "Running" | grep -Eo \
-                        "gwells-pgsql-[[:alpha:]]+-[[:digit:]]+-[[:alnum:]]+"
+                        "gwells-pgsql-[[:alpha:]]+-[[:digit:]]+-[[:alnum:]]+" | head -1
                 """,
             returnStdout:
                 true
         ).trim()
 
+        // Regex for an application (GWells) pod
         String POD_APP = sh(
             script:
                 """
@@ -43,7 +55,8 @@ stage ( 'run' )
                 true
         ).trim()
 
-        String DC_APP = sh(
+        // Regex for the deployment config / route name
+        String DC_RT = sh(
             script:
                 """
                     oc get dc -n "${PROJECT}" | grep -Eo "gwells-(test|prod)" | head -1
@@ -52,7 +65,8 @@ stage ( 'run' )
                 true
         ).trim()
 
-        String STATUS = sh(
+        // Database status (online|!online)
+        String STAT_DB = sh(
             script:
                 """
                 oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
@@ -62,13 +76,15 @@ stage ( 'run' )
             returnStdout:
                 true
         ).trim()
-        if ( STATUS == "online" ){
+
+        // If database is online, turn on maintenance mode, scale down app and run replication
+        if ( STAT_DB == "online" ){
             echo POD_DB +" is online"
             sh """
-                oc patch route "${DC_APP}" -n "${PROJECT}" -p \
+                oc patch route "${DC_RT}" -n "${PROJECT}" -p \
                     '{ "spec": { "to": { "name": "proxy-caddy"}, "port": { "targetPort": "2015-tcp" }}}'
 
-                oc scale dc "${DC_APP}" --timeout=5s --replicas=0 -n "${PROJECT}"
+                oc scale dc "${DC_RT}" --timeout=5s --replicas=0 -n "${PROJECT}"
                 oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
                     'psql -d gwells << EOF
 VACUUM FULL;
@@ -93,6 +109,8 @@ EOF
         } else {
             echo POD_DB +" is offline"
         }
+
+        // Count wells after replication
         int WELL_COUNT = sh(
             script:
                 """
@@ -102,12 +120,14 @@ EOF
             returnStdout:
                 true
         ).trim()
+
+        // If there are enough wells, assume success, leave maintenance mode
         if ( WELL_COUNT > WELL_CHECK ){
             sh """
-                oc scale dc "${DC_APP}" --timeout=5s --replicas=1 -n "${PROJECT}"
+                oc scale dc "${DC_RT}" --timeout=5s --replicas=1 -n "${PROJECT}"
                 sleep 20
-                oc patch route "${DC_APP}" -n "${PROJECT}" -p \
-                    '{ "spec": { "to": { "name": "${DC_APP}" }, "port": { "targetPort": "web" }}}'
+                oc patch route "${DC_RT}" -n "${PROJECT}" -p \
+                    '{ "spec": { "to": { "name": "${DC_RT}" }, "port": { "targetPort": "web" }}}'
             """
         } else {
             echo WELL_COUNT +" <= 120000, well count too low"
