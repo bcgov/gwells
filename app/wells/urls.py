@@ -12,9 +12,15 @@
     limitations under the License.
 """
 from django.conf.urls import url
+
+from gwells.urls import app_root_slash
 from . import views
 
 
 urlpatterns = [
+    # Views
+    url(r'^' + app_root_slash + \
+        'well/(?P<pk>[0-9]+)$', views.WellDetailView.as_view(), name='well_detail'),
+    # API
     url(r'^api/v1/well/(?P<tag>[0-9]+)/files$', views.ListFiles.as_view(), name='files'),
 ]

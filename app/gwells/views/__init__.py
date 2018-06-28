@@ -13,7 +13,6 @@
 """
 
 from ..forms import *
-from gwells.views.well_detail_view import WellDetailView
 from gwells.views.activity_submission import ActivitySubmissionDetailView, ActivitySubmissionListView,\
     ActivitySubmissionWizardView
 from gwells.views.health_view import HealthView

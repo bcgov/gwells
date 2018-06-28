@@ -18,7 +18,7 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from django.views.generic import TemplateView
 
-from gwells.views import WellDetailView, SurveyListView, SearchView, RegistryView,\
+from gwells.views import SurveyListView, SearchView, RegistryView,\
     ActivitySubmissionDetailView, HealthView, ActivitySubmissionWizardView, ActivitySubmissionListView,\
     FORMS
 from gwells.views.admin import *
@@ -51,8 +51,6 @@ urlpatterns = [
         SearchView.well_search, name='search'),
     # url(r'^(?P<pk>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/$',
     #     views.DetailView.as_view(), name='detail'),
-    url(r'^' + app_root_slash + \
-        'well/(?P<pk>[0-9]+)$', WellDetailView.as_view(), name='well_detail'),
     url(r'^' + app_root_slash + 'registry-legacy$',
         RegistryView.as_view(), name='registry-legacy'),
     url(r'^' + app_root_slash + 'submission/(?P<pk>[0-9]+)$',
