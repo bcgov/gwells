@@ -17,7 +17,8 @@ properties(
         )
     ]
 )
-def PROJECT = 'moe-gwells-test'
+String PROJECT = 'moe-gwells-prod'
+int WELL_CHECK = 100000
 stage ( 'run' )
 {
     node ( 'master' )
@@ -31,6 +32,26 @@ stage ( 'run' )
             returnStdout:
                 true
         ).trim()
+
+        String POD_APP = sh(
+            script:
+                """
+                    oc get pods -n "${PROJECT}" | grep -i "Running" | grep -Eo \
+                        "gwells-(test|prod)-[[:digit:]]+-[[:alnum:]]+" | head -1
+                """,
+            returnStdout:
+                true
+        ).trim()
+
+        String DC_APP = sh(
+            script:
+                """
+                    oc get dc -n "${PROJECT}" | grep -Eo "gwells-(test|prod)" | head -1
+                """,
+            returnStdout:
+                true
+        ).trim()
+
         String STATUS = sh(
             script:
                 """
@@ -44,12 +65,10 @@ stage ( 'run' )
         if ( STATUS == "online" ){
             echo POD_DB +" is online"
             sh """
-                oc patch route gwells-test -n "${PROJECT}" -p \
+                oc patch route "${DC_APP}" -n "${PROJECT}" -p \
                     '{ "spec": { "to": { "name": "proxy-caddy"}, "port": { "targetPort": "2015-tcp" }}}'
-                oc patch route proxy-caddy -n "${PROJECT}" -p \
-                    '{ "spec": { "to": { "name": "gwells-test" }, "port": { "targetPort": "web" }}}'
 
-                oc scale dc gwells-test --timeout=5s --replicas=0 -n "${PROJECT}"
+                oc scale dc "${DC_APP}" --timeout=5s --replicas=0 -n "${PROJECT}"
                 oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
                     'psql -d gwells -c "VACUUM FULL;"'
                 oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
@@ -71,13 +90,12 @@ stage ( 'run' )
             returnStdout:
                 true
         ).trim()
-        if ( WELL_COUNT > 120000 ){
+        if ( WELL_COUNT > WELL_CHECK ){
             sh """
-                oc scale dc gwells-test --timeout=5s --replicas=1 -n "${PROJECT}"
-                oc patch route gwells -n "${PROJECT}" -p \
-                    '{ "spec": { "to": { "name": "gwells-test" }, "port": { "targetPort": "web" }}}'
-                oc patch route proxy-caddy -n "${PROJECT}" -p \
-                    '{ "spec": { "to": { "name": "proxy-caddy" }, "port": { "targetPort": "2015-tcp" }}}'
+                oc scale dc "${DC_APP}" --timeout=5s --replicas=1 -n "${PROJECT}"
+                sleep 20
+                oc patch route "${DC_APP}" -n "${PROJECT}" -p \
+                    '{ "spec": { "to": { "name": "${DC_APP}" }, "port": { "targetPort": "web" }}}'
             """
         } else {
             echo WELL_COUNT +" <= 120000, well count too low"
