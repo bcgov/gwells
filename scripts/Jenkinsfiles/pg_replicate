@@ -12,7 +12,7 @@ properties(
     [
         pipelineTriggers(
             [
-                cron( 'H 6 * * 1-6' )
+                cron( 'H 11 * * 1-6' )
             ]
         )
     ]
