@@ -16,14 +16,16 @@ from rest_framework.response import Response
 from drf_yasg.utils import swagger_auto_schema
 from django.views import generic
 
-
+from gwells.models import Survey
+from wells.models import Well
 from wells.minio import MinioClient
+from gwells import settings
 
 
 class WellDetailView(generic.DetailView):
     model = Well
     context_object_name = 'well'
-    template_name = 'gwells/well_detail.html'
+    template_name = 'wells/well_detail.html'
 
     def get_context_data(self, **kwargs):
         """
@@ -35,7 +37,7 @@ class WellDetailView(generic.DetailView):
         context['surveys'] = surveys
         context['page'] = 'w'
 
-        if ENABLE_ADDITIONAL_DOCUMENTS:
+        if settings.ENABLE_ADDITIONAL_DOCUMENTS:
             # Generic error Handling for now
             try:
 

@@ -18,7 +18,7 @@ def update_application_status(apps, schema_editor):
         code.save()
     except ObjectDoesNotExist as e:
         # On an empty database, this records may not exist (it will be loaded with fixtures)
-        logger.warn('{}'.format(e))
+        logger.warn('{} (don\'t panic - on an empty database, this will be loaded from fixtures)'.format(e))
 
 
 def revert(apps, schema_editor):
@@ -29,7 +29,7 @@ def revert(apps, schema_editor):
         code.save()
     except ObjectDoesNotExist as e:
         # On an empty database, this records may not exist (it will be loaded with fixtures)
-        logger.warn('{}'.format(e))
+        logger.warn('{} (don\'t panic - on an empty database, this will be loaded from fixtures)'.format(e))
 
 
 class Migration(migrations.Migration):
