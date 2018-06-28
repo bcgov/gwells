@@ -11,8 +11,10 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
-from django.apps import AppConfig
+from django.conf.urls import url
+from . import views
 
 
-class RegistriesConfig(AppConfig):
-    name = 'registries'
+urlpatterns = [
+    url(r'^api/v1/well/(?P<tag>[0-9]+)/files$', views.ListFiles.as_view(), name='files'),
+]

@@ -19,7 +19,8 @@ from django.contrib import admin
 from django.views.generic import TemplateView
 
 from gwells.views import WellDetailView, SurveyListView, SearchView, RegistryView,\
-    ActivitySubmissionDetailView, HealthView, ActivitySubmissionWizardView, ActivitySubmissionListView
+    ActivitySubmissionDetailView, HealthView, ActivitySubmissionWizardView, ActivitySubmissionListView,\
+    FORMS
 from gwells.views.admin import *
 from gwells.settings.base import get_env_variable
 
@@ -79,12 +80,13 @@ urlpatterns = [
     url(r'^' + app_root_slash + 'accounts/',
         include('django.contrib.auth.urls')),
     url(r'^' + app_root_slash, include('registries.urls')),
+    url(r'^' + app_root_slash, include('wells.urls')),
 ]
 
 if settings.ENABLE_DATA_ENTRY:
     urlpatterns = [
         url(r'^' + app_root_slash + 'submission/create$',
-            ActivitySubmissionWizardView.as_view(views.FORMS),
+            ActivitySubmissionWizardView.as_view(FORMS),
             name='activity_submission_create'),
         url(r'^' + app_root_slash + 'submission/$',
             ActivitySubmissionListView.as_view(),

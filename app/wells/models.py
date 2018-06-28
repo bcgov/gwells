@@ -11,8 +11,6 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
-from django.apps import AppConfig
+from django.db import models
 
-
-class RegistriesConfig(AppConfig):
-    name = 'registries'
+# Create your models here.

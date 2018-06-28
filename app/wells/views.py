@@ -11,8 +11,14 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
-from django.apps import AppConfig
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from drf_yasg.utils import swagger_auto_schema
 
 
-class RegistriesConfig(AppConfig):
-    name = 'registries'
+class ListFiles(APIView):
+
+    @swagger_auto_schema(auto_schema=None)
+    def get(self, request, tag):
+        result = {'hello': tag}
+        return Response(result)
