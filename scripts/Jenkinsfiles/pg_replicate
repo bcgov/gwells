@@ -16,6 +16,15 @@ String PROJECT = 'moe-gwells-prod'
 int WELL_CHECK = 100000
 
 
+// Print stack trace of error
+@NonCPS
+private static String stackTraceAsString(Throwable t) {
+    StringWriter sw = new StringWriter();
+    t.printStackTrace(new PrintWriter(sw));
+    return sw.toString()
+}
+
+
 // Cronjob time (in UTC)
 properties(
     [
@@ -77,19 +86,20 @@ stage ( 'run' )
                 true
         ).trim()
 
-        // If database is online, turn on maintenance mode, scale down app and run replication
-        if ( STAT_DB == "online" ){
-            echo POD_DB +" is online"
-            sh """
-                oc patch route "${DC_RT}" -n "${PROJECT}" -p \
-                    '{ "spec": { "to": { "name": "proxy-caddy"}, "port": { "targetPort": "2015-tcp" }}}'
+        try {
+            // If database is online, turn on maintenance mode, scale down app and run replication
+            if ( STAT_DB == "online" ){
+                echo POD_DB +" is online"
+                sh """
+                    oc patch route "${DC_RT}" -n "${PROJECT}" -p \
+                        '{ "spec": { "to": { "name": "proxy-caddy"}, "port": { "targetPort": "2015-tcp" }}}'
 
                 oc scale dc "${DC_RT}" --timeout=5s --replicas=0 -n "${PROJECT}"
                 oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
                     'psql -d gwells << EOF
 VACUUM FULL;
 ALTER USER gwells SET log_statement to 'none';
-alter user gwells set log_min_duration_statement to 10000;         
+alter user gwells set log_min_duration_statement to 10000;
 EOF
 '
                 oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
@@ -102,7 +112,7 @@ EOF
                     'psql -d gwells << EOF
 VACUUM FULL;
 ALTER USER gwells SET log_statement to 'all';
-alter user gwells set log_min_duration_statement to -1;         
+alter user gwells set log_min_duration_statement to -1;
 EOF
 '
             """
@@ -115,22 +125,45 @@ EOF
             script:
                 """
                     oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
-                        'psql -t -d gwells -U "\${POSTGRESQL_USER}" -c "SELECT count(*) from well;"'
-                """,
-            returnStdout:
-                true
-        ).trim()
+                        'psql -d gwells -c "VACUUM FULL;"'
+                    oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
+                        'psql -t -d gwells -U "\${POSTGRESQL_USER}" -c \
+                            "SELECT db_replicate_step1(_subset_ind=>false);"'
+                    oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
+                        'psql -t -d gwells -U "\${POSTGRESQL_USER}" -c \
+                            "SELECT db_replicate_step2 ();"'
+                """
+            } else {
+                echo POD_DB +" is offline"
+                throw "Database is offline"
+            }
+            //TODO: email on success?
+        } catch( error ){
+            echo "${stackTraceAsString( error )}"
+            //TODO: email on fail
+        } finally {
+            // Count wells after replication
+            int WELL_COUNT = sh(
+                script:
+                    """
+                        oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
+                            'psql -t -d gwells -U "\${POSTGRESQL_USER}" -c "SELECT count(*) from well;"'
+                    """,
+                returnStdout:
+                    true
+            ).trim()
 
-        // If there are enough wells, assume success, leave maintenance mode
-        if ( WELL_COUNT > WELL_CHECK ){
-            sh """
-                oc scale dc "${DC_RT}" --timeout=5s --replicas=1 -n "${PROJECT}"
-                sleep 20
-                oc patch route "${DC_RT}" -n "${PROJECT}" -p \
-                    '{ "spec": { "to": { "name": "${DC_RT}" }, "port": { "targetPort": "web" }}}'
-            """
-        } else {
-            echo WELL_COUNT +" <= 120000, well count too low"
+            // If there are enough wells to assume success, scale up app and leave maintenance mode
+            if ( WELL_COUNT > WELL_CHECK ){
+                sh """
+                    oc scale dc "${DC_RT}" --timeout=5s --replicas=1 -n "${PROJECT}"
+                    sleep 20
+                    oc patch route "${DC_RT}" -n "${PROJECT}" -p \
+                        '{ "spec": { "to": { "name": "${DC_RT}" }, "port": { "targetPort": "web" }}}'
+                """
+            } else {
+                echo WELL_COUNT +" <= 120000, well count too low"
+            }
         }
     }
 }
