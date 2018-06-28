@@ -74,7 +74,7 @@ stage ( 'run' )
                 true
         ).trim()
 
-        // Database status (online|!online)
+        // Database status (online|!)
         String STAT_DB = sh(
             script:
                 """
@@ -135,7 +135,7 @@ EOF
                 """
             } else {
                 echo POD_DB +" is offline"
-                throw error "Database is offline"
+                error "Database is offline"
             }
             // TODO: broadcast status/result to Slack channel
         } catch( error ){
