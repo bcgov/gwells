@@ -15,15 +15,17 @@ from django.contrib import admin
 
 
 # Import all models
-from .models import (
+from gwells.models import (
     Survey,
     OnlineSurvey,
     Profile,
     ProvinceStateCode
 )
 
+
 class SurveyAdmin(admin.ModelAdmin):
     pass
+
 
 class OnlineSurveyAdmin(admin.ModelAdmin):
     date_hierarchy = 'effective_date'

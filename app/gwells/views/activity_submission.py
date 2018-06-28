@@ -78,7 +78,8 @@ class ActivitySubmissionWizardView(SessionWizardView):
         initial = {}
 
         if step == 'surface_seal':
-            # Determine if casing exists so surface seal fields can be validated as required in their clean methods
+            # Determine if casing exists so surface seal fields can be validated as required in their clean
+            # methods
             casing_data = self.get_cleaned_data_for_step('casing')
             initial.update({'casing_exists': False})
             if casing_data:
@@ -103,7 +104,7 @@ class ActivitySubmissionWizardView(SessionWizardView):
             initial.update({'well_class_code': ''})
             type_and_class_data = self.get_cleaned_data_for_step('type_and_class')
             if type_and_class_data and type_and_class_data.get('well_class'):
-                initial.update({'well_class_code': type_and_class_data.get('well_class').code})
+                initial.update({'well_class_code': type_and_class_data.get('well_class').well_class_code})
 
         return initial
 
@@ -113,7 +114,7 @@ class ActivitySubmissionWizardView(SessionWizardView):
         characteristics_data = cleaned_data.pop('water_quality_characteristics')
 
         if submission.well_activity_type.well_activity_code == 'CON' and not submission.well:
-            #TODO
+            # TODO
             w = submission.create_well()
             w.save()
             submission.well = w

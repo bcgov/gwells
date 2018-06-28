@@ -11,8 +11,8 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
-
 from django.views import generic
+
 
 class HomeView(generic.TemplateView):
     template_name = 'gwells/index.html'

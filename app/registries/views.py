@@ -30,7 +30,7 @@ from rest_framework.mixins import CreateModelMixin, UpdateModelMixin
 from rest_framework.views import APIView
 from drf_multiple_model.views import ObjectMultipleModelAPIView
 from gwells.roles import GWELLS_ROLE_GROUPS
-from gwells.models.ProvinceStateCode import ProvinceStateCode
+from gwells.models import ProvinceStateCode
 from reversion.models import Version
 from registries.models import (
     AccreditedCertificateCode,

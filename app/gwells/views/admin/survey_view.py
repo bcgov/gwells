@@ -1,21 +1,17 @@
-from django.views.generic import View
-from gwells.models.Survey import Survey
-from django.shortcuts import get_object_or_404
-from django.urls import reverse
-from django.shortcuts import redirect
-from django.template import loader
-from django.http import HttpResponse
-from django.http import HttpResponseNotAllowed
-from django.http import HttpResponseNotFound
-from django.http import HttpResponseServerError
 import uuid
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.mixins import PermissionRequiredMixin
+
+from django.views.generic import View
+from django.shortcuts import get_object_or_404, redirect
+from django.urls import reverse
+from django.template import loader
+from django.http import HttpResponse, HttpResponseNotAllowed, HttpResponseNotFound, HttpResponseServerError
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core.urlresolvers import reverse_lazy
 from django.core.exceptions import PermissionDenied
+from django.contrib.auth.models import Permission, Group
 
-from django.contrib.auth.models import Permission
-from django.contrib.auth.models import Group
+from gwells.models import Survey
+
 
 
 def get_handler_method(request_handler, http_method):
@@ -58,7 +54,8 @@ class SurveyView(LoginRequiredMixin, View):
         if admin_group not in user_groups:
             if self.raise_exception or self.request.user.is_authenticated:
                 raise PermissionDenied("Prermission Denied")
-            return redirect_to_login(self.request.get_full_path(), self.get_login_url(), self.get_redirect_field_name())
+            return redirect_to_login(self.request.get_full_path(), self.get_login_url(),
+                                     self.get_redirect_field_name())
 
         request_handler = self
 
