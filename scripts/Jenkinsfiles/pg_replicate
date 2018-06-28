@@ -18,7 +18,7 @@ properties(
     ]
 )
 String PROJECT = 'moe-gwells-prod'
-int WELL_CHECK = 120000
+int WELL_CHECK = 100000
 stage ( 'run' )
 {
     node ( 'master' )
