@@ -1,6 +1,6 @@
 <template>
   <div class="container p-1 p-md-3">
-    <b-card no-body class="mb-3">
+    <b-card no-body class="mb-3" id="breadcrumbs">
         <b-breadcrumb :items="breadcrumbs" class="py-0 my-2"></b-breadcrumb>
     </b-card>
     <div v-if="showSpinner">
@@ -135,7 +135,7 @@
                           variant="primary"
                           size="sm"
                           v-on:click="addApplication(registration)"
-                          class="mb-3"><i class="fa fa-plus-square-o"></i> Add classification</b-button>
+                          class="mb-3 registries-action-button"><i class="fa fa-plus-square-o"></i> Add classification</b-button>
                 </b-col>
               </b-row>
             </div>
@@ -280,7 +280,7 @@
                 v-for="(item, index) in registrationOptions"
                 :key="`unregistered activity ${index}`"
                 v-if="!currentDriller.registrations.some(reg => reg.registries_activity === item.code)">
-              <b-button variant="primary" class="my-1" :ref="`registerButton${item.code}`" @click="confirmRegisterModal[item.code]=true">
+              <b-button variant="primary" class="my-1 registries-action-button" :ref="`registerButton${item.code}`" @click="confirmRegisterModal[item.code]=true">
                 Register as a {{ item.desc }}
               </b-button>
               <b-modal
