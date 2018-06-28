@@ -93,6 +93,7 @@ stage ( 'run' )
         if ( WELL_COUNT > WELL_CHECK ){
             sh """
                 oc scale dc "${DC_APP}" --timeout=5s --replicas=1 -n "${PROJECT}"
+                sleep 20
                 oc patch route "${DC_APP}" -n "${PROJECT}" -p \
                     '{ "spec": { "to": { "name": "${DC_APP}" }, "port": { "targetPort": "web" }}}'
             """
