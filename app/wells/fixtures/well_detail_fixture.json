@@ -8,7 +8,7 @@
               "update_user": null},
    "pk": "BC"},
 
-  {"model": "gwells.wellclasscode",
+  {"model": "wells.wellclasscode",
    "fields": {"create_user": "",
               "description": "",
               "create_date": "2018-02-08T17:22:21.892Z",
@@ -17,7 +17,7 @@
               "update_user": null},
    "pk": "WCC"},
 
-  {"model": "gwells.well",
+  {"model": "wells.well",
    "pk": 123,
    "fields": {"backfill_depth": null,
               "intended_water_use": null,
