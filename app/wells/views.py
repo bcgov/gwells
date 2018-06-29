@@ -11,6 +11,8 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
+import json
+from urllib.parse import quote
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from drf_yasg.utils import swagger_auto_schema
@@ -69,5 +71,16 @@ class ListFiles(APIView):
 
     @swagger_auto_schema(auto_schema=None)
     def get(self, request, tag):
-        result = {'hello': tag}
+        client = MinioClient()
+        documents = client.get_documents(int(tag))
+        result = []
+        for doc in documents:
+            document = {
+                "url": 'https://{}/{}/{}'.format(client.host,
+                                                 quote(doc.bucket_name),
+                                                 quote(doc.object_name)),
+                "name": doc.object_name[doc.object_name.find("/")+1:]
+            }
+            result.append(document)
+
         return Response(result)

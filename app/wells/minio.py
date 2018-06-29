@@ -29,7 +29,7 @@ class MinioClient():
                                   secure=True)
         self.top_bucket = get_env_variable('S3_ROOT_BUCKET', strict=True)
 
-    def get_documents(self, well_tag_number):
+    def get_documents(self, well_tag_number: int):
 
         prefix = str(str('{:0<6}'.format('{:0>2}'.format(well_tag_number//10000))) + '/WTN ' +
                      str(well_tag_number) + '_')
