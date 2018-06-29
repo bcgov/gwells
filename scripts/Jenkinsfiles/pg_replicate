@@ -70,13 +70,25 @@ stage ( 'run' )
 
                 oc scale dc "${DC_APP}" --timeout=5s --replicas=0 -n "${PROJECT}"
                 oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
-                    'psql -d gwells -c "VACUUM FULL;"'
+                    'psql -d gwells << EOF
+VACUUM FULL;
+ALTER USER gwells SET log_statement to 'none';
+alter user gwells set log_min_duration_statement to 10000;         
+EOF
+'
                 oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
                     'psql -t -d gwells -U "\${POSTGRESQL_USER}" -c \
                         "SELECT db_replicate_step1(_subset_ind=>false);"'
                 oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
                     'psql -t -d gwells -U "\${POSTGRESQL_USER}" -c \
                         "SELECT db_replicate_step2 ();"'
+                oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
+                    'psql -d gwells << EOF
+VACUUM FULL;
+ALTER USER gwells SET log_statement to 'all';
+alter user gwells set log_min_duration_statement to -1;         
+EOF
+'
             """
         } else {
             echo POD_DB +" is offline"
