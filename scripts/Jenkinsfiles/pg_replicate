@@ -44,44 +44,40 @@ stage ( 'run' )
     {
         // Regex for a database pod
         String POD_DB = sh(
-            script:
-                """
-                    oc get pods -n "${PROJECT}" | grep -i "Running" | grep -Eo \
-                        "gwells-pgsql-[[:alpha:]]+-[[:digit:]]+-[[:alnum:]]+" | head -1
-                """,
+            script:"""
+                oc get pods -n "${PROJECT}" | grep -i "Running" | grep -Eo \
+                    "gwells-pgsql-[[:alpha:]]+-[[:digit:]]+-[[:alnum:]]+" | head -1
+            """,
             returnStdout:
                 true
         ).trim()
 
         // Regex for an application (GWells) pod
         String POD_APP = sh(
-            script:
-                """
-                    oc get pods -n "${PROJECT}" | grep -i "Running" | grep -Eo \
-                        "gwells-(test|prod)-[[:digit:]]+-[[:alnum:]]+" | head -1
-                """,
+            script:"""
+                oc get pods -n "${PROJECT}" | grep -i "Running" | grep -Eo \
+                    "gwells-(test|prod)-[[:digit:]]+-[[:alnum:]]+" | head -1
+            """,
             returnStdout:
                 true
         ).trim()
 
         // Regex for the deployment config / route name
         String DC_RT = sh(
-            script:
-                """
-                    oc get dc -n "${PROJECT}" | grep -Eo "gwells-(test|prod)" | head -1
-                """,
+            script:"""
+                oc get dc -n "${PROJECT}" | grep -Eo "gwells-(test|prod)" | head -1
+            """,
             returnStdout:
                 true
         ).trim()
 
         // Database status (online|!)
         String STAT_DB = sh(
-            script:
-                """
+            script:"""
                 oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
                     'psql -d gwells -c \
                         "SELECT 1 AS online FROM WELLS.WELLS_WELLS LIMIT 1;" | grep -o online'
-                """,
+            """,
             returnStdout:
                 true
         ).trim()
@@ -97,13 +93,13 @@ stage ( 'run' )
                     oc scale dc "${DC_RT}" --timeout=5s --replicas=0 -n "${PROJECT}"
 
                     oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
-                        'psql -t -d gwells -U "\${POSTGRESQL_USER}" -c \
+                        'psql -t -d gwells -c \
                             "VACUUM FULL;"'
                     oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
-                        'psql -t -d gwells -U "\${POSTGRESQL_USER}" -c \
+                        'psql -t -d gwells -c \
                             "ALTER USER gwells SET log_statement to 'none';"'
                     oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
-                        'psql -t -d gwells -U "\${POSTGRESQL_USER}" -c \
+                        'psql -t -d gwells -c \
                             "alter user gwells set log_min_duration_statement to 10000;"'
 
                     oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
@@ -114,19 +110,13 @@ stage ( 'run' )
                             "SELECT db_replicate_step2 ();"'
                 """
 
-            // Count wells after replication
-            int WELL_COUNT = sh(
-                script:
+                // Count wells after replication
+                int WELL_COUNT = sh(
+                    script:"""
+                        oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
+                            'psql -t -d gwells -U "\${POSTGRESQL_USER}" -c "SELECT count(*) from well;"'
                     """
-                        oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
-                            'psql -d gwells -c "VACUUM FULL;"'
-                        oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
-                            'psql -t -d gwells -U "\${POSTGRESQL_USER}" -c \
-                                "SELECT db_replicate_step1(_subset_ind=>false);"'
-                        oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
-                            'psql -t -d gwells -U "\${POSTGRESQL_USER}" -c \
-                                "SELECT db_replicate_step2 ();"'
-                    """
+                )
             } else {
                 echo POD_DB +" is offline"
                 error "Database is offline"
@@ -138,24 +128,23 @@ stage ( 'run' )
         } finally {
             // Count wells after replication
             int WELL_COUNT = sh(
-                script:
-                    """
-                        oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
-                            'psql -t -d gwells -U "\${POSTGRESQL_USER}" -c "SELECT count(*) from well;"'
-                    """,
+                script:"""
+                    oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
+                        'psql -t -d gwells -U "\${POSTGRESQL_USER}" -c "SELECT count(*) from well;"'
+                """,
                 returnStdout:
                     true
             ).trim()
 
             sh """
                 oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
-                    'psql -t -d gwells -U "\${POSTGRESQL_USER}" -c \
+                    'psql -t -d gwells -c \
                         "VACUUM FULL;"'
                 oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
-                    'psql -t -d gwells -U "\${POSTGRESQL_USER}" -c \
+                    'psql -t -d gwells -c \
                         "ALTER USER gwells SET log_statement to 'all';"'
                 oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
-                    'psql -t -d gwells -U "\${POSTGRESQL_USER}" -c \
+                    'psql -t -d gwells -c \
                         "alter user gwells set log_min_duration_statement to -1;"'
             """
 
