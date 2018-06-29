@@ -11,10 +11,12 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
-from django.db.models import Q
 from functools import reduce
 import operator
-from .models import Well
+
+from django.db.models import Q
+
+from gwells.models import Well
 
 
 class Search():

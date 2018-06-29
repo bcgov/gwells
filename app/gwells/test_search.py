@@ -11,11 +11,12 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
-
-from gwells.models import *
 from django.test import TestCase
-from gwells.search import Search
 from django.contrib.auth.models import Group
+
+from gwells.search import Search
+from gwells.models import ProvinceStateCode, WellClassCode, Well
+
 
 class SearchTestCase(TestCase):
 

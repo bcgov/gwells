@@ -1,7 +1,7 @@
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import AllowAny
 from gwells.serializers import SurveySerializer
-from gwells.models.Survey import Survey
+from gwells.models import Survey
 
 
 class SurveyListView(ListAPIView):

@@ -11,14 +11,18 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
+from datetime import date
+
 from django import forms
 from django.utils.safestring import mark_safe
+from django.forms.models import inlineformset_factory
+
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Div, Submit, Hidden, HTML, Field
 from crispy_forms.bootstrap import FormActions, AppendedText, InlineRadios
-from django.forms.models import inlineformset_factory
-from ..models import *
-from datetime import date
+
+from gwells.models import ActivitySubmission
+
 
 class ActivitySubmissionLocationForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
@@ -29,12 +33,16 @@ class ActivitySubmissionLocationForm(forms.ModelForm):
             Fieldset(
                 'Well Location',
                 Div(
-                    Div(HTML('Please provide as much well location information as possible. A minimum of one type of well location information is required below.<br /><br />'), css_class='col-md-12'),
+                    Div(HTML('Please provide as much well location information as possible. A minimum of one'
+                             ' type of well location information is required below.<br /><br />'),
+                        css_class='col-md-12'),
                     css_class='row',
                 ),
                 Div(
                     Div(HTML('<label>1) Civic Address</label>'), css_class='col-md-2'),
-                    Div(HTML('<input type="checkbox" id="chkSameAsOwnerAddress" /> <label for="chkSameAsOwnerAddress">Same as Owner Address</label>'), css_class='col-md-10'),
+                    Div(HTML('<input type="checkbox" id="chkSameAsOwnerAddress" /> '
+                             '<label for="chkSameAsOwnerAddress">Same as Owner Address</label>'),
+                        css_class='col-md-10'),
                     css_class='row',
                 ),
                 Div(
@@ -116,10 +124,14 @@ class ActivitySubmissionLocationForm(forms.ModelForm):
         legal_provided = legal_lot and legal_plan and land_district
 
         if not address_provided and not legal_provided and not cleaned_data.get('legal_pid'):
-            raise forms.ValidationError('At least 1 of Civic Address, Legal Description (Lot, Plan and Land District) or Parcel Identifier must be provided.')
+            raise forms.ValidationError('At least 1 of Civic Address, Legal Description (Lot, Plan and Land '
+                                        'District) or Parcel Identifier must be provided.')
         return cleaned_data
 
     class Meta:
         model = ActivitySubmission
-        fields = ['street_address', 'city', 'legal_lot', 'legal_plan', 'legal_district_lot', 'legal_block', 'legal_section', 'legal_township', 'legal_range', 'land_district', 'legal_pid', 'well_location_description']
-        help_texts = {'well_location_description': "Provide any additional well location details, such as physical landmarks",}
+        fields = ['street_address', 'city', 'legal_lot', 'legal_plan', 'legal_district_lot', 'legal_block',
+                  'legal_section', 'legal_township', 'legal_range', 'land_district', 'legal_pid',
+                  'well_location_description']
+        help_texts = {'well_location_description':
+                      "Provide any additional well location details, such as physical landmarks", }

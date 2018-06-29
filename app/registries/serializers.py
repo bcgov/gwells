@@ -16,7 +16,7 @@ from django.utils import timezone
 from django.db import transaction
 import logging
 from rest_framework import serializers
-from gwells.models.ProvinceStateCode import ProvinceStateCode
+from gwells.models import ProvinceStateCode
 from registries.models import (
     ProofOfAgeCode,
     Organization,

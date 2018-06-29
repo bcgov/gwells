@@ -1,9 +1,14 @@
 {% extends 'gwells/base.html' %}
+{% load static %}
 {% load crispy_forms_tags %}
 
 {% block title %}Activity Submission{% endblock %}
 
 {% block bodyheading_block %}Submit Activity{% endblock %}
+
+{% block additional_js %}
+<script src="{% static 'gwells/js/jqueryui/jquery-ui.min.js' %}"></script>
+{% endblock %}
 
 {% block introduction_block %}
 {% if wizard.steps.current == 'type_and_class' %}
@@ -54,7 +59,7 @@
     $('#id_type_and_class-work_end_date').datepicker({ dateFormat: 'yy-mm-dd' });
     $('#divSubclass').hide();
     var wherePlateAttached = ['Well Casing', 'Well Cap or Cover', 'Hand Pump', 'Pump House or Vault Wall'];
-    $('#id_type_and_class-where_plate_attached').autocomplete({
+    $('#id_type_and_class-well_plate_attached').autocomplete({
       source: wherePlateAttached
     });
   });
