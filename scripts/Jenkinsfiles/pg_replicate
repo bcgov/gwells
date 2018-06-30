@@ -10,7 +10,7 @@
 
 
 // Project name (moe-gwells-test|moe-gwells-prod)
-String PROJECT = 'moe-gwells-test'
+String PROJECT = 'moe-gwells-prod'
 
 // Minimum well count for success
 int WELL_CHECK = 100000
