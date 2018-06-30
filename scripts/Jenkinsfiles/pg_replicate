@@ -10,7 +10,7 @@
 
 
 // Project name (moe-gwells-test|moe-gwells-prod)
-String PROJECT = 'moe-gwells-prod'
+String PROJECT = 'moe-gwells-test'
 
 // Minimum well count for success
 int WELL_CHECK = 100000
@@ -97,10 +97,10 @@ stage ( 'run' )
                             "VACUUM FULL;"'
                     oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
                         'psql -t -d gwells -c \
-                            "ALTER USER gwells SET log_statement to 'none';"'
+                            "ALTER USER \\"\${POSTGRESQL_USER}\\" SET log_statement TO \\"none\\";"'
                     oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
                         'psql -t -d gwells -c \
-                            "alter user gwells set log_min_duration_statement to 10000;"'
+                            "ALTER USER \\"\${POSTGRESQL_USER}\\" SET log_min_duration_statement TO 10000;"'
 
                     oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
                         'psql -t -d gwells -U "\${POSTGRESQL_USER}" -c \
@@ -109,14 +109,6 @@ stage ( 'run' )
                         'psql -t -d gwells -U "\${POSTGRESQL_USER}" -c \
                             "SELECT db_replicate_step2 ();"'
                 """
-
-                // Count wells after replication
-                int WELL_COUNT = sh(
-                    script:"""
-                        oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
-                            'psql -t -d gwells -U "\${POSTGRESQL_USER}" -c "SELECT count(*) from well;"'
-                    """
-                )
             } else {
                 echo POD_DB +" is offline"
                 error "Database is offline"
@@ -142,10 +134,10 @@ stage ( 'run' )
                         "VACUUM FULL;"'
                 oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
                     'psql -t -d gwells -c \
-                        "ALTER USER gwells SET log_statement to 'all';"'
+                        "ALTER USER \\"\${POSTGRESQL_USER}\\" SET log_statement TO \\"all\\";"'
                 oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
                     'psql -t -d gwells -c \
-                        "alter user gwells set log_min_duration_statement to -1;"'
+                        "ALTER USER \\"\${POSTGRESQL_USER}\\" SET log_min_duration_statement TO -1;"'
             """
 
             // If there are enough wells to assume success, scale up app and leave maintenance mode
