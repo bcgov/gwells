@@ -1,0 +1,15 @@
+FROM python:3
+ENV PYTHONUNBUFFERED 1
+ENV DATABASE_SERVICE_NAME postgres
+ENV DATABASE_ENGINE postgresql
+ENV DATABASE_NAME gwells
+ENV DATABASE_USER gwells
+ENV DATABASE_PASSWORD test1
+ENV POSTGRES_SERVICE_HOST db
+ENV DJANGO_DEBUG True
+ENV APP_CONTEXT_ROOT gwells
+RUN mkdir /app
+WORKDIR /app
+ADD requirements.txt /app/
+RUN pip install -r requirements.txt
+ADD . /app/
