@@ -19,8 +19,10 @@ from drf_yasg.utils import swagger_auto_schema
 from django.views import generic
 
 from gwells.models import Survey
+from gwells.roles import GWELLS_ROLE_GROUPS
 from wells.models import Well
 from wells.minio import MinioClient
+
 from gwells import settings
 
 
@@ -39,31 +41,6 @@ class WellDetailView(generic.DetailView):
         context['surveys'] = surveys
         context['page'] = 'w'
 
-        if settings.ENABLE_ADDITIONAL_DOCUMENTS:
-            # Generic error Handling for now
-            try:
-
-                minio_client = MinioClient()
-
-                context['host'] = minio_client.host
-                context['documents'] = []
-
-                documents = minio_client.get_documents(
-                    context['well'].well_tag_number)
-
-                for doc in documents:
-                    document = {}
-                    document['bucket_name'] = doc.bucket_name
-                    object_name = doc.object_name
-                    document['object_name'] = object_name.replace(' ', '+')
-                    document['display_name'] = object_name[object_name.find(
-                        '/')+1: object_name.find('/') + 1 + len(object_name)]
-                    context['documents'].append(document)
-                    context['documents'] = sorted(
-                        context['documents'], key=lambda k: k['display_name'])
-            except Exception as exception:
-                context['file_client_error'] = 'Error retrieving documents.'
-                print("Document access exception: " + str(exception))
         return context
 
 
@@ -72,15 +49,9 @@ class ListFiles(APIView):
     @swagger_auto_schema(auto_schema=None)
     def get(self, request, tag):
         client = MinioClient()
-        documents = client.get_documents(int(tag))
-        result = []
-        for doc in documents:
-            document = {
-                "url": 'https://{}/{}/{}'.format(client.host,
-                                                 quote(doc.bucket_name),
-                                                 quote(doc.object_name)),
-                "name": doc.object_name[doc.object_name.find("/")+1:]
-            }
-            result.append(document)
+        user_is_staff = self.request.user.groups.filter(
+            name__in=GWELLS_ROLE_GROUPS).exists()
+        documents = client.get_documents(
+            int(tag), include_private=user_is_staff)
 
-        return Response(result)
+        return Response(documents)
