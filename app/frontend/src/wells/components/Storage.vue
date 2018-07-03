@@ -35,7 +35,6 @@ export default {
     }
   },
   methods: {
-
   },
   created () {
     ApiService.query('well/123/files').then((response) => {

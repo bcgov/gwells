@@ -24,7 +24,7 @@ module.exports = {
   entry: {
     header: './src/header/main.js',
     registry: './src/registry/main.js',
-    storage: './src/storage/main.js',
+    storage: './src/wells/storage.js',
     footer: './src/footer/main.js'
   },
   output: {

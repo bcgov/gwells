@@ -16,7 +16,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import { store } from '@/registry/store'
 import BootstrapVue from 'bootstrap-vue'
-import Storage from './Storage'
+import Storage from './components/Storage'
 import '@/common/assets/css/bootstrap-theme.min.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 
