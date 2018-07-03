@@ -11,15 +11,16 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
-
 from django.views import generic
 from django.forms import modelformset_factory
 from django.forms import modelform_factory
-from gwells.models.Survey import Survey
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.core.urlresolvers import reverse_lazy
 from django.contrib.auth.models import Group
 from django.contrib.auth.models import User
+
+from gwells.models import Survey
+
 
 class AdminView(UserPassesTestMixin, generic.TemplateView):
     login_url = reverse_lazy('admin:login')
@@ -42,10 +43,12 @@ class AdminView(UserPassesTestMixin, generic.TemplateView):
 
         context = super(AdminView, self).get_context_data(**kwargs)
 
-        survey_form_set = modelformset_factory(Survey, fields=('survey_introduction_text','survey_link', 'survey_page', 'survey_enabled'), extra=0)
+        survey_form_set = modelformset_factory(Survey, fields=('survey_introduction_text', 'survey_link',
+                                                               'survey_page', 'survey_enabled'), extra=0)
 
         survey_forms = survey_form_set(queryset=Survey.objects.all().order_by('-update_date'))
-        survey_form = modelform_factory(Survey, fields=('survey_introduction_text', 'survey_link', 'survey_page', 'survey_enabled'))
+        survey_form = modelform_factory(Survey, fields=('survey_introduction_text', 'survey_link',
+                                                        'survey_page', 'survey_enabled'))
 
         context['forms'] = survey_forms
 

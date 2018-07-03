@@ -16,7 +16,7 @@ import logging
 
 from django.core.exceptions import ImproperlyConfigured
 
-logger = logging.getLogger('gwells.settings.base')
+logger = logging.getLogger(__name__)
 
 
 # TODO: By default, we want to enforce environment variables to be set. In order to smoothly introduce

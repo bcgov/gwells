@@ -11,14 +11,21 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
+from datetime import date
+import logging
+
 from django import forms
 from django.utils.safestring import mark_safe
+from django.forms.models import inlineformset_factory
+
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Div, Submit, Hidden, HTML, Field
 from crispy_forms.bootstrap import FormActions, AppendedText, InlineRadios
-from django.forms.models import inlineformset_factory
-from ..models import *
-from datetime import date
+
+from gwells.models import LithologyDescription
+
+logger = logging.getLogger(__name__)
+
 
 class LithologyForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
@@ -65,7 +72,8 @@ class LithologyForm(forms.ModelForm):
             HTML('</td>'),
             HTML('<td>'),
             'lithology_observation',
-            HTML('</td><td width="5%">{% if form.instance.pk %}{{ form.DELETE }}{% endif %}</td>'),
+            HTML(
+                '</td><td width="5%">{% if form.instance.pk %}{{ form.DELETE }}{% endif %}</td>'),
             HTML('</tr>'),
         )
         super(LithologyForm, self).__init__(*args, **kwargs)
@@ -87,12 +95,19 @@ class LithologyForm(forms.ModelForm):
 
         if bedrock_material:
             lithology_moisture = cleaned_data.get('lithology_moisture')
-            water_bearing_estimated_flow = cleaned_data.get('water_bearing_estimated_flow')
-            try:
-                if lithology_moisture == LithologyMoistureCode.objects.get(code='Water Bear') and not water_bearing_estimated_flow:
-                    errors.append('Water Bearing Estimated Flow is required for Water Bearing Bedrock.')
+            water_bearing_estimated_flow = cleaned_data.get(
+                'water_bearing_estimated_flow')
+            try:  
+                # TODO: what is this hard coded value 'Water Bear'?
+                # I think there's a check here asking "if the rock is water bearing, there must be an estimated flow"     
+                # if lithology_moisture == LithologyMoistureCode.objects.get(lithology_moisture_code='Water Bear') and not water_bearing_estimated_flow:
+                if lithology_moisture and not water_bearing_estimated_flow:
+                    errors.append(
+                        'Water Bearing Estimated Flow is required for Water Bearing Bedrock.')
             except Exception as e:
-                errors.append('Configuration error: Water Bearing Lithology Moisture does not exist, please contact the administrator.')
+                errors.append('Configuration error: Water Bearing Lithology Moisture does not exist,'
+                              ' please contact the administrator.')
+                logger.error(e)
 
         if len(errors) > 0:
             raise forms.ValidationError(errors)
@@ -101,4 +116,7 @@ class LithologyForm(forms.ModelForm):
 
     class Meta:
         model = LithologyDescription
-        fields = ['lithology_from', 'lithology_to', 'surficial_material', 'secondary_surficial_material', 'bedrock_material', 'bedrock_material_descriptor', 'lithology_structure', 'lithology_colour', 'lithology_hardness', 'lithology_moisture', 'water_bearing_estimated_flow', 'lithology_observation']
+        fields = ['lithology_from', 'lithology_to', 'surficial_material', 'secondary_surficial_material',
+                  'bedrock_material', 'bedrock_material_descriptor', 'lithology_structure',
+                  'lithology_colour', 'lithology_hardness', 'lithology_moisture',
+                  'water_bearing_estimated_flow', 'lithology_observation']

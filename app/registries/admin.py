@@ -1,6 +1,6 @@
 from django.contrib import admin
 from reversion.admin import VersionAdmin
-from .models import (
+from registries.models import (
     Person,
     ContactInfo,
     Organization,

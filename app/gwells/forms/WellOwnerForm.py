@@ -11,15 +11,18 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
+from datetime import date
 
 from django import forms
 from django.utils.safestring import mark_safe
+from django.forms.models import inlineformset_factory
+
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Div, Submit, Hidden, HTML, Field
 from crispy_forms.bootstrap import FormActions, AppendedText, InlineRadios
-from django.forms.models import inlineformset_factory
-from ..models import *
-from datetime import date
+
+from gwells.models import ActivitySubmission
+
 
 class WellOwnerForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
@@ -61,8 +64,9 @@ class WellOwnerForm(forms.ModelForm):
 
     @staticmethod
     def label_from_instance_code(obj):
-        return obj.code
+        return obj.province_state_code
 
     class Meta:
         model = ActivitySubmission
-        fields = ['owner_full_name', 'owner_mailing_address', 'owner_city', 'owner_province_state', 'owner_postal_code']
+        fields = ['owner_full_name', 'owner_mailing_address',
+                  'owner_city', 'owner_province_state', 'owner_postal_code']

@@ -1,15 +1,18 @@
 import uuid
 import logging
 import os
+
 from django.urls import reverse
 from django.test import TestCase
 from django.core.management import call_command
 from django.utils.six import StringIO
+from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import Group
+
 from rest_framework import status
 from rest_framework.test import APITestCase, APIRequestFactory
-from gwells.models.ProvinceStateCode import ProvinceStateCode
-from gwells.models.Profile import Profile
-from django.contrib.auth.models import User, Group
+
+from gwells.models import ProvinceStateCode, Profile
 from registries.models import (
     ApplicationStatusCode,
     Organization,
@@ -19,7 +22,6 @@ from registries.models import (
     ActivityCode,
     SubactivityCode)
 from registries.views import PersonListView, PersonDetailView
-from django.contrib.auth.models import Group
 from gwells.roles import (roles_to_groups, GWELLS_ROLE_GROUPS, GWELLS_ROLES,
                           ADJUDICATOR_ROLE, ADMIN_ROLE, AUTHORITY_ROLE, VIEWER_ROLE)
 
