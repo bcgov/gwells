@@ -17,14 +17,27 @@ import 'babel-polyfill'
 import Vue from 'vue'
 import Vuex from 'vuex'
 import { store } from '@/registry/store'
+import { SET_KEYCLOAK } from '@/registry/store/mutations.types.js'
 import BootstrapVue from 'bootstrap-vue'
+import Keycloak from 'keycloak-js'
 import Header from '../common/components/Header'
 import '@/common/assets/css/bootstrap-theme.min.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
+import ApiService from '@/common/services/ApiService.js'
 
 Vue.use(Vuex)
 Vue.use(BootstrapVue)
 Vue.config.productionTip = false
+
+// start Keycloak
+Vue.prototype.$keycloak = Keycloak({
+  'realm': 'gwells',
+  'url': 'https://dev-sso.pathfinder.gov.bc.ca/auth',
+  'clientId': 'webapp-dev-local'
+})
+
+// set baseURL and default headers
+ApiService.init()
 
 /* eslint-disable no-new */
 new Vue({
@@ -33,7 +46,15 @@ new Vue({
   components: {
     Header
   },
-  template: '<Header auth="hide"/>'
+  template: '<Header/>',
+  created () {
+    this.$keycloak.init({ onLoad: 'check-sso' }).success(() => {
+      store.commit(SET_KEYCLOAK, this.$keycloak)
+      if (this.$keycloak.authenticated) {
+        ApiService.authHeader('JWT', this.$keycloak.token)
+      }
+    })
+  }
 })
 
 Vue.config.devtools = true
