@@ -832,39 +832,6 @@
 {% if settings.ENABLE_ADDITIONAL_DOCUMENTS %}
 <fieldset id="documents_fieldset" class="hide-for-print">
     <legend>Additional Documentation</legend>
-
-    {% if file_client_error %}
-    <div class="row no-gutters hide-for-print show-for-screen">
-        <div class="col-sm-12 alert alert-warning">
-            <div id="file-client-error-msg-body" role="alert" aria-atomic="true">{{file_client_error}}</div>
-        </div>
-    </div>
-    {% elif documents %}
-    <div class="row no-gutters">
-        <div class="col-md-12">
-            <table id="additional_documentation_table" class="table table-sm table-bordered table-striped">
-                <thead>
-                    <th>Document Link</th>
-                </thead>
-                <tbody>
-                    {% for document in documents %}
-                    <tr>
-                      <td>
-                          <a href="https://{{host}}/{{document.bucket_name}}/{{document.object_name}}" target="_blank">{{document.display_name}}</a>
-                      </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
-    {% else %}
-    <div class="row no-gutters hide-for-print show-for-screen">
-        <div class="col-sm-12">
-            <div id="no_documentation_msg">No additional documentation currently available for this well.</div>
-        </div>
-    </div>
-    {% endif %}
     <div id="storage"></div>
     {% render_bundle 'storage' 'js' %}
 </fieldset>

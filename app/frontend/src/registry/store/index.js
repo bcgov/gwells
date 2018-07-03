@@ -236,7 +236,9 @@ export const store = new Vuex.Store({
             state.keycloak.hasRealmRole('registries_statutory_authority') ||
             state.keycloak.hasRealmRole('registries_adjudicator')),
           approve: (state.keycloak.hasRealmRole('gwells_admin') ||
-            state.keycloak.hasRealmRole('registries_statutory_authority'))
+            state.keycloak.hasRealmRole('registries_statutory_authority')),
+          wellsView: (state.keycloak.hasRealmRole('gwells_admin') ||
+            state.keycloak.hasRealmRole('wells_viewer'))
         }
       } else {
         return {}
