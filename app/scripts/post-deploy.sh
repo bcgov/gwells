@@ -17,15 +17,27 @@
 #
 #   Example: ./post-deploy.sh
 #
-set -e
+set +e
+set -x
 echo "Running Post-Deploy tasks..."
 export PGPASSWORD=$DATABASE_PASSWORD
-cd $APP_ROOT/src/database/scripts/wellsearch/
+#cd $APP_ROOT/src/database/scripts/wellsearch/
+cd $APP_ROOT/app/database/scripts/wellsearch/
 echo ". Creating additional DB objects (e.g. spatial indices, stored procedures)"
-psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER << EOF
+psql -X --set ON_ERROR_STOP=on -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER << EOF
 	\i post-deploy.sql
 	\i wells_replication_stored_functions.sql
 EOF
+
+
+psql_exit_status=$?
+
+if [ $psql_exit_status != 0 ]; then
+    echo "psql failed while trying to run this sql script" 1>&2
+    exit $psql_exit_status
+fi
+
+
 
 echo ". Running python-related post-deploy tasks."
 cd $APP_ROOT/src/
