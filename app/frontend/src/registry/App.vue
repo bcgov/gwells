@@ -61,6 +61,9 @@ export default {
   .registries-action-button {
     display: none!important;
   }
+  .btn-primary {
+    background-color: #fff!important
+  }
 }
 
 html {
