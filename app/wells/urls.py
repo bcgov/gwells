@@ -22,5 +22,6 @@ urlpatterns = [
     url(r'^' + app_root_slash + \
         'well/(?P<pk>[0-9]+)$', views.WellDetailView.as_view(), name='well_detail'),
     # API
-    url(r'^api/v1/wells/(?P<tag>[0-9]+)/files$', views.ListFiles.as_view(), name='files'),
+    url(r'^api/v1/wells/(?P<tag>[0-9]+)/files$',
+        views.ListFiles.as_view(), name='files'),
 ]
