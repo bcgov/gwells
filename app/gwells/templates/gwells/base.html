@@ -101,6 +101,11 @@
 <body>
     <!-- HEADER -->
     <div id="header"></div>
+    <!-- Common Vue components -->
+    {% render_bundle 'manifest' 'js' %}
+    {% render_bundle 'vendor' 'js' %}    
+    <!-- Header Vue component -->
+    {% render_bundle 'header' 'js' %}
     <!-- /HEADER -->
 
     <!-- BODY CONTENT -->
@@ -125,7 +130,6 @@
                     {% endif %} {% endfor %} {% block introduction_block %}{% endblock %}
                 </div>
                 <!-- /INTRODUCTION -->
-
                 <div id="body">
                     {% block body_block %} {% endblock %}
                 </div>
@@ -141,6 +145,8 @@
     <!-- FOOTER -->
     <img class="back-to-top" src="/gwells/static/gwells/images/back-to-top.png" alt="Back to top" title="Back to top" style="display: inline;">
     <div id="footer"></div>
+    <!-- Footer Vue component -->
+    {% render_bundle 'footer' 'js' %}
     <!-- /FOOTER -->
     
     <!-- Bootstrap core JavaScript
@@ -151,13 +157,8 @@
     <script src="{% static 'gwells/js/popper.js/popper.min.js' %}"></script>
     <script src="{% static 'gwells/js/bootstrap.min.js' %}"></script>
 
-    {% block additional_js %} {% endblock %}
-
-    <!-- Misc. gwells javascript -->
-    {% render_bundle 'manifest' 'js' %}
-    {% render_bundle 'vendor' 'js' %}
-    {% render_bundle 'header' 'js' %}
-    {% render_bundle 'footer' 'js' %}
+    {% block additional_js %} {% endblock %}    
+    
     <script src="{% static 'gwells/js/misc.js' %}"></script>
 
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
@@ -173,7 +174,6 @@
     <script type="text/javascript" src="{% static 'gwells/js/datatables.min.js' %}"></script>
 
     {% block jqscript_block %} {% endblock %}
-
 </body>
 
 </html>
