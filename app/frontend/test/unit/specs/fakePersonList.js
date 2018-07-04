@@ -101,12 +101,6 @@ const fakePersonList = JSON.parse(JSON.stringify(
               }
             ]
           }
-        ],
-        'contact_info': [
-          {
-            'contact_tel': null,
-            'contact_email': 'driller1@example.com'
-          }
         ]
       },
       {
@@ -201,12 +195,6 @@ const fakePersonList = JSON.parse(JSON.stringify(
                 'cert_authority': 'BC'
               }
             ]
-          }
-        ],
-        'contact_info': [
-          {
-            'contact_tel': null,
-            'contact_email': 'driller2@example.com'
           }
         ]
       }
