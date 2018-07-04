@@ -7,6 +7,7 @@ const fakePersonList = JSON.parse(JSON.stringify(
         'person_guid': '728c5b91-25aa-44de-8b5d-3b0b7ab115a5',
         'first_name': 'Bob',
         'surname': 'Drillerson',
+        'contact_email': 'driller1@example.com',
         'registrations': [
           {
             'register_guid': '816eca52-7c45-4ff8-a0f0-e907ced6d93b',
@@ -107,6 +108,7 @@ const fakePersonList = JSON.parse(JSON.stringify(
         'person_guid': '728c5b91-25aa-44de-8b5d-3b0b7ab115a1',
         'first_name': 'Don',
         'surname': 'Drillerson',
+        'contact_email': 'driller2@example.com',
         'registrations': [
           {
             'register_guid': '816eca52-7c45-4ff8-a0f0-e907ced6d93a',
