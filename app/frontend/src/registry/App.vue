@@ -1,7 +1,7 @@
 <template>
   <div>
     <gwells-header/>
-    <main role="main">
+    <main role="main" class="p-0 mt-0 mt-sm-4">
       <b-container v-if="error">
         <api-error :error="error" resetter="SET_ERROR"/>
       </b-container>
