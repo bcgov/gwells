@@ -23,7 +23,7 @@ from gwells.models import Survey
 from gwells.roles import WELLS_ROLES
 from wells.models import Well
 from wells.documents import MinioClient
-from wells.permissions import WellsPermissions
+from wells.permissions import WellsDocumentPermissions
 
 from gwells import settings
 
