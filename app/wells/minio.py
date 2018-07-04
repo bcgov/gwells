@@ -12,6 +12,8 @@
     limitations under the License.
 """
 import os
+from datetime import timedelta
+from django.urls import reverse
 from urllib.parse import quote
 from minio import Minio
 from gwells.settings.base import get_env_variable
@@ -43,26 +45,40 @@ class MinioClient():
             secure=True
         )
 
-    def create_url(self, obj, host):
+    def get_private_file(self, object_name: str):
+        """ Generates a link to a private document """
+        return self.private_client.presigned_get_object(
+            self.private_bucket,
+            object_name,
+            expires=timedelta(minutes=10))
+
+    def create_url(self, request, obj, host, tag, private=False):
         """Generate URL for a document """
+
+        if private:
+            url = request.build_absolute_uri(
+                reverse('private-document', kwargs={'tag': tag, 'file': obj.object_name}))
+
+            return url
+
         return 'https://{}/{}/{}'.format(
             host,
             quote(obj.bucket_name),
             quote(obj.object_name)
         )
 
-    def create_url_list(self, objects, host):
+    def create_url_list(self, request, objects, host, tag, private=False):
         """Generate a list of document objects"""
         urls = list(
             map(
                 lambda document: {
-                    'url': self.create_url(document, host),
-                    'name': document.object_name.split('/', 1)[1],
+                    'url': self.create_url(request, document, host, tag, private),
+                    'name': document.object_name.split('/', 1)[1]
                 }, objects)
         )
         return urls
 
-    def get_documents(self, well_tag_number: int, include_private=False):
+    def get_documents(self, request, well_tag_number: int, include_private=False):
         """Retrieves a list of available documents for a given well tag number"""
 
         prefix = str(str('{:0<6}'.format('{:0>2}'.format(well_tag_number//10000))) + '/WTN ' +
@@ -71,17 +87,19 @@ class MinioClient():
         # provide all requests with a "public" collection of documents
         objects = {
             "public": self.create_url_list(
+                request,
                 self.public_client.list_objects(
                     self.public_bucket, prefix=prefix, recursive=True),
-                self.public_host
+                self.public_host, tag=well_tag_number
             )}
 
         # authenticated requests also receive a "private" collection
         if include_private:
             priv_objects = self.create_url_list(
+                request,
                 self.private_client.list_objects(
                     self.private_bucket, prefix=prefix, recursive=True),
-                self.private_host)
+                self.private_host, tag=well_tag_number, private=True)
             objects['private'] = priv_objects
 
         return objects

@@ -14,31 +14,31 @@
 
 from django.contrib.auth.models import Group, Permission
 
+
 # Keycloak/SSO groups:
-ADJUDICATOR_ROLE = 'registries_adjudicator'
-AUTHORITY_ROLE = 'registries_statutory_authority'
 ADMIN_ROLE = 'gwells_admin'
-VIEWER_ROLE = 'registries_viewer'
+REGISTRIES_ADJUDICATOR_ROLE = 'registries_adjudicator'
+REGISTRIES_AUTHORITY_ROLE = 'registries_statutory_authority'
+REGISTRIES_VIEWER_ROLE = 'registries_viewer'
+WELLS_VIEWER_ROLE = 'gwells_viewer'
 
-ADJUDICATOR_GROUP_NAME = 'registries_adjudicator'
-AUTHORITY_GROUP_NAME = 'registries_authority'
-ADMIN_GROUP_NAME = 'gwells_admin'
-VIEWER_GROUP_NAME = 'registries_viewer'
-
-ROLE_MAP = {
-    ADJUDICATOR_ROLE: ADJUDICATOR_GROUP_NAME,
-    AUTHORITY_ROLE: AUTHORITY_GROUP_NAME,
-    ADMIN_ROLE: ADMIN_GROUP_NAME,
-    VIEWER_ROLE: VIEWER_GROUP_NAME
-}
-
-GWELLS_ROLES = (ADJUDICATOR_ROLE, AUTHORITY_ROLE, ADMIN_ROLE, VIEWER_ROLE)
-GWELLS_ROLE_GROUPS = (
-    ROLE_MAP[ADJUDICATOR_ROLE],
-    ROLE_MAP[AUTHORITY_ROLE],
-    ROLE_MAP[ADMIN_ROLE],
-    ROLE_MAP[VIEWER_ROLE]
+# Role must be in this tuple to be valid
+REGISTRIES_ROLES = (
+    ADMIN_ROLE,
+    REGISTRIES_ADJUDICATOR_ROLE,
+    REGISTRIES_AUTHORITY_ROLE,
+    REGISTRIES_VIEWER_ROLE,
 )
+
+WELLS_ROLES = (
+    ADMIN_ROLE,
+    WELLS_VIEWER_ROLE,
+)
+
+GWELLS_ROLES = REGISTRIES_ROLES + WELLS_ROLES
+
+# Deprecated: use GWELLS_ROLES. Kept for backwards compatibility
+GWELLS_ROLE_GROUPS = GWELLS_ROLES
 
 
 def roles_to_groups(user, roles=None):
@@ -87,15 +87,17 @@ def roles_to_groups(user, roles=None):
                          ]
 
     # Default permissions for Adjudicator and Statutory Authority roles
-    ADJUDICATOR_PERMISSIONS = ADMIN_PERMISSIONS
-    AUTHORITY_PERMISSIONS = ADMIN_PERMISSIONS
-    VIEWER_PERMISSIONS = []
+    REGISTRIES_ADJUDICATOR_PERMISSIONS = ADMIN_PERMISSIONS
+    REGISTRIES_AUTHORITY_PERMISSIONS = ADMIN_PERMISSIONS
+    REGISTRIES_VIEWER_PERMISSIONS = []
+    WELLS_VIEWER_PERMISSIONS = []
 
     PERMISSION_MAP = {
-        ADJUDICATOR_ROLE: ADJUDICATOR_PERMISSIONS,
-        AUTHORITY_ROLE: AUTHORITY_PERMISSIONS,
         ADMIN_ROLE: ADMIN_PERMISSIONS,
-        VIEWER_ROLE: VIEWER_PERMISSIONS
+        REGISTRIES_ADJUDICATOR_ROLE: REGISTRIES_ADJUDICATOR_PERMISSIONS,
+        REGISTRIES_AUTHORITY_ROLE: REGISTRIES_AUTHORITY_PERMISSIONS,
+        REGISTRIES_VIEWER_ROLE: REGISTRIES_VIEWER_PERMISSIONS,
+        WELLS_VIEWER_ROLE: WELLS_VIEWER_PERMISSIONS
     }
 
     if user is None:
@@ -107,9 +109,9 @@ def roles_to_groups(user, roles=None):
     for role in roles:
 
         # if user is not in their role group, add them
-        if role in GWELLS_ROLES and ROLE_MAP.get(role) not in user_group_names:
+        if role in GWELLS_ROLES and role not in user_group_names:
             group, created = Group.objects.get_or_create(
-                name=ROLE_MAP.get(role))
+                name=role)
             group.user_set.add(user)
             if created:
                 group.permissions.set(PERMISSION_MAP.get(role))
@@ -117,6 +119,6 @@ def roles_to_groups(user, roles=None):
     # check if user has been removed from their SSO (Keycloak) group
     for group in user_group_names:
         if (group in GWELLS_ROLE_GROUPS and
-                group not in [ROLE_MAP.get(role) for role in roles] and
+                group not in roles and
                 user.groups.filter(name=group).exists()):
             user.groups.get(name=group).user_set.remove(user)

@@ -15,13 +15,17 @@ import json
 from urllib.parse import quote
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.permissions import AllowAny
 from drf_yasg.utils import swagger_auto_schema
+from django.http import Http404
 from django.views import generic
+from django.shortcuts import redirect
 
 from gwells.models import Survey
 from gwells.roles import GWELLS_ROLE_GROUPS
 from wells.models import Well
 from wells.minio import MinioClient
+from wells.permissions import WellsPermissions
 
 from gwells import settings
 
@@ -45,6 +49,9 @@ class WellDetailView(generic.DetailView):
 
 
 class ListFiles(APIView):
+    """
+    List documents associated with a well (e.g. well construction report)
+    """
 
     @swagger_auto_schema(auto_schema=None)
     def get(self, request, tag):
@@ -52,6 +59,22 @@ class ListFiles(APIView):
         user_is_staff = self.request.user.groups.filter(
             name__in=GWELLS_ROLE_GROUPS).exists()
         documents = client.get_documents(
-            int(tag), include_private=user_is_staff)
+            request, int(tag), include_private=user_is_staff)
 
         return Response(documents)
+
+
+class RetrieveDocument(APIView):
+    """ Redirects user to a protected document on an S3-compliant host (AWS or Minio) """
+
+    permission_classes = (WellsPermissions,)
+
+    def get(self, request, tag, file: str):
+        """ returns a redirect to a private document """
+        client = MinioClient()
+        authorized_link = client.get_private_file(file)
+
+        if not authorized_link:
+            raise Http404
+
+        return redirect(authorized_link)

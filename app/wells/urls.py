@@ -18,10 +18,16 @@ from . import views
 
 
 urlpatterns = [
-    # Views
+    # Template views
     url(r'^' + app_root_slash + \
         'well/(?P<pk>[0-9]+)$', views.WellDetailView.as_view(), name='well_detail'),
-    # API
+
+    # Private documents
+    url(r'^wells/(?P<tag>[0-9]+)/files/(?P<file>[\w\ \./]+)$',
+        views.RetrieveDocument.as_view(), name='private-document'),
+
+    # API endpoints
     url(r'^api/v1/wells/(?P<tag>[0-9]+)/files$',
-        views.ListFiles.as_view(), name='files'),
+        views.ListFiles.as_view(), name='file-list'),
+
 ]
