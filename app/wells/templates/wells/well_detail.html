@@ -831,7 +831,13 @@
 
 {% if settings.ENABLE_ADDITIONAL_DOCUMENTS %}
 <fieldset id="documents_fieldset" class="hide-for-print">
-    <legend>Additional Documentation</legend>
+    <legend>Documentation GRR</legend>
+    <script type="text/javascript">
+    var meta = document.createElement('meta');
+    meta.name="well.tag_number"
+    meta.content="{{well.well_tag_number}}"
+    document.getElementsByTagName("head")[0].appendChild(meta)
+    </script>
     <div id="storage"></div>
     {% render_bundle 'storage' 'js' %}
 </fieldset>
