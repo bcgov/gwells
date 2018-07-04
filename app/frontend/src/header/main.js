@@ -43,7 +43,6 @@ new Vue({
   },
   template: '<Header/>',
   created () {
-    console.log('header/main.js::created()')
     Auth.authenticate(this.$keycloak)
   }
 })

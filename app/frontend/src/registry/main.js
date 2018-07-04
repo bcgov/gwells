@@ -39,7 +39,6 @@ new Vue({
   components: { App },
   template: '<App/>',
   created () {
-    console.log('registry app')
     Auth.authenticate(this.$keycloak)
   }
 })
