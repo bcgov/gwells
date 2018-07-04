@@ -21,8 +21,7 @@ set +e
 set -x
 echo "Running Post-Deploy tasks..."
 export PGPASSWORD=$DATABASE_PASSWORD
-#cd $APP_ROOT/src/database/scripts/wellsearch/
-cd $APP_ROOT/app/database/scripts/wellsearch/
+cd $APP_ROOT/src/database/scripts/wellsearch/
 echo ". Creating additional DB objects (e.g. spatial indices, stored procedures)"
 psql -X --set ON_ERROR_STOP=on -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER << EOF
 	\i post-deploy.sql
