@@ -11,18 +11,16 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
-import json
-from urllib.parse import quote
+
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny
 from drf_yasg.utils import swagger_auto_schema
 from django.http import Http404
 from django.views import generic
 from django.shortcuts import redirect
 
 from gwells.models import Survey
-from gwells.roles import GWELLS_ROLE_GROUPS
+from gwells.roles import WELLS_ROLES
 from wells.models import Well
 from wells.documents import MinioClient
 from wells.permissions import WellsPermissions
@@ -59,7 +57,7 @@ class ListFiles(APIView):
     def get(self, request, tag):
         client = MinioClient(request=request)
         user_is_staff = self.request.user.groups.filter(
-            name__in=GWELLS_ROLE_GROUPS).exists()
+            name__in=WELLS_ROLES).exists()
         documents = client.get_documents(
             int(tag), include_private=user_is_staff)
 
