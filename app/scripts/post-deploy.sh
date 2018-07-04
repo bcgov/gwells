@@ -28,18 +28,17 @@ IFS=$'\n\t'
 #
 echo "Post-Deploy: SQL imports"
 cd $APP_ROOT/src/database/scripts/wellsearch/
-export PGPASSWORD=$DATABASE_PASSWORD
-
-(
-	set +x;
-	psql -X --set ON_ERROR_STOP=on -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER << EOF
-		\i post-deploy.sql
-		\i wells_replication_stored_functions.sql
-EOF || (
-		echo "psql failed while trying to run this sql script" 1>&2
-		exit $?
-	)
+set +x; \
+	export PGPASSWORD=$DATABASE_PASSWORD; \
+set -x
+COMMANDS=(
+	"\i post-deploy.sql;"
+	"\i wells_replication_stored_functions.sql;"
 )
+for c in ${COMMANDS[@]}
+do
+	psql -X --set ON_ERROR_STOP=on -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER $c
+done
 
 
 # Python related portion of post-deploy
