@@ -59,11 +59,14 @@ export default {
   methods: {
   },
   computed: {
-    ...mapGetters(['userRoles'])
+    ...mapGetters(['userRoles']),
+    wellTag () {
+      const wellMeta = document.head.querySelector('meta[name="well.tag_number"]')
+      return wellMeta.content
+    }
   },
   created () {
-    let wellMeta = document.head.querySelector('meta[name="well.tag_number"]')
-    ApiService.query('wells/' + wellMeta.content + '/files').then((response) => {
+    ApiService.query('wells/' + this.wellTag + '/files').then((response) => {
       this.files = response.data
     }).catch((e) => {
       console.error(e)
