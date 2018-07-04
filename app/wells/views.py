@@ -71,6 +71,7 @@ class RetrieveFile(APIView):
 
     permission_classes = (WellsPermissions,)
 
+    @swagger_auto_schema(auto_schema=None)
     def get(self, request, file: str):
         """ returns a redirect to a private document """
         client = MinioClient()
