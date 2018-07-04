@@ -17,31 +17,38 @@
 #
 #   Example: ./post-deploy.sh
 #
-set +e
-set -x
-echo "Running Post-Deploy tasks..."
-export PGPASSWORD=$DATABASE_PASSWORD
+#
+# Halt conditions, verbosity and field separator
+#
+set -xeuo pipefail
+IFS=$'\n\t'
+
+
+# Create additional DB objects (e.g. spatial indices, stored procedures)
+#
+echo "Post-Deploy: SQL imports"
 cd $APP_ROOT/src/database/scripts/wellsearch/
-echo ". Creating additional DB objects (e.g. spatial indices, stored procedures)"
-psql -X --set ON_ERROR_STOP=on -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER << EOF
-	\i post-deploy.sql
-	\i wells_replication_stored_functions.sql
-EOF
+export PGPASSWORD=$DATABASE_PASSWORD
+
+(
+	set +x;
+	psql -X --set ON_ERROR_STOP=on -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER << EOF
+		\i post-deploy.sql
+		\i wells_replication_stored_functions.sql
+EOF || (
+		echo "psql failed while trying to run this sql script" 1>&2
+		exit $?
+	)
+)
 
 
-psql_exit_status=$?
-
-if [ $psql_exit_status != 0 ]; then
-    echo "psql failed while trying to run this sql script" 1>&2
-    exit $psql_exit_status
-fi
-
-
-
-echo ". Running python-related post-deploy tasks."
+# Python related portion of post-deploy
+#
+echo "Post-Deploy: Python tasks"
 cd $APP_ROOT/src/
-set +e
 python manage.py post-deploy
-set -e
 
-echo "Completed Post-Deploy tasks."
+
+# Success!
+#
+echo "Post-Deploy: completed successfully"
