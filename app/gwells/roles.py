@@ -20,7 +20,7 @@ ADMIN_ROLE = 'gwells_admin'
 REGISTRIES_ADJUDICATOR_ROLE = 'registries_adjudicator'
 REGISTRIES_AUTHORITY_ROLE = 'registries_statutory_authority'
 REGISTRIES_VIEWER_ROLE = 'registries_viewer'
-WELLS_VIEWER_ROLE = 'gwells_viewer'
+WELLS_VIEWER_ROLE = 'wells_viewer'
 
 # Role must be in this tuple to be valid
 REGISTRIES_ROLES = (

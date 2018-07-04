@@ -70,7 +70,7 @@ class ListFiles(APIView):
 class RetrieveFile(APIView):
     """ Redirects user to a protected document on an S3-compliant host (AWS or Minio) """
 
-    permission_classes = (WellsPermissions,)
+    permission_classes = (WellsDocumentPermissions,)
 
     @swagger_auto_schema(auto_schema=None)
     def get(self, request, file: str):
