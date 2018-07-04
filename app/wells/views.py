@@ -55,9 +55,12 @@ class ListFiles(APIView):
 
     @swagger_auto_schema(auto_schema=None)
     def get(self, request, tag):
-        client = MinioClient(request=request)
         user_is_staff = self.request.user.groups.filter(
             name__in=WELLS_ROLES).exists()
+
+        client = MinioClient(
+            request=request, disable_private=(not user_is_staff))
+
         documents = client.get_documents(
             int(tag), include_private=user_is_staff)
 
@@ -72,7 +75,7 @@ class RetrieveFile(APIView):
     @swagger_auto_schema(auto_schema=None)
     def get(self, request, file: str):
         """ returns a redirect to a private document """
-        client = MinioClient()
+        client = MinioClient(disable_public=True)
         authorized_link = client.get_private_file(file)
 
         if not authorized_link:

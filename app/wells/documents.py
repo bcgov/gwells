@@ -40,32 +40,39 @@ class MinioClient():
 
     """
 
-    def __init__(self, request=None):
+    def __init__(self, request=None, disable_public=False, disable_private=False):
         self.request = request
 
-        self.public_host = get_env_variable('S3_HOST', strict=True)
-        self.public_bucket = get_env_variable('S3_ROOT_BUCKET', strict=True)
-        self.public_access_key = get_env_variable(
-            'S3_PUBLIC_ACCESS_KEY', warn=False)
-        self.public_secret_key = get_env_variable(
-            'S3_PUBLIC_SECRET_KEY', warn=False)
-        self.public_client = Minio(
-            self.public_host,
-            access_key=self.public_access_key,
-            secret_key=self.public_secret_key,
-            secure=True
-        )
+        # allow disabling public or private clients if not needed (e.g. if user not authorized anyway)
+        self.disable_private = disable_private
+        self.disable_public = disable_public
 
-        self.private_access_key = get_env_variable('S3_PRIVATE_ACCESS_KEY')
-        self.private_secret_key = get_env_variable('S3_PRIVATE_SECRET_KEY')
-        self.private_host = get_env_variable('S3_PRIVATE_HOST')
-        self.private_bucket = get_env_variable('S3_PRIVATE_BUCKET')
-        self.private_client = Minio(
-            self.private_host,
-            access_key=self.private_access_key,
-            secret_key=self.private_secret_key,
-            secure=True
-        )
+        if not disable_public:
+            self.public_host = get_env_variable('S3_HOST', strict=True)
+            self.public_bucket = get_env_variable(
+                'S3_ROOT_BUCKET', strict=True)
+            self.public_access_key = get_env_variable(
+                'S3_PUBLIC_ACCESS_KEY', warn=False)
+            self.public_secret_key = get_env_variable(
+                'S3_PUBLIC_SECRET_KEY', warn=False)
+            self.public_client = Minio(
+                self.public_host,
+                access_key=self.public_access_key,
+                secret_key=self.public_secret_key,
+                secure=True
+            )
+
+        if not disable_private:
+            self.private_access_key = get_env_variable('S3_PRIVATE_ACCESS_KEY')
+            self.private_secret_key = get_env_variable('S3_PRIVATE_SECRET_KEY')
+            self.private_host = get_env_variable('S3_PRIVATE_HOST')
+            self.private_bucket = get_env_variable('S3_PRIVATE_BUCKET')
+            self.private_client = Minio(
+                self.private_host,
+                access_key=self.private_access_key,
+                secret_key=self.private_secret_key,
+                secure=True
+            )
 
     def get_private_file(self, object_name: str):
         """ Generates a link to a private document with name "object_name" (name includes prefixes) """
@@ -130,7 +137,7 @@ class MinioClient():
             )}
 
         # authenticated requests also receive a "private" collection
-        if include_private:
+        if include_private and not self.disable_private:
             priv_objects = self.create_url_list(
                 self.private_client.list_objects(
                     self.private_bucket, prefix=prefix, recursive=True),
