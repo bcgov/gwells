@@ -29,6 +29,9 @@ export default {
         this.keycloak.login({ idpHint: 'idir' }).success((authenticated) => {
           if (authenticated) {
             ApiService.authHeader('JWT', this.keycloak.token)
+            localStorage.setItem('token', this.keycloak.token)
+            localStorage.setItem('refreshToken', this.keycloak.refreshToken)
+            localStorage.setItem('idToken', this.keycloak.idToken)
           }
         }).error((e) => {
           this.$store.commit(SET_ERROR, { error: 'Cannot contact SSO provider' })
@@ -38,7 +41,13 @@ export default {
     keyCloakLogout () {
       if (this.keycloak && this.keycloak.authenticated) {
         this.keycloak.logout()
-        this.$router.push({ name: 'SearchHome' })
+        ApiService.authHeader()
+        localStorage.removeItem('token')
+        localStorage.removeItem('refreshToken')
+        localStorage.removeItem('idToken')
+        if (this.$router) {
+          this.$router.push({ name: 'SearchHome' })
+        }
       }
     }
   }
