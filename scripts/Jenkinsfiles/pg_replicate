@@ -126,9 +126,6 @@ stage ( 'run' )
                 sh """
                     oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
                         'psql -t -d gwells -c \
-                            "VACUUM FULL;"'
-                    oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
-                        'psql -t -d gwells -c \
                             "ALTER USER \\"\${POSTGRESQL_USER}\\" SET log_statement TO \\"all\\";"'
                     oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
                         'psql -t -d gwells -c \
