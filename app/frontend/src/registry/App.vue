@@ -38,6 +38,34 @@ export default {
 @import '~bootstrap/scss/_variables';
 @import '~bootstrap/scss/mixins/_breakpoints';
 
+@media print {
+  body {
+    overflow: auto!important;
+    height: auto!important;
+  }
+  footer {
+    display: none!important;
+  }
+  .h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6 {
+  font-weight: 500!important;
+  }
+  #breadcrumbs {
+    display: none!important;
+  }
+  #keycloak-auth {
+    display: none!important;
+  }
+  .registries-edit-btn {
+    display: none!important;
+  }
+  .registries-action-button {
+    display: none!important;
+  }
+  .btn-primary {
+    background-color: #fff!important
+  }
+}
+
 html {
   font-size: 14px;
   background-color: #f1f1f1

@@ -1625,7 +1625,6 @@ img.back-to-top:hover {
     #main-content {
         /* 		margin-top:50px; */
         width: 100%;
-        overflow: hidden;
     }
     .homePageMainColumn>.blue-heading-bar {
         margin-top: 10px;
