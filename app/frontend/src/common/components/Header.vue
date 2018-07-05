@@ -15,7 +15,7 @@
               width="152" height="55"
               alt="B.C. Government Logo">
           <img
-              class="img-fluid d-sm-none"
+              class="nav-logo img-fluid d-sm-none"
               src="@/common/assets/images/01_gov3_bc_symbol.svg"
               width="61"
               height="43"
@@ -26,7 +26,7 @@
         </b-navbar-nav>
         <b-navbar-nav class="ml-auto">
           <li>
-            <keycloak-auth v-if="auth !== 'hide'"/>
+            <keycloak-auth v-if="auth !== 'hide'" id="keycloak-auth"/>
           </li>
         </b-navbar-nav>
         <b-navbar-nav class="ml-auto d-sm-none">

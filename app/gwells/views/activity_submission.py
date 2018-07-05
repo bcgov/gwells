@@ -43,6 +43,7 @@ class ActivitySubmissionListView(generic.ListView):
         return context
 
 
+
 class ActivitySubmissionWizardView(SessionWizardView):
     instance = None
 

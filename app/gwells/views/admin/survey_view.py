@@ -13,7 +13,6 @@ from django.contrib.auth.models import Permission, Group
 from gwells.models import Survey
 
 
-
 def get_handler_method(request_handler, http_method):
 
     try:
