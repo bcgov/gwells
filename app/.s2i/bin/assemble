@@ -53,6 +53,7 @@ fi
 cd frontend
 npm install
 npm run build
+rm -rf node_modules
 cd ..
 
 if should_collectstatic; then
