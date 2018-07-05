@@ -294,6 +294,7 @@ _stage('Unit Test', context) {
                         )
                         (
                             cd /opt/app-root/src/frontend
+                            npm install
                             npm test
                         )
                         mkdir -p frontend/test/
