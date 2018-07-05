@@ -86,12 +86,17 @@ stage ( 'run' )
             // If database is online, turn on maintenance mode, scale down app and run replication
             if ( STAT_DB == "online" ){
                 echo POD_DB +" is online"
+
+                echo "Scaling down and starting maintenance mode"
                 sh """
                     oc patch route "${DC_RT}" -n "${PROJECT}" -p \
                         '{ "spec": { "to": { "name": "proxy-caddy"}, "port": { "targetPort": "2015-tcp" }}}'
 
                     oc scale dc "${DC_RT}" --timeout=5s --replicas=0 -n "${PROJECT}"
+                """
 
+                echo "Disabling logging"
+                sh """
                     oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
                         'psql -t -d gwells -c \
                             "VACUUM FULL;"'
@@ -101,56 +106,62 @@ stage ( 'run' )
                     oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
                         'psql -t -d gwells -c \
                             "ALTER USER \\"\${POSTGRESQL_USER}\\" SET log_min_duration_statement TO 10000;"'
+                """
 
+                echo "Running replication step 1/2"
+                sh """
                     oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
                         'psql -t -d gwells -U "\${POSTGRESQL_USER}" -c \
                             "SELECT db_replicate_step1(_subset_ind=>false);"'
+                """
+
+                echo "Running replication step 2/2"
+                sh """
                     oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
                         'psql -t -d gwells -U "\${POSTGRESQL_USER}" -c \
                             "SELECT db_replicate_step2 ();"'
                 """
+
+                echo "Re-enabling logging"
+                sh """
+                    oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
+                        'psql -t -d gwells -c \
+                            "ALTER USER \\"\${POSTGRESQL_USER}\\" SET log_statement TO \\"all\\";"'
+                    oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
+                        'psql -t -d gwells -c \
+                            "ALTER USER \\"\${POSTGRESQL_USER}\\" SET log_min_duration_statement TO -1;"'
+                """
+
+                // If there are enough wells to assume success, scale up app and leave maintenance mode
+                int WELL_COUNT = sh(
+                    script:"""
+                        oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
+                        'psql -t -d gwells -U "\${POSTGRESQL_USER}" -c "SELECT count(*) from well;"'
+                    """,
+                    returnStdout:
+                        true
+                ).trim()
+                if ( WELL_COUNT > WELL_CHECK ){
+                    echo WELL_COUNT +" > "+ WELL_CHECK
+                    echo "Scaling down and leaving maintenance mode"
+                    sh """
+                        oc scale dc "${DC_RT}" --timeout=5s --replicas=1 -n "${PROJECT}"
+                        sleep 30
+                        oc patch route "${DC_RT}" -n "${PROJECT}" -p \
+                            '{ "spec": { "to": { "name": "${DC_RT}" }, "port": { "targetPort": "web" }}}'
+                    """
+                } else {
+                    echo WELL_COUNT +" <= 100000, well count too low"
+                }
             } else {
                 echo POD_DB +" is offline"
-                error "Database is offline"
+                error "Database is offline, no action taken"
             }
             // TODO: broadcast status/result to Slack channel
         } catch( error ){
             echo "${stackTraceAsString( error )}"
+            echo "ERROR - App may be offline"
             // TODO: broadcast status/result to Slack channel
-        } finally {
-            // Count wells after replication
-            int WELL_COUNT = sh(
-                script:"""
-                    oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
-                        'psql -t -d gwells -U "\${POSTGRESQL_USER}" -c "SELECT count(*) from well;"'
-                """,
-                returnStdout:
-                    true
-            ).trim()
-
-            sh """
-                oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
-                    'psql -t -d gwells -c \
-                        "VACUUM FULL;"'
-                oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
-                    'psql -t -d gwells -c \
-                        "ALTER USER \\"\${POSTGRESQL_USER}\\" SET log_statement TO \\"all\\";"'
-                oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
-                    'psql -t -d gwells -c \
-                        "ALTER USER \\"\${POSTGRESQL_USER}\\" SET log_min_duration_statement TO -1;"'
-            """
-
-            // If there are enough wells to assume success, scale up app and leave maintenance mode
-            if ( WELL_COUNT > WELL_CHECK ){
-                sh """
-                    oc scale dc "${DC_RT}" --timeout=5s --replicas=1 -n "${PROJECT}"
-                    sleep 30
-                    oc patch route "${DC_RT}" -n "${PROJECT}" -p \
-                        '{ "spec": { "to": { "name": "${DC_RT}" }, "port": { "targetPort": "web" }}}'
-                """
-            } else {
-                echo WELL_COUNT +" <= 100000, well count too low"
-            }
         }
     }
 }
