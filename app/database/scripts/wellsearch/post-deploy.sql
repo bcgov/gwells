@@ -13,7 +13,6 @@ COMMENT ON TABLE casing_material_code                   IS 'Placeholder table co
 COMMENT ON TABLE casing_code                       IS 'Placeholder table comment.';
 COMMENT ON TABLE decommission_method_code               IS 'Placeholder table comment.';
 COMMENT ON TABLE development_method_code                IS 'Placeholder table comment.';
-COMMENT ON TABLE driller                           IS 'Placeholder table comment.';
 COMMENT ON TABLE drilling_company                  IS 'Placeholder table comment.';
 COMMENT ON TABLE drilling_method_code                   IS 'Placeholder table comment.';
 COMMENT ON TABLE filter_pack_material_code              IS 'Placeholder table comment.';
