@@ -31,13 +31,17 @@ cd $APP_ROOT/src/database/scripts/wellsearch/
 set +x; \
 	export PGPASSWORD=$DATABASE_PASSWORD; \
 set -x
-COMMANDS=(
-	"\i post-deploy.sql;"
-	"\i wells_replication_stored_functions.sql;"
+SQL_FILES=(
+	"post-deploy.sql"
+	"wells_replication_stored_functions.sql"
 )
-for c in ${COMMANDS[@]}
+for s in ${SQL_FILES[@]}
 do
-	psql -X --set ON_ERROR_STOP=on -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER $c
+	psql -X --set ON_ERROR_STOP=on -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER -f $s || \
+		(
+			echo $? 1>&2
+			exit $?
+		)
 done
 
 
