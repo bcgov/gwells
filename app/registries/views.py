@@ -15,7 +15,7 @@
 import reversion
 from collections import OrderedDict
 from django.db.models import Q, Prefetch
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from django.utils import timezone
 from django.views.generic import TemplateView
 from django_filters import rest_framework as restfilters
@@ -291,7 +291,8 @@ class PersonListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
         activity = self.request.query_params.get('activity', None)
         status = self.request.query_params.get('status', None)
 
-        user_is_staff = self.request.user.groups.filter(name__in=GWELLS_ROLE_GROUPS).exists()
+        user_is_staff = self.request.user.groups.filter(
+            name__in=GWELLS_ROLE_GROUPS).exists()
 
         if activity:
             if (status == 'P' or not status) and user_is_staff:
@@ -303,7 +304,8 @@ class PersonListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
                     registries_activity__registries_activity_code=activity)
             else:
                 # For all other searches, we strictly filter on activity.
-                qs = qs.filter(registrations__registries_activity__registries_activity_code=activity)
+                qs = qs.filter(
+                    registrations__registries_activity__registries_activity_code=activity)
                 registrations_qs = registrations_qs.filter(
                     registries_activity__registries_activity_code=activity)
 

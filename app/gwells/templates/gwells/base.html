@@ -109,29 +109,34 @@
     <!-- /HEADER -->
 
     <!-- BODY CONTENT -->
-    <div id="topicTemplate" class="template container env-container">
-        <!-- PAGE CONTENT -->
-        <div class="row">
-            <div id="main-content" role="main" class="contentPageMainColumn col-sm-12">
-                <div id="main-content-anchor"></div>
-                <!-- TITLE -->
-                <h2>{% block bodyheading_block %}{% endblock %}</h2>
-                <!-- /TITLE -->
-                <!-- INTRODUCTION -->
-                <div id="introduction">
-                    {% for survey in surveys %} {% if survey.survey_page == page and survey.survey_enabled%}
-                    <div class="row hide-for-print show-for-screen">
-                        <div class="col-sm-12 alert alert-info">
-                            <div id="survey-msg" role="alert" aria-atomic="true">
-                                {{survey.survey_introduction_text}} <a href="{{survey.survey_link}}" id="survey:{{survey.survey_guid}}" target=_blank>survey</a>.
+    <div class="container p-0">
+        <div class="card mt-sm-4">
+            <div class="card-body px-2">
+
+            <!-- PAGE CONTENT -->
+                <div class="row">
+                    <div id="main-content" role="main" class="contentPageMainColumn col-sm-12">
+                        <div id="main-content-anchor"></div>
+                        <!-- TITLE -->
+                        <h2>{% block bodyheading_block %}{% endblock %}</h2>
+                        <!-- /TITLE -->
+                        <!-- INTRODUCTION -->
+                        <div id="introduction">
+                            {% for survey in surveys %} {% if survey.survey_page == page and survey.survey_enabled%}
+                            <div class="row hide-for-print show-for-screen">
+                                <div class="col-sm-12 alert alert-info">
+                                    <div id="survey-msg" role="alert" aria-atomic="true">
+                                        {{survey.survey_introduction_text}} <a href="{{survey.survey_link}}" id="survey:{{survey.survey_guid}}" target=_blank>survey</a>.
+                                    </div>
+                                </div>
                             </div>
+                            {% endif %} {% endfor %} {% block introduction_block %}{% endblock %}
+                        </div>
+                        <!-- /INTRODUCTION -->
+                        <div id="body">
+                            {% block body_block %} {% endblock %}
                         </div>
                     </div>
-                    {% endif %} {% endfor %} {% block introduction_block %}{% endblock %}
-                </div>
-                <!-- /INTRODUCTION -->
-                <div id="body">
-                    {% block body_block %} {% endblock %}
                 </div>
             </div>
         </div>

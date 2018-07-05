@@ -23,7 +23,7 @@ from registries.models import (
     SubactivityCode)
 from registries.views import PersonListView, PersonDetailView
 from gwells.roles import (roles_to_groups, GWELLS_ROLE_GROUPS, GWELLS_ROLES,
-                          ADJUDICATOR_ROLE, ADMIN_ROLE, AUTHORITY_ROLE, VIEWER_ROLE)
+                          REGISTRIES_ADJUDICATOR_ROLE, ADMIN_ROLE, REGISTRIES_AUTHORITY_ROLE, REGISTRIES_VIEWER_ROLE)
 
 # Note: see postman/newman for more API tests.
 # Postman API tests include making requests with incomplete data, missing required fields etc.
@@ -603,7 +603,7 @@ class APIPersonTests(AuthenticatedAPITestCase):
         if created:
             Profile.objects.get_or_create(user=user)
 
-        roles_to_groups(user, VIEWER_ROLE)
+        roles_to_groups(user, REGISTRIES_VIEWER_ROLE)
         self.client.force_authenticate(user=user)
         url = reverse('person-list')
         data = {'first_name': 'Bobby', 'surname': 'Driller'}
