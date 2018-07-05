@@ -189,6 +189,24 @@
                                     {
                                         "name": "PGHOST",
                                         "value": "gwells-pgsql${NAME_SUFFIX}"
+                                    },
+                                    {
+                                        "name": "GWELLS_API_TEST_USER",
+                                        "valueFrom": {
+                                            "secretKeyRef": {
+                                                "name": "apitest-secrets:${ENV_NAME}",
+                                                "key": "username"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "GWELLS_API_TEST_PASSWORD",
+                                        "valueFrom": {
+                                            "secretKeyRef": {
+                                                "name": "apitest-secrets:${ENV_NAME}",
+                                                "key": "password"
+                                            }
+                                        }
                                     }
                                 ]
                             }
