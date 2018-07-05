@@ -47,7 +47,11 @@ done
 
 # Python related portion of post-deploy
 #
-echo "Post-Deploy: Python tasks"
+echo "Post-Deploy: Python tasks" || \
+	(
+		echo $? 1>&2
+		exit $?
+	)
 cd $APP_ROOT/src/
 python manage.py post-deploy
 
