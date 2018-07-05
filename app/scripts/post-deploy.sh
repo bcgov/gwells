@@ -16,8 +16,13 @@
 #   Optionally, set $DB_REPLICATE (None|Subset|Full).
 #
 #   Example: ./post-deploy.sh
+
+
+# Sensitive, keep before 'set -x'
 #
-#
+export PGPASSWORD=$DATABASE_PASSWORD
+
+
 # Halt conditions, verbosity and field separator
 #
 set -xeuo pipefail
@@ -28,30 +33,15 @@ IFS=$'\n\t'
 #
 echo "Post-Deploy: SQL imports"
 cd $APP_ROOT/src/database/scripts/wellsearch/
-set +x; \
-	export PGPASSWORD=$DATABASE_PASSWORD; \
-set -x
-SQL_FILES=(
-	"post-deploy.sql"
-	"wells_replication_stored_functions.sql"
-)
-for s in ${SQL_FILES[@]}
-do
-	psql -X --set ON_ERROR_STOP=on -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER -f $s || \
-		(
-			echo $? 1>&2
-			exit $?
-		)
-done
+psql -X --set ON_ERROR_STOP=on -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER -f \
+	post-deploy.sql
+psql -X --set ON_ERROR_STOP=on -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER -f \
+	wells_replication_stored_functions.sql
 
 
 # Python related portion of post-deploy
 #
-echo "Post-Deploy: Python tasks" || \
-	(
-		echo $? 1>&2
-		exit $?
-	)
+echo "Post-Deploy: Python tasks"
 cd $APP_ROOT/src/
 python manage.py post-deploy
 
