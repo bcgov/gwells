@@ -340,29 +340,6 @@
                 </div>
               </div>
             </div>
-            <div v-if="personTel.length || personEmail.length">
-              <div class="row mb-2 mt-5">
-                <div class="col-12">
-                  <h6 class="card-title mb-3">Additional (Legacy) Contact Information</h6>
-                </div>
-                <div class="col-5 col-md-2">
-                  Email address:
-                </div>
-                <div class="col-7 col-md-4">
-                  <div v-for="(email, index) in personEmail" :key="`person email ${index}`">
-                    <a :href="`mailto:${email}`">{{ email }}</a>
-                  </div>
-                </div>
-                <div class="col-5 col-md-2">
-                  Telephone:
-                </div>
-                <div class="col-7 col-md-4">
-                  <div v-for="(tel, index) in personTel" :key="`person tel ${index}`">
-                    {{ tel }}
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
@@ -440,33 +417,6 @@ export default {
   computed: {
     showSpinner () {
       return this.currentDriller == null || this.loading || this.savingApplication
-    },
-    personEmail () {
-      // sort a person's contact info into a list of emails
-      const email = []
-
-      // support for contact_info table (legacy data)
-      if (this.currentDriller.contact_info && this.currentDriller.contact_info.length) {
-        this.currentDriller.contact_info.forEach((item) => {
-          if (item.contact_email) {
-            email.push(item.contact_email)
-          }
-        })
-      }
-
-      return email
-    },
-    personTel () {
-      const tel = []
-      if (this.currentDriller.contact_info && this.currentDriller.contact_info.length) {
-        this.currentDriller.contact_info.forEach((item) => {
-          if (item.contact_tel) {
-            tel.push(item.contact_tel)
-          }
-        })
-      }
-
-      return tel
     },
     company () {
       if (this.currentDriller && this.currentDriller.companies && this.currentDriller.companies.length) {
