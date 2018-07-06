@@ -58,6 +58,8 @@ class ListFiles(APIView):
         user_is_staff = self.request.user.groups.filter(
             name__in=WELLS_ROLES).exists()
 
+        print('user is staff: {}'.format(user_is_staff))
+
         client = MinioClient(
             request=request, disable_private=(not user_is_staff))
 

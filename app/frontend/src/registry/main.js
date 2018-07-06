@@ -13,7 +13,7 @@ import 'bootstrap-vue/dist/bootstrap-vue.css'
 import vueSmoothScroll from 'vue-smoothscroll'
 import vSelect from 'vue-select'
 import VueMoment from 'vue-moment'
-import Auth from '@/common/authenticate.js'
+import authenticate from '@/common/authenticate.js'
 
 // GWELLS js API library (helper methods for working with API)
 import ApiService from '@/common/services/ApiService.js'
@@ -24,12 +24,10 @@ Vue.use(vueSmoothScroll)
 Vue.use(VueMoment)
 Vue.component('v-select', vSelect)
 
-// start Keycloak
-Vue.prototype.$keycloak = Auth.getInstance()
-Vue.config.productionTip = false
-
 // set baseURL and default headers
 ApiService.init()
+
+Vue.config.productionTip = false
 
 /* eslint-disable no-new */
 new Vue({
@@ -39,6 +37,10 @@ new Vue({
   components: { App },
   template: '<App/>',
   created () {
-    Auth.authenticate(this.$keycloak)
+    // start Keycloak
+    authenticate.authenticate().then(() => {
+      console.log('SET_KEYCLOAK')
+      store.commit(SET_KEYCLOAK, authenticate.getInstance())
+    })
   }
 })

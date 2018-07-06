@@ -56,24 +56,45 @@ export default {
       error: null
     }
   },
+  watch: {
+    keycloak: function () {
+      ApiService.query('wells/' + this.wellTag + '/files').then((response) => {
+        this.files = response.data
+      }).catch((e) => {
+        console.error(e)
+        this.error = 'Unable to retrieve file list.'
+      }).finally(() => {
+        this.loading = false
+      })
+    }
+  },
   methods: {
   },
   computed: {
-    ...mapGetters(['userRoles']),
+    ...mapGetters(['userRoles', 'keycloak']),
     wellTag () {
       const wellMeta = document.head.querySelector('meta[name="well.tag_number"]')
       return wellMeta.content
     }
   },
   created () {
-    ApiService.query('wells/' + this.wellTag + '/files').then((response) => {
-      this.files = response.data
-    }).catch((e) => {
-      console.error(e)
-      this.error = 'Unable to retrieve file list.'
-    }).finally(() => {
-      this.loading = false
-    })
+    // const keycloak = authenticate.getInstance()
+
+    // keycloak.init({ onLoad: 'check-sso' }).success(() => {
+    //   ApiService.query('wells/' + this.wellTag + '/files').then((response) => {
+    //     this.files = response.data
+    //   }).catch((e) => {
+    //     console.error(e)
+    //     this.error = 'Unable to retrieve file list.'
+    //   }).finally(() => {
+    //     this.loading = false
+    //   })
+    // })
+    // console.log('Storage::created')
+    // Authenticate.authenticate().then(() => {
+    // console.log('Storage::authenticated')
+
+    // })
   }
 }
 </script>

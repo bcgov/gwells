@@ -12,6 +12,7 @@
     limitations under the License.
 """
 from django.conf.urls import url
+from django.views.decorators.cache import never_cache
 
 from gwells.urls import app_root_slash
 from . import views
@@ -28,6 +29,6 @@ urlpatterns = [
 
     # API endpoints
     url(r'^api/v1/wells/(?P<tag>[0-9]+)/files$',
-        views.ListFiles.as_view(), name='file-list'),
+        never_cache(views.ListFiles.as_view()), name='file-list'),
 
 ]

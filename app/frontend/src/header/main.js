@@ -17,22 +17,21 @@ import 'babel-polyfill'
 import Vue from 'vue'
 import Vuex from 'vuex'
 import { store } from '@/registry/store'
+import { SET_KEYCLOAK } from '@/registry/store/mutations.types.js'
 import BootstrapVue from 'bootstrap-vue'
 import Header from '../common/components/Header'
 import '@/common/assets/css/bootstrap-theme.min.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 import ApiService from '@/common/services/ApiService.js'
-import Auth from '@/common/authenticate.js'
+import authenticate from '@/common/authenticate.js'
 
 Vue.use(Vuex)
 Vue.use(BootstrapVue)
 Vue.config.productionTip = false
 
-// start Keycloak
-Vue.prototype.$keycloak = Auth.getInstance()
-
 // set baseURL and default headers
 ApiService.init()
+// authenticate.authenticate()
 
 /* eslint-disable no-new */
 new Vue({
@@ -43,7 +42,48 @@ new Vue({
   },
   template: '<Header/>',
   created () {
-    Auth.authenticate(this.$keycloak)
+    // start Keycloak
+    // authenticate.authenticate().then(() => {
+    //   console.log('SET_KEYCLOAK')
+    //   store.commit(SET_KEYCLOAK, authenticate.getInstance())
+    // })
+
+    const keycloak = authenticate.getInstance()
+
+    const token = localStorage.getItem('token')
+    const refreshToken = localStorage.getItem('refreshToken')
+    const idToken = localStorage.getItem('idToken')
+
+    if (token && refreshToken && idToken) {
+      keycloak.init({
+        onLoad: 'check-sso',
+        checkLoginIframe: true,
+        timeSkew: 10,
+        token,
+        refreshToken,
+        idToken }).success(() => {
+        if (keycloak.authenticated) {
+          localStorage.setItem('token', keycloak.token)
+          localStorage.setItem('refreshToken', keycloak.refreshToken)
+          localStorage.setItem('idToken', keycloak.idToken)
+          ApiService.authHeader('JWT', keycloak.token)
+        }
+        if (keycloak.authenticated) {
+          ApiService.authHeader('JWT', keycloak.token)
+        }
+        store.commit(SET_KEYCLOAK, keycloak)
+      })
+    } else {
+      keycloak.init({ onLoad: 'check-sso' }).success(() => {
+        if (keycloak.authenticated) {
+          localStorage.setItem('token', keycloak.token)
+          localStorage.setItem('refreshToken', keycloak.refreshToken)
+          localStorage.setItem('idToken', keycloak.idToken)
+          ApiService.authHeader('JWT', keycloak.token)
+        }
+        store.commit(SET_KEYCLOAK, keycloak)
+      })
+    }
   }
 })
 

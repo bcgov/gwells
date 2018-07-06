@@ -21,20 +21,27 @@ export default {
     }
   },
   computed: {
+    // keycloak () {
+    //   return authenticate.getInstance()
+    // }
     ...mapGetters(['keycloak'])
   },
   methods: {
     keyCloakLogin () {
+      // const keycloak = authenticate.getInstance()
+      console.log('Auth.vue::keyCloakLogin', this.keycloak)
       if (this.keycloak) {
-        this.keycloak.login({ idpHint: 'idir' }).success((authenticated) => {
-          if (authenticated) {
-            ApiService.authHeader('JWT', this.keycloak.token)
-            localStorage.setItem('token', this.keycloak.token)
-            localStorage.setItem('refreshToken', this.keycloak.refreshToken)
-            localStorage.setItem('idToken', this.keycloak.idToken)
-          }
-        }).error((e) => {
-          this.$store.commit(SET_ERROR, { error: 'Cannot contact SSO provider' })
+        this.keycloak.init().success(() => {
+          this.keycloak.login({ idpHint: 'idir' }).success((authenticated) => {
+            if (authenticated) {
+              ApiService.authHeader('JWT', this.keycloak.token)
+              localStorage.setItem('token', this.keycloak.token)
+              localStorage.setItem('refreshToken', this.keycloak.refreshToken)
+              localStorage.setItem('idToken', this.keycloak.idToken)
+            }
+          }).error((e) => {
+            this.$store.commit(SET_ERROR, { error: 'Cannot contact SSO provider' })
+          })
         })
       }
     },
