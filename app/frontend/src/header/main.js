@@ -41,8 +41,10 @@ new Vue({
   template: '<Header/>',
   created () {
     // start Keycloak authentication
-    authenticate.authenticate().then(() => {
+    console.log('header/main.js::created')
+    authenticate.authenticate().then((result) => {
       // Auth complete. Do somethign here if you want.
+      console.log('header/main.js::created authentication complete, result:', result)
     })
   }
 })

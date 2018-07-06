@@ -24,7 +24,14 @@ class JwtOidcAuthentication(JSONWebTokenAuthentication):
     Authenticate users who provide a JSON Web Token in the request headers (e.g. Authorization: JWT xxxxxxxxxx)
     """
 
+    def authenticate_header(self, request):
+        print('JwtOidcAuthentication')
+        header = super().authenticate_header(request)
+        print('header: {}'.format(header))
+        return header
+
     def authenticate_credentials(self, payload):
+        print('authenticate_credentials')
         User = get_user_model()
 
         # get keycloak ID from JWT token

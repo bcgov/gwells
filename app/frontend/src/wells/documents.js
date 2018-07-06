@@ -16,7 +16,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import { store } from '@/registry/store'
 import BootstrapVue from 'bootstrap-vue'
-import Storage from './components/Storage'
+import Documents from './components/Documents'
 import '@/common/assets/css/bootstrap-theme.min.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 
@@ -26,12 +26,12 @@ Vue.config.productionTip = false
 
 /* eslint-disable no-new */
 new Vue({
-  el: '#storage',
+  el: '#documents',
   store,
   components: {
-    Storage
+    Documents
   },
-  template: '<Storage/>'
+  template: '<Documents/>'
 })
 
 Vue.config.devtools = true

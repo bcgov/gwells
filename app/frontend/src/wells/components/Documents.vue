@@ -60,8 +60,9 @@ export default {
     // This is not ideal. If you are authorized, we need to show you a different set of wells, however,
     // auth is happening asynchronously somewhere else on the page.
     keycloak: function () {
-      console.log('loading wells')
+      console.log('loading wells documents (doing query)')
       ApiService.query('wells/' + this.wellTag + '/files').then((response) => {
+        console.log('got the response from wells:', response.data)
         this.files = response.data
       }).catch((e) => {
         console.error(e)

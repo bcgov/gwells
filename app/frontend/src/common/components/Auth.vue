@@ -46,15 +46,15 @@ export default {
       }
     },
     keyCloakLogout () {
+      // This should log the user out, but unfortunately does not delete the cookie storing the user
+      // token.
       if (this.keycloak && this.keycloak.authenticated) {
-        this.keycloak.logout()
+        this.keycloak.clearToken()
         ApiService.authHeader()
         localStorage.removeItem('token')
         localStorage.removeItem('refreshToken')
         localStorage.removeItem('idToken')
-        if (this.$router) {
-          this.$router.push({ name: 'SearchHome' })
-        }
+        this.keycloak.logout() // This redirects the user to a logout screen.
       }
     }
   }

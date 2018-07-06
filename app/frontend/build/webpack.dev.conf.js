@@ -93,7 +93,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
     // in a separate chunk, similar to the vendor chunk
     // see: https://webpack.js.org/plugins/commons-chunk-plugin/#extra-async-commons-chunk
     new webpack.optimize.CommonsChunkPlugin({
-      names: ['header', 'registry', 'storage', 'footer'],
+      names: ['header', 'registry', 'documents', 'footer'],
       async: true,
       children: true,
       minChunks: 3
