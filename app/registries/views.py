@@ -36,7 +36,6 @@ from registries.models import (
     AccreditedCertificateCode,
     ActivityCode,
     ApplicationStatusCode,
-    ContactInfo,
     Organization,
     OrganizationNote,
     Person,
@@ -420,7 +419,6 @@ class PersonDetailView(RevisionMixin, AuditUpdateMixin, RetrieveUpdateDestroyAPI
         .prefetch_related(
             'notes',
             'notes__author',
-            'contact_info',
             'registrations',
             'registrations__registries_activity',
             'registrations__organization',

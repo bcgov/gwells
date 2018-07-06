@@ -156,9 +156,7 @@
                 },
                 "resources": {},
                 "postCommit": {},
-                "nodeSelector": null,
-                "successfulBuildsHistoryLimit": 5,
-                "failedBuildsHistoryLimit": 5
+                "nodeSelector": null
             }
         },
         {
