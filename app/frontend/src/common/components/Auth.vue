@@ -21,15 +21,10 @@ export default {
     }
   },
   computed: {
-    // keycloak () {
-    //   return authenticate.getInstance()
-    // }
     ...mapGetters(['keycloak'])
   },
   methods: {
     keyCloakLogin () {
-      // const keycloak = authenticate.getInstance()
-      console.log('Auth.vue::keyCloakLogin', this.keycloak)
       if (this.keycloak) {
         this.keycloak.init().success(() => {
           this.keycloak.login({ idpHint: 'idir' }).success((authenticated) => {

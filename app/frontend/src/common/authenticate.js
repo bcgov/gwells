@@ -8,80 +8,55 @@ export default {
   getInstance: function () {
     if (!Vue.prototype.$keycloak) {
       // TODO: This has to read settings from environment configuration!
-      console.log('making keycloak instance')
       Vue.prototype.$keycloak = Keycloak({
         'realm': 'gwells',
         'url': 'https://dev-sso.pathfinder.gov.bc.ca/auth',
         'clientId': 'webapp-dev-local'
       })
-    } else {
-      console.log('already have keycloak instance')
-    }
-    Vue.prototype.$keycloak.onReady = (authenticated) => {
-      console.log('keycloak callback : onReady', authenticated)
-    }
-    Vue.prototype.$keycloak.onAuthSuccess = () => {
-      console.log('keycloak callback : onAuthSuccess')
-    }
-    Vue.prototype.$keycloak.onAuthError = () => {
-      console.log('keycloak callback : onAuthError')
-    }
-    Vue.prototype.$keycloak.onAuthRefreshSuccess = () => {
-      console.log('keycloak callback : onAuthRefreshSuccess')
-    }
-    Vue.prototype.$keycloak.onAuthRefreshError = () => {
-      console.log('keycloak callback : onAuthRefreshError')
-    }
-    Vue.prototype.$keycloak.onTokenExpired = () => {
-      console.log('keycloak callback : onTokenExpired')
     }
     return Vue.prototype.$keycloak
   },
 
   authenticate: function () {
     return new Promise((resolve, reject) => {
-      console.log('authenticate.js::authenticate...')
       const instance = this.getInstance()
-      if (instance.authenticated && ApiService.hasAuthHeader()) {
-        console.log('skipping auth - already good to go')
-        // Already authenticated. We can skip this.
-        resolve()
+      if (instance.authenticated && ApiService.hasAuthHeader() && !instance.isTokenExpired(0)) {
+        resolve() // We've already authenticated, have a header, and we've not expired.
       } else {
+        // Attempt to retrieve a stored token, this may avoid us having to refresh the page.
         const token = localStorage.getItem('token')
         const refreshToken = localStorage.getItem('refreshToken')
         const idToken = localStorage.getItem('idToken')
-
-        console.log('authenticate.js::authenticate : going to try to init....')
         instance.init({
           onLoad: 'check-sso',
           checkLoginIframe: true,
-          timeSkew: 10,
+          timeSkew: 10, // Allow for some deviation
           token,
           refreshToken,
           idToken }
         ).success((result) => {
-          console.log('authenticate.js::authenticate : init success, result:', result)
           store.commit(SET_KEYCLOAK, instance)
           if (instance.authenticated) {
+            // We may have been authenticated, but the token could be expired.
             if (instance.isTokenExpired(0)) {
               // The token is expired!
-              console.log('authenticate.js::authenticate : but wait - the token is expired!')
-              result = false
+              result = false // As far as we're concerned, this means authentication failed.
               localStorage.removeItem('token')
               localStorage.removeItem('refreshToken')
               localStorage.removeItem('idToken')
               ApiService.authHeader()
             } else {
+              // Store the token to avoid future round trips
               localStorage.setItem('token', instance.token)
               localStorage.setItem('refreshToken', instance.refreshToken)
               localStorage.setItem('idToken', instance.idToken)
               ApiService.authHeader('JWT', instance.token)
             }
           }
-          // We may have failed to authenticate, for many reasons, e.g. - it may be we never logged in.
+          // We may have failed to authenticate, for many reasons, e.g. - it may be we never logged in,
+          // or have an expired token.
           resolve(result)
         }).error((e) => {
-          console.error(e)
           reject(e)
         })
       }

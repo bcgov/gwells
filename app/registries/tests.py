@@ -429,7 +429,6 @@ class APIPersonTests(AuthenticatedAPITestCase):
         count_before = Person.objects.count()
 
         response = self.client.post(url, data, format='json')
-        print(response)
         created_guid = response.data['person_guid']
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
