@@ -17,7 +17,6 @@ from rest_framework.response import Response
 from drf_yasg.utils import swagger_auto_schema
 from django.http import Http404
 from django.views import generic
-from django.shortcuts import redirect
 
 from gwells.models import Survey
 from gwells.roles import WELLS_ROLES
@@ -68,7 +67,7 @@ class ListFiles(APIView):
 
 
 class RetrieveFile(APIView):
-    """ Redirects user to a protected document on an S3-compliant host (AWS or Minio) """
+    """ Returns url for a protected document on an S3-compliant host (AWS or Minio) """
 
     permission_classes = (WellsDocumentPermissions,)
 
@@ -81,4 +80,6 @@ class RetrieveFile(APIView):
         if not authorized_link:
             raise Http404
 
-        return redirect(authorized_link)
+        # Unfortunately we can't just do a redirect here, since that means the entire file is going
+        # to be returned as part of the ajax response.
+        return Response({'url': authorized_link})
