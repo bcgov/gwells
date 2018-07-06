@@ -88,19 +88,12 @@ class MinioClient():
         obj: the file object returned by Minio.list_objects()
         host: the host where the file was found
         tag: well tag number
-        private: private file permissions are handled internally. when private=True,
-            a local link will be generated.
+        private: private file permissions are handled by externally. when private=True,
+            an external link will be generated.
         """
 
         if private:
-            url = reverse('private-document',
-                          kwargs={'file': obj.object_name})
-
-            # if the request parameters are known, build a full URL including domain
-            if self.request:
-                url = self.request.build_absolute_uri(url)
-
-            return url
+            return self.get_private_file(obj.object_name)
 
         return 'https://{}/{}/{}'.format(
             host,

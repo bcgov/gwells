@@ -64,22 +64,3 @@ class ListFiles(APIView):
             int(tag), include_private=user_is_staff)
 
         return Response(documents)
-
-
-class RetrieveFile(APIView):
-    """ Returns url for a protected document on an S3-compliant host (AWS or Minio) """
-
-    permission_classes = (WellsDocumentPermissions,)
-
-    @swagger_auto_schema(auto_schema=None)
-    def get(self, request, file: str):
-        """ returns a redirect to a private document """
-        client = MinioClient(disable_public=True)
-        authorized_link = client.get_private_file(file)
-
-        if not authorized_link:
-            raise Http404
-
-        # Unfortunately we can't just do a redirect here, since that means the entire file is going
-        # to be returned as part of the ajax response.
-        return Response({'url': authorized_link})

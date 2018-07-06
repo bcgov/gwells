@@ -16,7 +16,7 @@
           </div>
           <ul v-else-if="files && files.public && files.public.length">
             <li v-for="(file, index) in files.public" :key="index">
-              <a :href="file.url" target="_blank">{{file.name}}</a>
+              <a :href="file.url" :download="file.name" target="_blank">{{file.name}}</a>
             </li>
           </ul>
           <div v-else>
@@ -32,7 +32,7 @@
             </div>
             <ul v-else-if="files && files.private && files.private.length">
               <li v-for="(file, index) in files.private" :key="index">
-                <a :href="file.url" v-on:click="download($event, file)" target="_blank">{{file.name}}</a>
+                <a :href="file.url" :download="file.name" target="_blank">{{file.name}}</a>
               </li>
             </ul>
               <div v-else>

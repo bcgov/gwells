@@ -23,10 +23,6 @@ urlpatterns = [
     url(r'^' + app_root_slash + \
         'well/(?P<pk>[0-9]+)$', views.WellDetailView.as_view(), name='well_detail'),
 
-    # Private documents
-    url(r'^wells/files/(?P<file>[\w\ \./]+)$',
-        views.RetrieveFile.as_view(), name='private-document'),
-
     # API endpoints
     url(r'^api/v1/wells/(?P<tag>[0-9]+)/files$',
         never_cache(views.ListFiles.as_view()), name='file-list'),
