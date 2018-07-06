@@ -38,7 +38,7 @@
                 },
                 "tags":[
                     {
-                        "name": "3.5",
+                        "name": "3.6",
                         "annotations": null,
                         "from": {
                             "kind": "DockerImage",
