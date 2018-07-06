@@ -23,6 +23,7 @@ from crispy_forms.layout import Layout, Fieldset, Div, Submit, Hidden, HTML, Fie
 from crispy_forms.bootstrap import FormActions, AppendedText, InlineRadios
 
 from gwells.models import ActivitySubmission
+from wells.models import DrillingMethodCode
 
 
 logger = logging.getLogger(__name__)
