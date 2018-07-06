@@ -43,7 +43,7 @@ export default {
           idToken }
         ).success(() => {
           console.log('success')
-          // store.commit(SET_KEYCLOAK, instance)
+          store.commit(SET_KEYCLOAK, instance)
           if (instance.authenticated) {
             localStorage.setItem('token', instance.token)
             localStorage.setItem('refreshToken', instance.refreshToken)

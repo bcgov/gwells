@@ -7,7 +7,6 @@ import BootstrapVue from 'bootstrap-vue'
 import App from './App'
 import router from './router'
 import { store } from './store'
-import { SET_KEYCLOAK } from '@/registry/store/mutations.types.js'
 import '@/common/assets/css/bootstrap-theme.min.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 import vueSmoothScroll from 'vue-smoothscroll'
@@ -37,10 +36,9 @@ new Vue({
   components: { App },
   template: '<App/>',
   created () {
-    // start Keycloak
+    // start Keycloak authentication
     authenticate.authenticate().then(() => {
-      console.log('SET_KEYCLOAK')
-      store.commit(SET_KEYCLOAK, authenticate.getInstance())
+      // Auth complete. Do somethign here if you want.
     })
   }
 })

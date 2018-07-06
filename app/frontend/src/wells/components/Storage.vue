@@ -57,7 +57,10 @@ export default {
     }
   },
   watch: {
+    // This is not ideal. If you are authorized, we need to show you a different set of wells, however,
+    // auth is happening asynchronously somewhere else on the page.
     keycloak: function () {
+      console.log('loading wells')
       ApiService.query('wells/' + this.wellTag + '/files').then((response) => {
         this.files = response.data
       }).catch((e) => {
@@ -68,33 +71,12 @@ export default {
       })
     }
   },
-  methods: {
-  },
   computed: {
     ...mapGetters(['userRoles', 'keycloak']),
     wellTag () {
       const wellMeta = document.head.querySelector('meta[name="well.tag_number"]')
       return wellMeta.content
     }
-  },
-  created () {
-    // const keycloak = authenticate.getInstance()
-
-    // keycloak.init({ onLoad: 'check-sso' }).success(() => {
-    //   ApiService.query('wells/' + this.wellTag + '/files').then((response) => {
-    //     this.files = response.data
-    //   }).catch((e) => {
-    //     console.error(e)
-    //     this.error = 'Unable to retrieve file list.'
-    //   }).finally(() => {
-    //     this.loading = false
-    //   })
-    // })
-    // console.log('Storage::created')
-    // Authenticate.authenticate().then(() => {
-    // console.log('Storage::authenticated')
-
-    // })
   }
 }
 </script>
