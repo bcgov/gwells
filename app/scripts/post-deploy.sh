@@ -16,21 +16,36 @@
 #   Optionally, set $DB_REPLICATE (None|Subset|Full).
 #
 #   Example: ./post-deploy.sh
+
+
+# Sensitive, keep before 'set -x'
 #
-set -e
-echo "Running Post-Deploy tasks..."
 export PGPASSWORD=$DATABASE_PASSWORD
+
+
+# Halt conditions, verbosity and field separator
+#
+set -xeuo pipefail
+IFS=$'\n\t'
+
+
+# Create additional DB objects (e.g. spatial indices, stored procedures)
+#
+echo "Post-Deploy: SQL imports"
 cd $APP_ROOT/src/database/scripts/wellsearch/
-echo ". Creating additional DB objects (e.g. spatial indices, stored procedures)"
-psql -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER << EOF
-	\i post-deploy.sql
-	\i wells_replication_stored_functions.sql
-EOF
+psql -X --set ON_ERROR_STOP=on -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER -f \
+	post-deploy.sql
+psql -X --set ON_ERROR_STOP=on -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER -f \
+	wells_replication_stored_functions.sql
 
-echo ". Running python-related post-deploy tasks."
+
+# Python related portion of post-deploy
+#
+echo "Post-Deploy: Python tasks"
 cd $APP_ROOT/src/
-set +e
 python manage.py post-deploy
-set -e
 
-echo "Completed Post-Deploy tasks."
+
+# Success!
+#
+echo "Post-Deploy: completed successfully"
