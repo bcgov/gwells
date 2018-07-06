@@ -15,6 +15,7 @@ from django.views import generic
 from formtools.wizard.views import SessionWizardView
 
 from gwells.models import ActivitySubmission
+from gwells import views
 
 
 class ActivitySubmissionDetailView(generic.DetailView):
@@ -43,7 +44,6 @@ class ActivitySubmissionListView(generic.ListView):
         return context
 
 
-
 class ActivitySubmissionWizardView(SessionWizardView):
     instance = None
 
@@ -55,7 +55,7 @@ class ActivitySubmissionWizardView(SessionWizardView):
         return context
 
     def get_template_names(self):
-        return [TEMPLATES[self.steps.current]]
+        return [views.TEMPLATES[self.steps.current]]
 
     def get_context_data(self, form, **kwargs):
         context = super(ActivitySubmissionWizardView, self).get_context_data(form=form, **kwargs)
