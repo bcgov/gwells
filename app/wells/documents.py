@@ -11,6 +11,7 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
+import sys
 import os
 import logging
 from datetime import timedelta
@@ -148,7 +149,7 @@ class MinioClient():
                     self.private_host, private=True)
             except:
                 logger.error(
-                    "Could not retrieve files from private file server")
+                    "Could not retrieve files from private file server", exc_info=sys.exc_info())
 
             objects['private'] = priv_objects
 
