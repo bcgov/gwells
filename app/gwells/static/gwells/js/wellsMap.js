@@ -621,7 +621,7 @@ function WellsMap(options) {
         if (_exists(_errorsNodeId)) {
             // 2018/03/27 Changed to lower case in order to conform to rest of site.
             var msg = 'Geolocation error (' + error.code + '): ' + error.message;
-            $('#' + _errorsNodeId + ' .message').html(msg);
+            $('#' + _errorsNodeId + ' .message').text(msg);
             $('#' + _errorsNodeId).show();
         }
     };
@@ -629,7 +629,7 @@ function WellsMap(options) {
     // Clear and hide the error message.
     var _clearErrorNode = function() {
         if (_exists(_errorsNodeId)) {
-            $('#' + _errorsNodeId + ' .message').html('');
+            $('#' + _errorsNodeId + ' .message').text('');
             $('#' + _errorsNodeId).hide();
         }
     }
@@ -638,7 +638,7 @@ function WellsMap(options) {
     var _handleTileError = function(error) {
         if (_exists(_errorsNodeId)) {
             var msg = 'Map tile currently not available.';
-            $('#' + _errorsNodeId + ' .message').html(msg);
+            $('#' + _errorsNodeId + ' .message').text(msg);
             $('#' + _errorsNodeId).show();
         }
     }
