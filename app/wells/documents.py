@@ -62,19 +62,20 @@ class MinioClient():
                 secret_key=self.public_secret_key,
                 secure=True
             )
+        self.disable_private = disable_private
 
-        if not disable_private:
-            self.private_access_key = get_env_variable('MINIO_ACCESS_KEY')
-            self.private_secret_key = get_env_variable('MINIO_SECRET_KEY')
-            self.private_host = get_env_variable('S3_PRIVATE_HOST')
-            self.private_bucket = get_env_variable('S3_PRIVATE_BUCKET')
+    def create_private_client(self):
+        self.private_access_key = get_env_variable('MINIO_ACCESS_KEY')
+        self.private_secret_key = get_env_variable('MINIO_SECRET_KEY')
+        self.private_host = get_env_variable('S3_PRIVATE_HOST')
+        self.private_bucket = get_env_variable('S3_PRIVATE_BUCKET')
 
-            self.private_client = Minio(
-                self.private_host,
-                access_key=self.private_access_key,
-                secret_key=self.private_secret_key,
-                secure=True
-            )
+        return Minio(
+            self.private_host,
+            access_key=self.private_access_key,
+            secret_key=self.private_secret_key,
+            secure=True
+        )
 
     def get_private_file(self, object_name: str):
         """ Generates a link to a private document with name "object_name" (name includes prefixes) """
@@ -140,6 +141,7 @@ class MinioClient():
             objects['public'] = pub_objects
 
         # authenticated requests also receive a "private" collection
+        self.private_client = self.create_private_client()
         if include_private and self.private_client:
             priv_objects = []
             try:
