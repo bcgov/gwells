@@ -15,15 +15,22 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from drf_yasg.utils import swagger_auto_schema
+from django.db.models import Prefetch
 from django.http import Http404
 from django.views import generic
 from django.shortcuts import redirect
+from rest_framework.generics import ListCreateAPIView
 
 from gwells.models import Survey
 from gwells.roles import WELLS_ROLES
 from wells.models import Well
 from wells.documents import MinioClient
-from wells.permissions import WellsDocumentPermissions
+from wells.permissions import WellsDocumentPermissions, WellsPermissions
+from wells.serializers import (
+    WellListSerializer,
+)
+
+from registries.views import APILimitOffsetPagination
 
 from gwells import settings
 
@@ -82,3 +89,40 @@ class RetrieveFile(APIView):
             raise Http404
 
         return redirect(authorized_link)
+
+
+class WellListAPIView(ListCreateAPIView):
+    """List and create wells
+
+    get: returns a list of wells
+    post: adds a new well
+    """
+
+    permission_classes = (WellsPermissions,)
+    model = Well
+    queryset = Well.objects.all()
+    pagination_class = APILimitOffsetPagination
+    serializer_class = WellListSerializer
+
+    def get_queryset(self):
+        qs = self.queryset
+        qs = qs \
+            .select_related(
+                "bcgs_id",
+            ).prefetch_related(
+                Prefetch("water_quality_characteristics")
+            )
+        return qs
+
+    def list(self, request):
+        """ List wells with pagination """
+        queryset = self.get_queryset()
+        filtered_queryset = self.filter_queryset(queryset)
+
+        page = self.paginate_queryset(filtered_queryset)
+        if page is not None:
+            serializer = WellListSerializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = WellListSerializer(filtered_queryset, many=True)
+        return Response(serializer.data)

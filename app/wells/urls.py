@@ -29,5 +29,7 @@ urlpatterns = [
     # API endpoints
     url(r'^api/v1/wells/(?P<tag>[0-9]+)/files$',
         views.ListFiles.as_view(), name='file-list'),
+    url(r'^api/v1/wells/$',
+        views.WellListAPIView.as_view(), name='well-list'),
 
 ]
