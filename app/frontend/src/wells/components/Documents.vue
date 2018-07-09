@@ -76,6 +76,22 @@ export default {
       const wellMeta = document.head.querySelector('meta[name="well.tag_number"]')
       return wellMeta.content
     }
+  },
+  methods: {
+    download (event, file) {
+      event.preventDefault() // Stop the browser from following the link
+      // Ask the API what the public URL (with expiring token) for this file is
+      ApiService.query(file.url).then((response) => {
+        // We now have the url of the file,
+        // The major downside of this is that there's going to be a "popup-blocked" message somewhere.
+        const a = document.createElement('a')
+        a.target = '_blank'
+        a.download = file.name
+        a.href = response.data.url
+        document.body.appendChild(a)
+        a.click()
+      })
+    }
   }
 }
 </script>
