@@ -428,6 +428,24 @@ for(String envKeyName: context.env.keySet() as String[]){
     }
 
     if ("DEV".equalsIgnoreCase(stageDeployName)){
+        _stage("Deploy - ${stageDeployName}", context) {
+            node('master') {
+                String podName=null
+                String projectName=context.deployments[envKeyName].projectName
+                String deploymentConfigName="gwells${context.deployments[envKeyName].dcSuffix}"
+                echo "POST-DEPLOY: env:${context.env[envKeyName]}"
+                echo "POST-DEPLOY: deployment:${context.deployments[envKeyName]}"
+                echo "POST-DEPLOY: projectName:${projectName}"
+                echo "POST-DEPLOY: deploymentConfigName:${deploymentConfigName}"
+                openshift.withProject(projectName){
+                    podName=openshift.selector('pod', ['deploymentconfig':deploymentConfigName]).objects()[0].metadata.name
+                }
+                sh "oc exec '${podName}' -n moe-gwells-dev -- bash -c 'cd /opt/app-root/src/scripts/ && pwd && ./gwells-deploy.sh'"
+            }
+        }
+    }
+
+    if ("DEV".equalsIgnoreCase(stageDeployName)){
         _stage("Load Fixtures - ${stageDeployName}", context) {
             node('master'){
                 String podName=null
