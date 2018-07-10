@@ -121,6 +121,7 @@ ALTER TABLE bedrock_material_descriptor_code  SET UNLOGGED;
 ALTER TABLE casing_code                       SET UNLOGGED;
 ALTER TABLE casing_material_code              SET UNLOGGED;
 ALTER TABLE decommission_method_code          SET UNLOGGED;
+ALTER TABLE driller                           SET UNLOGGED;
 ALTER TABLE development_method_code           SET UNLOGGED;
 ALTER TABLE drilling_company                  SET UNLOGGED;
 ALTER TABLE drilling_method_code              SET UNLOGGED;
