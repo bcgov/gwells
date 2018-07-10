@@ -28,23 +28,26 @@ if not REQUIRE_ENV_VARIABLES:
     logger.warn('REQUIRE_ENV_VARIABLES is set to False')
 
 
-def get_env_variable(var_name, default_value=None, strict=False):
+def get_env_variable(var_name, default_value=None, strict=False, warn=True):
     """ Returns the environment variable specified in :var_name:, or uses the :default_value: specified
 
     :param var_name: The name of the environment variable.
     :param default_value: The desired default value to use if the environment variable is not set.
     :param strict: When set to True, and REQUIRE_ENV_VARIABLES is set to True, throw an exception.
+    :param warn: If false, suppress warnings when environment variable is not set.
     """
     result = getenv(var_name)
     if not result:
+
         # If there's no environment variable, we fail over to using the default value, if specified,
         # unless we're in "REQUIRE_ENV_VARIABLES"
+        result = default_value
         msg = 'Environment variable "{}" not set'.format(var_name)
+
         if strict and REQUIRE_ENV_VARIABLES:
             # Default values are NOT acceptable, we raise an exception.
             raise ImproperlyConfigured(msg)
-        else:
+        elif warn:
             # Default values may be used, but will result in a warning message.
-            result = default_value
             logger.warn(msg)
     return result

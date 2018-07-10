@@ -23,6 +23,9 @@ const ApiService = {
       })
     }
   },
+  hasAuthHeader () {
+    return !!axios.defaults.headers.common['Authorization']
+  },
   authHeader (prefix, token) {
     // set auth header. Expects prefix to be "Bearer", "JWT" etc.
     // deletes auth header if called without a token (useful for logging out)

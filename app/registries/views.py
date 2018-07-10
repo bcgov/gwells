@@ -15,7 +15,7 @@
 import reversion
 from collections import OrderedDict
 from django.db.models import Q, Prefetch
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from django.utils import timezone
 from django.views.generic import TemplateView
 from django_filters import rest_framework as restfilters

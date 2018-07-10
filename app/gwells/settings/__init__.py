@@ -97,6 +97,7 @@ INSTALLED_APPS = (
     'crispy_forms',
     'formtools',
     'registries',
+    'wells',
     'django_nose',
     'webpack_loader',
     'django_filters',
