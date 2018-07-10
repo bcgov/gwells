@@ -13,13 +13,12 @@
 """
 
 from ..forms import *
-from .ActivitySubmissionDetailView import ActivitySubmissionDetailView
-from .ActivitySubmissionListView import ActivitySubmissionListView
-from .HealthView import HealthView
-from .RegistryView import RegistryView
-from .SearchView import SearchView
-from .WellDetailView import WellDetailView
-
+from gwells.views.activity_submission import ActivitySubmissionDetailView, ActivitySubmissionListView,\
+    ActivitySubmissionWizardView
+from gwells.views.health_view import HealthView
+from gwells.views.registry_view import RegistryView
+from gwells.views.search_view import SearchView
+from gwells.views.survey_list_view import SurveyListView
 
 FORMS = [('type_and_class', ActivitySubmissionTypeAndClassForm),
          ('owner', WellOwnerForm),
@@ -36,7 +35,8 @@ FORMS = [('type_and_class', ActivitySubmissionTypeAndClassForm),
          ('production_data', ProductionDataFormSet),
          ('water_quality', ActivitySubmissionWaterQualityForm),
          ('well_completion', WellCompletionForm),
-         ('comments', ActivitySubmissionCommentForm), ]
+         ('comments', ActivitySubmissionCommentForm),
+         ]
 
 TEMPLATES = {'type_and_class': 'gwells/activity_submission_form.html',
              'owner': 'gwells/activity_submission_form.html',
@@ -53,11 +53,8 @@ TEMPLATES = {'type_and_class': 'gwells/activity_submission_form.html',
              'production_data': 'gwells/activity_submission_form.html',
              'water_quality': 'gwells/activity_submission_form.html',
              'well_completion': 'gwells/activity_submission_form.html',
-             'comments': 'gwells/activity_submission_form.html', }
-
-
-# TODO: This import is in the wrong place - circular reference issues - need to move it out
-from .ActivitySubmissionWizardView import ActivitySubmissionWizardView
+             'comments': 'gwells/activity_submission_form.html',
+             }
 
 __all__ = ['ActivitySubmissionDetailView', 'ActivitySubmissionListView', 'ActivitySubmissionWizardView',
-           'FORMS', 'HealthView', 'RegistryView', 'SearchView', 'TEMPLATES', 'WellDetailView']
+           'FORMS', 'HealthView', 'RegistryView', 'SearchView', 'TEMPLATES']
