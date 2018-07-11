@@ -2,6 +2,9 @@
 DROP INDEX IF EXISTS well_latlong CASCADE;
 CREATE INDEX well_latlong ON well (latitude, longitude);
 
+DROP INDEX IF EXISTS bcgs_number_idx CASCADE;
+CREATE INDEX bcgs_number_idx ON bcgs_number (bcgs_number);
+
 COMMENT ON TABLE activity_submission               IS 'Placeholder table comment.';
 COMMENT ON TABLE activity_submission_water_quality IS 'Placeholder table comment.';
 COMMENT ON TABLE aquifer_well                      IS 'Placeholder table comment.';
