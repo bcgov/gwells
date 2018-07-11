@@ -31,7 +31,7 @@ IFS=$'\n\t'
 
 # Python migrate table changes
 #
-echo "Post-Deploy: Python tasks"
+echo "Post-Deploy: Python migration"
 cd $APP_ROOT/src/
 python manage.py migrate
 

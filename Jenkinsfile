@@ -433,10 +433,10 @@ for(String envKeyName: context.env.keySet() as String[]){
                 String podName=null
                 String projectName=context.deployments[envKeyName].projectName
                 String deploymentConfigName="gwells${context.deployments[envKeyName].dcSuffix}"
-                echo "POST-DEPLOY: env:${context.env[envKeyName]}"
-                echo "POST-DEPLOY: deployment:${context.deployments[envKeyName]}"
-                echo "POST-DEPLOY: projectName:${projectName}"
-                echo "POST-DEPLOY: deploymentConfigName:${deploymentConfigName}"
+                echo "Post-Deploy:"+"env:${context.env[envKeyName]}"
+                echo "Post-Deploy:"+"deployment:${context.deployments[envKeyName]}"
+                echo "Post-Deploy:"+"projectName:${projectName}"
+                echo "Post-Deploy:"+"deploymentConfigName:${deploymentConfigName}"
                 openshift.withProject(projectName){
                     podName=openshift.selector('pod', ['deploymentconfig':deploymentConfigName]).objects()[0].metadata.name
                 }
