@@ -313,7 +313,7 @@ grep --quiet "source /usr/local/opt/nvm/nvm.sh" ~/.bash_profile || \
 
 # Install requirements with PIP3 and NPM
 #
-cd "${START_DIR}"/../app
+cd "${START_DIR}"/../app/backend
 pip3 install -U -r requirements.txt
 cd "${START_DIR}"/../app/frontend
 export NVM_DIR="$HOME/.nvm"
@@ -326,7 +326,7 @@ npm run build
 
 # Migrate data from Wells (legacy) to GWells schema
 #
-cd "${START_DIR}"/../app
+cd "${START_DIR}"/../app/backend
 python3 manage.py migrate
 
 
@@ -384,7 +384,7 @@ fi
 # Run server
 #
 cd "${START_DIR}"
-python3 ../app/manage.py runserver || true
+python3 ../app/backend/manage.py runserver || true
 
 
 # Recommend sourcing ~/.bash_profile if the file has changed
