@@ -198,7 +198,7 @@
                             "execNewPod": {
                                 "command": [
                                     "/usr/bin/container-entrypoint",
-                                    "/opt/app-root/src/scripts/post-deploy.sh"
+                                    "/opt/app-root/src/scripts/gwells-deploy.sh"
                                 ],
                                 "containerName": "gwells-app${NAME_SUFFIX}"
                             }
