@@ -29,6 +29,13 @@ set -xeuo pipefail
 IFS=$'\n\t'
 
 
+# Python migrate table changes
+#
+echo "Post-Deploy: Python tasks"
+cd $APP_ROOT/src/
+python manage.py migrate
+
+
 # Create additional DB objects (e.g. spatial indices, stored procedures)
 #
 echo "Post-Deploy: SQL imports"
