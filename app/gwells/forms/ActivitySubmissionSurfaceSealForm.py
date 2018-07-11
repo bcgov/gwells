@@ -11,14 +11,18 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
+from datetime import date
+
 from django import forms
 from django.utils.safestring import mark_safe
+from django.forms.models import inlineformset_factory
+
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Div, Submit, Hidden, HTML, Field
 from crispy_forms.bootstrap import FormActions, AppendedText, InlineRadios
-from django.forms.models import inlineformset_factory
-from ..models import *
-from datetime import date
+
+from gwells.models import ActivitySubmission
+
 
 class ActivitySubmissionSurfaceSealForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
@@ -73,25 +77,25 @@ class ActivitySubmissionSurfaceSealForm(forms.ModelForm):
         surface_seal_material = self.cleaned_data.get('surface_seal_material')
 
         if self.initial['casing_exists'] and not surface_seal_material:
-            raise forms.ValidationError('This field is required.');
+            raise forms.ValidationError('This field is required.')
 
     def clean_surface_seal_depth(self):
         surface_seal_depth = self.cleaned_data.get('surface_seal_depth')
 
         if self.initial['casing_exists'] and not surface_seal_depth:
-            raise forms.ValidationError('This field is required.');
+            raise forms.ValidationError('This field is required.')
 
     def clean_surface_seal_thickness(self):
         surface_seal_thickness = self.cleaned_data.get('surface_seal_thickness')
 
         if self.initial['casing_exists'] and not surface_seal_thickness:
-            raise forms.ValidationError('This field is required.');
+            raise forms.ValidationError('This field is required.')
 
     def clean_surface_seal_method(self):
         surface_seal_method = self.cleaned_data.get('surface_seal_method')
 
         if self.initial['casing_exists'] and not surface_seal_method:
-            raise forms.ValidationError('This field is required.');
+            raise forms.ValidationError('This field is required.')
 
     def clean(self):
         cleaned_data = super(ActivitySubmissionSurfaceSealForm, self).clean()
@@ -110,4 +114,6 @@ class ActivitySubmissionSurfaceSealForm(forms.ModelForm):
 
     class Meta:
         model = ActivitySubmission
-        fields = ['surface_seal_material', 'surface_seal_depth', 'surface_seal_thickness', 'surface_seal_method', 'backfill_above_surface_seal', 'backfill_above_surface_seal_depth', 'liner_material', 'liner_diameter', 'liner_thickness', 'liner_from', 'liner_to']
+        fields = ['surface_seal_material', 'surface_seal_depth', 'surface_seal_thickness',
+                  'surface_seal_method', 'backfill_above_surface_seal', 'backfill_above_surface_seal_depth',
+                  'liner_material', 'liner_diameter', 'liner_thickness', 'liner_from', 'liner_to']

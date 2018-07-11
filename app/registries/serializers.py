@@ -16,11 +16,10 @@ from django.utils import timezone
 from django.db import transaction
 import logging
 from rest_framework import serializers
-from gwells.models.ProvinceStateCode import ProvinceStateCode
+from gwells.models import ProvinceStateCode
 from registries.models import (
     ProofOfAgeCode,
     Organization,
-    ContactInfo,
     Person,
     Register,
     RegistriesApplication,
@@ -117,19 +116,6 @@ class QualificationSerializer(serializers.ModelSerializer):
         fields = (
             'well_class',
             'description',
-        )
-
-
-class ContactInfoSerializer(AuditModelSerializer):
-    """
-    Serializes ContactInfo model fields.
-    """
-
-    class Meta:
-        model = ContactInfo
-        fields = (
-            'contact_tel',
-            'contact_email'
         )
 
 
@@ -555,7 +541,7 @@ class PersonListSerializer(AuditModelSerializer):
     """
     Serializes the Person model for a list view (fewer fields than detail view)
     """
-    contact_info = ContactInfoSerializer(many=True, read_only=True)
+
     registrations = RegistrationsListSerializer(many=True, read_only=True)
 
     class Meta:
@@ -565,7 +551,6 @@ class PersonListSerializer(AuditModelSerializer):
             'first_name',
             'surname',
             'registrations',
-            'contact_info',
             'contact_tel',
             'contact_cell',
             'contact_email'
@@ -655,7 +640,6 @@ class PersonAdminSerializer(AuditModelSerializer):
 
     # registrations = RegistrationAdminSerializer(many=True)
     registrations = serializers.SerializerMethodField()
-    contact_info = ContactInfoSerializer(many=True, required=False)
     notes = serializers.SerializerMethodField()
 
     def get_notes(self, obj):
@@ -683,10 +667,9 @@ class PersonAdminSerializer(AuditModelSerializer):
 
     def create(self, validated_data):
         """
-        Create Register and ContactInfo records to go along with a new person record
+        Create Register records to go along with a new person record
         """
         registrations = validated_data.pop('registrations', list())
-        contacts = validated_data.pop('contact_info', list())
         # The audit information has to be applied to all child records.
         audit_info = {'create_user': validated_data.get('create_user')}
 
@@ -700,9 +683,6 @@ class PersonAdminSerializer(AuditModelSerializer):
                 app_data = {**app_data, **audit_info}
                 app = RegistriesApplication.objects.create(
                     registration=register, **app_data)
-        for contact_data in contacts:
-            contact_data = {**contact_data, **audit_info}
-            contact = ContactInfo.objects.create(person=person, **contact_data)
 
         return Person.objects.get(person_guid=person.person_guid)
 
@@ -712,8 +692,6 @@ class PersonAdminSerializer(AuditModelSerializer):
         """
         if 'registrations' in validated_data:
             validated_data.pop('registrations')
-        if 'contact_info' in validated_data:
-            validated_data.pop('contact_info')
         return super(PersonAdminSerializer, self).update(instance, validated_data)
 
     def get_registrations(self, person):
@@ -746,7 +724,6 @@ class PersonAdminSerializer(AuditModelSerializer):
             'contact_tel',
             'contact_cell',
             'contact_email',
-            'contact_info',
             'well_driller_orcs_no',
             'pump_installer_orcs_no',
             'registrations',

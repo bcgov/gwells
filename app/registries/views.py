@@ -15,7 +15,7 @@
 import reversion
 from collections import OrderedDict
 from django.db.models import Q, Prefetch
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from django.utils import timezone
 from django.views.generic import TemplateView
 from django_filters import rest_framework as restfilters
@@ -30,13 +30,12 @@ from rest_framework.mixins import CreateModelMixin, UpdateModelMixin
 from rest_framework.views import APIView
 from drf_multiple_model.views import ObjectMultipleModelAPIView
 from gwells.roles import GWELLS_ROLE_GROUPS
-from gwells.models.ProvinceStateCode import ProvinceStateCode
+from gwells.models import ProvinceStateCode
 from reversion.models import Version
 from registries.models import (
     AccreditedCertificateCode,
     ActivityCode,
     ApplicationStatusCode,
-    ContactInfo,
     Organization,
     OrganizationNote,
     Person,
@@ -291,7 +290,8 @@ class PersonListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
         activity = self.request.query_params.get('activity', None)
         status = self.request.query_params.get('status', None)
 
-        user_is_staff = self.request.user.groups.filter(name__in=GWELLS_ROLE_GROUPS).exists()
+        user_is_staff = self.request.user.groups.filter(
+            name__in=GWELLS_ROLE_GROUPS).exists()
 
         if activity:
             if (status == 'P' or not status) and user_is_staff:
@@ -303,7 +303,8 @@ class PersonListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
                     registries_activity__registries_activity_code=activity)
             else:
                 # For all other searches, we strictly filter on activity.
-                qs = qs.filter(registrations__registries_activity__registries_activity_code=activity)
+                qs = qs.filter(
+                    registrations__registries_activity__registries_activity_code=activity)
                 registrations_qs = registrations_qs.filter(
                     registries_activity__registries_activity_code=activity)
 
@@ -418,7 +419,6 @@ class PersonDetailView(RevisionMixin, AuditUpdateMixin, RetrieveUpdateDestroyAPI
         .prefetch_related(
             'notes',
             'notes__author',
-            'contact_info',
             'registrations',
             'registrations__registries_activity',
             'registrations__organization',

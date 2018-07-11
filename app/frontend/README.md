@@ -81,7 +81,7 @@ The app can be served with hot reload as follows:
 
 ``` bash
 # serve with hot reload at localhost:8080
-APPLICATION_ROOT="/" AXIOS_BASE_URL="http://localhost:8000/gwells/api/v1/" npm run dev
+APPLICATION_ROOT="/gwells" AXIOS_BASE_URL="http://localhost:8000/gwells/api/v1/" npm run dev
 ```
 
 You may need to edit ```index.html``` and/or ```build/webpack.base.conf.js``` and ```build/webpack.dev.conf.js``` to load your app if you are creating a new one (currently the registries app is loaded).

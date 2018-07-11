@@ -1,7 +1,7 @@
 <template>
   <div>
     <gwells-header/>
-    <main role="main">
+    <main role="main" class="p-0 mt-0 mt-sm-4">
       <b-container v-if="error">
         <api-error :error="error" resetter="SET_ERROR"/>
       </b-container>
@@ -37,6 +37,34 @@ export default {
 @import '~bootstrap/scss/_functions';
 @import '~bootstrap/scss/_variables';
 @import '~bootstrap/scss/mixins/_breakpoints';
+
+@media print {
+  body {
+    overflow: auto!important;
+    height: auto!important;
+  }
+  footer {
+    display: none!important;
+  }
+  .h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6 {
+  font-weight: 500!important;
+  }
+  #breadcrumbs {
+    display: none!important;
+  }
+  #keycloak-auth {
+    display: none!important;
+  }
+  .registries-edit-btn {
+    display: none!important;
+  }
+  .registries-action-button {
+    display: none!important;
+  }
+  .btn-primary {
+    background-color: #fff!important
+  }
+}
 
 html {
   font-size: 14px;

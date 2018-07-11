@@ -119,4 +119,4 @@ The administrator account details are recorded as an OpenShift Secret (i.e. PROD
 Currently, these values are used as part of the automatic step to create the admin account:
 `python manage.py post-deploy`
 
-This is currently in the ./scripts/post-deploy.sh script and called in the mid-lifecycle hook; this will be moved into the Pipeline, at the approate Stage.
+This is currently in the ./scripts/gwells-deploy.sh script and called in the mid-lifecycle hook; this will be moved into the Pipeline, at the approate Stage.

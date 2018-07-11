@@ -21,7 +21,7 @@ NOTE: Related files are under the gwells project folder, with the other files bu
 - [app/database/codetables/registries/](../app/database/codetables/registries/)
 - [app.database/scripts/registries/](../app/database/scripts/registries/)
 
-The [post-deploy.sh](../openshift/scripts/post-deploy.sh) step now automatically includes the setup of the registries app code tables and data tables.
+The [gwells-deploy.sh](../openshift/scripts/gwells-deploy.sh) step now automatically includes the setup of the registries app code tables and data tables.
 ```
 cd registries/
 

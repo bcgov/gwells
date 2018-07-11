@@ -8,79 +8,160 @@
 //      Branches to build: */master
 //      Script path: scripts/Jenkinsfiles/pg_replicate
 
+
+// Project name (moe-gwells-test|moe-gwells-prod)
+String PROJECT = 'moe-gwells-prod'
+
+// Minimum well count for success
+int WELL_CHECK = 100000
+
+
+// Print stack trace of error
+@NonCPS
+private static String stackTraceAsString( Throwable t ){
+    StringWriter sw = new StringWriter();
+    t.printStackTrace(new PrintWriter(sw));
+    return sw.toString()
+}
+
+
+// Cronjob time (in UTC)
 properties(
     [
         pipelineTriggers(
             [
-                cron( 'H 6 * * 1-6' )
+                cron( 'H 11 * * 1-6' )
             ]
         )
     ]
 )
-def PROJECT = 'moe-gwells-test'
+
+
+// Cronjob commands to execute
 stage ( 'run' )
 {
     node ( 'master' )
     {
+        // Regex for a database pod
         String POD_DB = sh(
-            script:
-                """
-                    oc get pods -n "${PROJECT}" | grep -i "Running" | grep -Eo \
-                        "gwells-pgsql-[[:alpha:]]+-[[:digit:]]+-[[:alnum:]]+"
-                """,
+            script:"""
+                oc get pods -n "${PROJECT}" | grep -i "Running" | grep -Eo \
+                    "gwells-pgsql-[[:alpha:]]+-[[:digit:]]+-[[:alnum:]]+" | head -1
+            """,
             returnStdout:
                 true
         ).trim()
-        String STATUS = sh(
-            script:
-                """
+
+        // Regex for an application (GWells) pod
+        String POD_APP = sh(
+            script:"""
+                oc get pods -n "${PROJECT}" | grep -i "Running" | grep -Eo \
+                    "gwells-(test|prod)-[[:digit:]]+-[[:alnum:]]+" | head -1
+            """,
+            returnStdout:
+                true
+        ).trim()
+
+        // Regex for the deployment config / route name
+        String DC_RT = sh(
+            script:"""
+                oc get dc -n "${PROJECT}" | grep -Eo "gwells-(test|prod)" | head -1
+            """,
+            returnStdout:
+                true
+        ).trim()
+
+        // Database status (online|!)
+        String STAT_DB = sh(
+            script:"""
                 oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
                     'psql -d gwells -c \
                         "SELECT 1 AS online FROM WELLS.WELLS_WELLS LIMIT 1;" | grep -o online'
-                """,
+            """,
             returnStdout:
                 true
         ).trim()
-        if ( STATUS == "online" ){
-            echo POD_DB +" is online"
-            sh """
-                oc patch route gwells-test -n "${PROJECT}" -p \
-                    '{ "spec": { "to": { "name": "proxy-caddy"}, "port": { "targetPort": "2015-tcp" }}}'
-                oc patch route proxy-caddy -n "${PROJECT}" -p \
-                    '{ "spec": { "to": { "name": "gwells-test" }, "port": { "targetPort": "web" }}}'
 
-                oc scale dc gwells-test --timeout=5s --replicas=0 -n "${PROJECT}"
-                oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
-                    'psql -d gwells -c "VACUUM FULL;"'
-                oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
-                    'psql -t -d gwells -U "\${POSTGRESQL_USER}" -c \
-                        "SELECT db_replicate_step1(_subset_ind=>false);"'
-                oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
-                    'psql -t -d gwells -U "\${POSTGRESQL_USER}" -c \
-                        "SELECT db_replicate_step2 ();"'
-            """
-        } else {
-            echo POD_DB +" is offline"
-        }
-        int WELL_COUNT = sh(
-            script:
+        try {
+            // If database is online, turn on maintenance mode, scale down app and run replication
+            if ( STAT_DB == "online" ){
+                echo POD_DB +" is online"
+
+                echo "Scaling down and starting maintenance mode"
+                sh """
+                    oc patch route "${DC_RT}" -n "${PROJECT}" -p \
+                        '{ "spec": { "to": { "name": "proxy-caddy"}, "port": { "targetPort": "2015-tcp" }}}'
+
+                    oc scale dc "${DC_RT}" --timeout=5s --replicas=0 -n "${PROJECT}"
                 """
+
+                echo "Disabling logging"
+                sh """
                     oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
+                        'psql -t -d gwells -c \
+                            "VACUUM FULL;"'
+                    oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
+                        'psql -t -d gwells -c \
+                            "ALTER USER \\"\${POSTGRESQL_USER}\\" SET log_statement TO \\"none\\";"'
+                    oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
+                        'psql -t -d gwells -c \
+                            "ALTER USER \\"\${POSTGRESQL_USER}\\" SET log_min_duration_statement TO 10000;"'
+                """
+
+                echo "Running replication step 1/2"
+                sh """
+                    oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
+                        'psql -t -d gwells -U "\${POSTGRESQL_USER}" -c \
+                            "SELECT db_replicate_step1(_subset_ind=>false);"'
+                """
+
+                echo "Running replication step 2/2"
+                sh """
+                    oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
+                        'psql -t -d gwells -U "\${POSTGRESQL_USER}" -c \
+                            "SELECT db_replicate_step2 ();"'
+                """
+
+                echo "Re-enabling logging"
+                sh """
+                    oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
+                        'psql -t -d gwells -c \
+                            "ALTER USER \\"\${POSTGRESQL_USER}\\" SET log_statement TO \\"all\\";"'
+                    oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
+                        'psql -t -d gwells -c \
+                            "ALTER USER \\"\${POSTGRESQL_USER}\\" SET log_min_duration_statement TO -1;"'
+                """
+
+                // If there are enough wells to assume success, scale up app and leave maintenance mode
+                int WELL_COUNT = sh(
+                    script:"""
+                        oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
                         'psql -t -d gwells -U "\${POSTGRESQL_USER}" -c "SELECT count(*) from well;"'
-                """,
-            returnStdout:
-                true
-        ).trim()
-        if ( WELL_COUNT > 120000 ){
-            sh """
-                oc scale dc gwells-test --timeout=5s --replicas=1 -n "${PROJECT}"
-                oc patch route gwells -n "${PROJECT}" -p \
-                    '{ "spec": { "to": { "name": "gwells-test" }, "port": { "targetPort": "web" }}}'
-                oc patch route proxy-caddy -n "${PROJECT}" -p \
-                    '{ "spec": { "to": { "name": "proxy-caddy" }, "port": { "targetPort": "2015-tcp" }}}'
-            """
-        } else {
-            echo WELL_COUNT +" <= 120000, well count too low"
+                    """,
+                    returnStdout:
+                        true
+                ).trim()
+                if ( WELL_COUNT > WELL_CHECK ){
+                    echo WELL_COUNT +" > "+ WELL_CHECK
+                    echo "Scaling down and leaving maintenance mode"
+                    sh """
+                        oc scale dc "${DC_RT}" --timeout=5s --replicas=1 -n "${PROJECT}"
+                        sleep 30
+                        oc patch route "${DC_RT}" -n "${PROJECT}" -p \
+                            '{ "spec": { "to": { "name": "${DC_RT}" }, "port": { "targetPort": "web" }}}'
+                    """
+                } else {
+                    echo WELL_COUNT +" <= 100000, well count too low"
+                }
+            } else {
+                echo POD_DB +" is offline"
+                error "Database is offline, no action taken"
+            }
+            // TODO: broadcast status/result to Slack channel
+        } catch( error ){
+            echo "${stackTraceAsString( error )}"
+            echo "ERROR - App may be offline"
+            // TODO: broadcast status/result to Slack channel
         }
     }
 }

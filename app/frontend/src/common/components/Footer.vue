@@ -34,6 +34,7 @@ export default {
 @import '~bootstrap/scss/_functions';
 @import '~bootstrap/scss/_variables';
 @import '~bootstrap/scss/mixins/_breakpoints';
+
 .footer {
   @include media-breakpoint-only(xs) {
     height: 8.2rem!important;

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from gwells.models.Survey import Survey
+from gwells.models import Survey
 
 
 class SurveySerializer(serializers.ModelSerializer):

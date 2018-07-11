@@ -2,6 +2,8 @@ const fakePerson = JSON.parse(JSON.stringify({
   'person_guid': '728c5b91-25aa-44de-8b5d-3b0b7ab115a5',
   'first_name': 'Bob',
   'surname': 'Drillerson',
+  'contact_tel': '(555) 555-1234',
+  'contact_email': 'bob@example.com',
   'organization': {
     'org_guid': '081b3614-286f-4446-a984-88b05677bd45',
     'name': 'Drillerson Drilling Ltd.',
@@ -108,12 +110,6 @@ const fakePerson = JSON.parse(JSON.stringify({
           'cert_authority': 'BC'
         }
       ]
-    }
-  ],
-  'contact_info': [
-    {
-      'contact_tel': null,
-      'contact_email': 'driller1@example.com'
     }
   ],
   'notes': [
