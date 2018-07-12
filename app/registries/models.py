@@ -493,6 +493,7 @@ class RegistriesApplication(AuditModel):
     class Meta:
         db_table = 'registries_application'
         verbose_name_plural = 'Applications'
+        ordering = ['primary_certificate_no']
 
     def __str__(self):
         return '%s : %s' % (
