@@ -43,15 +43,14 @@ class DecommissionMethodCode(AuditModel):
 
 
 class BCGS_Numbers(AuditModel):
-    bcgs_id = models.BigIntegerField(primary_key=True, default=uuid.uuid4, editable=False)
+    bcgs_id = models.BigIntegerField(primary_key=True, editable=False)
     bcgs_number = models.CharField(max_length=20, verbose_name="BCGS Mapsheet Number")
 
     class Meta:
         db_table = 'bcgs_number'
-        ordering = ['bcgs_number']
 
     def __str__(self):
-        return self.description
+        return self.bcgs_number
 
 
 class ObsWellStatusCode(AuditModel):
