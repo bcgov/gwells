@@ -20,8 +20,8 @@ from . import views
 
 urlpatterns = [
     # Template views
-    url(r'^' + app_root_slash + \
-        'well/(?P<pk>[0-9]+)$', views.WellDetailView.as_view(), name='well_detail'),
+    url(r'^well/(?P<pk>[0-9]+)$',
+        views.WellDetailView.as_view(), name='well_detail'),
 
     # API endpoints
 
