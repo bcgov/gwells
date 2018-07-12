@@ -25,10 +25,10 @@ from gwells.models import Survey
 from gwells.roles import WELLS_ROLES
 from registries.views import APILimitOffsetPagination
 
-from wells.models import Well
+from wells.models import Well, ActivitySubmission
 from wells.documents import MinioClient
 from wells.permissions import WellsDocumentPermissions, WellsPermissions
-from wells.serializers import WellListSerializer
+from wells.serializers import WellListSerializer, WellSubmissionSerializer
 
 
 class WellDetailView(generic.DetailView):
@@ -104,4 +104,35 @@ class WellListAPIView(ListCreateAPIView):
             return self.get_paginated_response(serializer.data)
 
         serializer = WellListSerializer(filtered_queryset, many=True)
+        return Response(serializer.data)
+
+
+class SubmissionListAPIView(ListCreateAPIView):
+    """List and create submissions
+
+    get: returns a list of well activity submissions
+    post: adds a new submission
+    """
+
+    permission_classes = (WellsPermissions,)
+    model = ActivitySubmission
+    queryset = ActivitySubmission.objects.all()
+    pagination_class = APILimitOffsetPagination
+    serializer_class = WellSubmissionSerializer
+
+    def get_queryset(self):
+        qs = self.queryset
+        return qs
+
+    def list(self, request):
+        """ List wells with pagination """
+        queryset = self.get_queryset()
+        filtered_queryset = self.filter_queryset(queryset)
+
+        page = self.paginate_queryset(filtered_queryset)
+        if page is not None:
+            serializer = WellSubmissionSerializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = WellSubmissionSerializer(filtered_queryset, many=True)
         return Response(serializer.data)
