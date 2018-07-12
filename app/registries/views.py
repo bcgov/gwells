@@ -353,7 +353,8 @@ class PersonListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
             .prefetch_related(
                 'subactivity__qualification_set',
                 'subactivity__qualification_set__well_class'
-            ).distinct()
+            ).distinct() \
+            .order_by('primary_certificate_no')
 
         # generate registrations queryset, inserting filtered applications queryset defined above
         registrations_qs = registrations_qs \
