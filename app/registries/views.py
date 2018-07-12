@@ -343,6 +343,7 @@ class PersonListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
                 current_status='A', removal_date__isnull=True)
 
         # generate applications queryset
+        # We need to order by something to get a consistent result.
         applications_qs = applications_qs \
             .select_related(
                 'current_status',
