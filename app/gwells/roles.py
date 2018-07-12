@@ -83,7 +83,10 @@ def roles_to_groups(user, roles=None):
                                                                  'delete_personnote',
                                                                  'add_organizationnote',
                                                                  'change_organizationnote',
-                                                                 'delete_organizationnote'])
+                                                                 'delete_organizationnote',
+                                                                 'add_activitysubmission',
+                                                                 'change_activitysubmission',
+                                                                 'delete_activitysubmission', ])
                          ]
 
     # Default permissions for Adjudicator and Statutory Authority roles
