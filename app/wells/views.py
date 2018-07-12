@@ -18,7 +18,7 @@ from drf_yasg.utils import swagger_auto_schema
 from django.db.models import Prefetch
 from django.http import Http404
 from django.views import generic
-from rest_framework.generics import ListCreateAPIView
+from rest_framework.generics import ListAPIView, ListCreateAPIView
 
 from gwells import settings
 from gwells.models import Survey
@@ -70,11 +70,10 @@ class ListFiles(APIView):
         return Response(documents)
 
 
-class WellListAPIView(ListCreateAPIView):
+class WellListAPIView(ListAPIView):
     """List and create wells
 
     get: returns a list of wells
-    post: adds a new well
     """
 
     permission_classes = (WellsPermissions,)

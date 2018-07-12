@@ -32,4 +32,8 @@ urlpatterns = [
     # Well list
     url(r'^api/v1/wells/$',
         never_cache(views.WellListAPIView.as_view()), name='well-list'),
+
+    # Submissions list
+    url(r'^api/v1/submissions/$',
+        never_cache(views.SubmissionListAPIView.as_view()), name='well-list'),
 ]
