@@ -24,7 +24,12 @@ urlpatterns = [
         'well/(?P<pk>[0-9]+)$', views.WellDetailView.as_view(), name='well_detail'),
 
     # API endpoints
+
+    # Documents (well records)
     url(r'^api/v1/wells/(?P<tag>[0-9]+)/files$',
         never_cache(views.ListFiles.as_view()), name='file-list'),
 
+    # Well list
+    url(r'^api/v1/wells/$',
+        never_cache(views.WellListAPIView.as_view()), name='well-list'),
 ]
