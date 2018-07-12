@@ -23,7 +23,7 @@ from rest_framework.generics import ListAPIView, ListCreateAPIView
 from gwells import settings
 from gwells.models import Survey
 from gwells.roles import WELLS_ROLES
-from registries.views import APILimitOffsetPagination
+from gwells.pagination import APILimitOffsetPagination
 
 from wells.models import Well, ActivitySubmission
 from wells.documents import MinioClient
