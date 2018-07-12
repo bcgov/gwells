@@ -89,7 +89,8 @@ class WellListAPIView(ListAPIView):
                 "bcgs_id",
             ).prefetch_related(
                 Prefetch("water_quality_characteristics")
-            )
+            ) \
+            .order_by("well_tag_number")
         return qs
 
     def list(self, request):
@@ -121,10 +122,11 @@ class SubmissionListAPIView(ListCreateAPIView):
 
     def get_queryset(self):
         qs = self.queryset
+        qs = qs.order_by("filing_number")
         return qs
 
     def list(self, request):
-        """ List wells with pagination """
+        """ List activity submissions with pagination """
         queryset = self.get_queryset()
         filtered_queryset = self.filter_queryset(queryset)
 
