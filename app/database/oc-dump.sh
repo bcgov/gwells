@@ -26,7 +26,7 @@ SAVE_TO=${2:-./${PROJECT}-$( date +%Y-%m-%d-%H%M )}
 #
 APP_NAME=${APP_NAME:-gwells}
 DB_NAME=${DB_NAME:-${APP_NAME}}
-KEEP_APP_ONLINE=${KEEP_APP_ONLINE:-false}
+KEEP_APP_ONLINE=${KEEP_APP_ONLINE:-true}
 
 
 # Show message if passed any params
@@ -83,7 +83,7 @@ fi
 
 # Identify database and take a backup
 #
-POD_DB=$( oc get pods -n ${PROJECT} -o name | grep -Eo "postgresql-[0-9]+-[[:alnum:]]+" )
+POD_DB=$( oc get pods -n ${PROJECT} -o name | grep -Eo "gwells-pgsql-(test|prod)-[[:digit:]]+-[[:alnum:]]+" )
 SAVE_FILE=$( basename ${SAVE_TO} )
 SAVE_PATH=$( dirname ${SAVE_TO} )
 mkdir -p ${SAVE_PATH}
