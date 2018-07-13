@@ -9,8 +9,8 @@
   See the License for the specific language governing permissions and
   limitations under the License.
  */
-import { SET_KEYCLOAK } from '@/registry/store/mutations.types.js'
-import { store } from '@/registry/store'
+// import { SET_KEYCLOAK } from '@/registry/store/mutations.types.js'
+// import { store } from '@/registry/store'
 import Keycloak from 'keycloak-js'
 import ApiService from '@/common/services/ApiService.js'
 import Vue from 'vue'
@@ -28,7 +28,11 @@ export default {
     return Vue.prototype.$keycloak
   },
 
-  authenticate: function () {
+  authenticate: function (store) {
+    /**
+     * authenticates a user and then stores a reference to the keycloak instance in the store
+     * passed into the function
+     */
     return new Promise((resolve, reject) => {
       const instance = this.getInstance()
       if (instance.authenticated && ApiService.hasAuthHeader() && !instance.isTokenExpired(0)) {
@@ -46,7 +50,8 @@ export default {
           refreshToken,
           idToken }
         ).success((result) => {
-          store.commit(SET_KEYCLOAK, instance)
+          // assumes the store passed in includes a 'SET_KEYCLOAK' mutation.
+          store.commit('SET_KEYCLOAK', instance)
           if (instance.authenticated) {
             // We may have been authenticated, but the token could be expired.
             if (instance.isTokenExpired(0)) {

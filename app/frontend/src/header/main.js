@@ -41,7 +41,7 @@ new Vue({
   template: '<Header/>',
   created () {
     // start Keycloak authentication
-    authenticate.authenticate().then((result) => {
+    authenticate.authenticate(store).then((result) => {
       // Auth complete. Do something here if you want.
     })
   }
