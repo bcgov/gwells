@@ -26,7 +26,7 @@
         </b-navbar-nav>
         <b-navbar-nav class="ml-auto">
           <li>
-            <keycloak-auth v-if="auth !== 'hide'" id="keycloak-auth"/>
+            <keycloak-auth class="d-none d-sm-block" v-if="auth !== 'hide'" id="keycloak-auth"/>
           </li>
         </b-navbar-nav>
         <b-navbar-nav class="ml-auto d-sm-none">
@@ -38,13 +38,14 @@
       <b-container fluid>
         <b-collapse class="py-2" is-nav id="nav_collapse">
           <b-container id="navContainer">
-            <b-navbar-nav>
-              <li class="d-sm-none text-light mb-2 mt-2">Groundwater Wells and Aquifers</li>
+            <b-nav-text class="d-sm-none text-light">Groundwater Wells and Aquifers</b-nav-text>
+            <b-navbar-nav class="gwells-nav">
               <b-nav-item id="ribbon-search" class="navbar-link lvl2-link" href="/gwells">Well Search</b-nav-item>
               <b-nav-item id="ribbon-groundwaterinfo" class="navbar-link lvl2-link" href="/gwells/groundwater-information">Groundwater Information</b-nav-item>
               <b-nav-item id="ribbon-registry" class="navbar-link lvl2-link" href="/gwells/registries">Registry</b-nav-item>
-              <b-nav-item class="navbar-link lvl2-link" v-if="show.dataEntry" href="/gwells/submission/create">Submit Report</b-nav-item>
+              <b-nav-item class="navbar-link lvl2-link" v-if="show.dataEntry" href="/gwells/submissions">Submit Report</b-nav-item>
               <b-nav-item id="ribbon-admin" class="navbar-link lvl2-link" v-if="show.admin" href="/gwells/admin">Admin</b-nav-item>
+              <b-nav-item class="d-sm-none"><keycloak-auth v-if="auth !== 'hide'" id="keycloak-auth-xs"/></b-nav-item>
             </b-navbar-nav>
           </b-container>
         </b-collapse>
