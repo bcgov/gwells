@@ -16,6 +16,10 @@ const HOST = process.env.HOST
 const PORT = process.env.PORT && Number(process.env.PORT)
 
 const devWebpackConfig = merge(baseWebpackConfig, {
+  entry: {
+    // the current module/app that the dev server should serve
+    registry: './src/registry/main.js'
+  },
   module: {
     rules: utils.styleLoaders({
       sourceMap: config.dev.cssSourceMap,
@@ -93,7 +97,13 @@ const devWebpackConfig = merge(baseWebpackConfig, {
     // in a separate chunk, similar to the vendor chunk
     // see: https://webpack.js.org/plugins/commons-chunk-plugin/#extra-async-commons-chunk
     new webpack.optimize.CommonsChunkPlugin({
-      names: ['header', 'registry', 'documents', 'footer'],
+      names: [
+        'header',
+        'registry',
+        'documents',
+        'footer',
+        'submissions'
+      ],
       async: true,
       children: true,
       minChunks: 3
