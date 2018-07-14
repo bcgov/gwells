@@ -144,7 +144,7 @@
                     "dockerStrategy": {
                         "from": {
                             "kind": "ImageStreamTag",
-                            "name": "gwells-python-35-rhel7${NAME_SUFFIX}:3.5"
+                            "name": "gwells-python-35-rhel7${NAME_SUFFIX}:3.6"
                         }
                     }
                 },
