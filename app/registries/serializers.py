@@ -763,3 +763,11 @@ class ProvinceStateCodeSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProvinceStateCode
         fields = ('province_state_code', 'description', 'display_order')
+
+
+class PersonNameSerializer(serializers.ModelSerializer):
+    """Serializes person names for quick searching"""
+
+    class Meta:
+        model = Person
+        fields = ('name', 'person_guid')

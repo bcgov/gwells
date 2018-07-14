@@ -68,7 +68,9 @@ urlpatterns = [
     url(r'^api/v1/drillers/(?P<person_guid>[-\w]+)/notes/(?P<note_guid>[-\w]+)/$',
         views.PersonNoteDetailView.as_view(), name='person-note-detail'),
 
-    # Person resource endpoints (drillers, well installers, and other instances of Person model)
+    # Person endpoints (drillers, well installers, and other instances of Person model)
+    url(r'^api/v1/drillers/names/$',
+        never_cache(views.PersonNameSearch.as_view()), name='person-search'),
     url(r'api/v1/drillers/options/',
         views.PersonOptionsView.as_view(), name='person-options'),
     url(r'^api/v1/drillers/(?P<person_guid>[-\w]+)/history/$',
@@ -108,7 +110,7 @@ urlpatterns = [
 
     # Swagger documentation endpoint
     url(r'^api/$', schema_view.with_ui('swagger',
-                                      cache_timeout=None), name='api-docs'),
+                                       cache_timeout=None), name='api-docs'),
 
     # Deprecated old URL endpoints. NOTE: These may be linked from API catalogue
 

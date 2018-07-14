@@ -65,7 +65,8 @@ from registries.serializers import (
     SubactivitySerializer,
     WellClassCodeSerializer,
     AccreditedCertificateCodeSerializer,
-    OrganizationNoteSerializer)
+    OrganizationNoteSerializer,
+    PersonNameSerializer)
 from registries.utils import generate_history_diff
 
 
@@ -771,3 +772,21 @@ class PersonHistory(APIView):
             application_history_diff, key=lambda x: x['date'], reverse=True)
 
         return Response(history_diff)
+
+
+class PersonNameSearch(ListAPIView):
+    """Search for a person in the Register"""
+
+    permission_classes = (AllowAny,)
+    serializer_class = PersonNameSerializer
+    queryset = Person.objects.all()
+    pagination_class = None
+    lookup_field = 'person_guid'
+
+    filter_backends = (restfilters.DjangoFilterBackend,
+                       filters.SearchFilter)
+    ordering = ('surname',)
+    search_fields = (
+        'first_name',
+        'surname',
+    )

@@ -27,7 +27,24 @@
       <b-row>
         <b-col cols="12" md="6">
           <b-form-group label="Person Responsible for Drilling*">
-            <v-select></v-select>
+            <v-select
+                :filterable="false"
+                :options="personOptions"
+                @search="onPersonSearch">
+              <template slot="no-options">
+                  Type to search Well Driller and Pump Installer Registry...
+              </template>
+              <template slot="option" slot-scope="option">
+                <div>
+                  {{ option.name }}
+                  </div>
+              </template>
+              <template slot="selected-option" slot-scope="option">
+                <div>
+                  {{ option.name }}
+                </div>
+              </template>
+            </v-select>
           </b-form-group>
         </b-col>
       </b-row>
@@ -47,11 +64,14 @@
 </template>
 
 <script>
+import _ from 'lodash'
+import ApiService from '@/common/services/ApiService.js'
 export default {
   name: 'Step01Type',
   data () {
     return {
       units: 'metric',
+      personOptions: [],
       // form data keys follow naming convention from API for consistency with request/response field names
       formData: {
         type_of_work: 'CON',
@@ -59,6 +79,18 @@ export default {
         work_end_date: ''
       }
     }
+  },
+  methods: {
+    onPersonSearch (search, loading) {
+      loading(true)
+      this.search(loading, search, this)
+    },
+    search: _.debounce((loading, search, vm) => {
+      ApiService.query(`drillers/names/?search=${escape(search)}`).then((response) => {
+        vm.personOptions = response.data
+        loading(false)
+      })
+    }, 500)
   }
 }
 </script>
