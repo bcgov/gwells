@@ -26,7 +26,7 @@
             "kind": "ImageStream",
             "apiVersion": "v1",
             "metadata": {
-                "name": "gwells-python-36-rhel7${NAME_SUFFIX}",
+                "name": "gwells-python-35-rhel7${NAME_SUFFIX}",
                 "creationTimestamp": null,
                 "annotations": {
                     "description": "Python Base Image"
@@ -144,7 +144,7 @@
                     "dockerStrategy": {
                         "from": {
                             "kind": "ImageStreamTag",
-                            "name": "gwells-python-36-rhel7${NAME_SUFFIX}:3.6"
+                            "name": "gwells-python-35-rhel7${NAME_SUFFIX}:3.5"
                         }
                     }
                 },
