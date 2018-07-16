@@ -23,7 +23,7 @@ from drf_yasg.utils import swagger_auto_schema
 from reversion.views import RevisionMixin
 from rest_framework import filters, status, exceptions
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView
-from rest_framework.permissions import DjangoModelPermissionsOrAnonReadOnly, AllowAny
+from rest_framework.permissions import DjangoModelPermissionsOrAnonReadOnly
 from rest_framework.response import Response
 from rest_framework.mixins import CreateModelMixin, UpdateModelMixin
 from rest_framework.views import APIView
@@ -448,7 +448,7 @@ class CitiesListView(ListAPIView):
     serializer_class = CityListSerializer
     lookup_field = 'register_guid'
     pagination_class = None
-    permission_classes = (AllowAny,)
+    permission_classes = (DjangoModelPermissionsOrAnonReadOnly,)
     queryset = Register.objects \
         .exclude(organization__city__isnull=True) \
         .exclude(organization__city='') \
@@ -777,7 +777,7 @@ class PersonHistory(APIView):
 class PersonNameSearch(ListAPIView):
     """Search for a person in the Register"""
 
-    permission_classes = (AllowAny,)
+    permission_classes = (DjangoModelPermissionsOrAnonReadOnly,)
     serializer_class = PersonNameSerializer
     queryset = Person.objects.all()
     pagination_class = None
