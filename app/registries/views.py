@@ -469,9 +469,9 @@ class CitiesListView(ListAPIView):
             qs = qs.filter(
                 Q(applications__current_status__code='A'),
                 Q(applications__removal_date__isnull=True))
-        if self.kwargs['activity'] == 'drill':
+        if self.kwargs.get('activity') == 'drill':
             qs = qs.filter(registries_activity='DRILL')
-        if self.kwargs['activity'] == 'install':
+        if self.kwargs.get('activity') == 'install':
             qs = qs.filter(registries_activity='PUMP')
         return qs
 
