@@ -20,5 +20,8 @@ from submissions import views
 urlpatterns = [
     # Submissions list
     url(r'^api/v1/submissions/$',
-        never_cache(views.SubmissionListAPIView.as_view()), name='submission-list'),
+        never_cache(views.SubmissionListAPIView.as_view()), name='submissions-list'),
+
+    # Submissions home (loads Submissions application)
+    url(r'^submissions/', views.SubmissionsHomeView.as_view(), name='submissions-home')
 ]

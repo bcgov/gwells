@@ -62,4 +62,4 @@ class SubmissionListAPIView(ListCreateAPIView):
 
 class SubmissionsHomeView(TemplateView):
     """Loads the html file container the Submissions web app"""
-    template_name = 'wells/submissions.html'
+    template_name = 'submissions/submissions.html'
