@@ -198,6 +198,7 @@ export const store = new Vuex.Store({
     userRoles (state) {
       if (state.keycloak && state.keycloak.authenticated) {
         return {
+          admin: (!!state.keycloak.hasRealmRole('gwells_admin')),
           view: (state.keycloak.hasRealmRole('gwells_admin') ||
             state.keycloak.hasRealmRole('registries_statutory_authority') ||
             state.keycloak.hasRealmRole('registries_viewer') ||

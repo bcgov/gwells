@@ -62,10 +62,14 @@ export default {
   },
   props: ['auth'],
   data () {
-    let adminMeta = document.head.querySelector('meta[name="show.admin"]')
     return {
-      show: {
-        dataEntry: process.env.ENABLE_DATA_ENTRY,
+    }
+  },
+  computed: {
+    show () {
+      const adminMeta = document.head.querySelector('meta[name="show.admin"]')
+      return {
+        dataEntry: process.env.ENABLE_DATA_ENTRY || this.$store.getters.userRoles.admin,
         admin: adminMeta ? adminMeta.content === 'true' : false
       }
     }
