@@ -64,7 +64,7 @@
 </template>
 
 <script>
-import _ from 'lodash'
+import debounce from 'lodash.debounce'
 import ApiService from '@/common/services/ApiService.js'
 export default {
   name: 'Step01Type',
@@ -85,7 +85,7 @@ export default {
       loading(true)
       this.search(loading, search, this)
     },
-    search: _.debounce((loading, search, vm) => {
+    search: debounce((loading, search, vm) => {
       ApiService.query(`drillers/names/?search=${escape(search)}`).then((response) => {
         vm.personOptions = response.data
         loading(false)
