@@ -102,8 +102,3 @@ ALTER TABLE yield_estimation_method_code ALTER COLUMN effective_date SET DEFAULT
 -- Thu  1 Mar 20:00:30 2018 GW Django doesn't support multi-column PK's
 ALTER TABLE well_subclass_code DROP CONSTRAINT IF EXISTS well_subclass_code_uk CASCADE;
 ALTER TABLE well_subclass_code ADD CONSTRAINT well_subclass_code_uk UNIQUE (well_class_code, well_subclass_code);
-
--- Fri  29 Jun 10:00:30 2018 GW Disable logging for all tables replicated from GWELLS
---         NOTE: This will be reversed once we cut over from WELLS to GWELLS for data entry and submission
-
--- Mon  16 Jul 12:15:00 2018 Removed all SET UNLOGGED statements.  They were causing the well table to empty.
