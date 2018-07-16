@@ -17,21 +17,22 @@ from rest_framework.response import Response
 from drf_yasg.utils import swagger_auto_schema
 from django.db.models import Prefetch
 from django.http import Http404
-from django.views import generic
-from rest_framework.generics import ListAPIView, ListCreateAPIView
+from django.views.generic import DetailView
+
+from rest_framework.generics import ListAPIView
 
 from gwells import settings
 from gwells.models import Survey
 from gwells.roles import WELLS_ROLES
 from gwells.pagination import APILimitOffsetPagination
 
-from wells.models import Well, ActivitySubmission
+from wells.models import Well
 from wells.documents import MinioClient
 from wells.permissions import WellsDocumentPermissions, WellsPermissions
-from wells.serializers import WellListSerializer, WellSubmissionSerializer
+from wells.serializers import WellListSerializer
 
 
-class WellDetailView(generic.DetailView):
+class WellDetailView(DetailView):
     model = Well
     context_object_name = 'well'
     template_name = 'wells/well_detail.html'
@@ -104,36 +105,4 @@ class WellListAPIView(ListAPIView):
             return self.get_paginated_response(serializer.data)
 
         serializer = WellListSerializer(filtered_queryset, many=True)
-        return Response(serializer.data)
-
-
-class SubmissionListAPIView(ListCreateAPIView):
-    """List and create submissions
-
-    get: returns a list of well activity submissions
-    post: adds a new submission
-    """
-
-    permission_classes = (WellsPermissions,)
-    model = ActivitySubmission
-    queryset = ActivitySubmission.objects.all()
-    pagination_class = APILimitOffsetPagination
-    serializer_class = WellSubmissionSerializer
-
-    def get_queryset(self):
-        qs = self.queryset
-        qs = qs.order_by("filing_number")
-        return qs
-
-    def list(self, request):
-        """ List activity submissions with pagination """
-        queryset = self.get_queryset()
-        filtered_queryset = self.filter_queryset(queryset)
-
-        page = self.paginate_queryset(filtered_queryset)
-        if page is not None:
-            serializer = WellSubmissionSerializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-
-        serializer = WellSubmissionSerializer(filtered_queryset, many=True)
         return Response(serializer.data)

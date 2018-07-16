@@ -14,23 +14,11 @@
 from django.conf.urls import url
 from django.views.decorators.cache import never_cache
 
-from gwells.urls import app_root_slash
-from . import views
+from submissions import views
 
 
 urlpatterns = [
-    # Template views
-    url(r'^well/(?P<pk>[0-9]+)$',
-        views.WellDetailView.as_view(), name='well_detail'),
-
-    # API endpoints
-
-    # Documents (well records)
-    url(r'^api/v1/wells/(?P<tag>[0-9]+)/files$',
-        never_cache(views.ListFiles.as_view()), name='file-list'),
-
-    # Well list
-    url(r'^api/v1/wells/$',
-        never_cache(views.WellListAPIView.as_view()), name='well-list'),
-
+    # Submissions list
+    url(r'^api/v1/submissions/$',
+        never_cache(views.SubmissionListAPIView.as_view()), name='submission-list'),
 ]

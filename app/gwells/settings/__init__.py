@@ -98,6 +98,7 @@ INSTALLED_APPS = (
     'formtools',
     'registries',
     'wells',
+    'submissions',
     'django_nose',
     'webpack_loader',
     'django_filters',

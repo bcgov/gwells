@@ -17,6 +17,7 @@ from django.db import transaction
 import logging
 from rest_framework import serializers
 from gwells.models import ProvinceStateCode
+from gwells.serializers import AuditModelSerializer
 from registries.models import (
     ProofOfAgeCode,
     Organization,
@@ -36,17 +37,6 @@ from registries.models import (
 )
 
 logger = logging.getLogger(__name__)
-
-
-class AuditModelSerializer(serializers.ModelSerializer):
-    """
-    Serializes AuditModel fields.
-    Can be inherited into serializers for models that inherit from AuditModel
-    """
-    create_user = serializers.ReadOnlyField()
-    create_date = serializers.ReadOnlyField()
-    update_user = serializers.ReadOnlyField()
-    update_date = serializers.ReadOnlyField()
 
 
 class ProofOfAgeCodeSerializer(serializers.ModelSerializer):
