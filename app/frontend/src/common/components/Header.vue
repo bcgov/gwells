@@ -55,6 +55,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import Auth from '@/common/components/Auth.vue'
 export default {
   components: {
@@ -69,10 +70,11 @@ export default {
     show () {
       const adminMeta = document.head.querySelector('meta[name="show.admin"]')
       return {
-        dataEntry: process.env.ENABLE_DATA_ENTRY || this.$store.getters.userRoles.admin,
+        dataEntry: process.env.ENABLE_DATA_ENTRY || this.userRoles.submissions.edit,
         admin: adminMeta ? adminMeta.content === 'true' : false
       }
-    }
+    },
+    ...mapGetters(['userRoles'])
   }
 }
 </script>

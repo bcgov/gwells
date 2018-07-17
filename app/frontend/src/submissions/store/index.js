@@ -11,36 +11,18 @@
  */
 import Vue from 'vue'
 import Vuex from 'vuex'
+import auth from '@/common/store/auth.js'
+
 // import ApiService from '@/common/services/ApiService.js'
-import {
-  SET_KEYCLOAK
-} from './mutations.types.js'
+
 Vue.use(Vuex)
 
 export const store = new Vuex.Store({
-  state: {
-    keycloak: {}
+  modules: {
+    auth: auth
   },
-  mutations: {
-    [SET_KEYCLOAK] (state, payload) {
-      state.keycloak = payload
-    }
-  },
+  state: {},
+  mutations: {},
   actions: {},
-  getters: {
-    userRoles (state) {
-      if (state.keycloak && state.keycloak.authenticated) {
-        return {
-          view: (state.keycloak.hasRealmRole('gwells_admin') || state.keycloak.hasRealmRole('wells_viewer')),
-          edit: false,
-          approve: false
-        }
-      } else {
-        return {}
-      }
-    },
-    keycloak (state) {
-      return state.keycloak
-    }
-  }
+  getters: {}
 })

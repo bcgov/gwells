@@ -39,12 +39,12 @@
                   class="btn btn-light btn-sm registries-edit-btn"
                   type="button"
                   @click="editPerson = !editPerson"
-                  v-if="currentDriller.person_guid && userRoles.edit"><i class="fa fa-edit"></i> Edit</button>
+                  v-if="currentDriller.person_guid && userRoles.registry.edit"><i class="fa fa-edit"></i> Edit</button>
               </div>
             </div>
             <person-edit
                   section="person"
-                  v-if="editPerson && userRoles.edit"
+                  v-if="editPerson && userRoles.registry.edit"
                   :record="currentDriller.person_guid"
                   @updated="editPerson = false; updateRecord()"
                   @canceled="editPerson = false"></person-edit>
@@ -130,7 +130,7 @@
               <b-row v-else>
                 <b-col>
                   <b-button
-                          v-if="userRoles.edit"
+                          v-if="userRoles.registry.edit"
                           type="button"
                           variant="primary"
                           size="sm"
@@ -150,7 +150,7 @@
                   class="btn btn-light btn-sm registries-edit-btn"
                   type="button"
                   @click="editRegistration = (editRegistration === (index + 1) ? 0 : (index + 1))"
-                  v-if="userRoles.edit">
+                  v-if="userRoles.registry.edit">
                   <span><i class="fa fa-edit"></i> Edit</span>
                   </button>
               </div>
@@ -159,7 +159,7 @@
               class="mb-4"
               section="registration"
               :record="registration"
-              v-if="editRegistration === (index + 1) && userRoles.edit"
+              v-if="editRegistration === (index + 1) && userRoles.registry.edit"
               @updated="editRegistration = 0; updateRecord()"
               @canceled="editRegistration = 0"></person-edit>
             <div v-if="editRegistration !== (index + 1)">
@@ -183,7 +183,7 @@
                   class="btn btn-light btn-sm registries-edit-btn"
                   type="button"
                   @click="editCompany = (editCompany === (index + 1) ? 0 : (index + 1))"
-                  v-if="currentDriller.person_guid && userRoles.edit">
+                  v-if="currentDriller.person_guid && userRoles.registry.edit">
                   <span v-if="!registration.organization"><i class="fa fa-plus"></i> Add company</span>
                   <span v-else><i class="fa fa-refresh"></i> Change company</span>
                   </button>
@@ -192,7 +192,7 @@
             <person-edit
               section="company"
               :record="registration"
-              v-if="editCompany === (index + 1) && userRoles.edit"
+              v-if="editCompany === (index + 1) && userRoles.registry.edit"
               @updated="editCompany = 0; updateRecord()"
               @canceled="editCompany = 0"></person-edit>
             <div v-if="registration.organization && editCompany !== (index + 1)">
@@ -274,7 +274,7 @@
         </div>
 
         <!-- new registrations -->
-        <div class="card mb-3" v-if="userRoles.edit && (!currentDriller.registrations || currentDriller.registrations.length !== 2)">
+        <div class="card mb-3" v-if="userRoles.registry.edit && (!currentDriller.registrations || currentDriller.registrations.length !== 2)">
           <div class="card-body p-2 p-md-3">
             <div
                 v-for="(item, index) in registrationOptions"
@@ -318,13 +318,13 @@
                   class="btn btn-light btn-sm registries-edit-btn"
                   type="button"
                   @click="editContact = !editContact"
-                  v-if="currentDriller.person_guid && userRoles.edit"><i class="fa fa-edit"></i> Edit</button>
+                  v-if="currentDriller.person_guid && userRoles.registry.edit"><i class="fa fa-edit"></i> Edit</button>
               </div>
             </div>
             <person-edit
               section="contact"
               :record="currentDriller.person_guid"
-              v-if="editContact && userRoles.edit"
+              v-if="editContact && userRoles.registry.edit"
               @updated="editContact = false; updateRecord()"
               @canceled="editContact = false"></person-edit>
             <div v-if="!editContact">

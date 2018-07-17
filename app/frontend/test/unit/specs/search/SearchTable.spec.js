@@ -25,7 +25,7 @@ describe('SearchTable.vue', () => {
       loading: () => false,
       listError: () => null,
       drillers: jest.fn().mockReturnValue(fakePersonList),
-      userRoles: () => ({ edit: false, view: false, approve: false }),
+      userRoles: () => ({ registry: { edit: false, view: false, approve: false } }),
       activity: () => 'DRILL'
     }
     actions = {
@@ -142,7 +142,7 @@ describe('SearchTable.vue', () => {
       loading: () => false,
       listError: () => null,
       drillers: jest.fn().mockReturnValue(fakePersonList),
-      userRoles: () => ({ edit: true, view: true, approve: true }),
+      userRoles: () => ({ registry: { edit: true, view: true, approve: true } }),
       activity: () => 'PUMP'
     }
     store = new Vuex.Store({
@@ -227,7 +227,7 @@ describe('SearchTable.vue', () => {
       loading: () => false,
       listError: () => null,
       drillers: jest.fn().mockReturnValue(fakePersonList),
-      userRoles: () => ({ edit: true, view: true, approve: true }),
+      userRoles: () => ({ registry: { edit: true, view: true, approve: true } }),
       activity: () => 'DRILL'
     }
     store = new Vuex.Store({

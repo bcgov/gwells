@@ -24,7 +24,7 @@
           </div>
         </div>
       </div>
-      <div class="row no-gutters" v-if="userRoles.wellsView">
+      <div class="row no-gutters" v-if="userRoles.wells.view">
         <div class="col-md-12">
           <h4>Internal documentation - authorized access only</h4>
             <div v-if="error">

@@ -11,6 +11,7 @@
  */
 import Vue from 'vue'
 import Vuex from 'vuex'
+import auth from '@/common/store/auth.js'
 import ApiService from '@/common/services/ApiService.js'
 import {
   FETCH_CITY_LIST,
@@ -25,13 +26,15 @@ import {
   SET_CITY_LIST,
   SET_DRILLER,
   SET_DRILLER_LIST,
-  SET_KEYCLOAK,
   SET_DRILLER_OPTIONS,
   SET_LAST_SEARCHED_ACTIVITY } from './mutations.types.js'
 
 Vue.use(Vuex)
 
 export const store = new Vuex.Store({
+  modules: {
+    auth: auth
+  },
   state: {
     user: null,
     loading: false,
@@ -40,7 +43,6 @@ export const store = new Vuex.Store({
     cityList: {},
     drillerList: [],
     currentDriller: {},
-    keycloak: {},
     drillerOptions: null,
     lastSearchedActivity: 'DRILL'
   },
@@ -65,9 +67,6 @@ export const store = new Vuex.Store({
     },
     [SET_DRILLER_LIST] (state, payload) {
       state.drillerList = payload
-    },
-    [SET_KEYCLOAK] (state, payload) {
-      state.keycloak = payload
     },
     [SET_DRILLER_OPTIONS] (state, payload) {
       state.drillerOptions = payload
@@ -191,29 +190,6 @@ export const store = new Vuex.Store({
     },
     currentDriller (state) {
       return state.currentDriller
-    },
-    keycloak (state) {
-      return state.keycloak
-    },
-    userRoles (state) {
-      if (state.keycloak && state.keycloak.authenticated) {
-        return {
-          admin: (!!state.keycloak.hasRealmRole('gwells_admin')),
-          view: (state.keycloak.hasRealmRole('gwells_admin') ||
-            state.keycloak.hasRealmRole('registries_statutory_authority') ||
-            state.keycloak.hasRealmRole('registries_viewer') ||
-            state.keycloak.hasRealmRole('registries_adjudicator')),
-          edit: (state.keycloak.hasRealmRole('gwells_admin') ||
-            state.keycloak.hasRealmRole('registries_statutory_authority') ||
-            state.keycloak.hasRealmRole('registries_adjudicator')),
-          approve: (state.keycloak.hasRealmRole('gwells_admin') ||
-            state.keycloak.hasRealmRole('registries_statutory_authority')),
-          wellsView: (state.keycloak.hasRealmRole('gwells_admin') ||
-            state.keycloak.hasRealmRole('wells_viewer'))
-        }
-      } else {
-        return {}
-      }
     },
     drillerOptions (state) {
       return state.drillerOptions

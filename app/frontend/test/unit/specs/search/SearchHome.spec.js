@@ -75,7 +75,7 @@ describe('SearchHome.vue', () => {
           ]
         }
       },
-      userRoles: () => ({ edit: false, view: false, approve: false }),
+      userRoles: () => ({ registry: { edit: false, view: false, approve: false } }),
       activity: () => 'DRILL'
     }
     actions = {
@@ -107,7 +107,7 @@ describe('SearchHome.vue', () => {
       },
       cityList: () => [],
       activity: () => 'DRILL',
-      userRoles: () => ({ edit: false, view: false, approve: false })
+      userRoles: () => ({ registry: { edit: false, view: false, approve: false } })
     }
     const store = new Vuex.Store({ getters, actions })
     const wrapper = shallowMount(SearchHome, {
