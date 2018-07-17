@@ -33,4 +33,12 @@ export default {
 
 <style lang="scss">
 @import '../common/common.scss';
+@media print {
+  .registries-edit-btn {
+    display: none!important;
+  }
+  .registries-action-button {
+    display: none!important;
+  }
+}
 </style>
