@@ -87,7 +87,8 @@ POD_DB=$( oc get pods -n ${PROJECT} -o name | grep -Eo "gwells-pgsql-(test|prod)
 SAVE_FILE=$( basename ${SAVE_TO} )
 SAVE_PATH=$( dirname ${SAVE_TO} )
 mkdir -p ${SAVE_PATH}
-oc exec ${POD_DB} -n ${PROJECT} -- /bin/bash -c 'pg_dump -Fc '${DB_NAME}' > /tmp/'${SAVE_FILE}
+oc exec ${POD_DB} -n ${PROJECT} -- /bin/bash -c \
+	'pg_dump -U ${POSTGRESQL_USER} -d ${POSTGRESQL_DATABASE} -Fc --no-privileges --no-tablespaces --schema=public > /tmp/'${SAVE_FILE}
 oc rsync ${POD_DB}:/tmp/${SAVE_FILE} ${SAVE_PATH} -n ${PROJECT} --progress=true --no-perms=true
 oc exec ${POD_DB} -n ${PROJECT} -- /bin/bash -c 'rm /tmp/'${SAVE_FILE}
 
