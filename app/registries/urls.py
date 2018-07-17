@@ -109,7 +109,7 @@ urlpatterns = [
     url(r'^api/v1/api-token-auth/', obtain_jwt_token_noswagger, name='get-token'),
 
     # Swagger documentation endpoint
-    url(r'^api/$', schema_view.with_ui('swagger',
+    url(r'^api/$', schema_view.with_ui('redoc',
                                        cache_timeout=None), name='api-docs'),
 
 
