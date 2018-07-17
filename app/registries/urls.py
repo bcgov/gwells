@@ -108,7 +108,7 @@ urlpatterns = [
 
     # Swagger documentation endpoint
     url(r'^api/$', schema_view.with_ui('swagger',
-                                      cache_timeout=None), name='api-docs'),
+                                       cache_timeout=None), name='api-docs'),
 
     # Deprecated old URL endpoints. NOTE: These may be linked from API catalogue
 

@@ -61,11 +61,9 @@ class ListFiles(APIView):
         user_is_staff = self.request.user.groups.filter(
             name__in=WELLS_ROLES).exists()
 
-        client = MinioClient(
-            request=request, disable_private=(not user_is_staff))
+        client = MinioClient(include_private=user_is_staff)
 
-        documents = client.get_documents(
-            int(tag), include_private=user_is_staff)
+        documents = client.get_documents(int(tag))
 
         return Response(documents)
 
