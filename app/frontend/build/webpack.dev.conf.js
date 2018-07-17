@@ -101,8 +101,8 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         'header',
         'registry',
         'documents',
-        'footer',
-        'submissions'
+        'submissions',
+        'footer'
       ],
       async: true,
       children: true,
