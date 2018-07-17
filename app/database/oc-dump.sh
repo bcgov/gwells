@@ -25,7 +25,6 @@ SAVE_TO=${2:-./${PROJECT}-$( date +%Y-%m-%d-%H%M )}
 # APP and mode variables
 #
 APP_NAME=${APP_NAME:-gwells}
-DB_NAME=${DB_NAME:-${APP_NAME}}
 KEEP_APP_ONLINE=${KEEP_APP_ONLINE:-true}
 
 
@@ -88,7 +87,8 @@ SAVE_FILE=$( basename ${SAVE_TO} )
 SAVE_PATH=$( dirname ${SAVE_TO} )
 mkdir -p ${SAVE_PATH}
 oc exec ${POD_DB} -n ${PROJECT} -- /bin/bash -c \
-	'pg_dump -U ${POSTGRESQL_USER} -d ${POSTGRESQL_DATABASE} -Fc --no-privileges --no-tablespaces --schema=public > /tmp/'${SAVE_FILE}
+	'pg_dump -U ${POSTGRESQL_USER} -d ${POSTGRESQL_DATABASE} -Fc \
+	--no-privileges --no-tablespaces --schema=public > /tmp/'${SAVE_FILE}
 oc rsync ${POD_DB}:/tmp/${SAVE_FILE} ${SAVE_PATH} -n ${PROJECT} --progress=true --no-perms=true
 oc exec ${POD_DB} -n ${PROJECT} -- /bin/bash -c 'rm /tmp/'${SAVE_FILE}
 
@@ -106,7 +106,6 @@ fi
 # Summarize
 #
 echo
-echo "DB:   ${DB_NAME}"
 echo "Size: $( du -h ${SAVE_TO} | awk '{ print $1 }' )"
 echo "Name: ${SAVE_TO}"
 echo
