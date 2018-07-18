@@ -275,7 +275,7 @@
                             },
                             "paths": [
                                 {
-                                    "sourcePath": "/opt/app-root/src/staticfiles",
+                                    "sourcePath": "/opt/app-root/src/backend/staticfiles",
                                     "destinationDir": "."
                                 }
                             ]

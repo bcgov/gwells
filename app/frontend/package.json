@@ -20,6 +20,7 @@
     "babel-polyfill": "^6.26.0",
     "bootstrap-vue": "^2.0.0-rc.2",
     "keycloak-js": "^4.0.0",
+    "npm": "^5.6.0",
     "vue": "^2.5.2",
     "vue-moment": "^3.2.0",
     "vue-router": "^3.0.1",
