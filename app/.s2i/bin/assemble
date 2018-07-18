@@ -54,12 +54,11 @@ cd frontend
 npm install
 npm run build
 cd ..
-cd backend
 
 if should_collectstatic; then
   (
     echo "---> Collecting Django static files ..."
-
+    cd backend
 
     APP_HOME=${APP_HOME:-.}
     # Look for 'manage.py' in the directory specified by APP_HOME, or the current directory
@@ -79,6 +78,8 @@ if should_collectstatic; then
     fi
 
     python $manage_file collectstatic --noinput
+
+    cd ..
   )
 fi
 
