@@ -288,7 +288,7 @@ _stage('Unit Test', context) {
                         printf "NPM version:    "&& npm --version
 
                         (
-                            cd /opt/app-root/src
+                            cd /opt/app-root/src/backend
                             python manage.py migrate
                             ENABLE_DATA_ENTRY="True" python manage.py test -c nose.cfg
                         )
@@ -442,15 +442,15 @@ for(String envKeyName: context.env.keySet() as String[]){
                     podName=openshift.selector('pod', ['deploymentconfig':deploymentConfigName]).objects()[0].metadata.name
                 }
                 // Flush database
-                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src && pwd && python manage.py flush --no-input'"
+                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src/backend && pwd && python manage.py flush --no-input'"
                 // Lookup tables common to all system components (e.g. Django apps)
-                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src && pwd && python manage.py loaddata gwells-codetables.json'"
+                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src/backend && pwd && python manage.py loaddata gwells-codetables.json'"
                 // Lookup tables for the Wellsearch component (not yet a Django app) and Registries app
-                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src && pwd && python manage.py loaddata wellsearch-codetables.json registries-codetables.json'"
+                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src/backend && pwd && python manage.py loaddata wellsearch-codetables.json registries-codetables.json'"
                 // Test data for the Wellsearch component (not yet a Django app) and Registries app
-                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src && pwd && python manage.py loaddata wellsearch.json.gz registries.json'"
+                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src/backend && pwd && python manage.py loaddata wellsearch.json.gz registries.json'"
                 // Reversion
-                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src && pwd && python manage.py createinitialrevisions'"
+                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src/backend && pwd && python manage.py createinitialrevisions'"
             }
         }
     }
