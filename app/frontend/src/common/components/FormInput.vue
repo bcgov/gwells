@@ -9,8 +9,8 @@
         :state="validation"
         :aria-describedby="`${id}InvalidFeedback ${id}Hint`"
         :value="value"
-        @input="updateValue($event.target.value)"
-        placeholder="e.g.: http://www.example.com"/>
+        @input="updateValue($event)"
+        :placeholder="placeholder"/>
     <b-form-invalid-feedback :id="`${id}InvalidFeedback`">
       <div v-for="(error, index) in errors" :key="`urlInput error ${index}`">
         {{ error }}
@@ -31,12 +31,13 @@ export default {
     },
     label: String, // a label for the form input e.g.: "First name:"
     hint: String, // a hint for the user on how to enter text e.g. "Please use YYYY/MM/DD format"
-    errors: Array, // pass any "field errors" returned by the API into the "errors" prop
+    errors: null, // pass any "field errors" returned by the API into the "errors" prop
     value: String, // internal (holds the value for the field)
     type: { // the type of input (e.g. text, number, email)
       type: String,
       default: 'text'
-    }
+    },
+    placeholder: String
   },
   computed: {
     validation () {
