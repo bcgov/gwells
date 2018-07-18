@@ -1,7 +1,7 @@
 import collections
 from os import getenv
 from unittest import TestCase
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 from wells.documents import MinioClient
 
