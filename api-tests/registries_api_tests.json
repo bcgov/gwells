@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "9b0a045a-2d4d-487d-9a62-c98e6cc5e851",
+		"_postman_id": "1ab0d6b2-a821-4bd5-be73-ef33597c8aa9",
 		"name": "GWELLS API remote",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -1298,7 +1298,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n  \"first_name\": \"Bobby\",\n  \"surname\": \"Driller\",\n  \"registrations\": [\n  \t{\n  \t\t\"registries_activity\": \"DRILL\", \n  \t\t\"status\": \"ACTIVE\",\n  \t\t\"organization\": \"{{created_guid}}\",\n  \t\t\"applications\": [\n  \t\t{\n  \t\t\t\"subactivity\": {\n  \t\t\t\t\"registries_subactivity_code\": \"WATER\"\n  \t\t\t}, \n  \t\t\t\"primary_certificate\": {\n  \t\t\t\t\"acc_cert_guid\": \"28bf8730-dbb7-4218-8e9f-06bd51f60161\"\n  \t\t\t}, \n  \t\t\t\"primary_certificate_no\": \"12345\",\n  \t\t\t\"current_status\": {\"code\": \"P\"},\n  \t\t\t\"application_recieved_date\": \"2018-05-02\",\n  \t\t\t\"proof_of_age\": { \"code\": \"PASSPORT\"}\n  \t\t},\n  \t\t{\n  \t\t\t\"subactivity\": {\n  \t\t\t\t\"registries_subactivity_code\": \"WATER\"\n  \t\t\t},\n  \t\t\t\"primary_certificate\": {\n  \t\t\t\t\"acc_cert_guid\": \"28bf8730-dbb7-4218-8e9f-06bd51f60161\"\n  \t\t\t},\n  \t\t\t\"primary_certificate_no\": \"67890\",\n  \t\t\t\"current_status\": {\"code\" : \"P\"}\n  \t\t}\n\t\t]\n  }],\n  \"contact_info\": [{\"contact_tel\": \"555-1234\"}]\n}\n"
+									"raw": "{\n  \"first_name\": \"Bobby\",\n  \"surname\": \"Driller\",\n  \"contact_tel\": \"(555) 555-1234\",\n  \"contact_email\": \"bobby@example.com\",\n  \"registrations\": [\n  \t{\n  \t\t\"registries_activity\": \"DRILL\", \n  \t\t\"status\": \"ACTIVE\",\n  \t\t\"organization\": \"{{created_guid}}\",\n  \t\t\"applications\": [\n  \t\t{\n  \t\t\t\"subactivity\": {\n  \t\t\t\t\"registries_subactivity_code\": \"WATER\"\n  \t\t\t}, \n  \t\t\t\"primary_certificate\": {\n  \t\t\t\t\"acc_cert_guid\": \"28bf8730-dbb7-4218-8e9f-06bd51f60161\"\n  \t\t\t}, \n  \t\t\t\"primary_certificate_no\": \"12345\",\n  \t\t\t\"current_status\": {\"code\": \"P\"},\n  \t\t\t\"application_recieved_date\": \"2018-05-02\",\n  \t\t\t\"proof_of_age\": { \"code\": \"PASSPORT\"}\n  \t\t},\n  \t\t{\n  \t\t\t\"subactivity\": {\n  \t\t\t\t\"registries_subactivity_code\": \"WATER\"\n  \t\t\t},\n  \t\t\t\"primary_certificate\": {\n  \t\t\t\t\"acc_cert_guid\": \"28bf8730-dbb7-4218-8e9f-06bd51f60161\"\n  \t\t\t},\n  \t\t\t\"primary_certificate_no\": \"67890\",\n  \t\t\t\"current_status\": {\"code\" : \"P\"}\n  \t\t}\n\t\t]\n  }]\n}\n"
 								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/drillers/?format=json",

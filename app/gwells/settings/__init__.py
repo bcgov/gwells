@@ -97,6 +97,7 @@ INSTALLED_APPS = (
     'crispy_forms',
     'formtools',
     'registries',
+    'wells',
     'django_nose',
     'webpack_loader',
     'django_filters',
@@ -202,13 +203,15 @@ LOGGING = {
         'simple': {
             'format': '%(levelname)s %(message)s'
         },
+        'debug': {
+            'format': '%(levelname)s %(asctime)s %(filename)s[%(lineno)d]:%(module)s::%(funcName)s %(message)s'
+        }
     },
     'handlers': {
         'console_handler': {
             'class': 'logging.StreamHandler',
             'level': 'DEBUG',
-            'formatter': 'verbose',
-            'filters': ['require_debug_false']
+            'formatter': 'debug',
         }
     },
     'loggers': {
@@ -217,6 +220,10 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
         },
+        '': {
+            'handlers': ['console_handler'],
+            'propagate': True,
+        }
     }
 }
 

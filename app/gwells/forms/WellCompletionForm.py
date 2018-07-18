@@ -13,11 +13,13 @@
 """
 from django import forms
 from django.utils.safestring import mark_safe
+from django.forms.models import inlineformset_factory
+
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Div, Submit, Hidden, HTML, Field
 from crispy_forms.bootstrap import FormActions, AppendedText, InlineRadios
-from django.forms.models import inlineformset_factory
-from ..models import *
+
+from gwells.models import ActivitySubmission
 
 
 class WellCompletionForm(forms.ModelForm):
@@ -29,23 +31,30 @@ class WellCompletionForm(forms.ModelForm):
             Fieldset(
                 'Well Completion Details',
                 Div(
-                    Div(AppendedText('total_depth_drilled', 'ft'), css_class='col-md-3'),
-                    Div(AppendedText('finished_well_depth', 'ft (bgl)'), css_class='col-md-3'),
+                    Div(AppendedText('total_depth_drilled', 'ft'),
+                        css_class='col-md-3'),
+                    Div(AppendedText('finished_well_depth',
+                                     'ft (bgl)'), css_class='col-md-3'),
                     css_class='row',
                 ),
                 Div(
-                    Div(AppendedText('final_casing_stick_up', 'in'), css_class='col-md-3'),
-                    Div(AppendedText('bedrock_depth', 'ft (bgl)'), css_class='col-md-3'),
+                    Div(AppendedText('final_casing_stick_up', 'in'),
+                        css_class='col-md-3'),
+                    Div(AppendedText('bedrock_depth', 'ft (bgl)'),
+                        css_class='col-md-3'),
                     css_class='row',
                 ),
                 Div(
-                    Div(AppendedText('static_water_level', 'ft (btoc)'), css_class='col-md-3'),
+                    Div(AppendedText('static_water_level',
+                                     'ft (btoc)'), css_class='col-md-3'),
                     Div(AppendedText('well_yield', 'USgpm'), css_class='col-md-3'),
                     css_class='row',
                 ),
                 Div(
-                    Div(AppendedText('artesian_flow', 'USgpm'), css_class='col-md-3'),
-                    Div(AppendedText('artesian_pressure', 'ft'), css_class='col-md-3'),
+                    Div(AppendedText('artesian_flow', 'USgpm'),
+                        css_class='col-md-3'),
+                    Div(AppendedText('artesian_pressure', 'ft'),
+                        css_class='col-md-3'),
                     css_class='row',
                 ),
                 Div(
@@ -56,7 +65,8 @@ class WellCompletionForm(forms.ModelForm):
             )
         )
         super(WellCompletionForm, self).__init__(*args, **kwargs)
-        # Make fields required on the form even though they are not required in the DB due to legacy data issues
+        # Make fields required on the form even though they are not required in the DB due to legacy data
+        # issues
         # TODO - check admin or staff user and don't make these fields required
         self.fields['total_depth_drilled'].required = True
         self.fields['finished_well_depth'].required = True
@@ -73,7 +83,8 @@ class WellCompletionForm(forms.ModelForm):
         errors = []
 
         if total_depth_drilled and finished_well_depth and total_depth_drilled < finished_well_depth:
-            errors.append('Finished Well Depth can\'t be greater than Total Depth Drilled.')
+            errors.append(
+                'Finished Well Depth can\'t be greater than Total Depth Drilled.')
 
         if len(errors) > 0:
             raise forms.ValidationError(errors)
@@ -82,5 +93,7 @@ class WellCompletionForm(forms.ModelForm):
 
     class Meta:
         model = ActivitySubmission
-        fields = ['total_depth_drilled', 'finished_well_depth', 'final_casing_stick_up', 'bedrock_depth', 'static_water_level', 'well_yield', 'artesian_flow', 'artesian_pressure', 'well_cap_type', 'well_disinfected']
+        fields = ['total_depth_drilled', 'finished_well_depth', 'final_casing_stick_up', 'bedrock_depth',
+                  'static_water_level', 'well_yield', 'artesian_flow', 'artesian_pressure', 'well_cap_type',
+                  'well_disinfected']
         widgets = {'well_disinfected': forms.RadioSelect}

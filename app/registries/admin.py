@@ -1,8 +1,7 @@
 from django.contrib import admin
 from reversion.admin import VersionAdmin
-from .models import (
+from registries.models import (
     Person,
-    ContactInfo,
     Organization,
     ActivityCode,
     AccreditedCertificateCode,
@@ -39,7 +38,6 @@ class RegistriesApplicationModelAdmin(VersionAdmin):
 
 admin.site.register(AccreditedCertificateCode)
 admin.site.register(CertifyingAuthorityCode)
-admin.site.register(ContactInfo)
 admin.site.register(Person, PersonModelAdmin)
 admin.site.register(Organization, OrganizationModelAdmin)
 admin.site.register(ActivityCode)

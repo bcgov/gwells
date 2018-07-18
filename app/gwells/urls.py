@@ -18,10 +18,10 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from django.views.generic import TemplateView
 
-from . import views
-from gwells.views import *
+from gwells.views import SurveyListView, SearchView, RegistryView,\
+    ActivitySubmissionDetailView, HealthView, ActivitySubmissionWizardView, ActivitySubmissionListView,\
+    FORMS
 from gwells.views.admin import *
-from gwells.views import APIViews
 from gwells.settings.base import get_env_variable
 
 # Creating 2 versions of the app_root. One without and one with trailing slash
@@ -51,8 +51,6 @@ urlpatterns = [
         SearchView.well_search, name='search'),
     # url(r'^(?P<pk>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/$',
     #     views.DetailView.as_view(), name='detail'),
-    url(r'^' + app_root_slash + \
-        'well/(?P<pk>[0-9]+)$', WellDetailView.as_view(), name='well_detail'),
     url(r'^' + app_root_slash + 'registry-legacy$',
         RegistryView.as_view(), name='registry-legacy'),
     url(r'^' + app_root_slash + 'submission/(?P<pk>[0-9]+)$',
@@ -75,17 +73,18 @@ urlpatterns = [
         AdminView.as_view(),
         name='site_admin'),  # editable list view of surveys and other site admin features
     url(r'^' + app_root_slash + 'api/v1/surveys/$',
-        APIViews.SurveyListView.as_view(), name='survey-list'),
+        SurveyListView.as_view(), name='survey-list'),
     url(r'^' + app_root_slash + DJANGO_ADMIN_URL + '/', admin.site.urls),
     url(r'^' + app_root_slash + 'accounts/',
         include('django.contrib.auth.urls')),
     url(r'^' + app_root_slash, include('registries.urls')),
+    url(r'^' + app_root_slash, include('wells.urls')),
 ]
 
 if settings.ENABLE_DATA_ENTRY:
     urlpatterns = [
         url(r'^' + app_root_slash + 'submission/create$',
-            ActivitySubmissionWizardView.as_view(views.FORMS),
+            ActivitySubmissionWizardView.as_view(FORMS),
             name='activity_submission_create'),
         url(r'^' + app_root_slash + 'submission/$',
             ActivitySubmissionListView.as_view(),

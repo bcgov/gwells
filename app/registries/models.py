@@ -231,46 +231,6 @@ class Person(AuditModel):
         return '%s %s' % (self.first_name, self.surname)
 
 
-# deprecated - to be removed
-class ContactInfo(AuditModel):
-    contact_detail_guid = models.UUIDField(
-        primary_key=True,
-        default=uuid.uuid4,
-        editable=False,
-        verbose_name="Contact At UUID")
-    person = models.ForeignKey(
-        Person,
-        db_column='person_guid',
-        on_delete=models.PROTECT,
-        verbose_name="Person Reference",
-        related_name="contact_info")
-    contact_tel = models.CharField(
-        blank=True,
-        null=True,
-        max_length=15,
-        verbose_name="Contact telephone number")
-    contact_cell = models.CharField(
-        blank=True,
-        null=True,
-        max_length=15,
-        verbose_name="Contact cell number")
-
-    contact_email = models.EmailField(
-        blank=True, null=True, verbose_name="Email adddress")
-    effective_date = models.DateField(default=datetime.date.today)
-    expired_date = models.DateField(blank=True, null=True)
-
-    class Meta:
-        db_table = 'registries_contact_detail'
-        verbose_name_plural = 'Contact Information'
-
-    def __str__(self):
-        return '%s - %s, %s' % (
-            self.person,
-            self.contact_tel,
-            self.contact_email)
-
-
 class WellClassCode(AuditModel):
     """
     Class of Wells, classifying the type of wells and activities/subactivies permitted
@@ -533,6 +493,7 @@ class RegistriesApplication(AuditModel):
     class Meta:
         db_table = 'registries_application'
         verbose_name_plural = 'Applications'
+        ordering = ['primary_certificate_no']
 
     def __str__(self):
         return '%s : %s' % (

@@ -15,7 +15,7 @@
 import reversion
 from collections import OrderedDict
 from django.db.models import Q, Prefetch
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from django.utils import timezone
 from django.views.generic import TemplateView
 from django_filters import rest_framework as restfilters
@@ -23,20 +23,19 @@ from drf_yasg.utils import swagger_auto_schema
 from reversion.views import RevisionMixin
 from rest_framework import filters, status, exceptions
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView
-from rest_framework.pagination import LimitOffsetPagination, PageNumberPagination
 from rest_framework.permissions import DjangoModelPermissionsOrAnonReadOnly, AllowAny
 from rest_framework.response import Response
 from rest_framework.mixins import CreateModelMixin, UpdateModelMixin
 from rest_framework.views import APIView
 from drf_multiple_model.views import ObjectMultipleModelAPIView
 from gwells.roles import GWELLS_ROLE_GROUPS
-from gwells.models.ProvinceStateCode import ProvinceStateCode
+from gwells.models import ProvinceStateCode
+from gwells.pagination import APILimitOffsetPagination
 from reversion.models import Version
 from registries.models import (
     AccreditedCertificateCode,
     ActivityCode,
     ApplicationStatusCode,
-    ContactInfo,
     Organization,
     OrganizationNote,
     Person,
@@ -92,23 +91,6 @@ class AuditUpdateMixin(UpdateModelMixin):
         serializer.validated_data['update_user'] = (self.request.user.profile.name or
                                                     self.request.user.get_username())
         return super().perform_update(serializer)
-
-
-class APILimitOffsetPagination(LimitOffsetPagination):
-    """
-    Provides LimitOffsetPagination with custom parameters.
-    """
-
-    max_limit = 100
-
-    def get_paginated_response(self, data):
-        return Response(OrderedDict([
-            ('count', self.count),
-            ('next', self.get_next_link()),
-            ('previous', self.get_previous_link()),
-            ('offset', self.offset),
-            ('results', data)
-        ]))
 
 
 class RegistriesIndexView(TemplateView):
@@ -291,7 +273,8 @@ class PersonListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
         activity = self.request.query_params.get('activity', None)
         status = self.request.query_params.get('status', None)
 
-        user_is_staff = self.request.user.groups.filter(name__in=GWELLS_ROLE_GROUPS).exists()
+        user_is_staff = self.request.user.groups.filter(
+            name__in=GWELLS_ROLE_GROUPS).exists()
 
         if activity:
             if (status == 'P' or not status) and user_is_staff:
@@ -303,7 +286,8 @@ class PersonListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
                     registries_activity__registries_activity_code=activity)
             else:
                 # For all other searches, we strictly filter on activity.
-                qs = qs.filter(registrations__registries_activity__registries_activity_code=activity)
+                qs = qs.filter(
+                    registrations__registries_activity__registries_activity_code=activity)
                 registrations_qs = registrations_qs.filter(
                     registries_activity__registries_activity_code=activity)
 
@@ -418,7 +402,6 @@ class PersonDetailView(RevisionMixin, AuditUpdateMixin, RetrieveUpdateDestroyAPI
         .prefetch_related(
             'notes',
             'notes__author',
-            'contact_info',
             'registrations',
             'registrations__registries_activity',
             'registrations__organization',

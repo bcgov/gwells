@@ -101,33 +101,42 @@
 <body>
     <!-- HEADER -->
     <div id="header"></div>
+    <!-- Common Vue components -->
+    {% render_bundle 'manifest' 'js' %}
+    {% render_bundle 'vendor' 'js' %}    
+    <!-- Header Vue component -->
+    {% render_bundle 'header' 'js' %}
     <!-- /HEADER -->
 
     <!-- BODY CONTENT -->
-    <div id="topicTemplate" class="template container env-container">
-        <!-- PAGE CONTENT -->
-        <div class="row">
-            <div id="main-content" role="main" class="contentPageMainColumn col-sm-12">
-                <div id="main-content-anchor"></div>
-                <!-- TITLE -->
-                <h2>{% block bodyheading_block %}{% endblock %}</h2>
-                <!-- /TITLE -->
-                <!-- INTRODUCTION -->
-                <div id="introduction">
-                    {% for survey in surveys %} {% if survey.survey_page == page and survey.survey_enabled%}
-                    <div class="row hide-for-print show-for-screen">
-                        <div class="col-sm-12 alert alert-info">
-                            <div id="survey-msg" role="alert" aria-atomic="true">
-                                {{survey.survey_introduction_text}} <a href="{{survey.survey_link}}" id="survey:{{survey.survey_guid}}" target=_blank>survey</a>.
+    <div class="container p-0">
+        <div class="card mt-sm-4">
+            <div class="card-body px-2">
+
+            <!-- PAGE CONTENT -->
+                <div class="row">
+                    <div id="main-content" role="main" class="contentPageMainColumn col-sm-12">
+                        <div id="main-content-anchor"></div>
+                        <!-- TITLE -->
+                        <h2>{% block bodyheading_block %}{% endblock %}</h2>
+                        <!-- /TITLE -->
+                        <!-- INTRODUCTION -->
+                        <div id="introduction">
+                            {% for survey in surveys %} {% if survey.survey_page == page and survey.survey_enabled%}
+                            <div class="row hide-for-print show-for-screen">
+                                <div class="col-sm-12 alert alert-info">
+                                    <div id="survey-msg" role="alert" aria-atomic="true">
+                                        {{survey.survey_introduction_text}} <a href="{{survey.survey_link}}" id="survey:{{survey.survey_guid}}" target=_blank>survey</a>.
+                                    </div>
+                                </div>
                             </div>
+                            {% endif %} {% endfor %} {% block introduction_block %}{% endblock %}
+                        </div>
+                        <!-- /INTRODUCTION -->
+                        <div id="body">
+                            {% block body_block %} {% endblock %}
                         </div>
                     </div>
-                    {% endif %} {% endfor %} {% block introduction_block %}{% endblock %}
-                </div>
-                <!-- /INTRODUCTION -->
-
-                <div id="body">
-                    {% block body_block %} {% endblock %}
                 </div>
             </div>
         </div>
@@ -141,6 +150,8 @@
     <!-- FOOTER -->
     <img class="back-to-top" src="/gwells/static/gwells/images/back-to-top.png" alt="Back to top" title="Back to top" style="display: inline;">
     <div id="footer"></div>
+    <!-- Footer Vue component -->
+    {% render_bundle 'footer' 'js' %}
     <!-- /FOOTER -->
     
     <!-- Bootstrap core JavaScript
@@ -151,11 +162,8 @@
     <script src="{% static 'gwells/js/popper.js/popper.min.js' %}"></script>
     <script src="{% static 'gwells/js/bootstrap.min.js' %}"></script>
 
-    <!-- Misc. gwells javascript -->
-    {% render_bundle 'manifest' 'js' %}
-    {% render_bundle 'vendor' 'js' %}
-    {% render_bundle 'header' 'js' %}
-    {% render_bundle 'footer' 'js' %}
+    {% block additional_js %} {% endblock %}    
+    
     <script src="{% static 'gwells/js/misc.js' %}"></script>
 
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
@@ -171,7 +179,6 @@
     <script type="text/javascript" src="{% static 'gwells/js/datatables.min.js' %}"></script>
 
     {% block jqscript_block %} {% endblock %}
-
 </body>
 
 </html>

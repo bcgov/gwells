@@ -1,6 +1,6 @@
 <template>
   <div class="container p-1 p-md-3">
-    <b-card no-body class="mb-3">
+    <b-card no-body class="mb-3" id="breadcrumbs">
         <b-breadcrumb :items="breadcrumbs" class="py-0 my-2"></b-breadcrumb>
     </b-card>
     <div v-if="showSpinner">
@@ -135,7 +135,7 @@
                           variant="primary"
                           size="sm"
                           v-on:click="addApplication(registration)"
-                          class="mb-3"><i class="fa fa-plus-square-o"></i> Add classification</b-button>
+                          class="mb-3 registries-action-button"><i class="fa fa-plus-square-o"></i> Add classification</b-button>
                 </b-col>
               </b-row>
             </div>
@@ -280,7 +280,7 @@
                 v-for="(item, index) in registrationOptions"
                 :key="`unregistered activity ${index}`"
                 v-if="!currentDriller.registrations.some(reg => reg.registries_activity === item.code)">
-              <b-button variant="primary" class="my-1" :ref="`registerButton${item.code}`" @click="confirmRegisterModal[item.code]=true">
+              <b-button variant="primary" class="my-1 registries-action-button" :ref="`registerButton${item.code}`" @click="confirmRegisterModal[item.code]=true">
                 Register as a {{ item.desc }}
               </b-button>
               <b-modal
@@ -337,29 +337,6 @@
                 </div>
                 <div class="col-12 col-md-4">
                   <span class="contact-label">Cell: </span>{{ currentDriller.contact_cell }}
-                </div>
-              </div>
-            </div>
-            <div v-if="personTel.length || personEmail.length">
-              <div class="row mb-2 mt-5">
-                <div class="col-12">
-                  <h6 class="card-title mb-3">Additional (Legacy) Contact Information</h6>
-                </div>
-                <div class="col-5 col-md-2">
-                  Email address:
-                </div>
-                <div class="col-7 col-md-4">
-                  <div v-for="(email, index) in personEmail" :key="`person email ${index}`">
-                    <a :href="`mailto:${email}`">{{ email }}</a>
-                  </div>
-                </div>
-                <div class="col-5 col-md-2">
-                  Telephone:
-                </div>
-                <div class="col-7 col-md-4">
-                  <div v-for="(tel, index) in personTel" :key="`person tel ${index}`">
-                    {{ tel }}
-                  </div>
                 </div>
               </div>
             </div>
@@ -440,33 +417,6 @@ export default {
   computed: {
     showSpinner () {
       return this.currentDriller == null || this.loading || this.savingApplication
-    },
-    personEmail () {
-      // sort a person's contact info into a list of emails
-      const email = []
-
-      // support for contact_info table (legacy data)
-      if (this.currentDriller.contact_info && this.currentDriller.contact_info.length) {
-        this.currentDriller.contact_info.forEach((item) => {
-          if (item.contact_email) {
-            email.push(item.contact_email)
-          }
-        })
-      }
-
-      return email
-    },
-    personTel () {
-      const tel = []
-      if (this.currentDriller.contact_info && this.currentDriller.contact_info.length) {
-        this.currentDriller.contact_info.forEach((item) => {
-          if (item.contact_tel) {
-            tel.push(item.contact_tel)
-          }
-        })
-      }
-
-      return tel
     },
     company () {
       if (this.currentDriller && this.currentDriller.companies && this.currentDriller.companies.length) {

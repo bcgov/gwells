@@ -198,7 +198,7 @@
                             "execNewPod": {
                                 "command": [
                                     "/usr/bin/container-entrypoint",
-                                    "/opt/app-root/src/scripts/post-deploy.sh"
+                                    "/opt/app-root/src/scripts/gwells-deploy.sh"
                                 ],
                                 "containerName": "gwells-app${NAME_SUFFIX}"
                             }
@@ -472,6 +472,24 @@
                                             "secretKeyRef": {
                                                 "name": "minio-access-parameters${NAME_SUFFIX}",
                                                 "key": "S3_ROOT_BUCKET"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "S3_PRIVATE_HOST",
+                                        "valueFrom": {
+                                            "configMapKeyRef": {
+                                                "key": "S3_PRIVATE_HOST",
+                                                "name": "gwells-global-config${NAME_SUFFIX}"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "S3_PRIVATE_BUCKET",
+                                        "valueFrom": {
+                                            "configMapKeyRef": {
+                                                "key": "S3_PRIVATE_BUCKET",
+                                                "name": "gwells-global-config${NAME_SUFFIX}"
                                             }
                                         }
                                     },
