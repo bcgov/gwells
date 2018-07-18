@@ -18,7 +18,8 @@ def update_application_status(apps, schema_editor):
         code.save()
     except ObjectDoesNotExist as e:
         # On an empty database, this records may not exist (it will be loaded with fixtures)
-        logger.info('{} (don\'t panic - on an empty database, this will be loaded from fixtures)'.format(e))
+        logger.debug('ApplicationStatusCode with code \'A\' not found.'
+                     'This is expected on an empty database.')
 
 
 def revert(apps, schema_editor):
@@ -29,7 +30,8 @@ def revert(apps, schema_editor):
         code.save()
     except ObjectDoesNotExist as e:
         # On an empty database, this records may not exist (it will be loaded with fixtures)
-        logger.info('{} (don\'t panic - on an empty database, this will be loaded from fixtures)'.format(e))
+        logger.debug('ApplicationStatusCode with code \'A\' not found.'
+                     'This is expected on an empty database.')
 
 
 class Migration(migrations.Migration):

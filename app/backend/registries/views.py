@@ -23,7 +23,6 @@ from drf_yasg.utils import swagger_auto_schema
 from reversion.views import RevisionMixin
 from rest_framework import filters, status, exceptions
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView
-from rest_framework.pagination import LimitOffsetPagination, PageNumberPagination
 from rest_framework.permissions import DjangoModelPermissionsOrAnonReadOnly, AllowAny
 from rest_framework.response import Response
 from rest_framework.mixins import CreateModelMixin, UpdateModelMixin
@@ -31,6 +30,7 @@ from rest_framework.views import APIView
 from drf_multiple_model.views import ObjectMultipleModelAPIView
 from gwells.roles import GWELLS_ROLE_GROUPS
 from gwells.models import ProvinceStateCode
+from gwells.pagination import APILimitOffsetPagination
 from reversion.models import Version
 from registries.models import (
     AccreditedCertificateCode,
@@ -91,23 +91,6 @@ class AuditUpdateMixin(UpdateModelMixin):
         serializer.validated_data['update_user'] = (self.request.user.profile.name or
                                                     self.request.user.get_username())
         return super().perform_update(serializer)
-
-
-class APILimitOffsetPagination(LimitOffsetPagination):
-    """
-    Provides LimitOffsetPagination with custom parameters.
-    """
-
-    max_limit = 100
-
-    def get_paginated_response(self, data):
-        return Response(OrderedDict([
-            ('count', self.count),
-            ('next', self.get_next_link()),
-            ('previous', self.get_previous_link()),
-            ('offset', self.offset),
-            ('results', data)
-        ]))
 
 
 class RegistriesIndexView(TemplateView):
