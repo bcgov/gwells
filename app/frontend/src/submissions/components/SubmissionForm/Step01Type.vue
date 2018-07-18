@@ -4,7 +4,7 @@
       <b-row>
         <b-col cols="12" md="6">
           <b-form-group label="Type of Work*">
-            <b-form-radio-group v-model="formData.type_of_work"
+            <b-form-radio-group v-model="typeOfWorkInput"
                                 stacked
                                 name="submissionTypeRadio">
               <b-form-radio value="CON">Construction</b-form-radio>
@@ -15,7 +15,7 @@
         </b-col>
         <b-col cols="12" md="6">
           <b-form-group label="Measurement units for data entry">
-            <b-form-radio-group v-model="units"
+            <b-form-radio-group v-model="unitsInput"
                                 stacked
                                 name="measurementUnitsRadio">
               <b-form-radio value="metric">Metric</b-form-radio>
@@ -30,6 +30,7 @@
             <v-select
                 :filterable="false"
                 :options="personOptions"
+                v-model="personResponsibleInput"
                 @search="onPersonSearch">
               <template slot="no-options">
                   Type to search Well Driller and Pump Installer Registry...
@@ -50,14 +51,12 @@
       </b-row>
       <b-row>
         <b-col cols="12" md="6">
-          <b-form-group label="Start Date of Work*">
-            <b-form-input type="date" v-model="formData.work_start_date"/>
-          </b-form-group>
+          <form-input id="workStartDateInput" type="date" label="Start Date of Work*" v-model="workStartDateInput" :errors="errors.work_start_date">
+          </form-input>
         </b-col>
         <b-col cols="12" md="6">
-          <b-form-group label="End Date of Work*">
-            <b-form-input type="date" v-model="formData.work_end_date"/>
-          </b-form-group>
+          <form-input id="workEndDateInput" type="date" label="End Date of Work*" v-model="workEndDateInput" :errors="errors.work_end_date">
+          </form-input>
         </b-col>
       </b-row>
     </fieldset>
@@ -65,21 +64,35 @@
 
 <script>
 import debounce from 'lodash.debounce'
+import inputBindingsMixin from './inputBindingsMixin.js'
 import ApiService from '@/common/services/ApiService.js'
 export default {
   name: 'Step01Type',
-  data () {
-    return {
-      units: 'metric',
-      personOptions: [],
-      // form data keys follow naming convention from API for consistency with request/response field names
-      formData: {
-        type_of_work: 'CON',
-        work_start_date: '',
-        work_end_date: ''
-      }
+  mixins: [inputBindingsMixin],
+  props: {
+    units: String,
+    workStartDate: String,
+    workEndDate: String,
+    typeOfWork: String,
+    personResponsible: Object,
+    errors: {
+      type: Object,
+      default: () => ({})
     }
   },
+  fields: {
+    unitsInput: 'units',
+    workStartDateInput: 'workStartDate',
+    workEndDateInput: 'workEndDate',
+    typeOfWorkInput: 'typeOfWork',
+    personResponsibleInput: 'personResponsible'
+  },
+  data () {
+    return {
+      personOptions: []
+    }
+  },
+  computed: {},
   methods: {
     onPersonSearch (search, loading) {
       loading(true)
@@ -91,6 +104,9 @@ export default {
         loading(false)
       })
     }, 500)
+  },
+  watch: {
+
   }
 }
 </script>

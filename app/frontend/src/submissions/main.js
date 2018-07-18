@@ -21,6 +21,7 @@ import { store } from './store'
 import '@/common/assets/css/bootstrap-theme.min.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 import vSelect from 'vue-select'
+import FormInput from '@/common/components/FormInput.vue'
 import authenticate from '@/common/authenticate.js'
 
 // GWELLS js API library (helper methods for working with API)
@@ -29,6 +30,7 @@ import ApiService from '@/common/services/ApiService.js'
 Vue.use(Vuex)
 Vue.use(BootstrapVue)
 Vue.component('v-select', vSelect)
+Vue.component('form-input', FormInput)
 
 // set baseURL and default headers
 ApiService.init()
