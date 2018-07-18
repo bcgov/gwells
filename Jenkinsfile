@@ -298,7 +298,7 @@ _stage('Unit Test', context) {
                         )
                         mkdir -p frontend/test/
                         cp -R /opt/app-root/src/frontend/test/unit ./frontend/test/
-                        cp /opt/app-root/src/nosetests.xml /opt/app-root/src/coverage.xml ./
+                        cp /opt/app-root/src/backend/nosetests.xml /opt/app-root/src/backend/coverage.xml ./
                         cp /opt/app-root/src/frontend/junit.xml ./frontend/
                     '''
                 }
