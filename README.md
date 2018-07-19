@@ -20,6 +20,15 @@ It uses the Openshift Source-to-Image (S2I) strategy with Python 3.5 on centos7.
 
 Setup scripts, OpenShift deployment and development details are located in the [setup](./setup/) folder.  Please see the relevant [README.md](./setup/README.md).
 
+## Local Development with Docker images (new)
+
+A local development environment can be created quickly with docker-compose:
+
+  * Install docker, docker-machine and docker-compose. See [Install Docker for Mac](https://docs.docker.com/docker-for-mac/install/)
+  * Clone this repository locally, and from the `gwells` root folder, run `docker-compose up`
+  * Connect to the API at `localhost:8000` and the frontend development server at `localhost:8080`. Environment variables are configured with defaults for development.
+  * Please leave feedback as an issue or on our [Trello board](https://trello.com/b/2UQZgXHR/wells-project-board)
+
 ## Issues
 Issues are tracked on the [GWELLS Trello board](https://trello.com/b/2UQZgXHR/wells-project-board).
 
