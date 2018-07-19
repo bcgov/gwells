@@ -33,7 +33,7 @@ export default {
 
 <style lang="scss">
 @import url('https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
-@import '../../../gwells/static/gwells/css/ie10-viewport-bug-workaround.css';
+@import '../common/assets/css/ie10-viewport-bug-workaround.css';
 @import '~bootstrap/scss/_functions';
 @import '~bootstrap/scss/_variables';
 @import '~bootstrap/scss/mixins/_breakpoints';
