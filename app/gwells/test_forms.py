@@ -15,8 +15,8 @@
 from .forms import *
 from django.test import TestCase
 
-#TODO split tests into one file per class
 
+# TODO: Get rid of most (all) of these tests - we're going to be removing these forms soon.
 class FormsTestCase(TestCase):
 
     def test_activity_submission_comment_form_instantiation(self):
@@ -47,9 +47,10 @@ class FormsTestCase(TestCase):
         activity_submission_surface_seal_form = ActivitySubmissionSurfaceSealForm()
         self.assertIsInstance(activity_submission_surface_seal_form, ActivitySubmissionSurfaceSealForm)
 
-    def test_activity_submission_type_and_class_form_instantiation(self):
-        activity_submission_type_and_class_form = ActivitySubmissionTypeAndClassForm()
-        self.assertIsInstance(activity_submission_type_and_class_form, ActivitySubmissionTypeAndClassForm)
+    # This test is redundant, we're getting rid of this form.
+    # def test_activity_submission_type_and_class_form_instantiation(self):
+    #     activity_submission_type_and_class_form = ActivitySubmissionTypeAndClassForm()
+    #     self.assertIsInstance(activity_submission_type_and_class_form, ActivitySubmissionTypeAndClassForm)
 
     def test_activity_submission_water_quality_form_instantiation(self):
         test_activity_submission_water_quality_form = ActivitySubmissionWaterQualityForm()

@@ -12,7 +12,7 @@
         }
     },
     {
-        "model": "gwells.wellactivitycode",
+        "model": "wells.wellactivitycode",
         "pk": "CON",
         "fields": {
             "description": "Construction",

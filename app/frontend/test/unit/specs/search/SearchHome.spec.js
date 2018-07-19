@@ -4,7 +4,7 @@ import SearchHome from '@/registry/components/search/SearchHome'
 import SearchTable from '@/registry/components/search/SearchTable'
 import APIErrorMessage from '@/common/components/APIErrorMessage'
 import fakeDrillerOptions from '../fakeDrillerOptions'
-import { FETCH_CITY_LIST, FETCH_DRILLER_LIST, LOGIN, LOGOUT, FETCH_DRILLER_OPTIONS } from '@/registry/store/actions.types'
+import { FETCH_CITY_LIST, FETCH_DRILLER_LIST, FETCH_DRILLER_OPTIONS } from '@/registry/store/actions.types'
 import { SET_DRILLER_LIST } from '@/registry/store/mutations.types'
 
 const localVue = createLocalVue()
@@ -81,9 +81,7 @@ describe('SearchHome.vue', () => {
     actions = {
       [FETCH_CITY_LIST]: jest.fn(),
       [FETCH_DRILLER_LIST]: jest.fn(),
-      [FETCH_DRILLER_OPTIONS]: jest.fn(),
-      [LOGIN]: jest.fn(),
-      [LOGOUT]: jest.fn()
+      [FETCH_DRILLER_OPTIONS]: jest.fn()
     }
     mutations = {
       [SET_DRILLER_LIST]: jest.fn()

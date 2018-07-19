@@ -759,7 +759,7 @@ for(String envKeyName: context.env.keySet() as String[]){
 stage('Cleanup') {
 
     def inputResponse = null
-    String mergeMethod=isCI?'squash':'merge'
+    String mergeMethod='merge'
 
     waitUntil {
         boolean isDone=false

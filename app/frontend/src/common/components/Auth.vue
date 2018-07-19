@@ -26,19 +26,30 @@ export default {
   methods: {
     keyCloakLogin () {
       if (this.keycloak) {
-        this.keycloak.login({ idpHint: 'idir' }).success((authenticated) => {
-          if (authenticated) {
-            ApiService.authHeader('JWT', this.keycloak.token)
-          }
-        }).error((e) => {
-          this.$store.commit(SET_ERROR, { error: 'Cannot contact SSO provider' })
+        this.keycloak.init().success(() => {
+          this.keycloak.login({ idpHint: 'idir' }).success((authenticated) => {
+            if (authenticated) {
+              ApiService.authHeader('JWT', this.keycloak.token)
+              localStorage.setItem('token', this.keycloak.token)
+              localStorage.setItem('refreshToken', this.keycloak.refreshToken)
+              localStorage.setItem('idToken', this.keycloak.idToken)
+            }
+          }).error((e) => {
+            this.$store.commit(SET_ERROR, { error: 'Cannot contact SSO provider' })
+          })
         })
       }
     },
     keyCloakLogout () {
+      // This should log the user out, but unfortunately does not delete the cookie storing the user
+      // token.
       if (this.keycloak && this.keycloak.authenticated) {
-        this.keycloak.logout()
-        this.$router.push({ name: 'SearchHome' })
+        this.keycloak.clearToken()
+        ApiService.authHeader()
+        localStorage.removeItem('token')
+        localStorage.removeItem('refreshToken')
+        localStorage.removeItem('idToken')
+        this.keycloak.logout() // This redirects the user to a logout screen.
       }
     }
   }

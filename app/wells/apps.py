@@ -11,19 +11,8 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
+from django.apps import AppConfig
 
-from django.views import generic
 
-from ..models import ActivitySubmission
-
-class ActivitySubmissionListView(generic.ListView):
-    model = ActivitySubmission
-    context_object_name = 'activity_submission_list'
-    template_name = 'gwells/activity_submission_list.html'
-
-    def get_context_data(self, **kwargs):
-        """
-        Return the context for the page.
-        """
-        context = super(ActivitySubmissionListView, self).get_context_data(**kwargs)
-        return context
+class WellsConfig(AppConfig):
+    name = 'wells'

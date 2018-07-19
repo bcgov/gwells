@@ -1,6 +1,7 @@
 {% extends 'gwells/base.html' %}
 {% load verbose_name %}
 {% load exclude_zero_decimals %}
+{% load render_bundle from webpack_loader %}
 {% block title %}Well Summary{% endblock %}
 
 {% block introduction_block %}
@@ -830,40 +831,15 @@
 
 {% if settings.ENABLE_ADDITIONAL_DOCUMENTS %}
 <fieldset id="documents_fieldset" class="hide-for-print">
-    <legend>Additional Documentation</legend>
-
-    {% if file_client_error %}
-    <div class="row no-gutters hide-for-print show-for-screen">
-        <div class="col-sm-12 alert alert-warning">
-            <div id="file-client-error-msg-body" role="alert" aria-atomic="true">{{file_client_error}}</div>
-        </div>
-    </div>
-    {% elif documents %}
-    <div class="row no-gutters">
-        <div class="col-md-12">
-            <table id="additional_documentation_table" class="table table-sm table-bordered table-striped">
-                <thead>
-                    <th>Document Link</th>
-                </thead>
-                <tbody>
-                    {% for document in documents %}
-                    <tr>
-                      <td>
-                          <a href="https://{{host}}/{{document.bucket_name}}/{{document.object_name}}" target="_blank">{{document.display_name}}</a>
-                      </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
-    {% else %}
-    <div class="row no-gutters hide-for-print show-for-screen">
-        <div class="col-sm-12">
-            <div id="no_documentation_msg">No additional documentation currently available for this well.</div>
-        </div>
-    </div>
-    {% endif %}
+    <legend>Documentation</legend>
+    <script type="text/javascript">
+    var meta = document.createElement('meta');
+    meta.name="well.tag_number"
+    meta.content="{{well.well_tag_number}}"
+    document.getElementsByTagName("head")[0].appendChild(meta)
+    </script>
+    <div id="documents"></div>
+    {% render_bundle 'documents' 'js' %}
 </fieldset>
 {% endif %}
 

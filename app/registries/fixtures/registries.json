@@ -28545,7 +28545,7 @@
             "registrar_notes": null,
             "reason_denied": null,
             "primary_certificate": "e368e066-137b-491a-af2a-da3bf2936e6d",
-            "primary_certificate_no": "grand-parent",
+            "primary_certificate_no": "N/A",
             "current_status": "A",
             "application_recieved_date": null,
             "application_outcome_date": "2006-09-06",

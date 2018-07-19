@@ -1,3 +1,16 @@
+"""
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+"""
 import uuid
 import logging
 import os
@@ -23,7 +36,7 @@ from registries.models import (
     SubactivityCode)
 from registries.views import PersonListView, PersonDetailView
 from gwells.roles import (roles_to_groups, GWELLS_ROLE_GROUPS, GWELLS_ROLES,
-                          ADJUDICATOR_ROLE, ADMIN_ROLE, AUTHORITY_ROLE, VIEWER_ROLE)
+                          REGISTRIES_ADJUDICATOR_ROLE, ADMIN_ROLE, REGISTRIES_AUTHORITY_ROLE, REGISTRIES_VIEWER_ROLE)
 
 # Note: see postman/newman for more API tests.
 # Postman API tests include making requests with incomplete data, missing required fields etc.
@@ -429,7 +442,6 @@ class APIPersonTests(AuthenticatedAPITestCase):
         count_before = Person.objects.count()
 
         response = self.client.post(url, data, format='json')
-        print(response)
         created_guid = response.data['person_guid']
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -603,7 +615,7 @@ class APIPersonTests(AuthenticatedAPITestCase):
         if created:
             Profile.objects.get_or_create(user=user)
 
-        roles_to_groups(user, VIEWER_ROLE)
+        roles_to_groups(user, REGISTRIES_VIEWER_ROLE)
         self.client.force_authenticate(user=user)
         url = reverse('person-list')
         data = {'first_name': 'Bobby', 'surname': 'Driller'}
