@@ -30,7 +30,7 @@ const inputBindingsMixin = {
         if (!props.includes(fields[key])) {
           console.warn(`Field ${key} declared in fields but corresponding prop ${fields[key]} is missing`)
         }
-        this.$options.computed[`${key}`] = {
+        this.$options.computed[key] = {
           get () {
             return this[fields[key]]
           },
