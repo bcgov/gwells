@@ -27,5 +27,5 @@ class WellsPermissions(DjangoModelPermissions):
         """
         if request.user and request.user.is_authenticated and request.user.groups.filter(
                 name__in=WELLS_ROLES).exists():
-            return super(WellsPermissions, self).has_permission(request, view)
+            return super().has_permission(request, view)
         return False
