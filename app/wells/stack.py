@@ -38,7 +38,7 @@ class StackWells():
             # If there's already a well, we update it
             return self._update_well_record(submission)
         # If there is as yet no well, we create one
-        return self._stack([submission, ], Well())
+        return self._stack(ActivitySubmission.objects.filter(filing_number=filing_number), Well())
 
     def _create_legacy_submission(self, well: Well) -> None:
         """
@@ -55,7 +55,8 @@ class StackWells():
             well_tag_number=well
         )
 
-    def _stack(self, submissions: ActivitySubmission, well: Well) -> Well:
+    def _stack(self, submissions, well: Well) -> Well:
+        submissions = submissions.order_by('-work_start_date')
         composite = {}
         # Iterate through all the submissions
         # TODO: Deal with Lithology, LtsaOwner, LinerPerforation, Casing, AquiferWell, Screen etc.
@@ -76,7 +77,7 @@ class StackWells():
         Used to update an existing well record.
         """
         submissions = ActivitySubmission.objects.filter(
-            well_tag_number=submission.well_tag_number)        
+            well_tag_number=submission.well_tag_number)
         if submissions.count() > 1 or self._submission_is_construction(submission):
             # If there's more than one submission, or this is a construction submission, we don't need to
             # create a legacy well, we can go ahead, iterate though the submissions and update the well.

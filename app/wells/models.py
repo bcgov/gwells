@@ -968,7 +968,6 @@ class ActivitySubmission(AuditModel):
 
     class Meta:
         db_table = 'activity_submission'
-        ordering = ['-work_start_date']
 
     def __str__(self):
         if self.filing_number:
