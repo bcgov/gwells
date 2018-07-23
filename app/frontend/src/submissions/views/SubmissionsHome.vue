@@ -9,12 +9,28 @@
 
         <!-- Form load/save -->
         <b-row>
-          <b-col class="text-right">
-            <b-btn variant="outline-primary">Save</b-btn>
-            <b-btn variant="outline-primary">Load last saved</b-btn>
+          <b-col sm="6" md="7" lg="9"></b-col>
+          <b-col sm="6" md="5" lg="3">
+            <b-row>
+              <b-col class="text-right no-gutters">
+                <b-btn block variant="outline-primary" @click="saveForm">
+                  Save
+                  <transition name="bounce">
+                    <i v-show="saveFormSuccess" class="fa fa-check fa-fw text-success"></i>
+                  </transition>
+                </b-btn>
+              </b-col>
+              <b-col>
+                <b-btn block variant="outline-primary" @click="loadConfirmation" ref="confirmLoadBtn">
+                  Load
+                  <transition name="bounce">
+                    <i v-show="loadFormSuccess" class="fa fa-check fa-fw text-success"></i>
+                  </transition>
+                </b-btn>
+              </b-col>
+            </b-row>
           </b-col>
         </b-row>
-
         <!-- Form step 1: Type of well -->
         <step01-type class="my-3"
           :wellActivityType.sync="form.well_activity_type"
@@ -23,6 +39,7 @@
           :workStartDate.sync="form.work_start_date"
           :workEndDate.sync="form.work_end_date"
           :errors="errors"
+          :fieldsLoaded="fieldsLoaded"
         ></step01-type>
 
         <!-- Step 2: Owner information -->
@@ -33,6 +50,7 @@
           :ownerCity.sync="form.owner_city"
           :ownerPostalCode.sync="form.owner_postal_code"
           :errors="errors"
+          :fieldsLoaded="fieldsLoaded"
         ></step02-owner>
 
         <b-btn type="submit" variant="primary" ref="activitySubmitBtn">Submit</b-btn>
@@ -63,6 +81,24 @@
           </b-btn>
         </div>
       </b-modal>
+
+      <!-- Form reload (load from save) confirmation -->
+      <b-modal
+          v-model="confirmLoadModal"
+          centered
+          title="Confirm load submission data"
+          @shown="$refs.confirmLoadConfirmBtn.focus()"
+          :return-focus="$refs.loadFormBtn">
+        Are you sure you want to load the previously saved activity report? Your current report will be overwritten.
+        <div slot="modal-footer">
+          <b-btn variant="primary" @click="confirmLoadModal=false;loadForm()" ref="confirmLoadConfirmBtn">
+            Save
+          </b-btn>
+          <b-btn variant="light" @click="confirmLoadModal=false">
+            Cancel
+          </b-btn>
+        </div>
+      </b-modal>
     </div>
   </div>
 </template>
@@ -83,7 +119,11 @@ export default {
       confirmSubmitModal: false,
       formSubmitLoading: false,
       formSubmitSuccess: false,
+      saveFormSuccess: false,
+      loadFormSuccess: false,
+      confirmLoadModal: false,
       errors: {},
+      fieldsLoaded: {},
       form: {}
     }
   },
@@ -124,6 +164,41 @@ export default {
         owner_province_state: '',
         owner_postal_code: ''
       }
+    },
+    saveForm () {
+      // saves a copy of form data locally
+      this.saveFormReset()
+      const data = JSON.stringify(this.form)
+      localStorage.setItem('savedFormData', data)
+      setTimeout(() => { this.saveFormSuccess = true }, 0)
+    },
+    loadForm () {
+      this.saveFormReset()
+      const storedData = localStorage.getItem('savedFormData')
+      if (storedData) {
+        const parsedData = JSON.parse(storedData)
+        this.form = Object.assign(this.form, parsedData)
+        this.fieldsLoaded = Object.assign(this.fieldsLoaded, parsedData)
+        setTimeout(() => { this.loadFormSuccess = true }, 0)
+        setTimeout(() => { this.fieldsLoaded = {} }, 0)
+      } else {
+        console.log('no data stored')
+      }
+    },
+    loadConfirmation () {
+      this.confirmLoadModal = true
+    },
+    saveFormReset () {
+      this.saveFormSuccess = false
+      this.loadFormSuccess = false
+    }
+  },
+  watch: {
+    form: {
+      handler () {
+        this.saveFormReset()
+      },
+      deep: true
     }
   },
   created () {
@@ -132,6 +207,27 @@ export default {
 }
 </script>
 
-<style>
-
+<style lang="scss">
+.bounce-enter-active {
+  animation: bounce-in .5s;
+}
+.bounce-leave-active {
+  animation: bounce-out .2s;
+}
+@keyframes bounce-in {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.5);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes bounce-out {
+  100% {
+    transform: scale(0)
+  }
+}
 </style>

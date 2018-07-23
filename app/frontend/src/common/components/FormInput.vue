@@ -51,16 +51,31 @@ export default {
       type: String,
       default: 'text'
     },
-    placeholder: String
+    placeholder: String,
+    loaded: String // if changed to true, change contextual state temporarily (e.g. flash green on valid input)
+  },
+  data () {
+    return {
+      updated: false
+    }
   },
   computed: {
     validation () {
-      return (this.errors && this.errors.length) ? false : null
+      return (this.errors && this.errors.length) ? false
+        : (this.updated) ? true : null
     }
   },
   methods: {
     updateValue: function (value) {
       this.$emit('input', value)
+    }
+  },
+  watch: {
+    loaded () {
+      if (this.loaded && this.loaded.length) {
+        this.updated = true
+        setTimeout(() => { this.updated = false }, 500)
+      }
     }
   }
 
