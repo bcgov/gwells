@@ -53,7 +53,7 @@
           :fieldsLoaded="fieldsLoaded"
         ></step02-owner>
 
-        <b-btn type="submit" variant="primary" ref="activitySubmitBtn">Submit</b-btn>
+        <b-btn id="formSubmitButton" type="submit" variant="primary" ref="activitySubmitBtn">Submit</b-btn>
       </b-form>
 
       <!-- Form submission success message -->
@@ -67,6 +67,7 @@
       <!-- Form submission confirmation -->
       <b-modal
           v-model="confirmSubmitModal"
+          id="confirmSubmitModal"
           centered
           title="Confirm submission"
           @shown="$refs.confirmSubmitConfirmBtn.focus()"
@@ -92,7 +93,7 @@
         Are you sure you want to load the previously saved activity report? Your current report will be overwritten.
         <div slot="modal-footer">
           <b-btn variant="primary" @click="confirmLoadModal=false;loadForm()" ref="confirmLoadConfirmBtn">
-            Save
+            Load
           </b-btn>
           <b-btn variant="light" @click="confirmLoadModal=false">
             Cancel
