@@ -148,7 +148,7 @@ export default {
   },
   computed: {
     formStep () {
-      return (this.step % 2) + 1
+      return (this.step % (this.maxSteps + 1))
     }
   },
   methods: {
