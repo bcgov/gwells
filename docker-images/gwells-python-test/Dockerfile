@@ -1,4 +1,4 @@
-FROM openshift/python:3.5
+FROM openshift/python:3.6
 USER 0
 
 RUN yum -y --setopt=tsflags=nodocs install wget nano Xvfb  xorg-x11-xauth java-1.8.0-openjdk-devel git firefox unzip lsof rsync tar which zip bzip2 && \
