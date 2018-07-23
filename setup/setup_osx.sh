@@ -97,7 +97,29 @@ done
 
 		while ! (( which java )&&( /usr/libexec/java_home -x | grep -o "1.8" ))
 		do
-			echo "Waiting for Java 8 Install"
+			echo "Waiting for Java 8 install"
+			sleep 30
+		done
+	fi
+)
+
+
+# Request and wait for Python 3.6.6 install
+#
+( which python3 )&&( ! python3 --version | grep -q "3.7" )||( \
+	tput bel
+	echo
+	echo "Brew is currently not providing Python 3.6.6, install manually."
+	echo
+	read -n 1 -p "Open download link and wait for install? (y|n):" yORn
+	echo
+	if([ "${yORn}" == "y" ]||[ "${yORn}" == "Y" ])
+	then
+		open https://www.python.org/downloads/release/python-366/
+
+		while ! (( which python3 )&&( ! python3 --version | grep -q "3.7" ))
+		do
+			echo "Waiting for Python 3.6.6 install"
 			sleep 30
 		done
 	fi
@@ -130,7 +152,6 @@ PACKAGES=(
 	"nodejs"
 	"nvm"
 	"postgresql"
-	"python3"
 )
 for p in ${PACKAGES[@]}
 do
