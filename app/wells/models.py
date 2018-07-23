@@ -391,6 +391,15 @@ class WellStatusCode(AuditModel):
         super(WellStatusCode, self).save(*args, **kwargs)
 
 
+class WellActivityCodeTypeManager(models.Manager):
+
+    def construction(self):
+        return self.get_queryset().get(well_activity_type_code='CON')
+
+    def legacy(self):
+        return self.get_queryset().get(well_activity_type_code='LEGACY')
+
+
 class WellActivityCode(AuditModel):
     """
     Types of Well Activity.
@@ -402,6 +411,9 @@ class WellActivityCode(AuditModel):
 
     effective_date = models.DateTimeField(blank=True, null=True)
     expiry_date = models.DateTimeField(blank=True, null=True)
+
+    objects = models.Manager()
+    types = WellActivityCodeTypeManager()
 
     class Meta:
         db_table = 'well_activity_code'
@@ -759,17 +771,22 @@ class ActivitySubmission(AuditModel):
     intended_water_use = models.ForeignKey(IntendedWaterUseCode, db_column='intended_water_use_code',
                                            on_delete=models.CASCADE, blank=True, null=True,
                                            verbose_name='Intended Water Use')
+    # Driller responsible should be a required field on all submissions, but for legacy well
+    # information this may not be available, so we can't enforce this on a database level.
     driller_responsible = models.ForeignKey(Person, db_column='driller_responsible_guid',
                                             on_delete=models.PROTECT,
-                                            verbose_name='Person Responsible for Drilling')
+                                            verbose_name='Person Responsible for Drilling',
+                                            blank=True, null=True)
     driller_name = models.CharField(
         max_length=200, blank=True, verbose_name='Name of Person Who Did the Work')
     consultant_name = models.CharField(
         max_length=200, blank=True, verbose_name='Consultant Name')
     consultant_company = models.CharField(
         max_length=200, blank=True, verbose_name='Consultant Company')
-    work_start_date = models.DateField(verbose_name='Work Start Date')
-    work_end_date = models.DateField(verbose_name='Work End Date')
+    # Work start & end date should be required fields on all submissions, but for legacy well
+    # information this may not be available, so we can't enforce this on a database level.
+    work_start_date = models.DateField(verbose_name='Work Start Date', null=True, blank=True)
+    work_end_date = models.DateField(verbose_name='Work End Date', null=True, blank=True)
 
     owner_full_name = models.CharField(
         max_length=200, verbose_name='Owner Name')
@@ -949,91 +966,9 @@ class ActivitySubmission(AuditModel):
 
     tracker = FieldTracker()
 
-    def create_well(self):
-        w = Well(well_class=self.well_class)
-        w.well_subclass = self.well_subclass
-        w.intended_water_use = self.intended_water_use
-        w.owner_full_name = self.owner_full_name
-        w.owner_mailing_address = self.owner_mailing_address
-        w.owner_city = self.owner_city
-        w.owner_province_state = self.owner_province_state
-        w.owner_postal_code = self.owner_postal_code
-
-        w.street_address = self.street_address
-        w.city = self.city
-        w.legal_lot = self.legal_lot
-        w.legal_plan = self.legal_plan
-        w.legal_district_lot = self.legal_district_lot
-        w.legal_block = self.legal_block
-        w.legal_section = self.legal_section
-        w.legal_township = self.legal_township
-        w.legal_range = self.legal_range
-        w.land_district = self.land_district
-        w.legal_pid = self.legal_pid
-        w.well_location_description = self.well_location_description
-
-        w.identification_plate_number = self.identification_plate_number
-        w.latitude = self.latitude
-        w.longitude = self.longitude
-        w.ground_elevation = self.ground_elevation
-        w.ground_elevation_method = self.ground_elevation_method
-        w.drilling_method = self.drilling_method
-        w.other_drilling_method = self.other_drilling_method
-        w.well_orientation = self.well_orientation
-
-        w.surface_seal_material = self.surface_seal_material
-        w.surface_seal_depth = self.surface_seal_depth
-        w.surface_seal_thickness = self.surface_seal_thickness
-        w.surface_seal_method = self.surface_seal_method
-        w.backfill_above_surface_seal = self.backfill_above_surface_seal
-        w.backfill_above_surface_seal_depth = self.backfill_above_surface_seal_depth
-
-        w.liner_material = self.liner_material
-        w.liner_diameter = self.liner_diameter
-        w.liner_thickness = self.liner_thickness
-        w.liner_from = self.liner_from
-        w.liner_to = self.liner_to
-
-        w.screen_intake = self.screen_intake
-        w.screen_type = self.screen_type
-        w.screen_material = self.screen_material
-        w.other_screen_material = self.other_screen_material
-        w.screen_opening = self.screen_opening
-        w.screen_bottom = self.screen_bottom
-        w.other_screen_bottom = self.other_screen_bottom
-
-        w.filter_pack_from = self.filter_pack_from
-        w.filter_pack_to = self.filter_pack_to
-        w.filter_pack_thickness = self.filter_pack_thickness
-        w.filter_pack_material = self.filter_pack_material
-        w.filter_pack_material_size = self.filter_pack_material_size
-
-        w.development_method = self.development_method
-        w.development_hours = self.development_hours
-        w.development_notes = self.development_notes
-
-        w.water_quality_colour = self.water_quality_colour
-        w.water_quality_odour = self.water_quality_odour
-
-        w.total_depth_drilled = self.total_depth_drilled
-        w.finished_well_depth = self.finished_well_depth
-        w.final_casing_stick_up = self.final_casing_stick_up
-        w.bedrock_depth = self.bedrock_depth
-        w._water_level = self.static_water_level
-        w.well_yield = self.well_yield
-        w.artestian_flow = self.artestian_flow
-        w.artestian_pressure = self.artestian_pressure
-        w.well_cap_type = self.well_cap_type
-        w.well_disinfected = self.well_disinfected
-
-        w.comments = self.comments
-        w.alternative_specs_submitted = self.alternative_specs_submitted
-        # TODO
-
-        return w
-
     class Meta:
         db_table = 'activity_submission'
+        ordering = ['-work_start_date']
 
     def __str__(self):
         if self.filing_number:
