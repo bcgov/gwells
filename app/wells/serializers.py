@@ -126,3 +126,11 @@ class WellListSerializer(serializers.ModelSerializer):
             "backfill_material",
             "decommission_details",
         )
+
+
+class WellTagSearchSerializer(serializers.ModelSerializer):
+    """ serializes fields used for searching for well tags """
+
+    class Meta:
+        model = Well
+        fields = ("well_tag_number", "owner_full_name")

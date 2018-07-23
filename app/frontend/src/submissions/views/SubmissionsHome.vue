@@ -36,6 +36,7 @@
         <!-- Form step 1: Type of well -->
         <step01-type class="my-3"
           v-if="formStep === 1 || formIsFlat"
+          :wellTagNumber.sync="form.well_tag_number"
           :wellActivityType.sync="form.well_activity_type"
           :units.sync="units"
           :personResponsible.sync="form.driller_responsible"
@@ -158,6 +159,11 @@ export default {
       if (data.driller_responsible && data.driller_responsible.person_guid) {
         data.driller_responsible = data.driller_responsible.person_guid
       }
+
+      if (data.well_tag_number && data.well_tag_number.well_tag_number) {
+        data.well_tag_number = data.well_tag_number.well_tag_number
+      }
+
       this.formSubmitLoading = true
       this.errors = {}
       ApiService.post('submissions', data).then(() => {
@@ -178,6 +184,7 @@ export default {
         // one step at a time.
 
         well_activity_type: 'CON',
+        well_tag_number: null,
         driller_responsible: null,
         work_start_date: '',
         work_end_date: '',

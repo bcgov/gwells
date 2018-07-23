@@ -12,14 +12,18 @@
     limitations under the License.
 """
 
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from drf_yasg.utils import swagger_auto_schema
 from django.db.models import Prefetch
 from django.http import Http404
 from django.views.generic import DetailView
 
+from rest_framework import filters
+from rest_framework.views import APIView
+from rest_framework.response import Response
 from rest_framework.generics import ListAPIView
+from rest_framework.permissions import DjangoModelPermissionsOrAnonReadOnly
+
+from drf_yasg.utils import swagger_auto_schema
+# from django_filters import rest_framework as restfilters
 
 from gwells import settings
 from gwells.models import Survey
@@ -29,7 +33,7 @@ from gwells.pagination import APILimitOffsetPagination
 from wells.models import Well
 from wells.documents import MinioClient
 from wells.permissions import WellsDocumentPermissions, WellsPermissions
-from wells.serializers import WellListSerializer
+from wells.serializers import WellListSerializer, WellTagSearchSerializer
 
 
 class WellDetailView(DetailView):
@@ -77,7 +81,7 @@ class WellListAPIView(ListAPIView):
     get: returns a list of wells
     """
 
-    permission_classes = (WellsPermissions,)
+    permission_classes = (DjangoModelPermissionsOrAnonReadOnly,)
     model = Well
     queryset = Well.objects.all()
     pagination_class = APILimitOffsetPagination
@@ -106,3 +110,29 @@ class WellListAPIView(ListAPIView):
 
         serializer = WellListSerializer(filtered_queryset, many=True)
         return Response(serializer.data)
+
+
+class WellTagSearchAPIView(ListAPIView):
+    """ seach for wells by tag or owner """
+
+    permission_classes = (DjangoModelPermissionsOrAnonReadOnly,)
+    model = Well
+    queryset = Well.objects.all()
+    pagination_class = None
+    serializer_class = WellTagSearchSerializer
+    lookup_field = 'well_tag_number'
+
+    filter_backends = (filters.SearchFilter,)
+    ordering = ('well_tag_number',)
+    search_fields = (
+        'well_tag_number',
+        'owner_full_name',
+    )
+
+    def get(self, request):
+        search = self.request.query_params.get('search', None)
+        if not search or len(search) < 3:
+            # avoiding responding with entire collection of wells
+            return Response([])
+        else:
+            return super().get(request)
