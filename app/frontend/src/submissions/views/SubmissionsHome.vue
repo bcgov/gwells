@@ -1,7 +1,15 @@
 <template>
   <div class="card">
     <div class="card-body">
-      <h4 class="card-title">Well Activity Submission</h4>
+      <h4 class="card-title">
+        <b-row>
+          <b-col lg="8">Well Activity Submission</b-col>
+          <b-col lg="4" class="text-right">
+            <b-btn size="sm" :variant="`${formIsFlat ? 'primary':'outline-primary'}`" @click="formIsFlat=true">Flat form</b-btn>
+            <b-btn size="sm" :variant="`${formIsFlat ? 'outline-primary':'primary'}`" @click="formIsFlat=false">Wizard</b-btn>
+          </b-col>
+        </b-row>
+      </h4>
       <p>Submit activity on a well that does not exist in the system. Try a search to see if the well exists in the system before submitting a report.</p>
 
       <!-- Activity submission form -->
@@ -9,30 +17,25 @@
 
         <!-- Form load/save -->
         <b-row>
-          <b-col sm="6" md="7" lg="9"></b-col>
-          <b-col sm="6" md="5" lg="3">
-            <b-row>
-              <b-col class="text-right no-gutters">
-                <b-btn block variant="outline-primary" @click="saveForm">
-                  Save
-                  <transition name="bounce">
-                    <i v-show="saveFormSuccess" class="fa fa-check fa-fw text-success"></i>
-                  </transition>
-                </b-btn>
-              </b-col>
-              <b-col>
-                <b-btn block variant="outline-primary" @click="loadConfirmation" ref="confirmLoadBtn">
-                  Load
-                  <transition name="bounce">
-                    <i v-show="loadFormSuccess" class="fa fa-check fa-fw text-success"></i>
-                  </transition>
-                </b-btn>
-              </b-col>
-            </b-row>
+          <b-col class="text-right">
+            <b-btn size="sm" variant="outline-primary" @click="saveForm">
+              Save
+              <transition name="bounce" mode="out-in">
+                  <i v-show="saveFormSuccess" class="fa fa-check text-success"></i>
+              </transition>
+            </b-btn>
+            <b-btn size="sm" variant="outline-primary" @click="loadConfirmation" ref="confirmLoadBtn">
+              Load
+              <transition name="bounce">
+                  <i v-show="loadFormSuccess" class="fa fa-check text-success"></i>
+              </transition>
+            </b-btn>
           </b-col>
         </b-row>
+
         <!-- Form step 1: Type of well -->
         <step01-type class="my-3"
+          v-if="formStep === 1 || formIsFlat"
           :wellActivityType.sync="form.well_activity_type"
           :units.sync="units"
           :personResponsible.sync="form.driller_responsible"
@@ -44,6 +47,7 @@
 
         <!-- Step 2: Owner information -->
         <step02-owner class="my-3"
+          v-if="formStep === 2 || formIsFlat"
           :ownerFullName.sync="form.owner_full_name"
           :ownerMailingAddress.sync="form.owner_mailing_address"
           :ownerProvinceState.sync="form.owner_province_state"
@@ -52,8 +56,15 @@
           :errors="errors"
           :fieldsLoaded="fieldsLoaded"
         ></step02-owner>
-
-        <b-btn id="formSubmitButton" type="submit" variant="primary" ref="activitySubmitBtn">Submit</b-btn>
+        <b-row>
+          <b-col v-if="!formIsFlat">
+            <b-btn v-if="step > 1" @click="step > 1 ? step-- : null">Back</b-btn>
+          </b-col>
+          <b-col :class="`pr-4 ${formIsFlat ? '':'text-right'}`">
+            <b-btn v-if="step < maxSteps && !formIsFlat" @click="step++">Next</b-btn>
+            <b-btn v-else id="formSubmitButton" type="submit" variant="primary" ref="activitySubmitBtn">Submit</b-btn>
+          </b-col>
+        </b-row>
       </b-form>
 
       <!-- Form submission success message -->
@@ -116,6 +127,7 @@ export default {
   },
   data () {
     return {
+      formIsFlat: true,
       units: 'imperial',
       confirmSubmitModal: false,
       formSubmitLoading: false,
@@ -123,9 +135,17 @@ export default {
       saveFormSuccess: false,
       loadFormSuccess: false,
       confirmLoadModal: false,
+      step: 1,
+      maxSteps: 2,
+      sliding: null,
       errors: {},
       fieldsLoaded: {},
       form: {}
+    }
+  },
+  computed: {
+    formStep () {
+      return (this.step % 2) + 1
     }
   },
   methods: {
@@ -171,7 +191,8 @@ export default {
       this.saveFormReset()
       const data = JSON.stringify(this.form)
       localStorage.setItem('savedFormData', data)
-      setTimeout(() => { this.saveFormSuccess = true }, 0)
+      setTimeout(() => { this.saveFormSuccess = true }, 10)
+      setTimeout(() => { this.saveFormSuccess = false }, 1000)
     },
     loadForm () {
       this.saveFormReset()
@@ -182,6 +203,7 @@ export default {
         this.fieldsLoaded = Object.assign(this.fieldsLoaded, parsedData)
         setTimeout(() => { this.loadFormSuccess = true }, 0)
         setTimeout(() => { this.fieldsLoaded = {} }, 0)
+        setTimeout(() => { this.loadFormSuccess = false }, 1000)
       } else {
         console.log('no data stored')
       }
@@ -209,6 +231,16 @@ export default {
 </script>
 
 <style lang="scss">
+.slide-leave-active,
+.slide-enter-active {
+  transition: 1s;
+}
+.slide-enter {
+  transform: translate(100%, 0);
+}
+.slide-leave-to {
+  transform: translate(-100%, 0);
+}
 .bounce-enter-active {
   animation: bounce-in .5s;
 }
