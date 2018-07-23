@@ -53,6 +53,7 @@
           :ownerProvinceState.sync="form.owner_province_state"
           :ownerCity.sync="form.owner_city"
           :ownerPostalCode.sync="form.owner_postal_code"
+          :provinceOptions="formOptions.province_state_codes"
           :errors="errors"
           :fieldsLoaded="fieldsLoaded"
         ></step02-owner>
@@ -140,7 +141,8 @@ export default {
       sliding: null,
       errors: {},
       fieldsLoaded: {},
-      form: {}
+      form: {},
+      formOptions: {}
     }
   },
   computed: {
@@ -214,6 +216,11 @@ export default {
     saveFormReset () {
       this.saveFormSuccess = false
       this.loadFormSuccess = false
+    },
+    fetchOptions () {
+      ApiService.query('drillers/options').then((response) => {
+        this.formOptions = response.data
+      })
     }
   },
   watch: {
@@ -226,6 +233,7 @@ export default {
   },
   created () {
     this.resetForm()
+    this.fetchOptions()
   }
 }
 </script>

@@ -21,6 +21,8 @@
           <b-form-select
               v-model="ownerProvinceInput"
               :options="provinceOptions"
+              value-field="province_state_code"
+              text-field="description"
               :state="errors['owner_province_state'] ? false : null">
             <template slot="first">
               <option :value="null" disabled>Select a province</option>
@@ -50,6 +52,7 @@ export default {
     ownerCity: String,
     ownerProvinceState: String,
     ownerPostalCode: String,
+    provinceOptions: Array,
     errors: {
       type: Object,
       default: () => ({})
@@ -67,9 +70,7 @@ export default {
     ownerPostalCodeInput: 'ownerPostalCode'
   },
   data () {
-    return {
-      provinceOptions: ['BC', 'AB', 'ON'] // temporary placeholder
-    }
+    return {}
   }
 }
 </script>
