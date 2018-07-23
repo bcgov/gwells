@@ -359,7 +359,8 @@ python3 manage.py migrate
 
 # Collect static files
 #
-python3 manage.py collectstatic
+[ -d ${START_DIR}/../app/staticfiles ]|| \
+	python3 manage.py collectstatic
 
 
 # Run unit tests
