@@ -265,8 +265,12 @@
                     }
                 ],
                 "source": {
-                    "type": "Dockerfile",
-                    "dockerfile": "FROM openshift/bcgov-s2i-caddy:latest\nUSER 0\nCOPY staticfiles /var/www/html/gwells/static\nRUN ls -la /var/www/html/gwells/static/\nUSER 1001\nCMD [\"sh\",\"/tmp/scripts/run\"]\n",
+                    "contextDir": "docker-images/gwells-static",
+                    "git": {
+                        "ref": "master",
+                        "uri": "${SOURCE_REPOSITORY_URL}"
+                    },
+                    "type": "Git",
                     "images": [
                         {
                             "from": {
