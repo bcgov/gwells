@@ -40,6 +40,11 @@
           :wellActivityType.sync="form.well_activity_type"
           :units.sync="units"
           :personResponsible.sync="form.driller_responsible"
+          :idPlateNumber.sync="form.identification_plate_number"
+          :wellPlateAttached.sync="form.well_plate_attached"
+          :drillerName.sync="form.driller_name"
+          :consultantName.sync="form.consultant_name"
+          :consultantCompany.sync="form.consultant_company"
           :workStartDate.sync="form.work_start_date"
           :workEndDate.sync="form.work_end_date"
           :errors="errors"
@@ -180,12 +185,14 @@ export default {
     },
     resetForm () {
       this.form = {
-        // forms are grouped into 'steps' to facilitate completing submissions
-        // one step at a time.
-
         well_activity_type: 'CON',
         well_tag_number: null,
+        identification_plate_number: '',
+        well_plate_attached: '',
         driller_responsible: null,
+        driller_name: '',
+        consultant_name: '',
+        consultant_company: '',
         work_start_date: '',
         work_end_date: '',
         owner_full_name: '',

@@ -9,8 +9,6 @@
   See the License for the specific language governing permissions and
   limitations under the License.
  */
-// import { SET_KEYCLOAK } from '@/registry/store/mutations.types.js'
-// import { store } from '@/registry/store'
 import Keycloak from 'keycloak-js'
 import ApiService from '@/common/services/ApiService.js'
 import Vue from 'vue'
