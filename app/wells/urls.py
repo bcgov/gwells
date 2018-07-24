@@ -25,6 +25,10 @@ urlpatterns = [
 
     # API endpoints
 
+    # Well tag search
+    url(r'^api/v1/wells/tags/$',
+        never_cache(views.WellTagSearchAPIView.as_view()), name='well-tag-search'),
+
     # Documents (well records)
     url(r'^api/v1/wells/(?P<tag>[0-9]+)/files$',
         never_cache(views.ListFiles.as_view()), name='file-list'),

@@ -26,6 +26,32 @@
       </b-row>
       <b-row>
         <b-col cols="12" md="6">
+          <b-form-group label="Well tag number (if known)">
+            <v-select
+              v-model="wellTagNumberInput"
+              id="wellTagNumberSelect"
+              :filterable="false"
+              :options="wellTagOptions"
+              @search="onWellTagSearch">
+              <template slot="no-options">
+                  Search by well tag number or owner name
+              </template>
+              <template slot="option" slot-scope="option">
+                <div>
+                  {{ option.well_tag_number }} ({{ option.owner_full_name }})
+                </div>
+              </template>
+              <template slot="selected-option" slot-scope="option">
+                <div>
+                  {{ option.well_tag_number }}
+                </div>
+              </template>
+            </v-select>
+          </b-form-group>
+        </b-col>
+      </b-row>
+      <b-row>
+        <b-col cols="12" md="6">
           <b-form-group
               label="Person Responsible for Drilling: *"
               aria-describedby="personResponsibleInvalidFeedback"
@@ -81,6 +107,7 @@ export default {
   mixins: [inputBindingsMixin],
   props: {
     units: String,
+    wellTagNumber: Object,
     workStartDate: String,
     workEndDate: String,
     wellActivityType: String,
@@ -99,22 +126,34 @@ export default {
     workStartDateInput: 'workStartDate',
     workEndDateInput: 'workEndDate',
     wellActivityTypeInput: 'wellActivityType',
-    personResponsibleInput: 'personResponsible'
+    personResponsibleInput: 'personResponsible',
+    wellTagNumberInput: 'wellTagNumber'
   },
   data () {
     return {
-      personOptions: []
+      personOptions: [],
+      wellTagOptions: []
     }
   },
   computed: {},
   methods: {
     onPersonSearch (search, loading) {
       loading(true)
-      this.search(loading, search, this)
+      this.drillerSearch(loading, search, this)
     },
-    search: debounce((loading, search, vm) => {
+    drillerSearch: debounce((loading, search, vm) => {
       ApiService.query(`drillers/names/?search=${escape(search)}`).then((response) => {
         vm.personOptions = response.data
+        loading(false)
+      })
+    }, 500),
+    onWellTagSearch (search, loading) {
+      loading(true)
+      this.wellTagSearch(loading, search, this)
+    },
+    wellTagSearch: debounce((loading, search, vm) => {
+      ApiService.query(`wells/tags/?search=${escape(search)}`).then((response) => {
+        vm.wellTagOptions = response.data
         loading(false)
       })
     }, 500)
@@ -123,6 +162,10 @@ export default {
     personResponsibleInput (val) {
       // reset list of people when user finished selecting a person
       this.personOptions = []
+    },
+    wellTagNumberInput (val) {
+      // reset list of people when user finished selecting a person
+      this.wellTagOptions = []
     }
   }
 }
