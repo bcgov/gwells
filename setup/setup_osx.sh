@@ -357,10 +357,11 @@ python3 manage.py migrate
 	pg_restore -U gwells -d gwells --no-owner --no-privileges "${DB_MODERN}"
 
 
-# Collect static files
+# Create fresh static files
 #
-[ -d ${START_DIR}/../app/staticfiles ]|| \
-	python3 manage.py collectstatic
+[ ! -d ./staticfiles ]|| \
+	rm -rf ./staticfiles
+python3 manage.py collectstatic
 
 
 # Run unit tests
