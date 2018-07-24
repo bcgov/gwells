@@ -34,11 +34,16 @@ class StackWells():
         """
         submission = ActivitySubmission.objects.get(
             filing_number=filing_number)
-        if submission.well_tag_number is not None:
+        if submission.well is not None:
             # If there's already a well, we update it
             return self._update_well_record(submission)
         # If there is as yet no well, we create one
-        return self._stack(ActivitySubmission.objects.filter(filing_number=filing_number), Well())
+        logger.info('Creating well for submission {}'.format(filing_number))
+        well = Well.objects.create()
+        well = self._stack(ActivitySubmission.objects.filter(filing_number=filing_number), well)
+        submission.well = well
+        submission.save()
+        return well
 
     def _create_legacy_submission(self, well: Well) -> None:
         """
@@ -52,7 +57,7 @@ class StackWells():
             work_start_date=well.construction_start_date,
             work_end_date=well.construction_end_date,
             well_activity_type=WellActivityCode.types.legacy(),
-            well_tag_number=well
+            well=well
         )
 
     def _stack(self, submissions, well: Well) -> Well:
@@ -69,7 +74,9 @@ class StackWells():
         well.owner_full_name = composite.get('owner_full_name')
         well.owner_province_state = ProvinceStateCode.objects.get(
             province_state_code=composite.get('owner_province_state'))
+        logger.info('going to save well')
         well.save()
+        logger.info('done saving well')
         return well
 
     def _update_well_record(self, submission: ActivitySubmission) -> Well:
@@ -77,19 +84,19 @@ class StackWells():
         Used to update an existing well record.
         """
         submissions = ActivitySubmission.objects.filter(
-            well_tag_number=submission.well_tag_number)
+            well=submission.well)
         if submissions.count() > 1 or self._submission_is_construction(submission):
             # If there's more than one submission, or this is a construction submission, we don't need to
             # create a legacy well, we can go ahead, iterate though the submissions and update the well.
-            return self._stack(submissions, submission.well_tag_number)
+            return self._stack(submissions, submission.well)
         else:
             # If there aren't prior submissions, we may create a legacy record using the current well
             # record.
-            self._create_legacy_submission(submission.well_tag_number)
+            self._create_legacy_submission(submission.well)
             # We should now have multiple records
             submissions = ActivitySubmission.objects.filter(
-                well_tag_number=submission.well_tag_number)
-            return self._stack(submissions, submission.well_tag_number)
+                well=submission.well)
+            return self._stack(submissions, submission.well)
 
     def _submission_is_construction(self, submission):
         construction_code = WellActivityCode.types.construction().well_activity_type_code

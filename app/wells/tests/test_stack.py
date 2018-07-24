@@ -53,6 +53,21 @@ class StackTest(TestCase):
             display_order=0
         )[0]
 
+    def test_new_submission_gets_well_tag_number(self):
+        # Test that when a constrction submission is processed, it is asigned a well_tag_number
+        submission = ActivitySubmission.objects.create(
+            owner_full_name='Bob',
+            work_start_date=date(2018, 1, 1),
+            work_end_date=date(2018, 2, 1),
+            driller_responsible=self.driller,
+            owner_province_state=self.province,
+            well_activity_type=self.well_activity_construction,
+            )
+        stacker = StackWells()
+        well = stacker.process(submission.filing_number)
+        submission = ActivitySubmission.objects.get(filing_number=submission.filing_number)
+        self.assertEqual(well.well_tag_number, submission.well.well_tag_number)
+
     def test_construction_submission_no_current_well(self):
         # Creating a brand new well, we only have a construction submission for.
         owner_full_name = 'Bob'
@@ -85,13 +100,13 @@ class StackTest(TestCase):
             driller_responsible=self.driller,
             owner_province_state=self.province,
             well_activity_type=self.well_activity_alteration,
-            well_tag_number=well
+            well=well
             )
 
         stacker = StackWells()
         stacker.process(submission.filing_number)
         well = Well.objects.get(well_tag_number=well.well_tag_number)
-        submissions = ActivitySubmission.objects.filter(well_tag_number=well)
+        submissions = ActivitySubmission.objects.filter(well=well)
         self.assertEqual(submissions.count(), 2, "It is expected that a legacy submission be created")
         self.assertEqual(new_full_name, well.owner_full_name)
 
@@ -111,14 +126,14 @@ class StackTest(TestCase):
             driller_responsible=self.driller,
             owner_province_state=self.province,
             well_activity_type=self.well_activity_construction,
-            well_tag_number=well
+            well=well
             )
 
         stacker = StackWells()
         stacker.process(submission.filing_number)
 
         # Load all the submissions.
-        submissions = ActivitySubmission.objects.filter(well_tag_number=well)
+        submissions = ActivitySubmission.objects.filter(well=well)
         # Load the updated well record.
         well = Well.objects.get(well_tag_number=well.well_tag_number)
         self.assertEqual(submissions.count(), 1, "It is expected that no legacy submission be created")

@@ -493,7 +493,7 @@ class Well(AuditModel):
     owner_city = models.CharField(max_length=100, verbose_name='Town/City')
     owner_province_state = models.ForeignKey(
         ProvinceStateCode, db_column='province_state_code', on_delete=models.CASCADE, blank=True,
-        verbose_name='Province')
+        verbose_name='Province', null=True)
     owner_postal_code = models.CharField(
         max_length=10, blank=True, verbose_name='Postal Code')
 
@@ -758,7 +758,7 @@ class ActivitySubmission(AuditModel):
     filing_number = models.AutoField(primary_key=True)
     activity_submission_guid = models.UUIDField(
         primary_key=False, default=uuid.uuid4, editable=False)
-    well_tag_number = models.ForeignKey(
+    well = models.ForeignKey(
         Well, db_column='well_tag_number', on_delete=models.CASCADE, blank=True, null=True)
     well_activity_type = models.ForeignKey(
         WellActivityCode, db_column='well_activity_code', on_delete=models.CASCADE,
@@ -972,7 +972,7 @@ class ActivitySubmission(AuditModel):
     def __str__(self):
         if self.filing_number:
             return '%s %d %s %s' % (self.activity_submission_guid, self.filing_number,
-                                    self.well_activity_type.well_activity_code, self.street_address)
+                                    self.well_activity_type.well_activity_type_code, self.street_address)
         else:
             return '%s %s' % (self.activity_submission_guid, self.street_address)
 

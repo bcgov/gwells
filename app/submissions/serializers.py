@@ -18,7 +18,7 @@ from wells.models import (
     Well,
     ActivitySubmission
 )
-
+from wells.stack import StackWells
 from gwells.serializers import AuditModelSerializer
 
 
@@ -30,7 +30,7 @@ class WellSubmissionSerializer(serializers.ModelSerializer):
         fields = (
             "filing_number",
             "activity_submission_guid",
-            "well_tag_number",
+            "well",
             "well_activity_type",
             "well_class",
             "well_subclass",
@@ -112,3 +112,12 @@ class WellSubmissionSerializer(serializers.ModelSerializer):
             "well_yield_unit",
             "diameter",
         )
+
+    def create(self, validated_data):
+        instance = super().create(validated_data)
+        # Update the well record
+        stacker = StackWells()
+        stacker.process(instance.filing_number)
+        # The instance may have been updated with a well tag number
+        instance.refresh_from_db()
+        return instance

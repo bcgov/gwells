@@ -21,7 +21,7 @@ const webpackConfig = merge(baseWebpackConfig, {
     header: './src/header/main.js',
     footer: './src/footer/main.js',
     registry: './src/registry/main.js',
-    documents: './src/wells/main.js',
+    documents: './src/wells/documents.js',
     submissions: './src/submissions/main.js'
   },
   module: {
