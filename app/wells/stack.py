@@ -18,7 +18,8 @@ from django.forms.models import model_to_dict
 from django.db import transaction
 
 from gwells.models import ProvinceStateCode
-from wells.models import ActivitySubmission, Well, WellActivityCode
+from submissions.models import WellActivityCode
+from wells.models import Well, ActivitySubmission
 
 
 logger = logging.getLogger(__name__)

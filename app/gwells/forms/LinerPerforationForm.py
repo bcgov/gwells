@@ -21,7 +21,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Div, Submit, Hidden, HTML, Field
 from crispy_forms.bootstrap import FormActions, AppendedText, InlineRadios
 
-from gwells.models import LinerPerforation
+from wells.models import LinerPerforation
 
 
 class LinerPerforationForm(forms.ModelForm):

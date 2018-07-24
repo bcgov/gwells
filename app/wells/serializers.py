@@ -14,10 +14,7 @@
 
 from rest_framework import serializers
 from gwells.models import ProvinceStateCode
-from wells.models import (
-    Well,
-    ActivitySubmission
-)
+from wells.models import Well, ActivitySubmission
 
 from gwells.serializers import AuditModelSerializer
 
