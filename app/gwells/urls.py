@@ -79,6 +79,8 @@ urlpatterns = [
         include('django.contrib.auth.urls')),
     url(r'^' + app_root_slash, include('registries.urls')),
     url(r'^' + app_root_slash, include('wells.urls')),
+    url(r'^' + app_root_slash, include('submissions.urls')),
+
 ]
 
 if settings.ENABLE_DATA_ENTRY:

@@ -16,7 +16,7 @@ import operator
 
 from django.db.models import Q
 
-from gwells.models import Well
+from wells.models import Well
 
 
 class Search():

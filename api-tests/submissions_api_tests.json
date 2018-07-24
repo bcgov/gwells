@@ -1,0 +1,351 @@
+{
+	"info": {
+		"_postman_id": "e2d331f6-315f-4237-9a1e-bd0e0bce060f",
+		"name": "GWELLS Submissions API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"description": "",
+			"item": [
+				{
+					"name": "Log in",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "46c51db8-8a25-45d5-941f-f55f682ab9b6",
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = pm.response.json()",
+									"pm.environment.set(\"token\", jsonData.access_token);",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.expect(pm.response.code, \"Login was not successful\").to.equal(200);",
+									"})",
+									"",
+									"pm.test(\"A token was returned\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.access_token, \"a token was not returned\").to.be.ok;",
+									"    pm.expect(jsonData.access_token.length).to.be.above(36);",
+									"});",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "username",
+									"value": "{{test_user}}",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "{{test_password}}",
+									"type": "text"
+								},
+								{
+									"key": "grant_type",
+									"value": "password",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{client_id}}",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{client_secret}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{auth_server}}",
+							"host": [
+								"{{auth_server}}"
+							]
+						},
+						"description": "Get token (log in)"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Wells",
+			"description": "",
+			"item": []
+		},
+		{
+			"name": "Activity Submissions",
+			"description": "",
+			"item": [
+				{
+					"name": "Submission list",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "20837dbe-0390-4709-b8dc-4ac3b22153f4",
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = pm.response.json()",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"})",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "JWT {{token}}"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{base_url}}/api/v1/submissions/?format=json",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"submissions",
+								""
+							],
+							"query": [
+								{
+									"key": "format",
+									"value": "json"
+								}
+							]
+						},
+						"description": "Request a list of wells"
+					},
+					"response": []
+				},
+				{
+					"name": "Create new driller for submission report",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "05a0005d-cae7-447a-b666-63de221afd22",
+								"type": "text/javascript",
+								"exec": [
+									"( function() {",
+									"    pm.test(\"Successful POST request\", function () {",
+									"        pm.expect(pm.response.code).to.be.oneOf([201,202]);",
+									"    });",
+									"    ",
+									"    var jsonData = pm.response.json()",
+									"    pm.environment.set(\"created_driller_guid\", jsonData.person_guid);",
+									"    pm.environment.set(\"driller_audit_name\", jsonData.create_user);",
+									"    ",
+									"    pm.test(\"The record's identifier is in UUID format\", function () {",
+									"        var uuid_re = /\\w{8}-\\w{4}-\\w{4}-\\w{4}-\\w{12}/;",
+									"        var match = uuid_re.exec(jsonData.person_guid);",
+									"        pm.expect(match).to.be.ok;",
+									"        pm.expect(match.length).to.be.ok;",
+									"        pm.expect(match[0]).to.eql(jsonData.person_guid);",
+									"    });",
+									"    ",
+									"    pm.test(\"Person first name equals name supplied in request\", function () {",
+									"        pm.expect(jsonData.first_name).to.eql(\"Bobby\");",
+									"    });",
+									"    ",
+									"    pm.test(\"Last name equals value supplied in request\", function () {",
+									"        pm.expect(jsonData.surname).to.eql(\"Driller\");",
+									"    });",
+									"    ",
+									"    pm.test(\"Audit fields (create_user, create_date) were filled in by backend\", function () {",
+									"        pm.expect(jsonData.create_user.length).to.be.ok;",
+									"        pm.expect(jsonData.create_date.length).to.be.ok;",
+									"    });",
+									"})();",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "JWT {{token}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "first_name",
+									"value": "Bobby",
+									"type": "text"
+								},
+								{
+									"key": "surname",
+									"value": "Driller",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/drillers/?format=json",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"drillers",
+								""
+							],
+							"query": [
+								{
+									"key": "format",
+									"value": "json"
+								}
+							]
+						},
+						"description": "Create a new driller to be registered"
+					},
+					"response": []
+				},
+				{
+					"name": "Submission report",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "b17b5e32-a994-4952-85ad-7893fa7b9325",
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Status code is 201\", function () {",
+									"   pm.expect(pm.response.code).to.equal(201);",
+									"})",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "JWT {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "well_activity_type",
+									"value": "CON",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "driller_responsible",
+									"value": "{{created_driller_guid}}",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "work_end_date",
+									"value": "2018-07-02",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "owner_full_name",
+									"value": "Holly Homeowner",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "work_start_date",
+									"value": "2018-07-01",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "owner_province_state",
+									"value": "BC",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "owner_mailing_address",
+									"value": "321 Main Street",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "owner_city",
+									"value": "Anytown",
+									"description": "",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/submissions/?format=json",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"submissions",
+								""
+							],
+							"query": [
+								{
+									"key": "format",
+									"value": "json"
+								}
+							]
+						},
+						"description": "Request a list of wells"
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

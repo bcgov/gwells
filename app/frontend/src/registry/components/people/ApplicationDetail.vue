@@ -85,7 +85,7 @@
                       type="button"
                       @click="editClassification = !editClassification"
                       id="editClassification"
-                      v-if="userRoles.edit"><i class="fa fa-edit" id="editClassification"></i> Edit</button>
+                      v-if="userRoles.registry.edit"><i class="fa fa-edit" id="editClassification"></i> Edit</button>
                   </b-col>
                 </b-row>
                 <b-row class="row" v-if="classification && classification.registries_subactivity">
@@ -198,7 +198,6 @@
 </template>
 
 <script>
-import QualCheckbox from '@/common/components/QualCheckbox'
 import { mapGetters, mapActions } from 'vuex'
 import { SET_ERROR } from '@/registry/store/mutations.types'
 import { FETCH_DRILLER_OPTIONS } from '@/registry/store/actions.types'
@@ -208,7 +207,6 @@ import ApiService from '@/common/services/ApiService.js'
 export default {
   name: 'PersonApplicationDetail',
   components: {
-    'r-checkbox': QualCheckbox,
     'application-edit': ApplicationAddEdit
   },
   data () {
