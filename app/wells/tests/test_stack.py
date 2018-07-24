@@ -16,7 +16,8 @@ from datetime import date
 from django.test import TestCase
 
 from gwells.models import ProvinceStateCode
-from wells.models import ActivitySubmission, Well, WellActivityCode
+from wells.models import Well, ActivitySubmission
+from submissions.models import WellActivityCode
 from wells.stack import StackWells
 from registries.models import Person
 
