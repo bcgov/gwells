@@ -38,7 +38,6 @@ class StackWells():
             # If there's already a well, we update it
             return self._update_well_record(submission)
         # If there is as yet no well, we create one
-        logger.info('Creating well for submission {}'.format(filing_number))
         well = Well.objects.create()
         well = self._stack(ActivitySubmission.objects.filter(filing_number=filing_number), well)
         submission.well = well
@@ -74,9 +73,7 @@ class StackWells():
         well.owner_full_name = composite.get('owner_full_name')
         well.owner_province_state = ProvinceStateCode.objects.get(
             province_state_code=composite.get('owner_province_state'))
-        logger.info('going to save well')
         well.save()
-        logger.info('done saving well')
         return well
 
     def _update_well_record(self, submission: ActivitySubmission) -> Well:
