@@ -1074,7 +1074,8 @@ class LithologyDescription(AuditModel):
     well_tag_number = models.ForeignKey(
         Well, db_column='well_tag_number', on_delete=models.CASCADE, blank=True, null=True)
     lithology_from = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='From',
-                                         blank=True, null=True, validators=[MinValueValidator(Decimal('0.00'))])
+                                         blank=True, null=True,
+                                         validators=[MinValueValidator(Decimal('0.00'))])
     lithology_to = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='To',
                                        blank=True, null=True, validators=[MinValueValidator(Decimal('0.01'))])
     lithology_raw_data = models.CharField(
