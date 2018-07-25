@@ -14,6 +14,7 @@ class Migration(migrations.Migration):
     dependencies = [
         ('gwells', '0006_auto_20180724_2026'),
         ('wells', '0003_auto_20180724_0007'),
+        ('submissions', '0001_initial')
     ]
 
     state_operations = [
