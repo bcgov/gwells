@@ -36,7 +36,7 @@
         <!-- Form step 1: Type of well -->
         <step01-type class="my-3"
           v-if="formStep === 1 || formIsFlat"
-          :wellTagNumber.sync="form.well_tag_number"
+          :wellTagNumber.sync="form.well"
           :wellActivityType.sync="form.well_activity_type"
           :units.sync="units"
           :personResponsible.sync="form.driller_responsible"
@@ -165,8 +165,8 @@ export default {
         data.driller_responsible = data.driller_responsible.person_guid
       }
 
-      if (data.well_tag_number && data.well_tag_number.well_tag_number) {
-        data.well_tag_number = data.well_tag_number.well_tag_number
+      if (data.well && data.well.well_tag_number) {
+        data.well = data.well.well_tag_number
       }
 
       this.formSubmitLoading = true
@@ -186,7 +186,7 @@ export default {
     resetForm () {
       this.form = {
         well_activity_type: 'CON',
-        well_tag_number: null,
+        well: null,
         identification_plate_number: '',
         well_plate_attached: '',
         driller_responsible: null,
