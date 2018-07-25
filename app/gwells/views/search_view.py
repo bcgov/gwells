@@ -19,7 +19,7 @@ from django.shortcuts import render
 from django.http import JsonResponse
 
 from gwells.forms import SearchForm
-from gwells.models import LandDistrictCode
+from wells.models import LandDistrictCode
 from gwells.models import Survey
 
 

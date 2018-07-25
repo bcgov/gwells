@@ -19,7 +19,7 @@ describe('Notes.vue', () => {
       error: () => null,
       user: () => null,
       drillers: () => [],
-      userRoles: () => ({ edit: true, view: true, approve: true })
+      userRoles: () => ({ registry: { edit: true, view: true, approve: true } })
     }
     store = new Vuex.Store({ getters, actions, mutations })
   })
