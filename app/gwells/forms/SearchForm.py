@@ -21,7 +21,7 @@ from crispy_forms.layout import Layout, Fieldset, Div, Submit, Hidden, HTML, Fie
 from crispy_forms.bootstrap import FormActions, AppendedText, InlineRadios
 
 from ..search import Search
-from gwells.models import Screen
+from wells.models import Screen
 
 
 class SearchForm(forms.Form):

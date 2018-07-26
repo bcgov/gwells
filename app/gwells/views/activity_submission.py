@@ -14,7 +14,7 @@
 from django.views import generic
 from formtools.wizard.views import SessionWizardView
 
-from gwells.models import ActivitySubmission
+from wells.models import ActivitySubmission
 from gwells import views
 
 

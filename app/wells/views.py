@@ -12,26 +12,31 @@
     limitations under the License.
 """
 
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from drf_yasg.utils import swagger_auto_schema
 from django.db.models import Prefetch
 from django.http import Http404
-from django.views import generic
-from rest_framework.generics import ListAPIView, ListCreateAPIView
+from django.views.generic import DetailView
+
+from rest_framework import filters
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.generics import ListAPIView
+from rest_framework.permissions import DjangoModelPermissionsOrAnonReadOnly
+
+from drf_yasg.utils import swagger_auto_schema
+# from django_filters import rest_framework as restfilters
 
 from gwells import settings
 from gwells.models import Survey
 from gwells.roles import WELLS_ROLES
 from gwells.pagination import APILimitOffsetPagination
 
-from wells.models import Well, ActivitySubmission
+from wells.models import Well
 from wells.documents import MinioClient
 from wells.permissions import WellsDocumentPermissions, WellsPermissions
-from wells.serializers import WellListSerializer, WellSubmissionSerializer
+from wells.serializers import WellListSerializer, WellTagSearchSerializer
 
 
-class WellDetailView(generic.DetailView):
+class WellDetailView(DetailView):
     model = Well
     context_object_name = 'well'
     template_name = 'wells/well_detail.html'
@@ -74,7 +79,7 @@ class WellListAPIView(ListAPIView):
     get: returns a list of wells
     """
 
-    permission_classes = (WellsPermissions,)
+    permission_classes = (DjangoModelPermissionsOrAnonReadOnly,)
     model = Well
     queryset = Well.objects.all()
     pagination_class = APILimitOffsetPagination
@@ -105,33 +110,27 @@ class WellListAPIView(ListAPIView):
         return Response(serializer.data)
 
 
-class SubmissionListAPIView(ListCreateAPIView):
-    """List and create submissions
+class WellTagSearchAPIView(ListAPIView):
+    """ seach for wells by tag or owner """
 
-    get: returns a list of well activity submissions
-    post: adds a new submission
-    """
+    permission_classes = (DjangoModelPermissionsOrAnonReadOnly,)
+    model = Well
+    queryset = Well.objects.all()
+    pagination_class = None
+    serializer_class = WellTagSearchSerializer
+    lookup_field = 'well_tag_number'
 
-    permission_classes = (WellsPermissions,)
-    model = ActivitySubmission
-    queryset = ActivitySubmission.objects.all()
-    pagination_class = APILimitOffsetPagination
-    serializer_class = WellSubmissionSerializer
+    filter_backends = (filters.SearchFilter,)
+    ordering = ('well_tag_number',)
+    search_fields = (
+        'well_tag_number',
+        'owner_full_name',
+    )
 
-    def get_queryset(self):
-        qs = self.queryset
-        qs = qs.order_by("filing_number")
-        return qs
-
-    def list(self, request):
-        """ List activity submissions with pagination """
-        queryset = self.get_queryset()
-        filtered_queryset = self.filter_queryset(queryset)
-
-        page = self.paginate_queryset(filtered_queryset)
-        if page is not None:
-            serializer = WellSubmissionSerializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-
-        serializer = WellSubmissionSerializer(filtered_queryset, many=True)
-        return Response(serializer.data)
+    def get(self, request):
+        search = self.request.query_params.get('search', None)
+        if not search or len(search) < 3:
+            # avoiding responding with entire collection of wells
+            return Response([])
+        else:
+            return super().get(request)

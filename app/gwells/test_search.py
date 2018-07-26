@@ -15,7 +15,8 @@ from django.test import TestCase
 from django.contrib.auth.models import Group
 
 from gwells.search import Search
-from gwells.models import ProvinceStateCode, WellClassCode, Well
+from gwells.models import ProvinceStateCode
+from wells.models import WellClassCode, Well
 
 
 class SearchTestCase(TestCase):
