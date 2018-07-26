@@ -24,7 +24,7 @@ from django.contrib.auth.models import User
 from gwells.search import Search
 from gwells.views import *
 from gwells.forms import *
-from gwells.models import ActivitySubmission, Well, Survey
+from gwells.models import Survey
 
 
 class ViewsTestCase(TestCase):
