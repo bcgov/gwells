@@ -51,6 +51,9 @@ elif [[ -f setup.py ]]; then
 fi
 
 cd frontend
+npm cache clean -f
+npm install n
+n 8.11.3
 npm install
 npm run build
 cd ..
