@@ -485,6 +485,15 @@
                                         }
                                     },
                                     {
+                                        "name": "S3_PRIVATE_HOST_SECURE",
+                                        "valueFrom": {
+                                            "configMapKeyRef": {
+                                                "key": "S3_PRIVATE_HOST_SECURE",
+                                                "name": "gwells-global-config${NAME_SUFFIX}"
+                                            }
+                                        }
+                                    },
+                                    {
                                         "name": "S3_PRIVATE_EXTERNAL_HOST",
                                         "valueFrom": {
                                             "configMapKeyRef": {

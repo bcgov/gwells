@@ -34,7 +34,9 @@ class MinioClient():
         S3_ROOT_BUCKET: public document storage bucket
         MINIO_ACCESS_KEY: private storage account
         MINIO_SECRET_KEY: private storage secret
-        S3_PRIVATE_HOST: private storage host (must be specified even if same as public storage)
+        S3_PRIVATE_HOST: private storage host (must be specified even if same as public storage) internal
+            address
+        S3_PRIVATE_EXTERNAL_HOST: private storage host, external address.
         S3_PRIVATE_BUCKET: private storage bucket
     """
 
@@ -64,14 +66,16 @@ class MinioClient():
         # url is for our django server when talking to minio. The external url is for when an external
         # users is downloading a file.
         self.private_internal_host = get_env_variable('S3_PRIVATE_HOST')
+        private_internal_host_secure = get_env_variable('S3_PRIVATE_HOST_SECURE') == "True"
         self.private_external_host = get_env_variable('S3_PRIVATE_EXTERNAL_HOST')
         self.private_bucket = get_env_variable('S3_PRIVATE_BUCKET')
 
+        # The internal connection does NOT use HTTPs
         return Minio(
             self.private_internal_host,
             access_key=self.private_access_key,
             secret_key=self.private_secret_key,
-            secure=True
+            secure=private_internal_host_secure
         )
 
     def get_private_file(self, object_name: str):
