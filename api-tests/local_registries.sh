@@ -2,18 +2,17 @@
 # 
 # Usage:
 # - Set env variables (choose any username and password):
-#     export GWELLS_API_BASE_URL="http://localhost:8000/gwells/registries"
-#     export GWELLS_API_TEST_USER="testuser"
-#     export GWELLS_API_TEST_PASSWORD="secret"
-#     export GWELLS_API_TEST_AUTH_SERVER=""
-#     export GWELLS_API_TEST_CLIENT_ID=""
-#     export GWELLS_API_TEST_CLIENT_SECRET"""
-# - Create Django test user (requires env variables from previous step):
-#     python manage.py createtestuser
+#   GWELLS_API_TEST_USER:  test account username
+#   GWELLS_API_TEST_PASSWORD:  test account password
+#   GWELLS_API_BASE_URL:   URL for testing (API tests will make requests here)
+#   GWELLS_API_TEST_AUTH_SERVER:  SSO auth server (GWELLS realm)
+#   GWELLS_API_TEST_CLIENT_ID:   SSO test client ID (the client set up on the GWELLS realm for testing)
+#   GWELLS_API_TEST_CLIENT_SECRET:   SSO test client secret
 # - Install newman:
 #     npm install -g newman
 # - Run script:
 #     ./local_newman.sh
+
 
 
 ENV_VARS=(

@@ -23,7 +23,7 @@ from drf_yasg.utils import swagger_auto_schema
 from reversion.views import RevisionMixin
 from rest_framework import filters, status, exceptions
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView
-from rest_framework.permissions import DjangoModelPermissionsOrAnonReadOnly, AllowAny
+from rest_framework.permissions import DjangoModelPermissionsOrAnonReadOnly
 from rest_framework.response import Response
 from rest_framework.mixins import CreateModelMixin, UpdateModelMixin
 from rest_framework.views import APIView
@@ -65,7 +65,8 @@ from registries.serializers import (
     SubactivitySerializer,
     WellClassCodeSerializer,
     AccreditedCertificateCodeSerializer,
-    OrganizationNoteSerializer)
+    OrganizationNoteSerializer,
+    PersonNameSerializer)
 from registries.utils import generate_history_diff
 
 
@@ -447,7 +448,7 @@ class CitiesListView(ListAPIView):
     serializer_class = CityListSerializer
     lookup_field = 'register_guid'
     pagination_class = None
-    permission_classes = (AllowAny,)
+    permission_classes = (DjangoModelPermissionsOrAnonReadOnly,)
     queryset = Register.objects \
         .exclude(organization__city__isnull=True) \
         .exclude(organization__city='') \
@@ -468,9 +469,9 @@ class CitiesListView(ListAPIView):
             qs = qs.filter(
                 Q(applications__current_status__code='A'),
                 Q(applications__removal_date__isnull=True))
-        if self.kwargs['activity'] == 'drill':
+        if self.kwargs.get('activity') == 'drill':
             qs = qs.filter(registries_activity='DRILL')
-        if self.kwargs['activity'] == 'install':
+        if self.kwargs.get('activity') == 'install':
             qs = qs.filter(registries_activity='PUMP')
         return qs
 
@@ -771,3 +772,21 @@ class PersonHistory(APIView):
             application_history_diff, key=lambda x: x['date'], reverse=True)
 
         return Response(history_diff)
+
+
+class PersonNameSearch(ListAPIView):
+    """Search for a person in the Register"""
+
+    permission_classes = (DjangoModelPermissionsOrAnonReadOnly,)
+    serializer_class = PersonNameSerializer
+    queryset = Person.objects.all()
+    pagination_class = None
+    lookup_field = 'person_guid'
+
+    filter_backends = (restfilters.DjangoFilterBackend,
+                       filters.SearchFilter)
+    ordering = ('surname',)
+    search_fields = (
+        'first_name',
+        'surname',
+    )

@@ -24,7 +24,7 @@
           </div>
         </div>
       </div>
-      <div class="row no-gutters" v-if="userRoles.wellsView">
+      <div class="row no-gutters" v-if="userRoles.wells.view">
         <div class="col-md-12">
           <h4>Internal documentation - authorized access only</h4>
             <div v-if="error">
@@ -60,21 +60,26 @@ export default {
     // This is not ideal. If you are authorized, we need to show you a different set of wells, however,
     // auth is happening asynchronously somewhere else on the page.
     keycloak: function () {
-      ApiService.query('wells/' + this.wellTag + '/files').then((response) => {
-        this.files = response.data
-      }).catch((e) => {
-        console.error(e)
-        this.error = 'Unable to retrieve file list.'
-      }).finally(() => {
-        this.loading = false
-      })
+      if (this.wellTag) {
+        ApiService.query('wells/' + this.wellTag + '/files').then((response) => {
+          this.files = response.data
+        }).catch((e) => {
+          console.error(e)
+          this.error = 'Unable to retrieve file list.'
+        }).finally(() => {
+          this.loading = false
+        })
+      }
     }
   },
   computed: {
     ...mapGetters(['userRoles', 'keycloak']),
     wellTag () {
       const wellMeta = document.head.querySelector('meta[name="well.tag_number"]')
-      return wellMeta.content
+      if (wellMeta) {
+        return wellMeta.content
+      }
+      return null
     }
   }
 }

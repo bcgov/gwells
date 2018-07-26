@@ -98,6 +98,7 @@ INSTALLED_APPS = (
     'formtools',
     'registries',
     'wells',
+    'submissions',
     'django_nose',
     'webpack_loader',
     'django_filters',
@@ -275,7 +276,7 @@ SWAGGER_SETTINGS = {
     'SECURITY_DEFINITIONS': {
         'Bearer': {
             'type': 'apiKey',
-            'name': 'Authorization',
+            'name': 'JWT',
             'in': 'header'
         }
     }
