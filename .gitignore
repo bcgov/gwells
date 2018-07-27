@@ -130,11 +130,6 @@ functional-tests/.classpath
 functional-tests/bin
 functional-tests/src/test/groovy/testtamplet.txt
 
-# Custom GW
-activate
-# src <-- this was also blocking functional-tests/src
-x.sh
-
 #virtual env
 /deactivate
 .venv
