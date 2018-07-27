@@ -136,10 +136,9 @@ functional-tests/src/test/groovy/testtamplet.txt
 .direnv
 
 # Frontend files
-frontend/node_modules/
 frontend/webpack-stats.json
 app/gwells/static/vue
-api-tests/node_modules/
+**/node_modules/
 
 sonar-runner/.gradle
 *.patch
