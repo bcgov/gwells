@@ -515,7 +515,7 @@ for(String envKeyName: context.env.keySet() as String[]){
                 containers: [
                     containerTemplate(
                         name: 'jnlp',
-                        image: 'registry.access.redhat.com/openshift/jenkins-slave-nodejs:8',
+                        image: 'docker-registry.default.svc:5000/openshift/jenkins-slave-nodejs:8',
                         resourceRequestCpu: '800m',
                         resourceLimitCpu: '800m',
                         resourceRequestMemory: '1Gi',
