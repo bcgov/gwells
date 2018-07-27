@@ -210,11 +210,25 @@
       </b-row>
       <b-row>
         <b-col cols="12" md="6">
-          <form-input id="workStartDateInput" type="date" label="Start Date of Work *" v-model="workStartDateInput" :errors="errors.work_start_date" :loaded="fieldsLoaded['work_start_date']">
+          <form-input
+              id="workStartDateInput"
+              type="date"
+              label="Start Date of Work *"
+              hint="Enter date as YYYY/MM/DD"
+              v-model="workStartDateInput"
+              :errors="errors.work_start_date"
+              :loaded="fieldsLoaded['work_start_date']">
           </form-input>
         </b-col>
         <b-col cols="12" md="6">
-          <form-input id="workEndDateInput" type="date" label="End Date of Work *" v-model="workEndDateInput" :errors="errors.work_end_date" :loaded="fieldsLoaded['work_end_date']">
+          <form-input
+              id="workEndDateInput"
+              type="date"
+              label="End Date of Work *"
+              hint="Enter date as YYYY/MM/DD"
+              v-model="workEndDateInput"
+              :errors="errors.work_end_date"
+              :loaded="fieldsLoaded['work_end_date']">
           </form-input>
         </b-col>
       </b-row>

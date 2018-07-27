@@ -10,7 +10,7 @@
           </b-col>
         </b-row>
       </h4>
-      <p>Submit activity on a well that does not exist in the system. Try a search to see if the well exists in the system before submitting a report.</p>
+      <p>Submit activity on a well that does not exist in the system. <a href="/gwells/">Try a search</a> to see if the well exists in the system before submitting a report.</p>
 
       <!-- Activity submission form -->
       <b-form @submit.prevent="confirmSubmit">
@@ -50,7 +50,7 @@
           :consultantCompany.sync="form.consultant_company"
           :workStartDate.sync="form.work_start_date"
           :workEndDate.sync="form.work_end_date"
-          :drillerSameAsPersonResponsible.sync="form.nonForm.drillerSameAsPersonResponsible"
+          :drillerSameAsPersonResponsible.sync="form.meta.drillerSameAsPersonResponsible"
           :errors="errors"
           :fieldsLoaded="fieldsLoaded"
         ></step01-type>
@@ -164,8 +164,8 @@ export default {
     formSubmit () {
       const data = Object.assign({}, this.form)
 
-      // delete nonForm data stored within form object
-      delete data.nonForm
+      // delete "meta" data (form input that need not be submitted) stored within form object
+      delete data.meta
 
       // replace the "person responsible" object with the person's guid
       if (data.driller_responsible && data.driller_responsible.person_guid) {
@@ -212,7 +212,7 @@ export default {
         owner_postal_code: '',
 
         // non-form fields that should be saved with form
-        nonForm: {
+        meta: {
           drillerSameAsPersonResponsible: false
         }
       }
