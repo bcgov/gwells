@@ -9,6 +9,7 @@
         :state="validation"
         :aria-describedby="`${id}InvalidFeedback ${id}Hint`"
         :value="value"
+        :disabled="disabled"
         :required="required"
         @input="updateValue($event)"
         :placeholder="placeholder"/>
@@ -47,6 +48,7 @@ export default {
     errors: null, // pass any "field errors" returned by the API into the "errors" prop
     value: String, // internal (holds the value for the field)
     required: String,
+    disabled: Boolean,
     type: { // the type of input (e.g. text, number, email)
       type: String,
       default: 'text'

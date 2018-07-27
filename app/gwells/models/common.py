@@ -53,7 +53,7 @@ class ProvinceStateCode(AuditModel):
     """
     province_state_code = models.CharField(primary_key=True, max_length=10)
     description = models.CharField(max_length=100)
-    display_order = models.PositiveIntegerField()
+    display_order = models.PositiveIntegerField(db_index=True)
 
     """
     Tue 13 Feb 22:24:26 2018 GW Disabled for now until Code With Us sprint is complete
@@ -62,7 +62,7 @@ class ProvinceStateCode(AuditModel):
     """
     class Meta:
         db_table = 'province_state_code'
-        ordering = ['display_order', 'description']
+        ordering = ['display_order']
 
     def __str__(self):
         return self.description

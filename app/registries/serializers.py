@@ -17,7 +17,7 @@ from django.db import transaction
 import logging
 from rest_framework import serializers
 from gwells.models import ProvinceStateCode
-from gwells.serializers import AuditModelSerializer
+from gwells.serializers import AuditModelSerializer, ProvinceStateCodeSerializer
 from registries.models import (
     ProofOfAgeCode,
     Organization,
@@ -743,16 +743,6 @@ class WellClassCodeSerializer(serializers.ModelSerializer):
     class Meta:
         model = WellClassCode
         fields = ('registries_well_class_code', 'description')
-
-
-class ProvinceStateCodeSerializer(serializers.ModelSerializer):
-    """
-    Serializes ProvinceStateCodes
-    """
-
-    class Meta:
-        model = ProvinceStateCode
-        fields = ('province_state_code', 'description', 'display_order')
 
 
 class PersonNameSerializer(serializers.ModelSerializer):

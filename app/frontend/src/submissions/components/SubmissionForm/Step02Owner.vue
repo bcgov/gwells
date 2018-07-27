@@ -20,7 +20,7 @@
             aria-describedby="ownerProvinceInvalidFeedback">
           <b-form-select
               v-model="ownerProvinceInput"
-              :options="provinceOptions"
+              :options="codes.province_codes"
               value-field="province_state_code"
               text-field="description"
               :state="errors['owner_province_state'] ? false : null">
@@ -43,6 +43,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 export default {
   mixins: [inputBindingsMixin],
@@ -52,7 +53,6 @@ export default {
     ownerCity: String,
     ownerProvinceState: String,
     ownerPostalCode: String,
-    provinceOptions: Array,
     errors: {
       type: Object,
       default: () => ({})
@@ -71,6 +71,9 @@ export default {
   },
   data () {
     return {}
+  },
+  computed: {
+    ...mapGetters(['codes'])
   }
 }
 </script>
