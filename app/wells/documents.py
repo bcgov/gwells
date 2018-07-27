@@ -15,12 +15,9 @@ import sys
 import os
 import logging
 from datetime import timedelta
-from urllib.parse import quote, urlparse, urlunparse
-
 from django.urls import reverse
-
+from urllib.parse import quote
 from minio import Minio
-
 from gwells.settings.base import get_env_variable
 
 logger = logging.getLogger(__name__)
@@ -34,64 +31,58 @@ class MinioClient():
         S3_ROOT_BUCKET: public document storage bucket
         MINIO_ACCESS_KEY: private storage account
         MINIO_SECRET_KEY: private storage secret
-        S3_PRIVATE_HOST: private storage host (must be specified even if same as public storage) internal
-            address
-        S3_PRIVATE_EXTERNAL_HOST: private storage host, external address.
+        S3_PRIVATE_HOST: private storage host (must be specified even if same as public storage)
         S3_PRIVATE_BUCKET: private storage bucket
+
+    The optional "request" param can be set to the request that requires the minio client.
+    This allows generation of full URIs including domain name.
+    This is only required for generating private, local links.
+
+    e.g.:
+    def get(self, request):
+        client = MinioClient(request)
+
     """
 
-    def __init__(self, include_private=False):
+    def __init__(self, request=None, disable_public=False, disable_private=False):
+        self.request = request
 
-        self.public_host = get_env_variable('S3_HOST', strict=True)
-        self.public_bucket = get_env_variable('S3_ROOT_BUCKET', strict=True)
-        self.public_access_key = get_env_variable('S3_PUBLIC_ACCESS_KEY', warn=False)
-        self.public_secret_key = get_env_variable('S3_PUBLIC_SECRET_KEY', warn=False)
+        if not disable_public:
+            self.public_host = get_env_variable('S3_HOST', strict=True)
+            self.public_bucket = get_env_variable(
+                'S3_ROOT_BUCKET', strict=True)
+            self.public_access_key = get_env_variable(
+                'S3_PUBLIC_ACCESS_KEY', warn=False)
+            self.public_secret_key = get_env_variable(
+                'S3_PUBLIC_SECRET_KEY', warn=False)
 
-        self.public_client = Minio(
-            self.public_host,
-            access_key=self.public_access_key,
-            secret_key=self.public_secret_key,
-            secure=True
-        )
-
-        if include_private:
-            self.private_client = self.create_private_client()
-        else:
-            self.private_client = None
+            self.public_client = Minio(
+                self.public_host,
+                access_key=self.public_access_key,
+                secret_key=self.public_secret_key,
+                secure=True
+            )
+        self.disable_private = disable_private
 
     def create_private_client(self):
         self.private_access_key = get_env_variable('MINIO_ACCESS_KEY')
         self.private_secret_key = get_env_variable('MINIO_SECRET_KEY')
-        # We have two S3 host variables. One is for the internal use, one for external use. The internal
-        # url is for our django server when talking to minio. The external url is for when an external
-        # users is downloading a file.
-        self.private_internal_host = get_env_variable('S3_PRIVATE_HOST')
-        private_internal_host_secure = get_env_variable('S3_PRIVATE_HOST_SECURE') == "True"
-        self.private_external_host = get_env_variable('S3_PRIVATE_EXTERNAL_HOST')
+        self.private_host = get_env_variable('S3_PRIVATE_HOST')
         self.private_bucket = get_env_variable('S3_PRIVATE_BUCKET')
 
-        # The internal connection does NOT use HTTPs
         return Minio(
-            self.private_internal_host,
+            self.private_host,
             access_key=self.private_access_key,
             secret_key=self.private_secret_key,
-            secure=private_internal_host_secure
+            secure=True
         )
 
     def get_private_file(self, object_name: str):
         """ Generates a link to a private document with name "object_name" (name includes prefixes) """
-        presigned_url = self.private_client.presigned_get_object(
+        return self.private_client.presigned_get_object(
             self.private_bucket,
             object_name,
             expires=timedelta(minutes=12))
-        # Unfortunately, minio doesn't have an understanding of "internal url" and "external url".
-        # When our django server talks to our minio server, we want it to route internally. However,
-        # when we generate a signed url, we want to pass that on to our client, so that he can access
-        # it via the external url.
-        # That means we have deconstruct and re-constitute the url at this point.
-        parsed = urlparse(presigned_url)
-        parsed = parsed._replace(netloc=self.private_external_host)
-        return urlunparse(parsed)
 
     def create_url(self, obj, host, private=False):
         """Generate a URL for a file/document
@@ -125,7 +116,7 @@ class MinioClient():
         )
         return urls
 
-    def get_documents(self, well_tag_number: int):
+    def get_documents(self, well_tag_number: int, include_private=False):
         """Retrieves a list of available documents for a given well tag number"""
 
         # prefix well tag numbers with a 6 digit "folder" id
@@ -150,13 +141,14 @@ class MinioClient():
             objects['public'] = pub_objects
 
         # authenticated requests also receive a "private" collection
-        if self.private_client:
+        self.private_client = self.create_private_client()
+        if include_private and self.private_client:
             priv_objects = []
             try:
                 priv_objects = self.create_url_list(
                     self.private_client.list_objects(
                         self.private_bucket, prefix=prefix, recursive=True),
-                    self.private_internal_host, private=True)
+                    self.private_host, private=True)
             except:
                 logger.error(
                     "Could not retrieve files from private file server", exc_info=sys.exc_info())
