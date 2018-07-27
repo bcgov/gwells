@@ -2,6 +2,7 @@
   <div>
     <div v-if="loading" class="row no-gutters">
       <div class="col-md-12">
+        Loading documents...
         <div class="fa-2x text-center">
           <i class="fa fa-circle-o-notch fa-spin"></i>
         </div>

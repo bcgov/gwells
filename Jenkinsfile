@@ -432,27 +432,6 @@ for(String envKeyName: context.env.keySet() as String[]){
             node('master'){
                 String podName=null
                 String projectName=context.deployments[envKeyName].projectName
-                String deploymentConfigName="gwells-pgsql${context.deployments[envKeyName].dcSuffix}"
-                echo "env:${context.env[envKeyName]}"
-                echo "deployment:${context.deployments[envKeyName]}"
-                echo "projectName:${projectName}"
-                echo "deploymentConfigName:${deploymentConfigName}"
-
-                openshift.withProject(projectName){
-                    podName=openshift.selector('pod', ['deploymentconfig':deploymentConfigName]).objects()[0].metadata.name
-                }
-
-                // Drop the database and re-create, so that we have a clean environment every time we push new code up.
-                sh (
-                    script: """
-                        oc exec "${podName}" -n "${projectName}" -- bash -c 'psql -c "DROP DATABASE gwells;"'
-                        oc exec "${podName}" -n "${projectName}" -- bash -c 'psql -c "CREATE DATABASE gwells;"'
-                    """
-                )
-            }
-            node('master'){
-                String podName=null
-                String projectName=context.deployments[envKeyName].projectName
                 String deploymentConfigName="gwells${context.deployments[envKeyName].dcSuffix}"
                 echo "env:${context.env[envKeyName]}"
                 echo "deployment:${context.deployments[envKeyName]}"

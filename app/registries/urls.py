@@ -112,7 +112,6 @@ urlpatterns = [
     url(r'^api/$', schema_view.with_ui('redoc',
                                        cache_timeout=None), name='api-docs'),
 
-
     # Registries frontend webapp loader (html page that contains header, footer, and a SPA in between)
     url(r'^registries/', views.RegistriesIndexView.as_view(), name='registries-home'),
 ]
