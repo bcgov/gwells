@@ -247,6 +247,22 @@
     },
     {
         "model": "registries.accreditedcertificatecode",
+        "pk": "55911754-e547-4ca0-aad4-29592285f55d",
+        "fields": {
+            "create_user": "DATALOAD_USER",
+            "create_date": "2018-01-01T08:00:00Z",
+            "update_user": "DATALOAD_USER",
+            "update_date": "2018-01-01T08:00:00Z",
+            "cert_auth": "AB",
+            "registries_activity": "DRILL",
+            "name": "Earth Loop Technician, Alberta Journeyman Certificate",
+            "description": null,
+            "effective_date": "1970-01-01",
+            "expired_date": null
+        }
+    },
+    {
+        "model": "registries.accreditedcertificatecode",
         "pk": "7bf968aa-c6e0-4f57-b4f4-58723214de80",
         "fields": {
             "create_user": "DATALOAD_USER",
