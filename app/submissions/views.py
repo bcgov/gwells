@@ -102,8 +102,6 @@ class SubmissionsOptions(APIView):
             instance=WellActivityCode.objects.all(), many=True)
         well_class_codes = WellClassCodeSerializer(
             instance=WellClassCode.objects.prefetch_related("wellsubclasscode_set"), many=True)
-        # well_subclass_codes = WellSubclassCodeSerializer(
-        #     instance=WellSubclassCode.objects.all(), many=True)
         intended_water_use_codes = IntendedWaterUseCodeSerializer(
             instance=IntendedWaterUseCode.objects.all(), many=True)
 
