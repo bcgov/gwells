@@ -441,8 +441,8 @@ for(String envKeyName: context.env.keySet() as String[]){
                 openshift.withProject(projectName){
                     podName=openshift.selector('pod', ['deploymentconfig':deploymentConfigName]).objects()[0].metadata.name
                 }
-                // Flush database
-                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src && pwd && python manage.py flush --no-input'"
+                // Run migrate
+                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src && pwd && python manage.py migrate'"
                 // Lookup tables common to all system components (e.g. Django apps)
                 sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src && pwd && python manage.py loaddata gwells-codetables.json'"
                 // Lookup tables for the Wellsearch component (not yet a Django app) and Registries app
@@ -612,7 +612,23 @@ for(String envKeyName: context.env.keySet() as String[]){
                                     --global-var auth_server=$GWELLS_API_TEST_AUTH_SERVER \
                                     --global-var client_id=$GWELLS_API_TEST_CLIENT_ID \
                                     --global-var client_secret=$GWELLS_API_TEST_CLIENT_SECRET \
-                                    -r cli,junit,html;
+                                    -r cli,junit,html
+                                newman run ./wells_api_tests.json \
+                                    --global-var test_user=$GWELLS_API_TEST_USER \
+                                    --global-var test_password=$GWELLS_API_TEST_PASSWORD \
+                                    --global-var base_url="${BASEURL}" \
+                                    --global-var auth_server=$GWELLS_API_TEST_AUTH_SERVER \
+                                    --global-var client_id=$GWELLS_API_TEST_CLIENT_ID \
+                                    --global-var client_secret=$GWELLS_API_TEST_CLIENT_SECRET \
+                                    -r cli,junit,html
+                                newman run ./submissions_api_tests.json \
+                                    --global-var test_user=$GWELLS_API_TEST_USER \
+                                    --global-var test_password=$GWELLS_API_TEST_PASSWORD \
+                                    --global-var base_url="${BASEURL}" \
+                                    --global-var auth_server=$GWELLS_API_TEST_AUTH_SERVER \
+                                    --global-var client_id=$GWELLS_API_TEST_CLIENT_ID \
+                                    --global-var client_secret=$GWELLS_API_TEST_CLIENT_SECRET \
+                                    -r cli,junit,html
                             '''
                         } finally {
                                 junit 'newman/*.xml'

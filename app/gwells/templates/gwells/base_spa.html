@@ -71,20 +71,10 @@
     {% endif %}
 </head>
 
-<body class="registries-body">
+<body class="gwells-body">
     
     <!-- BODY CONTENT -->
-            <div class="container">
-                {% for survey in surveys %} {% if survey.survey_page == page and survey.survey_enabled%}
-                <div class="row hide-for-print show-for-screen">
-                    <div class="col-sm-12 alert alert-info">
-                        <div id="survey-msg" role="alert" aria-atomic="true">
-                            {{survey.survey_introduction_text}} <a href="{{survey.survey_link}}" id="survey:{{survey.survey_guid}}" target=_blank>survey</a>.
-                        </div>
-                    </div>
-                </div>
-                {% endif %} {% endfor %} 
-            </div>
+
             <div id="main-content">
                 <div id="main-content-anchor"></div>
                 <div>

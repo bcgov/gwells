@@ -25,11 +25,6 @@ from django.db.models.signals import post_save
 from .common import AuditModel, ProvinceStateCode
 from .screen import ScreenIntakeMethodCode, ScreenMaterialCode, ScreenOpeningCode, ScreenBottomCode,\
     ScreenTypeCode, ScreenAssemblyTypeCode
-from wells.models import Well, ActivitySubmission, WellYieldUnitCode, Casing, LinerPerforation,\
-    ProductionData, Screen, WellActivityCode, LandDistrictCode, WellClassCode
-from .lithology import SurficialMaterialCode, BedrockMaterialCode, LithologyColourCode, LithologyDescription,\
-    LithologyDescriptionCode, LithologyHardnessCode, LithologyMaterialCode, LithologyMoistureCode,\
-    LithologyStructureCode, BedrockMaterialDescriptorCode
 from .survey import Survey, OnlineSurvey
 
 

@@ -19,7 +19,7 @@ from .SearchForm import SearchForm
 from .WellCompletionForm import WellCompletionForm
 from .WellOwnerForm import WellOwnerForm
 
-from gwells.models import ActivitySubmission, LithologyDescription, Casing, LinerPerforation, Screen,\
+from wells.models import ActivitySubmission, LithologyDescription, Casing, LinerPerforation, Screen,\
     ProductionData
 
 

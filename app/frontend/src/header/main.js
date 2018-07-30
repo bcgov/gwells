@@ -16,7 +16,7 @@
 import 'babel-polyfill'
 import Vue from 'vue'
 import Vuex from 'vuex'
-import { store } from '@/registry/store'
+import auth from '@/common/store/auth.js'
 import BootstrapVue from 'bootstrap-vue'
 import Header from '../common/components/Header'
 import '@/common/assets/css/bootstrap-theme.min.css'
@@ -27,6 +27,13 @@ import authenticate from '@/common/authenticate.js'
 Vue.use(Vuex)
 Vue.use(BootstrapVue)
 Vue.config.productionTip = false
+
+// Create a store instance with the common auth store module
+const store = new Vuex.Store({
+  modules: {
+    auth: auth
+  }
+})
 
 // set baseURL and default headers
 ApiService.init()
@@ -41,7 +48,7 @@ new Vue({
   template: '<Header/>',
   created () {
     // start Keycloak authentication
-    authenticate.authenticate().then((result) => {
+    authenticate.authenticate(store).then((result) => {
       // Auth complete. Do something here if you want.
     })
   }
