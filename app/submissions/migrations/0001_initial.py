@@ -17,19 +17,19 @@ def insert_well_activity_code(apps, schema_editor):
         },
         'ALT': {
             "description": "Alteration report",
-            "display_order": 1
+            "display_order": 2
         },
         'DEC': {
             "description": "Decomission report",
-            "display_order": 1
+            "display_order": 3
         },
         'STAFF_EDIT': {
             "description": "Staff edit",
-            "display_order": 1
+            "display_order": 4
         },
         'LEGACY': {
             "description": "Legacy record",
-            "display_order": 1
+            "display_order": 5
         }
     }
     WellActivityCode = apps.get_model('submissions', 'WellActivityCode')

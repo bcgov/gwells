@@ -36,23 +36,10 @@ class StackTest(TestCase):
             display_order=1
         )[0]
 
-        self.well_activity_construction = WellActivityCode.objects.get_or_create(
-            well_activity_type_code='CON',
-            description='Construction',
-            display_order=0
-        )[0]
-
-        self.well_activity_legacy = WellActivityCode.objects.get_or_create(
-            well_activity_type_code='LEGACY',
-            description='Legacy',
-            display_order=0
-        )[0]
-
-        self.well_activity_alteration = WellActivityCode.objects.get_or_create(
-            well_activity_type_code='ALT',
-            description='Alteration',
-            display_order=0
-        )[0]
+        # These codes should already exists in the db (they are placed there as part of migrations)
+        self.well_activity_construction = WellActivityCode.objects.get(well_activity_type_code='CON')
+        self.well_activity_legacy = WellActivityCode.objects.get(well_activity_type_code='LEGACY')
+        self.well_activity_alteration = WellActivityCode.objects.get(well_activity_type_code='ALT')
 
     def test_new_submission_gets_well_tag_number(self):
         # Test that when a constrction submission is processed, it is asigned a well_tag_number

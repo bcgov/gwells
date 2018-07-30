@@ -130,21 +130,15 @@ functional-tests/.classpath
 functional-tests/bin
 functional-tests/src/test/groovy/testtamplet.txt
 
-# Custom GW
-activate
-# src <-- this was also blocking functional-tests/src
-x.sh
-
 #virtual env
 /deactivate
 .venv
 .direnv
 
 # Frontend files
-frontend/node_modules/
 frontend/webpack-stats.json
 app/gwells/static/vue
-api-tests/node_modules/
+**/node_modules/
 
 sonar-runner/.gradle
 *.patch
