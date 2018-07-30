@@ -14,7 +14,7 @@
 import 'babel-polyfill'
 import Vue from 'vue'
 import Vuex from 'vuex'
-import { store } from '@/registry/store'
+import auth from '@/common/store/auth.js'
 import BootstrapVue from 'bootstrap-vue'
 import Summary from './components/Summary'
 import '@/common/assets/css/bootstrap-theme.min.css'
@@ -23,6 +23,13 @@ import 'bootstrap-vue/dist/bootstrap-vue.css'
 Vue.use(Vuex)
 Vue.use(BootstrapVue)
 Vue.config.productionTip = false
+
+// Create a store instance with the common auth store module
+const store = new Vuex.Store({
+  modules: {
+    auth: auth
+  }
+})
 
 /* eslint-disable no-new */
 new Vue({
@@ -34,4 +41,4 @@ new Vue({
   template: '<Summary/>'
 })
 
-Vue.config.devtools = true
+Vue.config.devtools = process.env.NODE_ENV !== 'production'
