@@ -11,18 +11,14 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
-// The Vue build version to load with the `import` command
-// (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import 'babel-polyfill'
 import Vue from 'vue'
 import Vuex from 'vuex'
 import auth from '@/common/store/auth.js'
 import BootstrapVue from 'bootstrap-vue'
-import Header from '../common/components/Header'
+import Summary from './components/Summary'
 import '@/common/assets/css/bootstrap-theme.min.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
-import ApiService from '@/common/services/ApiService.js'
-import authenticate from '@/common/authenticate.js'
 
 Vue.use(Vuex)
 Vue.use(BootstrapVue)
@@ -35,23 +31,14 @@ const store = new Vuex.Store({
   }
 })
 
-// set baseURL and default headers
-ApiService.init()
-
 /* eslint-disable no-new */
 new Vue({
-  el: '#header',
+  el: '#summary',
   store,
   components: {
-    Header
+    Summary
   },
-  template: '<Header/>',
-  created () {
-    // start Keycloak authentication
-    authenticate.authenticate(store).then((result) => {
-      // Auth complete. Do something here if you want.
-    })
-  }
+  template: '<Summary/>'
 })
 
 Vue.config.devtools = process.env.NODE_ENV !== 'production'
