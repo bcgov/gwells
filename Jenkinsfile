@@ -269,8 +269,8 @@ _stage('Unit Test', context) {
                 image: "docker-registry.default.svc:5000/moe-gwells-tools/gwells${context.buildNameSuffix}:${context.buildEnvName}",
                 ttyEnabled: true,
                 command: 'cat',
-                resourceRequestCpu: '2000m',
-                resourceLimitCpu: '2000m',
+                resourceRequestCpu: '2500m',
+                resourceLimitCpu: '2500m',
                 resourceRequestMemory: '2.5Gi',
                 resourceLimitMemory: '2.5Gi'
             )
