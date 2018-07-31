@@ -19,11 +19,9 @@ import { mapGetters } from 'vuex'
 export default {
   computed: {
     analytics () {
-      console.log('process.env', process.env)
-      return process.env.ENABLE_GOOGLE_ANALYTICS === true
+      return !!window.ga
     },
     show () {
-      console.log('process.env', process.env)
       return {
         edit: process.env.ENABLE_DATA_ENTRY === true && this.userRoles.submissions.edit
       }
