@@ -57,7 +57,7 @@ class StackTest(TestCase):
         self.assertEqual(well.well_tag_number, submission.well.well_tag_number)
 
     def test_construction_submission_no_current_well(self):
-        # Creating a brand new well, we only have a construction submission for.
+        # Creating a brand new well that we only have a construction submission for.
         owner_full_name = 'Bob'
         submission = ActivitySubmission.objects.create(
             owner_full_name=owner_full_name,
@@ -71,6 +71,33 @@ class StackTest(TestCase):
         well = stacker.process(submission.filing_number)
         Well.objects.get(well_tag_number=well.well_tag_number)
         self.assertEqual(owner_full_name, well.owner_full_name)
+
+    def test_alteration_after_construction(self):
+        # Create a brand new well with a construction
+        owner_full_name = 'Bob'
+        new_owner_full_name = 'Joe'
+        construction = ActivitySubmission.objects.create(
+            owner_full_name=owner_full_name,
+            work_start_date=date(2018, 1, 1),
+            work_end_date=date(2018, 2, 1),
+            driller_responsible=self.driller,
+            owner_province_state=self.province,
+            well_activity_type=self.well_activity_construction,
+            )
+        stacker = StackWells()
+        well = stacker.process(construction.filing_number)
+        # Update the well with an alteration
+        alteration = ActivitySubmission.objects.create(
+            owner_full_name=new_owner_full_name,
+            work_start_date=date(2018, 2, 1),
+            work_end_date=date(2018, 3, 1),
+            driller_responsible=self.driller,
+            owner_province_state=self.province,
+            well_activity_type=self.well_activity_alteration,
+            well=well
+            )
+        well = stacker.process(alteration.filing_number)
+        self.assertEqual(new_owner_full_name, well.owner_full_name)
 
     def test_alteration_submission_to_legacy_well(self):
         # The well already exists, but has no construction submission.
