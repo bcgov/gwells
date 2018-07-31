@@ -10,7 +10,7 @@
           </b-col>
         </b-row>
       </h4>
-      <p>Submit activity on a well that does not exist in the system. <a href="/gwells/">Try a search</a> to see if the well exists in the system before submitting a report.</p>
+      <p>Submit activity on a well. <a href="/gwells/">Try a search</a> to see if the well exists in the system before submitting a report.</p>
 
       <!-- Activity submission form -->
       <b-form @submit.prevent="confirmSubmit">
@@ -251,6 +251,11 @@ export default {
     saveStatusReset () {
       this.saveFormSuccess = false
       this.loadFormSuccess = false
+    },
+    setWellTagNumber (well) {
+      // setWellTagNumber is used to link an activity report to a well other than through the dropdown menu.
+      // the dropdown menu returns an object so this method also does.
+      this.form.well = { well_tag_number: well }
     }
   },
   watch: {
@@ -264,6 +269,13 @@ export default {
   created () {
     this.resetForm()
     this.$store.dispatch(FETCH_CODES)
+
+    if (this.$route.params.id) {
+      this.setWellTagNumber(this.$route.params.id)
+    }
+    if (this.$route.name === 'SubmissionsEdit') {
+      this.form.well_activity_type = 'STAFF_EDIT'
+    }
   }
 }
 </script>

@@ -10,6 +10,7 @@
               <b-form-radio value="CON">Construction</b-form-radio>
               <b-form-radio value="ALT">Alteration</b-form-radio>
               <b-form-radio value="DEC">Decommissioning</b-form-radio>
+              <b-form-radio value="STAFF_EDIT" v-if="userRoles.wells.edit">Staff edit</b-form-radio>
             </b-form-radio-group>
           </b-form-group>
         </b-col>
@@ -61,26 +62,17 @@
           </b-form-group>
         </b-col>
         <b-col cols="12" md="4">
-          <b-form-group
-              id="intendedWaterUse"
-              label="Intended Water Use"
-              aria-describedby="intendedWaterUseInvalidFeedback">
-            <b-form-select
-                v-model="intendedWaterUseInput"
-                :options="codes.intended_water_uses"
-                value-field="intended_water_use_code"
-                text-field="description"
-                :state="errors['intended_water_use'] ? false : null">
-              <template slot="first">
-                <option value="" disabled>Select intended use</option>
-              </template>
-            </b-form-select>
-            <b-form-invalid-feedback id="intendedWaterUseInvalidFeedback">
-              <div v-for="(error, index) in errors['intended_water_use']" :key="`intendedWaterUse error ${index}`">
-                {{ error }}
-              </div>
-            </b-form-invalid-feedback>
-          </b-form-group>
+          <form-input
+            select
+            v-model="intendedWaterUseInput"
+            :options="codes.intended_water_uses"
+            value-field="intended_water_use_code"
+            text-field="description"
+            label="Intended Water Use"
+            placeholder="Select intended use"
+            :errors="errors['intended_water_use']"
+            :loaded="fieldsLoaded['intended_water_use']"
+            id="intendedWaterUse"></form-input>
         </b-col>
       </b-row>
       <b-row>
@@ -299,7 +291,7 @@ export default {
         return []
       }
     },
-    ...mapGetters(['codes'])
+    ...mapGetters(['codes', 'userRoles'])
   },
   methods: {
     onPersonSearch (search, loading) {
