@@ -28,8 +28,7 @@
 .list-group-item:last-child,
 .pagination > li > a:first-child,
 .pagination > li > a:last-child,
-#main-content .btn,
-.btn-group-vertical > .btn:first-child:not(:last-child),
+#main-content .btn-group-vertical > .btn:first-child:not(:last-child),
 .btn-group-vertical > .btn:last-child:not(:first-child),
 .dropdown-menu,
 .modal-content {

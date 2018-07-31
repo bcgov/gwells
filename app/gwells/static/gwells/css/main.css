@@ -2324,3 +2324,7 @@ h5.twitterUserName a {
     color: #000;
     font-size: 21px;
 }
+
+.print-button {
+    line-height: 38px
+}

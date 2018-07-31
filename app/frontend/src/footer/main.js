@@ -20,4 +20,4 @@ new Vue({
   template: '<Footer/>'
 })
 
-Vue.config.devtools = true
+Vue.config.devtools = process.env.NODE_ENV !== 'production'
