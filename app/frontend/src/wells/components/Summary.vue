@@ -19,11 +19,12 @@ import { mapGetters } from 'vuex'
 export default {
   computed: {
     analytics () {
-      return process.env.ENABLE_GOOGLE_ANALYTICS
+      return process.env.ENABLE_GOOGLE_ANALYTICS === 'True' || process.env.ENABLE_GOOGLE_ANALYTICS === 'true'
     },
     show () {
+      const enableDataEntry = process.env.ENABLE_DATA_ENTRY === 'True' || process.env.ENABLE_DATA_ENTRY === 'true'
       return {
-        edit: process.env.ENABLE_DATA_ENTRY && this.userRoles.submissions.edit
+        edit: enableDataEntry && this.userRoles.submissions.edit
       }
     },
     url () {

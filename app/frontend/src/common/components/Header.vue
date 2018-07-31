@@ -69,8 +69,9 @@ export default {
   computed: {
     show () {
       const adminMeta = document.head.querySelector('meta[name="show.admin"]')
+      const enableDataEntry = process.env.ENABLE_DATA_ENTRY === 'True' || process.env.ENABLE_DATA_ENTRY === 'true'
       return {
-        dataEntry: process.env.ENABLE_DATA_ENTRY || this.userRoles.submissions.edit,
+        dataEntry: enableDataEntry || this.userRoles.submissions.edit,
         admin: adminMeta ? adminMeta.content === 'true' : false
       }
     },
