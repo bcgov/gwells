@@ -80,7 +80,7 @@ webpack-stats.json
 api-tests/.envrc
 functional-tests/.envrc
 app/backend/.env
-app/backend/.secret_env
+*.secret_env
 
 # PyInstaller and Pip install files
 #  Usually these files are written by a python script from a template
