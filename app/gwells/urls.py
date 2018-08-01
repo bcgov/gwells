@@ -22,6 +22,7 @@ from gwells.views import SurveyListView, SearchView, RegistryView,\
     ActivitySubmissionDetailView, HealthView, ActivitySubmissionWizardView, ActivitySubmissionListView,\
     FORMS
 from gwells.views.admin import *
+from gwells.views import api
 from gwells.settings.base import get_env_variable
 
 # Creating 2 versions of the app_root. One without and one with trailing slash
@@ -77,6 +78,7 @@ urlpatterns = [
     url(r'^' + app_root_slash + DJANGO_ADMIN_URL + '/', admin.site.urls),
     url(r'^' + app_root_slash + 'accounts/',
         include('django.contrib.auth.urls')),
+    url(r'^api/v1/keycloak$', api.KeycloakConfig.as_view(), name='keycloak'),
     url(r'^' + app_root_slash, include('registries.urls')),
     url(r'^' + app_root_slash, include('wells.urls')),
     url(r'^' + app_root_slash, include('submissions.urls')),
