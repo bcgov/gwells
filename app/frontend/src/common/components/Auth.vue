@@ -1,11 +1,13 @@
 <template>
   <div>
     <div v-if="!keycloak || (keycloak && !keycloak.authenticated)">
-      <button type="button" id="gwells-sso-login" class="btn btn-light btn-sm" @click="keyCloakLogin()">Log in</button>
+      <button type="button" id="gwells-sso-login" class="btn btn-light btn-sm d-none d-sm-block" @click="keyCloakLogin()">Log in</button>
+      <div id="ribbon-gwells-sso-login" class="d-sm-none" @click="keyCloakLogin()">Log in</div>
     </div>
     <div v-if="keycloak && keycloak.authenticated">
-      <span class="userLoggedInText text-light">{{ keycloak.tokenParsed.name }}</span>
-      <button type="button" class="btn btn-light btn-sm" @click="keyCloakLogout()">Log out</button>
+      <span class="userLoggedInText text-light d-none d-sm-block">{{ keycloak.tokenParsed.name }}</span>
+      <button type="button" class="btn btn-light btn-sm d-none d-sm-block" @click="keyCloakLogout()">Log out</button>
+      <div id="ribbon-gwells-sso-logout" class="d-sm-none" @click="keyCloakLogout()">Log out</div>
     </div>
   </div>
 </template>

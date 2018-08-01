@@ -22,9 +22,9 @@
               alt="B.C. Government Logo">
         </a>
         <b-navbar-nav>
-          <li class="bc-nav-title d-none d-md-block">Groundwater Wells and Aquifers</li>
+          <li class="bc-nav-title">Groundwater Wells and Aquifers</li>
         </b-navbar-nav>
-        <b-navbar-nav class="ml-auto">
+        <b-navbar-nav class="ml-auto d-none d-sm-block">
           <li>
             <keycloak-auth class="d-none d-sm-block" v-if="auth !== 'hide'" id="keycloak-auth"/>
           </li>
@@ -38,14 +38,13 @@
       <b-container fluid>
         <b-collapse class="py-2" is-nav id="nav_collapse">
           <b-container id="navContainer">
-            <b-nav-text class="d-sm-none text-light">Groundwater Wells and Aquifers</b-nav-text>
             <b-navbar-nav class="gwells-nav">
               <b-nav-item id="ribbon-search" class="navbar-link lvl2-link" href="/gwells">Well Search</b-nav-item>
               <b-nav-item id="ribbon-groundwaterinfo" class="navbar-link lvl2-link" href="/gwells/groundwater-information">Groundwater Information</b-nav-item>
               <b-nav-item id="ribbon-registry" class="navbar-link lvl2-link" href="/gwells/registries">Registry</b-nav-item>
               <b-nav-item class="navbar-link lvl2-link" v-if="show.dataEntry" href="/gwells/submissions">Submit Report</b-nav-item>
               <b-nav-item id="ribbon-admin" class="navbar-link lvl2-link" v-if="show.admin" href="/gwells/admin">Admin</b-nav-item>
-              <b-nav-item class="d-sm-none"><keycloak-auth v-if="auth !== 'hide'" id="keycloak-auth-xs"/></b-nav-item>
+              <b-nav-item class="navbar-link lvl2-link d-sm-none"><keycloak-auth v-if="auth !== 'hide'" id="keycloak-auth-xs"/></b-nav-item>
             </b-navbar-nav>
           </b-container>
         </b-collapse>
@@ -91,7 +90,7 @@ export default {
   font-size: 13px;
 }
 .bc-nav-title {
-  font-size: 2em;
+  font-size: 1em;
   color: #fff!important;
   margin-bottom: -10px;
 }
@@ -104,17 +103,34 @@ export default {
   -moz-box-shadow: 0px 3px 3px 1px rgba(51, 51, 51, 0.5);
   box-shadow: 0px 3px 3px 1px rgba(51, 51, 51, 0.5);
 }
-header li + li {
-  @include media-breakpoint-up(sm) {
-    border-left: 1px solid #607D8B;
-  }
-}
 .lvl2-link a {
-  padding-top:0;
-  padding-bottom:0;
+  padding-top:2px;
+  padding-bottom:2px;
 }
 .nav-logo-print {
   height: 0px !important;
+}
+@include media-breakpoint-up(sm){
+  .bc-nav-title {
+    font-size: 1.25em;
+  }
+  .lvl2-link a {
+    padding-top:0;
+    padding-bottom:0;
+  }
+  header li + li {
+    border-left: 1px solid #607D8B;
+  }
+}
+@include media-breakpoint-up(md){
+  .bc-nav-title {
+    font-size: 1.50em;
+  }
+}
+@include media-breakpoint-up(lg){
+  .bc-nav-title {
+    font-size: 2em;
+  }
 }
 @media print {
   header nav {
