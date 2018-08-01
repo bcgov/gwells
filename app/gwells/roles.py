@@ -31,13 +31,17 @@ REGISTRIES_ROLES = (
     REGISTRIES_VIEWER_ROLE,
 )
 
-WELLS_ROLES = (
+WELLS_VIEW_ROLES = (
+    WELLS_VIEWER_ROLE,
+)
+
+WELLS_EDIT_ROLES = (
     ADMIN_ROLE,
     WELLS_VIEWER_ROLE,
     WELLS_EDIT_ROLE,
 )
 
-GWELLS_ROLES = REGISTRIES_ROLES + WELLS_ROLES
+GWELLS_ROLES = REGISTRIES_ROLES + WELLS_VIEW_ROLES + WELLS_EDIT_ROLES
 
 # Deprecated: use GWELLS_ROLES. Kept for backwards compatibility
 GWELLS_ROLE_GROUPS = GWELLS_ROLES
@@ -96,7 +100,11 @@ def roles_to_groups(user, roles=None):
     REGISTRIES_AUTHORITY_PERMISSIONS = ADMIN_PERMISSIONS
     REGISTRIES_VIEWER_PERMISSIONS = []
     WELLS_VIEWER_PERMISSIONS = []
-    WELLS_EDIT_PERMISSIONS = []
+    WELLS_EDIT_PERMISSIONS = [x for x in
+                              Permission.objects.filter(codename__in=['add_activitysubmission',
+                                                                      'change_activitysubmission',
+                                                                      'delete_activitysubmission', ])
+                              ]
 
     PERMISSION_MAP = {
         ADMIN_ROLE: ADMIN_PERMISSIONS,

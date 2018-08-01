@@ -20,7 +20,6 @@ from django.test import TestCase
 from django.core.management import call_command
 from django.utils.six import StringIO
 from django.contrib.auth.models import User, Group
-from django.contrib.auth.models import Group
 
 from rest_framework import status
 from rest_framework.test import APITestCase, APIRequestFactory
@@ -36,7 +35,8 @@ from registries.models import (
     SubactivityCode)
 from registries.views import PersonListView, PersonDetailView
 from gwells.roles import (roles_to_groups, GWELLS_ROLE_GROUPS, GWELLS_ROLES,
-                          REGISTRIES_ADJUDICATOR_ROLE, ADMIN_ROLE, REGISTRIES_AUTHORITY_ROLE, REGISTRIES_VIEWER_ROLE)
+                          REGISTRIES_ADJUDICATOR_ROLE, ADMIN_ROLE, REGISTRIES_AUTHORITY_ROLE,
+                          REGISTRIES_VIEWER_ROLE)
 
 # Note: see postman/newman for more API tests.
 # Postman API tests include making requests with incomplete data, missing required fields etc.

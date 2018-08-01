@@ -19,11 +19,10 @@ from rest_framework.generics import ListCreateAPIView
 
 from gwells import settings
 from gwells.models import Survey
-from gwells.roles import WELLS_ROLES
 from gwells.pagination import APILimitOffsetPagination
 
 from wells.models import Well, ActivitySubmission
-from wells.permissions import WellsPermissions
+from wells.permissions import WellsEditPermissions
 
 from submissions.serializers import WellSubmissionSerializer
 
@@ -35,7 +34,7 @@ class SubmissionListAPIView(ListCreateAPIView):
     post: adds a new submission
     """
 
-    permission_classes = (WellsPermissions,)
+    permission_classes = (WellsEditPermissions,)
     model = ActivitySubmission
     queryset = ActivitySubmission.objects.all()
     pagination_class = APILimitOffsetPagination
