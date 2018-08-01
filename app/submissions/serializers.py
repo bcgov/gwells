@@ -15,6 +15,9 @@
 from rest_framework import serializers
 
 from gwells.models import ProvinceStateCode
+
+from wells.models import Well, ActivitySubmission
+import wells.stack
 from gwells.serializers import AuditModelSerializer
 
 from wells.stack import StackWells
@@ -122,7 +125,7 @@ class WellSubmissionSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         instance = super().create(validated_data)
         # Update the well record
-        stacker = StackWells()
+        stacker = wells.stack.StackWells()
         stacker.process(instance.filing_number)
         # The instance may have been updated with a well tag number
         instance.refresh_from_db()

@@ -9,13 +9,8 @@
 {% block body_block %}
 <fieldset id="summary_information_fieldset">
 
-    <legend>Well Summary
-    {% if settings.ENABLE_GOOGLE_ANALYTICS %}
-            <a onclick="ga('send', 'event', 'Button', 'print', 'Wells Summary Print'); window.print();">
-    {% else %}
-            <a onclick="window.print();">
-    {% endif %}
-    <span title="Print" class="fas fa-print fa-pull-right button hide-for-print cursor-pointer"></span></a></legend>
+    <div id="summary"></div>
+    {% render_bundle 'summary' 'js' %}
 
     <div class="row no-gutters print-compressed">
 

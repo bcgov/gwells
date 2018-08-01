@@ -120,6 +120,7 @@ gwells.pyproj*
 *.sublime-workspace
 .vscode
 *.ipynb
+.idea
 
 # functional-tests
 functional-tests/.gradle/
