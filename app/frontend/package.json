@@ -13,7 +13,7 @@
     "watch-test": "jest --config test/unit/jest.conf.js --watch --verbose",
     "lint": "eslint --ext .js,.vue src test/unit",
     "build": "node build/build.js",
-    "watch": "./node_modules/.bin/webpack --config build/webpack.dev.conf.js --watch --display-entrypoints"
+    "watch": "./node_modules/.bin/webpack --config build/webpack.dev-watch.conf.js --watch --display-entrypoints"
   },
   "dependencies": {
     "axios": "^0.18.0",
