@@ -16,9 +16,12 @@ import logging
 from django.core.serializers import serialize
 from django.forms.models import model_to_dict
 from django.db import transaction
+from django.db.models import F
 
 from gwells.models import ProvinceStateCode
 from submissions.models import WellActivityCode
+import submissions.serializers
+from wells.serializers import WellStackerSerializer
 from wells.models import Well, ActivitySubmission
 
 
@@ -50,7 +53,6 @@ class StackWells():
         Using an existing well as a reference, create a legacy well record
         """
         # TODO: Deal with Lithology, LtsaOwner, LinerPerforation, Casing, AquiferWell, Screen etc.
-        # TODO: Implement some smart serialization here.
         ActivitySubmission.objects.create(
             owner_full_name=well.owner_full_name,
             owner_province_state=well.owner_province_state,
@@ -60,41 +62,42 @@ class StackWells():
             well=well
         )
 
-    def _stack(self, submissions, well: Well) -> Well:
-        submissions = submissions.order_by('-work_start_date')
+    def _stack(self, records, well: Well) -> Well:
+        records = records.order_by(F('work_start_date').asc(nulls_first=True))
         composite = {}
-        # Iterate through all the submissions
+        # Iterate through all the submission records
         # TODO: Deal with Lithology, LtsaOwner, LinerPerforation, Casing, AquiferWell, Screen etc.
-        # TODO: Implement some smart serialization here.
-        for submission in submissions:
-            data = model_to_dict(submission)
-            for key, value in data.items():
-                composite[key] = value
+        for submission in records:
+            serializer = submissions.serializers.WellSubmissionSerializer(submission)
+            for key, value in serializer.data.items():
+                # We only consider items with values
+                if value:
+                    composite[key] = value
         # Update the well view
-        well.owner_full_name = composite.get('owner_full_name')
-        well.owner_province_state = ProvinceStateCode.objects.get(
-            province_state_code=composite.get('owner_province_state'))
-        well.save()
+        well_serializer = WellStackerSerializer(well, data=composite, partial=True)
+        if well_serializer.is_valid(raise_exception=True):
+            well = well_serializer.save()
+
         return well
 
     def _update_well_record(self, submission: ActivitySubmission) -> Well:
         """
         Used to update an existing well record.
         """
-        submissions = ActivitySubmission.objects.filter(
+        records = ActivitySubmission.objects.filter(
             well=submission.well)
-        if submissions.count() > 1 or self._submission_is_construction(submission):
+        if records.count() > 1 or self._submission_is_construction(submission):
             # If there's more than one submission, or this is a construction submission, we don't need to
-            # create a legacy well, we can go ahead, iterate though the submissions and update the well.
-            return self._stack(submissions, submission.well)
+            # create a legacy well, we can go ahead, iterate though the submission records and update the well.
+            return self._stack(records, submission.well)
         else:
             # If there aren't prior submissions, we may create a legacy record using the current well
             # record.
             self._create_legacy_submission(submission.well)
             # We should now have multiple records
-            submissions = ActivitySubmission.objects.filter(
+            records = ActivitySubmission.objects.filter(
                 well=submission.well)
-            return self._stack(submissions, submission.well)
+            return self._stack(records, submission.well)
 
     def _submission_is_construction(self, submission):
         construction_code = WellActivityCode.types.construction().well_activity_type_code
