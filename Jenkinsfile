@@ -289,11 +289,7 @@ _stage('Unit Test', context) {
 
                         (
                             cd /opt/app-root/src
-                            #python manage.py migrate
-                            #ENABLE_DATA_ENTRY="True" python manage.py test -c nose.cfg
                             DATABASE_ENGINE=sqlite DEBUG=False TEMPLATE_DEBUG=False python manage.py test -c nose.cfg
-                        )
-                        (
                             cd /opt/app-root/src/frontend
                             npm test
                         )
