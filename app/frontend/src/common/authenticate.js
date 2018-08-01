@@ -16,12 +16,7 @@ import Vue from 'vue'
 export default {
   getInstance: function () {
     if (!Vue.prototype.$keycloak) {
-      // TODO: This has to read settings from environment configuration!
-      Vue.prototype.$keycloak = Keycloak({
-        'realm': 'gwells',
-        'url': 'https://dev-sso.pathfinder.gov.bc.ca/auth',
-        'clientId': 'webapp-dev-local'
-      })
+      Vue.prototype.$keycloak = Keycloak(`${process.env.AXIOS_BASE_URL}keycloak`)
     }
     return Vue.prototype.$keycloak
   },

@@ -392,6 +392,60 @@
                                         }
                                     },
                                     {
+                                        "name": "SSO_CLIENT",
+                                        "valueFrom": {
+                                            "configMapKeyRef": {
+                                                "key": "SSO_CLIENT",
+                                                "name": "gwells-global-config${NAME_SUFFIX}"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "SSO_PUBKEY",
+                                        "valueFrom": {
+                                            "configMapKeyRef": {
+                                                "key": "SSO_PUBKEY",
+                                                "name": "gwells-global-config${NAME_SUFFIX}"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "SSO_AUTH_HOST",
+                                        "valueFrom": {
+                                            "configMapKeyRef": {
+                                                "key": "SSO_AUTH_HOST",
+                                                "name": "gwells-global-config${NAME_SUFFIX}"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "SSO_AUDIENCE",
+                                        "valueFrom": {
+                                            "configMapKeyRef": {
+                                                "key": "SSO_AUDIENCE",
+                                                "name": "gwells-global-config${NAME_SUFFIX}"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "SSO_REALM",
+                                        "valueFrom": {
+                                            "configMapKeyRef": {
+                                                "key": "SSO_REALM",
+                                                "name": "gwells-global-config${NAME_SUFFIX}"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "SSO_PORT",
+                                        "valueFrom": {
+                                            "configMapKeyRef": {
+                                                "key": "SSO_PORT",
+                                                "name": "gwells-global-config${NAME_SUFFIX}"
+                                            }
+                                        }
+                                    },
+                                    {
                                         "name": "ENABLE_DATA_ENTRY",
                                         "value": "True"
                                     },
