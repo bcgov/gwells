@@ -32,70 +32,13 @@ export default {
 </script>
 
 <style lang="scss">
-@import url('https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
-@import '../../../backend/gwells/static/gwells/css/ie10-viewport-bug-workaround.css';
-@import '~bootstrap/scss/_functions';
-@import '~bootstrap/scss/_variables';
-@import '~bootstrap/scss/mixins/_breakpoints';
-
+@import '../common/common.scss';
 @media print {
-  body {
-    overflow: auto!important;
-    height: auto!important;
-  }
-  footer {
-    display: none!important;
-  }
-  .h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6 {
-  font-weight: 500!important;
-  }
-  #breadcrumbs {
-    display: none!important;
-  }
-  #keycloak-auth {
-    display: none!important;
-  }
   .registries-edit-btn {
     display: none!important;
   }
   .registries-action-button {
     display: none!important;
   }
-  .btn-primary {
-    background-color: #fff!important
-  }
-}
-
-html {
-  font-size: 14px;
-  background-color: #f1f1f1
-}
-body {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  background-color: #f1f1f1
-}
-body.registries-body {
-  background-color: #f1f1f1
-}
-main {
-  margin-bottom: 45px;
-  padding-top: 20px;
-  flex: auto;
-}
-header,
-footer {
-  flex: none;
-}
-.h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6 {
-  font-weight: 700;
-}
-
-// BC Gov Bootstrap 4 theme override
-.custom-select[size]:not([size="0"]) {
-  height:auto;
-  padding-right:.75rem;
-  background-image:none;
 }
 </style>

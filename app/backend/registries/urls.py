@@ -68,7 +68,9 @@ urlpatterns = [
     url(r'^api/v1/drillers/(?P<person_guid>[-\w]+)/notes/(?P<note_guid>[-\w]+)/$',
         views.PersonNoteDetailView.as_view(), name='person-note-detail'),
 
-    # Person resource endpoints (drillers, well installers, and other instances of Person model)
+    # Person endpoints (drillers, well installers, and other instances of Person model)
+    url(r'^api/v1/drillers/names/$',
+        never_cache(views.PersonNameSearch.as_view()), name='person-search'),
     url(r'api/v1/drillers/options/',
         views.PersonOptionsView.as_view(), name='person-options'),
     url(r'^api/v1/drillers/(?P<person_guid>[-\w]+)/history/$',
@@ -107,47 +109,8 @@ urlpatterns = [
     url(r'^api/v1/api-token-auth/', obtain_jwt_token_noswagger, name='get-token'),
 
     # Swagger documentation endpoint
-    url(r'^api/$', schema_view.with_ui('swagger',
-                                      cache_timeout=None), name='api-docs'),
-
-    # Deprecated old URL endpoints. NOTE: These may be linked from API catalogue
-
-    # Organization resource endpoints
-    url(r'^registries/api/v1/organizations/(?P<org_guid>[-\w]+)/$',
-        views.OrganizationDetailView.as_view(), name='organization-detail'),
-    url(r'^registries/api/v1/organizations/$',
-        views.OrganizationListView.as_view(),
-        name='organization-list'),
-
-    # Person resource endpoints (drillers, well installers, and other instances of Person model)
-    url(r'^registries/api/v1/drillers/(?P<person_guid>[-\w]+)/$',
-        views.PersonDetailView.as_view(),
-        name='person-detail'),
-    url(r'^registries/api/v1/drillers/$',
-        views.PersonListView.as_view(),
-        name='person-list'),
-
-    # List of cities that currently have registered drillers, pump installers etc.
-    url(r'^registries/api/v1/cities/drillers/$',
-        views.CitiesListView.as_view(),
-        {'activity': 'drill'},
-        name='city-list-drillers'),
-    url(r'^registries/api/v1/cities/installers/$',
-        views.CitiesListView.as_view(),
-        {'activity': 'install'},
-        name='city-list-installers'),
-
-    # Temporary development login endpoint
-    url(r'^registries/api/v1/api-token-auth/',
-        obtain_jwt_token_noswagger, name='get-token'),
-
-    # Swagger documentation endpoint
-    url(r'^registries/api/', schema_view.with_ui('swagger',
-                                                 cache_timeout=None), name='api-docs'),
-
-    # Deprecated API docs link
-    url(r'^registries/docs/$', schema_view.with_ui('swagger',
-                                                   cache_timeout=None), name='api-docs-old'),
+    url(r'^api/$', schema_view.with_ui('redoc',
+                                       cache_timeout=None), name='api-docs'),
 
     # Registries frontend webapp loader (html page that contains header, footer, and a SPA in between)
     url(r'^registries/', views.RegistriesIndexView.as_view(), name='registries-home'),
