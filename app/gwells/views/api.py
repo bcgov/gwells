@@ -14,6 +14,6 @@ class KeycloakConfig(APIView):
             "ssl-required": "external",
             "resource": get_env_variable("SSO_CLIENT"),
             "public-client": True,
-            "confidential-port": int(get_env_variable("SSO_PORT"))
+            "confidential-port": int(get_env_variable("SSO_PORT", "0"))
         }
         return Response(config)
