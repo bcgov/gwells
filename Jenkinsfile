@@ -211,7 +211,8 @@ properties([
     ),
     durabilityHint(
         'PERFORMANCE_OPTIMIZED'
-    )
+    ),
+    disableResume()
 ])
 
 
