@@ -15,12 +15,10 @@
 from rest_framework import serializers
 
 from gwells.models import ProvinceStateCode
+from gwells.serializers import AuditModelSerializer
 
 from wells.models import Well, ActivitySubmission
 import wells.stack
-from gwells.serializers import AuditModelSerializer
-
-from wells.stack import StackWells
 from wells.models import (
     ActivitySubmission,
     IntendedWaterUseCode,
