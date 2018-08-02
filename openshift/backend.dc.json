@@ -339,7 +339,11 @@
                                     },
                                     {
                                         "name": "APP_CONFIG",
-                                        "value": "gunicorn.cfg"
+                                        "value": "/opt/app-root/src/backend/gunicorn.cfg"
+                                    },
+                                    {
+                                        "name": "APP_MODULE",
+                                        "value": "wsgi"
                                     },
                                     {
                                         "name": "DJANGO_SECRET_KEY",
