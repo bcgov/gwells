@@ -334,9 +334,9 @@
                                         }
                                     },
                                     {
-                                        "name": "APP_SCRIPT",
-                                        "value": "scripts/gwells"
-                                    },
+                                        "name": "APP_CONFIG",
+                                        "value": "/opt/app-root/src/gunicorn.cfg"
+                                    },                                    
                                     {
                                         "name": "DJANGO_SECRET_KEY",
                                         "valueFrom": {
