@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from gwells.models import Survey
+from gwells.models import Survey, ProvinceStateCode
 
 
 class SurveySerializer(serializers.ModelSerializer):
@@ -24,3 +24,13 @@ class AuditModelSerializer(serializers.ModelSerializer):
     create_date = serializers.ReadOnlyField()
     update_user = serializers.ReadOnlyField()
     update_date = serializers.ReadOnlyField()
+
+
+class ProvinceStateCodeSerializer(serializers.ModelSerializer):
+    """
+    Serializes ProvinceStateCodes
+    """
+
+    class Meta:
+        model = ProvinceStateCode
+        fields = ('province_state_code', 'description', 'display_order')
