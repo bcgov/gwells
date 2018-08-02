@@ -65,7 +65,7 @@ When a feature is ready for testing please send a pull request to our current re
 When a pull request is related to a [GWELLS Trello board](https://trello.com/b/2UQZgXHR/wells-project-board) product backlog, your pull request title must match the following naming convention:
 > [Trello CardId] Trello Title 
 
-exemple:
+E.g.
 > [405] Bug to be fixed
 
 Find the Trello cardId in the card url.
