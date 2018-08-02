@@ -334,16 +334,8 @@
                                         }
                                     },
                                     {
-                                        "name": "APP_HOME",
-                                        "value": "backend"
-                                    },
-                                    {
-                                        "name": "APP_CONFIG",
-                                        "value": "/opt/app-root/src/backend/gunicorn.cfg"
-                                    },
-                                    {
-                                        "name": "APP_MODULE",
-                                        "value": "wsgi:application"
+                                        "name": "APP_SCRIPT",
+                                        "value": "scripts/gwells"
                                     },
                                     {
                                         "name": "DJANGO_SECRET_KEY",
