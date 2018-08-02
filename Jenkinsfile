@@ -287,13 +287,24 @@ _stage('Unit Test', context) {
                         printf "Pip version:    "&& pip --version
                         printf "Node version:   "&& node --version
                         printf "NPM version:    "&& npm --version
+                    '''
 
-                        (
-                            cd /opt/app-root/src
-                            DATABASE_ENGINE=sqlite DEBUG=False TEMPLATE_DEBUG=False python manage.py test -c nose.cfg
-                            cd /opt/app-root/src/frontend
-                            npm test
-                        )
+                    parallel (
+                        phase1: {
+                            sh script: '''#!/usr/bin/container-entrypoint /bin/sh
+                                cd /opt/app-root/src
+                                DATABASE_ENGINE=sqlite DEBUG=False TEMPLATE_DEBUG=False python manage.py test -c nose.cfg
+                            '''
+                        },
+                        phase2: {
+                            sh script: '''#!/usr/bin/container-entrypoint /bin/sh
+                                cd /opt/app-root/src/frontend
+                                npm test
+                            '''
+                        }
+                    )
+
+                    sh script: '''#!/usr/bin/container-entrypoint /bin/sh
                         mkdir -p frontend/test/
                         cp -R /opt/app-root/src/frontend/test/unit ./frontend/test/
                         cp /opt/app-root/src/backend/nosetests.xml /opt/app-root/src/backend/coverage.xml ./
