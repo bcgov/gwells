@@ -62,6 +62,14 @@ git push origin -f
 
 When a feature is ready for testing please send a pull request to our current release branch.
 
+When a pull request is related to a [GWELLS Trello board](https://trello.com/b/2UQZgXHR/wells-project-board) product backlog, your pull request title must match the following naming convention:
+> [Trello CardId] Trello Title 
+
+exemple:
+> [405] Bug to be fixed
+
+Find the Trello cardId in the card url.
+
 ### Continuous Integration and Continuous Deployment
 
 We use a Jenkins pipleline to test, build and integrate pull requests into release branches.  Those branches are merged into master and deployed into production approximately every two weeks, coinciding with the end of an agile sprint.
