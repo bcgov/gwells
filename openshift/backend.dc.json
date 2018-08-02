@@ -334,6 +334,10 @@
                                         }
                                     },
                                     {
+                                        "name": "APP_HOME",
+                                        "value": "/opt/app-root/src/backend/"
+                                    },
+                                    {
                                         "name": "APP_CONFIG",
                                         "value": "/opt/app-root/src/backend/gunicorn.cfg"
                                     },
