@@ -551,12 +551,12 @@
                                 ],
                                 "resources": {
                                     "limits": {
-                                        "cpu": "250m",
+                                        "cpu": "300m",
                                         "memory": "768Mi"
                                     },
                                     "requests": {
-                                        "cpu": "200m",
-                                        "memory": "512Mi"
+                                        "cpu": "300m",
+                                        "memory": "768Mi"
                                     }
                                 },
                                 "livenessProbe": {
