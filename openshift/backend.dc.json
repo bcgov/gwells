@@ -343,7 +343,7 @@
                                     },
                                     {
                                         "name": "APP_MODULE",
-                                        "value": "wsgi"
+                                        "value": "wsgi:application"
                                     },
                                     {
                                         "name": "DJANGO_SECRET_KEY",
