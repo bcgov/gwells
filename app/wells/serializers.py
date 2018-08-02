@@ -19,6 +19,13 @@ from wells.models import Well, ActivitySubmission
 from gwells.serializers import AuditModelSerializer
 
 
+class WellStackerSerializer(AuditModelSerializer):
+
+    class Meta:
+        model = Well
+        fields = '__all__'
+
+
 class WellListSerializer(serializers.ModelSerializer):
     """Serializes a well record"""
 

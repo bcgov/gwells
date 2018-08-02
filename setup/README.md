@@ -182,7 +182,7 @@ Please use either these steps or the install script.
     ```
     From python:
     python manage.py loaddata gwells-codetables
-    python manage.py loaddata wellsearch-codetables registries.codetables
+    python manage.py loaddata wellsearch-codetables registries-codetables
     python manage.py loaddata wellsearch registries
 
     From pg dump:
