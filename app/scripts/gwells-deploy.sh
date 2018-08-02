@@ -56,3 +56,5 @@ python manage.py post-deploy
 # Success!
 #
 echo "Post-Deploy: completed successfully"
+
+sleep 3600
