@@ -32,7 +32,7 @@ IFS=$'\n\t'
 # Python migrate table changes
 #
 echo "Post-Deploy: Python migration"
-cd $APP_ROOT/src/
+cd $APP_ROOT/src/backend/
 python manage.py migrate
 
 
@@ -49,7 +49,7 @@ psql -X --set ON_ERROR_STOP=on -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $D
 # Python related portion of post-deploy
 #
 echo "Post-Deploy: Python tasks"
-cd $APP_ROOT/src/
+cd $APP_ROOT/src/backend/
 python manage.py post-deploy
 
 
