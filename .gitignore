@@ -79,8 +79,8 @@ var/
 webpack-stats.json
 api-tests/.envrc
 functional-tests/.envrc
-app/.env
-*/.secret_env
+app/backend/.env
+*.secret_env
 
 # PyInstaller and Pip install files
 #  Usually these files are written by a python script from a template
@@ -138,7 +138,7 @@ functional-tests/src/test/groovy/testtamplet.txt
 
 # Frontend files
 frontend/webpack-stats.json
-app/gwells/static/vue
+app/backend/gwells/static/vue
 **/node_modules/
 
 sonar-runner/.gradle
