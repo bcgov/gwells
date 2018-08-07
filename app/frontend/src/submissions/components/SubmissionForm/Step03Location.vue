@@ -136,7 +136,37 @@
           </form-input>
         </b-col>
       </b-row>
-
+      <b-row>
+        <b-col>
+          <p class="mb-1">OR</p>
+        </b-col>
+      </b-row>
+      <b-row>
+        <b-col cols="12" md="6" lg="3">
+          <form-input
+              id="legalPID"
+              label="3) Parcel Identifier"
+              type="text"
+              v-model="legalPIDInput"
+              :errors="errors['legal_pid']"
+              :loaded="fieldsLoaded['legal_pid']"
+              >
+          </form-input>
+        </b-col>
+      </b-row>
+      <b-row>
+        <b-col cols="12" md="8">
+          <form-input
+              id="wellLocationDescription"
+              label="Description of Well Location"
+              type="text"
+              v-model="wellLocationDescriptionInput"
+              :errors="errors['well_location_description']"
+              :loaded="fieldsLoaded['well_location_description']"
+              >
+          </form-input>
+        </b-col>
+      </b-row>
     </fieldset>
 </template>
 <script>
@@ -154,6 +184,12 @@ export default {
     legalPlan: String,
     legalDistrictLot: String,
     legalBlock: String,
+    legalSection: String,
+    legalTownship: String,
+    legalRange: String,
+    landDistrict: String,
+    legalPID: String,
+    wellLocationDescription: String,
     errors: {
       type: Object,
       default: () => ({})
@@ -169,7 +205,13 @@ export default {
     legalLotInput: 'legalLot',
     legalPlanInput: 'legalPlan',
     legalDistrictLotInput: 'legalDistrictLot',
-    legalBlock: 'legalBlock'
+    legalBlockInput: 'legalBlock',
+    legalSectionInput: 'legalSection',
+    legalTownshipInput: 'legalTownship',
+    legalRangeInput: 'legalRange',
+    landDistrictInput: 'landDistrict',
+    legalPIDInput: 'legalPID',
+    wellLocationDescriptionInput: 'wellLocationDescription'
   },
   data () {
     return {

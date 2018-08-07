@@ -73,6 +73,12 @@
           :legalPlan.sync="form.legal_plan"
           :legalDistrictLot.sync="form.legal_district_lot"
           :legalBlock.sync="form.legal_block"
+          :legalSection.sync="form.legal_section"
+          :legalTownship.sync="form.legal_township"
+          :legalRange.sync="form.legal_range"
+          :landDistrict.sync="form.land_district"
+          :legalPID.sync="form.legal_pid"
+          :wellLocationDescription.sync="form.well_location_description"
         ></step03-location>
 
         <b-row>
@@ -157,7 +163,7 @@ export default {
       loadFormSuccess: false,
       confirmLoadModal: false,
       step: 1,
-      maxSteps: 2,
+      maxSteps: 3,
       sliding: null,
       errors: {},
       fieldsLoaded: {},
@@ -214,7 +220,18 @@ export default {
         owner_city: '',
         owner_province_state: '',
         owner_postal_code: '',
-        street_address: '' // this is the street address of the well location
+        street_address: '', // this is the street address of the well location
+        city: '', // well location city
+        legal_lot: '',
+        legal_plan: '',
+        legal_district_lot: '',
+        legal_block: '',
+        legal_section: '',
+        legal_township: '',
+        legal_range: '',
+        land_district: '',
+        legal_pid: '',
+        well_location_description: ''
       }
     },
     saveForm () {
