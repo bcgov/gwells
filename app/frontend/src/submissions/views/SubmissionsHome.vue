@@ -63,6 +63,11 @@
           :errors="errors"
           :fieldsLoaded="fieldsLoaded"
         ></step02-owner>
+
+        <step03-location
+          v-if="formStep === 3 || formIsFlat"
+          :streetAddress.sync="form.street_address"
+        ></step03-location>
         <b-row>
           <b-col v-if="!formIsFlat">
             <b-btn v-if="step > 1" @click="step > 1 ? step-- : null">Back</b-btn>
@@ -126,11 +131,13 @@
 import ApiService from '@/common/services/ApiService.js'
 import Step01Type from '@/submissions/components/SubmissionForm/Step01Type.vue'
 import Step02Owner from '@/submissions/components/SubmissionForm/Step02Owner.vue'
+import Step03Location from '@/submissions/components/SubmissionForm/Step03Location.vue'
 export default {
   name: 'SubmissionsHome',
   components: {
     Step01Type,
-    Step02Owner
+    Step02Owner,
+    Step03Location
   },
   data () {
     return {
@@ -199,7 +206,8 @@ export default {
         owner_mailing_address: '',
         owner_city: '',
         owner_province_state: '',
-        owner_postal_code: ''
+        owner_postal_code: '',
+        street_address: '' // this is the street address of the well location
       }
     },
     saveForm () {
