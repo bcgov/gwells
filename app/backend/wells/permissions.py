@@ -38,13 +38,8 @@ class WellsEditPermissions(DjangoModelPermissions):
         If user in one of the wells groups, group permissions will dictate (e.g. user is
         in a group that has 'add_well' permission)
         """
-        print('WellsEditPermissions.has_permission for user: {}'.format(request.user))
-        print('request.user.is_authenticated: {}'.format(request.user.is_authenticated))
-        print('request.user.groups: {}'.format(request.user.groups.all()))
         if request.user and request.user.is_authenticated and request.user.groups.filter(
                 name__in=WELLS_EDIT_ROLES).exists():
             result = super().has_permission(request, view)
-            print('view: {}'.format(view))
-            print('super().has_permission(request, view) = {}'.format(result))
             return result
         return False
