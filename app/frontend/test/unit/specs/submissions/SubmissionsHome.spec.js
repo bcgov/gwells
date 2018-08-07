@@ -1,11 +1,15 @@
 import { shallowMount, createLocalVue } from '@vue/test-utils'
 import Vuex from 'vuex'
+import VueRouter from 'vue-router'
 import SubmissionsHome from '@/submissions/views/SubmissionsHome.vue'
 
 import { FETCH_CODES } from '@/submissions/store/actions.types.js'
 
 const localVue = createLocalVue()
 localVue.use(Vuex)
+localVue.use(VueRouter)
+
+const router = new VueRouter()
 
 describe('SubmissionsHome.vue', () => {
   let actions
@@ -25,6 +29,7 @@ describe('SubmissionsHome.vue', () => {
     const wrapper = shallowMount(SubmissionsHome, {
       localVue,
       store,
+      router,
       sync: false
     })
     expect(wrapper.vm.confirmSubmitModal).toEqual(false)
@@ -38,6 +43,7 @@ describe('SubmissionsHome.vue', () => {
     shallowMount(SubmissionsHome, {
       localVue,
       store,
+      router,
       sync: false
     })
     expect(actions[FETCH_CODES]).toHaveBeenCalled()
