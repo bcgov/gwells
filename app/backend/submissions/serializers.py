@@ -15,9 +15,18 @@
 from rest_framework import serializers
 
 from gwells.models import ProvinceStateCode
+from gwells.serializers import AuditModelSerializer
+
 from wells.models import Well, ActivitySubmission
 import wells.stack
-from gwells.serializers import AuditModelSerializer
+from wells.models import (
+    ActivitySubmission,
+    IntendedWaterUseCode,
+    Well,
+    WellClassCode,
+    WellSubclassCode)
+
+from submissions.models import WellActivityCode
 
 
 class WellSubmissionSerializer(serializers.ModelSerializer):
@@ -119,3 +128,38 @@ class WellSubmissionSerializer(serializers.ModelSerializer):
         # The instance may have been updated with a well tag number
         instance.refresh_from_db()
         return instance
+
+
+class WellActivityCodeSerializer(serializers.ModelSerializer):
+    """ serializes well activity codes """
+
+    class Meta:
+        model = WellActivityCode
+        fields = ('well_activity_type_code', 'description')
+
+
+class WellSubclassCodeSerializer(serializers.ModelSerializer):
+    """ serializes well subclass codes """
+
+    class Meta:
+        model = WellSubclassCode
+        fields = ('well_subclass_guid', 'well_subclass_code', 'description')
+
+
+class WellClassCodeSerializer(serializers.ModelSerializer):
+    """ serializes well class codes """
+
+    wellsubclasscode_set = WellSubclassCodeSerializer(
+        many=True, read_only=True)
+
+    class Meta:
+        model = WellClassCode
+        fields = ('well_class_code', 'description', 'wellsubclasscode_set')
+
+
+class IntendedWaterUseCodeSerializer(serializers.ModelSerializer):
+    """ serializes intended water use codes """
+
+    class Meta:
+        model = IntendedWaterUseCode
+        fields = ('intended_water_use_code', 'description')
