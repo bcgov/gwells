@@ -23,16 +23,14 @@ from rest_framework.generics import ListAPIView
 from rest_framework.permissions import DjangoModelPermissionsOrAnonReadOnly
 
 from drf_yasg.utils import swagger_auto_schema
-# from django_filters import rest_framework as restfilters
 
 from gwells import settings
 from gwells.models import Survey
-from gwells.roles import WELLS_ROLES
+from gwells.roles import WELLS_VIEW_ROLES
 from gwells.pagination import APILimitOffsetPagination
 
 from wells.models import Well
 from wells.documents import MinioClient
-from wells.permissions import WellsDocumentPermissions, WellsPermissions
 from wells.serializers import WellListSerializer, WellTagSearchSerializer
 
 
@@ -64,7 +62,7 @@ class ListFiles(APIView):
     @swagger_auto_schema(auto_schema=None)
     def get(self, request, tag):
         user_is_staff = self.request.user.groups.filter(
-            name__in=WELLS_ROLES).exists()
+            name__in=WELLS_VIEW_ROLES).exists()
 
         client = MinioClient(
             request=request, disable_private=(not user_is_staff))
