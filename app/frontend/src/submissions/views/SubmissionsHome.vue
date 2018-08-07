@@ -64,10 +64,17 @@
           :fieldsLoaded="fieldsLoaded"
         ></step02-owner>
 
+        <!-- Step 3: Well location -->
         <step03-location
           v-if="formStep === 3 || formIsFlat"
           :streetAddress.sync="form.street_address"
+          :city.sync="form.city"
+          :legalLot.sync="form.legal_lot"
+          :legalPlan.sync="form.legal_plan"
+          :legalDistrictLot.sync="form.legal_district_lot"
+          :legalBlock.sync="form.legal_block"
         ></step03-location>
+
         <b-row>
           <b-col v-if="!formIsFlat">
             <b-btn v-if="step > 1" @click="step > 1 ? step-- : null">Back</b-btn>

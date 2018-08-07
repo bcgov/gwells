@@ -2,6 +2,11 @@
     <fieldset>
       <legend>Well Location</legend>
       <b-row>
+        <b-col>
+          <p>1) Well location address</p>
+        </b-col>
+      </b-row>
+      <b-row>
         <b-col cols="12" md="6">
           <b-form-group label="Street address">
             <v-select
@@ -14,20 +19,124 @@
               <template slot="no-options">
                 &nbsp;
               </template>
-              <!-- <template slot="option" slot-scope="option">
-                <div>
-                  {{ option.well_tag_number }} ({{ option.owner_full_name }})
-                </div>
-              </template>
-              <template slot="selected-option" slot-scope="option">
-                <div>
-                  {{ option.well_tag_number }}
-                </div>
-              </template> -->
             </v-select>
           </b-form-group>
         </b-col>
       </b-row>
+      <b-row>
+        <b-col cols="12" md="5">
+          <form-input
+              id="wellCity"
+              label="City"
+              type="text"
+              v-model="wellCityInput"
+              :errors="errors['city']"
+              :loaded="fieldsLoaded['city']"
+              >
+          </form-input>
+        </b-col>
+      </b-row>
+      <b-row>
+        <b-col>
+          <p class="mb-1">OR</p>
+          <p>2) Legal description</p>
+        </b-col>
+      </b-row>
+
+      <b-row>
+        <b-col cols="12" md="6" lg="3">
+          <form-input
+              id="legalLot"
+              label="Lot"
+              type="text"
+              v-model="legalLotInput"
+              :errors="errors['legal_lot']"
+              :loaded="fieldsLoaded['legal_lot']"
+              >
+          </form-input>
+        </b-col>
+        <b-col cols="12" md="6" lg="3">
+          <form-input
+              id="legalPlan"
+              label="Plan"
+              type="text"
+              v-model="legalPlanInput"
+              :errors="errors['legal_plan']"
+              :loaded="fieldsLoaded['legal_plan']"
+              >
+          </form-input>
+        </b-col>
+        <b-col cols="12" md="6" lg="3">
+          <form-input
+              id="legalDistrictLot"
+              label="District Lot"
+              type="text"
+              v-model="legalDistrictLotInput"
+              :errors="errors['legal_district_lot']"
+              :loaded="fieldsLoaded['legal_district_lot']"
+              >
+          </form-input>
+        </b-col>
+        <b-col cols="12" md="6" lg="3">
+          <form-input
+              id="legalBlock"
+              label="Block"
+              type="text"
+              v-model="legalBlockInput"
+              :errors="errors['legal_block']"
+              :loaded="fieldsLoaded['legal_block']"
+              >
+          </form-input>
+        </b-col>
+      </b-row>
+      <b-row>
+        <b-col cols="12" md="6" lg="3">
+          <form-input
+              id="legalSection"
+              label="Section"
+              type="text"
+              v-model="legalSectionInput"
+              :errors="errors['legal_section']"
+              :loaded="fieldsLoaded['legal_section']"
+              >
+          </form-input>
+        </b-col>
+        <b-col cols="12" md="6" lg="3">
+          <form-input
+              id="legalTownship"
+              label="Township"
+              type="text"
+              v-model="legalTownshipInput"
+              :errors="errors['legal_township']"
+              :loaded="fieldsLoaded['legal_township']"
+              >
+          </form-input>
+        </b-col>
+        <b-col cols="12" md="6" lg="3">
+          <form-input
+              id="legalRange"
+              label="Range"
+              type="text"
+              v-model="legalRangeInput"
+              :errors="errors['legal_range']"
+              :loaded="fieldsLoaded['legal_range']"
+              >
+          </form-input>
+        </b-col>
+        <b-col cols="12" md="6" lg="3">
+          <form-input
+              id="landDistrict"
+              label="Land District"
+              select
+              :options="['Nechako', 'North Coast', 'Lower Mainland']"
+              v-model="landDistrictInput"
+              :errors="errors['land_district']"
+              :loaded="fieldsLoaded['land_district']"
+              >
+          </form-input>
+        </b-col>
+      </b-row>
+
     </fieldset>
 </template>
 <script>
@@ -39,7 +148,12 @@ export default {
   name: 'Step03Location',
   mixins: [inputBindingsMixin],
   props: {
+    city: String,
     streetAddress: String,
+    legalLot: String,
+    legalPlan: String,
+    legalDistrictLot: String,
+    legalBlock: String,
     errors: {
       type: Object,
       default: () => ({})
@@ -50,7 +164,12 @@ export default {
     }
   },
   fields: {
-    wellAddressInput: 'streetAddress'
+    wellAddressInput: 'streetAddress',
+    wellCityInput: 'city',
+    legalLotInput: 'legalLot',
+    legalPlanInput: 'legalPlan',
+    legalDistrictLotInput: 'legalDistrictLot',
+    legalBlock: 'legalBlock'
   },
   data () {
     return {
