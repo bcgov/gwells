@@ -211,7 +211,8 @@ properties([
     ),
     durabilityHint(
         'PERFORMANCE_OPTIMIZED'
-    )
+    ),
+    disableResume()
 ])
 
 
@@ -269,8 +270,8 @@ _stage('Unit Test', context) {
                 image: "docker-registry.default.svc:5000/moe-gwells-tools/gwells${context.buildNameSuffix}:${context.buildEnvName}",
                 ttyEnabled: true,
                 command: 'cat',
-                resourceRequestCpu: '2000m',
-                resourceLimitCpu: '2000m',
+                resourceRequestCpu: '1.5',
+                resourceLimitCpu: '1.5',
                 resourceRequestMemory: '2.5Gi',
                 resourceLimitMemory: '2.5Gi'
             )
@@ -286,16 +287,24 @@ _stage('Unit Test', context) {
                         printf "Pip version:    "&& pip --version
                         printf "Node version:   "&& node --version
                         printf "NPM version:    "&& npm --version
+                    '''
 
-                        (
-                            cd /opt/app-root/src/backend
-                            python manage.py migrate
-                            ENABLE_DATA_ENTRY="True" python manage.py test -c nose.cfg
-                        )
-                        (
-                            cd /opt/app-root/src/frontend
-                            npm test
-                        )
+                    parallel (
+                        "Unit Test: Python": {
+                            sh script: '''#!/usr/bin/container-entrypoint /bin/sh
+                                cd /opt/app-root/src/backend
+                                DATABASE_ENGINE=sqlite DEBUG=False TEMPLATE_DEBUG=False python manage.py test -c nose.cfg
+                            '''
+                        },
+                        "Unit Test: Node": {
+                            sh script: '''#!/usr/bin/container-entrypoint /bin/sh
+                                cd /opt/app-root/src/frontend
+                                npm test
+                            '''
+                        }
+                    )
+
+                    sh script: '''#!/usr/bin/container-entrypoint /bin/sh
                         mkdir -p frontend/test/
                         cp -R /opt/app-root/src/frontend/test/unit ./frontend/test/
                         cp /opt/app-root/src/backend/nosetests.xml /opt/app-root/src/backend/coverage.xml ./
@@ -441,8 +450,7 @@ for(String envKeyName: context.env.keySet() as String[]){
                 openshift.withProject(projectName){
                     podName=openshift.selector('pod', ['deploymentconfig':deploymentConfigName]).objects()[0].metadata.name
                 }
-                // Run migrate
-                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src/backend && pwd && python manage.py migrate'"
+
                 // Lookup tables common to all system components (e.g. Django apps)
                 sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src/backend && pwd && python manage.py loaddata gwells-codetables.json'"
                 // Lookup tables for the Wellsearch component (not yet a Django app) and Registries app
