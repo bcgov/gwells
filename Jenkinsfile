@@ -287,6 +287,7 @@ _stage('Unit Test', context) {
                         printf "Pip version:    "&& pip --version
                         printf "Node version:   "&& node --version
                         printf "NPM version:    "&& npm --version
+                        printf ___"
                     '''
 
                     parallel (
@@ -295,21 +296,23 @@ _stage('Unit Test', context) {
                                 cd /opt/app-root/src/backend
                                 DATABASE_ENGINE=sqlite DEBUG=False TEMPLATE_DEBUG=False python manage.py test -c nose.cfg
                             '''
+                            sh script: '''#!/usr/bin/container-entrypoint /bin/sh
+                                cp /opt/app-root/src/backend/nosetests.xml ./
+                                cp /opt/app-root/src/backend/coverage.xml ./
+                            '''
                         },
                         "Unit Test: Node": {
                             sh script: '''#!/usr/bin/container-entrypoint /bin/sh
                                 cd /opt/app-root/src/frontend
                                 npm test
                             '''
+                            sh script: '''#!/usr/bin/container-entrypoint /bin/sh
+                                mkdir -p frontend/test/
+                                cp -R /opt/app-root/src/frontend/test/unit ./frontend/test/
+                                cp /opt/app-root/src/frontend/junit.xml ./frontend/
+                            '''
                         }
                     )
-
-                    sh script: '''#!/usr/bin/container-entrypoint /bin/sh
-                        mkdir -p frontend/test/
-                        cp -R /opt/app-root/src/frontend/test/unit ./frontend/test/
-                        cp /opt/app-root/src/backend/nosetests.xml /opt/app-root/src/backend/coverage.xml ./
-                        cp /opt/app-root/src/frontend/junit.xml ./frontend/
-                    '''
                 }
             } finally {
                 archiveArtifacts allowEmptyArchive: true, artifacts: 'frontend/test/unit/**/*'
