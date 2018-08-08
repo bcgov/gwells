@@ -278,20 +278,19 @@ _stage('Unit Test', context) {
         ]
     ) {
         node("node-${context.uuid}") {
-            try {
-                container('app') {
-                    sh script: '''#!/usr/bin/container-entrypoint /bin/sh
-                        set -euo pipefail
+            container('app') {
+                sh script: '''#!/usr/bin/container-entrypoint /bin/sh
+                    set -euo pipefail
 
-                        printf "Python version: "&& python --version
-                        printf "Pip version:    "&& pip --version
-                        printf "Node version:   "&& node --version
-                        printf "NPM version:    "&& npm --version
-                        printf ___"
-                    '''
+                    printf "Python version: "&& python --version
+                    printf "Pip version:    "&& pip --version
+                    printf "Node version:   "&& node --version
+                    printf "NPM version:    "&& npm --version
+                '''
 
-                    parallel (
-                        "Unit Test: Python": {
+                parallel (
+                    "Unit Test: Python": {
+                        try {
                             sh script: '''#!/usr/bin/container-entrypoint /bin/sh
                                 cd /opt/app-root/src/backend
                                 DATABASE_ENGINE=sqlite DEBUG=False TEMPLATE_DEBUG=False python manage.py test -c nose.cfg
@@ -300,8 +299,13 @@ _stage('Unit Test', context) {
                                 cp /opt/app-root/src/backend/nosetests.xml ./
                                 cp /opt/app-root/src/backend/coverage.xml ./
                             '''
-                        },
-                        "Unit Test: Node": {
+                        } finally {
+                            stash includes: 'nosetests.xml,coverage.xml', name: 'coverage'
+                            junit 'nosetests.xml'
+                        }
+                    },
+                    "Unit Test: Node": {
+                        try {
                             sh script: '''#!/usr/bin/container-entrypoint /bin/sh
                                 cd /opt/app-root/src/frontend
                                 npm test
@@ -311,28 +315,27 @@ _stage('Unit Test', context) {
                                 cp -R /opt/app-root/src/frontend/test/unit ./frontend/test/
                                 cp /opt/app-root/src/frontend/junit.xml ./frontend/
                             '''
+                        } finally {
+                            archiveArtifacts allowEmptyArchive: true, artifacts: 'frontend/test/unit/**/*'
+                            stash includes: 'frontend/test/unit/coverage/clover.xml', name: 'nodecoverage'
+                            stash includes: 'frontend/junit.xml', name: 'nodejunit'
+                            junit 'frontend/junit.xml'
+                            publishHTML (
+                                target: [
+                                    allowMissing: false,
+                                    alwaysLinkToLastBuild: false,
+                                    keepAll: true,
+                                    reportDir: 'frontend/test/unit/coverage/lcov-report/',
+                                    reportFiles: 'index.html',
+                                    reportName: "Node Coverage Report"
+                                ]
+                            )
                         }
-                    )
-                }
-            } finally {
-                archiveArtifacts allowEmptyArchive: true, artifacts: 'frontend/test/unit/**/*'
-                stash includes: 'nosetests.xml,coverage.xml', name: 'coverage'
-                stash includes: 'frontend/test/unit/coverage/clover.xml', name: 'nodecoverage'
-                stash includes: 'frontend/junit.xml', name: 'nodejunit'
-                junit 'nosetests.xml,frontend/junit.xml'
-                publishHTML (
-                    target: [
-                        allowMissing: false,
-                        alwaysLinkToLastBuild: false,
-                        keepAll: true,
-                        reportDir: 'frontend/test/unit/coverage/lcov-report/',
-                        reportFiles: 'index.html',
-                        reportName: "Node Coverage Report"
-                    ]
-                )
-            }
-        }
-    }
+                    } //end node
+                ) //end parallel
+            } //end container
+        } //end node
+    } //end podTemplate
 } //end stage
 
 
