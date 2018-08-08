@@ -290,13 +290,13 @@ _stage('Unit Test', context) {
                     '''
 
                     parallel (
-                        phase1: {
+                        "Unit Test: Python": {
                             sh script: '''#!/usr/bin/container-entrypoint /bin/sh
-                                cd /opt/app-root/src
+                                cd /opt/app-root/src/backend
                                 DATABASE_ENGINE=sqlite DEBUG=False TEMPLATE_DEBUG=False python manage.py test -c nose.cfg
                             '''
                         },
-                        phase2: {
+                        "Unit Test: Node": {
                             sh script: '''#!/usr/bin/container-entrypoint /bin/sh
                                 cd /opt/app-root/src/frontend
                                 npm test
