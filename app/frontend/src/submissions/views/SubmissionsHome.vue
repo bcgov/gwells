@@ -10,7 +10,7 @@
           </b-col>
         </b-row>
       </h4>
-      <p>Submit activity on a well that does not exist in the system. Try a search to see if the well exists in the system before submitting a report.</p>
+      <p>Submit activity on a well. <a href="/gwells/">Try a search</a> to see if the well exists in the system before submitting a report.</p>
 
       <!-- Activity submission form -->
       <b-form @submit.prevent="confirmSubmit">
@@ -38,6 +38,9 @@
           v-if="formStep === 1 || formIsFlat"
           :wellTagNumber.sync="form.well"
           :wellActivityType.sync="form.well_activity_type"
+          :wellClass.sync="form.well_class"
+          :wellSubclass.sync="form.well_subclass"
+          :intendedWaterUse.sync="form.intended_water_use"
           :units.sync="units"
           :personResponsible.sync="form.driller_responsible"
           :idPlateNumber.sync="form.identification_plate_number"
@@ -47,6 +50,7 @@
           :consultantCompany.sync="form.consultant_company"
           :workStartDate.sync="form.work_start_date"
           :workEndDate.sync="form.work_end_date"
+          :drillerSameAsPersonResponsible.sync="form.meta.drillerSameAsPersonResponsible"
           :errors="errors"
           :fieldsLoaded="fieldsLoaded"
         ></step01-type>
@@ -59,7 +63,6 @@
           :ownerProvinceState.sync="form.owner_province_state"
           :ownerCity.sync="form.owner_city"
           :ownerPostalCode.sync="form.owner_postal_code"
-          :provinceOptions="formOptions.province_state_codes"
           :errors="errors"
           :fieldsLoaded="fieldsLoaded"
         ></step02-owner>
@@ -124,6 +127,7 @@
 
 <script>
 import ApiService from '@/common/services/ApiService.js'
+import { FETCH_CODES } from '../store/actions.types.js'
 import Step01Type from '@/submissions/components/SubmissionForm/Step01Type.vue'
 import Step02Owner from '@/submissions/components/SubmissionForm/Step02Owner.vue'
 export default {
@@ -160,6 +164,9 @@ export default {
     formSubmit () {
       const data = Object.assign({}, this.form)
 
+      // delete "meta" data (form input that need not be submitted) stored within form object
+      delete data.meta
+
       // replace the "person responsible" object with the person's guid
       if (data.driller_responsible && data.driller_responsible.person_guid) {
         data.driller_responsible = data.driller_responsible.person_guid
@@ -187,7 +194,10 @@ export default {
       this.form = {
         well_activity_type: 'CON',
         well: null,
-        identification_plate_number: '',
+        well_class: '',
+        well_subclass: '',
+        intended_water_use: '',
+        identification_plate_number: null,
         well_plate_attached: '',
         driller_responsible: null,
         driller_name: '',
@@ -199,55 +209,73 @@ export default {
         owner_mailing_address: '',
         owner_city: '',
         owner_province_state: '',
-        owner_postal_code: ''
+        owner_postal_code: '',
+
+        // non-form fields that should be saved with form
+        meta: {
+          drillerSameAsPersonResponsible: false
+        }
       }
     },
     saveForm () {
       // saves a copy of form data locally
-      this.saveFormReset()
+      this.saveStatusReset()
       const data = JSON.stringify(this.form)
       localStorage.setItem('savedFormData', data)
       setTimeout(() => { this.saveFormSuccess = true }, 10)
       setTimeout(() => { this.saveFormSuccess = false }, 1000)
     },
     loadForm () {
-      this.saveFormReset()
+      this.saveStatusReset()
       const storedData = localStorage.getItem('savedFormData')
       if (storedData) {
-        const parsedData = JSON.parse(storedData)
-        this.form = Object.assign(this.form, parsedData)
-        this.fieldsLoaded = Object.assign(this.fieldsLoaded, parsedData)
-        setTimeout(() => { this.loadFormSuccess = true }, 0)
-        setTimeout(() => { this.fieldsLoaded = {} }, 0)
-        setTimeout(() => { this.loadFormSuccess = false }, 1000)
-      } else {
-        console.log('no data stored')
+        this.resetForm()
+
+        // some form features depend on watching form field values.
+        // setTimeout pushes rendering new data down execution queue
+        // to give watchers a chance to act on each set of changes
+        // (e.g. form reset, form population)
+        setTimeout(() => {
+          const parsedData = JSON.parse(storedData)
+          this.form = Object.assign(this.form, parsedData)
+          this.fieldsLoaded = Object.assign(this.fieldsLoaded, parsedData)
+          setTimeout(() => { this.loadFormSuccess = true }, 0)
+          setTimeout(() => { this.fieldsLoaded = {} }, 0)
+          setTimeout(() => { this.loadFormSuccess = false }, 1000)
+        }, 0)
       }
     },
     loadConfirmation () {
       this.confirmLoadModal = true
     },
-    saveFormReset () {
+    saveStatusReset () {
       this.saveFormSuccess = false
       this.loadFormSuccess = false
     },
-    fetchOptions () {
-      ApiService.query('drillers/options').then((response) => {
-        this.formOptions = response.data
-      })
+    setWellTagNumber (well) {
+      // setWellTagNumber is used to link an activity report to a well other than through the dropdown menu.
+      // the dropdown menu returns an object so this method also does.
+      this.form.well = { well_tag_number: well }
     }
   },
   watch: {
     form: {
       handler () {
-        this.saveFormReset()
+        this.saveStatusReset()
       },
       deep: true
     }
   },
   created () {
     this.resetForm()
-    this.fetchOptions()
+    this.$store.dispatch(FETCH_CODES)
+
+    if (this.$route.params.id) {
+      this.setWellTagNumber(this.$route.params.id)
+    }
+    if (this.$route.name === 'SubmissionsEdit') {
+      this.form.well_activity_type = 'STAFF_EDIT'
+    }
   }
 }
 </script>
