@@ -144,7 +144,6 @@ Map context = [
     stages:[
         'Build': true,
         'Unit Test': true,
-        'Code Quality': false,
         'Readiness - DEV': true,
         'Deploy - DEV': true,
         'Load Fixtures - DEV': true,
@@ -164,7 +163,6 @@ Map context = [
     - prepare OpenShift environment
     - build (build configs, imagestreams)
     - unit tests
-    - code quality (SonarQube)
     - deployment to transient dev environment
     - load fixtures
     - API tests
@@ -249,7 +247,6 @@ _stage('Build', context) {
 /* Unit test stage - pipeline step/closure
     - use Django's manage.py to run python unit tests (w/ nose.cfg)
     - use 'npm run unit' to run JavaScript unit tests
-    - stash test results for code quality stage
 */
 _stage('Unit Test', context) {
     podTemplate(
@@ -290,113 +287,30 @@ _stage('Unit Test', context) {
 
                 parallel (
                     "Unit Test: Python": {
-                        try {
-                            sh script: '''#!/usr/bin/container-entrypoint /bin/sh
-                                cd /opt/app-root/src/backend
-                                DATABASE_ENGINE=sqlite DEBUG=False TEMPLATE_DEBUG=False python manage.py test -c nose.cfg
-                            '''
-                            sh script: '''#!/usr/bin/container-entrypoint /bin/sh
-                                cp /opt/app-root/src/backend/nosetests.xml ./
-                                cp /opt/app-root/src/backend/coverage.xml ./
-                            '''
-                        } finally {
-                            stash includes: 'nosetests.xml,coverage.xml', name: 'coverage'
-                            junit 'nosetests.xml'
-                        }
+                        sh script: '''#!/usr/bin/container-entrypoint /bin/sh
+                            cd /opt/app-root/src/backend
+                            DATABASE_ENGINE=sqlite DEBUG=False TEMPLATE_DEBUG=False python manage.py test -c nose.cfg
+                        '''
+                        sh script: '''#!/usr/bin/container-entrypoint /bin/sh
+                            cp /opt/app-root/src/backend/nosetests.xml ./
+                            cp /opt/app-root/src/backend/coverage.xml ./
+                        '''
                     },
                     "Unit Test: Node": {
-                        try {
-                            sh script: '''#!/usr/bin/container-entrypoint /bin/sh
-                                cd /opt/app-root/src/frontend
-                                npm test
-                            '''
-                            sh script: '''#!/usr/bin/container-entrypoint /bin/sh
-                                mkdir -p frontend/test/
-                                cp -R /opt/app-root/src/frontend/test/unit ./frontend/test/
-                                cp /opt/app-root/src/frontend/junit.xml ./frontend/
-                            '''
-                        } finally {
-                            archiveArtifacts allowEmptyArchive: true, artifacts: 'frontend/test/unit/**/*'
-                            stash includes: 'frontend/test/unit/coverage/clover.xml', name: 'nodecoverage'
-                            stash includes: 'frontend/junit.xml', name: 'nodejunit'
-                            junit 'frontend/junit.xml'
-                            publishHTML (
-                                target: [
-                                    allowMissing: false,
-                                    alwaysLinkToLastBuild: false,
-                                    keepAll: true,
-                                    reportDir: 'frontend/test/unit/coverage/lcov-report/',
-                                    reportFiles: 'index.html',
-                                    reportName: "Node Coverage Report"
-                                ]
-                            )
-                        }
+                        sh script: '''#!/usr/bin/container-entrypoint /bin/sh
+                            cd /opt/app-root/src/frontend
+                            npm test
+                        '''
+                        sh script: '''#!/usr/bin/container-entrypoint /bin/sh
+                            mkdir -p frontend/test/
+                            cp -R /opt/app-root/src/frontend/test/unit ./frontend/test/
+                            cp /opt/app-root/src/frontend/junit.xml ./frontend/
+                        '''
                     } //end node
                 ) //end parallel
             } //end container
         } //end node
     } //end podTemplate
-} //end stage
-
-
-/* Code quality stage - pipeline step/closure
-    - unstash unit test results (previous stage)
-    - use SonarQube to consume results (*.xml)
-*/
-_stage('Code Quality', context) {
-    podTemplate(
-        name: "sonar-runner${context.uuid}",
-        label: "sonar-runner${context.uuid}",
-        serviceAccount: 'jenkins',
-        cloud: 'openshift',
-        containers:[
-            containerTemplate(
-                name: 'jnlp',
-                resourceRequestMemory: '1Gi',
-                resourceLimitMemory: '4Gi',
-                resourceRequestCpu: '500m',
-                resourceLimitCpu: '4000m',
-                image: 'registry.access.redhat.com/openshift3/jenkins-slave-maven-rhel7:v3.7',
-                workingDir: '/tmp',
-                args: '${computer.jnlpmac} ${computer.name}',
-                envVars: [
-                    envVar(key:'GRADLE_USER_HOME', value: '/var/cache/artifacts/gradle')
-                ]
-            )
-        ],
-        volumes: [
-            persistentVolumeClaim(
-                mountPath: '/var/cache/artifacts',
-                claimName: 'cache',
-                readOnly: false
-            )
-        ]
-    ){
-        node("sonar-runner${context.uuid}") {
-            //the checkout is mandatory, otherwise code quality check would fail
-            echo "checking out source"
-            echo "Build: ${BUILD_ID}"
-            checkout scm
-
-            String SONARQUBE_URL = 'https://sonarqube-moe-gwells-tools.pathfinder.gov.bc.ca'
-            echo "SONARQUBE_URL: ${SONARQUBE_URL}"
-            dir('app') {
-                unstash 'nodejunit'
-                unstash 'nodecoverage'
-            }
-            dir('sonar-runner') {
-                unstash 'coverage'
-                sh script:
-                    """
-                        ./gradlew -q dependencies
-                        ./gradlew sonarqube -Dsonar.host.url=${SONARQUBE_URL} -Dsonar.verbose=true \
-                            --stacktrace --info  -Dsonar.sources=..
-                    """,
-                    returnStdout: true
-            }
-        }
-    }
-
 } //end stage
 
 
