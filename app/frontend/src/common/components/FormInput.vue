@@ -3,12 +3,30 @@
     :id="id"
     :label="label"
     :label-for="`${id}Input`">
+    <b-form-select v-if="select"
+        :id="`${id}Input`"
+        :state="validation"
+        :aria-describedby="`${id}InvalidFeedback ${id}Hint`"
+        :value="value"
+        :options="options"
+        :value-field="valueField"
+        :text-field="textField"
+        :disabled="disabled"
+        :required="required"
+        @input="updateValue($event)"
+    >
+      <template slot="first" v-if="placeholder">
+        <option value="" disabled>{{ placeholder }}</option>
+      </template>
+    </b-form-select>
     <b-form-input
+        v-else
         :id="`${id}Input`"
         :type="type"
         :state="validation"
         :aria-describedby="`${id}InvalidFeedback ${id}Hint`"
         :value="value"
+        :disabled="disabled"
         :required="required"
         @input="updateValue($event)"
         :placeholder="placeholder"/>
@@ -47,10 +65,15 @@ export default {
     errors: null, // pass any "field errors" returned by the API into the "errors" prop
     value: String, // internal (holds the value for the field)
     required: String,
+    disabled: Boolean,
     type: { // the type of input (e.g. text, number, email)
       type: String,
       default: 'text'
     },
+    select: Boolean,
+    options: Array,
+    valueField: String,
+    textField: String,
     placeholder: String,
     loaded: String // if changed to true, change contextual state temporarily (e.g. flash green on valid input)
   },

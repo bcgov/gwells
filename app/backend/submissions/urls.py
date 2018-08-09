@@ -18,6 +18,11 @@ from submissions import views
 
 
 urlpatterns = [
+
+    # Submissions form options
+    url(r'^api/v1/submissions/options/$',
+        never_cache(views.SubmissionsOptions.as_view()), name='submissions-options'),
+
     # Submissions list
     url(r'^api/v1/submissions/$',
         never_cache(views.SubmissionListAPIView.as_view()), name='submissions-list'),
