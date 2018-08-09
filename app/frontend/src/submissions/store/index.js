@@ -12,8 +12,10 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import auth from '@/common/store/auth.js'
+import ApiService from '@/common/services/ApiService.js'
 
-// import ApiService from '@/common/services/ApiService.js'
+import { FETCH_CODES } from './actions.types.js'
+import { SET_CODES, SET_ERROR } from './mutations.types.js'
 
 Vue.use(Vuex)
 
@@ -21,8 +23,36 @@ export const store = new Vuex.Store({
   modules: {
     auth: auth
   },
-  state: {},
-  mutations: {},
-  actions: {},
-  getters: {}
+  state: {
+    error: null,
+    codes: null
+  },
+  mutations: {
+    [SET_ERROR] (state, payload) {
+      state.error = payload
+    },
+    [SET_CODES] (state, payload) {
+      state.codes = payload
+    }
+  },
+  actions: {
+    [FETCH_CODES] ({ commit }) {
+      if (!this.state.codes) {
+        // fetch codes once
+        ApiService.query('submissions/options').then((res) => {
+          commit(SET_CODES, res.data)
+        }).catch((e) => {
+          commit(SET_ERROR, e.response)
+        })
+      }
+    }
+  },
+  getters: {
+    codes (state) {
+      return state.codes || {}
+    },
+    globalError (state) {
+      return state.error
+    }
+  }
 })

@@ -12,24 +12,24 @@
     limitations under the License.
 """
 from rest_framework.permissions import DjangoModelPermissions, BasePermission
-from gwells.roles import WELLS_ROLES
+from gwells.roles import WELLS_VIEW_ROLES, WELLS_EDIT_ROLES
 
 
-class WellsDocumentPermissions(BasePermission):
+class WellsDocumentViewPermissions(BasePermission):
     """
     Grants permission to view documents to users in a Wells staff group
     """
 
     def has_permission(self, request, view):
         if request.user and request.user.is_authenticated and request.user.groups.filter(
-                name__in=WELLS_ROLES).exists():
+                name__in=WELLS_VIEW_ROLES).exists():
             return True
         return False
 
 
-class WellsPermissions(DjangoModelPermissions):
+class WellsEditPermissions(DjangoModelPermissions):
     """
-    Grants permissions to users based on Django model permissions
+    Grants permissions to edit wells to users
     """
 
     def has_permission(self, request, view):
@@ -39,6 +39,7 @@ class WellsPermissions(DjangoModelPermissions):
         in a group that has 'add_well' permission)
         """
         if request.user and request.user.is_authenticated and request.user.groups.filter(
-                name__in=WELLS_ROLES).exists():
-            return super().has_permission(request, view)
+                name__in=WELLS_EDIT_ROLES).exists():
+            result = super().has_permission(request, view)
+            return result
         return False

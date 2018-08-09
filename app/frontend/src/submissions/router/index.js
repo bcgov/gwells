@@ -8,6 +8,14 @@ Vue.use(Router)
 export default new Router({
   routes: [
     {
+      path: '/:id/edit',
+      name: 'SubmissionsEdit',
+      component: SubmissionsHome,
+      meta: {
+        edit: true // requires wells/edit permission. note: beforeEnter guard not implemented yet
+      }
+    },
+    {
       path: '/',
       name: 'SubmissionsHome',
       component: SubmissionsHome
