@@ -248,7 +248,7 @@ _stage('Build', context) {
     - use Django's manage.py to run python unit tests (w/ nose.cfg)
     - use 'npm run unit' to run JavaScript unit tests
 */
-_stage('Unit Test', context) {
+_stage('DEV: Unit Tests and Readiness', context) {
     podTemplate(
         label: "node-${context.uuid}",
         name:"node-${context.uuid}",
@@ -274,37 +274,47 @@ _stage('Unit Test', context) {
             )
         ]
     ) {
-        node("node-${context.uuid}") {
-            container('app') {
-                parallel (
-                    "Unit Test: Python": {
-                        sh script: '''#!/usr/bin/container-entrypoint /bin/sh
-                            printf "Python version: "&& python --version
-                            printf "Pip version:    "&& pip --version
-                            cd /opt/app-root/src/backend
-                            DATABASE_ENGINE=sqlite DEBUG=False TEMPLATE_DEBUG=False python manage.py test -c nose.cfg
-                        '''
-                        sh script: '''#!/usr/bin/container-entrypoint /bin/sh
-                            printf "Node version:   "&& node --version
-                            printf "NPM version:    "&& npm --version
-                            cp /opt/app-root/src/backend/nosetests.xml ./
-                            cp /opt/app-root/src/backend/coverage.xml ./
-                        '''
-                    },
-                    "Unit Test: Node": {
-                        sh script: '''#!/usr/bin/container-entrypoint /bin/sh
-                            cd /opt/app-root/src/frontend
-                            npm test
-                        '''
-                        sh script: '''#!/usr/bin/container-entrypoint /bin/sh
-                            mkdir -p frontend/test/
-                            cp -R /opt/app-root/src/frontend/test/unit ./frontend/test/
-                            cp /opt/app-root/src/frontend/junit.xml ./frontend/
-                        '''
-                    } //end node
-                ) //end parallel
-            } //end container
-        } //end node
+        parallel (
+            "Unit Tests": {
+                node("node-${context.uuid}") {
+                    container('app') {
+                    parallel (
+                        "Unit Tests: Python": {
+                            sh script: '''#!/usr/bin/container-entrypoint /bin/sh
+                                printf "Python version: "&& python --version
+                                printf "Pip version:    "&& pip --version
+                                cd /opt/app-root/src/backend
+                                DATABASE_ENGINE=sqlite DEBUG=False TEMPLATE_DEBUG=False python manage.py test -c nose.cfg
+                            '''
+                            sh script: '''#!/usr/bin/container-entrypoint /bin/sh
+                                printf "Node version:   "&& node --version
+                                printf "NPM version:    "&& npm --version
+                                cp /opt/app-root/src/backend/nosetests.xml ./
+                                cp /opt/app-root/src/backend/coverage.xml ./
+                            '''
+                        },
+                        "Unit Tests: Node": {
+                            sh script: '''#!/usr/bin/container-entrypoint /bin/sh
+                                cd /opt/app-root/src/frontend
+                                npm test
+                            '''
+                            sh script: '''#!/usr/bin/container-entrypoint /bin/sh
+                                mkdir -p frontend/test/
+                                cp -R /opt/app-root/src/frontend/test/unit ./frontend/test/
+                                cp /opt/app-root/src/frontend/junit.xml ./frontend/
+                            '''
+                        }
+                    )
+
+                    } //end container
+                } //end node
+            },
+            "Readiness": {
+                node('master') {
+                    new OpenShiftHelper().waitUntilEnvironmentIsReady(this, context, 'dev')
+                }
+            } //end node
+        ) //end parallel
     } //end podTemplate
 } //end stage
 
@@ -316,15 +326,13 @@ _stage('Unit Test', context) {
 for(String envKeyName: context.env.keySet() as String[]){
     String stageDeployName=envKeyName.toUpperCase()
 
-    if ("DEV".equalsIgnoreCase(stageDeployName) || isCD) {
+    if (!"DEV".equalsIgnoreCase(stageDeployName) && isCD){
         _stage("Readiness - ${stageDeployName}", context) {
             node('master') {
                 new OpenShiftHelper().waitUntilEnvironmentIsReady(this, context, envKeyName)
             }
         }
-    }
 
-    if (!"DEV".equalsIgnoreCase(stageDeployName) && isCD){
         _stage("Approve - ${stageDeployName}", context) {
             def inputResponse = null;
             try{
