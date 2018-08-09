@@ -70,11 +70,10 @@ export default {
   computed: {
     show () {
       const adminMeta = document.head.querySelector('meta[name="show.admin"]')
-      const result = {
+      return {
         dataEntry: (!!this.config && this.config.enable_data_entry === true) && this.userRoles.submissions.edit === true,
         admin: adminMeta ? adminMeta.content === 'true' : false
       }
-      return result
     },
     ...mapGetters(['userRoles', 'config'])
   },
