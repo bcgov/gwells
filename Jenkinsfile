@@ -276,22 +276,17 @@ _stage('Unit Test', context) {
     ) {
         node("node-${context.uuid}") {
             container('app') {
-                sh script: '''#!/usr/bin/container-entrypoint /bin/sh
-                    set -euo pipefail
-
-                    printf "Python version: "&& python --version
-                    printf "Pip version:    "&& pip --version
-                    printf "Node version:   "&& node --version
-                    printf "NPM version:    "&& npm --version
-                '''
-
                 parallel (
                     "Unit Test: Python": {
                         sh script: '''#!/usr/bin/container-entrypoint /bin/sh
+                            printf "Python version: "&& python --version
+                            printf "Pip version:    "&& pip --version
                             cd /opt/app-root/src/backend
                             DATABASE_ENGINE=sqlite DEBUG=False TEMPLATE_DEBUG=False python manage.py test -c nose.cfg
                         '''
                         sh script: '''#!/usr/bin/container-entrypoint /bin/sh
+                            printf "Node version:   "&& node --version
+                            printf "NPM version:    "&& npm --version
                             cp /opt/app-root/src/backend/nosetests.xml ./
                             cp /opt/app-root/src/backend/coverage.xml ./
                         '''
