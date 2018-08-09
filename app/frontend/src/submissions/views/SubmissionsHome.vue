@@ -81,6 +81,13 @@
           :wellLocationDescription.sync="form.well_location_description"
         ></step03-location>
 
+        <!-- Step 4: Coords and Method of Drilling -->
+        <step04-coords
+          v-if="formStep === 4 || formIsFlat"
+          :latitude.sync="form.latitude"
+          :longitude.sync="form.longitude">
+        </step04-coords>
+
         <b-row>
           <b-col v-if="!formIsFlat">
             <b-btn v-if="step > 1" @click="step > 1 ? step-- : null">Back</b-btn>
@@ -145,12 +152,14 @@ import ApiService from '@/common/services/ApiService.js'
 import Step01Type from '@/submissions/components/SubmissionForm/Step01Type.vue'
 import Step02Owner from '@/submissions/components/SubmissionForm/Step02Owner.vue'
 import Step03Location from '@/submissions/components/SubmissionForm/Step03Location.vue'
+import Step04Coords from '@/submissions/components/SubmissionForm/Step04Coords.vue'
 export default {
   name: 'SubmissionsHome',
   components: {
     Step01Type,
     Step02Owner,
-    Step03Location
+    Step03Location,
+    Step04Coords
   },
   data () {
     return {
@@ -163,7 +172,7 @@ export default {
       loadFormSuccess: false,
       confirmLoadModal: false,
       step: 1,
-      maxSteps: 3,
+      maxSteps: 4, // total number of wizard steps
       sliding: null,
       errors: {},
       fieldsLoaded: {},
@@ -231,7 +240,9 @@ export default {
         legal_range: '',
         land_district: '',
         legal_pid: '',
-        well_location_description: ''
+        well_location_description: '',
+        latitude: '',
+        longitude: ''
       }
     },
     saveForm () {
