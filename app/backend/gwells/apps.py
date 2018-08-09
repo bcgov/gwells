@@ -11,5 +11,8 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
+from django.apps import AppConfig
 
-default_app_config = 'gwells.apps.GWellsConfig'
+
+class GWellsConfig(AppConfig):
+    name = 'gwells'

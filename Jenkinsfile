@@ -250,34 +250,34 @@ _stage('Build', context) {
     - use 'npm run unit' to run JavaScript unit tests
     - stash test results for code quality stage
 */
-_stage('Unit Test', context) {
-    podTemplate(
-        label: "node-${context.uuid}",
-        name:"node-${context.uuid}",
-        serviceAccount: 'jenkins',
-        cloud: 'openshift',
-        containers: [
-            containerTemplate(
-                name: 'jnlp',
-                image: 'jenkins/jnlp-slave:3.10-1-alpine',
-                args: '${computer.jnlpmac} ${computer.name}',
-                resourceRequestCpu: '100m',
-                resourceLimitCpu: '100m'
-            ),
-            containerTemplate(
-                name: 'app',
-                image: "docker-registry.default.svc:5000/moe-gwells-tools/gwells${context.buildNameSuffix}:${context.buildEnvName}",
-                ttyEnabled: true,
-                command: 'cat',
-                resourceRequestCpu: '2000m',
-                resourceLimitCpu: '2000m',
-                resourceRequestMemory: '2.5Gi',
-                resourceLimitMemory: '2.5Gi'
-            )
-        ]
-    ) {
-        node("node-${context.uuid}") {
-            try {
+timestamps {
+    _stage('Unit Test', context) {
+        podTemplate(
+            label: "node-${context.uuid}",
+            name:"node-${context.uuid}",
+            serviceAccount: 'jenkins',
+            cloud: 'openshift',
+            containers: [
+                containerTemplate(
+                    name: 'jnlp',
+                    image: 'jenkins/jnlp-slave:3.10-1-alpine',
+                    args: '${computer.jnlpmac} ${computer.name}',
+                    resourceRequestCpu: '100m',
+                    resourceLimitCpu: '100m'
+                ),
+                containerTemplate(
+                    name: 'app',
+                    image: "docker-registry.default.svc:5000/moe-gwells-tools/gwells${context.buildNameSuffix}:${context.buildEnvName}",
+                    ttyEnabled: true,
+                    command: 'cat',
+                    resourceRequestCpu: '2000m',
+                    resourceLimitCpu: '2000m',
+                    resourceRequestMemory: '2.5Gi',
+                    resourceLimitMemory: '2.5Gi'
+                )
+            ]
+        ) {
+            node("node-${context.uuid}") {
                 container('app') {
                     sh script: '''#!/usr/bin/container-entrypoint /bin/sh
                         set -euo pipefail
@@ -289,7 +289,6 @@ _stage('Unit Test', context) {
 
                         (
                             cd /opt/app-root/src/backend
-                            python manage.py migrate
                             ENABLE_DATA_ENTRY="True" python manage.py test -c nose.cfg
                         )
                         (
@@ -302,22 +301,6 @@ _stage('Unit Test', context) {
                         cp /opt/app-root/src/frontend/junit.xml ./frontend/
                     '''
                 }
-            } finally {
-                archiveArtifacts allowEmptyArchive: true, artifacts: 'frontend/test/unit/**/*'
-                stash includes: 'nosetests.xml,coverage.xml', name: 'coverage'
-                stash includes: 'frontend/test/unit/coverage/clover.xml', name: 'nodecoverage'
-                stash includes: 'frontend/junit.xml', name: 'nodejunit'
-                junit 'nosetests.xml,frontend/junit.xml'
-                publishHTML (
-                    target: [
-                        allowMissing: false,
-                        alwaysLinkToLastBuild: false,
-                        keepAll: true,
-                        reportDir: 'frontend/test/unit/coverage/lcov-report/',
-                        reportFiles: 'index.html',
-                        reportName: "Node Coverage Report"
-                    ]
-                )
             }
         }
     }
