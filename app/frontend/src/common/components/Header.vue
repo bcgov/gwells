@@ -55,9 +55,8 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters } from 'vuex'
 import Auth from '@/common/components/Auth.vue'
-import { FETCH_CONFIG } from '@/common/store/config.js'
 export default {
   components: {
     'keycloak-auth': Auth
@@ -76,14 +75,6 @@ export default {
       }
     },
     ...mapGetters(['userRoles', 'config'])
-  },
-  methods: {
-    ...mapActions([
-      FETCH_CONFIG
-    ])
-  },
-  created () {
-    this.FETCH_CONFIG()
   }
 }
 </script>

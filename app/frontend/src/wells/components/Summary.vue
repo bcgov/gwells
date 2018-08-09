@@ -15,8 +15,7 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
-import { FETCH_CONFIG } from '@/common/store/config.js'
+import { mapGetters } from 'vuex'
 export default {
   computed: {
     analytics () {
@@ -38,14 +37,6 @@ export default {
       return null
     },
     ...mapGetters(['userRoles', 'config'])
-  },
-  methods: {
-    ...mapActions([
-      FETCH_CONFIG
-    ])
-  },
-  created () {
-    this.FETCH_CONFIG()
   }
 }
 </script>

@@ -13,9 +13,9 @@
 */
 import 'babel-polyfill'
 import Vue from 'vue'
-import Vuex from 'vuex'
+import Vuex, { mapActions } from 'vuex'
 import auth from '@/common/store/auth.js'
-import config from '@/common/store/config.js'
+import config, {FETCH_CONFIG} from '@/common/store/config.js'
 import BootstrapVue from 'bootstrap-vue'
 import Summary from './components/Summary'
 import '@/common/assets/css/bootstrap-theme.min.css'
@@ -40,7 +40,15 @@ new Vue({
   components: {
     Summary
   },
-  template: '<Summary/>'
+  template: '<Summary/>',
+  methods: {
+    ...mapActions([
+      FETCH_CONFIG
+    ])
+  },
+  created () {
+    this.FETCH_CONFIG()
+  }
 })
 
 Vue.config.devtools = process.env.NODE_ENV !== 'production'
