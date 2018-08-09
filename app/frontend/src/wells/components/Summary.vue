@@ -15,7 +15,8 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
+import { FETCH_CONFIG } from '@/common/store/config.js'
 export default {
   computed: {
     analytics () {
@@ -23,7 +24,7 @@ export default {
     },
     show () {
       return {
-        edit: process.env.ENABLE_DATA_ENTRY === true && this.userRoles.submissions.edit
+        edit: (!!this.config && this.config.enable_data_entry === true) && this.userRoles.submissions.edit === true
       }
     },
     url () {
@@ -36,7 +37,15 @@ export default {
       }
       return null
     },
-    ...mapGetters(['userRoles'])
+    ...mapGetters(['userRoles', 'config'])
+  },
+  methods: {
+    ...mapActions([
+      FETCH_CONFIG
+    ])
+  },
+  created () {
+    this.FETCH_CONFIG()
   }
 }
 </script>

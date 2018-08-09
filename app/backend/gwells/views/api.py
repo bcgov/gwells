@@ -17,3 +17,14 @@ class KeycloakConfig(APIView):
             "confidential-port": int(get_env_variable("SSO_PORT", "0"))
         }
         return Response(config)
+
+
+class GeneralConfig(APIView):
+    """ serves general configuration """
+
+    def get(self, request):
+        config = {
+            "enable_data_entry": get_env_variable("ENABLE_DATA_ENTRY") == "True",
+            "enable_google_analytics": get_env_variable("ENABLE_GOOGLE_ANALYTICS") == "True"
+        }
+        return Response(config)

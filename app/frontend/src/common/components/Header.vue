@@ -55,8 +55,9 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import Auth from '@/common/components/Auth.vue'
+import { FETCH_CONFIG } from '@/common/store/config.js'
 export default {
   components: {
     'keycloak-auth': Auth
@@ -69,12 +70,21 @@ export default {
   computed: {
     show () {
       const adminMeta = document.head.querySelector('meta[name="show.admin"]')
-      return {
-        dataEntry: process.env.ENABLE_DATA_ENTRY === true && this.userRoles.submissions.edit,
+      const result = {
+        dataEntry: (!!this.config && this.config.enable_data_entry === true) && this.userRoles.submissions.edit === true,
         admin: adminMeta ? adminMeta.content === 'true' : false
       }
+      return result
     },
-    ...mapGetters(['userRoles'])
+    ...mapGetters(['userRoles', 'config'])
+  },
+  methods: {
+    ...mapActions([
+      FETCH_CONFIG
+    ])
+  },
+  created () {
+    this.FETCH_CONFIG()
   }
 }
 </script>
