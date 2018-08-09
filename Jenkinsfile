@@ -278,34 +278,33 @@ _stage('DEV: Unit Tests and Deployment', context) {
             "Unit Tests": {
                 node("node-${context.uuid}") {
                     container('app') {
-                    parallel (
-                        "Unit Tests: Python": {
-                            sh script: '''#!/usr/bin/container-entrypoint /bin/sh
-                                printf "Python version: "&& python --version
-                                printf "Pip version:    "&& pip --version
-                                cd /opt/app-root/src/backend
-                                DATABASE_ENGINE=sqlite DEBUG=False TEMPLATE_DEBUG=False python manage.py test -c nose.cfg
-                            '''
-                            sh script: '''#!/usr/bin/container-entrypoint /bin/sh
-                                printf "Node version:   "&& node --version
-                                printf "NPM version:    "&& npm --version
-                                cp /opt/app-root/src/backend/nosetests.xml ./
-                                cp /opt/app-root/src/backend/coverage.xml ./
-                            '''
-                        },
-                        "Unit Tests: Node": {
-                            sh script: '''#!/usr/bin/container-entrypoint /bin/sh
-                                cd /opt/app-root/src/frontend
-                                npm test
-                            '''
-                            sh script: '''#!/usr/bin/container-entrypoint /bin/sh
-                                mkdir -p frontend/test/
-                                cp -R /opt/app-root/src/frontend/test/unit ./frontend/test/
-                                cp /opt/app-root/src/frontend/junit.xml ./frontend/
-                            '''
-                        }
-                    )
-
+                        parallel (
+                            "Unit Tests: Python": {
+                                sh script: '''#!/usr/bin/container-entrypoint /bin/sh
+                                    printf "Python version: "&& python --version
+                                    printf "Pip version:    "&& pip --version
+                                    cd /opt/app-root/src/backend
+                                    DATABASE_ENGINE=sqlite DEBUG=False TEMPLATE_DEBUG=False python manage.py test -c nose.cfg
+                                '''
+                                sh script: '''#!/usr/bin/container-entrypoint /bin/sh
+                                    printf "Node version:   "&& node --version
+                                    printf "NPM version:    "&& npm --version
+                                    cp /opt/app-root/src/backend/nosetests.xml ./
+                                    cp /opt/app-root/src/backend/coverage.xml ./
+                                '''
+                            },
+                            "Unit Tests: Node": {
+                                sh script: '''#!/usr/bin/container-entrypoint /bin/sh
+                                    cd /opt/app-root/src/frontend
+                                    npm test
+                                '''
+                                sh script: '''#!/usr/bin/container-entrypoint /bin/sh
+                                    mkdir -p frontend/test/
+                                    cp -R /opt/app-root/src/frontend/test/unit ./frontend/test/
+                                    cp /opt/app-root/src/frontend/junit.xml ./frontend/
+                                '''
+                            }
+                        )
                     } //end container
                 } //end node
             },
@@ -313,6 +312,30 @@ _stage('DEV: Unit Tests and Deployment', context) {
                 node('master') {
                     new OpenShiftHelper().waitUntilEnvironmentIsReady(this, context, 'dev')
                     new OpenShiftHelper().deploy(this, context, 'dev')
+                    parallel (
+                        "Load Fixtures": {
+                            String podName=null
+                            String projectName=context.deployments['dev'].projectName
+                            String deploymentConfigName="gwells${context.deployments['dev'].dcSuffix}"
+                            echo "env:${context.env['dev']}"
+                            echo "deployment:${context.deployments['dev']}"
+                            echo "projectName:${projectName}"
+                            echo "deploymentConfigName:${deploymentConfigName}"
+
+                            openshift.withProject(projectName){
+                                podName=openshift.selector('pod', ['deploymentconfig':deploymentConfigName]).objects()[0].metadata.name
+                            }
+
+                            // Lookup tables common to all system components (e.g. Django apps)
+                            sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src/backend && pwd && python manage.py loaddata gwells-codetables.json'"
+                            // Lookup tables for the Wellsearch component (not yet a Django app) and Registries app
+                            sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src/backend && pwd && python manage.py loaddata wellsearch-codetables.json registries-codetables.json'"
+                            // Test data for the Wellsearch component (not yet a Django app) and Registries app
+                            sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src/backend && pwd && python manage.py loaddata wellsearch.json.gz registries.json'"
+                            // Reversion
+                            sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src/backend && pwd && python manage.py createinitialrevisions'"
+                        }
+                    )
                 }
             } //end node
         ) //end parallel
@@ -354,33 +377,6 @@ for(String envKeyName: context.env.keySet() as String[]){
         _stage("Deploy - ${stageDeployName}", context) {
             node('master') {
                 new OpenShiftHelper().deploy(this, context, envKeyName)
-            }
-        }
-    }
-
-    if ("DEV".equalsIgnoreCase(stageDeployName)){
-        _stage("Load Fixtures - ${stageDeployName}", context) {
-            node('master'){
-                String podName=null
-                String projectName=context.deployments[envKeyName].projectName
-                String deploymentConfigName="gwells${context.deployments[envKeyName].dcSuffix}"
-                echo "env:${context.env[envKeyName]}"
-                echo "deployment:${context.deployments[envKeyName]}"
-                echo "projectName:${projectName}"
-                echo "deploymentConfigName:${deploymentConfigName}"
-
-                openshift.withProject(projectName){
-                    podName=openshift.selector('pod', ['deploymentconfig':deploymentConfigName]).objects()[0].metadata.name
-                }
-
-                // Lookup tables common to all system components (e.g. Django apps)
-                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src/backend && pwd && python manage.py loaddata gwells-codetables.json'"
-                // Lookup tables for the Wellsearch component (not yet a Django app) and Registries app
-                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src/backend && pwd && python manage.py loaddata wellsearch-codetables.json registries-codetables.json'"
-                // Test data for the Wellsearch component (not yet a Django app) and Registries app
-                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src/backend && pwd && python manage.py loaddata wellsearch.json.gz registries.json'"
-                // Reversion
-                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src/backend && pwd && python manage.py createinitialrevisions'"
             }
         }
     }
