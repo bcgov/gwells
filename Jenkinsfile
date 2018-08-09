@@ -248,7 +248,7 @@ _stage('Build', context) {
     - use Django's manage.py to run python unit tests (w/ nose.cfg)
     - use 'npm run unit' to run JavaScript unit tests
 */
-_stage('DEV: Unit Tests and Readiness', context) {
+_stage('DEV: Unit Tests and Deployment', context) {
     podTemplate(
         label: "node-${context.uuid}",
         name:"node-${context.uuid}",
@@ -309,9 +309,10 @@ _stage('DEV: Unit Tests and Readiness', context) {
                     } //end container
                 } //end node
             },
-            "Readiness": {
+            "Deployment": {
                 node('master') {
                     new OpenShiftHelper().waitUntilEnvironmentIsReady(this, context, 'dev')
+                    new OpenShiftHelper().deploy(this, context, 'dev')
                 }
             } //end node
         ) //end parallel
@@ -349,9 +350,7 @@ for(String envKeyName: context.env.keySet() as String[]){
                 "User '${inputResponse}' has approved deployment to '${stageDeployName}'"
             )
         }
-    }
 
-    if ("DEV".equalsIgnoreCase(stageDeployName) || isCD){
         _stage("Deploy - ${stageDeployName}", context) {
             node('master') {
                 new OpenShiftHelper().deploy(this, context, envKeyName)
