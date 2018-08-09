@@ -9,6 +9,4 @@
   See the License for the specific language governing permissions and
   limitations under the License.
  */
-export const SET_KEYCLOAK = 'SET_KEYCLOAK'
-export const SET_CODES = 'SET_CODES'
-export const SET_ERROR = 'SET_ERROR'
+export const FETCH_CODES = 'FETCH_CODES'

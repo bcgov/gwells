@@ -81,7 +81,7 @@ def update_groups(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('gwells', '0006_auto_20180724_2026'),
+        ('gwells', '0007_auto_20180726_1909'),
     ]
 
     operations = [
