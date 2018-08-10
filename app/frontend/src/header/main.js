@@ -15,8 +15,9 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import 'babel-polyfill'
 import Vue from 'vue'
-import Vuex from 'vuex'
+import Vuex, {mapActions} from 'vuex'
 import auth from '@/common/store/auth.js'
+import config, {FETCH_CONFIG} from '@/common/store/config.js'
 import BootstrapVue from 'bootstrap-vue'
 import Header from '../common/components/Header'
 import '@/common/assets/css/bootstrap-theme.min.css'
@@ -31,7 +32,8 @@ Vue.config.productionTip = false
 // Create a store instance with the common auth store module
 const store = new Vuex.Store({
   modules: {
-    auth: auth
+    auth: auth,
+    config: config
   }
 })
 
@@ -46,11 +48,17 @@ new Vue({
     Header
   },
   template: '<Header/>',
+  methods: {
+    ...mapActions([
+      FETCH_CONFIG
+    ])
+  },
   created () {
     // start Keycloak authentication
     authenticate.authenticate(store).then((result) => {
       // Auth complete. Do something here if you want.
     })
+    this.FETCH_CONFIG()
   }
 })
 
