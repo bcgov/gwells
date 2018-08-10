@@ -332,9 +332,8 @@ _stage('DEV: Unit Tests and Deployment', context) {
                             sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src/backend && pwd && python manage.py createinitialrevisions'"
                         },
                         "ZAP Security Scan": {
-                            def stageOpt =(context?.stages?:[:])[name]
-                            boolean isEnabled=(stageOpt == null || stageOpt == true)
-                            if (isEnabled) {
+                            def stageOpt =(context?.stages?:[:])['ZAP Security Scan']
+                            if (stageOpt == null || stageOpt == true) {
                                 podTemplate(
                                     label: "zap-${context.uuid}",
                                     name: "zap-${context.uuid}",
