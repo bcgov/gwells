@@ -80,29 +80,89 @@ describe('SearchTable.vue', () => {
     })
     expect(wrapper.find('#table-pagination-prev').text()).toEqual('Previous')
   })
-  it('dispatches fetch driller list with correct querystring when pagination next clicked', () => {
+  it('shows the paganation button disabled for previous page when no previous link is present in payload', () => {
+    let fakePersonListCopy = Object.assign({}, fakePersonList)
+    fakePersonListCopy.previous = null
+    getters = {
+      loading: () => false,
+      listError: () => null,
+      drillers: jest.fn().mockReturnValue(fakePersonListCopy),
+      userRoles: () => ({ registry: { edit: false, view: false, approve: false } }),
+      activity: () => 'DRILL'
+    }
+    store = new Vuex.Store({
+      getters,
+      actions
+    })
     const wrapper = shallowMount(SearchTable, {
       store,
       localVue,
       stubs: ['router-link', 'router-view']
     })
-    wrapper.find('#table-pagination-next').trigger('click')
-    expect(actions.FETCH_DRILLER_LIST.mock.calls[0][1]).toEqual({
-      limit: '30',
-      offset: '60'
-    })
+    expect(wrapper.find('#table-pagination-prev').attributes().disabled).toBe('disabled')
   })
-  it('dispatches fetch driller list with correct querystring when pagination prev clicked', () => {
+  it('shows the paganation button disabled for next page when no next link is present in payload', () => {
+    let fakePersonListCopy = Object.assign({}, fakePersonList)
+    fakePersonListCopy.next = null
+    getters = {
+      loading: () => false,
+      listError: () => null,
+      drillers: jest.fn().mockReturnValue(fakePersonListCopy),
+      userRoles: () => ({ registry: { edit: false, view: false, approve: false } }),
+      activity: () => 'DRILL'
+    }
+    store = new Vuex.Store({
+      getters,
+      actions
+    })
     const wrapper = shallowMount(SearchTable, {
       store,
       localVue,
       stubs: ['router-link', 'router-view']
     })
+    expect(wrapper.find('#table-pagination-next').attributes().disabled).toBe('disabled')
+  })
+  it('should call getPage when pagination next clicked', () => {
+    const wrapper = shallowMount(SearchTable, {
+      store,
+      localVue,
+      stubs: ['router-link', 'router-view']
+    })
+    let spy = jest.spyOn(wrapper.vm, 'getPage')
+    wrapper.find('#table-pagination-next').trigger('click')
+    expect(spy).toBeCalledWith('limit=30&offset=60')
+    spy.mockRestore()
+  })
+  it('should call getPage when pagination previous is clicked', () => {
+    const wrapper = shallowMount(SearchTable, {
+      store,
+      localVue,
+      stubs: ['router-link', 'router-view']
+    })
+    let spy = jest.spyOn(wrapper.vm, 'getPage')
     wrapper.find('#table-pagination-prev').trigger('click')
+    expect(spy).toBeCalledWith('limit=30&offset=0')
+    spy.mockRestore()
+  })
+  it('should dispatch fetch driller when getPage is called', () => {
+    const wrapper = shallowMount(SearchTable, {
+      store,
+      localVue,
+      stubs: ['router-link', 'router-view']
+    })
+    wrapper.vm.getPage('limit=30&offset=0')
     expect(actions.FETCH_DRILLER_LIST.mock.calls[0][1]).toEqual({
       limit: '30',
       offset: '0'
     })
+  })
+  it('should throw an error when getPage is called without required parameters', () => {
+    const wrapper = shallowMount(SearchTable, {
+      store,
+      localVue,
+      stubs: ['router-link', 'router-view']
+    })
+    expect(() => { wrapper.vm.getPage(null) }).toThrow(new Error('query parameter is required.'))
   })
   it('emits the column code (e.g. surname) to be sorted when column sort button clicked', () => {
     const wrapper = shallowMount(SearchTable, {
