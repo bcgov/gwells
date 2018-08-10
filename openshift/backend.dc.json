@@ -455,11 +455,21 @@
                                     },
                                     {
                                         "name": "ENABLE_DATA_ENTRY",
-                                        "value": "False"
+                                        "valueFrom": {
+                                            "configMapKeyRef": {
+                                                "key": "ENABLE_DATA_ENTRY",
+                                                "name": "gwells-global-config${NAME_SUFFIX}"
+                                            }
+                                        }
                                     },
                                     {
                                         "name": "ENABLE_ADDITIONAL_DOCUMENTS",
-                                        "value": "True"
+                                        "valueFrom": {
+                                            "configMapKeyRef": {
+                                                "key": "ENABLE_ADDITIONAL_DOCUMENTS",
+                                                "name": "gwells-global-config${NAME_SUFFIX}"
+                                            }
+                                        }
                                     },
                                     {
                                         "name": "APP_CONTEXT_ROOT",
