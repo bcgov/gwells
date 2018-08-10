@@ -278,33 +278,15 @@ _stage('DEV: Unit Tests and Deployment', context) {
             "Unit Tests": {
                 node("node-${context.uuid}") {
                     container('app') {
-                        parallel (
-                            "Unit Tests: Python": {
-                                sh script: '''#!/usr/bin/container-entrypoint /bin/sh
-                                    printf "Python version: "&& python --version
-                                    printf "Pip version:    "&& pip --version
-                                    cd /opt/app-root/src/backend
-                                    DATABASE_ENGINE=sqlite DEBUG=False TEMPLATE_DEBUG=False python manage.py test -c nose.cfg
-                                '''
-                                sh script: '''#!/usr/bin/container-entrypoint /bin/sh
-                                    printf "Node version:   "&& node --version
-                                    printf "NPM version:    "&& npm --version
-                                    cp /opt/app-root/src/backend/nosetests.xml ./
-                                    cp /opt/app-root/src/backend/coverage.xml ./
-                                '''
-                            },
-                            "Unit Tests: Node": {
-                                sh script: '''#!/usr/bin/container-entrypoint /bin/sh
-                                    cd /opt/app-root/src/frontend
-                                    npm test
-                                '''
-                                sh script: '''#!/usr/bin/container-entrypoint /bin/sh
-                                    mkdir -p frontend/test/
-                                    cp -R /opt/app-root/src/frontend/test/unit ./frontend/test/
-                                    cp /opt/app-root/src/frontend/junit.xml ./frontend/
-                                '''
-                            }
-                        )
+                            sh script: '''#!/usr/bin/container-entrypoint /bin/sh
+                                cd /opt/app-root/src/frontend
+                                npm test
+                            '''
+                            sh script: '''#!/usr/bin/container-entrypoint /bin/sh
+                                mkdir -p frontend/test/
+                                cp -R /opt/app-root/src/frontend/test/unit ./frontend/test/
+                                cp /opt/app-root/src/frontend/junit.xml ./frontend/
+                            '''
                     } //end container
                 } //end node
             },
@@ -313,7 +295,7 @@ _stage('DEV: Unit Tests and Deployment', context) {
                     new OpenShiftHelper().waitUntilEnvironmentIsReady(this, context, 'dev')
                     new OpenShiftHelper().deploy(this, context, 'dev')
                     parallel (
-                        "Load Fixtures": {
+                        "Unit Tests: Python": {
                             String podName=null
                             String projectName=context.deployments['dev'].projectName
                             String deploymentConfigName="gwells${context.deployments['dev'].dcSuffix}"
@@ -324,6 +306,21 @@ _stage('DEV: Unit Tests and Deployment', context) {
 
                             openshift.withProject(projectName){
                                 podName=openshift.selector('pod', ['deploymentconfig':deploymentConfigName]).objects()[0].metadata.name
+                            }
+
+                            sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src/backend && pwd && DATABASE_ENGINE=sqlite python manage.py test -c nose.cfg'"
+                        },
+                        "Load Fixtures": {
+                            String podName=null
+                            String projectName=context.deployments['dev'].projectName
+                            String deploymentConfigName="gwells${context.deployments['dev'].dcSuffix}"
+                            echo "env:${context.env['dev']}"
+                            echo "deployment:${context.deployments['dev']}"
+                            echo "projectName:${projectName}"
+                            echo "deploymentConfigName:${deploymentConfigName}"
+
+                            openshift.withProject(projectName){
+                                podName=openshift.selector('pod', ['deploymentconfig':deploymentConfigName]).objects()[1].metadata.name
                             }
 
                             // Lookup tables common to all system components (e.g. Django apps)
