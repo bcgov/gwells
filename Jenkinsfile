@@ -326,65 +326,65 @@ _stage('DEV: Unit Tests and Deployment', context) {
                                 podName=openshift.selector('pod', ['deploymentconfig':deploymentConfigName]).objects()[0].metadata.name
                             }
 
-                            // Lookup tables common to all system components (e.g. Django apps)
                             sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src/backend && pwd && python manage.py loaddata gwells-codetables.json'"
-                            // Lookup tables for the Wellsearch component (not yet a Django app) and Registries app
                             sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src/backend && pwd && python manage.py loaddata wellsearch-codetables.json registries-codetables.json'"
-                            // Test data for the Wellsearch component (not yet a Django app) and Registries app
                             sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src/backend && pwd && python manage.py loaddata wellsearch.json.gz registries.json'"
-                            // Reversion
                             sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src/backend && pwd && python manage.py createinitialrevisions'"
                         },
                         "ZAP Security Scan": {
-                            podTemplate(
-                                label: "zap-${context.uuid}",
-                                name: "zap-${context.uuid}",
-                                serviceAccount: "jenkins",
-                                cloud: "openshift",
-                                containers: [
-                                    containerTemplate(
-                                        name: 'jnlp',
-                                        image: 'docker-registry.default.svc:5000/moe-gwells-dev/owasp-zap-openshift',
-                                        resourceRequestCpu: '500m',
-                                        resourceLimitCpu: '1000m',
-                                        resourceRequestMemory: '3Gi',
-                                        resourceLimitMemory: '4Gi',
-                                        workingDir: '/home/jenkins',
-                                        command: '',
-                                        args: '${computer.jnlpmac} ${computer.name}'
-                                    )
-                                ]
-                            ) {
-                                node("zap-${context.uuid}") {
-                                    //the checkout is mandatory
-                                    echo "checking out source"
-                                    echo "Build: ${BUILD_ID}"
-                                    checkout scm
-                                    dir('zap') {
-                                        def retVal = sh (
-                                            script: """
-                                                set -eux
-                                                ./runzap.sh
-                                            """
+                            def stageOpt =(context?.stages?:[:])[name]
+                            boolean isEnabled=(stageOpt == null || stageOpt == true)
+                            if (isEnabled) {
+                                podTemplate(
+                                    label: "zap-${context.uuid}",
+                                    name: "zap-${context.uuid}",
+                                    serviceAccount: "jenkins",
+                                    cloud: "openshift",
+                                    containers: [
+                                        containerTemplate(
+                                            name: 'jnlp',
+                                            image: 'docker-registry.default.svc:5000/moe-gwells-dev/owasp-zap-openshift',
+                                            resourceRequestCpu: '500m',
+                                            resourceLimitCpu: '1000m',
+                                            resourceRequestMemory: '3Gi',
+                                            resourceLimitMemory: '4Gi',
+                                            workingDir: '/home/jenkins',
+                                            command: '',
+                                            args: '${computer.jnlpmac} ${computer.name}'
                                         )
-                                        publishHTML(
-                                            target: [
-                                                allowMissing: false,
-                                                alwaysLinkToLastBuild: false,
-                                                keepAll: true,
-                                                reportDir: '/zap/wrk',
-                                                reportFiles: 'index.html',
-                                                reportName: 'ZAP Full Scan',
-                                                reportTitles: 'ZAP Full Scan'
-                                            ]
-                                        )
-                                        echo "Return value is: ${retVal}"
-                                    }
-                                }
-                            }
-                        }
-                    )
-                }
+                                    ]
+                                ) {
+                                    node("zap-${context.uuid}") {
+                                        //the checkout is mandatory
+                                        echo "checking out source"
+                                        echo "Build: ${BUILD_ID}"
+                                        checkout scm
+                                        dir('zap') {
+                                            def retVal = sh (
+                                                script: """
+                                                    set -eux
+                                                    ./runzap.sh
+                                                """
+                                            )
+                                            publishHTML(
+                                                target: [
+                                                    allowMissing: false,
+                                                    alwaysLinkToLastBuild: false,
+                                                    keepAll: true,
+                                                    reportDir: '/zap/wrk',
+                                                    reportFiles: 'index.html',
+                                                    reportName: 'ZAP Full Scan',
+                                                    reportTitles: 'ZAP Full Scan'
+                                                ]
+                                            )
+                                            echo "Return value is: ${retVal}"
+                                        }
+                                    } //end node
+                                } //end podTemplate
+                            } //end if
+                        } //end sub-stage
+                    ) //end parallel
+                } //end node
             } //end node
         ) //end parallel
     } //end podTemplate
@@ -523,7 +523,6 @@ for(String envKeyName: context.env.keySet() as String[]){
                         echo BASEURL=$BASEURL
                     '''
 
-                    //TODO:? input(message: "Verify Environment variables. Continue?")
                     checkout scm
                     dir('api-tests') {
                         sh 'npm install -g newman'
@@ -648,41 +647,28 @@ for(String envKeyName: context.env.keySet() as String[]){
                                 return isDone
                             }
                         } finally {
-                                archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/geb/**/*'
-                                junit testResults:'build/test-results/**/*.xml', allowEmptyResults:true
-                                publishHTML (
-                                    target: [
-                                        allowMissing: true,
-                                        alwaysLinkToLastBuild: false,
-                                        keepAll: true,
-                                        reportDir: 'build/reports/spock',
-                                        reportFiles: 'index.html',
-                                        reportName: "Test: BDD Spock Report"
-                                    ]
-                                )
-                                publishHTML (
-                                    target: [
-                                        allowMissing: true,
-                                        alwaysLinkToLastBuild: false,
-                                        keepAll: true,
-                                        reportDir: 'build/reports/tests/chromeHeadlessTest',
-                                        reportFiles: 'index.html',
-                                        reportName: "Test: Full Test Report"
-                                    ]
-                                )
-                            //todo: install perf report plugin.
-                            //perfReport compareBuildPrevious: true,
-                            //    excludeResponseTime: true,
-                            //    ignoreFailedBuilds: true,
-                            //    ignoreUnstableBuilds: true,
-                            //    modeEvaluation: true,
-                            //    modePerformancePerTestCase: true,
-                            //    percentiles: '0,50,90,100',
-                            //    relativeFailedThresholdNegative: 80.0,
-                            //    relativeFailedThresholdPositive: 20.0,
-                            //    relativeUnstableThresholdNegative: 50.0,
-                            //    relativeUnstableThresholdPositive: 50.0,
-                            //    sourceDataFiles: 'build/test-results/**/*.xml'
+                            archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/geb/**/*'
+                            junit testResults:'build/test-results/**/*.xml', allowEmptyResults:true
+                            publishHTML (
+                                target: [
+                                    allowMissing: true,
+                                    alwaysLinkToLastBuild: false,
+                                    keepAll: true,
+                                    reportDir: 'build/reports/spock',
+                                    reportFiles: 'index.html',
+                                    reportName: "Test: BDD Spock Report"
+                                ]
+                            )
+                            publishHTML (
+                                target: [
+                                    allowMissing: true,
+                                    alwaysLinkToLastBuild: false,
+                                    keepAll: true,
+                                    reportDir: 'build/reports/tests/chromeHeadlessTest',
+                                    reportFiles: 'index.html',
+                                    reportName: "Test: Full Test Report"
+                                ]
+                            )
                         }
                     } //end dir
                 } //end node
