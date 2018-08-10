@@ -1,5 +1,6 @@
 import { shallowMount, createLocalVue } from '@vue/test-utils'
 import Vuex from 'vuex'
+import moxios from 'moxios'
 import SearchHome from '@/registry/components/search/SearchHome'
 import SearchTable from '@/registry/components/search/SearchTable'
 import APIErrorMessage from '@/common/components/APIErrorMessage'
@@ -17,6 +18,7 @@ describe('SearchHome.vue', () => {
   let mutations
 
   beforeEach(() => {
+    moxios.install()
     getters = {
       drillerOptions: jest.fn().mockReturnValue(fakeDrillerOptions),
       drillers: () => {
@@ -87,6 +89,10 @@ describe('SearchHome.vue', () => {
       [SET_DRILLER_LIST]: jest.fn()
     }
     store = new Vuex.Store({ getters, actions, mutations })
+  })
+
+  afterEach(() => {
+    moxios.uninstall()
   })
 
   it('loads the table component', () => {
