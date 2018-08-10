@@ -334,6 +334,54 @@ _stage('DEV: Unit Tests and Deployment', context) {
                             sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src/backend && pwd && python manage.py loaddata wellsearch.json.gz registries.json'"
                             // Reversion
                             sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src/backend && pwd && python manage.py createinitialrevisions'"
+                        },
+                        "ZAP Security Scan": {
+                            podTemplate(
+                                label: "zap-${context.uuid}",
+                                name: "zap-${context.uuid}",
+                                serviceAccount: "jenkins",
+                                cloud: "openshift",
+                                containers: [
+                                    containerTemplate(
+                                        name: 'jnlp',
+                                        image: 'docker-registry.default.svc:5000/moe-gwells-dev/owasp-zap-openshift',
+                                        resourceRequestCpu: '500m',
+                                        resourceLimitCpu: '1000m',
+                                        resourceRequestMemory: '3Gi',
+                                        resourceLimitMemory: '4Gi',
+                                        workingDir: '/home/jenkins',
+                                        command: '',
+                                        args: '${computer.jnlpmac} ${computer.name}'
+                                    )
+                                ]
+                            ) {
+                                node("zap-${context.uuid}") {
+                                    //the checkout is mandatory
+                                    echo "checking out source"
+                                    echo "Build: ${BUILD_ID}"
+                                    checkout scm
+                                    dir('zap') {
+                                        def retVal = sh (
+                                            script: """
+                                                set -eux
+                                                ./runzap.sh
+                                            """
+                                        )
+                                        publishHTML(
+                                            target: [
+                                                allowMissing: false,
+                                                alwaysLinkToLastBuild: false,
+                                                keepAll: true,
+                                                reportDir: '/zap/wrk',
+                                                reportFiles: 'index.html',
+                                                reportName: 'ZAP Full Scan',
+                                                reportTitles: 'ZAP Full Scan'
+                                            ]
+                                        )
+                                        echo "Return value is: ${retVal}"
+                                    }
+                                }
+                            }
                         }
                     )
                 }
@@ -382,55 +430,6 @@ for(String envKeyName: context.env.keySet() as String[]){
     }
 
     if ("DEV".equalsIgnoreCase(stageDeployName)){
-        _stage('ZAP Security Scan', context) {
-            podTemplate(
-                label: "zap-${context.uuid}",
-                name: "zap-${context.uuid}",
-                serviceAccount: "jenkins",
-                cloud: "openshift",
-                containers: [
-                    containerTemplate(
-                        name: 'jnlp',
-                        image: 'docker-registry.default.svc:5000/moe-gwells-dev/owasp-zap-openshift',
-                        resourceRequestCpu: '500m',
-                        resourceLimitCpu: '1000m',
-                        resourceRequestMemory: '3Gi',
-                        resourceLimitMemory: '4Gi',
-                        workingDir: '/home/jenkins',
-                        command: '',
-                        args: '${computer.jnlpmac} ${computer.name}'
-                    )
-                ]
-            ) {
-                node("zap-${context.uuid}") {
-                    //the checkout is mandatory
-                    echo "checking out source"
-                    echo "Build: ${BUILD_ID}"
-                    checkout scm
-                    dir('zap') {
-                        def retVal = sh (
-                            script: """
-                                set -eux
-                                ./runzap.sh
-                            """
-                        )
-                        publishHTML(
-                            target: [
-                                allowMissing: false,
-                                alwaysLinkToLastBuild: false,
-                                keepAll: true,
-                                reportDir: '/zap/wrk',
-                                reportFiles: 'index.html',
-                                reportName: 'ZAP Full Scan',
-                                reportTitles: 'ZAP Full Scan'
-                            ]
-                        )
-                        echo "Return value is: ${retVal}"
-                    }
-                }
-            }
-        }
-
         _stage('API Test', context) {
             String baseURL = context.deployments[envKeyName].environmentUrl.substring(0, context.deployments[envKeyName].environmentUrl.indexOf('/', 8) + 1)
             podTemplate(
