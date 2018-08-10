@@ -91,7 +91,8 @@
           :longitude.sync="form.longitude">
         </step04-coords>
 
-        <b-row>
+        <!-- Back / Next / Submit controls -->
+        <b-row class="mt-5">
           <b-col v-if="!formIsFlat">
             <b-btn v-if="step > 1" @click="step > 1 ? step-- : null">Back</b-btn>
           </b-col>
