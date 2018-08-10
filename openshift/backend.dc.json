@@ -455,7 +455,7 @@
                                     },
                                     {
                                         "name": "ENABLE_DATA_ENTRY",
-                                        "value": "True"
+                                        "value": "False"
                                     },
                                     {
                                         "name": "ENABLE_ADDITIONAL_DOCUMENTS",
