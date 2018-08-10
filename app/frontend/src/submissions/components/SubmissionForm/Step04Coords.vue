@@ -8,18 +8,18 @@
             type="text"
             label="Latitude"
             hint="Decimal degrees"
-            v-model="latitudeInput"
+            v-model="latitude"
             :errors="errors['latitude']"
             :loaded="fieldsLoaded['latitude']"
           ></form-input>
         </b-col>
-        <b-col cols="12" sm="6" lg="3">
+        <b-col cols="12" sm="6" lg="3" offset-lg="2">
           <form-input
             id="longitude"
             type="text"
             label="Longitude"
             hint="Decimal degrees"
-            v-model="longitudeInput"
+            v-model="longitude"
             :errors="errors['longitude']"
             :loaded="fieldsLoaded['longitude']"
           ></form-input>
@@ -27,34 +27,81 @@
       </b-row>
       <b-row><b-col><p>OR</p></b-col></b-row>
       <b-row>
-        <b-col cols="12" sm="6" lg="3">
-            <form-input
-              id="latitude"
-              type="text"
-              label="Latitude"
-              hint="Degrees, minutes, seconds"
-              v-model="latitudeInput"
-              :errors="errors['latitude']"
-              :loaded="fieldsLoaded['latitude']"
-            ></form-input>
+        <b-col cols="12" md="6" lg="4">
+          <b-row class="mb-2"><b-col>Latitude</b-col></b-row>
+          <b-row>
+            <b-col cols="12" sm="4">
+              <form-input
+                id="latitudeDeg"
+                type="text"
+                hint="Degrees"
+                v-model.number="latitudeDMS.deg"
+                :errors="errors['latitude']"
+                :loaded="fieldsLoaded['latitude']"
+              ></form-input>
+            </b-col>
+            <b-col cols="12" sm="4">
+              <form-input
+                id="latitudeMin"
+                type="text"
+                hint="Minutes"
+                v-model.number="latitudeDMS.min"
+                :errors="errors['latitude']"
+                :loaded="fieldsLoaded['latitude']"
+              ></form-input>
+            </b-col>
+            <b-col cols="12" sm="4">
+              <form-input
+                id="latitudeSec"
+                type="text"
+                hint="Seconds"
+                v-model.number="latitudeDMS.sec"
+                :errors="errors['latitude']"
+                :loaded="fieldsLoaded['latitude']"
+              ></form-input>
+            </b-col>
+          </b-row>
         </b-col>
-        <b-col cols="12" sm="6" lg="3">
-          <form-input
-            id="longitude"
-            type="text"
-            label="Longitude"
-            hint="Degrees, minutes, seconds"
-            v-model="longitudeInput"
-            :errors="errors['longitude']"
-            :loaded="fieldsLoaded['longitude']"
-          ></form-input>
+        <b-col cols="12" md="6" lg="4" offset-lg="1">
+          <b-row class="mb-2"><b-col>Longitude</b-col></b-row>
+          <b-row>
+            <b-col cols="12" sm="4">
+              <form-input
+                id="longitudeDeg"
+                type="text"
+                hint="Degrees"
+                v-model="longitudeDMS.deg"
+                :errors="errors['longitude']"
+                :loaded="fieldsLoaded['longitude']"
+              ></form-input>
+            </b-col>
+            <b-col cols="12" sm="4">
+              <form-input
+                id="longitudeMin"
+                type="text"
+                hint="Minutes"
+                v-model="longitudeDMS.min"
+                :errors="errors['longitude']"
+                :loaded="fieldsLoaded['longitude']"
+              ></form-input>
+            </b-col>
+            <b-col cols="12" sm="4">
+              <form-input
+                id="longitudeSec"
+                type="text"
+                hint="Seconds"
+                v-model="longitudeDMS.sec"
+                :errors="errors['longitude']"
+                :loaded="fieldsLoaded['longitude']"
+              ></form-input>
+            </b-col>
+          </b-row>
         </b-col>
       </b-row>
     </fieldset>
 </template>
 <script>
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
-// import ApiService from '@/common/services/ApiService.js'
 export default {
   name: 'Step04Coords',
   mixins: [inputBindingsMixin],
@@ -76,12 +123,51 @@ export default {
   },
   data () {
     return {
-
+      latitudeDMS: {
+        deg: '',
+        min: '',
+        sec: ''
+      },
+      longitudeDMS: {
+        deg: '',
+        min: '',
+        sec: ''
+      },
+      latitudeDMSValidation: null
     }
   },
   computed: {},
-  watch: {},
-  methods: {}
+  watch: {
+    latitudeDMS: {
+      deep: true,
+      handler: function (value) {
+        if (this.validDMSLat(value)) {
+          this.latitudeInput = (value.deg + value.min / 60 + value.sec / (60 * 60)).toFixed(6)
+          this.latitudeDMSValidation = null
+        }
+      }
+    }
+  },
+  methods: {
+    validDMSLat (value) {
+      return (
+        value.deg >= 0 &&
+        value.deg <= 90 &&
+        value.min >= 0 &&
+        value.min <= 60 &&
+        value.sec >= 0 &&
+        value.sec <= 60)
+    },
+    validDMSLng (value) {
+      return (
+        value.deg >= 0 &&
+        value.deg <= 180 &&
+        value.min >= 0 &&
+        value.min <= 60 &&
+        value.sec >= 0 &&
+        value.sec <= 60)
+    }
+  }
 }
 </script>
 
