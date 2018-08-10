@@ -1,6 +1,7 @@
 import { shallowMount, createLocalVue } from '@vue/test-utils'
 import Vuex from 'vuex'
 import VueMoment from 'vue-moment'
+import moxios from 'moxios'
 import ChangeHistory from '@/registry/components/people/ChangeHistory'
 
 const localVue = createLocalVue()
@@ -14,6 +15,7 @@ describe('Notes.vue', () => {
   let actions
 
   beforeEach(() => {
+    moxios.install()
     getters = {
       loading: () => false,
       error: () => null,
@@ -22,6 +24,10 @@ describe('Notes.vue', () => {
       userRoles: () => ({ registry: { edit: true, view: true, approve: true } })
     }
     store = new Vuex.Store({ getters, actions, mutations })
+  })
+
+  afterEach(() => {
+    moxios.uninstall()
   })
 
   it('renders and has a title', () => {
