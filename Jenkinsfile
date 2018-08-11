@@ -15,7 +15,6 @@ import bcgov.OpenShiftHelper
 import bcgov.GitHubHelper
 
 
-
 // Print stack trace of error
 @NonCPS
 private static String stackTraceAsString(Throwable t) {
@@ -27,7 +26,6 @@ private static String stackTraceAsString(Throwable t) {
 
 // Notify stage status and pass to Jenkins-GitHub library
 void notifyStageStatus (Map context, String name, String status) {
-    // TODO: broadcast status/result to Slack channel
     GitHubHelper.createCommitStatus(
         this,
         context.pullRequest.head,
@@ -275,36 +273,13 @@ _stage('DEV: Unit Tests and Deployment', context) {
         ]
     ) {
         parallel (
-            "Unit Tests": {
+            "Unit Tests: Node": {
                 node("node-${context.uuid}") {
                     container('app') {
-                        parallel (
-                            "Unit Tests: Python": {
-                                sh script: '''#!/usr/bin/container-entrypoint /bin/sh
-                                    printf "Python version: "&& python --version
-                                    printf "Pip version:    "&& pip --version
-                                    cd /opt/app-root/src/backend
-                                    DATABASE_ENGINE=sqlite DEBUG=False TEMPLATE_DEBUG=False python manage.py test -c nose.cfg
-                                '''
-                                sh script: '''#!/usr/bin/container-entrypoint /bin/sh
-                                    printf "Node version:   "&& node --version
-                                    printf "NPM version:    "&& npm --version
-                                    cp /opt/app-root/src/backend/nosetests.xml ./
-                                    cp /opt/app-root/src/backend/coverage.xml ./
-                                '''
-                            },
-                            "Unit Tests: Node": {
-                                sh script: '''#!/usr/bin/container-entrypoint /bin/sh
-                                    cd /opt/app-root/src/frontend
-                                    npm test
-                                '''
-                                sh script: '''#!/usr/bin/container-entrypoint /bin/sh
-                                    mkdir -p frontend/test/
-                                    cp -R /opt/app-root/src/frontend/test/unit ./frontend/test/
-                                    cp /opt/app-root/src/frontend/junit.xml ./frontend/
-                                '''
-                            }
-                        )
+                        sh script: '''#!/usr/bin/container-entrypoint /bin/sh
+                            cd /opt/app-root/src/frontend
+                            npm test
+                        '''
                     } //end container
                 } //end node
             },
@@ -312,24 +287,26 @@ _stage('DEV: Unit Tests and Deployment', context) {
                 node('master') {
                     new OpenShiftHelper().waitUntilEnvironmentIsReady(this, context, 'dev')
                     new OpenShiftHelper().deploy(this, context, 'dev')
+
+                    String projectName=context.deployments['dev'].projectName
+                    String deploymentConfigName="gwells${context.deployments['dev'].dcSuffix}"
+                    String pod0 = openshift.withProject(projectName){
+                        return openshift.selector('pod', ['deploymentconfig':deploymentConfigName]).objects()[0].metadata.name
+                    }
+                    String pod1 = openshift.withProject(projectName){
+                        return openshift.selector('pod', ['deploymentconfig':deploymentConfigName]).objects()[1].metadata.name
+                    }
                     parallel (
                         "Load Fixtures": {
-                            String podName=null
-                            String projectName=context.deployments['dev'].projectName
-                            String deploymentConfigName="gwells${context.deployments['dev'].dcSuffix}"
-                            echo "env:${context.env['dev']}"
-                            echo "deployment:${context.deployments['dev']}"
-                            echo "projectName:${projectName}"
-                            echo "deploymentConfigName:${deploymentConfigName}"
-
-                            openshift.withProject(projectName){
-                                podName=openshift.selector('pod', ['deploymentconfig':deploymentConfigName]).objects()[0].metadata.name
-                            }
-
-                            sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src/backend && pwd && python manage.py loaddata gwells-codetables.json'"
-                            sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src/backend && pwd && python manage.py loaddata wellsearch-codetables.json registries-codetables.json'"
-                            sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src/backend && pwd && python manage.py loaddata wellsearch.json.gz registries.json'"
-                            sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src/backend && pwd && python manage.py createinitialrevisions'"
+                            sh """
+                                oc exec '${pod0}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src/backend && python manage.py loaddata gwells-codetables.json'
+                                oc exec '${pod0}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src/backend && python manage.py loaddata wellsearch-codetables.json registries-codetables.json'
+                                oc exec '${pod0}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src/backend && python manage.py loaddata wellsearch.json.gz registries.json'
+                                oc exec '${pod0}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src/backend && python manage.py createinitialrevisions'
+                            """
+                        },
+                        "Unit Tests: Python": {
+                            sh "oc exec '${pod1}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src/backend && DATABASE_ENGINE=sqlite DEBUG=False TEMPLATE_DEBUG=False python manage.py test -c nose.cfg'"
                         },
                         "ZAP Security Scan": {
                             def stageOpt =(context?.stages?:[:])['ZAP Security Scan']
@@ -360,10 +337,8 @@ _stage('DEV: Unit Tests and Deployment', context) {
                                         checkout scm
                                         dir('zap') {
                                             def retVal = sh (
-                                                script: """
-                                                    set -eux
-                                                    ./runzap.sh
-                                                """
+                                                script: "./runzap.sh",
+                                                returnStdout: true
                                             )
                                             publishHTML(
                                                 target: [
