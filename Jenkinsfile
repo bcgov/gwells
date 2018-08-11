@@ -265,8 +265,8 @@ _stage('DEV: Unit Tests and Deployment', context) {
                 image: "docker-registry.default.svc:5000/moe-gwells-tools/gwells${context.buildNameSuffix}:${context.buildEnvName}",
                 ttyEnabled: true,
                 command: 'cat',
-                resourceRequestCpu: '1.5',
-                resourceLimitCpu: '1.5',
+                resourceRequestCpu: '2.5',
+                resourceLimitCpu: '2.5',
                 resourceRequestMemory: '2.5Gi',
                 resourceLimitMemory: '2.5Gi'
             )
@@ -278,7 +278,7 @@ _stage('DEV: Unit Tests and Deployment', context) {
                     container('app') {
                         sh script: '''#!/usr/bin/container-entrypoint /bin/sh
                             cd /opt/app-root/src/frontend
-                            npm test
+                            npm test --loglevel
                         '''
                     } //end container
                 } //end node
@@ -297,14 +297,17 @@ _stage('DEV: Unit Tests and Deployment', context) {
                         return openshift.selector('pod', ['deploymentconfig':deploymentConfigName]).objects()[1].metadata.name
                     }
                     parallel (
-                        "Fixtures and API Test": {
-                            sh """
-                                oc exec '${pod0}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src/backend && python manage.py loaddata gwells-codetables.json'
-                                oc exec '${pod0}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src/backend && python manage.py loaddata wellsearch-codetables.json registries-codetables.json'
-                                oc exec '${pod0}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src/backend && python manage.py loaddata wellsearch.json.gz registries.json'
-                                oc exec '${pod0}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src/backend && python manage.py createinitialrevisions'
-                            """
-                            String baseURL = context.deployments[envKeyName].environmentUrl.substring(0, context.deployments[envKeyName].environmentUrl.indexOf('/', 8) + 1)
+                        "Load Fixtures": {
+                            sh "oc exec '${pod0}' -n '${projectName}' -- bash -c '\
+                                cd /opt/app-root/src/backend; \
+                                python manage.py loaddata gwells-codetables.json; \
+                                python manage.py loaddata wellsearch-codetables.json registries-codetables.json; \
+                                python manage.py loaddata wellsearch.json.gz registries.json; \
+                                python manage.py createinitialrevisions \
+                            '"
+                        },
+                        "API Tests": {
+                            String baseURL = context.deployments['dev'].environmentUrl.substring(0, context.deployments['dev'].environmentUrl.indexOf('/', 8) + 1)
                             podTemplate(
                                 label: "nodejs-${context.uuid}",
                                 name: "nodejs-${context.uuid}",
@@ -353,40 +356,8 @@ _stage('DEV: Unit Tests and Deployment', context) {
                                             )
                                         ]
                                     )
-                            ],
-                            envVars: [
-                                envVar(
-                                    key:'BASEURL',
-                                    value: "${baseURL}gwells"
-                                ),
-                                secretEnvVar(
-                                    key: 'GWELLS_API_TEST_USER',
-                                    secretName: 'apitest-secrets',
-                                    secretKey: 'username'
-                                ),
-                                secretEnvVar(
-                                    key: 'GWELLS_API_TEST_PASSWORD',
-                                    secretName: 'apitest-secrets',
-                                    secretKey: 'password'
-                                ),
-                                secretEnvVar(
-                                    key: 'GWELLS_API_TEST_AUTH_SERVER',
-                                    secretName: 'apitest-secrets',
-                                    secretKey: 'auth_server'
-                                ),
-                                secretEnvVar(
-                                    key: 'GWELLS_API_TEST_CLIENT_ID',
-                                    secretName: 'apitest-secrets',
-                                    secretKey: 'client_id'
-                                ),
-                                secretEnvVar(
-                                    key: 'GWELLS_API_TEST_CLIENT_SECRET',
-                                    secretName: 'apitest-secrets',
-                                    secretKey: 'client_secret'
-                                )
-                            ]
-                        )
-                            {
+                                ]
+                            ) {
                                 node("nodejs-${context.uuid}") {
                                     //the checkout is mandatory, otherwise functional test would fail
                                     echo "checking out source"
@@ -428,18 +399,18 @@ _stage('DEV: Unit Tests and Deployment', context) {
                                                     -r cli,junit,html
                                             '''
                                         } finally {
-                                                junit 'newman/*.xml'
-                                                publishHTML (
-                                                    target: [
-                                                        allowMissing: false,
-                                                        alwaysLinkToLastBuild: false,
-                                                        keepAll: true,
-                                                        reportDir: 'newman',
-                                                        reportFiles: 'newman*.html',
-                                                        reportName: "API Test Report"
-                                                    ]
-                                                )
-                                                stash includes: 'newman/*.xml', name: 'api-tests'
+                                            junit 'newman/*.xml'
+                                            publishHTML (
+                                                target: [
+                                                    allowMissing: false,
+                                                    alwaysLinkToLastBuild: false,
+                                                    keepAll: true,
+                                                    reportDir: 'newman',
+                                                    reportFiles: 'newman*.html',
+                                                    reportName: "API Test Report"
+                                                ]
+                                            )
+                                            stash includes: 'newman/*.xml', name: 'api-tests'
                                         }
                                     } // end dir
                                 } //end node
@@ -496,7 +467,7 @@ _stage('DEV: Unit Tests and Deployment', context) {
                                     } //end node
                                 } //end podTemplate
                             } //end if
-                        } //end sub-stage
+                        } //end branch
                     ) //end parallel
                 } //end node
             } //end node
