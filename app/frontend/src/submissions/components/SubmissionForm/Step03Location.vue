@@ -1,8 +1,9 @@
 <template>
     <fieldset>
-      <legend>Well Location</legend>
+      <legend>Step 3: Well Location</legend>
       <b-row>
         <b-col>
+          <p>Please provide as much information as possible. A minimum of one type of well location information is required below:</p>
           <p>1) Well location address</p>
         </b-col>
       </b-row>
@@ -128,7 +129,9 @@
               id="landDistrict"
               label="Land District"
               select
-              :options="['Nechako', 'North Coast', 'Lower Mainland']"
+              :options="districtCodes"
+              text-field="name"
+              value-field="land_district_code"
               v-model="landDistrictInput"
               :errors="errors['land_district']"
               :loaded="fieldsLoaded['land_district']"
@@ -172,6 +175,7 @@
 <script>
 import debounce from 'lodash.debounce'
 import axios from 'axios'
+import { mapGetters } from 'vuex'
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 // import ApiService from '@/common/services/ApiService.js'
 export default {
@@ -218,7 +222,16 @@ export default {
       wellAddressHints: []
     }
   },
-  computed: {},
+  computed: {
+    districtCodes () {
+      const initial = [{
+        land_district_code: '',
+        name: 'Select district'
+      }]
+      return initial.concat(this.codes.land_district_codes)
+    },
+    ...mapGetters(['codes'])
+  },
   watch: {
     streetAddress (val) {
       // match against strings that contain two groups of letters/numbers (e.g. "123 Main")

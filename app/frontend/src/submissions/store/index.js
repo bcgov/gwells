@@ -49,7 +49,9 @@ export const store = new Vuex.Store({
   },
   getters: {
     codes (state) {
-      return state.codes || {}
+      return state.codes || {
+        land_district_codes: {}
+      }
     },
     globalError (state) {
       return state.error
