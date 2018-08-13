@@ -275,7 +275,8 @@ _stage('DEV: Unit Tests and Deployment', context) {
                     container('app') {
                         sh script: '''#!/usr/bin/container-entrypoint /bin/sh
                             cd /opt/app-root/src/frontend
-                            npm test --loglevel
+                            npm install --save-dev jest@23
+                            npm test --detectLeaks --runInBand -- --logHeapUsage --maxWorkers=1
                         '''
                     } //end container
                 } //end node
