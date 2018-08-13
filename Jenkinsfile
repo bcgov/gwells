@@ -250,34 +250,34 @@ _stage('Build', context) {
     - use 'npm run unit' to run JavaScript unit tests
     - stash test results for code quality stage
 */
-_stage('Unit Test', context) {
-    podTemplate(
-        label: "node-${context.uuid}",
-        name:"node-${context.uuid}",
-        serviceAccount: 'jenkins',
-        cloud: 'openshift',
-        containers: [
-            containerTemplate(
-                name: 'jnlp',
-                image: 'jenkins/jnlp-slave:3.10-1-alpine',
-                args: '${computer.jnlpmac} ${computer.name}',
-                resourceRequestCpu: '100m',
-                resourceLimitCpu: '100m'
-            ),
-            containerTemplate(
-                name: 'app',
-                image: "docker-registry.default.svc:5000/moe-gwells-tools/gwells${context.buildNameSuffix}:${context.buildEnvName}",
-                ttyEnabled: true,
-                command: 'cat',
-                resourceRequestCpu: '2000m',
-                resourceLimitCpu: '2000m',
-                resourceRequestMemory: '2.5Gi',
-                resourceLimitMemory: '2.5Gi'
-            )
-        ]
-    ) {
-        node("node-${context.uuid}") {
-            try {
+timestamps {
+    _stage('Unit Test', context) {
+        podTemplate(
+            label: "node-${context.uuid}",
+            name:"node-${context.uuid}",
+            serviceAccount: 'jenkins',
+            cloud: 'openshift',
+            containers: [
+                containerTemplate(
+                    name: 'jnlp',
+                    image: 'jenkins/jnlp-slave:3.10-1-alpine',
+                    args: '${computer.jnlpmac} ${computer.name}',
+                    resourceRequestCpu: '100m',
+                    resourceLimitCpu: '100m'
+                ),
+                containerTemplate(
+                    name: 'app',
+                    image: "docker-registry.default.svc:5000/moe-gwells-tools/gwells${context.buildNameSuffix}:${context.buildEnvName}",
+                    ttyEnabled: true,
+                    command: 'cat',
+                    resourceRequestCpu: '2000m',
+                    resourceLimitCpu: '2000m',
+                    resourceRequestMemory: '2.5Gi',
+                    resourceLimitMemory: '2.5Gi'
+                )
+            ]
+        ) {
+            node("node-${context.uuid}") {
                 container('app') {
                     sh script: '''#!/usr/bin/container-entrypoint /bin/sh
                         set -euo pipefail
@@ -288,8 +288,7 @@ _stage('Unit Test', context) {
                         printf "NPM version:    "&& npm --version
 
                         (
-                            cd /opt/app-root/src
-                            python manage.py migrate
+                            cd /opt/app-root/src/backend
                             ENABLE_DATA_ENTRY="True" python manage.py test -c nose.cfg
                         )
                         (
@@ -298,26 +297,10 @@ _stage('Unit Test', context) {
                         )
                         mkdir -p frontend/test/
                         cp -R /opt/app-root/src/frontend/test/unit ./frontend/test/
-                        cp /opt/app-root/src/nosetests.xml /opt/app-root/src/coverage.xml ./
+                        cp /opt/app-root/src/backend/nosetests.xml /opt/app-root/src/backend/coverage.xml ./
                         cp /opt/app-root/src/frontend/junit.xml ./frontend/
                     '''
                 }
-            } finally {
-                archiveArtifacts allowEmptyArchive: true, artifacts: 'frontend/test/unit/**/*'
-                stash includes: 'nosetests.xml,coverage.xml', name: 'coverage'
-                stash includes: 'frontend/test/unit/coverage/clover.xml', name: 'nodecoverage'
-                stash includes: 'frontend/junit.xml', name: 'nodejunit'
-                junit 'nosetests.xml,frontend/junit.xml'
-                publishHTML (
-                    target: [
-                        allowMissing: false,
-                        alwaysLinkToLastBuild: false,
-                        keepAll: true,
-                        reportDir: 'frontend/test/unit/coverage/lcov-report/',
-                        reportFiles: 'index.html',
-                        reportName: "Node Coverage Report"
-                    ]
-                )
             }
         }
     }
@@ -442,15 +425,15 @@ for(String envKeyName: context.env.keySet() as String[]){
                     podName=openshift.selector('pod', ['deploymentconfig':deploymentConfigName]).objects()[0].metadata.name
                 }
                 // Run migrate
-                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src && pwd && python manage.py migrate'"
+                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src/backend && pwd && python manage.py migrate'"
                 // Lookup tables common to all system components (e.g. Django apps)
-                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src && pwd && python manage.py loaddata gwells-codetables.json'"
+                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src/backend && pwd && python manage.py loaddata gwells-codetables.json'"
                 // Lookup tables for the Wellsearch component (not yet a Django app) and Registries app
-                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src && pwd && python manage.py loaddata wellsearch-codetables.json registries-codetables.json'"
+                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src/backend && pwd && python manage.py loaddata wellsearch-codetables.json registries-codetables.json'"
                 // Test data for the Wellsearch component (not yet a Django app) and Registries app
-                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src && pwd && python manage.py loaddata wellsearch.json.gz registries.json'"
+                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src/backend && pwd && python manage.py loaddata wellsearch.json.gz registries.json'"
                 // Reversion
-                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src && pwd && python manage.py createinitialrevisions'"
+                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src/backend && pwd && python manage.py createinitialrevisions'"
             }
         }
     }
@@ -515,7 +498,7 @@ for(String envKeyName: context.env.keySet() as String[]){
                 containers: [
                     containerTemplate(
                         name: 'jnlp',
-                        image: 'registry.access.redhat.com/openshift3/jenkins-slave-nodejs-rhel7',
+                        image: 'registry.access.redhat.com/openshift3/jenkins-agent-nodejs-8-rhel7',
                         resourceRequestCpu: '800m',
                         resourceLimitCpu: '800m',
                         resourceRequestMemory: '1Gi',

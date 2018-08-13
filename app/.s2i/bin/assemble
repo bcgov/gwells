@@ -33,6 +33,8 @@ if [[ ! -z "$UPGRADE_PIP_TO_LATEST" || ! -z "$ENABLE_PIPENV" ]]; then
   pip install -U pip setuptools wheel
 fi
 
+cd backend
+
 if [[ ! -z "$ENABLE_PIPENV" ]]; then
   install_pipenv
   echo "---> Installing dependencies via pipenv ..."
@@ -50,6 +52,7 @@ elif [[ -f setup.py ]]; then
   python setup.py develop
 fi
 
+cd ..
 cd frontend
 npm install
 npm run build
@@ -58,7 +61,7 @@ cd ..
 if should_collectstatic; then
   (
     echo "---> Collecting Django static files ..."
-
+    cd backend
 
     APP_HOME=${APP_HOME:-.}
     # Look for 'manage.py' in the directory specified by APP_HOME, or the current directory
@@ -78,6 +81,8 @@ if should_collectstatic; then
     fi
 
     python $manage_file collectstatic --noinput
+
+    cd ..
   )
 fi
 

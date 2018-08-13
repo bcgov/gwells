@@ -334,9 +334,17 @@
                                         }
                                     },
                                     {
-                                        "name": "APP_CONFIG",
-                                        "value": "/opt/app-root/src/gunicorn.cfg"
+                                        "name": "APP_MODULE",
+                                        "value": "wsgi:application"
                                     },
+                                    {
+                                        "name": "APP_HOME",
+                                        "value": "backend"
+                                    },
+                                    {
+                                        "name": "APP_CONFIG",
+                                        "value": "/opt/app-root/src/backend/gunicorn.cfg"
+                                    },                                    
                                     {
                                         "name": "DJANGO_SECRET_KEY",
                                         "valueFrom": {
@@ -447,11 +455,21 @@
                                     },
                                     {
                                         "name": "ENABLE_DATA_ENTRY",
-                                        "value": "True"
+                                        "valueFrom": {
+                                            "configMapKeyRef": {
+                                                "key": "ENABLE_DATA_ENTRY",
+                                                "name": "gwells-global-config${NAME_SUFFIX}"
+                                            }
+                                        }
                                     },
                                     {
                                         "name": "ENABLE_ADDITIONAL_DOCUMENTS",
-                                        "value": "True"
+                                        "valueFrom": {
+                                            "configMapKeyRef": {
+                                                "key": "ENABLE_ADDITIONAL_DOCUMENTS",
+                                                "name": "gwells-global-config${NAME_SUFFIX}"
+                                            }
+                                        }
                                     },
                                     {
                                         "name": "APP_CONTEXT_ROOT",

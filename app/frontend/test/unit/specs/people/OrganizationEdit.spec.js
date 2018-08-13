@@ -1,5 +1,6 @@
 import { shallowMount, createLocalVue } from '@vue/test-utils'
 import Vuex from 'vuex'
+import moxios from 'moxios'
 import OrganizationEdit from '@/registry/components/people/OrganizationEdit.vue'
 import fakeCompanyList from '../fakeCompanyList'
 import { FETCH_DRILLER_OPTIONS } from '@/registry/store/actions.types'
@@ -17,6 +18,7 @@ describe('OrganizationEdit.vue', () => {
   }
 
   beforeEach(() => {
+    moxios.install()
     getters = {
       error: () => null,
       drillerOptions: jest.fn().mockReturnValue(fakeOptions),
@@ -25,6 +27,11 @@ describe('OrganizationEdit.vue', () => {
 
     store = new Vuex.Store({ getters, actions, mutations })
   })
+
+  afterEach(() => {
+    moxios.uninstall()
+  })
+
   it('has a title', () => {
     const wrapper = shallowMount(OrganizationEdit, {
       localVue,
