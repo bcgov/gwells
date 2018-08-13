@@ -170,6 +170,12 @@
           </form-input>
         </b-col>
       </b-row>
+
+      <!-- Error message when location not given -->
+      <b-alert class="mt-3" variant="danger" :show="errorWellLocationNotProvided">
+        Must provide well location as either an address, legal description, or parcel identifier.
+      </b-alert>
+
     </fieldset>
 </template>
 <script>
@@ -177,7 +183,6 @@ import debounce from 'lodash.debounce'
 import axios from 'axios'
 import { mapGetters } from 'vuex'
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
-// import ApiService from '@/common/services/ApiService.js'
 export default {
   name: 'Step03Location',
   mixins: [inputBindingsMixin],
@@ -201,7 +206,8 @@ export default {
     fieldsLoaded: {
       type: Object,
       default: () => ({})
-    }
+    },
+    errorWellLocationNotProvided: Boolean
   },
   fields: {
     wellAddressInput: 'streetAddress',
