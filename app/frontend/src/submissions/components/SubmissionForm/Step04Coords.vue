@@ -1,6 +1,6 @@
 <template>
     <fieldset>
-      <legend>Geographic Coordinates</legend>
+      <legend>Step 4: Geographic Coordinates</legend>
       <b-card no-body class="p-3 m-1 m-md-1">
         <b-row>
           <b-col cols="12" sm="6" lg="3">
@@ -10,7 +10,7 @@
               label="Latitude"
               hint="Decimal degrees"
               append="W"
-              v-model="latitude"
+              v-model="latitudeInput"
               :errors="errors['latitude']"
               :loaded="fieldsLoaded['latitude']"
             ></form-input>
@@ -21,7 +21,7 @@
               type="text"
               label="Longitude"
               hint="Decimal degrees"
-              v-model="longitude"
+              v-model="longitudeInput"
               :errors="errors['longitude']"
               :loaded="fieldsLoaded['longitude']"
             ></form-input>
@@ -40,7 +40,7 @@
                   type="text"
                   hint="Degrees"
                   v-model.number="latitudeDMS.deg"
-                  :errors="errors['latitude']"
+                  :state="latitudeDMSValidation"
                   :loaded="fieldsLoaded['latitude']"
                 ></form-input>
               </b-col>
@@ -74,7 +74,7 @@
                   id="longitudeDeg"
                   type="text"
                   hint="Degrees"
-                  v-model="longitudeDMS.deg"
+                  v-model.number="longitudeDMS.deg"
                   :errors="errors['longitude']"
                   :loaded="fieldsLoaded['longitude']"
                 ></form-input>
@@ -84,7 +84,7 @@
                   id="longitudeMin"
                   type="text"
                   hint="Minutes"
-                  v-model="longitudeDMS.min"
+                  v-model.number="longitudeDMS.min"
                   :errors="errors['longitude']"
                   :loaded="fieldsLoaded['longitude']"
                 ></form-input>
@@ -94,7 +94,7 @@
                   id="longitudeSec"
                   type="text"
                   hint="Seconds"
-                  v-model="longitudeDMS.sec"
+                  v-model.number="longitudeDMS.sec"
                   :errors="errors['longitude']"
                   :loaded="fieldsLoaded['longitude']"
                 ></form-input>
@@ -110,9 +110,11 @@
             <form-input
               id="utmZone"
               select
-              :options="['16W', '16V']"
+              :options="utmZones"
               label="Zone"
               v-model="utm.zone"
+              text-field="name"
+              value-field="value"
               :loaded="fieldsLoaded['utmZone']"
             ></form-input>
           </b-col>
@@ -176,7 +178,15 @@ export default {
         easting: '',
         northing: ''
       },
-      latitudeDMSValidation: null
+      // BC is covered by UTM zones 7 through 11
+      utmZones: [
+        {'value': '', 'name': 'Select zone'},
+        {'value': '7', 'name': '7'},
+        {'value': '8', 'name': '8'},
+        {'value': '9', 'name': '9'},
+        {'value': '10', 'name': '10'},
+        {'value': '11', 'name': '11'}],
+      latitudeDMSValidation: false
     }
   },
   computed: {},
@@ -184,9 +194,24 @@ export default {
     latitudeDMS: {
       deep: true,
       handler: function (value) {
-        if (this.validDMSLat(value)) {
-          this.latitudeInput = (value.deg + value.min / 60 + value.sec / (60 * 60)).toFixed(6)
+        const dms = Object.assign({}, value)
+        dms.min = value.min || 0
+        dms.sec = value.sec || 0
+        if (this.validDMSLat(dms)) {
+          this.latitudeInput = (dms.deg + dms.min / 60 + dms.sec / (60 * 60)).toFixed(6)
           this.latitudeDMSValidation = null
+        }
+      }
+    },
+    longitudeDMS: {
+      deep: true,
+      handler: function (value) {
+        const dms = Object.assign({}, value)
+        dms.min = value.min || 0
+        dms.sec = value.sec || 0
+        if (this.validDMSLng(dms)) {
+          this.longitudeInput = (dms.deg + dms.min / 60 + dms.sec / (60 * 60)).toFixed(6)
+          this.longitudeDMSValidation = null
         }
       }
     }
