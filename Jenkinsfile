@@ -270,17 +270,17 @@ _stage('DEV: Unit Tests and Deployment', context) {
         ]
     ) {
         parallel (
-            "Unit Tests: Node": {
-                node("node-${context.uuid}") {
-                    container('app') {
-                        sh script: '''#!/usr/bin/container-entrypoint /bin/sh
-                            cd /opt/app-root/src/frontend
-                            npm install --save-dev jest@23
-                            npm test --detectLeaks --runInBand -- --logHeapUsage --maxWorkers=1
-                        '''
-                    } //end container
-                } //end node
-            },
+//            "Unit Tests: Node": {
+//                node("node-${context.uuid}") {
+//                    container('app') {
+//                        sh script: '''#!/usr/bin/container-entrypoint /bin/sh
+//                            cd /opt/app-root/src/frontend
+//                            npm install --save-dev jest@23
+//                            npm test --detectLeaks --runInBand -- --logHeapUsage --maxWorkers=1
+//                        '''
+//                    } //end container
+//                } //end node
+//            },
             "Deployment": {
                 node('master') {
                     new OpenShiftHelper().waitUntilEnvironmentIsReady(this, context, 'dev')
@@ -303,10 +303,13 @@ _stage('DEV: Unit Tests and Deployment', context) {
                                 python manage.py createinitialrevisions \
                             '"
                         },
-                        "Unit Tests: Python": {
+                        "Unit Tests": {
                             sh "oc exec '${pod1}' -n '${projectName}' -- bash -c '\
                                 cd /opt/app-root/src/backend; \
-                                DATABASE_ENGINE=sqlite DEBUG=False TEMPLATE_DEBUG=False python manage.py test -c nose.cfg \
+                                DATABASE_ENGINE=sqlite DEBUG=False TEMPLATE_DEBUG=False python manage.py test -c nose.cfg; \
+                                cd /opt/app-root/src/frontend; \
+                                npm install --save-dev jest@23; \
+                                npm test --detectLeaks --runInBand -- --logHeapUsage --maxWorkers=1 \
                             '"
                         },
                         "API Tests": {
