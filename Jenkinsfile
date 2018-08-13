@@ -283,7 +283,7 @@ _stage('DEV: Unit Tests and Deployment', context) {
                     String pod0 = podList[0].metadata.name
                     String pod1 = podList[0].metadata.name
                     parallel (
-                        "Load Fixtures": {
+                        "Load Fixtures and API Tests": {
                             sh "oc exec '${pod0}' -n '${projectName}' -- bash -c '\
                                 cd /opt/app-root/src/backend; \
                                 python manage.py loaddata gwells-codetables.json; \
@@ -291,19 +291,6 @@ _stage('DEV: Unit Tests and Deployment', context) {
                                 python manage.py loaddata wellsearch.json.gz registries.json; \
                                 python manage.py createinitialrevisions \
                             '"
-                        },
-                        "Unit Tests": {
-                            sh "oc exec '${pod1}' -n '${projectName}' -- bash -c '\
-                                cd /opt/app-root/src/frontend; \
-                                npm install --save-dev jest@23; \
-                                npm test --detectLeaks --runInBand -- --logHeapUsage --maxWorkers=1 \
-                            '"
-                            sh "oc exec '${pod1}' -n '${projectName}' -- bash -c '\
-                                cd /opt/app-root/src/backend; \
-                                DATABASE_ENGINE=sqlite DEBUG=False TEMPLATE_DEBUG=False python manage.py test -c nose.cfg \
-                            '"
-                        },
-                        "API Tests": {
                             def stageOpt =(context?.stages?:[:])['API Test']
                             if (stageOpt == null || stageOpt == true) {
                                 String baseURL = context.deployments['dev'].environmentUrl.substring(
@@ -408,6 +395,17 @@ _stage('DEV: Unit Tests and Deployment', context) {
                                     } //end node
                                 } //end podTemplate
                             }
+                        },
+                        "Unit Tests": {
+                            sh "oc exec '${pod1}' -n '${projectName}' -- bash -c '\
+                                cd /opt/app-root/src/frontend; \
+                                npm install --save-dev jest@23; \
+                                npm test --detectLeaks --runInBand -- --logHeapUsage --maxWorkers=1 \
+                            '"
+                            sh "oc exec '${pod1}' -n '${projectName}' -- bash -c '\
+                                cd /opt/app-root/src/backend; \
+                                DATABASE_ENGINE=sqlite DEBUG=False TEMPLATE_DEBUG=False python manage.py test -c nose.cfg \
+                            '"
                         },
                         "Functional Tests": {
                             def stageOpt =(context?.stages?:[:])['Functional Tests']
