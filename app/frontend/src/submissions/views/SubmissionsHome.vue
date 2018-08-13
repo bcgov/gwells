@@ -88,7 +88,13 @@
         <step04-coords
           v-if="formStep === 4 || formIsFlat"
           :latitude.sync="form.latitude"
-          :longitude.sync="form.longitude">
+          :longitude.sync="form.longitude"
+          :groundElevation.sync="form.ground_elevation"
+          :groundElevationMethod.sync="form.ground_elevation_method"
+          :drillingMethod.sync="form.drilling_method"
+          :otherDrillingMethod.sync="form.other_drilling_method"
+          :wellOrientation.sync="form.well_orientation"
+          >
         </step04-coords>
 
         <!-- Back / Next / Submit controls -->
@@ -254,6 +260,9 @@ export default {
         well_location_description: '',
         latitude: '',
         longitude: '',
+        ground_elevation: null,
+        ground_elevation_method: '',
+        well_orientation: '',
 
         // non-form fields that should be saved with form
         meta: {

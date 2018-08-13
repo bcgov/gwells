@@ -1,6 +1,8 @@
 <template>
+  <div>
     <fieldset>
       <legend>Step 4: Geographic Coordinates</legend>
+      <p>To determine coordinates using a Global Positioning System (GPS), set the datum to North America Datum of 1983 (NAD 83), the current ministry standard for mapping.</p>
       <b-card no-body class="p-3 m-1 m-md-1">
         <b-row>
           <b-col cols="12" sm="6" lg="3">
@@ -138,7 +140,73 @@
           </b-col>
         </b-row>
       </b-card>
+
+      <!-- Error message when coordinates not entered in at least one of the 3 input groups -->
+      <b-alert class="mt-3" variant="danger" :show="errorCoordsNotProvided">
+        Must enter geographic coordinates in either decimal degrees, degrees/minutes/seconds, or UTM format.
+      </b-alert>
     </fieldset>
+    <fieldset class="mt-4">
+      <legend>Method of Drilling</legend>
+      <b-row>
+        <b-col cols="12" md="3">
+          <form-input
+              id="groundElevation"
+              label="Ground Elevation"
+              type="number"
+              hint="Feet above sea level"
+              v-model.number="groundElevationInput"
+              :errors="errors['ground_elevation']"
+              :loaded="fieldsLoaded['ground_elevation']"></form-input>
+        </b-col>
+        <b-col cols="12" md="3">
+          <form-input
+              id="groundElevationMethod"
+              label="Method for Determining Ground Elevation"
+              select
+              :options="['GPS']"
+              v-model="groundElevationMethodInput"
+              :errors="errors['ground_elevation_method']"
+              :loaded="fieldsLoaded['ground_elevation_method']"></form-input>
+        </b-col>
+      </b-row>
+      <b-row>
+        <b-col cols="12" md="3">
+          <form-input
+              id="drillingMethod"
+              label="Drilling Method *"
+              select
+              :options="['Big drill', 'Small drill']"
+              v-model="drillingMethodInput"
+              :errors="errors['drilling_method']"
+              :loaded="fieldsLoaded['drilling_method']"
+          ></form-input>
+        </b-col>
+        <b-col cols="12" md="3">
+          <form-input
+              id="otherDrillingMethod"
+              label="Specify Other Method of Drilling"
+              type="text"
+              v-model="otherDrillingMethodInput"
+              :errors="errors['other_drilling_method']"
+              :loaded="fieldsLoaded['other_drilling_method']"
+          ></form-input>
+        </b-col>
+      </b-row>
+      <b-row>
+        <b-col>
+          <b-form-group label="Orientation of Well">
+            <b-form-radio-group v-model="wellOrientationInput"
+                                stacked
+                                name="wellOrientationRadio">
+              <b-form-radio value="VERTICAL">Vertical</b-form-radio>
+              <b-form-radio value="HORIZONTAL">Horizontal</b-form-radio>
+            </b-form-radio-group>
+          </b-form-group>
+        </b-col>
+      </b-row>
+    </fieldset>
+  </div>
 </template>
 <script>
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
@@ -148,6 +216,11 @@ export default {
   props: {
     latitude: String,
     longitude: String,
+    groundElevation: null,
+    groundElevationMethod: String,
+    drillingMethod: String,
+    otherDrillingMethod: String,
+    wellOrientation: String,
     errors: {
       type: Object,
       default: () => ({})
@@ -155,11 +228,17 @@ export default {
     fieldsLoaded: {
       type: Object,
       default: () => ({})
-    }
+    },
+    errorCoordsNotProvided: Boolean
   },
   fields: {
     latitudeInput: 'latitude',
-    longitudeInput: 'longitude'
+    longitudeInput: 'longitude',
+    groundElevationInput: 'groundElevation',
+    groundElevationMethodInput: 'groundElevationMethod',
+    drillingMethodInput: 'drillingMethod',
+    otherDrillingMethodInput: 'otherDrillingMethod',
+    wellOrientationInput: 'wellOrientation'
   },
   data () {
     return {
