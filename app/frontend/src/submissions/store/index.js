@@ -12,6 +12,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import auth from '@/common/store/auth.js'
+import config from '@/common/store/config.js'
 import ApiService from '@/common/services/ApiService.js'
 
 import { FETCH_CODES } from './actions.types.js'
@@ -21,7 +22,8 @@ Vue.use(Vuex)
 
 export const store = new Vuex.Store({
   modules: {
-    auth: auth
+    auth: auth,
+    config: config
   },
   state: {
     error: null,
