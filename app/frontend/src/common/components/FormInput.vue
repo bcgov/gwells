@@ -74,8 +74,6 @@ export default {
     options: Array,
     valueField: String,
     textField: String,
-    append: String,
-    Prepend: String,
     placeholder: String,
     loaded: String // if changed to true, change contextual state temporarily (e.g. flash green on valid input)
   },
