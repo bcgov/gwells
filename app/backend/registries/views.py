@@ -28,7 +28,7 @@ from rest_framework.response import Response
 from rest_framework.mixins import CreateModelMixin, UpdateModelMixin
 from rest_framework.views import APIView
 from drf_multiple_model.views import ObjectMultipleModelAPIView
-from gwells.roles import GWELLS_ROLE_GROUPS
+from gwells.roles import REGISTRIES_ROLES
 from gwells.models import ProvinceStateCode
 from gwells.pagination import APILimitOffsetPagination
 from reversion.models import Version
@@ -275,7 +275,7 @@ class PersonListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
         status = self.request.query_params.get('status', None)
 
         user_is_staff = self.request.user.groups.filter(
-            name__in=GWELLS_ROLE_GROUPS).exists()
+            name__in=REGISTRIES_ROLES).exists()
 
         if activity:
             if (status == 'P' or not status) and user_is_staff:
@@ -422,7 +422,7 @@ class PersonDetailView(RevisionMixin, AuditUpdateMixin, RetrieveUpdateDestroyAPI
         Returns only registered people (i.e. drillers with active registration) to anonymous users
         """
         qs = self.queryset
-        if not self.request.user.groups.filter(name__in=GWELLS_ROLE_GROUPS).exists():
+        if not self.request.user.groups.filter(name__in=REGISTRIES_ROLES).exists():
             qs = qs.filter(Q(applications__current_status__code='A'),
                            Q(applications__removal_date__isnull=True))
         return qs
@@ -465,7 +465,7 @@ class CitiesListView(ListAPIView):
         will filter for that activity
         """
         qs = self.queryset
-        if not self.request.user.groups.filter(name__in=GWELLS_ROLE_GROUPS).exists():
+        if not self.request.user.groups.filter(name__in=REGISTRIES_ROLES).exists():
             qs = qs.filter(
                 Q(applications__current_status__code='A'),
                 Q(applications__removal_date__isnull=True))

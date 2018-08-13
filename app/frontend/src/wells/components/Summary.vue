@@ -23,7 +23,7 @@ export default {
     },
     show () {
       return {
-        edit: process.env.ENABLE_DATA_ENTRY === true && this.userRoles.submissions.edit
+        edit: (!!this.config && this.config.enable_data_entry === true) && this.userRoles.submissions.edit === true
       }
     },
     url () {
@@ -36,7 +36,7 @@ export default {
       }
       return null
     },
-    ...mapGetters(['userRoles'])
+    ...mapGetters(['userRoles', 'config'])
   }
 }
 </script>
