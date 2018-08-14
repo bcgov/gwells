@@ -785,7 +785,7 @@ class CasingMaterialCode(AuditModel):
     """
      The material used for casing a well, e.g., Cement, Plastic, Steel.
     """
-    casing_material_code = models.CharField(primary_key=True, max_length=10, editable=False)
+    code = models.CharField(primary_key=True, max_length=10, editable=False, db_column='casing_material_code')
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
 
@@ -804,7 +804,7 @@ class CasingCode(AuditModel):
     """
     Type of Casing used on a well
     """
-    casing_code = models.CharField(primary_key=True, max_length=10, editable=False)
+    code = models.CharField(primary_key=True, max_length=10, editable=False, db_column='casing_code')
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
 
@@ -1224,10 +1224,13 @@ class LinerPerforation(AuditModel):
 class Casing(AuditModel):
     """
     Casing information
+
+    A casing may be associated to a particular submission, or to a well.
     """
     casing_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     activity_submission = models.ForeignKey(ActivitySubmission, db_column='filing_number',
-                                            on_delete=models.CASCADE, blank=True, null=True)
+                                            on_delete=models.CASCADE, blank=True, null=True,
+                                            related_name='casings')
     well_tag_number = models.ForeignKey(Well, db_column='well_tag_number', on_delete=models.CASCADE,
                                         blank=True, null=True)
     casing_from = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='From', null=True,

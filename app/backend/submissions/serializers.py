@@ -21,6 +21,8 @@ from wells.models import Well, ActivitySubmission
 import wells.stack
 from wells.models import (
     ActivitySubmission,
+    Casing,
+    CasingCode,
     IntendedWaterUseCode,
     Well,
     WellClassCode,
@@ -29,8 +31,30 @@ from wells.models import (
 from submissions.models import WellActivityCode
 
 
+class CasingCodeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CasingCode
+        fiels = (
+            'code',
+            'description',
+        )
+
+
+class CasingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Casing
+        fields = (
+            'casing_from',
+            'casing_to',
+            'diameter',
+            'casing_code'
+        )
+
+
 class WellSubmissionSerializer(serializers.ModelSerializer):
     """Serializes a well activity submission"""
+
+    casings = CasingSerializer(many=True)
 
     class Meta:
         model = ActivitySubmission
@@ -118,10 +142,14 @@ class WellSubmissionSerializer(serializers.ModelSerializer):
             "alternative_specs_submitted",
             "well_yield_unit",
             "diameter",
+            "casings",
         )
 
     def create(self, validated_data):
+        casings_data = validated_data.pop('casings')
         instance = super().create(validated_data)
+        for casing_data in casings_data:
+            Casing.objects.create(activity_submission=instance, **casing_data)
         # Update the well record
         stacker = wells.stack.StackWells()
         stacker.process(instance.filing_number)

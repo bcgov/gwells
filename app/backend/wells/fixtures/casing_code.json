@@ -1,0 +1,72 @@
+[
+    {
+        "model": "wells.casingcode",
+        "pk": "JfEPaHAiI",
+        "fields": {
+            "create_user": "Vitae ut aperiam quod molestias, quisquam sapien",
+            "create_date": "2018-08-14T17:42:52.421Z",
+            "update_user": "Voluptatum dele",
+            "update_date": "2018-08-14T17:42:52.421Z",
+            "description": "Illum doloremque minima at distinctio repellendus quos placeat",
+            "display_order": 89242,
+            "effective_date": "2013-11-07T05:28:00.402Z",
+            "expiry_date": "2015-11-02T17:17:22.402Z"
+        }
+    },
+    {
+        "model": "wells.casingcode",
+        "pk": "THSTfrPu",
+        "fields": {
+            "create_user": "Dolorum accusa",
+            "create_date": "2018-08-14T17:42:52.423Z",
+            "update_user": "Fuga esse vitae quidem modi r",
+            "update_date": "2018-08-14T17:42:52.423Z",
+            "description": "Accusamus molestiae laboriosam",
+            "display_order": 62954,
+            "effective_date": "2015-10-09T18:45:09.402Z",
+            "expiry_date": "2014-03-19T08:52:06.402Z"
+        }
+    },
+    {
+        "model": "wells.casingcode",
+        "pk": "UkLZ",
+        "fields": {
+            "create_user": "Iure expedita non dolorum molestiae mollitia? Facilis",
+            "create_date": "2018-08-14T17:42:52.416Z",
+            "update_user": "Rerum dolore accusamus sequi, libero deserunt temporibu",
+            "update_date": "2018-08-14T17:42:52.416Z",
+            "description": "Quod deleniti volupt",
+            "display_order": 28610,
+            "effective_date": "2019-01-22T06:28:15.402Z",
+            "expiry_date": "2013-12-14T14:52:25.402Z"
+        }
+    },
+    {
+        "model": "wells.casingcode",
+        "pk": "asxYP",
+        "fields": {
+            "create_user": "Inventore adipisci officiis ratione similique r",
+            "create_date": "2018-08-14T17:42:52.402Z",
+            "update_user": "Minima eius iusto",
+            "update_date": "2018-08-14T17:42:52.402Z",
+            "description": "Doloremque aspernatur amet q",
+            "display_order": 85386,
+            "effective_date": "2015-10-26T14:18:48.402Z",
+            "expiry_date": "2017-05-21T20:35:56.402Z"
+        }
+    },
+    {
+        "model": "wells.casingcode",
+        "pk": "nmQGtFooB",
+        "fields": {
+            "create_user": "Harum earum quam dol",
+            "create_date": "2018-08-14T17:42:52.419Z",
+            "update_user": "Commodi incidunt corrupti, animi fac",
+            "update_date": "2018-08-14T17:42:52.419Z",
+            "description": "Provident harum consectetur placeat impedit doloremque exercitationem ea par",
+            "display_order": 84273,
+            "effective_date": "2015-05-13T03:44:45.402Z",
+            "expiry_date": "2016-06-25T21:22:06.402Z"
+        }
+    }
+]

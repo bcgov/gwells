@@ -23,12 +23,14 @@ from gwells.models import ProvinceStateCode
 from gwells.serializers import ProvinceStateCodeSerializer
 from wells.models import (
     ActivitySubmission,
+    CasingCode,
     IntendedWaterUseCode,
     Well,
     WellClassCode,
     WellSubclassCode)
 from submissions.models import WellActivityCode
 from submissions.serializers import (
+    CasingCodeSerializer,
     WellSubmissionSerializer,
     WellActivityCodeSerializer,
     WellClassCodeSerializer,
@@ -70,7 +72,7 @@ class SubmissionListAPIView(ListCreateAPIView):
                 "lithologydescription_set",
                 "linerperforation_set",
                 "productiondata_set",
-                "casing_set",
+                "casings",
                 "screen_set",
             ) \
             .order_by("filing_number")
@@ -104,11 +106,13 @@ class SubmissionsOptions(APIView):
             instance=WellClassCode.objects.prefetch_related("wellsubclasscode_set"), many=True)
         intended_water_use_codes = IntendedWaterUseCodeSerializer(
             instance=IntendedWaterUseCode.objects.all(), many=True)
+        casing_codes = CasingCodeSerializer(instance=CasingCode.objects.all(), many=True)
 
         options["province_codes"] = province_codes.data
         options["activity_types"] = activity_codes.data
         options["well_classes"] = well_class_codes.data
         options["intended_water_uses"] = intended_water_use_codes.data
+        options["casing_codes"] = casing_codes.data
 
         return Response(options)
 

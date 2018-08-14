@@ -66,6 +66,15 @@
           :errors="errors"
           :fieldsLoaded="fieldsLoaded"
         ></step02-owner>
+
+        <!-- Step 6: Casings -->
+        <step06-casings class="my-3"
+          v-if="formStep === 3 || formIsFlat"
+          :casings.sync="form.casings"
+          :errors="errors"
+          :fieldsLoaded="fieldsLoaded"
+          />
+
         <b-row>
           <b-col v-if="!formIsFlat">
             <b-btn v-if="step > 1" @click="step > 1 ? step-- : null">Back</b-btn>
@@ -130,11 +139,13 @@ import ApiService from '@/common/services/ApiService.js'
 import { FETCH_CODES } from '../store/actions.types.js'
 import Step01Type from '@/submissions/components/SubmissionForm/Step01Type.vue'
 import Step02Owner from '@/submissions/components/SubmissionForm/Step02Owner.vue'
+import Step06Casings from '@/submissions/components/SubmissionForm/Step06Casings.vue'
 export default {
   name: 'SubmissionsHome',
   components: {
     Step01Type,
-    Step02Owner
+    Step02Owner,
+    Step06Casings
   },
   data () {
     return {
@@ -147,7 +158,7 @@ export default {
       loadFormSuccess: false,
       confirmLoadModal: false,
       step: 1,
-      maxSteps: 2,
+      maxSteps: 3,
       sliding: null,
       errors: {},
       fieldsLoaded: {},
@@ -210,6 +221,7 @@ export default {
         owner_city: '',
         owner_province_state: '',
         owner_postal_code: '',
+        casings: [],
 
         // non-form fields that should be saved with form
         meta: {
