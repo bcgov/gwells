@@ -63,23 +63,13 @@
       <div v-if="drillers.results && drillers.results.length" class="col-xs-12 col-sm-4 offset-sm-4 offset-md-5 col-md-3">
         <nav aria-label="List navigation" v-if="drillers.results && drillers.results.length">
           <ul class="pagination">
-            <li v-if="drillers.previous">
-              <button type="button" @click="paginationPrev" class="btn btn-default" aria-label="Previous" id="table-pagination-prev">
+            <li>
+              <button type="button" @click="paginationPrev" class="btn btn-default" aria-label="Previous" id="table-pagination-prev" :disabled="!drillers.previous">
                 <span aria-hidden="true">Previous</span>
               </button>
             </li>
-            <li v-else>
-              <button type="button" class="btn btn-default" aria-hidden="true" disabled>
-                <span aria-hidden="true">Previous</span>
-              </button>
-            </li>
-            <li v-if="drillers.next">
-              <button type="button" @click="paginationNext" class="btn btn-default" aria-label="Next" id="table-pagination-next">
-                <span aria-hidden="true">Next</span>
-              </button>
-            </li>
-            <li v-else>
-              <button type="button" class="btn btn-default" aria-hidden="true" disabled>
+            <li>
+              <button type="button" @click="paginationNext" class="btn btn-default" aria-label="Next" id="table-pagination-next" :disabled="!drillers.next">
                 <span aria-hidden="true">Next</span>
               </button>
             </li>
@@ -181,22 +171,44 @@ export default {
       'activity'
     ])
   },
+  watch: {
+    // When drillers has a new state, scroll to the top of the searchTable.
+    drillers () {
+      this.scrollToTableTop()
+    }
+  },
   methods: {
+    /**
+     * Gets called when the user clicks on the next button, load the next result page.
+     */
     paginationNext () {
       // API provides 'next' and 'previous' links with query strings for the current search
-      if (this.drillers.next && ~this.drillers.next.indexOf('?')) {
-        const q = this.drillers.next.split('?')[1]
-        this.$store.dispatch(FETCH_DRILLER_LIST, querystring.parse(q))
-      }
+      if (this.drillers.next && ~this.drillers.next.indexOf('?'))
+        this.getPage(this.drillers.next.split('?')[1])
     },
+    /**
+     * Gets called when the user clicks on the previous button, load the previous result page.
+     */
     paginationPrev () {
-      if (this.drillers.previous && ~this.drillers.previous.indexOf('?')) {
-        const q = this.drillers.previous.split('?')[1]
-        this.$store.dispatch(FETCH_DRILLER_LIST, querystring.parse(q))
-      }
+      if (this.drillers.previous && ~this.drillers.previous.indexOf('?'))
+        this.getPage(this.drillers.previous.split('?')[1])
+    },
+    /**
+     * Triggers FETCH_DRILLER_LIST store action.
+     * @param {string} query QueryString of the new page to be loaded.
+     */
+    getPage (query) {
+      if(!query) throw new Error('query parameter is required.')
+      this.$store.dispatch(FETCH_DRILLER_LIST, querystring.parse(query))
     },
     sortBy (sortCode) {
       this.$emit('sort', sortCode)
+    },
+    /**
+     * Scrolls user's screen to the top of the SearchTable component.
+     */
+    scrollToTableTop () {
+      this.$SmoothScroll(this.$el, 100)
     }
   }
 }
