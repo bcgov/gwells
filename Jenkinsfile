@@ -146,7 +146,7 @@ Map context = [
         'Deploy - DEV': true,
         'Load Fixtures - DEV': true,
         'ZAP Security Scan': false,
-        'API Test': true,
+        'API Test': false,
         'Functional Tests': false
     ],
     pullRequest:[
@@ -411,7 +411,7 @@ _stage('DEV: Unit Tests and Deployment', context) {
                             sh "oc exec '${pod1}' -n '${projectName}' -- bash -c '\
                                 cd /opt/app-root/src/frontend; \
                                 npm install --save-dev jest@21; \
-                                npm test --detectLeaks --runInBand -- --logHeapUsage --maxWorkers=1 \
+                                npm test --detectLeaks --runInBand -- --logHeapUsage --maxWorkers=2 \
                             '"
                             sh "oc exec '${pod1}' -n '${projectName}' -- bash -c '\
                                 cd /opt/app-root/src/backend; \
