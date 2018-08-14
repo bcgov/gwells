@@ -355,109 +355,71 @@ parallel (
     - unstash unit test results (previous stage)
     - use SonarQube to consume results (*.xml)
 */
-_stage('Code Quality', context) {
-    podTemplate(
-        name: "sonar-runner${context.uuid}",
-        label: "sonar-runner${context.uuid}",
-        serviceAccount: 'jenkins',
-        cloud: 'openshift',
-        containers:[
-            containerTemplate(
-                name: 'jnlp',
-                resourceRequestMemory: '1Gi',
-                resourceLimitMemory: '4Gi',
-                resourceRequestCpu: '500m',
-                resourceLimitCpu: '4000m',
-                image: 'registry.access.redhat.com/openshift3/jenkins-slave-maven-rhel7:v3.7',
-                workingDir: '/tmp',
-                args: '${computer.jnlpmac} ${computer.name}',
-                envVars: [
-                    envVar(key:'GRADLE_USER_HOME', value: '/var/cache/artifacts/gradle')
+parallel (
+    "Code Quality":     {
+        _stage('Code Quality', context) {
+            podTemplate(
+                name: "sonar-runner${context.uuid}",
+                label: "sonar-runner${context.uuid}",
+                serviceAccount: 'jenkins',
+                cloud: 'openshift',
+                containers:[
+                    containerTemplate(
+                        name: 'jnlp',
+                        resourceRequestMemory: '1Gi',
+                        resourceLimitMemory: '4Gi',
+                        resourceRequestCpu: '500m',
+                        resourceLimitCpu: '4000m',
+                        image: 'registry.access.redhat.com/openshift3/jenkins-slave-maven-rhel7:v3.7',
+                        workingDir: '/tmp',
+                        args: '${computer.jnlpmac} ${computer.name}',
+                        envVars: [
+                            envVar(key:'GRADLE_USER_HOME', value: '/var/cache/artifacts/gradle')
+                        ]
+                    )
+                ],
+                volumes: [
+                    persistentVolumeClaim(
+                        mountPath: '/var/cache/artifacts',
+                        claimName: 'cache',
+                        readOnly: false
+                    )
                 ]
-            )
-        ],
-        volumes: [
-            persistentVolumeClaim(
-                mountPath: '/var/cache/artifacts',
-                claimName: 'cache',
-                readOnly: false
-            )
-        ]
-    ){
-        node("sonar-runner${context.uuid}") {
-            //the checkout is mandatory, otherwise code quality check would fail
-            echo "checking out source"
-            echo "Build: ${BUILD_ID}"
-            checkout scm
+            ){
+                node("sonar-runner${context.uuid}") {
+                    //the checkout is mandatory, otherwise code quality check would fail
+                    echo "checking out source"
+                    echo "Build: ${BUILD_ID}"
+                    checkout scm
 
-            String SONARQUBE_URL = 'https://sonarqube-moe-gwells-tools.pathfinder.gov.bc.ca'
-            echo "SONARQUBE_URL: ${SONARQUBE_URL}"
-            dir('app') {
-                unstash 'nodejunit'
-                unstash 'nodecoverage'
+                    String SONARQUBE_URL = 'https://sonarqube-moe-gwells-tools.pathfinder.gov.bc.ca'
+                    echo "SONARQUBE_URL: ${SONARQUBE_URL}"
+                    dir('app') {
+                        unstash 'nodejunit'
+                        unstash 'nodecoverage'
+                    }
+                    dir('sonar-runner') {
+                        unstash 'coverage'
+                        sh script:
+                            """
+                                ./gradlew -q dependencies
+                                ./gradlew sonarqube -Dsonar.host.url=${SONARQUBE_URL} -Dsonar.verbose=true \
+                                    --stacktrace --info  -Dsonar.sources=..
+                            """,
+                            returnStdout: true
+                    }
+                }
             }
-            dir('sonar-runner') {
-                unstash 'coverage'
-                sh script:
-                    """
-                        ./gradlew -q dependencies
-                        ./gradlew sonarqube -Dsonar.host.url=${SONARQUBE_URL} -Dsonar.verbose=true \
-                            --stacktrace --info  -Dsonar.sources=..
-                    """,
-                    returnStdout: true
-            }
-        }
-    }
-
-} //end stage
-
-
-/* Primary stage execution block
-   - iterates through stages, set in context (Map)
-   - _stage wrapper adds functionality, stability
-*/
-for(String envKeyName: context.env.keySet() as String[]){
-    String stageDeployName=envKeyName.toUpperCase()
-
-    if (!"DEV".equalsIgnoreCase(stageDeployName) && isCD) {
-        _stage("Readiness - ${stageDeployName}", context) {
-            node('master') {
-                new OpenShiftHelper().waitUntilEnvironmentIsReady(this, context, envKeyName)
-            }
-        }
-
-        _stage("Approve - ${stageDeployName}", context) {
-            def inputResponse = null;
-            try{
-                inputResponse = input(
-                    id: "deploy_${stageDeployName.toLowerCase()}",
-                    message: "Deploy to ${stageDeployName}?",
-                    ok: 'Approve',
-                    submitterParameter: 'approved_by'
-                )
-            }catch(ex){
-                error "Pipeline has been aborted. - ${ex}"
-            }
-            GitHubHelper.getPullRequest(this).comment(
-                "User '${inputResponse}' has approved deployment to '${stageDeployName}'"
-            )
-        }
-
-        _stage("Deploy - ${stageDeployName}", context) {
-            node('master') {
-                new OpenShiftHelper().deploy(this, context, envKeyName)
-            }
-        }
-    }
-
-    if ("DEV".equalsIgnoreCase(stageDeployName)){
-        _stage("Load Fixtures - ${stageDeployName}", context) {
+        } //end stage
+    }, //end branch
+    "Load Fixtures": {
+        _stage("Load Fixtures - DEV", context) {
             node('master'){
                 String podName=null
-                String projectName=context.deployments[envKeyName].projectName
-                String deploymentConfigName="gwells${context.deployments[envKeyName].dcSuffix}"
-                echo "env:${context.env[envKeyName]}"
-                echo "deployment:${context.deployments[envKeyName]}"
+                String projectName=context.deployments['dev'].projectName
+                String deploymentConfigName="gwells${context.deployments['dev'].dcSuffix}"
+                echo "env:${context.env['dev']}"
+                echo "deployment:${context.deployments['dev']}"
                 echo "projectName:${projectName}"
                 echo "deploymentConfigName:${deploymentConfigName}"
 
@@ -475,10 +437,9 @@ for(String envKeyName: context.env.keySet() as String[]){
                 // Reversion
                 sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src/backend && pwd && python manage.py createinitialrevisions'"
             }
-        }
-    }
-
-    if ("DEV".equalsIgnoreCase(stageDeployName)){
+        } //end stage
+    }, //end branch
+    "ZAP Security Scan": {
         _stage('ZAP Security Scan', context) {
             podTemplate(
                 label: "zap-${context.uuid}",
@@ -526,8 +487,51 @@ for(String envKeyName: context.env.keySet() as String[]){
                     }
                 }
             }
+        } //end stage
+    } //end branch
+) //end parallel
+
+
+/* Primary stage execution block
+   - iterates through stages, set in context (Map)
+   - _stage wrapper adds functionality, stability
+*/
+for(String envKeyName: context.env.keySet() as String[]){
+    String stageDeployName=envKeyName.toUpperCase()
+
+    if (!"DEV".equalsIgnoreCase(stageDeployName) && isCD) {
+        _stage("Readiness - ${stageDeployName}", context) {
+            node('master') {
+                new OpenShiftHelper().waitUntilEnvironmentIsReady(this, context, envKeyName)
+            }
         }
 
+        _stage("Approve - ${stageDeployName}", context) {
+            def inputResponse = null;
+            try{
+                inputResponse = input(
+                    id: "deploy_${stageDeployName.toLowerCase()}",
+                    message: "Deploy to ${stageDeployName}?",
+                    ok: 'Approve',
+                    submitterParameter: 'approved_by'
+                )
+            }catch(ex){
+                error "Pipeline has been aborted. - ${ex}"
+            }
+            GitHubHelper.getPullRequest(this).comment(
+                "User '${inputResponse}' has approved deployment to '${stageDeployName}'"
+            )
+        }
+
+        _stage("Deploy - ${stageDeployName}", context) {
+            node('master') {
+                new OpenShiftHelper().deploy(this, context, envKeyName)
+            }
+        }
+    }
+
+
+    if ("DEV".equalsIgnoreCase(stageDeployName)){
         _stage('API Test', context) {
             String baseURL = context.deployments[envKeyName].environmentUrl.substring(0, context.deployments[envKeyName].environmentUrl.indexOf('/', 8) + 1)
             podTemplate(
