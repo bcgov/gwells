@@ -1686,8 +1686,6 @@ img.back-to-top:hover {
     .contentPageMainColumn .no-print {
         display: none;
     }
-    
-
 }
 
 .alert-success:before {
@@ -2338,4 +2336,3 @@ h5.twitterUserName a {
 .contentPageMainColumn .jump_link {
     text-decoration: none;
 }
-
