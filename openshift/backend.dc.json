@@ -565,7 +565,7 @@
                                         "memory": "768Mi"
                                     },
                                     "requests": {
-                                        "cpu": "300",
+                                        "cpu": "300m",
                                         "memory": "768Mi"
                                     }
                                 },
