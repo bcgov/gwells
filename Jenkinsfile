@@ -253,89 +253,100 @@ _stage('Build', context) {
     - use 'npm run unit' to run JavaScript unit tests
     - stash test results for code quality stage
 */
-_stage('Unit Test', context) {
-    podTemplate(
-        label: "node-${context.uuid}",
-        name:"node-${context.uuid}",
-        serviceAccount: 'jenkins',
-        cloud: 'openshift',
-        containers: [
-            containerTemplate(
-                name: 'jnlp',
-                image: 'jenkins/jnlp-slave:3.10-1-alpine',
-                args: '${computer.jnlpmac} ${computer.name}',
-                resourceRequestCpu: '100m',
-                resourceLimitCpu: '100m'
-            ),
-            containerTemplate(
-                name: 'app',
-                image: "docker-registry.default.svc:5000/moe-gwells-tools/gwells${context.buildNameSuffix}:${context.buildEnvName}",
-                ttyEnabled: true,
-                command: 'cat',
-                resourceRequestCpu: '1.5',
-                resourceLimitCpu: '1.5',
-                resourceRequestMemory: '2.5Gi',
-                resourceLimitMemory: '2.5Gi'
-            )
-        ]
-    ) {
-        node("node-${context.uuid}") {
-            container('app') {
-                sh script: '''#!/usr/bin/container-entrypoint /bin/sh
-                    printf "Python version: "&& python --version
-                    printf "Pip version:    "&& pip --version
-                    printf "Node version:   "&& node --version
-                    printf "NPM version:    "&& npm --version
-                '''
+_stage('Deployment and Unit Tests', context) {
+    String envKeyName = 'dev'
+    parallel (
+        "Deployment" : {
+            node('master') {
+                new OpenShiftHelper().waitUntilEnvironmentIsReady(this, context, envKeyName)
+                new OpenShiftHelper().deploy(this, context, envKeyName)
+            }
+        },
+        "Unit Tests" : {
+            podTemplate(
+                label: "node-${context.uuid}",
+                name:"node-${context.uuid}",
+                serviceAccount: 'jenkins',
+                cloud: 'openshift',
+                containers: [
+                    containerTemplate(
+                        name: 'jnlp',
+                        image: 'jenkins/jnlp-slave:3.10-1-alpine',
+                        args: '${computer.jnlpmac} ${computer.name}',
+                        resourceRequestCpu: '100m',
+                        resourceLimitCpu: '100m'
+                    ),
+                    containerTemplate(
+                        name: 'app',
+                        image: "docker-registry.default.svc:5000/moe-gwells-tools/gwells${context.buildNameSuffix}:${context.buildEnvName}",
+                        ttyEnabled: true,
+                        command: 'cat',
+                        resourceRequestCpu: '1.5',
+                        resourceLimitCpu: '1.5',
+                        resourceRequestMemory: '2.5Gi',
+                        resourceLimitMemory: '2.5Gi'
+                    )
+                ]
+            ) {
+                node("node-${context.uuid}") {
+                    container('app') {
+                        sh script: '''#!/usr/bin/container-entrypoint /bin/sh
+                            printf "Python version: "&& python --version
+                            printf "Pip version:    "&& pip --version
+                            printf "Node version:   "&& node --version
+                            printf "NPM version:    "&& npm --version
+                        '''
 
-                parallel (
-                    "Unit Test: Python": {
-                        try {
-                            sh script: '''#!/usr/bin/container-entrypoint /bin/sh
-                                cd /opt/app-root/src/backend
-                                DATABASE_ENGINE=sqlite DEBUG=False TEMPLATE_DEBUG=False python manage.py test -c nose.cfg
-                            '''
-                            sh script: '''#!/usr/bin/container-entrypoint /bin/sh
-                                cp /opt/app-root/src/backend/nosetests.xml ./
-                                cp /opt/app-root/src/backend/coverage.xml ./
-                            '''
-                        } finally {
-                            stash includes: 'nosetests.xml,coverage.xml', name: 'coverage'
-                            junit 'nosetests.xml'
-                        }
-                    },
-                    "Unit Test: Node": {
-                        try {
-                            sh script: '''#!/usr/bin/container-entrypoint /bin/sh
-                                cd /opt/app-root/src/frontend
-                                npm test
-                            '''
-                            sh script: '''#!/usr/bin/container-entrypoint /bin/sh
-                                mkdir -p frontend/test/
-                                cp -R /opt/app-root/src/frontend/test/unit ./frontend/test/
-                                cp /opt/app-root/src/frontend/junit.xml ./frontend/
-                            '''
-                        } finally {
-                            archiveArtifacts allowEmptyArchive: true, artifacts: 'frontend/test/unit/**/*'
-                            stash includes: 'frontend/test/unit/coverage/clover.xml', name: 'nodecoverage'
-                            stash includes: 'frontend/junit.xml', name: 'nodejunit'
-                            junit 'frontend/junit.xml'
-                            publishHTML (
-                                target: [
-                                    allowMissing: false,
-                                    alwaysLinkToLastBuild: false,
-                                    keepAll: true,
-                                    reportDir: 'frontend/test/unit/coverage/lcov-report/',
-                                    reportFiles: 'index.html',
-                                    reportName: "Node Coverage Report"
-                                ]
-                            )
-                        }
-                    } //end branch
-                ) //end parallel
-            } //end container
-        } //end node
-    } //end podTemplate
+                        parallel (
+                            "Unit Test: Python": {
+                                try {
+                                    sh script: '''#!/usr/bin/container-entrypoint /bin/sh
+                                        cd /opt/app-root/src/backend
+                                        DATABASE_ENGINE=sqlite DEBUG=False TEMPLATE_DEBUG=False python manage.py test -c nose.cfg
+                                    '''
+                                    sh script: '''#!/usr/bin/container-entrypoint /bin/sh
+                                        cp /opt/app-root/src/backend/nosetests.xml ./
+                                        cp /opt/app-root/src/backend/coverage.xml ./
+                                    '''
+                                } finally {
+                                    stash includes: 'nosetests.xml,coverage.xml', name: 'coverage'
+                                    junit 'nosetests.xml'
+                                }
+                            },
+                            "Unit Test: Node": {
+                                try {
+                                    sh script: '''#!/usr/bin/container-entrypoint /bin/sh
+                                        cd /opt/app-root/src/frontend
+                                        npm test
+                                    '''
+                                    sh script: '''#!/usr/bin/container-entrypoint /bin/sh
+                                        mkdir -p frontend/test/
+                                        cp -R /opt/app-root/src/frontend/test/unit ./frontend/test/
+                                        cp /opt/app-root/src/frontend/junit.xml ./frontend/
+                                    '''
+                                } finally {
+                                    archiveArtifacts allowEmptyArchive: true, artifacts: 'frontend/test/unit/**/*'
+                                    stash includes: 'frontend/test/unit/coverage/clover.xml', name: 'nodecoverage'
+                                    stash includes: 'frontend/junit.xml', name: 'nodejunit'
+                                    junit 'frontend/junit.xml'
+                                    publishHTML (
+                                        target: [
+                                            allowMissing: false,
+                                            alwaysLinkToLastBuild: false,
+                                            keepAll: true,
+                                            reportDir: 'frontend/test/unit/coverage/lcov-report/',
+                                            reportFiles: 'index.html',
+                                            reportName: "Node Coverage Report"
+                                        ]
+                                    )
+                                }
+                            } //end branch
+                        ) //end parallel
+                    } //end container
+                } //end node
+            } //end podTemplate
+        } //end branch
+    ) //end parallel
 } //end stage
 
 
@@ -407,15 +418,13 @@ _stage('Code Quality', context) {
 for(String envKeyName: context.env.keySet() as String[]){
     String stageDeployName=envKeyName.toUpperCase()
 
-    if ("DEV".equalsIgnoreCase(stageDeployName) || isCD) {
+    if (!"DEV".equalsIgnoreCase(stageDeployName) && isCD) {
         _stage("Readiness - ${stageDeployName}", context) {
             node('master') {
                 new OpenShiftHelper().waitUntilEnvironmentIsReady(this, context, envKeyName)
             }
         }
-    }
 
-    if (!"DEV".equalsIgnoreCase(stageDeployName) && isCD){
         _stage("Approve - ${stageDeployName}", context) {
             def inputResponse = null;
             try{
@@ -432,9 +441,7 @@ for(String envKeyName: context.env.keySet() as String[]){
                 "User '${inputResponse}' has approved deployment to '${stageDeployName}'"
             )
         }
-    }
 
-    if ("DEV".equalsIgnoreCase(stageDeployName) || isCD){
         _stage("Deploy - ${stageDeployName}", context) {
             node('master') {
                 new OpenShiftHelper().deploy(this, context, envKeyName)
