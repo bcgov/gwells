@@ -46,43 +46,45 @@ void notifyStageStatus (Map context, String name, String status) {
     - catches errors and provides output
 */
 def _stage(String name, Map context, boolean retry=0, boolean withCommitStatus=true, Closure body) {
-    def stageOpt =(context?.stages?:[:])[name]
-    boolean isEnabled=(stageOpt == null || stageOpt == true)
-    echo "Running Stage '${name}' - enabled:${isEnabled}"
+    timestamps {
+        def stageOpt =(context?.stages?:[:])[name]
+        boolean isEnabled=(stageOpt == null || stageOpt == true)
+        echo "Running Stage '${name}' - enabled:${isEnabled}"
 
-    if (isEnabled){
-        stage(name) {
-            waitUntil {
-                notifyStageStatus(context, name, 'PENDING')
-                boolean isDone=false
-                try{
-                    body()
-                    isDone=true
-                    notifyStageStatus(context, name, 'SUCCESS')
-                }catch (ex){
-                    notifyStageStatus(context, name, 'FAILURE')
-                    echo "${stackTraceAsString(ex)}"
-                    def inputAction = input(
-                        message: "This step (${name}) has failed. See error above.",
-                        ok: 'Confirm',
-                        parameters: [
-                            choice(
-                                name: 'action',
-                                choices: 'Re-run\nIgnore',
-                                description: 'What would you like to do?'
-                            )
-                        ]
-                    )
-                    if ('Ignore'.equalsIgnoreCase(inputAction)){
+        if (isEnabled){
+            stage(name) {
+                waitUntil {
+                    notifyStageStatus(context, name, 'PENDING')
+                    boolean isDone=false
+                    try{
+                        body()
                         isDone=true
+                        notifyStageStatus(context, name, 'SUCCESS')
+                    }catch (ex){
+                        notifyStageStatus(context, name, 'FAILURE')
+                        echo "${stackTraceAsString(ex)}"
+                        def inputAction = input(
+                            message: "This step (${name}) has failed. See error above.",
+                            ok: 'Confirm',
+                            parameters: [
+                                choice(
+                                    name: 'action',
+                                    choices: 'Re-run\nIgnore',
+                                    description: 'What would you like to do?'
+                                )
+                            ]
+                        )
+                        if ('Ignore'.equalsIgnoreCase(inputAction)){
+                            isDone=true
+                        }
                     }
-                }
-                return isDone
-            } //end waitUntil
-        } //end Stage
-    }else{
-        stage(name) {
-            echo 'Skipping'
+                    return isDone
+                } //end waitUntil
+            } //end Stage
+        }else{
+            stage(name) {
+                echo 'Skipping'
+            }
         }
     }
 }
@@ -251,93 +253,91 @@ _stage('Build', context) {
     - use 'npm run unit' to run JavaScript unit tests
     - stash test results for code quality stage
 */
-timestamps {
-    _stage('Unit Test', context) {
-        podTemplate(
-            label: "node-${context.uuid}",
-            name:"node-${context.uuid}",
-            serviceAccount: 'jenkins',
-            cloud: 'openshift',
-            containers: [
-                containerTemplate(
-                    name: 'jnlp',
-                    image: 'jenkins/jnlp-slave:3.10-1-alpine',
-                    args: '${computer.jnlpmac} ${computer.name}',
-                    resourceRequestCpu: '100m',
-                    resourceLimitCpu: '100m'
-                ),
-                containerTemplate(
-                    name: 'app',
-                    image: "docker-registry.default.svc:5000/moe-gwells-tools/gwells${context.buildNameSuffix}:${context.buildEnvName}",
-                    ttyEnabled: true,
-                    command: 'cat',
-                    resourceRequestCpu: '1.5',
-                    resourceLimitCpu: '1.5',
-                    resourceRequestMemory: '2.5Gi',
-                    resourceLimitMemory: '2.5Gi'
-                )
-            ]
-        ) {
-            node("node-${context.uuid}") {
-                container('app') {
-                    sh script: '''#!/usr/bin/container-entrypoint /bin/sh
-                        set -euo pipefail
-                        printf "Python version: "&& python --version
-                        printf "Pip version:    "&& pip --version
-                        printf "Node version:   "&& node --version
-                        printf "NPM version:    "&& npm --version
-                    '''
+_stage('Unit Test', context) {
+    podTemplate(
+        label: "node-${context.uuid}",
+        name:"node-${context.uuid}",
+        serviceAccount: 'jenkins',
+        cloud: 'openshift',
+        containers: [
+            containerTemplate(
+                name: 'jnlp',
+                image: 'jenkins/jnlp-slave:3.10-1-alpine',
+                args: '${computer.jnlpmac} ${computer.name}',
+                resourceRequestCpu: '100m',
+                resourceLimitCpu: '100m'
+            ),
+            containerTemplate(
+                name: 'app',
+                image: "docker-registry.default.svc:5000/moe-gwells-tools/gwells${context.buildNameSuffix}:${context.buildEnvName}",
+                ttyEnabled: true,
+                command: 'cat',
+                resourceRequestCpu: '1.5',
+                resourceLimitCpu: '1.5',
+                resourceRequestMemory: '2.5Gi',
+                resourceLimitMemory: '2.5Gi'
+            )
+        ]
+    ) {
+        node("node-${context.uuid}") {
+            container('app') {
+                sh script: '''#!/usr/bin/container-entrypoint /bin/sh
+                    printf "Python version: "&& python --version
+                    printf "Pip version:    "&& pip --version
+                    printf "Node version:   "&& node --version
+                    printf "NPM version:    "&& npm --version
+                '''
 
-                    parallel (
-                        "Unit Test: Python": {
-                            try {
-                                sh script: '''#!/usr/bin/container-entrypoint /bin/sh
-                                    cd /opt/app-root/src/backend
-                                    DATABASE_ENGINE=sqlite DEBUG=False TEMPLATE_DEBUG=False python manage.py test -c nose.cfg
-                                '''
-                                sh script: '''#!/usr/bin/container-entrypoint /bin/sh
-                                    cp /opt/app-root/src/backend/nosetests.xml ./
-                                    cp /opt/app-root/src/backend/coverage.xml ./
-                                '''
-                            } finally {
-                                stash includes: 'nosetests.xml,coverage.xml', name: 'coverage'
-                                junit 'nosetests.xml'
-                            }
-                        },
-                        "Unit Test: Node": {
-                            try {
-                                sh script: '''#!/usr/bin/container-entrypoint /bin/sh
-                                    cd /opt/app-root/src/frontend
-                                    npm test
-                                '''
-                                sh script: '''#!/usr/bin/container-entrypoint /bin/sh
-                                    mkdir -p frontend/test/
-                                    cp -R /opt/app-root/src/frontend/test/unit ./frontend/test/
-                                    cp /opt/app-root/src/frontend/junit.xml ./frontend/
-                                '''
-                            } finally {
-                                archiveArtifacts allowEmptyArchive: true, artifacts: 'frontend/test/unit/**/*'
-                                stash includes: 'frontend/test/unit/coverage/clover.xml', name: 'nodecoverage'
-                                stash includes: 'frontend/junit.xml', name: 'nodejunit'
-                                junit 'frontend/junit.xml'
-                                publishHTML (
-                                    target: [
-                                        allowMissing: false,
-                                        alwaysLinkToLastBuild: false,
-                                        keepAll: true,
-                                        reportDir: 'frontend/test/unit/coverage/lcov-report/',
-                                        reportFiles: 'index.html',
-                                        reportName: "Node Coverage Report"
-                                    ]
-                                )
-                            }
-                        } //end branch
-                    ) //end parallel
-                } //end container
-            } //end node
-        } //end podTemplate
-    } //end stage
-} //end timestamps
+                parallel (
+                    "Unit Test: Python": {
+                        try {
+                            sh script: '''#!/usr/bin/container-entrypoint /bin/sh
+                                cd /opt/app-root/src/backend
+                                DATABASE_ENGINE=sqlite DEBUG=False TEMPLATE_DEBUG=False python manage.py test -c nose.cfg
+                            '''
+                            sh script: '''#!/usr/bin/container-entrypoint /bin/sh
+                                cp /opt/app-root/src/backend/nosetests.xml ./
+                                cp /opt/app-root/src/backend/coverage.xml ./
+                            '''
+                        } finally {
+                            stash includes: 'nosetests.xml,coverage.xml', name: 'coverage'
+                            junit 'nosetests.xml'
+                        }
+                    },
+                    "Unit Test: Node": {
+                        try {
+                            sh script: '''#!/usr/bin/container-entrypoint /bin/sh
+                                cd /opt/app-root/src/frontend
+                                npm test
+                            '''
+                            sh script: '''#!/usr/bin/container-entrypoint /bin/sh
+                                mkdir -p frontend/test/
+                                cp -R /opt/app-root/src/frontend/test/unit ./frontend/test/
+                                cp /opt/app-root/src/frontend/junit.xml ./frontend/
+                            '''
+                        } finally {
+                            archiveArtifacts allowEmptyArchive: true, artifacts: 'frontend/test/unit/**/*'
+                            stash includes: 'frontend/test/unit/coverage/clover.xml', name: 'nodecoverage'
+                            stash includes: 'frontend/junit.xml', name: 'nodejunit'
+                            junit 'frontend/junit.xml'
+                            publishHTML (
+                                target: [
+                                    allowMissing: false,
+                                    alwaysLinkToLastBuild: false,
+                                    keepAll: true,
+                                    reportDir: 'frontend/test/unit/coverage/lcov-report/',
+                                    reportFiles: 'index.html',
+                                    reportName: "Node Coverage Report"
+                                ]
+                            )
+                        }
+                    } //end branch
+                ) //end parallel
+            } //end container
+        } //end node
+    } //end podTemplate
+} //end stage
+
 
 /* Code quality stage - pipeline step/closure
     - unstash unit test results (previous stage)
