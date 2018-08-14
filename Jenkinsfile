@@ -570,15 +570,7 @@ parallel (
                 } //end node
             } //end podTemplate
         } //end stage
-    } //end branch
-) //end parallel
-
-
-/* Code quality stage - pipeline step/closure
-    - unstash unit test results (previous stage)
-    - use SonarQube to consume results (*.xml)
-*/
-parallel (
+    }, //end branch
     "ZAP Security Scan": {
         _stage('ZAP Security Scan', context) {
             podTemplate(
@@ -625,11 +617,17 @@ parallel (
                         )
                         echo "Return value is: ${retVal}"
                     }
-                }
-            }
+                } //end node
+            } //end podTemplate
         } //end stage
     } //end branch
 ) //end parallel
+
+
+/* Code quality stage - pipeline step/closure
+    - unstash unit test results (previous stage)
+    - use SonarQube to consume results (*.xml)
+*/
 
 
 /* Primary stage execution block
