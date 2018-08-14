@@ -1,6 +1,6 @@
 <template>
     <fieldset>
-      <legend>Type of Work and Well Class</legend>
+      <legend>Step 1: Type of Work and Well Class</legend>
       <b-row>
         <b-col cols="12" md="6">
           <b-form-group label="Type of Work *">
