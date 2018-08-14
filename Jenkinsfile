@@ -279,32 +279,59 @@ timestamps {
             ]
         ) {
             node("node-${context.uuid}") {
-                container('app') {
-                    sh script: '''#!/usr/bin/container-entrypoint /bin/sh
-                        set -euo pipefail
+                try {
+                    container('app') {
+                        sh script: '''#!/usr/bin/container-entrypoint /bin/sh
+                            set -euo pipefail
+                            printf "Python version: "&& python --version
+                            printf "Pip version:    "&& pip --version
+                            printf "Node version:   "&& node --version
+                            printf "NPM version:    "&& npm --version
+                        '''
 
-                        printf "Python version: "&& python --version
-                        printf "Pip version:    "&& pip --version
-                        printf "Node version:   "&& node --version
-                        printf "NPM version:    "&& npm --version
-
-                        (
-                            cd /opt/app-root/src/backend
-                            DATABASE_ENGINE=sqlite DEBUG=False TEMPLATE_DEBUG=False python manage.py test -c nose.cfg
-                            cd /opt/app-root/src/frontend
-                            npm test
+                        parallel (
+                            "Unit Test: Python": {
+                                sh script: '''#!/usr/bin/container-entrypoint /bin/sh
+                                    cd /opt/app-root/src/backend
+                                    DATABASE_ENGINE=sqlite DEBUG=False TEMPLATE_DEBUG=False python manage.py test -c nose.cfg
+                                '''
+                            },
+                            "Unit Test: Node": {
+                                sh script: '''#!/usr/bin/container-entrypoint /bin/sh
+                                    cd /opt/app-root/src/frontend
+                                    npm test
+                                '''
+                            }
                         )
-                        mkdir -p frontend/test/
-                        cp -R /opt/app-root/src/frontend/test/unit ./frontend/test/
-                        cp /opt/app-root/src/backend/nosetests.xml /opt/app-root/src/backend/coverage.xml ./
-                        cp /opt/app-root/src/frontend/junit.xml ./frontend/
-                    '''
-                }
-            }
-        }
-    }
-} //end stage
 
+                        sh script: '''#!/usr/bin/container-entrypoint /bin/sh
+                            mkdir -p frontend/test/
+                            cp -R /opt/app-root/src/frontend/test/unit ./frontend/test/
+                            cp /opt/app-root/src/backend/nosetests.xml /opt/app-root/src/backend/coverage.xml ./
+                            cp /opt/app-root/src/frontend/junit.xml ./frontend/
+                        '''
+                    } //end container
+                } finally {
+                    archiveArtifacts allowEmptyArchive: true, artifacts: 'frontend/test/unit/**/*'
+                    stash includes: 'nosetests.xml,coverage.xml', name: 'coverage'
+                    stash includes: 'frontend/test/unit/coverage/clover.xml', name: 'nodecoverage'
+                    stash includes: 'frontend/junit.xml', name: 'nodejunit'
+                    junit 'nosetests.xml,frontend/junit.xml'
+                    publishHTML (
+                        target: [
+                            allowMissing: false,
+                            alwaysLinkToLastBuild: false,
+                            keepAll: true,
+                            reportDir: 'frontend/test/unit/coverage/lcov-report/',
+                            reportFiles: 'index.html',
+                            reportName: "Node Coverage Report"
+                        ]
+                    )
+                }
+            } //end node
+        } //end podTemplate
+    } //end stage
+} //end timestamps
 
 /* Code quality stage - pipeline step/closure
     - unstash unit test results (previous stage)
