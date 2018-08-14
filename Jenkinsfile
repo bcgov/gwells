@@ -242,6 +242,7 @@ _stage('Build', context) {
         new OpenShiftHelper().build(this, context)
         if ("master".equalsIgnoreCase(env.CHANGE_TARGET)) {
             new OpenShiftHelper().prepareForCD(this, context)
+            new OpenShiftHelper().waitUntilEnvironmentIsReady(this, context, 'dev')
         }
         deleteDir()
     }
@@ -254,13 +255,37 @@ _stage('Build', context) {
     - stash test results for code quality stage
 */
 parallel (
-    "Deployment" : {
+    "Deployment and Fixtures" : {
         _stage("Deploy - DEV", context) {
             node('master') {
-                new OpenShiftHelper().waitUntilEnvironmentIsReady(this, context, 'dev')
                 new OpenShiftHelper().deploy(this, context, 'dev')
             }
         }
+        _stage("Load Fixtures - DEV", context) {
+            node('master'){
+                String podName=null
+                String projectName=context.deployments['dev'].projectName
+                String deploymentConfigName="gwells${context.deployments['dev'].dcSuffix}"
+                echo "env:${context.env['dev']}"
+                echo "deployment:${context.deployments['dev']}"
+                echo "projectName:${projectName}"
+                echo "deploymentConfigName:${deploymentConfigName}"
+
+                openshift.withProject(projectName){
+                    podName=openshift.selector('pod', ['deploymentconfig':deploymentConfigName]).objects()[0].metadata.name
+                }
+                // Run migrate
+                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src/backend && pwd && python manage.py migrate'"
+                // Lookup tables common to all system components (e.g. Django apps)
+                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src/backend && pwd && python manage.py loaddata gwells-codetables.json'"
+                // Lookup tables for the Wellsearch component (not yet a Django app) and Registries app
+                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src/backend && pwd && python manage.py loaddata wellsearch-codetables.json registries-codetables.json'"
+                // Test data for the Wellsearch component (not yet a Django app) and Registries app
+                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src/backend && pwd && python manage.py loaddata wellsearch.json.gz registries.json'"
+                // Reversion
+                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src/backend && pwd && python manage.py createinitialrevisions'"
+            }
+        } //end stage
     },
     "Unit Tests" : {
         _stage('Unit Tests', context) {
@@ -356,7 +381,7 @@ parallel (
     - use SonarQube to consume results (*.xml)
 */
 parallel (
-    "Code Quality":     {
+    "Code Quality": {
         _stage('Code Quality', context) {
             podTemplate(
                 name: "sonar-runner${context.uuid}",
@@ -409,33 +434,6 @@ parallel (
                             returnStdout: true
                     }
                 }
-            }
-        } //end stage
-    }, //end branch
-    "Load Fixtures": {
-        _stage("Load Fixtures - DEV", context) {
-            node('master'){
-                String podName=null
-                String projectName=context.deployments['dev'].projectName
-                String deploymentConfigName="gwells${context.deployments['dev'].dcSuffix}"
-                echo "env:${context.env['dev']}"
-                echo "deployment:${context.deployments['dev']}"
-                echo "projectName:${projectName}"
-                echo "deploymentConfigName:${deploymentConfigName}"
-
-                openshift.withProject(projectName){
-                    podName=openshift.selector('pod', ['deploymentconfig':deploymentConfigName]).objects()[0].metadata.name
-                }
-                // Run migrate
-                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src/backend && pwd && python manage.py migrate'"
-                // Lookup tables common to all system components (e.g. Django apps)
-                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src/backend && pwd && python manage.py loaddata gwells-codetables.json'"
-                // Lookup tables for the Wellsearch component (not yet a Django app) and Registries app
-                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src/backend && pwd && python manage.py loaddata wellsearch-codetables.json registries-codetables.json'"
-                // Test data for the Wellsearch component (not yet a Django app) and Registries app
-                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src/backend && pwd && python manage.py loaddata wellsearch.json.gz registries.json'"
-                // Reversion
-                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src/backend && pwd && python manage.py createinitialrevisions'"
             }
         } //end stage
     }, //end branch
