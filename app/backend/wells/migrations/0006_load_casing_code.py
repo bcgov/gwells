@@ -3,15 +3,34 @@
 from __future__ import unicode_literals
 
 from django.db import migrations
-from django.core.serializers import base, python
+import json
+from io import open
+import os
+
+
+def casing_codes():
+    """ 
+    Generator that deserializes and provides casing objects.
+    Doing it this way, instead of using fixtures, means we don't have to maintain the json, it will
+    always work as it has access to the historic model.
+    """
+    path = os.path.dirname(os.path.realpath(__file__))
+    with open(os.path.join(path, '0006_load_casing_code.json'), 'r') as json_data:
+        data = json.load(json_data)
+        for item in data:
+            yield item
 
 
 def load_fixture(apps, schema_editor):
-    pass
+    CasingCode = apps.get_model('wells', 'CasingCode')
+    for item in casing_codes():
+        CasingCode.objects.create(**item)
 
 
 def unload_fixture(apps, schema_editor):
-    pass
+    CasingCode = apps.get_model('wells', 'CasingCode')
+    for item in casing_codes():
+        CasingCode.objects.get(code=item.get('code')).delete()
 
 
 class Migration(migrations.Migration):

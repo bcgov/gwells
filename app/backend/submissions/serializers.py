@@ -23,6 +23,7 @@ from wells.models import (
     ActivitySubmission,
     Casing,
     CasingCode,
+    CasingMaterialCode,
     IntendedWaterUseCode,
     Well,
     WellClassCode,
@@ -31,10 +32,19 @@ from wells.models import (
 from submissions.models import WellActivityCode
 
 
+class CasingMaterialSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CasingMaterialCode
+        fields = (
+            'code',
+            'description'
+        )
+
+
 class CasingCodeSerializer(serializers.ModelSerializer):
     class Meta:
         model = CasingCode
-        fiels = (
+        fields = (
             'code',
             'description',
         )
@@ -47,7 +57,9 @@ class CasingSerializer(serializers.ModelSerializer):
             'casing_from',
             'casing_to',
             'diameter',
-            'casing_code'
+            'casing_code',
+            'casing_material',
+            'drive_shoe',
         )
 
 

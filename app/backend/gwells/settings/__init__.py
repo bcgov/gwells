@@ -88,7 +88,6 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'autofixture',
     'debug_toolbar',
     'django.contrib.postgres',
     'rest_framework',

@@ -8,60 +8,95 @@
           <th>To ft (bgl)</th>
           <th>Diameter (in)</th>
           <th>Casing Type</th>
-          <th>Casing Material></th>
+          <th>Casing Material</th>
           <th>Wall Thickness (in)</th>
           <th>Drive Shoe</th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="(casing, index) in casings" :key="casing.id">
           <td>
             <form-input
-              id="casing_from"
-              type="text"
+              :id="'casing_from' + index"
+              type="number"
               v-model="casing.casing_from"
               :errors="getCasingError(index).casing_from"
               :loaded="getFieldsLoaded(index).casing_from"/>
           </td>
           <td>
             <form-input
-              id="casing_to"
-              type="text"
+              id="'casing_to_' + index"
+              type="number"
               v-model="casing.casing_to"
               :errors="getCasingError(index).casing_to"
               :loaded="getFieldsLoaded(index).casing_to"/>
           </td>
           <td>
             <form-input
-              id="diameter"
-              type="text"
+              id="'diameter_' + index"
+              type="number"
               v-model="casing.diameter"
               :errors="getCasingError(index).diameter"
               :loaded="getFieldsLoaded(index).diameter"/>
           </td>
           <td>
             <b-form-group
-              id="casingCode{index}"
+              id="'casingCode_' + index"
               aria-describedby="casingCodeInvalidFeedback{index}">
               <b-form-select
                   v-model="casing.casing_code"
-                  :options="codes.casing_code"
-                  value-field="casing_code"
+                  :options="codes.casing_codes"
+                  value-field="code"
                   text-field="description"
                   :state="getCasingError(index).casing_code ? false : null">
                 <template slot="first">
-                  <option :value="null" disabled>Select a code</option>
+                  <option :value="null" disabled>Select a type</option>
                 </template>
               </b-form-select>
               <b-form-invalid-feedback id="casingCodeInvalidFeedback{index}">
-                <div v-for="(error, error_index) in getCasingError(index).casing_code" :key="`Code input error ${error_index}`">
+                <div v-for="(error, error_index) in getCasingError(index).casing_code" :key="`Casing type input error ${error_index}`">
                   {{ error }}
                 </div>
               </b-form-invalid-feedback>
             </b-form-group>
           </td>
-          <td></td>
-          <td></td>
+          <td>
+            <b-form-group
+              id="'casingMaterial_' + index"
+              aria-describedby="casingMaterialInvalidFeedback{index}">
+              <b-form-select
+                  v-model="casing.casing_material"
+                  :options="codes.casing_materials"
+                  value-field="code"
+                  text-field="description"
+                  :state="getCasingError(index).casing_material ? false : null">
+                <template slot="first">
+                  <option :value="null" disabled>Select a material</option>
+                </template>
+              </b-form-select>
+              <b-form-invalid-feedback id="casingCodeInvalidFeedback{index}">
+                <div v-for="(error, error_index) in getCasingError(index).casing_material" :key="`Material input error ${error_index}`">
+                  {{ error }}
+                </div>
+              </b-form-invalid-feedback>
+            </b-form-group>
+          </td>
+          <td>
+            <form-input
+              id="'wall_thickness_' + index"
+              type="number"
+              v-model="casing.wall_thickness"
+              :errors="getCasingError(index).wall_thickness"
+              :loaded="getFieldsLoaded(index).wall_thickness"/>
+          </td>
+          <td>
+            <b-form-radio-group v-model="casing.drive_shoe"
+                                :name="'drive_shoe_' + index">
+              <b-form-radio value="False">No</b-form-radio>
+              <b-form-radio value="True">Yes</b-form-radio>
+            </b-form-radio-group>
+          </td>
           <td>
             <a href="#" v-on:click.prevent="removeRow(casing.id)">remove</a>
           </td>
@@ -89,9 +124,9 @@ export default {
       default: () => ({})
     }
   },
-  // fields: { TODO - what is this for?
-  //   casingsInput: 'casings'
-  // },
+  fields: {
+    casingsInput: 'casings'
+  },
   methods: {
     calcNextId () {
       return this.casings.reduce((accumulator, currentValue) => {

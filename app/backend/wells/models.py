@@ -1240,7 +1240,7 @@ class Casing(AuditModel):
     diameter = models.DecimalField(max_digits=8, decimal_places=3, verbose_name='Diameter', null=True,
                                    blank=True, validators=[MinValueValidator(Decimal('0.5'))])
     casing_code = models.ForeignKey(CasingCode, db_column='casing_code', on_delete=models.CASCADE,
-                                    verbose_name='Casing Code', null=True)
+                                    verbose_name='Casing Type Code', null=True)
     casing_material = models.ForeignKey(CasingMaterialCode, db_column='casing_material_code',
                                         on_delete=models.CASCADE, blank=True, null=True,
                                         verbose_name='Casing Material Code')
