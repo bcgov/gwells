@@ -29,7 +29,7 @@ const auth = {
               state.keycloak.hasRealmRole('registries_statutory_authority'))
           },
           wells: {
-            view: (!!state.keycloak.hasRealmRole('gwells_admin') || !!state.keycloak.hasRealmRole('wells_viewer')),
+            view: !!state.keycloak.hasRealmRole('wells_viewer'),
             edit: (!!state.keycloak.hasRealmRole('gwells_admin')),
             approve: (!!state.keycloak.hasRealmRole('gwells_admin'))
           },
