@@ -515,16 +515,7 @@ parallel (
                 } //end node
             } //end podTemplate
         } //end stage
-    } //end branch
-) //end parallel
 
-
-/* Code quality stage - pipeline step/closure
-    - unstash unit test results (previous stage)
-    - use SonarQube to consume results (*.xml)
-*/
-parallel (
-    "Code Quality": {
         _stage('Code Quality', context) {
             podTemplate(
                 name: "sonar-runner${context.uuid}",
@@ -576,10 +567,18 @@ parallel (
                             """,
                             returnStdout: true
                     }
-                }
-            }
+                } //end node
+            } //end podTemplate
         } //end stage
-    }, //end branch
+    } //end branch
+) //end parallel
+
+
+/* Code quality stage - pipeline step/closure
+    - unstash unit test results (previous stage)
+    - use SonarQube to consume results (*.xml)
+*/
+parallel (
     "ZAP Security Scan": {
         _stage('ZAP Security Scan', context) {
             podTemplate(
