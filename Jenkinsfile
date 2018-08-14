@@ -286,6 +286,149 @@ parallel (
                 sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src/backend && pwd && python manage.py createinitialrevisions'"
             }
         } //end stage
+
+        _stage('API Test', context) {
+            String baseURL = context.deployments['dev'].environmentUrl.substring(0, context.deployments['dev'].environmentUrl.indexOf('/', 8) + 1)
+            podTemplate(
+                label: "nodejs-${context.uuid}",
+                name: "nodejs-${context.uuid}",
+                serviceAccount: 'jenkins',
+                cloud: 'openshift',
+                containers: [
+                    containerTemplate(
+                        name: 'jnlp',
+                        image: 'registry.access.redhat.com/openshift3/jenkins-agent-nodejs-8-rhel7',
+                        resourceRequestCpu: '800m',
+                        resourceLimitCpu: '800m',
+                        resourceRequestMemory: '1Gi',
+                        resourceLimitMemory: '1Gi',
+                        workingDir: '/tmp',
+                        command: '',
+                        args: '${computer.jnlpmac} ${computer.name}',
+                        envVars: [
+                            envVar(
+                                key:'BASEURL',
+                                value: "${baseURL}gwells"
+                            ),
+                            secretEnvVar(
+                                key: 'GWELLS_API_TEST_USER',
+                                secretName: 'apitest-secrets',
+                                secretKey: 'username'
+                            ),
+                            secretEnvVar(
+                                key: 'GWELLS_API_TEST_PASSWORD',
+                                secretName: 'apitest-secrets',
+                                secretKey: 'password'
+                            ),
+                            secretEnvVar(
+                                key: 'GWELLS_API_TEST_AUTH_SERVER',
+                                secretName: 'apitest-secrets',
+                                secretKey: 'auth_server'
+                            ),
+                            secretEnvVar(
+                                key: 'GWELLS_API_TEST_CLIENT_ID',
+                                secretName: 'apitest-secrets',
+                                secretKey: 'client_id'
+                            ),
+                            secretEnvVar(
+                                key: 'GWELLS_API_TEST_CLIENT_SECRET',
+                                secretName: 'apitest-secrets',
+                                secretKey: 'client_secret'
+                            )
+                        ]
+                    )
+            ],
+            envVars: [
+                envVar(
+                    key:'BASEURL',
+                    value: "${baseURL}gwells"
+                ),
+                secretEnvVar(
+                    key: 'GWELLS_API_TEST_USER',
+                    secretName: 'apitest-secrets',
+                    secretKey: 'username'
+                ),
+                secretEnvVar(
+                    key: 'GWELLS_API_TEST_PASSWORD',
+                    secretName: 'apitest-secrets',
+                    secretKey: 'password'
+                ),
+                secretEnvVar(
+                    key: 'GWELLS_API_TEST_AUTH_SERVER',
+                    secretName: 'apitest-secrets',
+                    secretKey: 'auth_server'
+                ),
+                secretEnvVar(
+                    key: 'GWELLS_API_TEST_CLIENT_ID',
+                    secretName: 'apitest-secrets',
+                    secretKey: 'client_id'
+                ),
+                secretEnvVar(
+                    key: 'GWELLS_API_TEST_CLIENT_SECRET',
+                    secretName: 'apitest-secrets',
+                    secretKey: 'client_secret'
+                )
+            ]
+        ) {
+                node("nodejs-${context.uuid}") {
+                    //the checkout is mandatory, otherwise functional test would fail
+                    echo "checking out source"
+                    echo "Build: ${BUILD_ID}"
+                    echo "baseURL: ${baseURL}"
+                    sh '''#!/bin/bash
+                        echo BASEURL=$BASEURL
+                    '''
+
+                    //TODO:? input(message: "Verify Environment variables. Continue?")
+                    checkout scm
+                    dir('api-tests') {
+                        sh 'npm install -g newman'
+
+                        try {
+                            sh '''
+                                newman run ./registries_api_tests.json \
+                                    --global-var test_user=$GWELLS_API_TEST_USER \
+                                    --global-var test_password=$GWELLS_API_TEST_PASSWORD \
+                                    --global-var base_url="${BASEURL}" \
+                                    --global-var auth_server=$GWELLS_API_TEST_AUTH_SERVER \
+                                    --global-var client_id=$GWELLS_API_TEST_CLIENT_ID \
+                                    --global-var client_secret=$GWELLS_API_TEST_CLIENT_SECRET \
+                                    -r cli,junit,html
+                                newman run ./wells_api_tests.json \
+                                    --global-var test_user=$GWELLS_API_TEST_USER \
+                                    --global-var test_password=$GWELLS_API_TEST_PASSWORD \
+                                    --global-var base_url="${BASEURL}" \
+                                    --global-var auth_server=$GWELLS_API_TEST_AUTH_SERVER \
+                                    --global-var client_id=$GWELLS_API_TEST_CLIENT_ID \
+                                    --global-var client_secret=$GWELLS_API_TEST_CLIENT_SECRET \
+                                    -r cli,junit,html
+                                newman run ./submissions_api_tests.json \
+                                    --global-var test_user=$GWELLS_API_TEST_USER \
+                                    --global-var test_password=$GWELLS_API_TEST_PASSWORD \
+                                    --global-var base_url="${BASEURL}" \
+                                    --global-var auth_server=$GWELLS_API_TEST_AUTH_SERVER \
+                                    --global-var client_id=$GWELLS_API_TEST_CLIENT_ID \
+                                    --global-var client_secret=$GWELLS_API_TEST_CLIENT_SECRET \
+                                    -r cli,junit,html
+                            '''
+                        } finally {
+                                junit 'newman/*.xml'
+                                publishHTML (
+                                    target: [
+                                        allowMissing: false,
+                                        alwaysLinkToLastBuild: false,
+                                        keepAll: true,
+                                        reportDir: 'newman',
+                                        reportFiles: 'newman*.html',
+                                        reportName: "API Test Report"
+                                    ]
+                                )
+                                stash includes: 'newman/*.xml', name: 'api-tests'
+                        }
+                    } // end dir
+                } //end node
+            } //end podTemplate
+        } //end stage
     },
     "Unit Tests" : {
         _stage('Unit Tests', context) {
@@ -526,153 +669,6 @@ for(String envKeyName: context.env.keySet() as String[]){
                 new OpenShiftHelper().deploy(this, context, envKeyName)
             }
         }
-    }
-
-
-    if ("DEV".equalsIgnoreCase(stageDeployName)){
-        _stage('API Test', context) {
-            String baseURL = context.deployments[envKeyName].environmentUrl.substring(0, context.deployments[envKeyName].environmentUrl.indexOf('/', 8) + 1)
-            podTemplate(
-                label: "nodejs-${context.uuid}",
-                name: "nodejs-${context.uuid}",
-                serviceAccount: 'jenkins',
-                cloud: 'openshift',
-                containers: [
-                    containerTemplate(
-                        name: 'jnlp',
-                        image: 'registry.access.redhat.com/openshift3/jenkins-agent-nodejs-8-rhel7',
-                        resourceRequestCpu: '800m',
-                        resourceLimitCpu: '800m',
-                        resourceRequestMemory: '1Gi',
-                        resourceLimitMemory: '1Gi',
-                        workingDir: '/tmp',
-                        command: '',
-                        args: '${computer.jnlpmac} ${computer.name}',
-                        envVars: [
-                            envVar(
-                                key:'BASEURL',
-                                value: "${baseURL}gwells"
-                            ),
-                            secretEnvVar(
-                                key: 'GWELLS_API_TEST_USER',
-                                secretName: 'apitest-secrets',
-                                secretKey: 'username'
-                            ),
-                            secretEnvVar(
-                                key: 'GWELLS_API_TEST_PASSWORD',
-                                secretName: 'apitest-secrets',
-                                secretKey: 'password'
-                            ),
-                            secretEnvVar(
-                                key: 'GWELLS_API_TEST_AUTH_SERVER',
-                                secretName: 'apitest-secrets',
-                                secretKey: 'auth_server'
-                            ),
-                            secretEnvVar(
-                                key: 'GWELLS_API_TEST_CLIENT_ID',
-                                secretName: 'apitest-secrets',
-                                secretKey: 'client_id'
-                            ),
-                            secretEnvVar(
-                                key: 'GWELLS_API_TEST_CLIENT_SECRET',
-                                secretName: 'apitest-secrets',
-                                secretKey: 'client_secret'
-                            )
-                        ]
-                    )
-            ],
-            envVars: [
-                envVar(
-                    key:'BASEURL',
-                    value: "${baseURL}gwells"
-                ),
-                secretEnvVar(
-                    key: 'GWELLS_API_TEST_USER',
-                    secretName: 'apitest-secrets',
-                    secretKey: 'username'
-                ),
-                secretEnvVar(
-                    key: 'GWELLS_API_TEST_PASSWORD',
-                    secretName: 'apitest-secrets',
-                    secretKey: 'password'
-                ),
-                secretEnvVar(
-                    key: 'GWELLS_API_TEST_AUTH_SERVER',
-                    secretName: 'apitest-secrets',
-                    secretKey: 'auth_server'
-                ),
-                secretEnvVar(
-                    key: 'GWELLS_API_TEST_CLIENT_ID',
-                    secretName: 'apitest-secrets',
-                    secretKey: 'client_id'
-                ),
-                secretEnvVar(
-                    key: 'GWELLS_API_TEST_CLIENT_SECRET',
-                    secretName: 'apitest-secrets',
-                    secretKey: 'client_secret'
-                )
-            ]
-        )
-            {
-                node("nodejs-${context.uuid}") {
-                    //the checkout is mandatory, otherwise functional test would fail
-                    echo "checking out source"
-                    echo "Build: ${BUILD_ID}"
-                    echo "baseURL: ${baseURL}"
-                    sh '''#!/bin/bash
-                        echo BASEURL=$BASEURL
-                    '''
-
-                    //TODO:? input(message: "Verify Environment variables. Continue?")
-                    checkout scm
-                    dir('api-tests') {
-                        sh 'npm install -g newman'
-
-                        try {
-                            sh '''
-                                newman run ./registries_api_tests.json \
-                                    --global-var test_user=$GWELLS_API_TEST_USER \
-                                    --global-var test_password=$GWELLS_API_TEST_PASSWORD \
-                                    --global-var base_url="${BASEURL}" \
-                                    --global-var auth_server=$GWELLS_API_TEST_AUTH_SERVER \
-                                    --global-var client_id=$GWELLS_API_TEST_CLIENT_ID \
-                                    --global-var client_secret=$GWELLS_API_TEST_CLIENT_SECRET \
-                                    -r cli,junit,html
-                                newman run ./wells_api_tests.json \
-                                    --global-var test_user=$GWELLS_API_TEST_USER \
-                                    --global-var test_password=$GWELLS_API_TEST_PASSWORD \
-                                    --global-var base_url="${BASEURL}" \
-                                    --global-var auth_server=$GWELLS_API_TEST_AUTH_SERVER \
-                                    --global-var client_id=$GWELLS_API_TEST_CLIENT_ID \
-                                    --global-var client_secret=$GWELLS_API_TEST_CLIENT_SECRET \
-                                    -r cli,junit,html
-                                newman run ./submissions_api_tests.json \
-                                    --global-var test_user=$GWELLS_API_TEST_USER \
-                                    --global-var test_password=$GWELLS_API_TEST_PASSWORD \
-                                    --global-var base_url="${BASEURL}" \
-                                    --global-var auth_server=$GWELLS_API_TEST_AUTH_SERVER \
-                                    --global-var client_id=$GWELLS_API_TEST_CLIENT_ID \
-                                    --global-var client_secret=$GWELLS_API_TEST_CLIENT_SECRET \
-                                    -r cli,junit,html
-                            '''
-                        } finally {
-                                junit 'newman/*.xml'
-                                publishHTML (
-                                    target: [
-                                        allowMissing: false,
-                                        alwaysLinkToLastBuild: false,
-                                        keepAll: true,
-                                        reportDir: 'newman',
-                                        reportFiles: 'newman*.html',
-                                        reportName: "API Test Report"
-                                    ]
-                                )
-                                stash includes: 'newman/*.xml', name: 'api-tests'
-                        }
-                    } // end dir
-                } //end node
-            } //end podTemplate
-        } //end stage
     }
 
     if ("DEV".equalsIgnoreCase(stageDeployName) || isCD){
