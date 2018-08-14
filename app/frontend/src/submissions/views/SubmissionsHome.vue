@@ -66,7 +66,39 @@
           :errors="errors"
           :fieldsLoaded="fieldsLoaded"
         ></step02-owner>
-        <b-row>
+
+        <!-- Step 3: Well location -->
+        <step03-location
+          v-if="formStep === 3 || formIsFlat"
+          :streetAddress.sync="form.street_address"
+          :city.sync="form.city"
+          :legalLot.sync="form.legal_lot"
+          :legalPlan.sync="form.legal_plan"
+          :legalDistrictLot.sync="form.legal_district_lot"
+          :legalBlock.sync="form.legal_block"
+          :legalSection.sync="form.legal_section"
+          :legalTownship.sync="form.legal_township"
+          :legalRange.sync="form.legal_range"
+          :landDistrict.sync="form.land_district"
+          :legalPID.sync="form.legal_pid"
+          :wellLocationDescription.sync="form.well_location_description"
+        ></step03-location>
+
+        <!-- Step 4: Coords and Method of Drilling -->
+        <step04-coords
+          v-if="formStep === 4 || formIsFlat"
+          :latitude.sync="form.latitude"
+          :longitude.sync="form.longitude"
+          :groundElevation.sync="form.ground_elevation"
+          :groundElevationMethod.sync="form.ground_elevation_method"
+          :drillingMethod.sync="form.drilling_method"
+          :otherDrillingMethod.sync="form.other_drilling_method"
+          :wellOrientation.sync="form.well_orientation"
+          >
+        </step04-coords>
+
+        <!-- Back / Next / Submit controls -->
+        <b-row class="mt-5">
           <b-col v-if="!formIsFlat">
             <b-btn v-if="step > 1" @click="step > 1 ? step-- : null">Back</b-btn>
           </b-col>
@@ -130,11 +162,15 @@ import ApiService from '@/common/services/ApiService.js'
 import { FETCH_CODES } from '../store/actions.types.js'
 import Step01Type from '@/submissions/components/SubmissionForm/Step01Type.vue'
 import Step02Owner from '@/submissions/components/SubmissionForm/Step02Owner.vue'
+import Step03Location from '@/submissions/components/SubmissionForm/Step03Location.vue'
+import Step04Coords from '@/submissions/components/SubmissionForm/Step04Coords.vue'
 export default {
   name: 'SubmissionsHome',
   components: {
     Step01Type,
-    Step02Owner
+    Step02Owner,
+    Step03Location,
+    Step04Coords
   },
   data () {
     return {
@@ -147,7 +183,7 @@ export default {
       loadFormSuccess: false,
       confirmLoadModal: false,
       step: 1,
-      maxSteps: 2,
+      maxSteps: 4, // total number of wizard steps
       sliding: null,
       errors: {},
       fieldsLoaded: {},
@@ -210,6 +246,23 @@ export default {
         owner_city: '',
         owner_province_state: '',
         owner_postal_code: '',
+        street_address: '', // this is the street address of the well location
+        city: '', // well location city
+        legal_lot: '',
+        legal_plan: '',
+        legal_district_lot: '',
+        legal_block: '',
+        legal_section: '',
+        legal_township: '',
+        legal_range: '',
+        land_district: '',
+        legal_pid: '',
+        well_location_description: '',
+        latitude: '',
+        longitude: '',
+        ground_elevation: null,
+        ground_elevation_method: '',
+        well_orientation: '',
 
         // non-form fields that should be saved with form
         meta: {

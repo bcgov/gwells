@@ -1,6 +1,7 @@
 import { mount, createLocalVue } from '@vue/test-utils'
 import Vuex from 'vuex'
 import VueMoment from 'vue-moment'
+import moxios from 'moxios'
 import PersonDetail from '@/registry/components/people/PersonDetail'
 import APIErrorMessage from '@/common/components/APIErrorMessage'
 import { SET_DRILLER } from '@/registry/store/mutations.types'
@@ -18,6 +19,7 @@ describe('PersonDetail.vue', () => {
   let actions
 
   beforeEach(() => {
+    moxios.install()
     getters = {
       loading: () => false,
       error: () => null,
@@ -34,6 +36,10 @@ describe('PersonDetail.vue', () => {
       [FETCH_DRILLER_OPTIONS]: jest.fn()
     }
     store = new Vuex.Store({ getters, actions, mutations })
+  })
+
+  afterEach(() => {
+    moxios.uninstall()
   })
 
   it('dispatches the fetch driller action when page loads', () => {
