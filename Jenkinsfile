@@ -253,16 +253,17 @@ _stage('Build', context) {
     - use 'npm run unit' to run JavaScript unit tests
     - stash test results for code quality stage
 */
-_stage('Deployment and Unit Tests', context) {
-    String envKeyName = 'dev'
-    parallel (
-        "Deployment" : {
+parallel (
+    "Deployment" : {
+        _stage("Deploy - DEV", context) {
             node('master') {
-                new OpenShiftHelper().waitUntilEnvironmentIsReady(this, context, envKeyName)
-                new OpenShiftHelper().deploy(this, context, envKeyName)
+                new OpenShiftHelper().waitUntilEnvironmentIsReady(this, context, 'dev')
+                new OpenShiftHelper().deploy(this, context, 'dev')
             }
-        },
-        "Unit Tests" : {
+        }
+    },
+    "Unit Tests" : {
+        _stage('Unit Tests', context) {
             podTemplate(
                 label: "node-${context.uuid}",
                 name:"node-${context.uuid}",
@@ -345,9 +346,9 @@ _stage('Deployment and Unit Tests', context) {
                     } //end container
                 } //end node
             } //end podTemplate
-        } //end branch
-    ) //end parallel
-} //end stage
+        } //end stage
+    } //end branch
+) //end parallel
 
 
 /* Code quality stage - pipeline step/closure
