@@ -270,6 +270,17 @@ _stage('DEV: Unit Tests and Deployment', context) {
         ]
     ) {
         parallel (
+//            "Unit Tests: Node": {
+//                node("node-${context.uuid}") {
+//                    container('app') {
+//                        sh script: '''#!/usr/bin/container-entrypoint /bin/sh
+//                            cd /opt/app-root/src/frontend
+//                            npm install --save-dev jest@23
+//                            npm test --detectLeaks --runInBand -- --logHeapUsage --maxWorkers=1
+//                        '''
+//                    } //end container
+//                } //end node
+//            },
             "Deployment": {
                 node('master') {
                     new OpenShiftHelper().waitUntilEnvironmentIsReady(this, context, 'dev')
@@ -281,7 +292,7 @@ _stage('DEV: Unit Tests and Deployment', context) {
                         return openshift.selector('pod', ['deploymentconfig':deploymentConfigName]).objects()
                     }
                     String pod0 = podList[0].metadata.name
-                    String pod1 = podList[0].metadata.name
+                    String pod1 = podList[1].metadata.name
                     parallel (
                         "Load Fixtures and API Tests": {
                             sh "oc exec '${pod0}' -n '${projectName}' -- bash -c '\
@@ -399,7 +410,7 @@ _stage('DEV: Unit Tests and Deployment', context) {
                         "Unit Tests": {
                             sh "oc exec '${pod1}' -n '${projectName}' -- bash -c '\
                                 cd /opt/app-root/src/frontend; \
-                                npm install --save-dev jest@23; \
+                                npm install --save-dev jest@21; \
                                 npm test --detectLeaks --runInBand -- --logHeapUsage --maxWorkers=1 \
                             '"
                             sh "oc exec '${pod1}' -n '${projectName}' -- bash -c '\
