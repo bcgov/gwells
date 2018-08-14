@@ -290,8 +290,6 @@ timestamps {
                         (
                             cd /opt/app-root/src/backend
                             ENABLE_DATA_ENTRY="True" python manage.py test -c nose.cfg
-                        )
-                        (
                             cd /opt/app-root/src/frontend
                             npm test
                         )
