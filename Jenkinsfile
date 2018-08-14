@@ -270,8 +270,8 @@ timestamps {
                     image: "docker-registry.default.svc:5000/moe-gwells-tools/gwells${context.buildNameSuffix}:${context.buildEnvName}",
                     ttyEnabled: true,
                     command: 'cat',
-                    resourceRequestCpu: '2000m',
-                    resourceLimitCpu: '2000m',
+                    resourceRequestCpu: '1.5',
+                    resourceLimitCpu: '1.5',
                     resourceRequestMemory: '2.5Gi',
                     resourceLimitMemory: '2.5Gi'
                 )
