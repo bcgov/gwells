@@ -290,44 +290,12 @@ parallel (
                                     )
                                 ]
                             )
-                    ],
-                    envVars: [
-                        envVar(
-                            key:'BASEURL',
-                            value: "${baseURL}gwells"
-                        ),
-                        secretEnvVar(
-                            key: 'GWELLS_API_TEST_USER',
-                            secretName: 'apitest-secrets',
-                            secretKey: 'username'
-                        ),
-                        secretEnvVar(
-                            key: 'GWELLS_API_TEST_PASSWORD',
-                            secretName: 'apitest-secrets',
-                            secretKey: 'password'
-                        ),
-                        secretEnvVar(
-                            key: 'GWELLS_API_TEST_AUTH_SERVER',
-                            secretName: 'apitest-secrets',
-                            secretKey: 'auth_server'
-                        ),
-                        secretEnvVar(
-                            key: 'GWELLS_API_TEST_CLIENT_ID',
-                            secretName: 'apitest-secrets',
-                            secretKey: 'client_id'
-                        ),
-                        secretEnvVar(
-                            key: 'GWELLS_API_TEST_CLIENT_SECRET',
-                            secretName: 'apitest-secrets',
-                            secretKey: 'client_secret'
-                        )
                     ]
                 ) {
                         node("nodejs-${context.uuid}") {
                             checkout scm
                             dir('api-tests') {
                                 sh 'npm install -g newman'
-
                                 try {
                                     sh '''
                                         newman run ./registries_api_tests.json \
@@ -663,21 +631,6 @@ parallel (
 ) //end parallel
 
 
-/* Continuous integration (CI)
-   For feature branches merging into a release branch
-    || Deployment, Fixtures and Fixture-Using Tests:
-       - Deploy
-       - Load fixtures
-        -> || API tests
-           || Functional tests
-    || Unit tests and Code Quality
-       - Unit tests
-       - Code quality
-    || ZAP Security Scan
-       - ZAP security scan
-*/
-
-
 /* Continuous deployment (CD)
    For PRs to the master branch, reserved for release branches and hotfixes
    Iterates through DEV (skipped), TEST and PROD environments
@@ -763,32 +716,10 @@ for(String envKeyName: context.env.keySet() as String[]){
                 node("bddstack-${context.uuid}") {
                     echo "Build: ${BUILD_ID}"
                     echo "baseURL: ${baseURL}"
-
-                    //the checkout is mandatory, otherwise functional test would fail
-                    echo "checking out source"
                     checkout scm
                     dir('functional-tests') {
-                        Integer attempts = 0
-                        Integer attemptsMax = 2
                         try {
-                            waitUntil {
-                                boolean isDone=false
-                                attempts++
-                                try{
-                                    sh './gradlew -DchromeHeadlessTest.single=WellDetails chromeHeadlessTest'
-                                    isDone=true
-                                } catch (ex) {
-                                    echo "${stackTraceAsString(ex)}"
-                                    if ( attempts < attemptsMax ){
-                                        echo "DEV - Functional Tests Failed - Wait one minute and retry once"
-                                        sleep 60
-                                    } else {
-                                        echo "DEV - Functional Tests Failed - Retry Failed"
-                                        throw ex
-                                    }
-                                }
-                                return isDone
-                            }
+ß                            sh './gradlew -DchromeHeadlessTest.single=WellDetails chromeHeadlessTest'
                         } finally {
                                 archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/geb/**/*'
                                 junit testResults:'build/test-results/**/*.xml', allowEmptyResults:true
@@ -849,7 +780,6 @@ stage('Cleanup') {
             echo "Clearing OpenShift resources"
             new OpenShiftHelper().cleanup(this, context)
 
-            // TODO: broadcast status/result to Slack channel
             isDone=true
         }catch (ex){
             echo "${stackTraceAsString(ex)}"
