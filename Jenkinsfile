@@ -136,14 +136,12 @@ Map context = [
         ]
     ],
     stages:[
-        'Build': true,
+        'Load Fixtures': true,
+        'API Test': true,
+        'Functional Tests': false,
         'Unit Test': true,
         'Code Quality': false,
-        'Deploy - DEV': true,
-        'Load Fixtures': true,
-        'ZAP Security Scan': false,
-        'API Test': true,
-        'Functional Tests': false
+        'ZAP Security Scan': false
     ],
     pullRequest:[
         'id': env.CHANGE_ID,
@@ -215,12 +213,12 @@ _stage('Build', context) {
 */
 parallel (
     "Deployment, Fixtures and API/Functional Tests" : {
-        _stage('Deploy - DEV', context) {
+        _stage('Deploy', context) {
             node('master') {
                 new OpenShiftHelper().deploy(this, context, 'dev')
             }
         }
-        _stage('Load Fixtures - DEV', context) {
+        _stage('Load Fixtures', context) {
             node('master'){
                 String projectName=context.deployments['dev'].projectName
 
@@ -491,6 +489,8 @@ parallel (
                             printf "NPM version:    "&& npm --version
                         '''
 
+                        boolean runCodeQuality=((context?.stages?:[:])['Code Quality'] == true)
+
                         parallel (
                             "Unit Test: Python": {
                                 try {
@@ -498,13 +498,18 @@ parallel (
                                         cd /opt/app-root/src/backend
                                         DATABASE_ENGINE=sqlite DEBUG=False TEMPLATE_DEBUG=False python manage.py test -c nose.cfg
                                     '''
-                                    sh script: '''#!/usr/bin/container-entrypoint /bin/sh
-                                        cp /opt/app-root/src/backend/nosetests.xml ./
-                                        cp /opt/app-root/src/backend/coverage.xml ./
-                                    '''
+                                    if (runCodeQuality) {
+                                        sh script: '''#!/usr/bin/container-entrypoint /bin/sh
+                                            cp /opt/app-root/src/backend/nosetests.xml ./
+                                            cp /opt/app-root/src/backend/coverage.xml ./
+                                        '''
+                                        stash includes: 'nosetests.xml,coverage.xml', name: 'coverage'
+                                    }
                                 } finally {
-                                    stash includes: 'nosetests.xml,coverage.xml', name: 'coverage'
-                                    junit 'nosetests.xml'
+                                    if (runCodeQuality) {
+                                        stash includes: 'nosetests.xml,coverage.xml', name: 'coverage'
+                                        junit 'nosetests.xml'
+                                    }
                                 }
                             },
                             "Unit Test: Node": {
@@ -513,26 +518,30 @@ parallel (
                                         cd /opt/app-root/src/frontend
                                         npm test
                                     '''
-                                    sh script: '''#!/usr/bin/container-entrypoint /bin/sh
-                                        mkdir -p frontend/test/
-                                        cp -R /opt/app-root/src/frontend/test/unit ./frontend/test/
-                                        cp /opt/app-root/src/frontend/junit.xml ./frontend/
-                                    '''
+                                    if (runCodeQuality) {
+                                        sh script: '''#!/usr/bin/container-entrypoint /bin/sh
+                                            mkdir -p frontend/test/
+                                            cp -R /opt/app-root/src/frontend/test/unit ./frontend/test/
+                                            cp /opt/app-root/src/frontend/junit.xml ./frontend/
+                                        '''
+                                    }
                                 } finally {
-                                    archiveArtifacts allowEmptyArchive: true, artifacts: 'frontend/test/unit/**/*'
-                                    stash includes: 'frontend/test/unit/coverage/clover.xml', name: 'nodecoverage'
-                                    stash includes: 'frontend/junit.xml', name: 'nodejunit'
-                                    junit 'frontend/junit.xml'
-                                    publishHTML (
-                                        target: [
-                                            allowMissing: false,
-                                            alwaysLinkToLastBuild: false,
-                                            keepAll: true,
-                                            reportDir: 'frontend/test/unit/coverage/lcov-report/',
-                                            reportFiles: 'index.html',
-                                            reportName: "Node Coverage Report"
-                                        ]
-                                    )
+                                    if (runCodeQuality) {
+                                        archiveArtifacts allowEmptyArchive: true, artifacts: 'frontend/test/unit/**/*'
+                                        stash includes: 'frontend/test/unit/coverage/clover.xml', name: 'nodecoverage'
+                                        stash includes: 'frontend/junit.xml', name: 'nodejunit'
+                                        junit 'frontend/junit.xml'
+                                        publishHTML (
+                                            target: [
+                                                allowMissing: false,
+                                                alwaysLinkToLastBuild: false,
+                                                keepAll: true,
+                                                reportDir: 'frontend/test/unit/coverage/lcov-report/',
+                                                reportFiles: 'index.html',
+                                                reportName: "Node Coverage Report"
+                                            ]
+                                        )
+                                    }
                                 }
                             } //end branch
                         ) //end parallel
