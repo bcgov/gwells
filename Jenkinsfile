@@ -212,32 +212,36 @@ _stage('Build', context) {
        - ZAP security scan
 */
 parallel (
-    "Deployment, Fixtures and API/Functional Tests" : {
+    "Deploy" : {
         _stage('Deploy', context) {
             node('master') {
                 new OpenShiftHelper().deploy(this, context, 'dev')
             }
         }
-        _stage('Load Fixtures', context) {
-            node('master'){
-                String projectName=context.deployments['dev'].projectName
 
-                String podName = openshift.withProject(projectName){
-                    String deploymentConfigName="gwells${context.deployments['dev'].dcSuffix}"
-                    return openshift.selector('pod', ['deploymentconfig':deploymentConfigName]).objects()[0].metadata.name
-                }
+        parallel (
+            "Load Fixtures": {
+                _stage('Load Fixtures', context) {
+                    node('master'){
+                        String projectName=context.deployments['dev'].projectName
 
-                sh "oc exec '${podName}' -n '${projectName}' -- bash -c '\
-                    cd /opt/app-root/src/backend; \
-                    python manage.py migrate; \
-                    python manage.py loaddata gwells-codetables.json; \
-                    python manage.py loaddata wellsearch-codetables.json registries-codetables.json; \
-                    python manage.py loaddata wellsearch.json.gz registries.json; \
-                    python manage.py createinitialrevisions \
-                '"
+                        String podName = openshift.withProject(projectName){
+                            String deploymentConfigName="gwells${context.deployments['dev'].dcSuffix}"
+                            return openshift.selector('pod', ['deploymentconfig':deploymentConfigName]).objects()[0].metadata.name
+                        }
+
+                        sh "oc exec '${podName}' -n '${projectName}' -- bash -c '\
+                            cd /opt/app-root/src/backend; \
+                            python manage.py migrate; \
+                            python manage.py loaddata gwells-codetables.json; \
+                            python manage.py loaddata wellsearch-codetables.json registries-codetables.json; \
+                            python manage.py loaddata wellsearch.json.gz registries.json; \
+                            python manage.py createinitialrevisions \
+                        '"
+                    }
+                } //end stage
             }
-        } //end stage
-
+        )
         parallel (
             "API Test": {
                 _stage('API Test', context) {
@@ -416,7 +420,7 @@ parallel (
             }
         )
     },
-    "Unit Tests and Code Quality" : {
+    "Unit Tests" : {
         /* Unit test stage
             - use Django's manage.py to run python unit tests (w/ nose.cfg)
             - use 'npm run unit' to run JavaScript unit tests
@@ -523,60 +527,64 @@ parallel (
             - unstash unit test results (previous stage)
             - use SonarQube to consume results (*.xml)
         */
-        _stage('Code Quality', context) {
-            podTemplate(
-                name: "sonar-runner${context.uuid}",
-                label: "sonar-runner${context.uuid}",
-                serviceAccount: 'jenkins',
-                cloud: 'openshift',
-                containers:[
-                    containerTemplate(
-                        name: 'jnlp',
-                        resourceRequestMemory: '1Gi',
-                        resourceLimitMemory: '4Gi',
-                        resourceRequestCpu: '500m',
-                        resourceLimitCpu: '4000m',
-                        image: 'registry.access.redhat.com/openshift3/jenkins-slave-maven-rhel7:v3.7',
-                        workingDir: '/tmp',
-                        args: '${computer.jnlpmac} ${computer.name}',
-                        envVars: [
-                            envVar(key:'GRADLE_USER_HOME', value: '/var/cache/artifacts/gradle')
+        parallel (
+            "Code Quality": {
+                _stage('Code Quality', context) {
+                    podTemplate(
+                        name: "sonar-runner${context.uuid}",
+                        label: "sonar-runner${context.uuid}",
+                        serviceAccount: 'jenkins',
+                        cloud: 'openshift',
+                        containers:[
+                            containerTemplate(
+                                name: 'jnlp',
+                                resourceRequestMemory: '1Gi',
+                                resourceLimitMemory: '4Gi',
+                                resourceRequestCpu: '500m',
+                                resourceLimitCpu: '4000m',
+                                image: 'registry.access.redhat.com/openshift3/jenkins-slave-maven-rhel7:v3.7',
+                                workingDir: '/tmp',
+                                args: '${computer.jnlpmac} ${computer.name}',
+                                envVars: [
+                                    envVar(key:'GRADLE_USER_HOME', value: '/var/cache/artifacts/gradle')
+                                ]
+                            )
+                        ],
+                        volumes: [
+                            persistentVolumeClaim(
+                                mountPath: '/var/cache/artifacts',
+                                claimName: 'cache',
+                                readOnly: false
+                            )
                         ]
-                    )
-                ],
-                volumes: [
-                    persistentVolumeClaim(
-                        mountPath: '/var/cache/artifacts',
-                        claimName: 'cache',
-                        readOnly: false
-                    )
-                ]
-            ){
-                node("sonar-runner${context.uuid}") {
-                    //the checkout is mandatory, otherwise code quality check would fail
-                    echo "checking out source"
-                    echo "Build: ${BUILD_ID}"
-                    checkout scm
+                    ){
+                        node("sonar-runner${context.uuid}") {
+                            //the checkout is mandatory, otherwise code quality check would fail
+                            echo "checking out source"
+                            echo "Build: ${BUILD_ID}"
+                            checkout scm
 
-                    String SONARQUBE_URL = 'https://sonarqube-moe-gwells-tools.pathfinder.gov.bc.ca'
-                    echo "SONARQUBE_URL: ${SONARQUBE_URL}"
-                    dir('app') {
-                        unstash 'nodejunit'
-                        unstash 'nodecoverage'
-                    }
-                    dir('sonar-runner') {
-                        unstash 'coverage'
-                        sh script:
-                            """
-                                ./gradlew -q dependencies
-                                ./gradlew sonarqube -Dsonar.host.url=${SONARQUBE_URL} -Dsonar.verbose=true \
-                                    --stacktrace --info  -Dsonar.sources=..
-                            """,
-                            returnStdout: true
-                    }
-                } //end node
-            } //end podTemplate
-        } //end stage
+                            String SONARQUBE_URL = 'https://sonarqube-moe-gwells-tools.pathfinder.gov.bc.ca'
+                            echo "SONARQUBE_URL: ${SONARQUBE_URL}"
+                            dir('app') {
+                                unstash 'nodejunit'
+                                unstash 'nodecoverage'
+                            }
+                            dir('sonar-runner') {
+                                unstash 'coverage'
+                                sh script:
+                                    """
+                                        ./gradlew -q dependencies
+                                        ./gradlew sonarqube -Dsonar.host.url=${SONARQUBE_URL} -Dsonar.verbose=true \
+                                            --stacktrace --info  -Dsonar.sources=..
+                                    """,
+                                    returnStdout: true
+                            }
+                        } //end node
+                    } //end podTemplate
+                } //end stage
+            }
+        )
     }, //end branch
     "ZAP Security Scan": {
         _stage('ZAP Security Scan', context) {
