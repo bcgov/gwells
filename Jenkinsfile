@@ -15,7 +15,6 @@ import bcgov.OpenShiftHelper
 import bcgov.GitHubHelper
 
 
-
 // Print stack trace of error
 @NonCPS
 private static String stackTraceAsString(Throwable t) {
@@ -27,7 +26,6 @@ private static String stackTraceAsString(Throwable t) {
 
 // Notify stage status and pass to Jenkins-GitHub library
 void notifyStageStatus (Map context, String name, String status) {
-    // TODO: broadcast status/result to Slack channel
     GitHubHelper.createCommitStatus(
         this,
         context.pullRequest.head,
@@ -40,9 +38,8 @@ void notifyStageStatus (Map context, String name, String status) {
 
 
 /* _Stage wrapper:
-    - primary means of running stages
-    - reads which stages are to be run
-    - handles stages defined separately in closures (body)
+    - runs stages against true|false in map context
+    - receives stages defined separately in closures (body)
     - catches errors and provides output
 */
 def _stage(String name, Map context, boolean retry=0, boolean withCommitStatus=true, Closure body) {
@@ -90,15 +87,10 @@ def _stage(String name, Map context, boolean retry=0, boolean withCommitStatus=t
 }
 
 
-/* Project and pipeline-specific settings
+/* Project and build settings
    Includes:
-    - project name
-    - uuid
-    - web path (dev|test|prod)
-    - build config templates (*.bc)
-    - deployment config templates (*.dc) and parameters
+    - build (*.bc) and config templates (*.dc)
     - stage names and enabled status (true|false)
-    - git pull request details
 */
 Map context = [
     'name': 'gwells',
@@ -147,12 +139,11 @@ Map context = [
         'Build': true,
         'Unit Test': true,
         'Code Quality': false,
-        'Readiness - DEV': true,
         'Deploy - DEV': true,
-        'Load Fixtures - DEV': true,
+        'Load Fixtures': true,
         'ZAP Security Scan': false,
         'API Test': true,
-        'Full Test - DEV': false
+        'Functional Tests': false
     ],
     pullRequest:[
         'id': env.CHANGE_ID,
@@ -161,46 +152,10 @@ Map context = [
 ]
 
 
-/* Continuous integration (CI)
-   Triggers when a PR targets a sprint release branch
-    - prepare OpenShift environment
-    - build (build configs, imagestreams)
-    - unit tests
-    - code quality (SonarQube)
-    - deployment to transient dev environment
-    - load fixtures
-    - API tests
-    - functional tests
-    - merge PR into sprint release branch
-
-   Continuous deployment (CD)
-   Triggers when a PR targets the master branch, reserved for release branches and hotfixes
-    - All CI steps
-    - [prompt/stop]
-      - deployment to persistent test environment
-      - smoke tests
-      - deployment
-    - [prompt/stop]
-      - deployment to persistent production environment
-    - [prompt/stop]
-      - merge sprint release or hotfix branch into master
-      - close PR
-      - delete branch
-*/
-def isCI = !"master".equalsIgnoreCase(env.CHANGE_TARGET)
-def isCD = "master".equalsIgnoreCase(env.CHANGE_TARGET)
-
-
 /* Jenkins properties can be set on a pipeline-by-pipeline basis
-   Includes:
-    - build discarder
-    - build concurrency
-    - master node failure handling
-    - throttling
-    - parameters
-    - build triggers
     See Jenkins' Pipeline Systax for generation
     Globally equivalent to Jenkins > Manage Jenkins > Configure System
+    https://jenkins.io/doc/pipeline/steps/workflow-multibranch/#properties-set-job-properties
 */
 properties([
     buildDiscarder(
@@ -224,10 +179,6 @@ properties([
 */
 stage('Prepare') {
     abortAllPreviousBuildInProgress(currentBuild)
-    echo "BRANCH_NAME=${env.BRANCH_NAME}"
-    echo "CHANGE_ID=${env.CHANGE_ID}"
-    echo "CHANGE_TARGET=${env.CHANGE_TARGET}"
-    echo "BUILD_URL=${env.BUILD_URL}"
 }
 
 
@@ -249,41 +200,43 @@ _stage('Build', context) {
 } //end stage
 
 
-/* Unit test stage - pipeline step/closure
-    - use Django's manage.py to run python unit tests (w/ nose.cfg)
-    - use 'npm run unit' to run JavaScript unit tests
-    - stash test results for code quality stage
+/* Continuous integration (CI)
+   For feature branches merging into a release branch
+    || Deployment, Fixtures and Fixture-Using Tests:
+       - Deploy
+       - Load fixtures
+        -> || API tests
+           || Functional tests
+    || Unit tests and Code Quality
+       - Unit tests
+       - Code quality
+    || ZAP Security Scan
+       - ZAP security scan
 */
 parallel (
-    "Deployment and Fixtures" : {
-        _stage("Deploy - DEV", context) {
+    "Deployment, Fixtures and API/Functional Tests" : {
+        _stage('Deploy - DEV', context) {
             node('master') {
                 new OpenShiftHelper().deploy(this, context, 'dev')
             }
         }
-        _stage("Load Fixtures - DEV", context) {
+        _stage('Load Fixtures - DEV', context) {
             node('master'){
-                String podName=null
                 String projectName=context.deployments['dev'].projectName
-                String deploymentConfigName="gwells${context.deployments['dev'].dcSuffix}"
-                echo "env:${context.env['dev']}"
-                echo "deployment:${context.deployments['dev']}"
-                echo "projectName:${projectName}"
-                echo "deploymentConfigName:${deploymentConfigName}"
 
-                openshift.withProject(projectName){
-                    podName=openshift.selector('pod', ['deploymentconfig':deploymentConfigName]).objects()[0].metadata.name
+                String podName = openshift.withProject(projectName){
+                    String deploymentConfigName="gwells${context.deployments['dev'].dcSuffix}"
+                    return openshift.selector('pod', ['deploymentconfig':deploymentConfigName]).objects()[0].metadata.name
                 }
-                // Run migrate
-                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src/backend && pwd && python manage.py migrate'"
-                // Lookup tables common to all system components (e.g. Django apps)
-                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src/backend && pwd && python manage.py loaddata gwells-codetables.json'"
-                // Lookup tables for the Wellsearch component (not yet a Django app) and Registries app
-                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src/backend && pwd && python manage.py loaddata wellsearch-codetables.json registries-codetables.json'"
-                // Test data for the Wellsearch component (not yet a Django app) and Registries app
-                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src/backend && pwd && python manage.py loaddata wellsearch.json.gz registries.json'"
-                // Reversion
-                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src/backend && pwd && python manage.py createinitialrevisions'"
+
+                sh "oc exec '${podName}' -n '${projectName}' -- bash -c '\
+                    cd /opt/app-root/src/backend; \
+                    python manage.py migrate; \
+                    python manage.py loaddata gwells-codetables.json; \
+                    python manage.py loaddata wellsearch-codetables.json registries-codetables.json; \
+                    python manage.py loaddata wellsearch.json.gz registries.json; \
+                    python manage.py createinitialrevisions \
+                '"
             }
         } //end stage
 
@@ -373,15 +326,6 @@ parallel (
                     ]
                 ) {
                         node("nodejs-${context.uuid}") {
-                            //the checkout is mandatory, otherwise functional test would fail
-                            echo "checking out source"
-                            echo "Build: ${BUILD_ID}"
-                            echo "baseURL: ${baseURL}"
-                            sh '''#!/bin/bash
-                                echo BASEURL=$BASEURL
-                            '''
-
-                            //TODO:? input(message: "Verify Environment variables. Continue?")
                             checkout scm
                             dir('api-tests') {
                                 sh 'npm install -g newman'
@@ -431,10 +375,87 @@ parallel (
                         } //end node
                     } //end podTemplate
                 } //end stage
+            },
+            "Functional Tests":{
+                _stage('Functional Tests', context){
+                    String baseURL = context.deployments['dev'].environmentUrl.substring(
+                        0,
+                        context.deployments['dev'].environmentUrl.indexOf('/', 8) + 1
+                    )
+                    podTemplate(
+                        label: "bddstack-${context.uuid}",
+                        name: "bddstack-${context.uuid}",
+                        serviceAccount: 'jenkins',
+                        cloud: 'openshift',
+                        containers: [
+                          containerTemplate(
+                             name: 'jnlp',
+                             image: 'docker-registry.default.svc:5000/openshift/jenkins-slave-bddstack',
+                             resourceRequestCpu: '800m',
+                             resourceLimitCpu: '800m',
+                             resourceRequestMemory: '3Gi',
+                             resourceLimitMemory: '3Gi',
+                             workingDir: '/home/jenkins',
+                             command: '',
+                             args: '${computer.jnlpmac} ${computer.name}',
+                             envVars: [
+                                 envVar(key:'BASEURL', value: baseURL),
+                                 envVar(key:'GRADLE_USER_HOME', value: '/var/cache/artifacts/gradle')
+                             ]
+                          )
+                        ],
+                        volumes: [
+                            persistentVolumeClaim(
+                                mountPath: '/var/cache/artifacts',
+                                claimName: 'cache',
+                                readOnly: false
+                            )
+                        ]
+                    ){
+                        node("bddstack-${context.uuid}") {
+                            echo "Build: ${BUILD_ID}"
+                            echo "baseURL: ${baseURL}"
+                            checkout scm
+                            dir('functional-tests') {
+                                try {
+                                    sh './gradlew chromeHeadlessTest'
+                                } finally {
+                                        archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/geb/**/*'
+                                        junit testResults:'build/test-results/**/*.xml', allowEmptyResults:true
+                                        publishHTML (
+                                            target: [
+                                                allowMissing: true,
+                                                alwaysLinkToLastBuild: false,
+                                                keepAll: true,
+                                                reportDir: 'build/reports/spock',
+                                                reportFiles: 'index.html',
+                                                reportName: "Test: BDD Spock Report"
+                                            ]
+                                        )
+                                        publishHTML (
+                                            target: [
+                                                allowMissing: true,
+                                                alwaysLinkToLastBuild: false,
+                                                keepAll: true,
+                                                reportDir: 'build/reports/tests/chromeHeadlessTest',
+                                                reportFiles: 'index.html',
+                                                reportName: "Test: Full Test Report"
+                                            ]
+                                        )
+                                }
+                            } //end dir
+                        } //end node
+                    } //end podTemplate
+                } //end stage
             }
         )
     },
-    "Unit Tests" : {
+    "Unit Tests and Code Quality" : {
+        /* Unit test stage
+            - use Django's manage.py to run python unit tests (w/ nose.cfg)
+            - use 'npm run unit' to run JavaScript unit tests
+            - stash test results for code quality stage
+        */
         _stage('Unit Tests', context) {
             podTemplate(
                 label: "node-${context.uuid}",
@@ -520,6 +541,11 @@ parallel (
             } //end podTemplate
         } //end stage
 
+
+        /* Code quality stage - pipeline step/closure
+            - unstash unit test results (previous stage)
+            - use SonarQube to consume results (*.xml)
+        */
         _stage('Code Quality', context) {
             podTemplate(
                 name: "sonar-runner${context.uuid}",
@@ -628,20 +654,39 @@ parallel (
 ) //end parallel
 
 
-/* Code quality stage - pipeline step/closure
-    - unstash unit test results (previous stage)
-    - use SonarQube to consume results (*.xml)
+/* Continuous integration (CI)
+   For feature branches merging into a release branch
+    || Deployment, Fixtures and Fixture-Using Tests:
+       - Deploy
+       - Load fixtures
+        -> || API tests
+           || Functional tests
+    || Unit tests and Code Quality
+       - Unit tests
+       - Code quality
+    || ZAP Security Scan
+       - ZAP security scan
 */
 
 
-/* Primary stage execution block
-   - iterates through stages, set in context (Map)
-   - _stage wrapper adds functionality, stability
+/* Continuous deployment (CD)
+   For PRs to the master branch, reserved for release branches and hotfixes
+   Iterates through DEV (skipped), TEST and PROD environments
+    - [prompt/stop]
+      - deployment to persistent test environment
+      - smoke tests
+      - deployment
+    - [prompt/stop]
+      - deployment to persistent production environment
+    - [prompt/stop]
+      - merge sprint release or hotfix branch into master
+      - close PR
+      - delete branch
 */
 for(String envKeyName: context.env.keySet() as String[]){
     String stageDeployName=envKeyName.toUpperCase()
 
-    if (!"DEV".equalsIgnoreCase(stageDeployName) && isCD) {
+    if ("master".equalsIgnoreCase(env.CHANGE_TARGET)) {
         _stage("Readiness - ${stageDeployName}", context) {
             node('master') {
                 new OpenShiftHelper().waitUntilEnvironmentIsReady(this, context, envKeyName)
@@ -670,11 +715,8 @@ for(String envKeyName: context.env.keySet() as String[]){
                 new OpenShiftHelper().deploy(this, context, envKeyName)
             }
         }
-    }
 
-    if ("DEV".equalsIgnoreCase(stageDeployName) || isCD){
-        String testStageName="DEV".equalsIgnoreCase(stageDeployName)?"Full Test - DEV":"Smoke Test - ${stageDeployName}"
-        _stage(testStageName, context){
+        _stage("Smoke Test - ${stageDeployName}", context){
             String baseURL = context.deployments[envKeyName].environmentUrl.substring(
                 0,
                 context.deployments[envKeyName].environmentUrl.indexOf('/', 8) + 1
@@ -712,8 +754,6 @@ for(String envKeyName: context.env.keySet() as String[]){
                 node("bddstack-${context.uuid}") {
                     echo "Build: ${BUILD_ID}"
                     echo "baseURL: ${baseURL}"
-                    sh 'echo "BASEURL=${BASEURL}"'
-                    sh 'echo "GRADLE_USER_HOME=${GRADLE_USER_HOME}"'
 
                     //the checkout is mandatory, otherwise functional test would fail
                     echo "checking out source"
@@ -726,11 +766,7 @@ for(String envKeyName: context.env.keySet() as String[]){
                                 boolean isDone=false
                                 attempts++
                                 try{
-                                    if ("DEV".equalsIgnoreCase(stageDeployName)) {
-                                        sh './gradlew chromeHeadlessTest'
-                                    } else {
-                                        sh './gradlew -DchromeHeadlessTest.single=WellDetails chromeHeadlessTest'
-                                    }
+                                    sh './gradlew -DchromeHeadlessTest.single=WellDetails chromeHeadlessTest'
                                     isDone=true
                                 } catch (ex) {
                                     echo "${stackTraceAsString(ex)}"
@@ -767,19 +803,6 @@ for(String envKeyName: context.env.keySet() as String[]){
                                         reportName: "Test: Full Test Report"
                                     ]
                                 )
-                            //todo: install perf report plugin.
-                            //perfReport compareBuildPrevious: true,
-                            //    excludeResponseTime: true,
-                            //    ignoreFailedBuilds: true,
-                            //    ignoreUnstableBuilds: true,
-                            //    modeEvaluation: true,
-                            //    modePerformancePerTestCase: true,
-                            //    percentiles: '0,50,90,100',
-                            //    relativeFailedThresholdNegative: 80.0,
-                            //    relativeFailedThresholdPositive: 20.0,
-                            //    relativeUnstableThresholdNegative: 50.0,
-                            //    relativeUnstableThresholdPositive: 50.0,
-                            //    sourceDataFiles: 'build/test-results/**/*.xml'
                         }
                     } //end dir
                 } //end node
