@@ -183,22 +183,24 @@ export default {
      */
     paginationNext () {
       // API provides 'next' and 'previous' links with query strings for the current search
-      if (this.drillers.next && ~this.drillers.next.indexOf('?'))
+      if (this.drillers.next && ~this.drillers.next.indexOf('?')) {
         this.getPage(this.drillers.next.split('?')[1])
+      }
     },
     /**
      * Gets called when the user clicks on the previous button, load the previous result page.
      */
     paginationPrev () {
-      if (this.drillers.previous && ~this.drillers.previous.indexOf('?'))
+      if (this.drillers.previous && ~this.drillers.previous.indexOf('?')) {
         this.getPage(this.drillers.previous.split('?')[1])
+      }
     },
     /**
      * Triggers FETCH_DRILLER_LIST store action.
      * @param {string} query QueryString of the new page to be loaded.
      */
     getPage (query) {
-      if(!query) throw new Error('query parameter is required.')
+      if (!query) throw new Error('query parameter is required.')
       this.$store.dispatch(FETCH_DRILLER_LIST, querystring.parse(query))
     },
     sortBy (sortCode) {
