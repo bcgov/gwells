@@ -445,8 +445,8 @@ parallel (
                         image: "docker-registry.default.svc:5000/moe-gwells-tools/gwells${context.buildNameSuffix}:${context.buildEnvName}",
                         ttyEnabled: true,
                         command: 'cat',
-                        resourceRequestCpu: '1.5',
-                        resourceLimitCpu: '1.5',
+                        resourceRequestCpu: '2',
+                        resourceLimitCpu: '2',
                         resourceRequestMemory: '2.5Gi',
                         resourceLimitMemory: '2.5Gi'
                     )
