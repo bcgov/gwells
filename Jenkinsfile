@@ -538,9 +538,9 @@ parallel (
                         containers:[
                             containerTemplate(
                                 name: 'jnlp',
-                                resourceRequestMemory: '1Gi',
+                                resourceRequestMemory: '4Gi',
                                 resourceLimitMemory: '4Gi',
-                                resourceRequestCpu: '500m',
+                                resourceRequestCpu: '4000m',
                                 resourceLimitCpu: '4000m',
                                 image: 'registry.access.redhat.com/openshift3/jenkins-slave-maven-rhel7:v3.7',
                                 workingDir: '/tmp',
@@ -597,9 +597,9 @@ parallel (
                     containerTemplate(
                         name: 'jnlp',
                         image: 'docker-registry.default.svc:5000/moe-gwells-dev/owasp-zap-openshift',
-                        resourceRequestCpu: '500m',
-                        resourceLimitCpu: '1000m',
-                        resourceRequestMemory: '3Gi',
+                        resourceRequestCpu: '1',
+                        resourceLimitCpu: '1',
+                        resourceRequestMemory: '4Gi',
                         resourceLimitMemory: '4Gi',
                         workingDir: '/home/jenkins',
                         command: '',
@@ -727,7 +727,7 @@ for(String envKeyName: context.env.keySet() as String[]){
                     checkout scm
                     dir('functional-tests') {
                         try {
-ß                            sh './gradlew -DchromeHeadlessTest.single=WellDetails chromeHeadlessTest'
+                            sh './gradlew -DchromeHeadlessTest.single=WellDetails chromeHeadlessTest'
                         } finally {
                                 archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/geb/**/*'
                                 junit testResults:'build/test-results/**/*.xml', allowEmptyResults:true
