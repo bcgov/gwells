@@ -211,6 +211,7 @@ _stage('Build', context) {
     || ZAP Security Scan
        - ZAP security scan
 */
+boolean isFixtured = false
 parallel (
     "Deploy" : {
         _stage('Deploy', context) {
@@ -238,11 +239,10 @@ parallel (
                             python manage.py loaddata wellsearch.json.gz registries.json; \
                             python manage.py createinitialrevisions \
                         '"
+                        isFixtured = true
                     }
                 } //end stage
-            }
-        )
-        parallel (
+            },
             "API Test": {
                 _stage('API Test', context) {
                     String baseURL = context.deployments['dev'].environmentUrl.substring(0, context.deployments['dev'].environmentUrl.indexOf('/', 8) + 1)
@@ -300,6 +300,10 @@ parallel (
                             checkout scm
                             dir('api-tests') {
                                 sh 'npm install -g newman'
+                                waitUntil {
+                                    sleep 5
+                                    return isFixtured
+                                }
                                 try {
                                     sh '''
                                         newman run ./registries_api_tests.json \
@@ -387,6 +391,10 @@ parallel (
                             echo "baseURL: ${baseURL}"
                             checkout scm
                             dir('functional-tests') {
+                                waitUntil {
+                                    sleep 5
+                                    return isFixtured
+                                }
                                 try {
                                     sh './gradlew chromeHeadlessTest'
                                 } finally {
