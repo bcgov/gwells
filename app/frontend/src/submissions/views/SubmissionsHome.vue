@@ -273,7 +273,7 @@ export default {
         ground_elevation: null,
         ground_elevation_method: '',
         well_orientation: '',
-        casing_set: [],
+        casing_set: [{}, {}, {}],
 
         // non-form fields that should be saved with form
         meta: {
