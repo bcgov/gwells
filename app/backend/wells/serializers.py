@@ -11,19 +11,69 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
+import logging
 
 from rest_framework import serializers
 from gwells.models import ProvinceStateCode
-from wells.models import Well, ActivitySubmission
-
 from gwells.serializers import AuditModelSerializer
+from wells.models import Well, ActivitySubmission, Casing, CasingMaterialCode, CasingCode
+
+
+logger = logging.getLogger(__name__)
+
+
+class CasingMaterialSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CasingMaterialCode
+        fields = (
+            'code',
+            'description'
+        )
+
+
+class CasingCodeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CasingCode
+        fields = (
+            'code',
+            'description',
+        )
+
+
+class CasingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Casing
+        fields = (
+            'casing_from',
+            'casing_to',
+            'diameter',
+            'casing_code',
+            'casing_material',
+            'drive_shoe',
+        )
 
 
 class WellStackerSerializer(AuditModelSerializer):
 
+    casing_set = CasingSerializer(many=True)
+
     class Meta:
         model = Well
         fields = '__all__'
+
+    def update(self, instance, validated_data):        
+        # If there is existing casing data, the easiest approach is to drop it, and re-create it
+        # based on this update. Trying to match up individual casings and updating them, dealing with
+        # removed casing records etc. etc. is not the responsibility of this section. The composite section
+        # is responsible for that.
+        for casing in instance.casing_set.all():
+            casing.delete()
+        casings_data = validated_data.pop('casing_set', None)
+        if casings_data:
+            for casing_data in casings_data:
+                Casing.objects.create(well=instance, **casing_data)
+        instance = super().update(instance, validated_data)
+        return instance
 
 
 class WellListSerializer(serializers.ModelSerializer):

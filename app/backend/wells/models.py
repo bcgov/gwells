@@ -510,19 +510,19 @@ class Well(AuditModel):
     well_location_description = models.CharField(
         max_length=500, blank=True, verbose_name='Description of Well Location')
 
-    construction_start_date = models.DateTimeField(
+    construction_start_date = models.DateField(
         null=True, verbose_name="Construction Start Date")
-    construction_end_date = models.DateTimeField(
+    construction_end_date = models.DateField(
         null=True, verbose_name="Construction Date")
 
-    alteration_start_date = models.DateTimeField(
+    alteration_start_date = models.DateField(
         null=True, verbose_name="Alteration Start Date")
-    alteration_end_date = models.DateTimeField(
+    alteration_end_date = models.DateField(
         null=True, verbose_name="Alteration Date")
 
-    decommission_start_date = models.DateTimeField(
+    decommission_start_date = models.DateField(
         null=True, verbose_name="Decommission Start Date")
-    decommission_end_date = models.DateTimeField(
+    decommission_end_date = models.DateField(
         null=True, verbose_name="Decommission Date")
 
     drilling_company = models.ForeignKey(DrillingCompany, db_column='drilling_company_guid',
@@ -877,8 +877,8 @@ class ActivitySubmission(AuditModel):
     owner_full_name = models.CharField(
         max_length=200, verbose_name='Owner Name')
     owner_mailing_address = models.CharField(
-        max_length=100, verbose_name='Mailing Address')
-    owner_city = models.CharField(max_length=100, verbose_name='Town/City')
+        max_length=100, verbose_name='Mailing Address', blank=True)
+    owner_city = models.CharField(max_length=100, verbose_name='Town/City', blank=True)
     owner_province_state = models.ForeignKey(
         ProvinceStateCode, db_column='province_state_code', on_delete=models.CASCADE, verbose_name='Province')
     owner_postal_code = models.CharField(
@@ -1058,7 +1058,7 @@ class ActivitySubmission(AuditModel):
     def __str__(self):
         if self.filing_number:
             return '%s %d %s %s' % (self.activity_submission_guid, self.filing_number,
-                                    self.well_activity_type.well_activity_type_code, self.street_address)
+                                    self.well_activity_type.code, self.street_address)
         else:
             return '%s %s' % (self.activity_submission_guid, self.street_address)
 
@@ -1230,9 +1230,10 @@ class Casing(AuditModel):
     casing_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     activity_submission = models.ForeignKey(ActivitySubmission, db_column='filing_number',
                                             on_delete=models.CASCADE, blank=True, null=True,
-                                            related_name='casings')
-    well_tag_number = models.ForeignKey(Well, db_column='well_tag_number', on_delete=models.CASCADE,
-                                        blank=True, null=True)
+                                            related_name='casing_set')
+    well = models.ForeignKey(Well, db_column='well_tag_number', on_delete=models.CASCADE,
+                             blank=True, null=True,
+                             related_name='casing_set')
     casing_from = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='From', null=True,
                                       blank=True, validators=[MinValueValidator(Decimal('0.00'))])
     casing_to = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='To', null=True, blank=True,

@@ -12,6 +12,7 @@
     limitations under the License.
 """
 import logging
+import dateutil.parser
 
 from django.core.serializers import serialize
 from django.forms.models import model_to_dict
@@ -21,11 +22,22 @@ from django.db.models import F
 from gwells.models import ProvinceStateCode
 from submissions.models import WellActivityCode
 import submissions.serializers
-from wells.serializers import WellStackerSerializer
 from wells.models import Well, ActivitySubmission
+from wells.serializers import WellStackerSerializer
 
 
 logger = logging.getLogger(__name__)
+
+
+def overlap(a, b):
+    """
+    Checks to see if two casings intersect, or have identical start/end positions.
+    """
+    # If the casing start/end intersects
+    intersect = (a[0] > b[0] and a[0] < b[1]) or (a[1] > b[0] and a[1] < b[1])
+    # If the casings start or end in the same place
+    overlap = (a[0] == b[0]) or (a[1] == b[1])
+    return intersect or overlap
 
 
 class StackWells():
@@ -52,27 +64,59 @@ class StackWells():
         """
         Using an existing well as a reference, create a legacy well record
         """
-        # TODO: Deal with Lithology, LtsaOwner, LinerPerforation, Casing, AquiferWell, Screen etc.
-        ActivitySubmission.objects.create(
-            owner_full_name=well.owner_full_name,
-            owner_province_state=well.owner_province_state,
-            work_start_date=well.construction_start_date,
-            work_end_date=well.construction_end_date,
-            well_activity_type=WellActivityCode.types.legacy(),
-            well=well
-        )
+        # TODO: Deal with Lithology, LtsaOwner, LinerPerforation, AquiferWell, Screen etc. (This should
+        # work magically if the serializers are implemented correctly)
+
+        # Serialize the well.
+        well_serializer = WellStackerSerializer(well)
+        data = well_serializer.data
+        # Retain the construction date.
+        data['work_start_date'] = data.pop('construction_start_date', None)
+        data['work_end_date'] = data.pop('construction_end_date', None)
+        # Filter out None and '' values, they can interfere with validation.
+        data = {k: v for (k, v) in data.items() if v is not None and v != ''}
+        # Specify the submission type as legacy.
+        data['well_activity_type'] = WellActivityCode.types.legacy().code
+        # Retain the well reference.
+        data['well'] = well.well_tag_number
+        # De-serialize the well into a submission.
+        submission_serializer = submissions.serializers.WellSubmissionSerializer(data=data)
+        # Validate the data, throwing an exception on error.
+        if submission_serializer.is_valid(raise_exception=True):
+            # Save the submission.
+            instance = submission_serializer.save()
+
+    def _casing_overlaps(self, casing, casing_set):
+        # Return True if a casing overlaps with a list of casings
+        for other_casing in casing_set:
+            if overlap((casing.get('casing_from'), casing.get('casing_to')),
+                       (other_casing.get('casing_from'), other_casing.get('casing_to'))):
+                return True
+        return False
+
+    def _merge_casings(self, prev_casings, next_casings):
+        # Remove old records that overlap with new records
+        prev_casings = [casing for casing in prev_casings if not self._casing_overlaps(casing, next_casings)]
+        # Join the old with the new
+        new = prev_casings + next_casings
+        # Sort
+        new.sort(key=lambda casing: (casing.get('casing_from'), casing.get('casing_to')))
+        return new
 
     def _stack(self, records, well: Well) -> Well:
         records = records.order_by(F('work_start_date').asc(nulls_first=True))
         composite = {}
         # Iterate through all the submission records
-        # TODO: Deal with Lithology, LtsaOwner, LinerPerforation, Casing, AquiferWell, Screen etc.
+        # TODO: Deal with Lithology, LtsaOwner, LinerPerforation, AquiferWell, Screen etc.
         for submission in records:
             serializer = submissions.serializers.WellSubmissionSerializer(submission)
             for key, value in serializer.data.items():
                 # We only consider items with values
                 if value:
-                    composite[key] = value
+                    if key == 'casing_set' and key in composite:
+                        composite[key] = self._merge_casings(composite[key], value)
+                    else:
+                        composite[key] = value
         # Update the well view
         well_serializer = WellStackerSerializer(well, data=composite, partial=True)
         if well_serializer.is_valid(raise_exception=True):
@@ -100,5 +144,5 @@ class StackWells():
             return self._stack(records, submission.well)
 
     def _submission_is_construction(self, submission):
-        construction_code = WellActivityCode.types.construction().well_activity_type_code
-        return submission.well_activity_type.well_activity_type_code == construction_code
+        construction_code = WellActivityCode.types.construction().code
+        return submission.well_activity_type.code == construction_code

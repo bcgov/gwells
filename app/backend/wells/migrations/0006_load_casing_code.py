@@ -9,7 +9,7 @@ import os
 
 
 def casing_codes():
-    """ 
+    """
     Generator that deserializes and provides casing objects.
     Doing it this way, instead of using fixtures, means we don't have to maintain the json, it will
     always work as it has access to the historic model.

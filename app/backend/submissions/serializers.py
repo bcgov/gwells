@@ -18,12 +18,11 @@ from gwells.models import ProvinceStateCode
 from gwells.serializers import AuditModelSerializer
 
 from wells.models import Well, ActivitySubmission
+from wells.serializers import CasingSerializer
 import wells.stack
 from wells.models import (
     ActivitySubmission,
     Casing,
-    CasingCode,
-    CasingMaterialCode,
     IntendedWaterUseCode,
     Well,
     WellClassCode,
@@ -32,41 +31,10 @@ from wells.models import (
 from submissions.models import WellActivityCode
 
 
-class CasingMaterialSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CasingMaterialCode
-        fields = (
-            'code',
-            'description'
-        )
-
-
-class CasingCodeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CasingCode
-        fields = (
-            'code',
-            'description',
-        )
-
-
-class CasingSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Casing
-        fields = (
-            'casing_from',
-            'casing_to',
-            'diameter',
-            'casing_code',
-            'casing_material',
-            'drive_shoe',
-        )
-
-
 class WellSubmissionSerializer(serializers.ModelSerializer):
     """Serializes a well activity submission"""
 
-    casings = CasingSerializer(many=True)
+    casing_set = CasingSerializer(many=True)
 
     class Meta:
         model = ActivitySubmission
@@ -154,11 +122,11 @@ class WellSubmissionSerializer(serializers.ModelSerializer):
             "alternative_specs_submitted",
             "well_yield_unit",
             "diameter",
-            "casings",
+            "casing_set",
         )
 
     def create(self, validated_data):
-        casings_data = validated_data.pop('casings')
+        casings_data = validated_data.pop('casing_set')
         instance = super().create(validated_data)
         for casing_data in casings_data:
             Casing.objects.create(activity_submission=instance, **casing_data)
@@ -175,7 +143,7 @@ class WellActivityCodeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = WellActivityCode
-        fields = ('well_activity_type_code', 'description')
+        fields = ('code', 'description')
 
 
 class WellSubclassCodeSerializer(serializers.ModelSerializer):

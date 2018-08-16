@@ -30,9 +30,11 @@ from wells.models import (
     WellClassCode,
     WellSubclassCode)
 from submissions.models import WellActivityCode
-from submissions.serializers import (
+from wells.serializers import (
     CasingCodeSerializer,
-    CasingMaterialSerializer,
+    CasingMaterialSerializer
+)
+from submissions.serializers import (
     WellSubmissionSerializer,
     WellActivityCodeSerializer,
     WellClassCodeSerializer,
@@ -74,7 +76,7 @@ class SubmissionListAPIView(ListCreateAPIView):
                 "lithologydescription_set",
                 "linerperforation_set",
                 "productiondata_set",
-                "casings",
+                "casing_set",
                 "screen_set",
             ) \
             .order_by("filing_number")
