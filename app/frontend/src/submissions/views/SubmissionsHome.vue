@@ -67,7 +67,6 @@
           :fieldsLoaded="fieldsLoaded"
         ></step02-owner>
 
-        <b-row>
         <!-- Step 3: Well location -->
         <step03-location
           v-if="formStep === 3 || formIsFlat"
@@ -101,7 +100,7 @@
         <!-- Step 6: Casings -->
         <step06-casings class="my-3"
           v-if="formStep === 3 || formIsFlat"
-          :casings.sync="form.casings"
+          :casings.sync="form.casing_set"
           :errors="errors"
           :fieldsLoaded="fieldsLoaded"
           />
@@ -274,7 +273,7 @@ export default {
         ground_elevation: null,
         ground_elevation_method: '',
         well_orientation: '',
-        casings: [],
+        casing_set: [],
 
         // non-form fields that should be saved with form
         meta: {

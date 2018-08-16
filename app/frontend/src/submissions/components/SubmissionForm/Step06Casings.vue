@@ -6,9 +6,9 @@
         <tr>
           <th>From ft (bgl)</th>
           <th>To ft (bgl)</th>
-          <th>Diameter (in)</th>
           <th>Casing Type</th>
           <th>Casing Material</th>
+          <th>Diameter (in)</th>
           <th>Wall Thickness (in)</th>
           <th>Drive Shoe</th>
           <th></th>
@@ -26,19 +26,11 @@
           </td>
           <td>
             <form-input
-              id="'casing_to_' + index"
+              :id="'casing_to_' + index"
               type="number"
               v-model="casing.casing_to"
               :errors="getCasingError(index).casing_to"
               :loaded="getFieldsLoaded(index).casing_to"/>
-          </td>
-          <td>
-            <form-input
-              id="'diameter_' + index"
-              type="number"
-              v-model="casing.diameter"
-              :errors="getCasingError(index).diameter"
-              :loaded="getFieldsLoaded(index).diameter"/>
           </td>
           <td>
             <b-form-group
@@ -63,7 +55,7 @@
           </td>
           <td>
             <b-form-group
-              id="'casingMaterial_' + index"
+              :id="'casingMaterial_' + index"
               aria-describedby="casingMaterialInvalidFeedback{index}">
               <b-form-select
                   v-model="casing.casing_material"
@@ -84,7 +76,15 @@
           </td>
           <td>
             <form-input
-              id="'wall_thickness_' + index"
+              :id="'diameter_' + index"
+              type="number"
+              v-model="casing.diameter"
+              :errors="getCasingError(index).diameter"
+              :loaded="getFieldsLoaded(index).diameter"/>
+          </td>
+          <td>
+            <form-input
+              :id="'wall_thickness_' + index"
               type="number"
               v-model="casing.wall_thickness"
               :errors="getCasingError(index).wall_thickness"
@@ -109,7 +109,10 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 export default {
+  name: 'Step06Casings',
+  mixins: [inputBindingsMixin],
   props: {
     casings: {
       type: Array,
