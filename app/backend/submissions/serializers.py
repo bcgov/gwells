@@ -26,7 +26,8 @@ from wells.models import (
     IntendedWaterUseCode,
     Well,
     WellClassCode,
-    WellSubclassCode)
+    WellSubclassCode,
+    LandDistrictCode)
 
 from submissions.models import WellActivityCode
 
@@ -171,3 +172,11 @@ class IntendedWaterUseCodeSerializer(serializers.ModelSerializer):
     class Meta:
         model = IntendedWaterUseCode
         fields = ('intended_water_use_code', 'description')
+
+
+class LandDistrictSerializer(serializers.ModelSerializer):
+    """ serializes Land District codes/descriptions """
+
+    class Meta:
+        model = LandDistrictCode
+        fields = ('land_district_code', 'name')

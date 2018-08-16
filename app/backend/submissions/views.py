@@ -26,6 +26,7 @@ from wells.models import (
     CasingCode,
     CasingMaterialCode,
     IntendedWaterUseCode,
+    LandDistrictCode,
     Well,
     WellClassCode,
     WellSubclassCode)
@@ -39,7 +40,8 @@ from submissions.serializers import (
     WellActivityCodeSerializer,
     WellClassCodeSerializer,
     WellSubclassCodeSerializer,
-    IntendedWaterUseCodeSerializer
+    IntendedWaterUseCodeSerializer,
+    LandDistrictSerializer
 )
 
 
@@ -112,6 +114,8 @@ class SubmissionsOptions(APIView):
             instance=IntendedWaterUseCode.objects.all(), many=True)
         casing_codes = CasingCodeSerializer(instance=CasingCode.objects.all(), many=True)
         casing_material = CasingMaterialSerializer(instance=CasingMaterialCode.objects.all(), many=True)
+        land_district_codes = LandDistrictSerializer(
+            instance=LandDistrictCode.objects.all(), many=True)
 
         options["province_codes"] = province_codes.data
         options["activity_types"] = activity_codes.data
@@ -119,6 +123,7 @@ class SubmissionsOptions(APIView):
         options["intended_water_uses"] = intended_water_use_codes.data
         options["casing_codes"] = casing_codes.data
         options["casing_materials"] = casing_material.data
+        options["land_district_codes"] = land_district_codes.data
 
         return Response(options)
 
