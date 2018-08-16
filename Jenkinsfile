@@ -656,7 +656,7 @@ parallel (
 for(String envKeyName: context.env.keySet() as String[]){
     String stageDeployName=envKeyName.toUpperCase()
 
-    if ("master".equalsIgnoreCase(env.CHANGE_TARGET)) {
+    if (!"DEV".equalsIgnoreCase(stageDeployName) && "master".equalsIgnoreCase(env.CHANGE_TARGET)) {
         _stage("Readiness - ${stageDeployName}", context) {
             node('master') {
                 new OpenShiftHelper().waitUntilEnvironmentIsReady(this, context, envKeyName)
