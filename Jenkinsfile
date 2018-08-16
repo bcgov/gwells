@@ -200,15 +200,14 @@ _stage('Build', context) {
 
 /* Continuous integration (CI)
    For feature branches merging into a release branch
-    || Deployment and Fixtures
-       - Deploy
-        -> Load fixtures (sets isFixtured=true)
-    || API tests (executes on isFixtured=true)
-    || Functional tests (executes on isFixtured=true)
-    || Unit tests and Code Quality
-       - Unit tests
-        -> Code quality
-    || ZAP Security Scan
+    || Deployment and Fixtures (sets isDeployed and isFixtured=true)
+    || API tests (starts on isDeployed, executes on isFixtured)
+    || Functional tests (executes on isFixtured)
+    || Unit tests (sets isUnitTested=true)
+    -> || Python tests
+       || Node tests
+    || Code quality (executes on isUnitTested)
+    || ZAP Security Scan (executes on isDeployed)
 */
 boolean isDeployed = false
 boolean isFixtured = false
@@ -249,6 +248,10 @@ parallel (
     },
     "API Test": {
         _stage('API Test', context) {
+            waitUntil {
+                sleep 5
+                return isDeployed
+            }
             String baseURL = context.deployments['dev'].environmentUrl.substring(0, context.deployments['dev'].environmentUrl.indexOf('/', 8) + 1)
             podTemplate(
                 label: "nodejs-${context.uuid}",
