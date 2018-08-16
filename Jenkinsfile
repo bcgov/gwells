@@ -200,14 +200,14 @@ _stage('Build', context) {
 
 /* Continuous integration (CI)
    For feature branches merging into a release branch
-    || Deployment, Fixtures and Fixture-Using Tests:
+    || Deployment and Fixtures
        - Deploy
-       - Load fixtures
-        -> || API tests
-           || Functional tests
+        -> Load fixtures (sets isFixtured=true)
+    || API tests (executes on isFixtured=true)
+    || Functional tests (executes on isFixtured=true)
     || Unit tests and Code Quality
        - Unit tests
-       - Code quality
+        -> Code quality
     || ZAP Security Scan
        - ZAP security scan
 */
@@ -244,191 +244,191 @@ parallel (
                         isFixtured = true
                     }
                 } //end stage
-            },
-            "API Test": {
-                _stage('API Test', context) {
-                    String baseURL = context.deployments['dev'].environmentUrl.substring(0, context.deployments['dev'].environmentUrl.indexOf('/', 8) + 1)
-                    podTemplate(
-                        label: "nodejs-${context.uuid}",
-                        name: "nodejs-${context.uuid}",
-                        serviceAccount: 'jenkins',
-                        cloud: 'openshift',
-                        containers: [
-                            containerTemplate(
-                                name: 'jnlp',
-                                image: 'registry.access.redhat.com/openshift3/jenkins-agent-nodejs-8-rhel7',
-                                resourceRequestCpu: '800m',
-                                resourceLimitCpu: '800m',
-                                resourceRequestMemory: '1Gi',
-                                resourceLimitMemory: '1Gi',
-                                workingDir: '/tmp',
-                                command: '',
-                                args: '${computer.jnlpmac} ${computer.name}',
-                                envVars: [
-                                    envVar(
-                                        key:'BASEURL',
-                                        value: "${baseURL}gwells"
-                                    ),
-                                    secretEnvVar(
-                                        key: 'GWELLS_API_TEST_USER',
-                                        secretName: 'apitest-secrets',
-                                        secretKey: 'username'
-                                    ),
-                                    secretEnvVar(
-                                        key: 'GWELLS_API_TEST_PASSWORD',
-                                        secretName: 'apitest-secrets',
-                                        secretKey: 'password'
-                                    ),
-                                    secretEnvVar(
-                                        key: 'GWELLS_API_TEST_AUTH_SERVER',
-                                        secretName: 'apitest-secrets',
-                                        secretKey: 'auth_server'
-                                    ),
-                                    secretEnvVar(
-                                        key: 'GWELLS_API_TEST_CLIENT_ID',
-                                        secretName: 'apitest-secrets',
-                                        secretKey: 'client_id'
-                                    ),
-                                    secretEnvVar(
-                                        key: 'GWELLS_API_TEST_CLIENT_SECRET',
-                                        secretName: 'apitest-secrets',
-                                        secretKey: 'client_secret'
-                                    )
-                                ]
-                            )
-                    ]
-                ) {
-                        node("nodejs-${context.uuid}") {
-                            checkout scm
-                            dir('api-tests') {
-                                sh 'npm install -g newman'
-                                waitUntil {
-                                    sleep 5
-                                    return isFixtured
-                                }
-                                try {
-                                    sh '''
-                                        newman run ./registries_api_tests.json \
-                                            --global-var test_user=$GWELLS_API_TEST_USER \
-                                            --global-var test_password=$GWELLS_API_TEST_PASSWORD \
-                                            --global-var base_url="${BASEURL}" \
-                                            --global-var auth_server=$GWELLS_API_TEST_AUTH_SERVER \
-                                            --global-var client_id=$GWELLS_API_TEST_CLIENT_ID \
-                                            --global-var client_secret=$GWELLS_API_TEST_CLIENT_SECRET \
-                                            -r cli,junit,html
-                                        newman run ./wells_api_tests.json \
-                                            --global-var test_user=$GWELLS_API_TEST_USER \
-                                            --global-var test_password=$GWELLS_API_TEST_PASSWORD \
-                                            --global-var base_url="${BASEURL}" \
-                                            --global-var auth_server=$GWELLS_API_TEST_AUTH_SERVER \
-                                            --global-var client_id=$GWELLS_API_TEST_CLIENT_ID \
-                                            --global-var client_secret=$GWELLS_API_TEST_CLIENT_SECRET \
-                                            -r cli,junit,html
-                                        newman run ./submissions_api_tests.json \
-                                            --global-var test_user=$GWELLS_API_TEST_USER \
-                                            --global-var test_password=$GWELLS_API_TEST_PASSWORD \
-                                            --global-var base_url="${BASEURL}" \
-                                            --global-var auth_server=$GWELLS_API_TEST_AUTH_SERVER \
-                                            --global-var client_id=$GWELLS_API_TEST_CLIENT_ID \
-                                            --global-var client_secret=$GWELLS_API_TEST_CLIENT_SECRET \
-                                            -r cli,junit,html
-                                    '''
-                                } finally {
-                                        junit 'newman/*.xml'
-                                        publishHTML (
-                                            target: [
-                                                allowMissing: false,
-                                                alwaysLinkToLastBuild: false,
-                                                keepAll: true,
-                                                reportDir: 'newman',
-                                                reportFiles: 'newman*.html',
-                                                reportName: "API Test Report"
-                                            ]
-                                        )
-                                        stash includes: 'newman/*.xml', name: 'api-tests'
-                                }
-                            } // end dir
-                        } //end node
-                    } //end podTemplate
-                } //end stage
-            },
-            "Functional Tests":{
-                _stage('Functional Tests', context){
-                    String baseURL = context.deployments['dev'].environmentUrl.substring(
-                        0,
-                        context.deployments['dev'].environmentUrl.indexOf('/', 8) + 1
-                    )
-                    podTemplate(
-                        label: "bddstack-${context.uuid}",
-                        name: "bddstack-${context.uuid}",
-                        serviceAccount: 'jenkins',
-                        cloud: 'openshift',
-                        containers: [
-                          containerTemplate(
-                             name: 'jnlp',
-                             image: 'docker-registry.default.svc:5000/openshift/jenkins-slave-bddstack',
-                             resourceRequestCpu: '800m',
-                             resourceLimitCpu: '800m',
-                             resourceRequestMemory: '3Gi',
-                             resourceLimitMemory: '3Gi',
-                             workingDir: '/home/jenkins',
-                             command: '',
-                             args: '${computer.jnlpmac} ${computer.name}',
-                             envVars: [
-                                 envVar(key:'BASEURL', value: baseURL),
-                                 envVar(key:'GRADLE_USER_HOME', value: '/var/cache/artifacts/gradle')
-                             ]
-                          )
-                        ],
-                        volumes: [
-                            persistentVolumeClaim(
-                                mountPath: '/var/cache/artifacts',
-                                claimName: 'cache',
-                                readOnly: false
-                            )
-                        ]
-                    ){
-                        node("bddstack-${context.uuid}") {
-                            echo "Build: ${BUILD_ID}"
-                            echo "baseURL: ${baseURL}"
-                            checkout scm
-                            dir('functional-tests') {
-                                waitUntil {
-                                    sleep 5
-                                    return isFixtured
-                                }
-                                try {
-                                    sh './gradlew chromeHeadlessTest'
-                                } finally {
-                                        archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/geb/**/*'
-                                        junit testResults:'build/test-results/**/*.xml', allowEmptyResults:true
-                                        publishHTML (
-                                            target: [
-                                                allowMissing: true,
-                                                alwaysLinkToLastBuild: false,
-                                                keepAll: true,
-                                                reportDir: 'build/reports/spock',
-                                                reportFiles: 'index.html',
-                                                reportName: "Test: BDD Spock Report"
-                                            ]
-                                        )
-                                        publishHTML (
-                                            target: [
-                                                allowMissing: true,
-                                                alwaysLinkToLastBuild: false,
-                                                keepAll: true,
-                                                reportDir: 'build/reports/tests/chromeHeadlessTest',
-                                                reportFiles: 'index.html',
-                                                reportName: "Test: Full Test Report"
-                                            ]
-                                        )
-                                }
-                            } //end dir
-                        } //end node
-                    } //end podTemplate
-                } //end stage
             }
         )
+    },
+    "API Test": {
+        _stage('API Test', context) {
+            String baseURL = context.deployments['dev'].environmentUrl.substring(0, context.deployments['dev'].environmentUrl.indexOf('/', 8) + 1)
+            podTemplate(
+                label: "nodejs-${context.uuid}",
+                name: "nodejs-${context.uuid}",
+                serviceAccount: 'jenkins',
+                cloud: 'openshift',
+                containers: [
+                    containerTemplate(
+                        name: 'jnlp',
+                        image: 'registry.access.redhat.com/openshift3/jenkins-agent-nodejs-8-rhel7',
+                        resourceRequestCpu: '800m',
+                        resourceLimitCpu: '800m',
+                        resourceRequestMemory: '1Gi',
+                        resourceLimitMemory: '1Gi',
+                        workingDir: '/tmp',
+                        command: '',
+                        args: '${computer.jnlpmac} ${computer.name}',
+                        envVars: [
+                            envVar(
+                                key:'BASEURL',
+                                value: "${baseURL}gwells"
+                            ),
+                            secretEnvVar(
+                                key: 'GWELLS_API_TEST_USER',
+                                secretName: 'apitest-secrets',
+                                secretKey: 'username'
+                            ),
+                            secretEnvVar(
+                                key: 'GWELLS_API_TEST_PASSWORD',
+                                secretName: 'apitest-secrets',
+                                secretKey: 'password'
+                            ),
+                            secretEnvVar(
+                                key: 'GWELLS_API_TEST_AUTH_SERVER',
+                                secretName: 'apitest-secrets',
+                                secretKey: 'auth_server'
+                            ),
+                            secretEnvVar(
+                                key: 'GWELLS_API_TEST_CLIENT_ID',
+                                secretName: 'apitest-secrets',
+                                secretKey: 'client_id'
+                            ),
+                            secretEnvVar(
+                                key: 'GWELLS_API_TEST_CLIENT_SECRET',
+                                secretName: 'apitest-secrets',
+                                secretKey: 'client_secret'
+                            )
+                        ]
+                    )
+                ]
+            ) {
+                node("nodejs-${context.uuid}") {
+                    checkout scm
+                    dir('api-tests') {
+                        sh 'npm install -g newman'
+                        waitUntil {
+                            sleep 5
+                            return isFixtured
+                        }
+                        try {
+                            sh '''
+                                newman run ./registries_api_tests.json \
+                                    --global-var test_user=$GWELLS_API_TEST_USER \
+                                    --global-var test_password=$GWELLS_API_TEST_PASSWORD \
+                                    --global-var base_url="${BASEURL}" \
+                                    --global-var auth_server=$GWELLS_API_TEST_AUTH_SERVER \
+                                    --global-var client_id=$GWELLS_API_TEST_CLIENT_ID \
+                                    --global-var client_secret=$GWELLS_API_TEST_CLIENT_SECRET \
+                                    -r cli,junit,html
+                                newman run ./wells_api_tests.json \
+                                    --global-var test_user=$GWELLS_API_TEST_USER \
+                                    --global-var test_password=$GWELLS_API_TEST_PASSWORD \
+                                    --global-var base_url="${BASEURL}" \
+                                    --global-var auth_server=$GWELLS_API_TEST_AUTH_SERVER \
+                                    --global-var client_id=$GWELLS_API_TEST_CLIENT_ID \
+                                    --global-var client_secret=$GWELLS_API_TEST_CLIENT_SECRET \
+                                    -r cli,junit,html
+                                newman run ./submissions_api_tests.json \
+                                    --global-var test_user=$GWELLS_API_TEST_USER \
+                                    --global-var test_password=$GWELLS_API_TEST_PASSWORD \
+                                    --global-var base_url="${BASEURL}" \
+                                    --global-var auth_server=$GWELLS_API_TEST_AUTH_SERVER \
+                                    --global-var client_id=$GWELLS_API_TEST_CLIENT_ID \
+                                    --global-var client_secret=$GWELLS_API_TEST_CLIENT_SECRET \
+                                    -r cli,junit,html
+                            '''
+                        } finally {
+                                junit 'newman/*.xml'
+                                publishHTML (
+                                    target: [
+                                        allowMissing: false,
+                                        alwaysLinkToLastBuild: false,
+                                        keepAll: true,
+                                        reportDir: 'newman',
+                                        reportFiles: 'newman*.html',
+                                        reportName: "API Test Report"
+                                    ]
+                                )
+                                stash includes: 'newman/*.xml', name: 'api-tests'
+                        }
+                    } // end dir
+                } //end node
+            } //end podTemplate
+        } //end stage
+    },
+    "Functional Tests":{
+        _stage('Functional Tests', context){
+            String baseURL = context.deployments['dev'].environmentUrl.substring(
+                0,
+                context.deployments['dev'].environmentUrl.indexOf('/', 8) + 1
+            )
+            podTemplate(
+                label: "bddstack-${context.uuid}",
+                name: "bddstack-${context.uuid}",
+                serviceAccount: 'jenkins',
+                cloud: 'openshift',
+                containers: [
+                  containerTemplate(
+                     name: 'jnlp',
+                     image: 'docker-registry.default.svc:5000/openshift/jenkins-slave-bddstack',
+                     resourceRequestCpu: '800m',
+                     resourceLimitCpu: '800m',
+                     resourceRequestMemory: '3Gi',
+                     resourceLimitMemory: '3Gi',
+                     workingDir: '/home/jenkins',
+                     command: '',
+                     args: '${computer.jnlpmac} ${computer.name}',
+                     envVars: [
+                         envVar(key:'BASEURL', value: baseURL),
+                         envVar(key:'GRADLE_USER_HOME', value: '/var/cache/artifacts/gradle')
+                     ]
+                  )
+                ],
+                volumes: [
+                    persistentVolumeClaim(
+                        mountPath: '/var/cache/artifacts',
+                        claimName: 'cache',
+                        readOnly: false
+                    )
+                ]
+            ){
+                node("bddstack-${context.uuid}") {
+                    echo "Build: ${BUILD_ID}"
+                    echo "baseURL: ${baseURL}"
+                    checkout scm
+                    dir('functional-tests') {
+                        waitUntil {
+                            sleep 5
+                            return isFixtured
+                        }
+                        try {
+                            sh './gradlew chromeHeadlessTest'
+                        } finally {
+                                archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/geb/**/*'
+                                junit testResults:'build/test-results/**/*.xml', allowEmptyResults:true
+                                publishHTML (
+                                    target: [
+                                        allowMissing: true,
+                                        alwaysLinkToLastBuild: false,
+                                        keepAll: true,
+                                        reportDir: 'build/reports/spock',
+                                        reportFiles: 'index.html',
+                                        reportName: "Test: BDD Spock Report"
+                                    ]
+                                )
+                                publishHTML (
+                                    target: [
+                                        allowMissing: true,
+                                        alwaysLinkToLastBuild: false,
+                                        keepAll: true,
+                                        reportDir: 'build/reports/tests/chromeHeadlessTest',
+                                        reportFiles: 'index.html',
+                                        reportName: "Test: Full Test Report"
+                                    ]
+                                )
+                        }
+                    } //end dir
+                } //end node
+            } //end podTemplate
+        } //end stage
     },
     "Unit Tests" : {
         /* Unit test stage
