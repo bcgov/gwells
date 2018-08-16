@@ -209,10 +209,10 @@ _stage('Build', context) {
        - Unit tests
         -> Code quality
     || ZAP Security Scan
-       - ZAP security scan
 */
 boolean isDeployed = false
 boolean isFixtured = false
+boolean isUnitTested = false
 parallel (
     "Deploy" : {
         _stage('Deploy', context) {
@@ -527,74 +527,75 @@ parallel (
                                 }
                             } //end branch
                         ) //end parallel
+                        isUnitTested=true
                     } //end container
                 } //end node
             } //end podTemplate
         } //end stage
-
-
+    },
+    "Code Quality": {
         /* Code quality stage - pipeline step/closure
-            - unstash unit test results (previous stage)
-            - use SonarQube to consume results (*.xml)
+        - unstash unit test results (previous stage)
+        - use SonarQube to consume results (*.xml)
         */
-        parallel (
-            "Code Quality": {
-                _stage('Code Quality', context) {
-                    podTemplate(
-                        name: "sonar-runner${context.uuid}",
-                        label: "sonar-runner${context.uuid}",
-                        serviceAccount: 'jenkins',
-                        cloud: 'openshift',
-                        containers:[
-                            containerTemplate(
-                                name: 'jnlp',
-                                resourceRequestMemory: '4Gi',
-                                resourceLimitMemory: '4Gi',
-                                resourceRequestCpu: '4000m',
-                                resourceLimitCpu: '4000m',
-                                image: 'registry.access.redhat.com/openshift3/jenkins-slave-maven-rhel7:v3.7',
-                                workingDir: '/tmp',
-                                args: '${computer.jnlpmac} ${computer.name}',
-                                envVars: [
-                                    envVar(key:'GRADLE_USER_HOME', value: '/var/cache/artifacts/gradle')
-                                ]
-                            )
-                        ],
-                        volumes: [
-                            persistentVolumeClaim(
-                                mountPath: '/var/cache/artifacts',
-                                claimName: 'cache',
-                                readOnly: false
-                            )
+        _stage('Code Quality', context) {
+            podTemplate(
+                name: "sonar-runner${context.uuid}",
+                label: "sonar-runner${context.uuid}",
+                serviceAccount: 'jenkins',
+                cloud: 'openshift',
+                containers:[
+                    containerTemplate(
+                        name: 'jnlp',
+                        resourceRequestMemory: '4Gi',
+                        resourceLimitMemory: '4Gi',
+                        resourceRequestCpu: '4000m',
+                        resourceLimitCpu: '4000m',
+                        image: 'registry.access.redhat.com/openshift3/jenkins-slave-maven-rhel7:v3.7',
+                        workingDir: '/tmp',
+                        args: '${computer.jnlpmac} ${computer.name}',
+                        envVars: [
+                            envVar(key:'GRADLE_USER_HOME', value: '/var/cache/artifacts/gradle')
                         ]
-                    ){
-                        node("sonar-runner${context.uuid}") {
-                            //the checkout is mandatory, otherwise code quality check would fail
-                            echo "checking out source"
-                            echo "Build: ${BUILD_ID}"
-                            checkout scm
+                    )
+                ],
+                volumes: [
+                    persistentVolumeClaim(
+                        mountPath: '/var/cache/artifacts',
+                        claimName: 'cache',
+                        readOnly: false
+                    )
+                ]
+            ){
+                node("sonar-runner${context.uuid}") {
+                    //the checkout is mandatory, otherwise code quality check would fail
+                    echo "checking out source"
+                    echo "Build: ${BUILD_ID}"
+                    checkout scm
 
-                            String SONARQUBE_URL = 'https://sonarqube-moe-gwells-tools.pathfinder.gov.bc.ca'
-                            echo "SONARQUBE_URL: ${SONARQUBE_URL}"
-                            dir('app') {
-                                unstash 'nodejunit'
-                                unstash 'nodecoverage'
-                            }
-                            dir('sonar-runner') {
-                                unstash 'coverage'
-                                sh script:
-                                    """
-                                        ./gradlew -q dependencies
-                                        ./gradlew sonarqube -Dsonar.host.url=${SONARQUBE_URL} -Dsonar.verbose=true \
-                                            --stacktrace --info  -Dsonar.sources=..
-                                    """,
-                                    returnStdout: true
-                            }
-                        } //end node
-                    } //end podTemplate
-                } //end stage
-            }
-        )
+                    String SONARQUBE_URL = 'https://sonarqube-moe-gwells-tools.pathfinder.gov.bc.ca'
+                    echo "SONARQUBE_URL: ${SONARQUBE_URL}"
+                    waitUntil {
+                        sleep 5
+                        return isUnitTested
+                    }
+                    dir('app') {
+                        unstash 'nodejunit'
+                        unstash 'nodecoverage'
+                    }
+                    dir('sonar-runner') {
+                        unstash 'coverage'
+                        sh script:
+                            """
+                                ./gradlew -q dependencies
+                                ./gradlew sonarqube -Dsonar.host.url=${SONARQUBE_URL} -Dsonar.verbose=true \
+                                    --stacktrace --info  -Dsonar.sources=..
+                            """,
+                            returnStdout: true
+                    }
+                } //end node
+            } //end podTemplate
+        } //end stage
     }, //end branch
     "ZAP Security Scan": {
         _stage('ZAP Security Scan', context) {
