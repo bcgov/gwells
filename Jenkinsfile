@@ -137,9 +137,9 @@ Map context = [
     ],
     stages:[
         'Load Fixtures': true,
-        'API Test': true,
+        'API Tests': true,
         'Functional Tests': false,
-        'Unit Test': true,
+        'Unit Tests': true,
         'Code Quality': false,
         'ZAP Security Scan': false
     ],
@@ -243,8 +243,8 @@ parallel (
             }
         )
         parallel (
-            "API Test": {
-                _stage('API Test', context) {
+            "API Tests": {
+                _stage('API Tests', context) {
                     String baseURL = context.deployments['dev'].environmentUrl.substring(0, context.deployments['dev'].environmentUrl.indexOf('/', 8) + 1)
                     podTemplate(
                         label: "nodejs-${context.uuid}",
@@ -294,8 +294,39 @@ parallel (
                                     )
                                 ]
                             )
-                    ]
-                ) {
+                        ],
+                        envVars: [
+                            envVar(
+                                key:'BASEURL',
+                                value: "${baseURL}gwells"
+                            ),
+                            secretEnvVar(
+                                key: 'GWELLS_API_TEST_USER',
+                                secretName: 'apitest-secrets',
+                                secretKey: 'username'
+                            ),
+                            secretEnvVar(
+                                key: 'GWELLS_API_TEST_PASSWORD',
+                                secretName: 'apitest-secrets',
+                                secretKey: 'password'
+                            ),
+                            secretEnvVar(
+                                key: 'GWELLS_API_TEST_AUTH_SERVER',
+                                secretName: 'apitest-secrets',
+                                secretKey: 'auth_server'
+                            ),
+                            secretEnvVar(
+                                key: 'GWELLS_API_TEST_CLIENT_ID',
+                                secretName: 'apitest-secrets',
+                                secretKey: 'client_id'
+                            ),
+                            secretEnvVar(
+                                key: 'GWELLS_API_TEST_CLIENT_SECRET',
+                                secretName: 'apitest-secrets',
+                                secretKey: 'client_secret'
+                            )
+                        ]
+                    ) {
                         node("nodejs-${context.uuid}") {
                             checkout scm
                             dir('api-tests') {
@@ -464,7 +495,7 @@ parallel (
                         boolean runCodeQuality=((context?.stages?:[:])['Code Quality'] == true)
 
                         parallel (
-                            "Unit Test: Python": {
+                            "Unit Tests: Python": {
                                 try {
                                     sh script: '''#!/usr/bin/container-entrypoint /bin/sh
                                         cd /opt/app-root/src/backend
@@ -484,7 +515,7 @@ parallel (
                                     }
                                 }
                             },
-                            "Unit Test: Node": {
+                            "Unit Tests: Node": {
                                 try {
                                     sh script: '''#!/usr/bin/container-entrypoint /bin/sh
                                         cd /opt/app-root/src/frontend
