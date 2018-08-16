@@ -211,12 +211,14 @@ _stage('Build', context) {
     || ZAP Security Scan
        - ZAP security scan
 */
+boolean isDeployed = false
 boolean isFixtured = false
 parallel (
     "Deploy" : {
         _stage('Deploy', context) {
             node('master') {
                 new OpenShiftHelper().deploy(this, context, 'dev')
+                isDeployed = true
             }
         }
 
@@ -621,6 +623,10 @@ parallel (
                     echo "Build: ${BUILD_ID}"
                     checkout scm
                     dir('zap') {
+                        waitUntil {
+                            sleep 5
+                            return isDeployed
+                        }
                         def retVal = sh (
                             script: """
                                 set -eux
