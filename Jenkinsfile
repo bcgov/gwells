@@ -198,7 +198,7 @@ _stage('Build', context) {
 } //end stage
 
 
-/* Continuous integration (CI)
+/* Continuous Integration (CI)
    For feature branches merging into a release branch
     || Deploy and Load Fixtures (sets isDeployed and isFixtured=true)
     || Unit tests (sets isUnitTested=true)
@@ -448,28 +448,28 @@ parallel (
                         try {
                             sh './gradlew chromeHeadlessTest'
                         } finally {
-                                archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/geb/**/*'
-                                junit testResults:'build/test-results/**/*.xml', allowEmptyResults:true
-                                publishHTML (
-                                    target: [
-                                        allowMissing: true,
-                                        alwaysLinkToLastBuild: false,
-                                        keepAll: true,
-                                        reportDir: 'build/reports/spock',
-                                        reportFiles: 'index.html',
-                                        reportName: "Test: BDD Spock Report"
-                                    ]
-                                )
-                                publishHTML (
-                                    target: [
-                                        allowMissing: true,
-                                        alwaysLinkToLastBuild: false,
-                                        keepAll: true,
-                                        reportDir: 'build/reports/tests/chromeHeadlessTest',
-                                        reportFiles: 'index.html',
-                                        reportName: "Test: Full Test Report"
-                                    ]
-                                )
+                            archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/geb/**/*'
+                            junit testResults:'build/test-results/**/*.xml', allowEmptyResults:true
+                            publishHTML (
+                                target: [
+                                    allowMissing: true,
+                                    alwaysLinkToLastBuild: false,
+                                    keepAll: true,
+                                    reportDir: 'build/reports/spock',
+                                    reportFiles: 'index.html',
+                                    reportName: "Test: BDD Spock Report"
+                                ]
+                            )
+                            publishHTML (
+                                target: [
+                                    allowMissing: true,
+                                    alwaysLinkToLastBuild: false,
+                                    keepAll: true,
+                                    reportDir: 'build/reports/tests/chromeHeadlessTest',
+                                    reportFiles: 'index.html',
+                                    reportName: "Test: Full Test Report"
+                                ]
+                            )
                         }
                     } //end dir
                 } //end node
@@ -651,19 +651,15 @@ parallel (
 ) //end parallel
 
 
-/* Continuous deployment (CD)
+/* Continuous Deployment (CD)
    For PRs to the master branch, reserved for release branches and hotfixes
    Iterates through DEV (skipped), TEST and PROD environments
     - [prompt/stop]
-      - deployment to persistent test environment
-      - smoke tests
-      - deployment
+      || deployment to persistent TEST environment (sets isDeployed=true)
+      || smoke tests (executes on isDeployed)
     - [prompt/stop]
-      - deployment to persistent production environment
-    - [prompt/stop]
-      - merge sprint release or hotfix branch into master
-      - close PR
-      - delete branch
+      - deployment to persistent PROD environment
+      - GitHub tasks (merge, close PR, deleteproduction branch)
 */
 for(String envKeyName: context.env.keySet() as String[]){
     String stageDeployName=envKeyName.toUpperCase()
@@ -689,82 +685,93 @@ for(String envKeyName: context.env.keySet() as String[]){
             )
         }
 
-        _stage("Deploy - ${stageDeployName}", context) {
-            node('master') {
-                new OpenShiftHelper().deploy(this, context, envKeyName)
-            }
-        }
-
-        _stage("Smoke Test - ${stageDeployName}", context){
-            String baseURL = context.deployments[envKeyName].environmentUrl.substring(
-                0,
-                context.deployments[envKeyName].environmentUrl.indexOf('/', 8) + 1
-            )
-            podTemplate(
-                label: "bddstack-${context.uuid}",
-                name: "bddstack-${context.uuid}",
-                serviceAccount: 'jenkins',
-                cloud: 'openshift',
-                containers: [
-                  containerTemplate(
-                     name: 'jnlp',
-                     image: 'docker-registry.default.svc:5000/openshift/jenkins-slave-bddstack',
-                     resourceRequestCpu: '800m',
-                     resourceLimitCpu: '800m',
-                     resourceRequestMemory: '3Gi',
-                     resourceLimitMemory: '3Gi',
-                     workingDir: '/home/jenkins',
-                     command: '',
-                     args: '${computer.jnlpmac} ${computer.name}',
-                     envVars: [
-                         envVar(key:'BASEURL', value: baseURL),
-                         envVar(key:'GRADLE_USER_HOME', value: '/var/cache/artifacts/gradle')
-                     ]
-                  )
-                ],
-                volumes: [
-                    persistentVolumeClaim(
-                        mountPath: '/var/cache/artifacts',
-                        claimName: 'cache',
-                        readOnly: false
+        isDeployed = false
+        parallel (
+            "Deploy - ${stageDeployName}": {
+                _stage("Deploy - ${stageDeployName}", context) {
+                    node('master') {
+                        new OpenShiftHelper().deploy(this, context, envKeyName)
+                        isDeployed = true
+                    }
+                }
+            },
+            "Smoke Test - ${stageDeployName}": {
+                waitUntil {
+                    sleep 5
+                    return isDeployed
+                }
+                _stage("Smoke Test - ${stageDeployName}", context){
+                    String baseURL = context.deployments[envKeyName].environmentUrl.substring(
+                        0,
+                        context.deployments[envKeyName].environmentUrl.indexOf('/', 8) + 1
                     )
-                ]
-            ){
-                node("bddstack-${context.uuid}") {
-                    echo "Build: ${BUILD_ID}"
-                    echo "baseURL: ${baseURL}"
-                    checkout scm
-                    dir('functional-tests') {
-                        try {
-                            sh './gradlew -DchromeHeadlessTest.single=WellDetails chromeHeadlessTest'
-                        } finally {
-                            archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/geb/**/*'
-                            junit testResults:'build/test-results/**/*.xml', allowEmptyResults:true
-                            publishHTML (
-                                target: [
-                                    allowMissing: true,
-                                    alwaysLinkToLastBuild: false,
-                                    keepAll: true,
-                                    reportDir: 'build/reports/spock',
-                                    reportFiles: 'index.html',
-                                    reportName: "Test: BDD Spock Report"
-                                ]
+                    podTemplate(
+                        label: "bddstack-${context.uuid}",
+                        name: "bddstack-${context.uuid}",
+                        serviceAccount: 'jenkins',
+                        cloud: 'openshift',
+                        containers: [
+                          containerTemplate(
+                             name: 'jnlp',
+                             image: 'docker-registry.default.svc:5000/openshift/jenkins-slave-bddstack',
+                             resourceRequestCpu: '800m',
+                             resourceLimitCpu: '800m',
+                             resourceRequestMemory: '3Gi',
+                             resourceLimitMemory: '3Gi',
+                             workingDir: '/home/jenkins',
+                             command: '',
+                             args: '${computer.jnlpmac} ${computer.name}',
+                             envVars: [
+                                 envVar(key:'BASEURL', value: baseURL),
+                                 envVar(key:'GRADLE_USER_HOME', value: '/var/cache/artifacts/gradle')
+                             ]
+                          )
+                        ],
+                        volumes: [
+                            persistentVolumeClaim(
+                                mountPath: '/var/cache/artifacts',
+                                claimName: 'cache',
+                                readOnly: false
                             )
-                            publishHTML (
-                                target: [
-                                    allowMissing: true,
-                                    alwaysLinkToLastBuild: false,
-                                    keepAll: true,
-                                    reportDir: 'build/reports/tests/chromeHeadlessTest',
-                                    reportFiles: 'index.html',
-                                    reportName: "Test: Full Test Report"
-                                ]
-                            )
-                        }
-                    } //end dir
-                } //end node
-            } //end podTemplate
-        } //end stage
+                        ]
+                    ){
+                        node("bddstack-${context.uuid}") {
+                            echo "Build: ${BUILD_ID}"
+                            echo "baseURL: ${baseURL}"
+                            checkout scm
+                            dir('functional-tests') {
+                                try {
+                                    sh './gradlew -DchromeHeadlessTest.single=WellDetails chromeHeadlessTest'
+                                } finally {
+                                    archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/geb/**/*'
+                                    junit testResults:'build/test-results/**/*.xml', allowEmptyResults:true
+                                    publishHTML (
+                                        target: [
+                                            allowMissing: true,
+                                            alwaysLinkToLastBuild: false,
+                                            keepAll: true,
+                                            reportDir: 'build/reports/spock',
+                                            reportFiles: 'index.html',
+                                            reportName: "Test: BDD Spock Report"
+                                        ]
+                                    )
+                                    publishHTML (
+                                        target: [
+                                            allowMissing: true,
+                                            alwaysLinkToLastBuild: false,
+                                            keepAll: true,
+                                            reportDir: 'build/reports/tests/chromeHeadlessTest',
+                                            reportFiles: 'index.html',
+                                            reportName: "Test: Full Test Report"
+                                        ]
+                                    )
+                                }
+                            } //end dir
+                        } //end node
+                    } //end podTemplate
+                } //end stage
+            }
+        )
     } //end if
 } // end for
 
