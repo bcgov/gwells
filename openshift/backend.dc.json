@@ -344,7 +344,7 @@
                                     {
                                         "name": "APP_CONFIG",
                                         "value": "/opt/app-root/src/backend/gunicorn.cfg"
-                                    },                                    
+                                    },
                                     {
                                         "name": "DJANGO_SECRET_KEY",
                                         "valueFrom": {
@@ -561,12 +561,12 @@
                                 ],
                                 "resources": {
                                     "limits": {
-                                        "cpu": "250m",
+                                        "cpu": "300m",
                                         "memory": "768Mi"
                                     },
                                     "requests": {
-                                        "cpu": "200m",
-                                        "memory": "512Mi"
+                                        "cpu": "300m",
+                                        "memory": "768Mi"
                                     }
                                 },
                                 "livenessProbe": {
