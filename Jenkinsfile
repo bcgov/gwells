@@ -229,6 +229,7 @@ parallel (
             node('master'){
                 parallel (
                     "Load Fixtures": {
+                        sleep 10
                         String podName = openshift.withProject(projectName){
                             return openshift.selector('pod', ['deploymentconfig':deploymentConfigName]).objects()[0].metadata.name
                         }
