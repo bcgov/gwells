@@ -200,13 +200,13 @@ _stage('Build', context) {
 
 /* Continuous integration (CI)
    For feature branches merging into a release branch
-    || Deployment and Fixtures (sets isDeployed and isFixtured=true)
-    || API tests (executes on isFixtured)
+    || Deploy and Load Fixtures (sets isDeployed and isFixtured=true)
     || Unit tests (sets isUnitTested=true)
     -> || Python tests
        || Node tests
     || ZAP Security Scan (executes on isDeployed)
     || Functional tests (executes on isFixtured)
+    || API tests (executes on isFixtured)
     || Code quality (executes on isUnitTested)
 */
 boolean isDeployed = false
@@ -242,7 +242,240 @@ parallel (
                 isFixtured = true
             }
         } //end stage
-    },
+    }, //end branch
+    "Unit Tests" : {
+        /* Unit test stage
+            - use Django's manage.py to run python unit tests (w/ nose.cfg)
+            - use 'npm run unit' to run JavaScript unit tests
+            - stash test results for code quality stage
+        */
+        _stage('Unit Tests', context) {
+            podTemplate(
+                label: "node-${context.uuid}",
+                name:"node-${context.uuid}",
+                serviceAccount: 'jenkins',
+                cloud: 'openshift',
+                containers: [
+                    containerTemplate(
+                        name: 'jnlp',
+                        image: 'jenkins/jnlp-slave:3.10-1-alpine',
+                        args: '${computer.jnlpmac} ${computer.name}',
+                        resourceRequestCpu: '100m',
+                        resourceLimitCpu: '100m'
+                    ),
+                    containerTemplate(
+                        name: 'app',
+                        image: "docker-registry.default.svc:5000/moe-gwells-tools/gwells${context.buildNameSuffix}:${context.buildEnvName}",
+                        ttyEnabled: true,
+                        command: 'cat',
+                        resourceRequestCpu: '2',
+                        resourceLimitCpu: '2',
+                        resourceRequestMemory: '2.5Gi',
+                        resourceLimitMemory: '2.5Gi'
+                    )
+                ]
+            ) {
+                node("node-${context.uuid}") {
+                    container('app') {
+                        sh script: '''#!/usr/bin/container-entrypoint /bin/sh
+                            printf "Python version: "&& python --version
+                            printf "Pip version:    "&& pip --version
+                            printf "Node version:   "&& node --version
+                            printf "NPM version:    "&& npm --version
+                        '''
+
+                        boolean runCodeQuality=((context?.stages?:[:])['Code Quality'] == true)
+
+                        parallel (
+                            "Unit Test: Python": {
+                                try {
+                                    sh script: '''#!/usr/bin/container-entrypoint /bin/sh
+                                        cd /opt/app-root/src/backend
+                                        DATABASE_ENGINE=sqlite DEBUG=False TEMPLATE_DEBUG=False python manage.py test -c nose.cfg
+                                    '''
+                                    if (runCodeQuality) {
+                                        sh script: '''#!/usr/bin/container-entrypoint /bin/sh
+                                            cp /opt/app-root/src/backend/nosetests.xml ./
+                                            cp /opt/app-root/src/backend/coverage.xml ./
+                                        '''
+                                        stash includes: 'nosetests.xml,coverage.xml', name: 'coverage'
+                                    }
+                                } finally {
+                                    if (runCodeQuality) {
+                                        stash includes: 'nosetests.xml,coverage.xml', name: 'coverage'
+                                        junit 'nosetests.xml'
+                                    }
+                                }
+                            },
+                            "Unit Test: Node": {
+                                try {
+                                    sh script: '''#!/usr/bin/container-entrypoint /bin/sh
+                                        cd /opt/app-root/src/frontend
+                                        npm test
+                                    '''
+                                    if (runCodeQuality) {
+                                        sh script: '''#!/usr/bin/container-entrypoint /bin/sh
+                                            mkdir -p frontend/test/
+                                            cp -R /opt/app-root/src/frontend/test/unit ./frontend/test/
+                                            cp /opt/app-root/src/frontend/junit.xml ./frontend/
+                                        '''
+                                    }
+                                } finally {
+                                    if (runCodeQuality) {
+                                        archiveArtifacts allowEmptyArchive: true, artifacts: 'frontend/test/unit/**/*'
+                                        stash includes: 'frontend/test/unit/coverage/clover.xml', name: 'nodecoverage'
+                                        stash includes: 'frontend/junit.xml', name: 'nodejunit'
+                                        junit 'frontend/junit.xml'
+                                        publishHTML (
+                                            target: [
+                                                allowMissing: false,
+                                                alwaysLinkToLastBuild: false,
+                                                keepAll: true,
+                                                reportDir: 'frontend/test/unit/coverage/lcov-report/',
+                                                reportFiles: 'index.html',
+                                                reportName: "Node Coverage Report"
+                                            ]
+                                        )
+                                    }
+                                }
+                            } //end branch
+                        ) //end parallel
+                        isUnitTested=true
+                    } //end container
+                } //end node
+            } //end podTemplate
+        } //end stage
+    }, //end branch
+    "ZAP Security Scan": {
+        _stage('ZAP Security Scan', context) {
+            podTemplate(
+                label: "zap-${context.uuid}",
+                name: "zap-${context.uuid}",
+                serviceAccount: "jenkins",
+                cloud: "openshift",
+                containers: [
+                    containerTemplate(
+                        name: 'jnlp',
+                        image: 'docker-registry.default.svc:5000/moe-gwells-dev/owasp-zap-openshift',
+                        resourceRequestCpu: '1',
+                        resourceLimitCpu: '1',
+                        resourceRequestMemory: '4Gi',
+                        resourceLimitMemory: '4Gi',
+                        workingDir: '/home/jenkins',
+                        command: '',
+                        args: '${computer.jnlpmac} ${computer.name}'
+                    )
+                ]
+            ) {
+                node("zap-${context.uuid}") {
+                    //the checkout is mandatory
+                    echo "checking out source"
+                    echo "Build: ${BUILD_ID}"
+                    checkout scm
+                    dir('zap') {
+                        waitUntil {
+                            sleep 5
+                            return isDeployed
+                        }
+                        def retVal = sh (
+                            script: """
+                                set -eux
+                                ./runzap.sh
+                            """
+                        )
+                        publishHTML(
+                            target: [
+                                allowMissing: false,
+                                alwaysLinkToLastBuild: false,
+                                keepAll: true,
+                                reportDir: '/zap/wrk',
+                                reportFiles: 'index.html',
+                                reportName: 'ZAP Full Scan',
+                                reportTitles: 'ZAP Full Scan'
+                            ]
+                        )
+                        echo "Return value is: ${retVal}"
+                    }
+                } //end node
+            } //end podTemplate
+        } //end stage
+    }, //end branch
+    "Functional Tests":{
+        _stage('Functional Tests', context){
+            String baseURL = context.deployments['dev'].environmentUrl.substring(
+                0,
+                context.deployments['dev'].environmentUrl.indexOf('/', 8) + 1
+            )
+            podTemplate(
+                label: "bddstack-${context.uuid}",
+                name: "bddstack-${context.uuid}",
+                serviceAccount: 'jenkins',
+                cloud: 'openshift',
+                containers: [
+                  containerTemplate(
+                     name: 'jnlp',
+                     image: 'docker-registry.default.svc:5000/openshift/jenkins-slave-bddstack',
+                     resourceRequestCpu: '800m',
+                     resourceLimitCpu: '800m',
+                     resourceRequestMemory: '3Gi',
+                     resourceLimitMemory: '3Gi',
+                     workingDir: '/home/jenkins',
+                     command: '',
+                     args: '${computer.jnlpmac} ${computer.name}',
+                     envVars: [
+                         envVar(key:'BASEURL', value: baseURL),
+                         envVar(key:'GRADLE_USER_HOME', value: '/var/cache/artifacts/gradle')
+                     ]
+                  )
+                ],
+                volumes: [
+                    persistentVolumeClaim(
+                        mountPath: '/var/cache/artifacts',
+                        claimName: 'cache',
+                        readOnly: false
+                    )
+                ]
+            ){
+                node("bddstack-${context.uuid}") {
+                    echo "Build: ${BUILD_ID}"
+                    echo "baseURL: ${baseURL}"
+                    checkout scm
+                    dir('functional-tests') {
+                        waitUntil {
+                            sleep 5
+                            return isFixtured
+                        }
+                        try {
+                            sh './gradlew chromeHeadlessTest'
+                        } finally {
+                                archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/geb/**/*'
+                                junit testResults:'build/test-results/**/*.xml', allowEmptyResults:true
+                                publishHTML (
+                                    target: [
+                                        allowMissing: true,
+                                        alwaysLinkToLastBuild: false,
+                                        keepAll: true,
+                                        reportDir: 'build/reports/spock',
+                                        reportFiles: 'index.html',
+                                        reportName: "Test: BDD Spock Report"
+                                    ]
+                                )
+                                publishHTML (
+                                    target: [
+                                        allowMissing: true,
+                                        alwaysLinkToLastBuild: false,
+                                        keepAll: true,
+                                        reportDir: 'build/reports/tests/chromeHeadlessTest',
+                                        reportFiles: 'index.html',
+                                        reportName: "Test: Full Test Report"
+                                    ]
+                                )
+                        }
+                    } //end dir
+                } //end node
+            } //end podTemplate
+        } //end stage
+    }, //end branch
     "API Test": {
         _stage('API Test', context) {
             waitUntil {
@@ -350,186 +583,7 @@ parallel (
                 } //end node
             } //end podTemplate
         } //end stage
-    },
-    "Functional Tests":{
-        _stage('Functional Tests', context){
-            String baseURL = context.deployments['dev'].environmentUrl.substring(
-                0,
-                context.deployments['dev'].environmentUrl.indexOf('/', 8) + 1
-            )
-            podTemplate(
-                label: "bddstack-${context.uuid}",
-                name: "bddstack-${context.uuid}",
-                serviceAccount: 'jenkins',
-                cloud: 'openshift',
-                containers: [
-                  containerTemplate(
-                     name: 'jnlp',
-                     image: 'docker-registry.default.svc:5000/openshift/jenkins-slave-bddstack',
-                     resourceRequestCpu: '800m',
-                     resourceLimitCpu: '800m',
-                     resourceRequestMemory: '3Gi',
-                     resourceLimitMemory: '3Gi',
-                     workingDir: '/home/jenkins',
-                     command: '',
-                     args: '${computer.jnlpmac} ${computer.name}',
-                     envVars: [
-                         envVar(key:'BASEURL', value: baseURL),
-                         envVar(key:'GRADLE_USER_HOME', value: '/var/cache/artifacts/gradle')
-                     ]
-                  )
-                ],
-                volumes: [
-                    persistentVolumeClaim(
-                        mountPath: '/var/cache/artifacts',
-                        claimName: 'cache',
-                        readOnly: false
-                    )
-                ]
-            ){
-                node("bddstack-${context.uuid}") {
-                    echo "Build: ${BUILD_ID}"
-                    echo "baseURL: ${baseURL}"
-                    checkout scm
-                    dir('functional-tests') {
-                        waitUntil {
-                            sleep 5
-                            return isFixtured
-                        }
-                        try {
-                            sh './gradlew chromeHeadlessTest'
-                        } finally {
-                                archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/geb/**/*'
-                                junit testResults:'build/test-results/**/*.xml', allowEmptyResults:true
-                                publishHTML (
-                                    target: [
-                                        allowMissing: true,
-                                        alwaysLinkToLastBuild: false,
-                                        keepAll: true,
-                                        reportDir: 'build/reports/spock',
-                                        reportFiles: 'index.html',
-                                        reportName: "Test: BDD Spock Report"
-                                    ]
-                                )
-                                publishHTML (
-                                    target: [
-                                        allowMissing: true,
-                                        alwaysLinkToLastBuild: false,
-                                        keepAll: true,
-                                        reportDir: 'build/reports/tests/chromeHeadlessTest',
-                                        reportFiles: 'index.html',
-                                        reportName: "Test: Full Test Report"
-                                    ]
-                                )
-                        }
-                    } //end dir
-                } //end node
-            } //end podTemplate
-        } //end stage
-    },
-    "Unit Tests" : {
-        /* Unit test stage
-            - use Django's manage.py to run python unit tests (w/ nose.cfg)
-            - use 'npm run unit' to run JavaScript unit tests
-            - stash test results for code quality stage
-        */
-        _stage('Unit Tests', context) {
-            podTemplate(
-                label: "node-${context.uuid}",
-                name:"node-${context.uuid}",
-                serviceAccount: 'jenkins',
-                cloud: 'openshift',
-                containers: [
-                    containerTemplate(
-                        name: 'jnlp',
-                        image: 'jenkins/jnlp-slave:3.10-1-alpine',
-                        args: '${computer.jnlpmac} ${computer.name}',
-                        resourceRequestCpu: '100m',
-                        resourceLimitCpu: '100m'
-                    ),
-                    containerTemplate(
-                        name: 'app',
-                        image: "docker-registry.default.svc:5000/moe-gwells-tools/gwells${context.buildNameSuffix}:${context.buildEnvName}",
-                        ttyEnabled: true,
-                        command: 'cat',
-                        resourceRequestCpu: '2',
-                        resourceLimitCpu: '2',
-                        resourceRequestMemory: '2.5Gi',
-                        resourceLimitMemory: '2.5Gi'
-                    )
-                ]
-            ) {
-                node("node-${context.uuid}") {
-                    container('app') {
-                        sh script: '''#!/usr/bin/container-entrypoint /bin/sh
-                            printf "Python version: "&& python --version
-                            printf "Pip version:    "&& pip --version
-                            printf "Node version:   "&& node --version
-                            printf "NPM version:    "&& npm --version
-                        '''
-
-                        boolean runCodeQuality=((context?.stages?:[:])['Code Quality'] == true)
-
-                        parallel (
-                            "Unit Test: Python": {
-                                try {
-                                    sh script: '''#!/usr/bin/container-entrypoint /bin/sh
-                                        cd /opt/app-root/src/backend
-                                        DATABASE_ENGINE=sqlite DEBUG=False TEMPLATE_DEBUG=False python manage.py test -c nose.cfg
-                                    '''
-                                    if (runCodeQuality) {
-                                        sh script: '''#!/usr/bin/container-entrypoint /bin/sh
-                                            cp /opt/app-root/src/backend/nosetests.xml ./
-                                            cp /opt/app-root/src/backend/coverage.xml ./
-                                        '''
-                                        stash includes: 'nosetests.xml,coverage.xml', name: 'coverage'
-                                    }
-                                } finally {
-                                    if (runCodeQuality) {
-                                        stash includes: 'nosetests.xml,coverage.xml', name: 'coverage'
-                                        junit 'nosetests.xml'
-                                    }
-                                }
-                            },
-                            "Unit Test: Node": {
-                                try {
-                                    sh script: '''#!/usr/bin/container-entrypoint /bin/sh
-                                        cd /opt/app-root/src/frontend
-                                        npm test
-                                    '''
-                                    if (runCodeQuality) {
-                                        sh script: '''#!/usr/bin/container-entrypoint /bin/sh
-                                            mkdir -p frontend/test/
-                                            cp -R /opt/app-root/src/frontend/test/unit ./frontend/test/
-                                            cp /opt/app-root/src/frontend/junit.xml ./frontend/
-                                        '''
-                                    }
-                                } finally {
-                                    if (runCodeQuality) {
-                                        archiveArtifacts allowEmptyArchive: true, artifacts: 'frontend/test/unit/**/*'
-                                        stash includes: 'frontend/test/unit/coverage/clover.xml', name: 'nodecoverage'
-                                        stash includes: 'frontend/junit.xml', name: 'nodejunit'
-                                        junit 'frontend/junit.xml'
-                                        publishHTML (
-                                            target: [
-                                                allowMissing: false,
-                                                alwaysLinkToLastBuild: false,
-                                                keepAll: true,
-                                                reportDir: 'frontend/test/unit/coverage/lcov-report/',
-                                                reportFiles: 'index.html',
-                                                reportName: "Node Coverage Report"
-                                            ]
-                                        )
-                                    }
-                                }
-                            } //end branch
-                        ) //end parallel
-                        isUnitTested=true
-                    } //end container
-                } //end node
-            } //end podTemplate
-        } //end stage
-    },
+    }, //end branch
     "Code Quality": {
         /* Code quality stage - pipeline step/closure
         - unstash unit test results (previous stage)
@@ -593,60 +647,6 @@ parallel (
                 } //end node
             } //end podTemplate
         } //end stage
-    }, //end branch
-    "ZAP Security Scan": {
-        _stage('ZAP Security Scan', context) {
-            podTemplate(
-                label: "zap-${context.uuid}",
-                name: "zap-${context.uuid}",
-                serviceAccount: "jenkins",
-                cloud: "openshift",
-                containers: [
-                    containerTemplate(
-                        name: 'jnlp',
-                        image: 'docker-registry.default.svc:5000/moe-gwells-dev/owasp-zap-openshift',
-                        resourceRequestCpu: '1',
-                        resourceLimitCpu: '1',
-                        resourceRequestMemory: '4Gi',
-                        resourceLimitMemory: '4Gi',
-                        workingDir: '/home/jenkins',
-                        command: '',
-                        args: '${computer.jnlpmac} ${computer.name}'
-                    )
-                ]
-            ) {
-                node("zap-${context.uuid}") {
-                    //the checkout is mandatory
-                    echo "checking out source"
-                    echo "Build: ${BUILD_ID}"
-                    checkout scm
-                    dir('zap') {
-                        waitUntil {
-                            sleep 5
-                            return isDeployed
-                        }
-                        def retVal = sh (
-                            script: """
-                                set -eux
-                                ./runzap.sh
-                            """
-                        )
-                        publishHTML(
-                            target: [
-                                allowMissing: false,
-                                alwaysLinkToLastBuild: false,
-                                keepAll: true,
-                                reportDir: '/zap/wrk',
-                                reportFiles: 'index.html',
-                                reportName: 'ZAP Full Scan',
-                                reportTitles: 'ZAP Full Scan'
-                            ]
-                        )
-                        echo "Return value is: ${retVal}"
-                    }
-                } //end node
-            } //end podTemplate
-        } //end stage
     } //end branch
 ) //end parallel
 
@@ -669,13 +669,10 @@ for(String envKeyName: context.env.keySet() as String[]){
     String stageDeployName=envKeyName.toUpperCase()
 
     if (!"DEV".equalsIgnoreCase(stageDeployName) && "master".equalsIgnoreCase(env.CHANGE_TARGET)) {
-        _stage("Readiness - ${stageDeployName}", context) {
+        _stage("Approve - ${stageDeployName}", context) {
             node('master') {
                 new OpenShiftHelper().waitUntilEnvironmentIsReady(this, context, envKeyName)
             }
-        }
-
-        _stage("Approve - ${stageDeployName}", context) {
             def inputResponse = null;
             try{
                 inputResponse = input(
@@ -741,28 +738,28 @@ for(String envKeyName: context.env.keySet() as String[]){
                         try {
                             sh './gradlew -DchromeHeadlessTest.single=WellDetails chromeHeadlessTest'
                         } finally {
-                                archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/geb/**/*'
-                                junit testResults:'build/test-results/**/*.xml', allowEmptyResults:true
-                                publishHTML (
-                                    target: [
-                                        allowMissing: true,
-                                        alwaysLinkToLastBuild: false,
-                                        keepAll: true,
-                                        reportDir: 'build/reports/spock',
-                                        reportFiles: 'index.html',
-                                        reportName: "Test: BDD Spock Report"
-                                    ]
-                                )
-                                publishHTML (
-                                    target: [
-                                        allowMissing: true,
-                                        alwaysLinkToLastBuild: false,
-                                        keepAll: true,
-                                        reportDir: 'build/reports/tests/chromeHeadlessTest',
-                                        reportFiles: 'index.html',
-                                        reportName: "Test: Full Test Report"
-                                    ]
-                                )
+                            archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/geb/**/*'
+                            junit testResults:'build/test-results/**/*.xml', allowEmptyResults:true
+                            publishHTML (
+                                target: [
+                                    allowMissing: true,
+                                    alwaysLinkToLastBuild: false,
+                                    keepAll: true,
+                                    reportDir: 'build/reports/spock',
+                                    reportFiles: 'index.html',
+                                    reportName: "Test: BDD Spock Report"
+                                ]
+                            )
+                            publishHTML (
+                                target: [
+                                    allowMissing: true,
+                                    alwaysLinkToLastBuild: false,
+                                    keepAll: true,
+                                    reportDir: 'build/reports/tests/chromeHeadlessTest',
+                                    reportFiles: 'index.html',
+                                    reportName: "Test: Full Test Report"
+                                ]
+                            )
                         }
                     } //end dir
                 } //end node
