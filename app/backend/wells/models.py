@@ -875,12 +875,13 @@ class ActivitySubmission(AuditModel):
         verbose_name='Work End Date', null=True, blank=True)
 
     owner_full_name = models.CharField(
-        max_length=200, verbose_name='Owner Name')
+        max_length=200, verbose_name='Owner Name', null=True)
     owner_mailing_address = models.CharField(
         max_length=100, verbose_name='Mailing Address', blank=True)
     owner_city = models.CharField(max_length=100, verbose_name='Town/City', blank=True)
     owner_province_state = models.ForeignKey(
-        ProvinceStateCode, db_column='province_state_code', on_delete=models.CASCADE, verbose_name='Province')
+        ProvinceStateCode, db_column='province_state_code', on_delete=models.CASCADE, verbose_name='Province',
+        null=True)
     owner_postal_code = models.CharField(
         max_length=10, blank=True, verbose_name='Postal Code')
 

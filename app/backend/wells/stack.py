@@ -104,19 +104,47 @@ class StackWells():
         return new
 
     def _stack(self, records, well: Well) -> Well:
-        records = records.order_by(F('work_start_date').asc(nulls_first=True))
-        composite = {}
-        # Iterate through all the submission records
         # TODO: Deal with Lithology, LtsaOwner, LinerPerforation, AquiferWell, Screen etc.
+
+        # There isn't always a like to like mapping of values, sometimes the source key will differ from
+        # the target key:
+        activity_type_map = {
+            WellActivityCode.types.construction().code: {
+                'work_start_date': 'construction_start_date',
+                'work_end_date': 'construction_end_date'
+            },
+            WellActivityCode.types.alteration().code: {
+                'work_start_date': 'alteration_start_date',
+                'work_end_date': 'alteration_end_date'
+            },
+            WellActivityCode.types.decommission().code: {
+                'work_start_date': 'decommission_start_date',
+                'work_end_date': 'decommission_end_date'
+            }
+        }
+
+        # It's helpful for debugging, to limit the fields we consider only to target keys, for example
+        # there are some values that don't actually map from the submission to the well (e.g. create_date,
+        # filing number, well_activity_code etc.)
+        target_keys = WellStackerSerializer().get_fields().keys()
+
+        # Iterate through all the submission records
+        # Order by work_start_date, and where that's not availble, or null, fall back to the create date
+        records = records.order_by(F('work_start_date').asc(nulls_first=True), 'create_date')
+        composite = {}
         for submission in records:
+            source_target_map = activity_type_map.get(submission.well_activity_type.code, {})
             serializer = submissions.serializers.WellSubmissionSerializer(submission)
-            for key, value in serializer.data.items():
-                # We only consider items with values
+            for source_key, value in serializer.data.items():
+                # We only consider items with values, and keys that are in our target
                 if value:
-                    if key == 'casing_set' and key in composite:
-                        composite[key] = self._merge_casings(composite[key], value)
-                    else:
-                        composite[key] = value
+                    target_key = source_target_map.get(source_key, source_key)
+                    if target_key in target_keys:
+                        if target_key == 'casing_set' and target_key in composite:
+                            composite[target_key] = self._merge_casings(composite[source_key], value)
+                        else:
+                            composite[target_key] = value
+
         # Update the well view
         well_serializer = WellStackerSerializer(well, data=composite, partial=True)
         if well_serializer.is_valid(raise_exception=True):

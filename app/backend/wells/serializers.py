@@ -61,7 +61,7 @@ class WellStackerSerializer(AuditModelSerializer):
         model = Well
         fields = '__all__'
 
-    def update(self, instance, validated_data):        
+    def update(self, instance, validated_data):
         # If there is existing casing data, the easiest approach is to drop it, and re-create it
         # based on this update. Trying to match up individual casings and updating them, dealing with
         # removed casing records etc. etc. is not the responsibility of this section. The composite section

@@ -160,11 +160,6 @@ class StackTest(TestCase):
             display_order=1
         )[0]
 
-        # These codes should already exists in the db (they are placed there as part of migrations)
-        self.well_activity_construction = WellActivityCode.objects.get(code='CON')
-        self.well_activity_legacy = WellActivityCode.objects.get(code='LEGACY')
-        self.well_activity_alteration = WellActivityCode.objects.get(code='ALT')
-
     def test_new_submission_gets_well_tag_number(self):
         # Test that when a constrction submission is processed, it is asigned a well_tag_number
         submission = ActivitySubmission.objects.create(
@@ -173,7 +168,7 @@ class StackTest(TestCase):
             work_end_date=date(2018, 2, 1),
             driller_responsible=self.driller,
             owner_province_state=self.province,
-            well_activity_type=self.well_activity_construction,
+            well_activity_type=WellActivityCode.types.construction(),
             )
         stacker = StackWells()
         well = stacker.process(submission.filing_number)
@@ -189,7 +184,7 @@ class StackTest(TestCase):
             work_end_date=date(2018, 2, 1),
             driller_responsible=self.driller,
             owner_province_state=self.province,
-            well_activity_type=self.well_activity_construction,
+            well_activity_type=WellActivityCode.types.construction(),
             )
         stacker = StackWells()
         well = stacker.process(submission.filing_number)
@@ -206,7 +201,7 @@ class StackTest(TestCase):
             work_end_date=date(2018, 2, 1),
             driller_responsible=self.driller,
             owner_province_state=self.province,
-            well_activity_type=self.well_activity_construction,
+            well_activity_type=WellActivityCode.types.construction(),
             )
         stacker = StackWells()
         well = stacker.process(construction.filing_number)
@@ -217,7 +212,7 @@ class StackTest(TestCase):
             work_end_date=date(2018, 3, 1),
             driller_responsible=self.driller,
             owner_province_state=self.province,
-            well_activity_type=self.well_activity_alteration,
+            well_activity_type=WellActivityCode.types.alteration(),
             well=well
             )
         well = stacker.process(alteration.filing_number)
@@ -242,7 +237,7 @@ class StackTest(TestCase):
             work_end_date=date(2018, 2, 1),
             driller_responsible=self.driller,
             owner_province_state=self.province,
-            well_activity_type=self.well_activity_alteration,
+            well_activity_type=WellActivityCode.types.alteration(),
             well=well
             )
 
@@ -279,7 +274,7 @@ class StackTest(TestCase):
             work_end_date=date(2018, 2, 1),
             driller_responsible=self.driller,
             owner_province_state=self.province,
-            well_activity_type=self.well_activity_construction,
+            well_activity_type=WellActivityCode.types.construction(),
             well=well
             )
 
@@ -292,3 +287,51 @@ class StackTest(TestCase):
         well = Well.objects.get(well_tag_number=well.well_tag_number)
         self.assertEqual(submissions.count(), 1, "It is expected that no legacy submission be created")
         self.assertEqual(new_full_name, well.owner_full_name)
+
+    def test_construction_field_mapping(self):
+        # Fields such as "work_start_date" on a construction report, need to map to "construction_start_date"
+        # on a well.
+        start_date = date(2018, 1, 1)
+        end_date = date(2018, 1, 2)
+        submission = ActivitySubmission.objects.create(
+            work_start_date=start_date,
+            work_end_date=end_date,
+            well_activity_type=WellActivityCode.types.construction(),
+            )
+        stacker = StackWells()
+        well = stacker.process(submission.filing_number)
+        Well.objects.get(well_tag_number=well.well_tag_number)
+        self.assertEqual(start_date, well.construction_start_date)
+        self.assertEqual(end_date, well.construction_end_date)
+
+    def test_alteration_field_mapping(self):
+        # Fields such as "work_start_date" on an alteration report, need to map to "alteration_start_date"
+        # on a well.
+        start_date = date(2018, 1, 1)
+        end_date = date(2018, 1, 2)
+        submission = ActivitySubmission.objects.create(
+            work_start_date=start_date,
+            work_end_date=end_date,
+            well_activity_type=WellActivityCode.types.alteration(),
+            )
+        stacker = StackWells()
+        well = stacker.process(submission.filing_number)
+        Well.objects.get(well_tag_number=well.well_tag_number)
+        self.assertEqual(start_date, well.alteration_start_date)
+        self.assertEqual(end_date, well.alteration_end_date)
+
+    def test_decommission_field_mapping(self):
+        # Fields such as "work_start_date" on a decommission report, need to map to "decommission_start_date"
+        # on a well.
+        start_date = date(2018, 1, 1)
+        end_date = date(2018, 1, 2)
+        submission = ActivitySubmission.objects.create(
+            work_start_date=start_date,
+            work_end_date=end_date,
+            well_activity_type=WellActivityCode.types.decommission(),
+            )
+        stacker = StackWells()
+        well = stacker.process(submission.filing_number)
+        Well.objects.get(well_tag_number=well.well_tag_number)
+        self.assertEqual(start_date, well.decommission_start_date)
+        self.assertEqual(end_date, well.decommission_end_date)

@@ -28,6 +28,12 @@ class WellActivityCodeTypeManager(models.Manager):
     def legacy(self):
         return self.get_queryset().get(code='LEGACY')
 
+    def decommission(self):
+        return self.get_queryset().get(code='DEC')
+
+    def alteration(self):
+        return self.get_queryset().get(code='ALT')
+
 
 class WellActivityCode(AuditModel):
     """

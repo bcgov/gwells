@@ -73,4 +73,14 @@ class Migration(migrations.Migration):
             name='decommission_start_date',
             field=models.DateField(null=True, verbose_name='Decommission Start Date'),
         ),
+        migrations.AlterField(
+            model_name='activitysubmission',
+            name='owner_province_state',
+            field=models.ForeignKey(db_column='province_state_code', null=True, on_delete=django.db.models.deletion.CASCADE, to='gwells.ProvinceStateCode', verbose_name='Province'),
+        ),
+        migrations.AlterField(
+            model_name='activitysubmission',
+            name='owner_full_name',
+            field=models.CharField(max_length=200, null=True, verbose_name='Owner Name'),
+        ),
     ]

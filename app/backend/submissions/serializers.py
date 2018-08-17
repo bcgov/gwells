@@ -35,7 +35,7 @@ from submissions.models import WellActivityCode
 class WellSubmissionSerializer(serializers.ModelSerializer):
     """Serializes a well activity submission"""
 
-    casing_set = CasingSerializer(many=True)
+    casing_set = CasingSerializer(many=True, required=False)
 
     class Meta:
         model = ActivitySubmission
@@ -127,10 +127,11 @@ class WellSubmissionSerializer(serializers.ModelSerializer):
         )
 
     def create(self, validated_data):
-        casings_data = validated_data.pop('casing_set')
+        casings_data = validated_data.pop('casing_set', None)
         instance = super().create(validated_data)
-        for casing_data in casings_data:
-            Casing.objects.create(activity_submission=instance, **casing_data)
+        if casings_data:
+            for casing_data in casings_data:
+                Casing.objects.create(activity_submission=instance, **casing_data)
         # Update the well record
         stacker = wells.stack.StackWells()
         stacker.process(instance.filing_number)
