@@ -16,7 +16,7 @@
         @input="updateValue($event)"
     >
       <template slot="first" v-if="placeholder">
-        <option value="" disabled>{{ placeholder }}</option>
+        <option value="">{{ placeholder }}</option>
       </template>
     </b-form-select>
     <b-form-input
@@ -29,6 +29,8 @@
         :disabled="disabled"
         :required="required"
         @input="updateValue($event)"
+        @focus.native="$emit('focus', true)"
+        @blur.native="$emit('blur', true)"
         :placeholder="placeholder"/>
     <b-form-invalid-feedback :id="`${id}InvalidFeedback`">
       <div v-for="(error, index) in errors" :key="`${id}Input error ${index}`">

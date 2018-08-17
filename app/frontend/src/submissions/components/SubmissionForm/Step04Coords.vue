@@ -12,7 +12,7 @@
               label="Latitude"
               hint="Decimal degrees"
               append="W"
-              v-model="latitudeInput"
+              v-model="coords.latitude"
               :errors="errors['latitude']"
               :loaded="fieldsLoaded['latitude']"
             ></form-input>
@@ -23,7 +23,7 @@
               type="text"
               label="Longitude"
               hint="Decimal degrees"
-              v-model="longitudeInput"
+              v-model="coords.longitude"
               :errors="errors['longitude']"
               :loaded="fieldsLoaded['longitude']"
             ></form-input>
@@ -114,7 +114,7 @@
               select
               :options="utmZones"
               label="Zone"
-              v-model="utm.zone"
+              v-model="utmZone"
               text-field="name"
               value-field="value"
               :loaded="fieldsLoaded['utmZone']"
@@ -125,7 +125,9 @@
               id="utmEasting"
               type="text"
               label="UTM Easting"
-              v-model="utm.easting"
+              v-model="utmEasting"
+              @focus="unfreeze('utm')"
+              @blur="freeze('utm')"
               :loaded="fieldsLoaded['utmEasting']"
             ></form-input>
           </b-col>
@@ -134,7 +136,9 @@
               id="utmNorthing"
               type="text"
               label="UTM Northing"
-              v-model="utm.northing"
+              @focus="unfreeze('utm')"
+              @blur="freeze('utm')"
+              v-model="utmNorthing"
               :loaded="fieldsLoaded['utmNorthing']"
             ></form-input>
           </b-col>
@@ -164,7 +168,10 @@
               id="groundElevationMethod"
               label="Method for Determining Ground Elevation"
               select
-              :options="['GPS']"
+              placeholder="Select method"
+              :options="codes.ground_elevation_methods"
+              value-field="ground_elevation_method_code"
+              text-field="description"
               v-model="groundElevationMethodInput"
               :errors="errors['ground_elevation_method']"
               :loaded="fieldsLoaded['ground_elevation_method']"></form-input>
@@ -176,7 +183,10 @@
               id="drillingMethod"
               label="Drilling Method *"
               select
-              :options="['Big drill', 'Small drill']"
+              :options="codes.drilling_methods"
+              placeholder="Select method"
+              value-field="drilling_method_code"
+              text-field="description"
               v-model="drillingMethodInput"
               :errors="errors['drilling_method']"
               :loaded="fieldsLoaded['drilling_method']"
@@ -205,11 +215,14 @@
           </b-form-group>
         </b-col>
       </b-row>
+      <b-btn variant="primary" @click="convertToUTM">UTM</b-btn>
     </fieldset>
   </div>
 </template>
 <script>
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
+import { mapGetters } from 'vuex'
+import proj4 from 'proj4'
 export default {
   name: 'Step04Coords',
   mixins: [inputBindingsMixin],
@@ -242,6 +255,13 @@ export default {
   },
   data () {
     return {
+      ellps: 'GRS80', // UTM config parameters. This does not apply to degrees latitude/longitude
+      datum: 'nad83',
+      lock: {
+        utm: true,
+        dms: true,
+        deg: true
+      },
       latitudeDMS: {
         deg: '',
         min: '',
@@ -253,22 +273,109 @@ export default {
         sec: ''
       },
       utm: {
-        zone: '',
         easting: '',
-        northing: ''
+        northing: '',
+        zone: ''
       },
+      degreesDec: {
+        lat: '',
+        long: ''
+      },
+      degreesDMS: {
+        lat: {
+          deg: '',
+          min: '',
+          sec: ''
+        },
+        long: {
+          deg: '',
+          min: '',
+          sec: ''
+        }
+      },
+      coords: {
+        latitude: '',
+        longitude: '',
+        latSource: '',
+        longSource: ''
+      },
+      utmZone: '',
       // BC is covered by UTM zones 7 through 11
       utmZones: [
         {'value': '', 'name': 'Select zone'},
-        {'value': '7', 'name': '7'},
-        {'value': '8', 'name': '8'},
-        {'value': '9', 'name': '9'},
-        {'value': '10', 'name': '10'},
-        {'value': '11', 'name': '11'}],
+        {'value': 7, 'name': '7'},
+        {'value': 8, 'name': '8'},
+        {'value': 9, 'name': '9'},
+        {'value': 10, 'name': '10'},
+        {'value': 11, 'name': '11'}],
       latitudeDMSValidation: false
     }
   },
-  computed: {},
+  computed: {
+    lat () {
+      const lat = Number(this.coords.latitude)
+
+      // we have latitude as a number now, but the initial check
+      // will be for the original this.coords.latitude input. It will
+      // allow us to differentiate between no input and the number 0.
+      if (this.coords.latitude && lat >= -180 && lat <= 180) {
+        return Number(this.coords.latitude)
+      }
+      return null
+    },
+    long () {
+      const long = Number(this.coords.longitude)
+
+      // ensure that longitude is within range and original input has a value
+      if (this.coords.longitude && long >= -180 && long <= 180) {
+        return Number(this.coords.longitude)
+      }
+      return null
+    },
+    utmEasting: {
+      set: function (val) {
+        if (!this.lock.utm) {
+          if (this.utmZone) {
+            this.coords.longitude = this.convertToWGS84(Number(val), 0, this.utmZone).longitude
+            this.coords.longSource = 'utmE'
+          }
+          this.utm.easting = val
+        }
+      },
+
+      get: function () {
+        if (this.coords.longSource === 'utmE') {
+          return this.utm.easting
+        }
+        // get easting from coords
+        return this.long ? this.convertToUTM(this.long, 0).easting : ''
+      }
+    },
+    utmNorthing: {
+      set: function (val) {
+        if (!this.lock.utm) {
+          this.coords.latitude = this.convertToWGS84(0, Number(val)).latitude
+          this.coords.latSource = 'utmN'
+          this.utm.northing = val
+        }
+      },
+
+      get: function () {
+        if (this.coords.latSource === 'utmN') {
+          return this.utm.northing
+        }
+        // get northing from coords
+        return this.lat ? this.convertToUTM(0, this.lat).northing : ''
+      }
+    },
+    ddLat () {
+
+    },
+    ddLong () {
+
+    },
+    ...mapGetters(['codes'])
+  },
   watch: {
     latitudeDMS: {
       deep: true,
@@ -277,8 +384,8 @@ export default {
         dms.min = value.min || 0
         dms.sec = value.sec || 0
         if (this.validDMSLat(dms)) {
-          this.latitudeInput = (dms.deg + dms.min / 60 + dms.sec / (60 * 60)).toFixed(6)
-          this.latitudeDMSValidation = null
+          this.coords.latitude = (dms.deg + dms.min / 60 + dms.sec / (60 * 60)).toFixed(6)
+          this.coords.latSource = 'dmsLat'
         }
       }
     },
@@ -289,8 +396,8 @@ export default {
         dms.min = value.min || 0
         dms.sec = value.sec || 0
         if (this.validDMSLng(dms)) {
-          this.longitudeInput = (dms.deg + dms.min / 60 + dms.sec / (60 * 60)).toFixed(6)
-          this.longitudeDMSValidation = null
+          this.coords.longitude = (dms.deg + dms.min / 60 + dms.sec / (60 * 60)).toFixed(6)
+          this.coords.longSource = 'dmsLong'
         }
       }
     }
@@ -298,7 +405,7 @@ export default {
   methods: {
     validDMSLat (value) {
       return (
-        value.deg >= 0 &&
+        value.deg >= -90 &&
         value.deg <= 90 &&
         value.min >= 0 &&
         value.min <= 60 &&
@@ -307,12 +414,59 @@ export default {
     },
     validDMSLng (value) {
       return (
-        value.deg >= 0 &&
+        value.deg >= -180 &&
         value.deg <= 180 &&
         value.min >= 0 &&
         value.min <= 60 &&
         value.sec >= 0 &&
         value.sec <= 60)
+    },
+    convertToUTM (long, lat) {
+      // converts input coordinates and returns an object containing UTM easting, northing, and zone
+      const utm = {
+        easting: '',
+        northing: '',
+        zone: ''
+      }
+
+      lat = Number(lat)
+      long = Number(long)
+
+      const wgs84Projection = proj4.defs('EPSG:4326')
+
+      // determine zone
+      const zone = Math.floor((long + 180) / 6) + 1
+
+      const utmProjection = `+proj=utm +zone=${zone} +ellps=${this.ellps} +datum=${this.datum} +units=m +no_defs`
+      const coords = proj4(wgs84Projection, utmProjection, [long, lat])
+
+      utm.easting = coords[0]
+      utm.northing = coords[0]
+      utm.zone = zone
+
+      return utm
+    },
+    convertToWGS84 (easting, northing, zone) {
+      // converts from UTM to WGS84
+      northing = Number(northing)
+      easting = Number(easting)
+      zone = Number(zone)
+
+      const wgs84Projection = proj4.defs('EPSG:4326')
+      const utmProjection = `+proj=utm +zone=${zone} +ellps=${this.ellps} +datum=${this.datum} +units=m +no_defs`
+
+      const coords = proj4(utmProjection, wgs84Projection, [easting, northing])
+
+      return {
+        longitude: coords[0],
+        latitude: coords[1]
+      }
+    },
+    freeze (type) {
+      this.lock[type] = true
+    },
+    unfreeze (type) {
+      this.lock[type] = false
     }
   }
 }
