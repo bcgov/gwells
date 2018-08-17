@@ -212,6 +212,7 @@ _stage('Build', context) {
 boolean isDeployed = false
 boolean isFixtured = false
 boolean isUnitTested = false
+boolean runCodeQuality=((context?.stages?:[:])['Code Quality'] == true)
 parallel (
     "Deploy and Load Fixtures" : {
         _stage('Deploy', context) {
@@ -222,24 +223,39 @@ parallel (
             }
         }
 
+        String projectName=context.deployments['dev'].projectName
+        String deploymentConfigName="gwells${context.deployments['dev'].dcSuffix}"
         _stage('Load Fixtures', context) {
             node('master'){
-                String projectName=context.deployments['dev'].projectName
-
-                String podName = openshift.withProject(projectName){
-                    String deploymentConfigName="gwells${context.deployments['dev'].dcSuffix}"
-                    return openshift.selector('pod', ['deploymentconfig':deploymentConfigName]).objects()[0].metadata.name
-                }
-
-                sh "oc exec '${podName}' -n '${projectName}' -- bash -c '\
-                    cd /opt/app-root/src/backend; \
-                    python manage.py migrate; \
-                    python manage.py loaddata gwells-codetables.json; \
-                    python manage.py loaddata wellsearch-codetables.json registries-codetables.json; \
-                    python manage.py loaddata wellsearch.json.gz registries.json; \
-                    python manage.py createinitialrevisions \
-                '"
-                isFixtured = true
+                parallel (
+                    "Load Fixtures": {
+                        String podName = openshift.withProject(projectName){
+                            return openshift.selector('pod', ['deploymentconfig':deploymentConfigName]).objects()[0].metadata.name
+                        }
+                        sh "oc exec '${podName}' -n '${projectName}' -- bash -c '\
+                            cd /opt/app-root/src/backend; \
+                            python manage.py migrate; \
+                            python manage.py loaddata gwells-codetables.json; \
+                            python manage.py loaddata wellsearch-codetables.json registries-codetables.json; \
+                            python manage.py loaddata wellsearch.json.gz registries.json; \
+                            python manage.py createinitialrevisions \
+                        '"
+                        isFixtured = true
+                    },
+                    "Unit Test: Python": {
+                        sleep 30
+                        String podName = openshift.withProject(projectName){
+                            return openshift.selector('pod', ['deploymentconfig':deploymentConfigName]).objects()[1].metadata.name
+                        }
+                        if (!runCodeQuality){
+                            echo "Since Code Quality is disabled Unit Test: Python is executing early"
+                            sh "oc exec '${podName}' -n '${projectName}' -- bash -c '\
+                                cd /opt/app-root/src/backend; \
+                                DATABASE_ENGINE=sqlite DEBUG=False TEMPLATE_DEBUG=False python manage.py test -c nose.cfg \
+                            '"
+                        }
+                    }
+                )
             }
         } //end stage
     }, //end branch
@@ -284,27 +300,25 @@ parallel (
                             printf "NPM version:    "&& npm --version
                         '''
 
-                        boolean runCodeQuality=((context?.stages?:[:])['Code Quality'] == true)
-
                         parallel (
-                            "Unit Test: Python": {
-                                try {
-                                    sh script: '''#!/usr/bin/container-entrypoint /bin/sh
-                                        cd /opt/app-root/src/backend
-                                        DATABASE_ENGINE=sqlite DEBUG=False TEMPLATE_DEBUG=False python manage.py test -c nose.cfg
-                                    '''
-                                    if (runCodeQuality) {
+                            "Unit Test: Python (w/ ZAP)": {
+                                if (runCodeQuality) {
+                                    try {
+                                        sh script: '''#!/usr/bin/container-entrypoint /bin/sh
+                                            cd /opt/app-root/src/backend
+                                            DATABASE_ENGINE=sqlite DEBUG=False TEMPLATE_DEBUG=False python manage.py test -c nose.cfg
+                                        '''
                                         sh script: '''#!/usr/bin/container-entrypoint /bin/sh
                                             cp /opt/app-root/src/backend/nosetests.xml ./
                                             cp /opt/app-root/src/backend/coverage.xml ./
                                         '''
                                         stash includes: 'nosetests.xml,coverage.xml', name: 'coverage'
-                                    }
-                                } finally {
-                                    if (runCodeQuality) {
+                                    } finally {
                                         stash includes: 'nosetests.xml,coverage.xml', name: 'coverage'
                                         junit 'nosetests.xml'
                                     }
+                                } else {
+                                    echo "Since Code Quality is disabled Unit Test: Python has already run"
                                 }
                             },
                             "Unit Test: Node": {
