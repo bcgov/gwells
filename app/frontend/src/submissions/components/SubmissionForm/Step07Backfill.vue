@@ -77,6 +77,7 @@ export default {
     surfaceSealDepth: String,
     surfaceSealThickness: String,
     surfaceSealMethod: String,
+    backfillAboveSurfaceSeal: String,
     backfillDepth: String,
     errors: {
       type: Object,
