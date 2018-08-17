@@ -21,7 +21,11 @@ from wells.models import Well, ActivitySubmission
 import wells.stack
 from wells.models import (
     ActivitySubmission,
+    DrillingMethodCode,
     IntendedWaterUseCode,
+    GroundElevationMethodCode,
+    SurfaceSealMaterialCode,
+    SurfaceSealMethodCode,
     Well,
     WellClassCode,
     WellSubclassCode,
@@ -172,3 +176,35 @@ class LandDistrictSerializer(serializers.ModelSerializer):
     class Meta:
         model = LandDistrictCode
         fields = ('land_district_code', 'name')
+
+
+class GroundElevationMethodCodeSerializer(serializers.ModelSerializer):
+    """ serializes codes for methods of obtaining ground elevations """
+
+    class Meta:
+        model = GroundElevationMethodCode
+        fields = ('ground_elevation_method_code', 'description')
+
+
+class DrillingMethodCodeSerializer(serializers.ModelSerializer):
+    """ serializes drilling method codes """
+
+    class Meta:
+        model = DrillingMethodCode
+        fields = ('drilling_method_code', 'description')
+
+
+class SurfaceSealMethodCodeSerializer(serializers.ModelSerializer):
+    """ serializes surface seal method codes """
+
+    class Meta:
+        model = SurfaceSealMethodCode
+        fields = ('surface_seal_method_code', 'description')
+
+
+class SurfaceSealMaterialCodeSerializer(serializers.ModelSerializer):
+    """ serializes surface seal method codes """
+
+    class Meta:
+        model = SurfaceSealMaterialCode
+        fields = ('surface_seal_material_code', 'description')
