@@ -201,50 +201,47 @@ _stage('Build', context) {
 /* Continuous integration (CI)
    For feature branches merging into a release branch
     || Deployment and Fixtures (sets isDeployed and isFixtured=true)
-    || API tests (starts on isDeployed, executes on isFixtured)
-    || Functional tests (executes on isFixtured)
+    || API tests (executes on isFixtured)
     || Unit tests (sets isUnitTested=true)
     -> || Python tests
        || Node tests
-    || Code quality (executes on isUnitTested)
     || ZAP Security Scan (executes on isDeployed)
+    || Functional tests (executes on isFixtured)
+    || Code quality (executes on isUnitTested)
 */
 boolean isDeployed = false
 boolean isFixtured = false
 boolean isUnitTested = false
 parallel (
-    "Deploy" : {
+    "Deploy and Load Fixtures" : {
         _stage('Deploy', context) {
             node('master') {
                 new OpenShiftHelper().deploy(this, context, 'dev')
+                sleep 5
                 isDeployed = true
             }
         }
 
-        parallel (
-            "Load Fixtures": {
-                _stage('Load Fixtures', context) {
-                    node('master'){
-                        String projectName=context.deployments['dev'].projectName
+        _stage('Load Fixtures', context) {
+            node('master'){
+                String projectName=context.deployments['dev'].projectName
 
-                        String podName = openshift.withProject(projectName){
-                            String deploymentConfigName="gwells${context.deployments['dev'].dcSuffix}"
-                            return openshift.selector('pod', ['deploymentconfig':deploymentConfigName]).objects()[0].metadata.name
-                        }
+                String podName = openshift.withProject(projectName){
+                    String deploymentConfigName="gwells${context.deployments['dev'].dcSuffix}"
+                    return openshift.selector('pod', ['deploymentconfig':deploymentConfigName]).objects()[0].metadata.name
+                }
 
-                        sh "oc exec '${podName}' -n '${projectName}' -- bash -c '\
-                            cd /opt/app-root/src/backend; \
-                            python manage.py migrate; \
-                            python manage.py loaddata gwells-codetables.json; \
-                            python manage.py loaddata wellsearch-codetables.json registries-codetables.json; \
-                            python manage.py loaddata wellsearch.json.gz registries.json; \
-                            python manage.py createinitialrevisions \
-                        '"
-                        isFixtured = true
-                    }
-                } //end stage
+                sh "oc exec '${podName}' -n '${projectName}' -- bash -c '\
+                    cd /opt/app-root/src/backend; \
+                    python manage.py migrate; \
+                    python manage.py loaddata gwells-codetables.json; \
+                    python manage.py loaddata wellsearch-codetables.json registries-codetables.json; \
+                    python manage.py loaddata wellsearch.json.gz registries.json; \
+                    python manage.py createinitialrevisions \
+                '"
+                isFixtured = true
             }
-        )
+        } //end stage
     },
     "API Test": {
         _stage('API Test', context) {
@@ -252,7 +249,6 @@ parallel (
                 sleep 5
                 return isDeployed
             }
-            String baseURL = context.deployments['dev'].environmentUrl.substring(0, context.deployments['dev'].environmentUrl.indexOf('/', 8) + 1)
             podTemplate(
                 label: "nodejs-${context.uuid}",
                 name: "nodejs-${context.uuid}",
@@ -270,10 +266,6 @@ parallel (
                         command: '',
                         args: '${computer.jnlpmac} ${computer.name}',
                         envVars: [
-                            envVar(
-                                key:'BASEURL',
-                                value: "${baseURL}gwells"
-                            ),
                             secretEnvVar(
                                 key: 'GWELLS_API_TEST_USER',
                                 secretName: 'apitest-secrets',
@@ -311,33 +303,35 @@ parallel (
                             sleep 5
                             return isFixtured
                         }
+                        String BASEURL = context.deployments['dev'].environmentUrl.substring(0, context.deployments['dev'].environmentUrl.indexOf('/', 8) + 1)
+                        BASEURL += "gwells"
                         try {
-                            sh '''
+                            sh """
                                 newman run ./registries_api_tests.json \
-                                    --global-var test_user=$GWELLS_API_TEST_USER \
-                                    --global-var test_password=$GWELLS_API_TEST_PASSWORD \
-                                    --global-var base_url="${BASEURL}" \
-                                    --global-var auth_server=$GWELLS_API_TEST_AUTH_SERVER \
-                                    --global-var client_id=$GWELLS_API_TEST_CLIENT_ID \
-                                    --global-var client_secret=$GWELLS_API_TEST_CLIENT_SECRET \
+                                    --global-var test_user=\$GWELLS_API_TEST_USER \
+                                    --global-var test_password=\$GWELLS_API_TEST_PASSWORD \
+                                    --global-var base_url=${BASEURL} \
+                                    --global-var auth_server=\$GWELLS_API_TEST_AUTH_SERVER \
+                                    --global-var client_id=\$GWELLS_API_TEST_CLIENT_ID \
+                                    --global-var client_secret=\$GWELLS_API_TEST_CLIENT_SECRET \
                                     -r cli,junit,html
                                 newman run ./wells_api_tests.json \
-                                    --global-var test_user=$GWELLS_API_TEST_USER \
-                                    --global-var test_password=$GWELLS_API_TEST_PASSWORD \
-                                    --global-var base_url="${BASEURL}" \
-                                    --global-var auth_server=$GWELLS_API_TEST_AUTH_SERVER \
-                                    --global-var client_id=$GWELLS_API_TEST_CLIENT_ID \
-                                    --global-var client_secret=$GWELLS_API_TEST_CLIENT_SECRET \
+                                    --global-var test_user=\$GWELLS_API_TEST_USER \
+                                    --global-var test_password=\$GWELLS_API_TEST_PASSWORD \
+                                    --global-var base_url=${BASEURL} \
+                                    --global-var auth_server=\$GWELLS_API_TEST_AUTH_SERVER \
+                                    --global-var client_id=\$GWELLS_API_TEST_CLIENT_ID \
+                                    --global-var client_secret=\$GWELLS_API_TEST_CLIENT_SECRET \
                                     -r cli,junit,html
                                 newman run ./submissions_api_tests.json \
-                                    --global-var test_user=$GWELLS_API_TEST_USER \
-                                    --global-var test_password=$GWELLS_API_TEST_PASSWORD \
-                                    --global-var base_url="${BASEURL}" \
-                                    --global-var auth_server=$GWELLS_API_TEST_AUTH_SERVER \
-                                    --global-var client_id=$GWELLS_API_TEST_CLIENT_ID \
-                                    --global-var client_secret=$GWELLS_API_TEST_CLIENT_SECRET \
+                                    --global-var test_user=\$GWELLS_API_TEST_USER \
+                                    --global-var test_password=\$GWELLS_API_TEST_PASSWORD \
+                                    --global-var base_url=${BASEURL} \
+                                    --global-var auth_server=\$GWELLS_API_TEST_AUTH_SERVER \
+                                    --global-var client_id=\$GWELLS_API_TEST_CLIENT_ID \
+                                    --global-var client_secret=\$GWELLS_API_TEST_CLIENT_SECRET \
                                     -r cli,junit,html
-                            '''
+                            """
                         } finally {
                                 junit 'newman/*.xml'
                                 publishHTML (
