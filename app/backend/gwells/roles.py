@@ -20,7 +20,15 @@ from django.contrib.auth.models import Group, Permission
 logger = logging.getLogger(__name__)
 
 
-# Keycloak/SSO groups:
+# TODO: Change this section to match what's been done in Vue.js; We shouldn't have a concept of what
+#       and adjudicator/admin/etc. is here. We should only be concerned with what actions can be taken.
+#       Roles should be assigned appropriately to groups with keycloak.
+#       On the Django level, a keycloak role, such as "registries_edit", should translate to a django_group
+#       with the same name, that has the appropriate permissions set.
+#       In order to affect this change, code has to be changed in this module, and a migration creating the
+#       appropriate groups needs to be made.
+
+# Keycloak/SSO roles:
 ADMIN_ROLE = 'gwells_admin'
 REGISTRIES_ADJUDICATOR_ROLE = 'registries_adjudicator'
 REGISTRIES_AUTHORITY_ROLE = 'registries_statutory_authority'
