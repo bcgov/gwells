@@ -60,6 +60,7 @@ class StackWells():
         submission.save()
         return well
 
+    @transaction.atomic
     def _create_legacy_submission(self, well: Well) -> None:
         """
         Using an existing well as a reference, create a legacy well record
@@ -103,6 +104,7 @@ class StackWells():
         new.sort(key=lambda casing: (casing.get('casing_from'), casing.get('casing_to')))
         return new
 
+    @transaction.atomic
     def _stack(self, records, well: Well) -> Well:
         # TODO: Deal with Lithology, LtsaOwner, LinerPerforation, AquiferWell, Screen etc.
 
@@ -152,6 +154,7 @@ class StackWells():
 
         return well
 
+    @transaction.atomic
     def _update_well_record(self, submission: ActivitySubmission) -> Well:
         """
         Used to update an existing well record.

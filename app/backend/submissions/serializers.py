@@ -16,6 +16,7 @@ from rest_framework import serializers
 
 from gwells.models import ProvinceStateCode
 from gwells.serializers import AuditModelSerializer
+from django.db import transaction
 
 from wells.models import Well, ActivitySubmission
 from wells.serializers import CasingSerializer
@@ -126,6 +127,7 @@ class WellSubmissionSerializer(serializers.ModelSerializer):
             "casing_set",
         )
 
+    @transaction.atomic
     def create(self, validated_data):
         casings_data = validated_data.pop('casing_set', None)
         instance = super().create(validated_data)
