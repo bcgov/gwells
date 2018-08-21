@@ -1682,6 +1682,10 @@ img.back-to-top:hover {
     .back-to-top {
         display: none !important;
     }
+    /* hidden for print */
+    .contentPageMainColumn .no-print {
+        display: none;
+    }
 }
 
 .alert-success:before {
@@ -2327,4 +2331,8 @@ h5.twitterUserName a {
 
 .print-button {
     line-height: 38px
+}
+
+.contentPageMainColumn .jump_link {
+    text-decoration: none;
 }
