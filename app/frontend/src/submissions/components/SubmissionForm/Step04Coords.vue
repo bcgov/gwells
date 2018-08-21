@@ -11,8 +11,9 @@
               type="text"
               label="Latitude"
               hint="Decimal degrees"
-              append="W"
-              v-model="coords.latitude"
+              @focus="freeze('deg')"
+              @blur="unfreeze('deg')"
+              v-model="degrees.latitude"
               :errors="errors['latitude']"
               :loaded="fieldsLoaded['latitude']"
             ></form-input>
@@ -23,7 +24,7 @@
               type="text"
               label="Longitude"
               hint="Decimal degrees"
-              v-model="coords.longitude"
+              v-model="degrees.longitude"
               :errors="errors['longitude']"
               :loaded="fieldsLoaded['longitude']"
             ></form-input>
@@ -39,19 +40,18 @@
               <b-col cols="12" sm="4">
                 <form-input
                   id="latitudeDeg"
-                  type="text"
+                  type="number"
                   hint="Degrees"
-                  v-model.number="latitudeDMS.deg"
-                  :state="latitudeDMSValidation"
+                  v-model.number="dms.lat.deg"
                   :loaded="fieldsLoaded['latitude']"
                 ></form-input>
               </b-col>
               <b-col cols="12" sm="4">
                 <form-input
                   id="latitudeMin"
-                  type="text"
+                  type="number"
                   hint="Minutes"
-                  v-model.number="latitudeDMS.min"
+                  v-model.number="dms.lat.min"
                   :errors="errors['latitude']"
                   :loaded="fieldsLoaded['latitude']"
                 ></form-input>
@@ -61,7 +61,7 @@
                   id="latitudeSec"
                   type="text"
                   hint="Seconds"
-                  v-model.number="latitudeDMS.sec"
+                  v-model.number="dms.lat.sec"
                   :errors="errors['latitude']"
                   :loaded="fieldsLoaded['latitude']"
                 ></form-input>
@@ -76,7 +76,7 @@
                   id="longitudeDeg"
                   type="text"
                   hint="Degrees"
-                  v-model.number="longitudeDMS.deg"
+                  v-model.number="dms.long.deg"
                   :errors="errors['longitude']"
                   :loaded="fieldsLoaded['longitude']"
                 ></form-input>
@@ -84,9 +84,9 @@
               <b-col cols="12" sm="4">
                 <form-input
                   id="longitudeMin"
-                  type="text"
+                  type="number"
                   hint="Minutes"
-                  v-model.number="longitudeDMS.min"
+                  v-model.number="dms.long.min"
                   :errors="errors['longitude']"
                   :loaded="fieldsLoaded['longitude']"
                 ></form-input>
@@ -94,9 +94,9 @@
               <b-col cols="12" sm="4">
                 <form-input
                   id="longitudeSec"
-                  type="text"
+                  type="number"
                   hint="Seconds"
-                  v-model.number="longitudeDMS.sec"
+                  v-model.number="dms.long.sec"
                   :errors="errors['longitude']"
                   :loaded="fieldsLoaded['longitude']"
                 ></form-input>
@@ -114,7 +114,7 @@
               select
               :options="utmZones"
               label="Zone"
-              v-model="utmZone"
+              v-model="utm.zone"
               text-field="name"
               value-field="value"
               :loaded="fieldsLoaded['utmZone']"
@@ -125,7 +125,7 @@
               id="utmEasting"
               type="text"
               label="UTM Easting"
-              v-model="utmEasting"
+              v-model="utm.easting"
               @focus="unfreeze('utm')"
               @blur="freeze('utm')"
               :loaded="fieldsLoaded['utmEasting']"
@@ -138,7 +138,7 @@
               label="UTM Northing"
               @focus="unfreeze('utm')"
               @blur="freeze('utm')"
-              v-model="utmNorthing"
+              v-model="utm.northing"
               :loaded="fieldsLoaded['utmNorthing']"
             ></form-input>
           </b-col>
@@ -262,26 +262,16 @@ export default {
         dms: true,
         deg: true
       },
-      latitudeDMS: {
-        deg: '',
-        min: '',
-        sec: ''
-      },
-      longitudeDMS: {
-        deg: '',
-        min: '',
-        sec: ''
-      },
       utm: {
         easting: '',
         northing: '',
         zone: ''
       },
-      degreesDec: {
-        lat: '',
-        long: ''
+      degrees: {
+        latitude: '',
+        longitude: ''
       },
-      degreesDMS: {
+      dms: {
         lat: {
           deg: '',
           min: '',
@@ -335,7 +325,7 @@ export default {
     utmEasting: {
       set: function (val) {
         if (!this.lock.utm) {
-          if (this.utmZone) {
+          if (this.utmZone && val.length === 6) {
             this.coords.longitude = this.convertToWGS84(Number(val), 0, this.utmZone).longitude
             this.coords.longSource = 'utmE'
           }
@@ -368,37 +358,80 @@ export default {
         return this.lat ? this.convertToUTM(0, this.lat).northing : ''
       }
     },
-    ddLat () {
-
-    },
-    ddLong () {
-
-    },
     ...mapGetters(['codes'])
   },
   watch: {
-    latitudeDMS: {
+    'dms.lat': {
       deep: true,
       handler: function (value) {
-        const dms = Object.assign({}, value)
-        dms.min = value.min || 0
-        dms.sec = value.sec || 0
-        if (this.validDMSLat(dms)) {
-          this.coords.latitude = (dms.deg + dms.min / 60 + dms.sec / (60 * 60)).toFixed(6)
-          this.coords.latSource = 'dmsLat'
+        if (!value.deg && !value.min && !value.sec) {
+          // early return if all fields empty
+          // reset other coordinate fields at the same time (e.g. clean up previously calculated values)
+          this.degrees.latitude = ''
+          this.utm.northing = ''
+          return null
         }
+
+        const dms = Object.assign({}, value)
+        dms.deg = Number(value.deg) || 0
+        dms.min = Number(value.min) || 0
+        dms.sec = Number(value.sec) || 0
+
+        const lat = (dms.deg + dms.min / 60 + dms.sec / (60 * 60)).toFixed(6)
+        if (!this.lock.deg) this.degrees.latitude = lat
+        if (!this.lock.utm) this.utm.northing = this.convertToUTM(0, lat).northing
       }
     },
-    longitudeDMS: {
+    'dms.long': {
       deep: true,
       handler: function (value) {
-        const dms = Object.assign({}, value)
-        dms.min = value.min || 0
-        dms.sec = value.sec || 0
-        if (this.validDMSLng(dms)) {
-          this.coords.longitude = (dms.deg + dms.min / 60 + dms.sec / (60 * 60)).toFixed(6)
-          this.coords.longSource = 'dmsLong'
+        if (!value.deg && !value.min && !value.sec) {
+          this.degrees.longitude = ''
+          this.utm.easting = ''
+          this.utm.zone = ''
+          return null
         }
+
+        const dms = Object.assign({}, value)
+        dms.deg = Number(value.deg) || 0
+        dms.min = Number(value.min) || 0
+        dms.sec = Number(value.sec) || 0
+
+        const long = (dms.deg + dms.min / 60 + dms.sec / (60 * 60)).toFixed(6)
+
+        this.degrees.longitude = long
+
+        const { easting, zone } = this.convertToUTM(long, 0)
+        this.utm.easting = easting
+        this.utm.zone = zone
+      }
+    },
+    'degrees.latitude': {
+      deep: true,
+      handler: function (value) {
+        if (!value) {
+          this.dms.lat = {
+            deg: '',
+            min: '',
+            sec: ''
+          }
+          this.utm.northing = ''
+          return null
+        }
+
+        const lat = Number(value)
+        const deg = Math.floor(lat)
+        const sec = (3600 * (lat - Math.floor(lat)) % 60).toFixed(2)
+        const min = Math.floor((3600 * (lat - Math.floor(lat))) / 60)
+
+        const dms = {
+          deg: deg,
+          min: min,
+          sec: sec
+        }
+
+        this.dms.lat = dms
+        this.utm.northing = this.convertToUTM(0, lat).northing
       }
     }
   },
@@ -463,6 +496,10 @@ export default {
       }
     },
     freeze (type) {
+      // freeze updates the 'lock' object for the given type
+      // param 'type' should be one of 'utm', 'deg', 'dms'
+      // locking a type will prevent its form input field from being auto-updated
+      // while user is providing input.
       this.lock[type] = true
     },
     unfreeze (type) {
