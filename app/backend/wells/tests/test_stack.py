@@ -16,10 +16,134 @@ from datetime import date
 from django.test import TestCase
 
 from gwells.models import ProvinceStateCode
-from wells.models import Well, ActivitySubmission
+from wells.models import Well, ActivitySubmission, Casing
 from submissions.models import WellActivityCode
 from wells.stack import StackWells
 from registries.models import Person
+
+
+class CasingMergeTest(TestCase):
+
+    def test_new_data(self):
+        # Test scenario where there is only new data.
+        prev = []
+        incoming = [
+            {
+                "id": 1,
+                "casing_from": 0,
+                "casing_to": 10
+            },
+            {
+                "id": 2,
+                "casing_from": 10,
+                "casing_to": 20
+            }
+        ]
+        expected = incoming
+        stacker = StackWells()
+        new = stacker._merge_casings(prev, incoming)
+        self.assertEqual(new, expected)
+
+    def test_no_overlap(self):
+        # Test scenario where there is new and old data, but no overlap.
+        prev = [
+            {
+                "id": 1,
+                "casing_from": 0,
+                "casing_to": 10
+            },
+        ]
+        incoming = [
+            {
+                "id": 2,
+                "casing_from": 10,
+                "casing_to": 20
+            },
+        ]
+        expected = [
+            {
+                "id": 1,
+                "casing_from": 0,
+                "casing_to": 10
+            },
+            {
+                "id": 2,
+                "casing_from": 10,
+                "casing_to": 20
+            },
+        ]
+        stacker = StackWells()
+        new = stacker._merge_casings(prev, incoming)
+        self.assertEqual(new, expected)
+
+    def test_overlap(self):
+        # Test scenario where there is overlap
+        prev = [
+            {
+                "id": 1,
+                "casing_from": 0,
+                "casing_to": 10
+            },
+            {
+                "id": 3,
+                "casing_from": 10,
+                "casing_to": 20
+            },
+        ]
+        incoming = [
+            {
+                "id": 2,
+                "casing_from": 0,
+                "casing_to": 10
+            },
+        ]
+        expected = [
+            {
+                "id": 2,
+                "casing_from": 0,
+                "casing_to": 10
+            },
+            {
+                "id": 3,
+                "casing_from": 10,
+                "casing_to": 20
+            },
+        ]
+        stacker = StackWells()
+        new = stacker._merge_casings(prev, incoming)
+        self.assertEqual(new, expected)
+
+    def test_intersection(self):
+        # Test scenario where there is intersection
+        prev = [
+            {
+                "id": 1,
+                "casing_from": 0,
+                "casing_to": 10
+            },
+            {
+                "id": 3,
+                "casing_from": 10,
+                "casing_to": 20
+            },
+        ]
+        incoming = [
+            {
+                "id": 2,
+                "casing_from": 5,
+                "casing_to": 15
+            },
+        ]
+        expected = [
+            {
+                "id": 2,
+                "casing_from": 5,
+                "casing_to": 15
+            },
+        ]
+        stacker = StackWells()
+        new = stacker._merge_casings(prev, incoming)
+        self.assertEqual(new, expected)
 
 
 class StackTest(TestCase):
@@ -36,11 +160,6 @@ class StackTest(TestCase):
             display_order=1
         )[0]
 
-        # These codes should already exists in the db (they are placed there as part of migrations)
-        self.well_activity_construction = WellActivityCode.objects.get(well_activity_type_code='CON')
-        self.well_activity_legacy = WellActivityCode.objects.get(well_activity_type_code='LEGACY')
-        self.well_activity_alteration = WellActivityCode.objects.get(well_activity_type_code='ALT')
-
     def test_new_submission_gets_well_tag_number(self):
         # Test that when a constrction submission is processed, it is asigned a well_tag_number
         submission = ActivitySubmission.objects.create(
@@ -49,7 +168,7 @@ class StackTest(TestCase):
             work_end_date=date(2018, 2, 1),
             driller_responsible=self.driller,
             owner_province_state=self.province,
-            well_activity_type=self.well_activity_construction,
+            well_activity_type=WellActivityCode.types.construction(),
             )
         stacker = StackWells()
         well = stacker.process(submission.filing_number)
@@ -65,7 +184,7 @@ class StackTest(TestCase):
             work_end_date=date(2018, 2, 1),
             driller_responsible=self.driller,
             owner_province_state=self.province,
-            well_activity_type=self.well_activity_construction,
+            well_activity_type=WellActivityCode.types.construction(),
             )
         stacker = StackWells()
         well = stacker.process(submission.filing_number)
@@ -82,7 +201,7 @@ class StackTest(TestCase):
             work_end_date=date(2018, 2, 1),
             driller_responsible=self.driller,
             owner_province_state=self.province,
-            well_activity_type=self.well_activity_construction,
+            well_activity_type=WellActivityCode.types.construction(),
             )
         stacker = StackWells()
         well = stacker.process(construction.filing_number)
@@ -93,7 +212,7 @@ class StackTest(TestCase):
             work_end_date=date(2018, 3, 1),
             driller_responsible=self.driller,
             owner_province_state=self.province,
-            well_activity_type=self.well_activity_alteration,
+            well_activity_type=WellActivityCode.types.alteration(),
             well=well
             )
         well = stacker.process(alteration.filing_number)
@@ -106,7 +225,11 @@ class StackTest(TestCase):
         # This is the original well record
         well = Well.objects.create(
             owner_full_name=original_full_name,
-            owner_province_state=self.province)
+            owner_province_state=self.province,
+            construction_start_date=date(2017, 1, 1),
+            construction_end_date=date(2017, 1, 2))
+        Casing.objects.create(casing_from=0, casing_to=10, well=well)
+        Casing.objects.create(casing_from=10, casing_to=20, well=well)
         # Create a submission
         submission = ActivitySubmission.objects.create(
             owner_full_name=new_full_name,
@@ -114,16 +237,27 @@ class StackTest(TestCase):
             work_end_date=date(2018, 2, 1),
             driller_responsible=self.driller,
             owner_province_state=self.province,
-            well_activity_type=self.well_activity_alteration,
+            well_activity_type=WellActivityCode.types.alteration(),
             well=well
             )
 
         stacker = StackWells()
         stacker.process(submission.filing_number)
         well = Well.objects.get(well_tag_number=well.well_tag_number)
-        submissions = ActivitySubmission.objects.filter(well=well)
+        submissions = ActivitySubmission.objects.filter(well=well).order_by('work_start_date')        
         self.assertEqual(submissions.count(), 2, "It is expected that a legacy submission be created")
         self.assertEqual(new_full_name, well.owner_full_name)
+        self.assertEqual(submissions[0].casing_set.count(), 2, ("It is expected that the casings on the "
+                                                                "original well make part of the legacy "
+                                                                "submission"))
+        self.assertEqual(
+            submissions[0].work_start_date,
+            well.construction_start_date,
+            "It is expected that the well date match the submission date")
+        self.assertEqual(
+            submissions[0].work_end_date,
+            well.construction_end_date,
+            "Is it expected that the well date match the submission date")
 
     def test_construction_submission_to_legacy_well(self):
         # The well already exists, and we're applying a construction submission to it.
@@ -140,7 +274,7 @@ class StackTest(TestCase):
             work_end_date=date(2018, 2, 1),
             driller_responsible=self.driller,
             owner_province_state=self.province,
-            well_activity_type=self.well_activity_construction,
+            well_activity_type=WellActivityCode.types.construction(),
             well=well
             )
 
@@ -153,3 +287,51 @@ class StackTest(TestCase):
         well = Well.objects.get(well_tag_number=well.well_tag_number)
         self.assertEqual(submissions.count(), 1, "It is expected that no legacy submission be created")
         self.assertEqual(new_full_name, well.owner_full_name)
+
+    def test_construction_field_mapping(self):
+        # Fields such as "work_start_date" on a construction report, need to map to "construction_start_date"
+        # on a well.
+        start_date = date(2018, 1, 1)
+        end_date = date(2018, 1, 2)
+        submission = ActivitySubmission.objects.create(
+            work_start_date=start_date,
+            work_end_date=end_date,
+            well_activity_type=WellActivityCode.types.construction(),
+            )
+        stacker = StackWells()
+        well = stacker.process(submission.filing_number)
+        Well.objects.get(well_tag_number=well.well_tag_number)
+        self.assertEqual(start_date, well.construction_start_date)
+        self.assertEqual(end_date, well.construction_end_date)
+
+    def test_alteration_field_mapping(self):
+        # Fields such as "work_start_date" on an alteration report, need to map to "alteration_start_date"
+        # on a well.
+        start_date = date(2018, 1, 1)
+        end_date = date(2018, 1, 2)
+        submission = ActivitySubmission.objects.create(
+            work_start_date=start_date,
+            work_end_date=end_date,
+            well_activity_type=WellActivityCode.types.alteration(),
+            )
+        stacker = StackWells()
+        well = stacker.process(submission.filing_number)
+        Well.objects.get(well_tag_number=well.well_tag_number)
+        self.assertEqual(start_date, well.alteration_start_date)
+        self.assertEqual(end_date, well.alteration_end_date)
+
+    def test_decommission_field_mapping(self):
+        # Fields such as "work_start_date" on a decommission report, need to map to "decommission_start_date"
+        # on a well.
+        start_date = date(2018, 1, 1)
+        end_date = date(2018, 1, 2)
+        submission = ActivitySubmission.objects.create(
+            work_start_date=start_date,
+            work_end_date=end_date,
+            well_activity_type=WellActivityCode.types.decommission(),
+            )
+        stacker = StackWells()
+        well = stacker.process(submission.filing_number)
+        Well.objects.get(well_tag_number=well.well_tag_number)
+        self.assertEqual(start_date, well.decommission_start_date)
+        self.assertEqual(end_date, well.decommission_end_date)

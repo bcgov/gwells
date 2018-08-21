@@ -23,12 +23,18 @@ from gwells.models import ProvinceStateCode
 from gwells.serializers import ProvinceStateCodeSerializer
 from wells.models import (
     ActivitySubmission,
+    CasingCode,
+    CasingMaterialCode,
     IntendedWaterUseCode,
     LandDistrictCode,
     Well,
     WellClassCode,
     WellSubclassCode)
 from submissions.models import WellActivityCode
+from wells.serializers import (
+    CasingCodeSerializer,
+    CasingMaterialSerializer
+)
 from submissions.serializers import (
     WellSubmissionSerializer,
     WellActivityCodeSerializer,
@@ -106,6 +112,8 @@ class SubmissionsOptions(APIView):
             instance=WellClassCode.objects.prefetch_related("wellsubclasscode_set"), many=True)
         intended_water_use_codes = IntendedWaterUseCodeSerializer(
             instance=IntendedWaterUseCode.objects.all(), many=True)
+        casing_codes = CasingCodeSerializer(instance=CasingCode.objects.all(), many=True)
+        casing_material = CasingMaterialSerializer(instance=CasingMaterialCode.objects.all(), many=True)
         land_district_codes = LandDistrictSerializer(
             instance=LandDistrictCode.objects.all(), many=True)
 
@@ -113,6 +121,8 @@ class SubmissionsOptions(APIView):
         options["activity_types"] = activity_codes.data
         options["well_classes"] = well_class_codes.data
         options["intended_water_uses"] = intended_water_use_codes.data
+        options["casing_codes"] = casing_codes.data
+        options["casing_materials"] = casing_material.data
         options["land_district_codes"] = land_district_codes.data
 
         return Response(options)

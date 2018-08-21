@@ -97,6 +97,14 @@
           >
         </step04-coords>
 
+        <!-- Step 6: Casings -->
+        <step06-casings class="my-3"
+          v-if="formStep === 3 || formIsFlat"
+          :casings.sync="form.casing_set"
+          :errors="errors"
+          :fieldsLoaded="fieldsLoaded"
+          />
+
         <!-- Back / Next / Submit controls -->
         <b-row class="mt-5">
           <b-col v-if="!formIsFlat">
@@ -164,13 +172,15 @@ import Step01Type from '@/submissions/components/SubmissionForm/Step01Type.vue'
 import Step02Owner from '@/submissions/components/SubmissionForm/Step02Owner.vue'
 import Step03Location from '@/submissions/components/SubmissionForm/Step03Location.vue'
 import Step04Coords from '@/submissions/components/SubmissionForm/Step04Coords.vue'
+import Step06Casings from '@/submissions/components/SubmissionForm/Step06Casings.vue'
 export default {
   name: 'SubmissionsHome',
   components: {
     Step01Type,
     Step02Owner,
     Step03Location,
-    Step04Coords
+    Step04Coords,
+    Step06Casings
   },
   data () {
     return {
@@ -263,6 +273,7 @@ export default {
         ground_elevation: null,
         ground_elevation_method: '',
         well_orientation: '',
+        casing_set: [{}, {}, {}],
 
         // non-form fields that should be saved with form
         meta: {
