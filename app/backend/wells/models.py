@@ -510,19 +510,19 @@ class Well(AuditModel):
     well_location_description = models.CharField(
         max_length=500, blank=True, verbose_name='Description of Well Location')
 
-    construction_start_date = models.DateTimeField(
+    construction_start_date = models.DateField(
         null=True, verbose_name="Construction Start Date")
-    construction_end_date = models.DateTimeField(
+    construction_end_date = models.DateField(
         null=True, verbose_name="Construction Date")
 
-    alteration_start_date = models.DateTimeField(
+    alteration_start_date = models.DateField(
         null=True, verbose_name="Alteration Start Date")
-    alteration_end_date = models.DateTimeField(
+    alteration_end_date = models.DateField(
         null=True, verbose_name="Alteration Date")
 
-    decommission_start_date = models.DateTimeField(
+    decommission_start_date = models.DateField(
         null=True, verbose_name="Decommission Start Date")
-    decommission_end_date = models.DateTimeField(
+    decommission_end_date = models.DateField(
         null=True, verbose_name="Decommission Date")
 
     drilling_company = models.ForeignKey(DrillingCompany, db_column='drilling_company_guid',
@@ -785,7 +785,7 @@ class CasingMaterialCode(AuditModel):
     """
      The material used for casing a well, e.g., Cement, Plastic, Steel.
     """
-    casing_material_code = models.CharField(primary_key=True, max_length=10, editable=False)
+    code = models.CharField(primary_key=True, max_length=10, editable=False, db_column='casing_material_code')
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
 
@@ -804,7 +804,7 @@ class CasingCode(AuditModel):
     """
     Type of Casing used on a well
     """
-    casing_code = models.CharField(primary_key=True, max_length=10, editable=False)
+    code = models.CharField(primary_key=True, max_length=10, editable=False, db_column='casing_code')
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
 
@@ -875,12 +875,13 @@ class ActivitySubmission(AuditModel):
         verbose_name='Work End Date', null=True, blank=True)
 
     owner_full_name = models.CharField(
-        max_length=200, verbose_name='Owner Name')
+        max_length=200, verbose_name='Owner Name', null=True)
     owner_mailing_address = models.CharField(
-        max_length=100, verbose_name='Mailing Address')
-    owner_city = models.CharField(max_length=100, verbose_name='Town/City')
+        max_length=100, verbose_name='Mailing Address', blank=True)
+    owner_city = models.CharField(max_length=100, verbose_name='Town/City', blank=True)
     owner_province_state = models.ForeignKey(
-        ProvinceStateCode, db_column='province_state_code', on_delete=models.CASCADE, verbose_name='Province')
+        ProvinceStateCode, db_column='province_state_code', on_delete=models.CASCADE, verbose_name='Province',
+        null=True)
     owner_postal_code = models.CharField(
         max_length=10, blank=True, verbose_name='Postal Code')
 
@@ -1058,7 +1059,7 @@ class ActivitySubmission(AuditModel):
     def __str__(self):
         if self.filing_number:
             return '%s %d %s %s' % (self.activity_submission_guid, self.filing_number,
-                                    self.well_activity_type.well_activity_type_code, self.street_address)
+                                    self.well_activity_type.code, self.street_address)
         else:
             return '%s %s' % (self.activity_submission_guid, self.street_address)
 
@@ -1224,12 +1225,16 @@ class LinerPerforation(AuditModel):
 class Casing(AuditModel):
     """
     Casing information
+
+    A casing may be associated to a particular submission, or to a well.
     """
     casing_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     activity_submission = models.ForeignKey(ActivitySubmission, db_column='filing_number',
-                                            on_delete=models.CASCADE, blank=True, null=True)
-    well_tag_number = models.ForeignKey(Well, db_column='well_tag_number', on_delete=models.CASCADE,
-                                        blank=True, null=True)
+                                            on_delete=models.CASCADE, blank=True, null=True,
+                                            related_name='casing_set')
+    well = models.ForeignKey(Well, db_column='well_tag_number', on_delete=models.CASCADE,
+                             blank=True, null=True,
+                             related_name='casing_set')
     casing_from = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='From', null=True,
                                       blank=True, validators=[MinValueValidator(Decimal('0.00'))])
     casing_to = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='To', null=True, blank=True,
@@ -1237,7 +1242,7 @@ class Casing(AuditModel):
     diameter = models.DecimalField(max_digits=8, decimal_places=3, verbose_name='Diameter', null=True,
                                    blank=True, validators=[MinValueValidator(Decimal('0.5'))])
     casing_code = models.ForeignKey(CasingCode, db_column='casing_code', on_delete=models.CASCADE,
-                                    verbose_name='Casing Code', null=True)
+                                    verbose_name='Casing Type Code', null=True)
     casing_material = models.ForeignKey(CasingMaterialCode, db_column='casing_material_code',
                                         on_delete=models.CASCADE, blank=True, null=True,
                                         verbose_name='Casing Material Code')

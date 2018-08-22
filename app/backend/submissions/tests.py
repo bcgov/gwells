@@ -62,7 +62,9 @@ class TestPermissionsEditRights(APITestCase):
             'owner_mailing_address': 'somewhere',
             'owner_city': 'somewhere',
             'owner_province_state': 'BC',
-            'well_activity_type': 'CON'
+            'well_activity_type': 'CON',
+            'casing_set': []
         }
         response = self.client.post(url, data, format='json')
+        print(response)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
