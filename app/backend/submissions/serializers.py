@@ -25,10 +25,12 @@ from wells.models import (
     ActivitySubmission,
     Casing,
     IntendedWaterUseCode,
+    LandDistrictCode,
+    LinerMaterialCode,
+    LinerPerforation,
     Well,
     WellClassCode,
-    WellSubclassCode,
-    LandDistrictCode)
+    WellSubclassCode)
 
 from submissions.models import WellActivityCode
 
@@ -125,15 +127,21 @@ class WellSubmissionSerializer(serializers.ModelSerializer):
             "well_yield_unit",
             "diameter",
             "casing_set",
+            "linerperforation_set",
         )
 
     @transaction.atomic
     def create(self, validated_data):
+        print('CREATE')
         casings_data = validated_data.pop('casing_set', None)
+        linerperforations_data = validated_data.pop('linerperforation_set', None)
         instance = super().create(validated_data)
         if casings_data:
             for casing_data in casings_data:
                 Casing.objects.create(activity_submission=instance, **casing_data)
+        if linerperforations_data:
+            for linerperforation_data in linerperforations_data:
+                LinerPerforation.objects.create(activity_submission=instance, **linerperforation_data)
         # Update the well record
         stacker = wells.stack.StackWells()
         stacker.process(instance.filing_number)
@@ -183,3 +191,11 @@ class LandDistrictSerializer(serializers.ModelSerializer):
     class Meta:
         model = LandDistrictCode
         fields = ('land_district_code', 'name')
+
+
+class LinerMaterialCodeSerializer(serializers.ModelSerializer):
+    """ serializes Liner Material code/description """
+
+    class Meta:
+        model = LinerMaterialCode
+        fields = ('code', 'description')

@@ -178,8 +178,8 @@ class LinerMaterialCode(AuditModel):
     """
      Liner material installed in a well to protect the well pump or other works in the well from damage.
     """
-    liner_material_code = models.CharField(
-        primary_key=True, max_length=10, editable=False)
+    code = models.CharField(
+        primary_key=True, max_length=10, editable=False, db_column='liner_material_code')
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
 
@@ -1200,9 +1200,11 @@ class LinerPerforation(AuditModel):
     liner_perforation_guid = models.UUIDField(
         primary_key=True, default=uuid.uuid4, editable=False)
     activity_submission = models.ForeignKey(
-        ActivitySubmission, db_column='filing_number', on_delete=models.CASCADE, blank=True, null=True)
+        ActivitySubmission, db_column='filing_number', on_delete=models.CASCADE, blank=True, null=True,
+        related_name='linerperforation_set')
     well = models.ForeignKey(Well, db_column='well_tag_number',
-                             on_delete=models.CASCADE, blank=True, null=True)
+                             on_delete=models.CASCADE, blank=True, null=True,
+                             related_name='linerperforation_set')
     liner_perforation_from = models.DecimalField(
         max_digits=7, decimal_places=2, verbose_name='Perforated From', blank=False,
         validators=[MinValueValidator(Decimal('0.00'))])

@@ -105,6 +105,19 @@
           :fieldsLoaded="fieldsLoaded"
           />
 
+        <!-- Step 8: Liner Information -->
+        <step08-liner class="my-3"
+          v-if="formStep === 8 || formIsFlat"
+          :linerMaterial.sync="form.liner_material"
+          :linerDiameter.sync="form.liner_diameter"
+          :linerThickness.sync="form.liner_thickness"
+          :linerFrom.sync="form.liner_from"
+          :linerTo.sync="form.liner_to"
+          :linerPerforations.sync="form.linerperforation_set"
+          :errors="errors"
+          :fieldsLoaded="fieldsLoaded"
+        />
+
         <!-- Back / Next / Submit controls -->
         <b-row class="mt-5">
           <b-col v-if="!formIsFlat">
@@ -173,6 +186,7 @@ import Step02Owner from '@/submissions/components/SubmissionForm/Step02Owner.vue
 import Step03Location from '@/submissions/components/SubmissionForm/Step03Location.vue'
 import Step04Coords from '@/submissions/components/SubmissionForm/Step04Coords.vue'
 import Step06Casings from '@/submissions/components/SubmissionForm/Step06Casings.vue'
+import Step08Liner from '@/submissions/components/SubmissionForm/Step08Liner.vue'
 export default {
   name: 'SubmissionsHome',
   components: {
@@ -180,7 +194,8 @@ export default {
     Step02Owner,
     Step03Location,
     Step04Coords,
-    Step06Casings
+    Step06Casings,
+    Step08Liner
   },
   data () {
     return {
@@ -267,6 +282,12 @@ export default {
         legal_range: '',
         land_district: '',
         legal_pid: '',
+        liner_material: null,
+        liner_diameter: null,
+        liner_thickness: null,
+        liner_from: null,
+        liner_to: null,
+        linerperforation_set: [{}, {}, {}],
         well_location_description: '',
         latitude: '',
         longitude: '',

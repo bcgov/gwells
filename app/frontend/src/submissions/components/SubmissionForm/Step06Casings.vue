@@ -15,7 +15,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(casing, index) in casings" :key="casing.id">
+        <tr v-for="(casing, index) in casingsInput" :key="casing.id">
           <td>
             <form-input
               :id="'casing_from' + index"
