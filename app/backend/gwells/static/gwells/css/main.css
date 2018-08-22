@@ -2299,8 +2299,6 @@ h5.twitterUserName a {
 
 #main-content #body a {
     word-wrap: break-word;
-    /* RA-636 - Non standard for webkit */
-    word-break: break-all;
 }
 
 
