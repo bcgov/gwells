@@ -11,6 +11,8 @@
         :options="options"
         :value-field="valueField"
         :text-field="textField"
+        @focus.native="$emit('focus', true)"
+        @blur.native="$emit('blur', true)"
         :disabled="disabled"
         :required="required"
         @input="updateValue($event)"
