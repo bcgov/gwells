@@ -294,6 +294,7 @@ export default {
         longitude: '',
         ground_elevation: null,
         ground_elevation_method: '',
+        drilling_method: '',
         well_orientation: '',
         lithology_set: [],
         surface_seal_material: '',

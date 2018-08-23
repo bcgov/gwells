@@ -9,7 +9,10 @@
               id="surfaceSealMaterial"
               select
               v-model="surfaceSealMaterialInput"
-              :options="['Bentonite']"
+              :options="codes.surface_seal_materials"
+              placeholder="Select material"
+              text-field="description"
+              value-field="surface_seal_material_code"
               :errors="errors['surface_seal_material']"
               :loaded="fieldsLoaded['surface_seal_material']"></form-input>
         </b-col>
@@ -35,6 +38,11 @@
           <form-input
               label="Surface Seal Method of Installation"
               id="surfaceSealMethod"
+              select
+              :options="codes.surface_seal_methods"
+              placeholder="Select method"
+              text-field="description"
+              value-field="surface_seal_method_code"
               v-model="surfaceSealMethodInput"
               :errors="errors['surface_seal_method']"
               :loaded="fieldsLoaded['surface_seal_method']"></form-input>
@@ -50,7 +58,10 @@
               id="backfillAboveSurfaceSeal"
               select
               v-model="backfillAboveSurfaceSealInput"
-              :options="['Bentonite grout', 'Bentonite chips', 'Drill cuttings', 'Gravel', 'Sand', 'Native material']"
+              :options="codes.surficial_material_codes"
+              text-field="description"
+              value-field="surficial_material_code"
+              placeholder="Select material"
               :errors="errors['backfill_above_surface_seal']"
               :loaded="fieldsLoaded['backfill_above_surface_seal']"></form-input>
         </b-col>

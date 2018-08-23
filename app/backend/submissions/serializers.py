@@ -29,6 +29,7 @@ from wells.models import (
     GroundElevationMethodCode,
     SurfaceSealMaterialCode,
     SurfaceSealMethodCode,
+    SurficialMaterialCode,
     Well,
     WellClassCode,
     WellSubclassCode,
@@ -220,3 +221,11 @@ class SurfaceSealMaterialCodeSerializer(serializers.ModelSerializer):
     class Meta:
         model = SurfaceSealMaterialCode
         fields = ('surface_seal_material_code', 'description')
+
+
+class SurficialMaterialCodeSerializer(serializers.ModelSerializer):
+    """ serializes surficial material codes """
+
+    class Meta:
+        model = SurficialMaterialCode
+        fields = ('surficial_material_code', 'description')

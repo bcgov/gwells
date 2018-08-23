@@ -31,6 +31,7 @@ from wells.models import (
     LandDistrictCode,
     SurfaceSealMaterialCode,
     SurfaceSealMethodCode,
+    SurficialMaterialCode,
     Well,
     WellClassCode,
     WellSubclassCode)
@@ -46,6 +47,7 @@ from submissions.serializers import (
     WellSubclassCodeSerializer,
     SurfaceSealMaterialCodeSerializer,
     SurfaceSealMethodCodeSerializer,
+    SurficialMaterialCodeSerializer,
     IntendedWaterUseCodeSerializer,
     LandDistrictSerializer,
     GroundElevationMethodCodeSerializer,
@@ -120,8 +122,10 @@ class SubmissionsOptions(APIView):
             instance=WellClassCode.objects.prefetch_related("wellsubclasscode_set"), many=True)
         intended_water_use_codes = IntendedWaterUseCodeSerializer(
             instance=IntendedWaterUseCode.objects.all(), many=True)
-        casing_codes = CasingCodeSerializer(instance=CasingCode.objects.all(), many=True)
-        casing_material = CasingMaterialSerializer(instance=CasingMaterialCode.objects.all(), many=True)
+        casing_codes = CasingCodeSerializer(
+            instance=CasingCode.objects.all(), many=True)
+        casing_material = CasingMaterialSerializer(
+            instance=CasingMaterialCode.objects.all(), many=True)
         land_district_codes = LandDistrictSerializer(
             instance=LandDistrictCode.objects.all(), many=True)
         ground_elevation_method_codes = GroundElevationMethodCodeSerializer(
@@ -133,6 +137,8 @@ class SubmissionsOptions(APIView):
         surface_seal_material_codes = SurfaceSealMaterialCodeSerializer(
             instance=SurfaceSealMaterialCode.objects.all(), many=True
         )
+        surficial_material_codes = SurficialMaterialCodeSerializer(
+            instance=SurficialMaterialCode.objects.all(), many=True)
 
         options["province_codes"] = province_codes.data
         options["activity_types"] = activity_codes.data
@@ -145,6 +151,7 @@ class SubmissionsOptions(APIView):
         options["drilling_methods"] = drilling_method_codes.data
         options["surface_seal_methods"] = surface_seal_method_codes.data
         options["surface_seal_materials"] = surface_seal_material_codes.data
+        options["surficial_material_codes"] = surficial_material_codes.data
 
         return Response(options)
 
