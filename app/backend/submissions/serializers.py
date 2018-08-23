@@ -16,12 +16,15 @@ from rest_framework import serializers
 
 from gwells.models import ProvinceStateCode
 from gwells.serializers import AuditModelSerializer
+from django.db import transaction
 
 from wells.models import Well, ActivitySubmission
+from wells.serializers import CasingSerializer
 import wells.stack
 from wells.models import (
     ActivitySubmission,
     DrillingMethodCode,
+    Casing,
     IntendedWaterUseCode,
     GroundElevationMethodCode,
     SurfaceSealMaterialCode,
@@ -36,6 +39,8 @@ from submissions.models import WellActivityCode
 
 class WellSubmissionSerializer(serializers.ModelSerializer):
     """Serializes a well activity submission"""
+
+    casing_set = CasingSerializer(many=True, required=False)
 
     class Meta:
         model = ActivitySubmission
@@ -123,10 +128,17 @@ class WellSubmissionSerializer(serializers.ModelSerializer):
             "alternative_specs_submitted",
             "well_yield_unit",
             "diameter",
+            "casing_set",
         )
 
+    @transaction.atomic
     def create(self, validated_data):
+        casings_data = validated_data.pop('casing_set', None)
         instance = super().create(validated_data)
+        if casings_data:
+            for casing_data in casings_data:
+                Casing.objects.create(
+                    activity_submission=instance, **casing_data)
         # Update the well record
         stacker = wells.stack.StackWells()
         stacker.process(instance.filing_number)
@@ -140,7 +152,7 @@ class WellActivityCodeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = WellActivityCode
-        fields = ('well_activity_type_code', 'description')
+        fields = ('code', 'description')
 
 
 class WellSubclassCodeSerializer(serializers.ModelSerializer):

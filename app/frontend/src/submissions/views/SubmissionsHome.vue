@@ -103,6 +103,14 @@
           :lithology.sync="form.lithology_set"
         ></step05-lithology>
 
+        <!-- Step 6: Casings -->
+        <step06-casings class="my-3"
+          v-if="formStep === 3 || formIsFlat"
+          :casings.sync="form.casing_set"
+          :errors="errors"
+          :fieldsLoaded="fieldsLoaded"
+          />
+
         <!-- Step 7: Surface Seal / Backfill Material -->
         <step07-backfill class="my-3"
           v-if="formStep === 7 || formIsFlat"
@@ -182,6 +190,7 @@ import Step02Owner from '@/submissions/components/SubmissionForm/Step02Owner.vue
 import Step03Location from '@/submissions/components/SubmissionForm/Step03Location.vue'
 import Step04Coords from '@/submissions/components/SubmissionForm/Step04Coords.vue'
 import Step05Lithology from '@/submissions/components/SubmissionForm/Step05Lithology.vue'
+import Step06Casings from '@/submissions/components/SubmissionForm/Step06Casings.vue'
 import Step07Backfill from '@/submissions/components/SubmissionForm/Step07Backfill.vue'
 
 export default {
@@ -192,6 +201,7 @@ export default {
     Step03Location,
     Step04Coords,
     Step05Lithology,
+    Step06Casings,
     Step07Backfill
   },
   data () {
@@ -292,6 +302,7 @@ export default {
         surface_seal_method: '',
         backfill_above_surface_seal: '',
         backfill_above_surface_seal_depth: '',
+        casing_set: [{}, {}, {}],
 
         // non-form fields that should be saved with form
         meta: {

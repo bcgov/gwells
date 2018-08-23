@@ -23,18 +23,24 @@ from gwells.models import AuditModel
 class WellActivityCodeTypeManager(models.Manager):
 
     def construction(self):
-        return self.get_queryset().get(well_activity_type_code='CON')
+        return self.get_queryset().get(code='CON')
 
     def legacy(self):
-        return self.get_queryset().get(well_activity_type_code='LEGACY')
+        return self.get_queryset().get(code='LEGACY')
+
+    def decommission(self):
+        return self.get_queryset().get(code='DEC')
+
+    def alteration(self):
+        return self.get_queryset().get(code='ALT')
 
 
 class WellActivityCode(AuditModel):
     """
     Types of Well Activity.
     """
-    well_activity_type_code = models.CharField(
-        primary_key=True, max_length=10,  editable=False)
+    code = models.CharField(
+        primary_key=True, max_length=10,  editable=False, db_column='well_activity_type_code')
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
 

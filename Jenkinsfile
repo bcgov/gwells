@@ -15,7 +15,6 @@ import bcgov.OpenShiftHelper
 import bcgov.GitHubHelper
 
 
-
 // Print stack trace of error
 @NonCPS
 private static String stackTraceAsString(Throwable t) {
@@ -27,7 +26,6 @@ private static String stackTraceAsString(Throwable t) {
 
 // Notify stage status and pass to Jenkins-GitHub library
 void notifyStageStatus (Map context, String name, String status) {
-    // TODO: broadcast status/result to Slack channel
     GitHubHelper.createCommitStatus(
         this,
         context.pullRequest.head,
@@ -40,63 +38,59 @@ void notifyStageStatus (Map context, String name, String status) {
 
 
 /* _Stage wrapper:
-    - primary means of running stages
-    - reads which stages are to be run
-    - handles stages defined separately in closures (body)
+    - runs stages against true|false in map context
+    - receives stages defined separately in closures (body)
     - catches errors and provides output
 */
 def _stage(String name, Map context, boolean retry=0, boolean withCommitStatus=true, Closure body) {
-    def stageOpt =(context?.stages?:[:])[name]
-    boolean isEnabled=(stageOpt == null || stageOpt == true)
-    echo "Running Stage '${name}' - enabled:${isEnabled}"
+    timestamps {
+        def stageOpt =(context?.stages?:[:])[name]
+        boolean isEnabled=(stageOpt == null || stageOpt == true)
+        echo "Running Stage '${name}' - enabled:${isEnabled}"
 
-    if (isEnabled){
-        stage(name) {
-            waitUntil {
-                notifyStageStatus(context, name, 'PENDING')
-                boolean isDone=false
-                try{
-                    body()
-                    isDone=true
-                    notifyStageStatus(context, name, 'SUCCESS')
-                }catch (ex){
-                    notifyStageStatus(context, name, 'FAILURE')
-                    echo "${stackTraceAsString(ex)}"
-                    def inputAction = input(
-                        message: "This step (${name}) has failed. See error above.",
-                        ok: 'Confirm',
-                        parameters: [
-                            choice(
-                                name: 'action',
-                                choices: 'Re-run\nIgnore',
-                                description: 'What would you like to do?'
-                            )
-                        ]
-                    )
-                    if ('Ignore'.equalsIgnoreCase(inputAction)){
+        if (isEnabled){
+            stage(name) {
+                waitUntil {
+                    notifyStageStatus(context, name, 'PENDING')
+                    boolean isDone=false
+                    try{
+                        body()
                         isDone=true
+                        notifyStageStatus(context, name, 'SUCCESS')
+                    }catch (ex){
+                        notifyStageStatus(context, name, 'FAILURE')
+                        echo "${stackTraceAsString(ex)}"
+                        def inputAction = input(
+                            message: "This step (${name}) has failed. See error above.",
+                            ok: 'Confirm',
+                            parameters: [
+                                choice(
+                                    name: 'action',
+                                    choices: 'Re-run\nIgnore',
+                                    description: 'What would you like to do?'
+                                )
+                            ]
+                        )
+                        if ('Ignore'.equalsIgnoreCase(inputAction)){
+                            isDone=true
+                        }
                     }
-                }
-                return isDone
-            } //end waitUntil
-        } //end Stage
-    }else{
-        stage(name) {
-            echo 'Skipping'
+                    return isDone
+                } //end waitUntil
+            } //end Stage
+        }else{
+            stage(name) {
+                echo 'Skipping'
+            }
         }
     }
 }
 
 
-/* Project and pipeline-specific settings
+/* Project and build settings
    Includes:
-    - project name
-    - uuid
-    - web path (dev|test|prod)
-    - build config templates (*.bc)
-    - deployment config templates (*.dc) and parameters
+    - build (*.bc) and config templates (*.dc)
     - stage names and enabled status (true|false)
-    - git pull request details
 */
 Map context = [
     'name': 'gwells',
@@ -142,15 +136,12 @@ Map context = [
         ]
     ],
     stages:[
-        'Build': true,
+        'Load Fixtures': true,
+        'API Test': true,
+        'Functional Tests': false,
         'Unit Test': true,
         'Code Quality': false,
-        'Readiness - DEV': true,
-        'Deploy - DEV': true,
-        'Load Fixtures - DEV': true,
-        'ZAP Security Scan': false,
-        'API Test': true,
-        'Full Test - DEV': false
+        'ZAP Security Scan': false
     ],
     pullRequest:[
         'id': env.CHANGE_ID,
@@ -159,46 +150,10 @@ Map context = [
 ]
 
 
-/* Continuous integration (CI)
-   Triggers when a PR targets a sprint release branch
-    - prepare OpenShift environment
-    - build (build configs, imagestreams)
-    - unit tests
-    - code quality (SonarQube)
-    - deployment to transient dev environment
-    - load fixtures
-    - API tests
-    - functional tests
-    - merge PR into sprint release branch
-
-   Continuous deployment (CD)
-   Triggers when a PR targets the master branch, reserved for release branches and hotfixes
-    - All CI steps
-    - [prompt/stop]
-      - deployment to persistent test environment
-      - smoke tests
-      - deployment
-    - [prompt/stop]
-      - deployment to persistent production environment
-    - [prompt/stop]
-      - merge sprint release or hotfix branch into master
-      - close PR
-      - delete branch
-*/
-def isCI = !"master".equalsIgnoreCase(env.CHANGE_TARGET)
-def isCD = "master".equalsIgnoreCase(env.CHANGE_TARGET)
-
-
 /* Jenkins properties can be set on a pipeline-by-pipeline basis
-   Includes:
-    - build discarder
-    - build concurrency
-    - master node failure handling
-    - throttling
-    - parameters
-    - build triggers
     See Jenkins' Pipeline Systax for generation
     Globally equivalent to Jenkins > Manage Jenkins > Configure System
+    https://jenkins.io/doc/pipeline/steps/workflow-multibranch/#properties-set-job-properties
 */
 properties([
     buildDiscarder(
@@ -211,7 +166,8 @@ properties([
     ),
     durabilityHint(
         'PERFORMANCE_OPTIMIZED'
-    )
+    ),
+    disableResume()
 ])
 
 
@@ -221,10 +177,6 @@ properties([
 */
 stage('Prepare') {
     abortAllPreviousBuildInProgress(currentBuild)
-    echo "BRANCH_NAME=${env.BRANCH_NAME}"
-    echo "CHANGE_ID=${env.CHANGE_ID}"
-    echo "CHANGE_TARGET=${env.CHANGE_TARGET}"
-    echo "BUILD_URL=${env.BUILD_URL}"
 }
 
 
@@ -239,206 +191,177 @@ _stage('Build', context) {
         new OpenShiftHelper().build(this, context)
         if ("master".equalsIgnoreCase(env.CHANGE_TARGET)) {
             new OpenShiftHelper().prepareForCD(this, context)
+            new OpenShiftHelper().waitUntilEnvironmentIsReady(this, context, 'dev')
         }
         deleteDir()
     }
 } //end stage
 
 
-/* Unit test stage - pipeline step/closure
-    - use Django's manage.py to run python unit tests (w/ nose.cfg)
-    - use 'npm run unit' to run JavaScript unit tests
-    - stash test results for code quality stage
+/* Continuous Integration (CI)
+   For feature branches merging into a release branch
+    || Deploy and Load Fixtures (sets isDeployed and isFixtured=true)
+    || Unit tests (sets isUnitTested=true)
+    -> || Python tests
+       || Node tests
+    || ZAP Security Scan (executes on isDeployed)
+    || Functional tests (executes on isFixtured)
+    || API tests (executes on isFixtured)
+    || Code quality (executes on isUnitTested)
 */
-timestamps {
-    _stage('Unit Test', context) {
-        podTemplate(
-            label: "node-${context.uuid}",
-            name:"node-${context.uuid}",
-            serviceAccount: 'jenkins',
-            cloud: 'openshift',
-            containers: [
-                containerTemplate(
-                    name: 'jnlp',
-                    image: 'jenkins/jnlp-slave:3.10-1-alpine',
-                    args: '${computer.jnlpmac} ${computer.name}',
-                    resourceRequestCpu: '100m',
-                    resourceLimitCpu: '100m'
-                ),
-                containerTemplate(
-                    name: 'app',
-                    image: "docker-registry.default.svc:5000/moe-gwells-tools/gwells${context.buildNameSuffix}:${context.buildEnvName}",
-                    ttyEnabled: true,
-                    command: 'cat',
-                    resourceRequestCpu: '2000m',
-                    resourceLimitCpu: '2000m',
-                    resourceRequestMemory: '2.5Gi',
-                    resourceLimitMemory: '2.5Gi'
-                )
-            ]
-        ) {
-            node("node-${context.uuid}") {
-                container('app') {
-                    sh script: '''#!/usr/bin/container-entrypoint /bin/sh
-                        set -euo pipefail
-
-                        printf "Python version: "&& python --version
-                        printf "Pip version:    "&& pip --version
-                        printf "Node version:   "&& node --version
-                        printf "NPM version:    "&& npm --version
-
-                        (
-                            cd /opt/app-root/src/backend
-                            ENABLE_DATA_ENTRY="True" python manage.py test -c nose.cfg
-                        )
-                        (
-                            cd /opt/app-root/src/frontend
-                            npm test
-                        )
-                        mkdir -p frontend/test/
-                        cp -R /opt/app-root/src/frontend/test/unit ./frontend/test/
-                        cp /opt/app-root/src/backend/nosetests.xml /opt/app-root/src/backend/coverage.xml ./
-                        cp /opt/app-root/src/frontend/junit.xml ./frontend/
-                    '''
-                }
-            }
-        }
-    }
-} //end stage
-
-
-/* Code quality stage - pipeline step/closure
-    - unstash unit test results (previous stage)
-    - use SonarQube to consume results (*.xml)
-*/
-_stage('Code Quality', context) {
-    podTemplate(
-        name: "sonar-runner${context.uuid}",
-        label: "sonar-runner${context.uuid}",
-        serviceAccount: 'jenkins',
-        cloud: 'openshift',
-        containers:[
-            containerTemplate(
-                name: 'jnlp',
-                resourceRequestMemory: '1Gi',
-                resourceLimitMemory: '4Gi',
-                resourceRequestCpu: '500m',
-                resourceLimitCpu: '4000m',
-                image: 'registry.access.redhat.com/openshift3/jenkins-slave-maven-rhel7:v3.7',
-                workingDir: '/tmp',
-                args: '${computer.jnlpmac} ${computer.name}',
-                envVars: [
-                    envVar(key:'GRADLE_USER_HOME', value: '/var/cache/artifacts/gradle')
-                ]
-            )
-        ],
-        volumes: [
-            persistentVolumeClaim(
-                mountPath: '/var/cache/artifacts',
-                claimName: 'cache',
-                readOnly: false
-            )
-        ]
-    ){
-        node("sonar-runner${context.uuid}") {
-            //the checkout is mandatory, otherwise code quality check would fail
-            echo "checking out source"
-            echo "Build: ${BUILD_ID}"
-            checkout scm
-
-            String SONARQUBE_URL = 'https://sonarqube-moe-gwells-tools.pathfinder.gov.bc.ca'
-            echo "SONARQUBE_URL: ${SONARQUBE_URL}"
-            dir('app') {
-                unstash 'nodejunit'
-                unstash 'nodecoverage'
-            }
-            dir('sonar-runner') {
-                unstash 'coverage'
-                sh script:
-                    """
-                        ./gradlew -q dependencies
-                        ./gradlew sonarqube -Dsonar.host.url=${SONARQUBE_URL} -Dsonar.verbose=true \
-                            --stacktrace --info  -Dsonar.sources=..
-                    """,
-                    returnStdout: true
-            }
-        }
-    }
-
-} //end stage
-
-
-/* Primary stage execution block
-   - iterates through stages, set in context (Map)
-   - _stage wrapper adds functionality, stability
-*/
-for(String envKeyName: context.env.keySet() as String[]){
-    String stageDeployName=envKeyName.toUpperCase()
-
-    if ("DEV".equalsIgnoreCase(stageDeployName) || isCD) {
-        _stage("Readiness - ${stageDeployName}", context) {
+boolean isDeployed = false
+boolean isFixtured = false
+boolean isUnitTested = false
+boolean runCodeQuality=((context?.stages?:[:])['Code Quality'] == true)
+parallel (
+    "Deploy and Load Fixtures" : {
+        _stage('Deploy', context) {
             node('master') {
-                new OpenShiftHelper().waitUntilEnvironmentIsReady(this, context, envKeyName)
+                new OpenShiftHelper().deploy(this, context, 'dev')
+                sleep 5
+                isDeployed = true
             }
         }
-    }
 
-    if (!"DEV".equalsIgnoreCase(stageDeployName) && isCD){
-        _stage("Approve - ${stageDeployName}", context) {
-            def inputResponse = null;
-            try{
-                inputResponse = input(
-                    id: "deploy_${stageDeployName.toLowerCase()}",
-                    message: "Deploy to ${stageDeployName}?",
-                    ok: 'Approve',
-                    submitterParameter: 'approved_by'
-                )
-            }catch(ex){
-                error "Pipeline has been aborted. - ${ex}"
-            }
-            GitHubHelper.getPullRequest(this).comment(
-                "User '${inputResponse}' has approved deployment to '${stageDeployName}'"
-            )
-        }
-    }
-
-    if ("DEV".equalsIgnoreCase(stageDeployName) || isCD){
-        _stage("Deploy - ${stageDeployName}", context) {
-            node('master') {
-                new OpenShiftHelper().deploy(this, context, envKeyName)
-            }
-        }
-    }
-
-    if ("DEV".equalsIgnoreCase(stageDeployName)){
-        _stage("Load Fixtures - ${stageDeployName}", context) {
+        String projectName=context.deployments['dev'].projectName
+        String deploymentConfigName="gwells${context.deployments['dev'].dcSuffix}"
+        _stage('Load Fixtures', context) {
             node('master'){
-                String podName=null
-                String projectName=context.deployments[envKeyName].projectName
-                String deploymentConfigName="gwells${context.deployments[envKeyName].dcSuffix}"
-                echo "env:${context.env[envKeyName]}"
-                echo "deployment:${context.deployments[envKeyName]}"
-                echo "projectName:${projectName}"
-                echo "deploymentConfigName:${deploymentConfigName}"
-
-                openshift.withProject(projectName){
-                    podName=openshift.selector('pod', ['deploymentconfig':deploymentConfigName]).objects()[0].metadata.name
-                }
-                // Run migrate
-                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src/backend && pwd && python manage.py migrate'"
-                // Lookup tables common to all system components (e.g. Django apps)
-                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src/backend && pwd && python manage.py loaddata gwells-codetables.json'"
-                // Lookup tables for the Wellsearch component (not yet a Django app) and Registries app
-                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src/backend && pwd && python manage.py loaddata wellsearch-codetables.json registries-codetables.json'"
-                // Test data for the Wellsearch component (not yet a Django app) and Registries app
-                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src/backend && pwd && python manage.py loaddata wellsearch.json.gz registries.json'"
-                // Reversion
-                sh "oc exec '${podName}' -n '${projectName}' -- bash -c 'cd /opt/app-root/src/backend && pwd && python manage.py createinitialrevisions'"
+                parallel (
+                    "Load Fixtures": {
+                        sleep 10
+                        String podName = openshift.withProject(projectName){
+                            return openshift.selector('pod', ['deploymentconfig':deploymentConfigName]).objects()[0].metadata.name
+                        }
+                        sh "oc exec '${podName}' -n '${projectName}' -- bash -c '\
+                            cd /opt/app-root/src/backend; \
+                            python manage.py migrate; \
+                            python manage.py loaddata gwells-codetables.json; \
+                            python manage.py loaddata wellsearch-codetables.json registries-codetables.json; \
+                            python manage.py loaddata wellsearch.json.gz registries.json; \
+                            python manage.py createinitialrevisions \
+                        '"
+                        isFixtured = true
+                    },
+                    "Unit Test: Python": {
+                        sleep 30
+                        String podName = openshift.withProject(projectName){
+                            return openshift.selector('pod', ['deploymentconfig':deploymentConfigName]).objects()[1].metadata.name
+                        }
+                        if (!runCodeQuality){
+                            echo "Since Code Quality is disabled Unit Test: Python is executing early"
+                            sh "oc exec '${podName}' -n '${projectName}' -- bash -c '\
+                                cd /opt/app-root/src/backend; \
+                                DATABASE_ENGINE=sqlite DEBUG=False TEMPLATE_DEBUG=False python manage.py test -c nose.cfg \
+                            '"
+                        }
+                    }
+                )
             }
-        }
-    }
+        } //end stage
+    }, //end branch
+    "Unit Tests" : {
+        /* Unit test stage
+            - use Django's manage.py to run python unit tests (w/ nose.cfg)
+            - use 'npm run unit' to run JavaScript unit tests
+            - stash test results for code quality stage
+        */
+        _stage('Unit Tests', context) {
+            podTemplate(
+                label: "node-${context.uuid}",
+                name:"node-${context.uuid}",
+                serviceAccount: 'jenkins',
+                cloud: 'openshift',
+                containers: [
+                    containerTemplate(
+                        name: 'jnlp',
+                        image: 'jenkins/jnlp-slave:3.10-1-alpine',
+                        args: '${computer.jnlpmac} ${computer.name}',
+                        resourceRequestCpu: '100m',
+                        resourceLimitCpu: '100m'
+                    ),
+                    containerTemplate(
+                        name: 'app',
+                        image: "docker-registry.default.svc:5000/moe-gwells-tools/gwells${context.buildNameSuffix}:${context.buildEnvName}",
+                        ttyEnabled: true,
+                        command: 'cat',
+                        resourceRequestCpu: '2',
+                        resourceLimitCpu: '2',
+                        resourceRequestMemory: '2.5Gi',
+                        resourceLimitMemory: '2.5Gi'
+                    )
+                ]
+            ) {
+                node("node-${context.uuid}") {
+                    container('app') {
+                        sh script: '''#!/usr/bin/container-entrypoint /bin/sh
+                            printf "Python version: "&& python --version
+                            printf "Pip version:    "&& pip --version
+                            printf "Node version:   "&& node --version
+                            printf "NPM version:    "&& npm --version
+                        '''
 
-    if ("DEV".equalsIgnoreCase(stageDeployName)){
+                        parallel (
+                            "Unit Test: Python (w/ ZAP)": {
+                                if (runCodeQuality) {
+                                    try {
+                                        sh script: '''#!/usr/bin/container-entrypoint /bin/sh
+                                            cd /opt/app-root/src/backend
+                                            DATABASE_ENGINE=sqlite DEBUG=False TEMPLATE_DEBUG=False python manage.py test -c nose.cfg
+                                        '''
+                                        sh script: '''#!/usr/bin/container-entrypoint /bin/sh
+                                            cp /opt/app-root/src/backend/nosetests.xml ./
+                                            cp /opt/app-root/src/backend/coverage.xml ./
+                                        '''
+                                        stash includes: 'nosetests.xml,coverage.xml', name: 'coverage'
+                                    } finally {
+                                        stash includes: 'nosetests.xml,coverage.xml', name: 'coverage'
+                                        junit 'nosetests.xml'
+                                    }
+                                } else {
+                                    echo "Since Code Quality is disabled Unit Test: Python has already run"
+                                }
+                            },
+                            "Unit Test: Node": {
+                                try {
+                                    sh script: '''#!/usr/bin/container-entrypoint /bin/sh
+                                        cd /opt/app-root/src/frontend
+                                        npm test
+                                    '''
+                                    if (runCodeQuality) {
+                                        sh script: '''#!/usr/bin/container-entrypoint /bin/sh
+                                            mkdir -p frontend/test/
+                                            cp -R /opt/app-root/src/frontend/test/unit ./frontend/test/
+                                            cp /opt/app-root/src/frontend/junit.xml ./frontend/
+                                        '''
+                                    }
+                                } finally {
+                                    if (runCodeQuality) {
+                                        archiveArtifacts allowEmptyArchive: true, artifacts: 'frontend/test/unit/**/*'
+                                        stash includes: 'frontend/test/unit/coverage/clover.xml', name: 'nodecoverage'
+                                        stash includes: 'frontend/junit.xml', name: 'nodejunit'
+                                        junit 'frontend/junit.xml'
+                                        publishHTML (
+                                            target: [
+                                                allowMissing: false,
+                                                alwaysLinkToLastBuild: false,
+                                                keepAll: true,
+                                                reportDir: 'frontend/test/unit/coverage/lcov-report/',
+                                                reportFiles: 'index.html',
+                                                reportName: "Node Coverage Report"
+                                            ]
+                                        )
+                                    }
+                                }
+                            } //end branch
+                        ) //end parallel
+                        isUnitTested=true
+                    } //end container
+                } //end node
+            } //end podTemplate
+        } //end stage
+    }, //end branch
+    "ZAP Security Scan": {
         _stage('ZAP Security Scan', context) {
             podTemplate(
                 label: "zap-${context.uuid}",
@@ -449,9 +372,9 @@ for(String envKeyName: context.env.keySet() as String[]){
                     containerTemplate(
                         name: 'jnlp',
                         image: 'docker-registry.default.svc:5000/moe-gwells-dev/owasp-zap-openshift',
-                        resourceRequestCpu: '500m',
-                        resourceLimitCpu: '1000m',
-                        resourceRequestMemory: '3Gi',
+                        resourceRequestCpu: '1',
+                        resourceLimitCpu: '1',
+                        resourceRequestMemory: '4Gi',
                         resourceLimitMemory: '4Gi',
                         workingDir: '/home/jenkins',
                         command: '',
@@ -465,6 +388,10 @@ for(String envKeyName: context.env.keySet() as String[]){
                     echo "Build: ${BUILD_ID}"
                     checkout scm
                     dir('zap') {
+                        waitUntil {
+                            sleep 5
+                            return isDeployed
+                        }
                         def retVal = sh (
                             script: """
                                 set -eux
@@ -484,161 +411,15 @@ for(String envKeyName: context.env.keySet() as String[]){
                         )
                         echo "Return value is: ${retVal}"
                     }
-                }
-            }
-        }
-
-        _stage('API Test', context) {
-            String baseURL = context.deployments[envKeyName].environmentUrl.substring(0, context.deployments[envKeyName].environmentUrl.indexOf('/', 8) + 1)
-            podTemplate(
-                label: "nodejs-${context.uuid}",
-                name: "nodejs-${context.uuid}",
-                serviceAccount: 'jenkins',
-                cloud: 'openshift',
-                containers: [
-                    containerTemplate(
-                        name: 'jnlp',
-                        image: 'registry.access.redhat.com/openshift3/jenkins-agent-nodejs-8-rhel7',
-                        resourceRequestCpu: '800m',
-                        resourceLimitCpu: '800m',
-                        resourceRequestMemory: '1Gi',
-                        resourceLimitMemory: '1Gi',
-                        workingDir: '/tmp',
-                        command: '',
-                        args: '${computer.jnlpmac} ${computer.name}',
-                        envVars: [
-                            envVar(
-                                key:'BASEURL',
-                                value: "${baseURL}gwells"
-                            ),
-                            secretEnvVar(
-                                key: 'GWELLS_API_TEST_USER',
-                                secretName: 'apitest-secrets',
-                                secretKey: 'username'
-                            ),
-                            secretEnvVar(
-                                key: 'GWELLS_API_TEST_PASSWORD',
-                                secretName: 'apitest-secrets',
-                                secretKey: 'password'
-                            ),
-                            secretEnvVar(
-                                key: 'GWELLS_API_TEST_AUTH_SERVER',
-                                secretName: 'apitest-secrets',
-                                secretKey: 'auth_server'
-                            ),
-                            secretEnvVar(
-                                key: 'GWELLS_API_TEST_CLIENT_ID',
-                                secretName: 'apitest-secrets',
-                                secretKey: 'client_id'
-                            ),
-                            secretEnvVar(
-                                key: 'GWELLS_API_TEST_CLIENT_SECRET',
-                                secretName: 'apitest-secrets',
-                                secretKey: 'client_secret'
-                            )
-                        ]
-                    )
-            ],
-            envVars: [
-                envVar(
-                    key:'BASEURL',
-                    value: "${baseURL}gwells"
-                ),
-                secretEnvVar(
-                    key: 'GWELLS_API_TEST_USER',
-                    secretName: 'apitest-secrets',
-                    secretKey: 'username'
-                ),
-                secretEnvVar(
-                    key: 'GWELLS_API_TEST_PASSWORD',
-                    secretName: 'apitest-secrets',
-                    secretKey: 'password'
-                ),
-                secretEnvVar(
-                    key: 'GWELLS_API_TEST_AUTH_SERVER',
-                    secretName: 'apitest-secrets',
-                    secretKey: 'auth_server'
-                ),
-                secretEnvVar(
-                    key: 'GWELLS_API_TEST_CLIENT_ID',
-                    secretName: 'apitest-secrets',
-                    secretKey: 'client_id'
-                ),
-                secretEnvVar(
-                    key: 'GWELLS_API_TEST_CLIENT_SECRET',
-                    secretName: 'apitest-secrets',
-                    secretKey: 'client_secret'
-                )
-            ]
-        )
-            {
-                node("nodejs-${context.uuid}") {
-                    //the checkout is mandatory, otherwise functional test would fail
-                    echo "checking out source"
-                    echo "Build: ${BUILD_ID}"
-                    echo "baseURL: ${baseURL}"
-                    sh '''#!/bin/bash
-                        echo BASEURL=$BASEURL
-                    '''
-
-                    //TODO:? input(message: "Verify Environment variables. Continue?")
-                    checkout scm
-                    dir('api-tests') {
-                        sh 'npm install -g newman'
-
-                        try {
-                            sh '''
-                                newman run ./registries_api_tests.json \
-                                    --global-var test_user=$GWELLS_API_TEST_USER \
-                                    --global-var test_password=$GWELLS_API_TEST_PASSWORD \
-                                    --global-var base_url="${BASEURL}" \
-                                    --global-var auth_server=$GWELLS_API_TEST_AUTH_SERVER \
-                                    --global-var client_id=$GWELLS_API_TEST_CLIENT_ID \
-                                    --global-var client_secret=$GWELLS_API_TEST_CLIENT_SECRET \
-                                    -r cli,junit,html
-                                newman run ./wells_api_tests.json \
-                                    --global-var test_user=$GWELLS_API_TEST_USER \
-                                    --global-var test_password=$GWELLS_API_TEST_PASSWORD \
-                                    --global-var base_url="${BASEURL}" \
-                                    --global-var auth_server=$GWELLS_API_TEST_AUTH_SERVER \
-                                    --global-var client_id=$GWELLS_API_TEST_CLIENT_ID \
-                                    --global-var client_secret=$GWELLS_API_TEST_CLIENT_SECRET \
-                                    -r cli,junit,html
-                                newman run ./submissions_api_tests.json \
-                                    --global-var test_user=$GWELLS_API_TEST_USER \
-                                    --global-var test_password=$GWELLS_API_TEST_PASSWORD \
-                                    --global-var base_url="${BASEURL}" \
-                                    --global-var auth_server=$GWELLS_API_TEST_AUTH_SERVER \
-                                    --global-var client_id=$GWELLS_API_TEST_CLIENT_ID \
-                                    --global-var client_secret=$GWELLS_API_TEST_CLIENT_SECRET \
-                                    -r cli,junit,html
-                            '''
-                        } finally {
-                                junit 'newman/*.xml'
-                                publishHTML (
-                                    target: [
-                                        allowMissing: false,
-                                        alwaysLinkToLastBuild: false,
-                                        keepAll: true,
-                                        reportDir: 'newman',
-                                        reportFiles: 'newman*.html',
-                                        reportName: "API Test Report"
-                                    ]
-                                )
-                                stash includes: 'newman/*.xml', name: 'api-tests'
-                        }
-                    } // end dir
                 } //end node
             } //end podTemplate
         } //end stage
-    }
-
-    if ("DEV".equalsIgnoreCase(stageDeployName) || isCD){
-        String testStageName="DEV".equalsIgnoreCase(stageDeployName)?"Full Test - DEV":"Smoke Test - ${stageDeployName}"
-        _stage(testStageName, context){
-            String baseURL = context.deployments[envKeyName].environmentUrl.substring(
+    }, //end branch
+    "Functional Tests":{
+        _stage('Functional Tests', context){
+            String baseURL = context.deployments['dev'].environmentUrl.substring(
                 0,
-                context.deployments[envKeyName].environmentUrl.indexOf('/', 8) + 1
+                context.deployments['dev'].environmentUrl.indexOf('/', 8) + 1
             )
             podTemplate(
                 label: "bddstack-${context.uuid}",
@@ -673,79 +454,339 @@ for(String envKeyName: context.env.keySet() as String[]){
                 node("bddstack-${context.uuid}") {
                     echo "Build: ${BUILD_ID}"
                     echo "baseURL: ${baseURL}"
-                    sh 'echo "BASEURL=${BASEURL}"'
-                    sh 'echo "GRADLE_USER_HOME=${GRADLE_USER_HOME}"'
-
-                    //the checkout is mandatory, otherwise functional test would fail
-                    echo "checking out source"
                     checkout scm
                     dir('functional-tests') {
-                        Integer attempts = 0
-                        Integer attemptsMax = 2
+                        waitUntil {
+                            sleep 5
+                            return isFixtured
+                        }
                         try {
-                            waitUntil {
-                                boolean isDone=false
-                                attempts++
-                                try{
-                                    if ("DEV".equalsIgnoreCase(stageDeployName)) {
-                                        sh './gradlew chromeHeadlessTest'
-                                    } else {
-                                        sh './gradlew -DchromeHeadlessTest.single=WellDetails chromeHeadlessTest'
-                                    }
-                                    isDone=true
-                                } catch (ex) {
-                                    echo "${stackTraceAsString(ex)}"
-                                    if ( attempts < attemptsMax ){
-                                        echo "DEV - Functional Tests Failed - Wait one minute and retry once"
-                                        sleep 60
-                                    } else {
-                                        echo "DEV - Functional Tests Failed - Retry Failed"
-                                        throw ex
-                                    }
-                                }
-                                return isDone
-                            }
+                            sh './gradlew chromeHeadlessTest'
                         } finally {
-                                archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/geb/**/*'
-                                junit testResults:'build/test-results/**/*.xml', allowEmptyResults:true
-                                publishHTML (
-                                    target: [
-                                        allowMissing: true,
-                                        alwaysLinkToLastBuild: false,
-                                        keepAll: true,
-                                        reportDir: 'build/reports/spock',
-                                        reportFiles: 'index.html',
-                                        reportName: "Test: BDD Spock Report"
-                                    ]
-                                )
-                                publishHTML (
-                                    target: [
-                                        allowMissing: true,
-                                        alwaysLinkToLastBuild: false,
-                                        keepAll: true,
-                                        reportDir: 'build/reports/tests/chromeHeadlessTest',
-                                        reportFiles: 'index.html',
-                                        reportName: "Test: Full Test Report"
-                                    ]
-                                )
-                            //todo: install perf report plugin.
-                            //perfReport compareBuildPrevious: true,
-                            //    excludeResponseTime: true,
-                            //    ignoreFailedBuilds: true,
-                            //    ignoreUnstableBuilds: true,
-                            //    modeEvaluation: true,
-                            //    modePerformancePerTestCase: true,
-                            //    percentiles: '0,50,90,100',
-                            //    relativeFailedThresholdNegative: 80.0,
-                            //    relativeFailedThresholdPositive: 20.0,
-                            //    relativeUnstableThresholdNegative: 50.0,
-                            //    relativeUnstableThresholdPositive: 50.0,
-                            //    sourceDataFiles: 'build/test-results/**/*.xml'
+                            archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/geb/**/*'
+                            junit testResults:'build/test-results/**/*.xml', allowEmptyResults:true
+                            publishHTML (
+                                target: [
+                                    allowMissing: true,
+                                    alwaysLinkToLastBuild: false,
+                                    keepAll: true,
+                                    reportDir: 'build/reports/spock',
+                                    reportFiles: 'index.html',
+                                    reportName: "Test: BDD Spock Report"
+                                ]
+                            )
+                            publishHTML (
+                                target: [
+                                    allowMissing: true,
+                                    alwaysLinkToLastBuild: false,
+                                    keepAll: true,
+                                    reportDir: 'build/reports/tests/chromeHeadlessTest',
+                                    reportFiles: 'index.html',
+                                    reportName: "Test: Full Test Report"
+                                ]
+                            )
                         }
                     } //end dir
                 } //end node
             } //end podTemplate
         } //end stage
+    }, //end branch
+    "API Test": {
+        _stage('API Test', context) {
+            waitUntil {
+                sleep 5
+                return isDeployed
+            }
+            podTemplate(
+                label: "nodejs-${context.uuid}",
+                name: "nodejs-${context.uuid}",
+                serviceAccount: 'jenkins',
+                cloud: 'openshift',
+                containers: [
+                    containerTemplate(
+                        name: 'jnlp',
+                        image: 'registry.access.redhat.com/openshift3/jenkins-agent-nodejs-8-rhel7',
+                        resourceRequestCpu: '800m',
+                        resourceLimitCpu: '800m',
+                        resourceRequestMemory: '1Gi',
+                        resourceLimitMemory: '1Gi',
+                        workingDir: '/tmp',
+                        command: '',
+                        args: '${computer.jnlpmac} ${computer.name}',
+                        envVars: [
+                            secretEnvVar(
+                                key: 'GWELLS_API_TEST_USER',
+                                secretName: 'apitest-secrets',
+                                secretKey: 'username'
+                            ),
+                            secretEnvVar(
+                                key: 'GWELLS_API_TEST_PASSWORD',
+                                secretName: 'apitest-secrets',
+                                secretKey: 'password'
+                            ),
+                            secretEnvVar(
+                                key: 'GWELLS_API_TEST_AUTH_SERVER',
+                                secretName: 'apitest-secrets',
+                                secretKey: 'auth_server'
+                            ),
+                            secretEnvVar(
+                                key: 'GWELLS_API_TEST_CLIENT_ID',
+                                secretName: 'apitest-secrets',
+                                secretKey: 'client_id'
+                            ),
+                            secretEnvVar(
+                                key: 'GWELLS_API_TEST_CLIENT_SECRET',
+                                secretName: 'apitest-secrets',
+                                secretKey: 'client_secret'
+                            )
+                        ]
+                    )
+                ]
+            ) {
+                node("nodejs-${context.uuid}") {
+                    checkout scm
+                    dir('api-tests') {
+                        sh 'npm install -g newman'
+                        waitUntil {
+                            sleep 5
+                            return isFixtured
+                        }
+                        String BASEURL = context.deployments['dev'].environmentUrl.substring(0, context.deployments['dev'].environmentUrl.indexOf('/', 8) + 1)
+                        BASEURL += "gwells"
+                        try {
+                            sh """
+                                newman run ./registries_api_tests.json \
+                                    --global-var test_user=\$GWELLS_API_TEST_USER \
+                                    --global-var test_password=\$GWELLS_API_TEST_PASSWORD \
+                                    --global-var base_url=${BASEURL} \
+                                    --global-var auth_server=\$GWELLS_API_TEST_AUTH_SERVER \
+                                    --global-var client_id=\$GWELLS_API_TEST_CLIENT_ID \
+                                    --global-var client_secret=\$GWELLS_API_TEST_CLIENT_SECRET \
+                                    -r cli,junit,html
+                                newman run ./wells_api_tests.json \
+                                    --global-var test_user=\$GWELLS_API_TEST_USER \
+                                    --global-var test_password=\$GWELLS_API_TEST_PASSWORD \
+                                    --global-var base_url=${BASEURL} \
+                                    --global-var auth_server=\$GWELLS_API_TEST_AUTH_SERVER \
+                                    --global-var client_id=\$GWELLS_API_TEST_CLIENT_ID \
+                                    --global-var client_secret=\$GWELLS_API_TEST_CLIENT_SECRET \
+                                    -r cli,junit,html
+                                newman run ./submissions_api_tests.json \
+                                    --global-var test_user=\$GWELLS_API_TEST_USER \
+                                    --global-var test_password=\$GWELLS_API_TEST_PASSWORD \
+                                    --global-var base_url=${BASEURL} \
+                                    --global-var auth_server=\$GWELLS_API_TEST_AUTH_SERVER \
+                                    --global-var client_id=\$GWELLS_API_TEST_CLIENT_ID \
+                                    --global-var client_secret=\$GWELLS_API_TEST_CLIENT_SECRET \
+                                    -r cli,junit,html
+                            """
+                        } finally {
+                                junit 'newman/*.xml'
+                                publishHTML (
+                                    target: [
+                                        allowMissing: false,
+                                        alwaysLinkToLastBuild: false,
+                                        keepAll: true,
+                                        reportDir: 'newman',
+                                        reportFiles: 'newman*.html',
+                                        reportName: "API Test Report"
+                                    ]
+                                )
+                                stash includes: 'newman/*.xml', name: 'api-tests'
+                        }
+                    } // end dir
+                } //end node
+            } //end podTemplate
+        } //end stage
+    }, //end branch
+    "Code Quality": {
+        /* Code quality stage - pipeline step/closure
+        - unstash unit test results (previous stage)
+        - use SonarQube to consume results (*.xml)
+        */
+        _stage('Code Quality', context) {
+            podTemplate(
+                name: "sonar-runner${context.uuid}",
+                label: "sonar-runner${context.uuid}",
+                serviceAccount: 'jenkins',
+                cloud: 'openshift',
+                containers:[
+                    containerTemplate(
+                        name: 'jnlp',
+                        resourceRequestMemory: '4Gi',
+                        resourceLimitMemory: '4Gi',
+                        resourceRequestCpu: '4000m',
+                        resourceLimitCpu: '4000m',
+                        image: 'registry.access.redhat.com/openshift3/jenkins-slave-maven-rhel7:v3.7',
+                        workingDir: '/tmp',
+                        args: '${computer.jnlpmac} ${computer.name}',
+                        envVars: [
+                            envVar(key:'GRADLE_USER_HOME', value: '/var/cache/artifacts/gradle')
+                        ]
+                    )
+                ],
+                volumes: [
+                    persistentVolumeClaim(
+                        mountPath: '/var/cache/artifacts',
+                        claimName: 'cache',
+                        readOnly: false
+                    )
+                ]
+            ){
+                node("sonar-runner${context.uuid}") {
+                    //the checkout is mandatory, otherwise code quality check would fail
+                    echo "checking out source"
+                    echo "Build: ${BUILD_ID}"
+                    checkout scm
+
+                    String SONARQUBE_URL = 'https://sonarqube-moe-gwells-tools.pathfinder.gov.bc.ca'
+                    echo "SONARQUBE_URL: ${SONARQUBE_URL}"
+                    waitUntil {
+                        sleep 5
+                        return isUnitTested
+                    }
+                    dir('app') {
+                        unstash 'nodejunit'
+                        unstash 'nodecoverage'
+                    }
+                    dir('sonar-runner') {
+                        unstash 'coverage'
+                        sh script:
+                            """
+                                ./gradlew -q dependencies
+                                ./gradlew sonarqube -Dsonar.host.url=${SONARQUBE_URL} -Dsonar.verbose=true \
+                                    --stacktrace --info  -Dsonar.sources=..
+                            """,
+                            returnStdout: true
+                    }
+                } //end node
+            } //end podTemplate
+        } //end stage
+    } //end branch
+) //end parallel
+
+
+/* Continuous Deployment (CD)
+   For PRs to the master branch, reserved for release branches and hotfixes
+   Iterates through DEV (skipped), TEST and PROD environments
+    - [prompt/stop]
+      || deployment to persistent TEST environment (sets isDeployed=true)
+      || smoke tests (executes on isDeployed)
+    - [prompt/stop]
+      - deployment to persistent PROD environment
+      - GitHub tasks (merge, close PR, deleteproduction branch)
+*/
+for(String envKeyName: context.env.keySet() as String[]){
+    String stageDeployName=envKeyName.toUpperCase()
+
+    if (!"DEV".equalsIgnoreCase(stageDeployName) && "master".equalsIgnoreCase(env.CHANGE_TARGET)) {
+        _stage("Approve - ${stageDeployName}", context) {
+            node('master') {
+                new OpenShiftHelper().waitUntilEnvironmentIsReady(this, context, envKeyName)
+            }
+            def inputResponse = null;
+            try{
+                inputResponse = input(
+                    id: "deploy_${stageDeployName.toLowerCase()}",
+                    message: "Deploy to ${stageDeployName}?",
+                    ok: 'Approve',
+                    submitterParameter: 'approved_by'
+                )
+            }catch(ex){
+                error "Pipeline has been aborted. - ${ex}"
+            }
+            GitHubHelper.getPullRequest(this).comment(
+                "User '${inputResponse}' has approved deployment to '${stageDeployName}'"
+            )
+        }
+
+        isDeployed = false
+        parallel (
+            "Deploy - ${stageDeployName}": {
+                _stage("Deploy - ${stageDeployName}", context) {
+                    node('master') {
+                        new OpenShiftHelper().deploy(this, context, envKeyName)
+                        isDeployed = true
+                    }
+                }
+            },
+            "Smoke Test - ${stageDeployName}": {
+                waitUntil {
+                    sleep 5
+                    return isDeployed
+                }
+                _stage("Smoke Test - ${stageDeployName}", context){
+                    String baseURL = context.deployments[envKeyName].environmentUrl.substring(
+                        0,
+                        context.deployments[envKeyName].environmentUrl.indexOf('/', 8) + 1
+                    )
+                    podTemplate(
+                        label: "bddstack-${context.uuid}",
+                        name: "bddstack-${context.uuid}",
+                        serviceAccount: 'jenkins',
+                        cloud: 'openshift',
+                        containers: [
+                          containerTemplate(
+                             name: 'jnlp',
+                             image: 'docker-registry.default.svc:5000/openshift/jenkins-slave-bddstack',
+                             resourceRequestCpu: '800m',
+                             resourceLimitCpu: '800m',
+                             resourceRequestMemory: '3Gi',
+                             resourceLimitMemory: '3Gi',
+                             workingDir: '/home/jenkins',
+                             command: '',
+                             args: '${computer.jnlpmac} ${computer.name}',
+                             envVars: [
+                                 envVar(key:'BASEURL', value: baseURL),
+                                 envVar(key:'GRADLE_USER_HOME', value: '/var/cache/artifacts/gradle')
+                             ]
+                          )
+                        ],
+                        volumes: [
+                            persistentVolumeClaim(
+                                mountPath: '/var/cache/artifacts',
+                                claimName: 'cache',
+                                readOnly: false
+                            )
+                        ]
+                    ){
+                        node("bddstack-${context.uuid}") {
+                            echo "Build: ${BUILD_ID}"
+                            echo "baseURL: ${baseURL}"
+                            checkout scm
+                            dir('functional-tests') {
+                                try {
+                                    sh './gradlew -DchromeHeadlessTest.single=WellDetails chromeHeadlessTest'
+                                } finally {
+                                    archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/geb/**/*'
+                                    junit testResults:'build/test-results/**/*.xml', allowEmptyResults:true
+                                    publishHTML (
+                                        target: [
+                                            allowMissing: true,
+                                            alwaysLinkToLastBuild: false,
+                                            keepAll: true,
+                                            reportDir: 'build/reports/spock',
+                                            reportFiles: 'index.html',
+                                            reportName: "Test: BDD Spock Report"
+                                        ]
+                                    )
+                                    publishHTML (
+                                        target: [
+                                            allowMissing: true,
+                                            alwaysLinkToLastBuild: false,
+                                            keepAll: true,
+                                            reportDir: 'build/reports/tests/chromeHeadlessTest',
+                                            reportFiles: 'index.html',
+                                            reportName: "Test: Full Test Report"
+                                        ]
+                                    )
+                                }
+                            } //end dir
+                        } //end node
+                    } //end podTemplate
+                } //end stage
+            }
+        )
     } //end if
 } // end for
 
@@ -778,7 +819,6 @@ stage('Cleanup') {
             echo "Clearing OpenShift resources"
             new OpenShiftHelper().cleanup(this, context)
 
-            // TODO: broadcast status/result to Slack channel
             isDone=true
         }catch (ex){
             echo "${stackTraceAsString(ex)}"

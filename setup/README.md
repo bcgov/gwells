@@ -56,8 +56,7 @@ Please use either these steps or the install script.
 
     Change directory to repo, then add remote (upstream) origin.
 
-    ```
-    cd gwells
+    ```
     git remote add upstream https://github.com/bcgov/gwells.git
     ```
 
@@ -125,7 +124,8 @@ Please use either these steps or the install script.
     Install Python requirements (file in root of repo).
 
     ```
-    pip3 install -U -r ../requirements.txt
+    cd app/backend
+    pip3 install -U -r requirements.txt
     ```
 
 5.  ##### Config variables
@@ -174,18 +174,22 @@ Please use either these steps or the install script.
     Prepare and apply migration data structures (file in root of repo).
 
     ```
-    python3 ../manage.py makemigrations
-    python3 ../manage.py migrate
+    cd app/backend
+    python3 manage.py makemigrations
+    python3 manage.py migrate
     ```
 
     Optional: import a database.
-    ```
+    
     From python:
+    ```
+    cd app/backend
     python manage.py loaddata gwells-codetables
     python manage.py loaddata wellsearch-codetables registries-codetables
     python manage.py loaddata wellsearch registries
-
+    ```
     From pg dump:
+    ```
     pg_restore -U gwells -d gwells --no-owner --no-privileges <path to MODERN_DB_DUMP>
     ```
 
@@ -194,26 +198,28 @@ Please use either these steps or the install script.
     Collect static files and run tests (file in root of repo).
 
     ```
-    python3 ../manage.py collectstatic
-	python3 ../manage.py test -c nose.cfg
+    cd app/backend
+    python3 manage.py collectstatic
+    python3 manage.py test -c nose.cfg
     ```
 
 8.  ##### Start GWells
 
+    Build the Registries frontend app.  This should happen every time there has been a change in ./registries/.
+
+    ```
+    cd app/frontend
+    npm install
+    run build
+    ```
+
     Start the Django development server (file in root of repo).
 
     ```
-    python3 ../manage.py runserver
+    cd app/backend
+    python3 manage.py runserver
     ```
-
-    Optional: Build the Registries frontend app.  This should happen every time there has been a change in ./registries/.
-
-    ```
-    cd ../frontend
-    npm install
-    npm run build
-    ```
-
+    
 9.  ##### Use GWells
 
     Browse to http://127.0.0.1:8000/gwells, the welcome page.
