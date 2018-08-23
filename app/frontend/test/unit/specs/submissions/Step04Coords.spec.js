@@ -19,51 +19,6 @@ describe('Step04Coords.vue', () => {
     })
   })
 
-  it('accepts valid latitude input', () => {
-    const wrapper = shallowMount(Step04Coords, {
-      localVue,
-      store,
-      sync: false
-    })
-
-    const invalidLats = [{
-      deg: 267,
-      min: 0,
-      sec: 0
-    },
-    {
-      deg: 1,
-      min: 61,
-      sec: 0
-    },
-    {
-      deg: 1,
-      min: 25,
-      sec: 99
-    }]
-    const validLats = [{
-      deg: 67,
-      min: 0,
-      sec: 0
-    },
-    {
-      deg: 0,
-      min: 0,
-      sec: 0
-    }]
-
-    let lat
-
-    invalidLats.forEach(x => {
-      lat = wrapper.vm.validDMSLat(x)
-      expect(lat).toBe(false)
-    })
-    validLats.forEach(x => {
-      lat = wrapper.vm.validDMSLat(x)
-      expect(lat).toBe(true)
-    })
-  })
-
   it('converts from WSG84 to UTM', () => {
     const wrapper = shallowMount(Step04Coords, {
       localVue,
@@ -144,6 +99,107 @@ describe('Step04Coords.vue', () => {
       expect(Number.parseFloat(result.longitude).toFixed(6)).toBe(cases[i].expected.longitude)
       expect(Number.parseFloat(result.latitude).toFixed(6)).toBe(cases[i].expected.latitude)
       expect(result.zone).toBe(cases[i].expected.zone)
+    }
+  })
+  it('converts from decimal degrees to DMS', () => {
+    const wrapper = shallowMount(Step04Coords, {
+      localVue,
+      store,
+      sync: false
+    })
+
+    const cases = [
+      {
+        test: [-144.5099, 48.50112],
+        expected: {
+          lat: {
+            deg: '48',
+            min: '30',
+            sec: '4.03'
+          },
+          long: {
+            deg: '-144',
+            min: '30',
+            sec: '35.64'
+          }
+        }
+      }
+    ]
+
+    for (let i = 0; i < cases.length; i++) {
+      const args = cases[i]['test']
+
+      // longitude first
+      let result = wrapper.vm.convertToDMS(args[0])
+
+      expect(result.deg).toBe(cases[i].expected.long.deg)
+      expect(result.min).toBe(cases[i].expected.long.min)
+      expect(result.sec).toBe(cases[i].expected.long.sec)
+
+      // latitude
+      result = wrapper.vm.convertToDMS(args[1])
+
+      expect(result.deg).toBe(cases[i].expected.lat.deg)
+      expect(result.min).toBe(cases[i].expected.lat.min)
+      expect(result.sec).toBe(cases[i].expected.lat.sec)
+    }
+  })
+  it('converts from DMS to decimal degrees', () => {
+    const wrapper = shallowMount(Step04Coords, {
+      localVue,
+      store,
+      sync: false
+    })
+
+    const cases = [
+      {
+        test: {
+          lat: {
+            deg: 49,
+            min: 24,
+            sec: 55.98
+          },
+          long: {
+            deg: 142,
+            min: 58,
+            sec: 43.01
+          }},
+        expected: {
+          latitude: '49.415550',
+          longitude: '142.978614'
+        }
+      },
+      {
+        test: {
+          lat: {
+            deg: -49,
+            min: 24,
+            sec: 55.98
+          },
+          long: {
+            deg: -142,
+            min: 58,
+            sec: 43.01
+          }},
+        expected: {
+          latitude: '-49.415550',
+          longitude: '-142.978614'
+        }
+      }
+    ]
+
+    for (let i = 0; i < cases.length; i++) {
+      const args = cases[i]['test']
+
+      let result = wrapper.vm.convertDMStoDeg(args.long)
+
+      // longitude
+      expect(result).toBe(cases[i].expected.longitude)
+
+      // latitude
+      result = wrapper.vm.convertDMStoDeg(args.lat)
+
+      expect(result).toBe(cases[i].expected.latitude)
     }
   })
 })

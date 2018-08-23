@@ -334,7 +334,7 @@ export default {
           dms.min = Number(this.parseCoordValue(value.min)) || 0
           dms.sec = Number(this.parseCoordValue(value.sec)) || 0
 
-          const lat = (dms.deg + dms.min / 60 + dms.sec / (60 * 60)).toFixed(6)
+          const lat = this.convertDMStoDeg(dms)
           const { easting, northing, zone } = this.convertToUTM(Number(this.degrees.longitude), lat)
           this.updateDegrees(this.degrees.longitude, lat)
           this.updateUTM(easting, northing, zone)
@@ -356,7 +356,7 @@ export default {
           dms.min = Number(this.parseCoordValue(value.min)) || 0
           dms.sec = Number(this.parseCoordValue(value.sec)) || 0
 
-          const long = (dms.deg + dms.min / 60 + dms.sec / (60 * 60)).toFixed(6)
+          const long = this.convertDMStoDeg(dms)
 
           const { easting, northing, zone } = this.convertToUTM(long, Number(this.degrees.latitude))
           this.updateDegrees(long, this.degrees.latitude)
@@ -457,24 +457,6 @@ export default {
     }
   },
   methods: {
-    validDMSLat (value) {
-      return (
-        value.deg >= -90 &&
-        value.deg <= 90 &&
-        value.min >= 0 &&
-        value.min <= 60 &&
-        value.sec >= 0 &&
-        value.sec <= 60)
-    },
-    validDMSLng (value) {
-      return (
-        value.deg >= -180 &&
-        value.deg <= 180 &&
-        value.min >= 0 &&
-        value.min <= 60 &&
-        value.sec >= 0 &&
-        value.sec <= 60)
-    },
     convertToUTM (long, lat) {
       // converts input coordinates and returns an object containing UTM easting, northing, and zone
       const utm = {
@@ -532,6 +514,11 @@ export default {
         min: String(min),
         sec: String(sec)
       }
+    },
+    convertDMStoDeg (dms) {
+      const sign = Math.sign(dms.deg)
+
+      return (dms.deg + sign * dms.min / 60 + sign * dms.sec / (60 * 60)).toFixed(6)
     },
     updateUTM (easting, northing, zone) {
       this.utm.easting = easting
