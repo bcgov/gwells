@@ -253,7 +253,6 @@ export default {
     },
     wellAddressSearch: debounce((loading, search, vm) => {
       if (/^(\w+ [ \w]+)/.test(search)) {
-        console.log('matched', search)
         axios.get(`https://geocoder.api.gov.bc.ca/addresses.json?addressString=${escape(search)}&autoComplete=true&maxResults=10&brief=true`).then((response) => {
           vm.wellAddressHints = response.data.features.map(x => x.properties.fullAddress)
         })

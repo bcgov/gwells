@@ -51,8 +51,6 @@ describe('Step01Type.vue', () => {
       sync: false
     })
 
-    console.log(wrapper.vm.wellClass)
-
     expect(wrapper.vm.subclasses.length).toBe(2)
     expect(wrapper.vm.subclasses[0].well_subclass_code).toBe('DOMESTIC')
   })
