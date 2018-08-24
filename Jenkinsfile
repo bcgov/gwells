@@ -215,33 +215,41 @@ boolean isUnitTested = false
 boolean runCodeQuality=((context?.stages?:[:])['Code Quality'] == true)
 parallel (
     "Deploy and Load Fixtures" : {
+
+        String projectName=context.deployments['dev'].projectName
+        String deploymentConfigName="gwells${context.deployments['dev'].dcSuffix}"
+
         _stage('Deploy', context) {
             node('master') {
                 new OpenShiftHelper().deploy(this, context, 'dev')
-                sleep 5
+                def pods = openshift.selector('pod', ['deploymentconfig':deploymentConfigName])
+
+                pods.untilEach(1) {
+                    return it.object().status.containerStatuses.every {
+                        it.ready
+                    }
+                }
                 isDeployed = true
             }
         }
 
-        String projectName=context.deployments['dev'].projectName
-        String deploymentConfigName="gwells${context.deployments['dev'].dcSuffix}"
         _stage('Load Fixtures', context) {
             node('master'){
                 parallel (
                     "Load Fixtures": {
-                        sleep 10
-                        String podName = openshift.withProject(projectName){
-                            return openshift.selector('pod', ['deploymentconfig':deploymentConfigName]).objects()[0].metadata.name
-                        }
-                        sh "oc exec '${podName}' -n '${projectName}' -- bash -c '\
-                            cd /opt/app-root/src/backend; \
-                            python manage.py migrate; \
-                            python manage.py loaddata gwells-codetables.json; \
-                            python manage.py loaddata wellsearch-codetables.json registries-codetables.json; \
-                            python manage.py loaddata wellsearch.json.gz registries.json; \
-                            python manage.py createinitialrevisions \
-                        '"
-                        isFixtured = true
+                            String podName = openshift.withProject(projectName){
+                                return openshift.selector('pod', ['deploymentconfig':deploymentConfigName]).objects()[0].metadata.name
+                            }
+                                                        
+                            sh "oc exec '${podName}' -n '${projectName}' -- bash -c '\
+                                cd /opt/app-root/src/backend; \
+                                python manage.py migrate; \
+                                python manage.py loaddata gwells-codetables.json; \
+                                python manage.py loaddata wellsearch-codetables.json registries-codetables.json; \
+                                python manage.py loaddata wellsearch.json.gz registries.json; \
+                                python manage.py createinitialrevisions \
+                            '"
+                            isFixtured = true
                     },
                     "Unit Test: Python": {
                         sleep 30
