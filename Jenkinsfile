@@ -215,13 +215,13 @@ boolean isUnitTested = false
 boolean runCodeQuality=((context?.stages?:[:])['Code Quality'] == true)
 parallel (
     "Deploy and Load Fixtures" : {
-
-        String projectName=context.deployments['dev'].projectName
-        String deploymentConfigName="gwells${context.deployments['dev'].dcSuffix}"
-
         _stage('Deploy', context) {
             node('master') {
                 new OpenShiftHelper().deploy(this, context, 'dev')
+
+
+                String projectName=context.deployments['dev'].projectName
+                String deploymentConfigName="gwells${context.deployments['dev'].dcSuffix}"
 
                 // get list of pods for the new deployment
                 def latestDeployment = openshift.selector('dc', deploymentConfigName).object().status.latestVersion
