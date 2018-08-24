@@ -169,7 +169,6 @@
           <form-input
               id="groundElevation"
               label="Ground Elevation"
-              type="number"
               hint="Feet above sea level"
               v-model.number="groundElevationInput"
               :errors="errors['ground_elevation']"
