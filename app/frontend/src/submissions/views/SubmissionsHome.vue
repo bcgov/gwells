@@ -105,6 +105,9 @@
           :fieldsLoaded="fieldsLoaded"
           />
 
+        <!-- Step 9: Screens -->
+        <step09-screens></step09-screens>
+
         <!-- Back / Next / Submit controls -->
         <b-row class="mt-5">
           <b-col v-if="!formIsFlat">
@@ -173,6 +176,7 @@ import Step02Owner from '@/submissions/components/SubmissionForm/Step02Owner.vue
 import Step03Location from '@/submissions/components/SubmissionForm/Step03Location.vue'
 import Step04Coords from '@/submissions/components/SubmissionForm/Step04Coords.vue'
 import Step06Casings from '@/submissions/components/SubmissionForm/Step06Casings.vue'
+import Step09Screens from '@/submissions/components/SubmissionForm/Step09Screens.vue'
 export default {
   name: 'SubmissionsHome',
   components: {
@@ -180,7 +184,8 @@ export default {
     Step02Owner,
     Step03Location,
     Step04Coords,
-    Step06Casings
+    Step06Casings,
+    Step09Screens
   },
   data () {
     return {
