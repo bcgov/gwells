@@ -19,6 +19,59 @@
     ],
     "objects": [
         {
+            "kind": "BuildConfig",
+            "apiVersion": "v1",
+            "metadata": {
+                "name": "gwells-postgres-postgis-fdw${NAME_SUFFIX}",
+                "creationTimestamp": null,
+                "labels": {
+                    "build": "gwells-postgres-postgis-fdw"
+                },
+                "annotations": {
+                }
+            },
+            "spec": {
+                "successfulBuildsHistoryLimit": 3,
+                "failedBuildsHistoryLimit": 3,
+                "triggers": [
+                    {
+                        "type": "ImageChange",
+                        "imageChange": {}
+                    },
+                    {
+                        "type": "ConfigChange"
+                    }
+                ],
+                "runPolicy": "SerialLatestOnly",
+                "source": {
+                    "contextDir": "docker-images/gwells-postgres-postgis-fdw",
+                    "git": {
+                        "ref": "master",
+                        "uri": "${SOURCE_REPOSITORY_URL}"
+                    },
+                    "type": "Git"
+                },
+                "strategy": {
+                    "type": "Docker",
+                    "dockerStrategy": {
+                        "from": {
+                            "kind": "ImageStreamTag",
+                            "name": "gwells-postgres-postgis-fdw${NAME_SUFFIX}:9.6"
+                        }
+                    }
+                },
+                "output": {
+                    "to": {
+                        "kind": "ImageStreamTag",
+                        "name": "gwells-postgres-postgis-fdw${NAME_SUFFIX}:${ENV_NAME}"
+                    }
+                },
+                "resources": {},
+                "postCommit": {},
+                "nodeSelector": null
+            }
+        },
+        {
             "kind": "ImageStream",
             "apiVersion": "v1",
             "metadata": {
