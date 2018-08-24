@@ -222,7 +222,10 @@ parallel (
         _stage('Deploy', context) {
             node('master') {
                 new OpenShiftHelper().deploy(this, context, 'dev')
-                def pods = openshift.selector('pod', ['deploymentconfig':deploymentConfigName])
+
+                // get list of pods for the new deployment
+                def latestDeployment = openshift.selector('dc', deploymentConfigName).object().status.latestVersion
+                def pods = openshift.selector('pod', [deployment: "${deploymentConfigName}-${latestDeployment}"])
 
                 pods.untilEach(1) {
                     return it.object().status.containerStatuses.every {
@@ -237,19 +240,19 @@ parallel (
             node('master'){
                 parallel (
                     "Load Fixtures": {
-                            String podName = openshift.withProject(projectName){
-                                return openshift.selector('pod', ['deploymentconfig':deploymentConfigName]).objects()[0].metadata.name
-                            }
-                                                        
-                            sh "oc exec '${podName}' -n '${projectName}' -- bash -c '\
-                                cd /opt/app-root/src/backend; \
-                                python manage.py migrate; \
-                                python manage.py loaddata gwells-codetables.json; \
-                                python manage.py loaddata wellsearch-codetables.json registries-codetables.json; \
-                                python manage.py loaddata wellsearch.json.gz registries.json; \
-                                python manage.py createinitialrevisions \
-                            '"
-                            isFixtured = true
+                        String podName = openshift.withProject(projectName){
+                            return openshift.selector('pod', ['deploymentconfig':deploymentConfigName]).objects()[0].metadata.name
+                        }
+                                                    
+                        sh "oc exec '${podName}' -n '${projectName}' -- bash -c '\
+                            cd /opt/app-root/src/backend; \
+                            python manage.py migrate; \
+                            python manage.py loaddata gwells-codetables.json; \
+                            python manage.py loaddata wellsearch-codetables.json registries-codetables.json; \
+                            python manage.py loaddata wellsearch.json.gz registries.json; \
+                            python manage.py createinitialrevisions \
+                        '"
+                        isFixtured = true
                     },
                     "Unit Test: Python": {
                         sleep 30
