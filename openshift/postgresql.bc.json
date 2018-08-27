@@ -51,15 +51,6 @@
                     },
                     "type": "Git"
                 },
-                "strategy": {
-                    "type": "Docker",
-                    "dockerStrategy": {
-                        "from": {
-                            "kind": "ImageStreamTag",
-                            "name": "gwells-postgres-postgis-fdw${NAME_SUFFIX}:9.6"
-                        }
-                    }
-                },
                 "output": {
                     "to": {
                         "kind": "ImageStreamTag",
