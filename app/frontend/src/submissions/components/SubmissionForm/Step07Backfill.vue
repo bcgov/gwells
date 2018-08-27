@@ -1,7 +1,7 @@
 <template>
   <div>
     <fieldset>
-      <legend>Step 7: Backfill</legend>
+      <legend>Step 7: Surface Seal and Backfill Information</legend>
       <b-row>
         <b-col cols="12" sm="4" md="3">
           <form-input
