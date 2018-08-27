@@ -25,6 +25,7 @@ from wells.models import (
     ActivitySubmission,
     Casing,
     IntendedWaterUseCode,
+    ScreenIntakeMethodCode,
     Well,
     WellClassCode,
     WellSubclassCode,
@@ -133,7 +134,8 @@ class WellSubmissionSerializer(serializers.ModelSerializer):
         instance = super().create(validated_data)
         if casings_data:
             for casing_data in casings_data:
-                Casing.objects.create(activity_submission=instance, **casing_data)
+                Casing.objects.create(
+                    activity_submission=instance, **casing_data)
         # Update the well record
         stacker = wells.stack.StackWells()
         stacker.process(instance.filing_number)
@@ -183,3 +185,11 @@ class LandDistrictSerializer(serializers.ModelSerializer):
     class Meta:
         model = LandDistrictCode
         fields = ('land_district_code', 'name')
+
+
+class ScreenIntakeMethodSerializer(serializers.ModelSerializer):
+    """ serializes screen intake method codes """
+
+    class Meta:
+        model = ScreenIntakeMethodCode
+        fields = ('screen_intake_code', 'description')

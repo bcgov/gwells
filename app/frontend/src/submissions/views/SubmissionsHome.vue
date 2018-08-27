@@ -99,14 +99,17 @@
 
         <!-- Step 6: Casings -->
         <step06-casings class="my-3"
-          v-if="formStep === 3 || formIsFlat"
+          v-if="formStep === 6 || formIsFlat"
           :casings.sync="form.casing_set"
           :errors="errors"
           :fieldsLoaded="fieldsLoaded"
           />
 
         <!-- Step 9: Screens -->
-        <step09-screens></step09-screens>
+        <step09-screens
+          v-if="formstep === 9 || formIsFlat"
+          :screenIntakeMethod.sync="form.screen_intake_method"
+        ></step09-screens>
 
         <!-- Back / Next / Submit controls -->
         <b-row class="mt-5">
@@ -279,6 +282,7 @@ export default {
         ground_elevation_method: '',
         well_orientation: '',
         casing_set: [{}, {}, {}],
+        screen_intake_method: '',
 
         // non-form fields that should be saved with form
         meta: {
