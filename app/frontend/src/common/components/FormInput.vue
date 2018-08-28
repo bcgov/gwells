@@ -33,6 +33,7 @@
         :disabled="disabled"
         :required="required"
         :class="inputClass"
+        :list="list"
         @input="updateValue($event)"
         @focus.native="$emit('focus', true)"
         @blur.native="$emit('blur', true)"
@@ -75,6 +76,7 @@ export default {
     disabled: Boolean,
     groupClass: String, // optional pass-through class (use for formatting the form-group)
     inputClass: String, // optional pass-through input class (use for formatting the input field)
+    list: String, // optional pass-through ID of a datalist of suggested inputs
     type: { // the type of input (e.g. text, number, email)
       type: String,
       default: 'text'

@@ -68,7 +68,7 @@
           v-model="screenBottomInput"></form-input>
       </b-col>
     </b-row>
-    <p>Screen Details</p>
+    <p class="mt-3 mb-2">Screen Details</p>
     <div class="table-responsive">
       <table class="table table-sm">
         <thead>
@@ -115,7 +115,7 @@
                     placeholder="Select type"/>
               </td>
               <td class="input-width-small">
-                <form-input group-class="my-1" :id="`screen${index}SlotSize`" aria-label="Screen Slot Size" v-model="screens[index].slot_size"/>
+                <form-input list="screenSlotSizeList" group-class="my-1" :id="`screen${index}SlotSize`" aria-label="Screen Slot Size" v-model="screens[index].slot_size"/>
               </td>
               <td class="align-middle">
                 <b-btn size="sm" variant="light" @click="removeScreenRow(index)" :id="`removeScreenRowButton${index}`"><span class="small">Remove</span></b-btn>
@@ -125,6 +125,9 @@
         </tbody>
       </table>
     </div>
+    <datalist id="screenSlotSizeList">
+      <option v-for="size in screenSlotSizeSuggestions" :key="`screenSlotSizeListOption-${size}`">{{size}}</option>
+    </datalist>
     <b-btn size="sm" variant="light" @click="addScreenRow" id="addScreenRowButton"><i class="fa fa-plus-square-o"></i> Add row</b-btn>
   </fieldset>
 </template>
@@ -169,7 +172,9 @@ export default {
     screensInput: 'screens'
   },
   data () {
-    return {}
+    return {
+      screenSlotSizeSuggestions: ['10', '20', '40', '80']
+    }
   },
   computed: {
     ...mapGetters(['codes'])
