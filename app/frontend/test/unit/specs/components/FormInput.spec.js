@@ -15,7 +15,7 @@ describe('FormInput.vue', () => {
 
     expect(input.exists()).toBe(true)
   })
-  it('renders a hint if passed a hint string', () => {
+  it('displays a hint if passed a hint string', () => {
     const hint = 'This is a hint!'
     const wrapper = shallowMount(FormInput, {
       propsData: { id, hint },
@@ -24,5 +24,16 @@ describe('FormInput.vue', () => {
     const text = wrapper.find('#myFormFieldHint').text()
 
     expect(text).toEqual(hint)
+  })
+  it('displays error messages if passed an array of errors', () => {
+    const errors = ['This is an error message', 'This is another error message']
+    const wrapper = shallowMount(FormInput, {
+      propsData: { id, errors },
+      localVue
+    })
+    const text = wrapper.find('#myFormFieldInvalidFeedback').text()
+
+    expect(text).toContain(errors[0])
+    expect(text).toContain(errors[1])
   })
 })

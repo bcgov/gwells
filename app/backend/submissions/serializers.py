@@ -23,8 +23,13 @@ from wells.serializers import CasingSerializer
 import wells.stack
 from wells.models import (
     ActivitySubmission,
+    DrillingMethodCode,
     Casing,
     IntendedWaterUseCode,
+    GroundElevationMethodCode,
+    SurfaceSealMaterialCode,
+    SurfaceSealMethodCode,
+    SurficialMaterialCode,
     Well,
     WellClassCode,
     WellSubclassCode,
@@ -133,7 +138,8 @@ class WellSubmissionSerializer(serializers.ModelSerializer):
         instance = super().create(validated_data)
         if casings_data:
             for casing_data in casings_data:
-                Casing.objects.create(activity_submission=instance, **casing_data)
+                Casing.objects.create(
+                    activity_submission=instance, **casing_data)
         # Update the well record
         stacker = wells.stack.StackWells()
         stacker.process(instance.filing_number)
@@ -183,3 +189,43 @@ class LandDistrictSerializer(serializers.ModelSerializer):
     class Meta:
         model = LandDistrictCode
         fields = ('land_district_code', 'name')
+
+
+class GroundElevationMethodCodeSerializer(serializers.ModelSerializer):
+    """ serializes codes for methods of obtaining ground elevations """
+
+    class Meta:
+        model = GroundElevationMethodCode
+        fields = ('ground_elevation_method_code', 'description')
+
+
+class DrillingMethodCodeSerializer(serializers.ModelSerializer):
+    """ serializes drilling method codes """
+
+    class Meta:
+        model = DrillingMethodCode
+        fields = ('drilling_method_code', 'description')
+
+
+class SurfaceSealMethodCodeSerializer(serializers.ModelSerializer):
+    """ serializes surface seal method codes """
+
+    class Meta:
+        model = SurfaceSealMethodCode
+        fields = ('surface_seal_method_code', 'description')
+
+
+class SurfaceSealMaterialCodeSerializer(serializers.ModelSerializer):
+    """ serializes surface seal method codes """
+
+    class Meta:
+        model = SurfaceSealMaterialCode
+        fields = ('surface_seal_material_code', 'description')
+
+
+class SurficialMaterialCodeSerializer(serializers.ModelSerializer):
+    """ serializes surficial material codes """
+
+    class Meta:
+        model = SurficialMaterialCode
+        fields = ('surficial_material_code', 'description')
