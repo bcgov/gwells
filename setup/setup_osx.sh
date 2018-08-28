@@ -308,16 +308,13 @@ ENV_VARS=(
 )
 #
 PA_FILE=~/.virtualenvs/gwells/bin/postactivate
-if [ ! -f "${PA_FILE}" ]
-then 	(
-		echo "#!/bin/bash"
-		echo "#"
-		for e in ${ENV_VARS[@]}
-		do
-			echo $e
-		done
-	) > "${PA_FILE}"
-fi
+[ -f "${PA_FILE}" ]|| \
+	( echo "#!/bin/bash" > ${PA_FILE} )
+for e in ${ENV_VARS[@]}
+do
+	grep -q $e ${PA_FILE} ||\
+		( echo $e | tee -a ${PA_FILE})
+done
 
 
 # Set NVM requirements in bash profile
