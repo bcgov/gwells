@@ -25,6 +25,7 @@ from wells.models import (
     ActivitySubmission,
     CasingCode,
     CasingMaterialCode,
+    FilterPackMaterialCode,
     IntendedWaterUseCode,
     DevelopmentMethodCode,
     DrillingMethodCode,
@@ -68,6 +69,7 @@ from submissions.serializers import (
     GroundElevationMethodCodeSerializer,
     DrillingMethodCodeSerializer,
     YieldEstimationMethodCodeSerializer,
+    FilterPackMaterialCodeSerializer
 )
 
 
@@ -142,6 +144,8 @@ class SubmissionsOptions(APIView):
             instance=CasingCode.objects.all(), many=True)
         casing_material = CasingMaterialSerializer(
             instance=CasingMaterialCode.objects.all(), many=True)
+        filter_pack_materials = FilterPackMaterialCodeSerializer(
+            instance=FilterPackMaterialCode.objects.all(), many=True)
         land_district_codes = LandDistrictSerializer(
             instance=LandDistrictCode.objects.all(), many=True)
         ground_elevation_method_codes = GroundElevationMethodCodeSerializer(
@@ -173,6 +177,7 @@ class SubmissionsOptions(APIView):
         options["intended_water_uses"] = intended_water_use_codes.data
         options["casing_codes"] = casing_codes.data
         options["casing_materials"] = casing_material.data
+        options["filter_pack_materials"] = filter_pack_materials.data
         options["land_district_codes"] = land_district_codes.data
         options["screen_intake_methods"] = screen_intake_methods.data
         options["ground_elevation_methods"] = ground_elevation_method_codes.data
