@@ -14,10 +14,11 @@ DB_MODERN=${DB_MODERN:-''}
 DB_LEGACY=${DB_LEGACY:-''}
 
 
-# Post deploy and test options
+# Post deploy, test options and load fixtures
 #
 POST_DEPLOY=${POST_DEPLOY:-false}
 TEST=${TEST:-false}
+LOAD_FIXTURES=${LOAD_FIXTURES:-false}
 
 
 # GWells environment variables
@@ -346,6 +347,17 @@ npm run build
 #
 cd "${START_DIR}"/../app/backend
 python3 manage.py migrate
+
+
+# Load fixture data
+#
+if [ "${LOAD_FIXTURES}" == "true" ]
+then
+	python3 manage.py loaddata gwells-codetables.json
+	python3 manage.py loaddata wellsearch-codetables.json registries-codetables.json
+	python3 manage.py loaddata wellsearch.json.gz registries.json
+	python3 manage.py createinitialrevisions
+fi
 
 
 # Restore the GWells (modern) database from a dump
