@@ -26,8 +26,13 @@ from wells.models import (
     CasingCode,
     CasingMaterialCode,
     IntendedWaterUseCode,
+    DrillingMethodCode,
+    GroundElevationMethodCode,
     LandDistrictCode,
     ScreenIntakeMethodCode,
+    SurfaceSealMaterialCode,
+    SurfaceSealMethodCode,
+    SurficialMaterialCode,
     Well,
     WellClassCode,
     WellSubclassCode)
@@ -42,8 +47,13 @@ from submissions.serializers import (
     WellActivityCodeSerializer,
     WellClassCodeSerializer,
     WellSubclassCodeSerializer,
+    SurfaceSealMaterialCodeSerializer,
+    SurfaceSealMethodCodeSerializer,
+    SurficialMaterialCodeSerializer,
     IntendedWaterUseCodeSerializer,
-    LandDistrictSerializer
+    LandDistrictSerializer,
+    GroundElevationMethodCodeSerializer,
+    DrillingMethodCodeSerializer,
 )
 
 
@@ -122,6 +132,17 @@ class SubmissionsOptions(APIView):
             instance=LandDistrictCode.objects.all(), many=True)
         screen_intake_methods = ScreenIntakeMethodSerializer(
             instance=ScreenIntakeMethodCode.objects.all(), many=True)
+        ground_elevation_method_codes = GroundElevationMethodCodeSerializer(
+            instance=GroundElevationMethodCode.objects.all(), many=True)
+        drilling_method_codes = DrillingMethodCodeSerializer(
+            instance=DrillingMethodCode.objects.all(), many=True)
+        surface_seal_method_codes = SurfaceSealMethodCodeSerializer(
+            instance=SurfaceSealMethodCode.objects.all(), many=True)
+        surface_seal_material_codes = SurfaceSealMaterialCodeSerializer(
+            instance=SurfaceSealMaterialCode.objects.all(), many=True
+        )
+        surficial_material_codes = SurficialMaterialCodeSerializer(
+            instance=SurficialMaterialCode.objects.all(), many=True)
 
         options["province_codes"] = province_codes.data
         options["activity_types"] = activity_codes.data
@@ -131,6 +152,11 @@ class SubmissionsOptions(APIView):
         options["casing_materials"] = casing_material.data
         options["land_district_codes"] = land_district_codes.data
         options["screen_intake_methods"] = screen_intake_methods.data
+        options["ground_elevation_methods"] = ground_elevation_method_codes.data
+        options["drilling_methods"] = drilling_method_codes.data
+        options["surface_seal_methods"] = surface_seal_method_codes.data
+        options["surface_seal_materials"] = surface_seal_material_codes.data
+        options["surficial_material_codes"] = surficial_material_codes.data
 
         return Response(options)
 

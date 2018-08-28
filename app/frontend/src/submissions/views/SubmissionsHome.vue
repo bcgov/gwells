@@ -68,7 +68,7 @@
         ></step02-owner>
 
         <!-- Step 3: Well location -->
-        <step03-location
+        <step03-location class="my-3"
           v-if="formStep === 3 || formIsFlat"
           :streetAddress.sync="form.street_address"
           :city.sync="form.city"
@@ -85,7 +85,7 @@
         ></step03-location>
 
         <!-- Step 4: Coords and Method of Drilling -->
-        <step04-coords
+        <step04-coords class="my-3"
           v-if="formStep === 4 || formIsFlat"
           :latitude.sync="form.latitude"
           :longitude.sync="form.longitude"
@@ -97,6 +97,12 @@
           >
         </step04-coords>
 
+        <!-- Step 5: Lithology -->
+        <step05-lithology class="my-3"
+          v-if="formStep === 5 || formIsFlat"
+          :lithology.sync="form.lithology_set"
+        ></step05-lithology>
+
         <!-- Step 6: Casings -->
         <step06-casings class="my-3"
           v-if="formStep === 6 || formIsFlat"
@@ -104,6 +110,17 @@
           :errors="errors"
           :fieldsLoaded="fieldsLoaded"
           />
+
+        <!-- Step 7: Surface Seal / Backfill Material -->
+        <step07-backfill class="my-3"
+          v-if="formStep === 7 || formIsFlat"
+          :surfaceSealMaterial.sync="form.surface_seal_material"
+          :surfaceSealDepth.sync="form.surface_seal_depth"
+          :surfaceSealThickness.sync="form.surface_seal_thickness"
+          :surfaceSealMethod.sync="form.surface_seal_method"
+          :backfillAboveSurfaceSeal.sync="form.backfill_above_surface_seal"
+          :backfillDepth.sync="form.backfill_above_surface_seal_depth"
+        ></step07-backfill>
 
         <!-- Step 9: Screens -->
         <step09-screens
@@ -178,8 +195,11 @@ import Step01Type from '@/submissions/components/SubmissionForm/Step01Type.vue'
 import Step02Owner from '@/submissions/components/SubmissionForm/Step02Owner.vue'
 import Step03Location from '@/submissions/components/SubmissionForm/Step03Location.vue'
 import Step04Coords from '@/submissions/components/SubmissionForm/Step04Coords.vue'
+import Step05Lithology from '@/submissions/components/SubmissionForm/Step05Lithology.vue'
 import Step06Casings from '@/submissions/components/SubmissionForm/Step06Casings.vue'
+import Step07Backfill from '@/submissions/components/SubmissionForm/Step07Backfill.vue'
 import Step09Screens from '@/submissions/components/SubmissionForm/Step09Screens.vue'
+
 export default {
   name: 'SubmissionsHome',
   components: {
@@ -187,7 +207,9 @@ export default {
     Step02Owner,
     Step03Location,
     Step04Coords,
+    Step05Lithology,
     Step06Casings,
+    Step07Backfill,
     Step09Screens
   },
   data () {
@@ -201,7 +223,7 @@ export default {
       loadFormSuccess: false,
       confirmLoadModal: false,
       step: 1,
-      maxSteps: 4, // total number of wizard steps
+      maxSteps: 7, // total number of wizard steps
       sliding: null,
       errors: {},
       fieldsLoaded: {},
@@ -280,7 +302,15 @@ export default {
         longitude: '',
         ground_elevation: null,
         ground_elevation_method: '',
+        drilling_method: '',
         well_orientation: '',
+        lithology_set: [],
+        surface_seal_material: '',
+        surface_seal_depth: '',
+        surface_seal_thickness: '',
+        surface_seal_method: '',
+        backfill_above_surface_seal: '',
+        backfill_above_surface_seal_depth: '',
         casing_set: [{}, {}, {}],
         screen_intake_method: '',
 

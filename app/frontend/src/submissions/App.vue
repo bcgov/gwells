@@ -1,7 +1,7 @@
 <template>
   <div>
     <gwells-header/>
-    <main role="main" class="p-0 mt-0 mt-sm-4 container">
+    <main role="main" class="p-0 mt-0 mt-sm-4 container container-wide">
       <router-view/>
     </main>
     <gwells-footer/>
@@ -24,4 +24,7 @@ export default {
 
 <style lang="scss">
 @import '../common/common.scss';
+.container-wide {
+  max-width: 1400px
+}
 </style>
