@@ -47,10 +47,10 @@
           <template v-for="(row, index) in lithology.length">
             <tr  :key="`lithology row ${index}`" :id="`lithologyRow${index}`">
               <td class="input-width-small">
-                <b-input aria-label="Depth to (feet)" v-model="lithology[index].from"/>
+                <b-input aria-label="Depth from (feet)" v-model="lithology[index].from"/>
               </td>
               <td class="input-width-small">
-                <b-input aria-label="Depth from (feet)" v-model="lithology[index].to"/>
+                <b-input aria-label="Depth to (feet)" v-model="lithology[index].to"/>
               </td>
               <td>
                 <b-select aria-label="Primary surficial material" :options="['Gravel', 'Sand', 'Silt', 'Clay']" v-model="lithology[index].primary"></b-select>
@@ -155,10 +155,5 @@ export default {
 </script>
 
 <style lang="scss">
-.input-width-small {
-  max-width: 5rem;
-}
-.input-width-medium {
-  max-width: 10rem;
-}
+
 </style>

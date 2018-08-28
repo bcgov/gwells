@@ -1,5 +1,6 @@
 <template>
   <b-form-group
+    :class="groupClass"
     :id="id"
     :label="label"
     :label-for="`${id}Input`">
@@ -11,6 +12,7 @@
         :options="options"
         :value-field="valueField"
         :text-field="textField"
+        :class="inputClass"
         @focus.native="$emit('focus', true)"
         @blur.native="$emit('blur', true)"
         :disabled="disabled"
@@ -30,6 +32,7 @@
         :value="value"
         :disabled="disabled"
         :required="required"
+        :class="inputClass"
         @input="updateValue($event)"
         @focus.native="$emit('focus', true)"
         @blur.native="$emit('blur', true)"
@@ -70,6 +73,8 @@ export default {
     value: null, // internal (holds the value for the field)
     required: String,
     disabled: Boolean,
+    groupClass: String, // optional pass-through class (use for formatting the form-group)
+    inputClass: String, // optional pass-through input class (use for formatting the input field)
     type: { // the type of input (e.g. text, number, email)
       type: String,
       default: 'text'
