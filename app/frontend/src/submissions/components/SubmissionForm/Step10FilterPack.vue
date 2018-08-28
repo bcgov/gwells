@@ -51,7 +51,7 @@
           :options="codes.filter_pack_material_size"
           text-field="description"
           value-field="filter_pack_material_size"
-          placeholder="Select material"
+          placeholder="Select size"
           v-model="screenPackMaterialSizeInput"
         ></form-input>
       </b-col>
@@ -63,10 +63,14 @@
 import { mapGetters } from 'vuex'
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 export default {
+  name: 'Step10FilterPack',
   mixins: [inputBindingsMixin],
   props: {
-    screenIntakeMethod: String,
-    material: String,
+    filterPackFrom: String,
+    filterPackTo: String,
+    filterPackThickness: String,
+    screenPackMaterial: String,
+    screenPackMaterialSize: String,
     errors: {
       type: Object,
       default: () => ({})
@@ -82,8 +86,11 @@ export default {
   // into smaller components. Normally this is not necessary but we are composing a large POST request
   // out of many small components.
   fields: {
-    screenIntakeInput: 'screenIntakeMethod',
-    materialInput: 'material'
+    filterPackFromInput: 'filterPackFrom',
+    filterPackToInput: 'filterPackTo',
+    filterPackThicknessInput: 'filterPackThickness',
+    screenPackMaterialInput: 'screenPackMaterial',
+    screenPackMaterialSizeInput: 'screenPackMaterialSize'
   },
   data () {
     return {}

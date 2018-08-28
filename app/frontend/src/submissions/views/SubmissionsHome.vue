@@ -134,6 +134,16 @@
           :screens.sync="form.screen_set"
         ></step09-screens>
 
+        <!-- Step 10: Filter Pack -->
+        <step10-filterPack class="my-3"
+          v-if="formStep === 10 || formIsFlat"
+          :filterPackFrom.sync="form.filter_pack_from"
+          :filterPackTo.sync="form.filter_pack_to"
+          :filterPackThickness.sync="form.filter_pack_thickness"
+          :filterPackMaterial.sync="form.filter_pack_material"
+          :filterPackMaterialSize.sync="form.filter_pack_material_size"
+        />
+
         <!-- Step 11: Well Development -->
         <step11-development class="my-3"
           v-if="formStep === 11 || formIsFlat"
@@ -219,9 +229,9 @@ import Step05Lithology from '@/submissions/components/SubmissionForm/Step05Litho
 import Step06Casings from '@/submissions/components/SubmissionForm/Step06Casings.vue'
 import Step07Backfill from '@/submissions/components/SubmissionForm/Step07Backfill.vue'
 import Step09Screens from '@/submissions/components/SubmissionForm/Step09Screens.vue'
+import Step10FilterPack from '@/submissions/components/SubmissionForm/Step10FilterPack.vue'
 import Step11Development from '@/submissions/components/SubmissionForm/Step11Development.vue'
 import Step12Yield from '@/submissions/components/SubmissionForm/Step12Yield.vue'
-
 export default {
   name: 'SubmissionsHome',
   components: {
@@ -233,6 +243,7 @@ export default {
     Step06Casings,
     Step07Backfill,
     Step09Screens,
+    Step10FilterPack,
     Step11Development,
     Step12Yield
   },
@@ -347,6 +358,7 @@ export default {
         development_hours: '',
         development_notes: '',
         production_data_set: [],
+        filter_pack: '',
 
         // non-form fields that should be saved with form
         meta: {
