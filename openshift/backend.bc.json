@@ -98,7 +98,6 @@
                     "build": "gwells-python-runtime"
                 },
                 "annotations": {
-
                 }
             },
             "spec": {
