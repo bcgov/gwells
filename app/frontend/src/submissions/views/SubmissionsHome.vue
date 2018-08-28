@@ -124,8 +124,14 @@
 
         <!-- Step 9: Screens -->
         <step09-screens
-          v-if="formstep === 9 || formIsFlat"
+          v-if="formStep === 9 || formIsFlat"
           :screenIntakeMethod.sync="form.screen_intake_method"
+          :screenType.sync="form.screen_type"
+          :screenMaterial.sync="form.screen_material"
+          :otherScreenMaterial.sync="form.other_screen_material"
+          :screenOpening.sync="form.screen_opening"
+          :screenBottom.sync="form.screen_bottom"
+          :screens.sync="form.screen_set"
         ></step09-screens>
 
         <!-- Back / Next / Submit controls -->
@@ -223,7 +229,7 @@ export default {
       loadFormSuccess: false,
       confirmLoadModal: false,
       step: 1,
-      maxSteps: 7, // total number of wizard steps
+      maxSteps: 10, // total number of wizard steps
       sliding: null,
       errors: {},
       fieldsLoaded: {},
@@ -313,6 +319,12 @@ export default {
         backfill_above_surface_seal_depth: '',
         casing_set: [{}, {}, {}],
         screen_intake_method: '',
+        screen_type: '',
+        screen_material: '',
+        other_screen_material: '',
+        screen_opening: '',
+        screen_bottom: '',
+        screen_set: [],
 
         // non-form fields that should be saved with form
         meta: {
@@ -415,5 +427,11 @@ export default {
   100% {
     transform: scale(0)
   }
+}
+.input-width-small {
+  max-width: 5rem;
+}
+.input-width-medium {
+  max-width: 10rem;
 }
 </style>

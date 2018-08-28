@@ -27,6 +27,11 @@ from wells.models import (
     Casing,
     IntendedWaterUseCode,
     ScreenIntakeMethodCode,
+    ScreenTypeCode,
+    ScreenMaterialCode,
+    ScreenOpeningCode,
+    ScreenBottomCode,
+    ScreenAssemblyTypeCode,
     GroundElevationMethodCode,
     SurfaceSealMaterialCode,
     SurfaceSealMethodCode,
@@ -34,7 +39,7 @@ from wells.models import (
     Well,
     WellClassCode,
     WellSubclassCode,
-    LandDistrictCode)
+    LandDistrictCode,)
 
 from submissions.models import WellActivityCode
 
@@ -238,3 +243,43 @@ class SurficialMaterialCodeSerializer(serializers.ModelSerializer):
     class Meta:
         model = SurficialMaterialCode
         fields = ('surficial_material_code', 'description')
+
+
+class ScreenTypeCodeSerializer(serializers.ModelSerializer):
+    """ serializes screen type codes """
+
+    class Meta:
+        model = ScreenTypeCode
+        fields = ('screen_type_code', 'description')
+
+
+class ScreenMaterialCodeSerializer(serializers.ModelSerializer):
+    """ serializes screen material codes """
+
+    class Meta:
+        model = ScreenMaterialCode
+        fields = ('screen_material_code', 'description')
+
+
+class ScreenOpeningCodeSerializer(serializers.ModelSerializer):
+    """ serializes screen opening codes """
+
+    class Meta:
+        model = ScreenOpeningCode
+        fields = ('screen_opening_code', 'description')
+
+
+class ScreenBottomCodeSerializer(serializers.ModelSerializer):
+    """ serializes screen bottom codes """
+
+    class Meta:
+        model = ScreenBottomCode
+        fields = ('screen_bottom_code', 'description')
+
+
+class ScreenAssemblyTypeCodeSerializer(serializers.ModelSerializer):
+    """ serializes screen assembly codes """
+
+    class Meta:
+        model = ScreenAssemblyTypeCode
+        fields = ('screen_assembly_type_code', 'description')
