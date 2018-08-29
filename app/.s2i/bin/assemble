@@ -56,7 +56,7 @@ cd ..
 cd frontend
 npm install
 echo "--> testing and building frontend files"
-npm run test && npm run build
+npm run unit -- --runInBand && npm run build
 cd ..
 
 if should_collectstatic; then
