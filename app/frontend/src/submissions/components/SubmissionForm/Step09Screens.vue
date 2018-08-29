@@ -107,7 +107,7 @@
                     group-class="my-1"
                     :id="`screen${index}Assembly`"
                     aria-label="Screen Assembly Type"
-                    v-model="screens[index].screen_assembly_type"
+                    v-model="screens[index].assembly_type"
                     select
                     :options="codes.screen_assemblies"
                     text-field="description"
@@ -185,7 +185,7 @@ export default {
         screen_from: '',
         screen_to: '',
         internal_diameter: '',
-        screen_assembly_type: '',
+        assembly_type: '',
         slot_size: ''
       })
     },
