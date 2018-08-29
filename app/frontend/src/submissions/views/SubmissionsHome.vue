@@ -123,7 +123,7 @@
         ></step07-backfill>
 
         <!-- Step 9: Screens -->
-        <step09-screens
+        <step09-screens class="my-3"
           v-if="formStep === 9 || formIsFlat"
           :screenIntakeMethod.sync="form.screen_intake_method"
           :screenType.sync="form.screen_type"
@@ -135,7 +135,8 @@
         ></step09-screens>
 
         <!-- Step 11: Well Development -->
-        <step11-development
+        <step11-development class="my-3"
+          v-if="formStep === 11 || formIsFlat"
           :developmentMethod.sync="form.development_method"
           :developmentHours.sync="form.development_hours"
           :developmentNotes.sync="form.development_notes"
@@ -238,7 +239,7 @@ export default {
       loadFormSuccess: false,
       confirmLoadModal: false,
       step: 1,
-      maxSteps: 10, // total number of wizard steps
+      maxSteps: 11, // total number of wizard steps
       sliding: null,
       errors: {},
       fieldsLoaded: {},
