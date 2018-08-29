@@ -25,6 +25,7 @@ from wells.models import (
     ActivitySubmission,
     DrillingMethodCode,
     Casing,
+    DevelopmentMethodCode,
     IntendedWaterUseCode,
     Screen,
     ScreenIntakeMethodCode,
@@ -294,3 +295,11 @@ class ScreenAssemblyTypeCodeSerializer(serializers.ModelSerializer):
     class Meta:
         model = ScreenAssemblyTypeCode
         fields = ('screen_assembly_type_code', 'description')
+
+
+class DevelopmentMethodCodeSerializer(serializers.ModelSerializer):
+    """ serializes well development methods """
+
+    class Meta:
+        model = DevelopmentMethodCode
+        fields = ('development_method_code', 'description')

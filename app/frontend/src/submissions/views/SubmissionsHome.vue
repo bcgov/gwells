@@ -134,6 +134,13 @@
           :screens.sync="form.screen_set"
         ></step09-screens>
 
+        <!-- Step 11: Well Development -->
+        <step11-development
+          :developmentMethod.sync="form.development_method"
+          :developmentHours.sync="form.development_hours"
+          :developmentNotes.sync="form.development_notes"
+        ></step11-development>
+
         <!-- Back / Next / Submit controls -->
         <b-row class="mt-5">
           <b-col v-if="!formIsFlat">
@@ -205,6 +212,7 @@ import Step05Lithology from '@/submissions/components/SubmissionForm/Step05Litho
 import Step06Casings from '@/submissions/components/SubmissionForm/Step06Casings.vue'
 import Step07Backfill from '@/submissions/components/SubmissionForm/Step07Backfill.vue'
 import Step09Screens from '@/submissions/components/SubmissionForm/Step09Screens.vue'
+import Step11Development from '@/submissions/components/SubmissionForm/Step11Development.vue'
 
 export default {
   name: 'SubmissionsHome',
@@ -216,7 +224,8 @@ export default {
     Step05Lithology,
     Step06Casings,
     Step07Backfill,
-    Step09Screens
+    Step09Screens,
+    Step11Development
   },
   data () {
     return {
@@ -325,6 +334,9 @@ export default {
         screen_opening: '',
         screen_bottom: '',
         screen_set: [],
+        development_method: '',
+        development_hours: '',
+        development_notes: '',
 
         // non-form fields that should be saved with form
         meta: {

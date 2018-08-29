@@ -26,6 +26,7 @@ from wells.models import (
     CasingCode,
     CasingMaterialCode,
     IntendedWaterUseCode,
+    DevelopmentMethodCode,
     DrillingMethodCode,
     GroundElevationMethodCode,
     LandDistrictCode,
@@ -47,6 +48,7 @@ from wells.serializers import (
     CasingMaterialSerializer
 )
 from submissions.serializers import (
+    DevelopmentMethodCodeSerializer,
     ScreenIntakeMethodSerializer,
     WellSubmissionSerializer,
     WellActivityCodeSerializer,
@@ -164,12 +166,7 @@ class SubmissionsOptions(APIView):
             instance=ScreenAssemblyTypeCode.objects.all(),
             many=True
         )
-
-    # ScreenTypeCode,
-    # ScreenMaterialCode,
-    # ScreenOpeningCode,
-    # ScreenBottomCode,
-    # ScreenAssemblyTypeCode,
+        development_methods = DevelopmentMethodCodeSerializer(instance=DevelopmentMethodCode.objects.all(), many=True)
 
         options["province_codes"] = province_codes.data
         options["activity_types"] = activity_codes.data
@@ -189,6 +186,7 @@ class SubmissionsOptions(APIView):
         options["screen_openings"] = screen_openings.data
         options["screen_bottoms"] = screen_bottoms.data
         options["screen_assemblies"] = screen_assemblies.data
+        options["development_methods"] = development_methods.data
 
         return Response(options)
 
