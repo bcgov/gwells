@@ -19,13 +19,14 @@ from gwells.serializers import AuditModelSerializer
 from django.db import transaction
 
 from wells.models import Well, ActivitySubmission
-from wells.serializers import CasingSerializer
+from wells.serializers import CasingSerializer, ScreenSerializer
 import wells.stack
 from wells.models import (
     ActivitySubmission,
     DrillingMethodCode,
     Casing,
     IntendedWaterUseCode,
+    Screen,
     ScreenIntakeMethodCode,
     ScreenTypeCode,
     ScreenMaterialCode,
@@ -48,6 +49,7 @@ class WellSubmissionSerializer(serializers.ModelSerializer):
     """Serializes a well activity submission"""
 
     casing_set = CasingSerializer(many=True, required=False)
+    screen_set = ScreenSerializer(many=True, required=False)
 
     class Meta:
         model = ActivitySubmission
@@ -136,16 +138,25 @@ class WellSubmissionSerializer(serializers.ModelSerializer):
             "well_yield_unit",
             "diameter",
             "casing_set",
+            "screen_set",
         )
 
     @transaction.atomic
     def create(self, validated_data):
         casings_data = validated_data.pop('casing_set', None)
+        screen_data = validated_data.pop('screen_set', None)
         instance = super().create(validated_data)
         if casings_data:
             for casing_data in casings_data:
                 Casing.objects.create(
                     activity_submission=instance, **casing_data)
+
+        if screen_data:
+            for screen in screen_data:
+                Screen.objects.create(
+                    activity_submission=instance, **screen
+                )
+
         # Update the well record
         stacker = wells.stack.StackWells()
         stacker.process(instance.filing_number)
