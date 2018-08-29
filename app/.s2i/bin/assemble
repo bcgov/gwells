@@ -88,7 +88,9 @@ if should_collectstatic; then
 fi
 
 echo "--> running Django unit tests"
+cd backend
 python manage.py test -c nose.cfg
+cd ..
 
 # set permissions for any installed artifacts
 fix-permissions /opt/app-root
