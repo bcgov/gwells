@@ -55,7 +55,8 @@ fi
 cd ..
 cd frontend
 npm install
-npm run build
+echo "--> testing and building frontend files"
+npm run test && npm run build
 cd ..
 
 if should_collectstatic; then
@@ -85,6 +86,9 @@ if should_collectstatic; then
     cd ..
   )
 fi
+
+echo "--> running Django unit tests"
+python manage.py test -c nose.cfg
 
 # set permissions for any installed artifacts
 fix-permissions /opt/app-root
