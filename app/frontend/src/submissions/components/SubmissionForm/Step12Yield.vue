@@ -18,12 +18,14 @@
           <form-input
               id="yieldEstimationRate"
               label="Yield Estimation Rate"
+              hint="USgmp"
               v-model="productionData[index].yield_estimation_rate"></form-input>
         </b-col>
         <b-col cols="12" md="4" lg="2">
           <form-input
               id="yieldEstimationDuration"
               label="Yield Estimation Duration"
+              hint="Hours"
               v-model="productionData[index].yield_estimation_duration"></form-input>
         </b-col>
       </b-row>
