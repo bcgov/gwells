@@ -41,6 +41,7 @@ from wells.models import (
     Well,
     WellClassCode,
     WellSubclassCode,
+    YieldEstimationMethodCode,
     LandDistrictCode,)
 
 from submissions.models import WellActivityCode
@@ -167,7 +168,7 @@ class WellSubmissionSerializer(serializers.ModelSerializer):
 
 
 class WellActivityCodeSerializer(serializers.ModelSerializer):
-    """ serializes well activity codes """
+    """Serializes well activity codes"""
 
     class Meta:
         model = WellActivityCode
@@ -175,7 +176,7 @@ class WellActivityCodeSerializer(serializers.ModelSerializer):
 
 
 class WellSubclassCodeSerializer(serializers.ModelSerializer):
-    """ serializes well subclass codes """
+    """Serializes well subclass codes"""
 
     class Meta:
         model = WellSubclassCode
@@ -183,7 +184,7 @@ class WellSubclassCodeSerializer(serializers.ModelSerializer):
 
 
 class WellClassCodeSerializer(serializers.ModelSerializer):
-    """ serializes well class codes """
+    """Serializes well class codes"""
 
     wellsubclasscode_set = WellSubclassCodeSerializer(
         many=True, read_only=True)
@@ -194,7 +195,7 @@ class WellClassCodeSerializer(serializers.ModelSerializer):
 
 
 class IntendedWaterUseCodeSerializer(serializers.ModelSerializer):
-    """ serializes intended water use codes """
+    """Serializes intended water use codes"""
 
     class Meta:
         model = IntendedWaterUseCode
@@ -202,7 +203,7 @@ class IntendedWaterUseCodeSerializer(serializers.ModelSerializer):
 
 
 class LandDistrictSerializer(serializers.ModelSerializer):
-    """ serializes Land District codes/descriptions """
+    """Serializes Land District codes/descriptions"""
 
     class Meta:
         model = LandDistrictCode
@@ -210,7 +211,7 @@ class LandDistrictSerializer(serializers.ModelSerializer):
 
 
 class ScreenIntakeMethodSerializer(serializers.ModelSerializer):
-    """ serializes screen intake method codes """
+    """Serializes screen intake method codes"""
 
     class Meta:
         model = ScreenIntakeMethodCode
@@ -218,7 +219,7 @@ class ScreenIntakeMethodSerializer(serializers.ModelSerializer):
 
 
 class GroundElevationMethodCodeSerializer(serializers.ModelSerializer):
-    """ serializes codes for methods of obtaining ground elevations """
+    """Serializes codes for methods of obtaining ground elevations"""
 
     class Meta:
         model = GroundElevationMethodCode
@@ -226,7 +227,7 @@ class GroundElevationMethodCodeSerializer(serializers.ModelSerializer):
 
 
 class DrillingMethodCodeSerializer(serializers.ModelSerializer):
-    """ serializes drilling method codes """
+    """Serializes drilling method codes"""
 
     class Meta:
         model = DrillingMethodCode
@@ -234,7 +235,7 @@ class DrillingMethodCodeSerializer(serializers.ModelSerializer):
 
 
 class SurfaceSealMethodCodeSerializer(serializers.ModelSerializer):
-    """ serializes surface seal method codes """
+    """Serializes surface seal method codes"""
 
     class Meta:
         model = SurfaceSealMethodCode
@@ -242,7 +243,7 @@ class SurfaceSealMethodCodeSerializer(serializers.ModelSerializer):
 
 
 class SurfaceSealMaterialCodeSerializer(serializers.ModelSerializer):
-    """ serializes surface seal method codes """
+    """Serializes surface seal method codes"""
 
     class Meta:
         model = SurfaceSealMaterialCode
@@ -250,7 +251,7 @@ class SurfaceSealMaterialCodeSerializer(serializers.ModelSerializer):
 
 
 class SurficialMaterialCodeSerializer(serializers.ModelSerializer):
-    """ serializes surficial material codes """
+    """Serializes surficial material codes"""
 
     class Meta:
         model = SurficialMaterialCode
@@ -258,7 +259,7 @@ class SurficialMaterialCodeSerializer(serializers.ModelSerializer):
 
 
 class ScreenTypeCodeSerializer(serializers.ModelSerializer):
-    """ serializes screen type codes """
+    """Serializes screen type codes"""
 
     class Meta:
         model = ScreenTypeCode
@@ -266,7 +267,7 @@ class ScreenTypeCodeSerializer(serializers.ModelSerializer):
 
 
 class ScreenMaterialCodeSerializer(serializers.ModelSerializer):
-    """ serializes screen material codes """
+    """Serializes screen material codes"""
 
     class Meta:
         model = ScreenMaterialCode
@@ -274,7 +275,7 @@ class ScreenMaterialCodeSerializer(serializers.ModelSerializer):
 
 
 class ScreenOpeningCodeSerializer(serializers.ModelSerializer):
-    """ serializes screen opening codes """
+    """Serializes screen opening codes"""
 
     class Meta:
         model = ScreenOpeningCode
@@ -282,7 +283,7 @@ class ScreenOpeningCodeSerializer(serializers.ModelSerializer):
 
 
 class ScreenBottomCodeSerializer(serializers.ModelSerializer):
-    """ serializes screen bottom codes """
+    """Serializes screen bottom codes"""
 
     class Meta:
         model = ScreenBottomCode
@@ -290,7 +291,7 @@ class ScreenBottomCodeSerializer(serializers.ModelSerializer):
 
 
 class ScreenAssemblyTypeCodeSerializer(serializers.ModelSerializer):
-    """ serializes screen assembly codes """
+    """Serializes screen assembly codes"""
 
     class Meta:
         model = ScreenAssemblyTypeCode
@@ -298,8 +299,16 @@ class ScreenAssemblyTypeCodeSerializer(serializers.ModelSerializer):
 
 
 class DevelopmentMethodCodeSerializer(serializers.ModelSerializer):
-    """ serializes well development methods """
+    """Serializes well development methods"""
 
     class Meta:
         model = DevelopmentMethodCode
         fields = ('development_method_code', 'description')
+
+
+class YieldEstimationMethodCodeSerializer(serializers.ModelSerializer):
+    """Serializes well production yield estimation method codes"""
+
+    class Meta:
+        model = YieldEstimationMethodCode
+        fields = ('yield_estimation_method_code', 'description')

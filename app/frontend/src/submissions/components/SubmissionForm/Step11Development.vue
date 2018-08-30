@@ -46,6 +46,8 @@ export default {
   mixins: [inputBindingsMixin],
   props: {
     developmentMethod: String,
+    developmentHours: String,
+    developmentNotes: String,
     errors: {
       type: Object,
       default: () => ({})

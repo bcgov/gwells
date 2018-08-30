@@ -142,6 +142,12 @@
           :developmentNotes.sync="form.development_notes"
         ></step11-development>
 
+        <!-- Step 12: Yield (Production Data) -->
+        <step12-yield class="my-3"
+          v-if="formStep === 12 || formIsFlat"
+          :productionData.sync="form.production_data_set"
+        ></step12-yield>
+
         <!-- Back / Next / Submit controls -->
         <b-row class="mt-5">
           <b-col v-if="!formIsFlat">
@@ -214,6 +220,7 @@ import Step06Casings from '@/submissions/components/SubmissionForm/Step06Casings
 import Step07Backfill from '@/submissions/components/SubmissionForm/Step07Backfill.vue'
 import Step09Screens from '@/submissions/components/SubmissionForm/Step09Screens.vue'
 import Step11Development from '@/submissions/components/SubmissionForm/Step11Development.vue'
+import Step12Yield from '@/submissions/components/SubmissionForm/Step12Yield.vue'
 
 export default {
   name: 'SubmissionsHome',
@@ -226,7 +233,8 @@ export default {
     Step06Casings,
     Step07Backfill,
     Step09Screens,
-    Step11Development
+    Step11Development,
+    Step12Yield
   },
   data () {
     return {
@@ -338,6 +346,7 @@ export default {
         development_method: '',
         development_hours: '',
         development_notes: '',
+        production_data_set: [],
 
         // non-form fields that should be saved with form
         meta: {

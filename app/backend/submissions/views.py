@@ -41,7 +41,8 @@ from wells.models import (
     ScreenAssemblyTypeCode,
     Well,
     WellClassCode,
-    WellSubclassCode)
+    WellSubclassCode,
+    YieldEstimationMethodCode)
 from submissions.models import WellActivityCode
 from wells.serializers import (
     CasingCodeSerializer,
@@ -66,6 +67,7 @@ from submissions.serializers import (
     LandDistrictSerializer,
     GroundElevationMethodCodeSerializer,
     DrillingMethodCodeSerializer,
+    YieldEstimationMethodCodeSerializer,
 )
 
 
@@ -142,7 +144,6 @@ class SubmissionsOptions(APIView):
             instance=CasingMaterialCode.objects.all(), many=True)
         land_district_codes = LandDistrictSerializer(
             instance=LandDistrictCode.objects.all(), many=True)
-
         ground_elevation_method_codes = GroundElevationMethodCodeSerializer(
             instance=GroundElevationMethodCode.objects.all(), many=True)
         drilling_method_codes = DrillingMethodCodeSerializer(
@@ -150,23 +151,21 @@ class SubmissionsOptions(APIView):
         surface_seal_method_codes = SurfaceSealMethodCodeSerializer(
             instance=SurfaceSealMethodCode.objects.all(), many=True)
         surface_seal_material_codes = SurfaceSealMaterialCodeSerializer(
-            instance=SurfaceSealMaterialCode.objects.all(), many=True
-        )
+            instance=SurfaceSealMaterialCode.objects.all(), many=True)
         surficial_material_codes = SurficialMaterialCodeSerializer(
             instance=SurficialMaterialCode.objects.all(), many=True)
         screen_intake_methods = ScreenIntakeMethodSerializer(
-            instance=ScreenIntakeMethodCode.objects.all(),
-            many=True
-        )
+            instance=ScreenIntakeMethodCode.objects.all(), many=True)
         screen_types = ScreenTypeCodeSerializer(instance=ScreenTypeCode.objects.all(), many=True)
         screen_materials = ScreenMaterialCodeSerializer(instance=ScreenMaterialCode.objects.all(), many=True)
         screen_openings = ScreenOpeningCodeSerializer(instance=ScreenOpeningCode.objects.all(), many=True)
         screen_bottoms = ScreenBottomCodeSerializer(instance=ScreenBottomCode.objects.all(), many=True)
         screen_assemblies = ScreenAssemblyTypeCodeSerializer(
-            instance=ScreenAssemblyTypeCode.objects.all(),
-            many=True
-        )
-        development_methods = DevelopmentMethodCodeSerializer(instance=DevelopmentMethodCode.objects.all(), many=True)
+            instance=ScreenAssemblyTypeCode.objects.all(), many=True)
+        development_methods = DevelopmentMethodCodeSerializer(
+            instance=DevelopmentMethodCode.objects.all(), many=True)
+        yield_estimation_methods = YieldEstimationMethodCodeSerializer(
+            instance=YieldEstimationMethodCode.objects.all(), many=True)
 
         options["province_codes"] = province_codes.data
         options["activity_types"] = activity_codes.data
@@ -187,6 +186,7 @@ class SubmissionsOptions(APIView):
         options["screen_bottoms"] = screen_bottoms.data
         options["screen_assemblies"] = screen_assemblies.data
         options["development_methods"] = development_methods.data
+        options["yield_estimation_methods"] = yield_estimation_methods.data
 
         return Response(options)
 
