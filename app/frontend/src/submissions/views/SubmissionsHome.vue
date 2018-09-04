@@ -358,7 +358,11 @@ export default {
         development_hours: '',
         development_notes: '',
         production_data_set: [],
-        filter_pack: '',
+        filter_pack_from: '',
+        filter_pack_to: '',
+        filter_pack_thickness: '',
+        filter_pack_material_code: '',
+        filter_pack_material_thickness: '',
 
         // non-form fields that should be saved with form
         meta: {
