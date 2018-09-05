@@ -36,11 +36,13 @@
           id="filterPackMaterial"
           label="Filter Pack Material"
           select
-          :options="codes.filter_pack_materials"
+          :options="codes.filter_pack_material"
           text-field="description"
           value-field="filter_pack_material_code"
-          placeholder="Select material"
           v-model="screenPackMaterialInput"
+          placeholder="Select material"
+          :errors="errors['filter_pack_material']"
+          :loaded="fieldsLoaded['filter_pack_material']"
         ></form-input>
       </b-col>
       <b-col cols="12" md="6" lg="3">
@@ -51,8 +53,10 @@
           :options="codes.filter_pack_material_size"
           text-field="description"
           value-field="filter_pack_material_size"
-          placeholder="Select size"
           v-model="screenPackMaterialSizeInput"
+          placeholder="Select size"
+          :errors="errors['filter_pack_material_size']"
+          :loaded="fieldsLoaded['filter_pack_material_size']"
         ></form-input>
       </b-col>
     </b-row>
@@ -80,11 +84,6 @@ export default {
       default: () => ({})
     }
   },
-  // The fields property helps to bind v-model (on the form input components) to a prop.
-  // Set v-model to the key (see the form input above); the value corresponds to a prop declared on this component
-  // Prop values will then be synced with the parent component. This way we can break apart a large form
-  // into smaller components. Normally this is not necessary but we are composing a large POST request
-  // out of many small components.
   fields: {
     filterPackFromInput: 'filterPackFrom',
     filterPackToInput: 'filterPackTo',

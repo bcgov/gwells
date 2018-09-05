@@ -145,8 +145,10 @@ class SubmissionsOptions(APIView):
             instance=CasingCode.objects.all(), many=True)
         casing_material = CasingMaterialSerializer(
             instance=CasingMaterialCode.objects.all(), many=True)
-        filter_pack_materials = FilterPackMaterialCodeSerializer(
+        filter_pack_material = FilterPackMaterialCodeSerializer(
             instance=FilterPackMaterialCode.objects.all(), many=True)
+        filter_pack_material_size = FilterPackMaterialSizeCodeSerializer(
+            instance=FilterPackMaterialSizeCode.objects.all(), many=True)
         land_district_codes = LandDistrictSerializer(
             instance=LandDistrictCode.objects.all(), many=True)
         ground_elevation_method_codes = GroundElevationMethodCodeSerializer(
@@ -178,7 +180,8 @@ class SubmissionsOptions(APIView):
         options["intended_water_uses"] = intended_water_use_codes.data
         options["casing_codes"] = casing_codes.data
         options["casing_materials"] = casing_material.data
-        options["filter_pack_materials"] = filter_pack_materials.data
+        options["filter_pack_material"] = filter_pack_material.data
+        options["filter_pack_material_size"] = filter_pack_material_size.data
         options["land_district_codes"] = land_district_codes.data
         options["screen_intake_methods"] = screen_intake_methods.data
         options["ground_elevation_methods"] = ground_elevation_method_codes.data
