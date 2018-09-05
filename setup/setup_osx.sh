@@ -14,10 +14,11 @@ DB_MODERN=${DB_MODERN:-''}
 DB_LEGACY=${DB_LEGACY:-''}
 
 
-# Post deploy and test options
+# Post deploy, test options and load fixtures
 #
 POST_DEPLOY=${POST_DEPLOY:-false}
 TEST=${TEST:-false}
+LOAD_FIXTURES=${LOAD_FIXTURES:-false}
 
 
 # GWells environment variables
@@ -37,7 +38,7 @@ LEGACY_DATABASE_USER="${LEGACY_DATABASE_USER:-wells}"
 LEGACY_DATABASE_NAME="${LEGACY_DATABASE_NAME:-wells}"
 LEGACY_SCHEMA="${LEGACY_SCHEMA:-wells}"
 LEGACY_DATABASE_PW="${LEGACY_DATABASE_PW:-wells}"          # For Wells db import
-DJANGO_SECRET_KEY="${DJANGO_SECRET_KEY:-'9e4@&tw46\$l31)zrqe3wi+-slqm(ruvz&se0^%9#6(_w3ui!c0'}"
+DJANGO_SECRET_KEY="${DJANGO_SECRET_KEY:-theSecretest}"
 SESSION_COOKIE_SECURE="${SESSION_COOKIE_SECURE:-False}"
 CSRF_COOKIE_SECURE="${CSRF_COOKIE_SECURE:-False}"
 ENABLE_ADDITIONAL_DOCUMENTS="${ENABLE_ADDITIONAL_DOCUMENTSL:-False}"
@@ -308,16 +309,13 @@ ENV_VARS=(
 )
 #
 PA_FILE=~/.virtualenvs/gwells/bin/postactivate
-if [ ! -f "${PA_FILE}" ]
-then 	(
-		echo "#!/bin/bash"
-		echo "#"
-		for e in ${ENV_VARS[@]}
-		do
-			echo $e
-		done
-	) > "${PA_FILE}"
-fi
+[ -f "${PA_FILE}" ]|| \
+	( echo "#!/bin/bash" > ${PA_FILE} )
+for e in ${ENV_VARS[@]}
+do
+	grep -q $e ${PA_FILE} ||\
+		( echo $e | tee -a ${PA_FILE})
+done
 
 
 # Set NVM requirements in bash profile
@@ -349,6 +347,17 @@ npm run build
 #
 cd "${START_DIR}"/../app/backend
 python3 manage.py migrate
+
+
+# Load fixture data
+#
+if [ "${LOAD_FIXTURES}" == "true" ]
+then
+	python3 manage.py loaddata gwells-codetables.json
+	python3 manage.py loaddata wellsearch-codetables.json registries-codetables.json
+	python3 manage.py loaddata wellsearch.json.gz registries.json
+	python3 manage.py createinitialrevisions
+fi
 
 
 # Restore the GWells (modern) database from a dump

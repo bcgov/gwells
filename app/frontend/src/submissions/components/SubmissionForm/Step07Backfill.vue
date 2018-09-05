@@ -106,7 +106,6 @@ export default {
     surfaceSealMethodInput: 'surfaceSealMethod',
     backfillAboveSurfaceSealInput: 'backfillAboveSurfaceSeal',
     backfillDepthInput: 'backfillDepth'
-
   },
   data () {
     return {}

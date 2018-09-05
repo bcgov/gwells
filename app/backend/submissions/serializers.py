@@ -26,6 +26,8 @@ from wells.models import (
     DrillingMethodCode,
     Casing,
     DevelopmentMethodCode,
+    FilterPackMaterialCode,
+    FilterPackMaterialSizeCode,
     IntendedWaterUseCode,
     Screen,
     ScreenIntakeMethodCode,
@@ -193,6 +195,19 @@ class WellClassCodeSerializer(serializers.ModelSerializer):
         model = WellClassCode
         fields = ('well_class_code', 'description', 'wellsubclasscode_set')
 
+class FilterPackMaterialCodeSerializer(serializers.ModelSerializer):
+    """Serializes Filter Pack codes/descriptions"""
+
+    class Meta:
+        model = FilterPackMaterialCode
+        fields = ('filter_pack_material_code', 'description')
+
+class FilterPackMaterialSizeCodeSerializer(serializers.ModelSerializer):
+    """Serializes Filter Pack codes/descriptions"""
+
+    class Meta:
+        model = FilterPackMaterialSizeCode
+        fields = ('filter_pack_material_size_code', 'description')
 
 class IntendedWaterUseCodeSerializer(serializers.ModelSerializer):
     """Serializes intended water use codes"""
@@ -200,7 +215,6 @@ class IntendedWaterUseCodeSerializer(serializers.ModelSerializer):
     class Meta:
         model = IntendedWaterUseCode
         fields = ('intended_water_use_code', 'description')
-
 
 class LandDistrictSerializer(serializers.ModelSerializer):
     """Serializes Land District codes/descriptions"""
