@@ -80,6 +80,11 @@ export default {
       default: () => ({})
     }
   },
+  // The fields property helps to bind v-model (on the form input components) to a prop.
+  // Set v-model to the key (see the form input above); the value corresponds to a prop declared on this component
+  // Prop values will then be synced with the parent component. This way we can break apart a large form
+  // into smaller components. Normally this is not necessary but we are composing a large POST request
+  // out of many small components.
   fields: {
     filterPackFromInput: 'filterPackFrom',
     filterPackToInput: 'filterPackTo',
