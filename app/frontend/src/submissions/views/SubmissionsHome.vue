@@ -105,7 +105,7 @@
 
         <!-- Step 6: Casings -->
         <step06-casings class="my-3"
-          v-if="formStep === 3 || formIsFlat"
+          v-if="formStep === 6 || formIsFlat"
           :casings.sync="form.casing_set"
           :errors="errors"
           :fieldsLoaded="fieldsLoaded"
@@ -121,6 +121,32 @@
           :backfillAboveSurfaceSeal.sync="form.backfill_above_surface_seal"
           :backfillDepth.sync="form.backfill_above_surface_seal_depth"
         ></step07-backfill>
+
+        <!-- Step 9: Screens -->
+        <step09-screens class="my-3"
+          v-if="formStep === 9 || formIsFlat"
+          :screenIntakeMethod.sync="form.screen_intake_method"
+          :screenType.sync="form.screen_type"
+          :screenMaterial.sync="form.screen_material"
+          :otherScreenMaterial.sync="form.other_screen_material"
+          :screenOpening.sync="form.screen_opening"
+          :screenBottom.sync="form.screen_bottom"
+          :screens.sync="form.screen_set"
+        ></step09-screens>
+
+        <!-- Step 11: Well Development -->
+        <step11-development class="my-3"
+          v-if="formStep === 11 || formIsFlat"
+          :developmentMethod.sync="form.development_method"
+          :developmentHours.sync="form.development_hours"
+          :developmentNotes.sync="form.development_notes"
+        ></step11-development>
+
+        <!-- Step 12: Yield (Production Data) -->
+        <step12-yield class="my-3"
+          v-if="formStep === 12 || formIsFlat"
+          :productionData.sync="form.production_data_set"
+        ></step12-yield>
 
         <!-- Back / Next / Submit controls -->
         <b-row class="mt-5">
@@ -192,6 +218,9 @@ import Step04Coords from '@/submissions/components/SubmissionForm/Step04Coords.v
 import Step05Lithology from '@/submissions/components/SubmissionForm/Step05Lithology.vue'
 import Step06Casings from '@/submissions/components/SubmissionForm/Step06Casings.vue'
 import Step07Backfill from '@/submissions/components/SubmissionForm/Step07Backfill.vue'
+import Step09Screens from '@/submissions/components/SubmissionForm/Step09Screens.vue'
+import Step11Development from '@/submissions/components/SubmissionForm/Step11Development.vue'
+import Step12Yield from '@/submissions/components/SubmissionForm/Step12Yield.vue'
 
 export default {
   name: 'SubmissionsHome',
@@ -202,7 +231,10 @@ export default {
     Step04Coords,
     Step05Lithology,
     Step06Casings,
-    Step07Backfill
+    Step07Backfill,
+    Step09Screens,
+    Step11Development,
+    Step12Yield
   },
   data () {
     return {
@@ -215,7 +247,7 @@ export default {
       loadFormSuccess: false,
       confirmLoadModal: false,
       step: 1,
-      maxSteps: 7, // total number of wizard steps
+      maxSteps: 11, // total number of wizard steps
       sliding: null,
       errors: {},
       fieldsLoaded: {},
@@ -304,6 +336,17 @@ export default {
         backfill_above_surface_seal: '',
         backfill_above_surface_seal_depth: '',
         casing_set: [{}, {}, {}],
+        screen_intake_method: '',
+        screen_type: '',
+        screen_material: '',
+        other_screen_material: '',
+        screen_opening: '',
+        screen_bottom: '',
+        screen_set: [],
+        development_method: '',
+        development_hours: '',
+        development_notes: '',
+        production_data_set: [],
 
         // non-form fields that should be saved with form
         meta: {
@@ -406,5 +449,11 @@ export default {
   100% {
     transform: scale(0)
   }
+}
+.input-width-small {
+  max-width: 5rem;
+}
+.input-width-medium {
+  max-width: 10rem;
 }
 </style>

@@ -17,7 +17,14 @@ from rest_framework import serializers
 from django.db import transaction
 from gwells.models import ProvinceStateCode
 from gwells.serializers import AuditModelSerializer
-from wells.models import Well, ActivitySubmission, Casing, CasingMaterialCode, CasingCode
+from wells.models import (
+    Well,
+    ActivitySubmission,
+    Casing,
+    CasingMaterialCode,
+    CasingCode,
+    Screen,
+)
 
 
 logger = logging.getLogger(__name__)
@@ -51,6 +58,19 @@ class CasingSerializer(serializers.ModelSerializer):
             'casing_code',
             'casing_material',
             'drive_shoe',
+        )
+
+
+class ScreenSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Screen
+        fields = (
+            'screen_guid',
+            'screen_from',
+            'screen_to',
+            'internal_diameter',
+            'assembly_type',
+            'slot_size',
         )
 
 

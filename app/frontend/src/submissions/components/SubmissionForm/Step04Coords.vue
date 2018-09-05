@@ -13,7 +13,7 @@
               hint="Decimal degrees"
               @focus="unfreeze('deg')"
               @blur="freeze('deg')"
-              v-model="degrees.latitude"
+              v-model="latitudeInput"
               :errors="errors['latitude']"
               :loaded="fieldsLoaded['latitude']"
             ></form-input>
@@ -26,7 +26,7 @@
               @blur="freeze('deg')"
               label="Longitude"
               hint="Decimal degrees"
-              v-model="degrees.longitude"
+              v-model="longitudeInput"
               :errors="errors['longitude']"
               :loaded="fieldsLoaded['longitude']"
             ></form-input>
@@ -334,8 +334,8 @@ export default {
           dms.sec = Number(this.parseCoordValue(value.sec)) || 0
 
           const lat = this.convertDMStoDeg(dms)
-          const { easting, northing, zone } = this.convertToUTM(Number(this.degrees.longitude), lat)
-          this.updateDegrees(this.degrees.longitude, lat)
+          const { easting, northing, zone } = this.convertToUTM(Number(this.longitudeInput), lat)
+          this.updateDegrees(this.longitudeInput, lat)
           this.updateUTM(easting, northing, zone)
         }
       }
@@ -357,13 +357,13 @@ export default {
 
           const long = this.convertDMStoDeg(dms)
 
-          const { easting, northing, zone } = this.convertToUTM(long, Number(this.degrees.latitude))
-          this.updateDegrees(long, this.degrees.latitude)
+          const { easting, northing, zone } = this.convertToUTM(long, Number(this.latitudeInput))
+          this.updateDegrees(long, this.latitudeInput)
           this.updateUTM(easting, northing, zone)
         }
       }
     },
-    'degrees.latitude': {
+    'latitudeInput': {
       deep: true,
       handler: function (value) {
         if (!this.lock.deg) {
@@ -375,14 +375,14 @@ export default {
           }
 
           const lat = Number(value)
-          const { easting, northing, zone } = this.convertToUTM(Number(this.degrees.longitude), lat)
+          const { easting, northing, zone } = this.convertToUTM(Number(this.longitudeInput), lat)
 
-          this.updateDMS(this.convertToDMS(Number(this.degrees.longitude)), this.convertToDMS(lat))
+          this.updateDMS(this.convertToDMS(Number(this.longitudeInput)), this.convertToDMS(lat))
           this.updateUTM(easting, northing, zone)
         }
       }
     },
-    'degrees.longitude': {
+    'longitudeInput': {
       deep: true,
       handler: function (value) {
         if (!this.lock.deg) {
@@ -394,9 +394,9 @@ export default {
           }
 
           const long = Number(value)
-          const { easting, northing, zone } = this.convertToUTM(long, Number(this.degrees.latitude))
+          const { easting, northing, zone } = this.convertToUTM(long, Number(this.latitudeInput))
 
-          this.updateDMS(this.convertToDMS(long), this.convertToDMS(Number(this.degrees.latitude)))
+          this.updateDMS(this.convertToDMS(long), this.convertToDMS(Number(this.latitudeInput)))
           this.updateUTM(easting, northing, zone)
         }
       }
@@ -550,8 +550,8 @@ export default {
       }
     },
     updateDegrees (longitude, latitude) {
-      this.degrees.longitude = longitude
-      this.degrees.latitude = latitude
+      this.longitudeInput = longitude
+      this.latitudeInput = latitude
     },
     resetDegrees () {
       this.degrees = {
