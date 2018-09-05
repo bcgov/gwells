@@ -69,7 +69,8 @@ from submissions.serializers import (
     GroundElevationMethodCodeSerializer,
     DrillingMethodCodeSerializer,
     YieldEstimationMethodCodeSerializer,
-    FilterPackMaterialCodeSerializer
+    FilterPackMaterialCodeSerializer,
+    FilterPackMaterialSizeCodeSerializer
 )
 
 
