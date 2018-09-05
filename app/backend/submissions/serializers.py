@@ -27,6 +27,7 @@ from wells.models import (
     Casing,
     DevelopmentMethodCode,
     FilterPackMaterialCode,
+    FilterPackMaterialSizeCode,
     IntendedWaterUseCode,
     Screen,
     ScreenIntakeMethodCode,
@@ -200,6 +201,13 @@ class FilterPackMaterialCodeSerializer(serializers.ModelSerializer):
     class Meta:
         model = FilterPackMaterialCode
         fields = ('filter_pack_material_code', 'description')
+
+class FilterPackMaterialSizeCodeSerializer(serializers.ModelSerializer):
+    """Serializes Filter Pack codes/descriptions"""
+
+    class Meta:
+        model = FilterPackMaterialSizeCode
+        fields = ('filter_pack_material_size_code', 'description')
 
 class IntendedWaterUseCodeSerializer(serializers.ModelSerializer):
     """Serializes intended water use codes"""
