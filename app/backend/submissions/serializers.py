@@ -19,16 +19,32 @@ from gwells.serializers import AuditModelSerializer
 from django.db import transaction
 
 from wells.models import Well, ActivitySubmission
-from wells.serializers import CasingSerializer
+from wells.serializers import CasingSerializer, ScreenSerializer
 import wells.stack
 from wells.models import (
     ActivitySubmission,
+    DrillingMethodCode,
     Casing,
+    DevelopmentMethodCode,
+    FilterPackMaterialCode,
+    FilterPackMaterialSizeCode,
     IntendedWaterUseCode,
+    Screen,
+    ScreenIntakeMethodCode,
+    ScreenTypeCode,
+    ScreenMaterialCode,
+    ScreenOpeningCode,
+    ScreenBottomCode,
+    ScreenAssemblyTypeCode,
+    GroundElevationMethodCode,
+    SurfaceSealMaterialCode,
+    SurfaceSealMethodCode,
+    SurficialMaterialCode,
     Well,
     WellClassCode,
     WellSubclassCode,
-    LandDistrictCode)
+    YieldEstimationMethodCode,
+    LandDistrictCode,)
 
 from submissions.models import WellActivityCode
 
@@ -37,6 +53,7 @@ class WellSubmissionSerializer(serializers.ModelSerializer):
     """Serializes a well activity submission"""
 
     casing_set = CasingSerializer(many=True, required=False)
+    screen_set = ScreenSerializer(many=True, required=False)
 
     class Meta:
         model = ActivitySubmission
@@ -125,15 +142,25 @@ class WellSubmissionSerializer(serializers.ModelSerializer):
             "well_yield_unit",
             "diameter",
             "casing_set",
+            "screen_set",
         )
 
     @transaction.atomic
     def create(self, validated_data):
         casings_data = validated_data.pop('casing_set', None)
+        screen_data = validated_data.pop('screen_set', None)
         instance = super().create(validated_data)
         if casings_data:
             for casing_data in casings_data:
-                Casing.objects.create(activity_submission=instance, **casing_data)
+                Casing.objects.create(
+                    activity_submission=instance, **casing_data)
+
+        if screen_data:
+            for screen in screen_data:
+                Screen.objects.create(
+                    activity_submission=instance, **screen
+                )
+
         # Update the well record
         stacker = wells.stack.StackWells()
         stacker.process(instance.filing_number)
@@ -143,7 +170,7 @@ class WellSubmissionSerializer(serializers.ModelSerializer):
 
 
 class WellActivityCodeSerializer(serializers.ModelSerializer):
-    """ serializes well activity codes """
+    """Serializes well activity codes"""
 
     class Meta:
         model = WellActivityCode
@@ -151,7 +178,7 @@ class WellActivityCodeSerializer(serializers.ModelSerializer):
 
 
 class WellSubclassCodeSerializer(serializers.ModelSerializer):
-    """ serializes well subclass codes """
+    """Serializes well subclass codes"""
 
     class Meta:
         model = WellSubclassCode
@@ -159,7 +186,7 @@ class WellSubclassCodeSerializer(serializers.ModelSerializer):
 
 
 class WellClassCodeSerializer(serializers.ModelSerializer):
-    """ serializes well class codes """
+    """Serializes well class codes"""
 
     wellsubclasscode_set = WellSubclassCodeSerializer(
         many=True, read_only=True)
@@ -168,18 +195,134 @@ class WellClassCodeSerializer(serializers.ModelSerializer):
         model = WellClassCode
         fields = ('well_class_code', 'description', 'wellsubclasscode_set')
 
+class FilterPackMaterialCodeSerializer(serializers.ModelSerializer):
+    """Serializes Filter Pack codes/descriptions"""
+
+    class Meta:
+        model = FilterPackMaterialCode
+        fields = ('filter_pack_material_code', 'description')
+
+class FilterPackMaterialSizeCodeSerializer(serializers.ModelSerializer):
+    """Serializes Filter Pack codes/descriptions"""
+
+    class Meta:
+        model = FilterPackMaterialSizeCode
+        fields = ('filter_pack_material_size_code', 'description')
 
 class IntendedWaterUseCodeSerializer(serializers.ModelSerializer):
-    """ serializes intended water use codes """
+    """Serializes intended water use codes"""
 
     class Meta:
         model = IntendedWaterUseCode
         fields = ('intended_water_use_code', 'description')
 
-
 class LandDistrictSerializer(serializers.ModelSerializer):
-    """ serializes Land District codes/descriptions """
+    """Serializes Land District codes/descriptions"""
 
     class Meta:
         model = LandDistrictCode
         fields = ('land_district_code', 'name')
+
+
+class ScreenIntakeMethodSerializer(serializers.ModelSerializer):
+    """Serializes screen intake method codes"""
+
+    class Meta:
+        model = ScreenIntakeMethodCode
+        fields = ('screen_intake_code', 'description')
+
+
+class GroundElevationMethodCodeSerializer(serializers.ModelSerializer):
+    """Serializes codes for methods of obtaining ground elevations"""
+
+    class Meta:
+        model = GroundElevationMethodCode
+        fields = ('ground_elevation_method_code', 'description')
+
+
+class DrillingMethodCodeSerializer(serializers.ModelSerializer):
+    """Serializes drilling method codes"""
+
+    class Meta:
+        model = DrillingMethodCode
+        fields = ('drilling_method_code', 'description')
+
+
+class SurfaceSealMethodCodeSerializer(serializers.ModelSerializer):
+    """Serializes surface seal method codes"""
+
+    class Meta:
+        model = SurfaceSealMethodCode
+        fields = ('surface_seal_method_code', 'description')
+
+
+class SurfaceSealMaterialCodeSerializer(serializers.ModelSerializer):
+    """Serializes surface seal method codes"""
+
+    class Meta:
+        model = SurfaceSealMaterialCode
+        fields = ('surface_seal_material_code', 'description')
+
+
+class SurficialMaterialCodeSerializer(serializers.ModelSerializer):
+    """Serializes surficial material codes"""
+
+    class Meta:
+        model = SurficialMaterialCode
+        fields = ('surficial_material_code', 'description')
+
+
+class ScreenTypeCodeSerializer(serializers.ModelSerializer):
+    """Serializes screen type codes"""
+
+    class Meta:
+        model = ScreenTypeCode
+        fields = ('screen_type_code', 'description')
+
+
+class ScreenMaterialCodeSerializer(serializers.ModelSerializer):
+    """Serializes screen material codes"""
+
+    class Meta:
+        model = ScreenMaterialCode
+        fields = ('screen_material_code', 'description')
+
+
+class ScreenOpeningCodeSerializer(serializers.ModelSerializer):
+    """Serializes screen opening codes"""
+
+    class Meta:
+        model = ScreenOpeningCode
+        fields = ('screen_opening_code', 'description')
+
+
+class ScreenBottomCodeSerializer(serializers.ModelSerializer):
+    """Serializes screen bottom codes"""
+
+    class Meta:
+        model = ScreenBottomCode
+        fields = ('screen_bottom_code', 'description')
+
+
+class ScreenAssemblyTypeCodeSerializer(serializers.ModelSerializer):
+    """Serializes screen assembly codes"""
+
+    class Meta:
+        model = ScreenAssemblyTypeCode
+        fields = ('screen_assembly_type_code', 'description')
+
+
+class DevelopmentMethodCodeSerializer(serializers.ModelSerializer):
+    """Serializes well development methods"""
+
+    class Meta:
+        model = DevelopmentMethodCode
+        fields = ('development_method_code', 'description')
+
+
+class YieldEstimationMethodCodeSerializer(serializers.ModelSerializer):
+    """Serializes well production yield estimation method codes"""
+
+    class Meta:
+        model = YieldEstimationMethodCode
+        fields = ('yield_estimation_method_code', 'description')

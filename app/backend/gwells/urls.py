@@ -84,12 +84,11 @@ urlpatterns = [
         api.GeneralConfig.as_view(), name='configuration'),
     url(r'^' + app_root_slash, include('registries.urls')),
     url(r'^' + app_root_slash, include('wells.urls')),
-    url(r'^' + app_root_slash, include('submissions.urls')),
-
 ]
 
 if settings.ENABLE_DATA_ENTRY:
     urlpatterns = [
+        url(r'^' + app_root_slash, include('submissions.urls')),
         url(r'^' + app_root_slash + 'submission/create$',
             ActivitySubmissionWizardView.as_view(FORMS),
             name='activity_submission_create'),
