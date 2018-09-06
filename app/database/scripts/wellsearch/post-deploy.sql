@@ -80,6 +80,32 @@ ALTER TABLE lithology_moisture_code ALTER COLUMN effective_date SET DEFAULT CURR
 ALTER TABLE lithology_structure_code ALTER COLUMN effective_date SET DEFAULT CURRENT_DATE;
 ALTER TABLE obs_well_status_code ALTER COLUMN effective_date SET DEFAULT CURRENT_DATE;
 
+COMMENT ON COLUMN registries_accredited_certificate_code.name IS 'Certifications that are recognized by British Columbia for the purposes of registering an individual as a well pump installer or well driller.  E.g. GEOTECH, ';
+COMMENT ON COLUMN registries_organization.email IS 'The email address for a company, this is different from the email for the individual who is a registered driller or pump installer.  ';
+COMMENT ON COLUMN registries_organization.city IS 'City used for mailing address for the company.';
+COMMENT ON COLUMN registries_organization.website_url IS 'The web address associated with the company';
+COMMENT ON COLUMN registries_organization.street_address IS 'Street address used for mailing address for the company.';
+COMMENT ON COLUMN registries_organization.name IS 'Company''s Doing Business As name.' ;
+COMMENT ON COLUMN registries_organization.main_tel IS 'Telephone number used to contact the company';
+COMMENT ON COLUMN registries_organization.fax_tel IS 'Fax number used to contact the company';
+COMMENT ON COLUMN registries_organization.postal_code IS 'Postal code used for mailing address for the company';
+COMMENT ON COLUMN registries_organization.province_state_code IS 'Province or state used for the mailing address for the company';
+COMMENT ON COLUMN registries_organization_note.note IS 'Internal note used for the purposes of conducting business with the company.';
+COMMENT ON COLUMN registries_person.first_name IS 'Legal first name of the well driller or well pump installer who has applied and/or is registered with the province.';
+COMMENT ON COLUMN registries_person.contact_tel IS 'Land line area code and 7 digit phone number provided by the well driller or well pump installer where they can be contacted.' ;
+COMMENT ON COLUMN registries_person.contact_cell IS 'Cell phone area code and 7 digit number provided by the well driller or well pump installer where they can be contacted.';
+COMMENT ON COLUMN registries_person.surname IS 'Legal last name of the well driller or well pump installer who has applied and/or is registered with the province.';
+COMMENT ON COLUMN registries_person.well_driller_orcs_no IS 'Well driller''s unique filing number used in the BC government Operational Records Classification Systems (ORCS) filing system.  E.g --------- [Explain how the number is info rich]  Each person has an ORCS number when a file is started with their correspondence, usually with the application for being registered.';
+COMMENT ON COLUMN registries_person.contact_email IS 'Email address for the well driller or well pump installer.';
+COMMENT ON COLUMN registries_person.pump_installer_orcs_no IS 'Well pump installer''s unique filing number used in the BC government Operational Records Classification Systems (ORCS) filing system.  E.g --------- [Explain how the number is info rich]  Each person has an ORCS number when a file is started with their correspondence, usually with the application for being registered.  Each person can have a unique ORCS number as a well pump installer and as a well driller.';
+COMMENT ON COLUMN registries_person_note.note IS 'Internal note used for the purposes of conducting business with an applicant.';
+COMMENT ON COLUMN registries_proof_of_age_code.registries_proof_of_age_code IS 'List of valid options for what documentation the ministry staff reviewed to verify the applicants age to be over 19.  I.e. Drivers Licence, Birth Certificate, Passport.';
+COMMENT ON COLUMN registries_register.registration_no IS 'Unique number assigned to the well driller or well pump instaler upon registration.  Format used: [certification type] yymmdd[sequence]  where [sequence] is two digits starting with 01 for the first person registered in alphabetical order for that day, and [certification type] would be ''WD'' well driller and ''WPI'' for well pump installer.  E.g. WD 18031001';
+COMMENT ON COLUMN registries_removal_reason_code.registries_removal_reason_code IS 'Reason why a well driller or well pump installer was removed from the registry.  I.e NMEET, FAILTM, NLACT';
+COMMENT ON COLUMN registries_removal_reason_code.description IS 'Description of code e.g NMEET = Fails to meet a requirement for registration.';
+
+
+
 -- Tue 13 Feb 22:36:42 2018 GW Disabled for now until after CodeWithUs Sprint
 -- ALTER TABLE province_state_code ALTER COLUMN effective_date SET DEFAULT CURRENT_DATE;
 
