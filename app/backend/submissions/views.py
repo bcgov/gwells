@@ -25,26 +25,54 @@ from wells.models import (
     ActivitySubmission,
     CasingCode,
     CasingMaterialCode,
+    DevelopmentMethodCode,
+    DrillingMethodCode,
+    FilterPackMaterialCode,
+    GroundElevationMethodCode,
     IntendedWaterUseCode,
     LandDistrictCode,
+    LinerMaterialCode,
+    ScreenIntakeMethodCode,
+    SurfaceSealMaterialCode,
+    SurfaceSealMethodCode,
+    SurficialMaterialCode,
+    ScreenTypeCode,
+    ScreenMaterialCode,
+    ScreenOpeningCode,
+    ScreenBottomCode,
+    ScreenAssemblyTypeCode,
     Well,
     WellClassCode,
     WellSubclassCode,
-    LinerMaterialCode)
+    YieldEstimationMethodCode,)
 from submissions.models import WellActivityCode
 from wells.serializers import (
     CasingCodeSerializer,
     CasingMaterialSerializer
 )
 from submissions.serializers import (
+    DevelopmentMethodCodeSerializer,
+    DrillingMethodCodeSerializer,
+    FilterPackMaterialCodeSerializer,
+    FilterPackMaterialSizeCodeSerializer
+    GroundElevationMethodCodeSerializer,
+    IntendedWaterUseCodeSerializer,
+    LandDistrictSerializer,
+    LinerMaterialCodeSerializer
+    ScreenIntakeMethodSerializer,
+    SurfaceSealMaterialCodeSerializer,
+    SurfaceSealMethodCodeSerializer,
+    SurficialMaterialCodeSerializer,
+    ScreenTypeCodeSerializer,
+    ScreenMaterialCodeSerializer,
+    ScreenOpeningCodeSerializer,
+    ScreenBottomCodeSerializer,
+    ScreenAssemblyTypeCodeSerializer,
     WellSubmissionSerializer,
     WellActivityCodeSerializer,
     WellClassCodeSerializer,
     WellSubclassCodeSerializer,
-    IntendedWaterUseCodeSerializer,
-    LandDistrictSerializer,
-    LinerMaterialCodeSerializer
-)
+    YieldEstimationMethodCodeSerializer,)
 
 
 class SubmissionListAPIView(ListCreateAPIView):
@@ -114,12 +142,40 @@ class SubmissionsOptions(APIView):
             instance=WellClassCode.objects.prefetch_related("wellsubclasscode_set"), many=True)
         intended_water_use_codes = IntendedWaterUseCodeSerializer(
             instance=IntendedWaterUseCode.objects.all(), many=True)
-        casing_codes = CasingCodeSerializer(instance=CasingCode.objects.all(), many=True)
-        casing_material = CasingMaterialSerializer(instance=CasingMaterialCode.objects.all(), many=True)
+        casing_codes = CasingCodeSerializer(
+            instance=CasingCode.objects.all(), many=True)
+        casing_material = CasingMaterialSerializer(
+            instance=CasingMaterialCode.objects.all(), many=True)
+        filter_pack_material = FilterPackMaterialCodeSerializer(
+            instance=FilterPackMaterialCode.objects.all(), many=True)
+        filter_pack_material_size = FilterPackMaterialSizeCodeSerializer(
+            instance=FilterPackMaterialSizeCode.objects.all(), many=True)
         land_district_codes = LandDistrictSerializer(
             instance=LandDistrictCode.objects.all(), many=True)
         liner_material_codes = LinerMaterialCodeSerializer(
             instance=LinerMaterialCode.objects.all(), many=True)
+        ground_elevation_method_codes = GroundElevationMethodCodeSerializer(
+            instance=GroundElevationMethodCode.objects.all(), many=True)
+        drilling_method_codes = DrillingMethodCodeSerializer(
+            instance=DrillingMethodCode.objects.all(), many=True)
+        surface_seal_method_codes = SurfaceSealMethodCodeSerializer(
+            instance=SurfaceSealMethodCode.objects.all(), many=True)
+        surface_seal_material_codes = SurfaceSealMaterialCodeSerializer(
+            instance=SurfaceSealMaterialCode.objects.all(), many=True)
+        surficial_material_codes = SurficialMaterialCodeSerializer(
+            instance=SurficialMaterialCode.objects.all(), many=True)
+        screen_intake_methods = ScreenIntakeMethodSerializer(
+            instance=ScreenIntakeMethodCode.objects.all(), many=True)
+        screen_types = ScreenTypeCodeSerializer(instance=ScreenTypeCode.objects.all(), many=True)
+        screen_materials = ScreenMaterialCodeSerializer(instance=ScreenMaterialCode.objects.all(), many=True)
+        screen_openings = ScreenOpeningCodeSerializer(instance=ScreenOpeningCode.objects.all(), many=True)
+        screen_bottoms = ScreenBottomCodeSerializer(instance=ScreenBottomCode.objects.all(), many=True)
+        screen_assemblies = ScreenAssemblyTypeCodeSerializer(
+            instance=ScreenAssemblyTypeCode.objects.all(), many=True)
+        development_methods = DevelopmentMethodCodeSerializer(
+            instance=DevelopmentMethodCode.objects.all(), many=True)
+        yield_estimation_methods = YieldEstimationMethodCodeSerializer(
+            instance=YieldEstimationMethodCode.objects.all(), many=True)
 
         options["province_codes"] = province_codes.data
         options["activity_types"] = activity_codes.data
@@ -127,8 +183,23 @@ class SubmissionsOptions(APIView):
         options["intended_water_uses"] = intended_water_use_codes.data
         options["casing_codes"] = casing_codes.data
         options["casing_materials"] = casing_material.data
+        options["filter_pack_material"] = filter_pack_material.data
+        options["filter_pack_material_size"] = filter_pack_material_size.data
         options["land_district_codes"] = land_district_codes.data
         options["liner_material_codes"] = liner_material_codes.data
+        options["screen_intake_methods"] = screen_intake_methods.data
+        options["ground_elevation_methods"] = ground_elevation_method_codes.data
+        options["drilling_methods"] = drilling_method_codes.data
+        options["surface_seal_methods"] = surface_seal_method_codes.data
+        options["surface_seal_materials"] = surface_seal_material_codes.data
+        options["surficial_material_codes"] = surficial_material_codes.data
+        options["screen_types"] = screen_types.data
+        options["screen_materials"] = screen_materials.data
+        options["screen_openings"] = screen_openings.data
+        options["screen_bottoms"] = screen_bottoms.data
+        options["screen_assemblies"] = screen_assemblies.data
+        options["development_methods"] = development_methods.data
+        options["yield_estimation_methods"] = yield_estimation_methods.data
 
         return Response(options)
 

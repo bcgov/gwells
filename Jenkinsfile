@@ -215,24 +215,37 @@ boolean isUnitTested = false
 boolean runCodeQuality=((context?.stages?:[:])['Code Quality'] == true)
 parallel (
     "Deploy and Load Fixtures" : {
+
         _stage('Deploy', context) {
             node('master') {
                 new OpenShiftHelper().deploy(this, context, 'dev')
-                sleep 5
+                String deploymentConfigName = "gwells${context.deployments['dev'].dcSuffix}"
+                String projectName = context.deployments['dev'].projectName
+                openshift.withProject(projectName) {
+                    // get list of pods for the new deployment
+                    def latestDeployment = openshift.selector('dc', deploymentConfigName).object().status.latestVersion
+                    def pods = openshift.selector('pod', [deployment: "${deploymentConfigName}-${latestDeployment}"])
+
+                    pods.untilEach(1) {
+                        return it.object().status.containerStatuses.every {
+                            it.ready
+                        }
+                    }
+                }
                 isDeployed = true
             }
         }
 
-        String projectName=context.deployments['dev'].projectName
-        String deploymentConfigName="gwells${context.deployments['dev'].dcSuffix}"
         _stage('Load Fixtures', context) {
             node('master'){
                 parallel (
                     "Load Fixtures": {
-                        sleep 10
+                        String deploymentConfigName = "gwells${context.deployments['dev'].dcSuffix}"
+                        String projectName = context.deployments['dev'].projectName
                         String podName = openshift.withProject(projectName){
                             return openshift.selector('pod', ['deploymentconfig':deploymentConfigName]).objects()[0].metadata.name
                         }
+                                                    
                         sh "oc exec '${podName}' -n '${projectName}' -- bash -c '\
                             cd /opt/app-root/src/backend; \
                             python manage.py migrate; \
@@ -245,6 +258,8 @@ parallel (
                     },
                     "Unit Test: Python": {
                         sleep 30
+                        String deploymentConfigName = "gwells${context.deployments['dev'].dcSuffix}"
+                        String projectName = context.deployments['dev'].projectName
                         String podName = openshift.withProject(projectName){
                             return openshift.selector('pod', ['deploymentconfig':deploymentConfigName]).objects()[1].metadata.name
                         }

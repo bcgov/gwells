@@ -1,7 +1,7 @@
 <template>
   <fieldset>
-    <legend>Casing Details</legend>
-    <table class="table">
+    <legend>Step 6: Casing Details</legend>
+    <table class="table table-sm">
       <thead>
         <tr>
           <th>From ft (bgl)</th>
@@ -18,6 +18,7 @@
         <tr v-for="(casing, index) in casingsInput" :key="casing.id">
           <td>
             <form-input
+              group-class="my-1"
               :id="'casing_from' + index"
               type="number"
               v-model="casing.casing_from"
@@ -26,6 +27,7 @@
           </td>
           <td>
             <form-input
+              group-class="my-1"
               :id="'casing_to_' + index"
               type="number"
               v-model="casing.casing_to"
@@ -35,6 +37,7 @@
           <td>
             <b-form-group
               id="'casingCode_' + index"
+              class="my-1"
               aria-describedby="casingCodeInvalidFeedback{index}">
               <b-form-select
                   v-model="casing.casing_code"
@@ -56,6 +59,7 @@
           <td>
             <b-form-group
               :id="'casingMaterial_' + index"
+              class="my-1"
               aria-describedby="casingMaterialInvalidFeedback{index}">
               <b-form-select
                   v-model="casing.casing_material"
@@ -76,6 +80,7 @@
           </td>
           <td>
             <form-input
+              group-class="my-1"
               :id="'diameter_' + index"
               type="number"
               v-model="casing.diameter"
@@ -84,6 +89,7 @@
           </td>
           <td>
             <form-input
+              group-class="my-1"
               :id="'wall_thickness_' + index"
               type="number"
               v-model="casing.wall_thickness"
