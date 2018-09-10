@@ -100,12 +100,14 @@ Map context = [
         'test':[
             'params':[
                 'host':'gwells-test.pathfinder.gov.bc.ca',
+                'host_path':'/gwells',
                 'DB_PVC_SIZE':'5Gi'
             ]
         ],
         'prod':[
             'params':[
                 'host':'gwells-prod.pathfinder.gov.bc.ca',
+                'host_path':'/gwells',
                 'DB_PVC_SIZE':'5Gi'
             ]
         ]
@@ -130,7 +132,8 @@ Map context = [
             [
                 'file':'openshift/backend.dc.json',
                 'params':[
-                    'HOST':'${env[DEPLOY_ENV_NAME]?.params?.host?:("gwells" + deployments[DEPLOY_ENV_NAME].dcSuffix + "-" + deployments[DEPLOY_ENV_NAME].projectName + ".pathfinder.gov.bc.ca")}'
+                    'HOST':'${env[DEPLOY_ENV_NAME]?.params?.host?:("gwells" + "-" + DEPLOY_ENV_NAME + ".pathfinder.gov.bc.ca")}',
+                    'HOST_PATH':'${env[DEPLOY_ENV_NAME]?.params?.host_path?:(deployments[DEPLOY_ENV_NAME].dcSuffix + "/gwells")}'
                 ]
             ]
         ]
