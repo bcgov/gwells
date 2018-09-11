@@ -576,7 +576,7 @@
                                 },
                                 "livenessProbe": {
                                     "httpGet": {
-                                        "path": "/gwells/health",
+                                        "path": "/${HOST_PATH}/health",
                                         "port": 8080,
                                         "scheme": "HTTP"
                                     },
@@ -588,7 +588,7 @@
                                 },
                                 "readinessProbe": {
                                     "httpGet": {
-                                        "path": "/gwells/health",
+                                        "path": "/${HOST_PATH}/health",
                                         "port": 8080,
                                         "scheme": "HTTP"
                                     },

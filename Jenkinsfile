@@ -99,7 +99,7 @@ Map context = [
         'dev':[
             'params':[
                 'host':'gwells-dev.pathfinder.gov.bc.ca',
-                'host_path':"/${env.JOB_BASE_NAME.toLowerCase()}/gwells",
+                'host_path':"/${env.JOB_BASE_NAME.toLowerCase()}",
                 'DB_PVC_SIZE':'1Gi'
             ]
         ],
@@ -254,7 +254,7 @@ parallel (
                         String podName = openshift.withProject(projectName){
                             return openshift.selector('pod', ['deploymentconfig':deploymentConfigName]).objects()[0].metadata.name
                         }
-                                                    
+
                         sh "oc exec '${podName}' -n '${projectName}' -- bash -c '\
                             cd /opt/app-root/src/backend; \
                             python manage.py migrate; \
