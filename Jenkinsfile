@@ -249,7 +249,7 @@ parallel (
                         sh "oc exec '${podName}' -n '${projectName}' -- bash -c '\
                             cd /opt/app-root/src/backend; \
                             python manage.py migrate; \
-                            python manage.py loaddata gwells-codetables.json water-quality-codes.son; \
+                            python manage.py loaddata gwells-codetables.json water-quality-codes.json; \
                             python manage.py loaddata wellsearch-codetables.json registries-codetables.json; \
                             python manage.py loaddata wellsearch.json.gz registries.json; \
                             python manage.py createinitialrevisions \
