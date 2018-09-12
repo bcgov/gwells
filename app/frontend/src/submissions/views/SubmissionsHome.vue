@@ -167,6 +167,20 @@
           :emsID.sync="form.ems_id"
         ></step13-water-quality>
 
+        <step14-completion class="my-3"
+          v-if="formStep === 14 || formIsFlat"
+          :totalDepthDrilled.sync="form.total_depth_drilled"
+          :finishedWellDepth.sync="form.finished_well_depth"
+          :finalCasingStickUp.sync="form.final_casing_stick_up"
+          :bedrockDepth.sync="form.bedrock_depth"
+          :staticWaterLevel.sync="form.static_water_level"
+          :wellYield.sync="form.well_yield"
+          :artesianFlow.sync="form.artesian_flow"
+          :artesianPressure.sync="form.artesian_pressure"
+          :wellCapType.sync="form.well_cap_type"
+          :wellDisinfected.sync="form.well_disinfected"
+        ></step14-completion>
+
         <!-- Back / Next / Submit controls -->
         <b-row class="mt-5">
           <b-col v-if="!formIsFlat">
@@ -260,6 +274,7 @@ import Step10FilterPack from '@/submissions/components/SubmissionForm/Step10Filt
 import Step11Development from '@/submissions/components/SubmissionForm/Step11Development.vue'
 import Step12Yield from '@/submissions/components/SubmissionForm/Step12Yield.vue'
 import Step13WaterQuality from '@/submissions/components/SubmissionForm/Step13WaterQuality.vue'
+import Step14Completion from '@/submissions/components/SubmissionForm/Step14Completion.vue'
 export default {
   name: 'SubmissionsHome',
   mixins: [inputFormatMixin],
@@ -275,7 +290,8 @@ export default {
     Step10FilterPack,
     Step11Development,
     Step12Yield,
-    Step13WaterQuality
+    Step13WaterQuality,
+    Step14Completion
   },
   data () {
     return {
@@ -401,6 +417,16 @@ export default {
         water_quality_colour: '',
         water_quality_odour: '',
         ems_id: '',
+        total_depth_drilled: '',
+        finished_well_depth: '',
+        final_casing_stick_up: '',
+        bedrock_depth: '',
+        static_water_level: '',
+        well_yield: '',
+        artesian_flow: '',
+        artesian_pressure: '',
+        well_cap_type: '',
+        well_disinfected: 'False',
 
         // non-form fields that should be saved with form
         meta: {
