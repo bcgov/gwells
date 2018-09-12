@@ -181,6 +181,11 @@
           :wellDisinfected.sync="form.well_disinfected"
         ></step14-completion>
 
+        <step15-comments class="my-3"
+          :comments.sync="form.comments"
+          :alternativeSpecsSubmitted.sync="form.alternative_specs_submitted"
+        ></step15-comments>
+
         <!-- Back / Next / Submit controls -->
         <b-row class="mt-5">
           <b-col v-if="!formIsFlat">
@@ -275,6 +280,7 @@ import Step11Development from '@/submissions/components/SubmissionForm/Step11Dev
 import Step12Yield from '@/submissions/components/SubmissionForm/Step12Yield.vue'
 import Step13WaterQuality from '@/submissions/components/SubmissionForm/Step13WaterQuality.vue'
 import Step14Completion from '@/submissions/components/SubmissionForm/Step14Completion.vue'
+import Step15Comments from '@/submissions/components/SubmissionForm/Step15Comments.vue'
 export default {
   name: 'SubmissionsHome',
   mixins: [inputFormatMixin],
@@ -291,7 +297,8 @@ export default {
     Step11Development,
     Step12Yield,
     Step13WaterQuality,
-    Step14Completion
+    Step14Completion,
+    Step15Comments
   },
   data () {
     return {
@@ -427,6 +434,8 @@ export default {
         artesian_pressure: '',
         well_cap_type: '',
         well_disinfected: 'False',
+        comments: '',
+        alternative_specs_submitted: '',
 
         // non-form fields that should be saved with form
         meta: {
