@@ -478,7 +478,7 @@
                                     },
                                     {
                                         "name": "APP_CONTEXT_ROOT",
-                                        "value": "gwells"
+                                        "value": "${HOST_PATH}"
                                     },
                                     {
                                         "name": "SESSION_COOKIE_SECURE",
