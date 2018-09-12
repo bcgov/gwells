@@ -182,6 +182,7 @@
         ></step14-completion>
 
         <step15-comments class="my-3"
+          v-if="formStep === 15 || formIsFlat"
           :comments.sync="form.comments"
           :alternativeSpecsSubmitted.sync="form.alternative_specs_submitted"
         ></step15-comments>
@@ -312,7 +313,7 @@ export default {
       loadFormSuccess: false,
       confirmLoadModal: false,
       step: 1,
-      maxSteps: 13, // total number of wizard steps
+      maxSteps: 15, // total number of wizard steps
       sliding: null,
       errors: {},
       fieldsLoaded: {},
