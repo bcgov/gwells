@@ -28,7 +28,7 @@
         {
             "name": "HOST_PATH",
             "required": false,
-            "value": "/gwells"
+            "value": "gwells"
         }
     ],
     "objects": [
@@ -671,7 +671,7 @@
             },
             "spec": {
                 "host": "${HOST}",
-                "path": "${HOST_PATH}",
+                "path": "/${HOST_PATH}",
                 "to": {
                     "kind": "Service",
                     "name": "gwells${NAME_SUFFIX}",
