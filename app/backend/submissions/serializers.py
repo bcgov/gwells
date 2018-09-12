@@ -40,6 +40,8 @@ from wells.models import (
     SurfaceSealMaterialCode,
     SurfaceSealMethodCode,
     SurficialMaterialCode,
+    WaterQualityCharacteristic,
+    WaterQualityColour,
     Well,
     WellClassCode,
     WellSubclassCode,
@@ -195,12 +197,14 @@ class WellClassCodeSerializer(serializers.ModelSerializer):
         model = WellClassCode
         fields = ('well_class_code', 'description', 'wellsubclasscode_set')
 
+
 class FilterPackMaterialCodeSerializer(serializers.ModelSerializer):
     """Serializes Filter Pack codes/descriptions"""
 
     class Meta:
         model = FilterPackMaterialCode
         fields = ('filter_pack_material_code', 'description')
+
 
 class FilterPackMaterialSizeCodeSerializer(serializers.ModelSerializer):
     """Serializes Filter Pack codes/descriptions"""
@@ -209,12 +213,14 @@ class FilterPackMaterialSizeCodeSerializer(serializers.ModelSerializer):
         model = FilterPackMaterialSizeCode
         fields = ('filter_pack_material_size_code', 'description')
 
+
 class IntendedWaterUseCodeSerializer(serializers.ModelSerializer):
     """Serializes intended water use codes"""
 
     class Meta:
         model = IntendedWaterUseCode
         fields = ('intended_water_use_code', 'description')
+
 
 class LandDistrictSerializer(serializers.ModelSerializer):
     """Serializes Land District codes/descriptions"""
@@ -326,3 +332,19 @@ class YieldEstimationMethodCodeSerializer(serializers.ModelSerializer):
     class Meta:
         model = YieldEstimationMethodCode
         fields = ('yield_estimation_method_code', 'description')
+
+
+class WaterQualityCharacteristicSerializer(serializers.ModelSerializer):
+    """Serializes water quality characteristic codes"""
+
+    class Meta:
+        model = WaterQualityCharacteristic
+        fields = ('water_quality_characteristic_guid', 'description')
+
+
+class WaterQualityColourSerializer(serializers.ModelSerializer):
+    """Serializes water colour codes"""
+
+    class Meta:
+        model = WaterQualityColour
+        fields = ('code', 'description')

@@ -700,6 +700,7 @@ class Well(AuditModel):
         max_length=100, blank=True, null=True, verbose_name="Backfill Material")
     decommission_details = models.CharField(
         max_length=250, blank=True, null=True, verbose_name="Decommission Details")
+    ems_id = models.CharField(max_length=30, blank=True)
 
     tracker = FieldTracker()
 
@@ -1050,6 +1051,8 @@ class ActivitySubmission(AuditModel):
         WellYieldUnitCode, db_column='well_yield_unit_code', on_delete=models.CASCADE, blank=True, null=True)
     # want to be integer in future
     diameter = models.CharField(max_length=9, blank=True)
+    ems_id = models.CharField(max_length=30, blank=True)
+
 
     tracker = FieldTracker()
 
@@ -1309,3 +1312,21 @@ class Screen(AuditModel):
                                                          self.screen_to)
         else:
             return 'well {} {} {}'.format(self.well, self.screen_from, self.screen_to)
+
+
+class WaterQualityColour(AuditModel):
+    """
+    Colour choices for describing water quality
+    """
+    code = models.CharField(primary_key=True, max_length=32, db_column='water_quality_colour_code')
+    description = models.CharField(max_length=100)
+    display_order = models.PositiveIntegerField()
+
+    effective_date = models.DateTimeField(blank=True, null=True)
+    expiry_date = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'water_quality_colour_code'
+
+    def __str__(self):
+        return self.description
