@@ -139,7 +139,7 @@ Map context = [
         'Load Fixtures': true,
         'API Test': true,
         'Functional Tests': false,
-        'Unit Test': false,
+        'Unit Tests': false,
         'Code Quality': false,
         'ZAP Security Scan': false
     ],
@@ -248,7 +248,7 @@ parallel (
 
                         /* All of these commands could be run in one go, and be more performant, but then
                         it becomes difficult to see which on of the steps failed. Instead, each step is
-                        executed by itself. */                    
+                        executed by itself. */
                         sh "oc exec '${podName}' -n '${projectName}' -- bash -c '\
                             cd /opt/app-root/src/backend; \
                             python manage.py migrate; \
@@ -290,107 +290,107 @@ parallel (
             }
         } //end stage
     }, //end branch
-    // "Unit Tests" : {
-    //     /* Unit test stage
-    //         - use Django's manage.py to run python unit tests (w/ nose.cfg)
-    //         - use 'npm run unit' to run JavaScript unit tests
-    //         - stash test results for code quality stage
-    //     */
-    //     _stage('Unit Tests', context) {
-    //         podTemplate(
-    //             label: "node-${context.uuid}",
-    //             name:"node-${context.uuid}",
-    //             serviceAccount: 'jenkins',
-    //             cloud: 'openshift',
-    //             containers: [
-    //                 containerTemplate(
-    //                     name: 'jnlp',
-    //                     image: 'jenkins/jnlp-slave:3.10-1-alpine',
-    //                     args: '${computer.jnlpmac} ${computer.name}',
-    //                     resourceRequestCpu: '100m',
-    //                     resourceLimitCpu: '100m'
-    //                 ),
-    //                 containerTemplate(
-    //                     name: 'app',
-    //                     image: "docker-registry.default.svc:5000/moe-gwells-tools/gwells${context.buildNameSuffix}:${context.buildEnvName}",
-    //                     ttyEnabled: true,
-    //                     command: 'cat',
-    //                     resourceRequestCpu: '2',
-    //                     resourceLimitCpu: '2',
-    //                     resourceRequestMemory: '2.5Gi',
-    //                     resourceLimitMemory: '2.5Gi'
-    //                 )
-    //             ]
-    //         ) {
-    //             node("node-${context.uuid}") {
-    //                 container('app') {
-    //                     sh script: '''#!/usr/bin/container-entrypoint /bin/sh
-    //                         printf "Python version: "&& python --version
-    //                         printf "Pip version:    "&& pip --version
-    //                         printf "Node version:   "&& node --version
-    //                         printf "NPM version:    "&& npm --version
-    //                     '''
+    "Unit Tests" : {
+        /* Unit test stage
+            - use Django's manage.py to run python unit tests (w/ nose.cfg)
+            - use 'npm run unit' to run JavaScript unit tests
+            - stash test results for code quality stage
+        */
+        _stage('Unit Tests', context) {
+            podTemplate(
+                label: "node-${context.uuid}",
+                name:"node-${context.uuid}",
+                serviceAccount: 'jenkins',
+                cloud: 'openshift',
+                containers: [
+                    containerTemplate(
+                        name: 'jnlp',
+                        image: 'jenkins/jnlp-slave:3.10-1-alpine',
+                        args: '${computer.jnlpmac} ${computer.name}',
+                        resourceRequestCpu: '100m',
+                        resourceLimitCpu: '100m'
+                    ),
+                    containerTemplate(
+                        name: 'app',
+                        image: "docker-registry.default.svc:5000/moe-gwells-tools/gwells${context.buildNameSuffix}:${context.buildEnvName}",
+                        ttyEnabled: true,
+                        command: 'cat',
+                        resourceRequestCpu: '2',
+                        resourceLimitCpu: '2',
+                        resourceRequestMemory: '2.5Gi',
+                        resourceLimitMemory: '2.5Gi'
+                    )
+                ]
+            ) {
+                node("node-${context.uuid}") {
+                    container('app') {
+                        sh script: '''#!/usr/bin/container-entrypoint /bin/sh
+                            printf "Python version: "&& python --version
+                            printf "Pip version:    "&& pip --version
+                            printf "Node version:   "&& node --version
+                            printf "NPM version:    "&& npm --version
+                        '''
 
-    //                     parallel (
-    //                         "Unit Test: Python (w/ ZAP)": {
-    //                             if (runCodeQuality) {
-    //                                 try {
-    //                                     sh script: '''#!/usr/bin/container-entrypoint /bin/sh
-    //                                         cd /opt/app-root/src/backend
-    //                                         DATABASE_ENGINE=sqlite DEBUG=False TEMPLATE_DEBUG=False python manage.py test -c nose.cfg
-    //                                     '''
-    //                                     sh script: '''#!/usr/bin/container-entrypoint /bin/sh
-    //                                         cp /opt/app-root/src/backend/nosetests.xml ./
-    //                                         cp /opt/app-root/src/backend/coverage.xml ./
-    //                                     '''
-    //                                     stash includes: 'nosetests.xml,coverage.xml', name: 'coverage'
-    //                                 } finally {
-    //                                     stash includes: 'nosetests.xml,coverage.xml', name: 'coverage'
-    //                                     junit 'nosetests.xml'
-    //                                 }
-    //                             } else {
-    //                                 echo "Since Code Quality is disabled Unit Test: Python has already run"
-    //                             }
-    //                         },
-    //                         "Unit Test: Node": {
-    //                             try {
-    //                                 sh script: '''#!/usr/bin/container-entrypoint /bin/sh
-    //                                     cd /opt/app-root/src/frontend
-    //                                     npm test
-    //                                 '''
-    //                                 if (runCodeQuality) {
-    //                                     sh script: '''#!/usr/bin/container-entrypoint /bin/sh
-    //                                         mkdir -p frontend/test/
-    //                                         cp -R /opt/app-root/src/frontend/test/unit ./frontend/test/
-    //                                         cp /opt/app-root/src/frontend/junit.xml ./frontend/
-    //                                     '''
-    //                                 }
-    //                             } finally {
-    //                                 if (runCodeQuality) {
-    //                                     archiveArtifacts allowEmptyArchive: true, artifacts: 'frontend/test/unit/**/*'
-    //                                     stash includes: 'frontend/test/unit/coverage/clover.xml', name: 'nodecoverage'
-    //                                     stash includes: 'frontend/junit.xml', name: 'nodejunit'
-    //                                     junit 'frontend/junit.xml'
-    //                                     publishHTML (
-    //                                         target: [
-    //                                             allowMissing: false,
-    //                                             alwaysLinkToLastBuild: false,
-    //                                             keepAll: true,
-    //                                             reportDir: 'frontend/test/unit/coverage/lcov-report/',
-    //                                             reportFiles: 'index.html',
-    //                                             reportName: "Node Coverage Report"
-    //                                         ]
-    //                                     )
-    //                                 }
-    //                             }
-    //                         } //end branch
-    //                     ) //end parallel
-    //                     isUnitTested=true
-    //                 } //end container
-    //             } //end node
-    //         } //end podTemplate
-    //     } //end stage
-    // }, //end branch
+                        parallel (
+                            "Unit Test: Python (w/ ZAP)": {
+                                if (runCodeQuality) {
+                                    try {
+                                        sh script: '''#!/usr/bin/container-entrypoint /bin/sh
+                                            cd /opt/app-root/src/backend
+                                            DATABASE_ENGINE=sqlite DEBUG=False TEMPLATE_DEBUG=False python manage.py test -c nose.cfg
+                                        '''
+                                        sh script: '''#!/usr/bin/container-entrypoint /bin/sh
+                                            cp /opt/app-root/src/backend/nosetests.xml ./
+                                            cp /opt/app-root/src/backend/coverage.xml ./
+                                        '''
+                                        stash includes: 'nosetests.xml,coverage.xml', name: 'coverage'
+                                    } finally {
+                                        stash includes: 'nosetests.xml,coverage.xml', name: 'coverage'
+                                        junit 'nosetests.xml'
+                                    }
+                                } else {
+                                    echo "Since Code Quality is disabled Unit Test: Python has already run"
+                                }
+                            },
+                            "Unit Test: Node": {
+                                try {
+                                    sh script: '''#!/usr/bin/container-entrypoint /bin/sh
+                                        cd /opt/app-root/src/frontend
+                                        npm test
+                                    '''
+                                    if (runCodeQuality) {
+                                        sh script: '''#!/usr/bin/container-entrypoint /bin/sh
+                                            mkdir -p frontend/test/
+                                            cp -R /opt/app-root/src/frontend/test/unit ./frontend/test/
+                                            cp /opt/app-root/src/frontend/junit.xml ./frontend/
+                                        '''
+                                    }
+                                } finally {
+                                    if (runCodeQuality) {
+                                        archiveArtifacts allowEmptyArchive: true, artifacts: 'frontend/test/unit/**/*'
+                                        stash includes: 'frontend/test/unit/coverage/clover.xml', name: 'nodecoverage'
+                                        stash includes: 'frontend/junit.xml', name: 'nodejunit'
+                                        junit 'frontend/junit.xml'
+                                        publishHTML (
+                                            target: [
+                                                allowMissing: false,
+                                                alwaysLinkToLastBuild: false,
+                                                keepAll: true,
+                                                reportDir: 'frontend/test/unit/coverage/lcov-report/',
+                                                reportFiles: 'index.html',
+                                                reportName: "Node Coverage Report"
+                                            ]
+                                        )
+                                    }
+                                }
+                            } //end branch
+                        ) //end parallel
+                        isUnitTested=true
+                    } //end container
+                } //end node
+            } //end podTemplate
+        } //end stage
+    }, //end branch
     "ZAP Security Scan": {
         _stage('ZAP Security Scan', context) {
             podTemplate(
