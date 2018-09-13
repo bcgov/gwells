@@ -37,6 +37,13 @@ void notifyStageStatus (Map context, String name, String status) {
 }
 
 
+// Check if a stage is enabled (true|false in context)
+boolean isEnabled (Map context, String stageName) {
+    def stageOpt =(context?.stages?:[:])[stageName]
+    return (stageOpt == null || stageOpt == true)
+}
+
+
 /* _Stage wrapper:
     - runs stages against true|false in map context
     - receives stages defined separately in closures (body)
@@ -44,11 +51,9 @@ void notifyStageStatus (Map context, String name, String status) {
 */
 def _stage(String name, Map context, boolean retry=0, boolean withCommitStatus=true, Closure body) {
     timestamps {
-        def stageOpt =(context?.stages?:[:])[name]
-        boolean isEnabled=(stageOpt == null || stageOpt == true)
-        echo "Running Stage '${name}' - enabled:${isEnabled}"
+        echo "Running Stage '${name}'"
 
-        if (isEnabled){
+        if (isEnabled(context,name)){
             stage(name) {
                 waitUntil {
                     notifyStageStatus(context, name, 'PENDING')
