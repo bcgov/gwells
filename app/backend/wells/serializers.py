@@ -18,12 +18,13 @@ from django.db import transaction
 from gwells.models import ProvinceStateCode
 from gwells.serializers import AuditModelSerializer
 from wells.models import (
-    Well,
     ActivitySubmission,
     Casing,
     CasingMaterialCode,
     CasingCode,
+    LinerPerforation,
     Screen,
+    Well,
 )
 
 
@@ -71,6 +72,18 @@ class ScreenSerializer(serializers.ModelSerializer):
             'internal_diameter',
             'assembly_type',
             'slot_size',
+        )
+
+
+class LinerPerforationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LinerPerforation
+        fields = (
+            'liner_perforation_guid',
+            'activity_submission',
+            'well',
+            'liner_perforation_from',
+            'liner_perforation_to',
         )
 
 

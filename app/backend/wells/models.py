@@ -1197,20 +1197,19 @@ class LinerPerforation(AuditModel):
     """
     Perforation in a well liner
     """
-    liner_perforation_guid = models.UUIDField(
-        primary_key=True, default=uuid.uuid4, editable=False)
-    activity_submission = models.ForeignKey(
-        ActivitySubmission, db_column='filing_number', on_delete=models.CASCADE, blank=True, null=True,
-        related_name='linerperforation_set')
+    liner_perforation_guid = models.UUIDField(primary_key=True, default=uuid.uuid4,
+                                              editable=False)
+    activity_submission = models.ForeignKey(ActivitySubmission, db_column='filing_number',
+                                            on_delete=models.CASCADE, blank=True, null=True,
+                                            related_name='linerperforation_set')
     well = models.ForeignKey(Well, db_column='well_tag_number',
                              on_delete=models.CASCADE, blank=True, null=True,
                              related_name='linerperforation_set')
-    liner_perforation_from = models.DecimalField(
-        max_digits=7, decimal_places=2, verbose_name='Perforated From', blank=False,
-        validators=[MinValueValidator(Decimal('0.00'))])
-    liner_perforation_to = models.DecimalField(
-        max_digits=7, decimal_places=2, verbose_name='Perforated To', blank=False,
-        validators=[MinValueValidator(Decimal('0.01'))])
+    liner_perforation_from = models.DecimalField(max_digits=7, decimal_places=2,
+                                                 verbose_name='Perforated From', blank=False,
+                                                 validators=[MinValueValidator(Decimal('0.00'))])
+    liner_perforation_to = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='Perforated To',
+                                               blank=False, validators=[MinValueValidator(Decimal('0.01'))])
 
     class Meta:
         db_table = 'liner_perforation'

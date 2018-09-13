@@ -19,7 +19,7 @@ from gwells.serializers import AuditModelSerializer
 from django.db import transaction
 
 from wells.models import Well, ActivitySubmission
-from wells.serializers import CasingSerializer, ScreenSerializer
+from wells.serializers import CasingSerializer, ScreenSerializer, LinerPerforationSerializer
 import wells.stack
 from wells.models import (
     ActivitySubmission,
@@ -46,7 +46,8 @@ from wells.models import (
     Well,
     WellClassCode,
     WellSubclassCode,
-    YieldEstimationMethodCode,)
+    YieldEstimationMethodCode,
+)
 
 from submissions.models import WellActivityCode
 
@@ -56,6 +57,7 @@ class WellSubmissionSerializer(serializers.ModelSerializer):
 
     casing_set = CasingSerializer(many=True, required=False)
     screen_set = ScreenSerializer(many=True, required=False)
+    linerperforation_set = LinerPerforationSerializer(many=True, required=False)
 
     class Meta:
         model = ActivitySubmission
@@ -150,7 +152,6 @@ class WellSubmissionSerializer(serializers.ModelSerializer):
 
     @transaction.atomic
     def create(self, validated_data):
-        print('CREATE')
         casings_data = validated_data.pop('casing_set', None)
         linerperforations_data = validated_data.pop('linerperforation_set', None)
         instance = super().create(validated_data)
@@ -175,6 +176,7 @@ class WellSubmissionSerializer(serializers.ModelSerializer):
 
         # Update the well record
         stacker = wells.stack.StackWells()
+        logger.debug('Serializers going to call stacker.process....')
         stacker.process(instance.filing_number)
         # The instance may have been updated with a well tag number
         instance.refresh_from_db()

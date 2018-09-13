@@ -12,6 +12,7 @@
     limitations under the License.
 """
 from datetime import date
+import logging
 
 from django.test import TestCase
 
@@ -20,6 +21,9 @@ from wells.models import Well, ActivitySubmission, Casing
 from submissions.models import WellActivityCode
 from wells.stack import StackWells
 from registries.models import Person
+
+
+logger = logging.getLogger(__name__)
 
 
 class CasingMergeTest(TestCase):
@@ -241,10 +245,22 @@ class StackTest(TestCase):
             well=well
             )
 
+        logger.debug('what submissions are there?')
+        submissions = ActivitySubmission.objects.filter(well=well).order_by('work_start_date')
+        for submission in submissions:
+            logger.debug(submission)
+
         stacker = StackWells()
+        logger.debug('going to process submission...')
         stacker.process(submission.filing_number)
+        logger.debug('done processing submission.')
         well = Well.objects.get(well_tag_number=well.well_tag_number)
-        submissions = ActivitySubmission.objects.filter(well=well).order_by('work_start_date')        
+        submissions = ActivitySubmission.objects.filter(well=well).order_by('work_start_date')
+        # There should be two submissions at this point.
+        # Submission 1: A legacy well submission generated using the original well record.
+        # Submission 2: The submission for an alteration.
+        for submission in submissions:
+            logger.debug(submission)
         self.assertEqual(submissions.count(), 2, "It is expected that a legacy submission be created")
         self.assertEqual(new_full_name, well.owner_full_name)
         self.assertEqual(submissions[0].casing_set.count(), 2, ("It is expected that the casings on the "

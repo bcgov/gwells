@@ -54,11 +54,11 @@ from submissions.serializers import (
     DevelopmentMethodCodeSerializer,
     DrillingMethodCodeSerializer,
     FilterPackMaterialCodeSerializer,
-    FilterPackMaterialSizeCodeSerializer
+    FilterPackMaterialSizeCodeSerializer,
     GroundElevationMethodCodeSerializer,
     IntendedWaterUseCodeSerializer,
     LandDistrictSerializer,
-    LinerMaterialCodeSerializer
+    LinerMaterialCodeSerializer,
     ScreenIntakeMethodSerializer,
     SurfaceSealMaterialCodeSerializer,
     SurfaceSealMethodCodeSerializer,
