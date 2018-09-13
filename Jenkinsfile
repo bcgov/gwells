@@ -277,18 +277,20 @@ parallel (
                         isFixtured = true
                     },
                     "Unit Test: Python": {
-                        sleep 30
-                        String deploymentConfigName = "gwells${context.deployments['dev'].dcSuffix}"
-                        String projectName = context.deployments['dev'].projectName
-                        String podName = openshift.withProject(projectName){
-                            return openshift.selector('pod', ['deploymentconfig':deploymentConfigName]).objects()[1].metadata.name
-                        }
-                        if (!runCodeQuality){
-                            echo "Since Code Quality is disabled Unit Test: Python is executing early"
-                            sh "oc exec '${podName}' -n '${projectName}' -- bash -c '\
-                                cd /opt/app-root/src/backend; \
-                                DATABASE_ENGINE=sqlite DEBUG=False TEMPLATE_DEBUG=False python manage.py test -c nose.cfg \
-                            '"
+                        if (isEnabled(context, 'Unit Tests')){
+                            if (!isEnabled(context, 'Unit Tests')){
+                                sleep 30
+                                echo "Since Code Quality is disabled Unit Test: Python is executing early"
+                                String deploymentConfigName = "gwells${context.deployments['dev'].dcSuffix}"
+                                String projectName = context.deployments['dev'].projectName
+                                String podName = openshift.withProject(projectName){
+                                    return openshift.selector('pod', ['deploymentconfig':deploymentConfigName]).objects()[1].metadata.name
+                                }
+                                sh "oc exec '${podName}' -n '${projectName}' -- bash -c '\
+                                    cd /opt/app-root/src/backend; \
+                                    DATABASE_ENGINE=sqlite DEBUG=False TEMPLATE_DEBUG=False python manage.py test -c nose.cfg \
+                                '"
+                            }
                         }
                     }
                 )
