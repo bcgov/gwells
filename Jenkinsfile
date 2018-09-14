@@ -144,7 +144,7 @@ Map context = [
         'Load Fixtures': true,
         'API Test': true,
         'Functional Tests': false,
-        'Unit Tests': false,
+        'Unit Tests': true,
         'Code Quality': false,
         'ZAP Security Scan': false
     ],
