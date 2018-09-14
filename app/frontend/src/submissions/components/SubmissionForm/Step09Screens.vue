@@ -94,10 +94,10 @@
           <template v-for="(row, index) in screens.length">
             <tr  :key="`screen row ${index}`" :id="`screenRow${index}`">
               <td class="input-width-small">
-                <form-input group-class="my-1" :id="`screen${index}DepthFrom`" aria-label="Depth from (feet)" v-model="screens[index].screen_from"/>
+                <form-input group-class="my-1" :id="`screen${index}DepthFrom`" aria-label="Depth from (feet)" v-model="screens[index].start"/>
               </td>
               <td class="input-width-small">
-                <form-input group-class="my-1" :id="`screen${index}DepthTo`" aria-label="Depth to (feet)" v-model="screens[index].screen_to"/>
+                <form-input group-class="my-1" :id="`screen${index}DepthTo`" aria-label="Depth to (feet)" v-model="screens[index].end"/>
               </td>
               <td class="input-width-small">
                 <form-input group-class="my-1" :id="`screen${index}Diameter`" aria-label="Diameter (inches)" v-model="screens[index].internal_diameter"/>
@@ -182,8 +182,8 @@ export default {
   methods: {
     addScreenRow () {
       this.screensInput.push({
-        screen_from: '',
-        screen_to: '',
+        start: '',
+        end: '',
         internal_diameter: '',
         assembly_type: '',
         slot_size: ''

@@ -13,14 +13,14 @@
 """
 
 from rest_framework import serializers
+import logging
 
 from gwells.models import ProvinceStateCode
 from gwells.serializers import AuditModelSerializer
 from django.db import transaction
-
+import wells.stack
 from wells.models import Well, ActivitySubmission
 from wells.serializers import CasingSerializer, ScreenSerializer, LinerPerforationSerializer
-import wells.stack
 from wells.models import (
     ActivitySubmission,
     Casing,
@@ -50,6 +50,8 @@ from wells.models import (
 )
 
 from submissions.models import WellActivityCode
+
+logger = logging.getLogger(__name__)
 
 
 class WellSubmissionSerializer(serializers.ModelSerializer):
@@ -152,31 +154,25 @@ class WellSubmissionSerializer(serializers.ModelSerializer):
 
     @transaction.atomic
     def create(self, validated_data):
+        # Pop child/related records
+        logger.debug('validated_data: {}'.format(validated_data))
         casings_data = validated_data.pop('casing_set', None)
         linerperforations_data = validated_data.pop('linerperforation_set', None)
+        screen_data = validated_data.pop('screen_set', None)
+        # Create submission
         instance = super().create(validated_data)
+        # Create child/related records
         if casings_data:
             for casing_data in casings_data:
                 Casing.objects.create(activity_submission=instance, **casing_data)
         if linerperforations_data:
             for linerperforation_data in linerperforations_data:
                 LinerPerforation.objects.create(activity_submission=instance, **linerperforation_data)
-        screen_data = validated_data.pop('screen_set', None)
-        instance = super().create(validated_data)
-        if casings_data:
-            for casing_data in casings_data:
-                Casing.objects.create(
-                    activity_submission=instance, **casing_data)
-
         if screen_data:
             for screen in screen_data:
-                Screen.objects.create(
-                    activity_submission=instance, **screen
-                )
-
+                Screen.objects.create(activity_submission=instance, **screen)
         # Update the well record
         stacker = wells.stack.StackWells()
-        logger.debug('Serializers going to call stacker.process....')
         stacker.process(instance.filing_number)
         # The instance may have been updated with a well tag number
         instance.refresh_from_db()

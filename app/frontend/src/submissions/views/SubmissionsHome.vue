@@ -122,8 +122,8 @@
           :backfillDepth.sync="form.backfill_above_surface_seal_depth"
         ></step07-backfill>
 
-        <!-- Step 8: Liner Information -->
-        <step08-liner class="my-3"
+        <!-- Liner Information -->
+        <liner class="my-3"
           v-if="formStep === 8 || formIsFlat"
           :linerMaterial.sync="form.liner_material"
           :linerDiameter.sync="form.liner_diameter"
@@ -241,7 +241,7 @@ import Step04Coords from '@/submissions/components/SubmissionForm/Step04Coords.v
 import Step05Lithology from '@/submissions/components/SubmissionForm/Step05Lithology.vue'
 import Step06Casings from '@/submissions/components/SubmissionForm/Step06Casings.vue'
 import Step07Backfill from '@/submissions/components/SubmissionForm/Step07Backfill.vue'
-import Step08Liner from '@/submissions/components/SubmissionForm/Step08Liner.vue'
+import Liner from '@/submissions/components/SubmissionForm/Liner.vue'
 import Step09Screens from '@/submissions/components/SubmissionForm/Step09Screens.vue'
 import Step10FilterPack from '@/submissions/components/SubmissionForm/Step10FilterPack.vue'
 import Step11Development from '@/submissions/components/SubmissionForm/Step11Development.vue'
@@ -256,7 +256,7 @@ export default {
     Step05Lithology,
     Step06Casings,
     Step07Backfill,
-    Step08Liner,
+    Liner,
     Step09Screens,
     Step10FilterPack,
     Step11Development,

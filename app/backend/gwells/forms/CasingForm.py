@@ -11,6 +11,7 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
+# TODO: Delete this file once Submissions has been completed using Vue.js
 from datetime import date
 
 from django import forms
@@ -35,10 +36,10 @@ class CasingForm(forms.ModelForm):
         self.helper.layout = Layout(
             HTML('<tr valign="top">'),
             HTML('<td width="5%">'),
-            'casing_from',
+            'start',
             HTML('</td>'),
             HTML('<td width="5%">'),
-            'casing_to',
+            'end',
             HTML('</td>'),
             HTML('<td width="10%">'),
             'diameter',
@@ -64,14 +65,14 @@ class CasingForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super(CasingForm, self).clean()
 
-        casing_from = cleaned_data.get('casing_from')
-        casing_to = cleaned_data.get('casing_to')
+        start = cleaned_data.get('start')
+        end = cleaned_data.get('end')
         casing_code = cleaned_data.get('casing_code')
         casing_material = cleaned_data.get('casing_material')
         wall_thickness = cleaned_data.get('wall_thickness')
         errors = []
 
-        if casing_from and casing_to and casing_to < casing_from:
+        if start and end and end < start:
             errors.append('To must be greater than or equal to From.')
 
         open_casing_code = None
@@ -98,5 +99,5 @@ class CasingForm(forms.ModelForm):
 
     class Meta:
         model = Casing
-        fields = ['casing_from', 'casing_to', 'diameter', 'casing_code', 'casing_material', 'wall_thickness',
+        fields = ['start', 'end', 'diameter', 'casing_code', 'casing_material', 'wall_thickness',
                   'drive_shoe']

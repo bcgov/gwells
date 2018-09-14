@@ -9,7 +9,7 @@ module.exports = {
 
     // Paths
     assetsSubDirectory: 'bundles',
-    assetsPublicPath: '/moo/gwells/static/vue/',
+    assetsPublicPath: '/gwells/static/vue/',
     proxyTable: {},
 
     // Various Dev Server settings

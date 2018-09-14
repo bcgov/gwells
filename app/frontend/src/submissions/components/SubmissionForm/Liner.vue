@@ -1,6 +1,6 @@
 <template>
   <fieldset>
-    <legend>Step 8: Liner Information</legend>
+    <legend>Liner Information</legend>
     <b-row>
         <b-col cols="12" md="6">
           <form-input
@@ -81,18 +81,18 @@
                     :id="`liner_perforated_from_${index}`"
                     type="number"
                     hint="feet (below ground level)"
-                    v-model.number="liner.liner_perforation_from"
-                    :errors="getLinerPerforationError(index).liner_perforation_from"
-                    :loaded="getFieldsLoaded(index).liner_perforation_from"/>
+                    v-model.number="liner.start"
+                    :errors="getLinerPerforationError(index).start"
+                    :loaded="getFieldsLoaded(index).start"/>
                 </td>
                 <td>
                   <form-input
                     :id="`liner_perforated_to_${index}`"
                     type="number"
                     hint="feet (below ground level)"
-                    v-model.number="liner.liner_perforation_to"
-                    :errors="getLinerPerforationError(index).liner_perforation_to"
-                    :loaded="getFieldsLoaded(index).liner_perforation_to"/>
+                    v-model.number="liner.end"
+                    :errors="getLinerPerforationError(index).end"
+                    :loaded="getFieldsLoaded(index).end"/>
                 </td>
                 <td>
                   <a href="#" v-on:click.prevent="removeRow(index)">remove</a>
@@ -113,7 +113,7 @@ import { mapGetters } from 'vuex'
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 
 export default {
-  name: 'Step08LinerInformation',
+  name: 'LinerInformation',
   mixins: [inputBindingsMixin],
   props: {
     linerMaterial: String,

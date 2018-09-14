@@ -53,8 +53,8 @@ class CasingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Casing
         fields = (
-            'casing_from',
-            'casing_to',
+            'start',
+            'end',
             'diameter',
             'casing_code',
             'casing_material',
@@ -67,8 +67,8 @@ class ScreenSerializer(serializers.ModelSerializer):
         model = Screen
         fields = (
             'screen_guid',
-            'screen_from',
-            'screen_to',
+            'start',
+            'end',
             'internal_diameter',
             'assembly_type',
             'slot_size',
@@ -80,16 +80,18 @@ class LinerPerforationSerializer(serializers.ModelSerializer):
         model = LinerPerforation
         fields = (
             'liner_perforation_guid',
-            'activity_submission',
+            # 'activity_submission',
             'well',
-            'liner_perforation_from',
-            'liner_perforation_to',
+            'start',
+            'end',
         )
 
 
 class WellStackerSerializer(AuditModelSerializer):
 
     casing_set = CasingSerializer(many=True)
+    screen_set = ScreenSerializer(many=True)
+    linerperforation_set = LinerPerforationSerializer(many=True)
 
     class Meta:
         model = Well
@@ -97,16 +99,18 @@ class WellStackerSerializer(AuditModelSerializer):
 
     @transaction.atomic
     def update(self, instance, validated_data):
-        # If there is existing casing data, the easiest approach is to drop it, and re-create it
-        # based on this update. Trying to match up individual casings and updating them, dealing with
+        # If there is existing related data, the easiest approach is to drop it, and re-create it
+        # based on this update. Trying to match up individual records and updating them, dealing with
         # removed casing records etc. etc. is not the responsibility of this section. The composite section
         # is responsible for that.
-        for casing in instance.casing_set.all():
-            casing.delete()
-        casings_data = validated_data.pop('casing_set', None)
-        if casings_data:
-            for casing_data in casings_data:
-                Casing.objects.create(well=instance, **casing_data)
+        sets = (('casing_set', Casing), ('screen_set', Screen), ('linerperforation_set', LinerPerforation))
+        for item in sets:
+            for record in getattr(instance, item[0]).all():
+                record.delete()
+            records_data = validated_data.pop(item[0], None)
+            if records_data:
+                for record_data in records_data:
+                    item[1].objects.create(well=instance, **record_data)
         instance = super().update(instance, validated_data)
         return instance
 

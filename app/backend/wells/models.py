@@ -1202,25 +1202,26 @@ class LinerPerforation(AuditModel):
     activity_submission = models.ForeignKey(ActivitySubmission, db_column='filing_number',
                                             on_delete=models.CASCADE, blank=True, null=True,
                                             related_name='linerperforation_set')
-    well = models.ForeignKey(Well, db_column='well_tag_number',
-                             on_delete=models.CASCADE, blank=True, null=True,
-                             related_name='linerperforation_set')
-    liner_perforation_from = models.DecimalField(max_digits=7, decimal_places=2,
-                                                 verbose_name='Perforated From', blank=False,
-                                                 validators=[MinValueValidator(Decimal('0.00'))])
-    liner_perforation_to = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='Perforated To',
-                                               blank=False, validators=[MinValueValidator(Decimal('0.01'))])
+    well = models.ForeignKey(Well, db_column='well_tag_number', on_delete=models.CASCADE, blank=True,
+                             null=True, related_name='linerperforation_set')
+    start = models.DecimalField(db_column='liner_perforation_from', max_digits=7, decimal_places=2,
+                                verbose_name='Perforated From', blank=False,
+                                validators=[MinValueValidator(Decimal('0.00'))])
+    end = models.DecimalField(db_column='liner_perforation_to', max_digits=7, decimal_places=2,
+                              verbose_name='Perforated To', blank=False,
+                              validators=[MinValueValidator(Decimal('0.01'))])
 
     class Meta:
+        ordering = ["start", "end"]
         db_table = 'liner_perforation'
 
     def __str__(self):
         if self.activity_submission:
             return 'activity_submission {} {} {}'.format(self.activity_submission,
-                                                         self.liner_perforation_from,
-                                                         self.liner_perforation_to)
+                                                         self.start,
+                                                         self.end)
         else:
-            return 'well {} {} {}'.format(self.well, self.liner_perforation_from, self.liner_perforation_to)
+            return 'well {} {} {}'.format(self.well, self.start, self.end)
 
 
 class Casing(AuditModel):
@@ -1236,10 +1237,10 @@ class Casing(AuditModel):
     well = models.ForeignKey(Well, db_column='well_tag_number', on_delete=models.CASCADE,
                              blank=True, null=True,
                              related_name='casing_set')
-    casing_from = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='From', null=True,
-                                      blank=True, validators=[MinValueValidator(Decimal('0.00'))])
-    casing_to = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='To', null=True, blank=True,
-                                    validators=[MinValueValidator(Decimal('0.01'))])
+    start = models.DecimalField(db_column='casing_from', max_digits=7, decimal_places=2, verbose_name='From',
+                                null=True, blank=True, validators=[MinValueValidator(Decimal('0.00'))])
+    end = models.DecimalField(db_column='casing_to', max_digits=7, decimal_places=2, verbose_name='To',
+                              null=True, blank=True, validators=[MinValueValidator(Decimal('0.01'))])
     diameter = models.DecimalField(max_digits=8, decimal_places=3, verbose_name='Diameter', null=True,
                                    blank=True, validators=[MinValueValidator(Decimal('0.5'))])
     casing_code = models.ForeignKey(CasingCode, db_column='casing_code', on_delete=models.CASCADE,
@@ -1254,20 +1255,19 @@ class Casing(AuditModel):
                                          choices=((False, 'No'), (True, 'Yes')))
 
     class Meta:
-        ordering = ["casing_from", "casing_to"]
+        ordering = ["start", "end"]
         db_table = 'casing'
 
     def __str__(self):
         if self.activity_submission:
-            return 'activity_submission {} {} {}'.format(self.activity_submission, self.casing_from,
-                                                         self.casing_to)
+            return 'activity_submission {} {} {}'.format(self.activity_submission, self.start, self.end)
         else:
-            return 'well {} {} {}'.format(self.well, self.casing_from, self.casing_to)
+            return 'well {} {} {}'.format(self.well, self.start, self.end)
 
     def as_dict(self):
         return {
-            "casing_from": self.casing_from,
-            "casing_to": self.casing_to,
+            "start": self.start,
+            "end": self.end,
             "casing_guid": self.casing_guid,
             "well_tag_number": self.well_tag_number,
             "diameter": self.diameter,
@@ -1283,14 +1283,15 @@ class Screen(AuditModel):
     """
     screen_guid = models.UUIDField(
         primary_key=True, default=uuid.uuid4, editable=False)
-    activity_submission = models.ForeignKey(
-        ActivitySubmission, db_column='filing_number', on_delete=models.CASCADE, blank=True, null=True)
-    well = models.ForeignKey(Well, db_column='well_tag_number',
-                             on_delete=models.CASCADE, blank=True, null=True)
-    screen_from = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='From',
-                                      blank=True, null=True, validators=[MinValueValidator(Decimal('0.00'))])
-    screen_to = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='To',
-                                    blank=False, null=True, validators=[MinValueValidator(Decimal('0.01'))])
+    activity_submission = models.ForeignKey(ActivitySubmission, db_column='filing_number',
+                                            on_delete=models.CASCADE, blank=True, null=True,
+                                            related_name='screen_set')
+    well = models.ForeignKey(Well, db_column='well_tag_number', on_delete=models.CASCADE, blank=True,
+                             null=True, related_name='screen_set')
+    start = models.DecimalField(db_column='screen_from', max_digits=7, decimal_places=2, verbose_name='From',
+                                blank=True, null=True, validators=[MinValueValidator(Decimal('0.00'))])
+    end = models.DecimalField(db_column='screen_to', max_digits=7, decimal_places=2, verbose_name='To',
+                              blank=False, null=True, validators=[MinValueValidator(Decimal('0.01'))])
     internal_diameter = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='Diameter',
                                             blank=True, null=True,
                                             validators=[MinValueValidator(Decimal('0.0'))])
@@ -1302,11 +1303,11 @@ class Screen(AuditModel):
 
     class Meta:
         db_table = 'screen'
-        ordering = ['screen_from', 'screen_to']
+        ordering = ['start', 'end']
 
     def __str__(self):
         if self.activity_submission:
-            return 'activity_submission {} {} {}'.format(self.activity_submission, self.screen_from,
-                                                         self.screen_to)
+            return 'activity_submission {} {} {}'.format(self.activity_submission, self.start,
+                                                         self.end)
         else:
-            return 'well {} {} {}'.format(self.well, self.screen_from, self.screen_to)
+            return 'well {} {} {}'.format(self.well, self.start, self.end)
