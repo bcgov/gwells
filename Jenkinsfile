@@ -217,7 +217,6 @@ _stage('Build', context) {
 boolean isDeployed = false
 boolean isFixtured = false
 boolean isUnitTested = false
-boolean runCodeQuality=((context?.stages?:[:])['Code Quality'] == true)
 parallel (
     "Deploy and Load Fixtures" : {
 
@@ -340,7 +339,7 @@ parallel (
 
                         parallel (
                             "Unit Test: Python (w/ ZAP)": {
-                                if (runCodeQuality) {
+                                if (isEnabled( context, 'Code Quality' )) {
                                     try {
                                         sh script: '''#!/usr/bin/container-entrypoint /bin/sh
                                             cd /opt/app-root/src/backend
@@ -365,7 +364,7 @@ parallel (
                                         cd /opt/app-root/src/frontend
                                         npm test
                                     '''
-                                    if (runCodeQuality) {
+                                    if (isEnabled( context, 'Code Quality' )) {
                                         sh script: '''#!/usr/bin/container-entrypoint /bin/sh
                                             mkdir -p frontend/test/
                                             cp -R /opt/app-root/src/frontend/test/unit ./frontend/test/
@@ -373,7 +372,7 @@ parallel (
                                         '''
                                     }
                                 } finally {
-                                    if (runCodeQuality) {
+                                    if (isEnabled( context, 'Code Quality' )) {
                                         archiveArtifacts allowEmptyArchive: true, artifacts: 'frontend/test/unit/**/*'
                                         stash includes: 'frontend/test/unit/coverage/clover.xml', name: 'nodecoverage'
                                         stash includes: 'frontend/junit.xml', name: 'nodejunit'
