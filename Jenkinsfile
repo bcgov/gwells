@@ -142,7 +142,7 @@ Map context = [
     ],
     stages:[
         'Load Fixtures': true,
-        'API Test': true,
+        'API Tests': true,
         'Functional Tests': true,
         'Unit Tests': true,
         'Code Quality': false,
@@ -500,14 +500,15 @@ parallel (
                             sleep 5
                             return isFixtured
                         }
-                        String gradleExitCode = false
+                        String gradleExitCode = "0"
                         try {
                             gradleExitCode = sh([
                                 script: "./gradlew chromeHeadlessTest",
                                 returnStdout: true
                             ]).trim()
                         } finally {
-                            if (gradleExitCode) {
+                            echo "gradleExitCode: ${gradleExitCode}"
+                            if (gradleExitCode != "0" ) {
                                 archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/geb/**/*'
                                 junit testResults:'build/test-results/**/*.xml', allowEmptyResults:true
                                 publishHTML (
@@ -537,8 +538,8 @@ parallel (
             } //end podTemplate
         } //end stage
     }, //end branch
-    "API Test": {
-        _stage('API Test', context) {
+    "API Tests": {
+        _stage('API Tests', context) {
             waitUntil {
                 sleep 5
                 return isDeployed
