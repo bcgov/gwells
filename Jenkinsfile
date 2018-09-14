@@ -500,31 +500,37 @@ parallel (
                             sleep 5
                             return isFixtured
                         }
+                        String gradleExitCode = false
                         try {
-                            sh './gradlew chromeHeadlessTest'
+                            gradleExitCode = sh([
+                                script: "./gradlew chromeHeadlessTest",
+                                returnStdout: true
+                            ]).trim()
                         } finally {
-                            archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/geb/**/*'
-                            junit testResults:'build/test-results/**/*.xml', allowEmptyResults:true
-                            publishHTML (
-                                target: [
-                                    allowMissing: true,
-                                    alwaysLinkToLastBuild: false,
-                                    keepAll: true,
-                                    reportDir: 'build/reports/spock',
-                                    reportFiles: 'index.html',
-                                    reportName: "Test: BDD Spock Report"
-                                ]
-                            )
-                            publishHTML (
-                                target: [
-                                    allowMissing: true,
-                                    alwaysLinkToLastBuild: false,
-                                    keepAll: true,
-                                    reportDir: 'build/reports/tests/chromeHeadlessTest',
-                                    reportFiles: 'index.html',
-                                    reportName: "Test: Full Test Report"
-                                ]
-                            )
+                            if (gradleExitCode) {
+                                archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/geb/**/*'
+                                junit testResults:'build/test-results/**/*.xml', allowEmptyResults:true
+                                publishHTML (
+                                    target: [
+                                        allowMissing: true,
+                                        alwaysLinkToLastBuild: false,
+                                        keepAll: true,
+                                        reportDir: 'build/reports/spock',
+                                        reportFiles: 'index.html',
+                                        reportName: "Test: BDD Spock Report"
+                                    ]
+                                )
+                                publishHTML (
+                                    target: [
+                                        allowMissing: true,
+                                        alwaysLinkToLastBuild: false,
+                                        keepAll: true,
+                                        reportDir: 'build/reports/tests/chromeHeadlessTest',
+                                        reportFiles: 'index.html',
+                                        reportName: "Test: Full Test Report"
+                                    ]
+                                )
+                            }
                         }
                     } //end dir
                 } //end node
