@@ -52,7 +52,6 @@ boolean isEnabled (Map context, String stageName) {
 def _stage(String name, Map context, boolean retry=0, boolean withCommitStatus=true, Closure body) {
     timestamps {
         echo "Running Stage '${name}'"
-
         if (isEnabled(context,name)){
             stage(name) {
                 waitUntil {
@@ -143,7 +142,7 @@ Map context = [
     stages:[
         'Load Fixtures': true,
         'API Test': true,
-        'Functional Tests': false,
+        'Functional Tests': true,
         'Unit Tests': true,
         'Code Quality': false,
         'ZAP Security Scan': false
