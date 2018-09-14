@@ -451,6 +451,10 @@ parallel (
         } //end stage
     }, //end branch
     "Functional Tests":{
+        waitUntil {
+            sleep 5
+            return isDeployed
+        }
         _stage('Functional Tests', context){
             String baseURL = context.deployments['dev'].environmentUrl.substring(
                 0,
