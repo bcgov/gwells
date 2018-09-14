@@ -61,6 +61,7 @@ def _stage(String name, Map context, boolean retry=0, boolean withCommitStatus=t
                         body()
                         isDone=true
                         notifyStageStatus(context, name, 'SUCCESS')
+                        echo "Completed Stage '${name}'"
                     }catch (ex){
                         notifyStageStatus(context, name, 'FAILURE')
                         echo "${stackTraceAsString(ex)}"
@@ -274,11 +275,11 @@ parallel (
                         '"
                         isFixtured = true
                     },
-                    "Unit Test: Python": {
+                    "Unit Tests: Python": {
                         if (isEnabled(context, 'Unit Tests')){
                             if (!isEnabled(context, 'Unit Tests')){
                                 sleep 30
-                                echo "Since Code Quality is disabled Unit Test: Python is executing early"
+                                echo "Since Code Quality is disabled Unit Tests: Python is executing early"
                                 String deploymentConfigName = "gwells${context.deployments['dev'].dcSuffix}"
                                 String projectName = context.deployments['dev'].projectName
                                 String podName = openshift.withProject(projectName){
@@ -337,7 +338,7 @@ parallel (
                         '''
 
                         parallel (
-                            "Unit Test: Python (w/ ZAP)": {
+                            "Unit Tests: Python (w/ ZAP)": {
                                 if (isEnabled( context, 'Code Quality' )) {
                                     try {
                                         sh script: '''#!/usr/bin/container-entrypoint /bin/sh
@@ -354,10 +355,10 @@ parallel (
                                         junit 'nosetests.xml'
                                     }
                                 } else {
-                                    echo "Since Code Quality is disabled Unit Test: Python has already run"
+                                    echo "Since Code Quality is disabled Unit Tests: Python has already run"
                                 }
                             },
-                            "Unit Test: Node": {
+                            "Unit Tests: Node": {
                                 try {
                                     sh script: '''#!/usr/bin/container-entrypoint /bin/sh
                                         cd /opt/app-root/src/frontend
