@@ -30,7 +30,6 @@ from registries.models import Person
 from submissions.models import WellActivityCode
 from aquifers.models import Aquifer
 
-
 class DecommissionMethodCode(AuditModel):
     decommission_method_code = models.CharField(primary_key=True, max_length=10, editable=False,
                                                 verbose_name="Code")
@@ -1313,3 +1312,22 @@ class Screen(AuditModel):
                                                          self.screen_to)
         else:
             return 'well {} {} {}'.format(self.well, self.screen_from, self.screen_to)
+
+
+"""
+    Hydraulic properties of the well, usually determined via tests.
+"""
+class HydraulicProperty(AuditModel):
+
+    hydraulic_property_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    well_tag_number = models.ForeignKey(Well, db_column='well_tag_number', to_field='well_tag_number',
+                                        on_delete=models.CASCADE, blank=False, null=False)
+
+    class Meta:
+        db_table = 'hydraulic_property'
+        verbose_name_plural = 'Hydraulic Properties'
+
+    def __str__(self):
+        return '%s' % (
+            self.well_tag_number
+        )

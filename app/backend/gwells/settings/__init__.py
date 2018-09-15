@@ -99,6 +99,7 @@ INSTALLED_APPS = (
     'registries',
     'wells',
     'submissions',
+    'aquifers',
     'django_nose',
     'webpack_loader',
     'django_filters',
