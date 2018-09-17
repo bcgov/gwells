@@ -26,6 +26,7 @@ from wells.models import (
     CasingCode,
     CasingMaterialCode,
     FilterPackMaterialCode,
+    FilterPackMaterialSizeCode,
     IntendedWaterUseCode,
     DevelopmentMethodCode,
     DrillingMethodCode,
@@ -40,6 +41,8 @@ from wells.models import (
     ScreenOpeningCode,
     ScreenBottomCode,
     ScreenAssemblyTypeCode,
+    WaterQualityCharacteristic,
+    WaterQualityColour,
     Well,
     WellClassCode,
     WellSubclassCode,
@@ -70,7 +73,9 @@ from submissions.serializers import (
     DrillingMethodCodeSerializer,
     YieldEstimationMethodCodeSerializer,
     FilterPackMaterialCodeSerializer,
-    FilterPackMaterialSizeCodeSerializer
+    FilterPackMaterialSizeCodeSerializer,
+    WaterQualityCharacteristicSerializer,
+    WaterQualityColourSerializer
 )
 
 
@@ -173,6 +178,10 @@ class SubmissionsOptions(APIView):
             instance=DevelopmentMethodCode.objects.all(), many=True)
         yield_estimation_methods = YieldEstimationMethodCodeSerializer(
             instance=YieldEstimationMethodCode.objects.all(), many=True)
+        water_quality_characteristics = WaterQualityCharacteristicSerializer(
+            instance=WaterQualityCharacteristic.objects.all(), many=True)
+        water_quality_colours = WaterQualityColourSerializer(
+            instance=WaterQualityColour.objects.all(), many=True)
 
         options["province_codes"] = province_codes.data
         options["activity_types"] = activity_codes.data
@@ -196,6 +205,8 @@ class SubmissionsOptions(APIView):
         options["screen_assemblies"] = screen_assemblies.data
         options["development_methods"] = development_methods.data
         options["yield_estimation_methods"] = yield_estimation_methods.data
+        options["water_quality_characteristics"] = water_quality_characteristics.data
+        options["water_quality_colours"] = water_quality_colours.data
 
         return Response(options)
 
