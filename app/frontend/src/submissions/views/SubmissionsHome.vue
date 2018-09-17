@@ -436,7 +436,7 @@ export default {
         well_cap_type: '',
         well_disinfected: 'False',
         comments: '',
-        alternative_specs_submitted: '',
+        alternative_specs_submitted: 'False',
 
         // non-form fields that should be saved with form
         meta: {

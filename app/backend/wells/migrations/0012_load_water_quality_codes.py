@@ -11,7 +11,7 @@ from wells.models import WaterQualityCharacteristic, WaterQualityColour
 
 
 def water_quality_codes():
-    fixture = '0010_water_quality_codes.json'
+    fixture = '0012_water_quality_codes.json'
     fixture_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), fixture)
 
     return CodeFixture(fixture_path)
@@ -20,7 +20,7 @@ def water_quality_codes():
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('wells', '0009_auto_20180911_2330'),
+        ('wells', '0011_auto_20180917_1728'),
     ]
 
     operations = [

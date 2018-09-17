@@ -7,7 +7,7 @@
           <v-select
               :options="codes.water_quality_characteristics"
               label="description"
-              index="water_quality_characteristic_guid"
+              index="code"
               id="waterCharacteristicsInput"
               placeholder="Select characteristics"
               v-model="waterQualityCharacteristicsInput"

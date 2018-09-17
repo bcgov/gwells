@@ -102,8 +102,8 @@ class WaterQualityCharacteristic(AuditModel):
     """
      The characteristic of the well water, e.g. Fresh, Salty, Clear.
     """
-    water_quality_characteristic_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    code = models.CharField(max_length=10, unique=True)
+
+    code = models.CharField(primary_key=True, max_length=10, db_column='water_quality_characteristic_code')
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
 

@@ -339,7 +339,7 @@ class WaterQualityCharacteristicSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = WaterQualityCharacteristic
-        fields = ('water_quality_characteristic_guid', 'description')
+        fields = ('code', 'description')
 
 
 class WaterQualityColourSerializer(serializers.ModelSerializer):

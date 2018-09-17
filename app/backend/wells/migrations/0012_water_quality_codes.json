@@ -1,78 +1,72 @@
 [
     {
         "model": "wells.waterqualitycharacteristic",
-        "pk": "0d40f5e2-bd70-478f-88ea-c00d1f2eb2d3",
+        "pk": "FRESH",
         "fields": {
             "create_user": "steve",
             "create_date": "2018-09-12T18:53:02.106Z",
             "update_user": "steve",
             "update_date": "2018-09-12T18:53:02.106Z",
-            "code": "FRESH",
             "description": "Fresh",
             "display_order": 3
         }
     },
     {
         "model": "wells.waterqualitycharacteristic",
-        "pk": "0fac2633-4d45-4ab5-ad0e-66fbcc5d3e58",
+        "pk": "CLOUDY",
         "fields": {
             "create_user": "steve",
             "create_date": "2018-09-12T18:52:48.092Z",
             "update_user": "steve",
             "update_date": "2018-09-12T18:52:48.092Z",
-            "code": "CLOUDY",
             "description": "Cloudy",
             "display_order": 2
         }
     },
     {
         "model": "wells.waterqualitycharacteristic",
-        "pk": "3c4816f8-59b0-4045-8453-9144a5105301",
+        "pk": "SEDIMENT",
         "fields": {
             "create_user": "steve",
             "create_date": "2018-09-12T18:53:33.957Z",
             "update_user": "steve",
             "update_date": "2018-09-12T18:53:33.957Z",
-            "code": "SEDIMENT",
             "description": "Sediment",
             "display_order": 6
         }
     },
     {
         "model": "wells.waterqualitycharacteristic",
-        "pk": "7af82d96-f990-4c10-827d-d7ccd31e6367",
+        "pk": "CLEAR",
         "fields": {
             "create_user": "steve",
             "create_date": "2018-09-12T18:52:30.273Z",
             "update_user": "steve",
             "update_date": "2018-09-12T18:52:30.273Z",
-            "code": "CLEAR",
             "description": "Clear",
             "display_order": 1
         }
     },
     {
         "model": "wells.waterqualitycharacteristic",
-        "pk": "bc3f4edf-6cec-4d29-92d7-991c5942e31e",
+        "pk": "SALTY",
         "fields": {
             "create_user": "steve",
             "create_date": "2018-09-12T18:53:24.630Z",
             "update_user": "steve",
             "update_date": "2018-09-12T18:53:24.630Z",
-            "code": "SALTY",
             "description": "Salty",
             "display_order": 5
         }
     },
     {
         "model": "wells.waterqualitycharacteristic",
-        "pk": "e5683b14-7cd8-49de-bda5-895eac9a2aeb",
+        "pk": "GAS",
         "fields": {
             "create_user": "steve",
             "create_date": "2018-09-12T18:53:11.894Z",
             "update_user": "steve",
             "update_date": "2018-09-12T18:53:11.894Z",
-            "code": "GAS",
             "description": "Gas",
             "display_order": 4
         }
