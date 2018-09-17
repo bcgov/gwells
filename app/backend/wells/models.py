@@ -1314,7 +1314,7 @@ class Screen(AuditModel):
             return 'well {} {} {}'.format(self.well, self.screen_from, self.screen_to)
 
 
-class AquiferVulnerablityCode(AuditModel):
+class AquiferVulnerabilityCode(AuditModel):
     """
     Demand choices for describing Aquifer 
     -------------------
@@ -1352,7 +1352,7 @@ class HydraulicProperty(AuditModel):
                                         on_delete=models.CASCADE, blank=False, null=False)
 
     avi = models.ForeignKey(
-        AquiferVulnerablityCode,
+        AquiferVulnerabilityCode,
         db_column='aquifer_vulnerablity_code',
         blank=True,
         null=True,
