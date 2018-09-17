@@ -66,7 +66,6 @@ class ScreenSerializer(serializers.ModelSerializer):
     class Meta:
         model = Screen
         fields = (
-            'screen_guid',
             'start',
             'end',
             'internal_diameter',
@@ -79,9 +78,10 @@ class LinerPerforationSerializer(serializers.ModelSerializer):
     class Meta:
         model = LinerPerforation
         fields = (
-            'liner_perforation_guid',
-            # 'activity_submission',
-            'well',
+            # SUPER IMPORTANT: Don't include ID (liner_perforation_guid, well, or submission) as part of this
+            # serializer, as it will break the stacking code. If you include the guid, then it will remain
+            # stuck on a particular well/submission (unless I gues you pop it during serializing/
+            # deserializing) when creating legacy submissions or re-creating well records etc.
             'start',
             'end',
         )
@@ -101,16 +101,22 @@ class WellStackerSerializer(AuditModelSerializer):
     def update(self, instance, validated_data):
         # If there is existing related data, the easiest approach is to drop it, and re-create it
         # based on this update. Trying to match up individual records and updating them, dealing with
-        # removed casing records etc. etc. is not the responsibility of this section. The composite section
-        # is responsible for that.
-        sets = (('casing_set', Casing), ('screen_set', Screen), ('linerperforation_set', LinerPerforation))
-        for item in sets:
-            for record in getattr(instance, item[0]).all():
+        # removed casing/screen/perforation records etc. etc. is not the responsibility of this section.
+        # The composite section is responsible for that.
+        sets = {'casing_set': Casing, 'screen_set': Screen, 'linerperforation_set': LinerPerforation}        
+        for key in sets.keys():
+            for record in getattr(instance, key).all():
                 record.delete()
-            records_data = validated_data.pop(item[0], None)
+            records_data = validated_data.pop(key, None)
             if records_data:
                 for record_data in records_data:
-                    item[1].objects.create(well=instance, **record_data)
+                    # We're re-creating this record, and binding it to the current instance, so we need
+                    # to get rid of any redundant/duplicate reference that may exist in the record data
+                    # in order to avoid duplications. (the well we pop, should be the same as the instance
+                    # variable)
+                    record_data.pop('well', None)
+                    # Create new instance of of the casing/screen/whatever record.
+                    obj = sets[key].objects.create(well=instance, **record_data)
         instance = super().update(instance, validated_data)
         return instance
 

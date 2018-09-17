@@ -85,7 +85,9 @@ class StackWells():
         # Validate the data, throwing an exception on error.
         if submission_serializer.is_valid(raise_exception=True):
             # Save the submission.
-            instance = submission_serializer.save()
+            legacy = submission_serializer.save()
+            return legacy
+        return None
 
     def _series_overlaps(self, record, record_set):
         # Return True if a record overlaps with a list of records

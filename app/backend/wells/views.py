@@ -19,7 +19,7 @@ from django.views.generic import DetailView
 from rest_framework import filters
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.permissions import DjangoModelPermissionsOrAnonReadOnly
 
 from drf_yasg.utils import swagger_auto_schema
@@ -31,7 +31,8 @@ from gwells.pagination import APILimitOffsetPagination
 
 from wells.models import Well
 from wells.documents import MinioClient
-from wells.serializers import WellListSerializer, WellTagSearchSerializer
+from wells.serializers import WellListSerializer, WellTagSearchSerializer, WellStackerSerializer
+from wells.permissions import WellsEditPermissions
 
 
 class WellDetailView(DetailView):
@@ -50,6 +51,15 @@ class WellDetailView(DetailView):
         context['page'] = 'w'
 
         return context
+
+
+class WellDetail(RetrieveAPIView):
+    # This class created originally to assist in API testing, consider modification if using for
+    # other purposes!
+    permission_classes = (DjangoModelPermissionsOrAnonReadOnly, WellsEditPermissions)
+    serializer_class = WellStackerSerializer
+    queryset = Well.objects.all()
+    lookup_field = 'well_tag_number'
 
 
 class ListFiles(APIView):

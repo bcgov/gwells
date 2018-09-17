@@ -28,6 +28,7 @@ from wells.models import (
     DevelopmentMethodCode,
     DrillingMethodCode,
     FilterPackMaterialCode,
+    FilterPackMaterialSizeCode,
     GroundElevationMethodCode,
     IntendedWaterUseCode,
     LandDistrictCode,

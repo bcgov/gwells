@@ -26,7 +26,7 @@ from registries.models import Person
 logger = logging.getLogger(__name__)
 
 
-class CasingMergeTest(TestCase):
+class SeriesMergeTest(TestCase):
 
     def test_new_data(self):
         # Test scenario where there is only new data.
@@ -256,17 +256,18 @@ class StackTest(TestCase):
         # There should be two submissions at this point.
         # Submission 1: A legacy well submission generated using the original well record.
         # Submission 2: The submission for an alteration.
-        self.assertEqual(submissions.count(), 2, "It is expected that a legacy submission be created")
+        self.assertEqual(submissions.count(), 2, "It is expected that a legacy submission be created")        
         self.assertEqual(new_full_name, well.owner_full_name)
-        self.assertEqual(submissions[0].casing_set.count(), 2, ("It is expected that the casings on the "
-                                                                "original well make part of the legacy "
-                                                                "submission"))
-        self.assertEqual(submissions[0].screen_set.count(), 2, ("It is expected that the screens on the "
-                                                                "original well make part of the legacy "
-                                                                "submission"))
-        self.assertEqual(submissions[0].linerperforation_set(), 2, ("It is expected that the liner "
-                                                                    "perforations on the original well make "
-                                                                    "part of the legacy submission"))
+        # Test that all foreign key sets have also been copied
+        self.assertEqual(submissions[0].casing_set.count(), 2, "It is expected that the casings on the "
+                                                               "original well make part of the legacy "
+                                                               "submission")
+        self.assertEqual(submissions[0].screen_set.count(), 2, "It is expected that the screens on the "
+                                                               "original well make part of the legacy "
+                                                               "submission")
+        self.assertEqual(submissions[0].linerperforation_set.count(), 2, "It is expected that the liner "
+                                                                         "perforations on the original well "
+                                                                         "make part of the legacy submission")
         self.assertEqual(
             submissions[0].work_start_date,
             well.construction_start_date,

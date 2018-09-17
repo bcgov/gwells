@@ -16,6 +16,7 @@ class IsAdminOrReadOnly(IsAdminUser):
         return is_admin or request.method in SAFE_METHODS
 
 
+# TODO: Rename this to RegistriesPermissions!
 class GwellsPermissions(DjangoModelPermissions):
     """
     Grants permissions to users based on Django model permissions, with additional check for

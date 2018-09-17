@@ -155,22 +155,21 @@ class WellSubmissionSerializer(serializers.ModelSerializer):
     @transaction.atomic
     def create(self, validated_data):
         # Pop child/related records
-        logger.debug('validated_data: {}'.format(validated_data))
-        casings_data = validated_data.pop('casing_set', None)
-        linerperforations_data = validated_data.pop('linerperforation_set', None)
-        screen_data = validated_data.pop('screen_set', None)
+        SERIES = {
+            'casing_set': Casing,
+            'screen_set': Screen,
+            'linerperforation_set': LinerPerforation
+        }
+        series_data = {}
+        for key in SERIES.keys():
+            series_data[key] = validated_data.pop(key, None)
         # Create submission
         instance = super().create(validated_data)
         # Create child/related records
-        if casings_data:
-            for casing_data in casings_data:
-                Casing.objects.create(activity_submission=instance, **casing_data)
-        if linerperforations_data:
-            for linerperforation_data in linerperforations_data:
-                LinerPerforation.objects.create(activity_submission=instance, **linerperforation_data)
-        if screen_data:
-            for screen in screen_data:
-                Screen.objects.create(activity_submission=instance, **screen)
+        for key, value in series_data.items():
+            if value:
+                for data in value:
+                    SERIES[key].objects.create(activity_submission=instance, **data)
         # Update the well record
         stacker = wells.stack.StackWells()
         stacker.process(instance.filing_number)
