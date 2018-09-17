@@ -12,5 +12,12 @@
     limitations under the License.
 """
 from django.contrib import admin
+from wells.models import (
+    WaterQualityCharacteristic,
+    WaterQualityColour
+)
 
 # Register your models here.
+
+admin.site.register(WaterQualityCharacteristic)
+admin.site.register(WaterQualityColour)

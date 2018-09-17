@@ -43,6 +43,8 @@ from wells.models import (
     SurfaceSealMaterialCode,
     SurfaceSealMethodCode,
     SurficialMaterialCode,
+    WaterQualityCharacteristic,
+    WaterQualityColour,
     Well,
     WellClassCode,
     WellSubclassCode,
@@ -347,3 +349,19 @@ class YieldEstimationMethodCodeSerializer(serializers.ModelSerializer):
     class Meta:
         model = YieldEstimationMethodCode
         fields = ('yield_estimation_method_code', 'description')
+
+
+class WaterQualityCharacteristicSerializer(serializers.ModelSerializer):
+    """Serializes water quality characteristic codes"""
+
+    class Meta:
+        model = WaterQualityCharacteristic
+        fields = ('code', 'description')
+
+
+class WaterQualityColourSerializer(serializers.ModelSerializer):
+    """Serializes water colour codes"""
+
+    class Meta:
+        model = WaterQualityColour
+        fields = ('code', 'description')

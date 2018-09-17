@@ -31,10 +31,6 @@ class ActivitySubmissionWaterQualityForm(forms.ModelForm):
             Fieldset(
                 'Water Quality',
                 Div(
-                    Div('water_quality_characteristics', css_class='col-md-3'),
-                    css_class='row',
-                ),
-                Div(
                     Div('water_quality_colour', css_class='col-md-3'),
                     css_class='row',
                 ),
@@ -49,5 +45,4 @@ class ActivitySubmissionWaterQualityForm(forms.ModelForm):
 
     class Meta:
         model = ActivitySubmission
-        fields = ['water_quality_characteristics', 'water_quality_colour', 'water_quality_odour']
-        widgets = {'water_quality_characteristics': forms.CheckboxSelectMultiple}
+        fields = ['water_quality_colour', 'water_quality_odour']
