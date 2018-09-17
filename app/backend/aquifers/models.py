@@ -309,7 +309,6 @@ class Aquifer(AuditModel):
 
 
     """
- quifer_id                  | integer                        | not null  | (key 'true')
  aquifer_subtype_code        | character varying(10)          | not null  |
  adjoining_mapsheet          | character varying(3)           |           |
  aquifer_classification      | character varying(30)          |           |

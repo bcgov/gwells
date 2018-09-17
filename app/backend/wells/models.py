@@ -1314,6 +1314,34 @@ class Screen(AuditModel):
             return 'well {} {} {}'.format(self.well, self.screen_from, self.screen_to)
 
 
+class AquiferVulnerablityCode(AuditModel):
+    """
+    Demand choices for describing Aquifer 
+    -------------------
+    High
+    Low
+    Moderate
+
+    """
+    code = models.CharField(primary_key=True, max_length=1, db_column='aquifer_vulnerablity_code')
+    description = models.CharField(max_length=100)
+    display_order = models.PositiveIntegerField()
+
+    effective_date = models.DateTimeField(blank=True, null=True)
+    expiry_date = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'aquifer_vulnerablity_code'
+        ordering = ['display_order', 'code']
+        verbose_name_plural = 'Aquifer Vulnerability Codes'
+
+    def __str__(self):
+        return '%s - %s' % (
+            self.code,
+            self.description
+        )
+
+
 """
     Hydraulic properties of the well, usually determined via tests.
 """
@@ -1322,6 +1350,53 @@ class HydraulicProperty(AuditModel):
     hydraulic_property_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     well_tag_number = models.ForeignKey(Well, db_column='well_tag_number', to_field='well_tag_number',
                                         on_delete=models.CASCADE, blank=False, null=False)
+
+    avi = models.ForeignKey(
+        AquiferVulnerablityCode,
+        db_column='aquifer_vulnerablity_code',
+        blank=True,
+        null=True,
+        on_delete=models.PROTECT,
+        verbose_name="AVI Reference")
+    storativity = models.DecimalField(
+        max_digits=8, decimal_places=7, blank=True, null=True, verbose_name='Storativity')
+    transmissivity = models.DecimalField(
+        max_digits=10, decimal_places=0, blank=True, null=True, verbose_name='Transmissivity')
+    hydraulic_conductivity = models.TextField(
+        max_length=100,
+        blank=True,
+        null=True,
+        verbose_name='Hydraulic Conductivity')
+    specific_storage = models.TextField(
+        max_length=100,
+        blank=True,
+        null=True,
+        verbose_name='Specific Storage')
+    specific_yield = models.TextField(
+        max_length=100,
+        blank=True,
+        null=True,
+        verbose_name='Specific Yield')
+    testing_method = models.TextField(
+        max_length=100,
+        blank=True,
+        null=True,
+        verbose_name='Testing Method')
+    testing_duration = models.TextField(
+        max_length=100,
+        blank=True,
+        null=True,
+        verbose_name='Testing Duration')
+    analytic_solution_type = models.TextField(
+        max_length=100,
+        blank=True,
+        null=True,
+        verbose_name='Analytic Solution Type')
+    boundary_effect = models.TextField(
+        max_length=100,
+        blank=True,
+        null=True,
+        verbose_name='Boundary Effect')
 
     class Meta:
         db_table = 'hydraulic_property'
