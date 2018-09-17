@@ -1323,7 +1323,7 @@ class AquiferVulnerablityCode(AuditModel):
     Moderate
 
     """
-    code = models.CharField(primary_key=True, max_length=1, db_column='aquifer_vulnerablity_code')
+    code = models.CharField(primary_key=True, max_length=1, db_column='aquifer_vulnerability_code')
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
 
@@ -1331,7 +1331,7 @@ class AquiferVulnerablityCode(AuditModel):
     expiry_date = models.DateTimeField(blank=True, null=True)
 
     class Meta:
-        db_table = 'aquifer_vulnerablity_code'
+        db_table = 'aquifer_vulnerability_code'
         ordering = ['display_order', 'code']
         verbose_name_plural = 'Aquifer Vulnerability Codes'
 
@@ -1348,7 +1348,7 @@ class AquiferVulnerablityCode(AuditModel):
 class HydraulicProperty(AuditModel):
 
     hydraulic_property_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    well_tag_number = models.ForeignKey(Well, db_column='well_tag_number', to_field='well_tag_number',
+    well = models.ForeignKey(Well, db_column='well_tag_number', to_field='well_tag_number',
                                         on_delete=models.CASCADE, blank=False, null=False)
 
     avi = models.ForeignKey(
