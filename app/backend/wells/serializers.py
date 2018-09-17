@@ -103,8 +103,8 @@ class WellStackerSerializer(AuditModelSerializer):
         # based on this update. Trying to match up individual records and updating them, dealing with
         # removed casing/screen/perforation records etc. etc. is not the responsibility of this section.
         # The composite section is responsible for that.
-        sets = {'casing_set': Casing, 'screen_set': Screen, 'linerperforation_set': LinerPerforation}        
-        for key in sets.keys():
+        FOREIGN_KEYS = {'casing_set': Casing, 'screen_set': Screen, 'linerperforation_set': LinerPerforation}        
+        for key in FOREIGN_KEYS.keys():
             for record in getattr(instance, key).all():
                 record.delete()
             records_data = validated_data.pop(key, None)
@@ -116,7 +116,7 @@ class WellStackerSerializer(AuditModelSerializer):
                     # variable)
                     record_data.pop('well', None)
                     # Create new instance of of the casing/screen/whatever record.
-                    obj = sets[key].objects.create(well=instance, **record_data)
+                    obj = FOREIGN_KEYS[key].objects.create(well=instance, **record_data)
         instance = super().update(instance, validated_data)
         return instance
 

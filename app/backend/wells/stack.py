@@ -134,7 +134,7 @@ class StackWells():
         # Iterate through all the submission records
         # Order by work_start_date, and where that's not availble, or null, fall back to the create date
         records = records.order_by(F('work_start_date').asc(nulls_first=True), 'create_date')
-        SERIES = ('casing_set', 'screen_set', 'linerperforation_set')
+        FOREIGN_KEYS = ('casing_set', 'screen_set', 'linerperforation_set')
         composite = {}
         for submission in records:
             source_target_map = activity_type_map.get(submission.well_activity_type.code, {})
@@ -144,7 +144,7 @@ class StackWells():
                 if value:
                     target_key = source_target_map.get(source_key, source_key)
                     if target_key in target_keys:
-                        if target_key in composite and target_key in SERIES:
+                        if target_key in composite and target_key in FOREIGN_KEYS:
                             composite[target_key] = self._merge_series(composite[source_key], value)
                         else:
                             composite[target_key] = value
