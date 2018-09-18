@@ -704,7 +704,6 @@ class Well(AuditModel):
     aquifer = models.ForeignKey(Aquifer, db_column='aquifer_id',
                                     on_delete=models.CASCADE, blank=True, null=True,
                                     verbose_name='Aquifer ID Number')
-
     tracker = FieldTracker()
 
     class Meta:
@@ -1337,7 +1336,7 @@ class AquiferVulnerabilityCode(AuditModel):
         verbose_name_plural = 'Aquifer Vulnerability Codes'
 
     def __str__(self):
-        return 'aquifer_vulnerability_code {} {}'.format(self.code, self.description)
+        return '{} - {}'.format(self.code, self.description)
 
 class WaterQualityColour(AuditModel):
     """
@@ -1385,35 +1384,22 @@ class HydraulicProperty(AuditModel):
         blank=True,
         null=True,
         verbose_name='Specific Storage')
-    specific_yield = models.TextField(
-        max_length=100,
-        blank=True,
-        null=True,
-        verbose_name='Specific Yield')
+    specific_yield = models.DecimalField(
+        max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Specific Yield')
     testing_method = models.TextField(
         max_length=100,
         blank=True,
         null=True,
         verbose_name='Testing Method')
-    testing_duration = models.TextField(
-        max_length=100,
-        blank=True,
-        null=True,
-        verbose_name='Testing Duration')
-    analytic_solution_type = models.TextField(
-        max_length=100,
-        blank=True,
-        null=True,
-        verbose_name='Analytic Solution Type')
-    boundary_effect = models.TextField(
-        max_length=100,
-        blank=True,
-        null=True,
-        verbose_name='Boundary Effect')
+    testing_duration = models.PositiveIntegerField()
+    analytic_solution_type = models.DecimalField(
+        max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Analytic Solution Type')
+    boundary_effect = models.DecimalField(
+        max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Boundary Effect')
 
     class Meta:
         db_table = 'hydraulic_property'
         verbose_name_plural = 'Hydraulic Properties'
-
+        
     def __str__(self):
-        return 'hydraulic_property {} {}'.format(self.well, self.hydraulic_property_guid)
+        return '{} - {}'.format(self.well, self.hydraulic_property_guid)        

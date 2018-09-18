@@ -40,10 +40,7 @@ class AquiferMaterial(AuditModel):
         verbose_name_plural = 'Aquifer Material Codes'
 
     def __str__(self):
-        return '%s - %s' % (
-            self.code,
-            self.description
-        )
+        return '{} - {}'.format(self.code, self.description)
 
 class AquiferSubtype(AuditModel):
     """
@@ -76,15 +73,15 @@ class AquiferSubtype(AuditModel):
         db_table = 'aquifer_subtype_code'
 
     def __str__(self):
-        return self.description
+        return '{} - {}'.format(self.code, self.description)
 
 class AquiferProductivity(AuditModel):
     """
     Productivity choices for describing Aquifer 
     -------------------
-    High
-    Low
-    Moderate
+    High (H)
+    Low (L)
+    Moderate (M)
     """
     code = models.CharField(primary_key=True, max_length=1, db_column='aquifer_productivity_code')
     description = models.CharField(max_length=100)
@@ -99,31 +96,7 @@ class AquiferProductivity(AuditModel):
         verbose_name_plural = 'Aquifer Productivity Codes'
 
     def __str__(self):
-        return 'aquifer_productivity_code {} {}'.format(self.code, self.description)
-
-class AquiferVulnerability(AuditModel):
-    """
-    Vulnerability choices for describing Aquifer 
-    -------------------
-    High
-    Low
-    Moderate
-
-    """
-    code = models.CharField(primary_key=True, max_length=1, db_column='aquifer_vulnerability_code')
-    description = models.CharField(max_length=100)
-    display_order = models.PositiveIntegerField()
-
-    effective_date = models.DateTimeField(blank=True, null=True)
-    expiry_date = models.DateTimeField(blank=True, null=True)
-
-    class Meta:
-        db_table = 'aquifer_vulnerability_code'
-        ordering = ['display_order', 'code']
-        verbose_name_plural = 'Aquifer Vulnerability Codes'
-
-    def __str__(self):
-        return 'aquifer_vulnerability_code {} {}'.format(self.code, self.description)
+        return '{} - {}'.format(self.code, self.description)
 
 class AquiferDemand(AuditModel):
     """
@@ -146,7 +119,7 @@ class AquiferDemand(AuditModel):
         verbose_name_plural = 'Aquifer Demand Codes'
 
     def __str__(self):
-        return 'aquifer_demand_code {} {}'.format(self.code, self.description)
+        return '{} - {}'.format(self.code, self.description)
 
 class WaterUse(AuditModel):
     """
@@ -169,7 +142,7 @@ class WaterUse(AuditModel):
         verbose_name_plural = 'Aquifer Water Use Codes'
 
     def __str__(self):
-        return 'water_use_code {} {}'.format(self.code, self.description)
+        return '{} - {}'.format(self.code, self.description)
 
 class QualityConcern(AuditModel):
     """
@@ -191,7 +164,7 @@ class QualityConcern(AuditModel):
         verbose_name_plural = 'Aquifer Quality Concern Codes'
 
     def __str__(self):
-        return 'quality_concern_code {} {}'.format(self.code, self.description)
+        return '{} - {}'.format(self.code, self.description)
 
 class Aquifer(AuditModel):
     """
@@ -232,14 +205,6 @@ class Aquifer(AuditModel):
         null=True,        
         on_delete=models.PROTECT,
         verbose_name="Productivity Reference",
-        related_name='aquifers')
-    vulnerability = models.ForeignKey(
-        AquiferVulnerability,
-        db_column='aquifer_vulnerability_code',
-        blank=True,
-        null=True,        
-        on_delete=models.PROTECT,
-        verbose_name="Vulnerability Reference",
         related_name='aquifers')
     demand = models.ForeignKey(
         AquiferDemand,
@@ -287,4 +252,4 @@ class Aquifer(AuditModel):
         verbose_name_plural = 'Aquifers'
 
     def __str__(self):
-        return 'aquifer {} {}'.format(self.aquifer_id, self.aquifer_name)
+        return '{} - {}'.format(self.code, self.description)
