@@ -102,8 +102,8 @@ class WaterQualityCharacteristic(AuditModel):
     """
      The characteristic of the well water, e.g. Fresh, Salty, Clear.
     """
-    water_quality_characteristic_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    code = models.CharField(max_length=10, unique=True)
+
+    code = models.CharField(primary_key=True, max_length=10, db_column='water_quality_characteristic_code')
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
 
@@ -700,6 +700,7 @@ class Well(AuditModel):
         max_length=100, blank=True, null=True, verbose_name="Backfill Material")
     decommission_details = models.CharField(
         max_length=250, blank=True, null=True, verbose_name="Decommission Details")
+    ems_id = models.CharField(max_length=30, blank=True)
     aquifer = models.ForeignKey(Aquifer, db_column='aquifer_id',
                                     on_delete=models.CASCADE, blank=True, null=True,
                                     verbose_name='Aquifer ID Number')
@@ -1053,6 +1054,8 @@ class ActivitySubmission(AuditModel):
         WellYieldUnitCode, db_column='well_yield_unit_code', on_delete=models.CASCADE, blank=True, null=True)
     # want to be integer in future
     diameter = models.CharField(max_length=9, blank=True)
+    ems_id = models.CharField(max_length=30, blank=True)
+
 
     tracker = FieldTracker()
 
@@ -1313,7 +1316,6 @@ class Screen(AuditModel):
         else:
             return 'well {} {} {}'.format(self.well, self.screen_from, self.screen_to)
 
-
 class AquiferVulnerabilityCode(AuditModel):
     """
     Demand choices for describing Aquifer 
@@ -1321,7 +1323,6 @@ class AquiferVulnerabilityCode(AuditModel):
     High
     Low
     Moderate
-
     """
     code = models.CharField(primary_key=True, max_length=1, db_column='aquifer_vulnerability_code')
     description = models.CharField(max_length=100)
@@ -1330,17 +1331,30 @@ class AquiferVulnerabilityCode(AuditModel):
     effective_date = models.DateTimeField(blank=True, null=True)
     expiry_date = models.DateTimeField(blank=True, null=True)
 
-    class Meta:
+    class Meta: 
         db_table = 'aquifer_vulnerability_code'
         ordering = ['display_order', 'code']
         verbose_name_plural = 'Aquifer Vulnerability Codes'
 
     def __str__(self):
-        return '%s - %s' % (
-            self.code,
-            self.description
-        )
+        return 'aquifer_vulnerability_code {} {}'.format(self.code, self.description)
 
+class WaterQualityColour(AuditModel):
+    """
+    Colour choices for describing water quality
+    """
+    code = models.CharField(primary_key=True, max_length=32, db_column='water_quality_colour_code')
+    description = models.CharField(max_length=100)
+    display_order = models.PositiveIntegerField()
+
+    effective_date = models.DateTimeField(blank=True, null=True)
+    expiry_date = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'water_quality_colour_code'
+
+    def __str__(self):
+        return self.description
 
 """
     Hydraulic properties of the well, usually determined via tests.
@@ -1349,8 +1363,7 @@ class HydraulicProperty(AuditModel):
 
     hydraulic_property_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     well = models.ForeignKey(Well, db_column='well_tag_number', to_field='well_tag_number',
-                                        on_delete=models.CASCADE, blank=False, null=False)
-
+                             on_delete=models.CASCADE, blank=False, null=False)
     avi = models.ForeignKey(
         AquiferVulnerabilityCode,
         db_column='aquifer_vulnerablity_code',
@@ -1403,6 +1416,4 @@ class HydraulicProperty(AuditModel):
         verbose_name_plural = 'Hydraulic Properties'
 
     def __str__(self):
-        return '%s' % (
-            self.well_tag_number
-        )
+        return 'hydraulic_property {} {}'.format(self.well, self.hydraulic_property_guid)
