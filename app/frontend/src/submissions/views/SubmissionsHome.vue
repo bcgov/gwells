@@ -122,6 +122,19 @@
           :backfillDepth.sync="form.backfill_above_surface_seal_depth"
         ></step07-backfill>
 
+        <!-- Liner Information -->
+        <liner class="my-3"
+          v-if="formStep === 8 || formIsFlat"
+          :linerMaterial.sync="form.liner_material"
+          :linerDiameter.sync="form.liner_diameter"
+          :linerThickness.sync="form.liner_thickness"
+          :linerFrom.sync="form.liner_from"
+          :linerTo.sync="form.liner_to"
+          :linerPerforations.sync="form.linerperforation_set"
+          :errors="errors"
+          :fieldsLoaded="fieldsLoaded"
+        />
+
         <!-- Step 9: Screens -->
         <step09-screens class="my-3"
           v-if="formStep === 9 || formIsFlat"
@@ -275,6 +288,7 @@ import Step04Coords from '@/submissions/components/SubmissionForm/Step04Coords.v
 import Step05Lithology from '@/submissions/components/SubmissionForm/Step05Lithology.vue'
 import Step06Casings from '@/submissions/components/SubmissionForm/Step06Casings.vue'
 import Step07Backfill from '@/submissions/components/SubmissionForm/Step07Backfill.vue'
+import Liner from '@/submissions/components/SubmissionForm/Liner.vue'
 import Step09Screens from '@/submissions/components/SubmissionForm/Step09Screens.vue'
 import Step10FilterPack from '@/submissions/components/SubmissionForm/Step10FilterPack.vue'
 import Step11Development from '@/submissions/components/SubmissionForm/Step11Development.vue'
@@ -293,6 +307,7 @@ export default {
     Step05Lithology,
     Step06Casings,
     Step07Backfill,
+    Liner,
     Step09Screens,
     Step10FilterPack,
     Step11Development,
@@ -390,6 +405,12 @@ export default {
         legal_range: '',
         land_district: '',
         legal_pid: '',
+        liner_material: null,
+        liner_diameter: null,
+        liner_thickness: null,
+        liner_from: null,
+        liner_to: null,
+        linerperforation_set: [{}, {}, {}],
         well_location_description: '',
         latitude: '',
         longitude: '',

@@ -18,12 +18,13 @@ from django.db import transaction
 from gwells.models import ProvinceStateCode
 from gwells.serializers import AuditModelSerializer
 from wells.models import (
-    Well,
     ActivitySubmission,
     Casing,
     CasingMaterialCode,
     CasingCode,
+    LinerPerforation,
     Screen,
+    Well,
 )
 
 
@@ -52,8 +53,8 @@ class CasingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Casing
         fields = (
-            'casing_from',
-            'casing_to',
+            'start',
+            'end',
             'diameter',
             'casing_code',
             'casing_material',
@@ -65,18 +66,32 @@ class ScreenSerializer(serializers.ModelSerializer):
     class Meta:
         model = Screen
         fields = (
-            'screen_guid',
-            'screen_from',
-            'screen_to',
+            'start',
+            'end',
             'internal_diameter',
             'assembly_type',
             'slot_size',
         )
 
 
+class LinerPerforationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LinerPerforation
+        fields = (
+            # SUPER IMPORTANT: Don't include ID (liner_perforation_guid, well, or submission) as part of this
+            # serializer, as it will break the stacking code. If you include the guid, then it will remain
+            # stuck on a particular well/submission (unless I gues you pop it during serializing/
+            # deserializing) when creating legacy submissions or re-creating well records etc.
+            'start',
+            'end',
+        )
+
+
 class WellStackerSerializer(AuditModelSerializer):
 
     casing_set = CasingSerializer(many=True)
+    screen_set = ScreenSerializer(many=True)
+    linerperforation_set = LinerPerforationSerializer(many=True)
 
     class Meta:
         model = Well
@@ -84,16 +99,24 @@ class WellStackerSerializer(AuditModelSerializer):
 
     @transaction.atomic
     def update(self, instance, validated_data):
-        # If there is existing casing data, the easiest approach is to drop it, and re-create it
-        # based on this update. Trying to match up individual casings and updating them, dealing with
-        # removed casing records etc. etc. is not the responsibility of this section. The composite section
-        # is responsible for that.
-        for casing in instance.casing_set.all():
-            casing.delete()
-        casings_data = validated_data.pop('casing_set', None)
-        if casings_data:
-            for casing_data in casings_data:
-                Casing.objects.create(well=instance, **casing_data)
+        # If there is existing related data, the easiest approach is to drop it, and re-create it
+        # based on this update. Trying to match up individual records and updating them, dealing with
+        # removed casing/screen/perforation records etc. etc. is not the responsibility of this section.
+        # The composite section is responsible for that.
+        FOREIGN_KEYS = {'casing_set': Casing, 'screen_set': Screen, 'linerperforation_set': LinerPerforation}        
+        for key in FOREIGN_KEYS.keys():
+            for record in getattr(instance, key).all():
+                record.delete()
+            records_data = validated_data.pop(key, None)
+            if records_data:
+                for record_data in records_data:
+                    # We're re-creating this record, and binding it to the current instance, so we need
+                    # to get rid of any redundant/duplicate reference that may exist in the record data
+                    # in order to avoid duplications. (the well we pop, should be the same as the instance
+                    # variable)
+                    record_data.pop('well', None)
+                    # Create new instance of of the casing/screen/whatever record.
+                    obj = FOREIGN_KEYS[key].objects.create(well=instance, **record_data)
         instance = super().update(instance, validated_data)
         return instance
 

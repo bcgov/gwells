@@ -24,6 +24,9 @@ urlpatterns = [
         views.WellDetailView.as_view(), name='well_detail'),
 
     # API endpoints
+    # Well
+    url(r'^api/v1/wells/(?P<well_tag_number>[0-9]+)$',
+        never_cache(views.WellDetail.as_view()), name='well-detail'),
 
     # Well tag search
     url(r'^api/v1/wells/tags/$',

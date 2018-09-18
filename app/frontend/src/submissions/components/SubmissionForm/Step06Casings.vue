@@ -15,24 +15,24 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(casing, index) in casings" :key="casing.id">
+        <tr v-for="(casing, index) in casingsInput" :key="casing.id">
           <td>
             <form-input
               group-class="my-1"
-              :id="'casing_from' + index"
+              :id="'casing_from_' + index"
               type="number"
-              v-model="casing.casing_from"
-              :errors="getCasingError(index).casing_from"
-              :loaded="getFieldsLoaded(index).casing_from"/>
+              v-model="casing.start"
+              :errors="getCasingError(index).start"
+              :loaded="getFieldsLoaded(index).start"/>
           </td>
           <td>
             <form-input
               group-class="my-1"
               :id="'casing_to_' + index"
               type="number"
-              v-model="casing.casing_to"
-              :errors="getCasingError(index).casing_to"
-              :loaded="getFieldsLoaded(index).casing_to"/>
+              v-model="casing.end"
+              :errors="getCasingError(index).end"
+              :loaded="getFieldsLoaded(index).end"/>
           </td>
           <td>
             <b-form-group

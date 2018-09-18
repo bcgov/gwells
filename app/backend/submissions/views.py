@@ -25,13 +25,14 @@ from wells.models import (
     ActivitySubmission,
     CasingCode,
     CasingMaterialCode,
-    FilterPackMaterialCode,
-    FilterPackMaterialSizeCode,
-    IntendedWaterUseCode,
     DevelopmentMethodCode,
     DrillingMethodCode,
+    FilterPackMaterialCode,
+    FilterPackMaterialSizeCode,
     GroundElevationMethodCode,
+    IntendedWaterUseCode,
     LandDistrictCode,
+    LinerMaterialCode,
     ScreenIntakeMethodCode,
     SurfaceSealMaterialCode,
     SurfaceSealMethodCode,
@@ -46,7 +47,7 @@ from wells.models import (
     Well,
     WellClassCode,
     WellSubclassCode,
-    YieldEstimationMethodCode)
+    YieldEstimationMethodCode,)
 from submissions.models import WellActivityCode
 from wells.serializers import (
     CasingCodeSerializer,
@@ -54,11 +55,14 @@ from wells.serializers import (
 )
 from submissions.serializers import (
     DevelopmentMethodCodeSerializer,
+    DrillingMethodCodeSerializer,
+    FilterPackMaterialCodeSerializer,
+    FilterPackMaterialSizeCodeSerializer,
+    GroundElevationMethodCodeSerializer,
+    IntendedWaterUseCodeSerializer,
+    LandDistrictSerializer,
+    LinerMaterialCodeSerializer,
     ScreenIntakeMethodSerializer,
-    WellSubmissionSerializer,
-    WellActivityCodeSerializer,
-    WellClassCodeSerializer,
-    WellSubclassCodeSerializer,
     SurfaceSealMaterialCodeSerializer,
     SurfaceSealMethodCodeSerializer,
     SurficialMaterialCodeSerializer,
@@ -67,15 +71,13 @@ from submissions.serializers import (
     ScreenOpeningCodeSerializer,
     ScreenBottomCodeSerializer,
     ScreenAssemblyTypeCodeSerializer,
-    IntendedWaterUseCodeSerializer,
-    LandDistrictSerializer,
-    GroundElevationMethodCodeSerializer,
-    DrillingMethodCodeSerializer,
-    YieldEstimationMethodCodeSerializer,
-    FilterPackMaterialCodeSerializer,
-    FilterPackMaterialSizeCodeSerializer,
     WaterQualityCharacteristicSerializer,
-    WaterQualityColourSerializer
+    WaterQualityColourSerializer,
+    WellSubmissionSerializer,
+    WellActivityCodeSerializer,
+    WellClassCodeSerializer,
+    WellSubclassCodeSerializer,
+    YieldEstimationMethodCodeSerializer,    
 )
 
 
@@ -156,6 +158,8 @@ class SubmissionsOptions(APIView):
             instance=FilterPackMaterialSizeCode.objects.all(), many=True)
         land_district_codes = LandDistrictSerializer(
             instance=LandDistrictCode.objects.all(), many=True)
+        liner_material_codes = LinerMaterialCodeSerializer(
+            instance=LinerMaterialCode.objects.all(), many=True)
         ground_elevation_method_codes = GroundElevationMethodCodeSerializer(
             instance=GroundElevationMethodCode.objects.all(), many=True)
         drilling_method_codes = DrillingMethodCodeSerializer(
@@ -192,6 +196,7 @@ class SubmissionsOptions(APIView):
         options["filter_pack_material"] = filter_pack_material.data
         options["filter_pack_material_size"] = filter_pack_material_size.data
         options["land_district_codes"] = land_district_codes.data
+        options["liner_material_codes"] = liner_material_codes.data
         options["screen_intake_methods"] = screen_intake_methods.data
         options["ground_elevation_methods"] = ground_elevation_method_codes.data
         options["drilling_methods"] = drilling_method_codes.data
