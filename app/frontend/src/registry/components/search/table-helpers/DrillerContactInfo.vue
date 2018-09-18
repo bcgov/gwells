@@ -1,14 +1,37 @@
 <template>
   <div>
-    <div v-if="driller.contact_tel">{{driller.contact_tel}}</div>
-    <div v-if="driller.contact_cell">{{driller.contact_cell}}</div>
-    <div v-if="driller.contact_email"><a :href="`mailto:${driller.contact_email}`">{{driller.contact_email}}</a></div>
+    <div v-if="company.tel">Tel: {{company.tel}}</div>
+    <div v-else-if="driller.contact_tel">Tel: {{driller.contact_tel}}</div>
+    <div v-if="company.fax">Fax: {{company.fax}}</div>
+    <div v-if="company.contact_email"><a :href="`mailto:${company.contact_email}`">{{company.contact_email}}</a></div>
+    <div v-if="company.website"><a :href="company.website">{{company.website}}</a></div>
   </div>
 </template>
 
 <script>
 export default {
-  props: ['driller']
+  props: ['driller', 'activity'],
+  data () {
+    return {
+    }
+  },
+  computed: {
+    company () {
+      const company = {}
+      if (this.driller && this.driller.registrations && this.driller.registrations.length && this.activity) {
+        const registration = this.driller.registrations.find((reg) => {
+          return reg.activity === this.activity
+        })
+        if (registration && registration.organization) {
+          company['tel'] = registration.organization.main_tel
+          company['fax'] = registration.organization.fax_tel
+          company['email'] = registration.organization.email
+          company['website'] = registration.organization.website_url
+        }
+      }
+      return company
+    }
+  }
 }
 </script>
 

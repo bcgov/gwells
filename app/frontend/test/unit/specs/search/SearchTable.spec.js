@@ -257,7 +257,7 @@ describe('SearchTable.vue', () => {
     })
 
     const personContact = wrapper.find('#personContact0').text()
-    expect(personContact).toContain('driller1@example.com')
+    expect(personContact).toContain('(250) 555-4123')
   })
   it('shows the driller\'s subactivities', () => {
     const wrapper = mount(SearchTable, {

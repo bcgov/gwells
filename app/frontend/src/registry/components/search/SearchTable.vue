@@ -38,7 +38,7 @@
             </td>
             <td :id="`personContact${index}`">
               <div>
-                <driller-contact-info :driller="driller"/>
+                <driller-contact-info :driller="driller" :activity="activity"/>
               </div>
             </td>
             <td v-if="activity === 'DRILL'" :id="`personSubActivity${index}`">
