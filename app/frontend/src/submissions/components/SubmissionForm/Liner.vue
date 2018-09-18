@@ -128,12 +128,12 @@ export default {
     errors: {
       type: Object,
       default: () => ({}),
-      isInput: false
+      isInput: true
     },
     fieldsLoaded: {
       type: Object,
       default: () => ({}),
-      isInput: false
+      isInput: true
     }
   },
   methods: {
