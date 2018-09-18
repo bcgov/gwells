@@ -1,10 +1,10 @@
 <template>
   <div>
-    <div v-if="company.tel">Tel: {{company.tel}}</div>
+    <div v-if="company.tel">Phone: {{company.tel}}</div>
     <div v-else-if="driller.contact_tel">Tel: {{driller.contact_tel}}</div>
     <div v-if="company.fax">Fax: {{company.fax}}</div>
-    <div v-if="company.email"><a :href="`mailto:${company.email}`">{{company.email}}</a></div>
-    <div v-if="company.website"><a :href="company.website">{{company.website}}</a></div>
+    <div v-if="company.email">Email: <a :href="`mailto:${company.email}`">{{company.email}}</a></div>
+    <div v-if="company.website">Web: <a :href="company.website">{{company.website}}</a></div>
   </div>
 </template>
 
