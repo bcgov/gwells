@@ -3,7 +3,7 @@
     <div v-if="company.tel">Tel: {{company.tel}}</div>
     <div v-else-if="driller.contact_tel">Tel: {{driller.contact_tel}}</div>
     <div v-if="company.fax">Fax: {{company.fax}}</div>
-    <div v-if="company.contact_email"><a :href="`mailto:${company.contact_email}`">{{company.contact_email}}</a></div>
+    <div v-if="company.email"><a :href="`mailto:${company.email}`">{{company.email}}</a></div>
     <div v-if="company.website"><a :href="company.website">{{company.website}}</a></div>
   </div>
 </template>
