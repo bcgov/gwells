@@ -245,13 +245,28 @@ parallel (
                         String podName = openshift.withProject(projectName){
                             return openshift.selector('pod', ['deploymentconfig':deploymentConfigName]).objects()[0].metadata.name
                         }
-                                                    
+
+                        /* All of these commands could be run in one go, and be more performant, but then
+                        it becomes difficult to see which on of the steps failed. Instead, each step is
+                        executed by itself. */                    
                         sh "oc exec '${podName}' -n '${projectName}' -- bash -c '\
                             cd /opt/app-root/src/backend; \
                             python manage.py migrate; \
+                        '"
+                        sh "oc exec '${podName}' -n '${projectName}' -- bash -c '\
+                            cd /opt/app-root/src/backend; \
                             python manage.py loaddata gwells-codetables.json; \
+                        '"
+                        sh "oc exec '${podName}' -n '${projectName}' -- bash -c '\
+                            cd /opt/app-root/src/backend; \
                             python manage.py loaddata wellsearch-codetables.json registries-codetables.json; \
+                        '"
+                        sh "oc exec '${podName}' -n '${projectName}' -- bash -c '\
+                            cd /opt/app-root/src/backend; \
                             python manage.py loaddata wellsearch.json.gz registries.json; \
+                        '"
+                        sh "oc exec '${podName}' -n '${projectName}' -- bash -c '\
+                            cd /opt/app-root/src/backend; \
                             python manage.py createinitialrevisions \
                         '"
                         isFixtured = true

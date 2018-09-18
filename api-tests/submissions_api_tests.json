@@ -6,11 +6,11 @@
 	},
 	"item": [
 		{
-			"_postman_id": "b12323d9-0815-4b38-9027-2c9e89d7b0db",
+			"_postman_id": "f9784005-0192-4fbf-b98b-c7b3b44fd07e",
 			"name": "Authentication",
 			"item": [
 				{
-					"_postman_id": "f50b110d-16b5-43ef-acef-388272c58755",
+					"_postman_id": "a0adc27f-1038-43cf-90ae-e1a0079307a7",
 					"name": "Log in",
 					"event": [
 						{
@@ -90,16 +90,71 @@
 			]
 		},
 		{
-			"_postman_id": "3a0da5fb-3b86-41f4-b764-d1e9d917c62e",
+			"_postman_id": "f70aaf0f-0ee2-488e-8cdc-fc4bd5d14eca",
 			"name": "Wells",
 			"item": []
 		},
 		{
-			"_postman_id": "f2c26f60-8aff-4495-b697-dd2853f9b83f",
+			"_postman_id": "c1431a42-4397-4bc5-bfec-5c2435fbaa16",
 			"name": "Activity Submissions",
 			"item": [
 				{
-					"_postman_id": "2601e867-3d57-4224-b8bc-0e82be8aa689",
+					"_postman_id": "701d9501-2013-4224-8a57-b798d492433e",
+					"name": "Submission form Options",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "20837dbe-0390-4709-b8dc-4ac3b22153f4",
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = pm.response.json()",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"})",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "JWT {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/submissions/options/?format=json",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"submissions",
+								"options",
+								""
+							],
+							"query": [
+								{
+									"key": "format",
+									"value": "json"
+								}
+							]
+						},
+						"description": "Get form submission options"
+					},
+					"response": []
+				},
+				{
+					"_postman_id": "31f59c45-c098-45a3-b352-2238eee680cf",
 					"name": "Submission list",
 					"event": [
 						{
@@ -153,7 +208,7 @@
 					"response": []
 				},
 				{
-					"_postman_id": "8df80d7f-fb11-4146-9a97-252777810399",
+					"_postman_id": "3b0ca719-0382-44f8-aa84-22b3eb5fe641",
 					"name": "Create new driller for submission",
 					"event": [
 						{
@@ -246,7 +301,7 @@
 					"response": []
 				},
 				{
-					"_postman_id": "80a540ed-2d88-4585-afa2-1921e93033f7",
+					"_postman_id": "10966311-02eb-4ec5-a418-05988d815a07",
 					"name": "Submission",
 					"event": [
 						{
@@ -351,7 +406,7 @@
 					"response": []
 				},
 				{
-					"_postman_id": "c3608422-5a1f-445a-bb91-7043c3b6ddbd",
+					"_postman_id": "f8eceb22-1ee9-4ac2-8711-4701e84f499d",
 					"name": "Check submission - created well",
 					"event": [
 						{
@@ -439,14 +494,14 @@
 							]
 						},
 						"url": {
-							"raw": "{{base_url}}/api/v1/well/{{well_tag_number}}",
+							"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
 								"v1",
-								"well",
+								"wells",
 								"{{well_tag_number}}"
 							]
 						},
@@ -455,7 +510,7 @@
 					"response": []
 				},
 				{
-					"_postman_id": "f34f8682-6c43-40ce-9e31-68967b87a508",
+					"_postman_id": "61559fa8-d85a-4780-a1ce-87c459277f2d",
 					"name": "Submission - casings",
 					"event": [
 						{
@@ -520,7 +575,7 @@
 					"response": []
 				},
 				{
-					"_postman_id": "f18a8060-a85e-4e9c-b0a6-6a7af4729f3f",
+					"_postman_id": "5e5f58c9-e37d-4248-8469-c39b98f7db7f",
 					"name": "Check submission - created well casings",
 					"event": [
 						{
@@ -608,14 +663,14 @@
 							]
 						},
 						"url": {
-							"raw": "{{base_url}}/api/v1/well/{{well_tag_number}}",
+							"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
 								"v1",
-								"well",
+								"wells",
 								"{{well_tag_number}}"
 							]
 						},
@@ -624,7 +679,7 @@
 					"response": []
 				},
 				{
-					"_postman_id": "f7cd8822-c93e-4bda-a5c7-ea07829fbb66",
+					"_postman_id": "10095293-c481-490b-98bf-4d9ce9e270d7",
 					"name": "Submission - screen",
 					"event": [
 						{
@@ -683,7 +738,7 @@
 					"response": []
 				},
 				{
-					"_postman_id": "ebad2ab4-c9c5-43cd-9a33-637a10d16281",
+					"_postman_id": "c3b77fe8-1267-4936-b8f9-b777fa192fda",
 					"name": "Check submission - created well screens",
 					"event": [
 						{
@@ -771,14 +826,14 @@
 							]
 						},
 						"url": {
-							"raw": "{{base_url}}/api/v1/well/{{well_tag_number}}",
+							"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
 								"v1",
-								"well",
+								"wells",
 								"{{well_tag_number}}"
 							]
 						},
@@ -787,7 +842,7 @@
 					"response": []
 				},
 				{
-					"_postman_id": "1a46d73d-2c2e-4181-9e90-9cb0f4ec0e49",
+					"_postman_id": "26c40d3c-fda9-4e80-bd92-f0b5e24fa9c3",
 					"name": "Submission - liner",
 					"event": [
 						{
@@ -847,7 +902,7 @@
 					"response": []
 				},
 				{
-					"_postman_id": "184fbc33-f49f-43df-a897-2bd83eade92c",
+					"_postman_id": "ce94cd1a-43ef-4066-80d1-f92b3f6ab2f9",
 					"name": "Check submission - created well liners",
 					"event": [
 						{
@@ -935,14 +990,14 @@
 							]
 						},
 						"url": {
-							"raw": "{{base_url}}/api/v1/well/{{well_tag_number}}",
+							"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
 								"v1",
-								"well",
+								"wells",
 								"{{well_tag_number}}"
 							]
 						},
@@ -953,11 +1008,11 @@
 			]
 		},
 		{
-			"_postman_id": "3822a637-3b4e-4664-810b-c100aec667de",
+			"_postman_id": "a0f89642-6f77-4add-bd06-7708a26d8ca7",
 			"name": "Stacking",
 			"item": [
 				{
-					"_postman_id": "0b793aaa-5ee8-416b-9985-a912cdd4c2e7",
+					"_postman_id": "91f9ab66-7546-45cd-9c00-1ce2875a4777",
 					"name": "Submission - construction submission",
 					"event": [
 						{
@@ -1019,7 +1074,7 @@
 					"response": []
 				},
 				{
-					"_postman_id": "317d1f81-6699-4b1b-874a-03e913c050c6",
+					"_postman_id": "dd15669c-6ce6-4dfd-8d00-e388225c0e30",
 					"name": "Submission - alteration",
 					"event": [
 						{
@@ -1082,7 +1137,7 @@
 					"response": []
 				},
 				{
-					"_postman_id": "cde47804-3ba6-45ad-a065-59a26bea8f0f",
+					"_postman_id": "7911a539-dabf-4902-92a6-7473b6aa472c",
 					"name": "Check submission - well updated",
 					"event": [
 						{
@@ -1170,14 +1225,14 @@
 							]
 						},
 						"url": {
-							"raw": "{{base_url}}/api/v1/well/{{well_tag_number}}",
+							"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
 								"v1",
-								"well",
+								"wells",
 								"{{well_tag_number}}"
 							]
 						},
@@ -1186,7 +1241,7 @@
 					"response": []
 				},
 				{
-					"_postman_id": "288b4a4d-7701-4115-9858-5a33f2d22148",
+					"_postman_id": "0bd2af9f-8713-47c3-8407-e6985753e704",
 					"name": "Submission - alteration - intersecting data",
 					"event": [
 						{
@@ -1249,7 +1304,7 @@
 					"response": []
 				},
 				{
-					"_postman_id": "6a2ce39d-ac6b-46c0-8f66-f1896a7e6045",
+					"_postman_id": "0f5b0153-70c9-4e90-8689-3321498a0305",
 					"name": "Check submission - well stacked",
 					"event": [
 						{
@@ -1337,14 +1392,14 @@
 							]
 						},
 						"url": {
-							"raw": "{{base_url}}/api/v1/well/{{well_tag_number}}",
+							"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
 								"v1",
-								"well",
+								"wells",
 								"{{well_tag_number}}"
 							]
 						},
