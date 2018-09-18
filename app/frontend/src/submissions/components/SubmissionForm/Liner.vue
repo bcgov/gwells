@@ -68,7 +68,7 @@
       </b-row>
       <b-row>
         <b-col>
-          <table class="table">
+          <table class="table table-sm">
             <thead>
               <tr>
                 <th>Perforated From</th>
@@ -138,14 +138,14 @@ export default {
   },
   methods: {
     getLinerPerforationError (index) {
-      if (this.errors && 'linerPerforations' in this.errors && index in this.errors['linerPerforations']) {
-        return this.errors['linerPerforations'][index]
+      if (this.errors && 'linerperforation_set' in this.errors && index in this.errors['linerperforation_set']) {
+        return this.errors['linerperforation_set'][index]
       }
       return {}
     },
     getFieldsLoaded (index) {
-      if (this.fieldsLoaded && 'linerPerforations' in this.fieldsLoaded && index in this.fieldsLoaded['linerPerforations']) {
-        return this.fieldsLoaded['linerPerforations'][index]
+      if (this.fieldsLoaded && 'linerperforation_set' in this.fieldsLoaded && index in this.fieldsLoaded['linerperforation_set']) {
+        return this.fieldsLoaded['linerperforation_set'][index]
       }
       return {}
     },
