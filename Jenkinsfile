@@ -44,6 +44,46 @@ boolean isEnabled (Map context, String stageName) {
 }
 
 
+// Python tests can run early an in the container if Code Quality is disabled
+void unitTestsPython (Map context, boolean isQuick=false) {
+    boolean doCodeQuality = isEnabled( context, 'Code Quality' )
+    if (doCodeQuality && !isQuick) {
+        try {
+            echo "Running tests with artifact stash for SonarQube"
+            sh script: '''#!/usr/bin/container-entrypoint /bin/sh
+                cd /opt/app-root/src/backend
+                DATABASE_ENGINE=sqlite DEBUG=False TEMPLATE_DEBUG=False python manage.py test -c nose.cfg
+            '''
+            sh script: '''#!/usr/bin/container-entrypoint /bin/sh
+                cp /opt/app-root/src/backend/nosetests.xml ./
+                cp /opt/app-root/src/backend/coverage.xml ./
+            '''
+            stash includes: 'nosetests.xml,coverage.xml', name: 'coverage'
+        } finally {
+            stash includes: 'nosetests.xml,coverage.xml', name: 'coverage'
+            junit 'nosetests.xml'
+        }
+    } else if (!doCodeQuality && isQuick){
+        echo "Running short tests w/o artifact stash since SonarQube is disabled"
+        String deploymentConfigName = "gwells${context.deployments['dev'].dcSuffix}"
+        String projectName = context.deployments['dev'].projectName
+        String podName = openshift.withProject(projectName){
+            return openshift.selector('pod', ['deploymentconfig':deploymentConfigName]).objects()[1].metadata.name
+        }
+        sh "oc exec '${podName}' -n '${projectName}' -- bash -c '\
+            cd /opt/app-root/src/backend; \
+            DATABASE_ENGINE=sqlite DEBUG=False TEMPLATE_DEBUG=False python manage.py test -c nose.cfg \
+        '"
+    } else {
+        echo "Python unit tests are being skipped at this stage"
+        echo "doCodeQuality = ${doCodeQuality}"
+        echo "isQuick = ${isQuick}"
+    }
+}
+void unitTestsPythonQuick (Map context) {unitTestsPython (context, true)}
+void unitTestsPythonFull (Map context) {unitTestsPython (context, false)}
+
+
 /* _Stage wrapper:
     - runs stages against true|false in map context
     - receives stages defined separately in closures (body)
@@ -276,21 +316,7 @@ parallel (
                         isFixtured = true
                     },
                     "Unit Tests: Python": {
-                        if (isEnabled(context, 'Unit Tests')){
-                            if (!isEnabled(context, 'Unit Tests')){
-                                sleep 30
-                                echo "Since Code Quality is disabled Unit Tests: Python is executing early"
-                                String deploymentConfigName = "gwells${context.deployments['dev'].dcSuffix}"
-                                String projectName = context.deployments['dev'].projectName
-                                String podName = openshift.withProject(projectName){
-                                    return openshift.selector('pod', ['deploymentconfig':deploymentConfigName]).objects()[1].metadata.name
-                                }
-                                sh "oc exec '${podName}' -n '${projectName}' -- bash -c '\
-                                    cd /opt/app-root/src/backend; \
-                                    DATABASE_ENGINE=sqlite DEBUG=False TEMPLATE_DEBUG=False python manage.py test -c nose.cfg \
-                                '"
-                            }
-                        }
+                        unitTestsPythonQuick (context)
                     }
                 )
             }
@@ -339,24 +365,7 @@ parallel (
 
                         parallel (
                             "Unit Tests: Python (w/ ZAP)": {
-                                if (isEnabled( context, 'Code Quality' )) {
-                                    try {
-                                        sh script: '''#!/usr/bin/container-entrypoint /bin/sh
-                                            cd /opt/app-root/src/backend
-                                            DATABASE_ENGINE=sqlite DEBUG=False TEMPLATE_DEBUG=False python manage.py test -c nose.cfg
-                                        '''
-                                        sh script: '''#!/usr/bin/container-entrypoint /bin/sh
-                                            cp /opt/app-root/src/backend/nosetests.xml ./
-                                            cp /opt/app-root/src/backend/coverage.xml ./
-                                        '''
-                                        stash includes: 'nosetests.xml,coverage.xml', name: 'coverage'
-                                    } finally {
-                                        stash includes: 'nosetests.xml,coverage.xml', name: 'coverage'
-                                        junit 'nosetests.xml'
-                                    }
-                                } else {
-                                    echo "Since Code Quality is disabled Unit Tests: Python has already run"
-                                }
+                                unitTestsPythonFull (context)
                             },
                             "Unit Tests: Node": {
                                 try {
@@ -364,15 +373,13 @@ parallel (
                                         cd /opt/app-root/src/frontend
                                         npm test
                                     '''
+                                } finally {
                                     if (isEnabled( context, 'Code Quality' )) {
                                         sh script: '''#!/usr/bin/container-entrypoint /bin/sh
                                             mkdir -p frontend/test/
                                             cp -R /opt/app-root/src/frontend/test/unit ./frontend/test/
                                             cp /opt/app-root/src/frontend/junit.xml ./frontend/
                                         '''
-                                    }
-                                } finally {
-                                    if (isEnabled( context, 'Code Quality' )) {
                                         archiveArtifacts allowEmptyArchive: true, artifacts: 'frontend/test/unit/**/*'
                                         stash includes: 'frontend/test/unit/coverage/clover.xml', name: 'nodecoverage'
                                         stash includes: 'frontend/junit.xml', name: 'nodejunit'
