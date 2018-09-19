@@ -602,10 +602,10 @@
                     <!--|dictsort:"casing_from"-->
                     <tr>
                         <td>
-                            <span>{{casing.casing_from|exclude_zero_decimals|default_if_none:'&nbsp;' }}</span>
+                            <span>{{casing.start|exclude_zero_decimals|default_if_none:'&nbsp;' }}</span>
                         </td>
                         <td>
-                            <span>{{casing.casing_to|exclude_zero_decimals|default_if_none:'&nbsp;' }}</span>
+                            <span>{{casing.end|exclude_zero_decimals|default_if_none:'&nbsp;' }}</span>
                         </td>
                         <td>
                             <span>{{casing.diameter|exclude_zero_decimals|default_if_none:'&nbsp;' }}</span>
@@ -779,8 +779,8 @@
                 <tbody>
                     {% for screen in well.screen_set.all %}
                     <tr>
-                        <td><span class="pull-right">{{screen.screen_from|exclude_zero_decimals|default_if_none:'&nbsp;' }}</span></td>
-                        <td><span class="pull-right">{{screen.screen_to|exclude_zero_decimals|default_if_none:'&nbsp;' }}</span></td>
+                        <td><span class="pull-right">{{screen.start|exclude_zero_decimals|default_if_none:'&nbsp;' }}</span></td>
+                        <td><span class="pull-right">{{screen.end|exclude_zero_decimals|default_if_none:'&nbsp;' }}</span></td>
                         <td><span class="pull-right">{{screen.internal_diameter|exclude_zero_decimals|default_if_none:'&nbsp;' }}</span></td>
                         <td><span>{{screen.assembly_type|default_if_none:'&nbsp;' }}</span></td>
                         <td><span class="pull-right">{{screen.slot_size|exclude_zero_decimals|default_if_none:'&nbsp;' }}</span></td>
