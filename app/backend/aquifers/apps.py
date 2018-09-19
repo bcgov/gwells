@@ -11,13 +11,6 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
-from django.contrib import admin
-from wells.models import (
-    WaterQualityCharacteristic,
-    WaterQualityColour
-)
-
-# Register your models here.
-
-admin.site.register(WaterQualityCharacteristic)
-admin.site.register(WaterQualityColour)
+from django.apps import AppConfig
+class AquifersConfig(AppConfig):
+    name = 'aquifers'

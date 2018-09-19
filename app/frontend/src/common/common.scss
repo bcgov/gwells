@@ -58,3 +58,7 @@ footer {
   padding-right:.75rem;
   background-image:none;
 }
+
+div.dropdown-toggle::after {
+  display: none;
+}

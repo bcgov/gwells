@@ -122,6 +122,19 @@
           :backfillDepth.sync="form.backfill_above_surface_seal_depth"
         ></step07-backfill>
 
+        <!-- Liner Information -->
+        <liner class="my-3"
+          v-if="formStep === 8 || formIsFlat"
+          :linerMaterial.sync="form.liner_material"
+          :linerDiameter.sync="form.liner_diameter"
+          :linerThickness.sync="form.liner_thickness"
+          :linerFrom.sync="form.liner_from"
+          :linerTo.sync="form.liner_to"
+          :linerPerforations.sync="form.linerperforation_set"
+          :errors="errors"
+          :fieldsLoaded="fieldsLoaded"
+        />
+
         <!-- Step 9: Screens -->
         <step09-screens class="my-3"
           v-if="formStep === 9 || formIsFlat"
@@ -158,6 +171,35 @@
           :productionData.sync="form.production_data_set"
         ></step12-yield>
 
+        <!-- Step 13: Water Quality -->
+        <step13-water-quality class="my-3"
+          v-if="formStep === 13 || formIsFlat"
+          :waterQualityCharacteristics.sync="form.water_quality_characteristics"
+          :waterQualityColour.sync="form.water_quality_colour"
+          :waterQualityOdour.sync="form.water_quality_odour"
+          :emsID.sync="form.ems_id"
+        ></step13-water-quality>
+
+        <step14-completion class="my-3"
+          v-if="formStep === 14 || formIsFlat"
+          :totalDepthDrilled.sync="form.total_depth_drilled"
+          :finishedWellDepth.sync="form.finished_well_depth"
+          :finalCasingStickUp.sync="form.final_casing_stick_up"
+          :bedrockDepth.sync="form.bedrock_depth"
+          :staticWaterLevel.sync="form.static_water_level"
+          :wellYield.sync="form.well_yield"
+          :artesianFlow.sync="form.artesian_flow"
+          :artesianPressure.sync="form.artesian_pressure"
+          :wellCapType.sync="form.well_cap_type"
+          :wellDisinfected.sync="form.well_disinfected"
+        ></step14-completion>
+
+        <step15-comments class="my-3"
+          v-if="formStep === 15 || formIsFlat"
+          :comments.sync="form.comments"
+          :alternativeSpecsSubmitted.sync="form.alternative_specs_submitted"
+        ></step15-comments>
+
         <!-- Back / Next / Submit controls -->
         <b-row class="mt-5">
           <b-col v-if="!formIsFlat">
@@ -177,6 +219,23 @@
           @dismissed="formSubmitSuccess=false"
           variant="success"
           class="mt-3">Report submitted!</b-alert>
+
+      <!-- Form submission error message -->
+      <b-alert
+          :show="formSubmitError"
+          dismissible
+          @dismissed="formSubmitError=false"
+          variant="danger"
+          class="mt-3">
+        <span v-if="errors && errors.detail">
+          {{ errors.detail }}
+        </span>
+        <div v-if="errors && errors != {}">
+          <div v-for="(field, i) in Object.keys(errors)" :key="`submissionError${i}`">
+            {{field | readable}} : <span v-for="(e, j) in errors[field]" :key="`submissionError${i}-${j}`">{{ e }}</span>
+          </div>
+        </div>
+        </b-alert>
 
       <!-- Form submission confirmation -->
       <b-modal
@@ -221,6 +280,7 @@
 <script>
 import ApiService from '@/common/services/ApiService.js'
 import { FETCH_CODES } from '../store/actions.types.js'
+import inputFormatMixin from '@/common/inputFormatMixin.js'
 import Step01Type from '@/submissions/components/SubmissionForm/Step01Type.vue'
 import Step02Owner from '@/submissions/components/SubmissionForm/Step02Owner.vue'
 import Step03Location from '@/submissions/components/SubmissionForm/Step03Location.vue'
@@ -228,12 +288,17 @@ import Step04Coords from '@/submissions/components/SubmissionForm/Step04Coords.v
 import Step05Lithology from '@/submissions/components/SubmissionForm/Step05Lithology.vue'
 import Step06Casings from '@/submissions/components/SubmissionForm/Step06Casings.vue'
 import Step07Backfill from '@/submissions/components/SubmissionForm/Step07Backfill.vue'
+import Liner from '@/submissions/components/SubmissionForm/Liner.vue'
 import Step09Screens from '@/submissions/components/SubmissionForm/Step09Screens.vue'
 import Step10FilterPack from '@/submissions/components/SubmissionForm/Step10FilterPack.vue'
 import Step11Development from '@/submissions/components/SubmissionForm/Step11Development.vue'
 import Step12Yield from '@/submissions/components/SubmissionForm/Step12Yield.vue'
+import Step13WaterQuality from '@/submissions/components/SubmissionForm/Step13WaterQuality.vue'
+import Step14Completion from '@/submissions/components/SubmissionForm/Step14Completion.vue'
+import Step15Comments from '@/submissions/components/SubmissionForm/Step15Comments.vue'
 export default {
   name: 'SubmissionsHome',
+  mixins: [inputFormatMixin],
   components: {
     Step01Type,
     Step02Owner,
@@ -242,10 +307,14 @@ export default {
     Step05Lithology,
     Step06Casings,
     Step07Backfill,
+    Liner,
     Step09Screens,
     Step10FilterPack,
     Step11Development,
-    Step12Yield
+    Step12Yield,
+    Step13WaterQuality,
+    Step14Completion,
+    Step15Comments
   },
   data () {
     return {
@@ -254,11 +323,12 @@ export default {
       confirmSubmitModal: false,
       formSubmitLoading: false,
       formSubmitSuccess: false,
+      formSubmitError: false,
       saveFormSuccess: false,
       loadFormSuccess: false,
       confirmLoadModal: false,
       step: 1,
-      maxSteps: 11, // total number of wizard steps
+      maxSteps: 15, // total number of wizard steps
       sliding: null,
       errors: {},
       fieldsLoaded: {},
@@ -288,12 +358,15 @@ export default {
       }
 
       this.formSubmitLoading = true
+      this.formSubmitSuccess = false
+      this.formSubmitError = false
       this.errors = {}
       ApiService.post('submissions', data).then(() => {
         this.formSubmitSuccess = true
         this.resetForm()
       }).catch((error) => {
         this.errors = error.response.data
+        this.formSubmitError = true
       }).finally(() => {
         this.formSubmitLoading = false
       })
@@ -332,6 +405,12 @@ export default {
         legal_range: '',
         land_district: '',
         legal_pid: '',
+        liner_material: null,
+        liner_diameter: null,
+        liner_thickness: null,
+        liner_from: null,
+        liner_to: null,
+        linerperforation_set: [{}, {}, {}],
         well_location_description: '',
         latitude: '',
         longitude: '',
@@ -361,8 +440,24 @@ export default {
         filter_pack_from: '',
         filter_pack_to: '',
         filter_pack_thickness: '',
-        filter_pack_material_code: '',
-        filter_pack_material_thickness: '',
+        filter_pack_material: '',
+        filter_pack_material_size: '',
+        water_quality_characteristics: [],
+        water_quality_colour: '',
+        water_quality_odour: '',
+        ems_id: '',
+        total_depth_drilled: '',
+        finished_well_depth: '',
+        final_casing_stick_up: '',
+        bedrock_depth: '',
+        static_water_level: '',
+        well_yield: '',
+        artesian_flow: '',
+        artesian_pressure: '',
+        well_cap_type: '',
+        well_disinfected: 'False',
+        comments: '',
+        alternative_specs_submitted: 'False',
 
         // non-form fields that should be saved with form
         meta: {

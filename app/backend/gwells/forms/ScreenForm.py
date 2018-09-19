@@ -11,6 +11,7 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
+# TODO: Delete this file once Submissions has been completed using Vue.js
 from django import forms
 from django.utils.safestring import mark_safe
 from django.forms.models import inlineformset_factory
@@ -33,10 +34,10 @@ class ScreenForm(forms.ModelForm):
         self.helper.layout = Layout(
             HTML('<tr valign="top">'),
             HTML('<td width="60">'),
-            'screen_from',
+            'start',
             HTML('</td>'),
             HTML('<td width="60">'),
-            'screen_to',
+            'end',
             HTML('</td>'),
             HTML('<td width="70">'),
             'internal_diameter',
@@ -54,11 +55,11 @@ class ScreenForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super(ScreenForm, self).clean()
 
-        screen_from = cleaned_data.get('screen_from')
-        screen_to = cleaned_data.get('screen_to')
+        start = cleaned_data.get('start')
+        end = cleaned_data.get('end')
         errors = []
 
-        if screen_from and screen_to and screen_to < screen_from:
+        if start and end and end < start:
             errors.append('To must be greater than or equal to From.')
 
         if len(errors) > 0:
@@ -68,4 +69,4 @@ class ScreenForm(forms.ModelForm):
 
     class Meta:
         model = Screen
-        fields = ['screen_from', 'screen_to', 'internal_diameter', 'assembly_type', 'slot_size']
+        fields = ['start', 'end', 'internal_diameter', 'assembly_type', 'slot_size']

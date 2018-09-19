@@ -24,7 +24,6 @@ from gwells.models import AuditModel, ProvinceStateCode
 User = get_user_model()
 logger = logging.getLogger(__name__)
 
-
 @reversion.register()
 class ActivityCode(AuditModel):
     """
