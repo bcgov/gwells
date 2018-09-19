@@ -16,6 +16,7 @@ from django.db import models
 from gwells.models import AuditModel
 from django.core.validators import MinValueValidator, MaxValueValidator
 
+
 class AquiferMaterial(AuditModel):
     """
     Material choices for describing Aquifer Material
@@ -41,6 +42,7 @@ class AquiferMaterial(AuditModel):
 
     def __str__(self):
         return '{} - {}'.format(self.code, self.description)
+
 
 class AquiferSubtype(AuditModel):
     """
@@ -75,6 +77,7 @@ class AquiferSubtype(AuditModel):
     def __str__(self):
         return '{} - {}'.format(self.code, self.description)
 
+
 class AquiferProductivity(AuditModel):
     """
     Productivity choices for describing Aquifer 
@@ -97,6 +100,7 @@ class AquiferProductivity(AuditModel):
 
     def __str__(self):
         return '{} - {}'.format(self.code, self.description)
+
 
 class AquiferDemand(AuditModel):
     """
@@ -121,6 +125,7 @@ class AquiferDemand(AuditModel):
     def __str__(self):
         return '{} - {}'.format(self.code, self.description)
 
+
 class WaterUse(AuditModel):
     """
     Type of Known Water Use choices for describing Aquifer 
@@ -144,6 +149,7 @@ class WaterUse(AuditModel):
     def __str__(self):
         return '{} - {}'.format(self.code, self.description)
 
+
 class QualityConcern(AuditModel):
     """
     Isolated
@@ -165,6 +171,7 @@ class QualityConcern(AuditModel):
 
     def __str__(self):
         return '{} - {}'.format(self.code, self.description)
+
 
 class Aquifer(AuditModel):
     """

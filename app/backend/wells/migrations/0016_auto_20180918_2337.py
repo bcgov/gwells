@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('aquifers', '0001_initial'),
-        ('wells', '0012_load_water_quality_codes'),
+        ('wells', '0015_auto_20180917_2143'),
     ]
 
     operations = [
