@@ -96,16 +96,24 @@ Map context = [
     'name': 'gwells',
     'uuid' : "${env.JOB_BASE_NAME}-${env.BUILD_NUMBER}-${env.CHANGE_ID}",
     'env': [
-        'dev':[:],
+        'dev':[
+            'params':[
+                'host':'gwells-dev.pathfinder.gov.bc.ca',
+                'host_path':"${env.JOB_BASE_NAME.toLowerCase()}",
+                'DB_PVC_SIZE':'1Gi'
+            ]
+        ],
         'test':[
             'params':[
                 'host':'gwells-test.pathfinder.gov.bc.ca',
+                'host_path':'gwells',
                 'DB_PVC_SIZE':'5Gi'
             ]
         ],
         'prod':[
             'params':[
                 'host':'gwells-prod.pathfinder.gov.bc.ca',
+                'host_path':'gwells',
                 'DB_PVC_SIZE':'5Gi'
             ]
         ]
@@ -130,7 +138,8 @@ Map context = [
             [
                 'file':'openshift/backend.dc.json',
                 'params':[
-                    'HOST':'${env[DEPLOY_ENV_NAME]?.params?.host?:("gwells" + deployments[DEPLOY_ENV_NAME].dcSuffix + "-" + deployments[DEPLOY_ENV_NAME].projectName + ".pathfinder.gov.bc.ca")}'
+                    'HOST':'${env[DEPLOY_ENV_NAME]?.params?.host?:("gwells" + "-" + DEPLOY_ENV_NAME + ".pathfinder.gov.bc.ca")}',
+                    'HOST_PATH':'${env[DEPLOY_ENV_NAME]?.params?.host_path?:("gwells")}'
                 ]
             ]
         ]
@@ -245,7 +254,7 @@ parallel (
                         String podName = openshift.withProject(projectName){
                             return openshift.selector('pod', ['deploymentconfig':deploymentConfigName]).objects()[0].metadata.name
                         }
-                                                    
+
                         sh "oc exec '${podName}' -n '${projectName}' -- bash -c '\
                             cd /opt/app-root/src/backend; \
                             python manage.py migrate; \

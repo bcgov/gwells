@@ -50,7 +50,7 @@ module.exports = {
     // Paths
     assetsRoot: path.resolve(__dirname, '../../backend/gwells/static/vue'),
     assetsSubDirectory: 'bundles',
-    assetsPublicPath: '/gwells/static/vue/',
+    assetsPublicPath: path.resolve('/' + process.env.APP_CONTEXT_ROOT + '/static/vue/'),
 
     /**
      * Source Maps

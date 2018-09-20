@@ -24,6 +24,11 @@
             "name": "HOST",
             "required": false,
             "value": ""
+        },
+        {
+            "name": "HOST_PATH",
+            "required": false,
+            "value": "gwells"
         }
     ],
     "objects": [
@@ -473,7 +478,7 @@
                                     },
                                     {
                                         "name": "APP_CONTEXT_ROOT",
-                                        "value": "gwells"
+                                        "value": "${HOST_PATH}"
                                     },
                                     {
                                         "name": "SESSION_COOKIE_SECURE",
@@ -571,7 +576,7 @@
                                 },
                                 "livenessProbe": {
                                     "httpGet": {
-                                        "path": "/gwells/health",
+                                        "path": "/${HOST_PATH}/health",
                                         "port": 8080,
                                         "scheme": "HTTP"
                                     },
@@ -583,7 +588,7 @@
                                 },
                                 "readinessProbe": {
                                     "httpGet": {
-                                        "path": "/gwells/health",
+                                        "path": "/${HOST_PATH}/health",
                                         "port": 8080,
                                         "scheme": "HTTP"
                                     },
@@ -666,7 +671,7 @@
             },
             "spec": {
                 "host": "${HOST}",
-                "path": "/gwells",
+                "path": "/${HOST_PATH}",
                 "to": {
                     "kind": "Service",
                     "name": "gwells${NAME_SUFFIX}",
