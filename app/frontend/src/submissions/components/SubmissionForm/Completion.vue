@@ -1,6 +1,6 @@
 <template>
   <fieldset>
-    <legend>Step 14: Well Completion Data</legend>
+    <legend>Well Completion Data</legend>
     <b-row>
       <b-col cols="12" md="6" lg="4">
         <form-input

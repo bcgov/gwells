@@ -42,14 +42,21 @@
           :wellSubclass.sync="form.well_subclass"
           :intendedWaterUse.sync="form.intended_water_use"
           :units.sync="units"
-          :personResponsible.sync="form.driller_responsible"
           :idPlateNumber.sync="form.identification_plate_number"
           :wellPlateAttached.sync="form.well_plate_attached"
+          :workStartDate.sync="form.work_start_date"
+          :workEndDate.sync="form.work_end_date"
+          :errors="errors"
+          :fieldsLoaded="fieldsLoaded"
+        />
+
+        <!-- Person responsible for work -->
+        <person-responsible class="my-3"
+          v-if="formStep === 1 || formIsFlat"
           :drillerName.sync="form.driller_name"
           :consultantName.sync="form.consultant_name"
           :consultantCompany.sync="form.consultant_company"
-          :workStartDate.sync="form.work_start_date"
-          :workEndDate.sync="form.work_end_date"
+          :personResponsible.sync="form.driller_responsible"
           :drillerSameAsPersonResponsible.sync="form.meta.drillerSameAsPersonResponsible"
           :errors="errors"
           :fieldsLoaded="fieldsLoaded"
@@ -283,6 +290,7 @@ import ApiService from '@/common/services/ApiService.js'
 import { FETCH_CODES } from '../store/actions.types.js'
 import inputFormatMixin from '@/common/inputFormatMixin.js'
 import Type from '@/submissions/components/SubmissionForm/Type.vue'
+import PersonResponsible from '@/submissions/components/SubmissionForm/PersonResponsible.vue'
 import Owner from '@/submissions/components/SubmissionForm/Owner.vue'
 import Location from '@/submissions/components/SubmissionForm/Location.vue'
 import Coords from '@/submissions/components/SubmissionForm/Coords.vue'
@@ -302,6 +310,7 @@ export default {
   mixins: [inputFormatMixin],
   components: {
     Type,
+    PersonResponsible,
     Owner,
     Location,
     Coords,

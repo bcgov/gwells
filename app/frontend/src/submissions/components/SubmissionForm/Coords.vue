@@ -1,7 +1,7 @@
 <template>
   <div>
     <fieldset>
-      <legend>Step 4: Geographic Coordinates</legend>
+      <legend>Geographic Coordinates</legend>
       <p>To determine coordinates using a Global Positioning System (GPS), set the datum to North America Datum of 1983 (NAD 83), the current ministry standard for mapping.</p>
       <b-card no-body class="p-3 m-1 m-md-1">
         <b-row>

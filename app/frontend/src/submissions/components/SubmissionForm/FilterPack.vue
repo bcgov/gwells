@@ -1,6 +1,6 @@
 <template>
   <fieldset>
-    <legend>Step 10: Filter Pack</legend>
+    <legend>Filter Pack</legend>
     <b-row>
       <b-col cols="12" md="6" lg="3">
         <form-input

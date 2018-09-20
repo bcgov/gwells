@@ -1,6 +1,6 @@
 <template>
   <fieldset>
-    <legend>Step 12: Well Yield Estimation</legend>
+    <legend>Well Yield Estimation</legend>
     <div v-for="(data, index) in productionData" :key="`productionDataSet${index}`">
       <b-row>
         <b-col cols="12" md="4" lg="3">

@@ -1,6 +1,6 @@
 <template>
   <fieldset>
-    <legend>Step 2: Well Owner</legend>
+    <legend>Well Owner</legend>
     <b-row>
       <b-col cols="12" md="6">
         <form-input id="ownerFullName" label="Well Owner Name *" v-model="ownerFullNameInput" :errors="errors['owner_full_name']" :loaded="fieldsLoaded['owner_full_name']"></form-input>

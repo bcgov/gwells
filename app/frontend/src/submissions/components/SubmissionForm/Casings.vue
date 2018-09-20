@@ -1,6 +1,6 @@
 <template>
   <fieldset>
-    <legend>Step 6: Casing Details</legend>
+    <legend>Casing Details</legend>
     <table class="table table-sm">
       <thead>
         <tr>

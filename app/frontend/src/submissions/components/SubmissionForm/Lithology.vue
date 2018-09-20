@@ -1,6 +1,6 @@
 <template>
   <fieldset>
-    <legend>Step 5: Lithology</legend>
+    <legend>Lithology</legend>
     <div class="table-responsive">
       <table class="table table-sm">
         <thead>

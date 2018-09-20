@@ -1,6 +1,6 @@
 <template>
   <fieldset>
-    <legend>Step 15: Comments</legend>
+    <legend>Comments</legend>
     <b-row>
       <b-col cols="12" md="8">
         <b-form-group label="Comments" id="commentsGroup">

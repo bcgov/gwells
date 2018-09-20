@@ -1,6 +1,6 @@
 <template>
     <fieldset>
-      <legend>Step 3: Well Location</legend>
+      <legend>Well Location</legend>
       <b-row>
         <b-col>
           <p>Please provide as much information as possible. A minimum of one type of well location information is required below:</p>

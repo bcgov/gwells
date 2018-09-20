@@ -1,6 +1,6 @@
 <template>
   <fieldset>
-    <legend>Step 9: Screen Information</legend>
+    <legend>Screen Information</legend>
     <b-row>
       <b-col cols="12" md="4" lg="3">
         <form-input

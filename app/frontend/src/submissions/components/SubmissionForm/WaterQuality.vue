@@ -1,6 +1,6 @@
 <template>
   <fieldset>
-    <legend>Step 13: Water Quality</legend>
+    <legend>Water Quality</legend>
     <b-row>
       <b-col cols="12" md="6">
         <b-form-group label="Characteristics" id="waterCharacteristicsGroup">

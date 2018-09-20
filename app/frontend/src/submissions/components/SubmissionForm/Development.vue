@@ -1,6 +1,6 @@
 <template>
   <fieldset>
-    <legend>Step 11: Well Development</legend>
+    <legend>Well Development</legend>
     <b-row>
       <b-col cols="12" md="4" lg="3">
         <form-input
