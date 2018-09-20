@@ -37,6 +37,53 @@ void notifyStageStatus (Map context, String name, String status) {
 }
 
 
+// Check if a stage is enabled (true|false in context)
+boolean isEnabled (Map context, String stageName) {
+    def stageOpt =(context?.stages?:[:])[stageName]
+    return (stageOpt == null || stageOpt == true)
+}
+
+
+// Python tests can run early an in the container if Code Quality is disabled
+void unitTestsPython (Map context, boolean isQuick=false) {
+    boolean doCodeQuality = isEnabled( context, 'Code Quality' )
+    if (doCodeQuality && !isQuick) {
+        try {
+            echo "Running tests with artifact stash for SonarQube"
+            sh script: '''#!/usr/bin/container-entrypoint /bin/sh
+                cd /opt/app-root/src/backend
+                DATABASE_ENGINE=sqlite DEBUG=False TEMPLATE_DEBUG=False python manage.py test -c nose.cfg
+            '''
+            sh script: '''#!/usr/bin/container-entrypoint /bin/sh
+                cp /opt/app-root/src/backend/nosetests.xml ./
+                cp /opt/app-root/src/backend/coverage.xml ./
+            '''
+            stash includes: 'nosetests.xml,coverage.xml', name: 'coverage'
+        } finally {
+            stash includes: 'nosetests.xml,coverage.xml', name: 'coverage'
+            junit 'nosetests.xml'
+        }
+    } else if (!doCodeQuality && isQuick){
+        echo "Running short tests w/o artifact stash since SonarQube is disabled"
+        String deploymentConfigName = "gwells${context.deployments['dev'].dcSuffix}"
+        String projectName = context.deployments['dev'].projectName
+        String podName = openshift.withProject(projectName){
+            return openshift.selector('pod', ['deploymentconfig':deploymentConfigName]).objects()[1].metadata.name
+        }
+        sh "oc exec '${podName}' -n '${projectName}' -- bash -c '\
+            cd /opt/app-root/src/backend; \
+            DATABASE_ENGINE=sqlite DEBUG=False TEMPLATE_DEBUG=False python manage.py test -c nose.cfg \
+        '"
+    } else {
+        echo "Python unit tests are being skipped at this stage"
+        echo "doCodeQuality = ${doCodeQuality}"
+        echo "isQuick = ${isQuick}"
+    }
+}
+void unitTestsPythonQuick (Map context) {unitTestsPython (context, true)}
+void unitTestsPythonFull (Map context) {unitTestsPython (context, false)}
+
+
 /* _Stage wrapper:
     - runs stages against true|false in map context
     - receives stages defined separately in closures (body)
@@ -44,11 +91,8 @@ void notifyStageStatus (Map context, String name, String status) {
 */
 def _stage(String name, Map context, boolean retry=0, boolean withCommitStatus=true, Closure body) {
     timestamps {
-        def stageOpt =(context?.stages?:[:])[name]
-        boolean isEnabled=(stageOpt == null || stageOpt == true)
-        echo "Running Stage '${name}' - enabled:${isEnabled}"
-
-        if (isEnabled){
+        echo "Running Stage '${name}'"
+        if (isEnabled(context,name)){
             stage(name) {
                 waitUntil {
                     notifyStageStatus(context, name, 'PENDING')
@@ -57,6 +101,7 @@ def _stage(String name, Map context, boolean retry=0, boolean withCommitStatus=t
                         body()
                         isDone=true
                         notifyStageStatus(context, name, 'SUCCESS')
+                        echo "Completed Stage '${name}'"
                     }catch (ex){
                         notifyStageStatus(context, name, 'FAILURE')
                         echo "${stackTraceAsString(ex)}"
@@ -137,9 +182,9 @@ Map context = [
     ],
     stages:[
         'Load Fixtures': true,
-        'API Test': true,
-        'Functional Tests': false,
-        'Unit Test': true,
+        'API Tests': true,
+        'Functional Tests': true,
+        'Unit Tests': true,
         'Code Quality': false,
         'ZAP Security Scan': false
     ],
@@ -212,7 +257,6 @@ _stage('Build', context) {
 boolean isDeployed = false
 boolean isFixtured = false
 boolean isUnitTested = false
-boolean runCodeQuality=((context?.stages?:[:])['Code Quality'] == true)
 parallel (
     "Deploy and Load Fixtures" : {
 
@@ -248,7 +292,7 @@ parallel (
 
                         /* All of these commands could be run in one go, and be more performant, but then
                         it becomes difficult to see which on of the steps failed. Instead, each step is
-                        executed by itself. */                    
+                        executed by itself. */
                         sh "oc exec '${podName}' -n '${projectName}' -- bash -c '\
                             cd /opt/app-root/src/backend; \
                             python manage.py migrate; \
@@ -271,20 +315,8 @@ parallel (
                         '"
                         isFixtured = true
                     },
-                    "Unit Test: Python": {
-                        sleep 30
-                        String deploymentConfigName = "gwells${context.deployments['dev'].dcSuffix}"
-                        String projectName = context.deployments['dev'].projectName
-                        String podName = openshift.withProject(projectName){
-                            return openshift.selector('pod', ['deploymentconfig':deploymentConfigName]).objects()[1].metadata.name
-                        }
-                        if (!runCodeQuality){
-                            echo "Since Code Quality is disabled Unit Test: Python is executing early"
-                            sh "oc exec '${podName}' -n '${projectName}' -- bash -c '\
-                                cd /opt/app-root/src/backend; \
-                                DATABASE_ENGINE=sqlite DEBUG=False TEMPLATE_DEBUG=False python manage.py test -c nose.cfg \
-                            '"
-                        }
+                    "Unit Tests: Python": {
+                        unitTestsPythonQuick (context)
                     }
                 )
             }
@@ -332,41 +364,22 @@ parallel (
                         '''
 
                         parallel (
-                            "Unit Test: Python (w/ ZAP)": {
-                                if (runCodeQuality) {
-                                    try {
-                                        sh script: '''#!/usr/bin/container-entrypoint /bin/sh
-                                            cd /opt/app-root/src/backend
-                                            DATABASE_ENGINE=sqlite DEBUG=False TEMPLATE_DEBUG=False python manage.py test -c nose.cfg
-                                        '''
-                                        sh script: '''#!/usr/bin/container-entrypoint /bin/sh
-                                            cp /opt/app-root/src/backend/nosetests.xml ./
-                                            cp /opt/app-root/src/backend/coverage.xml ./
-                                        '''
-                                        stash includes: 'nosetests.xml,coverage.xml', name: 'coverage'
-                                    } finally {
-                                        stash includes: 'nosetests.xml,coverage.xml', name: 'coverage'
-                                        junit 'nosetests.xml'
-                                    }
-                                } else {
-                                    echo "Since Code Quality is disabled Unit Test: Python has already run"
-                                }
+                            "Unit Tests: Python (w/ ZAP)": {
+                                unitTestsPythonFull (context)
                             },
-                            "Unit Test: Node": {
+                            "Unit Tests: Node": {
                                 try {
                                     sh script: '''#!/usr/bin/container-entrypoint /bin/sh
                                         cd /opt/app-root/src/frontend
                                         npm test
                                     '''
-                                    if (runCodeQuality) {
+                                } finally {
+                                    if (isEnabled( context, 'Code Quality' )) {
                                         sh script: '''#!/usr/bin/container-entrypoint /bin/sh
                                             mkdir -p frontend/test/
                                             cp -R /opt/app-root/src/frontend/test/unit ./frontend/test/
                                             cp /opt/app-root/src/frontend/junit.xml ./frontend/
                                         '''
-                                    }
-                                } finally {
-                                    if (runCodeQuality) {
                                         archiveArtifacts allowEmptyArchive: true, artifacts: 'frontend/test/unit/**/*'
                                         stash includes: 'frontend/test/unit/coverage/clover.xml', name: 'nodecoverage'
                                         stash includes: 'frontend/junit.xml', name: 'nodejunit'
@@ -446,6 +459,10 @@ parallel (
         } //end stage
     }, //end branch
     "Functional Tests":{
+        waitUntil {
+            sleep 5
+            return isDeployed
+        }
         _stage('Functional Tests', context){
             String baseURL = context.deployments['dev'].environmentUrl.substring(
                 0,
@@ -490,39 +507,46 @@ parallel (
                             sleep 5
                             return isFixtured
                         }
+                        String gradleExitCode = "0"
                         try {
-                            sh './gradlew chromeHeadlessTest'
+                            gradleExitCode = sh([
+                                script: "./gradlew chromeHeadlessTest",
+                                returnStdout: true
+                            ]).trim()
                         } finally {
-                            archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/geb/**/*'
-                            junit testResults:'build/test-results/**/*.xml', allowEmptyResults:true
-                            publishHTML (
-                                target: [
-                                    allowMissing: true,
-                                    alwaysLinkToLastBuild: false,
-                                    keepAll: true,
-                                    reportDir: 'build/reports/spock',
-                                    reportFiles: 'index.html',
-                                    reportName: "Test: BDD Spock Report"
-                                ]
-                            )
-                            publishHTML (
-                                target: [
-                                    allowMissing: true,
-                                    alwaysLinkToLastBuild: false,
-                                    keepAll: true,
-                                    reportDir: 'build/reports/tests/chromeHeadlessTest',
-                                    reportFiles: 'index.html',
-                                    reportName: "Test: Full Test Report"
-                                ]
-                            )
+                            echo "gradleExitCode: ${gradleExitCode}"
+                            if (gradleExitCode != "0" ) {
+                                archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/geb/**/*'
+                                junit testResults:'build/test-results/**/*.xml', allowEmptyResults:true
+                                publishHTML (
+                                    target: [
+                                        allowMissing: true,
+                                        alwaysLinkToLastBuild: false,
+                                        keepAll: true,
+                                        reportDir: 'build/reports/spock',
+                                        reportFiles: 'index.html',
+                                        reportName: "Test: BDD Spock Report"
+                                    ]
+                                )
+                                publishHTML (
+                                    target: [
+                                        allowMissing: true,
+                                        alwaysLinkToLastBuild: false,
+                                        keepAll: true,
+                                        reportDir: 'build/reports/tests/chromeHeadlessTest',
+                                        reportFiles: 'index.html',
+                                        reportName: "Test: Full Test Report"
+                                    ]
+                                )
+                            }
                         }
                     } //end dir
                 } //end node
             } //end podTemplate
         } //end stage
     }, //end branch
-    "API Test": {
-        _stage('API Test', context) {
+    "API Tests": {
+        _stage('API Tests', context) {
             waitUntil {
                 sleep 5
                 return isDeployed
