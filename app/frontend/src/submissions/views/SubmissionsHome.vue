@@ -34,7 +34,7 @@
         </b-row>
 
         <!-- Type of well -->
-        <type class="my-3"
+        <well-type class="my-3"
           v-if="formStep === 1 || formIsFlat"
           :wellTagNumber.sync="form.well"
           :wellActivityType.sync="form.well_activity_type"
@@ -52,7 +52,7 @@
 
         <!-- Person responsible for work -->
         <person-responsible class="my-3"
-          v-if="formStep === 1 || formIsFlat"
+          v-if="formStep === 2 || formIsFlat"
           :drillerName.sync="form.driller_name"
           :consultantName.sync="form.consultant_name"
           :consultantCompany.sync="form.consultant_company"
@@ -64,7 +64,7 @@
 
         <!-- Owner information -->
         <owner class="my-3"
-          v-if="formStep === 2 || formIsFlat"
+          v-if="formStep === 3 || formIsFlat"
           :ownerFullName.sync="form.owner_full_name"
           :ownerMailingAddress.sync="form.owner_mailing_address"
           :ownerProvinceState.sync="form.owner_province_state"
@@ -76,7 +76,7 @@
 
         <!-- Well location -->
         <location class="my-3"
-          v-if="formStep === 3 || formIsFlat"
+          v-if="formStep === 4 || formIsFlat"
           :streetAddress.sync="form.street_address"
           :city.sync="form.city"
           :legalLot.sync="form.legal_lot"
@@ -93,7 +93,7 @@
 
         <!-- Coords and Method of Drilling -->
         <coords class="my-3"
-          v-if="formStep === 4 || formIsFlat"
+          v-if="formStep === 5 || formIsFlat"
           :latitude.sync="form.latitude"
           :longitude.sync="form.longitude"
           :groundElevation.sync="form.ground_elevation"
@@ -105,13 +105,13 @@
 
         <!-- Lithology -->
         <lithology class="my-3"
-          v-if="formStep === 5 || formIsFlat"
+          v-if="formStep === 6 || formIsFlat"
           :lithology.sync="form.lithology_set"
         />
 
         <!-- Casings -->
         <casings class="my-3"
-          v-if="formStep === 6 || formIsFlat"
+          v-if="formStep === 7 || formIsFlat"
           :casings.sync="form.casing_set"
           :errors="errors"
           :fieldsLoaded="fieldsLoaded"
@@ -119,7 +119,7 @@
 
         <!-- Surface Seal / Backfill Material -->
         <backfill class="my-3"
-          v-if="formStep === 7 || formIsFlat"
+          v-if="formStep === 8 || formIsFlat"
           :surfaceSealMaterial.sync="form.surface_seal_material"
           :surfaceSealDepth.sync="form.surface_seal_depth"
           :surfaceSealThickness.sync="form.surface_seal_thickness"
@@ -130,7 +130,7 @@
 
         <!-- Liner Information -->
         <liner class="my-3"
-          v-if="formStep === 8 || formIsFlat"
+          v-if="formStep === 9 || formIsFlat"
           :linerMaterial.sync="form.liner_material"
           :linerDiameter.sync="form.liner_diameter"
           :linerThickness.sync="form.liner_thickness"
@@ -143,7 +143,7 @@
 
         <!-- Screens -->
         <screens class="my-3"
-          v-if="formStep === 9 || formIsFlat"
+          v-if="formStep === 10 || formIsFlat"
           :screenIntakeMethod.sync="form.screen_intake_method"
           :screenType.sync="form.screen_type"
           :screenMaterial.sync="form.screen_material"
@@ -155,7 +155,7 @@
 
         <!-- Filter Pack -->
         <filterPack class="my-3"
-          v-if="formStep === 10 || formIsFlat"
+          v-if="formStep === 11 || formIsFlat"
           :filterPackFrom.sync="form.filter_pack_from"
           :filterPackTo.sync="form.filter_pack_to"
           :filterPackThickness.sync="form.filter_pack_thickness"
@@ -165,7 +165,7 @@
 
         <!-- Well Development -->
         <development class="my-3"
-          v-if="formStep === 11 || formIsFlat"
+          v-if="formStep === 12 || formIsFlat"
           :developmentMethod.sync="form.development_method"
           :developmentHours.sync="form.development_hours"
           :developmentNotes.sync="form.development_notes"
@@ -173,13 +173,13 @@
 
         <!-- Yield (Production Data) -->
         <yield class="my-3"
-          v-if="formStep === 12 || formIsFlat"
+          v-if="formStep === 13 || formIsFlat"
           :productionData.sync="form.production_data_set"
         />
 
         <!-- Water Quality -->
         <water-quality class="my-3"
-          v-if="formStep === 13 || formIsFlat"
+          v-if="formStep === 14 || formIsFlat"
           :waterQualityCharacteristics.sync="form.water_quality_characteristics"
           :waterQualityColour.sync="form.water_quality_colour"
           :waterQualityOdour.sync="form.water_quality_odour"
@@ -188,7 +188,7 @@
 
         <!-- Well Completion Data -->
         <completion class="my-3"
-          v-if="formStep === 14 || formIsFlat"
+          v-if="formStep === 15 || formIsFlat"
           :totalDepthDrilled.sync="form.total_depth_drilled"
           :finishedWellDepth.sync="form.finished_well_depth"
           :finalCasingStickUp.sync="form.final_casing_stick_up"
@@ -203,7 +203,7 @@
 
         <!-- Comments -->
         <comments class="my-3"
-          v-if="formStep === 15 || formIsFlat"
+          v-if="formStep === 16 || formIsFlat"
           :comments.sync="form.comments"
           :alternativeSpecsSubmitted.sync="form.alternative_specs_submitted"
         />
@@ -289,7 +289,7 @@
 import ApiService from '@/common/services/ApiService.js'
 import { FETCH_CODES } from '../store/actions.types.js'
 import inputFormatMixin from '@/common/inputFormatMixin.js'
-import Type from '@/submissions/components/SubmissionForm/Type.vue'
+import WellType from '@/submissions/components/SubmissionForm/WellType.vue'
 import PersonResponsible from '@/submissions/components/SubmissionForm/PersonResponsible.vue'
 import Owner from '@/submissions/components/SubmissionForm/Owner.vue'
 import Location from '@/submissions/components/SubmissionForm/Location.vue'
@@ -309,7 +309,7 @@ export default {
   name: 'SubmissionsHome',
   mixins: [inputFormatMixin],
   components: {
-    Type,
+    WellType,
     PersonResponsible,
     Owner,
     Location,
