@@ -95,14 +95,14 @@
                     :loaded="getFieldsLoaded(index).end"/>
                 </td>
                 <td>
-                  <a href="#" v-on:click.prevent="removeRow(index)">remove</a>
+                  <b-btn size="sm" variant="primary" @click="removeRow(index)" class="mt-2"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
                 </td>
               </tr>
             </thead>
             <tbody>
             </tbody>
           </table>
-          <a href="#" v-on:click.prevent="addRow">add another row</a>
+          <b-btn size="sm" variant="primary" @click="addRow"><i class="fa fa-plus-square-o"></i> Add row</b-btn>
         </b-col>
       </b-row>
   </fieldset>

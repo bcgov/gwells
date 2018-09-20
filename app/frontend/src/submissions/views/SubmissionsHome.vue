@@ -207,7 +207,7 @@
           </b-col>
           <b-col :class="`pr-4 ${formIsFlat ? '':'text-right'}`">
             <b-btn v-if="step < maxSteps && !formIsFlat" @click="step++" variant="primary">Next</b-btn>
-            <b-btn v-else id="formSubmitButton" type="submit" variant="primary" ref="activitySubmitBtn">Submit</b-btn>
+            <b-btn v-else id="formSubmitButton" type="submit" variant="primary" ref="activitySubmitBtn" :disabled="formSubmitLoading">Submit</b-btn>
           </b-col>
         </b-row>
       </b-form>
@@ -357,6 +357,8 @@ export default {
         data.well = data.well.well_tag_number
       }
 
+      this.stripBlankStrings(data)
+
       this.formSubmitLoading = true
       this.formSubmitSuccess = false
       this.formSubmitError = false
@@ -504,6 +506,20 @@ export default {
       // setWellTagNumber is used to link an activity report to a well other than through the dropdown menu.
       // the dropdown menu returns an object so this method also does.
       this.form.well = { well_tag_number: well }
+    },
+    stripBlankStrings (formObject) {
+      // strips blank strings from a form object
+
+      Object.keys(formObject).forEach((key) => {
+        if (typeof formObject[key] === 'object' && formObject[key] !== null) {
+          // descend into nested objects
+          this.stripBlankStrings(formObject[key])
+        }
+
+        if (formObject[key] === '') {
+          delete formObject[key]
+        }
+      })
     }
   },
   watch: {
@@ -566,5 +582,8 @@ export default {
 }
 .input-width-medium {
   max-width: 10rem;
+}
+.btn-sm { // <-- NOT a good solution. Overriding bootstrap is not ideal.
+  line-height: 1; // Either this or increase padding-top
 }
 </style>

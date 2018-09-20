@@ -103,13 +103,13 @@
               <b-form-radio value="True">Yes</b-form-radio>
             </b-form-radio-group>
           </td>
-          <td>
-            <a href="#" v-on:click.prevent="removeRow(casing.id)">remove</a>
+          <td class="align-middle">
+            <b-btn size="sm" variant="primary" @click="removeRow(casing.id)"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
           </td>
         </tr>
       </tbody>
     </table>
-    <a href="#" v-on:click.prevent="addRow">add another row</a>
+    <b-btn size="sm" variant="primary" @click="addRow"><i class="fa fa-plus-square-o"></i> Add row</b-btn>
   </fieldset>
 </template>
 

@@ -118,7 +118,7 @@
                 <form-input list="screenSlotSizeList" group-class="my-1" :id="`screen${index}SlotSize`" aria-label="Screen Slot Size" v-model="screens[index].slot_size"/>
               </td>
               <td class="align-middle">
-                <b-btn size="sm" variant="light" @click="removeScreenRow(index)" :id="`removeScreenRowButton${index}`"><span class="small">Remove</span></b-btn>
+                <b-btn size="sm" variant="primary" @click="removeScreenRow(index)" :id="`removeScreenRowButton${index}`"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
               </td>
             </tr>
           </template>
@@ -128,7 +128,7 @@
     <datalist id="screenSlotSizeList">
       <option v-for="size in screenSlotSizeSuggestions" :key="`screenSlotSizeListOption-${size}`">{{size}}</option>
     </datalist>
-    <b-btn size="sm" variant="light" @click="addScreenRow" id="addScreenRowButton"><i class="fa fa-plus-square-o"></i> Add row</b-btn>
+    <b-btn size="sm" variant="primary" @click="addScreenRow" id="addScreenRowButton"><i class="fa fa-plus-square-o"></i> Add row</b-btn>
   </fieldset>
 </template>
 

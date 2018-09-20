@@ -56,6 +56,9 @@ cd ..
 cd frontend
 npm install
 npm run build
+# Run unit tests in build stage with the code below
+#echo "--> testing and building frontend files"
+#npm run unit -- --runInBand && npm run build
 cd ..
 
 if should_collectstatic; then
@@ -85,6 +88,12 @@ if should_collectstatic; then
     cd ..
   )
 fi
+
+# Run unit tests in build stage with the code below
+#echo "--> running Django unit tests"
+#cd backend
+#python manage.py test -c nose.cfg
+#cd ..
 
 # set permissions for any installed artifacts
 fix-permissions /opt/app-root

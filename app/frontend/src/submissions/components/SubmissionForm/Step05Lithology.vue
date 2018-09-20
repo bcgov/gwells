@@ -83,14 +83,14 @@
                 <b-input aria-label="Observations" v-model="lithology[index].observations"></b-input>
               </td>
               <td class="align-middle">
-                <b-btn size="sm" variant="light" @click="removeLithologyRow(index)" :id="`removeRowButton${index}`"><span class="small">Remove</span></b-btn>
+                <b-btn size="sm" variant="primary" @click="removeLithologyRow(index)" :id="`removeRowButton${index}`"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
               </td>
             </tr>
           </template>
         </tbody>
       </table>
     </div>
-    <b-btn size="sm" variant="light" @click="addLithologyRow" id="addLithologyRowButton"><i class="fa fa-plus-square-o"></i> Add row</b-btn>
+    <b-btn size="sm" variant="primary" @click="addLithologyRow" id="addLithologyRowButton"><i class="fa fa-plus-square-o"></i> Add row</b-btn>
   </fieldset>
 </template>
 
