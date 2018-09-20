@@ -203,10 +203,10 @@
         <!-- Back / Next / Submit controls -->
         <b-row class="mt-5">
           <b-col v-if="!formIsFlat">
-            <b-btn v-if="step > 1" @click="step > 1 ? step-- : null">Back</b-btn>
+            <b-btn v-if="step > 1" @click="step > 1 ? step-- : null" variant="primary">Back</b-btn>
           </b-col>
           <b-col :class="`pr-4 ${formIsFlat ? '':'text-right'}`">
-            <b-btn v-if="step < maxSteps && !formIsFlat" @click="step++">Next</b-btn>
+            <b-btn v-if="step < maxSteps && !formIsFlat" @click="step++" variant="primary">Next</b-btn>
             <b-btn v-else id="formSubmitButton" type="submit" variant="primary" ref="activitySubmitBtn">Submit</b-btn>
           </b-col>
         </b-row>
