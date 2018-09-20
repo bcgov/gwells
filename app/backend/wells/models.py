@@ -28,7 +28,7 @@ from gwells.models.lithology import (
     LithologyMoistureCode, SurficialMaterialCode)
 from registries.models import Person
 from submissions.models import WellActivityCode
-
+from aquifers.models import Aquifer
 
 class DecommissionMethodCode(AuditModel):
     decommission_method_code = models.CharField(primary_key=True, max_length=10, editable=False,
@@ -102,8 +102,8 @@ class WaterQualityCharacteristic(AuditModel):
     """
      The characteristic of the well water, e.g. Fresh, Salty, Clear.
     """
-    water_quality_characteristic_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    code = models.CharField(max_length=10, unique=True)
+
+    code = models.CharField(primary_key=True, max_length=10, db_column='water_quality_characteristic_code')
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
 
@@ -178,8 +178,8 @@ class LinerMaterialCode(AuditModel):
     """
      Liner material installed in a well to protect the well pump or other works in the well from damage.
     """
-    liner_material_code = models.CharField(
-        primary_key=True, max_length=10, editable=False)
+    code = models.CharField(
+        primary_key=True, max_length=10, editable=False, db_column='liner_material_code')
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
 
@@ -700,7 +700,10 @@ class Well(AuditModel):
         max_length=100, blank=True, null=True, verbose_name="Backfill Material")
     decommission_details = models.CharField(
         max_length=250, blank=True, null=True, verbose_name="Decommission Details")
-
+    ems_id = models.CharField(max_length=30, blank=True)
+    aquifer = models.ForeignKey(Aquifer, db_column='aquifer_id',
+                                    on_delete=models.CASCADE, blank=True, null=True,
+                                    verbose_name='Aquifer ID Number')
     tracker = FieldTracker()
 
     class Meta:
@@ -1050,6 +1053,8 @@ class ActivitySubmission(AuditModel):
         WellYieldUnitCode, db_column='well_yield_unit_code', on_delete=models.CASCADE, blank=True, null=True)
     # want to be integer in future
     diameter = models.CharField(max_length=9, blank=True)
+    ems_id = models.CharField(max_length=30, blank=True)
+
 
     tracker = FieldTracker()
 
@@ -1197,29 +1202,31 @@ class LinerPerforation(AuditModel):
     """
     Perforation in a well liner
     """
-    liner_perforation_guid = models.UUIDField(
-        primary_key=True, default=uuid.uuid4, editable=False)
-    activity_submission = models.ForeignKey(
-        ActivitySubmission, db_column='filing_number', on_delete=models.CASCADE, blank=True, null=True)
-    well = models.ForeignKey(Well, db_column='well_tag_number',
-                             on_delete=models.CASCADE, blank=True, null=True)
-    liner_perforation_from = models.DecimalField(
-        max_digits=7, decimal_places=2, verbose_name='Perforated From', blank=False,
-        validators=[MinValueValidator(Decimal('0.00'))])
-    liner_perforation_to = models.DecimalField(
-        max_digits=7, decimal_places=2, verbose_name='Perforated To', blank=False,
-        validators=[MinValueValidator(Decimal('0.01'))])
+    liner_perforation_guid = models.UUIDField(primary_key=True, default=uuid.uuid4,
+                                              editable=False)
+    activity_submission = models.ForeignKey(ActivitySubmission, db_column='filing_number',
+                                            on_delete=models.CASCADE, blank=True, null=True,
+                                            related_name='linerperforation_set')
+    well = models.ForeignKey(Well, db_column='well_tag_number', on_delete=models.CASCADE, blank=True,
+                             null=True, related_name='linerperforation_set')
+    start = models.DecimalField(db_column='liner_perforation_from', max_digits=7, decimal_places=2,
+                                verbose_name='Perforated From', blank=False,
+                                validators=[MinValueValidator(Decimal('0.00'))])
+    end = models.DecimalField(db_column='liner_perforation_to', max_digits=7, decimal_places=2,
+                              verbose_name='Perforated To', blank=False,
+                              validators=[MinValueValidator(Decimal('0.01'))])
 
     class Meta:
+        ordering = ["start", "end"]
         db_table = 'liner_perforation'
 
     def __str__(self):
         if self.activity_submission:
             return 'activity_submission {} {} {}'.format(self.activity_submission,
-                                                         self.liner_perforation_from,
-                                                         self.liner_perforation_to)
+                                                         self.start,
+                                                         self.end)
         else:
-            return 'well {} {} {}'.format(self.well, self.liner_perforation_from, self.liner_perforation_to)
+            return 'well {} {} {}'.format(self.well, self.start, self.end)
 
 
 class Casing(AuditModel):
@@ -1235,10 +1242,10 @@ class Casing(AuditModel):
     well = models.ForeignKey(Well, db_column='well_tag_number', on_delete=models.CASCADE,
                              blank=True, null=True,
                              related_name='casing_set')
-    casing_from = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='From', null=True,
-                                      blank=True, validators=[MinValueValidator(Decimal('0.00'))])
-    casing_to = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='To', null=True, blank=True,
-                                    validators=[MinValueValidator(Decimal('0.01'))])
+    start = models.DecimalField(db_column='casing_from', max_digits=7, decimal_places=2, verbose_name='From',
+                                null=True, blank=True, validators=[MinValueValidator(Decimal('0.00'))])
+    end = models.DecimalField(db_column='casing_to', max_digits=7, decimal_places=2, verbose_name='To',
+                              null=True, blank=True, validators=[MinValueValidator(Decimal('0.01'))])
     diameter = models.DecimalField(max_digits=8, decimal_places=3, verbose_name='Diameter', null=True,
                                    blank=True, validators=[MinValueValidator(Decimal('0.5'))])
     casing_code = models.ForeignKey(CasingCode, db_column='casing_code', on_delete=models.CASCADE,
@@ -1253,20 +1260,19 @@ class Casing(AuditModel):
                                          choices=((False, 'No'), (True, 'Yes')))
 
     class Meta:
-        ordering = ["casing_from", "casing_to"]
+        ordering = ["start", "end"]
         db_table = 'casing'
 
     def __str__(self):
         if self.activity_submission:
-            return 'activity_submission {} {} {}'.format(self.activity_submission, self.casing_from,
-                                                         self.casing_to)
+            return 'activity_submission {} {} {}'.format(self.activity_submission, self.start, self.end)
         else:
-            return 'well {} {} {}'.format(self.well, self.casing_from, self.casing_to)
+            return 'well {} {} {}'.format(self.well, self.start, self.end)
 
     def as_dict(self):
         return {
-            "casing_from": self.casing_from,
-            "casing_to": self.casing_to,
+            "start": self.start,
+            "end": self.end,
             "casing_guid": self.casing_guid,
             "well_tag_number": self.well_tag_number,
             "diameter": self.diameter,
@@ -1282,14 +1288,15 @@ class Screen(AuditModel):
     """
     screen_guid = models.UUIDField(
         primary_key=True, default=uuid.uuid4, editable=False)
-    activity_submission = models.ForeignKey(
-        ActivitySubmission, db_column='filing_number', on_delete=models.CASCADE, blank=True, null=True)
-    well = models.ForeignKey(Well, db_column='well_tag_number',
-                             on_delete=models.CASCADE, blank=True, null=True)
-    screen_from = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='From',
-                                      blank=True, null=True, validators=[MinValueValidator(Decimal('0.00'))])
-    screen_to = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='To',
-                                    blank=False, null=True, validators=[MinValueValidator(Decimal('0.01'))])
+    activity_submission = models.ForeignKey(ActivitySubmission, db_column='filing_number',
+                                            on_delete=models.CASCADE, blank=True, null=True,
+                                            related_name='screen_set')
+    well = models.ForeignKey(Well, db_column='well_tag_number', on_delete=models.CASCADE, blank=True,
+                             null=True, related_name='screen_set')
+    start = models.DecimalField(db_column='screen_from', max_digits=7, decimal_places=2, verbose_name='From',
+                                blank=True, null=True, validators=[MinValueValidator(Decimal('0.00'))])
+    end = models.DecimalField(db_column='screen_to', max_digits=7, decimal_places=2, verbose_name='To',
+                              blank=False, null=True, validators=[MinValueValidator(Decimal('0.01'))])
     internal_diameter = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='Diameter',
                                             blank=True, null=True,
                                             validators=[MinValueValidator(Decimal('0.0'))])
@@ -1301,11 +1308,100 @@ class Screen(AuditModel):
 
     class Meta:
         db_table = 'screen'
-        ordering = ['screen_from', 'screen_to']
+        ordering = ['start', 'end']
 
     def __str__(self):
         if self.activity_submission:
-            return 'activity_submission {} {} {}'.format(self.activity_submission, self.screen_from,
-                                                         self.screen_to)
+            return 'activity_submission {} {} {}'.format(self.activity_submission, self.start,
+                                                         self.end)
         else:
-            return 'well {} {} {}'.format(self.well, self.screen_from, self.screen_to)
+            return 'well {} {} {}'.format(self.well, self.start, self.end)
+
+class AquiferVulnerabilityCode(AuditModel):
+    """
+    Demand choices for describing Aquifer 
+    -------------------
+    High
+    Low
+    Moderate
+    """
+    code = models.CharField(primary_key=True, max_length=1, db_column='aquifer_vulnerability_code')
+    description = models.CharField(max_length=100)
+    display_order = models.PositiveIntegerField()
+
+    effective_date = models.DateTimeField(blank=True, null=True)
+    expiry_date = models.DateTimeField(blank=True, null=True)
+
+    class Meta: 
+        db_table = 'aquifer_vulnerability_code'
+        ordering = ['display_order', 'code']
+        verbose_name_plural = 'Aquifer Vulnerability Codes'
+
+    def __str__(self):
+        return '{} - {}'.format(self.code, self.description)
+
+class WaterQualityColour(AuditModel):
+    """
+    Colour choices for describing water quality
+    """
+    code = models.CharField(primary_key=True, max_length=32, db_column='water_quality_colour_code')
+    description = models.CharField(max_length=100)
+    display_order = models.PositiveIntegerField()
+
+    effective_date = models.DateTimeField(blank=True, null=True)
+    expiry_date = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'water_quality_colour_code'
+
+    def __str__(self):
+        return self.description
+
+"""
+    Hydraulic properties of the well, usually determined via tests.
+"""
+class HydraulicProperty(AuditModel):
+
+    hydraulic_property_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    well = models.ForeignKey(Well, db_column='well_tag_number', to_field='well_tag_number',
+                             on_delete=models.CASCADE, blank=False, null=False)
+    avi = models.ForeignKey(
+        AquiferVulnerabilityCode,
+        db_column='aquifer_vulnerablity_code',
+        blank=True,
+        null=True,
+        on_delete=models.PROTECT,
+        verbose_name="AVI Reference")
+    storativity = models.DecimalField(
+        max_digits=8, decimal_places=7, blank=True, null=True, verbose_name='Storativity')
+    transmissivity = models.DecimalField(
+        max_digits=10, decimal_places=0, blank=True, null=True, verbose_name='Transmissivity')
+    hydraulic_conductivity = models.TextField(
+        max_length=100,
+        blank=True,
+        null=True,
+        verbose_name='Hydraulic Conductivity')
+    specific_storage = models.TextField(
+        max_length=100,
+        blank=True,
+        null=True,
+        verbose_name='Specific Storage')
+    specific_yield = models.DecimalField(
+        max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Specific Yield')
+    testing_method = models.TextField(
+        max_length=100,
+        blank=True,
+        null=True,
+        verbose_name='Testing Method')
+    testing_duration = models.PositiveIntegerField()
+    analytic_solution_type = models.DecimalField(
+        max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Analytic Solution Type')
+    boundary_effect = models.DecimalField(
+        max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Boundary Effect')
+
+    class Meta:
+        db_table = 'hydraulic_property'
+        verbose_name_plural = 'Hydraulic Properties'
+        
+    def __str__(self):
+        return '{} - {}'.format(self.well, self.hydraulic_property_guid)        

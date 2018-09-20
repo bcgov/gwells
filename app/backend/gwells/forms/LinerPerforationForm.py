@@ -11,6 +11,7 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
+# TODO: Delete this file once Submissions has been completed using Vue.js
 from datetime import date
 
 from django import forms
@@ -35,10 +36,10 @@ class LinerPerforationForm(forms.ModelForm):
         self.helper.layout = Layout(
             HTML('<tr valign="top">'),
             HTML('<td>'),
-            'liner_perforation_from',
+            'start',
             HTML('</td>'),
             HTML('<td>'),
-            'liner_perforation_to',
+            'end',
             HTML('</td><td width="75">&nbsp;{% if form.instance.pk %}{{ form.DELETE }}{% endif %}</td>'),
             HTML('</tr>'),
         )
@@ -47,11 +48,11 @@ class LinerPerforationForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super(LinerPerforationForm, self).clean()
 
-        liner_perforation_from = cleaned_data.get('liner_perforation_from')
-        liner_perforation_to = cleaned_data.get('liner_perforation_to')
+        start = cleaned_data.get('start')
+        end = cleaned_data.get('end')
         errors = []
 
-        if liner_perforation_from and liner_perforation_to and liner_perforation_to < liner_perforation_from:
+        if start and end and end < start:
             errors.append('To must be greater than or equal to From.')
 
         if len(errors) > 0:
@@ -61,4 +62,4 @@ class LinerPerforationForm(forms.ModelForm):
 
     class Meta:
         model = LinerPerforation
-        fields = ['liner_perforation_from', 'liner_perforation_to']
+        fields = ['start', 'end']

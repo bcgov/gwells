@@ -13,40 +13,47 @@
 """
 
 from rest_framework import serializers
+import logging
 
 from gwells.models import ProvinceStateCode
 from gwells.serializers import AuditModelSerializer
 from django.db import transaction
-
-from wells.models import Well, ActivitySubmission
-from wells.serializers import CasingSerializer, ScreenSerializer
 import wells.stack
+from wells.models import Well, ActivitySubmission
+from wells.serializers import CasingSerializer, ScreenSerializer, LinerPerforationSerializer
 from wells.models import (
     ActivitySubmission,
-    DrillingMethodCode,
     Casing,
     DevelopmentMethodCode,
+    DrillingMethodCode,
     FilterPackMaterialCode,
     FilterPackMaterialSizeCode,
+    GroundElevationMethodCode,
     IntendedWaterUseCode,
+    LandDistrictCode,
+    LinerMaterialCode,
+    LinerPerforation,
     Screen,
+    ScreenAssemblyTypeCode,
+    ScreenBottomCode,
     ScreenIntakeMethodCode,
-    ScreenTypeCode,
     ScreenMaterialCode,
     ScreenOpeningCode,
-    ScreenBottomCode,
-    ScreenAssemblyTypeCode,
-    GroundElevationMethodCode,
+    ScreenTypeCode,
     SurfaceSealMaterialCode,
     SurfaceSealMethodCode,
     SurficialMaterialCode,
+    WaterQualityCharacteristic,
+    WaterQualityColour,
     Well,
     WellClassCode,
     WellSubclassCode,
     YieldEstimationMethodCode,
-    LandDistrictCode,)
+)
 
 from submissions.models import WellActivityCode
+
+logger = logging.getLogger(__name__)
 
 
 class WellSubmissionSerializer(serializers.ModelSerializer):
@@ -54,6 +61,7 @@ class WellSubmissionSerializer(serializers.ModelSerializer):
 
     casing_set = CasingSerializer(many=True, required=False)
     screen_set = ScreenSerializer(many=True, required=False)
+    linerperforation_set = LinerPerforationSerializer(many=True, required=False)
 
     class Meta:
         model = ActivitySubmission
@@ -142,25 +150,28 @@ class WellSubmissionSerializer(serializers.ModelSerializer):
             "well_yield_unit",
             "diameter",
             "casing_set",
+            "linerperforation_set",
             "screen_set",
         )
 
     @transaction.atomic
     def create(self, validated_data):
-        casings_data = validated_data.pop('casing_set', None)
-        screen_data = validated_data.pop('screen_set', None)
+        # Pop foreign key records
+        FOREIGN_KEYS = {
+            'casing_set': Casing,
+            'screen_set': Screen,
+            'linerperforation_set': LinerPerforation
+        }
+        foreign_keys_data = {}
+        for key in FOREIGN_KEYS.keys():
+            foreign_keys_data[key] = validated_data.pop(key, None)
+        # Create submission
         instance = super().create(validated_data)
-        if casings_data:
-            for casing_data in casings_data:
-                Casing.objects.create(
-                    activity_submission=instance, **casing_data)
-
-        if screen_data:
-            for screen in screen_data:
-                Screen.objects.create(
-                    activity_submission=instance, **screen
-                )
-
+        # Create foreign key records
+        for key, value in foreign_keys_data.items():
+            if value:
+                for data in value:
+                    FOREIGN_KEYS[key].objects.create(activity_submission=instance, **data)
         # Update the well record
         stacker = wells.stack.StackWells()
         stacker.process(instance.filing_number)
@@ -195,12 +206,14 @@ class WellClassCodeSerializer(serializers.ModelSerializer):
         model = WellClassCode
         fields = ('well_class_code', 'description', 'wellsubclasscode_set')
 
+
 class FilterPackMaterialCodeSerializer(serializers.ModelSerializer):
     """Serializes Filter Pack codes/descriptions"""
 
     class Meta:
         model = FilterPackMaterialCode
         fields = ('filter_pack_material_code', 'description')
+
 
 class FilterPackMaterialSizeCodeSerializer(serializers.ModelSerializer):
     """Serializes Filter Pack codes/descriptions"""
@@ -209,6 +222,7 @@ class FilterPackMaterialSizeCodeSerializer(serializers.ModelSerializer):
         model = FilterPackMaterialSizeCode
         fields = ('filter_pack_material_size_code', 'description')
 
+
 class IntendedWaterUseCodeSerializer(serializers.ModelSerializer):
     """Serializes intended water use codes"""
 
@@ -216,12 +230,21 @@ class IntendedWaterUseCodeSerializer(serializers.ModelSerializer):
         model = IntendedWaterUseCode
         fields = ('intended_water_use_code', 'description')
 
+
 class LandDistrictSerializer(serializers.ModelSerializer):
     """Serializes Land District codes/descriptions"""
 
     class Meta:
         model = LandDistrictCode
         fields = ('land_district_code', 'name')
+
+
+class LinerMaterialCodeSerializer(serializers.ModelSerializer):
+    """ serializes Liner Material code/description """
+
+    class Meta:
+        model = LinerMaterialCode
+        fields = ('code', 'description')
 
 
 class ScreenIntakeMethodSerializer(serializers.ModelSerializer):
@@ -326,3 +349,19 @@ class YieldEstimationMethodCodeSerializer(serializers.ModelSerializer):
     class Meta:
         model = YieldEstimationMethodCode
         fields = ('yield_estimation_method_code', 'description')
+
+
+class WaterQualityCharacteristicSerializer(serializers.ModelSerializer):
+    """Serializes water quality characteristic codes"""
+
+    class Meta:
+        model = WaterQualityCharacteristic
+        fields = ('code', 'description')
+
+
+class WaterQualityColourSerializer(serializers.ModelSerializer):
+    """Serializes water colour codes"""
+
+    class Meta:
+        model = WaterQualityColour
+        fields = ('code', 'description')

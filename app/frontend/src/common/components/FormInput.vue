@@ -86,7 +86,9 @@ export default {
     valueField: String,
     textField: String,
     placeholder: String,
-    loaded: String // if changed to true, change contextual state temporarily (e.g. flash green on valid input)
+    loaded: {
+      required: false
+    } // if changed to true, change contextual state temporarily (e.g. flash green on valid input)
   },
   data () {
     return {
@@ -106,7 +108,7 @@ export default {
   },
   watch: {
     loaded () {
-      if (this.loaded && this.loaded.length) {
+      if (this.loaded && String(this.loaded).length) {
         this.updated = true
         setTimeout(() => { this.updated = false }, 500)
       }
