@@ -33,8 +33,8 @@
           </b-col>
         </b-row>
 
-        <!-- Form step 1: Type of well -->
-        <step01-type class="my-3"
+        <!-- Type of well -->
+        <type class="my-3"
           v-if="formStep === 1 || formIsFlat"
           :wellTagNumber.sync="form.well"
           :wellActivityType.sync="form.well_activity_type"
@@ -53,10 +53,10 @@
           :drillerSameAsPersonResponsible.sync="form.meta.drillerSameAsPersonResponsible"
           :errors="errors"
           :fieldsLoaded="fieldsLoaded"
-        ></step01-type>
+        />
 
-        <!-- Step 2: Owner information -->
-        <step02-owner class="my-3"
+        <!-- Owner information -->
+        <owner class="my-3"
           v-if="formStep === 2 || formIsFlat"
           :ownerFullName.sync="form.owner_full_name"
           :ownerMailingAddress.sync="form.owner_mailing_address"
@@ -65,10 +65,10 @@
           :ownerPostalCode.sync="form.owner_postal_code"
           :errors="errors"
           :fieldsLoaded="fieldsLoaded"
-        ></step02-owner>
+        />
 
-        <!-- Step 3: Well location -->
-        <step03-location class="my-3"
+        <!-- Well location -->
+        <location class="my-3"
           v-if="formStep === 3 || formIsFlat"
           :streetAddress.sync="form.street_address"
           :city.sync="form.city"
@@ -82,10 +82,10 @@
           :landDistrict.sync="form.land_district"
           :legalPID.sync="form.legal_pid"
           :wellLocationDescription.sync="form.well_location_description"
-        ></step03-location>
+        />
 
-        <!-- Step 4: Coords and Method of Drilling -->
-        <step04-coords class="my-3"
+        <!-- Coords and Method of Drilling -->
+        <coords class="my-3"
           v-if="formStep === 4 || formIsFlat"
           :latitude.sync="form.latitude"
           :longitude.sync="form.longitude"
@@ -94,25 +94,24 @@
           :drillingMethod.sync="form.drilling_method"
           :otherDrillingMethod.sync="form.other_drilling_method"
           :wellOrientation.sync="form.well_orientation"
-          >
-        </step04-coords>
+        />
 
-        <!-- Step 5: Lithology -->
-        <step05-lithology class="my-3"
+        <!-- Lithology -->
+        <lithology class="my-3"
           v-if="formStep === 5 || formIsFlat"
           :lithology.sync="form.lithology_set"
-        ></step05-lithology>
+        />
 
-        <!-- Step 6: Casings -->
-        <step06-casings class="my-3"
+        <!-- Casings -->
+        <casings class="my-3"
           v-if="formStep === 6 || formIsFlat"
           :casings.sync="form.casing_set"
           :errors="errors"
           :fieldsLoaded="fieldsLoaded"
-          />
+        />
 
-        <!-- Step 7: Surface Seal / Backfill Material -->
-        <step07-backfill class="my-3"
+        <!-- Surface Seal / Backfill Material -->
+        <backfill class="my-3"
           v-if="formStep === 7 || formIsFlat"
           :surfaceSealMaterial.sync="form.surface_seal_material"
           :surfaceSealDepth.sync="form.surface_seal_depth"
@@ -120,7 +119,7 @@
           :surfaceSealMethod.sync="form.surface_seal_method"
           :backfillAboveSurfaceSeal.sync="form.backfill_above_surface_seal"
           :backfillDepth.sync="form.backfill_above_surface_seal_depth"
-        ></step07-backfill>
+        />
 
         <!-- Liner Information -->
         <liner class="my-3"
@@ -135,8 +134,8 @@
           :fieldsLoaded="fieldsLoaded"
         />
 
-        <!-- Step 9: Screens -->
-        <step09-screens class="my-3"
+        <!-- Screens -->
+        <screens class="my-3"
           v-if="formStep === 9 || formIsFlat"
           :screenIntakeMethod.sync="form.screen_intake_method"
           :screenType.sync="form.screen_type"
@@ -145,10 +144,10 @@
           :screenOpening.sync="form.screen_opening"
           :screenBottom.sync="form.screen_bottom"
           :screens.sync="form.screen_set"
-        ></step09-screens>
+        />
 
-        <!-- Step 10: Filter Pack -->
-        <step10-filterPack class="my-3"
+        <!-- Filter Pack -->
+        <filterPack class="my-3"
           v-if="formStep === 10 || formIsFlat"
           :filterPackFrom.sync="form.filter_pack_from"
           :filterPackTo.sync="form.filter_pack_to"
@@ -157,30 +156,31 @@
           :filterPackMaterialSize.sync="form.filter_pack_material_size"
         />
 
-        <!-- Step 11: Well Development -->
-        <step11-development class="my-3"
+        <!-- Well Development -->
+        <development class="my-3"
           v-if="formStep === 11 || formIsFlat"
           :developmentMethod.sync="form.development_method"
           :developmentHours.sync="form.development_hours"
           :developmentNotes.sync="form.development_notes"
-        ></step11-development>
+        />
 
-        <!-- Step 12: Yield (Production Data) -->
-        <step12-yield class="my-3"
+        <!-- Yield (Production Data) -->
+        <yield class="my-3"
           v-if="formStep === 12 || formIsFlat"
           :productionData.sync="form.production_data_set"
-        ></step12-yield>
+        />
 
-        <!-- Step 13: Water Quality -->
-        <step13-water-quality class="my-3"
+        <!-- Water Quality -->
+        <water-quality class="my-3"
           v-if="formStep === 13 || formIsFlat"
           :waterQualityCharacteristics.sync="form.water_quality_characteristics"
           :waterQualityColour.sync="form.water_quality_colour"
           :waterQualityOdour.sync="form.water_quality_odour"
           :emsID.sync="form.ems_id"
-        ></step13-water-quality>
+        />
 
-        <step14-completion class="my-3"
+        <!-- Well Completion Data -->
+        <completion class="my-3"
           v-if="formStep === 14 || formIsFlat"
           :totalDepthDrilled.sync="form.total_depth_drilled"
           :finishedWellDepth.sync="form.finished_well_depth"
@@ -192,13 +192,14 @@
           :artesianPressure.sync="form.artesian_pressure"
           :wellCapType.sync="form.well_cap_type"
           :wellDisinfected.sync="form.well_disinfected"
-        ></step14-completion>
+        />
 
-        <step15-comments class="my-3"
+        <!-- Comments -->
+        <comments class="my-3"
           v-if="formStep === 15 || formIsFlat"
           :comments.sync="form.comments"
           :alternativeSpecsSubmitted.sync="form.alternative_specs_submitted"
-        ></step15-comments>
+        />
 
         <!-- Back / Next / Submit controls -->
         <b-row class="mt-5">
@@ -281,40 +282,40 @@
 import ApiService from '@/common/services/ApiService.js'
 import { FETCH_CODES } from '../store/actions.types.js'
 import inputFormatMixin from '@/common/inputFormatMixin.js'
-import Step01Type from '@/submissions/components/SubmissionForm/Step01Type.vue'
-import Step02Owner from '@/submissions/components/SubmissionForm/Step02Owner.vue'
-import Step03Location from '@/submissions/components/SubmissionForm/Step03Location.vue'
-import Step04Coords from '@/submissions/components/SubmissionForm/Step04Coords.vue'
-import Step05Lithology from '@/submissions/components/SubmissionForm/Step05Lithology.vue'
-import Step06Casings from '@/submissions/components/SubmissionForm/Step06Casings.vue'
-import Step07Backfill from '@/submissions/components/SubmissionForm/Step07Backfill.vue'
+import Type from '@/submissions/components/SubmissionForm/Type.vue'
+import Owner from '@/submissions/components/SubmissionForm/Owner.vue'
+import Location from '@/submissions/components/SubmissionForm/Location.vue'
+import Coords from '@/submissions/components/SubmissionForm/Coords.vue'
+import Lithology from '@/submissions/components/SubmissionForm/Lithology.vue'
+import Casings from '@/submissions/components/SubmissionForm/Casings.vue'
+import Backfill from '@/submissions/components/SubmissionForm/Backfill.vue'
 import Liner from '@/submissions/components/SubmissionForm/Liner.vue'
-import Step09Screens from '@/submissions/components/SubmissionForm/Step09Screens.vue'
-import Step10FilterPack from '@/submissions/components/SubmissionForm/Step10FilterPack.vue'
-import Step11Development from '@/submissions/components/SubmissionForm/Step11Development.vue'
-import Step12Yield from '@/submissions/components/SubmissionForm/Step12Yield.vue'
-import Step13WaterQuality from '@/submissions/components/SubmissionForm/Step13WaterQuality.vue'
-import Step14Completion from '@/submissions/components/SubmissionForm/Step14Completion.vue'
-import Step15Comments from '@/submissions/components/SubmissionForm/Step15Comments.vue'
+import Screens from '@/submissions/components/SubmissionForm/Screens.vue'
+import FilterPack from '@/submissions/components/SubmissionForm/FilterPack.vue'
+import Development from '@/submissions/components/SubmissionForm/Development.vue'
+import Yield from '@/submissions/components/SubmissionForm/Yield.vue'
+import WaterQuality from '@/submissions/components/SubmissionForm/WaterQuality.vue'
+import Completion from '@/submissions/components/SubmissionForm/Completion.vue'
+import Comments from '@/submissions/components/SubmissionForm/Comments.vue'
 export default {
   name: 'SubmissionsHome',
   mixins: [inputFormatMixin],
   components: {
-    Step01Type,
-    Step02Owner,
-    Step03Location,
-    Step04Coords,
-    Step05Lithology,
-    Step06Casings,
-    Step07Backfill,
+    Type,
+    Owner,
+    Location,
+    Coords,
+    Lithology,
+    Casings,
+    Backfill,
     Liner,
-    Step09Screens,
-    Step10FilterPack,
-    Step11Development,
-    Step12Yield,
-    Step13WaterQuality,
-    Step14Completion,
-    Step15Comments
+    Screens,
+    FilterPack,
+    Development,
+    Yield,
+    WaterQuality,
+    Completion,
+    Comments
   },
   data () {
     return {
