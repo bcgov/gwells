@@ -73,10 +73,10 @@
       <table class="table table-sm">
         <thead>
           <th class="font-weight-normal">
-            <div>From</div><div class="small">ft (bgl)</div>
+            <div>From ft (bgl)</div>
           </th>
           <th class="font-weight-normal">
-            <div>To</div><div class="small">ft (bgl)</div>
+            <div>To ft (bgl)</div>
           </th>
           <th class="font-weight-normal">
             Diameter (in)

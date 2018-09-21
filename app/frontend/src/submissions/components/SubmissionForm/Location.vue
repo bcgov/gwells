@@ -4,19 +4,22 @@
       <b-row>
         <b-col>
           <p>Please provide as much information as possible. A minimum of one type of well location information is required below:</p>
-          <p>1) Well location address</p>
+          <p class="d-inline">1) Well location address</p>
+          <div class="d-inline pl-2"><b-form-checkbox v-model="sameAsOwnerAddress">Same as owner address</b-form-checkbox></div>
         </b-col>
       </b-row>
       <b-row>
         <b-col cols="12" md="6">
           <b-form-group label="Street address">
             <v-select
-              v-model="wellAddressInput"
+              v-model="streetAddressInput"
               id="wellAddressSelect"
               :filterable="false"
               taggable
               :options="wellAddressHints"
-              @search="onWellAddressSearch">
+              @search="onWellAddressSearch"
+              :disabled="sameAsOwnerAddress"
+              >
               <template slot="no-options">
                 &nbsp;
               </template>
@@ -30,9 +33,10 @@
               id="wellCity"
               label="City"
               type="text"
-              v-model="wellCityInput"
+              v-model="cityInput"
               :errors="errors['city']"
               :loaded="fieldsLoaded['city']"
+              :disabled="sameAsOwnerAddress"
               >
           </form-input>
         </b-col>
@@ -184,9 +188,13 @@ import axios from 'axios'
 import { mapGetters } from 'vuex'
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 export default {
-  name: 'Step03Location',
+  name: 'Location',
   mixins: [inputBindingsMixin],
   props: {
+    ownerMailingAddress: String,
+    ownerProvinceState: String,
+    ownerCity: String,
+    ownerPostalCode: String,
     city: String,
     streetAddress: String,
     legalLot: String,
@@ -209,23 +217,10 @@ export default {
     },
     errorWellLocationNotProvided: Boolean
   },
-  fields: {
-    wellAddressInput: 'streetAddress',
-    wellCityInput: 'city',
-    legalLotInput: 'legalLot',
-    legalPlanInput: 'legalPlan',
-    legalDistrictLotInput: 'legalDistrictLot',
-    legalBlockInput: 'legalBlock',
-    legalSectionInput: 'legalSection',
-    legalTownshipInput: 'legalTownship',
-    legalRangeInput: 'legalRange',
-    landDistrictInput: 'landDistrict',
-    legalPIDInput: 'legalPID',
-    wellLocationDescriptionInput: 'wellLocationDescription'
-  },
   data () {
     return {
-      wellAddressHints: []
+      wellAddressHints: [],
+      sameAsOwnerAddress: false
     }
   },
   computed: {
@@ -244,6 +239,17 @@ export default {
       if (!(/^(\w+ [ \w]+)/.test(val))) {
         this.wellAddressHints = []
       }
+    },
+    sameAsOwnerAddress (val) {
+      console.log('sameAsOwnerAddress ', val, this.ownerMailingAddress, this.ownerCity)
+      /*
+      ownerMailingAddress: String,
+      ownerProvinceState: String,
+      ownerCity: String,
+      ownerPostalCode: String,
+      */
+      this.streetAddressInput = String(this.ownerMailingAddress)
+      this.cityInput = String(this.ownerCity)
     }
   },
   methods: {

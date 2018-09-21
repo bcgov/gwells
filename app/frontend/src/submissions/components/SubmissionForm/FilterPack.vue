@@ -67,7 +67,7 @@
 import { mapGetters } from 'vuex'
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 export default {
-  name: 'Step10FilterPack',
+  name: 'FilterPack',
   mixins: [inputBindingsMixin],
   props: {
     filterPackFrom: String,

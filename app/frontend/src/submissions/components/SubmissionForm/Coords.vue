@@ -169,7 +169,7 @@
           <form-input
               id="groundElevation"
               label="Ground Elevation"
-              hint="Feet above sea level"
+              hint="ft (asl)"
               v-model.number="groundElevationInput"
               :errors="errors['ground_elevation']"
               :loaded="fieldsLoaded['ground_elevation']"></form-input>
@@ -234,7 +234,7 @@ import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 import { mapGetters } from 'vuex'
 import proj4 from 'proj4'
 export default {
-  name: 'Step04Coords',
+  name: 'Coords',
   mixins: [inputBindingsMixin],
   props: {
     latitude: String,

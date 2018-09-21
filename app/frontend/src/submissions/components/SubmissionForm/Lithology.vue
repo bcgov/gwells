@@ -4,44 +4,46 @@
     <div class="table-responsive">
       <table class="table table-sm">
         <thead>
-          <th class="font-weight-normal">
-            <div>From</div><div class="small">ft (bgl)</div>
-          </th>
-          <th class="font-weight-normal">
-            <div>To</div><div class="small">ft (bgl)</div>
-          </th>
-          <th class="font-weight-normal">
-            Primary Surficial Material
-          </th>
-          <th class="font-weight-normal">
-            Secondary Surficial Material
-          </th>
-          <th class="font-weight-normal">
-            Bedrock
-          </th>
-          <th class="font-weight-normal">
-            Descriptor
-          </th>
-          <th class="font-weight-normal">
-            Bedding
-          </th>
-          <th class="font-weight-normal">
-            Colour
-          </th>
-          <th class="font-weight-normal">
-            Hardness
-          </th>
-          <th class="font-weight-normal">
-            Moisture
-          </th>
-          <th class="font-weight-normal">
-            Water Bearing Flow
-          </th>
-          <th class="font-weight-normal">
-            Observations
-          </th>
-          <th>
-          </th>
+          <tr>
+            <th class="font-weight-normal">
+              <div>From</div><div>ft (bgl)</div>
+            </th>
+            <th class="font-weight-normal">
+              <div>To</div><div>ft (bgl)</div>
+            </th>
+            <th class="font-weight-normal">
+              Primary Surficial Material
+            </th>
+            <th class="font-weight-normal">
+              Secondary Surficial Material
+            </th>
+            <th class="font-weight-normal">
+              Bedrock
+            </th>
+            <th class="font-weight-normal">
+              Descriptor
+            </th>
+            <th class="font-weight-normal">
+              Bedding
+            </th>
+            <th class="font-weight-normal">
+              Colour
+            </th>
+            <th class="font-weight-normal">
+              Hardness
+            </th>
+            <th class="font-weight-normal">
+              Moisture
+            </th>
+            <th class="font-weight-normal">
+              Water Bearing Flow
+            </th>
+            <th class="font-weight-normal">
+              Observations
+            </th>
+            <th>
+            </th>
+          </tr>
         </thead>
         <tbody>
           <template v-for="(row, index) in lithology.length">
@@ -98,7 +100,7 @@
 import { mapGetters } from 'vuex'
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 export default {
-  name: 'Step05Lithology',
+  name: 'Lithology',
   mixins: [inputBindingsMixin],
   props: {
     lithology: {

@@ -44,7 +44,7 @@
           <form-input
             id="linerFrom"
             label="Liner From"
-            hint="feet (below ground level)"
+            hint="ft (bgl)"
             type="number"
             v-model.number="linerFromInput"
             :errors="errors['liner_from']"
@@ -55,7 +55,7 @@
           <form-input
             id="linerTo"
             label="Liner To"
-            hint="feet (below ground level)"
+            hint="ft (bgl)"
             type="number"
             v-model.number="linerToInput"
             :errors="errors['liner_to']"
@@ -71,8 +71,8 @@
           <table class="table table-sm">
             <thead>
               <tr>
-                <th>Perforated From</th>
-                <th>Perforated To</th>
+                <th class="font-weight-normal">Perforated From ft (bgl)</th>
+                <th class="font-weight-normal">Perforated To ft (bgl)</th>
                 <th></th>
               </tr>
               <tr v-for="(liner, index) in linerPerforationsInput" :key="index">
@@ -80,7 +80,6 @@
                   <form-input
                     :id="`liner_perforated_from_${index}`"
                     type="number"
-                    hint="feet (below ground level)"
                     v-model.number="liner.start"
                     :errors="getLinerPerforationError(index).start"
                     :loaded="getFieldsLoaded(index).start"/>
@@ -89,7 +88,6 @@
                   <form-input
                     :id="`liner_perforated_to_${index}`"
                     type="number"
-                    hint="feet (below ground level)"
                     v-model.number="liner.end"
                     :errors="getLinerPerforationError(index).end"
                     :loaded="getFieldsLoaded(index).end"/>

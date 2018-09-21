@@ -77,6 +77,10 @@
         <!-- Well location -->
         <location class="my-3"
           v-if="formStep === 4 || formIsFlat"
+          :ownerMailingAddress.sync="form.owner_mailing_address"
+          :ownerProvinceState.sync="form.owner_province_state"
+          :ownerCity.sync="form.owner_city"
+          :ownerPostalCode.sync="form.owner_postal_code"
           :streetAddress.sync="form.street_address"
           :city.sync="form.city"
           :legalLot.sync="form.legal_lot"

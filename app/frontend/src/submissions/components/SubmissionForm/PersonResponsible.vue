@@ -89,7 +89,7 @@ import { mapGetters } from 'vuex'
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 import ApiService from '@/common/services/ApiService.js'
 export default {
-  name: 'Step01Type',
+  name: 'PersonResponsible',
   mixins: [inputBindingsMixin],
   props: {
     personResponsible: Object,
