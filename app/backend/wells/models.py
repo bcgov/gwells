@@ -1320,10 +1320,6 @@ class Screen(AuditModel):
 class AquiferVulnerabilityCode(AuditModel):
     """
     Demand choices for describing Aquifer 
-    -------------------
-    High
-    Low
-    Moderate
     """
     code = models.CharField(primary_key=True, max_length=1, db_column='aquifer_vulnerability_code')
     description = models.CharField(max_length=100)

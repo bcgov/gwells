@@ -16,17 +16,9 @@ from django.db import models
 from gwells.models import AuditModel
 from django.core.validators import MinValueValidator, MaxValueValidator
 
-
 class AquiferMaterial(AuditModel):
     """
     Material choices for describing Aquifer Material
-
-    aquifer_materials
-    -------------------
-    Bedrock
-    Gravel
-    Sand
-    Sand and Gravel
     """
     code = models.CharField(primary_key=True, max_length=10, db_column='aquifer_material_code')
     description = models.CharField(max_length=100)
@@ -47,22 +39,6 @@ class AquiferMaterial(AuditModel):
 class AquiferSubtype(AuditModel):
     """
     Subtypes of Aquifer
-
-    From Trello ticket
-    Aquifer_Subtype	Aquifer_Subtype_Descriptions
-    1a	Unconfined sand and gravel - large river system
-    1b	Unconfined sand and gravel aquifer - medium stream system
-    1c	Unconfined sand and gravel aquifer - small stream system
-    2	Unconfined sand and gravel - deltaic
-    3	Unconfined sand and gravel - alluvial or colluvial fan
-    4a	Unconfined sand and gravel - late glacial outwash 
-    4b	Confined sand and gravel - glacial 
-    4c	Confined sand and gravel - glacio-marine
-    5a	Fractured sedimentary rock
-    5b	Karstic limestone
-    6a	Flat-lying to gently-dipping volcanic bedrock
-    6b	Fractured crystalline bedrock 
-    UNK	Unknown
     """
     code = models.CharField(primary_key=True, max_length=3, db_column='aquifer_subtype_code')
     description = models.CharField(max_length=100)
@@ -82,9 +58,6 @@ class AquiferProductivity(AuditModel):
     """
     Productivity choices for describing Aquifer 
     -------------------
-    High (H)
-    Low (L)
-    Moderate (M)
     """
     code = models.CharField(primary_key=True, max_length=1, db_column='aquifer_productivity_code')
     description = models.CharField(max_length=100)
@@ -105,10 +78,6 @@ class AquiferProductivity(AuditModel):
 class AquiferDemand(AuditModel):
     """
     Demand choices for describing Aquifer 
-    -------------------
-    High
-    Low
-    Moderate
     """
     code = models.CharField(primary_key=True, max_length=1, db_column='aquifer_demand_code')
     description = models.CharField(max_length=100)
@@ -118,7 +87,7 @@ class AquiferDemand(AuditModel):
     expiry_date = models.DateTimeField(blank=True, null=True)
 
     class Meta:
-        db_table = 'aquifer_demand_code'
+        db_table = 'aquifer_demand_code' 
         ordering = ['display_order', 'code']
         verbose_name_plural = 'Aquifer Demand Codes'
 
@@ -130,9 +99,6 @@ class WaterUse(AuditModel):
     """
     Type of Known Water Use choices for describing Aquifer 
     -------------------
-    Domestic
-    Multiple
-    Potential Domestic
     """
     code = models.CharField(primary_key=True, max_length=2, db_column='water_use_code')
     description = models.CharField(max_length=100)
@@ -151,12 +117,6 @@ class WaterUse(AuditModel):
 
 
 class QualityConcern(AuditModel):
-    """
-    Isolated
-    Local
-    None
-    Regional
-    """
     code = models.CharField(primary_key=True, max_length=2, db_column='quality_concern_code')
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
@@ -180,7 +140,6 @@ class Aquifer(AuditModel):
 
     This table holds ONLY the aquifers to which we have associated one or more wells.  It is not
     the definitive source of all aquifers in the province. 
-
     """
     aquifer_id = models.PositiveIntegerField(
         primary_key=True, verbose_name="Aquifer ID Number")
