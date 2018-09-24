@@ -76,23 +76,25 @@
                 <th></th>
               </tr>
               <tr v-for="(liner, index) in linerPerforationsInput" :key="index">
-                <td>
+                <td class="pb-0 pt-1">
                   <form-input
                     :id="`liner_perforated_from_${index}`"
                     type="number"
+                    class="mb-0"
                     v-model.number="liner.start"
                     :errors="getLinerPerforationError(index).start"
                     :loaded="getFieldsLoaded(index).start"/>
                 </td>
-                <td>
+                <td class="pb-0 pt-1">
                   <form-input
                     :id="`liner_perforated_to_${index}`"
                     type="number"
+                    class="mb-0"
                     v-model.number="liner.end"
                     :errors="getLinerPerforationError(index).end"
                     :loaded="getFieldsLoaded(index).end"/>
                 </td>
-                <td>
+                <td class="py-0">
                   <b-btn size="sm" variant="primary" @click="removeRow(index)" class="mt-2"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
                 </td>
               </tr>
@@ -161,4 +163,5 @@ export default {
 </script>
 
 <style>
+
 </style>
