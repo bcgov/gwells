@@ -14,13 +14,11 @@
 
 package pages
 
-class HomePage extends BaseAppPage {
+class RegistryManagePage extends BaseAppPage {
   static at = { pageTitle.text() == 'Groundwater Well Search' }
-  static url = ''
+  static url = 'registries/organizations/manage'
   static content = {
     pageTitle { $('#main-content h2') }
-
-    bodyContent { $('#main-content') }
 
     wellTagOrPlateField { $('#id_well') }
     streetAddressField { $('#id_addr') }
@@ -30,29 +28,5 @@ class HomePage extends BaseAppPage {
     searchButton { $('input', type:'submit', value:'Search') }
 
     searchResultsTable(required:false) { $('#results') }
-  }
-
-  void setWellTagOrIdentificationPlateNumber(int value) {
-    wellTagOrPlateField.value(value)
-  }
-
-  void setStreetAddress(String address) {
-    streetAddressField.value(address)
-  }
-
-  void setLegalPlanOrDistrictLotorPID(String value) {
-    legalPlanOrDistrictLotOrPIDField.value(value)
-  }
-
-  void setOwnerName(String name) {
-    ownerNameField.value(name)
-  }
-
-  void clickSearchButton() {
-    searchButton.click()
-  }
-
-  Boolean foundSearchResults() {
-    waitFor { searchResultsTable.$('tbody tr').size() != 0 }
   }
 }

@@ -25,7 +25,11 @@ class OrganizationsPage extends BaseAppPage {
     deleteAlert(required:false) { $('#orgDeleteSuccessAlert') }
 
     // add company
+<<<<<<< HEAD
     addNewCompanyButton(wait:2) { $('#orgAddNewButton') }
+=======
+    addNewCompanyButton { $('#orgAddNewButton') }
+>>>>>>> 19131fb9... Initial BDD uplift of pages and specs.
 
     // Update/Delete company
     selectCompanySearchField { $('#orgEditSelectDropdown').$('input', type:'search') }

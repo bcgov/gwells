@@ -34,9 +34,13 @@ class HeaderModule extends Module {
    * @param a map of attributes of the header menu anchor tag. eg: [text:'header link text'] (required)
    */
   void clickMenuItem(Map<String, Object> itemSelector) {
+<<<<<<< HEAD
     waitFor {
       getHeaderSelector(itemSelector).click()
     }
+=======
+    getHeaderSelector(itemSelector).click()
+>>>>>>> 19131fb9... Initial BDD uplift of pages and specs.
   }
 
   /**
@@ -44,6 +48,10 @@ class HeaderModule extends Module {
    * @param a map of attributes of the header menu anchor tag. eg: [text:'header link text'] (required)
    */
   Navigator getHeaderSelector(Map<String, Object> itemSelector) {
+<<<<<<< HEAD
       headerNavigationBar.$(itemSelector, 'a')
+=======
+    headerNavigationBar.$(itemSelector, 'a')
+>>>>>>> 19131fb9... Initial BDD uplift of pages and specs.
   }
 }
