@@ -133,6 +133,7 @@ functional-tests/src/test/groovy/testtamplet.txt
 
 #virtual env
 /deactivate
+venv
 .venv
 venv
 .direnv
