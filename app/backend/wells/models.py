@@ -30,6 +30,7 @@ from registries.models import Person
 from submissions.models import WellActivityCode
 from aquifers.models import Aquifer
 
+
 class DecommissionMethodCode(AuditModel):
     decommission_method_code = models.CharField(primary_key=True, max_length=10, editable=False,
                                                 verbose_name="Code")
@@ -1340,6 +1341,7 @@ class AquiferVulnerabilityCode(AuditModel):
     def __str__(self):
         return '{} - {}'.format(self.code, self.description)
 
+
 class WaterQualityColour(AuditModel):
     """
     Colour choices for describing water quality
@@ -1356,6 +1358,7 @@ class WaterQualityColour(AuditModel):
 
     def __str__(self):
         return self.description
+
 
 """
     Hydraulic properties of the well, usually determined via tests.
@@ -1402,6 +1405,6 @@ class HydraulicProperty(AuditModel):
     class Meta:
         db_table = 'hydraulic_property'
         verbose_name_plural = 'Hydraulic Properties'
-        
+
     def __str__(self):
         return '{} - {}'.format(self.well, self.hydraulic_property_guid)        
