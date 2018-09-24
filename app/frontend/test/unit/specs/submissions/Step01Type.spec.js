@@ -1,11 +1,11 @@
 import { shallowMount, createLocalVue } from '@vue/test-utils'
 import Vuex from 'vuex'
-import Step01Type from '@/submissions/components/SubmissionForm/Step01Type.vue'
+import WellType from '@/submissions/components/SubmissionForm/WellType.vue'
 
 const localVue = createLocalVue()
 localVue.use(Vuex)
 
-describe('Step01Type.vue', () => {
+describe('WellType.vue', () => {
   let store
   let getters
 
@@ -44,7 +44,7 @@ describe('Step01Type.vue', () => {
 
   it('computes valid subclasses from well class code options', () => {
     const wellClass = 'WATR_SPPLY'
-    const wrapper = shallowMount(Step01Type, {
+    const wrapper = shallowMount(WellType, {
       localVue,
       store,
       propsData: { wellClass },
