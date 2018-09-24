@@ -143,9 +143,11 @@ class Aquifer(AuditModel):
     """
     aquifer_id = models.PositiveIntegerField(
         primary_key=True, verbose_name="Aquifer ID Number")
-    aquifer_name = models.CharField(max_length=100)
+    aquifer_name = models.CharField(max_length=100,
+        blank=True,
+        null=True)
     location_description = models.CharField(
-        max_length=100, blank=True, verbose_name='Description of Location')
+        max_length=100, blank=True, null=True, verbose_name='Description of Location')
     material = models.ForeignKey(
         AquiferMaterial,
         db_column='aquifer_material_code',
@@ -197,7 +199,7 @@ class Aquifer(AuditModel):
         verbose_name="Quality Concern Reference",
         related_name='aquifers')
     litho_stratographic_unit = models.CharField(
-        max_length=100, blank=True, verbose_name='Lithographic Stratographic Unit')
+        max_length=100, blank=True, null=True, verbose_name='Lithographic Stratographic Unit')
     mapping_year = models.PositiveIntegerField(
         validators=[
             MinValueValidator(1990), 

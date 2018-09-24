@@ -1389,7 +1389,8 @@ class HydraulicProperty(AuditModel):
         blank=True,
         null=True,
         verbose_name='Testing Method')
-    testing_duration = models.PositiveIntegerField()
+    testing_duration = models.PositiveIntegerField(
+        blank=True,null=True)
     analytic_solution_type = models.DecimalField(
         max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Analytic Solution Type')
     boundary_effect = models.DecimalField(
