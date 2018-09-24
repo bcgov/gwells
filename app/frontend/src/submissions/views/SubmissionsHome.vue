@@ -100,6 +100,11 @@
           v-if="formStep === 5 || formIsFlat"
           :latitude.sync="form.latitude"
           :longitude.sync="form.longitude"
+        />
+
+        <!-- Method of Drilling -->
+        <method-of-drilling class="my-3"
+          v-if="formStep === 6 || formIsFlat"
           :groundElevation.sync="form.ground_elevation"
           :groundElevationMethod.sync="form.ground_elevation_method"
           :drillingMethod.sync="form.drilling_method"
@@ -109,13 +114,13 @@
 
         <!-- Lithology -->
         <lithology class="my-3"
-          v-if="formStep === 6 || formIsFlat"
+          v-if="formStep === 7 || formIsFlat"
           :lithology.sync="form.lithology_set"
         />
 
         <!-- Casings -->
         <casings class="my-3"
-          v-if="formStep === 7 || formIsFlat"
+          v-if="formStep === 8 || formIsFlat"
           :casings.sync="form.casing_set"
           :errors="errors"
           :fieldsLoaded="fieldsLoaded"
@@ -123,7 +128,7 @@
 
         <!-- Surface Seal / Backfill Material -->
         <backfill class="my-3"
-          v-if="formStep === 8 || formIsFlat"
+          v-if="formStep === 9 || formIsFlat"
           :surfaceSealMaterial.sync="form.surface_seal_material"
           :surfaceSealDepth.sync="form.surface_seal_depth"
           :surfaceSealThickness.sync="form.surface_seal_thickness"
@@ -134,7 +139,7 @@
 
         <!-- Liner Information -->
         <liner class="my-3"
-          v-if="formStep === 9 || formIsFlat"
+          v-if="formStep === 10 || formIsFlat"
           :linerMaterial.sync="form.liner_material"
           :linerDiameter.sync="form.liner_diameter"
           :linerThickness.sync="form.liner_thickness"
@@ -147,7 +152,7 @@
 
         <!-- Screens -->
         <screens class="my-3"
-          v-if="formStep === 10 || formIsFlat"
+          v-if="formStep === 11 || formIsFlat"
           :screenIntakeMethod.sync="form.screen_intake_method"
           :screenType.sync="form.screen_type"
           :screenMaterial.sync="form.screen_material"
@@ -159,7 +164,7 @@
 
         <!-- Filter Pack -->
         <filterPack class="my-3"
-          v-if="formStep === 11 || formIsFlat"
+          v-if="formStep === 12 || formIsFlat"
           :filterPackFrom.sync="form.filter_pack_from"
           :filterPackTo.sync="form.filter_pack_to"
           :filterPackThickness.sync="form.filter_pack_thickness"
@@ -169,7 +174,7 @@
 
         <!-- Well Development -->
         <development class="my-3"
-          v-if="formStep === 12 || formIsFlat"
+          v-if="formStep === 13 || formIsFlat"
           :developmentMethod.sync="form.development_method"
           :developmentHours.sync="form.development_hours"
           :developmentNotes.sync="form.development_notes"
@@ -177,13 +182,13 @@
 
         <!-- Yield (Production Data) -->
         <yield class="my-3"
-          v-if="formStep === 13 || formIsFlat"
+          v-if="formStep === 14 || formIsFlat"
           :productionData.sync="form.production_data_set"
         />
 
         <!-- Water Quality -->
         <water-quality class="my-3"
-          v-if="formStep === 14 || formIsFlat"
+          v-if="formStep === 15 || formIsFlat"
           :waterQualityCharacteristics.sync="form.water_quality_characteristics"
           :waterQualityColour.sync="form.water_quality_colour"
           :waterQualityOdour.sync="form.water_quality_odour"
@@ -192,7 +197,7 @@
 
         <!-- Well Completion Data -->
         <completion class="my-3"
-          v-if="formStep === 15 || formIsFlat"
+          v-if="formStep === 16 || formIsFlat"
           :totalDepthDrilled.sync="form.total_depth_drilled"
           :finishedWellDepth.sync="form.finished_well_depth"
           :finalCasingStickUp.sync="form.final_casing_stick_up"
@@ -207,7 +212,7 @@
 
         <!-- Comments -->
         <comments class="my-3"
-          v-if="formStep === 16 || formIsFlat"
+          v-if="formStep === 17 || formIsFlat"
           :comments.sync="form.comments"
           :alternativeSpecsSubmitted.sync="form.alternative_specs_submitted"
         />
@@ -298,6 +303,7 @@ import PersonResponsible from '@/submissions/components/SubmissionForm/PersonRes
 import Owner from '@/submissions/components/SubmissionForm/Owner.vue'
 import Location from '@/submissions/components/SubmissionForm/Location.vue'
 import Coords from '@/submissions/components/SubmissionForm/Coords.vue'
+import MethodOfDrilling from '@/submissions/components/SubmissionForm/MethodOfDrilling.vue'
 import Lithology from '@/submissions/components/SubmissionForm/Lithology.vue'
 import Casings from '@/submissions/components/SubmissionForm/Casings.vue'
 import Backfill from '@/submissions/components/SubmissionForm/Backfill.vue'
@@ -318,6 +324,7 @@ export default {
     Owner,
     Location,
     Coords,
+    MethodOfDrilling,
     Lithology,
     Casings,
     Backfill,
