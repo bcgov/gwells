@@ -100,6 +100,11 @@
           v-if="currentStep === 'wellCoords' || (formIsFlat && flatForm.wellCoords)"
           :latitude.sync="form.latitude"
           :longitude.sync="form.longitude"
+        />
+
+        <!-- Method of Drilling -->
+        <method-of-drilling class="my-3"
+          v-if="formStep === 6 || formIsFlat"
           :groundElevation.sync="form.ground_elevation"
           :groundElevationMethod.sync="form.ground_elevation_method"
           :drillingMethod.sync="form.drilling_method"
@@ -298,6 +303,7 @@ import PersonResponsible from '@/submissions/components/SubmissionForm/PersonRes
 import Owner from '@/submissions/components/SubmissionForm/Owner.vue'
 import Location from '@/submissions/components/SubmissionForm/Location.vue'
 import Coords from '@/submissions/components/SubmissionForm/Coords.vue'
+import MethodOfDrilling from '@/submissions/components/SubmissionForm/MethodOfDrilling.vue'
 import Lithology from '@/submissions/components/SubmissionForm/Lithology.vue'
 import Casings from '@/submissions/components/SubmissionForm/Casings.vue'
 import Backfill from '@/submissions/components/SubmissionForm/Backfill.vue'
@@ -318,6 +324,7 @@ export default {
     Owner,
     Location,
     Coords,
+    MethodOfDrilling,
     Lithology,
     Casings,
     Backfill,

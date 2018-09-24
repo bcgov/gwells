@@ -17,28 +17,28 @@
         </thead>
         <tbody>
           <tr v-for="(casing, index) in casingsInput" :key="casing.id">
-            <td>
+            <td class="pb-0">
               <form-input
-                group-class="my-1"
+                group-class="my-0"
                 :id="'casing_from_' + index"
                 type="number"
                 v-model="casing.start"
                 :errors="getCasingError(index).start"
                 :loaded="getFieldsLoaded(index).start"/>
             </td>
-            <td>
+            <td class="pb-0">
               <form-input
-                group-class="my-1"
+                group-class="my-0"
                 :id="'casing_to_' + index"
                 type="number"
                 v-model="casing.end"
                 :errors="getCasingError(index).end"
                 :loaded="getFieldsLoaded(index).end"/>
             </td>
-            <td>
+            <td class="pb-0">
               <b-form-group
                 id="'casingCode_' + index"
-                class="my-1"
+                class="my-0"
                 aria-describedby="casingCodeInvalidFeedback{index}">
                 <b-form-select
                     v-model="casing.casing_code"
@@ -57,10 +57,10 @@
                 </b-form-invalid-feedback>
               </b-form-group>
             </td>
-            <td>
+            <td class="pb-0">
               <b-form-group
                 :id="'casingMaterial_' + index"
-                class="my-1"
+                class="my-0"
                 aria-describedby="casingMaterialInvalidFeedback{index}">
                 <b-form-select
                     v-model="casing.casing_material"
@@ -79,32 +79,32 @@
                 </b-form-invalid-feedback>
               </b-form-group>
             </td>
-            <td>
+            <td class="pb-0">
               <form-input
-                group-class="my-1"
+                group-class="my-0"
                 :id="'diameter_' + index"
                 type="number"
                 v-model="casing.diameter"
                 :errors="getCasingError(index).diameter"
                 :loaded="getFieldsLoaded(index).diameter"/>
             </td>
-            <td>
+            <td class="pb-0">
               <form-input
-                group-class="my-1"
+                group-class="my-0"
                 :id="'wall_thickness_' + index"
                 type="number"
                 v-model="casing.wall_thickness"
                 :errors="getCasingError(index).wall_thickness"
                 :loaded="getFieldsLoaded(index).wall_thickness"/>
             </td>
-            <td>
+            <td class="pt-0 py-0">
               <b-form-radio-group v-model="casing.drive_shoe"
                                   :name="'drive_shoe_' + index">
                 <b-form-radio value="False">No</b-form-radio>
                 <b-form-radio value="True">Yes</b-form-radio>
               </b-form-radio-group>
             </td>
-            <td class="align-middle">
+            <td class="align-middle pt-1 py-0">
               <b-btn size="sm" variant="primary" @click="removeRow(casing.id)"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
             </td>
           </tr>

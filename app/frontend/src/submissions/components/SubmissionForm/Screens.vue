@@ -92,17 +92,17 @@
         </thead>
         <tbody>
           <template v-for="(row, index) in screens.length">
-            <tr  :key="`screen row ${index}`" :id="`screenRow${index}`">
-              <td class="input-width-small">
+            <tr :key="`screen row ${index}`" :id="`screenRow${index}`">
+              <td class="input-width-small py-0">
                 <form-input group-class="my-1" :id="`screen${index}DepthFrom`" aria-label="Depth from (feet)" v-model="screens[index].start"/>
               </td>
-              <td class="input-width-small">
+              <td class="input-width-small py-0">
                 <form-input group-class="my-1" :id="`screen${index}DepthTo`" aria-label="Depth to (feet)" v-model="screens[index].end"/>
               </td>
-              <td class="input-width-small">
+              <td class="input-width-small py-0">
                 <form-input group-class="my-1" :id="`screen${index}Diameter`" aria-label="Diameter (inches)" v-model="screens[index].internal_diameter"/>
               </td>
-              <td class="input-width-small">
+              <td class="input-width-small py-0">
                 <form-input
                     group-class="my-1"
                     :id="`screen${index}Assembly`"
@@ -114,10 +114,10 @@
                     value-field="screen_assembly_type_code"
                     placeholder="Select type"/>
               </td>
-              <td class="input-width-small">
+              <td class="input-width-small py-0">
                 <form-input list="screenSlotSizeList" group-class="my-1" :id="`screen${index}SlotSize`" aria-label="Screen Slot Size" v-model="screens[index].slot_size"/>
               </td>
-              <td class="align-middle">
+              <td class="align-middle py-0">
                 <b-btn size="sm" variant="primary" @click="removeScreenRow(index)" :id="`removeScreenRowButton${index}`"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
               </td>
             </tr>
