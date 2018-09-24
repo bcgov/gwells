@@ -185,7 +185,7 @@ Map context = [
         'API Tests': true,
         'Functional Tests': true,
         'Unit Tests': true,
-        'Code Quality': false,
+        'Code Quality': true,
         'ZAP Security Scan': true
     ],
     pullRequest:[
