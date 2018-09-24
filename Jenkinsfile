@@ -186,7 +186,7 @@ Map context = [
         'Functional Tests': true,
         'Unit Tests': true,
         'Code Quality': false,
-        'ZAP Security Scan': false
+        'ZAP Security Scan': true
     ],
     pullRequest:[
         'id': env.CHANGE_ID,
