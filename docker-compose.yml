@@ -22,7 +22,7 @@ services:
       - /webapp/node_modules/
   api:
     build:
-      context: ./app/
+      context: ./app/backend/
       dockerfile: $PWD/docker-images/gwells-develop/api/Dockerfile
     environment:
       DATABASE_SERVICE_NAME: postgres
@@ -51,7 +51,7 @@ services:
              python3 manage.py createinitialrevisions &&
              python3 manage.py runserver 0.0.0.0:8000"
     volumes:
-      - ./app/:/app
+      - ./app/backend:/app
     ports:
       - "8000:8000"
     depends_on:
