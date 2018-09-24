@@ -388,7 +388,6 @@ export default {
           'wellOwner',
           'wellLocation',
           'wellCoords',
-          'lithology',
           'comments'
         ]
       }
