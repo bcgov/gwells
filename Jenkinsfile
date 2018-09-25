@@ -314,7 +314,7 @@ parallel (
                             DROP TABLE IF EXISTS xform_aquifers; \
                             CREATE unlogged TABLE IF NOT EXISTS xform_aquifers ( \
                             aquifer_id integer,mapping_year integer); \
-                            EOF
+                            EOF \
                         '"
                         sh "oc exec '${podName}' -n '${projectName}' -- bash -c '\
                             cd /opt/app-root/src/backend; \
