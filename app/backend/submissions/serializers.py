@@ -24,6 +24,8 @@ from wells.serializers import CasingSerializer, ScreenSerializer, LinerPerforati
 from wells.models import (
     ActivitySubmission,
     Casing,
+    DecommissionMaterialCode,
+    DecommissionMethodCode,
     DevelopmentMethodCode,
     DrillingMethodCode,
     FilterPackMaterialCode,
@@ -152,6 +154,11 @@ class WellSubmissionSerializer(serializers.ModelSerializer):
             "casing_set",
             "linerperforation_set",
             "screen_set",
+            "decommission_reason",
+            "decommission_method",
+            "sealant_material",
+            "backfill_material",
+            "decommission_details",
         )
 
     @transaction.atomic
@@ -364,4 +371,20 @@ class WaterQualityColourSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = WaterQualityColour
+        fields = ('code', 'description')
+
+
+class DecommissionMethodCodeSerializer(serializers.ModelSerializer):
+    """ Serializes decommission methods """
+
+    class Meta:
+        model = DecommissionMethodCode
+        fields = ('decommission_method_code', 'description')
+
+
+class DecommissionMaterialCodeSerializer(serializers.ModelSerializer):
+    """ Serializes decommission material codes """
+
+    class Meta:
+        model = DecommissionMaterialCode
         fields = ('code', 'description')

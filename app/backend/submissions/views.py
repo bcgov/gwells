@@ -25,6 +25,8 @@ from wells.models import (
     ActivitySubmission,
     CasingCode,
     CasingMaterialCode,
+    DecommissionMaterialCode,
+    DecommissionMethodCode,
     DevelopmentMethodCode,
     DrillingMethodCode,
     FilterPackMaterialCode,
@@ -54,6 +56,8 @@ from wells.serializers import (
     CasingMaterialSerializer
 )
 from submissions.serializers import (
+    DecommissionMaterialCodeSerializer,
+    DecommissionMethodCodeSerializer,
     DevelopmentMethodCodeSerializer,
     DrillingMethodCodeSerializer,
     FilterPackMaterialCodeSerializer,
@@ -77,7 +81,7 @@ from submissions.serializers import (
     WellActivityCodeSerializer,
     WellClassCodeSerializer,
     WellSubclassCodeSerializer,
-    YieldEstimationMethodCodeSerializer,    
+    YieldEstimationMethodCodeSerializer,
 )
 
 
@@ -152,6 +156,10 @@ class SubmissionsOptions(APIView):
             instance=CasingCode.objects.all(), many=True)
         casing_material = CasingMaterialSerializer(
             instance=CasingMaterialCode.objects.all(), many=True)
+        decommission_materials = DecommissionMaterialCodeSerializer(
+            instance=DecommissionMaterialCode.objects.all(), many=True)
+        decommission_methods = DecommissionMethodCodeSerializer(
+            instance=DecommissionMethodCode.objects.all(), many=True)
         filter_pack_material = FilterPackMaterialCodeSerializer(
             instance=FilterPackMaterialCode.objects.all(), many=True)
         filter_pack_material_size = FilterPackMaterialSizeCodeSerializer(
@@ -193,6 +201,8 @@ class SubmissionsOptions(APIView):
         options["intended_water_uses"] = intended_water_use_codes.data
         options["casing_codes"] = casing_codes.data
         options["casing_materials"] = casing_material.data
+        options["decommission_materials"] = decommission_materials.data
+        options["decommission_methods"] = decommission_methods.data
         options["filter_pack_material"] = filter_pack_material.data
         options["filter_pack_material_size"] = filter_pack_material_size.data
         options["land_district_codes"] = land_district_codes.data
