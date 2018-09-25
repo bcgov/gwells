@@ -45,6 +45,11 @@ psql -X --set ON_ERROR_STOP=on -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $D
 psql -X --set ON_ERROR_STOP=on -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER -f \
 	wells_replication_stored_functions.sql
 
+# 2018-SEP-25 GW Aquifers CodeWithUs	
+cd $APP_ROOT/src/database/scripts/aquifers/
+psql -X --set ON_ERROR_STOP=on -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER -c \
+	"\copy xform_aquifers FROM 'xforms-aquifers.csv' HEADER DELIMITER ',' CSV"
+
 
 # Python related portion of post-deploy
 #
