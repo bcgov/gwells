@@ -919,39 +919,39 @@ BEGIN
     ,null -- from spreadsheet temporary table
     ,null 
     ,CASE attrs.demand
-        WHEN ''Moderate'' THEN ''M''
-        WHEN ''Low''      THEN ''L''
-        WHEN ''High''     THEN ''H''
+        WHEN 'Moderate' THEN 'M'
+        WHEN 'Low'      THEN 'L'
+        WHEN 'High'     THEN 'H'
         ELSE attrs.demand
      END AS aquifer_demand_code
     ,CASE attrs.type_of_water_use
-        WHEN ''Domestic''           THEN ''D''
-        WHEN ''Multiple''           THEN ''M''
-        WHEN ''Potential Domestic'' THEN ''PD''
+        WHEN 'Domestic'           THEN 'D'
+        WHEN 'Multiple'           THEN 'M'
+        WHEN 'Potential Domestic' THEN 'PD'
         ELSE attrs.type_of_water_use
      END AS type_of_water_use
     ,CASE attrs.aquifer_materials
-        WHEN ''Bedrock''         THEN ''B''
-        WHEN ''Gravel''          THEN ''G''
-        WHEN ''Sand''            THEN ''S''
-        WHEN ''Sand and Gravel'' THEN ''SG''
+        WHEN 'Bedrock'         THEN 'B'
+        WHEN 'Gravel'          THEN 'G'
+        WHEN 'Sand'            THEN 'S'
+        WHEN 'Sand and Gravel' THEN 'SG'
         ELSE attrs.aquifer_materials
      END AS aquifer_material_code
     ,CASE attrs.productivity
-        WHEN ''Moderate'' THEN ''M''
-        WHEN ''Low''      THEN ''L''
-        WHEN ''High''     THEN ''H''
+        WHEN 'Moderate' THEN 'M'
+        WHEN 'Low'      THEN 'L'
+        WHEN 'High'     THEN 'H'
         ELSE attrs.productivity
      END AS aquifer_productivity_code
     ,CASE attrs.quality_concerns
-        WHEN ''Isolated'' THEN ''I''
-        WHEN ''Local''    THEN ''L''
-        WHEN ''Regional'' THEN ''R''
-        WHEN ''None''     THEN ''N''
+        WHEN 'Isolated' THEN 'I'
+        WHEN 'Local'    THEN 'L'
+        WHEN 'Regional' THEN 'R'
+        WHEN 'None'     THEN 'N'
         ELSE attrs.quality_concerns
      END AS quality_concern_code
     ,CASE attrs.aquifer_subtype_code
-        WHEN ''UNK'' THEN null
+        WHEN 'UNK' THEN null
         ELSE attrs.aquifer_subtype_code
      END AS aquifer_subtype_code
     ,attrs.who_created
@@ -968,6 +968,14 @@ BEGIN
   raise notice '...gw_aquifer_attrs data imported';
   SELECT count(*) from aquifer into row_count;
   raise notice '% rows loaded into the aquifer table',  row_count;
+
+  UPDATE aquifer
+  SET    mapping_year = xform.mapping_year
+  FROM   xform_aquifers xform
+  WHERE  aquifer.aquifer_id = xform.aquifer_id
+  AND    xform.mapping_year is not null;
+
+  raise notice '...gw_aquifer_attrs data updated from mapping ';
 
 END;
 $$ LANGUAGE plpgsql;
