@@ -1,0 +1,58 @@
+version: '3'
+
+services:
+  db:
+    image: postgres:9.6
+    environment:
+      POSTGRES_USER: gwells
+      POSTGRES_PASSWORD: test1
+    hostname: db
+  webapp: 
+    build:
+      context: ./app/frontend/
+      dockerfile: $PWD/docker-images/gwells-develop/webapp/Dockerfile
+    environment:
+      AXIOS_BASE_URL: http://127.0.0.1:8000/gwells/api/v1/
+      CHOKIDAR_USEPOLLING: "True"
+    command: npm run dev
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./app/frontend:/webapp
+      - /webapp/node_modules/
+  api:
+    build:
+      context: ./app/backend/
+      dockerfile: $PWD/docker-images/gwells-develop/api/Dockerfile
+    environment:
+      DATABASE_SERVICE_NAME: postgres
+      DATABASE_ENGINE: postgresql
+      DATABASE_NAME: gwells
+      DATABASE_USER: gwells
+      DATABASE_PASSWORD: test1
+      POSTGRES_SERVICE_HOST: db
+      DJANGO_DEBUG: "True"
+      APP_CONTEXT_ROOT: gwells
+      DJANGO_SECRET_KEY: secret
+      SESSION_COOKIE_SECURE: "True"
+      CSRF_COOKIE_SECURE: "True"
+      ENABLE_DATA_ENTRY: "True"
+      ENABLE_GOOGLE_ANALYTICS: "False"
+      ENABLE_ADDITIONAL_DOCUMENTS: "False"
+      POSTGRES_SERVICE_PORT: 5432
+      DJANGO_ADMIN_URL: admin
+    command: /bin/bash -c "sleep 3 &&
+             python3 manage.py migrate --noinput &&
+             echo Loading fixtures, this may take some time... &&
+             python3 manage.py loaddata 
+                gwells-codetables.json
+                registries-codetables.json
+                registries.json &&
+             python3 manage.py createinitialrevisions &&
+             python3 manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - ./app/backend:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db

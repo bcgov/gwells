@@ -1,0 +1,3 @@
+FROM postgres:9.5
+ENV POSTGRES_USER gwells
+ENV POSTGRES_PASSWORD test1
