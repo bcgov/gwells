@@ -95,7 +95,7 @@
                     :loaded="getFieldsLoaded(index).end"/>
                 </td>
                 <td class="py-0">
-                  <b-btn size="sm" variant="primary" @click="removeRow(index)" class="mt-2"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
+                  <b-btn size="sm" variant="primary" @click="removeRowIfOk(index)" class="mt-2"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
                 </td>
               </tr>
             </thead>
@@ -103,6 +103,21 @@
             </tbody>
           </table>
           <b-btn size="sm" variant="primary" @click="addRow"><i class="fa fa-plus-square-o"></i> Add row</b-btn>
+          <b-modal
+            v-model="confirmRemoveModal"
+            centered
+            title="Confirm remove"
+            @shown="focusRemoveModal">
+            Are you sure you want to remove this row?
+            <div slot="modal-footer">
+              <b-btn variant="secondary" @click="confirmRemoveModal=false;rowIndexToRemove=null" ref="cancelRemoveBtn">
+                Cancel
+              </b-btn>
+              <b-btn variant="danger" @click="confirmRemoveModal=false;removeRowByIndex(rowIndexToRemove)">
+                Remove
+              </b-btn>
+            </div>
+          </b-modal>
         </b-col>
       </b-row>
   </fieldset>
@@ -136,6 +151,12 @@ export default {
       isInput: true
     }
   },
+  data () {
+    return {
+      confirmRemoveModal: false,
+      rowIndexToRemove: null
+    }
+  },
   methods: {
     getLinerPerforationError (index) {
       if (this.errors && 'linerperforation_set' in this.errors && index in this.errors['linerperforation_set']) {
@@ -152,8 +173,27 @@ export default {
     addRow () {
       this.linerPerforations.push({})
     },
-    removeRow (index) {
+    removeRowByIndex (index) {
       this.linerPerforations.splice(index, 1)
+      this.rowIndexToRemove = null
+    },
+    removeRowIfOk (rowNumber) {
+      if (this.rowHasValues(this.linerPerforations[rowNumber])) {
+        this.rowIndexToRemove = rowNumber
+        this.confirmRemoveModal = true
+      } else {
+        this.removeRowByIndex(rowNumber)
+      }
+    },
+    rowHasValues (row) {
+      let keys = Object.keys(row)
+      if (keys.length === 0) return false
+      // Check that all fields are not empty.
+      return !keys.every((key) => !row[key])
+    },
+    focusRemoveModal () {
+      // Focus the "cancel" button in the confirm remove popup.
+      this.$refs.cancelRemoveBtn.focus()
     }
   },
   computed: {

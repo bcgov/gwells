@@ -97,9 +97,8 @@
         v-model="confirmRemoveModal"
         centered
         title="Confirm remove"
-        @shown="focusRemoveModal"
-        :return-focus="$refs.noteInputCancelBtn">
-      Are you sue you want to remove this row?
+        @shown="focusRemoveModal">
+      Are you sure you want to remove this row?
       <div slot="modal-footer">
         <b-btn variant="secondary" @click="confirmRemoveModal=false;rowIndexToRemove=null" ref="cancelRemoveBtn">
           Cancel
@@ -176,15 +175,16 @@ export default {
     rowHasValues (row) {
       let keys = Object.keys(row)
       if (keys.length === 0) return false
-      return keys.every((key) => !!row[key])
+      // Check that all fields are not empty.
+      return !keys.every((key) => !row[key])
     },
     focusRemoveModal () {
-      // focus the "cancel" button in the confirm remove popup
+      // Focus the "cancel" button in the confirm remove popup.
       this.$refs.cancelRemoveBtn.focus()
     }
   },
   created () {
-    // when component created, add an initial row of lithology
+    // When component created, add an initial row of lithology.
     if (!this.lithology.length) {
       this.addLithologyRow()
     }
