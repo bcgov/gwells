@@ -9,20 +9,20 @@ services:
     hostname: db
   webapp: 
     build:
-      context: ./app/frontend/
+      context: ./app/
       dockerfile: $PWD/docker-images/gwells-develop/webapp/Dockerfile
     environment:
       AXIOS_BASE_URL: http://127.0.0.1:8000/gwells/api/v1/
       CHOKIDAR_USEPOLLING: "True"
-    command: npm run dev
+    command: /bin/bash -c "cd /app/frontend && npm run build && npm run dev"
     ports:
       - "8080:8080"
     volumes:
-      - ./app/frontend:/webapp
-      - /webapp/node_modules/
+      - ./app/frontend:/app/frontend
+      - /app/frontend/node_modules/
   api:
     build:
-      context: ./app/backend/
+      context: ./app/
       dockerfile: $PWD/docker-images/gwells-develop/api/Dockerfile
     environment:
       DATABASE_SERVICE_NAME: postgres
@@ -42,6 +42,7 @@ services:
       POSTGRES_SERVICE_PORT: 5432
       DJANGO_ADMIN_URL: admin
     command: /bin/bash -c "sleep 3 &&
+             cd /app/backend &&
              python3 manage.py migrate --noinput &&
              echo Loading fixtures, this may take some time... &&
              python3 manage.py loaddata 
@@ -49,9 +50,10 @@ services:
                 registries-codetables.json
                 registries.json &&
              python3 manage.py createinitialrevisions &&
+             python3 manage.py collectstatic --noinput &&
              python3 manage.py runserver 0.0.0.0:8000"
     volumes:
-      - ./app/backend:/app
+      - ./app/backend:/app/backend
     ports:
       - "8000:8000"
     depends_on:
