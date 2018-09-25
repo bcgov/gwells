@@ -105,13 +105,29 @@
               </b-form-radio-group>
             </td>
             <td class="align-middle pt-1 py-0">
-              <b-btn size="sm" variant="primary" @click="removeRow(casing.id)"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
+              <b-btn size="sm" variant="primary" @click="removeRowIfOk(casing)"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
             </td>
           </tr>
         </tbody>
       </table>
     </div>
     <b-btn size="sm" variant="primary" @click="addRow"><i class="fa fa-plus-square-o"></i> Add row</b-btn>
+    <b-modal
+        v-model="confirmRemoveModal"
+        centered
+        title="Confirm remove"
+        @shown="focusRemoveModal"
+        :return-focus="$refs.noteInputCancelBtn">
+      Are you sue you want to remove this row?
+      <div slot="modal-footer">
+        <b-btn variant="secondary" @click="confirmRemoveModal=false;rowIndexToRemove=null" ref="cancelRemoveBtn">
+          Cancel
+        </b-btn>
+        <b-btn variant="danger" @click="confirmRemoveModal=false;removeRowByIndex(rowIndexToRemove)">
+          Remove
+        </b-btn>
+      </div>
+    </b-modal>
   </fieldset>
 </template>
 
@@ -135,20 +151,34 @@ export default {
       default: () => ({})
     }
   },
-  fields: {
-    casingsInput: 'casings'
+  data () {
+    return {
+      confirmRemoveModal: false,
+      rowIndexToRemove: null
+    }
   },
   methods: {
-    calcNextId () {
-      return this.casings.reduce((accumulator, currentValue) => {
-        return accumulator <= currentValue.id ? currentValue.id + 1 : accumulator
-      }, 0)
-    },
+    // calcNextId () {
+    //   return this.casings.reduce((accumulator, currentValue) => {
+    //     return accumulator <= currentValue.id ? currentValue.id + 1 : accumulator
+    //   }, 0)
+    // },
     addRow () {
-      this.casings.push({id: this.calcNextId()})
+      // this.casings.push({id: this.calcNextId()})
+      this.casings.push({})
     },
-    removeRow (id) {
-      this.casings.splice(this.casings.findIndex(item => item.id === id), 1)
+    removeRowByIndex (index) {
+      this.casings.splice(index, 1)
+      this.rowIndexToRemove = null
+    },
+    removeRowIfOk (instance) {
+      const index = this.casings.findIndex(item => item === instance)
+      if (this.rowHasValues(this.casings[index])) {
+        this.rowIndexToRemove = index
+        this.confirmRemoveModal = true
+      } else {
+        this.removeRowByIndex(index)
+      }
     },
     getCasingError (index) {
       if (this.errors && 'casings' in this.errors && index in this.errors['casings']) {
@@ -161,6 +191,15 @@ export default {
         return this.fieldsLoaded['casings'][index]
       }
       return {}
+    },
+    rowHasValues (row) {
+      let keys = Object.keys(row)
+      if (keys.length === 0) return false
+      return keys.every((key) => !!row[key])
+    },
+    focusRemoveModal () {
+      // focus the "cancel" button in the confirm remove popup
+      this.$refs.cancelRemoveBtn.focus()
     }
   },
   computed: {

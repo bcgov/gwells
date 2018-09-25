@@ -85,7 +85,7 @@
                 <b-input aria-label="Observations" v-model="lithology[index].observations"></b-input>
               </td>
               <td class="align-middle">
-                <b-btn size="sm" variant="primary" @click="removeLithologyRow(index)" :id="`removeRowButton${index}`"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
+                <b-btn size="sm" variant="primary" @click="removeRowIfOk(index)" :id="`removeRowButton${index}`"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
               </td>
             </tr>
           </template>
@@ -93,6 +93,22 @@
       </table>
     </div>
     <b-btn size="sm" variant="primary" @click="addLithologyRow" id="addLithologyRowButton"><i class="fa fa-plus-square-o"></i> Add row</b-btn>
+    <b-modal
+        v-model="confirmRemoveModal"
+        centered
+        title="Confirm remove"
+        @shown="focusRemoveModal"
+        :return-focus="$refs.noteInputCancelBtn">
+      Are you sue you want to remove this row?
+      <div slot="modal-footer">
+        <b-btn variant="secondary" @click="confirmRemoveModal=false;rowIndexToRemove=null" ref="cancelRemoveBtn">
+          Cancel
+        </b-btn>
+        <b-btn variant="danger" @click="confirmRemoveModal=false;removeRowByIndex(rowIndexToRemove)">
+          Remove
+        </b-btn>
+      </div>
+    </b-modal>
   </fieldset>
 </template>
 
@@ -121,6 +137,8 @@ export default {
   },
   data () {
     return {
+      confirmRemoveModal: false,
+      rowIndexToRemove: null
     }
   },
   computed: {
@@ -143,8 +161,26 @@ export default {
         observations: ''
       })
     },
-    removeLithologyRow (rowNumber) {
-      this.lithologyInput.splice(rowNumber, 1)
+    removeRowByIndex (index) {
+      this.lithologyInput.splice(index, 1)
+      this.rowIndexToRemove = null
+    },
+    removeRowIfOk (rowNumber) {
+      if (this.rowHasValues(this.lithologyInput[rowNumber])) {
+        this.rowIndexToRemove = rowNumber
+        this.confirmRemoveModal = true
+      } else {
+        this.removeRowByIndex(rowNumber)
+      }
+    },
+    rowHasValues (row) {
+      let keys = Object.keys(row)
+      if (keys.length === 0) return false
+      return keys.every((key) => !!row[key])
+    },
+    focusRemoveModal () {
+      // focus the "cancel" button in the confirm remove popup
+      this.$refs.cancelRemoveBtn.focus()
     }
   },
   created () {
