@@ -104,13 +104,20 @@
 
         <!-- Method of Drilling -->
         <method-of-drilling class="my-3"
-          v-if="formStep === 6 || formIsFlat"
+          v-if="currentStep === 'method' || (formIsFlat && flatForm.method)"
+
           :groundElevation.sync="form.ground_elevation"
           :groundElevationMethod.sync="form.ground_elevation_method"
           :drillingMethod.sync="form.drilling_method"
           :otherDrillingMethod.sync="form.other_drilling_method"
           :wellOrientation.sync="form.well_orientation"
         />
+
+        <!-- Closure/Decommission Description -->
+        <closure-description
+          v-if="currentStep === 'closureDescription' || (formIsFlat && flatForm.closureDescription)">
+
+        </closure-description>
 
         <!-- Lithology -->
         <lithology class="my-3"
@@ -315,6 +322,7 @@ import Yield from '@/submissions/components/SubmissionForm/Yield.vue'
 import WaterQuality from '@/submissions/components/SubmissionForm/WaterQuality.vue'
 import Completion from '@/submissions/components/SubmissionForm/Completion.vue'
 import Comments from '@/submissions/components/SubmissionForm/Comments.vue'
+import ClosureDescription from '@/submissions/components/SubmissionForm/ClosureDescription.vue'
 export default {
   name: 'SubmissionsHome',
   mixins: [inputFormatMixin],
@@ -335,7 +343,8 @@ export default {
     Yield,
     WaterQuality,
     Completion,
-    Comments
+    Comments,
+    ClosureDescription
   },
   data () {
     return {
@@ -361,6 +370,7 @@ export default {
           'wellOwner',
           'wellLocation',
           'wellCoords',
+          'method',
           'lithology',
           'casings',
           'backfill',
@@ -378,6 +388,7 @@ export default {
           'wellOwner',
           'wellLocation',
           'wellCoords',
+          'method',
           'lithology',
           'casings',
           'backfill',
@@ -395,6 +406,8 @@ export default {
           'wellOwner',
           'wellLocation',
           'wellCoords',
+          'method',
+          'closureDescription',
           'comments'
         ]
       }
