@@ -310,6 +310,13 @@ parallel (
                             python manage.py loaddata wellsearch.json.gz registries.json; \
                         '"
                         sh "oc exec '${podName}' -n '${projectName}' -- bash -c '\
+                            psql -X --set ON_ERROR_STOP=on -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER << EOF \
+                            DROP TABLE IF EXISTS xform_aquifers;
+                            CREATE unlogged TABLE IF NOT EXISTS xform_aquifers (
+                            aquifer_id integer,mapping_year integer);
+                            EOF
+                        '"
+                        sh "oc exec '${podName}' -n '${projectName}' -- bash -c '\
                             cd /opt/app-root/src/backend; \
                             python manage.py createinitialrevisions \
                         '"
