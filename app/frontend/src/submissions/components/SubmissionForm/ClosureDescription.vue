@@ -64,7 +64,7 @@ export default {
   props: {
     closureDescriptionSet: {
       type: Array,
-      default: () => ([{start: '', end: '', decommision_material: '', observations: ''}, {start: '', end: '', decommision_material: '', observations: ''}])
+      default: () => ([])
     },
     errors: {
       type: Object,
@@ -83,6 +83,11 @@ export default {
   },
   computed: {
     ...mapGetters(['codes'])
+  },
+  methods: {
+    addClosureRow () {
+      this.closureDescriptionSet.push({start: '', end: '', material: '', observations: ''})
+    }
   }
 }
 </script>
