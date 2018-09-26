@@ -13,10 +13,11 @@ services:
       AXIOS_BASE_URL: http://127.0.0.1:8000/gwells/api/v1/
       CHOKIDAR_USEPOLLING: "True"
     command: /bin/bash -c "
+        set -x &&
         cd /app/frontend &&
         npm install &&
         npm run build &&
-        npm run dev"
+        npm run ${NPM_CMD:-dev}"
     ports:
       - "8080:8080"
     volumes:
@@ -42,17 +43,18 @@ services:
       DJANGO_ADMIN_URL: admin
       PYTHONUNBUFFERED: "1"
     command: /bin/bash -c "sleep 3 &&
-             cd /app/backend &&
-             pip3 install -r requirements.txt &&
-             python3 manage.py migrate --noinput &&
-             echo Loading fixtures, this may take some time... &&
-             python3 manage.py loaddata
+            set -x &&
+            cd /app/backend &&
+            pip3 install -r requirements.txt &&
+            python3 manage.py migrate --noinput &&
+            echo Loading fixtures, this may take some time... &&
+            python3 manage.py loaddata
                 gwells-codetables.json
                 registries-codetables.json
                 registries.json &&
-             python3 manage.py createinitialrevisions &&
-             python3 manage.py collectstatic --noinput &&
-             python3 manage.py runserver 0.0.0.0:8000"
+            python3 manage.py createinitialrevisions &&
+            python3 manage.py collectstatic --noinput &&
+            python3 manage.py runserver 0.0.0.0:8000"
     volumes:
       - ./app:/app
     ports:
