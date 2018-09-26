@@ -2,18 +2,21 @@
 
 ## Local development
 
-To run this project in your development machine, ensure that Git, Python 3.5 and PostgreSQL 9.5 is installed. When installing Python, ensure 'install for everyone' and 'PATH' options are enabled. Ensure you run all shell windows in ADMIN mode. Follow these steps:
+To run this project in your development machine, ensure that Git, Python 3.6.6 and PostgreSQL 9.5 is installed. When installing Python, ensure 'install for everyone' and 'PATH' options are enabled. Ensure you run all shell windows in ADMIN mode. Follow these steps:
 
-##### Preemptive TL;DR
+#### Windows
+Optional: To make package installation easier, consider using: [Chocolatey](https://chocolatey.org/)
 
-OS X:
+
+#### Preemptive TL;DR
+
+###### OS X
 
 ```
 ./setup_osx.sh
 ```
 
-
-##### Manual Setup
+#### Manual Setup
 
 Please use either these steps or the install script.
 
@@ -76,11 +79,21 @@ Please use either these steps or the install script.
 
     PostgreSQL may need to be configured.  OS X file locations are used here.
 
+    ###### OS X
     ```
     brew services start postgresql
     initdb /usr/local/var/postgres/
     /usr/local/Cellar/postgresql/<version-number>/bin/createuser -s postgres
     ```
+
+    ###### Windows
+    - If using chocolatey:
+      - Installation will prompt for default user/password (typically postgres/postgres)
+    ```
+    choco install postgresql --version <version>
+    ```
+
+    - Otherwise download from: https://www.postgresql.org/download/windows/
 
     Create a GWells (modern system) user and empty database.
 
@@ -138,17 +151,32 @@ Please use either these steps or the install script.
     * Bash shell script in ~/.bash_profile
 
     ```
-    export DATABASE_SERVICE_NAME=postgresql
+    export DJANGO_LOG_LEVEL=DEBUG
+    export DATABASE_SERVICE_NAME=localhost
+    export LOCALHOST_SERVICE_HOST=localhost
+    export BASEURL=http://127.0.0.1:8000/
+    export LOCALHOST_SERVICE_PORT=5432
     export DATABASE_ENGINE=postgresql
     export DATABASE_NAME=gwells
     export DATABASE_USER=gwells
     export DATABASE_PASSWORD=gwells
     export DATABASE_SCHEMA=public
+    export DJANGO_SECRET_KEY=blah
     export DJANGO_DEBUG=True
     export APP_CONTEXT_ROOT=gwells
     export ENABLE_GOOGLE_ANALYTICS=False
     export ENABLE_DATA_ENTRY=True
-    export BASEURL=http://gwells-dev.pathfinder.gov.bc.ca/
+    export AXIOS_BASEURL=http://127.0.0.1:8000/
+    export LEGACY_DATABASE_USER=wells
+    export LEGACY_DATABASE_NAME=wells
+    export LEGACY_SCHEMA=wells
+    export SESSION_COOKIE_SECURE=False
+    export CSRF_COOKIE_SECURE=False
+    export ENABLE_ADDITIONAL_DOCUMENTS=True
+    export DJANGO_ADMIN_URL=admin
+    export REQUIRE_ENV_VARIABLES=True
+    export S3_HOST=s3.ca-central-1.amazonaws.com
+    export S3_ROOT_BUCKET=gwells-docs
     ```
 
     ###### Windows
@@ -156,17 +184,32 @@ Please use either these steps or the install script.
     Add the following to %USERPROFILE%\Envs\myenv\Scripts\activate.bat:
 
     ```
-    SET DATABASE_SERVICE_NAME=postgresql
-    SET DATABASE_ENGINE=postgresql
-    SET DATABASE_NAME=gwells
-    SET DATABASE_USER=gwells
-    SET DATABASE_PASSWORD=gwells
-    SET DATABASE_SCHEMA=public
-    SET DJANGO_DEBUG=True
-    SET APP_CONTEXT_ROOT=gwells
-    SET ENABLE_GOOGLE_ANALYTICS=False
-    SET ENABLE_DATA_ENTRY=True
-    SET BASEURL=http://gwells-dev.pathfinder.gov.bc.ca/
+    set DJANGO_LOG_LEVEL=DEBUG
+    set DATABASE_SERVICE_NAME=localhost
+    set LOCALHOST_SERVICE_HOST=localhost
+    set BASEURL=http://127.0.0.1:8000/
+    set LOCALHOST_SERVICE_PORT=5432
+    set DATABASE_ENGINE=postgresql
+    set DATABASE_NAME=gwells
+    set DATABASE_USER=gwells
+    set DATABASE_PASSWORD=gwells
+    set DATABASE_SCHEMA=public
+    set DJANGO_SECRET_KEY=blah
+    set DJANGO_DEBUG=True
+    set APP_CONTEXT_ROOT=gwells
+    set ENABLE_GOOGLE_ANALYTICS=False
+    set ENABLE_DATA_ENTRY=True
+    set AXIOS_BASEURL=http://127.0.0.1:8000/
+    set LEGACY_DATABASE_USER=wells
+    set LEGACY_DATABASE_NAME=wells
+    set LEGACY_SCHEMA=wells
+    set SESSION_COOKIE_SECURE=False
+    set CSRF_COOKIE_SECURE=False
+    set ENABLE_ADDITIONAL_DOCUMENTS=True
+    set DJANGO_ADMIN_URL=admin
+    set REQUIRE_ENV_VARIABLES=True
+    set S3_HOST=s3.ca-central-1.amazonaws.com
+    set S3_ROOT_BUCKET=gwells-docs
     ```
 
 6.  ##### Development Database
@@ -180,13 +223,14 @@ Please use either these steps or the install script.
     ```
 
     Optional: import a database.
-    
+
     From python:
     ```
     cd app/backend
     python manage.py loaddata gwells-codetables
     python manage.py loaddata wellsearch-codetables registries-codetables
     python manage.py loaddata wellsearch registries
+    python manage.py createinitialrevisions
     ```
     From pg dump:
     ```
@@ -210,7 +254,7 @@ Please use either these steps or the install script.
     ```
     cd app/frontend
     npm install
-    run build
+    npm run build
     ```
 
     Start the Django development server (file in root of repo).
@@ -219,7 +263,7 @@ Please use either these steps or the install script.
     cd app/backend
     python3 manage.py runserver
     ```
-    
+
 9.  ##### Use GWells
 
     Browse to http://127.0.0.1:8000/gwells, the welcome page.
@@ -265,11 +309,11 @@ Note that environment variables are case sensitive.
 You can fine tune the gunicorn configuration through the environment variable `APP_CONFIG` that, when set, should point to a config file as documented [here](http://docs.gunicorn.org/en/latest/settings.html).
 
 #### DB_REPLICATE
-Until legacy WELLS is shutdown and all works done on GWELLS, there is a nightly replication of WELLS records to GWELLS Production.   This [variable](database/README.md#32) controls the behavior during deploys (to DEV/TEST/PROD) and is one of None, Subset, or Full.  
+Until legacy WELLS is shutdown and all works done on GWELLS, there is a nightly replication of WELLS records to GWELLS Production.   This [variable](database/README.md#32) controls the behavior during deploys (to DEV/TEST/PROD) and is one of None, Subset, or Full.
 
-* Recommended value on DEV:  `Subset` (otherwise the Functional Tests will fail)  
-* Recommended value on TEST: `Subset` or `Full`  
-* Recommended value on PROD: `Full`  
+* Recommended value on DEV:  `Subset` (otherwise the Functional Tests will fail)
+* Recommended value on TEST: `Subset` or `Full`
+* Recommended value on PROD: `Full`
 
 #### MINIO_ACCESS_KEY
 Access key acting as a user ID that uniquely identifies the account.  Set as part of `gwells-minio` deployment but then used in `gwells` deployment to connect to the internal (private) Minio Server.
@@ -293,7 +337,7 @@ Set to `True` to enable debugging.  Recommended value:  `True`
 
 NOTE: On local developer environments, the `gradlew` tests will fail with `DJANGO_DEBUG=False` unless the developer manually runs `python3 manage.py collectstatic`.
 
-#### ENABLE_DATA_ENTRY  
+#### ENABLE_DATA_ENTRY
 Set to `True` to enable debugging.  Recommended value:  Not set for Production (as the feature is not released); `True` for Development.
 
 #### ENABLE_GOOGLE_ANALYTICS
