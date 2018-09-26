@@ -7,23 +7,22 @@ services:
       POSTGRES_USER: gwells
       POSTGRES_PASSWORD: test1
     hostname: db
-  webapp: 
-    build:
-      context: ./app/
-      dockerfile: $PWD/docker-images/gwells-develop/webapp/Dockerfile
+  webapp:
+    image: node:8
     environment:
       AXIOS_BASE_URL: http://127.0.0.1:8000/gwells/api/v1/
       CHOKIDAR_USEPOLLING: "True"
-    command: /bin/bash -c "cd /app/frontend && npm run build && npm run dev"
+    command: /bin/bash -c "
+        cd /app/frontend &&
+        npm install &&
+        npm run build &&
+        npm run dev"
     ports:
       - "8080:8080"
     volumes:
-      - ./app/frontend:/app/frontend
-      - /app/frontend/node_modules/
+      - ./app:/app
   api:
-    build:
-      context: ./app/
-      dockerfile: $PWD/docker-images/gwells-develop/api/Dockerfile
+    image: python:3.6
     environment:
       DATABASE_SERVICE_NAME: postgres
       DATABASE_ENGINE: postgresql
@@ -41,11 +40,13 @@ services:
       ENABLE_ADDITIONAL_DOCUMENTS: "False"
       POSTGRES_SERVICE_PORT: 5432
       DJANGO_ADMIN_URL: admin
+      PYTHONUNBUFFERED: "1"
     command: /bin/bash -c "sleep 3 &&
              cd /app/backend &&
+             pip3 install -r requirements.txt &&
              python3 manage.py migrate --noinput &&
              echo Loading fixtures, this may take some time... &&
-             python3 manage.py loaddata 
+             python3 manage.py loaddata
                 gwells-codetables.json
                 registries-codetables.json
                 registries.json &&
@@ -53,7 +54,7 @@ services:
              python3 manage.py collectstatic --noinput &&
              python3 manage.py runserver 0.0.0.0:8000"
     volumes:
-      - ./app/backend:/app/backend
+      - ./app:/app
     ports:
       - "8000:8000"
     depends_on:
