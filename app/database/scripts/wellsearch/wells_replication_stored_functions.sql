@@ -977,6 +977,33 @@ BEGIN
 
   raise notice '...gw_aquifer_attrs data updated from mapping ';
 
+  INSERT INTO hydraulic_property(
+    hydraulic_property_guid  
+  ,storativity              
+  ,transmissivity           
+  ,aquifer_vulnerablity_code
+  ,well_tag_number        
+  ,create_user,create_date,update_user,update_date
+  )
+  SELECT gen_random_uuid()
+  ,gw.storativity
+  ,gw.transmissivity
+  ,gw.aquifer_vulnerability_index
+  ,well.well_tag_number
+  ,gw.who_created
+  ,gw.when_created
+  ,coalesce(gw.who_updated, gw.who_created)
+  ,coalesce(gw.when_updated,gw.when_created)
+  FROM wells.gw_aquifer_wells gw,
+      wells.wells_wells well_legacy, -- to get well_tag_number
+      well well -- only for wells in GWELLS
+  WHERE  well_legacy.well_id = gw.well_id
+  AND    well_legacy.well_tag_number = well.well_tag_number;
+
+  raise notice '...hydraulic_property data imported';
+  SELECT count(*) from hydraulic_property into row_count;
+  raise notice '% rows loaded into the hydraulic_property table',  row_count;
+
 END;
 $$ LANGUAGE plpgsql;
 COMMENT ON FUNCTION migrate_aquifers () IS 'Load Aquifer Wells, only for the wells that have been replicated.';
