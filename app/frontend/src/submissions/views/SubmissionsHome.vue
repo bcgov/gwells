@@ -115,7 +115,8 @@
 
         <!-- Closure/Decommission Description -->
         <closure-description
-          v-if="currentStep === 'closureDescription' || (formIsFlat && flatForm.closureDescription)">
+          v-if="currentStep === 'closureDescription' || (formIsFlat && flatForm.closureDescription)"
+          :closureDescriptionSet.sync="form.closure_description_set">
 
         </closure-description>
 
@@ -562,6 +563,7 @@ export default {
         well_disinfected: 'False',
         comments: '',
         alternative_specs_submitted: 'False',
+        closure_description_set: [],
 
         // non-form fields that should be saved with form
         meta: {

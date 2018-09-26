@@ -19,38 +19,42 @@
                   v-for="(item, index) in closureDescriptionSet"
                   :key="`closureDescription${index}`">
 
-                <td class="input-width-small">
-                  <b-input
+                <td class="input-width-small pb-0">
+                  <form-input
+                      group-class="my-0"
                       :id="`closureFrom${index}`"
                       v-model="item.start"
                   />
                 </td>
-                <td class="input-width-small">
-                  <b-input
+                <td class="input-width-small pb-0">
+                  <form-input
+                      group-class="my-0"
                       :id="`closureTo${index}`"
                       v-model="item.end"
                   />
                 </td>
-                <td>
-                  <b-input
+                <td class="pb-0">
+                  <form-input
+                      group-class="my-0"
                       :id="`decommissionMaterial${index}`"
-                      v-model="item.decommision_material"
+                      v-model="item.material"
                   />
                 </td>
-                <td>
-                  <b-input
+                <td class="pb-0">
+                  <form-input
+                      group-class="my-0"
                       :id="`closureObservations${index}`"
                       v-model="item.observations"
                   />
                 </td>
-                <td class="align-middle">
-                  <b-btn size="sm" variant="primary" :id="`removeClosureRowButton${index}`"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
+                <td class="align-middle pb-0">
+                  <b-btn size="sm" variant="primary" @click="removeClosureRow(index)" :id="`removeClosureRowButton${index}`"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
                 </td>
               </tr>
             </tbody>
           </table>
         </div>
-        <b-btn size="sm" variant="primary" id="addClosureRowButton"><i class="fa fa-plus-square-o"></i> Add row</b-btn>
+        <b-btn size="sm" variant="primary" @click="addClosureRow" id="addClosureRowButton"><i class="fa fa-plus-square-o"></i> Add row</b-btn>
       </b-col>
     </b-row>
   </fieldset>
@@ -62,18 +66,9 @@ import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 export default {
   mixins: [inputBindingsMixin],
   props: {
-    closureDescriptionSet: {
-      type: Array,
-      default: () => ([])
-    },
-    errors: {
-      type: Object,
-      default: () => ({})
-    },
-    fieldsLoaded: {
-      type: Object,
-      default: () => ({})
-    }
+    closureDescriptionSet: Array,
+    errors: Array,
+    fieldsLoaded: Object
   },
   fields: {
     closureDescriptionSetInput: 'closureDescriptionSet'
@@ -86,7 +81,10 @@ export default {
   },
   methods: {
     addClosureRow () {
-      this.closureDescriptionSet.push({start: '', end: '', material: '', observations: ''})
+      this.closureDescriptionSetInput.push({start: '', end: '', material: '', observations: ''})
+    },
+    removeClosureRow (rowNumber) {
+      this.closureDescriptionSetInput.splice(rowNumber, 1)
     }
   }
 }

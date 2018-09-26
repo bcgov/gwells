@@ -6,7 +6,7 @@
   "license": "Apache-2.0",
   "private": true,
   "scripts": {
-    "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js --host 0.0.0.0 --disableHostCheck true",
+    "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js --disableHostCheck true",
     "start": "npm run dev",
     "unit": "jest --config test/unit/jest.conf.js --coverage",
     "test": "npm run unit",
