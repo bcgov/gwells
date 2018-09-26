@@ -137,10 +137,7 @@ export default {
   name: 'Casings',
   mixins: [inputBindingsMixin],
   props: {
-    casings: {
-      type: Array,
-      default: () => []
-    },
+    casings: Array,
     errors: {
       type: Object,
       default: () => ({})

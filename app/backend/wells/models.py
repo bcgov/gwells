@@ -703,8 +703,8 @@ class Well(AuditModel):
         max_length=250, blank=True, null=True, verbose_name="Decommission Details")
     ems_id = models.CharField(max_length=30, blank=True)
     aquifer = models.ForeignKey(Aquifer, db_column='aquifer_id',
-                                    on_delete=models.CASCADE, blank=True, null=True,
-                                    verbose_name='Aquifer ID Number')
+                                on_delete=models.CASCADE, blank=True, null=True,
+                                verbose_name='Aquifer ID Number')
     tracker = FieldTracker()
 
     class Meta:
@@ -1056,7 +1056,6 @@ class ActivitySubmission(AuditModel):
     diameter = models.CharField(max_length=9, blank=True)
     ems_id = models.CharField(max_length=30, blank=True)
 
-
     tracker = FieldTracker()
 
     class Meta:
@@ -1077,9 +1076,11 @@ class LithologyDescription(AuditModel):
     lithology_description_guid = models.UUIDField(
         primary_key=True, default=uuid.uuid4, editable=False)
     activity_submission = models.ForeignKey(
-        ActivitySubmission, db_column='filing_number', on_delete=models.CASCADE, blank=True, null=True)
-    well_tag_number = models.ForeignKey(
-        Well, db_column='well_tag_number', on_delete=models.CASCADE, blank=True, null=True)
+        ActivitySubmission, db_column='filing_number', on_delete=models.CASCADE, blank=True, null=True,
+        related_name='lithology_set')
+    well = models.ForeignKey(
+        Well, db_column='well_tag_number', on_delete=models.CASCADE, blank=True, null=True,
+        related_name='lithology_set')
     lithology_from = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='From',
                                          blank=True, null=True,
                                          validators=[MinValueValidator(Decimal('0.00'))])
@@ -1318,6 +1319,7 @@ class Screen(AuditModel):
         else:
             return 'well {} {} {}'.format(self.well, self.start, self.end)
 
+
 class AquiferVulnerabilityCode(AuditModel):
     """
     Demand choices for describing Aquifer 
@@ -1360,11 +1362,10 @@ class WaterQualityColour(AuditModel):
         return self.description
 
 
-"""
-    Hydraulic properties of the well, usually determined via tests.
-"""
 class HydraulicProperty(AuditModel):
-
+    """
+    Hydraulic properties of the well, usually determined via tests.
+    """
     hydraulic_property_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     well = models.ForeignKey(Well, db_column='well_tag_number', to_field='well_tag_number',
                              on_delete=models.CASCADE, blank=False, null=False)
