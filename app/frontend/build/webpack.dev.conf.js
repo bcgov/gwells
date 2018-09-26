@@ -100,6 +100,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
       names: [
         'header',
         'registry',
+        'summary',
         'documents',
         'submissions',
         'footer'

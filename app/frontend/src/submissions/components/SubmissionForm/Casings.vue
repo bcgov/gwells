@@ -155,15 +155,15 @@ export default {
   },
   methods: {
     addRow () {
-      this.casings.push({})
+      this.casingsInput.push({})
     },
     removeRowByIndex (index) {
-      this.casings.splice(index, 1)
+      this.casingsInput.splice(index, 1)
       this.rowIndexToRemove = null
     },
     removeRowIfOk (instance) {
-      const index = this.casings.findIndex(item => item === instance)
-      if (this.rowHasValues(this.casings[index])) {
+      const index = this.casingsInput.findIndex(item => item === instance)
+      if (this.rowHasValues(this.casingsInput[index])) {
         this.rowIndexToRemove = index
         this.confirmRemoveModal = true
       } else {
@@ -195,6 +195,12 @@ export default {
   },
   computed: {
     ...mapGetters(['codes'])
+  },
+  created () {
+    // When component created, add an initial row of lithology.
+    if (!this.casingsInput.length) {
+      this.casingsInput.push({}, {}, {})
+    }
   }
 }
 </script>

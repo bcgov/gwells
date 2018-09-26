@@ -159,10 +159,7 @@ export default {
     otherScreenMaterial: String,
     screenOpening: String,
     screenBottom: String,
-    screens: {
-      type: Array,
-      default: () => ([{}])
-    },
+    screens: Array,
     errors: {
       type: Object,
       default: () => ({})
@@ -171,20 +168,6 @@ export default {
       type: Object,
       default: () => ({})
     }
-  },
-  // The fields property helps to bind v-model (on the form input components) to a prop.
-  // Set v-model to the key (see the form input above); the value corresponds to a prop declared on this component
-  // Prop values will then be synced with the parent component. This way we can break apart a large form
-  // into smaller components. Normally this is not necessary but we are composing a large POST request
-  // out of many small components.
-  fields: {
-    screenIntakeInput: 'screenIntakeMethod',
-    screenTypeInput: 'screenType',
-    screenMaterialInput: 'screenMaterial',
-    otherScreenMaterialInput: 'otherScreenMaterial',
-    screenOpeningInput: 'screenOpening',
-    screenBottomInput: 'screenBottom',
-    screensInput: 'screens'
   },
   data () {
     return {
@@ -198,13 +181,7 @@ export default {
   },
   methods: {
     addScreenRow () {
-      this.screensInput.push({
-        start: '',
-        end: '',
-        internal_diameter: '',
-        assembly_type: '',
-        slot_size: ''
-      })
+      this.screensInput.push({})
     },
     removeRowByIndex (index) {
       this.screensInput.splice(index, 1)
@@ -231,8 +208,8 @@ export default {
   },
   created () {
     // when component created, add an initial row of screens
-    if (!this.screens.length) {
-      this.addScreenRow()
+    if (!this.screensInput.length) {
+      this.screensInput.push({}, {}, {})
     }
   }
 }

@@ -138,22 +138,9 @@ export default {
     ...mapGetters(['codes'])
   },
   methods: {
-    // addLithologyRow () {
-    //   this.lithologyInput.push({
-    //     from: '',
-    //     to: '',
-    //     primary: '',
-    //     secondary: '',
-    //     bedrock: '',
-    //     descriptor: '',
-    //     bedding: '',
-    //     colour: '',
-    //     hardness: '',
-    //     moisture: '',
-    //     water_bearing_flow: '',
-    //     observations: ''
-    //   })
-    // },
+    addLithologyRow () {
+      this.lithologyInput.push({})
+    },
     removeRowByIndex (index) {
       this.lithologyInput.splice(index, 1)
       this.rowIndexToRemove = null
@@ -179,7 +166,7 @@ export default {
   },
   created () {
     // When component created, add an initial row of lithology.
-    if (!this.lithology.length) {
+    if (!this.lithologyInput.length) {
       this.lithologyInput.push({}, {}, {})
     }
   }

@@ -136,10 +136,7 @@ export default {
     linerThickness: Number,
     linerFrom: Number,
     linerTo: Number,
-    linerPerforations: {
-      type: Array,
-      default: () => []
-    },
+    linerPerforations: Array,
     errors: {
       type: Object,
       default: () => ({}),
@@ -198,6 +195,12 @@ export default {
   },
   computed: {
     ...mapGetters(['codes'])
+  },
+  created () {
+    // When component created, add an initial row of lithology.
+    if (!this.linerPerforationsInput.length) {
+      this.linerPerforationsInput.push({}, {}, {})
+    }
   }
 }
 </script>
