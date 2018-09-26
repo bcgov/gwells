@@ -33,8 +33,8 @@ services:
       DJANGO_DEBUG: "True"
       APP_CONTEXT_ROOT: gwells
       DJANGO_SECRET_KEY: secret
-      SESSION_COOKIE_SECURE: "True"
-      CSRF_COOKIE_SECURE: "True"
+      SESSION_COOKIE_SECURE: "False"
+      CSRF_COOKIE_SECURE: "False"
       ENABLE_DATA_ENTRY: "True"
       ENABLE_GOOGLE_ANALYTICS: "False"
       ENABLE_ADDITIONAL_DOCUMENTS: "False"
