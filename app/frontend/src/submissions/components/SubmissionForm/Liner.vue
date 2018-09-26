@@ -67,11 +67,11 @@
         <b-col>Liner Perforations</b-col>
       </b-row>
       <b-row>
-        <b-col>
-          <table class="table table-sm">
+        <b-col md="6">
+          <table class="table table-sm no-border">
             <thead>
               <tr>
-                <th class="font-weight-normal">Perforated From ft (bgl)</th>
+                <th class="font-weight-normal no-border">Perforated From ft (bgl)</th>
                 <th class="font-weight-normal">Perforated To ft (bgl)</th>
                 <th></th>
               </tr>
@@ -201,7 +201,19 @@ export default {
   }
 }
 </script>
+<style lang="scss" scoped>
+%no-border {
+  border: 0px;
+  border-bottom: 0px;
+  border-top: 0px;
+}
 
-<style>
-
+.no-border {
+  th {
+    @extend %no-border;
+  }
+  td {
+    @extend %no-border;
+  }
+}
 </style>

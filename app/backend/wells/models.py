@@ -1244,9 +1244,9 @@ class Casing(AuditModel):
                              blank=True, null=True,
                              related_name='casing_set')
     start = models.DecimalField(db_column='casing_from', max_digits=7, decimal_places=2, verbose_name='From',
-                                null=True, blank=True, validators=[MinValueValidator(Decimal('0.00'))])
+                                blank=False, validators=[MinValueValidator(Decimal('0.00'))])
     end = models.DecimalField(db_column='casing_to', max_digits=7, decimal_places=2, verbose_name='To',
-                              null=True, blank=True, validators=[MinValueValidator(Decimal('0.01'))])
+                              null=True, blank=False, validators=[MinValueValidator(Decimal('0.01'))])
     diameter = models.DecimalField(max_digits=8, decimal_places=3, verbose_name='Diameter', null=True,
                                    blank=True, validators=[MinValueValidator(Decimal('0.5'))])
     casing_code = models.ForeignKey(CasingCode, db_column='casing_code', on_delete=models.CASCADE,

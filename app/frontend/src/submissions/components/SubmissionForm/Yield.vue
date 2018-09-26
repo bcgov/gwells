@@ -18,7 +18,7 @@
           <form-input
               id="yieldEstimationRate"
               label="Yield Estimation Rate"
-              hint="USgmp"
+              hint="USgpm"
               v-model="productionData[index].yield_estimation_rate"></form-input>
         </b-col>
         <b-col cols="12" md="4" lg="2">
@@ -60,7 +60,7 @@
               id="hydroFracturingYieldIncrease"
               label="Increase in Well Yield Due to Hydro-fracturing"
               v-model="productionData[index].hydro_fracturing_yield_increase"
-              hint="ft (btoc)"
+              hint="USgpm"
               ></form-input>
         </b-col>
       </b-row>
