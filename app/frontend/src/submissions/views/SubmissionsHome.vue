@@ -604,7 +604,4 @@ export default {
 .input-width-medium {
   max-width: 10rem;
 }
-.btn-sm { // <-- NOT a good solution. Overriding bootstrap is not ideal.
-  line-height: 1; // Either this or increase padding-top
-}
 </style>

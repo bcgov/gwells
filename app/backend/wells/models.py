@@ -506,8 +506,8 @@ class Well(AuditModel):
     land_district = models.ForeignKey(LandDistrictCode, db_column='land_district_code',
                                       on_delete=models.CASCADE, blank=True, null=True,
                                       verbose_name='Land District')
-    legal_pid = models.CharField(max_length=9, blank=True, null=True,
-                                 verbose_name='Property Identification Description (PID)')
+    legal_pid = models.PositiveIntegerField(blank=True, null=True,
+                                            verbose_name='Property Identification Description (PID)')
     well_location_description = models.CharField(
         max_length=500, blank=True, verbose_name='Description of Well Location')
 
