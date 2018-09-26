@@ -295,19 +295,19 @@ parallel (
                         executed by itself. */
                         sh "oc exec '${podName}' -n '${projectName}' -- bash -c '\
                             cd /opt/app-root/src/backend; \
-                            python manage.py migrate; \
+                            python manage.py migrate \
                         '"
                         sh "oc exec '${podName}' -n '${projectName}' -- bash -c '\
                             cd /opt/app-root/src/backend; \
-                            python manage.py loaddata gwells-codetables.json; \
+                            python manage.py loaddata gwells-codetables.json \
                         '"
                         sh "oc exec '${podName}' -n '${projectName}' -- bash -c '\
                             cd /opt/app-root/src/backend; \
-                            python manage.py loaddata wellsearch-codetables.json registries-codetables.json; \
+                            python manage.py loaddata wellsearch-codetables.json registries-codetables.json \
                         '"
                         sh "oc exec '${podName}' -n '${projectName}' -- bash -c '\
                             cd /opt/app-root/src/backend; \
-                            python manage.py loaddata wellsearch.json.gz registries.json; \
+                            python manage.py loaddata wellsearch.json.gz registries.json \
                         '"
                         sh "oc exec '${podName}' -n '${projectName}' -- bash -c '\
                             cd /opt/app-root/src/backend; \
