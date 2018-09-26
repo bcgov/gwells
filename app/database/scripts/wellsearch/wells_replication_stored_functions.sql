@@ -911,7 +911,7 @@ BEGIN
     ,create_user,create_date,update_user,update_date
     )
     SELECT
-    attrs.aquifer_id
+     attrs.aquifer_id
     ,attrs.aquifer_name
     ,attrs.descriptive_location
     ,attrs.size_km2
