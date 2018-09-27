@@ -133,6 +133,25 @@ class QualityConcern(AuditModel):
         return '{} - {}'.format(self.code, self.description)
 
 
+class AquiferVulnerabilityCode(AuditModel):
+    """
+    Demand choices for describing Aquifer 
+    """
+    code = models.CharField(primary_key=True, max_length=1, db_column='aquifer_vulnerability_code')
+    description = models.CharField(max_length=100)
+    display_order = models.PositiveIntegerField()
+
+    effective_date = models.DateTimeField(blank=True, null=True)
+    expiry_date = models.DateTimeField(blank=True, null=True)
+
+    class Meta: 
+        db_table = 'aquifer_vulnerability_code'
+        ordering = ['display_order', 'code']
+        verbose_name_plural = 'Aquifer Vulnerability Codes'
+
+    def __str__(self):
+        return '{} - {}'.format(self.code, self.description)
+
 class Aquifer(AuditModel):
     """
     An underground layer of water-bearing permeable rock, rock fractures or unconsolidated materials
@@ -166,6 +185,13 @@ class Aquifer(AuditModel):
         related_name='aquifers')
     area = models.DecimalField(
         max_digits=5, decimal_places=1, blank=True, null=True, verbose_name='Size (square km)')
+    vulnerability = models.ForeignKey(
+        AquiferVulnerabilityCode,
+        db_column='aquifer_vulnerablity_code',
+        blank=True,
+        null=True,
+        on_delete=models.PROTECT,
+        verbose_name="Aquifer Vulnerabiliy")   
     productivity = models.ForeignKey(
         AquiferProductivity,
         db_column='aquifer_productivity_code',
