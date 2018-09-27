@@ -700,7 +700,7 @@ class Well(AuditModel):
         max_length=100, blank=True, null=True, verbose_name="Backfill Material")
     decommission_details = models.CharField(
         max_length=250, blank=True, null=True, verbose_name="Decommission Details")
-    ems_id = models.CharField(max_length=30, blank=True)
+    ems_id = models.CharField(max_length=30, blank=True, null=True)
     aquifer = models.ForeignKey(Aquifer, db_column='aquifer_id',
                                     on_delete=models.CASCADE, blank=True, null=True,
                                     verbose_name='Aquifer ID Number')
