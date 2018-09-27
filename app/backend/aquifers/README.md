@@ -8,11 +8,10 @@ This is a distinct app under the GWELLS project, created using the Django comman
 ## Test data fixture
 
 To facilitate the CodeWithUs effort, we have a sample set of data available in a
-[aquifers-sample file](./fixtures/aquifers-sample.json).  It is a subset of the full dataset, and has been sanitized (personal names have been deleted; in fact the entire registries_persons table is not inclued).
-
-'''
+[aquifers-sample file](./fixtures/aquifers-sample.json).  It is a subset of the full dataset, and has been sanitized (personal names have been deleted; in fact the entire registries_persons table is not included).
+```
 python manage.py loaddata aquifers-sample.json 
-'''
+```
 
 Output from the above command should be:
 ```
