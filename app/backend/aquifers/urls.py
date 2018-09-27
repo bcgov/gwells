@@ -22,4 +22,7 @@ urlpatterns = [
         never_cache(views.AquiferListAPIView.as_view()),
         name='aquifers-list'
     )
+
+    # Aquifers home (loads aquifers application)
+    url(r'^aquifers/', views.AquiferHomeView.as_view(), name='aquifers-home')
 ]

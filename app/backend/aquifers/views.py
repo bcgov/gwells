@@ -14,6 +14,7 @@
 
 from django.shortcuts import render
 from django_filters import rest_framework as filters
+from django.views.generic import TemplateView
 
 from rest_framework.filters import SearchFilter
 from rest_framework.generics import ListAPIView
@@ -31,3 +32,7 @@ class AquiferListAPIView(ListAPIView):
     filter_backends = (filters.DjangoFilterBackend,SearchFilter)
     filter_fields = ('aquifer_id',)
     search_fields = ('aquifer_name',)
+
+class AquiferHomeView(TemplateView):
+    """Loads the html file containing the Aquifer web app"""
+    template_name = 'aquifers/aquifers.html'
