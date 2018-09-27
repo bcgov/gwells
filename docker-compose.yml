@@ -7,6 +7,8 @@ services:
       POSTGRES_USER: gwells
       POSTGRES_PASSWORD: test1
     hostname: db
+    volumes:
+      - ./database/psql-dev:/var/lib/postgresql
   webapp:
     image: node:8
     environment:
