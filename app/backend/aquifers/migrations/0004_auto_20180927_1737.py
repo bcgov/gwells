@@ -10,6 +10,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('aquifers', '0003_auto_20180924_2205'),
+        ('wells', '0021_delete_aquifervulnerabilitycode')
     ]
 
     operations = [

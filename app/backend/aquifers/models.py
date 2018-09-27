@@ -16,6 +16,7 @@ from django.db import models
 from gwells.models import AuditModel
 from django.core.validators import MinValueValidator, MaxValueValidator
 
+
 class AquiferMaterial(AuditModel):
     """
     Material choices for describing Aquifer Material
@@ -56,7 +57,7 @@ class AquiferSubtype(AuditModel):
 
 class AquiferProductivity(AuditModel):
     """
-    Productivity choices for describing Aquifer 
+    Productivity choices for describing Aquifer
     -------------------
     """
     code = models.CharField(primary_key=True, max_length=1, db_column='aquifer_productivity_code')
@@ -77,7 +78,7 @@ class AquiferProductivity(AuditModel):
 
 class AquiferDemand(AuditModel):
     """
-    Demand choices for describing Aquifer 
+    Demand choices for describing Aquifer
     """
     code = models.CharField(primary_key=True, max_length=1, db_column='aquifer_demand_code')
     description = models.CharField(max_length=100)
@@ -152,6 +153,7 @@ class AquiferVulnerabilityCode(AuditModel):
     def __str__(self):
         return '{} - {}'.format(self.code, self.description)
 
+
 class Aquifer(AuditModel):
     """
     An underground layer of water-bearing permeable rock, rock fractures or unconsolidated materials
@@ -162,9 +164,7 @@ class Aquifer(AuditModel):
     """
     aquifer_id = models.PositiveIntegerField(
         primary_key=True, verbose_name="Aquifer ID Number")
-    aquifer_name = models.CharField(max_length=100,
-        blank=True,
-        null=True)
+    aquifer_name = models.CharField(max_length=100, blank=True, null=True)
     location_description = models.CharField(
         max_length=100, blank=True, null=True, verbose_name='Description of Location')
     material = models.ForeignKey(
