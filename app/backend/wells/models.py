@@ -1317,6 +1317,11 @@ class Screen(AuditModel):
         else:
             return 'well {} {} {}'.format(self.well, self.start, self.end)
 
+"""
+TODO 2018-SEP-27 GW To delete on subsequent migration; this
+     has been moved to ../aquifers/model.py.  We may need to
+    'squash' as part of this.
+"""
 class AquiferVulnerabilityCode(AuditModel):
     """
     Demand choices for describing Aquifer 
@@ -1361,13 +1366,8 @@ class HydraulicProperty(AuditModel):
     hydraulic_property_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     well = models.ForeignKey(Well, db_column='well_tag_number', to_field='well_tag_number',
                              on_delete=models.CASCADE, blank=False, null=False)
-    avi = models.ForeignKey(
-        AquiferVulnerabilityCode,
-        db_column='aquifer_vulnerablity_code',
-        blank=True,
-        null=True,
-        on_delete=models.PROTECT,
-        verbose_name="AVI Reference")
+    avi = models.DecimalField(
+        max_digits=10, decimal_places=0, blank=True, null=True, verbose_name='AVI')
     storativity = models.DecimalField(
         max_digits=8, decimal_places=7, blank=True, null=True, verbose_name='Storativity')
     transmissivity = models.DecimalField(
