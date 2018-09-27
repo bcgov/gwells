@@ -136,7 +136,7 @@ class QualityConcern(AuditModel):
 
 class AquiferVulnerabilityCode(AuditModel):
     """
-    Demand choices for describing Aquifer 
+    Demand choices for describing Aquifer
     """
     code = models.CharField(primary_key=True, max_length=1, db_column='aquifer_vulnerability_code')
     description = models.CharField(max_length=100)
@@ -145,7 +145,7 @@ class AquiferVulnerabilityCode(AuditModel):
     effective_date = models.DateTimeField(blank=True, null=True)
     expiry_date = models.DateTimeField(blank=True, null=True)
 
-    class Meta: 
+    class Meta:
         db_table = 'aquifer_vulnerability_code'
         ordering = ['display_order', 'code']
         verbose_name_plural = 'Aquifer Vulnerability Codes'
