@@ -1438,6 +1438,11 @@ class DecommissionDescription(AuditModel):
     """Provides a description of the ground conditions (between specified start and end depth) for decommissioning"""
 
     decommission_description_guid = models.UUIDField(primary_key=True, default=uuid.uuid4)
+    activity_submission = models.ForeignKey(ActivitySubmission, db_column='filing_number',
+                                            on_delete=models.CASCADE, blank=True, null=True,
+                                            related_name='decommission_description_set')
+    well = models.ForeignKey(Well, db_column='well_tag_number', on_delete=models.CASCADE, blank=True,
+                             null=True, related_name='decommission_description_set')
     start = models.DecimalField(db_column='decommission_description_from', max_digits=7, decimal_places=2,
                                 verbose_name='Decommissioned From', blank=False,
                                 validators=[MinValueValidator(Decimal('0.00'))])
@@ -1446,3 +1451,4 @@ class DecommissionDescription(AuditModel):
                               validators=[MinValueValidator(Decimal('0.01'))])
     material = models.ForeignKey(DecommissionMaterialCode, db_column='decommission_material_code', on_delete=models.PROTECT)
     observations = models.CharField(max_length=255, null=True, blank=True)
+

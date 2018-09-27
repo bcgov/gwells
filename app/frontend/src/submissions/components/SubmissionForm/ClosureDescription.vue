@@ -17,37 +17,46 @@
             <tbody>
               <tr
                   v-for="(item, index) in closureDescriptionSet"
-                  :key="`closureDescription${index}`">
+                  :key="`closureDescription${index}`"
+                  :id="`closureDescription${index}`">
 
-                <td class="input-width-small pb-0">
+                <td class="input-width-small">
                   <form-input
-                      group-class="my-0"
+                      group-class="mt-1 mb-0"
                       :id="`closureFrom${index}`"
                       v-model="item.start"
+                      :errors="getClosureError(index).start"
+                      :loaded="getFieldsLoaded(index).start"
                   />
                 </td>
-                <td class="input-width-small pb-0">
+                <td class="input-width-small">
                   <form-input
-                      group-class="my-0"
+                      group-class="mt-1 mb-0"
                       :id="`closureTo${index}`"
                       v-model="item.end"
+                      :errors="getClosureError(index).end"
+                      :loaded="getFieldsLoaded(index).end"
                   />
                 </td>
-                <td class="pb-0">
+                <td>
                   <form-input
-                      group-class="my-0"
+                      group-class="mt-1 mb-0"
                       :id="`decommissionMaterial${index}`"
                       v-model="item.material"
+                      :errors="getClosureError(index).material"
+                      :loaded="getFieldsLoaded(index).material"
                   />
                 </td>
-                <td class="pb-0">
+                <td>
                   <form-input
-                      group-class="my-0"
+                      group-class="mt-1 mb-0"
                       :id="`closureObservations${index}`"
                       v-model="item.observations"
+                      :errors="getClosureError(index).observations"
+                      :loaded="getFieldsLoaded(index).observations"
                   />
                 </td>
-                <td class="align-middle pb-0">
+                <td class="align-middle">
                   <b-btn size="sm" variant="primary" @click="removeClosureRow(index)" :id="`removeClosureRowButton${index}`"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
                 </td>
               </tr>
@@ -66,7 +75,10 @@ import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 export default {
   mixins: [inputBindingsMixin],
   props: {
-    closureDescriptionSet: Array,
+    closureDescriptionSet: {
+      type: Array,
+      default: () => ([])
+    },
     errors: Array,
     fieldsLoaded: Object
   },
@@ -85,6 +97,23 @@ export default {
     },
     removeClosureRow (rowNumber) {
       this.closureDescriptionSetInput.splice(rowNumber, 1)
+    },
+    getClosureError (index) {
+      if (this.errors && 'closure_description_set' in this.errors && index in this.errors['closure_description_set']) {
+        return this.errors['closure_description_set'][index]
+      }
+      return {}
+    },
+    getFieldsLoaded (index) {
+      if (this.fieldsLoaded && 'closure_description_set' in this.fieldsLoaded && index in this.fieldsLoaded['closure_description_set']) {
+        return this.fieldsLoaded['closure_description_set'][index]
+      }
+      return {}
+    }
+  },
+  created () {
+    if (!this.closureDescriptionSet.length) {
+      this.addClosureRow()
     }
   }
 }
