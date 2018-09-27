@@ -28,7 +28,9 @@ class CodeFixture():
         for item in self.fixture:
             app, model = item.get('model').split('.', 1)
             model = apps.get_model(app, model)
-            model.objects.get(pk=item.get('pk')).delete()
+            item = model.objects.filter(pk=item.get('pk')).first()
+            if item:
+                item.delete()
 
     def _process_fixture_file(self, fixture_path):
         with open(fixture_path, 'r') as json_data:

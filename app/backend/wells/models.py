@@ -1317,29 +1317,6 @@ class Screen(AuditModel):
         else:
             return 'well {} {} {}'.format(self.well, self.start, self.end)
 
-"""
-TODO 2018-SEP-27 GW To delete on subsequent migration; this
-     has been moved to ../aquifers/model.py.  We may need to
-    'squash' as part of this.
-"""
-class AquiferVulnerabilityCode(AuditModel):
-    """
-    Demand choices for describing Aquifer 
-    """
-    code = models.CharField(primary_key=True, max_length=1, db_column='aquifer_vulnerability_code')
-    description = models.CharField(max_length=100)
-    display_order = models.PositiveIntegerField()
-
-    effective_date = models.DateTimeField(blank=True, null=True)
-    expiry_date = models.DateTimeField(blank=True, null=True)
-
-    class Meta: 
-        db_table = 'aquifer_vulnerability_code'
-        ordering = ['display_order', 'code']
-        verbose_name_plural = 'Aquifer Vulnerability Codes'
-
-    def __str__(self):
-        return '{} - {}'.format(self.code, self.description)
 
 class WaterQualityColour(AuditModel):
     """
