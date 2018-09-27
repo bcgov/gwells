@@ -35,7 +35,7 @@ def restore_code_description(apps, schema_editor):
     casing_material = CasingMaterialCode(code='STL_PUL_OT', description='Steel pulled out', display_order=20)
     casing_material.save()
 
-    for casing in Casing.objects.filter(casing_material=casing_material):
+    for casing in Casing.objects.filter(casing_code=casing_code):
         if casing.casing_material:
             raise DataError('Was not expecting to find casing code: {}'.format(casing.casing_code))
         casing.casing_material = casing_material
