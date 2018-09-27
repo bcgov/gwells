@@ -24,6 +24,7 @@ services:
       - "8080:8080"
     volumes:
       - ./app:/app
+      - /app/frontend/node_modules/
   api:
     image: python:3.6
     environment:
