@@ -1244,12 +1244,15 @@ class Casing(AuditModel):
     well = models.ForeignKey(Well, db_column='well_tag_number', on_delete=models.CASCADE,
                              blank=True, null=True,
                              related_name='casing_set')
+    # 2018/Sep/26 - According to PO (Lindsay), diameter, start and end are required fields.
+    # There is however a lot of legacy data that does not have this field.
     start = models.DecimalField(db_column='casing_from', max_digits=7, decimal_places=2, verbose_name='From',
-                                null=False, validators=[MinValueValidator(Decimal('0.00'))])
+                                null=True, blank=True, validators=[MinValueValidator(Decimal('0.00'))])
     end = models.DecimalField(db_column='casing_to', max_digits=7, decimal_places=2, verbose_name='To',
-                              null=False, validators=[MinValueValidator(Decimal('0.01'))])
-    diameter = models.DecimalField(max_digits=8, decimal_places=3, verbose_name='Diameter', null=False,
-                                   validators=[MinValueValidator(Decimal('0.5'))])
+                              null=True, blank=True, validators=[MinValueValidator(Decimal('0.01'))])    
+    # NOTE: Diameter should be pulling from internal_diameter
+    diameter = models.DecimalField(max_digits=8, decimal_places=3, verbose_name='Diameter', null=True,
+                                   blank=True, validators=[MinValueValidator(Decimal('0.5'))])
     casing_code = models.ForeignKey(CasingCode, db_column='casing_code', on_delete=models.CASCADE,
                                     verbose_name='Casing Type Code', null=True)
     casing_material = models.ForeignKey(CasingMaterialCode, db_column='casing_material_code',
@@ -1296,14 +1299,15 @@ class Screen(AuditModel):
     well = models.ForeignKey(Well, db_column='well_tag_number', on_delete=models.CASCADE, blank=True,
                              null=True, related_name='screen_set')
     start = models.DecimalField(db_column='screen_from', max_digits=7, decimal_places=2, verbose_name='From',
-                                null=False, validators=[MinValueValidator(Decimal('0.00'))])
+                                blank=True, null=True, validators=[MinValueValidator(Decimal('0.00'))])
     end = models.DecimalField(db_column='screen_to', max_digits=7, decimal_places=2, verbose_name='To',
-                              null=False, validators=[MinValueValidator(Decimal('0.01'))])
+                              blank=False, null=True, validators=[MinValueValidator(Decimal('0.01'))])
     internal_diameter = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='Diameter',
                                             blank=True, null=True,
                                             validators=[MinValueValidator(Decimal('0.0'))])
     assembly_type = models.ForeignKey(
-        ScreenAssemblyTypeCode, db_column='screen_assembly_type_code', on_delete=models.CASCADE, null=False)
+        ScreenAssemblyTypeCode, db_column='screen_assembly_type_code', on_delete=models.CASCADE, blank=True,
+        null=True)
     slot_size = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='Slot Size',
                                     blank=True, null=True, validators=[MinValueValidator(Decimal('0.00'))])
 
