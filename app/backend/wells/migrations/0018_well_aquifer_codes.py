@@ -7,7 +7,6 @@ import json
 from io import open
 import os
 from gwells.codes import CodeFixture
-from wells.models import AquiferVulnerabilityCode
 
 
 def aquifer_vulnerability_codes():

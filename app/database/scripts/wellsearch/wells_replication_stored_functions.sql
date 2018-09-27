@@ -898,7 +898,8 @@ BEGIN
     aquifer_id              
     ,aquifer_name            
     ,location_description    
-    ,area                      
+    ,area   
+    ,aquifer_vulnerablity_code               
     ,litho_stratographic_unit
     ,mapping_year              
     ,notes                     
@@ -911,10 +912,16 @@ BEGIN
     ,create_user,create_date,update_user,update_date
     )
     SELECT
-    attrs.aquifer_id
+     attrs.aquifer_id
     ,attrs.aquifer_name
     ,attrs.descriptive_location
     ,attrs.size_km2
+    ,CASE attrs.vulnerability
+        WHEN 'Moderate' THEN 'M'
+        WHEN 'Low'      THEN 'L'
+        WHEN 'High'     THEN 'H'
+        ELSE attrs.vulnerability
+     END AS aquifer_vulnerablity_code
     ,attrs.litho_stratographic_unit
     ,null -- from spreadsheet temporary table
     ,null 
