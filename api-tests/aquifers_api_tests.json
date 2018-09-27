@@ -1,0 +1,135 @@
+{
+	"info": {
+		"_postman_id": "f986d626-d0a1-42fe-b758-762529ccedb1",
+		"name": "GWELLS Aquifers",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Aquifers List",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "85664ee3-92d9-4510-b7d8-6bd6c44ec870",
+						"type": "text/javascript",
+						"exec": [
+							"var jsonData = pm.response.json()",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.expect(pm.response.code).to.equal(200);",
+							"})",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "{{base_url}}/api/v1/aquifers/",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"aquifers",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Aquifers Search",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "e291aa1f-95f3-4ca8-8e6c-f88b496980ba",
+						"type": "text/javascript",
+						"exec": [
+							"var jsonData = pm.response.json()",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.expect(pm.response.code).to.equal(200);",
+							"})",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "{{base_url}}/api/v1/aquifers/?aquifer_id=123",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"aquifers",
+						""
+					],
+					"query": [
+						{
+							"key": "aquifer_id",
+							"value": "123"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Aquifers Filter by aquifer_id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "7ab4ef72-57cb-4c27-8b88-2cb379cab83c",
+						"type": "text/javascript",
+						"exec": [
+							"var jsonData = pm.response.json()",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.expect(pm.response.code).to.equal(200);",
+							"})",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "{{base_url}}/api/v1/aquifers/?search=asdf",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"aquifers",
+						""
+					],
+					"query": [
+						{
+							"key": "search",
+							"value": "asdf"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

@@ -12,22 +12,24 @@
     limitations under the License.
 """
 
-from django.shortcuts import render
-from django_filters import rest_framework as filters
-
-from rest_framework.filters import SearchFilter
-from rest_framework.generics import ListAPIView
+from rest_framework import serializers
 
 from aquifers.models import Aquifer
-from aquifers.serializers import AquiferListSerializer
 
-class AquiferListAPIView(ListAPIView):
-    """List aquifers
-    get: return a list of aquifers
-    """
+class AquiferListSerializer(serializers.ModelSerializer):
+    """Serialize a aquifer list"""
 
-    queryset = Aquifer.objects.all()
-    serializer_class = AquiferListSerializer
-    filter_backends = (filters.DjangoFilterBackend,SearchFilter)
-    filter_fields = ('aquifer_id',)
-    search_fields = ('aquifer_name',)
+    class Meta:
+        model = Aquifer
+        fields = (
+            'aquifer_id',
+            'aquifer_name',
+            'location_description',
+            'material',
+            'litho_stratographic_unit',
+            'subtype',
+            'area',
+            'productivity',
+            'demand',
+            'mapping_year'
+        )
