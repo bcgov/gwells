@@ -28,6 +28,8 @@ class CodeFixture():
         for item in self.fixture:
             app, model = item.get('model').split('.', 1)
             model = apps.get_model(app, model)
+            # The fixture in question may have been deleted for other reasons, so we don't force a
+            # delete. If the record exists, then delete it.
             item = model.objects.filter(pk=item.get('pk')).first()
             if item:
                 item.delete()
