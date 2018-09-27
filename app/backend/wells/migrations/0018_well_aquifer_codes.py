@@ -9,16 +9,18 @@ import os
 from gwells.codes import CodeFixture
 from wells.models import AquiferVulnerabilityCode
 
+
 def aquifer_vulnerability_codes():
-    fixture = '0017_well_aquifer_codes.json'
+    fixture = '0018_well_aquifer_codes.json'
     fixture_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), fixture)
 
     return CodeFixture(fixture_path)
 
+
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('wells', '0016_auto_20180918_2337'),
+        ('wells', '0017_auto_20180926_2104'),
     ]
 
     operations = [
