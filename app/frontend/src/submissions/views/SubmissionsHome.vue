@@ -218,6 +218,16 @@
           :wellDisinfected.sync="form.well_disinfected"
         />
 
+        <decommission-information class="my-3"
+          v-if="currentStep === 'decommissionInformation' || (formIsFlat && flatForm.decommissionInformation)"
+          :finishedWellDepth.sync="form.finished_well_depth"
+          :decommissionReason.sync="form.decommission_reason"
+          :decommissionMethod.sync="form.decommission_method"
+          :sealantMaterial.sync="form.sealant_material"
+          :backfillMaterial.sync="form.backfill_material"
+          :decommissionDetails.sync="form.decommission_details"
+        />
+
         <!-- Comments -->
         <comments class="my-3"
           v-if="currentStep === 'comments' || (formIsFlat && flatForm.comments)"
@@ -324,6 +334,7 @@ import WaterQuality from '@/submissions/components/SubmissionForm/WaterQuality.v
 import Completion from '@/submissions/components/SubmissionForm/Completion.vue'
 import Comments from '@/submissions/components/SubmissionForm/Comments.vue'
 import ClosureDescription from '@/submissions/components/SubmissionForm/ClosureDescription.vue'
+import DecommissionInformation from '@/submissions/components/SubmissionForm/DecommissionInformation.vue'
 export default {
   name: 'SubmissionsHome',
   mixins: [inputFormatMixin],
@@ -345,7 +356,8 @@ export default {
     WaterQuality,
     Completion,
     Comments,
-    ClosureDescription
+    ClosureDescription,
+    DecommissionInformation
   },
   data () {
     return {
@@ -409,6 +421,7 @@ export default {
           'wellCoords',
           'method',
           'closureDescription',
+          'decommissionInformation',
           'comments'
         ]
       }
@@ -564,6 +577,11 @@ export default {
         comments: '',
         alternative_specs_submitted: 'False',
         decommission_description_set: [],
+        decommission_reason: '',
+        decommission_method: '',
+        sealant_material: '',
+        backfill_material: '',
+        decommission_details: '',
 
         // non-form fields that should be saved with form
         meta: {

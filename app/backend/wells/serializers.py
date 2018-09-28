@@ -62,6 +62,22 @@ class CasingSerializer(serializers.ModelSerializer):
         )
 
 
+class DecommissionDescriptionSerializer(serializers.ModelSerializer):
+    """Serializes Decommission Descriptions"""
+
+    class Meta:
+        model = DecommissionDescription
+        fields = (
+            'decommission_description_guid',
+            'activity_submission',
+            'well',
+            'start',
+            'end',
+            'material',
+            'observations',
+        )
+
+
 class ScreenSerializer(serializers.ModelSerializer):
     class Meta:
         model = Screen
@@ -103,7 +119,7 @@ class WellStackerSerializer(AuditModelSerializer):
         # based on this update. Trying to match up individual records and updating them, dealing with
         # removed casing/screen/perforation records etc. etc. is not the responsibility of this section.
         # The composite section is responsible for that.
-        FOREIGN_KEYS = {'casing_set': Casing, 'screen_set': Screen, 'linerperforation_set': LinerPerforation}        
+        FOREIGN_KEYS = {'casing_set': Casing, 'screen_set': Screen, 'linerperforation_set': LinerPerforation}
         for key in FOREIGN_KEYS.keys():
             for record in getattr(instance, key).all():
                 record.delete()

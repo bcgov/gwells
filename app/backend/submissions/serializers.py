@@ -20,10 +20,16 @@ from gwells.serializers import AuditModelSerializer
 from django.db import transaction
 import wells.stack
 from wells.models import Well, ActivitySubmission
-from wells.serializers import CasingSerializer, ScreenSerializer, LinerPerforationSerializer
+from wells.serializers import (
+    CasingSerializer,
+    DecommissionDescriptionSerializer,
+    ScreenSerializer,
+    LinerPerforationSerializer
+)
 from wells.models import (
     ActivitySubmission,
     Casing,
+    DecommissionDescription,
     DecommissionMaterialCode,
     DecommissionMethodCode,
     DevelopmentMethodCode,
@@ -62,6 +68,7 @@ class WellSubmissionSerializer(serializers.ModelSerializer):
     """Serializes a well activity submission"""
 
     casing_set = CasingSerializer(many=True, required=False)
+    decommission_description_set = DecommissionDescriptionSerializer(many=True, required=False)
     screen_set = ScreenSerializer(many=True, required=False)
     linerperforation_set = LinerPerforationSerializer(many=True, required=False)
 
@@ -167,7 +174,8 @@ class WellSubmissionSerializer(serializers.ModelSerializer):
         FOREIGN_KEYS = {
             'casing_set': Casing,
             'screen_set': Screen,
-            'linerperforation_set': LinerPerforation
+            'linerperforation_set': LinerPerforation,
+            'decommission_description_set': DecommissionDescription,
         }
         foreign_keys_data = {}
         for key in FOREIGN_KEYS.keys():

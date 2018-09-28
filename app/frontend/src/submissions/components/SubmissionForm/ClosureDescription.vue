@@ -2,7 +2,7 @@
   <fieldset>
     <legend>Description</legend>
     <b-row>
-      <b-col cols="12" md="8">
+      <b-col cols="12">
         <div class="table-responsive">
           <table class="table table-sm">
             <thead>
