@@ -311,6 +311,10 @@ parallel (
                         '"
                         sh "oc exec '${podName}' -n '${projectName}' -- bash -c '\
                             cd /opt/app-root/src/backend; \
+                            python manage.py loaddata aquifers.json \
+                        '"
+                        sh "oc exec '${podName}' -n '${projectName}' -- bash -c '\
+                            cd /opt/app-root/src/backend; \
                             python manage.py createinitialrevisions \
                         '"
                         isFixtured = true
