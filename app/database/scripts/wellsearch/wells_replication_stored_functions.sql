@@ -988,7 +988,7 @@ BEGIN
     hydraulic_property_guid  
   ,storativity              
   ,transmissivity           
-  ,aquifer_vulnerablity_code
+  ,avi
   ,well_tag_number        
   ,create_user,create_date,update_user,update_date
   )
