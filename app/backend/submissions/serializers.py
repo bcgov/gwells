@@ -89,7 +89,7 @@ class WellSubmissionSerializer(serializers.ModelSerializer):
             "work_start_date",
             "work_end_date",
             "owner_full_name",
-            "owner_mailing_address",  # temporarily disabled
+            "owner_mailing_address",
             "owner_city",
             "owner_province_state",
             "owner_postal_code",

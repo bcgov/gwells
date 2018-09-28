@@ -22,6 +22,7 @@ from wells.models import (
     Casing,
     CasingMaterialCode,
     CasingCode,
+    DecommissionDescription,
     LinerPerforation,
     Screen,
     Well,
