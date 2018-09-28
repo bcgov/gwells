@@ -24,6 +24,7 @@ export default {
 
 <style lang="scss">
 @import '../common/common.scss';
+@import '../common/assets/css/ie10-viewport-bug-workaround.css';
 .container-wide {
   max-width: 1400px
 }
