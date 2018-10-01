@@ -6,7 +6,7 @@
         <form-input
           id="filterPackFrom"
           label="Filter Pack From"
-          hint="ft."
+          hint="ft"
           type="text"
           v-model="filterPackFromInput"
         ></form-input>
@@ -15,7 +15,7 @@
         <form-input
           id="filterPackTo"
           label="Filter Pack To"
-          hint="ft."
+          hint="ft"
           type="text"
           v-model="filterPackToInput"
         ></form-input>
@@ -24,7 +24,7 @@
         <form-input
           id="filterPackThickness"
           label="Filter Pack Thickness"
-          hint="in."
+          hint="inches"
           type="text"
           v-model="filterPackThicknessInput"
         ></form-input>
