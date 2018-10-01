@@ -16,7 +16,7 @@
   <b-card no-body class="p-3 mb-4">
     <h5>Aquifer Search</h5>
     <b-form
-      v-on:submit.prevent="search"
+      v-on:submit.prevent="search(searchParams)"
       v-on:reset="reset">
       <b-form-row>
         <b-col cols="12" md="4">
@@ -52,7 +52,7 @@
 
 <script>
 import { SEARCH_AQUIFERS, RESET_RESULTS } from '../store/actions.types'
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 
 export default {
   data () {
@@ -81,13 +81,15 @@ export default {
     ])
   },
   methods: {
-    search () {
-      this.$store.dispatch(SEARCH_AQUIFERS, this.searchParams)
-    },
+    ...mapActions({
+      search: SEARCH_AQUIFERS,
+      resetResults: RESET_RESULTS
+    }),
     reset () {
-      this.$store.dispatch(RESET_RESULTS)
+      this.resetResults()
       this.searchParams = {}
-    }
+    },
+    search() { this.$store.dispatch(SEARCH_AQUIFERS) }
   }
 }
 </script>

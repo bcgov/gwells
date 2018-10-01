@@ -1,0 +1,285 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Search Component Matches the snapshot 1`] = `
+<div
+  class="card p-3 mb-4"
+>
+  <h5>
+    Aquifer Search
+  </h5>
+   
+  <form
+    class=""
+  >
+    <div
+      class="form-row"
+    >
+      <div
+        class="col-md-4 col-12"
+      >
+        <fieldset
+          aria-labelledby="__BVID__14__BV_label_"
+          class="b-form-group form-group"
+          id="__BVID__14"
+          role="group"
+        >
+          <legend
+            class="col-form-label pt-0"
+            id="__BVID__14__BV_label_"
+          >
+            Aquifer name
+          </legend>
+          <div
+            aria-labelledby="__BVID__14__BV_label_"
+            class=""
+            role="group"
+          >
+            <input
+              class="form-control"
+              id="__BVID__15"
+              type="text"
+            />
+            <!---->
+            <!---->
+            <!---->
+          </div>
+        </fieldset>
+         
+        <fieldset
+          aria-labelledby="__BVID__16__BV_label_"
+          class="b-form-group form-group"
+          id="__BVID__16"
+          role="group"
+        >
+          <legend
+            class="col-form-label pt-0"
+            id="__BVID__16__BV_label_"
+          >
+            Aquifer number
+          </legend>
+          <div
+            aria-labelledby="__BVID__16__BV_label_"
+            class=""
+            role="group"
+          >
+            <input
+              class="form-control"
+              id="__BVID__17"
+              type="text"
+            />
+            <!---->
+            <!---->
+            <!---->
+          </div>
+        </fieldset>
+      </div>
+    </div>
+     
+    <div
+      class="form-row"
+    >
+      <div
+        class="col"
+      >
+        <fieldset
+          class="b-form-group form-group"
+          id="__BVID__18"
+          role="group"
+        >
+          <!---->
+          <div
+            class=""
+            role="group"
+          >
+            <button
+              class="btn btn-primary"
+              type="submit"
+            >
+              Search
+            </button>
+             
+            <button
+              class="btn btn-default"
+              type="reset"
+            >
+              Reset
+            </button>
+            <!---->
+            <!---->
+            <!---->
+          </div>
+        </fieldset>
+      </div>
+    </div>
+  </form>
+   
+  <table
+    aria-busy="false"
+    aria-colcount="12"
+    aria-rowcount="1"
+    class="table b-table"
+    id="__BVID__19"
+  >
+    <!---->
+    <!---->
+    <thead
+      class=""
+    >
+      <tr>
+        <th
+          aria-colindex="1"
+          class=""
+        >
+          Aquifer number
+        </th>
+        <th
+          aria-colindex="2"
+          class=""
+        >
+          Aquifer name
+        </th>
+        <th
+          aria-colindex="3"
+          class=""
+        >
+          Descriptive location
+        </th>
+        <th
+          aria-colindex="4"
+          class=""
+        >
+          Material
+        </th>
+        <th
+          aria-colindex="5"
+          class=""
+        >
+          Litho stragraphic unit
+        </th>
+        <th
+          aria-colindex="6"
+          class=""
+        >
+          Subtype
+        </th>
+        <th
+          aria-colindex="7"
+          class=""
+        >
+          Vulnerability
+        </th>
+        <th
+          aria-colindex="8"
+          class=""
+        >
+          Size-km²
+        </th>
+        <th
+          aria-colindex="9"
+          class=""
+        >
+          Productivity
+        </th>
+        <th
+          aria-colindex="10"
+          class=""
+        >
+          Demand
+        </th>
+        <th
+          aria-colindex="11"
+          class=""
+        >
+          Year of mapping
+        </th>
+        <th
+          aria-colindex="12"
+          class=""
+        >
+          Publication status
+        </th>
+      </tr>
+    </thead>
+    <!---->
+    <tbody
+      class=""
+    >
+      <!---->
+      <tr
+        class=""
+      >
+        <td
+          aria-colindex="1"
+          class=""
+        >
+          4
+        </td>
+        <td
+          aria-colindex="2"
+          class=""
+        >
+          Aggasiz
+        </td>
+        <td
+          aria-colindex="3"
+          class=""
+        >
+          Aggasiz/Sea Bird Island
+        </td>
+        <td
+          aria-colindex="4"
+          class=""
+        >
+          Sand and Gravel
+        </td>
+        <td
+          aria-colindex="5"
+          class=""
+        >
+          Fraser River Sediments
+        </td>
+        <td
+          aria-colindex="6"
+          class=""
+        >
+          Unconfined sand and gravel - large river system
+        </td>
+        <td
+          aria-colindex="7"
+          class=""
+        >
+          High
+        </td>
+        <td
+          aria-colindex="8"
+          class=""
+        >
+          63.3
+        </td>
+        <td
+          aria-colindex="9"
+          class=""
+        >
+          High
+        </td>
+        <td
+          aria-colindex="10"
+          class=""
+        />
+        <td
+          aria-colindex="11"
+          class=""
+        >
+          1993
+        </td>
+        <td
+          aria-colindex="12"
+          class=""
+        />
+      </tr>
+      <!---->
+      <!---->
+    </tbody>
+  </table>
+</div>
+`;
