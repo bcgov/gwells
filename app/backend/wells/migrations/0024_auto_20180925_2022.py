@@ -12,7 +12,7 @@ import uuid
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('wells', '0017_update_casing_material_code'),
+        ('wells', '0023_auto_change_pid_to_positive_integerfield_20180925_2040'),
     ]
 
     operations = [
@@ -24,8 +24,10 @@ class Migration(migrations.Migration):
                 ('update_user', models.CharField(max_length=60, null=True)),
                 ('update_date', models.DateTimeField(blank=True, null=True)),
                 ('decommission_description_guid', models.UUIDField(default=uuid.uuid4, primary_key=True, serialize=False)),
-                ('start', models.DecimalField(db_column='decommission_description_from', decimal_places=2, max_digits=7, validators=[django.core.validators.MinValueValidator(Decimal('0.00'))], verbose_name='Decommissioned From')),
-                ('end', models.DecimalField(db_column='decommission_description_to', decimal_places=2, max_digits=7, validators=[django.core.validators.MinValueValidator(Decimal('0.01'))], verbose_name='Decommissioned To')),
+                ('start', models.DecimalField(db_column='decommission_description_from', decimal_places=2, max_digits=7,
+                                              validators=[django.core.validators.MinValueValidator(Decimal('0.00'))], verbose_name='Decommissioned From')),
+                ('end', models.DecimalField(db_column='decommission_description_to', decimal_places=2, max_digits=7,
+                                            validators=[django.core.validators.MinValueValidator(Decimal('0.01'))], verbose_name='Decommissioned To')),
                 ('observations', models.CharField(blank=True, max_length=255, null=True)),
             ],
             options={
@@ -61,7 +63,8 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='activitysubmission',
             name='decommission_method',
-            field=models.ForeignKey(blank=True, db_column='decommission_method_code', null='True', on_delete=django.db.models.deletion.CASCADE, to='wells.DecommissionMethodCode', verbose_name='Method of Decommission'),
+            field=models.ForeignKey(blank=True, db_column='decommission_method_code', null='True', on_delete=django.db.models.deletion.CASCADE,
+                                    to='wells.DecommissionMethodCode', verbose_name='Method of Decommission'),
         ),
         migrations.AddField(
             model_name='activitysubmission',
