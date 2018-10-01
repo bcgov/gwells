@@ -11,7 +11,7 @@
           text-field="description"
           value-field="screen_intake_code"
           placeholder="Select intake"
-          v-model="screenIntakeInput"></form-input>
+          v-model="screenIntakeMethodInput"></form-input>
       </b-col>
     </b-row>
     <b-row>
@@ -94,13 +94,34 @@
           <template v-for="(row, index) in screens.length">
             <tr :key="`screen row ${index}`" :id="`screenRow${index}`">
               <td class="input-width-small py-0">
-                <form-input group-class="my-1" :id="`screen${index}DepthFrom`" aria-label="Depth from (feet)" v-model="screens[index].start"/>
+                <form-input
+                  group-class="my-1"
+                  :id="`screen${index}DepthFrom`"
+                  aria-label="Depth from (feet)"
+                  v-model="screens[index].start"
+                  :errors="getScreenError(index).start"
+                  :loaded="getScreenLoaded(index).start"
+                  />
               </td>
               <td class="input-width-small py-0">
-                <form-input group-class="my-1" :id="`screen${index}DepthTo`" aria-label="Depth to (feet)" v-model="screens[index].end"/>
+                <form-input
+                  group-class="my-1"
+                  :id="`screen${index}DepthTo`"
+                  aria-label="Depth to (feet)"
+                  v-model="screens[index].end"
+                  :errors="getScreenError(index).end"
+                  :loaded="getScreenLoaded(index).end"
+                  />
               </td>
               <td class="input-width-small py-0">
-                <form-input group-class="my-1" :id="`screen${index}Diameter`" aria-label="Diameter (inches)" v-model="screens[index].internal_diameter"/>
+                <form-input
+                  group-class="my-1"
+                  :id="`screen${index}Diameter`"
+                  aria-label="Diameter (inches)"
+                  v-model="screens[index].internal_diameter"
+                  :errors="getScreenError(index).internal_diameter"
+                  :loaded="getScreenLoaded(index).internal_diameter"
+                  />
               </td>
               <td class="input-width-small py-0">
                 <form-input
@@ -112,13 +133,24 @@
                     :options="codes.screen_assemblies"
                     text-field="description"
                     value-field="screen_assembly_type_code"
-                    placeholder="Select type"/>
+                    placeholder="Select type"
+                    :errors="getScreenError(index).assembly_type"
+                    :loaded="getScreenLoaded(index).assembly_type"
+                    />
               </td>
               <td class="input-width-small py-0">
-                <form-input list="screenSlotSizeList" group-class="my-1" :id="`screen${index}SlotSize`" aria-label="Screen Slot Size" v-model="screens[index].slot_size"/>
+                <form-input
+                  list="screenSlotSizeList"
+                  group-class="my-1"
+                  :id="`screen${index}SlotSize`"
+                  aria-label="Screen Slot Size"
+                  v-model="screens[index].slot_size"
+                  :errors="getScreenError(index).slot_size"
+                  :loaded="getScreenLoaded(index).slot_size"
+                  />
               </td>
-              <td class="align-middle py-0">
-                <b-btn size="sm" variant="primary" @click="removeScreenRow(index)" :id="`removeScreenRowButton${index}`"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
+              <td class="py-0">
+                <b-btn size="sm" variant="primary" @click="removeRowIfOk(index)" :id="`removeScreenRowButton${index}`" class="mt-2"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
               </td>
             </tr>
           </template>
@@ -129,6 +161,21 @@
       <option v-for="size in screenSlotSizeSuggestions" :key="`screenSlotSizeListOption-${size}`">{{size}}</option>
     </datalist>
     <b-btn size="sm" variant="primary" @click="addScreenRow" id="addScreenRowButton"><i class="fa fa-plus-square-o"></i> Add row</b-btn>
+    <b-modal
+      v-model="confirmRemoveModal"
+      centered
+      title="Confirm remove"
+      @shown="focusRemoveModal">
+      Are you sure you want to remove this row?
+      <div slot="modal-footer">
+        <b-btn variant="secondary" @click="confirmRemoveModal=false;rowIndexToRemove=null" ref="cancelRemoveBtn">
+          Cancel
+        </b-btn>
+        <b-btn variant="danger" @click="confirmRemoveModal=false;removeRowByIndex(rowIndexToRemove)">
+          Remove
+        </b-btn>
+      </div>
+    </b-modal>
   </fieldset>
 </template>
 
@@ -146,7 +193,7 @@ export default {
     screenBottom: String,
     screens: {
       type: Array,
-      default: () => ([{}])
+      default: () => ([])
     },
     errors: {
       type: Object,
@@ -157,23 +204,11 @@ export default {
       default: () => ({})
     }
   },
-  // The fields property helps to bind v-model (on the form input components) to a prop.
-  // Set v-model to the key (see the form input above); the value corresponds to a prop declared on this component
-  // Prop values will then be synced with the parent component. This way we can break apart a large form
-  // into smaller components. Normally this is not necessary but we are composing a large POST request
-  // out of many small components.
-  fields: {
-    screenIntakeInput: 'screenIntakeMethod',
-    screenTypeInput: 'screenType',
-    screenMaterialInput: 'screenMaterial',
-    otherScreenMaterialInput: 'otherScreenMaterial',
-    screenOpeningInput: 'screenOpening',
-    screenBottomInput: 'screenBottom',
-    screensInput: 'screens'
-  },
   data () {
     return {
-      screenSlotSizeSuggestions: ['10', '20', '40', '80']
+      screenSlotSizeSuggestions: ['10', '20', '40', '80'],
+      confirmRemoveModal: false,
+      rowIndexToRemove: null
     }
   },
   computed: {
@@ -181,22 +216,47 @@ export default {
   },
   methods: {
     addScreenRow () {
-      this.screensInput.push({
-        start: '',
-        end: '',
-        internal_diameter: '',
-        assembly_type: '',
-        slot_size: ''
-      })
+      this.screensInput.push({})
     },
-    removeScreenRow (rowNumber) {
-      this.screensInput.splice(rowNumber, 1)
+    removeRowByIndex (index) {
+      this.screensInput.splice(index, 1)
+      this.rowIndexToRemove = null
+    },
+    removeRowIfOk (rowNumber) {
+      if (this.rowHasValues(this.screensInput[rowNumber])) {
+        this.rowIndexToRemove = rowNumber
+        this.confirmRemoveModal = true
+      } else {
+        this.removeRowByIndex(rowNumber)
+      }
+    },
+    getScreenError (index) {
+      if (this.errors && 'screen_set' in this.errors && index in this.errors['screen_set']) {
+        return this.errors['screen_set'][index]
+      }
+      return {}
+    },
+    getScreenLoaded (index) {
+      if (this.fieldsLoaded && 'screen_set' in this.fieldsLoaded && index in this.fieldsLoaded['screen_set']) {
+        return this.fieldsLoaded['screen_set'][index]
+      }
+      return {}
+    },
+    rowHasValues (row) {
+      let keys = Object.keys(row)
+      if (keys.length === 0) return false
+      // Check that all fields are not empty.
+      return !keys.every((key) => !row[key])
+    },
+    focusRemoveModal () {
+      // Focus the "cancel" button in the confirm remove popup.
+      this.$refs.cancelRemoveBtn.focus()
     }
   },
   created () {
     // when component created, add an initial row of screens
-    if (!this.screens.length) {
-      this.addScreenRow()
+    if (!this.screensInput.length) {
+      this.screensInput.push({}, {}, {})
     }
   }
 }

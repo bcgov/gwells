@@ -168,6 +168,8 @@
           :screenOpening.sync="form.screen_opening"
           :screenBottom.sync="form.screen_bottom"
           :screens.sync="form.screen_set"
+          :errors="errors"
+          :fieldsLoaded="fieldsLoaded"
         />
 
         <!-- Filter Pack -->
@@ -528,7 +530,7 @@ export default {
         liner_thickness: null,
         liner_from: null,
         liner_to: null,
-        linerperforation_set: [{}, {}, {}],
+        linerperforation_set: [],
         well_location_description: '',
         latitude: '',
         longitude: '',
@@ -543,7 +545,7 @@ export default {
         surface_seal_method: '',
         backfill_above_surface_seal: '',
         backfill_above_surface_seal_depth: '',
-        casing_set: [{}, {}, {}],
+        casing_set: [],
         screen_intake_method: '',
         screen_type: '',
         screen_material: '',
@@ -701,8 +703,5 @@ export default {
 }
 .input-width-medium {
   max-width: 10rem;
-}
-.btn-sm { // <-- NOT a good solution. Overriding bootstrap is not ideal.
-  line-height: 1; // Either this or increase padding-top
 }
 </style>

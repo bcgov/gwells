@@ -104,14 +104,29 @@
                 <b-form-radio value="True">Yes</b-form-radio>
               </b-form-radio-group>
             </td>
-            <td class="align-middle pt-1 py-0">
-              <b-btn size="sm" variant="primary" @click="removeRow(casing.id)"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
+            <td class="pt-1 py-0">
+              <b-btn size="sm" variant="primary" @click="removeRowIfOk(casing)" class="mt-2"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
             </td>
           </tr>
         </tbody>
       </table>
     </div>
     <b-btn size="sm" variant="primary" @click="addRow"><i class="fa fa-plus-square-o"></i> Add row</b-btn>
+    <b-modal
+        v-model="confirmRemoveModal"
+        centered
+        title="Confirm remove"
+        @shown="focusRemoveModal">
+      Are you sure you want to remove this row?
+      <div slot="modal-footer">
+        <b-btn variant="secondary" @click="confirmRemoveModal=false;rowIndexToRemove=null" ref="cancelRemoveBtn">
+          Cancel
+        </b-btn>
+        <b-btn variant="danger" @click="confirmRemoveModal=false;removeRowByIndex(rowIndexToRemove)">
+          Remove
+        </b-btn>
+      </div>
+    </b-modal>
   </fieldset>
 </template>
 
@@ -122,10 +137,7 @@ export default {
   name: 'Casings',
   mixins: [inputBindingsMixin],
   props: {
-    casings: {
-      type: Array,
-      default: () => []
-    },
+    casings: Array,
     errors: {
       type: Object,
       default: () => ({})
@@ -135,36 +147,60 @@ export default {
       default: () => ({})
     }
   },
-  fields: {
-    casingsInput: 'casings'
+  data () {
+    return {
+      confirmRemoveModal: false,
+      rowIndexToRemove: null
+    }
   },
   methods: {
-    calcNextId () {
-      return this.casings.reduce((accumulator, currentValue) => {
-        return accumulator <= currentValue.id ? currentValue.id + 1 : accumulator
-      }, 0)
-    },
     addRow () {
-      this.casings.push({id: this.calcNextId()})
+      this.casingsInput.push({})
     },
-    removeRow (id) {
-      this.casings.splice(this.casings.findIndex(item => item.id === id), 1)
+    removeRowByIndex (index) {
+      this.casingsInput.splice(index, 1)
+      this.rowIndexToRemove = null
+    },
+    removeRowIfOk (instance) {
+      const index = this.casingsInput.findIndex(item => item === instance)
+      if (this.rowHasValues(this.casingsInput[index])) {
+        this.rowIndexToRemove = index
+        this.confirmRemoveModal = true
+      } else {
+        this.removeRowByIndex(index)
+      }
     },
     getCasingError (index) {
-      if (this.errors && 'casings' in this.errors && index in this.errors['casings']) {
-        return this.errors['casings'][index]
+      if (this.errors && 'casing_set' in this.errors && index in this.errors['casing_set']) {
+        return this.errors['casing_set'][index]
       }
       return {}
     },
     getFieldsLoaded (index) {
-      if (this.fieldsLoaded && 'casings' in this.fieldsLoaded && index in this.fieldsLoaded['casings']) {
-        return this.fieldsLoaded['casings'][index]
+      if (this.fieldsLoaded && 'casing_set' in this.fieldsLoaded && index in this.fieldsLoaded['casing_set']) {
+        return this.fieldsLoaded['casing_set'][index]
       }
       return {}
+    },
+    rowHasValues (row) {
+      let keys = Object.keys(row)
+      if (keys.length === 0) return false
+      // Check that all fields are not empty.
+      return !keys.every((key) => !row[key])
+    },
+    focusRemoveModal () {
+      // Focus the "cancel" button in the confirm remove popup.
+      this.$refs.cancelRemoveBtn.focus()
     }
   },
   computed: {
     ...mapGetters(['codes'])
+  },
+  created () {
+    // When component created, add an initial row of lithology.
+    if (!this.casingsInput.length) {
+      this.casingsInput.push({}, {}, {})
+    }
   }
 }
 </script>

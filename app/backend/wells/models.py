@@ -506,8 +506,8 @@ class Well(AuditModel):
     land_district = models.ForeignKey(LandDistrictCode, db_column='land_district_code',
                                       on_delete=models.CASCADE, blank=True, null=True,
                                       verbose_name='Land District')
-    legal_pid = models.CharField(max_length=9, blank=True, null=True,
-                                 verbose_name='Property Identification Description (PID)')
+    legal_pid = models.PositiveIntegerField(blank=True, null=True,
+                                            verbose_name='Property Identification Description (PID)')
     well_location_description = models.CharField(
         max_length=500, blank=True, verbose_name='Description of Well Location')
 
@@ -701,10 +701,10 @@ class Well(AuditModel):
         max_length=100, blank=True, null=True, verbose_name="Backfill Material")
     decommission_details = models.CharField(
         max_length=250, blank=True, null=True, verbose_name="Decommission Details")
-    ems_id = models.CharField(max_length=30, blank=True)
+    ems_id = models.CharField(max_length=30, blank=True, null=True)
     aquifer = models.ForeignKey(Aquifer, db_column='aquifer_id',
-                                    on_delete=models.CASCADE, blank=True, null=True,
-                                    verbose_name='Aquifer ID Number')
+                                on_delete=models.CASCADE, blank=True, null=True,
+                                verbose_name='Aquifer ID Number')
     tracker = FieldTracker()
 
     class Meta:
@@ -1089,9 +1089,11 @@ class LithologyDescription(AuditModel):
     lithology_description_guid = models.UUIDField(
         primary_key=True, default=uuid.uuid4, editable=False)
     activity_submission = models.ForeignKey(
-        ActivitySubmission, db_column='filing_number', on_delete=models.CASCADE, blank=True, null=True)
-    well_tag_number = models.ForeignKey(
-        Well, db_column='well_tag_number', on_delete=models.CASCADE, blank=True, null=True)
+        ActivitySubmission, db_column='filing_number', on_delete=models.CASCADE, blank=True, null=True,
+        related_name='lithology_set')
+    well = models.ForeignKey(
+        Well, db_column='well_tag_number', on_delete=models.CASCADE, blank=True, null=True,
+        related_name='lithology_set')
     lithology_from = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='From',
                                          blank=True, null=True,
                                          validators=[MinValueValidator(Decimal('0.00'))])
@@ -1255,10 +1257,13 @@ class Casing(AuditModel):
     well = models.ForeignKey(Well, db_column='well_tag_number', on_delete=models.CASCADE,
                              blank=True, null=True,
                              related_name='casing_set')
+    # 2018/Sep/26 - According to PO (Lindsay), diameter, start and end are required fields.
+    # There is however a lot of legacy data that does not have this field.
     start = models.DecimalField(db_column='casing_from', max_digits=7, decimal_places=2, verbose_name='From',
                                 null=True, blank=True, validators=[MinValueValidator(Decimal('0.00'))])
     end = models.DecimalField(db_column='casing_to', max_digits=7, decimal_places=2, verbose_name='To',
                               null=True, blank=True, validators=[MinValueValidator(Decimal('0.01'))])
+    # NOTE: Diameter should be pulling from internal_diameter
     diameter = models.DecimalField(max_digits=8, decimal_places=3, verbose_name='Diameter', null=True,
                                    blank=True, validators=[MinValueValidator(Decimal('0.5'))])
     casing_code = models.ForeignKey(CasingCode, db_column='casing_code', on_delete=models.CASCADE,
@@ -1330,29 +1335,6 @@ class Screen(AuditModel):
         else:
             return 'well {} {} {}'.format(self.well, self.start, self.end)
 
-class AquiferVulnerabilityCode(AuditModel):
-    """
-    Demand choices for describing Aquifer 
-    -------------------
-    High
-    Low
-    Moderate
-    """
-    code = models.CharField(primary_key=True, max_length=1, db_column='aquifer_vulnerability_code')
-    description = models.CharField(max_length=100)
-    display_order = models.PositiveIntegerField()
-
-    effective_date = models.DateTimeField(blank=True, null=True)
-    expiry_date = models.DateTimeField(blank=True, null=True)
-
-    class Meta: 
-        db_table = 'aquifer_vulnerability_code'
-        ordering = ['display_order', 'code']
-        verbose_name_plural = 'Aquifer Vulnerability Codes'
-
-    def __str__(self):
-        return '{} - {}'.format(self.code, self.description)
-
 
 class WaterQualityColour(AuditModel):
     """
@@ -1372,21 +1354,15 @@ class WaterQualityColour(AuditModel):
         return self.description
 
 
-"""
-    Hydraulic properties of the well, usually determined via tests.
-"""
 class HydraulicProperty(AuditModel):
-
+    """
+    Hydraulic properties of the well, usually determined via tests.
+    """
     hydraulic_property_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     well = models.ForeignKey(Well, db_column='well_tag_number', to_field='well_tag_number',
                              on_delete=models.CASCADE, blank=False, null=False)
-    avi = models.ForeignKey(
-        AquiferVulnerabilityCode,
-        db_column='aquifer_vulnerablity_code',
-        blank=True,
-        null=True,
-        on_delete=models.PROTECT,
-        verbose_name="AVI Reference")
+    avi = models.DecimalField(
+        max_digits=10, decimal_places=0, blank=True, null=True, verbose_name='AVI')
     storativity = models.DecimalField(
         max_digits=8, decimal_places=7, blank=True, null=True, verbose_name='Storativity')
     transmissivity = models.DecimalField(
@@ -1408,7 +1384,7 @@ class HydraulicProperty(AuditModel):
         blank=True,
         null=True,
         verbose_name='Testing Method')
-    testing_duration = models.PositiveIntegerField()
+    testing_duration = models.PositiveIntegerField(blank=True, null=True)
     analytic_solution_type = models.DecimalField(
         max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Analytic Solution Type')
     boundary_effect = models.DecimalField(
@@ -1451,4 +1427,3 @@ class DecommissionDescription(AuditModel):
                               validators=[MinValueValidator(Decimal('0.01'))])
     material = models.ForeignKey(DecommissionMaterialCode, db_column='decommission_material_code', on_delete=models.PROTECT)
     observations = models.CharField(max_length=255, null=True, blank=True)
-

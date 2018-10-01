@@ -1,0 +1,111 @@
+{
+    "kind": "List",
+    "apiVersion": "v1",
+    "metadata": {},
+    "items": [
+        {
+            "kind": "CronJob",
+            "apiVersion": "batch/v1beta1",
+            "metadata": {
+                "name": "gwells-pgsql-backup-prod",
+                "creationTimestamp": null,
+                "labels": {
+                    "run": "gwells-pgsql-backup-prod"
+                }
+            },
+            "spec": {
+                "schedule": "0 * * * *",
+                "concurrencyPolicy": "Replace",
+                "suspend": false,
+                "jobTemplate": {
+                    "metadata": {
+                        "creationTimestamp": null
+                    },
+                    "spec": {
+                        "activeDeadlineSeconds": 300,
+                        "template": {
+                            "metadata": {
+                                "creationTimestamp": null,
+                                "labels": {
+                                    "run": "gwells-pgsql-backup-prod"
+                                }
+                            },
+                            "spec": {
+                                "volumes": [
+                                    {
+                                        "name": "backup",
+                                        "persistentVolumeClaim": {
+                                            "claimName": "gwells-pgsql-prod-backup"
+                                        }
+                                    }
+                                ],
+                                "containers": [
+                                    {
+                                        "name": "gwells-pgsql-backup-prod",
+                                        "image": "docker-registry.default.svc:5000/openshift/postgresql:9.5",
+                                        "command": [
+                                            "bash",
+                                            "-c",
+                                            "set -x; psql --version \u0026\u0026 mkdir -p /pgsql-backup/gwells-pgsql-prod \u0026\u0026 pg_dump -Fc gwells \u003e /pgsql-backup/gwells-pgsql-prod/$(date +%Y-%m-%d-%H%M ).bak \u0026\u0026 ls /pgsql-backup/gwells-pgsql-prod/*.bak -1pr | tail -n +11 | xargs -r rm -- \u0026\u0026 ls -lah /pgsql-backup/gwells-pgsql-prod/"
+                                        ],
+                                        "env": [
+                                            {
+                                                "name": "PGHOST",
+                                                "value": "gwells-pgsql-prod"
+                                            },
+                                            {
+                                                "name": "PGDATABASE",
+                                                "valueFrom": {
+                                                    "secretKeyRef": {
+                                                        "name": "gwells-pgsql-prod",
+                                                        "key": "database-name"
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                "name": "PGUSER",
+                                                "valueFrom": {
+                                                    "secretKeyRef": {
+                                                        "name": "gwells-pgsql-prod",
+                                                        "key": "database-user"
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                "name": "PGPASSWORD",
+                                                "valueFrom": {
+                                                    "secretKeyRef": {
+                                                        "name": "gwells-pgsql-prod",
+                                                        "key": "database-password"
+                                                    }
+                                                }
+                                            }
+                                        ],
+                                        "resources": {},
+                                        "volumeMounts": [
+                                            {
+                                                "name": "backup",
+                                                "mountPath": "/pgsql-backup"
+                                            }
+                                        ],
+                                        "terminationMessagePath": "/dev/termination-log",
+                                        "terminationMessagePolicy": "File",
+                                        "imagePullPolicy": "Always"
+                                    }
+                                ],
+                                "restartPolicy": "Never",
+                                "terminationGracePeriodSeconds": 30,
+                                "activeDeadlineSeconds": 300,
+                                "dnsPolicy": "ClusterFirst",
+                                "securityContext": {},
+                                "schedulerName": "default-scheduler"
+                            }
+                        }
+                    }
+                },
+                "successfulJobsHistoryLimit": 3,
+                "failedJobsHistoryLimit": 3
+            }
+        }
+    ]
+}
