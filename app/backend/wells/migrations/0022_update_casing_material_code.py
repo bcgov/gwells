@@ -15,14 +15,15 @@ def change_code_description(apps, schema_editor):
 
     casing_material = CasingMaterialCode.objects.filter(code='STL_PUL_OT').first()
 
-    for casing in Casing.objects.filter(casing_material=casing_material):
-        # Any case where we are overwriting a different casing_code can be ignored, as casing material 
-        # is an entirely new field, and this migration should thus only find records in test/dev.
-        casing.casing_code = casing_code
-        casing.casing_material = None
-        casing.save()
+    if casing_material:
+        for casing in Casing.objects.filter(casing_material=casing_material):
+            # Any case where we are overwriting a different casing_code can be ignored, as casing material 
+            # is an entirely new field, and this migration should thus only find records in test/dev.
+            casing.casing_code = casing_code
+            casing.casing_material = None
+            casing.save()
 
-    casing_material.delete()
+        casing_material.delete()
 
 
 def restore_code_description(apps, schema_editor):
