@@ -123,7 +123,7 @@
         <!-- Lithology -->
         <lithology class="my-3"
           v-if="currentStep === 'lithology' || (formIsFlat && flatForm.lithology)"
-          :lithology.sync="form.lithology_set"
+          :lithology.sync="form.lithologydescription_set"
         />
 
         <!-- Casings -->
@@ -539,7 +539,7 @@ export default {
         ground_elevation_method: '',
         drilling_method: '',
         well_orientation: '',
-        lithology_set: [],
+        lithologydescription_set: [],
         surface_seal_material: '',
         surface_seal_depth: '',
         surface_seal_thickness: '',

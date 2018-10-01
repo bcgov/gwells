@@ -1090,10 +1090,10 @@ class LithologyDescription(AuditModel):
         primary_key=True, default=uuid.uuid4, editable=False)
     activity_submission = models.ForeignKey(
         ActivitySubmission, db_column='filing_number', on_delete=models.CASCADE, blank=True, null=True,
-        related_name='lithology_set')
+        related_name='lithologydescription_set')
     well = models.ForeignKey(
         Well, db_column='well_tag_number', on_delete=models.CASCADE, blank=True, null=True,
-        related_name='lithology_set')
+        related_name='lithologydescription_set')
     lithology_from = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='From',
                                          blank=True, null=True,
                                          validators=[MinValueValidator(Decimal('0.00'))])

@@ -241,13 +241,6 @@ export default {
       }
     },
     sameAsOwnerAddress (val) {
-      console.log('sameAsOwnerAddress ', val, this.ownerMailingAddress, this.ownerCity)
-      /*
-      ownerMailingAddress: String,
-      ownerProvinceState: String,
-      ownerCity: String,
-      ownerPostalCode: String,
-      */
       this.streetAddressInput = String(this.ownerMailingAddress)
       this.cityInput = String(this.ownerCity)
     }
