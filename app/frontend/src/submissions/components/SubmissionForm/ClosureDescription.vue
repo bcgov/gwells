@@ -41,7 +41,11 @@
                 <td>
                   <form-input
                       group-class="mt-1 mb-0"
+                      select
                       :id="`decommissionMaterial${index}`"
+                      :options="codes.decommission_materials"
+                      text-field="description"
+                      value-field="code"
                       v-model="item.material"
                       :errors="getClosureError(index).material"
                       :loaded="getFieldsLoaded(index).material"
