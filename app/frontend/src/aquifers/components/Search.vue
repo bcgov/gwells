@@ -63,7 +63,7 @@ export default {
         { key: 'aquifer_name', label: 'Aquifer name' },
         { key: 'location_description', label: 'Descriptive location' },
         { key: 'material_description', label: 'Material' },
-        { key: 'litho_stratographic_unit', label: 'Litho stragraphic unit' },
+        { key: 'litho_stratographic_unit', label: 'Litho stratigraphic unit' },
         { key: 'subtype_description', label: 'Subtype' },
         { key: 'vulnerability_description', label: 'Vulnerability' },
         { key: 'area', label: 'Size-km²' },
@@ -89,7 +89,7 @@ export default {
       this.resetResults()
       this.searchParams = {}
     },
-    search() { this.$store.dispatch(SEARCH_AQUIFERS) }
+    search () { this.$store.dispatch(SEARCH_AQUIFERS) }
   }
 }
 </script>
