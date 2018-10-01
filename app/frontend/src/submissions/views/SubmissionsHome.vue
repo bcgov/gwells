@@ -114,7 +114,7 @@
         />
 
         <!-- Closure/Decommission Description -->
-        <closure-description
+        <closure-description class="my-3"
           v-if="currentStep === 'closureDescription' || (formIsFlat && flatForm.closureDescription)"
           :closureDescriptionSet.sync="form.decommission_description_set">
 
@@ -423,6 +423,7 @@ export default {
           'wellCoords',
           'method',
           'closureDescription',
+          'casings',
           'decommissionInformation',
           'comments'
         ]

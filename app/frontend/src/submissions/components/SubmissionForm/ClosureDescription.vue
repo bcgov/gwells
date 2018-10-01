@@ -1,6 +1,6 @@
 <template>
   <fieldset>
-    <legend>Description</legend>
+    <legend>Decommission Description</legend>
     <b-row>
       <b-col cols="12">
         <div class="table-responsive">
