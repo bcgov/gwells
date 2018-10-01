@@ -35,8 +35,8 @@
       <b-form-row>
         <b-col>
           <b-form-group>
-            <b-button type="submit">Search</b-button>
-            <b-button type="reset">Reset</b-button>
+            <b-button variant="primary" type="submit">Search</b-button>
+            <b-button variant="default" type="reset">Reset</b-button>
           </b-form-group>
         </b-col>
       </b-form-row>
