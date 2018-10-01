@@ -27,11 +27,11 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='lithologydescription',
             name='activity_submission',
-            field=models.ForeignKey(blank=True, db_column='filing_number', null=True, on_delete=django.db.models.deletion.CASCADE, related_name='lithology_set', to='wells.ActivitySubmission'),
+            field=models.ForeignKey(blank=True, db_column='filing_number', null=True, on_delete=django.db.models.deletion.CASCADE, related_name='lithologydescription_set', to='wells.ActivitySubmission'),
         ),
         migrations.AlterField(
             model_name='lithologydescription',
             name='well',
-            field=models.ForeignKey(blank=True, db_column='well_tag_number', null=True, on_delete=django.db.models.deletion.CASCADE, related_name='lithology_set', to='wells.Well'),
+            field=models.ForeignKey(blank=True, db_column='well_tag_number', null=True, on_delete=django.db.models.deletion.CASCADE, related_name='lithologydescription_set', to='wells.Well'),
         )
     ]
