@@ -160,6 +160,8 @@
           :screenOpening.sync="form.screen_opening"
           :screenBottom.sync="form.screen_bottom"
           :screens.sync="form.screen_set"
+          :errors="errors"
+          :fieldsLoaded="fieldsLoaded"
         />
 
         <!-- Filter Pack -->

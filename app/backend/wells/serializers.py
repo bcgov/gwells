@@ -82,7 +82,7 @@ class ScreenSerializer(serializers.ModelSerializer):
             'end': {'required': True},
             'assembly_type': {'required': True}
         }
- 
+
 
 class LinerPerforationSerializer(serializers.ModelSerializer):
     class Meta:

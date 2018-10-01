@@ -11,7 +11,7 @@
           text-field="description"
           value-field="screen_intake_code"
           placeholder="Select intake"
-          v-model="screenIntakeInput"></form-input>
+          v-model="screenIntakeMethodInput"></form-input>
       </b-col>
     </b-row>
     <b-row>
@@ -94,13 +94,34 @@
           <template v-for="(row, index) in screens.length">
             <tr :key="`screen row ${index}`" :id="`screenRow${index}`">
               <td class="input-width-small py-0">
-                <form-input group-class="my-1" :id="`screen${index}DepthFrom`" aria-label="Depth from (feet)" v-model="screens[index].start"/>
+                <form-input
+                  group-class="my-1"
+                  :id="`screen${index}DepthFrom`"
+                  aria-label="Depth from (feet)"
+                  v-model="screens[index].start"
+                  :errors="getScreenError(index).start"
+                  :loaded="getScreenLoaded(index).start"
+                  />
               </td>
               <td class="input-width-small py-0">
-                <form-input group-class="my-1" :id="`screen${index}DepthTo`" aria-label="Depth to (feet)" v-model="screens[index].end"/>
+                <form-input
+                  group-class="my-1"
+                  :id="`screen${index}DepthTo`"
+                  aria-label="Depth to (feet)"
+                  v-model="screens[index].end"
+                  :errors="getScreenError(index).end"
+                  :loaded="getScreenLoaded(index).end"
+                  />
               </td>
               <td class="input-width-small py-0">
-                <form-input group-class="my-1" :id="`screen${index}Diameter`" aria-label="Diameter (inches)" v-model="screens[index].internal_diameter"/>
+                <form-input
+                  group-class="my-1"
+                  :id="`screen${index}Diameter`"
+                  aria-label="Diameter (inches)"
+                  v-model="screens[index].internal_diameter"
+                  :errors="getScreenError(index).internal_diameter"
+                  :loaded="getScreenLoaded(index).internal_diameter"
+                  />
               </td>
               <td class="input-width-small py-0">
                 <form-input
@@ -112,10 +133,21 @@
                     :options="codes.screen_assemblies"
                     text-field="description"
                     value-field="screen_assembly_type_code"
-                    placeholder="Select type"/>
+                    placeholder="Select type"
+                    :errors="getScreenError(index).assembly_type"
+                    :loaded="getScreenLoaded(index).assembly_type"
+                    />
               </td>
               <td class="input-width-small py-0">
-                <form-input list="screenSlotSizeList" group-class="my-1" :id="`screen${index}SlotSize`" aria-label="Screen Slot Size" v-model="screens[index].slot_size"/>
+                <form-input
+                  list="screenSlotSizeList"
+                  group-class="my-1"
+                  :id="`screen${index}SlotSize`"
+                  aria-label="Screen Slot Size"
+                  v-model="screens[index].slot_size"
+                  :errors="getScreenError(index).slot_size"
+                  :loaded="getScreenLoaded(index).slot_size"
+                  />
               </td>
               <td class="align-middle py-0">
                 <b-btn size="sm" variant="primary" @click="removeRowIfOk(index)" :id="`removeScreenRowButton${index}`"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
@@ -194,6 +226,18 @@ export default {
       } else {
         this.removeRowByIndex(rowNumber)
       }
+    },
+    getScreenError (index) {
+      if (this.errors && 'screen_set' in this.errors && index in this.errors['screen_set']) {
+        return this.errors['screen_set'][index]
+      }
+      return {}
+    },
+    getScreenLoaded (index) {
+      if (this.fieldsLoaded && 'screen_set' in this.fieldsLoaded && index in this.fieldsLoaded['screen_set']) {
+        return this.fieldsLoaded['screen_set'][index]
+      }
+      return {}
     },
     rowHasValues (row) {
       let keys = Object.keys(row)

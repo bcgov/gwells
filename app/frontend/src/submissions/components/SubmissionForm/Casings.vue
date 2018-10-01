@@ -171,14 +171,14 @@ export default {
       }
     },
     getCasingError (index) {
-      if (this.errors && 'casings' in this.errors && index in this.errors['casings']) {
-        return this.errors['casings'][index]
+      if (this.errors && 'casing_set' in this.errors && index in this.errors['casing_set']) {
+        return this.errors['casing_set'][index]
       }
       return {}
     },
     getFieldsLoaded (index) {
-      if (this.fieldsLoaded && 'casings' in this.fieldsLoaded && index in this.fieldsLoaded['casings']) {
-        return this.fieldsLoaded['casings'][index]
+      if (this.fieldsLoaded && 'casing_set' in this.fieldsLoaded && index in this.fieldsLoaded['casing_set']) {
+        return this.fieldsLoaded['casing_set'][index]
       }
       return {}
     },
