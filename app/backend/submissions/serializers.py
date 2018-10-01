@@ -166,6 +166,7 @@ class WellSubmissionSerializer(serializers.ModelSerializer):
             "sealant_material",
             "backfill_material",
             "decommission_details",
+            'decommission_description_set',
         )
 
     @transaction.atomic
