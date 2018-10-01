@@ -191,7 +191,10 @@ export default {
     otherScreenMaterial: String,
     screenOpening: String,
     screenBottom: String,
-    screens: Array,
+    screens: {
+      type: Array,
+      default: () => ([])
+    },
     errors: {
       type: Object,
       default: () => ({})

@@ -25,7 +25,7 @@ describe('Lithology.vue', () => {
       sync: false
     })
 
-    expect(wrapper.vm.lithology.length).toBe(1)
+    expect(wrapper.vm.lithology.length).toBe(3)
   })
   it('adds a new lithology row when clicking Add Row', () => {
     const wrapper = shallowMount(Lithology, {
@@ -35,7 +35,7 @@ describe('Lithology.vue', () => {
     })
 
     wrapper.find('#addLithologyRowButton').trigger('click')
-    expect(wrapper.vm.lithology.length).toBe(2)
+    expect(wrapper.vm.lithology.length).toBe(4)
   })
   it('when clicking the remove button on a row, removes that row', () => {
     const wrapper = shallowMount(Lithology, {
@@ -45,6 +45,6 @@ describe('Lithology.vue', () => {
     })
 
     wrapper.find('#removeRowButton0').trigger('click')
-    expect(wrapper.vm.lithology.length).toBe(0)
+    expect(wrapper.vm.lithology.length).toBe(2)
   })
 })

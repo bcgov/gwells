@@ -118,7 +118,10 @@ export default {
   name: 'Lithology',
   mixins: [inputBindingsMixin],
   props: {
-    lithology: Array,
+    lithology: {
+      type: Array,
+      default: () => ([])
+    },
     errors: {
       type: Object,
       default: () => ({})

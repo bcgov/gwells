@@ -1,6 +1,6 @@
 import { shallowMount, createLocalVue } from '@vue/test-utils'
 import Vuex from 'vuex'
-import Step01Type from '@/submissions/components/SubmissionForm/Step01Type.vue'
+import Step01Type from '@/submissions/components/SubmissionForm/WellType.vue'
 
 const localVue = createLocalVue()
 localVue.use(Vuex)

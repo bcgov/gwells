@@ -1,11 +1,11 @@
 import { shallowMount, createLocalVue } from '@vue/test-utils'
 import Vuex from 'vuex'
-import Step09Screens from '@/submissions/components/SubmissionForm/Step09Screens.vue'
+import Screens from '@/submissions/components/SubmissionForm/Screens.vue'
 
 const localVue = createLocalVue()
 localVue.use(Vuex)
 
-describe('Step09Screens.vue', () => {
+describe('Screens.vue', () => {
   let store
   let getters
 
@@ -19,32 +19,31 @@ describe('Step09Screens.vue', () => {
   })
 
   it('starts with a blank screen row', () => {
-    const wrapper = shallowMount(Step09Screens, {
+    const wrapper = shallowMount(Screens, {
       localVue,
       store,
       sync: false
     })
-
-    expect(wrapper.vm.screens.length).toBe(1)
+    expect(wrapper.vm.screens.length).toBe(3)
   })
   it('adds a new screen row when clicking Add Row', () => {
-    const wrapper = shallowMount(Step09Screens, {
+    const wrapper = shallowMount(Screens, {
       localVue,
       store,
       sync: false
     })
 
     wrapper.find('#addScreenRowButton').trigger('click')
-    expect(wrapper.vm.screens.length).toBe(2)
+    expect(wrapper.vm.screens.length).toBe(4)
   })
   it('when clicking the remove button on a row, removes that row', () => {
-    const wrapper = shallowMount(Step09Screens, {
+    const wrapper = shallowMount(Screens, {
       localVue,
       store,
       sync: false
     })
 
     wrapper.find('#removeScreenRowButton0').trigger('click')
-    expect(wrapper.vm.screens.length).toBe(0)
+    expect(wrapper.vm.screens.length).toBe(2)
   })
 })

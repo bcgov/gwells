@@ -1,6 +1,6 @@
 import { shallowMount, createLocalVue } from '@vue/test-utils'
 import Vuex from 'vuex'
-import Step04Coords from '@/submissions/components/SubmissionForm/Step04Coords.vue'
+import Step04Coords from '@/submissions/components/SubmissionForm/Coords.vue'
 
 const localVue = createLocalVue()
 localVue.use(Vuex)
