@@ -18,18 +18,29 @@ from aquifers.models import Aquifer
 
 class AquiferListSerializer(serializers.ModelSerializer):
     """Serialize a aquifer list"""
+    demand_description = serializers.SlugRelatedField(source='demand', read_only=True, slug_field='description')
+    material_description = serializers.SlugRelatedField(source='material', read_only=True, slug_field='description')
+    productivity_description = serializers.SlugRelatedField(source='productivity', read_only=True, slug_field='description')
+    subtype_description = serializers.SlugRelatedField(source='subtype', read_only=True, slug_field='description')
+    vulnerability_description = serializers.SlugRelatedField(source='vulnerability', read_only=True, slug_field='description')
 
     class Meta:
         model = Aquifer
         fields = (
             'aquifer_id',
             'aquifer_name',
-            'location_description',
-            'material',
-            'litho_stratographic_unit',
-            'subtype',
             'area',
-            'productivity',
+            'demand_description',
             'demand',
-            'mapping_year'
+            'litho_stratographic_unit',
+            'location_description',
+            'mapping_year',
+            'material_description',
+            'material',
+            'productivity_description',
+            'productivity',
+            'subtype_description',
+            'subtype',
+            'vulnerability_description',
+            'vulnerability'
         )

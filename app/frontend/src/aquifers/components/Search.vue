@@ -62,13 +62,13 @@ export default {
         { key: 'aquifer_id', label: 'Aquifer number' },
         { key: 'aquifer_name', label: 'Aquifer name' },
         { key: 'location_description', label: 'Descriptive location' },
-        { key: 'material', label: 'Materials' },
+        { key: 'material_description', label: 'Material' },
         { key: 'litho_stratographic_unit', label: 'Litho stragraphic unit' },
-        { key: 'subtype', label: 'Subtype' },
-        { key: 'vulnerability', label: 'Vulnerability' },
+        { key: 'subtype_description', label: 'Subtype' },
+        { key: 'vulnerability_description', label: 'Vulnerability' },
         { key: 'area', label: 'Size-km²' },
-        { key: 'productivity', label: 'Productivity' },
-        { key: 'demand', label: 'Demand' },
+        { key: 'productivity_description', label: 'Productivity' },
+        { key: 'demand_description', label: 'Demand' },
         { key: 'mapping_year', label: 'Year of mapping' },
         { key: 'publication_status', label: 'Publication status' }
       ]
