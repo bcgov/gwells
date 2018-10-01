@@ -149,8 +149,8 @@
                   :loaded="getScreenLoaded(index).slot_size"
                   />
               </td>
-              <td class="align-middle py-0">
-                <b-btn size="sm" variant="primary" @click="removeRowIfOk(index)" :id="`removeScreenRowButton${index}`"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
+              <td class="py-0">
+                <b-btn size="sm" variant="primary" @click="removeRowIfOk(index)" :id="`removeScreenRowButton${index}`" class="mt-2"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
               </td>
             </tr>
           </template>

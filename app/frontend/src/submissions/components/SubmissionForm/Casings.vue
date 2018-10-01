@@ -104,8 +104,8 @@
                 <b-form-radio value="True">Yes</b-form-radio>
               </b-form-radio-group>
             </td>
-            <td class="align-middle pt-1 py-0">
-              <b-btn size="sm" variant="primary" @click="removeRowIfOk(casing)"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
+            <td class="pt-1 py-0">
+              <b-btn size="sm" variant="primary" @click="removeRowIfOk(casing)" class="mt-2"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
             </td>
           </tr>
         </tbody>
