@@ -9,7 +9,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('wells', '0017_update_casing_material_code'),
+        ('wells', '0022_update_casing_material_code'),
     ]
 
     operations = [

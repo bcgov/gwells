@@ -48,7 +48,7 @@ def restore_code_description(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('wells', '0016_auto_20180918_2337'),
+        ('wells', '0021_delete_aquifervulnerabilitycode'),
     ]
 
     operations = [
