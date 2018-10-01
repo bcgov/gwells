@@ -39,6 +39,16 @@ python manage.py migrate
 # Create additional DB objects (e.g. spatial indices, stored procedures)
 #
 echo "Post-Deploy: SQL imports"
+# 2018-SEP-25 GW Aquifers CodeWithUs	
+cd $APP_ROOT/src/database/scripts/aquifers/
+
+psql -X --set ON_ERROR_STOP=on -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER << EOF
+DROP TABLE IF EXISTS xform_aquifers;
+CREATE unlogged TABLE IF NOT EXISTS xform_aquifers (
+aquifer_id integer,mapping_year integer);
+\copy xform_aquifers FROM 'xforms-aquifers.csv' HEADER DELIMITER ',' CSV
+EOF
+
 cd $APP_ROOT/src/database/scripts/wellsearch/
 psql -X --set ON_ERROR_STOP=on -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER -f \
 	post-deploy.sql

@@ -701,7 +701,7 @@ class Well(AuditModel):
         max_length=100, blank=True, null=True, verbose_name="Backfill Material")
     decommission_details = models.CharField(
         max_length=250, blank=True, null=True, verbose_name="Decommission Details")
-    ems_id = models.CharField(max_length=30, blank=True)
+    ems_id = models.CharField(max_length=30, blank=True, null=True)
     aquifer = models.ForeignKey(Aquifer, db_column='aquifer_id',
                                 on_delete=models.CASCADE, blank=True, null=True,
                                 verbose_name='Aquifer ID Number')
@@ -1249,7 +1249,7 @@ class Casing(AuditModel):
     start = models.DecimalField(db_column='casing_from', max_digits=7, decimal_places=2, verbose_name='From',
                                 null=True, blank=True, validators=[MinValueValidator(Decimal('0.00'))])
     end = models.DecimalField(db_column='casing_to', max_digits=7, decimal_places=2, verbose_name='To',
-                              null=True, blank=True, validators=[MinValueValidator(Decimal('0.01'))])    
+                              null=True, blank=True, validators=[MinValueValidator(Decimal('0.01'))])
     # NOTE: Diameter should be pulling from internal_diameter
     diameter = models.DecimalField(max_digits=8, decimal_places=3, verbose_name='Diameter', null=True,
                                    blank=True, validators=[MinValueValidator(Decimal('0.5'))])
@@ -1323,30 +1323,6 @@ class Screen(AuditModel):
             return 'well {} {} {}'.format(self.well, self.start, self.end)
 
 
-class AquiferVulnerabilityCode(AuditModel):
-    """
-    Demand choices for describing Aquifer 
-    -------------------
-    High
-    Low
-    Moderate
-    """
-    code = models.CharField(primary_key=True, max_length=1, db_column='aquifer_vulnerability_code')
-    description = models.CharField(max_length=100)
-    display_order = models.PositiveIntegerField()
-
-    effective_date = models.DateTimeField(blank=True, null=True)
-    expiry_date = models.DateTimeField(blank=True, null=True)
-
-    class Meta: 
-        db_table = 'aquifer_vulnerability_code'
-        ordering = ['display_order', 'code']
-        verbose_name_plural = 'Aquifer Vulnerability Codes'
-
-    def __str__(self):
-        return '{} - {}'.format(self.code, self.description)
-
-
 class WaterQualityColour(AuditModel):
     """
     Colour choices for describing water quality
@@ -1372,13 +1348,8 @@ class HydraulicProperty(AuditModel):
     hydraulic_property_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     well = models.ForeignKey(Well, db_column='well_tag_number', to_field='well_tag_number',
                              on_delete=models.CASCADE, blank=False, null=False)
-    avi = models.ForeignKey(
-        AquiferVulnerabilityCode,
-        db_column='aquifer_vulnerablity_code',
-        blank=True,
-        null=True,
-        on_delete=models.PROTECT,
-        verbose_name="AVI Reference")
+    avi = models.DecimalField(
+        max_digits=10, decimal_places=0, blank=True, null=True, verbose_name='AVI')
     storativity = models.DecimalField(
         max_digits=8, decimal_places=7, blank=True, null=True, verbose_name='Storativity')
     transmissivity = models.DecimalField(
@@ -1400,7 +1371,7 @@ class HydraulicProperty(AuditModel):
         blank=True,
         null=True,
         verbose_name='Testing Method')
-    testing_duration = models.PositiveIntegerField()
+    testing_duration = models.PositiveIntegerField(blank=True, null=True)
     analytic_solution_type = models.DecimalField(
         max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Analytic Solution Type')
     boundary_effect = models.DecimalField(
