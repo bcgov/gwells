@@ -11,6 +11,7 @@
     "unit": "jest --config test/unit/jest.conf.js --coverage",
     "test": "npm run unit",
     "watch-test": "jest --config test/unit/jest.conf.js --watch --verbose",
+    "watch-all-test": "jest --config test/unit/jest.conf.js --watchAll --verbose",
     "lint": "eslint --ext .js,.vue src test/unit",
     "build": "node build/build.js",
     "watch": "./node_modules/.bin/webpack --config build/webpack.dev-watch.conf.js --watch --display-entrypoints"

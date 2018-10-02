@@ -36,7 +36,7 @@
         </b-form-group>
       </b-col>
       <b-col cols="6" md="4">
-        <form-input id="ownerPostalCode" label="Postal Code" v-model="ownerPostalCodeInput" :errors="errors['owner_postal_code']" :loaded="fieldsLoaded['owner_postal_code']"></form-input>
+        <form-input id="ownerPostalCode" label="Postal Code *" v-model="ownerPostalCodeInput" :errors="errors['owner_postal_code']" :loaded="fieldsLoaded['owner_postal_code']"></form-input>
       </b-col>
     </b-row>
   </fieldset>
