@@ -128,6 +128,7 @@
 
         <!-- Casings -->
         <casings class="my-3"
+          :key="`casingsComponent${componentUpdateTrigger}`"
           v-if="currentStep === 'casings' || (formIsFlat && flatForm.casings)"
           :casings.sync="form.casing_set"
           :errors="errors"
@@ -373,6 +374,9 @@ export default {
       saveFormSuccess: false,
       loadFormSuccess: false,
       confirmLoadModal: false,
+      // componentUpdateTrigger can be appended to a component's key. Changing this value will cause
+      // these components to be re-created, allowing the created() and mounted() hooks to re-run.
+      componentUpdateTrigger: 0,
       step: 1,
       sliding: null,
       errors: {},
@@ -591,6 +595,7 @@ export default {
           drillerSameAsPersonResponsible: false
         }
       }
+      this.componentUpdateTrigger = Date.now()
     },
     saveForm () {
       // saves a copy of form data locally
