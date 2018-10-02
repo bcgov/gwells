@@ -1,16 +1,14 @@
 {
 	"info": {
-		"_postman_id": "e9a3522c-8247-47fa-9737-e4ed8844b71c",
+		"_postman_id": "5372c36b-759f-4701-9798-c1e4cedf70c1",
 		"name": "GWELLS Submissions API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
-			"_postman_id": "f9784005-0192-4fbf-b98b-c7b3b44fd07e",
 			"name": "Authentication",
 			"item": [
 				{
-					"_postman_id": "a0adc27f-1038-43cf-90ae-e1a0079307a7",
 					"name": "Log in",
 					"event": [
 						{
@@ -90,16 +88,13 @@
 			]
 		},
 		{
-			"_postman_id": "f70aaf0f-0ee2-488e-8cdc-fc4bd5d14eca",
 			"name": "Wells",
 			"item": []
 		},
 		{
-			"_postman_id": "c1431a42-4397-4bc5-bfec-5c2435fbaa16",
 			"name": "Activity Submissions",
 			"item": [
 				{
-					"_postman_id": "701d9501-2013-4224-8a57-b798d492433e",
 					"name": "Submission form Options",
 					"event": [
 						{
@@ -154,7 +149,6 @@
 					"response": []
 				},
 				{
-					"_postman_id": "31f59c45-c098-45a3-b352-2238eee680cf",
 					"name": "Submission list",
 					"event": [
 						{
@@ -208,7 +202,6 @@
 					"response": []
 				},
 				{
-					"_postman_id": "3b0ca719-0382-44f8-aa84-22b3eb5fe641",
 					"name": "Create new driller for submission",
 					"event": [
 						{
@@ -301,7 +294,6 @@
 					"response": []
 				},
 				{
-					"_postman_id": "10966311-02eb-4ec5-a418-05988d815a07",
 					"name": "Submission",
 					"event": [
 						{
@@ -406,7 +398,6 @@
 					"response": []
 				},
 				{
-					"_postman_id": "f8eceb22-1ee9-4ac2-8711-4701e84f499d",
 					"name": "Check submission - created well",
 					"event": [
 						{
@@ -510,13 +501,12 @@
 					"response": []
 				},
 				{
-					"_postman_id": "61559fa8-d85a-4780-a1ce-87c459277f2d",
 					"name": "Submission - casings",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
-								"id": "1f834cd1-410b-45b1-8ad6-06b3f921ada5",
+								"id": "c6ccd3af-884d-45fb-93f4-21294aa25b3a",
 								"type": "text/javascript",
 								"exec": [
 									"var jsonData = pm.response.json();",
@@ -528,7 +518,7 @@
 									"})",
 									"",
 									"pm.test(\"Expect casings records to be created\", function() {",
-									"    ",
+									"    pm.expect(jsonData.casing_set.length).to.equal(2);",
 									"})",
 									"",
 									""
@@ -575,7 +565,63 @@
 					"response": []
 				},
 				{
-					"_postman_id": "5e5f58c9-e37d-4248-8469-c39b98f7db7f",
+					"name": "Submission - casings - empty",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "bf57abbb-38dd-41f5-a5bc-b8b85d729ade",
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Status code is 400\", function () {",
+									"   pm.expect(pm.response.code).to.equal(400);",
+									"})",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "JWT {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"well_activity_type\": \"CON\",\n\t\"owner_full_name\": \"Bob\",\n\t\"owner_mailing_address\": \"123 Place\",\n\t\"owner_city\": \"Victoria\",\n\t\"owner_province_state\": \"BC\",\n\t\"casing_set\": [\n\t\t{\n\t\t},\n\t\t{\n\t\t}\n\t]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/submissions/?format=json",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"submissions",
+								""
+							],
+							"query": [
+								{
+									"key": "format",
+									"value": "json"
+								}
+							]
+						},
+						"description": "Request a list of wells"
+					},
+					"response": []
+				},
+				{
 					"name": "Check submission - created well casings",
 					"event": [
 						{
@@ -679,7 +725,6 @@
 					"response": []
 				},
 				{
-					"_postman_id": "10095293-c481-490b-98bf-4d9ce9e270d7",
 					"name": "Submission - screen",
 					"event": [
 						{
@@ -713,7 +758,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"well_activity_type\": \"CON\",\n\t\"owner_full_name\": \"Bob\",\n\t\"owner_mailing_address\": \"123 Place\",\n\t\"owner_city\": \"Victoria\",\n\t\"owner_province_state\": \"BC\",\n\t\"liner_diameter\": 1,\n\t\"liner_from\": 0,\n\t\"liner_material\": \"PVC\",\n\t\"liner_thickness\": 2,\n\t\"liner_to\": 3,\n\t\"screen_set\": [\n\t\t{\n\t\t\t\"start\": 10,\n\t\t\t\"end\": 20\n\t\t}\n\t]\n}"
+							"raw": "{\n\t\"well_activity_type\": \"CON\",\n\t\"owner_full_name\": \"Bob\",\n\t\"owner_mailing_address\": \"123 Place\",\n\t\"owner_city\": \"Victoria\",\n\t\"owner_province_state\": \"BC\",\n\t\"liner_diameter\": 1,\n\t\"liner_from\": 0,\n\t\"liner_material\": \"PVC\",\n\t\"liner_thickness\": 2,\n\t\"liner_to\": 3,\n\t\"screen_set\": [\n\t\t{\n\t\t\t\"start\": 10,\n\t\t\t\"end\": 20,\n\t\t\t\"assembly_type\": \"SCREEN\"\n\t\t}\n\t]\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/v1/submissions/?format=json",
@@ -738,7 +783,62 @@
 					"response": []
 				},
 				{
-					"_postman_id": "c3b77fe8-1267-4936-b8f9-b777fa192fda",
+					"name": "Submission - screen empty",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "78582a37-9917-4d5c-a736-a0db198978ef",
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Status code is 400\", function() {",
+									"    pm.expect(pm.response.code).to.equal(400);",
+									"})"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "JWT {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"well_activity_type\": \"CON\",\n\t\"owner_full_name\": \"Bob\",\n\t\"owner_mailing_address\": \"123 Place\",\n\t\"owner_city\": \"Victoria\",\n\t\"owner_province_state\": \"BC\",\n\t\"liner_diameter\": 1,\n\t\"liner_from\": 0,\n\t\"liner_material\": \"PVC\",\n\t\"liner_thickness\": 2,\n\t\"liner_to\": 3,\n\t\"screen_set\": [\n\t\t{\n\t\t}\n\t]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/submissions/?format=json",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"submissions",
+								""
+							],
+							"query": [
+								{
+									"key": "format",
+									"value": "json"
+								}
+							]
+						},
+						"description": "Request a list of wells"
+					},
+					"response": []
+				},
+				{
 					"name": "Check submission - created well screens",
 					"event": [
 						{
@@ -842,7 +942,6 @@
 					"response": []
 				},
 				{
-					"_postman_id": "26c40d3c-fda9-4e80-bd92-f0b5e24fa9c3",
 					"name": "Submission - liner",
 					"event": [
 						{
@@ -902,7 +1001,63 @@
 					"response": []
 				},
 				{
-					"_postman_id": "ce94cd1a-43ef-4066-80d1-f92b3f6ab2f9",
+					"name": "Submission - liner empty",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3737032f-d35f-4597-a306-133d74120ae4",
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Status code is 400\", function () {",
+									"   pm.expect(pm.response.code).to.equal(400);",
+									"})",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "JWT {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"well_activity_type\": \"CON\",\n\t\"owner_full_name\": \"Bob\",\n\t\"owner_mailing_address\": \"123 Place\",\n\t\"owner_city\": \"Victoria\",\n\t\"owner_province_state\": \"BC\",\n\t\"liner_diameter\": 1,\n\t\"liner_from\": 0,\n\t\"liner_material\": \"PVC\",\n\t\"liner_thickness\": 2,\n\t\"liner_to\": 3,\n\t\"linerperforation_set\": [\n\t\t{\n\t\t}\n\t]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/submissions/?format=json",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"submissions",
+								""
+							],
+							"query": [
+								{
+									"key": "format",
+									"value": "json"
+								}
+							]
+						},
+						"description": "Request a list of wells"
+					},
+					"response": []
+				},
+				{
 					"name": "Check submission - created well liners",
 					"event": [
 						{
@@ -1004,15 +1159,168 @@
 						"description": "Check if the created well matched submission"
 					},
 					"response": []
+				},
+				{
+					"name": "Alteration for unknown well",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "94e81347-a6a8-4f14-825a-bfa24db3099a",
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Status code is 201\", function () {",
+									"   pm.expect(pm.response.code).to.equal(201);",
+									"})",
+									"",
+									"pm.environment.set(\"well_tag_number\", jsonData.well);",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "JWT {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"well_activity_type\": \"ALT\",\n\t\"owner_full_name\": \"Bob\",\n\t\"owner_mailing_address\": \"123 Place\",\n\t\"owner_city\": \"ALT_WELL_TEST_CITY\",\n\t\"owner_province_state\": \"BC\",\n\t\"casing_set\": [\n\t\t{\n\t\t\t\"casing_code\": \"SURFACE\",\n\t\t\t\"start\":\"10\",\n\t\t\t\"casing_material\":\"STL_PUL_OT\",\n\t\t\t\"end\":\"20\",\n\t\t\t\"diameter\":\"1\",\n\t\t\t\"drive_shoe\":\"False\",\n\t\t\t\"id\":0,\n\t\t\t\"wall_thickness\":\"87\"\n\t\t}\n\t],\n    \"linerperforation_set\": [\n\t\t{\n\t\t\t\"start\": 10,\n\t\t\t\"end\": 20\n\t\t}\n\t]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/submissions/?format=json",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"submissions",
+								""
+							],
+							"query": [
+								{
+									"key": "format",
+									"value": "json"
+								}
+							]
+						},
+						"description": "Request a list of wells"
+					},
+					"response": []
+				},
+				{
+					"name": "Check submission - Alteration report on unknown well",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "758668aa-93ed-4341-9c01-1eb1c25985dd",
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"   pm.expect(pm.response.code).to.equal(200);",
+									"})",
+									"",
+									"pm.test(\"Expected well owner city to match the submitted alteration report\", function() {",
+									"    pm.expect(jsonData.owner_city).to.equal(\"ALT_WELL_TEST_CITY\");",
+									"})",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "JWT {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "well_activity_type",
+									"value": "CON",
+									"type": "text"
+								},
+								{
+									"key": "driller_responsible",
+									"value": "{{created_driller_guid}}",
+									"type": "text"
+								},
+								{
+									"key": "work_end_date",
+									"value": "2018-07-02",
+									"type": "text"
+								},
+								{
+									"key": "owner_full_name",
+									"value": "Holly Homeowner",
+									"type": "text"
+								},
+								{
+									"key": "work_start_date",
+									"value": "2018-07-01",
+									"type": "text"
+								},
+								{
+									"key": "owner_province_state",
+									"value": "BC",
+									"type": "text"
+								},
+								{
+									"key": "owner_mailing_address",
+									"value": "321 Main Street",
+									"type": "text"
+								},
+								{
+									"key": "owner_city",
+									"value": "Anytown",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"wells",
+								"{{well_tag_number}}"
+							]
+						},
+						"description": "Check if the created well matched submission"
+					},
+					"response": []
 				}
 			]
 		},
 		{
-			"_postman_id": "a0f89642-6f77-4add-bd06-7708a26d8ca7",
 			"name": "Stacking",
 			"item": [
 				{
-					"_postman_id": "91f9ab66-7546-45cd-9c00-1ce2875a4777",
 					"name": "Submission - construction submission",
 					"event": [
 						{
@@ -1074,7 +1382,6 @@
 					"response": []
 				},
 				{
-					"_postman_id": "dd15669c-6ce6-4dfd-8d00-e388225c0e30",
 					"name": "Submission - alteration",
 					"event": [
 						{
@@ -1137,7 +1444,6 @@
 					"response": []
 				},
 				{
-					"_postman_id": "7911a539-dabf-4902-92a6-7473b6aa472c",
 					"name": "Check submission - well updated",
 					"event": [
 						{
@@ -1241,7 +1547,6 @@
 					"response": []
 				},
 				{
-					"_postman_id": "0bd2af9f-8713-47c3-8407-e6985753e704",
 					"name": "Submission - alteration - intersecting data",
 					"event": [
 						{
@@ -1304,7 +1609,6 @@
 					"response": []
 				},
 				{
-					"_postman_id": "0f5b0153-70c9-4e90-8689-3321498a0305",
 					"name": "Check submission - well stacked",
 					"event": [
 						{

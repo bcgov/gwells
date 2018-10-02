@@ -33,6 +33,8 @@ export default {
 
 <style lang="scss">
 @import '../common/common.scss';
+@import '../common/assets/css/ie10-viewport-bug-workaround.css';
+
 @media print {
   .registries-edit-btn {
     display: none!important;

@@ -1,0 +1,408 @@
+[
+    {
+        "model": "aquifers.aquifersubtype",
+        "pk": "1a",
+        "fields": {
+            "create_user": "DATALOAD_USER",
+            "create_date": "2018-01-01T08:00:00Z",
+            "update_user": "DATALOAD_USER",
+            "update_date": "2018-01-01T08:00:00Z",
+            "description": "Unconfined sand and gravel - large river system",
+            "display_order": 2,
+            "effective_date": "1970-01-01T08:00:00Z",
+            "expiry_date": null
+        }
+    },
+    {
+        "model": "aquifers.aquifersubtype",
+        "pk": "1b",
+        "fields": {
+            "create_user": "DATALOAD_USER",
+            "create_date": "2018-01-01T08:00:00Z",
+            "update_user": "DATALOAD_USER",
+            "update_date": "2018-01-01T08:00:00Z",
+            "description": "Unconfined sand and gravel aquifer - medium stream system",
+            "display_order": 4,
+            "effective_date": "1970-01-01T08:00:00Z",
+            "expiry_date": null
+        }
+    },
+    {
+        "model": "aquifers.aquifersubtype",
+        "pk": "1c",
+        "fields": {
+            "create_user": "DATALOAD_USER",
+            "create_date": "2018-01-01T08:00:00Z",
+            "update_user": "DATALOAD_USER",
+            "update_date": "2018-01-01T08:00:00Z",
+            "description": "Unconfined sand and gravel aquifer - small stream system",
+            "display_order": 6,
+            "effective_date": "1970-01-01T08:00:00Z",
+            "expiry_date": null
+        }
+    },
+    {
+        "model": "aquifers.aquifersubtype",
+        "pk": "2",
+        "fields": {
+            "create_user": "DATALOAD_USER",
+            "create_date": "2018-01-01T08:00:00Z",
+            "update_user": "DATALOAD_USER",
+            "update_date": "2018-01-01T08:00:00Z",
+            "description": "Unconfined sand and gravel - deltaic",
+            "display_order": 8,
+            "effective_date": "1970-01-01T08:00:00Z",
+            "expiry_date": null
+        }
+    },
+    {
+        "model": "aquifers.aquifersubtype",
+        "pk": "3",
+        "fields": {
+            "create_user": "DATALOAD_USER",
+            "create_date": "2018-01-01T08:00:00Z",
+            "update_user": "DATALOAD_USER",
+            "update_date": "2018-01-01T08:00:00Z",
+            "description": "Unconfined sand and gravel - alluvial or colluvial fan",
+            "display_order": 10,
+            "effective_date": "1970-01-01T08:00:00Z",
+            "expiry_date": null
+        }
+    },
+    {
+        "model": "aquifers.aquifersubtype",
+        "pk": "4a",
+        "fields": {
+            "create_user": "DATALOAD_USER",
+            "create_date": "2018-01-01T08:00:00Z",
+            "update_user": "DATALOAD_USER",
+            "update_date": "2018-01-01T08:00:00Z",
+            "description": "Unconfined sand and gravel - late glacial outwash",
+            "display_order": 12,
+            "effective_date": "1970-01-01T08:00:00Z",
+            "expiry_date": null
+        }
+    },
+    {
+        "model": "aquifers.aquifersubtype",
+        "pk": "4b",
+        "fields": {
+            "create_user": "DATALOAD_USER",
+            "create_date": "2018-01-01T08:00:00Z",
+            "update_user": "DATALOAD_USER",
+            "update_date": "2018-01-01T08:00:00Z",
+            "description": "Confined sand and gravel - glacial",
+            "display_order": 14,
+            "effective_date": "1970-01-01T08:00:00Z",
+            "expiry_date": null
+        }
+    },
+    {
+        "model": "aquifers.aquifersubtype",
+        "pk": "4c",
+        "fields": {
+            "create_user": "DATALOAD_USER",
+            "create_date": "2018-01-01T08:00:00Z",
+            "update_user": "DATALOAD_USER",
+            "update_date": "2018-01-01T08:00:00Z",
+            "description": "Confined sand and gravel - glacio-marine",
+            "display_order": 16,
+            "effective_date": "1970-01-01T08:00:00Z",
+            "expiry_date": null
+        }
+    },
+    {
+        "model": "aquifers.aquifersubtype",
+        "pk": "5a",
+        "fields": {
+            "create_user": "DATALOAD_USER",
+            "create_date": "2018-01-01T08:00:00Z",
+            "update_user": "DATALOAD_USER",
+            "update_date": "2018-01-01T08:00:00Z",
+            "description": "Fractured sedimentary rock",
+            "display_order": 18,
+            "effective_date": "1970-01-01T08:00:00Z",
+            "expiry_date": null
+        }
+    },
+    {
+        "model": "aquifers.aquifersubtype",
+        "pk": "5b",
+        "fields": {
+            "create_user": "DATALOAD_USER",
+            "create_date": "2018-01-01T08:00:00Z",
+            "update_user": "DATALOAD_USER",
+            "update_date": "2018-01-01T08:00:00Z",
+            "description": "Karstic limestone",
+            "display_order": 20,
+            "effective_date": "1970-01-01T08:00:00Z",
+            "expiry_date": null
+        }
+    },
+    {
+        "model": "aquifers.aquifersubtype",
+        "pk": "6a",
+        "fields": {
+            "create_user": "DATALOAD_USER",
+            "create_date": "2018-01-01T08:00:00Z",
+            "update_user": "DATALOAD_USER",
+            "update_date": "2018-01-01T08:00:00Z",
+            "description": "Flat-lying to gently-dipping volcanic bedrock",
+            "display_order": 22,
+            "effective_date": "1970-01-01T08:00:00Z",
+            "expiry_date": null
+        }
+    },
+    {
+        "model": "aquifers.aquifersubtype",
+        "pk": "6b",
+        "fields": {
+            "create_user": "DATALOAD_USER",
+            "create_date": "2018-01-01T08:00:00Z",
+            "update_user": "DATALOAD_USER",
+            "update_date": "2018-01-01T08:00:00Z",
+            "description": "Fractured crystalline bedrock",
+            "display_order": 24,
+            "effective_date": "1970-01-01T08:00:00Z",
+            "expiry_date": null
+        }
+    },
+    {
+        "model": "aquifers.aquiferdemand",
+        "pk": "H",
+        "fields": {
+            "create_user": "DATALOAD_USER",
+            "create_date": "2018-01-01T08:00:00Z",
+            "update_user": "DATALOAD_USER",
+            "update_date": "2018-01-01T08:00:00Z",
+            "description": "High",
+            "display_order": 2,
+            "effective_date": "1970-01-01T08:00:00Z",
+            "expiry_date": null
+        }
+    },
+    {
+        "model": "aquifers.aquiferdemand",
+        "pk": "L",
+        "fields": {
+            "create_user": "DATALOAD_USER",
+            "create_date": "2018-01-01T08:00:00Z",
+            "update_user": "DATALOAD_USER",
+            "update_date": "2018-01-01T08:00:00Z",
+            "description": "Low",
+            "display_order": 4,
+            "effective_date": "1970-01-01T08:00:00Z",
+            "expiry_date": null
+        }
+    },
+    {
+        "model": "aquifers.aquiferdemand",
+        "pk": "M",
+        "fields": {
+            "create_user": "DATALOAD_USER",
+            "create_date": "2018-01-01T08:00:00Z",
+            "update_user": "DATALOAD_USER",
+            "update_date": "2018-01-01T08:00:00Z",
+            "description": "Moderate",
+            "display_order": 6,
+            "effective_date": "1970-01-01T08:00:00Z",
+            "expiry_date": null
+        }
+    },
+    {
+        "model": "aquifers.aquiferproductivity",
+        "pk": "H",
+        "fields": {
+            "create_user": "DATALOAD_USER",
+            "create_date": "2018-01-01T08:00:00Z",
+            "update_user": "DATALOAD_USER",
+            "update_date": "2018-01-01T08:00:00Z",
+            "description": "High",
+            "display_order": 2,
+            "effective_date": "1970-01-01T08:00:00Z",
+            "expiry_date": null
+        }
+    },
+    {
+        "model": "aquifers.aquiferproductivity",
+        "pk": "L",
+        "fields": {
+            "create_user": "DATALOAD_USER",
+            "create_date": "2018-01-01T08:00:00Z",
+            "update_user": "DATALOAD_USER",
+            "update_date": "2018-01-01T08:00:00Z",
+            "description": "Low",
+            "display_order": 4,
+            "effective_date": "1970-01-01T08:00:00Z",
+            "expiry_date": null
+        }
+    },
+    {
+        "model": "aquifers.aquiferproductivity",
+        "pk": "M",
+        "fields": {
+            "create_user": "DATALOAD_USER",
+            "create_date": "2018-01-01T08:00:00Z",
+            "update_user": "DATALOAD_USER",
+            "update_date": "2018-01-01T08:00:00Z",
+            "description": "Moderate",
+            "display_order": 6,
+            "effective_date": "1970-01-01T08:00:00Z",
+            "expiry_date": null
+        }
+    },
+    {
+        "model": "aquifers.qualityconcern",
+        "pk": "I",
+        "fields": {
+            "create_user": "DATALOAD_USER",
+            "create_date": "2018-01-01T08:00:00Z",
+            "update_user": "DATALOAD_USER",
+            "update_date": "2018-01-01T08:00:00Z",
+            "description": "Isolated",
+            "display_order": 2,
+            "effective_date": "1970-01-01T08:00:00Z",
+            "expiry_date": null
+        }
+    },
+    {
+        "model": "aquifers.qualityconcern",
+        "pk": "L",
+        "fields": {
+            "create_user": "DATALOAD_USER",
+            "create_date": "2018-01-01T08:00:00Z",
+            "update_user": "DATALOAD_USER",
+            "update_date": "2018-01-01T08:00:00Z",
+            "description": "Local",
+            "display_order": 4,
+            "effective_date": "1970-01-01T08:00:00Z",
+            "expiry_date": null
+        }
+    },
+    {
+        "model": "aquifers.qualityconcern",
+        "pk": "R",
+        "fields": {
+            "create_user": "DATALOAD_USER",
+            "create_date": "2018-01-01T08:00:00Z",
+            "update_user": "DATALOAD_USER",
+            "update_date": "2018-01-01T08:00:00Z",
+            "description": "Regional",
+            "display_order": 6,
+            "effective_date": "1970-01-01T08:00:00Z",
+            "expiry_date": null
+        }
+    },
+    {
+        "model": "aquifers.qualityconcern",
+        "pk": "N",
+        "fields": {
+            "create_user": "DATALOAD_USER",
+            "create_date": "2018-01-01T08:00:00Z",
+            "update_user": "DATALOAD_USER",
+            "update_date": "2018-01-01T08:00:00Z",
+            "description": "None",
+            "display_order": 8,
+            "effective_date": "1970-01-01T08:00:00Z",
+            "expiry_date": null
+        }
+    },
+    {
+        "model": "aquifers.aquifermaterial",
+        "pk": "B",
+        "fields": {
+            "create_user": "DATALOAD_USER",
+            "create_date": "2018-01-01T08:00:00Z",
+            "update_user": "DATALOAD_USER",
+            "update_date": "2018-01-01T08:00:00Z",
+            "description": "Bedrock",
+            "display_order": 2,
+            "effective_date": "1970-01-01T08:00:00Z",
+            "expiry_date": null
+        }
+    },
+    {
+        "model": "aquifers.aquifermaterial",
+        "pk": "G",
+        "fields": {
+            "create_user": "DATALOAD_USER",
+            "create_date": "2018-01-01T08:00:00Z",
+            "update_user": "DATALOAD_USER",
+            "update_date": "2018-01-01T08:00:00Z",
+            "description": "Gravel",
+            "display_order": 4,
+            "effective_date": "1970-01-01T08:00:00Z",
+            "expiry_date": null
+        }
+    },
+    {
+        "model": "aquifers.aquifermaterial",
+        "pk": "S",
+        "fields": {
+            "create_user": "DATALOAD_USER",
+            "create_date": "2018-01-01T08:00:00Z",
+            "update_user": "DATALOAD_USER",
+            "update_date": "2018-01-01T08:00:00Z",
+            "description": "Sand",
+            "display_order": 6,
+            "effective_date": "1970-01-01T08:00:00Z",
+            "expiry_date": null
+        }
+    },    
+    {
+        "model": "aquifers.aquifermaterial",
+        "pk": "SG",
+        "fields": {
+            "create_user": "DATALOAD_USER",
+            "create_date": "2018-01-01T08:00:00Z",
+            "update_user": "DATALOAD_USER",
+            "update_date": "2018-01-01T08:00:00Z",
+            "description": "Sand and Gravel",
+            "display_order": 8,
+            "effective_date": "1970-01-01T08:00:00Z",
+            "expiry_date": null
+        }
+    },
+    {
+        "model": "aquifers.wateruse",
+        "pk": "D",
+        "fields": {
+            "create_user": "DATALOAD_USER",
+            "create_date": "2018-01-01T08:00:00Z",
+            "update_user": "DATALOAD_USER",
+            "update_date": "2018-01-01T08:00:00Z",
+            "description": "Domestic",
+            "display_order": 2,
+            "effective_date": "1970-01-01T08:00:00Z",
+            "expiry_date": null
+        }
+    },
+    {
+        "model": "aquifers.wateruse",
+        "pk": "M",
+        "fields": {
+            "create_user": "DATALOAD_USER",
+            "create_date": "2018-01-01T08:00:00Z",
+            "update_user": "DATALOAD_USER",
+            "update_date": "2018-01-01T08:00:00Z",
+            "description": "Multiple",
+            "display_order": 4,
+            "effective_date": "1970-01-01T08:00:00Z",
+            "expiry_date": null
+        }
+    },    
+    {
+        "model": "aquifers.wateruse",
+        "pk": "PD",
+        "fields": {
+            "create_user": "DATALOAD_USER",
+            "create_date": "2018-01-01T08:00:00Z",
+            "update_user": "DATALOAD_USER",
+            "update_date": "2018-01-01T08:00:00Z",
+            "description": "Potential Domestic",
+            "display_order": 6,
+            "effective_date": "1970-01-01T08:00:00Z",
+            "expiry_date": null
+        }
+    }
+]
