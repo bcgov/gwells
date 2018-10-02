@@ -77,7 +77,7 @@ from submissions.serializers import (
     WellActivityCodeSerializer,
     WellClassCodeSerializer,
     WellSubclassCodeSerializer,
-    YieldEstimationMethodCodeSerializer,    
+    YieldEstimationMethodCodeSerializer,
 )
 
 
@@ -132,6 +132,27 @@ class SubmissionListAPIView(ListCreateAPIView):
 
         serializer = WellSubmissionSerializer(filtered_queryset, many=True)
         return Response(serializer.data)
+
+
+class SubmissionConstructionAPIView(SubmissionListAPIView):
+    """Create a construction submission
+
+    """
+    pass
+
+
+class SubmissionAlterationAPIView(SubmissionListAPIView):
+    """Create an alteration submission
+
+    """
+    pass
+
+
+class SubmissionDecommissionAPIView(SubmissionListAPIView):
+    """Create an decommission submission
+
+    """
+    pass
 
 
 class SubmissionsOptions(APIView):
