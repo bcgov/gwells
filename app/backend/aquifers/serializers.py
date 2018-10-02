@@ -16,7 +16,7 @@ from rest_framework import serializers
 
 from aquifers.models import Aquifer
 
-class AquiferListSerializer(serializers.ModelSerializer):
+class AquiferSerializer(serializers.ModelSerializer):
     """Serialize a aquifer list"""
     demand_description = serializers.SlugRelatedField(source='demand', read_only=True, slug_field='description')
     material_description = serializers.SlugRelatedField(source='material', read_only=True, slug_field='description')
