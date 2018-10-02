@@ -138,6 +138,27 @@ class SubmissionListAPIView(ListCreateAPIView):
         return Response(serializer.data)
 
 
+class SubmissionConstructionAPIView(SubmissionListAPIView):
+    """Create a construction submission
+
+    """
+    pass
+
+
+class SubmissionAlterationAPIView(SubmissionListAPIView):
+    """Create an alteration submission
+
+    """
+    pass
+
+
+class SubmissionDecommissionAPIView(SubmissionListAPIView):
+    """Create an decommission submission
+
+    """
+    pass
+
+
 class SubmissionsOptions(APIView):
     """Options required for submitting activity report forms"""
 

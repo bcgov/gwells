@@ -64,8 +64,7 @@ from submissions.models import WellActivityCode
 logger = logging.getLogger(__name__)
 
 
-class WellSubmissionSerializer(serializers.ModelSerializer):
-    """Serializes a well activity submission"""
+class WellSubmissionSerializerBase(serializers.ModelSerializer):
 
     casing_set = CasingSerializer(many=True, required=False)
     decommission_description_set = DecommissionDescriptionSerializer(many=True, required=False)
@@ -74,6 +73,38 @@ class WellSubmissionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ActivitySubmission
+
+    @transaction.atomic
+    def create(self, validated_data):
+        # Pop foreign key records
+        FOREIGN_KEYS = {
+            'casing_set': Casing,
+            'screen_set': Screen,
+            'linerperforation_set': LinerPerforation
+        }
+        foreign_keys_data = {}
+        for key in FOREIGN_KEYS.keys():
+            foreign_keys_data[key] = validated_data.pop(key, None)
+        # Create submission
+        instance = super().create(validated_data)
+        # Create foreign key records
+        for key, value in foreign_keys_data.items():
+            if value:
+                for data in value:
+                    FOREIGN_KEYS[key].objects.create(activity_submission=instance, **data)
+        # Update the well record
+        stacker = wells.stack.StackWells()
+        stacker.process(instance.filing_number)
+        # The instance may have been updated with a well tag number
+        instance.refresh_from_db()
+        return instance
+
+
+class WellConstructionSubmissionSerializer(WellSubmissionSerializerBase):
+
+    """ Serializes a well construction submission """
+    class Meta:
+        # TODO: Remove all the fields that construction doesn't have
         fields = (
             "filing_number",
             "activity_submission_guid",
@@ -169,31 +200,99 @@ class WellSubmissionSerializer(serializers.ModelSerializer):
             'decommission_description_set',
         )
 
-    @transaction.atomic
-    def create(self, validated_data):
-        # Pop foreign key records
-        FOREIGN_KEYS = {
-            'casing_set': Casing,
-            'screen_set': Screen,
-            'linerperforation_set': LinerPerforation,
-            'decommission_description_set': DecommissionDescription,
-        }
-        foreign_keys_data = {}
-        for key in FOREIGN_KEYS.keys():
-            foreign_keys_data[key] = validated_data.pop(key, None)
-        # Create submission
-        instance = super().create(validated_data)
-        # Create foreign key records
-        for key, value in foreign_keys_data.items():
-            if value:
-                for data in value:
-                    FOREIGN_KEYS[key].objects.create(activity_submission=instance, **data)
-        # Update the well record
-        stacker = wells.stack.StackWells()
-        stacker.process(instance.filing_number)
-        # The instance may have been updated with a well tag number
-        instance.refresh_from_db()
-        return instance
+
+class WellSubmissionSerializer(WellSubmissionSerializerBase):
+    """Serializes a well activity submission"""
+
+    class Meta:
+        fields = (
+            "filing_number",
+            "activity_submission_guid",
+            "well",
+            "well_activity_type",
+            "well_class",
+            "well_subclass",
+            "intended_water_use",
+            "driller_responsible",
+            "driller_name",
+            "consultant_name",
+            "consultant_company",
+            "work_start_date",
+            "work_end_date",
+            "owner_full_name",
+            "owner_mailing_address",  # temporarily disabled
+            "owner_city",
+            "owner_province_state",
+            "owner_postal_code",
+            "street_address",
+            "city",
+            "legal_lot",
+            "legal_plan",
+            "legal_district_lot",
+            "legal_block",
+            "legal_section",
+            "legal_township",
+            "legal_range",
+            "land_district",
+            "legal_pid",
+            "well_location_description",
+            "identification_plate_number",
+            "well_plate_attached",
+            "latitude",
+            "longitude",
+            "ground_elevation",
+            "ground_elevation_method",
+            "drilling_method",
+            "other_drilling_method",
+            "water_supply_system_name",
+            "water_supply_system_well_name",
+            "surface_seal_material",
+            "surface_seal_depth",
+            "surface_seal_thickness",
+            "surface_seal_method",
+            "backfill_above_surface_seal",
+            "backfill_above_surface_seal_depth",
+            "liner_material",
+            "liner_diameter",
+            "liner_thickness",
+            "liner_from",
+            "liner_to",
+            "screen_intake_method",
+            "screen_type",
+            "screen_material",
+            "other_screen_material",
+            "screen_opening",
+            "screen_bottom",
+            "other_screen_bottom",
+            "filter_pack_from",
+            "filter_pack_to",
+            "filter_pack_thickness",
+            "filter_pack_material",
+            "filter_pack_material_size",
+            "development_method",
+            "development_hours",
+            "development_notes",
+            "water_quality_characteristics",
+            "water_quality_colour",
+            "water_quality_odour",
+            "total_depth_drilled",
+            "finished_well_depth",
+            "final_casing_stick_up",
+            "bedrock_depth",
+            "static_water_level",
+            "well_yield",
+            "artesian_flow",
+            "artesian_pressure",
+            "well_cap_type",
+            "well_disinfected",
+            "comments",
+            "alternative_specs_submitted",
+            "well_yield_unit",
+            "diameter",
+            "casing_set",
+            "linerperforation_set",
+            "screen_set",
+        )
 
 
 class WellActivityCodeSerializer(serializers.ModelSerializer):
