@@ -86,9 +86,6 @@ export default {
     errors: Array,
     fieldsLoaded: Object
   },
-  fields: {
-    closureDescriptionSetInput: 'closureDescriptionSet'
-  },
   data () {
     return {}
   },
