@@ -246,4 +246,4 @@ class Aquifer(AuditModel):
         verbose_name_plural = 'Aquifers'
 
     def __str__(self):
-        return '{} - {}'.format(self.code, self.description)
+        return '{} - {}'.format(self.aquifer_id, self.aquifer_name)
