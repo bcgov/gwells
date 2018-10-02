@@ -84,14 +84,6 @@ export default {
       default: () => ({})
     }
   },
-  fields: {
-    finishedWellDepthInput: 'finishedWellDepth',
-    decommissionReasonInput: 'decommissionReason',
-    decommissionMethodInput: 'decommissionMethod',
-    sealantMaterialInput: 'sealantMaterial',
-    backfillMaterialInput: 'backfillMaterial',
-    decommissionDetailsInput: 'decommissionDetails'
-  },
   data () {
     return {}
   },

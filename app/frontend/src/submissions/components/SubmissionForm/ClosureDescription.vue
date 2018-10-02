@@ -117,7 +117,7 @@ export default {
   },
   created () {
     if (!this.closureDescriptionSet.length) {
-      this.addClosureRow()
+      this.closureDescriptionSetInput.push({}, {}, {}, {}, {}, {})
     }
   }
 }
