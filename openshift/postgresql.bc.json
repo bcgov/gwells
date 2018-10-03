@@ -25,7 +25,8 @@
                 "name": "gwells-postgresql${NAME_SUFFIX}",
                 "creationTimestamp": null,
                 "labels": {
-                    "base-name": "gwells-postgresql"
+                    "base-name": "gwells-postgresql",
+                    "appver": "${NAME_SUFFIX}"
                 },
                 "annotations": {}
             },

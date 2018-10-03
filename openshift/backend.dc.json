@@ -34,7 +34,8 @@
                 "name": "gwells${NAME_SUFFIX}",
                 "creationTimestamp": null,
                 "labels": {
-                    "base-name":"gwells"
+                    "base-name":"gwells",
+                    "appver": "${NAME_SUFFIX}"
                 },
                 "annotations": {
                     "description": "Keeps track of changes in the application image"
@@ -120,7 +121,9 @@
             "metadata": {
                 "name": "gwells${NAME_SUFFIX}",
                 "creationTimestamp": null,
-                "labels": null,
+                "labels": {
+                    "appver": "${NAME_SUFFIX}"
+                },
                 "annotations": {
                     "description": "Defines how to deploy the application server"
                 }
@@ -216,7 +219,8 @@
                         "name": "gwells${NAME_SUFFIX}",
                         "creationTimestamp": null,
                         "labels": {
-                            "name": "gwells${NAME_SUFFIX}"
+                            "name": "gwells${NAME_SUFFIX}",
+                            "appver": "${NAME_SUFFIX}"
                         }
                     },
                     "spec": {
@@ -630,7 +634,9 @@
             "kind": "HorizontalPodAutoscaler",
             "metadata": {
                 "creationTimestamp": null,
-                "labels": { },
+                "labels": {
+                    "appver": "${NAME_SUFFIX}"
+                },
                 "name": "gwells${NAME_SUFFIX}"
             },
             "spec": {
@@ -650,7 +656,9 @@
             "metadata": {
                 "name": "gwells${NAME_SUFFIX}",
                 "creationTimestamp": null,
-                "labels": null,
+                "labels": {
+                    "appver": "${NAME_SUFFIX}"
+                },
                 "annotations": {
                     "description": "Exposes and load balances the application pods"
                 }
@@ -678,7 +686,8 @@
                 "name": "gwells${NAME_SUFFIX}",
                 "creationTimestamp": null,
                 "labels": {
-                    "frontend": "true"
+                    "frontend": "true",
+                    "appver": "${NAME_SUFFIX}"
                 },
                 "annotations": { }
             },
