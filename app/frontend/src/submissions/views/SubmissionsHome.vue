@@ -95,7 +95,7 @@
           :wellLocationDescription.sync="form.well_location_description"
         />
 
-        <!-- Coords and Method of Drilling -->
+        <!-- Coords -->
         <coords class="my-3"
           v-if="formStep === 5 || formIsFlat"
           :latitude.sync="form.latitude"
