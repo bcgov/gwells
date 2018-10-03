@@ -108,6 +108,7 @@ def get_submission_queryset(qs):
                 "productiondata_set",
                 "casing_set",
                 "screen_set",
+                "decommission_description_set",
             ) \
             .order_by("filing_number")
 
@@ -172,7 +173,13 @@ class SubmissionDecommissionAPIView(ListCreateAPIView):
     """Create an decommission submission
 
     """
-    pass
+    model = ActivitySubmission
+    serializer_class = WellDecommissionSubmissionSerializer
+    permission_classes = (WellsEditPermissions,)
+    queryset = ActivitySubmission.objects.all()
+
+    def get_queryset(self):
+        return get_submission_queryset(self.queryset)
 
 
 class SubmissionsOptions(APIView):
