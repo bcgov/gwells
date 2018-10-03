@@ -58,6 +58,11 @@ pipeline {
         script {
           openshift.withCluster() {
             openshift.withProject(TOOLS_PROJECT) {
+
+              // start building the base image. In the future, we should only have to do this once. (future improvement)
+              def baseBuild = openshift.selector("bc", "gwells-python-runtime-${SERVER_ENV}-${PR_NUM}")
+              baseBuild.startBuild("--wait")
+
               def appBuild = openshift.selector("bc", "${APP_NAME}-${SERVER_ENV}-${PR_NUM}")
               appBuild.startBuild("--wait")
             }
