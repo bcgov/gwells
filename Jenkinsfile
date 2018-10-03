@@ -37,10 +37,11 @@ pipeline {
               openshift.create(buildtemplate)
 
               def dbtemplate = openshift.process("-f",
-                "openshift/postgressql.bc.json",
+                "openshift/postgresql.bc.json",
                 "NAME_SUFFIX=${SERVER_ENV}-${PR_NUM}",
                 "ENV_NAME=${SERVER_ENV}"
               )
+              openshift.create(dbtemplate)
             }
           }
         }
@@ -78,7 +79,17 @@ pipeline {
                 "HOST=${APP_NAME}-${SERVER_ENV}-${PR_NUM}.pathfinder.gov.bc.ca",
               )
 
+              def deployDBTemplate = openshift.process("-f",
+                "openshift/postgresql.dc.json",
+                "DATABASE_SERVICE_NAME=gwells-pgsql${SERVER_ENV}-${PR_NUM}",
+                "IMAGE_STREAM_NAMESPACE=''",
+                "IMAGE_STREAM_NAME=gwells-postgresql${SERVER_ENV}-${PR_NUM}",
+                "IMAGE_STREAM_VERSION=${SERVER_ENV}",
+                "POSTGRESQL_DATABASE=gwells",
+                "VOLUME_CAPACITY=1Gi"
+              )
               openshift.create(deployTemplate)
+              openshift.create(deployDBTemplate)
             }
 
 
