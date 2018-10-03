@@ -26,6 +26,6 @@ class GeneralConfig(APIView):
         config = {
             "enable_data_entry": get_env_variable("ENABLE_DATA_ENTRY") == "True",
             "enable_google_analytics": get_env_variable("ENABLE_GOOGLE_ANALYTICS") == "True",
-            "sso_idp_hint": get_env_variable("SSO_IDP_HINT") or "idir"
+            "sso_idp_hint": get_env_variable("SSO_IDP_HINT", "idir")
         }
         return Response(config)
