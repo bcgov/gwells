@@ -2,8 +2,9 @@ pipeline {
   environment {
     // PR_NUM is the pull request number e.g. 'pr-4'
     PR_NUM = "${env.JOB_BASE_NAME}".toLowerCase()
-    APP_NAME = "gwells-dev"
+    APP_NAME = "gwells"
     PROJECT = "moe-gwells-dev"
+    TOOLS_PROJECT = "moe-gwells-tools"
     SERVER_ENV = "dev"
     REPOSITORY = 'https://www.github.com/bcgov/gwells'
   }
@@ -19,11 +20,11 @@ pipeline {
 
     // create a new environment for this pull request
     // e.g. gwells-dev-pr-999
-    stage('Initialize environment') {
+    stage('Initialize new DEV environment') {
       steps {
         script {
           openshift.withCluster() {
-            openshift.withProject(PROJECT) {
+            openshift.withProject(TOOLS_PROJECT) {
               checkout scm
 
               // create a new build config if one does not already exist
@@ -31,9 +32,9 @@ pipeline {
                 echo "Creating a new build config for pull request ${PR_NUM}"
                 def buildtemplate = openshift.process("-f",
                   "openshift/backend.bc.json",
-                  "NAME_SUFFIX=${APP_NAME}-${SERVER_ENV}-${PR_NUM}",
-                  "ENV_NAME=",
-                  "SOURCE_REPOSITORY_URL=${REPOSITORY}/pulls/${PR_NUM}"
+                  "NAME_SUFFIX=${SERVER_ENV}-${PR_NUM}",
+                  "ENV_NAME=${SERVER_ENV}",
+                  "SOURCE_REPOSITORY_URL=${REPOSITORY}/pull/${CHANGE_ID}"
                 )
                 openshift.create(buildtemplate)
 
@@ -56,7 +57,7 @@ pipeline {
       steps {
         script {
           openshift.withCluster() {
-            openshift.withProject(PROJECT) {
+            openshift.withProject(TOOLS_PROJECT) {
               def appBuild = openshift.selector("bc", "${APP_NAME}-${SERVER_ENV}-${PR_NUM}")
               appBuild.startBuild("--wait")
             }
@@ -77,7 +78,7 @@ pipeline {
                 echo "Creating a new deployment config for pull request ${PR_NUM}"
                 def deployTemplate = openshift.process("-f",
                   "openshift/backend.dc.json",
-                  "NAME_SUFFIX=${APP_NAME}-${SERVER_ENV}-${PR_NUM}",
+                  "NAME_SUFFIX=${SERVER_ENV}-${PR_NUM}",
                   "BUILD_ENV_NAME=",
                   "ENV_NAME=${SERVER_ENV}",
                   "HOST=${APP_NAME}-${SERVER_ENV}-${PR_NUM}.pathfinder.gov.bc.ca",
