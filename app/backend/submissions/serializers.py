@@ -19,7 +19,7 @@ from gwells.models import ProvinceStateCode
 from gwells.serializers import AuditModelSerializer
 from django.db import transaction
 import wells.stack
-from wells.models import Well, ActivitySubmission
+from wells.models import Well, ActivitySubmission, WellActivityCode
 from wells.serializers import (
     CasingSerializer,
     DecommissionDescriptionSerializer,
@@ -59,14 +59,12 @@ from wells.models import (
     YieldEstimationMethodCode,
 )
 
-from submissions.models import WellActivityCode
-
 logger = logging.getLogger(__name__)
 
 # There are a LOT of fields. It's hard to keep track of them, so they're broken
 # up into sections that match the UI.
+WELL_SUBMISSION_FIELDS = ("filing_number",)
 WELL_TYPE_FIELDS = ("well",
-                    "well_activity_type",
                     "well_class",
                     "well_subclass",
                     "intended_water_use",
@@ -83,7 +81,7 @@ WELL_OWNER_FIELDS = ("owner_full_name",
                      "owner_province_state",
                      "owner_city",
                      "owner_postal_code",)
-WELL_LOCATION_FIELDS = ("owner_full_name",  # Duplicated in WELL_OWNER_FIELDS!
+WELL_LOCATION_FIELDS = ("owner_full_name",
                         "owner_mailing_address",
                         "owner_province_state",
                         "owner_city",
@@ -106,7 +104,7 @@ WELL_METHOD_FIELDS = ("ground_elevation",
                       "ground_elevation_method",
                       "drilling_method",
                       "other_drilling_method",
-                      "well_orientation")  # well_orientation ???
+                      "well_orientation")
 WELL_LITHOLOGY_FIELDS = ("lithologydescription_set",)
 WELL_CASINGS_FIELDS = ("casing_set",)
 WELL_BACKFILL_FIELDS = ("surface_seal_material",
@@ -137,7 +135,7 @@ WELL_FILTERPACK_FIELDS = ("filter_pack_from",
 WELL_DEVELOPMENT_FIELDS = ("development_method",
                            "development_hours",
                            "development_notes",)
-WELL_YIELD_FIELDS = ()  # EMPTY?????
+WELL_YIELD_FIELDS = ()
 WATER_QUALITY_FIELDS = ("water_quality_characteristics",
                         "water_quality_colour",
                         "water_quality_odour",
@@ -161,22 +159,18 @@ WELL_CLOSURE_DESCRIPTION_FIELDS = ("decommission_reason",
                                    "decommission_details",)
 WELL_DECOMMISSION_INFORMATION_FIELDS = ('decommission_description_set',)
 
-# "filing_number", Not needed???
-# "activity_submission_guid", Not needed???
-# "water_supply_system_name",
-# "water_supply_system_well_name",
-# "well_yield_unit",
-# "diameter",
-
 # Construction and alteration have identical fields.
 # For ease of composing serializers, fields are broken up to match user user interface
 ALTERATION_FIELDS = CONSTRUCTION_FIELDS = list(set(
+    WELL_SUBMISSION_FIELDS +
     WELL_TYPE_FIELDS + WELL_OWNER_FIELDS + WELL_LOCATION_FIELDS + WELL_COORDS_FIELDS + WELL_METHOD_FIELDS +
     WELL_LITHOLOGY_FIELDS + WELL_CASINGS_FIELDS + WELL_BACKFILL_FIELDS + WELL_LINER_FIELDS +
     WELL_SCREENS_FIELDS + WELL_FILTERPACK_FIELDS + WELL_DEVELOPMENT_FIELDS + WELL_YIELD_FIELDS +
     WATER_QUALITY_FIELDS + WELL_COMPLETION_FIELDS + WELL_COMMENTS_FIELDS))
 
+# Decomission is a subset of construction/alteration.
 DECOMMISSION_FIELDS = list(set(
+    WELL_SUBMISSION_FIELDS +
     WELL_TYPE_FIELDS + WELL_OWNER_FIELDS + WELL_LOCATION_FIELDS + WELL_COORDS_FIELDS + WELL_METHOD_FIELDS +
     WELL_CLOSURE_DESCRIPTION_FIELDS + WELL_CASINGS_FIELDS + WELL_DECOMMISSION_INFORMATION_FIELDS +
     WELL_COMMENTS_FIELDS))
@@ -192,14 +186,19 @@ class WellSubmissionListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ActivitySubmission
-        fields = list(set(ALTERATION_FIELDS + CONSTRUCTION_FIELDS + DECOMMISSION_FIELDS))
+        fields = list(set(
+            list(WELL_SUBMISSION_FIELDS) + ALTERATION_FIELDS + CONSTRUCTION_FIELDS + DECOMMISSION_FIELDS +
+            list("well_activity_type")))
 
 
 class WellSubmissionSerializerBase(serializers.ModelSerializer):
     """ Bass class for well submission serialisation. """
 
     def get_foreign_keys(self):
-        return {}
+        raise NotImplementedError()  # Implement in base class!
+
+    def get_well_activity_type():
+        raise NotImplementedError()  # Implement in base class!
 
     @transaction.atomic
     def create(self, validated_data):
@@ -209,6 +208,7 @@ class WellSubmissionSerializerBase(serializers.ModelSerializer):
         for key in foreign_keys.keys():
             foreign_keys_data[key] = validated_data.pop(key, None)
         # Create submission.
+        validated_data['well_activity_type'] = self.get_well_activity_type()
         instance = super().create(validated_data)
         # Create foreign key records.
         for key, value in foreign_keys_data.items():
@@ -257,6 +257,9 @@ class WellConstructionSubmissionSerializer(WellSubmissionSerializerBase):
             'screen_set': Screen,
             'linerperforation_set': LinerPerforation,
             }
+
+    def get_well_activity_type(self):
+        return WellActivityCode.types.construction()
 
     class Meta:
         model = ActivitySubmission
