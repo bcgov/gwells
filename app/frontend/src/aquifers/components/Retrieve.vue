@@ -15,11 +15,11 @@
 <template>
   <b-card no-body class="p-3 mb-4">
     <b-container>
-      <b-row class="border-bottom mb-3">
+      <b-row>
         <b-col><h5>Aquifer Summary</h5></b-col>
         <b-col cols="auto">
             <b-button variant="secondary" v-on:click.prevent="print()">
-              <span title="Print" class="fa fa-print"/>
+              <span title="Print" class="fa-print"/>
             </b-button>
         </b-col>
       </b-row>
@@ -36,12 +36,12 @@
         <dd class="col-sm-4">{{record.litho_stratographic_unit}}</dd>
 
         <dt class="col-sm-2">Descriptive location</dt>
-        <dd class="col-sm-4">{{record.location_description}}</dd>
+        <dd class="col-sm-4">{{record.descriptive_location}}</dd>
         <dt class="col-sm-2">Vulnerability</dt>
         <dd class="col-sm-4">{{record.vulnerability_description}}</dd>
 
         <dt class="col-sm-2">Material type</dt>
-        <dd class="col-sm-4">{{record.material_description}}</dd>
+        <dd class="col-sm-4">{{record.material_location}}</dd>
         <dt class="col-sm-2">Subtype</dt>
         <dd class="col-sm-4">{{record.subtype_description}}</dd>
 
@@ -58,13 +58,6 @@
     </b-container>
   </b-card>
 </template>
-
-<style>
-.print, .print:hover {
-  color: black;
-  text-decoration: none;
-}
-</style>
 
 <script>
 import ApiService from '@/common/services/ApiService.js'

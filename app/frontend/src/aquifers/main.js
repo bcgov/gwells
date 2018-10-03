@@ -18,6 +18,7 @@ import App from './App'
 import BootstrapVue from 'bootstrap-vue'
 import '@/common/assets/css/bootstrap-theme.min.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
+import router from './router'
 import store from './store'
 import ApiService from '@/common/services/ApiService.js'
 
@@ -27,8 +28,9 @@ Vue.use(BootstrapVue)
 
 /* eslint-disable no-new */
 new Vue({
-  el: '#app',
-  store,
   components: { App },
+  el: '#app',
+  router,
+  store,
   template: '<App/>'
 })
