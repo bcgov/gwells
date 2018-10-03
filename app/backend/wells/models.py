@@ -506,8 +506,8 @@ class Well(AuditModel):
     land_district = models.ForeignKey(LandDistrictCode, db_column='land_district_code',
                                       on_delete=models.CASCADE, blank=True, null=True,
                                       verbose_name='Land District')
-    legal_pid = models.CharField(max_length=9, blank=True, null=True,
-                                 verbose_name='Property Identification Description (PID)')
+    legal_pid = models.PositiveIntegerField(blank=True, null=True,
+                                            verbose_name='Property Identification Description (PID)')
     well_location_description = models.CharField(
         max_length=500, blank=True, verbose_name='Description of Well Location')
 
@@ -1076,9 +1076,11 @@ class LithologyDescription(AuditModel):
     lithology_description_guid = models.UUIDField(
         primary_key=True, default=uuid.uuid4, editable=False)
     activity_submission = models.ForeignKey(
-        ActivitySubmission, db_column='filing_number', on_delete=models.CASCADE, blank=True, null=True)
-    well_tag_number = models.ForeignKey(
-        Well, db_column='well_tag_number', on_delete=models.CASCADE, blank=True, null=True)
+        ActivitySubmission, db_column='filing_number', on_delete=models.CASCADE, blank=True, null=True,
+        related_name='lithologydescription_set')
+    well = models.ForeignKey(
+        Well, db_column='well_tag_number', on_delete=models.CASCADE, blank=True, null=True,
+        related_name='lithologydescription_set')
     lithology_from = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='From',
                                          blank=True, null=True,
                                          validators=[MinValueValidator(Decimal('0.00'))])
@@ -1242,10 +1244,13 @@ class Casing(AuditModel):
     well = models.ForeignKey(Well, db_column='well_tag_number', on_delete=models.CASCADE,
                              blank=True, null=True,
                              related_name='casing_set')
+    # 2018/Sep/26 - According to PO (Lindsay), diameter, start and end are required fields.
+    # There is however a lot of legacy data that does not have this field.
     start = models.DecimalField(db_column='casing_from', max_digits=7, decimal_places=2, verbose_name='From',
                                 null=True, blank=True, validators=[MinValueValidator(Decimal('0.00'))])
     end = models.DecimalField(db_column='casing_to', max_digits=7, decimal_places=2, verbose_name='To',
                               null=True, blank=True, validators=[MinValueValidator(Decimal('0.01'))])
+    # NOTE: Diameter should be pulling from internal_diameter
     diameter = models.DecimalField(max_digits=8, decimal_places=3, verbose_name='Diameter', null=True,
                                    blank=True, validators=[MinValueValidator(Decimal('0.5'))])
     casing_code = models.ForeignKey(CasingCode, db_column='casing_code', on_delete=models.CASCADE,
@@ -1377,4 +1382,4 @@ class HydraulicProperty(AuditModel):
         verbose_name_plural = 'Hydraulic Properties'
 
     def __str__(self):
-        return '{} - {}'.format(self.well, self.hydraulic_property_guid)        
+        return '{} - {}'.format(self.well, self.hydraulic_property_guid)

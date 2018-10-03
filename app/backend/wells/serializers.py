@@ -60,6 +60,11 @@ class CasingSerializer(serializers.ModelSerializer):
             'casing_material',
             'drive_shoe',
         )
+        extra_kwargs = {
+            'start': {'required': True},
+            'end': {'required': True},
+            'diameter': {'required': True}
+        }
 
 
 class ScreenSerializer(serializers.ModelSerializer):
@@ -72,6 +77,11 @@ class ScreenSerializer(serializers.ModelSerializer):
             'assembly_type',
             'slot_size',
         )
+        extra_kwargs = {
+            'start': {'required': True},
+            'end': {'required': True},
+            'assembly_type': {'required': True}
+        }
 
 
 class LinerPerforationSerializer(serializers.ModelSerializer):
