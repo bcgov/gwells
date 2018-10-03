@@ -35,7 +35,7 @@
                 "creationTimestamp": null,
                 "labels": {
                     "base-name":"gwells",
-                    "appver": "${NAME_SUFFIX}"
+                    "appver": "gwells${NAME_SUFFIX}"
                 },
                 "annotations": {
                     "description": "Keeps track of changes in the application image"
@@ -122,7 +122,7 @@
                 "name": "gwells${NAME_SUFFIX}",
                 "creationTimestamp": null,
                 "labels": {
-                    "appver": "${NAME_SUFFIX}"
+                    "appver": "gwells${NAME_SUFFIX}"
                 },
                 "annotations": {
                     "description": "Defines how to deploy the application server"
@@ -220,7 +220,7 @@
                         "creationTimestamp": null,
                         "labels": {
                             "name": "gwells${NAME_SUFFIX}",
-                            "appver": "${NAME_SUFFIX}"
+                            "appver": "gwells${NAME_SUFFIX}"
                         }
                     },
                     "spec": {
@@ -635,7 +635,7 @@
             "metadata": {
                 "creationTimestamp": null,
                 "labels": {
-                    "appver": "${NAME_SUFFIX}"
+                    "appver": "gwells${NAME_SUFFIX}"
                 },
                 "name": "gwells${NAME_SUFFIX}"
             },
@@ -657,7 +657,7 @@
                 "name": "gwells${NAME_SUFFIX}",
                 "creationTimestamp": null,
                 "labels": {
-                    "appver": "${NAME_SUFFIX}"
+                    "appver": "gwells${NAME_SUFFIX}"
                 },
                 "annotations": {
                     "description": "Exposes and load balances the application pods"
@@ -687,7 +687,7 @@
                 "creationTimestamp": null,
                 "labels": {
                     "frontend": "true",
-                    "appver": "${NAME_SUFFIX}"
+                    "appver": "gwells${NAME_SUFFIX}"
                 },
                 "annotations": { }
             },

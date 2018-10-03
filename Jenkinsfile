@@ -32,7 +32,7 @@ pipeline {
                 echo "Creating a new build config for pull request ${PR_NUM}"
                 def buildtemplate = openshift.process("-f",
                   "openshift/backend.bc.json",
-                  "NAME_SUFFIX=${SERVER_ENV}-${PR_NUM}",
+                  "NAME_SUFFIX=-${SERVER_ENV}-${PR_NUM}",
                   "ENV_NAME=${SERVER_ENV}",
                   "SOURCE_REPOSITORY_URL=${REPOSITORY}/pull/${CHANGE_ID}"
                 )
@@ -40,7 +40,7 @@ pipeline {
 
                 def dbtemplate = openshift.process("-f",
                   "openshift/postgresql.bc.json",
-                  "NAME_SUFFIX=${SERVER_ENV}-${PR_NUM}",
+                  "NAME_SUFFIX=-${SERVER_ENV}-${PR_NUM}",
                   "ENV_NAME=${SERVER_ENV}"
                 )
                 openshift.create(dbtemplate)
@@ -78,7 +78,7 @@ pipeline {
                 echo "Creating a new deployment config for pull request ${PR_NUM}"
                 def deployTemplate = openshift.process("-f",
                   "openshift/backend.dc.json",
-                  "NAME_SUFFIX=${SERVER_ENV}-${PR_NUM}",
+                  "NAME_SUFFIX=-${SERVER_ENV}-${PR_NUM}",
                   "BUILD_ENV_NAME=",
                   "ENV_NAME=${SERVER_ENV}",
                   "HOST=${APP_NAME}-${SERVER_ENV}-${PR_NUM}.pathfinder.gov.bc.ca",
