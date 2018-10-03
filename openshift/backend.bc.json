@@ -75,7 +75,8 @@
                 "name": "gwells${NAME_SUFFIX}",
                 "creationTimestamp": null,
                 "labels": {
-                    "base-name":"gwells"
+                    "base-name":"gwells",
+                    "appver": "${NAME_SUFFIX}"
                 },
                 "annotations": {
                     "description": "Keeps track of changes in the application image"
@@ -95,7 +96,8 @@
                 "name": "gwells-python-runtime${NAME_SUFFIX}",
                 "creationTimestamp": null,
                 "labels": {
-                    "build": "gwells-python-runtime"
+                    "build": "gwells-python-runtime",
+                    "appver": "${NAME_SUFFIX}"
                 },
                 "annotations": {
 
