@@ -14,7 +14,7 @@
 
 from rest_framework.response import Response
 from django.views.generic import TemplateView
-from rest_framework.generics import ListCreateAPIView
+from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveUpdateAPIView
 from rest_framework.views import APIView
 
 from gwells.pagination import APILimitOffsetPagination
@@ -77,7 +77,10 @@ from submissions.serializers import (
     ScreenAssemblyTypeCodeSerializer,
     WaterQualityCharacteristicSerializer,
     WaterQualityColourSerializer,
-    WellSubmissionSerializer,
+    WellConstructionSubmissionSerializer,
+    WellAlterationSubmissionSerializer,
+    WellDecommissionSubmissionSerializer,
+    WellSubmissionListSerializer,
     WellActivityCodeSerializer,
     WellClassCodeSerializer,
     WellSubclassCodeSerializer,
@@ -85,23 +88,8 @@ from submissions.serializers import (
 )
 
 
-class SubmissionListAPIView(ListCreateAPIView):
-    """List and create submissions
-
-    get: returns a list of well activity submissions
-    post: adds a new submission
-    """
-
-    permission_classes = (WellsEditPermissions,)
-    model = ActivitySubmission
-    queryset = ActivitySubmission.objects.all()
-    pagination_class = APILimitOffsetPagination
-    serializer_class = WellSubmissionSerializer
-
-    def get_queryset(self):
-        qs = self.queryset
-        qs = qs \
-            .select_related(
+def get_submission_queryset(qs):
+    return qs.select_related(
                 "well_class",
                 "well_subclass",
                 "intended_water_use",
@@ -122,7 +110,23 @@ class SubmissionListAPIView(ListCreateAPIView):
                 "screen_set",
             ) \
             .order_by("filing_number")
-        return qs
+
+
+class SubmissionListAPIView(ListAPIView):
+    """List and create submissions
+
+    get: returns a list of well activity submissions
+    post: adds a new submission
+    """
+
+    permission_classes = (WellsEditPermissions,)
+    model = ActivitySubmission
+    queryset = ActivitySubmission.objects.all()
+    pagination_class = APILimitOffsetPagination
+    serializer_class = WellSubmissionListSerializer
+
+    def get_queryset(self):
+        return get_submission_queryset(self.queryset)
 
     def list(self, request):
         """ List activity submissions with pagination """
@@ -131,28 +135,40 @@ class SubmissionListAPIView(ListCreateAPIView):
 
         page = self.paginate_queryset(filtered_queryset)
         if page is not None:
-            serializer = WellSubmissionSerializer(page, many=True)
+            serializer = WellSubmissionListSerializer(page, many=True)
             return self.get_paginated_response(serializer.data)
 
-        serializer = WellSubmissionSerializer(filtered_queryset, many=True)
+        serializer = WellSubmissionListSerializer(filtered_queryset, many=True)
         return Response(serializer.data)
 
 
-class SubmissionConstructionAPIView(SubmissionListAPIView):
+class SubmissionConstructionAPIView(ListCreateAPIView):
     """Create a construction submission
 
     """
-    pass
+    model = ActivitySubmission
+    serializer_class = WellConstructionSubmissionSerializer
+    permission_classes = (WellsEditPermissions,)
+    queryset = ActivitySubmission.objects.all()
+
+    def get_queryset(self):
+        return get_submission_queryset(self.queryset)
 
 
-class SubmissionAlterationAPIView(SubmissionListAPIView):
+class SubmissionAlterationAPIView(ListCreateAPIView):
     """Create an alteration submission
 
     """
-    pass
+    model = ActivitySubmission
+    serializer_class = WellAlterationSubmissionSerializer
+    permission_classes = (WellsEditPermissions,)
+    queryset = ActivitySubmission.objects.all()
+
+    def get_queryset(self):
+        return get_submission_queryset(self.queryset)
 
 
-class SubmissionDecommissionAPIView(SubmissionListAPIView):
+class SubmissionDecommissionAPIView(ListCreateAPIView):
     """Create an decommission submission
 
     """

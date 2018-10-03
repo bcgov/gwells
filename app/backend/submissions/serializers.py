@@ -63,8 +63,123 @@ from submissions.models import WellActivityCode
 
 logger = logging.getLogger(__name__)
 
+# There are a LOT of fields. It's hard to keep track of them, so they're broken
+# up into sections that match the UI.
+WELL_TYPE_FIELDS = ("well",
+                    "well_activity_type",
+                    "well_class",
+                    "well_subclass",
+                    "intended_water_use",
+                    "identification_plate_number",
+                    "well_plate_attached",
+                    "work_start_date",
+                    "work_end_date",)
+PERSON_RESPONSIBLE_FIELDS = ("driller_name",
+                             "consultant_name",
+                             "consultant_company",
+                             "driller_responsible",)
+WELL_OWNER_FIELDS = ("owner_full_name",
+                     "owner_mailing_address",
+                     "owner_province_state",
+                     "owner_city",
+                     "owner_postal_code",)
+WELL_LOCATION_FIELDS = ("owner_full_name",  # Duplicated in WELL_OWNER_FIELDS!
+                        "owner_mailing_address",
+                        "owner_province_state",
+                        "owner_city",
+                        "owner_postal_code",
+                        "street_address",
+                        "city",
+                        "legal_lot",
+                        "legal_plan",
+                        "legal_district_lot",
+                        "legal_block",
+                        "legal_section",
+                        "legal_township",
+                        "legal_range",
+                        "land_district",
+                        "legal_pid",
+                        "well_location_description",)
+WELL_COORDS_FIELDS = ("latitude",
+                      "longitude",)
+WELL_METHOD_FIELDS = ("ground_elevation",
+                      "ground_elevation_method",
+                      "drilling_method",
+                      "other_drilling_method",
+                      "well_orientation")  # well_orientation ???
+WELL_LITHOLOGY_FIELDS = ("lithologydescription_set",)
+WELL_CASINGS_FIELDS = ("casing_set",)
+WELL_BACKFILL_FIELDS = ("surface_seal_material",
+                        "surface_seal_depth",
+                        "surface_seal_thickness",
+                        "surface_seal_method",
+                        "backfill_above_surface_seal",
+                        "backfill_above_surface_seal_depth",)
+WELL_LINER_FIELDS = ("liner_material",
+                     "liner_diameter",
+                     "liner_thickness",
+                     "liner_from",
+                     "liner_to",
+                     "linerperforation_set",)
+WELL_SCREENS_FIELDS = ("screen_intake_method",
+                       "screen_type",
+                       "screen_material",
+                       "other_screen_material",
+                       "screen_opening",
+                       "screen_bottom",
+                       "other_screen_bottom",
+                       "screen_set",)
+WELL_FILTERPACK_FIELDS = ("filter_pack_from",
+                          "filter_pack_to",
+                          "filter_pack_thickness",
+                          "filter_pack_material",
+                          "filter_pack_material_size",)
+WELL_DEVELOPMENT_FIELDS = ("development_method",
+                           "development_hours",
+                           "development_notes",)
+WELL_YIELD_FIELDS = ()  # EMPTY?????
+WATER_QUALITY_FIELDS = ("water_quality_characteristics",
+                        "water_quality_colour",
+                        "water_quality_odour",
+                        "ems_id",)
+WELL_COMPLETION_FIELDS = ("total_depth_drilled",
+                          "finished_well_depth",
+                          "final_casing_stick_up",
+                          "bedrock_depth",
+                          "static_water_level",
+                          "well_yield",
+                          "artesian_flow",
+                          "artesian_pressure",
+                          "well_cap_type",
+                          "well_disinfected",)
+WELL_COMMENTS_FIELDS = ("comments",
+                        "alternative_specs_submitted",)
+WELL_CLOSURE_DESCRIPTION_FIELDS = ()  # TBD!
+WELL_DECOMMISSION_INFORMATION_FIELDS = ()  # TBD!
 
-class WellSubmissionSerializerBase(serializers.ModelSerializer):
+# "filing_number", Not needed???
+# "activity_submission_guid", Not needed???
+# "water_supply_system_name",
+# "water_supply_system_well_name",
+# "well_yield_unit",
+# "diameter",
+
+# Construction and alteration have identical fields.
+# For ease of composing serializers, fields are broken up to match user user interface
+ALTERATION_FIELDS = CONSTRUCTION_FIELDS = list(set(
+    WELL_TYPE_FIELDS + WELL_OWNER_FIELDS + WELL_LOCATION_FIELDS + WELL_COORDS_FIELDS + WELL_METHOD_FIELDS +
+    WELL_LITHOLOGY_FIELDS + WELL_CASINGS_FIELDS + WELL_BACKFILL_FIELDS + WELL_LINER_FIELDS +
+    WELL_SCREENS_FIELDS + WELL_FILTERPACK_FIELDS + WELL_DEVELOPMENT_FIELDS + WELL_YIELD_FIELDS +
+    WATER_QUALITY_FIELDS + WELL_COMPLETION_FIELDS + WELL_COMMENTS_FIELDS))
+
+DECOMMISSION_FIELDS = list(set(
+    WELL_TYPE_FIELDS + WELL_OWNER_FIELDS + WELL_LOCATION_FIELDS + WELL_COORDS_FIELDS + WELL_METHOD_FIELDS +
+    WELL_CLOSURE_DESCRIPTION_FIELDS + WELL_CASINGS_FIELDS + WELL_DECOMMISSION_INFORMATION_FIELDS +
+    WELL_COMMENTS_FIELDS))
+
+
+class WellSubmissionListSerializer(serializers.ModelSerializer):
+    """ Class used for listing well submissions """
 
     casing_set = CasingSerializer(many=True, required=False)
     decommission_description_set = DecommissionDescriptionSerializer(many=True, required=False)
@@ -73,226 +188,114 @@ class WellSubmissionSerializerBase(serializers.ModelSerializer):
 
     class Meta:
         model = ActivitySubmission
+        fields = list(set(ALTERATION_FIELDS + CONSTRUCTION_FIELDS + DECOMMISSION_FIELDS))
+
+
+class WellSubmissionSerializerBase(serializers.ModelSerializer):
+    """ Bass class for well submission serialisation. """
+
+    def get_foreign_keys(self):
+        return {}
 
     @transaction.atomic
     def create(self, validated_data):
-        # Pop foreign key records
-        FOREIGN_KEYS = {
-            'casing_set': Casing,
-            'screen_set': Screen,
-            'linerperforation_set': LinerPerforation
-        }
+        # Pop foreign key records from validated data (we need to create them ourselves).
+        foreign_keys = self.get_foreign_keys()
         foreign_keys_data = {}
-        for key in FOREIGN_KEYS.keys():
+        for key in foreign_keys.keys():
             foreign_keys_data[key] = validated_data.pop(key, None)
-        # Create submission
+        # Create submission.
         instance = super().create(validated_data)
-        # Create foreign key records
+        # Create foreign key records.
         for key, value in foreign_keys_data.items():
             if value:
                 for data in value:
-                    FOREIGN_KEYS[key].objects.create(activity_submission=instance, **data)
-        # Update the well record
+                    foreign_keys[key].objects.create(activity_submission=instance, **data)
+        # Update the well record.
         stacker = wells.stack.StackWells()
         stacker.process(instance.filing_number)
-        # The instance may have been updated with a well tag number
+        # The instance may have been updated with a well tag number, so we refresh.
         instance.refresh_from_db()
         return instance
 
 
+class WellSubmissionStackerSerializer(WellSubmissionSerializerBase):
+    """ Class with no validation, and all possible fields, used by stacker to serialize. """
+
+    casing_set = CasingSerializer(many=True, required=False)
+    screen_set = ScreenSerializer(many=True, required=False)
+    linerperforation_set = LinerPerforationSerializer(many=True, required=False)
+
+    def get_foreign_keys(self):
+        return {
+            'casing_set': Casing,
+            'screen_set': Screen,
+            'linerperforation_set': LinerPerforation,
+            }
+
+    class Meta:
+        model = ActivitySubmission
+        fields = list(set(ALTERATION_FIELDS + CONSTRUCTION_FIELDS + DECOMMISSION_FIELDS))
+
+
 class WellConstructionSubmissionSerializer(WellSubmissionSerializerBase):
+    """ Serializes a well construction submission. """
 
-    """ Serializes a well construction submission """
-    class Meta:
-        # TODO: Remove all the fields that construction doesn't have
-        fields = (
-            "filing_number",
-            "activity_submission_guid",
-            "well",
-            "well_activity_type",
-            "well_class",
-            "well_subclass",
-            "intended_water_use",
-            "driller_responsible",
-            "driller_name",
-            "consultant_name",
-            "consultant_company",
-            "work_start_date",
-            "work_end_date",
-            "owner_full_name",
-            "owner_mailing_address",
-            "owner_city",
-            "owner_province_state",
-            "owner_postal_code",
-            "street_address",
-            "city",
-            "legal_lot",
-            "legal_plan",
-            "legal_district_lot",
-            "legal_block",
-            "legal_section",
-            "legal_township",
-            "legal_range",
-            "land_district",
-            "legal_pid",
-            "well_location_description",
-            "identification_plate_number",
-            "well_plate_attached",
-            "latitude",
-            "longitude",
-            "ground_elevation",
-            "ground_elevation_method",
-            "drilling_method",
-            "other_drilling_method",
-            "water_supply_system_name",
-            "water_supply_system_well_name",
-            "surface_seal_material",
-            "surface_seal_depth",
-            "surface_seal_thickness",
-            "surface_seal_method",
-            "backfill_above_surface_seal",
-            "backfill_above_surface_seal_depth",
-            "liner_material",
-            "liner_diameter",
-            "liner_thickness",
-            "liner_from",
-            "liner_to",
-            "screen_intake_method",
-            "screen_type",
-            "screen_material",
-            "other_screen_material",
-            "screen_opening",
-            "screen_bottom",
-            "other_screen_bottom",
-            "filter_pack_from",
-            "filter_pack_to",
-            "filter_pack_thickness",
-            "filter_pack_material",
-            "filter_pack_material_size",
-            "development_method",
-            "development_hours",
-            "development_notes",
-            "water_quality_characteristics",
-            "water_quality_colour",
-            "water_quality_odour",
-            "total_depth_drilled",
-            "finished_well_depth",
-            "final_casing_stick_up",
-            "bedrock_depth",
-            "static_water_level",
-            "well_yield",
-            "artesian_flow",
-            "artesian_pressure",
-            "well_cap_type",
-            "well_disinfected",
-            "comments",
-            "alternative_specs_submitted",
-            "well_yield_unit",
-            "diameter",
-            "casing_set",
-            "linerperforation_set",
-            "screen_set",
-            "decommission_reason",
-            "decommission_method",
-            "sealant_material",
-            "backfill_material",
-            "decommission_details",
-            'decommission_description_set',
-        )
+    casing_set = CasingSerializer(many=True, required=False)
+    screen_set = ScreenSerializer(many=True, required=False)
+    linerperforation_set = LinerPerforationSerializer(many=True, required=False)
 
-
-class WellSubmissionSerializer(WellSubmissionSerializerBase):
-    """Serializes a well activity submission"""
+    def get_foreign_keys(self):
+        return {
+            'casing_set': Casing,
+            'screen_set': Screen,
+            'linerperforation_set': LinerPerforation,
+            }
 
     class Meta:
-        fields = (
-            "filing_number",
-            "activity_submission_guid",
-            "well",
-            "well_activity_type",
-            "well_class",
-            "well_subclass",
-            "intended_water_use",
-            "driller_responsible",
-            "driller_name",
-            "consultant_name",
-            "consultant_company",
-            "work_start_date",
-            "work_end_date",
-            "owner_full_name",
-            "owner_mailing_address",  # temporarily disabled
-            "owner_city",
-            "owner_province_state",
-            "owner_postal_code",
-            "street_address",
-            "city",
-            "legal_lot",
-            "legal_plan",
-            "legal_district_lot",
-            "legal_block",
-            "legal_section",
-            "legal_township",
-            "legal_range",
-            "land_district",
-            "legal_pid",
-            "well_location_description",
-            "identification_plate_number",
-            "well_plate_attached",
-            "latitude",
-            "longitude",
-            "ground_elevation",
-            "ground_elevation_method",
-            "drilling_method",
-            "other_drilling_method",
-            "water_supply_system_name",
-            "water_supply_system_well_name",
-            "surface_seal_material",
-            "surface_seal_depth",
-            "surface_seal_thickness",
-            "surface_seal_method",
-            "backfill_above_surface_seal",
-            "backfill_above_surface_seal_depth",
-            "liner_material",
-            "liner_diameter",
-            "liner_thickness",
-            "liner_from",
-            "liner_to",
-            "screen_intake_method",
-            "screen_type",
-            "screen_material",
-            "other_screen_material",
-            "screen_opening",
-            "screen_bottom",
-            "other_screen_bottom",
-            "filter_pack_from",
-            "filter_pack_to",
-            "filter_pack_thickness",
-            "filter_pack_material",
-            "filter_pack_material_size",
-            "development_method",
-            "development_hours",
-            "development_notes",
-            "water_quality_characteristics",
-            "water_quality_colour",
-            "water_quality_odour",
-            "total_depth_drilled",
-            "finished_well_depth",
-            "final_casing_stick_up",
-            "bedrock_depth",
-            "static_water_level",
-            "well_yield",
-            "artesian_flow",
-            "artesian_pressure",
-            "well_cap_type",
-            "well_disinfected",
-            "comments",
-            "alternative_specs_submitted",
-            "well_yield_unit",
-            "diameter",
-            "casing_set",
-            "linerperforation_set",
-            "screen_set",
-        )
+        model = ActivitySubmission
+        fields = CONSTRUCTION_FIELDS
+        extra_kwargs = {
+            'lithologydescription_set': {'required': False},
+        }
+
+
+class WellAlterationSubmissionSerializer(WellSubmissionSerializerBase):
+    """ Serializes a well alteration submission. """
+
+    casing_set = CasingSerializer(many=True, required=False)
+    screen_set = ScreenSerializer(many=True, required=False)
+    linerperforation_set = LinerPerforationSerializer(many=True, required=False)
+
+    def get_foreign_keys(self):
+        return {
+            'casing_set': Casing,
+            'screen_set': Screen,
+            'linerperforation_set': LinerPerforation,
+            }
+
+    class Meta:
+        model = ActivitySubmission
+        fields = ALTERATION_FIELDS
+        extra_kwargs = {
+            'lithologydescription_set': {'required': False},
+        }
+
+
+class WellDecommissionSubmissionSerializer(WellSubmissionSerializerBase):
+    """ Serializes a well decommission submission. """
+
+    casing_set = CasingSerializer(many=True, required=False)
+
+    def get_foreign_keys(self):
+        return {
+            'casing_set': Casing
+            }
+
+    class Meta:
+        model = ActivitySubmission
+        # Decommission has fewer fields
+        fields = DECOMMISSION_FIELDS
 
 
 class WellActivityCodeSerializer(serializers.ModelSerializer):

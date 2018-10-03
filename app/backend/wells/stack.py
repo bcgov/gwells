@@ -138,7 +138,7 @@ class StackWells():
         composite = {}
         for submission in records:
             source_target_map = activity_type_map.get(submission.well_activity_type.code, {})
-            serializer = submissions.serializers.WellSubmissionSerializer(submission)
+            serializer = submissions.serializers.WellSubmissionStackerSerializer(submission)
             for source_key, value in serializer.data.items():
                 # We only consider items with values, and keys that are in our target
                 if value:
