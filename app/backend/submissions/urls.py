@@ -29,6 +29,9 @@ urlpatterns = [
     # Submissions list
     url(r'^api/v1/submissions/$',
         never_cache(SubmissionListAPIView.as_view()), name='submissions-list'),
+    # Submission
+    # url(r'^api/v1/submissions/(?P<filing_number>[0-9]+$',
+        # never_cache()),
     # Construction submission
     url(r'^api/v1/submissions/construction$',
         never_cache(SubmissionConstructionAPIView.as_view())),
