@@ -1,11 +1,11 @@
 import { shallowMount, createLocalVue } from '@vue/test-utils'
 import Vuex from 'vuex'
-import Step04Coords from '@/submissions/components/SubmissionForm/Coords.vue'
+import Coords from '@/submissions/components/SubmissionForm/Coords.vue'
 
 const localVue = createLocalVue()
 localVue.use(Vuex)
 
-describe('Step04Coords.vue', () => {
+describe('Coords.vue', () => {
   let store
   let getters
 
@@ -20,7 +20,7 @@ describe('Step04Coords.vue', () => {
   })
 
   it('converts from WSG84 to UTM', () => {
-    const wrapper = shallowMount(Step04Coords, {
+    const wrapper = shallowMount(Coords, {
       localVue,
       store,
       sync: false
@@ -70,7 +70,7 @@ describe('Step04Coords.vue', () => {
     }
   })
   it('converts from UTM to WGS84', () => {
-    const wrapper = shallowMount(Step04Coords, {
+    const wrapper = shallowMount(Coords, {
       localVue,
       store,
       sync: false
@@ -102,7 +102,7 @@ describe('Step04Coords.vue', () => {
     }
   })
   it('converts from decimal degrees to DMS', () => {
-    const wrapper = shallowMount(Step04Coords, {
+    const wrapper = shallowMount(Coords, {
       localVue,
       store,
       sync: false
@@ -145,7 +145,7 @@ describe('Step04Coords.vue', () => {
     }
   })
   it('converts from DMS to decimal degrees', () => {
-    const wrapper = shallowMount(Step04Coords, {
+    const wrapper = shallowMount(Coords, {
       localVue,
       store,
       sync: false
