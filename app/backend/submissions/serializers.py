@@ -210,7 +210,7 @@ class WellSubmissionSerializerBase(serializers.ModelSerializer):
         for key, value in foreign_keys_data.items():
             if value:
                 for data in value:
-                    foreign_keys[key].objects.create(activity_submission=instance, **data)
+                    thing = foreign_keys[key].objects.create(activity_submission=instance, **data)
         # Update the well record.
         stacker = wells.stack.StackWells()
         stacker.process(instance.filing_number)
@@ -225,12 +225,14 @@ class WellSubmissionStackerSerializer(WellSubmissionSerializerBase):
     casing_set = CasingSerializer(many=True, required=False)
     screen_set = ScreenSerializer(many=True, required=False)
     linerperforation_set = LinerPerforationSerializer(many=True, required=False)
+    decommission_description_set = DecommissionDescriptionSerializer(many=True, required=False)
 
     def get_foreign_keys(self):
         return {
             'casing_set': Casing,
             'screen_set': Screen,
             'linerperforation_set': LinerPerforation,
+            'decommission_description_set': DecommissionDescription
             }
 
     class Meta:
@@ -256,6 +258,7 @@ class WellConstructionSubmissionSerializer(WellSubmissionSerializerBase):
         model = ActivitySubmission
         fields = CONSTRUCTION_FIELDS
         extra_kwargs = {
+            # TODO: reference appropriate serializer as above
             'lithologydescription_set': {'required': False},
         }
 
@@ -278,6 +281,7 @@ class WellAlterationSubmissionSerializer(WellSubmissionSerializerBase):
         model = ActivitySubmission
         fields = ALTERATION_FIELDS
         extra_kwargs = {
+            # TODO: reference appropriate serializer as above
             'lithologydescription_set': {'required': False},
         }
 
