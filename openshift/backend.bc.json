@@ -150,6 +150,9 @@
             "metadata": {
                 "name": "gwells${NAME_SUFFIX}",
                 "creationTimestamp": null,
+                "labels": {
+                    "appver": "gwells${NAME_SUFFIX}"
+                },
                 "annotations": {
                     "description": "Defines how to build the application"
                 }
