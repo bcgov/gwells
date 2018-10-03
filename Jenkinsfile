@@ -6,7 +6,7 @@ pipeline {
     PROJECT = "moe-gwells-dev"
     TOOLS_PROJECT = "moe-gwells-tools"
     SERVER_ENV = "dev"
-    REPOSITORY = 'https://www.github.com/bcgov/gwells'
+    REPOSITORY = 'https://www.github.com/bcgov/gwells.git'
   }
   agent any
   stages {
@@ -34,7 +34,7 @@ pipeline {
                   "openshift/backend.bc.json",
                   "NAME_SUFFIX=-${SERVER_ENV}-${PR_NUM}",
                   "ENV_NAME=${SERVER_ENV}",
-                  "SOURCE_REPOSITORY_URL=${REPOSITORY}/pull/${CHANGE_ID}"
+                  "SOURCE_REPOSITORY_URL=${REPOSITORY}#pull/${CHANGE_ID}/head"
                 )
                 openshift.create(buildtemplate)
 
