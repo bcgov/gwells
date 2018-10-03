@@ -83,6 +83,7 @@
               id="wellTagNumberSelect"
               :filterable="false"
               :options="wellTagOptions"
+              label="well_tag_number"
               @search="onWellTagSearch">
               <template slot="no-options">
                   Search by well tag number or owner name

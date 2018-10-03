@@ -20,10 +20,18 @@ from gwells.serializers import AuditModelSerializer
 from django.db import transaction
 import wells.stack
 from wells.models import Well, ActivitySubmission
-from wells.serializers import CasingSerializer, ScreenSerializer, LinerPerforationSerializer
+from wells.serializers import (
+    CasingSerializer,
+    DecommissionDescriptionSerializer,
+    ScreenSerializer,
+    LinerPerforationSerializer
+)
 from wells.models import (
     ActivitySubmission,
     Casing,
+    DecommissionDescription,
+    DecommissionMaterialCode,
+    DecommissionMethodCode,
     DevelopmentMethodCode,
     DrillingMethodCode,
     FilterPackMaterialCode,
@@ -146,8 +154,12 @@ WELL_COMPLETION_FIELDS = ("total_depth_drilled",
                           "well_disinfected",)
 WELL_COMMENTS_FIELDS = ("comments",
                         "alternative_specs_submitted",)
-WELL_CLOSURE_DESCRIPTION_FIELDS = ()  # TBD!
-WELL_DECOMMISSION_INFORMATION_FIELDS = ()  # TBD!
+WELL_CLOSURE_DESCRIPTION_FIELDS = ("decommission_reason",
+                                   "decommission_method",
+                                   "sealant_material",
+                                   "backfill_material",
+                                   "decommission_details",)
+WELL_DECOMMISSION_INFORMATION_FIELDS = ('decommission_description_set',)
 
 # "filing_number", Not needed???
 # "activity_submission_guid", Not needed???
@@ -174,6 +186,7 @@ class WellSubmissionListSerializer(serializers.ModelSerializer):
     """ Class used for listing well submissions """
 
     casing_set = CasingSerializer(many=True, required=False)
+    decommission_description_set = DecommissionDescriptionSerializer(many=True, required=False)
     screen_set = ScreenSerializer(many=True, required=False)
     linerperforation_set = LinerPerforationSerializer(many=True, required=False)
 
@@ -277,10 +290,12 @@ class WellDecommissionSubmissionSerializer(WellSubmissionSerializerBase):
     """ Serializes a well decommission submission. """
 
     casing_set = CasingSerializer(many=True, required=False)
+    decommission_description_set = DecommissionDescriptionSerializer(many=True, required=False)
 
     def get_foreign_keys(self):
         return {
-            'casing_set': Casing
+            'casing_set': Casing,
+            'decommission_description_set': DecommissionDescription,
             }
 
     class Meta:
@@ -473,4 +488,20 @@ class WaterQualityColourSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = WaterQualityColour
+        fields = ('code', 'description')
+
+
+class DecommissionMethodCodeSerializer(serializers.ModelSerializer):
+    """ Serializes decommission methods """
+
+    class Meta:
+        model = DecommissionMethodCode
+        fields = ('decommission_method_code', 'description')
+
+
+class DecommissionMaterialCodeSerializer(serializers.ModelSerializer):
+    """ Serializes decommission material codes """
+
+    class Meta:
+        model = DecommissionMaterialCode
         fields = ('code', 'description')

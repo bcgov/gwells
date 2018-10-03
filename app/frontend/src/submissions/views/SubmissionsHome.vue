@@ -35,9 +35,9 @@
 
         <!-- Type of well -->
         <well-type class="my-3"
-          v-if="formStep === 1 || formIsFlat"
+          v-if="currentStep === 'wellType' || (formIsFlat && flatForm.wellType)"
           :wellTagNumber.sync="form.well"
-          :wellActivityType.sync="form.well_activity_type"
+          :wellActivityType.sync="activityType"
           :wellClass.sync="form.well_class"
           :wellSubclass.sync="form.well_subclass"
           :intendedWaterUse.sync="form.intended_water_use"
@@ -64,7 +64,7 @@
 
         <!-- Owner information -->
         <owner class="my-3"
-          v-if="formStep === 3 || formIsFlat"
+          v-if="currentStep === 'wellOwner' || (formIsFlat && flatForm.wellOwner)"
           :ownerFullName.sync="form.owner_full_name"
           :ownerMailingAddress.sync="form.owner_mailing_address"
           :ownerProvinceState.sync="form.owner_province_state"
@@ -76,7 +76,7 @@
 
         <!-- Well location -->
         <location class="my-3"
-          v-if="formStep === 4 || formIsFlat"
+          v-if="currentStep === 'wellLocation' || (formIsFlat && flatForm.wellLocation)"
           :ownerMailingAddress.sync="form.owner_mailing_address"
           :ownerProvinceState.sync="form.owner_province_state"
           :ownerCity.sync="form.owner_city"
@@ -97,14 +97,15 @@
 
         <!-- Coords -->
         <coords class="my-3"
-          v-if="formStep === 5 || formIsFlat"
+          v-if="currentStep === 'wellCoords' || (formIsFlat && flatForm.wellCoords)"
           :latitude.sync="form.latitude"
           :longitude.sync="form.longitude"
         />
 
         <!-- Method of Drilling -->
         <method-of-drilling class="my-3"
-          v-if="formStep === 6 || formIsFlat"
+          v-if="currentStep === 'method' || (formIsFlat && flatForm.method)"
+
           :groundElevation.sync="form.ground_elevation"
           :groundElevationMethod.sync="form.ground_elevation_method"
           :drillingMethod.sync="form.drilling_method"
@@ -112,15 +113,23 @@
           :wellOrientation.sync="form.well_orientation"
         />
 
+        <!-- Closure/Decommission Description -->
+        <closure-description class="my-3"
+          v-if="currentStep === 'closureDescription' || (formIsFlat && flatForm.closureDescription)"
+          :closureDescriptionSet.sync="form.decommission_description_set">
+
+        </closure-description>
+
         <!-- Lithology -->
         <lithology class="my-3"
-          v-if="formStep === 7 || formIsFlat"
+          v-if="currentStep === 'lithology' || (formIsFlat && flatForm.lithology)"
           :lithology.sync="form.lithologydescription_set"
         />
 
         <!-- Casings -->
         <casings class="my-3"
-          v-if="formStep === 8 || formIsFlat"
+          :key="`casingsComponent${componentUpdateTrigger}`"
+          v-if="currentStep === 'casings' || (formIsFlat && flatForm.casings)"
           :casings.sync="form.casing_set"
           :errors="errors"
           :fieldsLoaded="fieldsLoaded"
@@ -128,7 +137,7 @@
 
         <!-- Surface Seal / Backfill Material -->
         <backfill class="my-3"
-          v-if="formStep === 9 || formIsFlat"
+          v-if="currentStep === 'backfill' || (formIsFlat && flatForm.backfill)"
           :surfaceSealMaterial.sync="form.surface_seal_material"
           :surfaceSealDepth.sync="form.surface_seal_depth"
           :surfaceSealThickness.sync="form.surface_seal_thickness"
@@ -139,7 +148,7 @@
 
         <!-- Liner Information -->
         <liner class="my-3"
-          v-if="formStep === 10 || formIsFlat"
+          v-if="currentStep === 'liner' || (formIsFlat && flatForm.liner)"
           :linerMaterial.sync="form.liner_material"
           :linerDiameter.sync="form.liner_diameter"
           :linerThickness.sync="form.liner_thickness"
@@ -152,7 +161,7 @@
 
         <!-- Screens -->
         <screens class="my-3"
-          v-if="formStep === 11 || formIsFlat"
+          v-if="currentStep === 'screens' || (formIsFlat && flatForm.screens)"
           :screenIntakeMethod.sync="form.screen_intake_method"
           :screenType.sync="form.screen_type"
           :screenMaterial.sync="form.screen_material"
@@ -166,7 +175,7 @@
 
         <!-- Filter Pack -->
         <filterPack class="my-3"
-          v-if="formStep === 12 || formIsFlat"
+          v-if="currentStep === 'filterPack' || (formIsFlat && flatForm.filterPack)"
           :filterPackFrom.sync="form.filter_pack_from"
           :filterPackTo.sync="form.filter_pack_to"
           :filterPackThickness.sync="form.filter_pack_thickness"
@@ -176,7 +185,7 @@
 
         <!-- Well Development -->
         <development class="my-3"
-          v-if="formStep === 13 || formIsFlat"
+          v-if="currentStep === 'wellDevelopment' || (formIsFlat && flatForm.wellDevelopment)"
           :developmentMethod.sync="form.development_method"
           :developmentHours.sync="form.development_hours"
           :developmentNotes.sync="form.development_notes"
@@ -184,13 +193,13 @@
 
         <!-- Yield (Production Data) -->
         <yield class="my-3"
-          v-if="formStep === 14 || formIsFlat"
+          v-if="currentStep === 'wellYield' || (formIsFlat && flatForm.wellYield)"
           :productionData.sync="form.production_data_set"
         />
 
         <!-- Water Quality -->
         <water-quality class="my-3"
-          v-if="formStep === 15 || formIsFlat"
+          v-if="currentStep === 'waterQuality' || (formIsFlat && flatForm.waterQuality)"
           :waterQualityCharacteristics.sync="form.water_quality_characteristics"
           :waterQualityColour.sync="form.water_quality_colour"
           :waterQualityOdour.sync="form.water_quality_odour"
@@ -199,7 +208,7 @@
 
         <!-- Well Completion Data -->
         <completion class="my-3"
-          v-if="formStep === 16 || formIsFlat"
+          v-if="currentStep === 'wellCompletion' || (formIsFlat && flatForm.wellCompletion)"
           :totalDepthDrilled.sync="form.total_depth_drilled"
           :finishedWellDepth.sync="form.finished_well_depth"
           :finalCasingStickUp.sync="form.final_casing_stick_up"
@@ -212,9 +221,19 @@
           :wellDisinfected.sync="form.well_disinfected"
         />
 
+        <decommission-information class="my-3"
+          v-if="currentStep === 'decommissionInformation' || (formIsFlat && flatForm.decommissionInformation)"
+          :finishedWellDepth.sync="form.finished_well_depth"
+          :decommissionReason.sync="form.decommission_reason"
+          :decommissionMethod.sync="form.decommission_method"
+          :sealantMaterial.sync="form.sealant_material"
+          :backfillMaterial.sync="form.backfill_material"
+          :decommissionDetails.sync="form.decommission_details"
+        />
+
         <!-- Comments -->
         <comments class="my-3"
-          v-if="formStep === 17 || formIsFlat"
+          v-if="currentStep === 'comments' || (formIsFlat && flatForm.comments)"
           :comments.sync="form.comments"
           :alternativeSpecsSubmitted.sync="form.alternative_specs_submitted"
         />
@@ -317,6 +336,8 @@ import Yield from '@/submissions/components/SubmissionForm/Yield.vue'
 import WaterQuality from '@/submissions/components/SubmissionForm/WaterQuality.vue'
 import Completion from '@/submissions/components/SubmissionForm/Completion.vue'
 import Comments from '@/submissions/components/SubmissionForm/Comments.vue'
+import ClosureDescription from '@/submissions/components/SubmissionForm/ClosureDescription.vue'
+import DecommissionInformation from '@/submissions/components/SubmissionForm/DecommissionInformation.vue'
 export default {
   name: 'SubmissionsHome',
   mixins: [inputFormatMixin],
@@ -337,10 +358,13 @@ export default {
     Yield,
     WaterQuality,
     Completion,
-    Comments
+    Comments,
+    ClosureDescription,
+    DecommissionInformation
   },
   data () {
     return {
+      activityType: 'CON',
       formIsFlat: true,
       units: 'imperial',
       confirmSubmitModal: false,
@@ -350,18 +374,93 @@ export default {
       saveFormSuccess: false,
       loadFormSuccess: false,
       confirmLoadModal: false,
+      // componentUpdateTrigger can be appended to a component's key. Changing this value will cause
+      // these components to be re-created, allowing the created() and mounted() hooks to re-run.
+      componentUpdateTrigger: 0,
       step: 1,
-      maxSteps: 15, // total number of wizard steps
       sliding: null,
       errors: {},
       fieldsLoaded: {},
       form: {},
-      formOptions: {}
+      formOptions: {},
+      formSteps: {
+        CON: [
+          'wellType',
+          'wellOwner',
+          'wellLocation',
+          'wellCoords',
+          'method',
+          'lithology',
+          'casings',
+          'backfill',
+          'liner',
+          'screens',
+          'filterPack',
+          'wellDevelopment',
+          'wellYield',
+          'waterQuality',
+          'wellCompletion',
+          'comments'
+        ],
+        ALT: [
+          'wellType',
+          'wellOwner',
+          'wellLocation',
+          'wellCoords',
+          'method',
+          'lithology',
+          'casings',
+          'backfill',
+          'liner',
+          'screens',
+          'filterPack',
+          'wellDevelopment',
+          'wellYield',
+          'waterQuality',
+          'wellCompletion',
+          'comments'
+        ],
+        DEC: [
+          'wellType',
+          'wellOwner',
+          'wellLocation',
+          'wellCoords',
+          'method',
+          'closureDescription',
+          'casings',
+          'decommissionInformation',
+          'comments'
+        ]
+      }
     }
   },
   computed: {
     formStep () {
+      // the numbered step that the user is on
+      // this value is bound by the length of the list of steps for the
+      // current type of submission
       return (this.step % (this.maxSteps + 1))
+    },
+    maxSteps () {
+      return this.formSteps[this.activityType].length
+    },
+    currentStep () {
+      // the string name of the step corresponding to formStep
+      // this will determine which step is currently displayed
+      return this.formSteps[this.activityType][this.formStep - 1]
+    },
+    flatForm () {
+      // returns an object describing which components should be displayed
+      // when in "flat form" mode
+
+      const activityType = this.activityType
+      const components = {}
+
+      this.formSteps[activityType].forEach((step) => {
+        components[step] = true
+      })
+
+      return components
     }
   },
   methods: {
@@ -370,6 +469,8 @@ export default {
 
       // delete "meta" data (form input that need not be submitted) stored within form object
       delete data.meta
+
+      data['well_activity_type'] = this.activityType
 
       // replace the "person responsible" object with the person's guid
       if (data.driller_responsible && data.driller_responsible.person_guid) {
@@ -401,7 +502,6 @@ export default {
     },
     resetForm () {
       this.form = {
-        well_activity_type: 'CON',
         well: null,
         well_class: '',
         well_subclass: '',
@@ -483,12 +583,19 @@ export default {
         well_disinfected: 'False',
         comments: '',
         alternative_specs_submitted: 'False',
+        decommission_description_set: [],
+        decommission_reason: '',
+        decommission_method: '',
+        sealant_material: '',
+        backfill_material: '',
+        decommission_details: '',
 
         // non-form fields that should be saved with form
         meta: {
           drillerSameAsPersonResponsible: false
         }
       }
+      this.componentUpdateTrigger = Date.now()
     },
     saveForm () {
       // saves a copy of form data locally
@@ -546,11 +653,8 @@ export default {
     }
   },
   watch: {
-    form: {
-      handler () {
-        this.saveStatusReset()
-      },
-      deep: true
+    activityType () {
+      this.resetForm()
     }
   },
   created () {
@@ -561,7 +665,7 @@ export default {
       this.setWellTagNumber(this.$route.params.id)
     }
     if (this.$route.name === 'SubmissionsEdit') {
-      this.form.well_activity_type = 'STAFF_EDIT'
+      this.activityType = 'STAFF_EDIT'
     }
   }
 }

@@ -134,7 +134,7 @@ class StackWells():
         # Iterate through all the submission records
         # Order by work_start_date, and where that's not availble, or null, fall back to the create date
         records = records.order_by(F('work_start_date').asc(nulls_first=True), 'create_date')
-        FOREIGN_KEYS = ('casing_set', 'screen_set', 'linerperforation_set')
+        FOREIGN_KEYS = ('casing_set', 'screen_set', 'linerperforation_set', 'decommission_description_set')
         composite = {}
         for submission in records:
             source_target_map = activity_type_map.get(submission.well_activity_type.code, {})
