@@ -101,11 +101,15 @@ pipeline {
               openshift.apply(deployTemplate)
               openshift.apply(deployDBTemplate)
 
+
+              // TODO: Must tag image to dev here!
+
+
               echo "Waiting for deployment to dev..."
               def newVersion = openshift.selector("dc", "${APP_NAME}-${PR_NUM}").object().status.latestVersion
 
               // find the pods for the newest deployment
-              def pods = openshift.selector('pod', [deployment: "${APP_NAME}-${PR_NUM}-${newVersion}"])
+              def pods = openshift.selector('pod', [deployment: "${APP_NAME}-${SERVER_ENV}-${PR_NUM}-${newVersion}"])
 
               // wait until each container in this deployment's pod reports as ready
               pods.untilEach(1) {
