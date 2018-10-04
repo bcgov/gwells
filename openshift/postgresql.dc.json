@@ -148,7 +148,7 @@
                 "creationTimestamp": null,
                 "labels": {
                     "base-name": "gwells-postgresql",
-                    "appver": "gwells${NAME_SUFFIX}"
+                    "appver": "gwells${LABEL_APPVER}"
                 },
                 "annotations": {}
             },
@@ -179,7 +179,7 @@
                     "metadata": {
                         "labels": {
                             "name": "${DATABASE_SERVICE_NAME}",
-                            "appver": "gwells${NAME_SUFFIX}"
+                            "appver": "gwells${LABEL_APPVER}"
                         }
                     },
                     "spec": {
