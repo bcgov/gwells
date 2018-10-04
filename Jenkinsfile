@@ -61,8 +61,11 @@ pipeline {
             openshift.withProject(TOOLS_PROJECT) {
                 echo "Running unit tests and building images..."
               // start building the base image. In the future, we should only have to do this once. (future improvement)
+
               def baseBuild = openshift.selector("bc", "gwells-python-runtime-${SERVER_ENV}-${PR_NUM}")
               baseBuild.startBuild("--wait")
+
+
               def appBuild = openshift.selector("bc", "${APP_NAME}-${SERVER_ENV}-${PR_NUM}")
               appBuild.startBuild("--wait", "--env=ENABLE_DATA_ENTRY=True")
             }
@@ -77,7 +80,7 @@ pipeline {
       steps {
         script {
           openshift.withCluster() {
-            openshift.withProject(PROJECT) {
+            openshift.withProject(DEV_PROJECT) {
               // if a deployment config does not exist for this pull request, create one
 
               echo "Creating a new deployment config for pull request ${PR_NUM}"
@@ -102,9 +105,8 @@ pipeline {
               openshift.apply(deployTemplate)
               openshift.apply(deployDBTemplate)
 
-
-              // TODO: Must tag image to dev here!
-
+              // promote image to DEV
+              openshift.tag("${TOOLS_PROJECT}/gwells-application:${PR_NUM}", "${DEV_PROJECT}/gwells-${SERVER_ENV}-${PR_NUM}:dev")  // todo: clean up labels/tags
 
               echo "Waiting for deployment to dev..."
               def newVersion = openshift.selector("dc", "${APP_NAME}-${PR_NUM}").object().status.latestVersion
