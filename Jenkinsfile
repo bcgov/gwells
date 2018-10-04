@@ -95,9 +95,9 @@ pipeline {
               def deployDBTemplate = openshift.process("-f",
                 "openshift/postgresql.dc.json",
                 "LABEL_APPVER=-${SERVER_ENV}-${PR_NUM}",
-                "DATABASE_SERVICE_NAME=gwells-pgsql${SERVER_ENV}-${PR_NUM}",
+                "DATABASE_SERVICE_NAME=gwells-pgsql-${SERVER_ENV}-${PR_NUM}",
                 "IMAGE_STREAM_NAMESPACE=''",
-                "IMAGE_STREAM_NAME=gwells-postgresql${SERVER_ENV}-${PR_NUM}",
+                "IMAGE_STREAM_NAME=gwells-postgresql-${SERVER_ENV}-${PR_NUM}",
                 "IMAGE_STREAM_VERSION=${SERVER_ENV}",
                 "POSTGRESQL_DATABASE=gwells",
                 "VOLUME_CAPACITY=1Gi"
@@ -109,7 +109,7 @@ pipeline {
               openshift.tag("${TOOLS_PROJECT}/gwells-application:${PR_NUM}", "${DEV_PROJECT}/gwells-${SERVER_ENV}-${PR_NUM}:dev")  // todo: clean up labels/tags
 
               echo "Waiting for deployment to dev..."
-              def newVersion = openshift.selector("dc", "${APP_NAME}-${PR_NUM}").object().status.latestVersion
+              def newVersion = openshift.selector("dc", "${APP_NAME}-${SERVER_ENV}-${PR_NUM}").object().status.latestVersion
 
               // find the pods for the newest deployment
               def pods = openshift.selector('pod', [deployment: "${APP_NAME}-${SERVER_ENV}-${PR_NUM}-${newVersion}"])
