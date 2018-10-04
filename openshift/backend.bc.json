@@ -19,6 +19,10 @@
       {
         "name": "ENV_NAME",
         "required": true
+      },
+      {
+        "name": "SOURCE_REPOSITORY_REF",
+        "required": true
       }
     ],
     "objects": [
@@ -125,7 +129,7 @@
                 "source": {
                     "contextDir": "openshift/docker-images/gwells-python-runtime",
                     "git": {
-                        "ref": "master",
+                        "ref": "${SOURCE_REPOSITORY_REF}",
                         "uri": "${SOURCE_REPOSITORY_URL}"
                     },
                     "type": "Git"
