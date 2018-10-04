@@ -23,6 +23,10 @@
       {
         "name": "SOURCE_REPOSITORY_REF",
         "required": true
+      },
+      {
+          "name": "APP_IMAGE_TAG",
+          "required": true
       }
     ],
     "objects": [
@@ -82,11 +86,10 @@
             "kind": "ImageStream",
             "apiVersion": "v1",
             "metadata": {
-                "name": "gwells${NAME_SUFFIX}",
+                "name": "gwells-application",
                 "creationTimestamp": null,
                 "labels": {
-                    "base-name":"gwells",
-                    "appver": "gwells${NAME_SUFFIX}"
+                    "base-name":"gwells"
                 },
                 "annotations": {
                     "description": "Keeps track of changes in the application image"
@@ -220,7 +223,7 @@
                 "output": {
                     "to": {
                         "kind": "ImageStreamTag",
-                        "name": "gwells${NAME_SUFFIX}:${ENV_NAME}"
+                        "name": "gwells-application:${APP_IMAGE_TAG}"
                     }
                 },
                 "resources": {

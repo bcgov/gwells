@@ -3,7 +3,7 @@ pipeline {
     // PR_NUM is the pull request number e.g. 'pr-4'
     PR_NUM = "${env.JOB_BASE_NAME}".toLowerCase()
     APP_NAME = "gwells"
-    PROJECT = "moe-gwells-dev"
+    DEV_PROJECT = "moe-gwells-dev"
     TOOLS_PROJECT = "moe-gwells-tools"
     SERVER_ENV = "dev"
     REPOSITORY = 'https://www.github.com/bcgov/gwells.git'
@@ -33,6 +33,7 @@ pipeline {
                 "openshift/backend.bc.json",
                 "NAME_SUFFIX=-${SERVER_ENV}-${PR_NUM}",
                 "ENV_NAME=${SERVER_ENV}",
+                "APP_IMAGE_TAG=${PR_NUM}",
                 "SOURCE_REPOSITORY_URL=${REPOSITORY}",
                 "SOURCE_REPOSITORY_REF=pull/${CHANGE_ID}/head"
               )
@@ -58,7 +59,7 @@ pipeline {
         script {
           openshift.withCluster() {
             openshift.withProject(TOOLS_PROJECT) {
-                echo "Building images..."
+                echo "Running unit tests and building images..."
               // start building the base image. In the future, we should only have to do this once. (future improvement)
               def baseBuild = openshift.selector("bc", "gwells-python-runtime-${SERVER_ENV}-${PR_NUM}")
               baseBuild.startBuild("--wait")
