@@ -63,7 +63,7 @@ pipeline {
               def baseBuild = openshift.selector("bc", "gwells-python-runtime-${SERVER_ENV}-${PR_NUM}")
               baseBuild.startBuild("--wait")
               def appBuild = openshift.selector("bc", "${APP_NAME}-${SERVER_ENV}-${PR_NUM}")
-              appBuild.startBuild("--wait")
+              appBuild.startBuild("--wait", "--env=ENABLE_DATA_ENTRY=True")
             }
           }
         }
@@ -90,6 +90,7 @@ pipeline {
 
               def deployDBTemplate = openshift.process("-f",
                 "openshift/postgresql.dc.json",
+                "LABEL_APPVER=-${SERVER_ENV}-${PR_NUM}",
                 "DATABASE_SERVICE_NAME=gwells-pgsql${SERVER_ENV}-${PR_NUM}",
                 "IMAGE_STREAM_NAMESPACE=''",
                 "IMAGE_STREAM_NAME=gwells-postgresql${SERVER_ENV}-${PR_NUM}",
