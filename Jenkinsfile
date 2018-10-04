@@ -28,22 +28,22 @@ pipeline {
               checkout scm
 
               // create a new build config if one does not already exist
-                echo "Applying build config for pull request ${PR_NUM}"
-                def buildtemplate = openshift.process("-f",
-                  "openshift/backend.bc.json",
-                  "NAME_SUFFIX=-${SERVER_ENV}-${PR_NUM}",
-                  "ENV_NAME=${SERVER_ENV}",
-                  "SOURCE_REPOSITORY_URL=${REPOSITORY}",
-                  "SOURCE_REPOSITORY_REF=pull/${CHANGE_ID}/head"
-                )
-                openshift.apply(buildtemplate)
+              echo "Applying build config for pull request ${PR_NUM}"
+              def buildtemplate = openshift.process("-f",
+                "openshift/backend.bc.json",
+                "NAME_SUFFIX=-${SERVER_ENV}-${PR_NUM}",
+                "ENV_NAME=${SERVER_ENV}",
+                "SOURCE_REPOSITORY_URL=${REPOSITORY}",
+                "SOURCE_REPOSITORY_REF=pull/${CHANGE_ID}/head"
+              )
+              openshift.apply(buildtemplate)
 
-                def dbtemplate = openshift.process("-f",
-                  "openshift/postgresql.bc.json",
-                  "NAME_SUFFIX=-${SERVER_ENV}-${PR_NUM}",
-                  "ENV_NAME=${SERVER_ENV}"
-                )
-                openshift.apply(dbtemplate)
+              def dbtemplate = openshift.process("-f",
+                "openshift/postgresql.bc.json",
+                "NAME_SUFFIX=-${SERVER_ENV}-${PR_NUM}",
+                "ENV_NAME=${SERVER_ENV}"
+              )
+              openshift.apply(dbtemplate)
               
             }
           }
