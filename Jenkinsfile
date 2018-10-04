@@ -28,22 +28,22 @@ pipeline {
               checkout scm
 
               // create a new build config if one does not already exist
-                echo "Applying build config for pull request ${PR_NUM}"
-                def buildtemplate = openshift.process("-f",
-                  "openshift/backend.bc.json",
-                  "NAME_SUFFIX=-${SERVER_ENV}-${PR_NUM}",
-                  "ENV_NAME=${SERVER_ENV}",
-                  "SOURCE_REPOSITORY_URL=${REPOSITORY}",
-                  "SOURCE_REPOSITORY_REF=pull/${CHANGE_ID}/head"
-                )
-                openshift.apply(buildtemplate)
+              echo "Applying build config for pull request ${PR_NUM}"
+              def buildtemplate = openshift.process("-f",
+                "openshift/backend.bc.json",
+                "NAME_SUFFIX=-${SERVER_ENV}-${PR_NUM}",
+                "ENV_NAME=${SERVER_ENV}",
+                "SOURCE_REPOSITORY_URL=${REPOSITORY}",
+                "SOURCE_REPOSITORY_REF=pull/${CHANGE_ID}/head"
+              )
+              openshift.apply(buildtemplate)
 
-                def dbtemplate = openshift.process("-f",
-                  "openshift/postgresql.bc.json",
-                  "NAME_SUFFIX=-${SERVER_ENV}-${PR_NUM}",
-                  "ENV_NAME=${SERVER_ENV}"
-                )
-                openshift.apply(dbtemplate)
+              def dbtemplate = openshift.process("-f",
+                "openshift/postgresql.bc.json",
+                "NAME_SUFFIX=-${SERVER_ENV}-${PR_NUM}",
+                "ENV_NAME=${SERVER_ENV}"
+              )
+              openshift.apply(dbtemplate)
 
             }
           }
@@ -120,12 +120,3 @@ pipeline {
     }
   }
 }
-<<<<<<< HEAD
-
-// ERROR: process returned an error;
-// {reference={}, err=error: unable to process template
-//   Required value: template.parameters[1]: parameter BUILD_ENV_NAME is required and must be specified, verb=process, cmd=oc --server=https://172.50.0.1:443 --certificate-authority=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt --namespace=moe-gwells-dev --token=XXXXX process -f openshift/backend.dc.json NAME_SUFFIX=-dev-pr-935 BUILD_ENV_NAME= ENV_NAME=dev HOST=gwells-dev-pr-935.pathfinder.gov.bc.ca -o=json , out=, status=1}
-
-// Finished: FAILURE
-=======
->>>>>>> add missing env name
