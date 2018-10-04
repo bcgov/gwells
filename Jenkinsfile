@@ -34,7 +34,7 @@ pipeline {
                   "openshift/backend.bc.json",
                   "NAME_SUFFIX=-${SERVER_ENV}-${PR_NUM}",
                   "ENV_NAME=${SERVER_ENV}",
-                  "SOURCE_REPOSITORY_URL=${REPOSITORY}#pull/${CHANGE_ID}/head"
+                  "SOURCE_REPOSITORY_URL=${REPOSITORY}"
                 )
                 openshift.create(buildtemplate)
 
