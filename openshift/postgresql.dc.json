@@ -64,6 +64,10 @@
             "name": "IMAGE_STREAM_VERSION",
             "required": true,
             "value": "9.5"
+        },
+        {
+            "name": "LABEL_APPVER",
+            "required": true
         }
     ],
     "objects": [
