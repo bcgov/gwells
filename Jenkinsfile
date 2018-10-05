@@ -149,8 +149,7 @@ pipeline {
               }
               echo "Deployment successful!"
               echo "Loading fixtures"
-              pods[0].exec("
-                bash -c '\
+              pods[0].exec("bash -c '\
                 cd /opt/app-root/src/backend; \
                 python manage.py loaddata \
                   gwells-codetables.json \
@@ -159,8 +158,7 @@ pipeline {
                   aquifers.json \
                   wellsearch.json.gz \
                   registries.json; \
-                python manage.py createinitialrevisions
-              '")
+                python manage.py createinitialrevisions'")
             }
           }
         }
