@@ -67,25 +67,6 @@
             "kind": "ImageStream",
             "apiVersion": "v1",
             "metadata": {
-                "name": "gwells-python-runtime${NAME_SUFFIX}",
-                "creationTimestamp": null,
-                "labels": {
-                    "appver": "gwells${NAME_SUFFIX}"
-                },
-                "annotations": {
-                    "description": "Python Runtime Image"
-                }
-            },
-            "spec": {
-                "lookupPolicy": {
-                    "local": false
-                }
-            }
-        },
-        {
-            "kind": "ImageStream",
-            "apiVersion": "v1",
-            "metadata": {
                 "name": "gwells-application",
                 "creationTimestamp": null,
                 "labels": {
@@ -100,62 +81,6 @@
                     "local": false
                 },
                 "tags":[ ]
-            }
-        },
-        {
-            "kind": "BuildConfig",
-            "apiVersion": "v1",
-            "metadata": {
-                "name": "gwells-python-runtime${NAME_SUFFIX}",
-                "creationTimestamp": null,
-                "labels": {
-                    "build": "gwells-python-runtime",
-                    "appver": "gwells${NAME_SUFFIX}"
-                },
-                "annotations": {
-
-                }
-            },
-            "spec": {
-                "successfulBuildsHistoryLimit": 3,
-                "failedBuildsHistoryLimit": 3,
-                "triggers": [
-                    {
-                        "type": "ImageChange",
-                        "imageChange": {}
-                    },
-                    {
-                        "type": "ConfigChange"
-                    }
-                ],
-                "runPolicy": "SerialLatestOnly",
-                "source": {
-                    "contextDir": "./",
-                    "git": {
-                        "ref": "${SOURCE_REPOSITORY_REF}",
-                        "uri": "${SOURCE_REPOSITORY_URL}"
-                    },
-                    "type": "Git"
-                },
-                "strategy": {
-                    "type": "Docker",
-                    "dockerStrategy": {
-                        "from": {
-                            "kind": "ImageStreamTag",
-                            "name": "gwells-python-36-rhel7:3.6"
-                        },
-                        "dockerfilePath": "openshift/docker-images/gwells-python-runtime/Dockerfile"
-                    }
-                },
-                "output": {
-                    "to": {
-                        "kind": "ImageStreamTag",
-                        "name": "gwells-python-runtime${NAME_SUFFIX}:${ENV_NAME}"
-                    }
-                },
-                "resources": {},
-                "postCommit": {},
-                "nodeSelector": null
             }
         },
         {
@@ -196,7 +121,7 @@
                     "sourceStrategy": {
                         "from": {
                             "kind": "ImageStreamTag",
-                            "name": "gwells-python-runtime${NAME_SUFFIX}:${ENV_NAME}"
+                            "name": "gwells-python-36-rhel7:3.6"
                         },
                         "env": [
                             {
