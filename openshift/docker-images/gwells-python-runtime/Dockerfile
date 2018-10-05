@@ -1,6 +1,6 @@
 FROM openshift/python:3.6
 WORKDIR /packages
-ADD . app/frontend/package.json
+ADD . ../../../app/frontend/package.json
 ADD . app/backend/requirements.txt
 RUN source scl_source enable rh-python36 && \
 source ${APP_ROOT}/bin/activate && \
