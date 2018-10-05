@@ -18,7 +18,7 @@ pipeline {
       }
     }
 
-    // create a new environment for this pull request
+    // create a new dev environment for this pull request
     // e.g. gwells-dev-pr-999
     stage('Initialize new DEV environment') {
       steps {
@@ -37,13 +37,15 @@ pipeline {
                 "SOURCE_REPOSITORY_URL=${REPOSITORY}",
                 "SOURCE_REPOSITORY_REF=pull/${CHANGE_ID}/head"
               )
-              openshift.apply(buildtemplate)
 
               def dbtemplate = openshift.process("-f",
                 "openshift/postgresql.bc.json",
                 "NAME_SUFFIX=-${SERVER_ENV}-${PR_NUM}",
                 "ENV_NAME=${SERVER_ENV}"
               )
+
+              // apply the template objects to create and/or modify objects in the dev environment
+              openshift.apply(buildtemplate)
               openshift.apply(dbtemplate)
 
             }
@@ -59,14 +61,17 @@ pipeline {
         script {
           openshift.withCluster() {
             openshift.withProject(TOOLS_PROJECT) {
-                echo "Running unit tests and building images..."
-              // start building the base image. In the future, we should only have to do this once. (future improvement)
+              echo "Running unit tests and building images..."
+              echo "This may take several minutes. Logs are not forwarded to Jenkins by default (at this time)."
+              echo "Additional logs can be found by monitoring builds in ${TOOLS_PROJECT}"
 
+              // start building the base image. In the future, we should only have to do this once. (future improvement)
               def baseBuild = openshift.selector("bc", "gwells-python-runtime-${SERVER_ENV}-${PR_NUM}")
               baseBuild.startBuild("--wait")
 
 
               def appBuild = openshift.selector("bc", "${APP_NAME}-${SERVER_ENV}-${PR_NUM}")
+              // ENABLE_DATA_ENTRY=True is temporarily set during testing because False currently leads to a failing unit test
               appBuild.startBuild("--wait", "--env=ENABLE_DATA_ENTRY=True")
             }
           }
@@ -82,7 +87,7 @@ pipeline {
           openshift.withCluster() {
             openshift.withProject(DEV_PROJECT) {
 
-              // process template. deployTemplate will contain a set of models as defined in the template
+              // process templates. deployTemplate and deployDBTemplate will contain sets of model specs
               echo "Creating a new deployment config for pull request ${PR_NUM}"
               def deployTemplate = openshift.process("-f",
                 "openshift/backend.dc.json",
@@ -91,7 +96,6 @@ pipeline {
                 "ENV_NAME=${SERVER_ENV}",
                 "HOST=${APP_NAME}-${SERVER_ENV}-${PR_NUM}.pathfinder.gov.bc.ca",
               )
-
 
               def deployDBTemplate = openshift.process("-f",
                 "openshift/postgresql.dc.json",
@@ -106,35 +110,44 @@ pipeline {
 
               // some objects need to be copied from a base secret or configmap
               // these objects have an annotation "as-copy-of" in their object spec (e.g. an object in backend.dc.json)
+              echo "Creating configmaps and secrets objects"
               List newObjectCopies = []
 
               for (o in (deployTemplate + deployDBTemplate)) {
 
                 // only perform this operation on objects with 'as-copy-of'
-                def sourceName = o.metadata.annotations['as-copy-of']
-                if (sourceName != null && sourceName.length() > 0) {
+                def sourceName = o.metadata && o.metadata.annotations && o.metadata.annotations['as-copy-of']
+                if (sourceName && sourceName.length() > 0) {
                   def selector = openshift.selector("${o.kind}/${sourceName}")
                   if (selector.count() == 1) {
 
                     // create a copy of the object and add it to the new list of objects to be applied
                     Map copiedModel = selector.object(exportable:true)
                     copiedModel.metadata.name = o.metadata.name
+                    echo "Copying ${o.kind} ${o.metadata.name}"
                     newObjectCopies.add(copiedModel)
                   }
                 }
               }
 
+              // apply the templates, which will create new objects or modify existing ones as necessary.
+              // the copies of base objects (secrets, configmaps) are also applied.
               openshift.apply(deployTemplate)
               openshift.apply(deployDBTemplate)
-              openshift.apply(newObjectCopies).label(['app':"gwells-${SERVER_ENV}-${PR_NUM}", 'app-name':${APP_NAME}, 'env-name':${SERVER_ENV}], "--overwrite")
+              openshift.apply(newObjectCopies).label(['app':"gwells-${SERVER_ENV}-${PR_NUM}", 'app-name':"${APP_NAME}", 'env-name':"${SERVER_ENV}"], "--overwrite")
+              echo "Successfully applied deployment configs for ${PR_NUM}"
 
-              // promote image to DEV
+              // promote the newly built image to DEV
+              echo "Tagging new image to DEV imagestream."
               openshift.tag("${TOOLS_PROJECT}/gwells-application:${PR_NUM}", "${DEV_PROJECT}/gwells-${SERVER_ENV}-${PR_NUM}:dev")  // todo: clean up labels/tags
+<<<<<<< HEAD
 
+=======
+
+              // monitor the deployment status and wait until deployment is successful
+>>>>>>> try caching build deps
               echo "Waiting for deployment to dev..."
               def newVersion = openshift.selector("dc", "${APP_NAME}-${SERVER_ENV}-${PR_NUM}").object().status.latestVersion
-
-              // find the pods for the newest deployment
               def pods = openshift.selector('pod', [deployment: "${APP_NAME}-${SERVER_ENV}-${PR_NUM}-${newVersion}"])
 
               // wait until each container in this deployment's pod reports as ready
