@@ -34,9 +34,9 @@
             "kind": "ImageStream",
             "apiVersion": "v1",
             "metadata": {
-                "name": "gwells-python-36-rhel7${NAME_SUFFIX}",
+                "name": "gwells-python-36-rhel7",
                 "labels": {
-                    "appver": "gwells${NAME_SUFFIX}"
+                    "appver": "gwells-base-image"
                 },
                 "creationTimestamp": null,
                 "annotations": {
@@ -142,7 +142,7 @@
                     "dockerStrategy": {
                         "from": {
                             "kind": "ImageStreamTag",
-                            "name": "gwells-python-36-rhel7${NAME_SUFFIX}:3.6"
+                            "name": "gwells-python-36-rhel7:3.6"
                         },
                         "dockerfilePath": "openshift/docker-images/gwells-python-runtime/Dockerfile"
                     }
