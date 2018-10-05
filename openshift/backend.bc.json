@@ -130,7 +130,7 @@
                 ],
                 "runPolicy": "SerialLatestOnly",
                 "source": {
-                    "contextDir": "openshift/docker-images/gwells-python-runtime",
+                    "contextDir": "./",
                     "git": {
                         "ref": "${SOURCE_REPOSITORY_REF}",
                         "uri": "${SOURCE_REPOSITORY_URL}"
@@ -143,7 +143,8 @@
                         "from": {
                             "kind": "ImageStreamTag",
                             "name": "gwells-python-36-rhel7${NAME_SUFFIX}:3.6"
-                        }
+                        },
+                        "dockerfilePath": "openshift/docker-images/gwells-python-runtime/Dockerfile"
                     }
                 },
                 "output": {
