@@ -12,6 +12,7 @@
                 id="personResponsibleSelect"
                 :filterable="false"
                 :options="personOptions"
+                label="name"
                 v-model="personResponsibleInput"
                 @search="onPersonSearch">
               <template slot="no-options">

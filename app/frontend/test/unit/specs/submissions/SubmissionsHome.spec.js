@@ -2,6 +2,7 @@ import { shallowMount, createLocalVue } from '@vue/test-utils'
 import Vuex from 'vuex'
 import VueRouter from 'vue-router'
 import SubmissionsHome from '@/submissions/views/SubmissionsHome.vue'
+import Yield from '@/submissions/components/SubmissionForm/Yield.vue'
 
 import { FETCH_CODES } from '@/submissions/store/actions.types.js'
 
@@ -47,5 +48,17 @@ describe('SubmissionsHome.vue', () => {
       sync: false
     })
     expect(actions[FETCH_CODES]).toHaveBeenCalled()
+  })
+
+  it('renders components based on the activity selected (Yield exists on construction report, not on decommission report)', () => {
+    const wrapper = shallowMount(SubmissionsHome, {
+      localVue,
+      store,
+      router
+    })
+    wrapper.setData({ activityType: 'CON' })
+    expect(wrapper.find(Yield).exists()).toBe(true)
+    wrapper.setData({ activityType: 'DEC' })
+    expect(wrapper.find(Yield).exists()).toBe(false)
   })
 })
