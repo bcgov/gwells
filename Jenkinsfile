@@ -81,8 +81,8 @@ pipeline {
         script {
           openshift.withCluster() {
             openshift.withProject(DEV_PROJECT) {
-              // if a deployment config does not exist for this pull request, create one
 
+              // process template. deployTemplate will contain a set of models as defined in the template
               echo "Creating a new deployment config for pull request ${PR_NUM}"
               def deployTemplate = openshift.process("-f",
                 "openshift/backend.dc.json",
@@ -91,6 +91,7 @@ pipeline {
                 "ENV_NAME=${SERVER_ENV}",
                 "HOST=${APP_NAME}-${SERVER_ENV}-${PR_NUM}.pathfinder.gov.bc.ca",
               )
+
 
               def deployDBTemplate = openshift.process("-f",
                 "openshift/postgresql.dc.json",
@@ -102,8 +103,30 @@ pipeline {
                 "POSTGRESQL_DATABASE=gwells",
                 "VOLUME_CAPACITY=1Gi"
               )
+
+              // some objects need to be copied from a base secret or configmap
+              // these objects have an annotation "as-copy-of" in their object spec (e.g. an object in backend.dc.json)
+              List newObjectCopies = []
+
+              for (o in (deployTemplate + deployDBTemplate)) {
+
+                // only perform this operation on objects with 'as-copy-of'
+                def sourceName = o.metadata.annotations['as-copy-of']
+                if (sourceName != null && sourceName.length() > 0) {
+                  def selector = openshift.selector("${o.kind}/${sourceName}")
+                  if (selector.count() == 1) {
+
+                    // create a copy of the object and add it to the new list of objects to be applied
+                    Map copiedModel = selector.object(exportable:true)
+                    copiedModel.metadata.name = o.metadata.name
+                    newObjectCopies.add(copiedModel)
+                  }
+                }
+              }
+
               openshift.apply(deployTemplate)
               openshift.apply(deployDBTemplate)
+              openshift.apply(newObjectCopies).label(['app':"gwells-${SERVER_ENV}-${PR_NUM}", 'app-name':${APP_NAME}, 'env-name':${SERVER_ENV}], "--overwrite")
 
               // promote image to DEV
               openshift.tag("${TOOLS_PROJECT}/gwells-application:${PR_NUM}", "${DEV_PROJECT}/gwells-${SERVER_ENV}-${PR_NUM}:dev")  // todo: clean up labels/tags
