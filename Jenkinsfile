@@ -65,15 +65,12 @@ pipeline {
               echo "This may take several minutes. Logs are not forwarded to Jenkins by default (at this time)."
               echo "Additional logs can be found by monitoring builds in ${TOOLS_PROJECT}"
 
-              // start building the base image. In the future, we should only have to do this once. (future improvement)
-<<<<<<< HEAD
-
-=======
->>>>>>> try caching build deps
               def baseBuild = openshift.selector("bc", "gwells-python-runtime-${SERVER_ENV}-${PR_NUM}")
               baseBuild.startBuild("--wait")
 
 
+=======
+>>>>>>> remove extra build step
               def appBuild = openshift.selector("bc", "${APP_NAME}-${SERVER_ENV}-${PR_NUM}")
               // ENABLE_DATA_ENTRY=True is temporarily set during testing because False currently leads to a failing unit test
               appBuild.startBuild("--wait", "--env=ENABLE_DATA_ENTRY=True")
