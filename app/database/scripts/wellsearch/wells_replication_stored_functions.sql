@@ -984,6 +984,15 @@ BEGIN
 
   raise notice '...gw_aquifer_attrs data updated from mapping ';
 
+  UPDATE well
+  SET    aquifer_id = aws.aquifer_id
+  FROM   wells.gw_aquifer_wells aws,
+         wells.wells_wells well_legacy -- to get well_tag_number
+  WHERE  well_legacy.well_id = aws.well_id
+  AND    well_legacy.well_tag_number = well.well_tag_number;
+
+  raise notice '...well data updated from gw_aquifer_wells';
+
   INSERT INTO hydraulic_property(
     hydraulic_property_guid  
   ,storativity              
@@ -993,18 +1002,18 @@ BEGIN
   ,create_user,create_date,update_user,update_date
   )
   SELECT gen_random_uuid()
-  ,gw.storativity
-  ,gw.transmissivity
-  ,gw.aquifer_vulnerability_index
+  ,aws.storativity
+  ,aws.transmissivity
+  ,aws.aquifer_vulnerability_index
   ,well.well_tag_number
-  ,gw.who_created
-  ,gw.when_created
-  ,coalesce(gw.who_updated, gw.who_created)
-  ,coalesce(gw.when_updated,gw.when_created)
-  FROM wells.gw_aquifer_wells gw,
+  ,aws.who_created
+  ,aws.when_created
+  ,coalesce(aws.who_updated, aws.who_created)
+  ,coalesce(aws.when_updated,aws.when_created)
+  FROM wells.gw_aquifer_wells aws,
       wells.wells_wells well_legacy, -- to get well_tag_number
       well well -- only for wells in GWELLS
-  WHERE  well_legacy.well_id = gw.well_id
+  WHERE  well_legacy.well_id = aws.well_id
   AND    well_legacy.well_tag_number = well.well_tag_number;
 
   raise notice '...hydraulic_property data imported';
