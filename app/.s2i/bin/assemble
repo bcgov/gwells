@@ -28,6 +28,9 @@ shopt -s dotglob
 echo "---> Installing application source ..."
 mv /tmp/src/* ./
 
+echo "---> Copying node modules"
+mv /packages/node_modules ./app/frontend/
+
 if [[ ! -z "$UPGRADE_PIP_TO_LATEST" || ! -z "$ENABLE_PIPENV" ]]; then
   echo "---> Upgrading pip to latest version ..."
   pip install -U pip setuptools wheel
@@ -54,7 +57,6 @@ fi
 
 cd ..
 cd frontend
-npm install
 # npm run build
 # Run unit tests in build stage with the code below
 echo "--> testing and building frontend files"
