@@ -136,8 +136,8 @@ pipeline {
 
               // apply the templates, which will create new objects or modify existing ones as necessary.
               // the copies of base objects (secrets, configmaps) are also applied.
-              openshift.apply(deployTemplate)
-              openshift.apply(deployDBTemplate)
+              openshift.apply(deployTemplate).label(['app':"gwells-${SERVER_ENV}-${PR_NUM}", 'app-name':"${APP_NAME}", 'env-name':"${SERVER_ENV}"], "--overwrite")
+              openshift.apply(deployDBTemplate).label(['app':"gwells-${SERVER_ENV}-${PR_NUM}", 'app-name':"${APP_NAME}", 'env-name':"${SERVER_ENV}"], "--overwrite")
               openshift.apply(newObjectCopies).label(['app':"gwells-${SERVER_ENV}-${PR_NUM}", 'app-name':"${APP_NAME}", 'env-name':"${SERVER_ENV}"], "--overwrite")
               echo "Successfully applied deployment configs for ${PR_NUM}"
 
