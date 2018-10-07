@@ -376,7 +376,7 @@ pipeline {
 
               // Images are then tagged into the target environment namespace (test or prod)
               openshift.tag("${TOOLS_PROJECT}/gwells-application:${TEST_SUFFIX}", "${TEST_PROJECT}/gwells-${TEST_SUFFIX}:${TEST_SUFFIX}")  // todo: clean up labels/tags
-              openshift.tag("${TOOLS_PROJECT}/gwells-postgresql:${TEST_SUFFIX}", "${TEST_PROJECT}/gwells-${TEST_SUFFIX}:${TEST_SUFFIX}")  // todo: clean up labels/tags
+              openshift.tag("${TOOLS_PROJECT}/gwells-postgresql:${TEST_SUFFIX}", "${TEST_PROJECT}/gwells-postgresql-${TEST_SUFFIX}:${TEST_SUFFIX}")  // todo: clean up labels/tags
 
               // Clean up development tags (e.g. PR-999) with the flag -d
               // this will allow old images that were not promoted to TEST/PROD to be cleaned up
