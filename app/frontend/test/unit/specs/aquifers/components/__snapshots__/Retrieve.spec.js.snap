@@ -21,11 +21,15 @@ exports[`Retrieve Component Matches the snapshot 1`] = `
       <div
         class="col-auto"
       >
-        <a
-          class="print fa fa-print fa-lg d-print-none"
-          href="#"
-          title="Print"
-        />
+        <button
+          class="btn btn-secondary"
+          type="button"
+        >
+          <span
+            class="fa fa-print"
+            title="Print"
+          />
+        </button>
       </div>
     </div>
      

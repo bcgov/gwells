@@ -18,9 +18,9 @@
       <b-row class="border-bottom mb-3">
         <b-col><h5>Aquifer Summary</h5></b-col>
         <b-col cols="auto">
-          <a href="#" title="Print"
-           v-on:click.prevent="print()"
-           class="print fa fa-print fa-lg d-print-none"/>
+            <b-button variant="secondary" v-on:click.prevent="print()">
+              <span title="Print" class="fa fa-print"/>
+            </b-button>
         </b-col>
       </b-row>
 
