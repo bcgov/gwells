@@ -64,20 +64,20 @@ import ApiService from '@/common/services/ApiService.js'
 
 export default {
   props: ['id'],
-  created() { this.fetch() },
-  data() {
+  created () { this.fetch() },
+  data () {
     return {
       record: {}
     }
   },
   watch: {
-    id() { this.fetch() }
+    id () { this.fetch() }
   },
   methods: {
-    print() {
+    print () {
       window.print()
     },
-    fetch(id = this.id) {
+    fetch (id = this.id) {
       ApiService.query(`aquifers/${id}`)
         .then((response) => {
           this.record = response.data

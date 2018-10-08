@@ -59,7 +59,7 @@
 import ApiService from '@/common/services/ApiService.js'
 
 export default {
-  data() {
+  data () {
     return {
       query: {},
       response: {},
@@ -80,15 +80,15 @@ export default {
     }
   },
   computed: {
-    aquiferList() { return this.response && this.response.results },
-    emptyResults() { return this.response && this.response.count == 0 }
+    aquiferList () { return this.response && this.response.results },
+    emptyResults () { return this.response && this.response.count === 0 }
   },
   methods: {
-    reset() {
+    reset () {
       this.response = {}
       this.query = {}
     },
-    search() {
+    search () {
       ApiService.query('aquifers/', this.query)
         .then((response) => {
           this.response = response.data
