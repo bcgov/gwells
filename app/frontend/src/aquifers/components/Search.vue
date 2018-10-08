@@ -75,21 +75,20 @@ export default {
     }
   },
   computed: {
-    ...mapGetters([
-      'aquiferList',
-      'emptyResults'
-    ])
+    aquiferList () { return this.response && this.response.results },
+    emptyResults () { return this.response && this.response.count === 0 }
   },
   methods: {
-    ...mapActions({
-      search: SEARCH_AQUIFERS,
-      resetResults: RESET_RESULTS
-    }),
     reset () {
-      this.resetResults()
-      this.searchParams = {}
+      this.response = {}
+      this.query = {}
     },
-    search () { this.$store.dispatch(SEARCH_AQUIFERS) }
+    search () {
+      ApiService.query('aquifers/', this.query)
+        .then((response) => {
+          this.response = response.data
+        })
+    }
   }
 }
 </script>
