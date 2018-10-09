@@ -1,17 +1,15 @@
 <template>
   <div class="card">
     <div class="card-body">
-      <h4 class="card-title">
-        <b-row>
-          <b-col lg="8">Well Activity Submission</b-col>
-          <b-col lg="4" class="text-right">
-            <b-btn size="sm" :variant="`${formIsFlat ? 'primary':'outline-primary'}`" @click="formIsFlat=true">Flat form</b-btn>
-            <b-btn size="sm" :variant="`${formIsFlat ? 'outline-primary':'primary'}`" @click="formIsFlat=false">Wizard</b-btn>
-            <b-btn size="sm" variant="outline-primary" @click="formIsFlat=false;preview=true">Preview</b-btn>
-          </b-col>
-        </b-row>
-      </h4>
-      <p>Submit activity on a well. <a href="/gwells/">Try a search</a> to see if the well exists in the system before submitting a report.</p>
+      <h1 class="card-title">Well Activity Submission</h1>
+      <b-row>
+        <b-col cols="12" lg="8"><p>Submit activity on a well. <a href="/gwells/">Try a search</a> to see if the well exists in the system before submitting a report.</p></b-col>
+        <b-col cols="12" lg="4" class="text-right">
+          <b-btn size="sm" :variant="`${formIsFlat ? 'primary':'outline-primary'}`" @click="formIsFlat=true">Flat form</b-btn>
+          <b-btn size="sm" :variant="`${formIsFlat ? 'outline-primary':'primary'}`" @click="formIsFlat=false">Wizard</b-btn>
+          <b-btn size="sm" :variant="`${preview ? 'primary':'outline-primary'}`" @click="preview=!preview">Preview</b-btn>
+        </b-col>
+      </b-row>
 
       <!-- Activity submission form -->
       <b-form @submit.prevent="confirmSubmit">
@@ -53,7 +51,7 @@
 
         <!-- Person responsible for work -->
         <person-responsible class="my-3"
-          v-if="formStep === 2 || formIsFlat"
+          v-if="formStep === 'personResponsible' || formIsFlat && flatForm.personResponsible"
           :drillerName.sync="form.driller_name"
           :consultantName.sync="form.consultant_name"
           :consultantCompany.sync="form.consultant_company"
@@ -239,6 +237,9 @@
           :alternativeSpecsSubmitted.sync="form.alternative_specs_submitted"
         />
 
+        <!-- Preview -->
+        <submission-preview/>
+
         <!-- Back / Next / Submit controls -->
         <b-row class="mt-5">
           <b-col v-if="!formIsFlat">
@@ -339,6 +340,7 @@ import Completion from '@/submissions/components/SubmissionForm/Completion.vue'
 import Comments from '@/submissions/components/SubmissionForm/Comments.vue'
 import ClosureDescription from '@/submissions/components/SubmissionForm/ClosureDescription.vue'
 import DecommissionInformation from '@/submissions/components/SubmissionForm/DecommissionInformation.vue'
+import SubmissionPreview from '@/submissions/components/SubmissionPreview/SubmissionPreview.vue'
 export default {
   name: 'SubmissionsHome',
   mixins: [inputFormatMixin],
@@ -361,12 +363,14 @@ export default {
     Completion,
     Comments,
     ClosureDescription,
-    DecommissionInformation
+    DecommissionInformation,
+    SubmissionPreview
   },
   data () {
     return {
       activityType: 'CON',
       formIsFlat: true,
+      preview: false,
       units: 'imperial',
       confirmSubmitModal: false,
       formSubmitLoading: false,
@@ -388,6 +392,7 @@ export default {
         CON: [
           'wellType',
           'wellOwner',
+          'personResponsible',
           'wellLocation',
           'wellCoords',
           'method',
@@ -406,6 +411,7 @@ export default {
         ALT: [
           'wellType',
           'wellOwner',
+          'personResponsible',
           'wellLocation',
           'wellCoords',
           'method',
@@ -424,6 +430,7 @@ export default {
         DEC: [
           'wellType',
           'wellOwner',
+          'personResponsible',
           'wellLocation',
           'wellCoords',
           'method',
@@ -448,7 +455,7 @@ export default {
     currentStep () {
       // the string name of the step corresponding to formStep
       // this will determine which step is currently displayed
-      return this.formSteps[this.activityType][this.formStep - 1]
+      return this.preview ? 'preview' : this.formSteps[this.activityType][this.formStep - 1]
     },
     flatForm () {
       // returns an object describing which components should be displayed
@@ -461,7 +468,7 @@ export default {
         components[step] = true
       })
 
-      return components
+      return this.preview ? {preview: true} : components
     }
   },
   methods: {
