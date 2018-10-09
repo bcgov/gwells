@@ -7,6 +7,7 @@
           <b-col lg="4" class="text-right">
             <b-btn size="sm" :variant="`${formIsFlat ? 'primary':'outline-primary'}`" @click="formIsFlat=true">Flat form</b-btn>
             <b-btn size="sm" :variant="`${formIsFlat ? 'outline-primary':'primary'}`" @click="formIsFlat=false">Wizard</b-btn>
+            <b-btn size="sm" variant="outline-primary" @click="formIsFlat=false;preview=true">Preview</b-btn>
           </b-col>
         </b-row>
       </h4>
