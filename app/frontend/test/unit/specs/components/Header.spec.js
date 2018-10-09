@@ -9,13 +9,6 @@ describe('Header.vue', () => {
   let getters
   let store
 
-  beforeEach(() => {
-    getters = {
-      config: () => ({ enable_aquifers_search: true })
-    }
-
-    store = new Vuex.Store({ getters })
-  })
   it('the show computed property allows disabling links', () => {
     getters = {
       config: () => ({ enable_aquifers_search: false })
