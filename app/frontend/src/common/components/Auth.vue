@@ -21,13 +21,13 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['keycloak'])
+    ...mapGetters(['keycloak', 'config'])
   },
   methods: {
     keyCloakLogin () {
       if (this.keycloak) {
         this.keycloak.init().success(() => {
-          this.keycloak.login({ idpHint: 'idir' }).success((authenticated) => {
+          this.keycloak.login({ idpHint: this.config.sso_idp_hint }).success((authenticated) => {
             if (authenticated) {
               ApiService.authHeader('JWT', this.keycloak.token)
               localStorage.setItem('token', this.keycloak.token)
