@@ -29,6 +29,7 @@ from aquifers.permissions import HasAquiferEditRoleOrReadOnly
 class AquiferRetrieveUpdateAPIView(RetrieveUpdateAPIView):
     """List aquifers
     get: return details of aquifers
+    patch: update aquifer
     """
 
     permission_classes = (HasAquiferEditRoleOrReadOnly,)
@@ -83,7 +84,6 @@ class AquiferSubtypeListAPIView(ListAPIView):
     queryset = models.AquiferSubtype.objects.all()
     serializer_class = serializers.AquiferSubtypeSerializer
 
-
 class AquiferProductivityListAPIView(ListAPIView):
     """List aquifer productivity codes
     get: return a list of aquifer productivity codes
@@ -91,7 +91,6 @@ class AquiferProductivityListAPIView(ListAPIView):
 
     queryset = models.AquiferProductivity.objects.all()
     serializer_class = serializers.AquiferProductivitySerializer
-
 
 class AquiferDemandListAPIView(ListAPIView):
     """List aquifer demand codes
@@ -101,7 +100,6 @@ class AquiferDemandListAPIView(ListAPIView):
     queryset = models.AquiferDemand.objects.all()
     serializer_class = serializers.AquiferDemandSerializer
 
-
 class WaterUseListAPIView(ListAPIView):
     """List Water Use Codes
     get: return a list of water use codes
@@ -109,7 +107,6 @@ class WaterUseListAPIView(ListAPIView):
 
     queryset = models.WaterUse.objects.all()
     serializer_class = serializers.WaterUseSerializer
-
 
 class AquiferHomeView(TemplateView):
     """Loads the html file containing the Aquifer web app"""
