@@ -20,6 +20,7 @@ import 'bootstrap-vue/dist/bootstrap-vue.css'
 import router from './router'
 import store from './store'
 import ApiService from '@/common/services/ApiService.js'
+import authenticate from '@/common/authenticate.js'
 
 ApiService.init()
 
@@ -31,5 +32,8 @@ new Vue({
   el: '#app',
   router,
   store,
-  template: '<App/>'
+  template: '<App/>',
+  created () {
+    authenticate.authenticate(store)
+  }
 })

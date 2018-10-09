@@ -18,6 +18,9 @@
       <b-row class="border-bottom mb-3">
         <b-col><h5>Aquifer Summary</h5></b-col>
         <b-col cols="auto">
+          <b-button variant="secondary" v-on:click.prevent="edit()">
+            <span title="Edit" class="fa fa-edit"/>
+          </b-button>
           <a href="#" title="Print"
            v-on:click.prevent="print()"
            class="print fa fa-print fa-lg d-print-none"/>
@@ -81,6 +84,9 @@ export default {
     id () { this.fetch() }
   },
   methods: {
+    edit () {
+      this.$router.push({ name: 'edit', params: { id: this.id } })
+    },
     print () {
       window.print()
     },
