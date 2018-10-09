@@ -34,7 +34,8 @@
                 "name": "gwells${NAME_SUFFIX}",
                 "creationTimestamp": null,
                 "labels": {
-                    "base-name":"gwells"
+                    "base-name":"gwells",
+                    "appver": "gwells${NAME_SUFFIX}"
                 },
                 "annotations": {
                     "description": "Keeps track of changes in the application image"
@@ -102,8 +103,20 @@
         {
             "apiVersion": "v1",
             "data": {
-                "DB_REPLICATE": "None",
-                "DJANGO_DEBUG": "False"
+                "DB_REPLICATE": null,
+                "DJANGO_DEBUG":  null,
+                "ENABLE_ADDITIONAL_DOCUMENTS":  null,
+                "ENABLE_DATA_ENTRY":  null,
+                "ENABLE_GOOGLE_ANALYTICS": null,
+                "S3_PRIVATE_BUCKET": null,
+                "S3_PRIVATE_HOST": null,
+                "SSO_AUDIENCE": null,
+                "SSO_AUTH_HOST":  null,
+                "SSO_CLIENT": null,
+                "SSO_IDP_HINT": null,
+                "SSO_PORT": null,
+                "SSO_PUBKEY": null,
+                "SSO_REALM": null
             },
             "kind": "ConfigMap",
             "metadata": {
@@ -111,6 +124,10 @@
                 "name": "gwells-global-config${NAME_SUFFIX}",
                 "annotations": {
                     "as-copy-of": "gwells-global-config"
+                },
+                "labels": {
+                    "appver":"gwells${NAME_SUFFIX}",
+                    "app": "gwells${NAME_SUFFIX}"
                 }
             }
         },
@@ -120,7 +137,9 @@
             "metadata": {
                 "name": "gwells${NAME_SUFFIX}",
                 "creationTimestamp": null,
-                "labels": null,
+                "labels": {
+                    "appver": "gwells${NAME_SUFFIX}"
+                },
                 "annotations": {
                     "description": "Defines how to deploy the application server"
                 }
@@ -216,7 +235,8 @@
                         "name": "gwells${NAME_SUFFIX}",
                         "creationTimestamp": null,
                         "labels": {
-                            "name": "gwells${NAME_SUFFIX}"
+                            "name": "gwells${NAME_SUFFIX}",
+                            "appver": "gwells${NAME_SUFFIX}"
                         }
                     },
                     "spec": {
@@ -621,7 +641,9 @@
             "kind": "HorizontalPodAutoscaler",
             "metadata": {
                 "creationTimestamp": null,
-                "labels": { },
+                "labels": {
+                    "appver": "gwells${NAME_SUFFIX}"
+                },
                 "name": "gwells${NAME_SUFFIX}"
             },
             "spec": {
@@ -641,7 +663,9 @@
             "metadata": {
                 "name": "gwells${NAME_SUFFIX}",
                 "creationTimestamp": null,
-                "labels": null,
+                "labels": {
+                    "appver": "gwells${NAME_SUFFIX}"
+                },
                 "annotations": {
                     "description": "Exposes and load balances the application pods"
                 }
@@ -669,7 +693,8 @@
                 "name": "gwells${NAME_SUFFIX}",
                 "creationTimestamp": null,
                 "labels": {
-                    "frontend": "true"
+                    "frontend": "true",
+                    "appver": "gwells${NAME_SUFFIX}"
                 },
                 "annotations": { }
             },
