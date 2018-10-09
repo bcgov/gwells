@@ -14,30 +14,42 @@
 
 from rest_framework import serializers
 
-from aquifers.models import Aquifer
+from aquifers import models
+
 
 class AquiferSerializer(serializers.ModelSerializer):
     """Serialize a aquifer list"""
-    demand_description = serializers.SlugRelatedField(source='demand', read_only=True, slug_field='description')
-    material_description = serializers.SlugRelatedField(source='material', read_only=True, slug_field='description')
-    productivity_description = serializers.SlugRelatedField(source='productivity', read_only=True, slug_field='description')
-    subtype_description = serializers.SlugRelatedField(source='subtype', read_only=True, slug_field='description')
-    vulnerability_description = serializers.SlugRelatedField(source='vulnerability', read_only=True, slug_field='description')
-    quality_concern_description = serializers.SlugRelatedField(source='quality_concern', read_only=True, slug_field='description')
+    demand_description = serializers.SlugRelatedField(
+        source='demand', read_only=True, slug_field='description')
+    material_description = serializers.SlugRelatedField(
+        source='material', read_only=True, slug_field='description')
+    productivity_description = serializers.SlugRelatedField(
+        source='productivity', read_only=True, slug_field='description')
+    subtype_description = serializers.SlugRelatedField(
+        source='subtype', read_only=True, slug_field='description')
+    vulnerability_description = serializers.SlugRelatedField(
+        source='vulnerability', read_only=True, slug_field='description')
+    quality_concern_description = serializers.SlugRelatedField(
+        source='quality_concert', read_only=True, slug_field='description')
+    known_water_use_description = serializers.SlugRelatedField(
+        source='known_water_use', read_only=True, slug_field='description')
 
     class Meta:
-        model = Aquifer
+        model = models.Aquifer
         fields = (
             'aquifer_id',
             'aquifer_name',
             'area',
             'demand_description',
             'demand',
+            'known_water_use_description',
+            'known_water_use',
             'litho_stratographic_unit',
             'location_description',
             'mapping_year',
             'material_description',
             'material',
+            'notes',
             'productivity_description',
             'productivity',
             'quality_concern_description',
@@ -46,4 +58,67 @@ class AquiferSerializer(serializers.ModelSerializer):
             'subtype',
             'vulnerability_description',
             'vulnerability'
+        )
+
+
+class AquiferMaterialSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.AquiferMaterial
+        fields = (
+            'code',
+            'description'
+        )
+
+
+class QualityConcernSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.QualityConcern
+        fields = (
+            'code',
+            'description'
+        )
+
+
+class AquiferVulnerabilitySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.AquiferVulnerabilityCode
+        fields = (
+            'code',
+            'description'
+        )
+
+
+class AquiferSubtypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.AquiferSubtype
+        fields = (
+            'code',
+            'description'
+        )
+
+
+class AquiferProductivitySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.AquiferProductivity
+        fields = (
+            'code',
+            'description'
+        )
+
+
+class AquiferDemandSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.AquiferDemand
+        fields = (
+            'code',
+            'description'
+        )
+
+
+class WaterUseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.WaterUse
+        fields = (
+            'code',
+            'description'
         )
