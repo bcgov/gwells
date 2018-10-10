@@ -33,6 +33,12 @@
           </b-col>
         </b-row>
 
+        <!-- Type of work performed -->
+        <activity-type class="my-3"
+          v-if="currentStep === 'activityType' || (formIsFlat && flatForm.activityType)"
+          :wellActivityType.sync="activityType"
+        />
+
         <!-- Type of well -->
         <well-type class="my-3"
           v-if="currentStep === 'wellType' || (formIsFlat && flatForm.wellType)"
@@ -52,7 +58,7 @@
 
         <!-- Person responsible for work -->
         <person-responsible class="my-3"
-          v-if="formStep === 2 || formIsFlat"
+          v-if="formStep === 'personResponsible' || (formIsFlat && flatForm.personResponsible)"
           :drillerName.sync="form.driller_name"
           :consultantName.sync="form.consultant_name"
           :consultantCompany.sync="form.consultant_company"
@@ -319,6 +325,7 @@
 import ApiService from '@/common/services/ApiService.js'
 import { FETCH_CODES } from '../store/actions.types.js'
 import inputFormatMixin from '@/common/inputFormatMixin.js'
+import ActivityType from '@/submissions/components/SubmissionForm/ActivityType.vue'
 import WellType from '@/submissions/components/SubmissionForm/WellType.vue'
 import PersonResponsible from '@/submissions/components/SubmissionForm/PersonResponsible.vue'
 import Owner from '@/submissions/components/SubmissionForm/Owner.vue'
@@ -342,6 +349,7 @@ export default {
   name: 'SubmissionsHome',
   mixins: [inputFormatMixin],
   components: {
+    ActivityType,
     WellType,
     PersonResponsible,
     Owner,
@@ -385,6 +393,7 @@ export default {
       formOptions: {},
       formSteps: {
         CON: [
+          'activityType',
           'wellType',
           'wellOwner',
           'wellLocation',
@@ -403,6 +412,7 @@ export default {
           'comments'
         ],
         ALT: [
+          'activityType',
           'wellType',
           'wellOwner',
           'wellLocation',
@@ -421,6 +431,7 @@ export default {
           'comments'
         ],
         DEC: [
+          'activityType',
           'wellType',
           'wellOwner',
           'wellLocation',
@@ -430,6 +441,9 @@ export default {
           'casings',
           'decommissionInformation',
           'comments'
+        ],
+        STAFF_EDIT: [
+          'activityType'
         ]
       }
     }
