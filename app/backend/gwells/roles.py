@@ -35,6 +35,8 @@ REGISTRIES_AUTHORITY_ROLE = 'registries_statutory_authority'
 REGISTRIES_VIEWER_ROLE = 'registries_viewer'
 WELLS_VIEWER_ROLE = 'wells_viewer'
 WELLS_EDIT_ROLE = 'wells_edit'
+AQUIFERS_VIEWER_ROLE = 'aquifers_view'
+AQUIFERS_EDIT_ROLE = 'aquifers_edit'
 
 # Roles relating to registries.
 REGISTRIES_ROLES = (
@@ -55,6 +57,17 @@ WELLS_EDIT_ROLES = (
     ADMIN_ROLE,
     WELLS_VIEWER_ROLE,
     WELLS_EDIT_ROLE,
+)
+
+AQUIFERS_EDIT_ROLES = (
+    ADMIN_ROLE,
+    AQUIFERS_EDIT_ROLE,
+)
+
+AQUIFERS_VIEW_ROLES = (
+    ADMIN_ROLE,
+    AQUIFERS_EDIT_ROLE,
+    AQUIFERS_VIEWER_ROLE
 )
 
 EXCLUDE = ('idir', 'offline_access', 'admin', 'uma_authorization')
