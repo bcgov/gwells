@@ -189,7 +189,7 @@ class WellSubmissionSerializerBase(serializers.ModelSerializer):
     def get_foreign_keys(self):
         raise NotImplementedError()  # Implement in base class!
 
-    def get_well_activity_type():
+    def get_well_activity_type(self):
         raise NotImplementedError()  # Implement in base class!
 
     @transaction.atomic
@@ -229,11 +229,40 @@ class WellSubmissionStackerSerializer(WellSubmissionSerializerBase):
             'screen_set': Screen,
             'linerperforation_set': LinerPerforation,
             'decommission_description_set': DecommissionDescription,
+        }    
+
+    class Meta:
+        model = ActivitySubmission
+        fields = '__all__'
+
+
+class WellSubmissionLegacySerializer(WellSubmissionSerializerBase):
+    """ Class with no validation, and all possible fields, used by stacker to create legacy records """
+
+    casing_set = CasingSerializer(many=True, required=False)
+    screen_set = ScreenSerializer(many=True, required=False)
+    linerperforation_set = LinerPerforationSerializer(many=True, required=False)
+    decommission_description_set = DecommissionDescriptionSerializer(many=True, required=False)
+
+    def get_well_activity_type(self):
+        return WellActivityCode.types.legacy()
+
+    def get_foreign_keys(self):
+        return {
+            'casing_set': Casing,
+            'screen_set': Screen,
+            'linerperforation_set': LinerPerforation,
+            'decommission_description_set': DecommissionDescription,
         }
 
     class Meta:
         model = ActivitySubmission
-        fields = list(set(ALTERATION_FIELDS + CONSTRUCTION_FIELDS + DECOMMISSION_FIELDS))
+        extra_kwargs = {
+            'lithologydescription_set': {'required': False},
+            'create_user': {'required': False},  # This field might not be present
+            'well_activity_type': {'required': False},  # This is autopopulated during create
+        }
+        fields = '__all__'
 
 
 class WellConstructionSubmissionSerializer(WellSubmissionSerializerBase):
