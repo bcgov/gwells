@@ -55,7 +55,7 @@ class TestPermissionsEditRights(APITestCase):
         self.client.force_authenticate(user)
 
     def test_edit_rights_attempts_submit(self):
-        url = reverse('submissions-list')
+        url = reverse('submissions-construction-create')
         # As a user with edit rights, I should be able to make a submission.
         data = {
             'owner_full_name': 'molly',

@@ -31,16 +31,16 @@ urlpatterns = [
         never_cache(SubmissionListAPIView.as_view()), name='submissions-list'),
     # Submission
     url(r'^api/v1/submissions/(?P<filing_number>[0-9]+)$',
-        never_cache(SubmissionGetAPIView.as_view())),
+        never_cache(SubmissionGetAPIView.as_view()), name='submissions-get'),
     # Construction submission
     url(r'^api/v1/submissions/construction$',
-        never_cache(SubmissionConstructionAPIView.as_view())),
+        never_cache(SubmissionConstructionAPIView.as_view()), name='submissions-construction-create'),
     # Alteration submission
     url(r'^api/v1/submissions/alteration$',
-        never_cache(SubmissionAlterationAPIView.as_view())),
+        never_cache(SubmissionAlterationAPIView.as_view()), name='submissions-alteration-create'),
     # Decommission submission
     url(r'^api/v1/submissions/decommission$',
-        never_cache(SubmissionDecommissionAPIView.as_view())),
+        never_cache(SubmissionDecommissionAPIView.as_view()), name='submissions-decommission-create'),
 
     # Submissions home (loads Submissions application)
     url(r'^submissions/', SubmissionsHomeView.as_view(), name='submissions-home')
