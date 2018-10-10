@@ -216,7 +216,7 @@ class Aquifer(AuditModel):
         on_delete=models.PROTECT,
         verbose_name="Known Water Use Reference",
         related_name='aquifers')
-    quality_concert = models.ForeignKey(
+    quality_concern = models.ForeignKey(
         QualityConcern,
         db_column='quality_concern_code',
         blank=True,
