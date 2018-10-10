@@ -63,7 +63,7 @@ logger = logging.getLogger(__name__)
 
 # There are a LOT of fields. It's hard to keep track of them, so they're broken
 # up into sections that match the UI.
-WELL_SUBMISSION_FIELDS = ("filing_number",)
+WELL_SUBMISSION_FIELDS = ("filing_number", "well_activity_type",)
 WELL_TYPE_FIELDS = ("well",
                     "well_class",
                     "well_subclass",
@@ -180,7 +180,7 @@ class WellSubmissionListSerializer(serializers.ModelSerializer):
     class Meta:
         model = ActivitySubmission
         fields = list(set(WELL_SUBMISSION_FIELDS + ALTERATION_FIELDS + CONSTRUCTION_FIELDS +
-                          DECOMMISSION_FIELDS + ("well_activity_type",)))
+                          DECOMMISSION_FIELDS))
 
 
 class WellSubmissionSerializerBase(serializers.ModelSerializer):
@@ -228,8 +228,8 @@ class WellSubmissionStackerSerializer(WellSubmissionSerializerBase):
             'casing_set': Casing,
             'screen_set': Screen,
             'linerperforation_set': LinerPerforation,
-            'decommission_description_set': DecommissionDescription
-            }
+            'decommission_description_set': DecommissionDescription,
+        }
 
     class Meta:
         model = ActivitySubmission
@@ -248,7 +248,7 @@ class WellConstructionSubmissionSerializer(WellSubmissionSerializerBase):
             'casing_set': Casing,
             'screen_set': Screen,
             'linerperforation_set': LinerPerforation,
-            }
+        }
 
     def get_well_activity_type(self):
         return WellActivityCode.types.construction()
@@ -259,6 +259,7 @@ class WellConstructionSubmissionSerializer(WellSubmissionSerializerBase):
         extra_kwargs = {
             # TODO: reference appropriate serializer as above
             'lithologydescription_set': {'required': False},
+            'well_activity_type': {'required': False}
         }
 
 
@@ -274,7 +275,10 @@ class WellAlterationSubmissionSerializer(WellSubmissionSerializerBase):
             'casing_set': Casing,
             'screen_set': Screen,
             'linerperforation_set': LinerPerforation,
-            }
+        }
+
+    def get_well_activity_type(self):
+        return WellActivityCode.types.alteration()
 
     class Meta:
         model = ActivitySubmission
@@ -282,6 +286,7 @@ class WellAlterationSubmissionSerializer(WellSubmissionSerializerBase):
         extra_kwargs = {
             # TODO: reference appropriate serializer as above
             'lithologydescription_set': {'required': False},
+            'well_activity_type': {'required': False}
         }
 
 
@@ -290,15 +295,22 @@ class WellDecommissionSubmissionSerializer(WellSubmissionSerializerBase):
 
     casing_set = CasingSerializer(many=True, required=False)
 
+    def get_well_activity_type(self):
+        return WellActivityCode.types.decommission()
+
     def get_foreign_keys(self):
         return {
-            'casing_set': Casing
-            }
+            'casing_set': Casing,
+            'decommission_description_set': DecommissionDescription,
+        }
 
     class Meta:
         model = ActivitySubmission
         # Decommission has fewer fields
         fields = DECOMMISSION_FIELDS
+        extra_kwargs = {
+            'well_activity_type': {'required': False}
+        }
 
 
 class WellActivityCodeSerializer(serializers.ModelSerializer):
