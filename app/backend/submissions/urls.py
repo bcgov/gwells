@@ -16,7 +16,7 @@ from django.views.decorators.cache import never_cache
 
 from submissions.views import (SubmissionsOptions, SubmissionListAPIView, SubmissionConstructionAPIView,
                                SubmissionAlterationAPIView, SubmissionDecommissionAPIView,
-                               SubmissionsHomeView,
+                               SubmissionsHomeView, SubmissionGetAPIView
                                )
 
 
@@ -30,8 +30,8 @@ urlpatterns = [
     url(r'^api/v1/submissions/$',
         never_cache(SubmissionListAPIView.as_view()), name='submissions-list'),
     # Submission
-    # url(r'^api/v1/submissions/(?P<filing_number>[0-9]+$',
-        # never_cache()),
+    url(r'^api/v1/submissions/(?P<filing_number>[0-9]+)$',
+        never_cache(SubmissionGetAPIView.as_view())),
     # Construction submission
     url(r'^api/v1/submissions/construction$',
         never_cache(SubmissionConstructionAPIView.as_view())),

@@ -14,7 +14,7 @@
 
 from rest_framework.response import Response
 from django.views.generic import TemplateView
-from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveUpdateAPIView
+from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveUpdateAPIView, RetrieveAPIView
 from rest_framework.views import APIView
 
 from gwells.pagination import APILimitOffsetPagination
@@ -113,7 +113,20 @@ def get_submission_queryset(qs):
             .order_by("filing_number")
 
 
-class SubmissionListAPIView(ListAPIView):
+class SubmissionGetAPIView(RetrieveAPIView):
+    """Get a submission"""
+
+    permission_classes = (WellsEditPermissions,)
+    serializer_class = WellSubmissionListSerializer
+    queryset = ActivitySubmission.objects.all()
+    model = ActivitySubmission
+    lookup_field = 'filing_number'
+
+    def get_queryset(self):
+        return get_submission_queryset(self.queryset)
+
+
+class SubmissionListAPIView(ListAPIView, RetrieveAPIView):
     """List and create submissions
 
     get: returns a list of well activity submissions
