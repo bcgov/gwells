@@ -384,18 +384,18 @@ class WellStatusCodeTypeManager(models.Manager):
 
     # Construction reports correspond to "NEW" status
     def construction(self):
-        return self.get_queryset().get(code='NEW')
+        return self.get_queryset().get(well_status_code='NEW')
 
     # Decommission reports trigger a "CLOSURE" status
     def decommission(self):
-        return self.get_queryset().get(code='CLOSURE')
+        return self.get_queryset().get(well_status_code='CLOSURE')
 
     # Alteration reports trigger an "ALTERATION" status
     def alteration(self):
-        return self.get_queryset().get(code='ALTERATION')
+        return self.get_queryset().get(well_status_code='ALTERATION')
     
     def other(self):
-        return self.get_queryset().get(code='OTHER')
+        return self.get_queryset().get(well_status_code='OTHER')
 
 
 class WellStatusCode(AuditModel):

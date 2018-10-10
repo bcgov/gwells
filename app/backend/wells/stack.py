@@ -22,7 +22,7 @@ from django.db.models import F
 from gwells.models import ProvinceStateCode
 from submissions.models import WellActivityCode
 import submissions.serializers
-from wells.models import Well, ActivitySubmission
+from wells.models import Well, ActivitySubmission, WellStatusCode
 from wells.serializers import WellStackerSerializer
 
 
@@ -139,9 +139,9 @@ class StackWells():
 
         # Well status is set based on the most recent activity submission.
         well_status_map = {
-            WellActivityCode.types.construction().code: WellStatusCode.types.construction().code,
-            WellActivityCode.types.alteration().code: WellStatusCode.types.alteration().code,
-            WellActivityCode.types.decommission().code: WellStatusCode.types.decommission().code,
+            WellActivityCode.types.construction().code: WellStatusCode.types.construction().well_status_code,
+            WellActivityCode.types.alteration().code: WellStatusCode.types.alteration().well_status_code,
+            WellActivityCode.types.decommission().code: WellStatusCode.types.decommission().well_status_code,
         }
 
         for submission in records:
@@ -159,7 +159,7 @@ class StackWells():
 
             # add a well_status based on the current activity submission
             composite['well_status'] = well_status_map.get(
-                submission.well_activity_type.code, WellStatusCode.types.other().code)
+                submission.well_activity_type.code, WellStatusCode.types.other().well_status_code)
 
         # Update the well view
         well_serializer = WellStackerSerializer(well, data=composite, partial=True)
