@@ -37,9 +37,9 @@
             </td>
             <td class="pb-0">
               <b-form-group
-                id="'casingCode_' + index"
+                :id="'casingCode_' + index"
                 class="my-0"
-                aria-describedby="casingCodeInvalidFeedback{index}">
+                :aria-describedby="`casingCodeInvalidFeedback${index}`">
                 <b-form-select
                     v-model="casing.casing_code"
                     :options="codes.casing_codes"
@@ -50,7 +50,7 @@
                     <option :value="null" disabled>Select a type</option>
                   </template>
                 </b-form-select>
-                <b-form-invalid-feedback id="casingCodeInvalidFeedback{index}">
+                <b-form-invalid-feedback :id="`casingCodeInvalidFeedback${index}`">
                   <div v-for="(error, error_index) in getCasingError(index).casing_code" :key="`Casing type input error ${error_index}`">
                     {{ error }}
                   </div>
@@ -61,7 +61,7 @@
               <b-form-group
                 :id="'casingMaterial_' + index"
                 class="my-0"
-                aria-describedby="casingMaterialInvalidFeedback{index}">
+                :aria-describedby="`casingMaterialInvalidFeedback${index}`">
                 <b-form-select
                     v-model="casing.casing_material"
                     :options="codes.casing_materials"
@@ -72,7 +72,7 @@
                     <option :value="null" disabled>Select a material</option>
                   </template>
                 </b-form-select>
-                <b-form-invalid-feedback id="casingCodeInvalidFeedback{index}">
+                <b-form-invalid-feedback :id="`casingCodeInvalidFeedback${index}`">
                   <div v-for="(error, error_index) in getCasingError(index).casing_material" :key="`Material input error ${error_index}`">
                     {{ error }}
                   </div>

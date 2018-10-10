@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-if="!keycloak || (keycloak && !keycloak.authenticated)">
-      <button type="button" id="gwells-sso-login" class="btn btn-light btn-sm" @click="keyCloakLogin()">Log in</button>
+      <button type="button" :id="`gwells-sso-login${fromMenu ? '-menu':''}`" class="btn btn-light btn-sm" @click="keyCloakLogin()">Log in</button>
     </div>
     <div v-if="keycloak && keycloak.authenticated">
       <span class="userLoggedInText text-light">{{ keycloak.tokenParsed.name }}</span>
@@ -16,6 +16,12 @@ import ApiService from '@/common/services/ApiService.js'
 import { SET_ERROR } from '@/registry/store/mutations.types.js'
 
 export default {
+  props: {
+    fromMenu: {
+      type: Boolean,
+      default: false
+    }
+  },
   data () {
     return {
     }
