@@ -77,8 +77,6 @@ var/
 .installed.cfg
 *.egg
 webpack-stats.json
-api-tests/.envrc
-functional-tests/.envrc
 app/backend/.env
 *.secret_env
 
