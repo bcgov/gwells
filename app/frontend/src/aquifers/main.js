@@ -13,6 +13,7 @@
 */
 
 import Vue from 'vue'
+import {mapActions} from 'vuex'
 import App from './App'
 import BootstrapVue from 'bootstrap-vue'
 import '@/common/assets/css/bootstrap-theme.min.css'
@@ -21,6 +22,7 @@ import router from './router'
 import store from './store'
 import ApiService from '@/common/services/ApiService.js'
 import authenticate from '@/common/authenticate.js'
+import {FETCH_CONFIG} from '@/common/store/config.js'
 
 ApiService.init()
 
@@ -33,7 +35,15 @@ new Vue({
   router,
   store,
   template: '<App/>',
+  methods: {
+    ...mapActions([
+      FETCH_CONFIG
+    ])
+  },
   created () {
-    authenticate.authenticate(store)
+    authenticate.authenticate(store).then(() => {
+      // Auth complete. Do something here if you want.
+    })
+    this.FETCH_CONFIG()
   }
 })
