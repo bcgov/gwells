@@ -136,6 +136,14 @@ class StackWells():
         records = records.order_by(F('work_start_date').asc(nulls_first=True), 'create_date')
         FOREIGN_KEYS = ('casing_set', 'screen_set', 'linerperforation_set', 'decommission_description_set')
         composite = {}
+
+        # Well status is set based on the most recent activity submission.
+        well_status_map = {
+            WellActivityCode.types.construction().code: WellStatusCode.types.construction().code,
+            WellActivityCode.types.alteration().code: WellStatusCode.types.alteration().code,
+            WellActivityCode.types.decommission().code: WellStatusCode.types.decommission().code,
+        }
+
         for submission in records:
             source_target_map = activity_type_map.get(submission.well_activity_type.code, {})
             serializer = submissions.serializers.WellSubmissionStackerSerializer(submission)
@@ -148,6 +156,10 @@ class StackWells():
                             composite[target_key] = self._merge_series(composite[source_key], value)
                         else:
                             composite[target_key] = value
+
+            # add a well_status based on the current activity submission
+            composite['well_status'] = well_status_map.get(
+                submission.well_activity_type.code, WellStatusCode.types.other().code)
 
         # Update the well view
         well_serializer = WellStackerSerializer(well, data=composite, partial=True)
