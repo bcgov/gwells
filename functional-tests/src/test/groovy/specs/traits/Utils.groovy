@@ -51,9 +51,9 @@ trait Utils {
    * @return true if the selector is not found.
    * @throws AssertionError if the selector is found.
    */
-  Boolean expectNotPresent(Navigator selector, int wait=1) {
+  Boolean expectNotPresent(Navigator selector, int wait=5) {
     try {
-      waitFor(1) { selector }
+      waitFor(wait) { selector }
       fail("Expected the [$selector] selector to not be present, but was found.");
     } catch (WaitTimeoutException e) {
       true
@@ -69,9 +69,9 @@ trait Utils {
    * @return true if the selector is found.
    * @throws AssertionError if the selector is not found.
    */
-  Boolean expectPresent(Navigator selector, int wait=1) {
+  Boolean expectPresent(Navigator selector, int wait=5) {
     try {
-      waitFor(1) { selector }
+      waitFor(wait) { selector }
     } catch (WaitTimeoutException e) {
       fail("Expected the [$selector] selector to be present, but was not found.");
     }

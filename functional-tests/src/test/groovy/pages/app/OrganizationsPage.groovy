@@ -25,7 +25,7 @@ class OrganizationsPage extends BaseAppPage {
     deleteAlert(required:false) { $('#orgDeleteSuccessAlert') }
 
     // add company
-    addNewCompanyButton { $('#orgAddNewButton') }
+    addNewCompanyButton(wait:2) { $('#orgAddNewButton') }
 
     // Update/Delete company
     selectCompanySearchField { $('#orgEditSelectDropdown').$('input', type:'search') }
