@@ -36,7 +36,7 @@
         <dd class="col-sm-4">{{record.litho_stratographic_unit}}</dd>
 
         <dt class="col-sm-2">Descriptive location</dt>
-        <dd class="col-sm-4">{{record.descriptive_location}}</dd>
+        <dd class="col-sm-4">{{record.location_description}}</dd>
         <dt class="col-sm-2">Vulnerability</dt>
         <dd class="col-sm-4">{{record.vulnerability_description}}</dd>
 
