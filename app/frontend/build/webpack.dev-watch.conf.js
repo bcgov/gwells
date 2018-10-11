@@ -22,7 +22,8 @@ const devWebpackConfig = merge(baseWebpackConfig, {
     registry: './src/registry/main.js',
     documents: './src/wells/documents.js',
     summary: './src/wells/summary.js',
-    submissions: './src/submissions/main.js'
+    submissions: './src/submissions/main.js',
+    aquifers: './src/aquifers/main.js'
   },
   module: {
     rules: utils.styleLoaders({
