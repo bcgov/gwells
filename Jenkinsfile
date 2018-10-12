@@ -1,19 +1,37 @@
 pipeline {
   environment {
+
+    APP_NAME = "gwells"
+    REPOSITORY = 'https://www.github.com/bcgov/gwells.git'
+
+    // TOOLS_PROJECT is where images are built
+    TOOLS_PROJECT = "moe-gwells-tools"
+
+    // DEV_PROJECT is the project where individual development environments are spun up
+    // for example: a pull request PR-999 will result in gwells-dev-pr-999.pathfinder.gov.bc.ca
+    DEV_PROJECT = "moe-gwells-dev"
+    DEV_SUFFIX = "dev"
+
+    // TEST_PROJECT contains the test deployment. The test image is a candidate for promotion to prod.
+    TEST_PROJECT = "moe-gwells-test"
+    TEST_SUFFIX = "test-sth"
+
+    // PROD_PROJECT is the prod deployment.
+    // New production images can be deployed by tagging an existing "test" image as "prod".
+    PROD_PROJECT = "moe-gwells-test"
+    PROD_SUFFIX= "prod-test-sth"
+
     // PR_NUM is the pull request number e.g. 'pr-4'
     PR_NUM = "${env.JOB_BASE_NAME}".toLowerCase()
-    APP_NAME = "gwells"
-    TOOLS_PROJECT = "moe-gwells-tools"
-    DEV_PROJECT = "moe-gwells-dev"
-    TEST_PROJECT = "moe-gwells-dev"
-    TEST_SUFFIX = "test-sth"
-    SERVER_ENV = "dev"
-    REPOSITORY = 'https://www.github.com/bcgov/gwells.git'
   }
   agent any
   stages {
-    // the Start Pipeline stage will process and apply OpenShift build templates which will supply
-    // buildconfigs and an imagestream that newly built images will be pushed to after the Build stage
+
+    // the Start Pipeline stage will process and apply OpenShift build templates which will create
+    // buildconfigs and an imagestream for built images.
+    // each pull request gets its own buildconfig but all new builds are pushed to a single imagestream,
+    // to be tagged with the pull request number.
+    // e.g.:  gwells-app:pr-999
     stage('Start pipeline') {
       steps {
         script {
@@ -24,17 +42,18 @@ pipeline {
               echo "Applying build configuration..."
               def buildtemplate = openshift.process("-f",
                 "openshift/backend.bc.json",
-                "NAME_SUFFIX=-${SERVER_ENV}-${PR_NUM}",
-                "ENV_NAME=${SERVER_ENV}",
+                "NAME_SUFFIX=-${DEV_SUFFIX}-${PR_NUM}",
+                "ENV_NAME=${DEV_SUFFIX}",
                 "APP_IMAGE_TAG=${PR_NUM}",
                 "SOURCE_REPOSITORY_URL=${REPOSITORY}",
                 "SOURCE_REPOSITORY_REF=pull/${CHANGE_ID}/head"
               )
 
+              // database build/imagestream template
               def dbtemplate = openshift.process("-f",
                 "openshift/postgresql.bc.json",
-                "NAME_SUFFIX=-${SERVER_ENV}-${PR_NUM}",
-                "ENV_NAME=${SERVER_ENV}"
+                "NAME_SUFFIX=-${DEV_SUFFIX}-${PR_NUM}",
+                "ENV_NAME=${DEV_SUFFIX}"
               )
 
               // apply the template objects to create and/or modify objects in the dev environment
@@ -47,9 +66,8 @@ pipeline {
       }
     }
 
-    // the Build stage runs unit tests and builds files. an image will be outputted to the imagestream
-    // defined in the templates applied in the "start pipeline" stage.
-    // The build stage uses the source to image strategy. See /app/.s2i/assemble for image build script
+    // the Build stage runs unit tests and builds files. an image will be outputted to the app's imagestream
+    // builds use the source to image strategy. See /app/.s2i/assemble for image build script
     stage('Build (with tests)') {
       steps {
         script {
@@ -59,11 +77,8 @@ pipeline {
               echo "This may take several minutes. Logs are not forwarded to Jenkins by default (at this time)."
               echo "Additional logs can be found by monitoring builds in ${TOOLS_PROJECT}"
 
-              def appBuild = openshift.selector("bc", "${APP_NAME}-${SERVER_ENV}-${PR_NUM}")
-              // def appBuild = openshift.selector("bc", "${APP_NAME}-${SERVER_ENV}-${PR_NUM}")
-              // // ENABLE_DATA_ENTRY=True is temporarily set during testing because False currently leads to a failing unit test
-              // appBuild.startBuild("--wait", "--env=ENABLE_DATA_ENTRY=True")
 =======
+              def appBuild = openshift.selector("bc", "${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}")
               // temporarily set ENABLE_DATA_ENTRY=True during testing because False currently leads to a failing unit test
               appBuild.startBuild("--wait", "--env=ENABLE_DATA_ENTRY=True")
 >>>>>>> full dev/test pipeline
@@ -87,19 +102,19 @@ pipeline {
               echo "Processing deployment config for pull request ${PR_NUM}"
               def deployTemplate = openshift.process("-f",
                 "openshift/backend.dc.json",
-                "NAME_SUFFIX=-${SERVER_ENV}-${PR_NUM}",
-                "BUILD_ENV_NAME=${SERVER_ENV}",
-                "ENV_NAME=${SERVER_ENV}",
-                "HOST=${APP_NAME}-${SERVER_ENV}-${PR_NUM}.pathfinder.gov.bc.ca",
+                "NAME_SUFFIX=-${DEV_SUFFIX}-${PR_NUM}",
+                "BUILD_ENV_NAME=${DEV_SUFFIX}",
+                "ENV_NAME=${DEV_SUFFIX}",
+                "HOST=${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}.pathfinder.gov.bc.ca",
               )
 
               def deployDBTemplate = openshift.process("-f",
                 "openshift/postgresql.dc.json",
-                "LABEL_APPVER=-${SERVER_ENV}-${PR_NUM}",
-                "DATABASE_SERVICE_NAME=gwells-pgsql-${SERVER_ENV}-${PR_NUM}",
+                "LABEL_APPVER=-${DEV_SUFFIX}-${PR_NUM}",
+                "DATABASE_SERVICE_NAME=gwells-pgsql-${DEV_SUFFIX}-${PR_NUM}",
                 "IMAGE_STREAM_NAMESPACE=''",
-                "IMAGE_STREAM_NAME=gwells-postgresql-${SERVER_ENV}-${PR_NUM}",
-                "IMAGE_STREAM_VERSION=${SERVER_ENV}",
+                "IMAGE_STREAM_NAME=gwells-postgresql-${DEV_SUFFIX}-${PR_NUM}",
+                "IMAGE_STREAM_VERSION=${DEV_SUFFIX}",
                 "POSTGRESQL_DATABASE=gwells",
                 "VOLUME_CAPACITY=1Gi"
               )
@@ -131,19 +146,19 @@ pipeline {
 
               // apply the templates, which will create new objects or modify existing ones as necessary.
               // the copies of base objects (secrets, configmaps) are also applied.
-              openshift.apply(deployTemplate).label(['app':"gwells-${SERVER_ENV}-${PR_NUM}", 'app-name':"${APP_NAME}", 'env-name':"${SERVER_ENV}"], "--overwrite")
-              openshift.apply(deployDBTemplate).label(['app':"gwells-${SERVER_ENV}-${PR_NUM}", 'app-name':"${APP_NAME}", 'env-name':"${SERVER_ENV}"], "--overwrite")
-              openshift.apply(newObjectCopies).label(['app':"gwells-${SERVER_ENV}-${PR_NUM}", 'app-name':"${APP_NAME}", 'env-name':"${SERVER_ENV}"], "--overwrite")
+              openshift.apply(deployTemplate).label(['app':"gwells-${DEV_SUFFIX}-${PR_NUM}", 'app-name':"${APP_NAME}", 'env-name':"${DEV_SUFFIX}"], "--overwrite")
+              openshift.apply(deployDBTemplate).label(['app':"gwells-${DEV_SUFFIX}-${PR_NUM}", 'app-name':"${APP_NAME}", 'env-name':"${DEV_SUFFIX}"], "--overwrite")
+              openshift.apply(newObjectCopies).label(['app':"gwells-${DEV_SUFFIX}-${PR_NUM}", 'app-name':"${APP_NAME}", 'env-name':"${DEV_SUFFIX}"], "--overwrite")
               echo "Successfully applied deployment configs for ${PR_NUM}"
 
               // promote the newly built image to DEV
               echo "Tagging new image to DEV imagestream."
-              openshift.tag("${TOOLS_PROJECT}/gwells-application:${PR_NUM}", "${DEV_PROJECT}/gwells-${SERVER_ENV}-${PR_NUM}:dev")  // todo: clean up labels/tags
+              openshift.tag("${TOOLS_PROJECT}/gwells-application:${PR_NUM}", "${DEV_PROJECT}/gwells-${DEV_SUFFIX}-${PR_NUM}:dev")  // todo: clean up labels/tags
 
               // monitor the deployment status and wait until deployment is successful
               echo "Waiting for deployment to dev..."
-              def newVersion = openshift.selector("dc", "${APP_NAME}-${SERVER_ENV}-${PR_NUM}").object().status.latestVersion
-              def pods = openshift.selector('pod', [deployment: "${APP_NAME}-${SERVER_ENV}-${PR_NUM}-${newVersion}"])
+              def newVersion = openshift.selector("dc", "${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}").object().status.latestVersion
+              def pods = openshift.selector('pod', [deployment: "${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}-${newVersion}"])
 
               // wait until each container in this deployment's pod reports as ready
               pods.untilEach(1) {
@@ -171,117 +186,115 @@ pipeline {
       }
     }
 
-    // TODO: Use already deployed pod for executing newman API tests.
-
-    // stage('API Tests') {
-    //   steps {
-    //     script {
-    //       podTemplate(
-    //             label: "nodejs-${APP_NAME}-${SERVER_ENV}-${PR_NUM}",
-    //             name: "nodejs-${APP_NAME}-${SERVER_ENV}-${PR_NUM}",
-    //             serviceAccount: 'jenkins',
-    //             cloud: 'openshift',
-    //             containers: [
-    //                 containerTemplate(
-    //                     name: 'jnlp',
-    //                     image: 'registry.access.redhat.com/openshift3/jenkins-agent-nodejs-8-rhel7',
-    //                     resourceRequestCpu: '800m',
-    //                     resourceLimitCpu: '800m',
-    //                     resourceRequestMemory: '1Gi',
-    //                     resourceLimitMemory: '1Gi',
-    //                     workingDir: '/tmp',
-    //                     command: '',
-    //                     args: '${computer.jnlpmac} ${computer.name}',
-    //                     envVars: [
-    //                         secretEnvVar(
-    //                             key: 'GWELLS_API_TEST_USER',
-    //                             secretName: 'apitest-secrets',
-    //                             secretKey: 'username'
-    //                         ),
-    //                         secretEnvVar(
-    //                             key: 'GWELLS_API_TEST_PASSWORD',
-    //                             secretName: 'apitest-secrets',
-    //                             secretKey: 'password'
-    //                         ),
-    //                         secretEnvVar(
-    //                             key: 'GWELLS_API_TEST_AUTH_SERVER',
-    //                             secretName: 'apitest-secrets',
-    //                             secretKey: 'auth_server'
-    //                         ),
-    //                         secretEnvVar(
-    //                             key: 'GWELLS_API_TEST_CLIENT_ID',
-    //                             secretName: 'apitest-secrets',
-    //                             secretKey: 'client_id'
-    //                         ),
-    //                         secretEnvVar(
-    //                             key: 'GWELLS_API_TEST_CLIENT_SECRET',
-    //                             secretName: 'apitest-secrets',
-    //                             secretKey: 'client_secret'
-    //                         )
-    //                     ]
-    //                 )
-    //             ]
-    //         ) {
-    //             node("nodejs-${APP_NAME}-${SERVER_ENV}-${PR_NUM}") {
-    //                 checkout scm
-    //                 dir('api-tests') {
-    //                     sh 'npm install -g newman'
-    //                     String BASEURL = "https://${APP_NAME}-${SERVER_ENV}-${PR_NUM}.pathfinder.gov.bc.ca/gwells"
-    //                     try {
-    //                         sh """
-    //                             newman run ./registries_api_tests.json \
-    //                                 --global-var test_user=\$GWELLS_API_TEST_USER \
-    //                                 --global-var test_password=\$GWELLS_API_TEST_PASSWORD \
-    //                                 --global-var base_url=${BASEURL} \
-    //                                 --global-var auth_server=\$GWELLS_API_TEST_AUTH_SERVER \
-    //                                 --global-var client_id=\$GWELLS_API_TEST_CLIENT_ID \
-    //                                 --global-var client_secret=\$GWELLS_API_TEST_CLIENT_SECRET \
-    //                                 -r cli,junit,html
-    //                             newman run ./wells_api_tests.json \
-    //                                 --global-var test_user=\$GWELLS_API_TEST_USER \
-    //                                 --global-var test_password=\$GWELLS_API_TEST_PASSWORD \
-    //                                 --global-var base_url=${BASEURL} \
-    //                                 --global-var auth_server=\$GWELLS_API_TEST_AUTH_SERVER \
-    //                                 --global-var client_id=\$GWELLS_API_TEST_CLIENT_ID \
-    //                                 --global-var client_secret=\$GWELLS_API_TEST_CLIENT_SECRET \
-    //                                 -r cli,junit,html
-    //                             newman run ./submissions_api_tests.json \
-    //                                 --global-var test_user=\$GWELLS_API_TEST_USER \
-    //                                 --global-var test_password=\$GWELLS_API_TEST_PASSWORD \
-    //                                 --global-var base_url=${BASEURL} \
-    //                                 --global-var auth_server=\$GWELLS_API_TEST_AUTH_SERVER \
-    //                                 --global-var client_id=\$GWELLS_API_TEST_CLIENT_ID \
-    //                                 --global-var client_secret=\$GWELLS_API_TEST_CLIENT_SECRET \
-    //                                 -r cli,junit,html
-    //                             newman run ./aquifers_api_tests.json \
-    //                                 --global-var test_user=\$GWELLS_API_TEST_USER \
-    //                                 --global-var test_password=\$GWELLS_API_TEST_PASSWORD \
-    //                                 --global-var base_url=${BASEURL} \
-    //                                 --global-var auth_server=\$GWELLS_API_TEST_AUTH_SERVER \
-    //                                 --global-var client_id=\$GWELLS_API_TEST_CLIENT_ID \
-    //                                 --global-var client_secret=\$GWELLS_API_TEST_CLIENT_SECRET \
-    //                                 -r cli,junit,html
-    //                         """
-    //                     } finally {
-    //                       junit 'newman/*.xml'
-    //                       publishHTML (
-    //                           target: [
-    //                               allowMissing: false,
-    //                               alwaysLinkToLastBuild: false,
-    //                               keepAll: true,
-    //                               reportDir: 'newman',
-    //                               reportFiles: 'newman*.html',
-    //                               reportName: "API Test Report"
-    //                           ]
-    //                       )
-    //                       stash includes: 'newman/*.xml', name: 'api-tests'
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //     }
-    //   }
-    // }
+    stage('API Tests') {
+      steps {
+        script {
+          podTemplate(
+                label: "nodejs-${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}",
+                name: "nodejs-${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}",
+                serviceAccount: 'jenkins',
+                cloud: 'openshift',
+                containers: [
+                    containerTemplate(
+                        name: 'jnlp',
+                        image: 'registry.access.redhat.com/openshift3/jenkins-agent-nodejs-8-rhel7',
+                        resourceRequestCpu: '800m',
+                        resourceLimitCpu: '800m',
+                        resourceRequestMemory: '1Gi',
+                        resourceLimitMemory: '1Gi',
+                        workingDir: '/tmp',
+                        command: '',
+                        args: '${computer.jnlpmac} ${computer.name}',
+                        envVars: [
+                            secretEnvVar(
+                                key: 'GWELLS_API_TEST_USER',
+                                secretName: 'apitest-secrets',
+                                secretKey: 'username'
+                            ),
+                            secretEnvVar(
+                                key: 'GWELLS_API_TEST_PASSWORD',
+                                secretName: 'apitest-secrets',
+                                secretKey: 'password'
+                            ),
+                            secretEnvVar(
+                                key: 'GWELLS_API_TEST_AUTH_SERVER',
+                                secretName: 'apitest-secrets',
+                                secretKey: 'auth_server'
+                            ),
+                            secretEnvVar(
+                                key: 'GWELLS_API_TEST_CLIENT_ID',
+                                secretName: 'apitest-secrets',
+                                secretKey: 'client_id'
+                            ),
+                            secretEnvVar(
+                                key: 'GWELLS_API_TEST_CLIENT_SECRET',
+                                secretName: 'apitest-secrets',
+                                secretKey: 'client_secret'
+                            )
+                        ]
+                    )
+                ]
+            ) {
+                node("nodejs-${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}") {
+                    checkout scm
+                    dir('api-tests') {
+                        sh 'npm install -g newman'
+                        String BASEURL = "https://${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}.pathfinder.gov.bc.ca/gwells"
+                        try {
+                            sh """
+                                newman run ./registries_api_tests.json \
+                                    --global-var test_user=\$GWELLS_API_TEST_USER \
+                                    --global-var test_password=\$GWELLS_API_TEST_PASSWORD \
+                                    --global-var base_url=${BASEURL} \
+                                    --global-var auth_server=\$GWELLS_API_TEST_AUTH_SERVER \
+                                    --global-var client_id=\$GWELLS_API_TEST_CLIENT_ID \
+                                    --global-var client_secret=\$GWELLS_API_TEST_CLIENT_SECRET \
+                                    -r cli,junit,html
+                                newman run ./wells_api_tests.json \
+                                    --global-var test_user=\$GWELLS_API_TEST_USER \
+                                    --global-var test_password=\$GWELLS_API_TEST_PASSWORD \
+                                    --global-var base_url=${BASEURL} \
+                                    --global-var auth_server=\$GWELLS_API_TEST_AUTH_SERVER \
+                                    --global-var client_id=\$GWELLS_API_TEST_CLIENT_ID \
+                                    --global-var client_secret=\$GWELLS_API_TEST_CLIENT_SECRET \
+                                    -r cli,junit,html
+                                newman run ./submissions_api_tests.json \
+                                    --global-var test_user=\$GWELLS_API_TEST_USER \
+                                    --global-var test_password=\$GWELLS_API_TEST_PASSWORD \
+                                    --global-var base_url=${BASEURL} \
+                                    --global-var auth_server=\$GWELLS_API_TEST_AUTH_SERVER \
+                                    --global-var client_id=\$GWELLS_API_TEST_CLIENT_ID \
+                                    --global-var client_secret=\$GWELLS_API_TEST_CLIENT_SECRET \
+                                    -r cli,junit,html
+                                newman run ./aquifers_api_tests.json \
+                                    --global-var test_user=\$GWELLS_API_TEST_USER \
+                                    --global-var test_password=\$GWELLS_API_TEST_PASSWORD \
+                                    --global-var base_url=${BASEURL} \
+                                    --global-var auth_server=\$GWELLS_API_TEST_AUTH_SERVER \
+                                    --global-var client_id=\$GWELLS_API_TEST_CLIENT_ID \
+                                    --global-var client_secret=\$GWELLS_API_TEST_CLIENT_SECRET \
+                                    -r cli,junit,html
+                            """
+                        } finally {
+                          junit 'newman/*.xml'
+                          publishHTML (
+                              target: [
+                                  allowMissing: false,
+                                  alwaysLinkToLastBuild: false,
+                                  keepAll: true,
+                                  reportDir: 'newman',
+                                  reportFiles: 'newman*.html',
+                                  reportName: "API Test Report"
+                              ]
+                          )
+                          stash includes: 'newman/*.xml', name: 'api-tests'
+                        }
+                    }
+                }
+            }
+        }
+      }
+    }
 
     // the Promote to Test stage allows approving the tagging of the newly built image into the test environment,
     // which will trigger an automatic deployment of that image.
@@ -365,6 +378,119 @@ pipeline {
 
             }
           }
+        }
+      }
+    }
+
+    stage('API Tests against TEST') {
+      when {
+        expression { env.CHANGE_TARGET == 'master' || true }  // NOTE: temporarily set to always run while developing pipeline
+      }
+      steps {
+        script {
+          podTemplate(
+                label: "nodejs-${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}",
+                name: "nodejs-${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}",
+                serviceAccount: 'jenkins',
+                cloud: 'openshift',
+                containers: [
+                    containerTemplate(
+                        name: 'jnlp',
+                        image: 'registry.access.redhat.com/openshift3/jenkins-agent-nodejs-8-rhel7',
+                        resourceRequestCpu: '800m',
+                        resourceLimitCpu: '800m',
+                        resourceRequestMemory: '1Gi',
+                        resourceLimitMemory: '1Gi',
+                        workingDir: '/tmp',
+                        command: '',
+                        args: '${computer.jnlpmac} ${computer.name}',
+                        envVars: [
+                            secretEnvVar(
+                                key: 'GWELLS_API_TEST_USER',
+                                secretName: 'apitest-secrets',
+                                secretKey: 'username'
+                            ),
+                            secretEnvVar(
+                                key: 'GWELLS_API_TEST_PASSWORD',
+                                secretName: 'apitest-secrets',
+                                secretKey: 'password'
+                            ),
+                            secretEnvVar(
+                                key: 'GWELLS_API_TEST_AUTH_SERVER',
+                                secretName: 'apitest-secrets',
+                                secretKey: 'auth_server'
+                            ),
+                            secretEnvVar(
+                                key: 'GWELLS_API_TEST_CLIENT_ID',
+                                secretName: 'apitest-secrets',
+                                secretKey: 'client_id'
+                            ),
+                            secretEnvVar(
+                                key: 'GWELLS_API_TEST_CLIENT_SECRET',
+                                secretName: 'apitest-secrets',
+                                secretKey: 'client_secret'
+                            )
+                        ]
+                    )
+                ]
+            ) {
+                node("nodejs-${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}") {
+                    checkout scm
+                    dir('api-tests') {
+                        sh 'npm install -g newman'
+                        String BASEURL = "https://${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}.pathfinder.gov.bc.ca/gwells"
+                        try {
+                            sh """
+                                newman run ./registries_api_tests.json \
+                                    --global-var test_user=\$GWELLS_API_TEST_USER \
+                                    --global-var test_password=\$GWELLS_API_TEST_PASSWORD \
+                                    --global-var base_url=${BASEURL} \
+                                    --global-var auth_server=\$GWELLS_API_TEST_AUTH_SERVER \
+                                    --global-var client_id=\$GWELLS_API_TEST_CLIENT_ID \
+                                    --global-var client_secret=\$GWELLS_API_TEST_CLIENT_SECRET \
+                                    -r cli,junit,html
+                                newman run ./wells_api_tests.json \
+                                    --global-var test_user=\$GWELLS_API_TEST_USER \
+                                    --global-var test_password=\$GWELLS_API_TEST_PASSWORD \
+                                    --global-var base_url=${BASEURL} \
+                                    --global-var auth_server=\$GWELLS_API_TEST_AUTH_SERVER \
+                                    --global-var client_id=\$GWELLS_API_TEST_CLIENT_ID \
+                                    --global-var client_secret=\$GWELLS_API_TEST_CLIENT_SECRET \
+                                    -r cli,junit,html
+                                newman run ./submissions_api_tests.json \
+                                    --global-var test_user=\$GWELLS_API_TEST_USER \
+                                    --global-var test_password=\$GWELLS_API_TEST_PASSWORD \
+                                    --global-var base_url=${BASEURL} \
+                                    --global-var auth_server=\$GWELLS_API_TEST_AUTH_SERVER \
+                                    --global-var client_id=\$GWELLS_API_TEST_CLIENT_ID \
+                                    --global-var client_secret=\$GWELLS_API_TEST_CLIENT_SECRET \
+                                    -r cli,junit,html
+                                newman run ./aquifers_api_tests.json \
+                                    --global-var test_user=\$GWELLS_API_TEST_USER \
+                                    --global-var test_password=\$GWELLS_API_TEST_PASSWORD \
+                                    --global-var base_url=${BASEURL} \
+                                    --global-var auth_server=\$GWELLS_API_TEST_AUTH_SERVER \
+                                    --global-var client_id=\$GWELLS_API_TEST_CLIENT_ID \
+                                    --global-var client_secret=\$GWELLS_API_TEST_CLIENT_SECRET \
+                                    -r cli,junit,html
+                            """
+                        } finally {
+                          junit 'newman/*.xml'
+                          publishHTML (
+                              target: [
+                                  allowMissing: false,
+                                  alwaysLinkToLastBuild: false,
+                                  keepAll: true,
+                                  reportDir: 'newman',
+                                  reportFiles: 'newman*.html',
+                                  reportName: "API Test Report"
+                              ]
+                          )
+                          stash includes: 'newman/*.xml', name: 'api-tests'
+                        }
+                    }
+                }
+            }
         }
       }
     }
