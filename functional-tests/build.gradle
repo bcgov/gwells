@@ -2,6 +2,7 @@ import org.apache.tools.ant.taskdefs.condition.Os
 
 plugins {
     id "groovy"
+    id "codenarc"
     id "com.energizedwork.webdriver-binaries" version "1.0"
     id "net.foragerr.jmeter" version "1.0.10-3.3"
 }
@@ -11,14 +12,18 @@ ext {
     drivers = ["firefox", "firefoxHeadless", "chrome", "chromeHeadless","ie","edge","safari"]
 
     ext {
-        groovyVersion = '2.4.12'
-        gebVersion = '2.1'
-        seleniumVersion = '3.12.0'
-        chromeDriverVersion = '2.38'
-        geckoDriverVersion = '0.18.0'
-        ieDriverVersion = '3.6'
-        edgeDriverVersion = seleniumVersion
-        safariDriverVersion = seleniumVersion
+        groovyVersion = '2.4.15'
+        gebVersion = '2.2'
+        seleniumVersion = '3.14.0'
+        chromeDriverVersion = '2.41'
+        geckoDriverVersion = '0.21.0'
+        ieDriverVersion = '3.14.0'
+        edgeDriverVersion = '3.14.0'
+        safariDriverVersion = '3.14.0'
+
+        spockCoreVersion = '1.1-groovy-2.4'
+        spockReportsVersion = '1.6.1'
+        slf4jApiVersion = '1.7.25'
     }
 }
 
@@ -31,7 +36,7 @@ repositories {
 dependencies {
     // If using Spock, need to depend on geb-spock
     testCompile "org.gebish:geb-spock:$gebVersion"
-    testCompile("org.spockframework:spock-core:1.1-groovy-2.4") {
+    testCompile("org.spockframework:spock-core:$spockCoreVersion") {
         exclude group: "org.codehaus.groovy"
     }
     testCompile "org.codehaus.groovy:groovy-all:$groovyVersion"
@@ -50,11 +55,11 @@ dependencies {
     testCompile "org.seleniumhq.selenium:selenium-edge-driver:$seleniumVersion"
 
     // Spock reports
-    testCompile( 'com.athaydes:spock-reports:1.4.0' ) {
+    testCompile( "com.athaydes:spock-reports:$spockReportsVersion" ) {
         transitive = false // this avoids affecting your version of Groovy/Spock
     }
-    testCompile 'org.slf4j:slf4j-api:1.7.13'
-    testCompile 'org.slf4j:slf4j-simple:1.7.13'
+    testCompile "org.slf4j:slf4j-api:$slf4jApiVersion"
+    testCompile "org.slf4j:slf4j-simple:$slf4jApiVersion"
 }
 
 webdriverBinaries {
@@ -117,4 +122,25 @@ jmeter {
   jmSystemPropertiesFiles= [file("src/test/jmeter/jmeter.properties")] //to add additional system properties
   //enableReports = true //produce Graphical and CSV reports
   //enableExtendedReports = true //produce Graphical and CSV reports
+}
+
+codenarc {
+    toolVersion = '1.2.1'
+    reportFormat = 'html'
+}
+
+codenarcTest {
+    ignoreFailures = true
+    configFile = file("${projectDir}/codenarc.properties")
+}
+
+sourceSets {
+    test {
+        groovy {
+            srcDirs = ["src/test/groovy"]
+        }
+        resources {
+            srcDirs = ["src/test/resources"]
+        }
+    }
 }

@@ -12,24 +12,26 @@
     limitations under the License.
 */
 
-import Vue from 'vue'
-import App from './App'
-import BootstrapVue from 'bootstrap-vue'
-import '@/common/assets/css/bootstrap-theme.min.css'
-import 'bootstrap-vue/dist/bootstrap-vue.css'
-import router from './router'
-import store from './store'
-import ApiService from '@/common/services/ApiService.js'
+package traits
 
-ApiService.init()
+/**
+ * Methods to manage user credentials.
+ */
+trait Users {
+  Map env = System.getenv()
+  Map getUserOne() {
+    [username:env['GWELLS_USERNAME'], password:env['GWELLS_PASSWORD']]
+  }
 
-Vue.use(BootstrapVue)
+  Map getViewerUser() {
+    [username:env['GWELLS_VIEWER_USERNAME'], password:env['GWELLS_PASSWORD']]
+  }
 
-/* eslint-disable no-new */
-new Vue({
-  components: { App },
-  el: '#app',
-  router,
-  store,
-  template: '<App/>'
-})
+  Map getSubmissionUser() {
+    [username:env['GWELLS_SUBMISSION_USERNAME'], password:env['GWELLS_PASSWORD']]
+  }
+
+  Map getRegistryUser() {
+    [username:env['GWELLS_REGISTRY_USERNAME'], password:env['GWELLS_PASSWORD']]
+  }
+}

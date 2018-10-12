@@ -16,13 +16,14 @@ from rest_framework import serializers
 
 from aquifers.models import Aquifer
 
-class AquiferListSerializer(serializers.ModelSerializer):
+class AquiferSerializer(serializers.ModelSerializer):
     """Serialize a aquifer list"""
     demand_description = serializers.SlugRelatedField(source='demand', read_only=True, slug_field='description')
     material_description = serializers.SlugRelatedField(source='material', read_only=True, slug_field='description')
     productivity_description = serializers.SlugRelatedField(source='productivity', read_only=True, slug_field='description')
     subtype_description = serializers.SlugRelatedField(source='subtype', read_only=True, slug_field='description')
     vulnerability_description = serializers.SlugRelatedField(source='vulnerability', read_only=True, slug_field='description')
+    quality_concern_description = serializers.SlugRelatedField(source='quality_concern', read_only=True, slug_field='description')
 
     class Meta:
         model = Aquifer
@@ -39,6 +40,8 @@ class AquiferListSerializer(serializers.ModelSerializer):
             'material',
             'productivity_description',
             'productivity',
+            'quality_concern_description',
+            'quality_concern',
             'subtype_description',
             'subtype',
             'vulnerability_description',

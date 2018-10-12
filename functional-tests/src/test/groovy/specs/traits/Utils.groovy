@@ -12,24 +12,24 @@
     limitations under the License.
 */
 
-import Vue from 'vue'
-import App from './App'
-import BootstrapVue from 'bootstrap-vue'
-import '@/common/assets/css/bootstrap-theme.min.css'
-import 'bootstrap-vue/dist/bootstrap-vue.css'
-import router from './router'
-import store from './store'
-import ApiService from '@/common/services/ApiService.js'
+package traits
 
-ApiService.init()
+import geb.navigator.Navigator
+import geb.driver.CachingDriverFactory
+import geb.waiting.WaitTimeoutException
 
-Vue.use(BootstrapVue)
+import java.lang.AssertionError
 
-/* eslint-disable no-new */
-new Vue({
-  components: { App },
-  el: '#app',
-  router,
-  store,
-  template: '<App/>'
-})
+/**
+ * Generic re-usable utility methods.
+ */
+trait Utils {
+  /**
+   * Clears the browser and closes it.
+   * The next spec to run will open a fresh browser instance.
+   */
+  void clearAndResetBrowser() {
+    resetBrowser()
+    CachingDriverFactory.clearCacheAndQuitDriver()
+  }
+}

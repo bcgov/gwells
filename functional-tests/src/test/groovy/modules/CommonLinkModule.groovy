@@ -12,24 +12,23 @@
     limitations under the License.
 */
 
-import Vue from 'vue'
-import App from './App'
-import BootstrapVue from 'bootstrap-vue'
-import '@/common/assets/css/bootstrap-theme.min.css'
-import 'bootstrap-vue/dist/bootstrap-vue.css'
-import router from './router'
-import store from './store'
-import ApiService from '@/common/services/ApiService.js'
+package modules
 
-ApiService.init()
+import geb.Module
+import geb.navigator.Navigator
 
-Vue.use(BootstrapVue)
+/**
+ * Contains objects and methods for interacting with generic page links.
+ */
+class CommonLinkModule extends Module {
 
-/* eslint-disable no-new */
-new Vue({
-  components: { App },
-  el: '#app',
-  router,
-  store,
-  template: '<App/>'
-})
+  /**
+   * Attempts to find and click a link on the page.
+   *
+   * @param a map of attributes of the desired anchor tag. eg: [text:'footer link text']. (required)
+   * @param a selector to narrow the search space. (required)
+   */
+  void clickPageLink(Map<String, Object> itemSelector, Navigator parentSelector) {
+    parentSelector.$(itemSelector, 'a').click()
+  }
+}

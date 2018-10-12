@@ -18,25 +18,25 @@ exports[`Search Component Matches the snapshot 1`] = `
         class="col-md-4 col-12"
       >
         <fieldset
-          aria-labelledby="__BVID__14__BV_label_"
+          aria-labelledby="__BVID__10__BV_label_"
           class="b-form-group form-group"
-          id="__BVID__14"
+          id="__BVID__10"
           role="group"
         >
           <legend
             class="col-form-label pt-0"
-            id="__BVID__14__BV_label_"
+            id="__BVID__10__BV_label_"
           >
             Aquifer name
           </legend>
           <div
-            aria-labelledby="__BVID__14__BV_label_"
+            aria-labelledby="__BVID__10__BV_label_"
             class=""
             role="group"
           >
             <input
               class="form-control"
-              id="__BVID__15"
+              id="__BVID__11"
               type="text"
             />
             <!---->
@@ -46,25 +46,25 @@ exports[`Search Component Matches the snapshot 1`] = `
         </fieldset>
          
         <fieldset
-          aria-labelledby="__BVID__16__BV_label_"
+          aria-labelledby="__BVID__12__BV_label_"
           class="b-form-group form-group"
-          id="__BVID__16"
+          id="__BVID__12"
           role="group"
         >
           <legend
             class="col-form-label pt-0"
-            id="__BVID__16__BV_label_"
+            id="__BVID__12__BV_label_"
           >
             Aquifer number
           </legend>
           <div
-            aria-labelledby="__BVID__16__BV_label_"
+            aria-labelledby="__BVID__12__BV_label_"
             class=""
             role="group"
           >
             <input
               class="form-control"
-              id="__BVID__17"
+              id="__BVID__13"
               type="text"
             />
             <!---->
@@ -83,7 +83,7 @@ exports[`Search Component Matches the snapshot 1`] = `
       >
         <fieldset
           class="b-form-group form-group"
-          id="__BVID__18"
+          id="__BVID__14"
           role="group"
         >
           <!---->
@@ -118,7 +118,7 @@ exports[`Search Component Matches the snapshot 1`] = `
     aria-colcount="12"
     aria-rowcount="1"
     class="table b-table"
-    id="__BVID__19"
+    id="__BVID__15"
   >
     <!---->
     <!---->
@@ -212,7 +212,9 @@ exports[`Search Component Matches the snapshot 1`] = `
           aria-colindex="1"
           class=""
         >
-          4
+          <router-link-stub
+            to="4/"
+          />
         </td>
         <td
           aria-colindex="2"

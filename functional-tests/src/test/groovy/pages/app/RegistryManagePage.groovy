@@ -12,24 +12,21 @@
     limitations under the License.
 */
 
-import Vue from 'vue'
-import App from './App'
-import BootstrapVue from 'bootstrap-vue'
-import '@/common/assets/css/bootstrap-theme.min.css'
-import 'bootstrap-vue/dist/bootstrap-vue.css'
-import router from './router'
-import store from './store'
-import ApiService from '@/common/services/ApiService.js'
+package pages
 
-ApiService.init()
+class RegistryManagePage extends BaseAppPage {
+  static at = { pageTitle.text() == 'Groundwater Well Search' }
+  static url = 'registries/organizations/manage'
+  static content = {
+    pageTitle { $('#main-content h2') }
 
-Vue.use(BootstrapVue)
+    wellTagOrPlateField { $('#id_well') }
+    streetAddressField { $('#id_addr') }
+    legalPlanOrDistrictLotOrPIDField { $('#id_legal') }
+    ownerNameField { $('#id_owner') }
 
-/* eslint-disable no-new */
-new Vue({
-  components: { App },
-  el: '#app',
-  router,
-  store,
-  template: '<App/>'
-})
+    searchButton { $('input', type:'submit', value:'Search') }
+
+    searchResultsTable(required:false) { $('#results') }
+  }
+}
