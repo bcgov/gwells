@@ -40,7 +40,7 @@ describe('OrganizationAdd.vue', () => {
     })
     wrapper.vm.orgForm.name = 'Big Drilling Co'
     expect(wrapper.vm.orgForm.name).toEqual('Big Drilling Co')
-    wrapper.find('#orgFormResetButton').trigger('reset')
+    wrapper.find('#orgAddFormResetButton').trigger('reset')
     expect(wrapper.vm.orgForm.name).toEqual('')
   })
 })
