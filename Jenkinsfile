@@ -80,8 +80,7 @@ pipeline {
 =======
               def appBuild = openshift.selector("bc", "${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}")
               // temporarily set ENABLE_DATA_ENTRY=True during testing because False currently leads to a failing unit test
-              appBuild.startBuild("--wait", "--env=ENABLE_DATA_ENTRY=True")
->>>>>>> full dev/test pipeline
+              appBuild.startBuild("--wait", "--env=ENABLE_DATA_ENTRY=True").logs("-f")
             }
           }
         }
@@ -301,7 +300,7 @@ pipeline {
     // which will trigger an automatic deployment of that image.
     // The deployment configs in the openshift folder are applied first in case there are any changes to the templates.
     // this stage should only occur when the pull request is being made against the master branch.
-    stage('Promote image to TEST') {
+    stage('Deploy image to TEST') {
       when {
         expression { env.CHANGE_TARGET == 'master' || true }  // NOTE: temporarily set to always run while developing pipeline
       }
@@ -380,7 +379,7 @@ pipeline {
               // monitor the deployment status and wait until deployment is successful
               echo "Waiting for deployment to TEST..."
               def newVersion = openshift.selector("dc", "gwells-${TEST_SUFFIX}").object().status.latestVersion
-              def pods = openshift.selector('pod', [deployment: "gwells-pgsql-${TEST_SUFFIX}-${newVersion}"])
+              def pods = openshift.selector('pod', [deployment: "gwells-${TEST_SUFFIX}-${newVersion}"])
 
               // wait until at least one pod reports as ready
               pods.untilEach(1) {
