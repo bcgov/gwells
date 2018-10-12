@@ -23,6 +23,11 @@ urlpatterns = [
         name='aquifers-list'
     ),
 
+    url(r'^api/v1/aquifers/(?P<aquifer_id>[0-9]+)/$',
+        never_cache(views.AquiferRetrieveAPIView.as_view()),
+        name='aquifer-retrieve'
+    ),
+
     # Aquifers home (loads aquifers application)
     url(r'^aquifers/', views.AquiferHomeView.as_view(), name='aquifers-home')
 ]
