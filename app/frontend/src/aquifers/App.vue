@@ -16,7 +16,7 @@
   <div>
     <gwells-header/>
     <main role="main" class="p-0 mt-0 mt-sm-4 container container-wide">
-      <router-view/>
+      <aquifer-search/>
     </main>
     <gwells-footer/>
   </div>
@@ -25,20 +25,21 @@
 <script>
 import Header from '@/common/components/Header'
 import Footer from '@/common/components/Footer'
+import AquiferSearch from './components/Search'
 
 export default {
   name: 'App',
   components: {
     'gwells-header': Header,
-    'gwells-footer': Footer
+    'gwells-footer': Footer,
+    'aquifer-search': AquiferSearch
   }
 }
 </script>
 
 <style lang="scss">
-@import "../common/common.scss";
-
+@import '../common/common.scss';
 .container-wide {
-  max-width: 1400px;
+  max-width: 1400px
 }
 </style>

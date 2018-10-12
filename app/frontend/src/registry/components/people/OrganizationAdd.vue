@@ -1,5 +1,5 @@
 <template>
-  <b-modal id="orgAddModal" title="Add a Company" hide-footer @shown="focusInput()">
+  <b-modal id="orgModal" title="Add a Company" hide-footer @shown="focusInput()">
     <div class="col-xs-12" v-if="error">
       <api-error :error="error" resetter="SET_ERROR"></api-error>
     </div>
@@ -8,24 +8,26 @@
           <b-row>
             <b-col cols="12">
               <b-form-group
+                id="orgNameInputGroup"
                 label="Company name:"
-                label-for="orgAddNameInput">
+                label-for="orgNameInput">
                 <b-form-input
-                    id="orgAddNameInput"
+                    id="orgNameInput"
                     type="text"
                     v-model="orgForm.name"
                     required
-                    ref="orgAddNameInput"/>
+                    ref="orgNameInput"/>
               </b-form-group>
             </b-col>
           </b-row>
           <b-row class="mt-3">
             <b-col cols="12">
               <b-form-group
+                id="orgAddressInputGroup"
                 label="Street address:"
-                label-for="orgAddAddressInput">
+                label-for="orgAddressInput">
                 <b-form-input
-                    id="orgAddAddressInput"
+                    id="orgAddressInput"
                     type="text"
                     v-model="orgForm.street_address"/>
               </b-form-group>
@@ -34,20 +36,21 @@
           <b-row>
             <b-col cols="12" md="6">
               <b-form-group
+                id="orgCityInputGroup"
                 label="City:"
-                label-for="orgAddCityInput">
+                label-for="orgCityInput">
                 <b-form-input
-                    id="orgAddCityInput"
+                    id="orgCityInput"
                     type="text"
                     v-model="orgForm.city"/>
               </b-form-group>
             </b-col>
             <b-col cols="12" md="6">
               <b-form-group
+                id="provInputGroup"
                 label="Province/State:"
-                label-for="orgAddProvinceInput">
+                label-for="provInput">
                 <b-form-select
-                  id="orgAddProvinceInput"
                   :options="provinceStateOptions"
                   v-model="orgForm.province_state"
                   :state="validation.province_state"
@@ -56,7 +59,7 @@
                     <option :value="''" disabled>Select a province</option>
                   </template>
                 </b-form-select>
-                <b-form-invalid-feedback id="orgAddProvinceFeedback">
+                <b-form-invalid-feedback id="provInputFeedback">
                   <div v-for="(error, index) in fieldErrors.province_state" :key="`urlInput error ${index}`">
                     {{ error }}
                   </div>
@@ -67,10 +70,11 @@
           <b-row>
             <b-col cols="12" md="6">
               <b-form-group
+                id="postalCodeInputGroup"
                 label="Postal code:"
-                label-for="orgAddPostalInput">
+                label-for="postalCodeInput">
                 <b-form-input
-                    id="orgAddPostalInput"
+                    id="postalCodeInput"
                     type="text"
                     v-model="orgForm.postal_code"/>
               </b-form-group>
@@ -79,10 +83,11 @@
           <b-row class="mt-3">
             <b-col cols="12" md="6">
               <b-form-group
+                id="telInputGroup"
                 label="Telephone:"
-                label-for="orgAddPhoneInput">
+                label-for="telInput">
                 <b-form-input
-                    id="orgAddPhoneInput"
+                    id="telInput"
                     type="text"
                     :formatter="formatTel"
                     lazy-formatter
@@ -91,10 +96,11 @@
             </b-col>
             <b-col cols="12" md="6">
               <b-form-group
+                id="faxInputGroup"
                 label="Fax number:"
-                label-for="orgAddFaxInput">
+                label-for="faxInput">
                 <b-form-input
-                    id="orgAddFaxInput"
+                    id="faxInput"
                     type="text"
                     :formatter="formatTel"
                     lazy-formatter
@@ -105,15 +111,16 @@
           <b-row>
             <b-col cols="12" md="6">
               <b-form-group
+                id="emailInputGroup"
                 label="Email:"
-                label-for="orgAddEmailInput">
+                label-for="emailInput">
                 <b-form-input
-                    id="orgAddEmailInput"
+                    id="emailInput"
                     type="text"
                     :state="validation.email"
-                    aria-describedby="orgAddEmailFeedback"
+                    aria-describedby="emailInputFeedback"
                     v-model="orgForm.email"/>
-                <b-form-invalid-feedback>
+                <b-form-invalid-feedback id="emailInputFeedback">
                   <div v-for="(error, index) in fieldErrors.email" :key="`urlInput error ${index}`">
                     {{ error }}
                   </div>
@@ -122,21 +129,22 @@
             </b-col>
             <b-col cols="12" md="6">
               <b-form-group
+                id="websiteInputGroup"
                 label="Website:"
-                label-for="orgAddWebsiteInput">
+                label-for="websiteInput">
                 <b-form-input
-                    id="orgAddWebsiteInput"
+                    id="websiteInput"
                     type="text"
                     :state="validation.website_url"
-                    aria-describedby="orgAddWebsiteFeedback websiteInputHelp"
+                    aria-describedby="websiteInputFeedback websiteInputHelp"
                     v-model="orgForm.website_url"
                     placeholder="e.g.: http://www.example.com"/>
-                <b-form-invalid-feedback>
+                <b-form-invalid-feedback id="websiteInputFeedback">
                   <div v-for="(error, index) in fieldErrors.website_url" :key="`urlInput error ${index}`">
                     {{ error }}
                   </div>
                 </b-form-invalid-feedback>
-                <b-form-text>
+                <b-form-text id="websiteInputHelp">
                   Use a full website address, including http://
                 </b-form-text>
               </b-form-group>
@@ -145,7 +153,7 @@
           <b-row class="my-3">
             <b-col>
               <b-button type="submit" class="mr-2" variant="primary" :disabled="orgSubmitLoading">Save</b-button>
-              <b-button type="reset" variant="light" id="orgAddFormResetButton">Cancel</b-button>
+              <b-button type="reset" variant="light" id="orgFormResetButton">Cancel</b-button>
             </b-col>
           </b-row>
         </b-form>
@@ -216,7 +224,7 @@ export default {
       }
       ApiService.post('organizations', org).then((response) => {
         this.orgSubmitLoading = false
-        this.$root.$emit('bv::hide::modal', 'orgAddModal')
+        this.$root.$emit('bv::hide::modal', 'orgModal')
         this.$emit('newOrgAdded', response.data.org_guid)
       }).catch((e) => {
         this.orgSubmitLoading = false
@@ -239,10 +247,10 @@ export default {
         fax_tel: '',
         website_url: ''
       })
-      this.$root.$emit('bv::hide::modal', 'orgAddModal')
+      this.$root.$emit('bv::hide::modal', 'orgModal')
     },
     focusInput () {
-      this.$refs.orgAddNameInput.focus()
+      this.$refs.orgNameInput.focus()
     },
     resetFieldErrors () {
       this.fieldErrors = {

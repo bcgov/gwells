@@ -65,7 +65,7 @@ class StackWells():
         """
         Using an existing well as a reference, create a legacy well record
         """
-        # TODO: Deal with Lithology, LtsaOwner, AquiferWell etc. (This should
+        # TODO: Deal with Lithology, LtsaOwner, LinerPerforation, AquiferWell, Screen etc. (This should
         # work magically if the serializers are implemented correctly)
         # Serialize the well.
         well_serializer = WellStackerSerializer(well)
@@ -75,10 +75,12 @@ class StackWells():
         data['work_end_date'] = data.pop('construction_end_date', None)
         # Filter out None and '' values, they can interfere with validation.
         data = {k: v for (k, v) in data.items() if v is not None and v != ''}
+        # Specify the submission type as legacy.
+        data['well_activity_type'] = WellActivityCode.types.legacy().code
         # Retain the well reference.
         data['well'] = well.well_tag_number
         # De-serialize the well into a submission.
-        submission_serializer = submissions.serializers.WellSubmissionLegacySerializer(data=data)
+        submission_serializer = submissions.serializers.WellSubmissionSerializer(data=data)
 
         # Validate the data, throwing an exception on error.
         if submission_serializer.is_valid(raise_exception=True):
@@ -136,7 +138,7 @@ class StackWells():
         composite = {}
         for submission in records:
             source_target_map = activity_type_map.get(submission.well_activity_type.code, {})
-            serializer = submissions.serializers.WellSubmissionStackerSerializer(submission)
+            serializer = submissions.serializers.WellSubmissionSerializer(submission)
             for source_key, value in serializer.data.items():
                 # We only consider items with values, and keys that are in our target
                 if value:
