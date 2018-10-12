@@ -154,6 +154,7 @@ pipeline {
               // promote the newly built image to DEV
               echo "Tagging new image to DEV imagestream."
               openshift.tag("${TOOLS_PROJECT}/gwells-application:${PR_NUM}", "${DEV_PROJECT}/gwells-${DEV_SUFFIX}-${PR_NUM}:dev")  // todo: clean up labels/tags
+              openshift.tag("${TOOLS_PROJECT}/gwells-postgresql:dev", "${DEV_PROJECT}/gwells-postgresql-${DEV_SUFFIX}-${PR_NUM}:dev")  // todo: clean up labels/tags
 
               // monitor the deployment status and wait until deployment is successful
               echo "Waiting for deployment to dev..."
@@ -376,6 +377,19 @@ pipeline {
               // this will allow old images that were not promoted to TEST/PROD to be cleaned up
               openshift.tag("${TOOLS_PROJECT}/gwells-application:${PR_NUM}", "-d")
 
+              // monitor the deployment status and wait until deployment is successful
+              echo "Waiting for deployment to TEST..."
+              def newVersion = openshift.selector("dc", "gwells-${TEST_SUFFIX}").object().status.latestVersion
+              def pods = openshift.selector('pod', [deployment: "gwells-pgsql-${TEST_SUFFIX}-${newVersion}"])
+
+              // wait until at least one pod reports as ready
+              pods.untilEach(1) {
+                return it.object().status.containerStatuses.every {
+                  it.ready
+                }
+              }
+
+              echo "TEST deployment successful."
             }
           }
         }
