@@ -206,7 +206,8 @@ LOGGING = {
             'format': '%(levelname)s %(message)s'
         },
         'debug': {
-            'format': '%(levelname)s %(asctime)s %(filename)s[%(lineno)d]:%(module)s::%(funcName)s %(message)s'
+            'format':
+                '%(levelname)s %(asctime)s %(filename)s[%(lineno)d]:%(module)s::%(funcName)s %(message)s'
         }
     },
     'handlers': {
@@ -290,3 +291,19 @@ if DEBUG:
     CORS_ORIGIN_WHITELIST = ('localhost:8080', '127.0.0.1:8080')
 
 ADD_REVERSION_ADMIN = True
+
+
+# It can be very useful to disable migrations when testing. This piece of code allows one to disable
+# migrations by specifying an environemnt variable DISABLE_MIGRATIONS. Used in conjunction with
+# --keepdb, a developer can run mosts unit tests, and run them fast.
+#
+# e.g.: DATABASE_ENGINE=sqlite DISABLE_MIGRATIONS=DISABLE_MIGRATIONS python manage.py test\
+#  submissions.tests.TestWellSubmissionListSerializer --keepdb
+class DisableMigrations(object):
+    def __contains__(self, item):
+        return True
+
+    def __getitem__(self, item):
+        return None
+if get_env_variable('DISABLE_MIGRATIONS', None, strict=False, warn=False) == 'DISABLE_MIGRATIONS':
+    MIGRATION_MODULES = DisableMigrations()
