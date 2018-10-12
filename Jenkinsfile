@@ -510,7 +510,7 @@ parallel (
                             key:'GWELLS_REGISTRY_USERNAME',
                             secretName: 'functional-tests-secrets',
                             secretKey: 'gwells_registry_username'
-                        )
+                        ),
                         secretEnvVar(
                            key:'GWELLS_PASSWORD',
                            secretName: 'functional-tests-secrets',
