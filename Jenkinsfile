@@ -402,8 +402,8 @@ pipeline {
       steps {
         script {
           podTemplate(
-                label: "nodejs-${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}",
-                name: "nodejs-${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}",
+                label: "nodejs-${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}-${env.CHANGE_ID}",
+                name: "nodejs-${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}-${env.CHANGE_ID}",
                 serviceAccount: 'jenkins',
                 cloud: 'openshift',
                 containers: [
@@ -447,11 +447,11 @@ pipeline {
                     )
                 ]
             ) {
-                node("nodejs-${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}") {
+                node("nodejs-${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}-${env.CHANGE_ID}") {
                     checkout scm
                     dir('api-tests') {
                         sh 'npm install -g newman'
-                        String BASEURL = "https://${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}.pathfinder.gov.bc.ca/gwells"
+                        String BASEURL = "https://gwells-${TEST_SUFFIX}.pathfinder.gov.bc.ca/gwells"
                         try {
                             sh """
                                 newman run ./registries_api_tests.json \
