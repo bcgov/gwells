@@ -8,9 +8,9 @@
       <!-- Company selector (used to select company to edit) -->
       <b-row>
         <b-col cols="12" md="7">
-          <b-form-group label="Select a company:" label-for="orgEditSelectDropdown">
+          <b-form-group label="Select a company:" label-for="manageCompanySelect">
             <v-select
-                id="orgEditSelectDropdown"
+                id="manageCompanySelect"
                 :options="companies"
                 label="org_verbose_name"
                 v-model="selectedCompany"
@@ -29,9 +29,9 @@
       <b-row>
         <b-col>
           <b-button
-              id="orgAddNewButton"
+              id="addNewOrgButton"
               type="button"
-              v-b-modal.orgAddModal
+              v-b-modal.orgModal
               variant="primary"
               size="sm"
               class="mb-5">
@@ -41,7 +41,7 @@
       </b-row>
       <b-row>
         <b-col>
-          <b-alert variant="success" id="orgAddSuccessAlert" :show="companyAddSuccess" dismissible @dismissed="companyAddSuccess=false">Company added.</b-alert>
+          <b-alert variant="success" :show="companyAddSuccess" dismissible @dismissed="companyAddSuccess=false">Company added.</b-alert>
         </b-col>
       </b-row>
 
@@ -52,22 +52,24 @@
           <b-row>
             <b-col cols="12" md="5">
                 <b-form-group
+                  id="companyNameInputGroup"
                   label="Company name:"
-                  label-for="orgEditNameInput">
+                  label-for="companyNameInput">
                   <b-form-input
                     :disabled="!selectedCompany"
-                    id="orgEditNameInput"
+                    id="companyNameInput"
                     type="text"
                     v-model="companyForm.name"/>
                 </b-form-group>
             </b-col>
               <b-col cols="12" md="5" offset-md="1">
                 <b-form-group
+                  id="companyAddressInputGroup"
                   label="Street address:"
-                  label-for="orgEditAddressInput">
+                  label-for="companyAddressInput">
                   <b-form-input
                     :disabled="!selectedCompany"
-                    id="orgEditAddressInput"
+                    id="companyAddressInput"
                     type="text"
                     v-model="companyForm.street_address"/>
                 </b-form-group>
@@ -76,22 +78,24 @@
           <b-row>
             <b-col cols="12" md="5">
                 <b-form-group
+                  id="companyCityInputGroup"
                   label="City:"
-                  label-for="orgEditCityInput">
+                  label-for="companyCityInput">
                   <b-form-input
                     :disabled="!selectedCompany"
-                    id="orgEditCityInput"
+                    id="companyCityInput"
                     type="text"
                     v-model="companyForm.city"/>
                 </b-form-group>
             </b-col>
               <b-col cols="12" md="5" offset-md="1">
                 <b-form-group
+                  id="companyProvinceInputGroup"
                   label="Province:"
-                  label-for="orgEditProvinceInput">
+                  label-for="companyProvinceInput">
                   <b-form-select
                     :disabled="!selectedCompany"
-                    id="orgEditProvinceInput"
+                    id="companyProvinceInput"
                     :state="validation.province_state"
                     :options="provinceStateOptions"
                     aria-describedby="provInputFeedback"
@@ -109,11 +113,12 @@
           <b-row>
             <b-col cols="12" md="5">
                 <b-form-group
+                  id="postalCodeInputGroup"
                   label="Postal code:"
-                  label-for="orgEditPostalInput">
+                  label-for="postalCodeInput">
                   <b-form-input
                     :disabled="!selectedCompany"
-                    id="orgEditPostalInput"
+                    id="postalCodeInput"
                     type="text"
                     v-model="companyForm.postal_code"/>
                 </b-form-group>
@@ -122,11 +127,12 @@
           <b-row class="mt-4">
             <b-col cols="12" md="5">
               <b-form-group
+                id="companyTelInputGroup"
                 label="Office number:"
-                label-for="orgEditPhoneInput">
+                label-for="companyTelInput">
                 <b-form-input
                   :disabled="!selectedCompany"
-                  id="orgEditPhoneInput"
+                  id="companyTelInput"
                   type="text"
                   :formatter="formatTel"
                   lazy-formatter
@@ -135,11 +141,12 @@
             </b-col>
             <b-col cols="12" md="5" offset-md="1">
                 <b-form-group
+                  id="companyFaxInputGroup"
                   label="Fax number:"
-                  label-for="orgEditFaxInput">
+                  label-for="companyFaxInput">
                   <b-form-input
                     :disabled="!selectedCompany"
-                    id="orgEditFaxInput"
+                    id="companyFaxInput"
                     type="text"
                     :formatter="formatTel"
                     lazy-formatter
@@ -150,16 +157,17 @@
           <b-row>
             <b-col cols="12" md="5">
               <b-form-group
+                id="companyEmailInputGroup"
                 label="Email:"
-                label-for="orgEditEmailInput">
+                label-for="companyEmailInput">
                 <b-form-input
-                    id="orgEditEmailInput"
+                    id="companyEmailInput"
                     type="text"
                     :state="validation.email"
                     :disabled="!selectedCompany"
-                    aria-describedby="orgEditEmailFeedback"
+                    aria-describedby="companyEmailInputFeedback"
                     v-model="companyForm.email"/>
-                <b-form-invalid-feedback id="orgEditEmailFeedback">
+                <b-form-invalid-feedback id="companyEmailInputFeedback">
                   <div v-for="(error, index) in fieldErrors.email" :key="`urlInput error ${index}`">
                     {{ error }}
                   </div>
@@ -168,16 +176,17 @@
             </b-col>
             <b-col cols="12" md="5" offset-md="1">
               <b-form-group
+                id="companyWebsiteInputGroup"
                 label="Website:"
-                label-for="orgEditWebsiteInput">
+                label-for="companyWebsiteInput">
                 <b-form-input
                   :disabled="!selectedCompany"
-                  id="orgEditWebsiteInput"
+                  id="companyWebsiteInput"
                   :state="validation.website_url"
-                  aria-describedby="orgEditWebsiteFeedback"
+                  aria-describedby="websiteInputFeedback"
                   type="text"
                   v-model="companyForm.website_url"/>
-                <b-form-invalid-feedback id="orgEditWebsiteFeedback">
+                <b-form-invalid-feedback id="websiteInputFeedback">
                     <div v-for="(error, index) in fieldErrors.website_url" :key="`websiteInput error ${index}`">
                       {{ error }}
                     </div>
@@ -193,7 +202,7 @@
           </b-row>
           <b-row>
             <b-col>
-              <b-alert class="mt-3" variant="success" id="orgUpdateSuccessAlert" :show="companyUpdateSuccess" dismissible @dismissed="companyUpdateSuccess=false">
+              <b-alert class="mt-3" variant="success" :show="companyUpdateSuccess" dismissible @dismissed="companyUpdateSuccess=false">
                 Successfully updated company information.
               </b-alert>
             </b-col>
@@ -201,10 +210,9 @@
 
           <!-- Modals for confirming update/cancel editing -->
           <b-modal
-              id="orgUpdateModal"
               v-model="confirmSubmitModal"
               centered
-              title="Confirm update"
+              title="Confirm save"
               @shown="focusSubmitModal"
               :return-focus="$refs.orgUpdateSaveBtn">
             Are you sure you want to save these changes?
@@ -277,7 +285,6 @@
             </div>
       </div>
       <b-modal
-          id="orgDeleteModal"
           v-model="companyDeleteModal"
           centered
           title="Confirm delete"
@@ -293,7 +300,7 @@
           </b-btn>
         </div>
       </b-modal>
-      <b-alert variant="success" class="mt-3" id="orgDeleteSuccessAlert" :show="!!companyDeleted" dismissible @dismissed="companyDeleted=false">
+      <b-alert variant="success" class="mt-3" :show="!!companyDeleted" dismissible @dismissed="companyDeleted=false">
           {{ companyDeleted }} removed.
       </b-alert>
     </b-card>

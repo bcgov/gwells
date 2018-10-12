@@ -17,19 +17,10 @@ from django_filters import rest_framework as filters
 from django.views.generic import TemplateView
 
 from rest_framework.filters import SearchFilter
-from rest_framework.generics import ListAPIView, RetrieveAPIView
+from rest_framework.generics import ListAPIView
 
 from aquifers.models import Aquifer
-from aquifers.serializers import AquiferSerializer
-
-class AquiferRetrieveAPIView(RetrieveAPIView):
-    """List aquifers
-    get: return details of aquifers
-    """
-
-    queryset = Aquifer.objects.all()
-    lookup_field = 'aquifer_id'
-    serializer_class = AquiferSerializer
+from aquifers.serializers import AquiferListSerializer
 
 class AquiferListAPIView(ListAPIView):
     """List aquifers
@@ -37,7 +28,7 @@ class AquiferListAPIView(ListAPIView):
     """
 
     queryset = Aquifer.objects.all()
-    serializer_class = AquiferSerializer
+    serializer_class = AquiferListSerializer
     filter_backends = (filters.DjangoFilterBackend,SearchFilter)
     filter_fields = ('aquifer_id',)
     search_fields = ('aquifer_name',)

@@ -12,7 +12,6 @@ services:
   webapp:
     image: node:8
     environment:
-      DEBUG: "True"
       AXIOS_BASE_URL: http://127.0.0.1:8000/gwells/api/v1/
       CHOKIDAR_USEPOLLING: "True"
     command: /bin/bash -c "

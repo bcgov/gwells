@@ -95,7 +95,7 @@
           :wellLocationDescription.sync="form.well_location_description"
         />
 
-        <!-- Coords -->
+        <!-- Coords and Method of Drilling -->
         <coords class="my-3"
           v-if="currentStep === 'wellCoords' || (formIsFlat && flatForm.wellCoords)"
           :latitude.sync="form.latitude"
@@ -316,7 +316,6 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
 import ApiService from '@/common/services/ApiService.js'
 import { FETCH_CODES } from '../store/actions.types.js'
 import inputFormatMixin from '@/common/inputFormatMixin.js'
@@ -462,8 +461,7 @@ export default {
       })
 
       return components
-    },
-    ...mapGetters(['codes'])
+    }
   },
   methods: {
     formSubmit () {
@@ -471,6 +469,8 @@ export default {
 
       // delete "meta" data (form input that need not be submitted) stored within form object
       delete data.meta
+
+      data['well_activity_type'] = this.activityType
 
       // replace the "person responsible" object with the person's guid
       if (data.driller_responsible && data.driller_responsible.person_guid) {
@@ -487,10 +487,7 @@ export default {
       this.formSubmitSuccess = false
       this.formSubmitError = false
       this.errors = {}
-      // Depending on the type of submission (construction/decommission/alteration/edit) we post to
-      // different endpoints.
-      const PATH = this.codes.activity_types.find((item) => item.code === this.activityType).path
-      ApiService.post(PATH, data).then(() => {
+      ApiService.post('submissions', data).then(() => {
         this.formSubmitSuccess = true
         this.resetForm()
       }).catch((error) => {
