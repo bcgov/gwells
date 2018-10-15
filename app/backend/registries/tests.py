@@ -61,7 +61,8 @@ class AuthenticatedAPITestCase(APITestCase):
         self.user.save()
         self.user.profile.save()
 
-        roles_to_groups(self.user, ['gwells_admin'])
+        roles_to_groups(self.user, [REGISTRIES_ADJUDICATOR_ROLE, REGISTRIES_AUTHORITY_ROLE,
+                                    REGISTRIES_VIEWER_ROLE])
         self.client.force_authenticate(self.user)
 
 
