@@ -30,7 +30,7 @@ class AquiferSerializer(serializers.ModelSerializer):
     vulnerability_description = serializers.SlugRelatedField(
         source='vulnerability', read_only=True, slug_field='description')
     quality_concern_description = serializers.SlugRelatedField(
-        source='quality_concert', read_only=True, slug_field='description')
+        source='quality_concern', read_only=True, slug_field='description')
     known_water_use_description = serializers.SlugRelatedField(
         source='known_water_use', read_only=True, slug_field='description')
 
