@@ -49,7 +49,7 @@ class TestPermissionsViewRights(APITestCase):
 
 class TestPermissionsEditRights(APITestCase):
 
-    fixtures = ['gwells-codetables.json', ]
+    fixtures = ['gwells-codetables.json', 'wellsearch-codetables.json' ]
 
     def setUp(self):
         user, created = User.objects.get_or_create(username='edit_rights')
