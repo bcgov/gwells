@@ -105,13 +105,13 @@
               </b-form-radio-group>
             </td>
             <td class="pt-1 py-0">
-              <b-btn size="sm" variant="primary" @click="removeRowIfOk(casing)" class="mt-2"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
+              <b-btn size="sm" variant="primary" :id="`removeCasingRowBtn${index}`" @click="removeRowIfOk(casing)" class="mt-2"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
             </td>
           </tr>
         </tbody>
       </table>
     </div>
-    <b-btn size="sm" variant="primary" @click="addRow"><i class="fa fa-plus-square-o"></i> Add row</b-btn>
+    <b-btn size="sm" id="addCasingRowBtn" variant="primary" @click="addRow"><i class="fa fa-plus-square-o"></i> Add row</b-btn>
     <b-modal
         v-model="confirmRemoveModal"
         centered
@@ -197,7 +197,7 @@ export default {
     ...mapGetters(['codes'])
   },
   created () {
-    // When component created, add an initial row of lithology.
+    // When component created, add an initial row of casings.
     if (!this.casingsInput.length) {
       this.casingsInput.push({}, {}, {})
     }
