@@ -12,7 +12,7 @@ from submissions.serializers import (WellSubmissionListSerializer, WellConstruct
 
 class TestPermissionsNotAuthenticated(APITestCase):
 
-    def test_no_authenticated_attemps_submit(self):
+    def test_not_authenticated_attemps_submit(self):
         # As an unauthenticated user, I should not be authorised to get a submission list.
         url = reverse('submissions-list')
         response = self.client.get(url, {}, format='json')

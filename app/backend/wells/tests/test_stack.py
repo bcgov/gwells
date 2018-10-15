@@ -19,11 +19,30 @@ from django.test import TestCase
 from gwells.models import ProvinceStateCode
 from wells.models import Well, ActivitySubmission, Casing, Screen, LinerPerforation
 from submissions.models import WellActivityCode
-from wells.stack import StackWells
+from wells.stack import StackWells, overlap
 from registries.models import Person
 
 
 logger = logging.getLogger(__name__)
+
+
+class OverlapTest(TestCase):
+
+    def test_overlap(self):
+        # 0-1 ; 1-2 ; does not overlap.
+        self.assertFalse(overlap((0, 1), (1, 2)))
+
+    def test_overlap(self):
+        # 0-1 ; 0-1 ; does overlap.
+        self.assertTrue(overlap((0, 1), (0, 1)))
+
+    def test_overlap(self):
+        # 0-2 ; 1-2 ; does overlap.
+        self.assertTrue(overlap((0, 2), (1, 2)))
+
+    def test_overlap(self):
+        # 0-2 ; 1-3 ; does overlap.
+        self.assertTrue(overlap((0, 2), (1, 3)))
 
 
 class SeriesMergeTest(TestCase):
