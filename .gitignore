@@ -77,8 +77,6 @@ var/
 .installed.cfg
 *.egg
 webpack-stats.json
-api-tests/.envrc
-functional-tests/.envrc
 app/backend/.env
 *.secret_env
 
@@ -133,6 +131,7 @@ functional-tests/src/test/groovy/testtamplet.txt
 
 #virtual env
 /deactivate
+venv
 .venv
 venv
 .direnv

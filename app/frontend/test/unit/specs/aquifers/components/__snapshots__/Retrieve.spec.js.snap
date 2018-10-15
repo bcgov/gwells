@@ -1,0 +1,181 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Retrieve Component Matches the snapshot 1`] = `
+<div
+  class="card p-3 mb-4"
+>
+  <div
+    class="container"
+  >
+    <div
+      class="row border-bottom mb-3"
+    >
+      <div
+        class="col"
+      >
+        <h5>
+          Aquifer Summary
+        </h5>
+      </div>
+       
+      <div
+        class="col-auto"
+      >
+        <a
+          class="print fa fa-print fa-lg d-print-none"
+          href="#"
+          title="Print"
+        />
+      </div>
+    </div>
+     
+    <dl
+      class="row"
+    >
+      <dt
+        class="col-sm-2"
+      >
+        Aquifer number
+      </dt>
+       
+      <dd
+        class="col-sm-4"
+      >
+        4
+      </dd>
+       
+      <dt
+        class="col-sm-2"
+      >
+        Year of mapping
+      </dt>
+       
+      <dd
+        class="col-sm-4"
+      >
+        1993
+      </dd>
+       
+      <dt
+        class="col-sm-2"
+      >
+        Aquifer name
+      </dt>
+       
+      <dd
+        class="col-sm-4"
+      >
+        Aggasiz
+      </dd>
+       
+      <dt
+        class="col-sm-2"
+      >
+        Litho stratigraphic unit
+      </dt>
+       
+      <dd
+        class="col-sm-4"
+      >
+        Fraser River Sediments
+      </dd>
+       
+      <dt
+        class="col-sm-2"
+      >
+        Descriptive location
+      </dt>
+       
+      <dd
+        class="col-sm-4"
+      >
+        Aggasiz/Sea Bird Island
+      </dd>
+       
+      <dt
+        class="col-sm-2"
+      >
+        Vulnerability
+      </dt>
+       
+      <dd
+        class="col-sm-4"
+      >
+        High
+      </dd>
+       
+      <dt
+        class="col-sm-2"
+      >
+        Material type
+      </dt>
+       
+      <dd
+        class="col-sm-4"
+      >
+        Sand and Gravel
+      </dd>
+       
+      <dt
+        class="col-sm-2"
+      >
+        Subtype
+      </dt>
+       
+      <dd
+        class="col-sm-4"
+      >
+        Unconfined sand and gravel - large river system
+      </dd>
+       
+      <dt
+        class="col-sm-2"
+      >
+        Quality concerns
+      </dt>
+       
+      <dd
+        class="col-sm-4"
+      >
+        
+      </dd>
+       
+      <dt
+        class="col-sm-2"
+      >
+        Productivity
+      </dt>
+       
+      <dd
+        class="col-sm-4"
+      >
+        High
+      </dd>
+       
+      <dt
+        class="col-sm-2"
+      >
+        Size (km²)
+      </dt>
+       
+      <dd
+        class="col-sm-4"
+      >
+        63.3
+      </dd>
+       
+      <dt
+        class="col-sm-2"
+      >
+        Demand
+      </dt>
+       
+      <dd
+        class="col-sm-4"
+      >
+        
+      </dd>
+    </dl>
+  </div>
+</div>
+`;
