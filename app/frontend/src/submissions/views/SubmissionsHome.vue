@@ -19,13 +19,13 @@
         <b-row>
           <b-col class="text-right">
             <b-btn size="sm" variant="outline-primary" @click="saveForm">
-              Save
+              Save report progress
               <transition name="bounce" mode="out-in">
                   <i v-show="saveFormSuccess" class="fa fa-check text-success"></i>
               </transition>
             </b-btn>
-            <b-btn size="sm" variant="outline-primary" @click="loadConfirmation" ref="confirmLoadBtn">
-              Load
+            <b-btn size="sm" variant="outline-primary" @click="loadConfirmation" ref="confirmLoadBtn" :disabled="isLoadFormDisabled">
+              Load saved report
               <transition name="bounce">
                   <i v-show="loadFormSuccess" class="fa fa-check text-success"></i>
               </transition>
@@ -245,7 +245,7 @@
           </b-col>
           <b-col :class="`pr-4 ${formIsFlat ? '':'text-right'}`">
             <b-btn v-if="step < maxSteps && !formIsFlat" @click="step++" variant="primary">Next</b-btn>
-            <b-btn v-else id="formSubmitButton" type="submit" variant="primary" ref="activitySubmitBtn" :disabled="formSubmitLoading">Submit</b-btn>
+            <b-btn v-else id="formSubmitButton" type="submit" variant="primary" ref="activitySubmitBtn">Submit</b-btn>
           </b-col>
         </b-row>
       </b-form>
@@ -373,6 +373,7 @@ export default {
       formSubmitSuccess: false,
       formSubmitError: false,
       saveFormSuccess: false,
+      hasHadSaveFormSuccess: false,
       loadFormSuccess: false,
       confirmLoadModal: false,
       // componentUpdateTrigger can be appended to a component's key. Changing this value will cause
@@ -462,6 +463,10 @@ export default {
       })
 
       return components
+    },
+    isLoadFormDisabled () {
+      const storedData = localStorage.getItem('savedFormData')
+      return storedData === null && !this.hasHadSaveFormSuccess
     },
     ...mapGetters(['codes'])
   },
@@ -606,7 +611,7 @@ export default {
       const data = JSON.stringify(this.form)
       localStorage.setItem('savedFormData', data)
       setTimeout(() => { this.saveFormSuccess = true }, 10)
-      setTimeout(() => { this.saveFormSuccess = false }, 1000)
+      setTimeout(() => { this.saveFormSuccess = false; this.hasHadSaveFormSuccess = true }, 1000)
     },
     loadForm () {
       this.saveStatusReset()
