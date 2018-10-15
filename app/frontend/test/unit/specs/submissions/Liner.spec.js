@@ -53,27 +53,4 @@ describe('Liner.vue', () => {
     wrapper.find('#removeLinerPerfRowBtn0').trigger('click')
     expect(wrapper.vm.linerPerforationsInput.length).toBe(2)
   })
-  // it('Passes errors into the input components', () => {
-  //   const wrapper = shallowMount(Liner, {
-  //     localVue,
-  //     store,
-  //     sync: true,
-  //     propsData: {
-  //       Liner: []
-  //     }
-  //   })
-  //   wrapper.setProps({
-  //     errors: {
-  //       casing_set: [
-  //         {
-  //           start: [
-  //             'Test error for start field'
-  //           ]
-  //         }
-  //       ]
-  //     }
-  //   })
-  //   const errMsg = wrapper.find('#casing_from_0InvalidFeedback')
-  //   expect(errMsg.text()).toContain('Test error for start field')
-  // })
 })
