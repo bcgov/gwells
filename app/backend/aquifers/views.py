@@ -19,16 +19,19 @@ from django.views.generic import TemplateView
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.filters import SearchFilter
-from rest_framework.generics import ListAPIView, RetrieveAPIView
+from rest_framework.generics import ListAPIView, RetrieveUpdateAPIView
 
 from aquifers import models
 from aquifers import serializers
+from aquifers.permissions import HasAquiferEditRoleOrReadOnly
 
-class AquiferRetrieveAPIView(RetrieveAPIView):
+
+class AquiferRetrieveAPIView(RetrieveUpdateAPIView):
     """List aquifers
     get: return details of aquifers
     """
 
+    permission_classes = (HasAquiferEditRoleOrReadOnly,)
     queryset = models.Aquifer.objects.all()
     lookup_field = 'aquifer_id'
     serializer_class = serializers.AquiferSerializer
@@ -81,6 +84,7 @@ class AquiferSubtypeListAPIView(ListAPIView):
     queryset = models.AquiferSubtype.objects.all()
     serializer_class = serializers.AquiferSubtypeSerializer
 
+
 class AquiferProductivityListAPIView(ListAPIView):
     """List aquifer productivity codes
     get: return a list of aquifer productivity codes
@@ -88,6 +92,7 @@ class AquiferProductivityListAPIView(ListAPIView):
 
     queryset = models.AquiferProductivity.objects.all()
     serializer_class = serializers.AquiferProductivitySerializer
+
 
 class AquiferDemandListAPIView(ListAPIView):
     """List aquifer demand codes
@@ -97,6 +102,7 @@ class AquiferDemandListAPIView(ListAPIView):
     queryset = models.AquiferDemand.objects.all()
     serializer_class = serializers.AquiferDemandSerializer
 
+
 class WaterUseListAPIView(ListAPIView):
     """List Water Use Codes
     get: return a list of water use codes
@@ -104,6 +110,7 @@ class WaterUseListAPIView(ListAPIView):
 
     queryset = models.WaterUse.objects.all()
     serializer_class = serializers.WaterUseSerializer
+
 
 class AquiferHomeView(TemplateView):
     """Loads the html file containing the Aquifer web app"""
