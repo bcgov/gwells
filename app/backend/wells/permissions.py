@@ -11,7 +11,7 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
-from rest_framework.permissions import DjangoModelPermissions, BasePermission
+from rest_framework.permissions import BasePermission
 from gwells.roles import WELLS_VIEWER_ROLE, WELLS_EDIT_ROLE
 
 
@@ -21,13 +21,11 @@ class WellsDocumentViewPermissions(BasePermission):
     """
 
     def has_permission(self, request, view):
-        if request.user and request.user.is_authenticated and request.user.groups.filter(
-                name=WELLS_VIEWER_ROLE).exists():
-            return True
-        return False
+        return request.user and request.user.is_authenticated and\
+            request.user.groups.filter(name=WELLS_VIEWER_ROLE).exists()
 
 
-class WellsEditPermissions(DjangoModelPermissions):
+class WellsEditPermissions(BasePermission):
     """
     Grants permissions to edit wells to users
     """
@@ -38,7 +36,5 @@ class WellsEditPermissions(DjangoModelPermissions):
         If user is in the edit group, then group permissions will dictate (e.g. user is
         in a group that has 'add_well' permission)
         """
-        if request.user and request.user.is_authenticated and request.user.groups.filter(
-                name=WELLS_EDIT_ROLE).exists():
-            return super().has_permission(request, view)
-        return False
+        return request.user and request.user.is_authenticated and\
+            request.user.groups.filter(name=WELLS_EDIT_ROLE).exists()

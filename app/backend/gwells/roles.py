@@ -70,7 +70,7 @@ def roles_to_groups(user, roles: Tuple[str] = None):
             if not group:
                 # From time to time, a new role will be added to keycloak, and this role will not yet
                 # exist in the django database as a group. When this happens, we create it.
-                logger.error('Group "{}" does not exist. Creating it....'.format(role))
+                logger.info('Group "{}" does not exist. Creating it....'.format(role))
                 group = Group(name=role)
                 group.save()
             group.user_set.add(user)
