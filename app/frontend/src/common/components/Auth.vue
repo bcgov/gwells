@@ -1,11 +1,11 @@
 <template>
   <div>
     <div v-if="!keycloak || (keycloak && !keycloak.authenticated)">
-      <button type="button" :id="`gwells-sso-login${fromMenu ? '-menu':''}`" class="btn btn-light btn-sm" @click="keyCloakLogin()">Log in</button>
+      <button type="button" :id="`${id}-login-button`" class="btn btn-light btn-sm" @click="keyCloakLogin()">Log in</button>
     </div>
     <div v-if="keycloak && keycloak.authenticated">
       <span class="userLoggedInText text-light">{{ keycloak.tokenParsed.name }}</span>
-      <button type="button" class="btn btn-light btn-sm" @click="keyCloakLogout()">Log out</button>
+      <button type="button" :id="`${id}-logout-button`" class="btn btn-light btn-sm" @click="keyCloakLogout()">Log out</button>
     </div>
   </div>
 </template>
@@ -17,9 +17,9 @@ import { SET_ERROR } from '@/registry/store/mutations.types.js'
 
 export default {
   props: {
-    fromMenu: {
-      type: Boolean,
-      default: false
+    id: {
+      type: String,
+      default: 'sso-auth'
     }
   },
   data () {
