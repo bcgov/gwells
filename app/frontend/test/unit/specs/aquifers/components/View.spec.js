@@ -1,5 +1,5 @@
 import { shallowMount, createLocalVue } from '@vue/test-utils'
-import RetrieveComponent from '@/aquifers/components/Retrieve.vue'
+import ViewComponent from '@/aquifers/components/View.vue'
 import Vuex from 'vuex'
 import axios from 'axios'
 
@@ -22,8 +22,8 @@ const aquiferFixture = {
   mapping_year: '1993'
 }
 
-describe('Retrieve Component', () => {
-  const component = (options) => shallowMount(RetrieveComponent, {
+describe('View Component', () => {
+  const component = (options) => shallowMount(ViewComponent, {
     localVue,
     ...options
   })
