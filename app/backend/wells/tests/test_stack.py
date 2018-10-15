@@ -322,7 +322,36 @@ class StackTest(TestCase):
         submissions = ActivitySubmission.objects.filter(well=well)
         # Load the updated well record.
         well = Well.objects.get(well_tag_number=well.well_tag_number)
-        self.assertEqual(submissions.count(), 1, "It is expected that no legacy submission be created")
+        self.assertEqual(submissions.count(), 2, "It is expected that a legacy submission be created")
+        self.assertEqual(new_full_name, well.owner_full_name)
+
+    def test_decomission_submission_to_legacy_well(self):
+        # The well already exists, and we are applying a decommission submission to it.
+        original_full_name = 'Bob'
+        new_full_name = 'Jimbo'
+        # This is the original well record.
+        well = Well.objects.create(
+            owner_full_name=original_full_name,
+            owner_province_state=self.province)
+        # Create a submission.
+        submission = ActivitySubmission.objects.create(
+            owner_full_name=new_full_name,
+            work_start_date=date(2018, 1, 1),
+            work_end_date=date(2018, 2, 1),
+            driller_responsible=self.driller,
+            owner_province_state=self.province,
+            well_activity_type=WellActivityCode.types.decommission(),
+            well=well
+            )
+
+        stacker = StackWells()
+        stacker.process(submission.filing_number)
+
+        # Load all the submissions.
+        submissions = ActivitySubmission.objects.filter(well=well)
+        # Load the updated well record.
+        well = Well.objects.get(well_tag_number=well.well_tag_number)
+        self.assertEqual(submissions.count(), 2, "It is expected that a legacy submission be created")
         self.assertEqual(new_full_name, well.owner_full_name)
 
     def test_construction_field_mapping(self):
