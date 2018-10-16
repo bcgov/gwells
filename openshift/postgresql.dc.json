@@ -124,7 +124,8 @@
             "metadata": {
                 "name": "${DATABASE_SERVICE_NAME}",
                 "annotations":{
-                    "template.openshift.io.bcgov/create": "true"
+                    "template.openshift.io.bcgov/create": "true",
+                    "volume.beta.kubernetes.io/storage-provisioner": "kubernetes.io/glusterfs"
                 }
             },
             "spec": {
@@ -135,7 +136,8 @@
                     "requests": {
                         "storage": "${VOLUME_CAPACITY}"
                     }
-                }
+                },
+                "storageClassName": "gluster-file-db"
             }
         },
         {
