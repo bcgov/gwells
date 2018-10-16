@@ -875,6 +875,7 @@ DECLARE
 BEGIN
   raise notice '...importing gw_aquifer_wells data';
 
+  -- This next INSERT statement will be removed once the new Aquifers app is completed (CodeWithUs)
   INSERT INTO aquifer_well(
     aquifer_well_guid,
     aquifer_id,
@@ -891,9 +892,134 @@ BEGIN
     coalesce(aws.when_updated,aws.when_created)
   FROM wells.gw_aquifer_wells aws INNER JOIN xform_well xform ON aws.well_id = xform.well_id;
 
+  -- 2018-SEPT-24 14:59 GW Aquifer app
+  raise notice '...importing gw_aquifer_attrs data';
+  INSERT INTO aquifer(
+    aquifer_id              
+    ,aquifer_name            
+    ,location_description    
+    ,area   
+    ,aquifer_vulnerablity_code               
+    ,litho_stratographic_unit
+    ,mapping_year              
+    ,notes                     
+    ,aquifer_demand_code       
+    ,water_use_code            
+    ,aquifer_material_code     
+    ,aquifer_productivity_code 
+    ,quality_concern_code      
+    ,aquifer_subtype_code     
+    ,create_user,create_date,update_user,update_date
+    )
+    SELECT
+     attrs.aquifer_id
+    ,attrs.aquifer_name
+    ,attrs.descriptive_location
+    ,attrs.size_km2
+    ,CASE attrs.vulnerability
+        WHEN 'Moderate' THEN 'M'
+        WHEN 'Low'      THEN 'L'
+        WHEN 'High'     THEN 'H'
+        ELSE attrs.vulnerability
+     END AS aquifer_vulnerablity_code
+    ,attrs.litho_stratographic_unit
+    ,null -- from spreadsheet temporary table
+    ,null 
+    ,CASE attrs.demand
+        WHEN 'Moderate' THEN 'M'
+        WHEN 'Low'      THEN 'L'
+        WHEN 'High'     THEN 'H'
+        ELSE attrs.demand
+     END AS aquifer_demand_code
+    ,CASE attrs.type_of_water_use
+        WHEN 'Domestic'           THEN 'D'
+        WHEN 'Multiple'           THEN 'M'
+        WHEN 'Potential Domestic' THEN 'PD'
+        ELSE attrs.type_of_water_use
+     END AS type_of_water_use
+    ,CASE attrs.aquifer_materials
+        WHEN 'Bedrock'         THEN 'B'
+        WHEN 'Gravel'          THEN 'G'
+        WHEN 'Sand'            THEN 'S'
+        WHEN 'Sand and Gravel' THEN 'SG'
+        ELSE attrs.aquifer_materials
+     END AS aquifer_material_code
+    ,CASE attrs.productivity
+        WHEN 'Moderate' THEN 'M'
+        WHEN 'Low'      THEN 'L'
+        WHEN 'High'     THEN 'H'
+        ELSE attrs.productivity
+     END AS aquifer_productivity_code
+    ,CASE attrs.quality_concerns
+        WHEN 'Isolated' THEN 'I'
+        WHEN 'Local'    THEN 'L'
+        WHEN 'Regional' THEN 'R'
+        WHEN 'None'     THEN 'N'
+        ELSE attrs.quality_concerns
+     END AS quality_concern_code
+    ,CASE attrs.aquifer_subtype_code
+        WHEN 'UNK' THEN null
+        ELSE attrs.aquifer_subtype_code
+     END AS aquifer_subtype_code
+    ,attrs.who_created
+    ,attrs.when_created
+    ,coalesce(attrs.who_updated, attrs.who_created)
+    ,coalesce(attrs.when_updated,attrs.when_created)
+    FROM wells.gw_aquifer_attrs attrs;
+
+  -- These next 3 lines will be removed once the new Aquifers app is completed (CodeWithUs)
   raise notice '...gw_aquifer_well data imported';
   SELECT count(*) from aquifer_well into row_count;
   raise notice '% rows loaded into the aquifer_well table',  row_count;
+
+  raise notice '...gw_aquifer_attrs data imported';
+  SELECT count(*) from aquifer into row_count;
+  raise notice '% rows loaded into the aquifer table',  row_count;
+
+  UPDATE aquifer
+  SET    mapping_year = xform.mapping_year
+  FROM   xform_aquifers xform
+  WHERE  aquifer.aquifer_id = xform.aquifer_id
+  AND    xform.mapping_year is not null;
+
+  raise notice '...gw_aquifer_attrs data updated from mapping ';
+
+  UPDATE well
+  SET    aquifer_id = aws.aquifer_id
+  FROM   wells.gw_aquifer_wells aws,
+         wells.wells_wells well_legacy -- to get well_tag_number
+  WHERE  well_legacy.well_id = aws.well_id
+  AND    well_legacy.well_tag_number = well.well_tag_number;
+
+  raise notice '...well data updated from gw_aquifer_wells';
+
+  INSERT INTO hydraulic_property(
+    hydraulic_property_guid  
+  ,storativity              
+  ,transmissivity           
+  ,avi
+  ,well_tag_number        
+  ,create_user,create_date,update_user,update_date
+  )
+  SELECT gen_random_uuid()
+  ,aws.storativity
+  ,aws.transmissivity
+  ,aws.aquifer_vulnerability_index
+  ,well.well_tag_number
+  ,aws.who_created
+  ,aws.when_created
+  ,coalesce(aws.who_updated, aws.who_created)
+  ,coalesce(aws.when_updated,aws.when_created)
+  FROM wells.gw_aquifer_wells aws,
+      wells.wells_wells well_legacy, -- to get well_tag_number
+      well well -- only for wells in GWELLS
+  WHERE  well_legacy.well_id = aws.well_id
+  AND    well_legacy.well_tag_number = well.well_tag_number;
+
+  raise notice '...hydraulic_property data imported';
+  SELECT count(*) from hydraulic_property into row_count;
+  raise notice '% rows loaded into the hydraulic_property table',  row_count;
+
 END;
 $$ LANGUAGE plpgsql;
 COMMENT ON FUNCTION migrate_aquifers () IS 'Load Aquifer Wells, only for the wells that have been replicated.';

@@ -295,19 +295,23 @@ parallel (
                         executed by itself. */
                         sh "oc exec '${podName}' -n '${projectName}' -- bash -c '\
                             cd /opt/app-root/src/backend; \
-                            python manage.py migrate; \
+                            python manage.py migrate \
                         '"
                         sh "oc exec '${podName}' -n '${projectName}' -- bash -c '\
                             cd /opt/app-root/src/backend; \
-                            python manage.py loaddata gwells-codetables.json; \
+                            python manage.py loaddata gwells-codetables.json \
                         '"
                         sh "oc exec '${podName}' -n '${projectName}' -- bash -c '\
                             cd /opt/app-root/src/backend; \
-                            python manage.py loaddata wellsearch-codetables.json registries-codetables.json; \
+                            python manage.py loaddata wellsearch-codetables.json registries-codetables.json \
                         '"
                         sh "oc exec '${podName}' -n '${projectName}' -- bash -c '\
                             cd /opt/app-root/src/backend; \
-                            python manage.py loaddata wellsearch.json.gz registries.json; \
+                            python manage.py loaddata wellsearch.json.gz registries.json \
+                        '"
+                        sh "oc exec '${podName}' -n '${projectName}' -- bash -c '\
+                            cd /opt/app-root/src/backend; \
+                            python manage.py loaddata aquifers.json \
                         '"
                         sh "oc exec '${podName}' -n '${projectName}' -- bash -c '\
                             cd /opt/app-root/src/backend; \
@@ -626,6 +630,14 @@ parallel (
                                     --global-var client_secret=\$GWELLS_API_TEST_CLIENT_SECRET \
                                     -r cli,junit,html
                                 newman run ./submissions_api_tests.json \
+                                    --global-var test_user=\$GWELLS_API_TEST_USER \
+                                    --global-var test_password=\$GWELLS_API_TEST_PASSWORD \
+                                    --global-var base_url=${BASEURL} \
+                                    --global-var auth_server=\$GWELLS_API_TEST_AUTH_SERVER \
+                                    --global-var client_id=\$GWELLS_API_TEST_CLIENT_ID \
+                                    --global-var client_secret=\$GWELLS_API_TEST_CLIENT_SECRET \
+                                    -r cli,junit,html
+                                newman run ./aquifers_api_tests.json \
                                     --global-var test_user=\$GWELLS_API_TEST_USER \
                                     --global-var test_password=\$GWELLS_API_TEST_PASSWORD \
                                     --global-var base_url=${BASEURL} \

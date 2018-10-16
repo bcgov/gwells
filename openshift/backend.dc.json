@@ -547,6 +547,15 @@
                                         }
                                     },
                                     {
+                                        "name": "SSO_IDP_HINT",
+                                        "valueFrom": {
+                                            "configMapKeyRef": {
+                                                "key": "SSO_IDP_HINT",
+                                                "name": "gwells-global-config${NAME_SUFFIX}"
+                                            }
+                                        }
+                                    },
+                                    {
                                         "name": "WEB_CONCURRENCY",
                                         "value": "4"
                                     },

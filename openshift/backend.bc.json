@@ -115,7 +115,7 @@
                 ],
                 "runPolicy": "SerialLatestOnly",
                 "source": {
-                    "contextDir": "docker-images/gwells-python-runtime",
+                    "contextDir": "openshift/docker-images/gwells-python-runtime",
                     "git": {
                         "ref": "master",
                         "uri": "${SOURCE_REPOSITORY_URL}"

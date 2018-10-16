@@ -20,13 +20,6 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 class AquiferMaterial(AuditModel):
     """
     Material choices for describing Aquifer Material
-
-    aquifer_materials
-    -------------------
-    Bedrock
-    Gravel
-    Sand
-    Sand and Gravel
     """
     code = models.CharField(primary_key=True, max_length=10, db_column='aquifer_material_code')
     description = models.CharField(max_length=100)
@@ -47,22 +40,6 @@ class AquiferMaterial(AuditModel):
 class AquiferSubtype(AuditModel):
     """
     Subtypes of Aquifer
-
-    From Trello ticket
-    Aquifer_Subtype	Aquifer_Subtype_Descriptions
-    1a	Unconfined sand and gravel - large river system
-    1b	Unconfined sand and gravel aquifer - medium stream system
-    1c	Unconfined sand and gravel aquifer - small stream system
-    2	Unconfined sand and gravel - deltaic
-    3	Unconfined sand and gravel - alluvial or colluvial fan
-    4a	Unconfined sand and gravel - late glacial outwash 
-    4b	Confined sand and gravel - glacial 
-    4c	Confined sand and gravel - glacio-marine
-    5a	Fractured sedimentary rock
-    5b	Karstic limestone
-    6a	Flat-lying to gently-dipping volcanic bedrock
-    6b	Fractured crystalline bedrock 
-    UNK	Unknown
     """
     code = models.CharField(primary_key=True, max_length=3, db_column='aquifer_subtype_code')
     description = models.CharField(max_length=100)
@@ -80,11 +57,8 @@ class AquiferSubtype(AuditModel):
 
 class AquiferProductivity(AuditModel):
     """
-    Productivity choices for describing Aquifer 
+    Productivity choices for describing Aquifer
     -------------------
-    High (H)
-    Low (L)
-    Moderate (M)
     """
     code = models.CharField(primary_key=True, max_length=1, db_column='aquifer_productivity_code')
     description = models.CharField(max_length=100)
@@ -104,11 +78,7 @@ class AquiferProductivity(AuditModel):
 
 class AquiferDemand(AuditModel):
     """
-    Demand choices for describing Aquifer 
-    -------------------
-    High
-    Low
-    Moderate
+    Demand choices for describing Aquifer
     """
     code = models.CharField(primary_key=True, max_length=1, db_column='aquifer_demand_code')
     description = models.CharField(max_length=100)
@@ -118,7 +88,7 @@ class AquiferDemand(AuditModel):
     expiry_date = models.DateTimeField(blank=True, null=True)
 
     class Meta:
-        db_table = 'aquifer_demand_code'
+        db_table = 'aquifer_demand_code' 
         ordering = ['display_order', 'code']
         verbose_name_plural = 'Aquifer Demand Codes'
 
@@ -130,9 +100,6 @@ class WaterUse(AuditModel):
     """
     Type of Known Water Use choices for describing Aquifer 
     -------------------
-    Domestic
-    Multiple
-    Potential Domestic
     """
     code = models.CharField(primary_key=True, max_length=2, db_column='water_use_code')
     description = models.CharField(max_length=100)
@@ -151,12 +118,6 @@ class WaterUse(AuditModel):
 
 
 class QualityConcern(AuditModel):
-    """
-    Isolated
-    Local
-    None
-    Regional
-    """
     code = models.CharField(primary_key=True, max_length=2, db_column='quality_concern_code')
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
@@ -173,6 +134,26 @@ class QualityConcern(AuditModel):
         return '{} - {}'.format(self.code, self.description)
 
 
+class AquiferVulnerabilityCode(AuditModel):
+    """
+    Demand choices for describing Aquifer
+    """
+    code = models.CharField(primary_key=True, max_length=1, db_column='aquifer_vulnerability_code')
+    description = models.CharField(max_length=100)
+    display_order = models.PositiveIntegerField()
+
+    effective_date = models.DateTimeField(blank=True, null=True)
+    expiry_date = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'aquifer_vulnerability_code'
+        ordering = ['display_order', 'code']
+        verbose_name_plural = 'Aquifer Vulnerability Codes'
+
+    def __str__(self):
+        return '{} - {}'.format(self.code, self.description)
+
+
 class Aquifer(AuditModel):
     """
     An underground layer of water-bearing permeable rock, rock fractures or unconsolidated materials
@@ -180,13 +161,12 @@ class Aquifer(AuditModel):
 
     This table holds ONLY the aquifers to which we have associated one or more wells.  It is not
     the definitive source of all aquifers in the province. 
-
     """
     aquifer_id = models.PositiveIntegerField(
         primary_key=True, verbose_name="Aquifer ID Number")
-    aquifer_name = models.CharField(max_length=100)
+    aquifer_name = models.CharField(max_length=100, blank=True, null=True)
     location_description = models.CharField(
-        max_length=100, blank=True, verbose_name='Description of Location')
+        max_length=100, blank=True, null=True, verbose_name='Description of Location')
     material = models.ForeignKey(
         AquiferMaterial,
         db_column='aquifer_material_code',
@@ -205,6 +185,13 @@ class Aquifer(AuditModel):
         related_name='aquifers')
     area = models.DecimalField(
         max_digits=5, decimal_places=1, blank=True, null=True, verbose_name='Size (square km)')
+    vulnerability = models.ForeignKey(
+        AquiferVulnerabilityCode,
+        db_column='aquifer_vulnerablity_code',
+        blank=True,
+        null=True,
+        on_delete=models.PROTECT,
+        verbose_name="Aquifer Vulnerabiliy")   
     productivity = models.ForeignKey(
         AquiferProductivity,
         db_column='aquifer_productivity_code',
@@ -229,7 +216,7 @@ class Aquifer(AuditModel):
         on_delete=models.PROTECT,
         verbose_name="Known Water Use Reference",
         related_name='aquifers')
-    quality_concert = models.ForeignKey(
+    quality_concern = models.ForeignKey(
         QualityConcern,
         db_column='quality_concern_code',
         blank=True,
@@ -238,7 +225,7 @@ class Aquifer(AuditModel):
         verbose_name="Quality Concern Reference",
         related_name='aquifers')
     litho_stratographic_unit = models.CharField(
-        max_length=100, blank=True, verbose_name='Lithographic Stratographic Unit')
+        max_length=100, blank=True, null=True, verbose_name='Lithographic Stratographic Unit')
     mapping_year = models.PositiveIntegerField(
         validators=[
             MinValueValidator(1990), 
@@ -259,4 +246,4 @@ class Aquifer(AuditModel):
         verbose_name_plural = 'Aquifers'
 
     def __str__(self):
-        return '{} - {}'.format(self.code, self.description)
+        return '{} - {}'.format(self.aquifer_id, self.aquifer_name)
