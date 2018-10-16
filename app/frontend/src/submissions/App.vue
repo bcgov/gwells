@@ -11,13 +11,11 @@
 <script>
 import Header from '@/common/components/Header'
 import Footer from '@/common/components/Footer'
-import APIErrorMessage from '@/common/components/APIErrorMessage.vue'
 export default {
   name: 'App',
   components: {
     'gwells-header': Header,
-    'gwells-footer': Footer,
-    'api-error': APIErrorMessage
+    'gwells-footer': Footer
   }
 }
 </script>

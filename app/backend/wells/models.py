@@ -376,6 +376,28 @@ class WellClassCode(AuditModel):
         return self.description
 
 
+class WellStatusCodeTypeManager(models.Manager):
+    """
+    Provides additional methods for returning well status codes that correspond
+    to activity submissions
+    """
+
+    # Construction reports correspond to "NEW" status
+    def construction(self):
+        return self.get_queryset().get(well_status_code='NEW')
+
+    # Decommission reports trigger a "CLOSURE" status
+    def decommission(self):
+        return self.get_queryset().get(well_status_code='CLOSURE')
+
+    # Alteration reports trigger an "ALTERATION" status
+    def alteration(self):
+        return self.get_queryset().get(well_status_code='ALTERATION')
+    
+    def other(self):
+        return self.get_queryset().get(well_status_code='OTHER')
+
+
 class WellStatusCode(AuditModel):
     """
     Well Status.
@@ -387,6 +409,9 @@ class WellStatusCode(AuditModel):
 
     effective_date = models.DateTimeField(blank=True, null=True)
     expiry_date = models.DateTimeField(blank=True, null=True)
+
+    objects = models.Manager()
+    types = WellStatusCodeTypeManager()
 
     class Meta:
         db_table = 'well_status_code'
