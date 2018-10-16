@@ -798,6 +798,16 @@ for(String envKeyName: context.env.keySet() as String[]){
                     node('master') {
                         new OpenShiftHelper().deploy(this, context, envKeyName)
                         isDeployed = true
+
+                        String DEST = "${stageDeployName}".toLowerCase()
+                        echo "DEST = ${DEST}"
+                        echo "Running tag workaround"
+                        sh """
+                            oc -n moe-gwells-${DEST} get istag/gwells-${DEST}:${DEST} -o 'jsonpath={.image.metadata.name}' | xargs -I {} oc -n moe-gwells-${DEST} import-image gwells-${DEST}:backup '--from=docker-registry.default.svc:5000/moe-gwells-${DEST}/gwells-${DEST}:gwells-${DEST}@{}' --insecure=true --confirm=true
+                            oc -n moe-gwells-${DEST} get istag/gwells-${DEST}:${DEST} -o 'jsonpath={.image.metadata.name}' | xargs -I {} oc -n moe-gwells-${DEST} import-image gwells-${DEST}:tmp '--from=docker-registry.default.svc:5000/moe-gwells-${DEST}/gwells-${DEST}:gwells-${DEST}@{}' --insecure=true --confirm=true
+                            oc -n moe-gwells-${DEST} get istag/gwells-${DEST}:${DEST} -o 'jsonpath={.image.metadata.name}' | xargs -I {} oc -n moe-gwells-${DEST} tag 'gwells-${DEST}@{}' gwells-${DEST}:${DEST}
+                            oc -n moe-gwells-${DEST} delete istag/gwells-${DEST}:backup
+                        """
                     }
                 }
             },
