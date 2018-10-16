@@ -59,17 +59,6 @@ WELLS_EDIT_ROLES = (
     WELLS_EDIT_ROLE,
 )
 
-AQUIFERS_EDIT_ROLES = (
-    ADMIN_ROLE,
-    AQUIFERS_EDIT_ROLE,
-)
-
-AQUIFERS_VIEW_ROLES = (
-    ADMIN_ROLE,
-    AQUIFERS_EDIT_ROLE,
-    AQUIFERS_VIEWER_ROLE
-)
-
 EXCLUDE = ('idir', 'offline_access', 'admin', 'uma_authorization')
 
 
