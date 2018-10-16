@@ -18,7 +18,10 @@
       <b-row class="border-bottom mb-3 pb-2">
         <b-col><h5 class="pt-2">Aquifer Summary</h5></b-col>
         <b-col cols="auto">
-          <b-button variant="default" v-on:click.prevent="edit()">
+          <b-button
+            variant="default"
+            v-if="userRoles.aquifers.edit"
+            v-on:click.prevent="edit()">
             <span title="Edit" class="fa fa-edit"/>
           </b-button>
           <a class="ml-2 print fa fa-print fa-lg d-print-none"
@@ -73,6 +76,7 @@
 
 <script>
 import ApiService from '@/common/services/ApiService.js'
+import { mapGetters } from 'vuex'
 
 export default {
   props: ['id'],
@@ -81,6 +85,9 @@ export default {
     return {
       record: {}
     }
+  },
+  computed: {
+    ...mapGetters(['userRoles'])
   },
   watch: {
     id () { this.fetch() }
