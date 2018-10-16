@@ -238,7 +238,7 @@
         />
 
         <!-- Preview -->
-        <submission-preview :form="form"/>
+        <submission-preview :form="form" :activity="activityType"/>
 
         <!-- Back / Next / Submit controls -->
         <b-row class="mt-5">
