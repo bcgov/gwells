@@ -5,7 +5,7 @@
         <b-row>
           <b-col lg="12" >Well Activity Submission
             <b-form-radio-group button-variant="outline-primary" size="sm" buttons v-model="formIsFlat" label="Form layout" class="float-right">
-              <b-form-radio v-bind:value="true">Single page</b-form-radio>
+              <b-form-radio v-bind:value="true" id="flat">Single page</b-form-radio>
               <b-form-radio v-bind:value="false">Multi page</b-form-radio>
             </b-form-radio-group>
           </b-col>
