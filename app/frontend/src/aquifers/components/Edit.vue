@@ -363,6 +363,7 @@ export default {
     },
     save(id = this.id) {
       this.showSaveSuccess = false
+      this.fieldErrors = {}
 
       ApiService.patch('aquifers', id, this.record)
         .then(() => { this.showSaveSuccess = true })
