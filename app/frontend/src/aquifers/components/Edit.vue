@@ -175,7 +175,7 @@
               :state="fieldHasError.quality_concerns">
               <b-form-select
                 id="quality_concerns"
-                v-model="record.quality_concert"
+                v-model="record.quality_concern"
                 :options="quality_concern_codes"
                 value-field="code"
                 text-field="description"
