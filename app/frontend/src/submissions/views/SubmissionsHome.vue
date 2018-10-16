@@ -3,10 +3,11 @@
     <div class="card-body">
       <h4 class="card-title">
         <b-row>
-          <b-col lg="8">Well Activity Submission</b-col>
-          <b-col lg="4" class="text-right">
-            <b-btn size="sm" :variant="`${formIsFlat ? 'primary':'outline-primary'}`" @click="formIsFlat=true">Flat form</b-btn>
-            <b-btn size="sm" :variant="`${formIsFlat ? 'outline-primary':'primary'}`" @click="formIsFlat=false">Wizard</b-btn>
+          <b-col lg="12" >Well Activity Submission
+            <b-form-radio-group button-variant="outline-primary" size="sm" buttons v-model="formIsFlat" label="Form layout" class="float-right">
+              <b-form-radio v-bind:value="true">Single page</b-form-radio>
+              <b-form-radio v-bind:value="false">Multi page</b-form-radio>
+            </b-form-radio-group>
           </b-col>
         </b-row>
       </h4>
@@ -374,7 +375,7 @@ export default {
   data () {
     return {
       activityType: 'CON',
-      formIsFlat: true,
+      formIsFlat: false,
       units: 'imperial',
       confirmSubmitModal: false,
       formSubmitLoading: false,
@@ -479,8 +480,8 @@ export default {
       return components
     },
     isLoadFormDisabled () {
-      const storedData = localStorage.getItem('savedFormData')
-      return storedData === null && !this.hasHadSaveFormSuccess
+      // During unit tests, the localStorage object might not exist, so we have to check it's existence.
+      return !window.localStorage || (window.localStorage.getItem('savedFormData') === null && !this.hasHadSaveFormSuccess)
     },
     ...mapGetters(['codes'])
   },
