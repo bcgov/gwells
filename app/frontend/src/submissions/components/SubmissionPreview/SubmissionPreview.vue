@@ -110,20 +110,22 @@
           </b-row>
         </b-col>
         <b-col cols="12" lg="6" xl="6" offset-xl="2">
-          <div class="mb-5">This is a map.</div>
+          <div class="mb-5">
+            <preview-map :latitude="form.latitude" :longitude="form.longitude"></preview-map>
+          </div>
           <div class="my-5">&nbsp;</div>
           <div><span class="font-weight-bold">Geographic Coordinates - North American Datum of 1983 (NAD 83)</span></div>
           <b-row>
-            <b-col cols="12" lg="4"><span class="font-weight-bold">Latitude:</span> 11222</b-col>
-            <b-col cols="12" lg="6"><span class="font-weight-bold">Longitude:</span> 11222</b-col>
+            <b-col cols="12" lg="4"><span class="font-weight-bold">Latitude:</span> {{form.latitude}}</b-col>
+            <b-col cols="12" lg="6"><span class="font-weight-bold">Longitude:</span> {{form.longitude}}</b-col>
           </b-row>
           <b-row>
-            <b-col cols="12" lg="4"><span class="font-weight-bold">UTM Easting:</span> 11222</b-col>
-            <b-col cols="12" lg="6"><span class="font-weight-bold">UTM Northing:</span> 11222</b-col>
+            <b-col cols="12" lg="4"><span class="font-weight-bold">UTM Easting:</span> {{form.easting}}</b-col>
+            <b-col cols="12" lg="6"><span class="font-weight-bold">UTM Northing:</span> {{form.northing}}</b-col>
           </b-row>
           <b-row>
-            <b-col cols="12" lg="4"><span class="font-weight-bold">Zone:</span> 7</b-col>
-            <b-col cols="12" lg="6"><span class="font-weight-bold">Location Accuracy Code:</span> J</b-col>
+            <b-col cols="12" lg="4"><span class="font-weight-bold">Zone:</span> {{form.utm_zone}}</b-col>
+            <b-col cols="12" lg="6"><span class="font-weight-bold">Location Accuracy Code:</span> {{form.location_accuracy_code}}</b-col>
           </b-row>
         </b-col>
       </b-row>
@@ -309,8 +311,12 @@
 </template>
 
 <script>
+import PreviewMap from '@/submissions/components/SubmissionPreview/PreviewMap.vue'
 export default {
   name: 'SubmissionPreview',
+  components: {
+    PreviewMap
+  },
   props: [
     'form',
     'activity'
