@@ -12,7 +12,7 @@
     limitations under the License.
 """
 from rest_framework.permissions import BasePermission, SAFE_METHODS
-from gwells.roles import AQUIFERS_EDIT_ROLES
+from gwells.roles import AQUIFERS_EDIT_ROLE
 
 class HasAquiferEditRoleOrReadOnly(BasePermission):
     """
@@ -24,5 +24,5 @@ class HasAquiferEditRoleOrReadOnly(BasePermission):
             request.method in SAFE_METHODS or
             request.user and
             request.user.is_authenticated and
-            request.user.groups.filter(name__in=AQUIFERS_EDIT_ROLES).exists()
+            request.user.groups.filter(name=AQUIFERS_EDIT_ROLE).exists()
         )
