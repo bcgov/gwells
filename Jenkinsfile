@@ -77,7 +77,6 @@ pipeline {
               echo "This may take several minutes. Logs are not forwarded to Jenkins by default (at this time)."
               echo "Additional logs can be found by monitoring builds in ${TOOLS_PROJECT}"
 
-=======
               def appBuild = openshift.selector("bc", "${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}")
               // temporarily set ENABLE_DATA_ENTRY=True during testing because False currently leads to a failing unit test
               appBuild.startBuild("--wait", "--env=ENABLE_DATA_ENTRY=True").logs("-f")
