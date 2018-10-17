@@ -59,7 +59,7 @@ pipeline {
               // apply the template objects to create and/or modify objects in the dev environment
               openshift.apply(buildtemplate)
               openshift.apply(dbtemplate)
-              
+
             }
           }
         }
@@ -88,13 +88,13 @@ pipeline {
 
 
     // the Deploy to Dev stage creates a new dev environment for the pull request (if necessary), tags the newly built
-    // application image into that environment, and monitors the newest deployment for pods/containers to 
+    // application image into that environment, and monitors the newest deployment for pods/containers to
     // report back as ready.
     stage('Deploy to dev') {
       steps {
         script {
           openshift.withCluster() {
-            openshift.withProject(DEV_PROJECT) {     
+            openshift.withProject(DEV_PROJECT) {
 
               // process templates. deployTemplate and deployDBTemplate will contain sets of model specs
               echo "Processing deployment config for pull request ${PR_NUM}"
@@ -153,7 +153,7 @@ pipeline {
               echo "Tagging new image to DEV imagestream."
               openshift.tag("${TOOLS_PROJECT}/gwells-application:${PR_NUM}", "${DEV_PROJECT}/gwells-${DEV_SUFFIX}-${PR_NUM}:dev")  // todo: clean up labels/tags
               openshift.tag("${TOOLS_PROJECT}/gwells-postgresql:dev", "${DEV_PROJECT}/gwells-postgresql-${DEV_SUFFIX}-${PR_NUM}:dev")  // todo: clean up labels/tags
-          
+
               // monitor the deployment status and wait until deployment is successful
               echo "Waiting for deployment to dev..."
               def newVersion = openshift.selector("dc", "${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}").object().status.latestVersion
@@ -521,5 +521,3 @@ pipeline {
     }
   }
 }
-
-

@@ -13,6 +13,8 @@
 """
 from django.contrib import admin
 from wells.models import (
+    DecommissionMaterialCode,
+    DecommissionMethodCode,
     WaterQualityCharacteristic,
     WaterQualityColour
 )
@@ -21,3 +23,5 @@ from wells.models import (
 
 admin.site.register(WaterQualityCharacteristic)
 admin.site.register(WaterQualityColour)
+admin.site.register(DecommissionMaterialCode)
+admin.site.register(DecommissionMethodCode)

@@ -492,6 +492,15 @@
                                         }
                                     },
                                     {
+                                        "name": "ENABLE_AQUIFERS_SEARCH",
+                                        "valueFrom": {
+                                            "configMapKeyRef": {
+                                                "key": "ENABLE_AQUIFERS_SEARCH",
+                                                "name": "gwells-global-config${NAME_SUFFIX}"
+                                            }
+                                        }
+                                    },
+                                    {
                                         "name": "APP_CONTEXT_ROOT",
                                         "value": "gwells"
                                     },
@@ -562,6 +571,15 @@
                                         "valueFrom": {
                                             "configMapKeyRef": {
                                                 "key": "S3_PRIVATE_BUCKET",
+                                                "name": "gwells-global-config${NAME_SUFFIX}"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "SSO_IDP_HINT",
+                                        "valueFrom": {
+                                            "configMapKeyRef": {
+                                                "key": "SSO_IDP_HINT",
                                                 "name": "gwells-global-config${NAME_SUFFIX}"
                                             }
                                         }

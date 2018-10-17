@@ -1056,6 +1056,19 @@ class ActivitySubmission(AuditModel):
     diameter = models.CharField(max_length=9, blank=True)
     ems_id = models.CharField(max_length=30, blank=True)
 
+    # Decommission info
+    decommission_reason = models.CharField(
+        max_length=250, blank=True, null=True, verbose_name="Reason for Decommission")
+    decommission_method = models.ForeignKey(
+        DecommissionMethodCode, db_column='decommission_method_code', blank=True, null="True",
+        verbose_name="Method of Decommission")
+    sealant_material = models.CharField(
+        max_length=100, blank=True, null=True, verbose_name="Sealant Material")
+    backfill_material = models.CharField(
+        max_length=100, blank=True, null=True, verbose_name="Backfill Material")
+    decommission_details = models.CharField(
+        max_length=250, blank=True, null=True, verbose_name="Decommission Details")
+
     tracker = FieldTracker()
 
     class Meta:
@@ -1383,3 +1396,34 @@ class HydraulicProperty(AuditModel):
 
     def __str__(self):
         return '{} - {}'.format(self.well, self.hydraulic_property_guid)
+
+
+class DecommissionMaterialCode(AuditModel):
+    """Codes for decommission materials"""
+    code = models.CharField(primary_key=True, max_length=30, db_column='decommission_material_code')
+    description = models.CharField(max_length=100)
+
+    effective_date = models.DateTimeField(blank=True, null=True)
+    expiry_date = models.DateTimeField(blank=True, null=True)
+
+    def __str__(self):
+        return '{} - {}'.format(self.code, self.description)
+
+
+class DecommissionDescription(AuditModel):
+    """Provides a description of the ground conditions (between specified start and end depth) for decommissioning"""
+
+    decommission_description_guid = models.UUIDField(primary_key=True, default=uuid.uuid4)
+    activity_submission = models.ForeignKey(ActivitySubmission, db_column='filing_number',
+                                            on_delete=models.CASCADE, blank=True, null=True,
+                                            related_name='decommission_description_set')
+    well = models.ForeignKey(Well, db_column='well_tag_number', on_delete=models.CASCADE, blank=True,
+                             null=True, related_name='decommission_description_set')
+    start = models.DecimalField(db_column='decommission_description_from', max_digits=7, decimal_places=2,
+                                verbose_name='Decommissioned From', blank=False,
+                                validators=[MinValueValidator(Decimal('0.00'))])
+    end = models.DecimalField(db_column='decommission_description_to', max_digits=7, decimal_places=2,
+                              verbose_name='Decommissioned To', blank=False,
+                              validators=[MinValueValidator(Decimal('0.01'))])
+    material = models.ForeignKey(DecommissionMaterialCode, db_column='decommission_material_code', on_delete=models.PROTECT)
+    observations = models.CharField(max_length=255, null=True, blank=True)
