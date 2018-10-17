@@ -2,16 +2,10 @@
   <div style="height: 32rem">
     <l-map
       :zoom="zoom"
-      :center="point"
+      :center="mapCentre"
     >
-      <l-tile-layer
-        :url="url"
-        :attribution="attribution"
-      ></l-tile-layer>
-
-      <l-marker
-        :lat-lng="point"
-      ></l-marker>
+      <l-tile-layer :url="url" :attribution="attribution"></l-tile-layer>
+      <l-marker :lat-lng="marker"></l-marker>
 
     </l-map>
 
@@ -56,15 +50,23 @@ export default {
       attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
       currentZoom: 13,
       showParagraph: false,
-      defaultCentre: [49, -123]
+      defaultCentre: [49, -123],
+      mapCentre: L.latLng(49, -123),
+      marker: L.latLng(49, -123)
     }
   },
-  computed: {
-    point () {
-      if (!this.latitude || !this.longitude || Number.isNaN(this.latitude) || Number.isNaN(this.longitude)) {
-        return L.latLng(this.defaultCentre[0], this.defaultCentre[1])
-      }
-      return L.latLng(Number(this.latitude), Number(this.longitude))
+  watch: {
+    latitude () {
+      this.updateMarkerPosition()
+    }
+  },
+  methods: {
+    updateMarkerPosition (lat, long) {
+      lat = Number(lat)
+      long = Number(long)
+
+      this.marker = point
+      this.mapCentre = point
     }
   }
 }
