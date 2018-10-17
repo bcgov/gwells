@@ -64,6 +64,10 @@
             "name": "IMAGE_STREAM_VERSION",
             "required": true,
             "value": "9.5"
+        },
+        {
+            "name": "LABEL_APPVER",
+            "required": true
         }
     ],
     "objects": [
@@ -147,7 +151,8 @@
                 "name": "${IMAGE_STREAM_NAME}",
                 "creationTimestamp": null,
                 "labels": {
-                    "base-name": "gwells-postgresql"
+                    "base-name": "gwells-postgresql",
+                    "appver": "gwells${LABEL_APPVER}"
                 },
                 "annotations": {}
             },
@@ -177,7 +182,8 @@
                 "template": {
                     "metadata": {
                         "labels": {
-                            "name": "${DATABASE_SERVICE_NAME}"
+                            "name": "${DATABASE_SERVICE_NAME}",
+                            "appver": "gwells${LABEL_APPVER}"
                         }
                     },
                     "spec": {
