@@ -1,5 +1,5 @@
 <template>
-  <div class="card">
+  <div class="card" v-if="userRoles.wells.edit || userRoles.submissions.edit">
     <div class="card-body">
       <h4 class="card-title">
         <b-row>
@@ -485,7 +485,7 @@ export default {
       // During unit tests, the localStorage object might not exist, so we have to check it's existence.
       return !window.localStorage || (window.localStorage.getItem('savedFormData') === null && !this.hasHadSaveFormSuccess)
     },
-    ...mapGetters(['codes'])
+    ...mapGetters(['codes', 'userRoles'])
   },
   methods: {
     formSubmit () {

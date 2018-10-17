@@ -7,10 +7,10 @@
           <b-form-radio-group v-model="wellActivityTypeInput"
                               stacked
                               name="submissionTypeRadio">
-            <b-form-radio value="CON">Construction</b-form-radio>
-            <b-form-radio value="ALT">Alteration</b-form-radio>
-            <b-form-radio value="DEC">Decommissioning</b-form-radio>
-            <b-form-radio value="STAFF_EDIT" v-if="userRoles.wells.edit">Other Report Types</b-form-radio>
+            <b-form-radio value="CON" v-if="userRoles.submissions.edit">Construction</b-form-radio>
+            <b-form-radio value="ALT" v-if="userRoles.submissions.edit">Alteration</b-form-radio>
+            <b-form-radio value="DEC" v-if="userRoles.submissions.edit">Decommissioning</b-form-radio>
+            <b-form-radio value="STAFF_EDIT" v-if="userRoles.wells.edit">Staff Edit</b-form-radio>
           </b-form-radio-group>
         </b-form-group>
       </b-col>
