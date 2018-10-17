@@ -130,44 +130,6 @@
 				}
 			},
 			"response": []
-		},
-		{
-			"name": "Aquifer Retrieve",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "768133b0-7dd6-4197-97ca-ddca5cb1743f",
-						"type": "text/javascript",
-						"exec": [
-							"var jsonData = pm.response.json()",
-							"",
-							"pm.test(\"Status code is 200\", function () {",
-							"    pm.expect(pm.response.code).to.equal(200);",
-							"})",
-							""
-						]
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [],
-				"body": {},
-				"url": {
-					"raw": "{{base_url}}/api/v1/aquifers/1",
-					"host": [
-						"{{base_url}}"
-					],
-					"path": [
-						"api",
-						"v1",
-						"aquifers",
-						"1"
-					]
-				}
-			},
-			"response": []
 		}
 	]
 }

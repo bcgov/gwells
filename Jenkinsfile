@@ -489,8 +489,33 @@ parallel (
                      command: '',
                      args: '${computer.jnlpmac} ${computer.name}',
                      envVars: [
-                         envVar(key:'BASEURL', value: baseURL),
-                         envVar(key:'GRADLE_USER_HOME', value: '/var/cache/artifacts/gradle')
+                        envVar(key:'BASEURL', value: baseURL),
+                        envVar(key:'GRADLE_USER_HOME', value: '/var/cache/artifacts/gradle'),
+                        secretEnvVar(
+                            key:'GWELLS_USERNAME',
+                            secretName: 'functional-tests-secrets',
+                            secretKey: 'username'
+                        ),
+                        secretEnvVar(
+                            key:'GWELLS_VIEWER_USERNAME',
+                            secretName: 'functional-tests-secrets',
+                            secretKey: 'gwells_viewer_username'
+                        ),
+                        secretEnvVar(
+                            key:'GWELLS_SUBMISSION_USERNAME',
+                            secretName: 'functional-tests-secrets',
+                            secretKey: 'gwells_submission_username'
+                        ),
+                        secretEnvVar(
+                            key:'GWELLS_REGISTRY_USERNAME',
+                            secretName: 'functional-tests-secrets',
+                            secretKey: 'gwells_registry_username'
+                        ),
+                        secretEnvVar(
+                           key:'GWELLS_PASSWORD',
+                           secretName: 'functional-tests-secrets',
+                           secretKey: 'password'
+                        )
                      ]
                   )
                 ],
@@ -773,6 +798,16 @@ for(String envKeyName: context.env.keySet() as String[]){
                     node('master') {
                         new OpenShiftHelper().deploy(this, context, envKeyName)
                         isDeployed = true
+
+                        String DEST = "${stageDeployName}".toLowerCase()
+                        echo "DEST = ${DEST}"
+                        echo "Running tag workaround"
+                        sh """
+                            oc -n moe-gwells-${DEST} get istag/gwells-${DEST}:${DEST} -o 'jsonpath={.image.metadata.name}' | xargs -I {} oc -n moe-gwells-${DEST} import-image gwells-${DEST}:backup --from=docker-registry.default.svc:5000/moe-gwells-${DEST}/gwells-${DEST}:gwells-${DEST}@{} --insecure=true --confirm=true
+                            oc -n moe-gwells-${DEST} get istag/gwells-${DEST}:${DEST} -o 'jsonpath={.image.metadata.name}' | xargs -I {} oc -n moe-gwells-${DEST} import-image gwells-${DEST}:tmp --from=docker-registry.default.svc:5000/moe-gwells-${DEST}/gwells-${DEST}:gwells-${DEST}@{} --insecure=true --confirm=true
+                            oc -n moe-gwells-${DEST} get istag/gwells-${DEST}:${DEST} -o 'jsonpath={.image.metadata.name}' | xargs -I {} oc -n moe-gwells-${DEST} tag 'gwells-${DEST}@{}' gwells-${DEST}:${DEST}
+                            oc -n moe-gwells-${DEST} delete istag/gwells-${DEST}:backup
+                        """
                     }
                 }
             },

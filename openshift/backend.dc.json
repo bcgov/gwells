@@ -472,6 +472,15 @@
                                         }
                                     },
                                     {
+                                        "name": "ENABLE_AQUIFERS_SEARCH",
+                                        "valueFrom": {
+                                            "configMapKeyRef": {
+                                                "key": "ENABLE_AQUIFERS_SEARCH",
+                                                "name": "gwells-global-config${NAME_SUFFIX}"
+                                            }
+                                        }
+                                    },
+                                    {
                                         "name": "APP_CONTEXT_ROOT",
                                         "value": "gwells"
                                     },
