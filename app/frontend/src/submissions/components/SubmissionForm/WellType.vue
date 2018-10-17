@@ -32,7 +32,7 @@
             <b-form-select
                 v-model="wellSubclassInput"
                 :options="subclasses"
-                value-field="well_subclass_code"
+                value-field="well_subclass_guid"
                 text-field="description"
                 :disabled="!subclasses.length"
                 :state="errors['well_subclass'] ? false : null">
