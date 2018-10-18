@@ -3,10 +3,13 @@
     <div class="card-body">
       <h4 class="card-title">
         <b-row>
-          <b-col lg="8">Well Activity Submission</b-col>
-          <b-col lg="4" class="text-right">
-            <b-btn size="sm" :variant="`${formIsFlat ? 'primary':'outline-primary'}`" @click="formIsFlat=true">Flat form</b-btn>
-            <b-btn size="sm" :variant="`${formIsFlat ? 'outline-primary':'primary'}`" @click="formIsFlat=false">Wizard</b-btn>
+          <b-col lg="12" >Well Activity Submission
+            <b-form-group>
+              <b-form-radio-group button-variant="outline-primary" size="sm" buttons v-model="formIsFlat" label="Form layout" class="float-right">
+                <b-form-radio v-bind:value="true" id="flat">Single page</b-form-radio>
+                <b-form-radio v-bind:value="false">Multi page</b-form-radio>
+              </b-form-radio-group>
+            </b-form-group>
           </b-col>
         </b-row>
       </h4>
@@ -19,13 +22,13 @@
         <b-row>
           <b-col class="text-right">
             <b-btn size="sm" variant="outline-primary" @click="saveForm">
-              Save
+              Save report progress
               <transition name="bounce" mode="out-in">
                   <i v-show="saveFormSuccess" class="fa fa-check text-success"></i>
               </transition>
             </b-btn>
-            <b-btn size="sm" variant="outline-primary" @click="loadConfirmation" ref="confirmLoadBtn">
-              Load
+            <b-btn size="sm" variant="outline-primary" @click="loadConfirmation" ref="confirmLoadBtn" :disabled="isLoadFormDisabled">
+              Load saved report
               <transition name="bounce">
                   <i v-show="loadFormSuccess" class="fa fa-check text-success"></i>
               </transition>
@@ -251,7 +254,7 @@
           </b-col>
           <b-col :class="`pr-4 ${formIsFlat ? '':'text-right'}`">
             <b-btn v-if="step < maxSteps && !formIsFlat" @click="step++" variant="primary">Next</b-btn>
-            <b-btn v-else id="formSubmitButton" type="submit" variant="primary" ref="activitySubmitBtn" :disabled="formSubmitLoading">Submit</b-btn>
+            <b-btn v-else id="formSubmitButton" type="submit" variant="primary" ref="activitySubmitBtn">Submit</b-btn>
           </b-col>
         </b-row>
       </b-form>
@@ -374,13 +377,14 @@ export default {
   data () {
     return {
       activityType: 'CON',
-      formIsFlat: true,
+      formIsFlat: false,
       units: 'imperial',
       confirmSubmitModal: false,
       formSubmitLoading: false,
       formSubmitSuccess: false,
       formSubmitError: false,
       saveFormSuccess: false,
+      hasHadSaveFormSuccess: false,
       loadFormSuccess: false,
       confirmLoadModal: false,
       // componentUpdateTrigger can be appended to a component's key. Changing this value will cause
@@ -476,6 +480,10 @@ export default {
       })
 
       return components
+    },
+    isLoadFormDisabled () {
+      // During unit tests, the localStorage object might not exist, so we have to check it's existence.
+      return !window.localStorage || (window.localStorage.getItem('savedFormData') === null && !this.hasHadSaveFormSuccess)
     },
     ...mapGetters(['codes'])
   },
@@ -620,7 +628,7 @@ export default {
       const data = JSON.stringify(this.form)
       localStorage.setItem('savedFormData', data)
       setTimeout(() => { this.saveFormSuccess = true }, 10)
-      setTimeout(() => { this.saveFormSuccess = false }, 1000)
+      setTimeout(() => { this.saveFormSuccess = false; this.hasHadSaveFormSuccess = true }, 1000)
     },
     loadForm () {
       this.saveStatusReset()
