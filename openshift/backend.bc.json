@@ -27,6 +27,10 @@
       {
           "name": "APP_IMAGE_TAG",
           "required": true
+      },
+      {
+        "name": "PR_NUM",
+        "required": true
       }
     ],
     "objects": [
@@ -160,6 +164,64 @@
                     "requests": {
                         "cpu": "1",
                         "memory": "4Gi"
+                    }
+                },
+                "nodeSelector": null
+            }
+        },
+        {
+            "kind": "BuildConfig",
+            "apiVersion": "v1",
+            "metadata": {
+                "name": "gwells-pipeline-${NAME_SUFFIX}",
+                "creationTimestamp": null,
+                "labels": {
+                    "appver": "gwells${NAME_SUFFIX}"
+                },
+                "annotations": {
+                    "description": "Defines how to build the application"
+                }
+            },
+            "spec": {
+                "successfulBuildsHistoryLimit": 3,
+                "failedBuildsHistoryLimit": 3,
+                "triggers": [
+                    {
+                        "type": "ImageChange"
+                    },
+                    {
+                        "type": "ConfigChange"
+                    }
+                ],
+                "runPolicy": "SerialLatestOnly",
+                "source": {
+                    "type": "Git",
+                    "git": {
+                        "uri": "${SOURCE_REPOSITORY_URL}",
+                        "ref": "${SOURCE_REPOSITORY_REF}"
+                    },
+                    "contextDir": "app"
+                },
+                "strategy": {
+                    "type": "JenkinsPipeline",
+                    "jenkinsPipelineStrategy": {
+                        "jenkinsfile": "pipeline/Jenkinsfile",
+                        "env": [
+                            {
+                                "name": "PULL_REQUEST",
+                                "value": "${PR_NUM}"
+                            }
+                        ]
+                    }
+                },
+                "resources": {
+                    "limits": {
+                        "cpu": "1",
+                        "memory": "1Gi"
+                    },
+                    "requests": {
+                        "cpu": "1",
+                        "memory": "1Gi"
                     }
                 },
                 "nodeSelector": null
