@@ -57,17 +57,28 @@ export default {
   },
   watch: {
     latitude () {
-      this.updateMarkerPosition()
+      this.updateMarkerPosition(this.latitude, this.longitude)
+    },
+    longitude () {
+      this.updateMarkerPosition(this.latitude, this.longitude)
     }
   },
   methods: {
     updateMarkerPosition (lat, long) {
+      // convert lat/long to numbers, check if NaN, and update the existing
+      // marker and map centre to the new coordinates.
+      console.log(lat, long)
       lat = Number(lat)
       long = Number(long)
 
-      this.marker = point
-      this.mapCentre = point
+      if (lat && long && !Number.isNaN(lat) && !Number.isNaN(long)) {
+        this.marker = L.latLng(lat, long)
+        this.mapCentre = L.latLng(lat, long)
+      }
     }
+  },
+  created () {
+    this.updateMarkerPosition(this.latitude, this.longitude)
   }
 }
 </script>
