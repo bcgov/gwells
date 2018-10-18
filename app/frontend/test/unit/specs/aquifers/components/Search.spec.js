@@ -1,9 +1,7 @@
 import { shallowMount, createLocalVue } from '@vue/test-utils'
 import SearchComponent from '@/aquifers/components/Search.vue'
+import { SEARCH_AQUIFERS, RESET_RESULTS } from '@/aquifers/store/actions.types'
 import Vuex from 'vuex'
-import axios from 'axios'
-
-jest.mock('axios')
 
 const localVue = createLocalVue()
 localVue.use(Vuex)
@@ -23,18 +21,20 @@ const aquiferFixture = {
 }
 
 describe('Search Component', () => {
-  const component = (options) => shallowMount(SearchComponent, {
-    localVue,
-    stubs: ['router-link', 'router-view'],
-    ...options
+  const component = ({ getters, actions }) => shallowMount(SearchComponent, {
+    store: new Vuex.Store({
+      getters: Object.assign({
+        aquiferList: () => [],
+        emptyResults: () => false
+      }, getters),
+      actions
+    }),
+    localVue
   })
 
   it('Displays a message if no aquifers could be found', () => {
     const wrapper = component({
-      computed: {
-        aquiferList() { return [] },
-        emptyResults() { return true }
-      }
+      getters: { emptyResults: () => true }
     })
 
     expect(wrapper.text()).toContain('No aquifers could be found')
@@ -42,36 +42,39 @@ describe('Search Component', () => {
 
   it('Matches the snapshot', () => {
     const wrapper = component({
-      computed: {
-        aquiferList() { return [aquiferFixture] }
-      }
+      getters: { aquiferList: () => [aquiferFixture] }
     })
 
     expect(wrapper.element).toMatchSnapshot()
   })
 
-  it('search triggers apiService query', () => {
-    axios.get.mockResolvedValue({})
+  it('triggers SEARCH_AQUIFERS when form is submitted', () => {
+    const spy = jest.fn()
+    const wrapper = component({
+      actions: { [SEARCH_AQUIFERS]: spy }
+    })
 
-    const wrapper = component()
     wrapper.find('form').trigger('submit')
-
-    expect(axios.get).toHaveBeenCalledWith('aquifers/', {"params": {}})
+    expect(spy).toHaveBeenCalled()
   })
 
-  it('form reset resets response and query', () => {
+  it('triggers RESET_RESULTS when form is reset', () => {
+    const spy = jest.fn()
     const wrapper = component({
-      data() {
-        return {
-          response: 1,
-          query: 1
-        }
-      }
+      actions: { [RESET_RESULTS]: spy }
     })
 
     wrapper.find('form').trigger('reset')
+    expect(spy).toHaveBeenCalled()
+  })
 
-    expect(wrapper.vm.response).toEqual({})
-    expect(wrapper.vm.query).toEqual({})
+  it('resets input values when form is reset', () => {
+    const spy = jest.fn()
+    const wrapper = component({
+      actions: { [RESET_RESULTS]: spy }
+    })
+
+    wrapper.find('form').trigger('reset')
+    expect(spy).toHaveBeenCalled()
   })
 })

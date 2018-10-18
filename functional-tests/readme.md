@@ -18,14 +18,14 @@ The following commands will launch the tests with the individual browsers:
     ./gradlew firefoxHeadlessTest //Will run in pipeline as well
     ./gradlew edgeTest
     ./gradlew ieTest
-
+    
 To run with all, you can run:
 
     ./gradlew test
 
 Replace `./gradlew` with `gradlew.bat` in the above examples if you're on Windows.
 
-
+    
 To run a single class of tests, you can run:
 
     ./gradlew chromeTest --tests <ClassName>
@@ -70,7 +70,7 @@ In order to use a custom directory for jmx files (default is `src/test/jmeter`) 
 When working with the default or custom path to scan for jmx files, you can include or exclude specific files with the *ïncludes* and *excludes* properties.
 * E.g. excludes = ["excludeThisTest.jmx"]
 
-(Note that you should provide a list of patterns, not just a String)
+(Note that you should provide a list of patterns, not just a String) 
 
 ### Edit JMeter files
 
@@ -80,20 +80,16 @@ By default the plugin will search for *.jmx files in `src/test/jmeter`. You can 
 
 ### Run the tests
 
-You can run the tests by executing
+You can run the tests by executing 
 
 `gradle jmRun`
 
 ### Create Reports
 
-You can run the tests by executing
+You can run the tests by executing 
 
 `gradle jmReport`
 
 By default, extended reports are turned on and HTML reports are turned off
 
 The results of the tests will can be found in(default location, can be overridden) `build/jmeter-report`
-
-## License
-
-Code released under the [Apache License, Version 2.0](https://github.com/bcgov/gwells/blob/master/LICENSE).

@@ -294,11 +294,10 @@
                   <b-btn
                       variant="primary"
                       @click="confirmRegisterModal[item.code]=false;submitRegistration(item.code)"
-                      :ref="`confirmRegisterConfirmBtn${item.code}`"
-                      id="register-confirm">
+                      :ref="`confirmRegisterConfirmBtn${item.code}`">
                     Confirm
                   </b-btn>
-                  <b-btn variant="light" @click="confirmRegisterModal[item.code]=false" id="register-cancel">
+                  <b-btn variant="light" @click="confirmRegisterModal[item.code]=false">
                     Cancel
                   </b-btn>
                 </div>
