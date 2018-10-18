@@ -37,9 +37,9 @@
             </td>
             <td class="pb-0">
               <b-form-group
-                id="'casingCode_' + index"
+                :id="'casingCode_' + index"
                 class="my-0"
-                aria-describedby="casingCodeInvalidFeedback{index}">
+                :aria-describedby="`casingCodeInvalidFeedback${index}`">
                 <b-form-select
                     v-model="casing.casing_code"
                     :options="codes.casing_codes"
@@ -50,7 +50,7 @@
                     <option :value="null" disabled>Select a type</option>
                   </template>
                 </b-form-select>
-                <b-form-invalid-feedback id="casingCodeInvalidFeedback{index}">
+                <b-form-invalid-feedback :id="`casingCodeInvalidFeedback${index}`">
                   <div v-for="(error, error_index) in getCasingError(index).casing_code" :key="`Casing type input error ${error_index}`">
                     {{ error }}
                   </div>
@@ -61,7 +61,7 @@
               <b-form-group
                 :id="'casingMaterial_' + index"
                 class="my-0"
-                aria-describedby="casingMaterialInvalidFeedback{index}">
+                :aria-describedby="`casingMaterialInvalidFeedback${index}`">
                 <b-form-select
                     v-model="casing.casing_material"
                     :options="codes.casing_materials"
@@ -72,7 +72,7 @@
                     <option :value="null" disabled>Select a material</option>
                   </template>
                 </b-form-select>
-                <b-form-invalid-feedback id="casingCodeInvalidFeedback{index}">
+                <b-form-invalid-feedback :id="`casingCodeInvalidFeedback${index}`">
                   <div v-for="(error, error_index) in getCasingError(index).casing_material" :key="`Material input error ${error_index}`">
                     {{ error }}
                   </div>
@@ -105,13 +105,13 @@
               </b-form-radio-group>
             </td>
             <td class="pt-1 py-0">
-              <b-btn size="sm" variant="primary" @click="removeRowIfOk(casing)" class="mt-2"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
+              <b-btn size="sm" variant="primary" :id="`removeCasingRowBtn${index}`" @click="removeRowIfOk(casing)" class="mt-2"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
             </td>
           </tr>
         </tbody>
       </table>
     </div>
-    <b-btn size="sm" variant="primary" @click="addRow"><i class="fa fa-plus-square-o"></i> Add row</b-btn>
+    <b-btn size="sm" id="addCasingRowBtn" variant="primary" @click="addRow"><i class="fa fa-plus-square-o"></i> Add row</b-btn>
     <b-modal
         v-model="confirmRemoveModal"
         centered
@@ -197,7 +197,7 @@ export default {
     ...mapGetters(['codes'])
   },
   created () {
-    // When component created, add an initial row of lithology.
+    // When component created, add an initial row of casings.
     if (!this.casingsInput.length) {
       this.casingsInput.push({}, {}, {})
     }
