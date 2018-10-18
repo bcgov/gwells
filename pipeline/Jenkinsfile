@@ -1,0 +1,97 @@
+pipeline {
+  environment {
+
+    APP_NAME = "gwells"
+    REPOSITORY = 'https://www.github.com/bcgov/gwells.git'
+
+    // TOOLS_PROJECT is where images are built
+    TOOLS_PROJECT = "moe-gwells-tools"
+
+    // DEV_PROJECT is the project where individual development environments are spun up
+    // for example: a pull request PR-999 will result in gwells-dev-pr-999.pathfinder.gov.bc.ca
+    DEV_PROJECT = "moe-gwells-dev"
+    DEV_SUFFIX = "dev"
+
+    // TEST_PROJECT contains the test deployment. The test image is a candidate for promotion to prod.
+    TEST_PROJECT = "moe-gwells-test"
+    TEST_SUFFIX = "test-sth"
+
+    // PROD_PROJECT is the prod deployment.
+    // New production images can be deployed by tagging an existing "test" image as "prod".
+    PROD_PROJECT = "moe-gwells-test"
+    PROD_SUFFIX= "prod-test-sth"
+
+    // PR_NUM is the pull request number e.g. 'pr-4'
+    PR_NUM = "${PULL_REQUEST}".toLowerCase()
+  }
+  agent any
+  stages {
+    // the Build stage runs unit tests and builds files. an image will be outputted to the app's imagestream
+    // builds use the source to image strategy. See /app/.s2i/assemble for image build script
+    stage('Build (with tests)') {
+      steps {
+        script {
+          openshift.withCluster() {
+            openshift.withProject(TOOLS_PROJECT) {
+              echo "Running unit tests and building images..."
+              echo "This may take several minutes. Logs are not forwarded to Jenkins by default (at this time)."
+              echo "Additional logs can be found by monitoring builds in ${TOOLS_PROJECT}"
+
+              def appBuild = openshift.selector("bc", "${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}")
+              // temporarily set ENABLE_DATA_ENTRY=True during testing because False currently leads to a failing unit test
+              appBuild.startBuild("--wait", "--env=ENABLE_DATA_ENTRY=True").logs("-f")
+            }
+          }
+        }
+      }
+    }
+
+
+    // the Deploy to Dev stage creates a new dev environment for the pull request (if necessary), tags the newly built
+    // application image into that environment, and monitors the newest deployment for pods/containers to
+    // report back as ready.
+    stage('Deploy to dev') {
+      steps {
+        script {
+          openshift.withCluster() {
+            openshift.withProject(DEV_PROJECT) {
+
+
+
+              // promote the newly built image to DEV
+              echo "Tagging new image to DEV imagestream."
+              openshift.tag("${TOOLS_PROJECT}/gwells-application:${PR_NUM}", "${DEV_PROJECT}/gwells-${DEV_SUFFIX}-${PR_NUM}:dev")  // todo: clean up labels/tags
+              openshift.tag("${TOOLS_PROJECT}/gwells-postgresql:dev", "${DEV_PROJECT}/gwells-postgresql-${DEV_SUFFIX}-${PR_NUM}:dev")  // todo: clean up labels/tags
+
+              // monitor the deployment status and wait until deployment is successful
+              echo "Waiting for deployment to dev..."
+              def newVersion = openshift.selector("dc", "${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}").object().status.latestVersion
+              def pods = openshift.selector('pod', [deployment: "${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}-${newVersion}"])
+
+              // wait until each container in this deployment's pod reports as ready
+              pods.untilEach(1) {
+                return it.object().status.containerStatuses.every {
+                  it.ready
+                }
+              }
+              echo "Deployment successful!"
+              echo "Loading fixtures"
+              def firstPod = pods.objects()[0].metadata.name
+              openshift.exec(firstPod, "--", "bash -c '\
+                cd /opt/app-root/src/backend; \
+                python manage.py loaddata \
+                  gwells-codetables.json \
+                  wellsearch-codetables.json \
+                  registries-codetables.json \
+                  registries.json \
+                  aquifers.json \
+                  wellsearch.json.gz; \
+                python manage.py createinitialrevisions'")
+
+            }
+          }
+        }
+      }
+    }  
+  }
+}

@@ -19,6 +19,18 @@
       {
         "name": "ENV_NAME",
         "required": true
+      },
+      {
+        "name": "SOURCE_REPOSITORY_REF",
+        "required": true
+      },
+      {
+          "name": "APP_IMAGE_TAG",
+          "required": true
+      },
+      {
+        "name": "PR_NUM",
+        "required": true
       }
     ],
     "objects": [
@@ -26,7 +38,10 @@
             "kind": "ImageStream",
             "apiVersion": "v1",
             "metadata": {
-                "name": "gwells-python-36-rhel7${NAME_SUFFIX}",
+                "name": "gwells-python-36-rhel7",
+                "labels": {
+                    "appver": "gwells-base-image"
+                },
                 "creationTimestamp": null,
                 "annotations": {
                     "description": "Python Base Image"
@@ -56,23 +71,7 @@
             "kind": "ImageStream",
             "apiVersion": "v1",
             "metadata": {
-                "name": "gwells-python-runtime${NAME_SUFFIX}",
-                "creationTimestamp": null,
-                "annotations": {
-                    "description": "Python Runtime Image"
-                }
-            },
-            "spec": {
-                "lookupPolicy": {
-                    "local": false
-                }
-            }
-        },
-        {
-            "kind": "ImageStream",
-            "apiVersion": "v1",
-            "metadata": {
-                "name": "gwells${NAME_SUFFIX}",
+                "name": "gwells-application",
                 "creationTimestamp": null,
                 "labels": {
                     "base-name":"gwells"
@@ -92,62 +91,11 @@
             "kind": "BuildConfig",
             "apiVersion": "v1",
             "metadata": {
-                "name": "gwells-python-runtime${NAME_SUFFIX}",
-                "creationTimestamp": null,
-                "labels": {
-                    "build": "gwells-python-runtime"
-                },
-                "annotations": {
-
-                }
-            },
-            "spec": {
-                "successfulBuildsHistoryLimit": 3,
-                "failedBuildsHistoryLimit": 3,
-                "triggers": [
-                    {
-                        "type": "ImageChange",
-                        "imageChange": {}
-                    },
-                    {
-                        "type": "ConfigChange"
-                    }
-                ],
-                "runPolicy": "SerialLatestOnly",
-                "source": {
-                    "contextDir": "openshift/docker-images/gwells-python-runtime",
-                    "git": {
-                        "ref": "master",
-                        "uri": "${SOURCE_REPOSITORY_URL}"
-                    },
-                    "type": "Git"
-                },
-                "strategy": {
-                    "type": "Docker",
-                    "dockerStrategy": {
-                        "from": {
-                            "kind": "ImageStreamTag",
-                            "name": "gwells-python-36-rhel7${NAME_SUFFIX}:3.6"
-                        }
-                    }
-                },
-                "output": {
-                    "to": {
-                        "kind": "ImageStreamTag",
-                        "name": "gwells-python-runtime${NAME_SUFFIX}:${ENV_NAME}"
-                    }
-                },
-                "resources": {},
-                "postCommit": {},
-                "nodeSelector": null
-            }
-        },
-        {
-            "kind": "BuildConfig",
-            "apiVersion": "v1",
-            "metadata": {
                 "name": "gwells${NAME_SUFFIX}",
                 "creationTimestamp": null,
+                "labels": {
+                    "appver": "gwells${NAME_SUFFIX}"
+                },
                 "annotations": {
                     "description": "Defines how to build the application"
                 }
@@ -168,7 +116,7 @@
                     "type": "Git",
                     "git": {
                         "uri": "${SOURCE_REPOSITORY_URL}",
-                        "ref": "master"
+                        "ref": "${SOURCE_REPOSITORY_REF}"
                     },
                     "contextDir": "app"
                 },
@@ -177,7 +125,7 @@
                     "sourceStrategy": {
                         "from": {
                             "kind": "ImageStreamTag",
-                            "name": "gwells-python-runtime${NAME_SUFFIX}:${ENV_NAME}"
+                            "name": "gwells-python-36-rhel7:3.6"
                         },
                         "env": [
                             {
@@ -205,7 +153,7 @@
                 "output": {
                     "to": {
                         "kind": "ImageStreamTag",
-                        "name": "gwells${NAME_SUFFIX}:${ENV_NAME}"
+                        "name": "gwells-application:${APP_IMAGE_TAG}"
                     }
                 },
                 "resources": {
@@ -216,6 +164,68 @@
                     "requests": {
                         "cpu": "1",
                         "memory": "4Gi"
+                    }
+                },
+                "nodeSelector": null
+            }
+        },
+        {
+            "kind": "BuildConfig",
+            "apiVersion": "v1",
+            "metadata": {
+                "name": "gwells-pipeline-${NAME_SUFFIX}",
+                "creationTimestamp": null,
+                "labels": {
+                    "appver": "gwells${NAME_SUFFIX}"
+                },
+                "annotations": {
+                    "description": "Defines how to build the application"
+                }
+            },
+            "spec": {
+                "successfulBuildsHistoryLimit": 3,
+                "failedBuildsHistoryLimit": 3,
+                "triggers": [
+                    {
+                        "type": "ImageChange"
+                    },
+                    {
+                        "type": "ConfigChange"
+                    }
+                ],
+                "runPolicy": "SerialLatestOnly",
+                "source": {
+                    "type": "Git",
+                    "git": {
+                        "uri": "${SOURCE_REPOSITORY_URL}",
+                        "ref": "${SOURCE_REPOSITORY_REF}"
+                    },
+                    "contextDir": "app"
+                },
+                "strategy": {
+                    "type": "JenkinsPipeline",
+                    "jenkinsPipelineStrategy": {
+                        "jenkinsfilePath": "pipeline/Jenkinsfile",
+                        "env": [
+                            {
+                                "name": "PULL_REQUEST",
+                                "value": "${PR_NUM}"
+                            },
+                            {
+                                "name": "CHANGE_ID",
+                                "value": "${CHANGE_ID}"
+                            }
+                        ]
+                    }
+                },
+                "resources": {
+                    "limits": {
+                        "cpu": "1",
+                        "memory": "1Gi"
+                    },
+                    "requests": {
+                        "cpu": "1",
+                        "memory": "1Gi"
                     }
                 },
                 "nodeSelector": null

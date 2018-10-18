@@ -22,10 +22,11 @@
             "kind": "ImageStream",
             "apiVersion": "v1",
             "metadata": {
-                "name": "gwells-postgresql${NAME_SUFFIX}",
+                "name": "gwells-postgresql",
                 "creationTimestamp": null,
                 "labels": {
-                    "base-name": "gwells-postgresql"
+                    "base-name": "gwells-postgresql",
+                    "appver": "gwells"
                 },
                 "annotations": {}
             },
