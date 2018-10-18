@@ -77,7 +77,7 @@ class DecommissionDescriptionSerializer(serializers.ModelSerializer):
             'start',
             'end',
             'material',
-            'observations',
+            'observations'
         )
         extra_kwargs = {
             'start': {'required': True},
