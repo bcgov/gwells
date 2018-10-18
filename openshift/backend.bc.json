@@ -210,6 +210,10 @@
                             {
                                 "name": "PULL_REQUEST",
                                 "value": "${PR_NUM}"
+                            },
+                            {
+                                "name": "CHANGE_ID",
+                                "value": "${CHANGE_ID}"
                             }
                         ]
                     }
