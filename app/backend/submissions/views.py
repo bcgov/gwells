@@ -13,10 +13,13 @@
 """
 
 from rest_framework.response import Response
+from posixpath import join as urljoin
 from django.views.generic import TemplateView
-from rest_framework.generics import ListCreateAPIView
+from django.urls import reverse
+from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveUpdateAPIView, RetrieveAPIView
 from rest_framework.views import APIView
 
+from gwells.urls import app_root
 from gwells.pagination import APILimitOffsetPagination
 from wells.permissions import WellsEditPermissions
 from gwells.models import ProvinceStateCode
@@ -77,7 +80,10 @@ from submissions.serializers import (
     ScreenAssemblyTypeCodeSerializer,
     WaterQualityCharacteristicSerializer,
     WaterQualityColourSerializer,
-    WellSubmissionSerializer,
+    WellConstructionSubmissionSerializer,
+    WellAlterationSubmissionSerializer,
+    WellDecommissionSubmissionSerializer,
+    WellSubmissionListSerializer,
     WellActivityCodeSerializer,
     WellClassCodeSerializer,
     WellSubclassCodeSerializer,
@@ -85,23 +91,8 @@ from submissions.serializers import (
 )
 
 
-class SubmissionListAPIView(ListCreateAPIView):
-    """List and create submissions
-
-    get: returns a list of well activity submissions
-    post: adds a new submission
-    """
-
-    permission_classes = (WellsEditPermissions,)
-    model = ActivitySubmission
-    queryset = ActivitySubmission.objects.all()
-    pagination_class = APILimitOffsetPagination
-    serializer_class = WellSubmissionSerializer
-
-    def get_queryset(self):
-        qs = self.queryset
-        qs = qs \
-            .select_related(
+def get_submission_queryset(qs):
+    return qs.select_related(
                 "well_class",
                 "well_subclass",
                 "intended_water_use",
@@ -120,9 +111,45 @@ class SubmissionListAPIView(ListCreateAPIView):
                 "productiondata_set",
                 "casing_set",
                 "screen_set",
+                "decommission_description_set",
             ) \
             .order_by("filing_number")
-        return qs
+
+
+class SubmissionGetAPIView(RetrieveAPIView):
+    """Get a submission"""
+
+    permission_classes = (WellsEditPermissions,)
+    queryset = ActivitySubmission.objects.all()
+    model = ActivitySubmission
+    lookup_field = 'filing_number'
+
+    def get_serializer(self, data):
+        if data.well_activity_type.code == WellActivityCode.types.construction().code:
+            return WellConstructionSubmissionSerializer(data)
+        elif data.well_activity_type.code == WellActivityCode.types.alteration().code:
+            return WellAlterationSubmissionSerializer(data)
+        elif data.well_activity_type.code == WellActivityCode.types.decommission().code:
+            return WellDecommissionSubmissionSerializer(data)
+        else:
+            return WellSubmissionListSerializer(data)
+
+
+class SubmissionListAPIView(ListAPIView):
+    """List and create submissions
+
+    get: returns a list of well activity submissions
+    post: adds a new submission
+    """
+
+    permission_classes = (WellsEditPermissions,)
+    model = ActivitySubmission
+    queryset = ActivitySubmission.objects.all()
+    pagination_class = APILimitOffsetPagination
+    serializer_class = WellSubmissionListSerializer
+
+    def get_queryset(self):
+        return get_submission_queryset(self.queryset)
 
     def list(self, request):
         """ List activity submissions with pagination """
@@ -131,11 +158,66 @@ class SubmissionListAPIView(ListCreateAPIView):
 
         page = self.paginate_queryset(filtered_queryset)
         if page is not None:
-            serializer = WellSubmissionSerializer(page, many=True)
+            serializer = WellSubmissionListSerializer(page, many=True)
             return self.get_paginated_response(serializer.data)
 
-        serializer = WellSubmissionSerializer(filtered_queryset, many=True)
+        serializer = WellSubmissionListSerializer(filtered_queryset, many=True)
         return Response(serializer.data)
+
+
+class SubmissionConstructionAPIView(ListCreateAPIView):
+    """Create a construction submission
+
+    """
+    model = ActivitySubmission
+    serializer_class = WellConstructionSubmissionSerializer
+    permission_classes = (WellsEditPermissions,)
+    queryset = ActivitySubmission.objects.all()
+
+    def get_queryset(self):
+        return get_submission_queryset(self.queryset)\
+            .filter(well_activity_type=WellActivityCode.types.construction())
+
+
+class SubmissionAlterationAPIView(ListCreateAPIView):
+    """Create an alteration submission
+
+    """
+    model = ActivitySubmission
+    serializer_class = WellAlterationSubmissionSerializer
+    permission_classes = (WellsEditPermissions,)
+    queryset = ActivitySubmission.objects.all()
+
+    def get_queryset(self):
+        return get_submission_queryset(self.queryset)\
+            .filter(well_activity_type=WellActivityCode.types.alteration())
+
+
+class SubmissionDecommissionAPIView(ListCreateAPIView):
+    """Create an decommission submission
+
+    """
+    model = ActivitySubmission
+    serializer_class = WellDecommissionSubmissionSerializer
+    permission_classes = (WellsEditPermissions,)
+    queryset = ActivitySubmission.objects.all()
+
+    def get_queryset(self):
+        return get_submission_queryset(self.queryset)\
+            .filter(well_activity_type=WellActivityCode.types.decommission())
+
+
+class SubmissionStaffEditAPIView(ListCreateAPIView):
+    """ Create a staff edit submission
+    TODO: Implement this class fully
+    """
+    model = ActivitySubmission
+    permission_classes = (WellsEditPermissions,)
+    queryset = ActivitySubmission.objects.all()
+
+    def get_queryset(self):
+        return get_submission_queryset(self.queryset)\
+            .filter(well_activity_type=WellActivityCode.types.staff_edit())
 
 
 class SubmissionsOptions(APIView):
@@ -194,6 +276,11 @@ class SubmissionsOptions(APIView):
             instance=WaterQualityCharacteristic.objects.all(), many=True)
         water_quality_colours = WaterQualityColourSerializer(
             instance=WaterQualityColour.objects.all(), many=True)
+
+        root = urljoin('/', app_root, 'api/v1/')
+        for item in activity_codes.data:
+            if item['code'] not in ('LEGACY'):
+                item['path'] = reverse(item['code'])[len(root):]
 
         options["province_codes"] = province_codes.data
         options["activity_types"] = activity_codes.data

@@ -6,6 +6,8 @@ from rest_framework.test import APITestCase
 from rest_framework import status
 
 from gwells.roles import roles_to_groups, WELLS_EDIT_ROLE, WELLS_VIEWER_ROLE
+from submissions.serializers import (WellSubmissionListSerializer, WellConstructionSubmissionSerializer,
+                                     WellAlterationSubmissionSerializer, WellDecommissionSubmissionSerializer)
 
 
 class TestPermissionsNotAuthenticated(APITestCase):
@@ -55,7 +57,7 @@ class TestPermissionsEditRights(APITestCase):
         self.client.force_authenticate(user)
 
     def test_edit_rights_attempts_submit(self):
-        url = reverse('submissions-list')
+        url = reverse('CON')
         # As a user with edit rights, I should be able to make a submission.
         data = {
             'owner_full_name': 'molly',
@@ -66,5 +68,4 @@ class TestPermissionsEditRights(APITestCase):
             'casing_set': []
         }
         response = self.client.post(url, data, format='json')
-        print(response)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
