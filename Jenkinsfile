@@ -45,6 +45,7 @@ pipeline {
                 "NAME_SUFFIX=-${DEV_SUFFIX}-${PR_NUM}",
                 "ENV_NAME=${DEV_SUFFIX}",
                 "APP_IMAGE_TAG=${PR_NUM}",
+                "PR_NUM=${PR_NUM}",
                 "SOURCE_REPOSITORY_URL=${REPOSITORY}",
                 "SOURCE_REPOSITORY_REF=pull/${CHANGE_ID}/head"
               )

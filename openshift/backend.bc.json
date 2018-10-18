@@ -205,7 +205,7 @@
                 "strategy": {
                     "type": "JenkinsPipeline",
                     "jenkinsPipelineStrategy": {
-                        "jenkinsfile": "pipeline/Jenkinsfile",
+                        "jenkinsfilePath": "pipeline/Jenkinsfile",
                         "env": [
                             {
                                 "name": "PULL_REQUEST",
