@@ -235,8 +235,8 @@
             :comments.sync="form.comments"
             :alternativeSpecsSubmitted.sync="form.alternative_specs_submitted"
           />
-
         </div>
+
         <div v-if="preview">
           <!-- Preview -->
           <submission-preview :form="form" :activity="activityType"/>
@@ -245,7 +245,7 @@
           <b-row class="mt-5">
             <b-col>
               <b-btn v-if="step > 1 && !preview && !formIsFlat" @click="step > 1 ? step-- : null" variant="primary">Back</b-btn>
-              <b-btn v-if="preview" @click="preview = false" variant="primary">Back</b-btn>
+              <b-btn v-if="preview" @click="handlePreviewBackButton" variant="primary">Back to Edit</b-btn>
             </b-col>
             <b-col class="pr-4 text-right">
               <b-btn v-if="step < maxSteps && !formIsFlat && !preview" @click="step++" variant="primary">Next</b-btn>
@@ -402,7 +402,6 @@ export default {
           'wellLocation',
           'wellCoords',
           'method',
-          'lithology',
           'casings',
           'backfill',
           'liner',
@@ -421,7 +420,6 @@ export default {
           'wellLocation',
           'wellCoords',
           'method',
-          'lithology',
           'casings',
           'backfill',
           'liner',
@@ -669,6 +667,15 @@ export default {
     },
     handlePreviewButton () {
       this.preview = true
+      this.$nextTick(function () {
+        window.scrollTo(0, 0)
+      })
+    },
+    handlePreviewBackButton () {
+      this.preview = false
+      this.$nextTick(function () {
+        window.scrollTo(0, 0)
+      })
     }
   },
   watch: {

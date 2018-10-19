@@ -148,14 +148,36 @@
     <div class="my-3">
       <h3>Lithology</h3>
       <div class="table-responsive">
-        <b-table :items="form.lithology_set" show-empty></b-table>
+        <b-table
+          :items="filterBlankRows(form.lithology_set)"
+          show-empty
+          :fields="[
+            'from',
+            'to',
+            'primary',
+            'secondary',
+            'bedrock',
+            'descriptor',
+            'colour',
+            'hardness',
+            'moisture',
+            'water_bearing_flow',
+            'observations'
+          ]"></b-table>
       </div>
     </div>
 
     <div class="my-3">
       <h3>Casing Details</h3>
       <div class="table-responsive">
-        <b-table :items="filteredCasingSet" :fields="['start', 'end']" show-empty></b-table>
+        <b-table
+            :items="filterBlankRows(form.casing_set)"
+            :fields="['from', 'to', 'casing_code', 'casing_material', 'diameter', 'wall_thickness', 'drive_shoe']"
+            show-empty>
+
+          <template slot="from" slot-scope="data">{{data.item.start}} ft</template>
+          <template slot="to" slot-scope="data">{{data.item.end}} ft</template>
+        </b-table>
       </div>
     </div>
 
@@ -195,7 +217,14 @@
         </b-col>
         <b-col cols="12" lg="6">
           <div class="font-weight-bold">Liner perforations</div>
-          <b-table :items="form.linerperforation_set" :fields="['from', 'to']"></b-table>
+          <b-table
+              :items="filterBlankRows(form.linerperforation_set)"
+              :fields="['from', 'to']"
+              show-empty
+          >
+            <template slot="from" slot-scope="data">{{data.item.start}} ft</template>
+            <template slot="to" slot-scope="data">{{data.item.end}} ft</template>
+          </b-table>
         </b-col>
       </b-row>
     </div>
@@ -221,7 +250,15 @@
           </b-row>
         </b-col>
         <b-col cols="12" lg="8">
-          <b-table :items="form.screen_set" :fields="['from', 'to']"></b-table>
+          <div class="font-weight-bold">Installed Screens</div>
+          <b-table
+              :items="filterBlankRows(form.screen_set)"
+              :fields="['from', 'to', 'internal_diameter', 'assembly_type', 'slot_size']"
+              show-empty
+              >
+            <template slot="from" slot-scope="data">{{data.item.start}} ft</template>
+            <template slot="to" slot-scope="data">{{data.item.end}} ft</template>
+          </b-table>
         </b-col>
       </b-row>
     </div>
@@ -321,21 +358,15 @@ export default {
     'form',
     'activity'
   ],
-  computed: {
-    filteredCasingSet () {
-      // return an empty array if casing_set isn't available on the form, otherwise
-      // return the casing set with blank rows filtered out
-      if (!this.form || !this.form.casing_set) {
-        return []
-      }
-      return this.filterBlankRows(this.form.casing_set)
-    }
-  },
   methods: {
     // filter blank rows from an array (for example, casing_set, lithology_set)
     // this method will return a new array stripped of blank objects or objects
     // where all keys have null or empty string values
     filterBlankRows (set) {
+      if (!set) {
+        return []
+      }
+
       return set.filter(item => {
         // check that item is an object, has keys and at least one of those keys
         // has a value (i.e. not null or empty string)
