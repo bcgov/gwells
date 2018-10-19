@@ -41,7 +41,7 @@ class AquiferSerializer(serializers.ModelSerializer):
             'productivity_description',
             'productivity',
             'quality_concern_description',
-            'quality_concert',
+            'quality_concern',
             'subtype_description',
             'subtype',
             'vulnerability_description',
