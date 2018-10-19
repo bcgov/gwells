@@ -1,7 +1,7 @@
 <template>
   <div class="card">
     <div class="card-body">
-      <h4 class="card-title">
+      <h1 class="card-title">
         <b-row>
           <b-col lg="12" >Well Activity Submission
             <b-form-group>
@@ -12,7 +12,7 @@
             </b-form-group>
           </b-col>
         </b-row>
-      </h4>
+      </h1>
       <p>Submit activity on a well. <a href="/gwells/">Try a search</a> to see if the well exists in the system before submitting a report.</p>
 
       <!-- Activity submission form -->
@@ -35,6 +35,12 @@
               </b-btn>
             </b-col>
           </b-row>
+
+          <!-- activity type -->
+          <activity-type
+            v-if="currentStep === 'activityType' || (formIsFlat && flatForm.activityType)"
+            :wellActivityType.sync="activityType"
+          ></activity-type>
 
           <!-- Type of well -->
           <well-type class="my-3"

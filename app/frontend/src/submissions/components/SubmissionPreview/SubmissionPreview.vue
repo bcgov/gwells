@@ -10,12 +10,11 @@
       </b-row>
       <b-row>
         <b-col cols="12" lg="4"><span class="font-weight-bold">Class of Well:</span> {{ form.well_class }}</b-col>
-        <b-col cols="12" lg="4"><span class="font-weight-bold">Subclass:</span> {{ form.well_subclass }}</b-col>
+        <b-col cols="12" lg="4"><span class="font-weight-bold">Subclass:</span> {{ wellSubclass }}</b-col>
         <b-col cols="12" lg="4"><span class="font-weight-bold">Intended Water Use:</span> {{ form.intended_water_use }}</b-col>
-
       </b-row>
       <b-row>
-        <b-col cols="12" lg="4"><span class="font-weight-bold">Well Tag Number:</span> {{ form.well }}</b-col>
+        <b-col cols="12" lg="4"><span class="font-weight-bold">Well Tag Number:</span> {{ form.well ? form.well['well_tag_number']: '' }}</b-col>
         <b-col cols="12" lg="4"><span class="font-weight-bold">Well Identification Plate Number:</span> {{ form.identification_plate_number }}</b-col>
         <b-col cols="12" lg="4"><span class="font-weight-bold">Where Plate Attached:</span> {{ form.well_plate_attached }}</b-col>
       </b-row>
@@ -28,7 +27,7 @@
     <div class="my-3">
       <h3>Person Responsible for Work</h3>
       <b-row>
-        <b-col cols="12" lg="4"><span class="font-weight-bold">Person Responsible for Work:</span> {{ form.driller_responsible }}</b-col>
+        <b-col cols="12" lg="4"><span class="font-weight-bold">Person Responsible for Work:</span> {{ form.driller_responsible ? form.driller_responsible['name'] : '' }}</b-col>
         <b-col cols="12" lg="4"><span class="font-weight-bold">Person Who Performed Work:</span> {{ form.driller_name }}</b-col>
       </b-row>
       <b-row>
@@ -348,6 +347,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import PreviewMap from '@/submissions/components/SubmissionPreview/PreviewMap.vue'
 export default {
   name: 'SubmissionPreview',
@@ -358,6 +358,29 @@ export default {
     'form',
     'activity'
   ],
+  computed: {
+    wellSubclass () {
+      let subclassCodes = []
+      let subclass = null
+
+      // generate a list of subclasses
+      if (this.form.well_subclass && this.form.well_class) {
+        this.codes.well_classes.forEach((item) => {
+          if (item.wellsubclasscode_set) {
+            subclassCodes = subclassCodes.concat(item.wellsubclasscode_set)
+          }
+        })
+
+        // find the subclass to get its description
+        subclass = subclassCodes.find((code) => {
+          return code.well_subclass_guid === this.form.well_subclass
+        })['description']
+      }
+
+      return subclass
+    },
+    ...mapGetters(['codes'])
+  },
   methods: {
     // filter blank rows from an array (for example, casing_set, lithology_set)
     // this method will return a new array stripped of blank objects or objects
