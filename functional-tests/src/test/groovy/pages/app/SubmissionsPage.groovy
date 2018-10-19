@@ -12,25 +12,12 @@
     limitations under the License.
 */
 
-import 'babel-polyfill'
-import Vue from 'vue'
-import App from './App'
-import BootstrapVue from 'bootstrap-vue'
-import '@/common/assets/css/bootstrap-theme.min.css'
-import 'bootstrap-vue/dist/bootstrap-vue.css'
-import router from './router'
-import store from './store'
-import ApiService from '@/common/services/ApiService.js'
+package pages
 
-ApiService.init()
-
-Vue.use(BootstrapVue)
-
-/* eslint-disable no-new */
-new Vue({
-  components: { App },
-  el: '#app',
-  router,
-  store,
-  template: '<App/>'
-})
+class SubmissionsPage extends BaseAppPage {
+  static at = { pageTitle.text() == 'Well Activity Submission' }
+  static url = 'submissions'
+  static content = {
+    pageTitle { $('.card-title .col-lg-8') } // TODO improve this selector
+  }
+}

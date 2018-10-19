@@ -16,19 +16,19 @@
   <b-card no-body class="p-3 mb-4">
     <h5>Aquifer Search</h5>
     <b-form
-      v-on:submit.prevent="search(searchParams)"
+      v-on:submit.prevent="search(query)"
       v-on:reset="reset">
       <b-form-row>
         <b-col cols="12" md="4">
           <b-form-group label="Aquifer name">
             <b-form-input
               type="text"
-              v-model="searchParams.search"/>
+              v-model="query.search"/>
           </b-form-group>
           <b-form-group label="Aquifer number">
             <b-form-input
               type="text"
-              v-model="searchParams.aquifer_id"/>
+              v-model="query.aquifer_id"/>
           </b-form-group>
         </b-col>
       </b-form-row>
@@ -43,21 +43,26 @@
     </b-form>
 
     <b-table
+      v-if="aquiferList"
       :show-empty="emptyResults"
       empty-text="No aquifers could be found"
       :items="aquiferList"
-      :fields="aquiferListFields" />
+      :fields="aquiferListFields">
+      <template slot="aquifer_id" slot-scope="data">
+        <router-link :to="`${data.value}/`">{{data.value}}</router-link>
+      </template>
+    </b-table>
   </b-card>
 </template>
 
 <script>
-import { SEARCH_AQUIFERS, RESET_RESULTS } from '../store/actions.types'
-import { mapGetters, mapActions } from 'vuex'
+import ApiService from '@/common/services/ApiService.js'
 
 export default {
   data () {
     return {
-      searchParams: {},
+      query: {},
+      response: {},
       aquiferListFields: [
         { key: 'aquifer_id', label: 'Aquifer number' },
         { key: 'aquifer_name', label: 'Aquifer name' },
@@ -75,21 +80,20 @@ export default {
     }
   },
   computed: {
-    ...mapGetters([
-      'aquiferList',
-      'emptyResults'
-    ])
+    aquiferList () { return this.response && this.response.results },
+    emptyResults () { return this.response && this.response.count == 0 }
   },
   methods: {
-    ...mapActions({
-      search: SEARCH_AQUIFERS,
-      resetResults: RESET_RESULTS
-    }),
     reset () {
-      this.resetResults()
-      this.searchParams = {}
+      this.response = {}
+      this.query = {}
     },
-    search () { this.$store.dispatch(SEARCH_AQUIFERS) }
+    search () {
+      ApiService.query('aquifers/', this.query)
+        .then((response) => {
+          this.response = response.data
+        })
+    }
   }
 }
 </script>

@@ -12,25 +12,21 @@
     limitations under the License.
 */
 
-import 'babel-polyfill'
-import Vue from 'vue'
-import App from './App'
-import BootstrapVue from 'bootstrap-vue'
-import '@/common/assets/css/bootstrap-theme.min.css'
-import 'bootstrap-vue/dist/bootstrap-vue.css'
-import router from './router'
-import store from './store'
-import ApiService from '@/common/services/ApiService.js'
+package pages
 
-ApiService.init()
+import geb.Page
 
-Vue.use(BootstrapVue)
+class LoginPage extends Page {
+  static at = {
+    title.trim() == 'Log in to Groundwater Wells' &&
+    pageTitle.text().trim() == 'GROUNDWATER WELLS'
+  }
+  static content = {
+    pageTitle { $('#kc-header-wrapper') }
 
-/* eslint-disable no-new */
-new Vue({
-  components: { App },
-  el: '#app',
-  router,
-  store,
-  template: '<App/>'
-})
+    usernameField { $('#username') }
+    passwordField { $('#password') }
+
+    logInButton { $('input', type:'submit', value:'Log in') }
+  }
+}

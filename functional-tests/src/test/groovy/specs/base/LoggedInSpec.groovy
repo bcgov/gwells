@@ -12,25 +12,22 @@
     limitations under the License.
 */
 
-import 'babel-polyfill'
-import Vue from 'vue'
-import App from './App'
-import BootstrapVue from 'bootstrap-vue'
-import '@/common/assets/css/bootstrap-theme.min.css'
-import 'bootstrap-vue/dist/bootstrap-vue.css'
-import router from './router'
-import store from './store'
-import ApiService from '@/common/services/ApiService.js'
+package specs
 
-ApiService.init()
+import traits.Login
 
-Vue.use(BootstrapVue)
-
-/* eslint-disable no-new */
-new Vue({
-  components: { App },
-  el: '#app',
-  router,
-  store,
-  template: '<App/>'
-})
+/**
+ * Base spec for tests that require being logged in.
+ *
+ * All specs that login should extend this class.
+ */
+abstract class LoggedInSpec extends BaseSpec implements Login {
+  /**
+   * Cleanup that runs after each test.
+   *
+   * Clears and restarts the browser, the next test will open in a new browser.
+   */
+  void cleanup() {
+    clearAndResetBrowser()
+  }
+}
