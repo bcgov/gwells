@@ -155,7 +155,7 @@
     <div class="my-3">
       <h3>Casing Details</h3>
       <div class="table-responsive">
-        <b-table :items="form.casing_set" :fields="['start', 'end']" show-empty></b-table>
+        <b-table :items="filteredCasingSet" :fields="['start', 'end']" show-empty></b-table>
       </div>
     </div>
 
@@ -320,7 +320,31 @@ export default {
   props: [
     'form',
     'activity'
-  ]
+  ],
+  computed: {
+    filteredCasingSet () {
+      // return an empty array if casing_set isn't available on the form, otherwise
+      // return the casing set with blank rows filtered out
+      if (!this.form || !this.form.casing_set) {
+        return []
+      }
+      return this.filterBlankRows(this.form.casing_set)
+    }
+  },
+  methods: {
+    // filter blank rows from an array (for example, casing_set, lithology_set)
+    // this method will return a new array stripped of blank objects or objects
+    // where all keys have null or empty string values
+    filterBlankRows (set) {
+      return set.filter(item => {
+        // check that item is an object, has keys and at least one of those keys
+        // has a value (i.e. not null or empty string)
+        return item.constructor === Object && Object.keys(item).length !== 0 && !Object.keys(item).every((key) => {
+          return !item[key] && item[key] !== 0
+        })
+      })
+    }
+  }
 }
 </script>
 
