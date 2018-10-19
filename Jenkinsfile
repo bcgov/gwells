@@ -361,29 +361,6 @@ pipeline {
 
               // promote the newly built image to DEV
 
-              // monitor the deployment status and wait until deployment is successful
-              echo "Waiting for deployment to dev..."
-              def newVersion = openshift.selector("dc", "${APP_NAME}-${SERVER_ENV}-${PR_NUM}").object().status.latestVersion
-              def pods = openshift.selector('pod', [deployment: "${APP_NAME}-${SERVER_ENV}-${PR_NUM}-${newVersion}"])
-
-              // wait until each container in this deployment's pod reports as ready
-              pods.untilEach(1) {
-                return it.object().status.containerStatuses.every {
-                  it.ready
-                }
-              }
-              echo "Deployment successful!"
-              echo "Loading fixtures"
-              pods[0].exec("bash -c '\
-                cd /opt/app-root/src/backend; \
-                python manage.py loaddata \
-                  gwells-codetables.json \
-                  wellsearch-codetables.json \
-                  registries-codetables.json \
-                  aquifers.json \
-                  wellsearch.json.gz \
-                  registries.json; \
-                python manage.py createinitialrevisions'")
               echo "Tagging new image to TEST imagestream."
 
               // Application/database images are tagged in the tools imagestream as the new test/prod image
