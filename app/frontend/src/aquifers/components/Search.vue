@@ -81,7 +81,7 @@ export default {
   },
   computed: {
     aquiferList () { return this.response && this.response.results },
-    emptyResults () { return this.response && this.response.count === 0 }
+    emptyResults () { return this.response && this.response.count == 0 }
   },
   methods: {
     reset () {

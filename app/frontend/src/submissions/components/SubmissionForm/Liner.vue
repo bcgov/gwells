@@ -95,14 +95,14 @@
                     :loaded="getFieldsLoaded(index).end"/>
                 </td>
                 <td class="py-0">
-                  <b-btn size="sm" variant="primary" @click="removeRowIfOk(index)" class="mt-2"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
+                  <b-btn size="sm" :id="`removeLinerPerfRowBtn${index}`" variant="primary" @click="removeRowIfOk(index)" class="mt-2"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
                 </td>
               </tr>
             </thead>
             <tbody>
             </tbody>
           </table>
-          <b-btn size="sm" variant="primary" @click="addRow"><i class="fa fa-plus-square-o"></i> Add row</b-btn>
+          <b-btn size="sm" variant="primary" id="addlinerPerforationRowBtn" @click="addRow"><i class="fa fa-plus-square-o"></i> Add row</b-btn>
           <b-modal
             v-model="confirmRemoveModal"
             centered

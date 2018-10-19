@@ -32,7 +32,7 @@
       <b-row>
         <b-col cols="12" md="4" lg="2">
           <form-input
-              id="staticWaterLevel"
+              id="staticWaterLevelTest"
               label="SWL Before Test"
               v-model="productionData[index].static_level"
               hint="ft (btoc)"></form-input>

@@ -26,7 +26,7 @@ from drf_yasg.utils import swagger_auto_schema
 
 from gwells import settings
 from gwells.models import Survey
-from gwells.roles import WELLS_VIEW_ROLES
+from gwells.roles import WELLS_VIEWER_ROLE
 from gwells.pagination import APILimitOffsetPagination
 
 from wells.models import Well
@@ -72,7 +72,7 @@ class ListFiles(APIView):
     @swagger_auto_schema(auto_schema=None)
     def get(self, request, tag):
         user_is_staff = self.request.user.groups.filter(
-            name__in=WELLS_VIEW_ROLES).exists()
+            name=WELLS_VIEWER_ROLE).exists()
 
         client = MinioClient(
             request=request, disable_private=(not user_is_staff))

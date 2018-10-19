@@ -20,43 +20,18 @@ from django.contrib.auth.models import Group, Permission
 logger = logging.getLogger(__name__)
 
 
-# TODO: Change this section to match what's been done in Vue.js; We shouldn't have a concept of what
-#       and adjudicator/admin/etc. is here. We should only be concerned with what actions can be taken.
-#       Roles should be assigned appropriately to groups with keycloak.
-#       On the Django level, a keycloak role, such as "registries_edit", should translate to a django_group
-#       with the same name, that has the appropriate permissions set.
-#       In order to affect this change, code has to be changed in this module, and a migration creating the
-#       appropriate groups needs to be made.
-
-# Keycloak/SSO roles:
+# Keycloak/SSO roles - these map to Django groups.
 ADMIN_ROLE = 'gwells_admin'
+# TODO: The ADJUDICATOR and AUTHORITY role should be removed. These concepts should exist as groups in
+#           keycloak, and the underlying actions should be defined as roles seperate from business rules.
+#           e.g.: an adjudicator may view and edit registries.
 REGISTRIES_ADJUDICATOR_ROLE = 'registries_adjudicator'
 REGISTRIES_AUTHORITY_ROLE = 'registries_statutory_authority'
 REGISTRIES_VIEWER_ROLE = 'registries_viewer'
 WELLS_VIEWER_ROLE = 'wells_viewer'
 WELLS_EDIT_ROLE = 'wells_edit'
 
-# Roles relating to registries.
-REGISTRIES_ROLES = (
-    ADMIN_ROLE,
-    REGISTRIES_ADJUDICATOR_ROLE,
-    REGISTRIES_AUTHORITY_ROLE,
-    REGISTRIES_VIEWER_ROLE,
-)
-
-# Roles relating to wells view.
-WELLS_VIEW_ROLES = (
-    ADMIN_ROLE,
-    WELLS_VIEWER_ROLE,
-)
-
-# Roles leating to wells edit.
-WELLS_EDIT_ROLES = (
-    ADMIN_ROLE,
-    WELLS_VIEWER_ROLE,
-    WELLS_EDIT_ROLE,
-)
-
+# These roles are excluded, as they cannot be mapped to any particular useful groups.
 EXCLUDE = ('idir', 'offline_access', 'admin', 'uma_authorization')
 
 
@@ -91,11 +66,14 @@ def roles_to_groups(user, roles: Tuple[str] = None):
     for role in roles:
         # if user is not in their role group, add them
         if role not in user_group_names and role not in EXCLUDE:
-            try:
-                group = Group.objects.get(name=role)
-                group.user_set.add(user)
-            except Group.DoesNotExist:
-                logger.error('Group does not exist: {}'.format(role))
+            group = Group.objects.filter(name=role).first()
+            if not group:
+                # From time to time, a new role will be added to keycloak, and this role will not yet
+                # exist in the django database as a group. When this happens, we create it.
+                logger.info('Group "{}" does not exist. Creating it....'.format(role))
+                group = Group(name=role)
+                group.save()
+            group.user_set.add(user)
 
     # check if user has been removed from their SSO (Keycloak) group
     for group in user_group_names:

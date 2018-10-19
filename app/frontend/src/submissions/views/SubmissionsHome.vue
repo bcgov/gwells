@@ -1,14 +1,19 @@
 <template>
   <div class="card">
     <div class="card-body">
-      <h1 class="card-title">Well Activity Submission</h1>
-      <b-row>
-        <b-col cols="12" lg="8"><p>Submit activity on a well. <a href="/gwells/">Try a search</a> to see if the well exists in the system before submitting a report.</p></b-col>
-        <b-col cols="12" lg="4" class="text-right">
-          <b-btn size="sm" :variant="`${formIsFlat ? 'primary':'outline-primary'}`" @click="formIsFlat=true">Flat form</b-btn>
-          <b-btn size="sm" :variant="`${formIsFlat ? 'outline-primary':'primary'}`" @click="formIsFlat=false">Wizard</b-btn>
-        </b-col>
-      </b-row>
+      <h4 class="card-title">
+        <b-row>
+          <b-col lg="12" >Well Activity Submission
+            <b-form-group>
+              <b-form-radio-group button-variant="outline-primary" size="sm" buttons v-model="formIsFlat" label="Form layout" class="float-right">
+                <b-form-radio v-bind:value="true" id="flat">Single page</b-form-radio>
+                <b-form-radio v-bind:value="false">Multi page</b-form-radio>
+              </b-form-radio-group>
+            </b-form-group>
+          </b-col>
+        </b-row>
+      </h4>
+      <p>Submit activity on a well. <a href="/gwells/">Try a search</a> to see if the well exists in the system before submitting a report.</p>
 
       <!-- Activity submission form -->
       <b-form @submit.prevent="confirmSubmit">
@@ -327,6 +332,7 @@ import { mapGetters } from 'vuex'
 import ApiService from '@/common/services/ApiService.js'
 import { FETCH_CODES } from '../store/actions.types.js'
 import inputFormatMixin from '@/common/inputFormatMixin.js'
+import ActivityType from '@/submissions/components/SubmissionForm/ActivityType.vue'
 import WellType from '@/submissions/components/SubmissionForm/WellType.vue'
 import PersonResponsible from '@/submissions/components/SubmissionForm/PersonResponsible.vue'
 import Owner from '@/submissions/components/SubmissionForm/Owner.vue'
@@ -351,6 +357,7 @@ export default {
   name: 'SubmissionsHome',
   mixins: [inputFormatMixin],
   components: {
+    ActivityType,
     WellType,
     PersonResponsible,
     Owner,
@@ -375,7 +382,7 @@ export default {
   data () {
     return {
       activityType: 'CON',
-      formIsFlat: true,
+      formIsFlat: false,
       preview: false,
       units: 'imperial',
       confirmSubmitModal: false,
@@ -383,6 +390,7 @@ export default {
       formSubmitSuccess: false,
       formSubmitError: false,
       saveFormSuccess: false,
+      hasHadSaveFormSuccess: false,
       loadFormSuccess: false,
       confirmLoadModal: false,
       // componentUpdateTrigger can be appended to a component's key. Changing this value will cause
@@ -396,6 +404,7 @@ export default {
       formOptions: {},
       formSteps: {
         CON: [
+          'activityType',
           'wellType',
           'wellOwner',
           'personResponsible',
@@ -414,6 +423,7 @@ export default {
           'comments'
         ],
         ALT: [
+          'activityType',
           'wellType',
           'wellOwner',
           'personResponsible',
@@ -432,6 +442,7 @@ export default {
           'comments'
         ],
         DEC: [
+          'activityType',
           'wellType',
           'wellOwner',
           'personResponsible',
@@ -442,6 +453,9 @@ export default {
           'casings',
           'decommissionInformation',
           'comments'
+        ],
+        STAFF_EDIT: [
+          'activityType'
         ]
       }
     }
@@ -473,6 +487,10 @@ export default {
       })
 
       return this.preview ? {preview: true} : components
+    },
+    isLoadFormDisabled () {
+      // During unit tests, the localStorage object might not exist, so we have to check it's existence.
+      return !window.localStorage || (window.localStorage.getItem('savedFormData') === null && !this.hasHadSaveFormSuccess)
     },
     ...mapGetters(['codes'])
   },
@@ -617,7 +635,7 @@ export default {
       const data = JSON.stringify(this.form)
       localStorage.setItem('savedFormData', data)
       setTimeout(() => { this.saveFormSuccess = true }, 10)
-      setTimeout(() => { this.saveFormSuccess = false }, 1000)
+      setTimeout(() => { this.saveFormSuccess = false; this.hasHadSaveFormSuccess = true }, 1000)
     },
     loadForm () {
       this.saveStatusReset()
