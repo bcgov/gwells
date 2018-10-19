@@ -51,6 +51,7 @@ services:
       SSO_AUDIENCE: gwells-test
       SSO_CLIENT: gwells-test
       SSO_AUTH_HOST: https://sso-test.pathfinder.gov.bc.ca/auth
+      SSO_IDP_HINT: "undefined"
     command: /bin/bash -c "sleep 3 &&
             set -x &&
             cd /app/backend &&
