@@ -26,7 +26,7 @@ from aquifers import serializers
 from aquifers.permissions import HasAquiferEditRoleOrReadOnly
 
 
-class AquiferRetrieveAPIView(RetrieveUpdateAPIView):
+class AquiferRetrieveUpdateAPIView(RetrieveUpdateAPIView):
     """List aquifers
     get: return details of aquifers
     """

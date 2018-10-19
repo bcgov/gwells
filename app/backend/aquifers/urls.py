@@ -24,8 +24,8 @@ urlpatterns = [
         ),
 
     url(r'^api/v1/aquifers/(?P<aquifer_id>[0-9]+)/$',
-        never_cache(views.AquiferRetrieveAPIView.as_view()),
-        name='aquifer-retrieve'
+        never_cache(views.AquiferRetrieveUpdateAPIView.as_view()),
+        name='aquifer-retrieve-update'
         ),
 
     url(r'^api/v1/aquifer-codes/materials/$',
