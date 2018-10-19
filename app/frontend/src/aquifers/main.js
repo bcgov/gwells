@@ -12,6 +12,7 @@
     limitations under the License.
 */
 
+import 'babel-polyfill'
 import Vue from 'vue'
 import App from './App'
 import BootstrapVue from 'bootstrap-vue'
