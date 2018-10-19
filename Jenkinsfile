@@ -52,7 +52,6 @@ pipeline {
               // database build/imagestream template
               def dbtemplate = openshift.process("-f",
                 "openshift/postgresql.bc.json",
-                "NAME_SUFFIX=-${DEV_SUFFIX}-${PR_NUM}",
                 "ENV_NAME=${DEV_SUFFIX}"
               )
 
