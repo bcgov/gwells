@@ -32,33 +32,39 @@ pipeline {
     // each pull request gets its own buildconfig but all new builds are pushed to a single imagestream,
     // to be tagged with the pull request number.
     // e.g.:  gwells-app:pr-999
-    stage('Start pipeline') {
+    stage('Prep ImageStreams ') {
       steps {
         script {
           abortAllPreviousBuildInProgress(currentBuild)
           openshift.withCluster() {
             openshift.withProject(TOOLS_PROJECT) {
-              // create a new build config if one does not already exist
-              echo "Applying build configuration..."
+
+              // Process db and app template into list objects
+              //  - variable substitution
+              def dbtemplate = openshift.process("-f",
+                "openshift/postgresql.bc.json",
+                "ENV_NAME=${DEV_SUFFIX}"
+              )
+              //
               def buildtemplate = openshift.process("-f",
                 "openshift/backend.bc.json",
-                "NAME_SUFFIX=-${DEV_SUFFIX}-${PR_NUM}",
                 "ENV_NAME=${DEV_SUFFIX}",
+                "NAME_SUFFIX=-${DEV_SUFFIX}-${PR_NUM}",
                 "APP_IMAGE_TAG=${PR_NUM}",
                 "SOURCE_REPOSITORY_URL=${REPOSITORY}",
                 "SOURCE_REPOSITORY_REF=pull/${CHANGE_ID}/head"
               )
 
-              // database build/imagestream template
-              def dbtemplate = openshift.process("-f",
-                "openshift/postgresql.bc.json",
-                "ENV_NAME=${DEV_SUFFIX}"
-              )
-
-              // apply the template objects to create and/or modify objects in the dev environment
-              openshift.apply(buildtemplate)
+              // Apply oc list objects
+              //  - add docker image reference as tag in gwells-postgresql
+              echo "Preparing database imagestream"
+              echo " \$ oc process -f openshift/postgresql.bc.json -p ENV_NAME=${DEV_SUFFIX} | oc apply -n moe-gwells-tools -f -"
               openshift.apply(dbtemplate)
-
+              //  - add docker image reference as tag in gwells-application
+              //  - create build config
+              echo "Preparing backend imagestream and buildconfig"
+              echo " \$ oc process -f openshift/backend.bc.json -p ENV_NAME=${DEV_SUFFIX} -p NAME_SUFFIX=-${DEV_SUFFIX}-${PR_NUM} -p APP_IMAGE_TAG=${PR_NUM} -p SOURCE_REPOSITORY_URL=${REPOSITORY} -p SOURCE_REPOSITORY_REF=pull/${CHANGE_ID}/head | oc apply -n moe-gwells-tools -f -"
+              openshift.apply(buildtemplate)
             }
           }
         }
