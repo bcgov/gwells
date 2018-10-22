@@ -144,7 +144,7 @@
       </b-row>
     </div>
 
-    <div class="my-3">
+    <div class="my-3" v-if="sections.lithology">
       <h3>Lithology</h3>
       <div class="table-responsive">
         <b-table
@@ -163,6 +163,16 @@
             'water_bearing_flow',
             'observations'
           ]"></b-table>
+      </div>
+    </div>
+
+    <div class="my-3">
+      <h3>Decommission Description</h3>
+      <div class="table-responsive">
+        <b-table
+          >
+
+        </b-table>
       </div>
     </div>
 
@@ -356,7 +366,8 @@ export default {
   },
   props: [
     'form',
-    'activity'
+    'activity',
+    'sections'
   ],
   computed: {
     wellSubclass () {

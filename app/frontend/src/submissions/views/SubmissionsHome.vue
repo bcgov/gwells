@@ -38,13 +38,13 @@
 
           <!-- activity type -->
           <activity-type
-            v-if="currentStep === 'activityType' || (formIsFlat && flatForm.activityType)"
+            v-if="currentStep === 'activityType' || (formIsFlat && displayFormSection.activityType)"
             :wellActivityType.sync="activityType"
           ></activity-type>
 
           <!-- Type of well -->
           <well-type class="my-3"
-            v-if="currentStep === 'wellType' || (formIsFlat && flatForm.wellType)"
+            v-if="currentStep === 'wellType' || (formIsFlat && displayFormSection.wellType)"
             :wellTagNumber.sync="form.well"
             :wellActivityType.sync="activityType"
             :wellClass.sync="form.well_class"
@@ -61,7 +61,7 @@
 
           <!-- Person responsible for work -->
           <person-responsible class="my-3"
-            v-if="currentStep === 'personResponsible' || (formIsFlat && flatForm.personResponsible)"
+            v-if="currentStep === 'personResponsible' || (formIsFlat && displayFormSection.personResponsible)"
             :drillerName.sync="form.driller_name"
             :consultantName.sync="form.consultant_name"
             :consultantCompany.sync="form.consultant_company"
@@ -73,7 +73,7 @@
 
           <!-- Owner information -->
           <owner class="my-3"
-            v-if="currentStep === 'wellOwner' || (formIsFlat && flatForm.wellOwner)"
+            v-if="currentStep === 'wellOwner' || (formIsFlat && displayFormSection.wellOwner)"
             :ownerFullName.sync="form.owner_full_name"
             :ownerMailingAddress.sync="form.owner_mailing_address"
             :ownerProvinceState.sync="form.owner_province_state"
@@ -85,7 +85,7 @@
 
           <!-- Well location -->
           <location class="my-3"
-            v-if="currentStep === 'wellLocation' || (formIsFlat && flatForm.wellLocation)"
+            v-if="currentStep === 'wellLocation' || (formIsFlat && displayFormSection.wellLocation)"
             :ownerMailingAddress.sync="form.owner_mailing_address"
             :ownerProvinceState.sync="form.owner_province_state"
             :ownerCity.sync="form.owner_city"
@@ -106,14 +106,14 @@
 
           <!-- Coords -->
           <coords class="my-3"
-            v-if="currentStep === 'wellCoords' || (formIsFlat && flatForm.wellCoords)"
+            v-if="currentStep === 'wellCoords' || (formIsFlat && displayFormSection.wellCoords)"
             :latitude.sync="form.latitude"
             :longitude.sync="form.longitude"
           />
 
           <!-- Method of Drilling -->
           <method-of-drilling class="my-3"
-            v-if="currentStep === 'method' || (formIsFlat && flatForm.method)"
+            v-if="currentStep === 'method' || (formIsFlat && displayFormSection.method)"
 
             :groundElevation.sync="form.ground_elevation"
             :groundElevationMethod.sync="form.ground_elevation_method"
@@ -124,21 +124,21 @@
 
           <!-- Closure/Decommission Description -->
           <closure-description class="my-3"
-            v-if="currentStep === 'closureDescription' || (formIsFlat && flatForm.closureDescription)"
+            v-if="currentStep === 'closureDescription' || (formIsFlat && displayFormSection.closureDescription)"
             :closureDescriptionSet.sync="form.decommission_description_set">
 
           </closure-description>
 
           <!-- Lithology -->
           <lithology class="my-3"
-            v-if="currentStep === 'lithology' || (formIsFlat && flatForm.lithology)"
+            v-if="currentStep === 'lithology' || (formIsFlat && displayFormSection.lithology)"
             :lithology.sync="form.lithologydescription_set"
           />
 
           <!-- Casings -->
           <casings class="my-3"
             :key="`casingsComponent${componentUpdateTrigger}`"
-            v-if="currentStep === 'casings' || (formIsFlat && flatForm.casings)"
+            v-if="currentStep === 'casings' || (formIsFlat && displayFormSection.casings)"
             :casings.sync="form.casing_set"
             :errors="errors"
             :fieldsLoaded="fieldsLoaded"
@@ -146,7 +146,7 @@
 
           <!-- Surface Seal / Backfill Material -->
           <backfill class="my-3"
-            v-if="currentStep === 'backfill' || (formIsFlat && flatForm.backfill)"
+            v-if="currentStep === 'backfill' || (formIsFlat && displayFormSection.backfill)"
             :surfaceSealMaterial.sync="form.surface_seal_material"
             :surfaceSealDepth.sync="form.surface_seal_depth"
             :surfaceSealThickness.sync="form.surface_seal_thickness"
@@ -157,7 +157,7 @@
 
           <!-- Liner Information -->
           <liner class="my-3"
-            v-if="currentStep === 'liner' || (formIsFlat && flatForm.liner)"
+            v-if="currentStep === 'liner' || (formIsFlat && displayFormSection.liner)"
             :linerMaterial.sync="form.liner_material"
             :linerDiameter.sync="form.liner_diameter"
             :linerThickness.sync="form.liner_thickness"
@@ -170,7 +170,7 @@
 
           <!-- Screens -->
           <screens class="my-3"
-            v-if="currentStep === 'screens' || (formIsFlat && flatForm.screens)"
+            v-if="currentStep === 'screens' || (formIsFlat && displayFormSection.screens)"
             :screenIntakeMethod.sync="form.screen_intake_method"
             :screenType.sync="form.screen_type"
             :screenMaterial.sync="form.screen_material"
@@ -184,7 +184,7 @@
 
           <!-- Filter Pack -->
           <filterPack class="my-3"
-            v-if="currentStep === 'filterPack' || (formIsFlat && flatForm.filterPack)"
+            v-if="currentStep === 'filterPack' || (formIsFlat && displayFormSection.filterPack)"
             :filterPackFrom.sync="form.filter_pack_from"
             :filterPackTo.sync="form.filter_pack_to"
             :filterPackThickness.sync="form.filter_pack_thickness"
@@ -194,7 +194,7 @@
 
           <!-- Well Development -->
           <development class="my-3"
-            v-if="currentStep === 'wellDevelopment' || (formIsFlat && flatForm.wellDevelopment)"
+            v-if="currentStep === 'wellDevelopment' || (formIsFlat && displayFormSection.wellDevelopment)"
             :developmentMethod.sync="form.development_method"
             :developmentHours.sync="form.development_hours"
             :developmentNotes.sync="form.development_notes"
@@ -202,13 +202,13 @@
 
           <!-- Yield (Production Data) -->
           <yield class="my-3"
-            v-if="currentStep === 'wellYield' || (formIsFlat && flatForm.wellYield)"
+            v-if="currentStep === 'wellYield' || (formIsFlat && displayFormSection.wellYield)"
             :productionData.sync="form.production_data_set"
           />
 
           <!-- Water Quality -->
           <water-quality class="my-3"
-            v-if="currentStep === 'waterQuality' || (formIsFlat && flatForm.waterQuality)"
+            v-if="currentStep === 'waterQuality' || (formIsFlat && displayFormSection.waterQuality)"
             :waterQualityCharacteristics.sync="form.water_quality_characteristics"
             :waterQualityColour.sync="form.water_quality_colour"
             :waterQualityOdour.sync="form.water_quality_odour"
@@ -217,7 +217,7 @@
 
           <!-- Well Completion Data -->
           <completion class="my-3"
-            v-if="currentStep === 'wellCompletion' || (formIsFlat && flatForm.wellCompletion)"
+            v-if="currentStep === 'wellCompletion' || (formIsFlat && displayFormSection.wellCompletion)"
             :totalDepthDrilled.sync="form.total_depth_drilled"
             :finishedWellDepth.sync="form.finished_well_depth"
             :finalCasingStickUp.sync="form.final_casing_stick_up"
@@ -231,7 +231,7 @@
           />
 
           <decommission-information class="my-3"
-            v-if="currentStep === 'decommissionInformation' || (formIsFlat && flatForm.decommissionInformation)"
+            v-if="currentStep === 'decommissionInformation' || (formIsFlat && displayFormSection.decommissionInformation)"
             :finishedWellDepth.sync="form.finished_well_depth"
             :decommissionReason.sync="form.decommission_reason"
             :decommissionMethod.sync="form.decommission_method"
@@ -242,7 +242,7 @@
 
           <!-- Comments -->
           <comments class="my-3"
-            v-if="currentStep === 'comments' || (formIsFlat && flatForm.comments)"
+            v-if="currentStep === 'comments' || (formIsFlat && displayFormSection.comments)"
             :comments.sync="form.comments"
             :alternativeSpecsSubmitted.sync="form.alternative_specs_submitted"
           />
@@ -250,7 +250,10 @@
 
         <div v-if="preview">
           <!-- Preview -->
-          <submission-preview :form="form" :activity="activityType"/>
+          <submission-preview
+            :form="form"
+            :activity="activityType"
+            :sections="displayFormSection"/>
         </div>
           <!-- Back / Next / Submit controls -->
           <b-row class="mt-5">
@@ -481,7 +484,7 @@ export default {
       // this will determine which step is currently displayed
       return this.preview ? 'preview' : this.formSteps[this.activityType][this.formStep - 1]
     },
-    flatForm () {
+    displayFormSection () {
       // returns an object describing which components should be displayed
       // when in "flat form" mode
 
@@ -492,7 +495,7 @@ export default {
         components[step] = true
       })
 
-      return this.preview ? {preview: true} : components
+      return components
     },
     isLoadFormDisabled () {
       // During unit tests, the localStorage object might not exist, so we have to check it's existence.
