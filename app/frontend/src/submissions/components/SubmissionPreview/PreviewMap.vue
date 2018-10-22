@@ -69,7 +69,6 @@ export default {
     updateMarkerPosition (lat, long) {
       // convert lat/long to numbers, check if NaN, and update the existing
       // marker and map centre to the new coordinates.
-      console.log(lat, long)
       lat = Number(lat)
       long = Number(long)
 
