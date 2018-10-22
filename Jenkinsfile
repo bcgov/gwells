@@ -60,6 +60,7 @@ pipeline {
               echo "Preparing database imagestream"
               echo " \$ oc process -f openshift/postgresql.bc.json -p ENV_NAME=${DEV_SUFFIX} | oc apply -n moe-gwells-tools -f -"
               openshift.apply(dbtemplate)
+
               //  - add docker image reference as tag in gwells-application
               //  - create build config
               echo "Preparing backend imagestream and buildconfig"
@@ -82,8 +83,11 @@ pipeline {
               echo "This may take several minutes. Logs are not forwarded to Jenkins by default (at this time)."
               echo "Additional logs can be found by monitoring builds in ${TOOLS_PROJECT}"
 
+              // Select appropriate buildconfig
               def appBuild = openshift.selector("bc", "${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}")
               // temporarily set ENABLE_DATA_ENTRY=True during testing because False currently leads to a failing unit test
+              echo "Building"
+              echo " \$ oc start-build -n moe-gwells-tools ${APP_NAME}-${DEV_SUFFIX}-${PR_NUM} --wait --env=ENABLE_DATA_ENTRY=true --follow=true"
               appBuild.startBuild("--wait", "--env=ENABLE_DATA_ENTRY=True").logs("-f")
             }
           }
