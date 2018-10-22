@@ -308,7 +308,7 @@ pipeline {
     // which will trigger an automatic deployment of that image.
     // The deployment configs in the openshift folder are applied first in case there are any changes to the templates.
     // this stage should only occur when the pull request is being made against the master branch.
-    stage('Deploy image to TEST') {
+    stage('Deploy image to Staging') {
       when {
         expression { env.CHANGE_TARGET == 'master' || true }  // NOTE: temporarily set to always run while developing pipeline
       }
@@ -316,9 +316,9 @@ pipeline {
         script {
           openshift.withCluster() {
             openshift.withProject(TEST_PROJECT) {
-              input "Deploy to test?"
+              input "Deploy to staging?"
 
-              echo "Updating test deployment..."
+              echo "Updating staging deployment..."
               def deployTemplate = openshift.process("-f",
                 "openshift/backend.dc.json",
                 "NAME_SUFFIX=-${TEST_SUFFIX}",
@@ -417,7 +417,7 @@ pipeline {
       }
     }
 
-    stage('API Tests against TEST') {
+    stage('API Tests against Staging') {
       when {
         expression { env.CHANGE_TARGET == 'master' || true }  // NOTE: temporarily set to always run while developing pipeline
       }
@@ -526,6 +526,103 @@ pipeline {
                     }
                 }
             }
+        }
+      }
+    }
+
+
+    stage('Deploy image to Production') {
+      when {
+        expression { env.CHANGE_TARGET == 'master' || true }  // NOTE: temporarily set to always run while developing pipeline
+      }
+      steps {
+        script {
+          openshift.withCluster() {
+            openshift.withProject(PROD_PROJECT) {
+              input "Deploy to production?"
+
+              echo "Updating production deployment..."
+              def deployTemplate = openshift.process("-f",
+                "openshift/backend.dc.json",
+                "NAME_SUFFIX=-${PROD_SUFFIX}",
+                "BUILD_ENV_NAME=${PROD_SUFFIX}",
+                "ENV_NAME=${PROD_SUFFIX}",
+                "HOST=${APP_NAME}-${PROD_SUFFIX}.pathfinder.gov.bc.ca",
+              )
+
+              def deployDBTemplate = openshift.process("-f",
+                "openshift/postgresql.dc.json",
+                "LABEL_APPVER=-${PROD_SUFFIX}",
+                "DATABASE_SERVICE_NAME=gwells-pgsql-${PROD_SUFFIX}",
+                "IMAGE_STREAM_NAMESPACE=''",
+                "IMAGE_STREAM_NAME=gwells-postgresql-${PROD_SUFFIX}",
+                "IMAGE_STREAM_VERSION=${PROD_SUFFIX}",
+                "POSTGRESQL_DATABASE=gwells",
+                "VOLUME_CAPACITY=2Gi"
+              )
+
+              // some objects need to be copied from a base secret or configmap
+              // these objects have an annotation "as-copy-of" in their object spec (e.g. an object in backend.dc.json)
+              echo "Creating configmaps and secrets objects"
+              List newObjectCopies = []
+
+              for (o in (deployTemplate + deployDBTemplate)) {
+
+                // only perform this operation on objects with 'as-copy-of'
+                def sourceName = o.metadata && o.metadata.annotations && o.metadata.annotations['as-copy-of']
+                if (sourceName && sourceName.length() > 0) {
+                  def selector = openshift.selector("${o.kind}/${sourceName}")
+                  if (selector.count() == 1) {
+
+                    // create a copy of the object and add it to the new list of objects to be applied
+                    Map copiedModel = selector.object(exportable:true)
+                    copiedModel.metadata.name = o.metadata.name
+                    echo "Copying ${o.kind} ${o.metadata.name}"
+                    newObjectCopies.add(copiedModel)
+                  }
+                }
+              }
+
+              // apply the templates, which will create new objects or modify existing ones as necessary.
+              // the copies of base objects (secrets, configmaps) are also applied.
+              echo "Applying deployment config for pull request ${PR_NUM} on ${PROD_PROJECT}"
+
+              openshift.apply(deployTemplate).label(['app':"gwells-${PROD_SUFFIX}", 'app-name':"${APP_NAME}", 'env-name':"${PROD_SUFFIX}"], "--overwrite")
+              openshift.apply(deployDBTemplate).label(['app':"gwells-${PROD_SUFFIX}", 'app-name':"${APP_NAME}", 'env-name':"${PROD_SUFFIX}"], "--overwrite")
+              openshift.apply(newObjectCopies).label(['app':"gwells-${PROD_SUFFIX}", 'app-name':"${APP_NAME}", 'env-name':"${PROD_SUFFIX}"], "--overwrite")
+              echo "Successfully applied production deployment config"
+
+              // promote the newly built image to DEV
+              echo "Tagging new image to production imagestream."
+
+              // Application/database images are tagged in the tools imagestream as the new prod image
+              openshift.tag("${TOOLS_PROJECT}/gwells-application:${PR_NUM}", "${TOOLS_PROJECT}/gwells-application:${PROD_SUFFIX}")  // todo: clean up labels/tags
+              openshift.tag("${TOOLS_PROJECT}/gwells-postgresql:dev", "${TOOLS_PROJECT}/gwells-postgresql:${PROD_SUFFIX}")
+
+              // Images are then tagged into the target environment namespace (prod)
+              openshift.tag("${TOOLS_PROJECT}/gwells-application:${PROD_SUFFIX}", "${PROD_PROJECT}/gwells-${PROD_SUFFIX}:${PROD_SUFFIX}")  // todo: clean up labels/tags
+              openshift.tag("${TOOLS_PROJECT}/gwells-postgresql:${PROD_SUFFIX}", "${PROD_PROJECT}/gwells-postgresql-${PROD_SUFFIX}:${PROD_SUFFIX}")  // todo: clean up labels/tags
+
+              // Clean up development tags (e.g. PR-999) with the flag -d
+              // this will allow old images that were not promoted to TEST/PROD to be cleaned up
+              openshift.tag("${TOOLS_PROJECT}/gwells-application:${PR_NUM}", "-d")
+
+              // monitor the deployment status and wait until deployment is successful
+              echo "Waiting for deployment to production..."
+              def newVersion = openshift.selector("dc", "gwells-${PROD_SUFFIX}").object().status.latestVersion
+              def pods = openshift.selector('pod', [deployment: "gwells-${PROD_SUFFIX}-${newVersion}"])
+
+              // wait until at least one pod reports as ready
+              pods.untilEach(1) {
+                return it.object().status.containerStatuses.every {
+                  it.ready
+                }
+              }
+
+              echo "Production deployment successful."
+
+            }
+          }
         }
       }
     }
