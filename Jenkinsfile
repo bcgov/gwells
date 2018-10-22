@@ -183,8 +183,8 @@ Map context = [
     stages:[
         'Load Fixtures': true,
         'API Tests': true,
-        'Functional Tests': true,
-        'Unit Tests': true,
+        'Functional Tests': false,
+        'Unit Tests': false,
         'Code Quality': false,
         'ZAP Security Scan': false
     ],
