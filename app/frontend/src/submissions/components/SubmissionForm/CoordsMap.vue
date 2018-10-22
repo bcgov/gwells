@@ -1,62 +1,52 @@
 <template>
-    <l-map
-      :zoom="zoom"
-      :center="center"
-      style="height: 80%"
-      @update:center="centerUpdate"
-      @update:zoom="zoomUpdate">
-      <l-tile-layer
-        :url="url"
-        :attribution="attribution"/>
-      <l-marker :lat-lng="marker">
-        <l-popup>
-          <div @click="popupClick">
-            I am a tooltip
-            <p v-show="showParagraph">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sed pretium nisl, ut sagittis sapien. Sed vel sollicitudin nisi. Donec finibus semper metus id malesuada.
-            </p>
-          </div>
-        </l-popup>
-      </l-marker>
-    </l-map>
+  <b-row>
+    <b-col>
+      <div id="map" class="map">The map will go here</div>
+    </b-col>
+  </b-row>
 </template>
 
 <script>
-import { LMap, LTileLayer, LMarker, LPopup } from 'vue2-leaflet'
 import L from 'leaflet'
 export default {
-  name: 'Example',
+  name: 'CoordsMap',
   components: {
-    LMap,
-    LTileLayer,
-    LMarker,
-    LPopup
+
   },
   data () {
     return {
-      zoom: 13,
-      center: L.latLng(47.413220, -1.219482),
-      url: 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
-      attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
-      marker: L.latLng(47.413220, -1.219482),
-      currentZoom: 13,
-      currentCenter: L.latLng(47.413220, -1.219482),
-      showParagraph: false
+      map: null,
+      tileLayer: null,
+      layers: []
     }
   },
+  mounted () {
+    this.initMap()
+    this.initLayers()
+  },
   methods: {
-    zoomUpdate (zoom) {
-      this.currentZoom = zoom
+    initMap () {
+      this.map = L.map('map').setView([51.505, -0.09], 13)
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      }).addTo(this.map)
+
+      L.marker([51.5, -0.09]).addTo(this.map)
+        .bindPopup('A pretty CSS3 popup.<br> Easily customizable.')
+        .openPopup()
     },
-    centerUpdate (center) {
-      this.currentCenter = center
-    },
-    showLongText () {
-      this.showParagraph = !this.showParagraph
-    },
-    popupClick () {
-      alert('Popup Click!')
+    initLayers () {
     }
   }
 }
 </script>
+<style>
+.map {
+  height: 200px;
+  width: 300px;
+  position: absolute;
+  top: 10;
+  left: 10;
+}
+</style>
