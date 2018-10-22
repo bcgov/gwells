@@ -108,10 +108,10 @@
           </b-row>
         </b-col>
         <b-col cols="12" lg="6" xl="6" offset-xl="2">
-          <div class="mb-5">
+          <div>
             <preview-map :latitude="form.latitude" :longitude="form.longitude"></preview-map>
           </div>
-          <div class="my-5">&nbsp;</div>
+          <div class="my-3">&nbsp;</div>
           <div><span class="font-weight-bold">Geographic Coordinates - North American Datum of 1983 (NAD 83)</span></div>
           <b-row>
             <b-col cols="12" lg="4"><span class="font-weight-bold">Latitude:</span> {{form.latitude}}</b-col>
