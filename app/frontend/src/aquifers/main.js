@@ -13,17 +13,19 @@
 */
 
 import 'babel-polyfill'
-import Vue from 'vue'
 import {mapActions} from 'vuex'
-import App from './App'
+import Vue from 'vue'
 import BootstrapVue from 'bootstrap-vue'
-import '@/common/assets/css/bootstrap-theme.min.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
-import router from './router'
-import store from './store'
+
+import {FETCH_CONFIG} from '@/common/store/config.js'
 import ApiService from '@/common/services/ApiService.js'
 import authenticate from '@/common/authenticate.js'
-import {FETCH_CONFIG} from '@/common/store/config.js'
+import '@/common/assets/css/bootstrap-theme.min.css'
+
+import App from './App'
+import router from './router'
+import store from './store'
 
 ApiService.init()
 
