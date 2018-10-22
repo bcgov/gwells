@@ -136,8 +136,7 @@
                     "requests": {
                         "storage": "${VOLUME_CAPACITY}"
                     }
-                },
-                "storageClassName": "gluster-file-db"
+                }
             }
         },
         {
