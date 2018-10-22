@@ -14,7 +14,7 @@
           </b-col>
         </b-row>
       </h1>
-      <p>Submit activity on a well. <a href="/gwells/">Try a search</a> to see if the well exists in the system before submitting a report.</p>
+      <p v-if="!preview">Submit activity on a well. <a href="/gwells/">Try a search</a> to see if the well exists in the system before submitting a report.</p>
 
       <!-- Activity submission form -->
       <b-form @submit.prevent="confirmSubmit">
@@ -363,9 +363,10 @@ import Comments from '@/submissions/components/SubmissionForm/Comments.vue'
 import ClosureDescription from '@/submissions/components/SubmissionForm/ClosureDescription.vue'
 import DecommissionInformation from '@/submissions/components/SubmissionForm/DecommissionInformation.vue'
 import SubmissionPreview from '@/submissions/components/SubmissionPreview/SubmissionPreview.vue'
+import filterBlankRows from '@/common/filterBlankRows.js'
 export default {
   name: 'SubmissionsHome',
-  mixins: [inputFormatMixin],
+  mixins: [inputFormatMixin, filterBlankRows],
   components: {
     ActivityType,
     WellType,
@@ -521,6 +522,13 @@ export default {
       }
 
       this.stripBlankStrings(data)
+
+      data.linerperforation_set = this.filterBlankRows(data.linerperforation_set)
+      data.lithologydescription_set = this.filterBlankRows(data.lithologydescription_set)
+      data.production_data_set = this.filterBlankRows(data.production_data_set)
+      data.screen_set = this.filterBlankRows(data.screen_set)
+      data.casing_set = this.filterBlankRows(data.casing_set)
+      data.decommission_description_set = this.filterBlankRows(data.decommission_description_set)
 
       this.formSubmitLoading = true
       this.formSubmitSuccess = false
