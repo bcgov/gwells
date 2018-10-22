@@ -3,159 +3,166 @@
     <fieldset>
       <legend>Geographic Coordinates</legend>
       <p>To determine coordinates using a Global Positioning System (GPS), set the datum to North America Datum of 1983 (NAD 83), the current ministry standard for mapping.</p>
-      <b-card no-body class="p-3 m-1 m-md-1">
-        <b-row>
-          <b-col cols="12" sm="6" lg="3">
-            <form-input
-              id="latitude"
-              type="text"
-              label="Latitude"
-              hint="Decimal degrees"
-              @focus="unfreeze('deg')"
-              @blur="freeze('deg')"
-              v-model="latitudeInput"
-              :errors="errors['latitude']"
-              :loaded="fieldsLoaded['latitude']"
-            ></form-input>
-          </b-col>
-          <b-col cols="12" sm="6" lg="3" offset-lg="2">
-            <form-input
-              id="longitude"
-              type="text"
-              @focus="unfreeze('deg')"
-              @blur="freeze('deg')"
-              label="Longitude"
-              hint="Decimal degrees"
-              v-model="longitudeInput"
-              :errors="errors['longitude']"
-              :loaded="fieldsLoaded['longitude']"
-            ></form-input>
-          </b-col>
-        </b-row>
-      </b-card>
-      <b-row><b-col><p class="p-3">OR</p></b-col></b-row>
-      <b-card no-body class="p-3 mx-1 mx-md-1">
-        <b-row>
-          <b-col cols="12" md="6" lg="4">
-            <b-row class="mb-2"><b-col>Latitude</b-col></b-row>
+      <b-row>
+        <b-col cols="6">
+          <b-card no-body class="p-3 m-1 m-md-1">
             <b-row>
-              <b-col cols="12" sm="4">
+              <b-col cols="12" sm="6" lg="3">
                 <form-input
-                  id="latitudeDeg"
-                  @focus="unfreeze('dms')"
-                  @blur="freeze('dms')"
-                  hint="Degrees"
-                  v-model="dms.lat.deg"
-                  :loaded="fieldsLoaded['latitude']"
-                ></form-input>
-              </b-col>
-              <b-col cols="12" sm="4">
-                <form-input
-                  id="latitudeMin"
-                  hint="Minutes"
-                  @focus="unfreeze('dms')"
-                  @blur="freeze('dms')"
-                  v-model="dms.lat.min"
+                  id="latitude"
+                  type="text"
+                  label="Latitude"
+                  hint="Decimal degrees"
+                  @focus="unfreeze('deg')"
+                  @blur="freeze('deg')"
+                  v-model="latitudeInput"
                   :errors="errors['latitude']"
                   :loaded="fieldsLoaded['latitude']"
                 ></form-input>
               </b-col>
-              <b-col cols="12" sm="4">
+              <b-col cols="12" sm="6" lg="3" offset-lg="2">
                 <form-input
-                  id="latitudeSec"
+                  id="longitude"
                   type="text"
-                  @focus="unfreeze('dms')"
-                  @blur="freeze('dms')"
-                  hint="Seconds"
-                  v-model="dms.lat.sec"
-                  :errors="errors['latitude']"
-                  :loaded="fieldsLoaded['latitude']"
-                ></form-input>
-              </b-col>
-            </b-row>
-          </b-col>
-          <b-col cols="12" md="6" lg="4" offset-lg="1">
-            <b-row class="mb-2"><b-col>Longitude</b-col></b-row>
-            <b-row>
-              <b-col cols="12" sm="4">
-                <form-input
-                  id="longitudeDeg"
-                  type="text"
-                  @focus="unfreeze('dms')"
-                  @blur="freeze('dms')"
-                  hint="Degrees"
-                  v-model="dms.long.deg"
-                  :errors="errors['longitude']"
-                  :loaded="fieldsLoaded['longitude']"
-                ></form-input>
-              </b-col>
-              <b-col cols="12" sm="4">
-                <form-input
-                  id="longitudeMin"
-                  @focus="unfreeze('dms')"
-                  @blur="freeze('dms')"
-                  hint="Minutes"
-                  v-model="dms.long.min"
-                  :errors="errors['longitude']"
-                  :loaded="fieldsLoaded['longitude']"
-                ></form-input>
-              </b-col>
-              <b-col cols="12" sm="4">
-                <form-input
-                  id="longitudeSec"
-                  @focus="unfreeze('dms')"
-                  @blur="freeze('dms')"
-                  hint="Seconds"
-                  v-model="dms.long.sec"
+                  @focus="unfreeze('deg')"
+                  @blur="freeze('deg')"
+                  label="Longitude"
+                  hint="Decimal degrees"
+                  v-model="longitudeInput"
                   :errors="errors['longitude']"
                   :loaded="fieldsLoaded['longitude']"
                 ></form-input>
               </b-col>
             </b-row>
-          </b-col>
-        </b-row>
-      </b-card>
-      <b-row><b-col><p class="p-3">OR</p></b-col></b-row>
-      <b-card no-body class="p-3 mx-1 mx-md-1">
-        <b-row>
-          <b-col cols="12" sm="4" lg="2">
-            <form-input
-              id="utmZone"
-              select
-              :options="utmZones"
-              label="Zone"
-              @focus="unfreeze('utm')"
-              @blur="freeze('utm')"
-              v-model="utm.zone"
-              text-field="name"
-              value-field="value"
-              :loaded="fieldsLoaded['utmZone']"
-            ></form-input>
-          </b-col>
-          <b-col cols="12" sm="4" lg="3">
-            <form-input
-              id="utmEasting"
-              type="text"
-              label="UTM Easting"
-              v-model="utm.easting"
-              @focus="unfreeze('utm')"
-              @blur="freeze('utm')"
-              :loaded="fieldsLoaded['utmEasting']"
-            ></form-input>
-          </b-col>
-          <b-col cols="12" sm="4" lg="3">
-            <form-input
-              id="utmNorthing"
-              type="text"
-              label="UTM Northing"
-              @focus="unfreeze('utm')"
-              @blur="freeze('utm')"
-              v-model="utm.northing"
-              :loaded="fieldsLoaded['utmNorthing']"
-            ></form-input>
-          </b-col>
-        </b-row>
-      </b-card>
+          </b-card>
+          <b-row><b-col><p class="p-3">OR</p></b-col></b-row>
+          <b-card no-body class="p-3 mx-1 mx-md-1">
+            <b-row>
+              <b-col cols="12" md="6" lg="4">
+                <b-row class="mb-2"><b-col>Latitude</b-col></b-row>
+                <b-row>
+                  <b-col cols="12" sm="4">
+                    <form-input
+                      id="latitudeDeg"
+                      @focus="unfreeze('dms')"
+                      @blur="freeze('dms')"
+                      hint="Degrees"
+                      v-model="dms.lat.deg"
+                      :loaded="fieldsLoaded['latitude']"
+                    ></form-input>
+                  </b-col>
+                  <b-col cols="12" sm="4">
+                    <form-input
+                      id="latitudeMin"
+                      hint="Minutes"
+                      @focus="unfreeze('dms')"
+                      @blur="freeze('dms')"
+                      v-model="dms.lat.min"
+                      :errors="errors['latitude']"
+                      :loaded="fieldsLoaded['latitude']"
+                    ></form-input>
+                  </b-col>
+                  <b-col cols="12" sm="4">
+                    <form-input
+                      id="latitudeSec"
+                      type="text"
+                      @focus="unfreeze('dms')"
+                      @blur="freeze('dms')"
+                      hint="Seconds"
+                      v-model="dms.lat.sec"
+                      :errors="errors['latitude']"
+                      :loaded="fieldsLoaded['latitude']"
+                    ></form-input>
+                  </b-col>
+                </b-row>
+              </b-col>
+              <b-col cols="12" md="6" lg="4" offset-lg="1">
+                <b-row class="mb-2"><b-col>Longitude</b-col></b-row>
+                <b-row>
+                  <b-col cols="12" sm="4">
+                    <form-input
+                      id="longitudeDeg"
+                      type="text"
+                      @focus="unfreeze('dms')"
+                      @blur="freeze('dms')"
+                      hint="Degrees"
+                      v-model="dms.long.deg"
+                      :errors="errors['longitude']"
+                      :loaded="fieldsLoaded['longitude']"
+                    ></form-input>
+                  </b-col>
+                  <b-col cols="12" sm="4">
+                    <form-input
+                      id="longitudeMin"
+                      @focus="unfreeze('dms')"
+                      @blur="freeze('dms')"
+                      hint="Minutes"
+                      v-model="dms.long.min"
+                      :errors="errors['longitude']"
+                      :loaded="fieldsLoaded['longitude']"
+                    ></form-input>
+                  </b-col>
+                  <b-col cols="12" sm="4">
+                    <form-input
+                      id="longitudeSec"
+                      @focus="unfreeze('dms')"
+                      @blur="freeze('dms')"
+                      hint="Seconds"
+                      v-model="dms.long.sec"
+                      :errors="errors['longitude']"
+                      :loaded="fieldsLoaded['longitude']"
+                    ></form-input>
+                  </b-col>
+                </b-row>
+              </b-col>
+            </b-row>
+          </b-card>
+          <b-row><b-col><p class="p-3">OR</p></b-col></b-row>
+          <b-card no-body class="p-3 mx-1 mx-md-1">
+            <b-row>
+              <b-col cols="12" sm="4" lg="2">
+                <form-input
+                  id="utmZone"
+                  select
+                  :options="utmZones"
+                  label="Zone"
+                  @focus="unfreeze('utm')"
+                  @blur="freeze('utm')"
+                  v-model="utm.zone"
+                  text-field="name"
+                  value-field="value"
+                  :loaded="fieldsLoaded['utmZone']"
+                ></form-input>
+              </b-col>
+              <b-col cols="12" sm="4" lg="3">
+                <form-input
+                  id="utmEasting"
+                  type="text"
+                  label="UTM Easting"
+                  v-model="utm.easting"
+                  @focus="unfreeze('utm')"
+                  @blur="freeze('utm')"
+                  :loaded="fieldsLoaded['utmEasting']"
+                ></form-input>
+              </b-col>
+              <b-col cols="12" sm="4" lg="3">
+                <form-input
+                  id="utmNorthing"
+                  type="text"
+                  label="UTM Northing"
+                  @focus="unfreeze('utm')"
+                  @blur="freeze('utm')"
+                  v-model="utm.northing"
+                  :loaded="fieldsLoaded['utmNorthing']"
+                ></form-input>
+              </b-col>
+            </b-row>
+          </b-card>
+        </b-col>
+        <b-col cols="6">
+          <coords-map/>
+        </b-col>
+      </b-row>
 
       <!-- Error message when coordinates not entered in at least one of the 3 input groups -->
       <b-alert class="mt-3" variant="danger" :show="errorCoordsNotProvided">
@@ -166,9 +173,13 @@
 </template>
 <script>
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
+import CoordsMap from '@/submissions/components/SubmissionForm/CoordsMap.vue'
 import { mapGetters } from 'vuex'
 import proj4 from 'proj4'
 export default {
+  components: {
+    'coords-map': CoordsMap
+  },
   name: 'Coords',
   mixins: [inputBindingsMixin],
   props: {
