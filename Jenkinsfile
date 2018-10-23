@@ -203,9 +203,9 @@ pipeline {
                   gwells-codetables.json \
                   wellsearch-codetables.json \
                   registries-codetables.json \
-                  registries.json \
-                  aquifers.json \
-                  wellsearch.json.gz; \
+                  registries_large.json \
+                  aquifers_large.json \
+                  wellsearch_large.json.gz; \
                 python manage.py createinitialrevisions'")
 
                 new GitHubHelper().createDeploymentStatus(this, ghDeploymentId, 'SUCCESS', ['targetUrl':"${targetURL}"])
