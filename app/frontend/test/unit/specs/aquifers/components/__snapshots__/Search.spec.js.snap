@@ -115,9 +115,9 @@ exports[`Search Component Matches the snapshot 1`] = `
    
   <table
     aria-busy="false"
-    aria-colcount="12"
+    aria-colcount="11"
     aria-rowcount="1"
-    class="table b-table"
+    class="table b-table table-striped"
     id="__BVID__15"
   >
     <!---->
@@ -191,12 +191,6 @@ exports[`Search Component Matches the snapshot 1`] = `
           class=""
         >
           Year of mapping
-        </th>
-        <th
-          aria-colindex="12"
-          class=""
-        >
-          Publication status
         </th>
       </tr>
     </thead>
@@ -274,10 +268,6 @@ exports[`Search Component Matches the snapshot 1`] = `
         >
           1993
         </td>
-        <td
-          aria-colindex="12"
-          class=""
-        />
       </tr>
       <!---->
       <!---->
