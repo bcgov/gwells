@@ -19,7 +19,7 @@
         <b-col><h5>Aquifer Summary</h5></b-col>
         <b-col cols="auto">
             <b-button variant="secondary" v-on:click.prevent="print()">
-              <span title="Print" class="fa-print"/>
+              <span title="Print" class="fa fa-print"/>
             </b-button>
         </b-col>
       </b-row>
