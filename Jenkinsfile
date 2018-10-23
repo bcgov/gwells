@@ -160,7 +160,7 @@ pipeline {
               def pods = openshift.selector('pod', [deployment: "${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}-${newVersion}"])
 
               // wait until each container in this deployment's pod reports as ready
-              pods.untilEach(1) {
+              pods.untilEach(2) {
                 return it.object().status.containerStatuses.every {
                   it.ready
                 }
@@ -381,7 +381,7 @@ pipeline {
               def pods = openshift.selector('pod', [deployment: "gwells-${TEST_SUFFIX}-${newVersion}"])
 
               // wait until at least one pod reports as ready
-              pods.untilEach(1) {
+              pods.untilEach(2) {
                 return it.object().status.containerStatuses.every {
                   it.ready
                 }
@@ -604,8 +604,8 @@ pipeline {
               def newVersion = openshift.selector("dc", "gwells-${PROD_SUFFIX}").object().status.latestVersion
               def pods = openshift.selector('pod', [deployment: "gwells-${PROD_SUFFIX}-${newVersion}"])
 
-              // wait until at least one pod reports as ready
-              pods.untilEach(1) {
+              // wait until pods reports as ready
+              pods.untilEach(2) {
                 return it.object().status.containerStatuses.every {
                   it.ready
                 }
