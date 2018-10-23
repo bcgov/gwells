@@ -2,11 +2,13 @@ import { shallowMount, createLocalVue } from '@vue/test-utils'
 import SearchComponent from '@/aquifers/components/Search.vue'
 import Vuex from 'vuex'
 import axios from 'axios'
+import VueRouter from 'vue-router'
 
 jest.mock('axios')
 
 const localVue = createLocalVue()
 localVue.use(Vuex)
+localVue.use(VueRouter)
 
 const aquiferFixture = {
   aquifer_id: '4',
@@ -26,6 +28,10 @@ describe('Search Component', () => {
   const component = (options) => shallowMount(SearchComponent, {
     localVue,
     stubs: ['router-link', 'router-view'],
+    router: new VueRouter(),
+    methods: {
+      scrollToTableTop() {}
+    },
     ...options
   })
 
@@ -50,28 +56,26 @@ describe('Search Component', () => {
     expect(wrapper.element).toMatchSnapshot()
   })
 
-  it('search triggers apiService query', () => {
+  it('search updates route query params', () => {
     axios.get.mockResolvedValue({})
 
     const wrapper = component()
+    wrapper.find('#search').setValue('asdf')
     wrapper.find('form').trigger('submit')
 
-    expect(axios.get).toHaveBeenCalledWith('aquifers/', {"params": {}})
+    expect(axios.get).toHaveBeenCalledWith('aquifers/', {"params": { "search": "asdf" }})
   })
 
   it('form reset resets response and query', () => {
-    const wrapper = component({
-      data() {
-        return {
-          response: 1,
-          query: 1
-        }
-      }
-    })
+    const wrapper = component()
+
+    wrapper.find('#search').setValue('asdf')
+    wrapper.find('form').trigger('submit')
+
+    expect(wrapper.vm.query.search).toEqual('asdf')
 
     wrapper.find('form').trigger('reset')
 
-    expect(wrapper.vm.response).toEqual({})
-    expect(wrapper.vm.query).toEqual({})
+    expect(wrapper.vm.query.search).toEqual('')
   })
 })

@@ -21,10 +21,12 @@ import 'bootstrap-vue/dist/bootstrap-vue.css'
 import router from './router'
 import store from './store'
 import ApiService from '@/common/services/ApiService.js'
+import vueSmoothScroll from 'vue-smoothscroll'
 
 ApiService.init()
 
 Vue.use(BootstrapVue)
+Vue.use(vueSmoothScroll)
 
 /* eslint-disable no-new */
 new Vue({

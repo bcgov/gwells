@@ -36,7 +36,7 @@ exports[`Search Component Matches the snapshot 1`] = `
           >
             <input
               class="form-control"
-              id="__BVID__11"
+              id="search"
               type="text"
             />
             <!---->
@@ -64,7 +64,7 @@ exports[`Search Component Matches the snapshot 1`] = `
           >
             <input
               class="form-control"
-              id="__BVID__13"
+              id="aquifer_id"
               type="text"
             />
             <!---->
@@ -273,5 +273,7 @@ exports[`Search Component Matches the snapshot 1`] = `
       <!---->
     </tbody>
   </table>
+   
+  <!---->
 </div>
 `;
