@@ -160,11 +160,14 @@ pipeline {
               def pods = openshift.selector('pod', [deployment: "${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}-${newVersion}"])
 
               // wait until each container in this deployment's pod reports as ready
-              pods.untilEach(2) {
-                return it.object().status.containerStatuses.every {
-                  it.ready
+              timeout(15) {
+                pods.untilEach(2) {
+                  return it.object().status.containerStatuses.every {
+                    it.ready
+                  }
                 }
               }
+
               echo "Deployment successful!"
               echo "Loading fixtures"
               def firstPod = pods.objects()[0].metadata.name
@@ -381,9 +384,11 @@ pipeline {
               def pods = openshift.selector('pod', [deployment: "gwells-${TEST_SUFFIX}-${newVersion}"])
 
               // wait until at least one pod reports as ready
-              pods.untilEach(2) {
-                return it.object().status.containerStatuses.every {
-                  it.ready
+              timeout(15) {
+                pods.untilEach(2) {
+                  return it.object().status.containerStatuses.every {
+                    it.ready
+                  }
                 }
               }
 
@@ -595,19 +600,17 @@ pipeline {
               openshift.tag("${TOOLS_PROJECT}/gwells-application:${PROD_SUFFIX}", "${PROD_PROJECT}/gwells-${PROD_SUFFIX}:${PROD_SUFFIX}")  // todo: clean up labels/tags
               openshift.tag("${TOOLS_PROJECT}/gwells-postgresql:${PROD_SUFFIX}", "${PROD_PROJECT}/gwells-postgresql-${PROD_SUFFIX}:${PROD_SUFFIX}")  // todo: clean up labels/tags
 
-              // Clean up development tags (e.g. PR-999) with the flag -d
-              // this will allow old images that were not promoted to TEST/PROD to be cleaned up
-              openshift.tag("${TOOLS_PROJECT}/gwells-application:${PR_NUM}", "-d")
-
               // monitor the deployment status and wait until deployment is successful
               echo "Waiting for deployment to production..."
               def newVersion = openshift.selector("dc", "gwells-${PROD_SUFFIX}").object().status.latestVersion
               def pods = openshift.selector('pod', [deployment: "gwells-${PROD_SUFFIX}-${newVersion}"])
 
               // wait until pods reports as ready
-              pods.untilEach(2) {
-                return it.object().status.containerStatuses.every {
-                  it.ready
+              timeout(15) {
+                pods.untilEach(2) {
+                  return it.object().status.containerStatuses.every {
+                    it.ready
+                  }
                 }
               }
 
