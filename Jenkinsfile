@@ -586,7 +586,9 @@ pipeline {
               echo "Tagging new image to production imagestream."
 
               // Application/database images are tagged in the tools imagestream as the new prod image
-              openshift.tag("${TOOLS_PROJECT}/gwells-application:${PR_NUM}", "${TOOLS_PROJECT}/gwells-application:${PROD_SUFFIX}")  // todo: clean up labels/tags
+              openshift.tag("${TOOLS_PROJECT}/gwells-application:${TEST_SUFFIX}", "${TOOLS_PROJECT}/gwells-application:${PROD_SUFFIX}")  // todo: clean up labels/tags
+
+              // TODO: determine best way to manage database images (at the moment they never change, but we don't want an unforeseen change to impact prod)
               openshift.tag("${TOOLS_PROJECT}/gwells-postgresql:dev", "${TOOLS_PROJECT}/gwells-postgresql:${PROD_SUFFIX}")
 
               // Images are then tagged into the target environment namespace (prod)
