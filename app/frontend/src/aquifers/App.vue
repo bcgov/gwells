@@ -41,4 +41,8 @@ export default {
 .container-wide {
   max-width: 1400px;
 }
+
+main a {
+  text-decoration: underline;
+}
 </style>
