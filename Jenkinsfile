@@ -368,11 +368,11 @@ pipeline {
 
               // Application/database images are tagged in the tools imagestream as the new test/prod image
               openshift.tag("${TOOLS_PROJECT}/gwells-application:${PR_NUM}", "${TOOLS_PROJECT}/gwells-application:${TEST_SUFFIX}")  // todo: clean up labels/tags
-              openshift.tag("${TOOLS_PROJECT}/gwells-postgresql:dev", "${TOOLS_PROJECT}/gwells-postgresql:${TEST_SUFFIX}")
+              // openshift.tag("${TOOLS_PROJECT}/gwells-postgresql:test", "${TOOLS_PROJECT}/gwells-postgresql:${TEST_SUFFIX}")
 
               // Images are then tagged into the target environment namespace (test or prod)
               openshift.tag("${TOOLS_PROJECT}/gwells-application:${TEST_SUFFIX}", "${TEST_PROJECT}/gwells-${TEST_SUFFIX}:${TEST_SUFFIX}")  // todo: clean up labels/tags
-              openshift.tag("${TOOLS_PROJECT}/gwells-postgresql:${TEST_SUFFIX}", "${TEST_PROJECT}/gwells-postgresql-${TEST_SUFFIX}:${TEST_SUFFIX}")  // todo: clean up labels/tags
+              openshift.tag("${TOOLS_PROJECT}/gwells-postgresql:test", "${TEST_PROJECT}/gwells-postgresql-${TEST_SUFFIX}:${TEST_SUFFIX}")  // todo: clean up labels/tags
 
               // Clean up development tags (e.g. PR-999) with the flag -d
               // this will allow old images that were not promoted to TEST/PROD to be cleaned up
@@ -553,7 +553,7 @@ pipeline {
                 "IMAGE_STREAM_NAME=gwells-postgresql-${PROD_SUFFIX}",
                 "IMAGE_STREAM_VERSION=${PROD_SUFFIX}",
                 "POSTGRESQL_DATABASE=gwells",
-                "VOLUME_CAPACITY=2Gi"
+                "VOLUME_CAPACITY=5Gi"
               )
 
               // some objects need to be copied from a base secret or configmap
@@ -594,11 +594,11 @@ pipeline {
               openshift.tag("${TOOLS_PROJECT}/gwells-application:${TEST_SUFFIX}", "${TOOLS_PROJECT}/gwells-application:${PROD_SUFFIX}")  // todo: clean up labels/tags
 
               // TODO: determine best way to manage database images (at the moment they never change, but we don't want an unforeseen change to impact prod)
-              openshift.tag("${TOOLS_PROJECT}/gwells-postgresql:dev", "${TOOLS_PROJECT}/gwells-postgresql:${PROD_SUFFIX}")
+              // openshift.tag("${TOOLS_PROJECT}/gwells-postgresql:prod", "${TOOLS_PROJECT}/gwells-postgresql:${PROD_SUFFIX}")
 
               // Images are then tagged into the target environment namespace (prod)
               openshift.tag("${TOOLS_PROJECT}/gwells-application:${PROD_SUFFIX}", "${PROD_PROJECT}/gwells-${PROD_SUFFIX}:${PROD_SUFFIX}")  // todo: clean up labels/tags
-              openshift.tag("${TOOLS_PROJECT}/gwells-postgresql:${PROD_SUFFIX}", "${PROD_PROJECT}/gwells-postgresql-${PROD_SUFFIX}:${PROD_SUFFIX}")  // todo: clean up labels/tags
+              openshift.tag("${TOOLS_PROJECT}/gwells-postgresql:prod", "${PROD_PROJECT}/gwells-postgresql-${PROD_SUFFIX}:${PROD_SUFFIX}")  // todo: clean up labels/tags
 
               // monitor the deployment status and wait until deployment is successful
               echo "Waiting for deployment to production..."
