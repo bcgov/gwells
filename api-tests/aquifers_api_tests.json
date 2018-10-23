@@ -44,6 +44,272 @@
 			"response": []
 		},
 		{
+			"name": "Aquifer Codes / Materials List",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "85664ee3-92d9-4510-b7d8-6bd6c44ec870",
+						"type": "text/javascript",
+						"exec": [
+							"var jsonData = pm.response.json()",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.expect(pm.response.code).to.equal(200);",
+							"})",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "{{base_url}}/api/v1/aquifer-codes/materials",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"aquifer-codes",
+						"materials"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Aquifer Codes / Quality Concerns List",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "85664ee3-92d9-4510-b7d8-6bd6c44ec870",
+						"type": "text/javascript",
+						"exec": [
+							"var jsonData = pm.response.json()",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.expect(pm.response.code).to.equal(200);",
+							"})",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "{{base_url}}/api/v1/aquifer-codes/quality-concerns",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"aquifer-codes",
+						"quality-concerns"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Aquifer Codes / Vulnerability List",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "85664ee3-92d9-4510-b7d8-6bd6c44ec870",
+						"type": "text/javascript",
+						"exec": [
+							"var jsonData = pm.response.json()",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.expect(pm.response.code).to.equal(200);",
+							"})",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "{{base_url}}/api/v1/aquifer-codes/vulnerability",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"aquifer-codes",
+						"vulnerability"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Aquifer Codes / Subtypes List",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "85664ee3-92d9-4510-b7d8-6bd6c44ec870",
+						"type": "text/javascript",
+						"exec": [
+							"var jsonData = pm.response.json()",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.expect(pm.response.code).to.equal(200);",
+							"})",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "{{base_url}}/api/v1/aquifer-codes/subtypes",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"aquifer-codes",
+						"subtypes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Aquifer Codes / Productivity List",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "85664ee3-92d9-4510-b7d8-6bd6c44ec870",
+						"type": "text/javascript",
+						"exec": [
+							"var jsonData = pm.response.json()",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.expect(pm.response.code).to.equal(200);",
+							"})",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "{{base_url}}/api/v1/aquifer-codes/productivity",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"aquifer-codes",
+						"productivity"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Aquifer Codes / Demand List",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "85664ee3-92d9-4510-b7d8-6bd6c44ec870",
+						"type": "text/javascript",
+						"exec": [
+							"var jsonData = pm.response.json()",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.expect(pm.response.code).to.equal(200);",
+							"})",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "{{base_url}}/api/v1/aquifer-codes/demand",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"aquifer-codes",
+						"demand"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Aquifer Codes / Water Use List",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "85664ee3-92d9-4510-b7d8-6bd6c44ec870",
+						"type": "text/javascript",
+						"exec": [
+							"var jsonData = pm.response.json()",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.expect(pm.response.code).to.equal(200);",
+							"})",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "{{base_url}}/api/v1/aquifer-codes/water-use",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"aquifer-codes",
+						"water-use"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Aquifers Search",
 			"event": [
 				{
