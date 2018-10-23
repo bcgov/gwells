@@ -14,12 +14,12 @@ pipeline {
 
     // TEST_PROJECT contains the test deployment. The test image is a candidate for promotion to prod.
     TEST_PROJECT = "moe-gwells-test"
-    TEST_SUFFIX = "test-sth"
+    TEST_SUFFIX = "test-mock"
 
     // PROD_PROJECT is the prod deployment.
     // New production images can be deployed by tagging an existing "test" image as "prod".
     PROD_PROJECT = "moe-gwells-test"
-    PROD_SUFFIX= "prod-test-sth"
+    PROD_SUFFIX= "prod-mock"
 
     // PR_NUM is the pull request number e.g. 'pr-4'
     PR_NUM = "${env.JOB_BASE_NAME}".toLowerCase()
@@ -302,7 +302,7 @@ pipeline {
     // which will trigger an automatic deployment of that image.
     // The deployment configs in the openshift folder are applied first in case there are any changes to the templates.
     // this stage should only occur when the pull request is being made against the master branch.
-    stage('Deploy image to Staging') {
+    stage('Deploy image to test') {
       when {
         expression { env.CHANGE_TARGET == 'master' || true }  // NOTE: temporarily set to always run while developing pipeline
       }
@@ -310,9 +310,9 @@ pipeline {
         script {
           openshift.withCluster() {
             openshift.withProject(TEST_PROJECT) {
-              input "Deploy to staging?"
+              input "Deploy to test?"
 
-              echo "Updating staging deployment..."
+              echo "Updating test deployment..."
               def deployTemplate = openshift.process("-f",
                 "openshift/backend.dc.json",
                 "NAME_SUFFIX=-${TEST_SUFFIX}",
@@ -337,6 +337,7 @@ pipeline {
               echo "Creating configmaps and secrets objects"
               List newObjectCopies = []
 
+              // todo: refactor to explicitly copy the objects we need
               for (o in (deployTemplate + deployDBTemplate)) {
 
                 // only perform this operation on objects with 'as-copy-of'
@@ -394,6 +395,8 @@ pipeline {
 
               echo "TEST deployment successful."
 
+              // fixtures are not loaded for every test run
+              // they need to be loaded manually on a fresh database
               echo "Loading fixtures"
               def firstPod = pods.objects()[0].metadata.name
               openshift.exec(firstPod, "--", "bash -c '\
@@ -623,3 +626,4 @@ pipeline {
     }
   }
 }
+
