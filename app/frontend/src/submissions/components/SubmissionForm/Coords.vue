@@ -4,18 +4,18 @@
       <legend>Geographic Coordinates</legend>
       <p>To determine coordinates using a Global Positioning System (GPS), set the datum to North America Datum of 1983 (NAD 83), the current ministry standard for mapping.</p>
       <b-row>
-        <b-col cols="6">
+        <b-col sm="12" md="6">
           <b-card no-body class="p-3 m-1 m-md-1">
             <b-row>
               <b-col cols="12" sm="6" lg="3">
                 <form-input
                   id="latitude"
-                  type="text"
+                  type="number"
                   label="Latitude"
                   hint="Decimal degrees"
                   @focus="unfreeze('deg')"
                   @blur="freeze('deg')"
-                  v-model="latitudeInput"
+                  v-model.number="latitudeInput"
                   :errors="errors['latitude']"
                   :loaded="fieldsLoaded['latitude']"
                 ></form-input>
@@ -23,12 +23,12 @@
               <b-col cols="12" sm="6" lg="3" offset-lg="2">
                 <form-input
                   id="longitude"
-                  type="text"
+                  type="number"
                   @focus="unfreeze('deg')"
                   @blur="freeze('deg')"
                   label="Longitude"
                   hint="Decimal degrees"
-                  v-model="longitudeInput"
+                  v-model.number="longitudeInput"
                   :errors="errors['longitude']"
                   :loaded="fieldsLoaded['longitude']"
                 ></form-input>
@@ -47,7 +47,8 @@
                       @focus="unfreeze('dms')"
                       @blur="freeze('dms')"
                       hint="Degrees"
-                      v-model="dms.lat.deg"
+                      type="number"
+                      v-model.number="dms.lat.deg"
                       :loaded="fieldsLoaded['latitude']"
                     ></form-input>
                   </b-col>
@@ -57,7 +58,8 @@
                       hint="Minutes"
                       @focus="unfreeze('dms')"
                       @blur="freeze('dms')"
-                      v-model="dms.lat.min"
+                      type="number"
+                      v-model.number="dms.lat.min"
                       :errors="errors['latitude']"
                       :loaded="fieldsLoaded['latitude']"
                     ></form-input>
@@ -65,11 +67,11 @@
                   <b-col cols="12" sm="4">
                     <form-input
                       id="latitudeSec"
-                      type="text"
+                      type="number"
                       @focus="unfreeze('dms')"
                       @blur="freeze('dms')"
                       hint="Seconds"
-                      v-model="dms.lat.sec"
+                      v-model.number="dms.lat.sec"
                       :errors="errors['latitude']"
                       :loaded="fieldsLoaded['latitude']"
                     ></form-input>
@@ -82,11 +84,11 @@
                   <b-col cols="12" sm="4">
                     <form-input
                       id="longitudeDeg"
-                      type="text"
+                      type="number"
                       @focus="unfreeze('dms')"
                       @blur="freeze('dms')"
                       hint="Degrees"
-                      v-model="dms.long.deg"
+                      v-model.number="dms.long.deg"
                       :errors="errors['longitude']"
                       :loaded="fieldsLoaded['longitude']"
                     ></form-input>
@@ -94,10 +96,11 @@
                   <b-col cols="12" sm="4">
                     <form-input
                       id="longitudeMin"
+                      type="number"
                       @focus="unfreeze('dms')"
                       @blur="freeze('dms')"
                       hint="Minutes"
-                      v-model="dms.long.min"
+                      v-model.number="dms.long.min"
                       :errors="errors['longitude']"
                       :loaded="fieldsLoaded['longitude']"
                     ></form-input>
@@ -105,10 +108,11 @@
                   <b-col cols="12" sm="4">
                     <form-input
                       id="longitudeSec"
+                      type="number"
                       @focus="unfreeze('dms')"
                       @blur="freeze('dms')"
                       hint="Seconds"
-                      v-model="dms.long.sec"
+                      v-model.number="dms.long.sec"
                       :errors="errors['longitude']"
                       :loaded="fieldsLoaded['longitude']"
                     ></form-input>
@@ -137,9 +141,9 @@
               <b-col cols="12" sm="4" lg="3">
                 <form-input
                   id="utmEasting"
-                  type="text"
+                  type="number"
                   label="UTM Easting"
-                  v-model="utm.easting"
+                  v-model.number="utm.easting"
                   @focus="unfreeze('utm')"
                   @blur="freeze('utm')"
                   :loaded="fieldsLoaded['utmEasting']"
@@ -148,19 +152,19 @@
               <b-col cols="12" sm="4" lg="3">
                 <form-input
                   id="utmNorthing"
-                  type="text"
+                  type="number"
                   label="UTM Northing"
                   @focus="unfreeze('utm')"
                   @blur="freeze('utm')"
-                  v-model="utm.northing"
+                  v-model.number="utm.northing"
                   :loaded="fieldsLoaded['utmNorthing']"
                 ></form-input>
               </b-col>
             </b-row>
           </b-card>
         </b-col>
-        <b-col cols="6">
-          <coords-map/>
+        <b-col sm="12" md="6">
+          <coords-map :latitude="latitudeInput" :longitude="longitudeInput"/>
         </b-col>
       </b-row>
 
@@ -183,8 +187,8 @@ export default {
   name: 'Coords',
   mixins: [inputBindingsMixin],
   props: {
-    latitude: String,
-    longitude: String,
+    latitude: Number,
+    longitude: Number,
     errors: {
       type: Object,
       default: () => ({})
@@ -194,10 +198,6 @@ export default {
       default: () => ({})
     },
     errorCoordsNotProvided: Boolean
-  },
-  fields: {
-    latitudeInput: 'latitude',
-    longitudeInput: 'longitude'
   },
   data () {
     return {
@@ -209,24 +209,24 @@ export default {
         deg: true
       },
       utm: {
-        easting: '',
-        northing: '',
+        easting: null,
+        northing: null,
         zone: ''
       },
       degrees: {
-        latitude: '',
-        longitude: ''
+        latitude: null,
+        longitude: null
       },
       dms: {
         lat: {
-          deg: '',
-          min: '',
-          sec: ''
+          deg: null,
+          min: null,
+          sec: null
         },
         long: {
-          deg: '',
-          min: '',
-          sec: ''
+          deg: null,
+          min: null,
+          sec: null
         }
       },
       latitudeDMSValidation: false
@@ -265,12 +265,12 @@ export default {
           }
 
           const dms = Object.assign({}, value)
-          dms.deg = Number(this.parseCoordValue(value.deg)) || 0
-          dms.min = Number(this.parseCoordValue(value.min)) || 0
-          dms.sec = Number(this.parseCoordValue(value.sec)) || 0
+          dms.deg = value.deg
+          dms.min = value.min
+          dms.sec = value.sec
 
           const lat = this.convertDMStoDeg(dms)
-          const { easting, northing, zone } = this.convertToUTM(Number(this.longitudeInput), lat)
+          const { easting, northing, zone } = this.convertToUTM(this.longitudeInput, lat)
           this.updateDegrees(this.longitudeInput, lat)
           this.updateUTM(easting, northing, zone)
         }
@@ -287,13 +287,13 @@ export default {
           }
 
           const dms = Object.assign({}, value)
-          dms.deg = Number(this.parseCoordValue(value.deg)) || 0
-          dms.min = Number(this.parseCoordValue(value.min)) || 0
-          dms.sec = Number(this.parseCoordValue(value.sec)) || 0
+          dms.deg = value.deg
+          dms.min = value.min
+          dms.sec = value.sec
 
           const long = this.convertDMStoDeg(dms)
 
-          const { easting, northing, zone } = this.convertToUTM(long, Number(this.latitudeInput))
+          const { easting, northing, zone } = this.convertToUTM(long, this.latitudeInput)
           this.updateDegrees(long, this.latitudeInput)
           this.updateUTM(easting, northing, zone)
         }
@@ -303,17 +303,16 @@ export default {
       deep: true,
       handler: function (value) {
         if (!this.lock.deg) {
-          value = this.parseCoordValue(value)
           if (!value) {
             this.resetUTM()
             this.resetDMS()
             return null
           }
 
-          const lat = Number(value)
-          const { easting, northing, zone } = this.convertToUTM(Number(this.longitudeInput), lat)
+          const lat = value
+          const { easting, northing, zone } = this.convertToUTM(this.longitudeInput, lat)
 
-          this.updateDMS(this.convertToDMS(Number(this.longitudeInput)), this.convertToDMS(lat))
+          this.updateDMS(this.convertToDMS(this.longitudeInput), this.convertToDMS(lat))
           this.updateUTM(easting, northing, zone)
         }
       }
@@ -322,17 +321,16 @@ export default {
       deep: true,
       handler: function (value) {
         if (!this.lock.deg) {
-          value = this.parseCoordValue(value)
           if (!value) {
             this.resetUTM()
             this.resetDMS()
             return null
           }
 
-          const long = Number(value)
-          const { easting, northing, zone } = this.convertToUTM(long, Number(this.latitudeInput))
+          const long = value
+          const { easting, northing, zone } = this.convertToUTM(long, this.latitudeInput)
 
-          this.updateDMS(this.convertToDMS(long), this.convertToDMS(Number(this.latitudeInput)))
+          this.updateDMS(this.convertToDMS(long), this.convertToDMS(this.latitudeInput))
           this.updateUTM(easting, northing, zone)
         }
       }
@@ -341,7 +339,6 @@ export default {
       deep: true,
       handler: function (value) {
         if (!this.lock.utm) {
-          value = this.parseCoordValue(value)
           if (!value) {
             this.resetDMS()
             this.resetDegrees()
@@ -359,7 +356,6 @@ export default {
       deep: true,
       handler: function (value) {
         if (!this.lock.utm) {
-          value = this.parseCoordValue(value)
           if (!value) {
             this.resetDMS()
             this.resetDegrees()
@@ -395,32 +391,27 @@ export default {
     convertToUTM (long, lat) {
       // converts input coordinates and returns an object containing UTM easting, northing, and zone
       const utm = {
-        easting: '',
-        northing: '',
-        zone: ''
+        easting: null,
+        northing: null,
+        zone: null
       }
-
-      lat = Number(lat)
-      long = Number(long)
 
       // determine zone
       const zone = Math.floor((long + 180) / 6) + 1
 
       // proj4 coordinate system definitions
       const utmProjection = `+proj=utm +zone=${zone} +ellps=GRS80 +datum=NAD83 +units=m +no_defs`
+      console.log(utmProjection, [long, lat])
       const coords = proj4(utmProjection, [long, lat])
 
-      utm.easting = String(coords[0])
-      utm.northing = String(coords[1])
+      utm.easting = coords[0]
+      utm.northing = coords[1]
       utm.zone = zone
 
       return utm
     },
     convertToWGS84 (easting, northing, zone) {
       // converts from UTM to WGS84
-      northing = Number(northing)
-      easting = Number(easting)
-      zone = Number(zone)
 
       // proj4 coordinate system definitions
       const wgs84Projection = proj4.defs('EPSG:4326')
@@ -429,31 +420,29 @@ export default {
       const coords = proj4(utmProjection, wgs84Projection, [easting, northing])
 
       return {
-        longitude: String(coords[0]),
-        latitude: String(coords[1])
+        longitude: coords[0],
+        latitude: coords[1]
       }
     },
     convertToDMS (degrees) {
       // converts from decimal degrees to degrees, minutes seconds
       // returns an object with keys 'deg', 'min', 'sec'
 
-      degrees = Number(degrees)
-
       const angle = Math.abs(degrees)
       const deg = Math.floor(angle) * Math.sign(degrees)
-      const sec = (3600 * (angle - Math.floor(angle)) % 60).toFixed(2)
+      const sec = 3600 * (angle - Math.floor(angle)) % 60
       const min = Math.floor((3600 * (angle - Math.floor(angle))) / 60)
 
       return {
-        deg: String(deg),
-        min: String(min),
-        sec: String(sec)
+        deg: deg,
+        min: min,
+        sec: sec
       }
     },
     convertDMStoDeg (dms) {
       const sign = Math.sign(dms.deg)
 
-      return (dms.deg + sign * dms.min / 60 + sign * dms.sec / (60 * 60)).toFixed(6)
+      return dms.deg + sign * dms.min / 60 + sign * dms.sec / (60 * 60)
     },
     updateUTM (easting, northing, zone) {
       this.utm.easting = easting
@@ -462,9 +451,9 @@ export default {
     },
     resetUTM () {
       this.utm = {
-        easting: '',
-        northing: '',
-        zone: ''
+        easting: null,
+        northing: null,
+        zone: null
       }
     },
     updateDMS (longitude = {}, latitude = {}) {
@@ -474,14 +463,14 @@ export default {
     resetDMS () {
       this.dms = {
         lat: {
-          deg: '',
-          min: '',
-          sec: ''
+          deg: null,
+          min: null,
+          sec: null
         },
         long: {
-          deg: '',
-          min: '',
-          sec: ''
+          deg: null,
+          min: null,
+          sec: null
         }
       }
     },
@@ -491,28 +480,9 @@ export default {
     },
     resetDegrees () {
       this.degrees = {
-        latitude: '',
-        longitude: ''
+        latitude: null,
+        longitude: null
       }
-    },
-    parseCoordValue (value) {
-      // check that the input contains at least one number
-      if (!value.match(/[0-9]/)) {
-        value = '0'
-      }
-
-      // check that there are no dashes except when at the beginning of the string
-      if (value.length > 1 && value.substr(1).match(/-/)) {
-        value = '0'
-      }
-
-      // check that there is maximum one decimal ('.') character
-      if ((value.match(/\./g) || []).length > 1) {
-        value = '0'
-      }
-
-      value = value.replace(/[^0-9.-]/g, '')
-      return value
     },
     freeze (type) {
       // freeze updates the 'lock' object for the given type

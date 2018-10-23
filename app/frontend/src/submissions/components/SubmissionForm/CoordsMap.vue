@@ -1,17 +1,21 @@
 <template>
-  <b-row>
-    <b-col>
-      <div id="map" class="map">The map will go here</div>
-    </b-col>
-  </b-row>
+  <div id="map" class="map"/>
 </template>
 
 <script>
 import L from 'leaflet'
+import { tiledMapLayer } from 'esri-leaflet'
 export default {
   name: 'CoordsMap',
-  components: {
-
+  props: {
+    latitude: {
+      type: Number,
+      default: 54.5
+    },
+    longitude: {
+      type: Number,
+      default: -126.5
+    }
   },
   data () {
     return {
@@ -21,32 +25,88 @@ export default {
     }
   },
   mounted () {
+    this.initLeaflet()
     this.initMap()
-    this.initLayers()
+  },
+  watch: {
+    latitude () {
+      this.updateCoords()
+    },
+    longitude () {
+      this.updateCoords()
+    }
   },
   methods: {
+    initLeaflet () {
+      // eslint-disable-next-line
+      delete L.Icon.Default.prototype._getIconUrl  
+      // eslint-disable-next-line
+      L.Icon.Default.mergeOptions({  
+        iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
+        iconUrl: require('leaflet/dist/images/marker-icon.png'),
+        shadowUrl: require('leaflet/dist/images/marker-shadow.png')
+      })
+    },
     initMap () {
-      this.map = L.map('map').setView([51.505, -0.09], 13)
+      console.log(this.latitude)
+      this.map = L.map('map').setView([this.latitude ? this.latitude : 54.5, this.longitude ? this.longitude : -126.5], 5)
 
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      tiledMapLayer({url: 'https://maps.gov.bc.ca/arcserver/rest/services/Province/roads_wm/MapServer'}).addTo(this.map)
+
+      L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW/ows?', {
+        format: 'image/png',
+        layers: 'pub:WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW',
+        styles: 'PMBC_Parcel_Fabric_Cadastre_Outlined',
+        transparent: true
       }).addTo(this.map)
 
-      L.marker([51.5, -0.09]).addTo(this.map)
-        .bindPopup('A pretty CSS3 popup.<br> Easily customizable.')
-        .openPopup()
+      this.marker = L.marker([this.latitude ? this.latitude : 54.5, this.longitude ? this.longitude : -126.5])
+      this.marker.addTo(this.map)
+      this.marker.bindPopup('Latitude: ' + this.latitude + ', Longitude: ' + this.longitude)
     },
-    initLayers () {
+    updateCoords () {
+      this.marker.setLatLng(L.latLng(this.latitude, this.longitude))
+      this.map.setView([this.latitude ? this.latitude : 54.5, this.longitude ? this.longitude : -126.5], 5)
     }
   }
 }
 </script>
 <style>
+@import "leaflet/dist/leaflet.css";
+
 .map {
-  height: 200px;
-  width: 300px;
-  position: absolute;
-  top: 10;
-  left: 10;
+  width: 550px;
+  height: 500px;
 }
+
+/*
+styles like this would be nice, but can't live in this control
+
+@media (min-width: 575px) {
+  .map {
+    width: 250px;
+    height: 250px;
+  }
+}
+
+@media (min-width: 767px) {
+  .map {
+    width: 350px;
+    height: 350px;
+  }
+}
+
+@media (min-width: 991px) {
+  .map {
+    width: 450px;
+    height: 450px;
+  }
+}
+
+@media (min-width: 1199px) {
+  .map {
+    width: 550px;
+    height: 500px;
+  }
+} */
 </style>
