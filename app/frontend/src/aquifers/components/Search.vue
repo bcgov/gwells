@@ -43,6 +43,7 @@
     </b-form>
 
     <b-table
+      striped
       v-if="aquiferList"
       :show-empty="emptyResults"
       empty-text="No aquifers could be found"
@@ -74,8 +75,7 @@ export default {
         { key: 'area', label: 'Size-km²' },
         { key: 'productivity_description', label: 'Productivity' },
         { key: 'demand_description', label: 'Demand' },
-        { key: 'mapping_year', label: 'Year of mapping' },
-        { key: 'publication_status', label: 'Publication status' }
+        { key: 'mapping_year', label: 'Year of mapping' }
       ]
     }
   },
