@@ -626,7 +626,7 @@
                                         "scheme": "HTTP"
                                     },
                                     "initialDelaySeconds": 5,
-                                    "timeoutSeconds": 2,
+                                    "timeoutSeconds": 5,
                                     "periodSeconds": 5,
                                     "successThreshold": 1,
                                     "failureThreshold": 10

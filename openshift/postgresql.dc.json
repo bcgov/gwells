@@ -274,7 +274,7 @@
                                     "tcpSocket": {
                                         "port": 5432
                                     },
-                                    "timeoutSeconds": 1
+                                    "timeoutSeconds": 5
                                 },
                                 "name": "postgresql",
                                 "ports": [
@@ -293,7 +293,7 @@
                                         ]
                                     },
                                     "initialDelaySeconds": 5,
-                                    "timeoutSeconds": 1
+                                    "timeoutSeconds": 5
                                 },
                                 "resources": {
                                     "requests": {
