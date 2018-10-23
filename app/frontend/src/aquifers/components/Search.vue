@@ -16,19 +16,21 @@
   <b-card no-body class="p-3 mb-4">
     <h5>Aquifer Search</h5>
     <b-form
-      v-on:submit.prevent="search(query)"
+      v-on:submit.prevent="updateQueryParams"
       v-on:reset="reset">
       <b-form-row>
         <b-col cols="12" md="4">
           <b-form-group label="Aquifer name">
             <b-form-input
+              id="search"
               type="text"
-              v-model="query.search"/>
+              v-model="searchParams.search"/>
           </b-form-group>
           <b-form-group label="Aquifer number">
             <b-form-input
+              id="aquifer_id"
               type="text"
-              v-model="query.aquifer_id"/>
+              v-model="searchParams.aquifer_id"/>
           </b-form-group>
         </b-col>
       </b-form-row>
@@ -53,16 +55,28 @@
         <router-link :to="`${data.value}/`">{{data.value}}</router-link>
       </template>
     </b-table>
+
+    <b-container v-if="displayPagination">
+      <b-row align-h="end">
+        <b-pagination :total-rows="response.count" :per-page="limit" v-model="currentPage" />
+      </b-row>
+    </b-container>
+
   </b-card>
 </template>
 
 <script>
 import ApiService from '@/common/services/ApiService.js'
+import { isNil, isEmpty, omitBy } from 'lodash'
+
+const LIMIT = 30
 
 export default {
   data () {
     return {
-      query: {},
+      limit: LIMIT,
+      currentPage: undefined,
+      searchParams: Object.assign({}, this.$route.query),
       response: {},
       aquiferListFields: [
         { key: 'aquifer_id', label: 'Aquifer number' },
@@ -81,18 +95,54 @@ export default {
   },
   computed: {
     aquiferList () { return this.response && this.response.results },
-    emptyResults () { return this.response && this.response.count === 0 }
+    displayPagination () { return this.aquiferList && (this.response.next || this.response.previous) },
+    emptyResults () { return this.response && this.response.count === 0 },
+    query () { return this.$route.query }
   },
   methods: {
-    reset () {
-      this.response = {}
-      this.query = {}
-    },
-    search () {
-      ApiService.query('aquifers/', this.query)
+    fetchResults (query) {
+      if (isEmpty(query)) {
+        return
+      }
+
+      ApiService.query('aquifers/', query)
         .then((response) => {
           this.response = response.data
+          this.scrollToTableTop()
         })
+    },
+    reset () {
+      this.response = {}
+      this.searchParams = {
+        search: '',
+        aquifer_id: ''
+      }
+
+     this.updateQueryParams()
+    },
+    scrollToTableTop () {
+      this.$SmoothScroll(this.$el, 100)
+    },
+    updateQueryParams () {
+      this.$router.replace({
+        query: omitBy(this.searchParams, isNil)
+      })
+    }
+  },
+  mounted () {
+    this.fetchResults(this.query)
+  },
+  watch: {
+    query (query) {
+      this.fetchResults(query)
+    },
+    currentPage (currentPage) {
+      const i = (currentPage || 1) - 1
+
+      this.searchParams.limit = LIMIT
+      this.searchParams.offset = i * LIMIT
+
+      this.updateQueryParams()
     }
   }
 }
