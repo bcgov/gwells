@@ -26,7 +26,7 @@
     <b-form-input
         v-else
         :id="`${id}Input`"
-        :type="type === 'number' ? 'text' : type"
+        :type="type"
         :step="step"
         :state="validation"
         :aria-describedby="`${id}InvalidFeedback ${id}Hint`"
