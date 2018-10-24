@@ -11,6 +11,9 @@
                 <form-input
                   id="latitude"
                   type="number"
+                  step="0.1"
+                  min="-90"
+                  max="90"
                   label="Latitude"
                   hint="Decimal degrees"
                   @focus="unfreeze('deg')"
@@ -23,6 +26,9 @@
               <b-col cols="12" sm="6" lg="3" offset-lg="2">
                 <form-input
                   id="longitude"
+                  step="0.1"
+                  min="-180"
+                  max="180"
                   type="number"
                   @focus="unfreeze('deg')"
                   @blur="freeze('deg')"
@@ -38,7 +44,7 @@
           <b-row><b-col><p class="p-3">OR</p></b-col></b-row>
           <b-card no-body class="p-3 mx-1 mx-md-1">
             <b-row>
-              <b-col cols="12" md="6" lg="4">
+              <b-col cols="12" md="6" lg="5">
                 <b-row class="mb-2"><b-col>Latitude</b-col></b-row>
                 <b-row>
                   <b-col cols="12" sm="4">
@@ -48,6 +54,9 @@
                       @blur="freeze('dms')"
                       hint="Degrees"
                       type="number"
+                      step="1"
+                      min="-90"
+                      max="90"
                       v-model.number="dms.lat.deg"
                       :loaded="fieldsLoaded['latitude']"
                     ></form-input>
@@ -59,6 +68,9 @@
                       @focus="unfreeze('dms')"
                       @blur="freeze('dms')"
                       type="number"
+                      step="1"
+                      min="60"
+                      max="60"
                       v-model.number="dms.lat.min"
                       :errors="errors['latitude']"
                       :loaded="fieldsLoaded['latitude']"
@@ -71,6 +83,9 @@
                       @focus="unfreeze('dms')"
                       @blur="freeze('dms')"
                       hint="Seconds"
+                      step="1"
+                      min="60"
+                      max="60"
                       v-model.number="dms.lat.sec"
                       :errors="errors['latitude']"
                       :loaded="fieldsLoaded['latitude']"
@@ -78,13 +93,16 @@
                   </b-col>
                 </b-row>
               </b-col>
-              <b-col cols="12" md="6" lg="4" offset-lg="1">
+              <b-col cols="12" md="6" lg="5" offset-lg="1">
                 <b-row class="mb-2"><b-col>Longitude</b-col></b-row>
                 <b-row>
-                  <b-col cols="12" sm="4">
+                  <b-col cols="12" sm="4" class="px-2">
                     <form-input
                       id="longitudeDeg"
+                      step="1"
                       type="number"
+                      min="-180"
+                      max="180"
                       @focus="unfreeze('dms')"
                       @blur="freeze('dms')"
                       hint="Degrees"
@@ -97,6 +115,9 @@
                     <form-input
                       id="longitudeMin"
                       type="number"
+                      step="1"
+                      min="60"
+                      max="60"
                       @focus="unfreeze('dms')"
                       @blur="freeze('dms')"
                       hint="Minutes"
@@ -109,6 +130,9 @@
                     <form-input
                       id="longitudeSec"
                       type="number"
+                      step="1"
+                      min="60"
+                      max="60"
                       @focus="unfreeze('dms')"
                       @blur="freeze('dms')"
                       hint="Seconds"
@@ -124,7 +148,7 @@
           <b-row><b-col><p class="p-3">OR</p></b-col></b-row>
           <b-card no-body class="p-3 mx-1 mx-md-1">
             <b-row>
-              <b-col cols="12" sm="4" lg="2">
+              <b-col cols="12" sm="4" lg="3">
                 <form-input
                   id="utmZone"
                   select
@@ -164,7 +188,7 @@
           </b-card>
         </b-col>
         <b-col sm="12" md="6">
-          <coords-map :latitude="latitudeInput" :longitude="longitudeInput"/>
+          <coords-map :latitude="latitudeInput" :longitude="longitudeInput" v-on:coordinate="handleMapCoordinate"/>
         </b-col>
       </b-row>
 
@@ -286,10 +310,15 @@ export default {
             return null
           }
 
+          // Force longitude to always be negative.
+          if (value.deg > 0) {
+            this.dms.long.deg = value.deg * -1
+          }
+
           const dms = Object.assign({}, value)
           dms.deg = value.deg
           dms.min = value.min
-          dms.sec = value.sec
+          dms.sec = Math.round(value.sec)
 
           const long = this.convertDMStoDeg(dms)
 
@@ -308,7 +337,6 @@ export default {
             this.resetDMS()
             return null
           }
-
           const lat = value
           const { easting, northing, zone } = this.convertToUTM(this.longitudeInput, lat)
 
@@ -325,6 +353,10 @@ export default {
             this.resetUTM()
             this.resetDMS()
             return null
+          }
+          if (value > 0) {
+            // Force longitude to always be negative.
+            this.longitudeInput = value * -1
           }
 
           const long = value
@@ -396,17 +428,18 @@ export default {
         zone: null
       }
 
-      // determine zone
-      const zone = Math.floor((long + 180) / 6) + 1
+      if (long !== null && lat !== null) {
+        // determine zone
+        const zone = Math.floor((long + 180) / 6) + 1
 
-      // proj4 coordinate system definitions
-      const utmProjection = `+proj=utm +zone=${zone} +ellps=GRS80 +datum=NAD83 +units=m +no_defs`
-      console.log(utmProjection, [long, lat])
-      const coords = proj4(utmProjection, [long, lat])
+        // proj4 coordinate system definitions
+        const utmProjection = `+proj=utm +zone=${zone} +ellps=GRS80 +datum=NAD83 +units=m +no_defs`
+        const coords = proj4(utmProjection, [long, lat])
 
-      utm.easting = coords[0]
-      utm.northing = coords[1]
-      utm.zone = zone
+        utm.easting = coords[0]
+        utm.northing = coords[1]
+        utm.zone = zone
+      }
 
       return utm
     },
@@ -436,17 +469,19 @@ export default {
       return {
         deg: deg,
         min: min,
-        sec: sec
+        sec: Math.round(sec)
       }
     },
     convertDMStoDeg (dms) {
       const sign = Math.sign(dms.deg)
-
-      return dms.deg + sign * dms.min / 60 + sign * dms.sec / (60 * 60)
+      return this.roundDegrees(dms.deg + sign * dms.min / 60 + sign * dms.sec / (60 * 60))
+    },
+    roundDegrees (deg) {
+      return Math.round(deg * 10000) / 10000
     },
     updateUTM (easting, northing, zone) {
-      this.utm.easting = easting
-      this.utm.northing = northing
+      this.utm.easting = Math.round(easting)
+      this.utm.northing = Math.round(northing)
       this.utm.zone = zone
     },
     resetUTM () {
@@ -475,8 +510,8 @@ export default {
       }
     },
     updateDegrees (longitude, latitude) {
-      this.longitudeInput = longitude
-      this.latitudeInput = latitude
+      this.longitudeInput = this.roundDegrees(longitude)
+      this.latitudeInput = this.roundDegrees(latitude)
     },
     resetDegrees () {
       this.degrees = {
@@ -493,6 +528,14 @@ export default {
     },
     unfreeze (type) {
       this.lock[type] = false
+    },
+    handleMapCoordinate (latlng) {
+      this.updateDegrees(latlng.lng, latlng.lat)
+
+      const { easting, northing, zone } = this.convertToUTM(latlng.lng, latlng.lat)
+
+      this.updateDMS(this.convertToDMS(latlng.lng), this.convertToDMS(latlng.lat))
+      this.updateUTM(easting, northing, zone)
     }
   }
 }
