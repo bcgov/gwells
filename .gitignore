@@ -79,6 +79,7 @@ var/
 webpack-stats.json
 app/backend/.env
 *.secret_env
+app/backend/.pip
 
 # PyInstaller and Pip install files
 #  Usually these files are written by a python script from a template
