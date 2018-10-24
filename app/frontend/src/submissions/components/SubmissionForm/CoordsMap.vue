@@ -78,7 +78,7 @@ export default {
       this.marker.bindPopup('Latitude: ' + latitude + ', Longitude: ' + longitude)
     },
     updateCoords () {
-      if (this.latitude !== null && this.longitude !== null) {
+      if (!isNaN(this.latitude) && !isNaN(this.longitude)) {
         const latlng = L.latLng(this.latitude, this.longitude)
         if (this.insideBC(latlng)) {
           if (this.marker) {
@@ -108,7 +108,7 @@ export default {
       // could check this against databc by reverse geocoding change checking that the point is in BC
       // - https://geocoder.api.gov.bc.ca/addresses.json?locationDescriptor=any&parcelPoint=55%2C-124
       // Using a very simple, rough bounding box
-      return latLng.lat < 60 && latLng.lat > 48.2 && latLng.lng > -139.07 && latLng.lng < -114
+      return !!latLng && latLng.lat < 60 && latLng.lat > 48.2 && latLng.lng > -139.07 && latLng.lng < -114
     }
   }
 }

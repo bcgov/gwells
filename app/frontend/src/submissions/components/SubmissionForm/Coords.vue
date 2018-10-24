@@ -3,6 +3,7 @@
     <fieldset>
       <legend>Geographic Coordinates</legend>
       <p>To determine coordinates using a Global Positioning System (GPS), set the datum to North America Datum of 1983 (NAD 83), the current ministry standard for mapping.</p>
+      <p>After the GPS coordinates are entered, the map pin can be moved by clicking and dragging it on the map. The GPS coordinates will be updated automatically.</p>
       <b-row>
         <b-col sm="12" md="6">
           <b-card no-body class="p-3 m-1 m-md-1">
@@ -331,7 +332,7 @@ export default {
     'latitudeInput': {
       deep: true,
       handler: function (value) {
-        if (!this.lock.deg) {
+        if (!this.lock.deg && !isNaN(value)) {
           if (!value) {
             this.resetUTM()
             this.resetDMS()
@@ -348,7 +349,7 @@ export default {
     'longitudeInput': {
       deep: true,
       handler: function (value) {
-        if (!this.lock.deg) {
+        if (!this.lock.deg && !isNaN(value)) {
           if (!value) {
             this.resetUTM()
             this.resetDMS()
@@ -428,7 +429,7 @@ export default {
         zone: null
       }
 
-      if (long !== null && lat !== null) {
+      if (!!long && !!lat) {
         // determine zone
         const zone = Math.floor((long + 180) / 6) + 1
 
