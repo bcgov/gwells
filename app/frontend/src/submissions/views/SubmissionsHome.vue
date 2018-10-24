@@ -265,8 +265,8 @@
             <b-col class="pr-4 text-right">
               <b-btn v-if="step < maxSteps && !formIsFlat && !preview" @click="step++" variant="primary">Next</b-btn>
               <span v-else>
-                <b-btn v-if="!preview" :variant="`${preview ? 'primary':'outline-primary'}`" @click="handlePreviewButton">Preview</b-btn>
-                <b-btn id="formSubmitButton" type="submit" variant="primary" ref="activitySubmitBtn" :disabled="formSubmitLoading">Submit</b-btn>
+                <b-btn v-if="!preview" variant="primary" @click="handlePreviewButton">Preview &amp; Submit</b-btn>
+                <b-btn v-if="preview" id="formSubmitButton" type="submit" variant="primary" ref="activitySubmitBtn" :disabled="formSubmitLoading">Submit</b-btn>
               </span>
             </b-col>
           </b-row>
