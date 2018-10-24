@@ -4,13 +4,13 @@
       <legend>Type of Work and Well Class</legend>
       <b-row>
         <b-col>
-          <span class="font-weight-bold">Report Type:</span> {{ activity }}
+          <span class="font-weight-bold">Report Type:</span> {{ codeToDescription('activity_types', activity) }}
         </b-col>
       </b-row>
       <b-row>
-        <b-col cols="12" lg="4"><span class="font-weight-bold">Class of Well:</span> {{ form.well_class }}</b-col>
+        <b-col cols="12" lg="4"><span class="font-weight-bold">Class of Well:</span> {{ codeToDescription('well_classes', form.well_class) }}</b-col>
         <b-col cols="12" lg="4"><span class="font-weight-bold">Subclass:</span> {{ wellSubclass }}</b-col>
-        <b-col cols="12" lg="4"><span class="font-weight-bold">Intended Water Use:</span> {{ form.intended_water_use }}</b-col>
+        <b-col cols="12" lg="4"><span class="font-weight-bold">Intended Water Use:</span> {{ codeToDescription('intended_water_uses', form.intended_water_use) }}</b-col>
       </b-row>
       <b-row>
         <b-col cols="12" lg="4"><span class="font-weight-bold">Well Tag Number:</span> {{ form.well ? form.well['well_tag_number']: '' }}</b-col>
@@ -182,11 +182,14 @@
       <div class="table-responsive">
         <b-table
             :items="filterBlankRows(form.casing_set)"
-            :fields="['from', 'to', 'casing_code', 'casing_material', 'diameter', 'wall_thickness', 'drive_shoe']"
+            :fields="['from', 'to', 'casing_type', 'casing_material', 'diameter', 'wall_thickness', 'drive_shoe']"
             show-empty>
 
           <template slot="from" slot-scope="data">{{data.item.start}} ft</template>
           <template slot="to" slot-scope="data">{{data.item.end}} ft</template>
+          <template slot="casing_type" slot-scope="data">{{codeToDescription('casing_codes', data.item.casing_code)}}</template>
+          <template slot="casing_material" slot-scope="data">{{codeToDescription('casing_materials', data.item.casing_material)}}</template>
+
         </b-table>
       </div>
     </fieldset>
@@ -194,12 +197,12 @@
     <fieldset class="my-3 detail-section" v-if="sections.backfill">
       <legend>Surface Seal and Backfill Details</legend>
       <b-row>
-        <b-col cols="12" lg="4"><span class="font-weight-bold">Surface Seal Material:</span> {{ form.surface_seal_material }}</b-col>
-        <b-col cols="12" lg="4"><span class="font-weight-bold">Method of determining elevation:</span> {{ form.backfill_above_surface_seal }}</b-col>
+        <b-col cols="12" lg="4"><span class="font-weight-bold">Surface Seal Material:</span> {{ codeToDescription('surface_seal_materials', form.surface_seal_material) }}</b-col>
+        <b-col cols="12" lg="4"><span class="font-weight-bold">Backfill Material Above Surface Seal:</span> {{ codeToDescription('surface_seal_materials', form.backfill_above_surface_seal) }}</b-col>
       </b-row>
       <b-row>
-        <b-col cols="12" lg="4"><span class="font-weight-bold">Surface Seal Installation Method:</span> {{ form.surface_seal_method }}</b-col>
-        <b-col cols="12" lg="4"><span class="font-weight-bold">Backfill Depth:</span> {{ form.backfill_above_surface_seal_depth }}</b-col>
+        <b-col cols="12" lg="4"><span class="font-weight-bold">Surface Seal Installation Method:</span> {{ codeToDescription('surface_seal_methods', form.surface_seal_method) }}</b-col>
+        <b-col cols="12" lg="4"><span class="font-weight-bold">Backfill Depth:</span> {{ form.backfill_depth }}</b-col>
       </b-row>
       <b-row>
         <b-col cols="12" lg="4"><span class="font-weight-bold">Surface Seal Thickness:</span> {{ form.surface_seal_thickness }}</b-col>
@@ -214,7 +217,7 @@
       <b-row>
         <b-col cols="12" lg="6">
           <b-row>
-            <b-col cols="12" lg="6"><span class="font-weight-bold">Liner Material:</span> {{ form.liner_material }}</b-col>
+            <b-col cols="12" lg="6"><span class="font-weight-bold">Liner Material:</span> {{ codeToDescription('liner_materials', form.liner_material) }}</b-col>
           </b-row>
           <b-row>
             <b-col cols="12" lg="6"><span class="font-weight-bold">Liner Diameter:</span> {{ form.liner_diameter }}</b-col>
@@ -244,19 +247,19 @@
       <b-row>
         <b-col cols="12" lg="4">
           <b-row>
-            <b-col cols="12" lg="6"><span class="font-weight-bold">Intake Method:</span> {{ form.screen_intake_method }}</b-col>
+            <b-col cols="12" lg="6"><span class="font-weight-bold">Intake Method:</span> {{ codeToDescription('screen_intake_methods', form.screen_intake_method) }}</b-col>
           </b-row>
           <b-row>
-            <b-col cols="12" lg="6"><span class="font-weight-bold">Type:</span> {{ form.screen_type }}</b-col>
+            <b-col cols="12" lg="6"><span class="font-weight-bold">Type:</span> {{ codeToDescription('screen_types', form.screen_type) }}</b-col>
           </b-row>
           <b-row>
-            <b-col cols="12" lg="6"><span class="font-weight-bold">Material:</span> {{ form.screen_material }}</b-col>
+            <b-col cols="12" lg="6"><span class="font-weight-bold">Material:</span> {{ codeToDescription('screen_materials', form.screen_material) }}</b-col>
           </b-row>
           <b-row>
-            <b-col cols="12" lg="6"><span class="font-weight-bold">Opening:</span> {{ form.screen_opening }}</b-col>
+            <b-col cols="12" lg="6"><span class="font-weight-bold">Opening:</span> {{ codeToDescription('screen_openings', form.screen_opening) }}</b-col>
           </b-row>
           <b-row>
-            <b-col cols="12" lg="6"><span class="font-weight-bold">Bottom:</span> {{ form.screen_bottom }}</b-col>
+            <b-col cols="12" lg="6"><span class="font-weight-bold">Bottom:</span> {{ codeToDescription('screen_bottoms', form.screen_bottom) }}</b-col>
           </b-row>
         </b-col>
         <b-col cols="12" lg="8">
@@ -268,6 +271,7 @@
               >
             <template slot="from" slot-scope="data">{{data.item.start}} ft</template>
             <template slot="to" slot-scope="data">{{data.item.end}} ft</template>
+            <template slot="assembly_type" slot-scope="data">{{codeToDescription('screen_assemblies', data.item.assembly_type)}}</template>
           </b-table>
         </b-col>
       </b-row>
@@ -281,7 +285,7 @@
         <b-col cols="12" lg="4"><span class="font-weight-bold">Filter pack thickness:</span> {{ form.filter_pack_thickness }}</b-col>
       </b-row>
       <b-row>
-        <b-col cols="12" lg="4"><span class="font-weight-bold">Filter pack material:</span> {{ form.filter_pack_material }}</b-col>
+        <b-col cols="12" lg="4"><span class="font-weight-bold">Filter pack material:</span> {{ codeToDescription('filter_pack_material', form.filter_pack_material) }}</b-col>
         <b-col cols="12" lg="4"><span class="font-weight-bold">Filter pack material size:</span> {{ form.filter_pack_material_size }}</b-col>
       </b-row>
     </fieldset>
@@ -289,7 +293,7 @@
     <fieldset class="my-3 detail-section" v-if="sections.wellDevelopment">
       <legend>Well Development</legend>
       <b-row>
-        <b-col cols="12" lg="4"><span class="font-weight-bold">Developed by:</span> {{ form.development_method }}</b-col>
+        <b-col cols="12" lg="4"><span class="font-weight-bold">Developed by:</span> {{ codeToDescription('development_methods', form.development_method) }}</b-col>
         <b-col cols="12" lg="4"><span class="font-weight-bold">Development Total Duration:</span> {{ form.development_hours }} {{ form.development_hours ? 'hours':'' }}</b-col>
       </b-row>
     </fieldset>
@@ -309,10 +313,10 @@
         <b-col cols="12" lg="4"><span class="font-weight-bold">Characteristics:</span>
           <span v-for="(item, index) in form.water_quality_characteristics" :key="`previewWaterCharacteristic${index}`">
             <!-- Add a comma before each item except index 0 -->
-            {{ index ? ', ': ''}}{{ item }}
+            {{ index ? ', ': ''}}{{ codeToDescription('water_quality_characteristics', item) }}
           </span>
         </b-col>
-        <b-col cols="12" lg="4"><span class="font-weight-bold">Water Quality Colour:</span> {{ form.water_quality_colour }}</b-col>
+        <b-col cols="12" lg="4"><span class="font-weight-bold">Water Quality Colour:</span> {{ codeToDescription('water_quality_colours', form.water_quality_colour) }}</b-col>
       </b-row>
       <b-row>
         <b-col cols="12" lg="6"><span class="font-weight-bold">Water Quality Odour:</span> {{ form.water_quality_odour }}</b-col>
@@ -377,12 +381,14 @@
 import { mapGetters } from 'vuex'
 import PreviewMap from '@/submissions/components/SubmissionPreview/PreviewMap.vue'
 import filterBlankRows from '@/common/filterBlankRows'
+import codeToDescription from '@/common/codeToDescription.js'
+
 export default {
   name: 'SubmissionPreview',
   components: {
     PreviewMap
   },
-  mixins: [filterBlankRows],
+  mixins: [filterBlankRows, codeToDescription],
   props: [
     'form',
     'activity',
