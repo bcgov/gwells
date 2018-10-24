@@ -206,6 +206,7 @@ pipeline {
                 name: "nodejs-${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}",
                 serviceAccount: 'jenkins',
                 cloud: 'openshift',
+                activeDeadlineSeconds: '1800',
                 containers: [
                     containerTemplate(
                         name: 'jnlp',
@@ -418,6 +419,7 @@ pipeline {
                 name: "nodejs-${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}-${env.CHANGE_ID}",
                 serviceAccount: 'jenkins',
                 cloud: 'openshift',
+                activeDeadlineSeconds: '1800',
                 containers: [
                     containerTemplate(
                         name: 'jnlp',
