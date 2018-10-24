@@ -63,42 +63,42 @@
             <b-col>
               <div class="my-3"><span class="font-weight-bold">Legal Description:</span></div>
               <div class="table-responsive">
-                <table class="table table-sm table-striped">
+                <table class="table table-sm table-striped table-bordered">
                   <tbody>
                     <tr>
-                      <th>Lot</th>
+                      <th class="w-50">Lot</th>
                       <td>{{ form.legal_lot }}</td>
                     </tr>
                     <tr>
-                      <th>Plan</th>
+                      <th class="w-50">Plan</th>
                       <td>{{ form.legal_plan }}</td>
                     </tr>
                     <tr>
-                      <th>District Lot</th>
+                      <th class="w-50">District Lot</th>
                       <td>{{ form.legal_district_lot }}</td>
                     </tr>
                     <tr>
-                      <th>Block</th>
+                      <th class="w-50">Block</th>
                       <td>{{ form.legal_block }}</td>
                     </tr>
                     <tr>
-                      <th>Section</th>
+                      <th class="w-50">Section</th>
                       <td>{{ form.legal_section }}</td>
                     </tr>
                     <tr>
-                      <th>Township</th>
+                      <th class="w-50">Township</th>
                       <td>{{ form.legal_township }}</td>
                     </tr>
                     <tr>
-                      <th>Range</th>
+                      <th class="w-50">Range</th>
                       <td>{{ form.legal_range }}</td>
                     </tr>
                     <tr>
-                      <th>Land District</th>
+                      <th class="w-50">Land District</th>
                       <td>{{ form.land_district }}</td>
                     </tr>
                     <tr>
-                      <th>Property Identification Description (PID)</th>
+                      <th class="w-50">Property Identification Description (PID)</th>
                       <td>{{ form.legal_pid }}</td>
                     </tr>
                   </tbody>
@@ -148,6 +148,9 @@
       <legend>Lithology</legend>
       <div class="table-responsive">
         <b-table
+          striped
+          small
+          bordered
           :items="filterBlankRows(form.lithology_set)"
           show-empty
           :fields="[
@@ -170,6 +173,9 @@
       <legend>Decommission Description</legend>
       <div class="table-responsive">
         <b-table
+          striped
+          small
+          bordered
           :items="filterBlankRows(form.decommission_description_set)"
           :fields="['start', 'end', 'material', 'observations']"
           show-empty
@@ -181,6 +187,9 @@
       <legend>Casing Details</legend>
       <div class="table-responsive">
         <b-table
+            striped
+            small
+            bordered
             :items="filterBlankRows(form.casing_set)"
             :fields="['from', 'to', 'casing_type', 'casing_material', 'diameter', 'wall_thickness', 'drive_shoe']"
             show-empty>
@@ -231,6 +240,9 @@
         <b-col cols="12" lg="6">
           <div class="font-weight-bold">Liner perforations</div>
           <b-table
+              striped
+              small
+              bordered
               :items="filterBlankRows(form.linerperforation_set)"
               :fields="['from', 'to']"
               show-empty
@@ -265,6 +277,9 @@
         <b-col cols="12" lg="8">
           <div class="font-weight-bold">Installed Screens</div>
           <b-table
+              striped
+              small
+              bordered
               :items="filterBlankRows(form.screen_set)"
               :fields="['from', 'to', 'internal_diameter', 'assembly_type', 'slot_size']"
               show-empty
