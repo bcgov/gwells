@@ -60,7 +60,6 @@ pipeline {
               echo "Preparing database imagestream"
               echo " \$ oc process -f openshift/postgresql.bc.json -p ENV_NAME=${DEV_SUFFIX} | oc apply -n moe-gwells-tools -f -"
               openshift.apply(dbtemplate)
-
               //  - add docker image reference as tag in gwells-application
               //  - create build config
               echo "Preparing backend imagestream and buildconfig"
@@ -104,26 +103,28 @@ pipeline {
         script {
           openshift.withCluster() {
             openshift.withProject(DEV_PROJECT) {
-
-              // process templates. deployTemplate and deployDBTemplate will contain sets of model specs
-              echo "Processing deployment config for pull request ${PR_NUM}"
-              def deployTemplate = openshift.process("-f",
-                "openshift/backend.dc.json",
-                "NAME_SUFFIX=-${DEV_SUFFIX}-${PR_NUM}",
-                "BUILD_ENV_NAME=${DEV_SUFFIX}",
-                "ENV_NAME=${DEV_SUFFIX}",
-                "HOST=${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}.pathfinder.gov.bc.ca",
-              )
-
+              // Process postgres deployment config (sub in vars, create list items)
+              echo " \$ oc process -f openshift/postgresql.dc.json -p DATABASE_SERVICE_NAME=gwells-pgsql-${DEV_SUFFIX}-${PR_NUM} -p IMAGE_STREAM_NAMESPACE='' -p IMAGE_STREAM_NAME=gwells-postgresql-${DEV_SUFFIX}-${PR_NUM} -p IMAGE_STREAM_VERSION=${DEV_SUFFIX} -p LABEL_APPVER=-${DEV_SUFFIX}-${PR_NUM} -p POSTGRESQL_DATABASE=gwells -p VOLUME_CAPACITY=1Gi | oc apply -n moe-gwells-dev -f -"
               def deployDBTemplate = openshift.process("-f",
                 "openshift/postgresql.dc.json",
-                "LABEL_APPVER=-${DEV_SUFFIX}-${PR_NUM}",
                 "DATABASE_SERVICE_NAME=gwells-pgsql-${DEV_SUFFIX}-${PR_NUM}",
                 "IMAGE_STREAM_NAMESPACE=''",
                 "IMAGE_STREAM_NAME=gwells-postgresql-${DEV_SUFFIX}-${PR_NUM}",
                 "IMAGE_STREAM_VERSION=${DEV_SUFFIX}",
+                "LABEL_APPVER=-${DEV_SUFFIX}-${PR_NUM}",
                 "POSTGRESQL_DATABASE=gwells",
                 "VOLUME_CAPACITY=1Gi"
+              )
+
+              // Process postgres deployment config (sub in vars, create list items)
+              echo " \$ oc process -f openshift/backend.dc.json -p BUILD_ENV_NAME=${DEV_SUFFIX} -p ENV_NAME=${DEV_SUFFIX} -p NAME_SUFFIX=-${DEV_SUFFIX}-${PR_NUM} | oc apply -n moe-gwells-dev -f -"
+              echo "Processing deployment config for pull request ${PR_NUM}"
+              def deployTemplate = openshift.process("-f",
+                "openshift/backend.dc.json",
+                "BUILD_ENV_NAME=${DEV_SUFFIX}",
+                "ENV_NAME=${DEV_SUFFIX}",
+                "HOST=${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}.pathfinder.gov.bc.ca",
+                "NAME_SUFFIX=-${DEV_SUFFIX}-${PR_NUM}"
               )
 
               // some objects need to be copied from a base secret or configmap
