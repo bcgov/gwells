@@ -278,7 +278,11 @@
           dismissible
           @dismissed="formSubmitSuccess=false"
           variant="success"
-          class="mt-3">Report submitted!</b-alert>
+          class="mt-3">Report submitted!
+        <a v-if="formSubmitSuccessWellTag" :href="`/gwells/well/${formSubmitSuccessWellTag}`">
+          View well details for well {{formSubmitSuccessWellTag}}
+        </a>
+      </b-alert>
 
       <!-- Form submission error message -->
       <b-alert
@@ -399,6 +403,7 @@ export default {
       confirmSubmitModal: false,
       formSubmitLoading: false,
       formSubmitSuccess: false,
+      formSubmitSuccessWellTag: null,
       formSubmitError: false,
       saveFormSuccess: false,
       hasHadSaveFormSuccess: false,
@@ -533,12 +538,14 @@ export default {
       this.formSubmitLoading = true
       this.formSubmitSuccess = false
       this.formSubmitError = false
+      this.formSubmitSuccessWellTag = null
       this.errors = {}
       // Depending on the type of submission (construction/decommission/alteration/edit) we post to
       // different endpoints.
       const PATH = this.codes.activity_types.find((item) => item.code === this.activityType).path
-      ApiService.post(PATH, data).then(() => {
+      ApiService.post(PATH, data).then((response) => {
         this.formSubmitSuccess = true
+        this.formSubmitSuccessWellTag = response.data.well
         this.resetForm()
       }).catch((error) => {
         this.errors = error.response.data
