@@ -67,7 +67,9 @@
 
 <script>
 import ApiService from '@/common/services/ApiService.js'
-import { isNil, isEmpty, omitBy } from 'lodash'
+import isNil from 'lodash.isnil'
+import isEmpty from 'lodash.isempty'
+import omitBy from 'lodash.omitby'
 
 const LIMIT = 30
 
