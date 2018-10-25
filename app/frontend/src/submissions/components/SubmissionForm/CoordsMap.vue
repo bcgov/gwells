@@ -21,8 +21,12 @@ export default {
     }
   },
   mounted () {
-    this.initLeaflet()
-    this.initMap()
+    // There seems to be an issue loading leaflet immediately on mount, we use nextTick to ensure
+    // that the view has been rendered at least once before injecting the map.
+    this.$nextTick(function () {
+      this.initLeaflet()
+      this.initMap()
+    })
   },
   watch: {
     latitude () {
@@ -35,7 +39,7 @@ export default {
   methods: {
     initLeaflet () {
       // eslint-disable-next-line
-      delete L.Icon.Default.prototype._getIconUrl  
+      delete L.Icon.Default.prototype._getIconUrl
       // eslint-disable-next-line
       L.Icon.Default.mergeOptions({  
         iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
