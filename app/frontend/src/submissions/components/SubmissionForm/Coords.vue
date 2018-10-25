@@ -11,7 +11,10 @@
               <b-col cols="12" sm="6" lg="3">
                 <form-input
                   id="latitude"
-                  type="text"
+                  type="number"
+                  :step="0.1"
+                  :min="48.2"
+                  :max="60"
                   label="Latitude"
                   hint="Decimal degrees"
                   @focus="unfreeze('deg')"
@@ -24,7 +27,10 @@
               <b-col cols="12" sm="6" lg="3" offset-lg="2">
                 <form-input
                   id="longitude"
-                  type="text"
+                  type="number"
+                  :step="0.1"
+                  :min="114"
+                  :max="139.07"
                   @focus="unfreeze('deg')"
                   @blur="freeze('deg')"
                   label="Longitude"
@@ -39,36 +45,45 @@
           <b-row><b-col><p class="p-3">OR</p></b-col></b-row>
           <b-card no-body class="p-3 mx-1 mx-md-1">
             <b-row>
-              <b-col cols="12" md="6" lg="5">
+              <b-col cols="12" md="6" lg="6">
                 <b-row class="mb-2"><b-col>Latitude</b-col></b-row>
                 <b-row>
-                  <b-col cols="12" sm="4">
+                  <b-col cols="12" sm="4" class="px-2">
                     <form-input
                       id="latitudeDeg"
                       @focus="unfreeze('dms')"
                       @blur="freeze('dms')"
                       hint="Degrees"
-                      type="text"
+                      type="number"
+                      :step="1"
+                      :min="48"
+                      :max="60"
                       v-model.number="dms.lat.deg"
                       :loaded="fieldsLoaded['latitude']"
                     ></form-input>
                   </b-col>
-                  <b-col cols="12" sm="4">
+                  <b-col cols="12" sm="4" class="px-2">
                     <form-input
                       id="latitudeMin"
                       hint="Minutes"
                       @focus="unfreeze('dms')"
                       @blur="freeze('dms')"
-                      type="text"
+                      type="number"
+                      :step="1"
+                      :min="0"
+                      :max="60"
                       v-model.number="dms.lat.min"
                       :errors="errors['latitude']"
                       :loaded="fieldsLoaded['latitude']"
                     ></form-input>
                   </b-col>
-                  <b-col cols="12" sm="4">
+                  <b-col cols="12" sm="4" class="px-1">
                     <form-input
                       id="latitudeSec"
-                      type="text"
+                      type="number"
+                      :step="0.1"
+                      :min="0"
+                      :max="60"
                       @focus="unfreeze('dms')"
                       @blur="freeze('dms')"
                       hint="Seconds"
@@ -79,13 +94,16 @@
                   </b-col>
                 </b-row>
               </b-col>
-              <b-col cols="12" md="6" lg="5" offset-lg="1">
+              <b-col cols="12" md="6" lg="6" offset-lg="0">
                 <b-row class="mb-2"><b-col>Longitude</b-col></b-row>
                 <b-row>
                   <b-col cols="12" sm="4" class="px-2">
                     <form-input
                       id="longitudeDeg"
-                      type="text"
+                      type="number"
+                      :step="1"
+                      :min="114"
+                      :max="139"
                       @focus="unfreeze('dms')"
                       @blur="freeze('dms')"
                       hint="Degrees"
@@ -94,10 +112,13 @@
                       :loaded="fieldsLoaded['longitude']"
                     ></form-input>
                   </b-col>
-                  <b-col cols="12" sm="4">
+                  <b-col cols="12" sm="4" class="px-2">
                     <form-input
                       id="longitudeMin"
-                      type="text"
+                      type="number"
+                      :step="1"
+                      :min="0"
+                      :max="60"
                       @focus="unfreeze('dms')"
                       @blur="freeze('dms')"
                       hint="Minutes"
@@ -106,10 +127,13 @@
                       :loaded="fieldsLoaded['longitude']"
                     ></form-input>
                   </b-col>
-                  <b-col cols="12" sm="4">
+                  <b-col cols="12" sm="4" class="px-1">
                     <form-input
                       id="longitudeSec"
-                      type="text"
+                      type="number"
+                      :step="0.1"
+                      :min="0"
+                      :max="60"
                       @focus="unfreeze('dms')"
                       @blur="freeze('dms')"
                       hint="Seconds"
@@ -125,7 +149,7 @@
           <b-row><b-col><p class="p-3">OR</p></b-col></b-row>
           <b-card no-body class="p-3 mx-1 mx-md-1">
             <b-row>
-              <b-col cols="12" sm="4" lg="3">
+              <b-col cols="12" sm="4" lg="4">
                 <form-input
                   id="utmZone"
                   select
@@ -139,25 +163,31 @@
                   :loaded="fieldsLoaded['utmZone']"
                 ></form-input>
               </b-col>
-              <b-col cols="12" sm="4" lg="3">
+              <b-col cols="12" sm="4" lg="4">
+                <!-- UTM Easting should only allow 6 digits to be entered. -->
                 <form-input
                   id="utmEasting"
-                  type="text"
+                  type="number"
+                  :step="1"
                   label="UTM Easting"
                   v-model.number="utm.easting"
                   @focus="unfreeze('utm')"
                   @blur="freeze('utm')"
                   :loaded="fieldsLoaded['utmEasting']"
+                  :max="999999"
                 ></form-input>
               </b-col>
-              <b-col cols="12" sm="4" lg="3">
+              <b-col cols="12" sm="4" lg="4">
+                <!-- UTM Northing should only allow 7 digits to be entered. -->
                 <form-input
                   id="utmNorthing"
-                  type="text"
+                  type="number"
+                  :step="1"
                   label="UTM Northing"
                   @focus="unfreeze('utm')"
                   @blur="freeze('utm')"
                   v-model.number="utm.northing"
+                  :max="9999999"
                   :loaded="fieldsLoaded['utmNorthing']"
                 ></form-input>
               </b-col>
@@ -287,15 +317,10 @@ export default {
             return null
           }
 
-          // Force longitude to always be negative.
-          if (value.deg > 0) {
-            this.dms.long.deg = value.deg * -1
-          }
-
           const dms = Object.assign({}, value)
           dms.deg = value.deg
           dms.min = value.min
-          dms.sec = Math.round(value.sec)
+          dms.sec = this.roundSeconds(value.sec)
 
           const long = this.convertDMStoDeg(dms)
 
@@ -307,36 +332,30 @@ export default {
     },
     'latitudeInput': {
       deep: true,
-      handler: function (value) {
-        if (!this.lock.deg && !isNaN(value)) {
-          if (!value) {
+      handler: function (latitude) {
+        if (!this.lock.deg && !isNaN(latitude)) {
+          if (!latitude) {
             this.resetUTM()
             this.resetDMS()
             return null
           }
-          const lat = value
-          const { easting, northing, zone } = this.convertToUTM(this.longitudeInput, lat)
+          const { easting, northing, zone } = this.convertToUTM(this.longitudeInput, latitude)
 
-          this.updateDMS(this.convertToDMS(this.longitudeInput), this.convertToDMS(lat))
+          this.updateDMS(this.convertToDMS(this.longitudeInput), this.convertToDMS(latitude))
           this.updateUTM(easting, northing, zone)
         }
       }
     },
     'longitudeInput': {
       deep: true,
-      handler: function (value) {
-        if (!this.lock.deg && !isNaN(value)) {
-          if (!value) {
+      handler: function (long) {
+        if (!this.lock.deg && !isNaN(long)) {
+          if (!long) {
             this.resetUTM()
             this.resetDMS()
             return null
           }
-          if (value > 0) {
-            // Force longitude to always be negative.
-            this.longitudeInput = value * -1
-          }
 
-          const long = value
           const { easting, northing, zone } = this.convertToUTM(long, this.latitudeInput)
 
           this.updateDMS(this.convertToDMS(long), this.convertToDMS(this.latitudeInput))
@@ -406,6 +425,11 @@ export default {
       }
 
       if (!!long && !!lat) {
+        if (long > 0) {
+          // In B.C. everything is negative by convention, so we have to introduct a minus here to make
+          // the math work.
+          long *= -1
+        }
         // determine zone
         const zone = Math.floor((long + 180) / 6) + 1
 
@@ -446,15 +470,22 @@ export default {
       return {
         deg: deg,
         min: min,
-        sec: Math.round(sec)
+        sec: this.roundSeconds(sec)
       }
     },
     convertDMStoDeg (dms) {
       const sign = Math.sign(dms.deg)
-      return this.roundDegrees(dms.deg + sign * dms.min / 60 + sign * dms.sec / (60 * 60))
+      return this.roundDecimalDegrees(dms.deg + sign * dms.min / 60 + sign * dms.sec / (60 * 60))
     },
-    roundDegrees (deg) {
-      return Math.round(deg * 10000) / 10000
+    roundDecimalDegrees (deg) {
+      // Regulations are specific about how GPS coordinates are to be provided.
+      // DD to at least 5 decimal places.
+      return Math.round(deg * 100000) / 100000
+    },
+    roundSeconds (seconds) {
+      // Regulations are specific about how GPS coordinates are to be provided.
+      // DMS toat least 2 decimal places;
+      return Math.round(seconds * 100) / 100
     },
     updateUTM (easting, northing, zone) {
       this.utm.easting = Math.round(easting)
@@ -487,8 +518,8 @@ export default {
       }
     },
     updateDegrees (longitude, latitude) {
-      this.longitudeInput = this.roundDegrees(longitude)
-      this.latitudeInput = this.roundDegrees(latitude)
+      this.longitudeInput = this.roundDecimalDegrees(longitude)
+      this.latitudeInput = this.roundDecimalDegrees(latitude)
     },
     resetDegrees () {
       this.degrees = {

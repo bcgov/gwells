@@ -49,7 +49,8 @@ export default {
     },
     initMap () {
       // Create map, with default centered and zoomed to show entire BC.
-      this.map = L.map('map').setView([this.latitude ? this.latitude : 54.5, this.longitude ? this.longitude : -126.5], 5)
+      this.map = L.map('map').setView([this.latitude ? this.latitude : 54.5, this.getLongitude() ? this.getLongitude() : -126.5], 5)
+      L.control.scale().addTo(this.map)
 
       // Add map layers.
       tiledMapLayer({url: 'https://maps.gov.bc.ca/arcserver/rest/services/Province/roads_wm/MapServer'}).addTo(this.map)
@@ -61,13 +62,16 @@ export default {
       }).addTo(this.map)
     },
     createMarker () {
-      if (this.latitude !== null && this.longitude !== null) {
-        this.marker = L.marker([this.latitude, this.longitude], {draggable: true, autoPan: true})
+      if (this.latitude !== null && this.getLongitude() !== null) {
+        const latlng = L.latLng(this.latitude, this.getLongitude())
+        this.marker = L.marker(latlng, {draggable: true, autoPan: true})
         this.marker.on('dragend', (ev) => {
           this.handleDrag(ev)
         })
         this.marker.addTo(this.map)
         this.setMarkerPopup()
+        // The 1st time we create a marker, we jump to a different zoom level.
+        this.map.setView(latlng, 13)
       }
     },
     updateMarkerLatLong (latlng) {
@@ -80,15 +84,15 @@ export default {
       this.marker.bindPopup('Latitude: ' + latitude + ', Longitude: ' + longitude)
     },
     updateCoords () {
-      if (!isNaN(this.latitude) && !isNaN(this.longitude)) {
-        const latlng = L.latLng(this.latitude, this.longitude)
+      if (!isNaN(this.latitude) && !isNaN(this.getLongitude())) {
+        const latlng = L.latLng(this.latitude, this.getLongitude())
         if (this.insideBC(latlng)) {
           if (this.marker) {
             this.updateMarkerLatLong(latlng)
+            this.map.panTo(latlng)
           } else {
             this.createMarker()
           }
-          this.map.panTo(latlng)
         } else {
           if (this.marker) {
             this.map.removeLayer(this.marker)
@@ -99,10 +103,14 @@ export default {
     },
     handleDrag (ev) {
       if (this.insideBC(this.marker.getLatLng())) {
-        this.$emit('coordinate', this.marker.getLatLng())
+        const markerLatLng = this.marker.getLatLng()
+        // In B.C. that longitude is always negative, so people aren't used to seeing the minus sign - so
+        // we're hiding it away from them.
+        const newLatLng = { lng: markerLatLng.lng > 0 ? markerLatLng.lng : markerLatLng.lng * -1, lat: markerLatLng.lat }
+        this.$emit('coordinate', newLatLng)
       } else {
         // We don't allow dragging the marker outside of BC, put it back.
-        const latlng = L.latLng(this.latitude, this.longitude)
+        const latlng = L.latLng(this.latitude, this.getLongitude())
         this.updateMarkerLatLong(latlng)
       }
     },
@@ -111,6 +119,11 @@ export default {
       // - https://geocoder.api.gov.bc.ca/addresses.json?locationDescriptor=any&parcelPoint=55%2C-124
       // Using a very simple, rough bounding box
       return !!latLng && latLng.lat < 60 && latLng.lat > 48.2 && latLng.lng > -139.07 && latLng.lng < -114
+    },
+    getLongitude () {
+      // In B.C. users are used to omitting the minus sign on longitude, it's always negative. So we're
+      // very forgiving, and just always make sure longitude is negative.
+      return this.longitude > 0 ? this.longitude * -1 : this.longitude
     }
   }
 }
