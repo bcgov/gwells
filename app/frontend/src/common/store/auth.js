@@ -35,13 +35,17 @@ const auth = {
             view: state.keycloak.hasRealmRole('wells_viewer'),
             edit: state.keycloak.hasRealmRole('wells_edit'),
             approve: state.keycloak.hasRealmRole('wells_approve')
+          },
+          aquifers: {
+            edit: state.keycloak.hasRealmRole('aquifers_edit')
           }
         }
       } else {
         return {
           registry: {},
           wells: {},
-          submissions: {}
+          submissions: {},
+          aquifers: {}
         }
       }
     }
