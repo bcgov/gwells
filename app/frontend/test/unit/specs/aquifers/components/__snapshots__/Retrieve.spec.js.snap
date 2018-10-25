@@ -26,7 +26,7 @@ exports[`Retrieve Component Matches the snapshot 1`] = `
           type="button"
         >
           <span
-            class="fa-print"
+            class="fa fa-print"
             title="Print"
           />
         </button>
