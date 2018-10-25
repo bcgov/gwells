@@ -103,6 +103,9 @@
                     </tr>
                   </tbody>
                 </table>
+                <div>
+                  <span class="font-weight-bold">Description of Well Location:</span>{{ form.well_location_description }}
+                </div>
               </div>
             </b-col>
           </b-row>
