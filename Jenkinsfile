@@ -14,12 +14,12 @@ pipeline {
 
     // TEST_PROJECT contains the test deployment. The test image is a candidate for promotion to prod.
     TEST_PROJECT = "moe-gwells-test"
-    TEST_SUFFIX = "test-mock"
+    TEST_SUFFIX = "staging"
 
     // PROD_PROJECT is the prod deployment.
     // New production images can be deployed by tagging an existing "test" image as "prod".
     PROD_PROJECT = "moe-gwells-test"
-    PROD_SUFFIX= "prod-mock"
+    PROD_SUFFIX= "production"
 
     // PR_NUM is the pull request number e.g. 'pr-4'
     PR_NUM = "${env.JOB_BASE_NAME}".toLowerCase()
@@ -32,7 +32,7 @@ pipeline {
     // each pull request gets its own buildconfig but all new builds are pushed to a single imagestream,
     // to be tagged with the pull request number.
     // e.g.:  gwells-app:pr-999
-    stage('Prep ImageStreams ') {
+    stage('ImageStreams ') {
       steps {
         script {
           abortAllPreviousBuildInProgress(currentBuild)
@@ -143,7 +143,7 @@ pipeline {
                     // create a copy of the object and add it to the new list of objects to be applied
                     Map copiedModel = selector.object(exportable:true)
                     copiedModel.metadata.name = o.metadata.name
-                    echo "Copying ${o.kind} ${o.metadata.name}"
+                    echo "[as-copy-of] Copying ${o.kind} ${o.metadata.name}"
                     newObjectCopies.add(copiedModel)
                   }
                 }
@@ -312,7 +312,7 @@ pipeline {
     // which will trigger an automatic deployment of that image.
     // The deployment configs in the openshift folder are applied first in case there are any changes to the templates.
     // this stage should only occur when the pull request is being made against the master branch.
-    stage('Deploy image to test') {
+    stage('Deploy image to staging') {
       when {
         expression { env.CHANGE_TARGET == 'master' || true }  // NOTE: temporarily set to always run while developing pipeline
       }
@@ -320,9 +320,9 @@ pipeline {
         script {
           openshift.withCluster() {
             openshift.withProject(TEST_PROJECT) {
-              input "Deploy to test?"
+              input "Deploy to staging?"
 
-              echo "Updating test deployment..."
+              echo "Updating staging deployment..."
               def deployTemplate = openshift.process("-f",
                 "openshift/backend.dc.json",
                 "NAME_SUFFIX=-${TEST_SUFFIX}",
@@ -334,7 +334,7 @@ pipeline {
               def deployDBTemplate = openshift.process("-f",
                 "openshift/postgresql.dc.json",
                 "LABEL_APPVER=-${TEST_SUFFIX}",
-                "DATABASE_SERVICE_NAME=gwells-pgsql-${TEST_SUFFIX}",
+                "DATABASE_SERVICE_NAME=gwells-${TEST_SUFFIX}-pgsql",
                 "IMAGE_STREAM_NAMESPACE=''",
                 "IMAGE_STREAM_NAME=gwells-postgresql-${TEST_SUFFIX}",
                 "IMAGE_STREAM_VERSION=${TEST_SUFFIX}",
@@ -566,7 +566,7 @@ pipeline {
                 "IMAGE_STREAM_NAME=gwells-postgresql-${PROD_SUFFIX}",
                 "IMAGE_STREAM_VERSION=${PROD_SUFFIX}",
                 "POSTGRESQL_DATABASE=gwells",
-                "VOLUME_CAPACITY=5Gi"
+                "VOLUME_CAPACITY=2Gi"
               )
 
               // some objects need to be copied from a base secret or configmap
@@ -636,4 +636,3 @@ pipeline {
     }
   }
 }
-
