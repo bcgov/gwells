@@ -120,7 +120,7 @@ export default {
         aquifer_id: ''
       }
 
-     this.updateQueryParams()
+      this.updateQueryParams()
     },
     scrollToTableTop () {
       this.$SmoothScroll(this.$el, 100)
