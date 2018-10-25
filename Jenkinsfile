@@ -376,10 +376,6 @@ pipeline {
               openshift.tag("${TOOLS_PROJECT}/gwells-application:${TEST_SUFFIX}", "${TEST_PROJECT}/gwells-${TEST_SUFFIX}:${TEST_SUFFIX}")  // todo: clean up labels/tags
               openshift.tag("${TOOLS_PROJECT}/gwells-postgresql:test", "${TEST_PROJECT}/gwells-postgresql-${TEST_SUFFIX}:${TEST_SUFFIX}")  // todo: clean up labels/tags
 
-              // Clean up development tags (e.g. PR-999) with the flag -d
-              // this will allow old images that were not promoted to TEST/PROD to be cleaned up
-              openshift.tag("${TOOLS_PROJECT}/gwells-application:${PR_NUM}", "-d")
-
               // monitor the deployment status and wait until deployment is successful
               echo "Waiting for deployment to TEST..."
               def newVersion = openshift.selector("dc", "gwells-${TEST_SUFFIX}").object().status.latestVersion
@@ -596,7 +592,7 @@ pipeline {
               echo "Tagging new image to production imagestream."
 
               // Application/database images are tagged in the tools imagestream as the new prod image
-              openshift.tag("${TOOLS_PROJECT}/gwells-application:${TEST_SUFFIX}", "${TOOLS_PROJECT}/gwells-application:${PROD_SUFFIX}")  // todo: clean up labels/tags
+              openshift.tag("${TOOLS_PROJECT}/gwells-application:${PR_NUM}", "${TOOLS_PROJECT}/gwells-application:${PROD_SUFFIX}")  // todo: clean up labels/tags
 
               // TODO: determine best way to manage database images (at the moment they never change, but we don't want an unforeseen change to impact prod)
               // openshift.tag("${TOOLS_PROJECT}/gwells-postgresql:prod", "${TOOLS_PROJECT}/gwells-postgresql:${PROD_SUFFIX}")
