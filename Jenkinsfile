@@ -315,7 +315,7 @@ pipeline {
     // this stage should only occur when the pull request is being made against the master branch.
     stage('Deploy image to staging') {
       when {
-        expression { env.CHANGE_TARGET == 'master' || true }  // NOTE: temporarily set to always run while developing pipeline
+        expression { env.CHANGE_TARGET == 'master' }
       }
       steps {
         script {
@@ -410,7 +410,7 @@ pipeline {
 
     stage('API Tests against Staging') {
       when {
-        expression { env.CHANGE_TARGET == 'master' || true }  // NOTE: temporarily set to always run while developing pipeline
+        expression { env.CHANGE_TARGET == 'master' }
       }
       steps {
         script {
@@ -525,7 +525,7 @@ pipeline {
 
     stage('Deploy image to Production') {
       when {
-        expression { env.CHANGE_TARGET == 'master' || true }  // NOTE: temporarily set to always run while developing pipeline
+        expression { env.CHANGE_TARGET == 'master' }
       }
       steps {
         script {
