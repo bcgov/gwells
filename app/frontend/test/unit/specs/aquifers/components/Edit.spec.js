@@ -72,7 +72,7 @@ describe('Edit Component', () => {
             vulnerability: [errorMessage],
             material: [errorMessage],
             subtype: [errorMessage],
-            quality_concerns: [errorMessage],
+            quality_concern: [errorMessage],
             productivity: [errorMessage],
             area: [errorMessage],
             demand: [errorMessage],
@@ -90,7 +90,7 @@ describe('Edit Component', () => {
     expect(wrapper.find('#vulnerability + [role="alert"]').text()).toBe(errorMessage)
     expect(wrapper.find('#material + [role="alert"]').text()).toBe(errorMessage)
     expect(wrapper.find('#subtype + [role="alert"]').text()).toBe(errorMessage)
-    expect(wrapper.find('#quality_concerns + [role="alert"]').text()).toBe(errorMessage)
+    expect(wrapper.find('#quality_concern + [role="alert"]').text()).toBe(errorMessage)
     expect(wrapper.find('#productivity + [role="alert"]').text()).toBe(errorMessage)
     expect(wrapper.find('#area + [role="alert"]').text()).toBe(errorMessage)
     expect(wrapper.find('#demand + [role="alert"]').text()).toBe(errorMessage)

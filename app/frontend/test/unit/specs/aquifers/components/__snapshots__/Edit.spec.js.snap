@@ -343,7 +343,7 @@ exports[`Edit Component Matches the snapshot 1`] = `
             >
               <label
                 class="col-sm-4 col-form-label"
-                for="quality_concerns"
+                for="quality_concern"
                 id="__BVID__19__BV_label_"
               >
                 Quality concerns
@@ -354,7 +354,7 @@ exports[`Edit Component Matches the snapshot 1`] = `
                 <select
                   aria-required="true"
                   class="form-control custom-select"
-                  id="quality_concerns"
+                  id="quality_concern"
                   required="required"
                 />
                 <!---->

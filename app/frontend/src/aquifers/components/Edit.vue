@@ -170,12 +170,12 @@
               horizontal
               label-cols="4"
               label="Quality concerns"
-              label-for="quality_concerns"
-              :invalid-feedback="fieldErrorMessages.quality_concerns"
-              :state="fieldHasError.quality_concerns">
+              label-for="quality_concern"
+              :invalid-feedback="fieldErrorMessages.quality_concern"
+              :state="fieldHasError.quality_concern">
               <b-form-select
-                id="quality_concerns"
-                v-model="record.quality_concert"
+                id="quality_concern"
+                v-model="record.quality_concern"
                 :options="quality_concern_codes"
                 value-field="code"
                 text-field="description"
