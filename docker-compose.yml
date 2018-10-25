@@ -46,6 +46,11 @@ services:
       POSTGRES_SERVICE_PORT: 5432
       DJANGO_ADMIN_URL: admin
       PYTHONUNBUFFERED: "1"
+      SSO_PUBKEY: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAh+5Hc4w/PKN04avW1LX/orSyXsJ7nJiEbErMyQqCvYAEKmQUeok7Yy+r6sVuJSyQQMCExk37NY3fUQOK92J83oC/9WGij7bvlWHew810edIisechoKpLuQbw63xlj/5ifQfJ977NM1n1RQgXF4hr4MDuhGbV+PAkQGdSPfufjEFleCwj8mvjUwTFnSwE9I+Rf78DVJzCHZbpFMq9skvrpCzeNsLNNoz+k1DENQ6MKnVnbUYskG+j5NZ3g+kxfkRf2G0tw2KisLYtxUSdfwutieT2Zxglk/kZeMWS7khXWzhwjvWf5a1qM5ebreVVYNhra7MjcrkXSh0v5IBcW+122wIDAQAB
+      SSO_REALM: gwells
+      SSO_AUDIENCE: gwells-test
+      SSO_CLIENT: gwells-test
+      SSO_AUTH_HOST: https://sso-test.pathfinder.gov.bc.ca/auth
     command: /bin/bash -c "sleep 3 &&
             set -x &&
             cd /app/backend &&
