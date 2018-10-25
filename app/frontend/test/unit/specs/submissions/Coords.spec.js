@@ -113,14 +113,14 @@ describe('Coords.vue', () => {
         test: [-144.5099, 48.50112],
         expected: {
           lat: {
-            deg: '48',
-            min: '30',
-            sec: '4.03'
+            deg: 48,
+            min: 30,
+            sec: 4
           },
           long: {
-            deg: '-144',
-            min: '30',
-            sec: '35.64'
+            deg: -144,
+            min: 30,
+            sec: 36
           }
         }
       }
@@ -165,8 +165,8 @@ describe('Coords.vue', () => {
             sec: 43.01
           }},
         expected: {
-          latitude: '49.415550',
-          longitude: '142.978614'
+          latitude: 49.4155,
+          longitude: 142.9786
         }
       },
       {
@@ -182,8 +182,8 @@ describe('Coords.vue', () => {
             sec: 43.01
           }},
         expected: {
-          latitude: '-49.415550',
-          longitude: '-142.978614'
+          latitude: -49.4155,
+          longitude: -142.9786
         }
       }
     ]
