@@ -15,12 +15,20 @@
 <template>
   <b-card no-body class="p-3 mb-4">
     <b-container>
-      <b-row>
-        <b-col><h5>Aquifer Summary</h5></b-col>
+      <b-row class="border-bottom mb-3 pb-2">
+        <b-col><h5 class="pt-2">Aquifer Summary</h5></b-col>
         <b-col cols="auto">
-            <b-button variant="secondary" v-on:click.prevent="print()">
-              <span title="Print" class="fa-print"/>
-            </b-button>
+          <b-button
+            variant="default"
+            v-if="userRoles.aquifers.edit"
+            v-on:click.prevent="edit()">
+            <span title="Edit" class="fa fa-edit"/>
+          </b-button>
+          <a class="ml-2 print fa fa-print fa-lg d-print-none"
+            href="#"
+            title="Print"
+            v-on:click.prevent="print()"
+           />
         </b-col>
       </b-row>
 
@@ -36,12 +44,12 @@
         <dd class="col-sm-4">{{record.litho_stratographic_unit}}</dd>
 
         <dt class="col-sm-2">Descriptive location</dt>
-        <dd class="col-sm-4">{{record.descriptive_location}}</dd>
+        <dd class="col-sm-4">{{record.location_description}}</dd>
         <dt class="col-sm-2">Vulnerability</dt>
         <dd class="col-sm-4">{{record.vulnerability_description}}</dd>
 
         <dt class="col-sm-2">Material type</dt>
-        <dd class="col-sm-4">{{record.material_location}}</dd>
+        <dd class="col-sm-4">{{record.material_description}}</dd>
         <dt class="col-sm-2">Subtype</dt>
         <dd class="col-sm-4">{{record.subtype_description}}</dd>
 
@@ -59,8 +67,16 @@
   </b-card>
 </template>
 
+<style>
+.print, .print:hover {
+  color: black;
+  text-decoration: none;
+}
+</style>
+
 <script>
 import ApiService from '@/common/services/ApiService.js'
+import { mapGetters } from 'vuex'
 
 export default {
   props: ['id'],
@@ -70,10 +86,16 @@ export default {
       record: {}
     }
   },
+  computed: {
+    ...mapGetters(['userRoles'])
+  },
   watch: {
     id () { this.fetch() }
   },
   methods: {
+    edit () {
+      this.$router.push({ name: 'edit', params: { id: this.id } })
+    },
     print () {
       window.print()
     },
