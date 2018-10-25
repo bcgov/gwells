@@ -1,3 +1,7 @@
+#!groovy
+
+@Library('groovy.json.JsonOutput')
+
 pipeline {
   environment {
 
@@ -191,6 +195,15 @@ pipeline {
                   aquifers.json \
                   wellsearch.json.gz; \
                 python manage.py createinitialrevisions'")
+
+              def token = openshift.selector("secret", "slack").object().data.token.decodeBase64()
+              def message = [:]
+              message.channel = "#gwells"
+              message.text = "A new environment for ${PR_NUM} is live: https://${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}.pathfinder.gov.bc.ca "
+
+              payload = JsonOutput.toJson(message)
+
+              echo "curl -X POST -d ${payload} https://devopspathfinder.slack.com/services/hooks/jenkins-ci?token=${token}"
 
             }
           }
