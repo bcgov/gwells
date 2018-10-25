@@ -323,23 +323,24 @@ pipeline {
               input "Deploy to staging?"
 
               echo "Updating staging deployment..."
+
+              def deployDBTemplate = openshift.process("-f",
+                "openshift/postgresql.dc.json",
+                "LABEL_APPVER=-${TEST_SUFFIX}",
+                "DATABASE_SERVICE_NAME=gwells-pgsql-${TEST_SUFFIX}",
+                "IMAGE_STREAM_NAMESPACE=''",
+                "IMAGE_STREAM_NAME=gwells-postgresql-${TEST_SUFFIX}",
+                "IMAGE_STREAM_VERSION=${TEST_SUFFIX}",
+                "POSTGRESQL_DATABASE=gwells",
+                "VOLUME_CAPACITY=1Gi"
+              )
+
               def deployTemplate = openshift.process("-f",
                 "openshift/backend.dc.json",
                 "NAME_SUFFIX=-${TEST_SUFFIX}",
                 "BUILD_ENV_NAME=${TEST_SUFFIX}",
                 "ENV_NAME=${TEST_SUFFIX}",
                 "HOST=${APP_NAME}-${TEST_SUFFIX}.pathfinder.gov.bc.ca",
-              )
-
-              def deployDBTemplate = openshift.process("-f",
-                "openshift/postgresql.dc.json",
-                "LABEL_APPVER=-${TEST_SUFFIX}",
-                "DATABASE_SERVICE_NAME=gwells-${TEST_SUFFIX}-pgsql",
-                "IMAGE_STREAM_NAMESPACE=''",
-                "IMAGE_STREAM_NAME=gwells-postgresql-${TEST_SUFFIX}",
-                "IMAGE_STREAM_VERSION=${TEST_SUFFIX}",
-                "POSTGRESQL_DATABASE=gwells",
-                "VOLUME_CAPACITY=1Gi"
               )
 
               // some objects need to be copied from a base secret or configmap
@@ -404,21 +405,6 @@ pipeline {
               }
 
               echo "TEST deployment successful."
-
-              // fixtures are not loaded for every test run
-              // they need to be loaded manually on a fresh database
-              echo "Loading fixtures"
-              def firstPod = pods.objects()[0].metadata.name
-              openshift.exec(firstPod, "--", "bash -c '\
-                cd /opt/app-root/src/backend; \
-                python manage.py loaddata \
-                  gwells-codetables.json \
-                  wellsearch-codetables.json \
-                  registries-codetables.json \
-                  registries.json \
-                  aquifers.json \
-                  wellsearch.json.gz; \
-                python manage.py createinitialrevisions'")
             }
           }
         }
@@ -613,7 +599,7 @@ pipeline {
               openshift.tag("${TOOLS_PROJECT}/gwells-application:${PROD_SUFFIX}", "${PROD_PROJECT}/gwells-${PROD_SUFFIX}:${PROD_SUFFIX}")  // todo: clean up labels/tags
               openshift.tag("${TOOLS_PROJECT}/gwells-postgresql:prod", "${PROD_PROJECT}/gwells-postgresql-${PROD_SUFFIX}:${PROD_SUFFIX}")  // todo: clean up labels/tags
 
-              // monitor the deployment status and wait until deployment is successful
+              // monitor the deployment status and wait until pgsql-${ deployment is successful
               echo "Waiting for deployment to production..."
               def newVersion = openshift.selector("dc", "gwells-${PROD_SUFFIX}").object().status.latestVersion
               def pods = openshift.selector('pod', [deployment: "gwells-${PROD_SUFFIX}-${newVersion}"])
