@@ -1,3 +1,7 @@
+#!groovy
+
+@Library('groovy.json.JsonOutput')
+
 pipeline {
   environment {
 
