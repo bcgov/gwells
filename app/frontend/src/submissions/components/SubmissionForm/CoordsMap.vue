@@ -17,9 +17,7 @@ export default {
   },
   data () {
     return {
-      map: null,
-      tileLayer: null,
-      layers: []
+      map: null
     }
   },
   mounted () {

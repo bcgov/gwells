@@ -27,7 +27,6 @@
         v-else
         :id="`${id}Input`"
         :type="type"
-        :step="step"
         :state="validation"
         :aria-describedby="`${id}InvalidFeedback ${id}Hint`"
         :value="value"
@@ -82,7 +81,6 @@ export default {
       type: String,
       default: 'text'
     },
-    step: null,
     select: Boolean,
     options: Array,
     valueField: String,
