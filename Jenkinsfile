@@ -1,6 +1,6 @@
 #!groovy
 
-@Library('groovy.json.JsonOutput') JsonOutput
+import groovy.json.JsonOutput
 
 pipeline {
   environment {
@@ -196,7 +196,6 @@ pipeline {
                   wellsearch.json.gz; \
                 python manage.py createinitialrevisions'")
 
-              import groovy.json.JsonOutput
               def token = openshift.selector("secret", "slack").object().data.token.decodeBase64()
               def message = [:]
               message.channel = "#gwells"
