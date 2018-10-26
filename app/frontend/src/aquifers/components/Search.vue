@@ -134,8 +134,8 @@ export default {
     query () { return this.$route.query }
   },
   methods: {
-    fetchResults (query) {
-      ApiService.query('aquifers/', query)
+    fetchResults () {
+      ApiService.query('aquifers/', this.query)
         .then((response) => {
           this.response = response.data
           this.scrollToTableTop()
@@ -189,9 +189,9 @@ export default {
       this.$router.replace({ query: this.filterParams })
     }
   },
-  mounted () { this.fetchResults(this.query) },
+  mounted () { this.fetchResults() },
   watch: {
-    query (query) { this.fetchResults(query) },
+    query () { this.fetchResults() },
     currentPage () { this.triggerPagination() },
     sortDesc () { this.triggerSort() },
     sortBy () { this.triggerSort() }

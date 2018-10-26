@@ -40,6 +40,9 @@ describe('Search Component', () => {
       computed: {
         aquiferList() { return [] },
         emptyResults() { return true }
+      },
+      methods: {
+        fetchResults() {}
       }
     })
 
@@ -50,6 +53,9 @@ describe('Search Component', () => {
     const wrapper = component({
       computed: {
         aquiferList() { return [aquiferFixture] }
+      },
+      methods: {
+        fetchResults() {}
       }
     })
 
@@ -76,6 +82,6 @@ describe('Search Component', () => {
 
     wrapper.find('form').trigger('reset')
 
-    expect(wrapper.vm.query.search).toEqual('')
+    expect(wrapper.vm.query.search).toEqual(undefined)
   })
 })
