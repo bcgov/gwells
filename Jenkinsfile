@@ -173,7 +173,7 @@ pipeline {
               def targetURL = "https://${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}.pathfinder.gov.bc.ca/gwells"
               def ghDeploymentId = new GitHubHelper().createDeployment(this, "pull/${env.CHANGE_ID}/head", ['environment':"${DEV_SUFFIX}", 'task':"deploy:pull:${env.CHANGE_ID}"])
               new GitHubHelper().createDeploymentStatus(this, ghDeploymentId, 'PENDING', ['targetUrl':"${targetURL}"])
-              new GitHubHelper().createCommitStatus(this, "pull/${env.CHANGE_ID}/head", 'PENDING', "${BUILD_URL}", "Deployment to ${DEV_SUFFIX}", "continuous-integration/jenkins/deployment/${DEV_SUFFIX.toLowerCase()}")
+              // new GitHubHelper().createCommitStatus(this, "pull/${env.CHANGE_ID}/head", 'PENDING', "${targetURL}", "Deployment to ${DEV_SUFFIX}", "continuous-integration/jenkins/deployment/${DEV_SUFFIX.toLowerCase()}")
 
 
               // monitor the deployment status and wait until deployment is successful
@@ -224,7 +224,7 @@ pipeline {
                 
 
                 new GitHubHelper().createDeploymentStatus(this, ghDeploymentId, 'SUCCESS', ['targetUrl':"${targetURL}"])
-                new GitHubHelper().createCommitStatus(this, "pull/${env.CHANGE_ID}/head", 'SUCCESS', "${BUILD_URL}", "Deployment to ${DEV_SUFFIX}", "continuous-integration/jenkins/deployment/${DEV_SUFFIX.toLowerCase()}")
+                // new GitHubHelper().createCommitStatus(this, "pull/${env.CHANGE_ID}/head", 'SUCCESS', "${BUILD_URL}", "Deployment to ${DEV_SUFFIX}", "continuous-integration/jenkins/deployment/${DEV_SUFFIX.toLowerCase()}")
               }
             }
           }
