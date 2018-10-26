@@ -217,7 +217,7 @@ pipeline {
                 payload = JsonOutput.toJson(message)
 
                 sh (
-                  script: """curl -X -H "Content-Type: application/json" POST --data \'${payload}\' https://devopspathfinder.slack.com/services/hooks/jenkins-ci?token=${token}""",
+                  script: """curl -X POST -H "Content-Type: application/json" --data \'${payload}\' https://devopspathfinder.slack.com/services/hooks/jenkins-ci?token=${token}""",
                   returnStdout: true
                 ).trim()
                 
