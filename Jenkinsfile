@@ -18,7 +18,7 @@ pipeline {
 
     // PROD_PROJECT is the prod deployment.
     // New production images can be deployed by tagging an existing "test" image as "prod".
-    PROD_PROJECT = "moe-gwells-test"
+    PROD_PROJECT = "moe-gwells-prod"
     PROD_SUFFIX= "production"
 
     // PR_NUM is the pull request number e.g. 'pr-4'
@@ -32,7 +32,7 @@ pipeline {
     // each pull request gets its own buildconfig but all new builds are pushed to a single imagestream,
     // to be tagged with the pull request number.
     // e.g.:  gwells-app:pr-999
-    stage('ImageStreams ') {
+    stage('Prepare Templates') {
       steps {
         script {
           abortAllPreviousBuildInProgress(currentBuild)
