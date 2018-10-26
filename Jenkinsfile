@@ -1,6 +1,7 @@
 #!groovy
 
 import groovy.json.JsonOutput
+import bcgov.GitHubHelper
 
 pipeline {
   environment {
@@ -168,6 +169,12 @@ pipeline {
               openshift.tag("${TOOLS_PROJECT}/gwells-application:${PR_NUM}", "${DEV_PROJECT}/gwells-${DEV_SUFFIX}-${PR_NUM}:dev")  // todo: clean up labels/tags
               openshift.tag("${TOOLS_PROJECT}/gwells-postgresql:dev", "${DEV_PROJECT}/gwells-postgresql-${DEV_SUFFIX}-${PR_NUM}:dev")  // todo: clean up labels/tags
 
+              // post a notification to Github that this pull request is being deployed
+              def targetURL = "https://${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}.pathfinder.gov.bc.ca/gwells"
+              def ghDeploymentId = new GitHubHelper().createDeployment(this, "pull/${env.CHANGE_ID}/head", ['environment':"${DEV_SUFFIX}", 'task':"deploy:pull:${env.CHANGE_ID}"])
+              new GitHubHelper().createDeploymentStatus(this, ghDeploymentId, 'PENDING', ['targetUrl':"${targetURL}"])
+
+
               // monitor the deployment status and wait until deployment is successful
               echo "Waiting for deployment to dev..."
               def newVersion = openshift.selector("dc", "${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}").object().status.latestVersion
@@ -196,20 +203,27 @@ pipeline {
                   wellsearch.json.gz; \
                 python manage.py createinitialrevisions'")
 
+              // slack & github notifications that a new deployment is ready
               openshift.withProject(TOOLS_PROJECT) {
+
+                // get a slack token
                 def token = openshift.selector("secret", "slack").object().data.token.decodeBase64()
+                token = new String(token)
+
+                // build a message to send to the channel
                 def message = [:]
                 message.channel = "#gwells"
-                message.text = "A new environment for ${PR_NUM} is live: https://${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}.pathfinder.gov.bc.ca "
-
+                message.text = "A new environment for ${PR_NUM} is ready at ${targetURL}"
                 payload = JsonOutput.toJson(message)
 
-                echo "curl -X POST -d ${payload} https://devopspathfinder.slack.com/services/hooks/jenkins-ci?token=${token}"
+                sh  """curl -X -H "Content-Type: application/json" POST --data \'${payload}\' https://devopspathfinder.slack.com/services/hooks/jenkins-ci?token=${token}"""
+
+                new GitHubHelper().createDeploymentStatus(this, ghDeploymentId, 'SUCCESS', ['targetUrl':"${targetURL}"])
               }
             }
           }
         }
-      }
+      } 
     }
 
     stage('API Tests') {
