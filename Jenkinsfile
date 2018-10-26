@@ -45,6 +45,7 @@ pipeline {
 
               // Process db and app template into list objects
               //  - variable substitution
+              echo "Processing build templates"
               def dbtemplate = openshift.process("-f",
                 "openshift/postgresql.bc.json",
                 "ENV_NAME=${DEV_SUFFIX}"
