@@ -252,7 +252,7 @@ class PersonListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
     )
 
     # fetch related companies and registration applications (prevent duplicate database trips)
-    queryset = Person.objects.all()
+    queryset = Person.objects.filter(expired_date__isnull=True)
 
     def get_queryset(self):
         """ Returns Person queryset, removing non-active and unregistered drillers for anonymous users """
@@ -316,7 +316,9 @@ class PersonListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
             # Only show active drillers to non-admin users and public
             qs = qs.filter(
                 Q(registrations__applications__current_status__code='A'),
-                Q(registrations__applications__removal_date__isnull=True))
+                Q(registrations__applications__removal_date__isnull=True),
+                Q()
+            )
 
             registrations_qs = registrations_qs.filter(
                 Q(applications__current_status__code='A'),
