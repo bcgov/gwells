@@ -216,7 +216,11 @@ pipeline {
                 message.text = "A new environment for ${PR_NUM} is ready at ${targetURL}"
                 payload = JsonOutput.toJson(message)
 
-                sh  """curl -X -H "Content-Type: application/json" POST --data \'${payload}\' https://devopspathfinder.slack.com/services/hooks/jenkins-ci?token=${token}"""
+                sh (
+                  script: """curl -X -H "Content-Type: application/json" POST --data \'${payload}\' https://devopspathfinder.slack.com/services/hooks/jenkins-ci?token=${token}""",
+                  returnStdout: true
+                ).trim()
+                
 
                 new GitHubHelper().createDeploymentStatus(this, ghDeploymentId, 'SUCCESS', ['targetUrl':"${targetURL}"])
               }
