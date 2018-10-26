@@ -39,7 +39,6 @@ pipeline {
     stage('ImageStreams ') {
       steps {
         script {
-          abortAllPreviousBuildInProgress(currentBuild)
           openshift.withCluster() {
             openshift.withProject(TOOLS_PROJECT) {
 
