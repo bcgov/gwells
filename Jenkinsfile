@@ -173,8 +173,6 @@ pipeline {
               def targetURL = "https://${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}.pathfinder.gov.bc.ca/gwells"
               def ghDeploymentId = new GitHubHelper().createDeployment(this, "pull/${env.CHANGE_ID}/head", ['environment':"${DEV_SUFFIX}", 'task':"deploy:pull:${env.CHANGE_ID}"])
               new GitHubHelper().createDeploymentStatus(this, ghDeploymentId, 'PENDING', ['targetUrl':"${targetURL}"])
-              // new GitHubHelper().createCommitStatus(this, "pull/${env.CHANGE_ID}/head", 'PENDING', "${targetURL}", "Deployment to ${DEV_SUFFIX}", "continuous-integration/jenkins/deployment/${DEV_SUFFIX.toLowerCase()}")
-
 
               // monitor the deployment status and wait until deployment is successful
               echo "Waiting for deployment to dev..."
@@ -204,28 +202,8 @@ pipeline {
                   wellsearch.json.gz; \
                 python manage.py createinitialrevisions'")
 
-              // slack & github notifications that a new deployment is ready
-              openshift.withProject(TOOLS_PROJECT) {
-
-                // // get a slack token
-                // def token = openshift.selector("secret", "slack").object().data.token.decodeBase64()
-                // token = new String(token)
-
-                // // build a message to send to the channel
-                // def message = [:]
-                // message.channel = "#gwells"
-                // message.text = "A new environment for ${PR_NUM} is ready at ${targetURL}"
-                // payload = JsonOutput.toJson(message)
-
-                // sh (
-                //   script: """curl -X POST -H "Content-Type: application/json" --data \'${payload}\' https://devopspathfinder.slack.com/services/hooks/jenkins-ci?token=${token}""",
-                //   returnStdout: true
-                // ).trim()
-                
-
                 new GitHubHelper().createDeploymentStatus(this, ghDeploymentId, 'SUCCESS', ['targetUrl':"${targetURL}"])
-                // new GitHubHelper().createCommitStatus(this, "pull/${env.CHANGE_ID}/head", 'SUCCESS', "${BUILD_URL}", "Deployment to ${DEV_SUFFIX}", "continuous-integration/jenkins/deployment/${DEV_SUFFIX.toLowerCase()}")
-              }
+
             }
           }
         }
@@ -420,6 +398,10 @@ pipeline {
               // Images are then tagged into the target environment namespace (test or prod)
               openshift.tag("${TOOLS_PROJECT}/gwells-application:${TEST_SUFFIX}", "${TEST_PROJECT}/gwells-${TEST_SUFFIX}:${TEST_SUFFIX}")  // todo: clean up labels/tags
               openshift.tag("${TOOLS_PROJECT}/gwells-postgresql:test", "${TEST_PROJECT}/gwells-postgresql-${TEST_SUFFIX}:${TEST_SUFFIX}")  // todo: clean up labels/tags
+              
+              def targetTestURL = "https://${APP_NAME}-${TEST_SUFFIX}.pathfinder.gov.bc.ca/gwells"
+              def ghDeploymentId = new GitHubHelper().createDeployment(this, "pull/${env.CHANGE_ID}/head", ['environment':"${TEST_SUFFIX}", 'task':"deploy:pull:${env.CHANGE_ID}"])
+              new GitHubHelper().createDeploymentStatus(this, ghDeploymentId, 'PENDING', ['targetUrl':"${targetTestURL}"])
 
               // monitor the deployment status and wait until deployment is successful
               echo "Waiting for deployment to TEST..."
@@ -434,6 +416,8 @@ pipeline {
                   }
                 }
               }
+
+              new GitHubHelper().createDeploymentStatus(this, ghDeploymentId, 'SUCCESS', ['targetUrl':"${targetTestURL}"])
 
               echo "TEST deployment successful."
               echo "Loading fixtures"
@@ -643,6 +627,10 @@ pipeline {
               openshift.tag("${TOOLS_PROJECT}/gwells-application:${PROD_SUFFIX}", "${PROD_PROJECT}/gwells-${PROD_SUFFIX}:${PROD_SUFFIX}")  // todo: clean up labels/tags
               openshift.tag("${TOOLS_PROJECT}/gwells-postgresql:prod", "${PROD_PROJECT}/gwells-postgresql-${PROD_SUFFIX}:${PROD_SUFFIX}")  // todo: clean up labels/tags
 
+              def targetProdURL = "https://apps.nrs.gov.bc.ca/gwells/"
+              def ghDeploymentId = new GitHubHelper().createDeployment(this, "pull/${env.CHANGE_ID}/head", ['environment':"${PROD_SUFFIX}", 'task':"deploy:pull:${env.CHANGE_ID}"])
+              new GitHubHelper().createDeploymentStatus(this, ghDeploymentId, 'PENDING', ['targetUrl':"${targetProdURL}"])
+
               // monitor the deployment status and wait until pgsql-${ deployment is successful
               echo "Waiting for deployment to production..."
               def newVersion = openshift.selector("dc", "gwells-${PROD_SUFFIX}").object().status.latestVersion
@@ -658,7 +646,28 @@ pipeline {
               }
 
               echo "Production deployment successful."
+              // slack & github notifications that a new deployment is ready
 
+              new GitHubHelper().createDeploymentStatus(this, ghDeploymentId, 'SUCCESS', ['targetUrl':"${targetProdURL}"])
+
+              openshift.withProject(TOOLS_PROJECT) {
+
+                // get a slack token
+                def token = openshift.selector("secret", "slack").object().data.token.decodeBase64()
+                token = new String(token)
+
+                // build a message to send to the channel
+                def message = [:]
+                message.channel = "#gwells"
+                message.text = "A new production deployment was rolled out at https://apps.nrs.gov.bc.ca/gwells/"
+                payload = JsonOutput.toJson(message)
+
+                sh (
+                  script: """curl -X POST -H "Content-Type: application/json" --data \'${payload}\' https://devopspathfinder.slack.com/services/hooks/jenkins-ci?token=${token}""",
+                  returnStdout: true
+                ).trim()
+                
+              }
             }
           }
         }
