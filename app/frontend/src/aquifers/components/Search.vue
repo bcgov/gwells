@@ -86,8 +86,24 @@
   </b-card>
 </template>
 
+<style>
+table.b-table > thead > tr > th.sorting::before,
+table.b-table > tfoot > tr > th.sorting::before {
+  display: none;
+}
+
+table.b-table > thead > tr > th.sorting::after,
+table.b-table > tfoot > tr > th.sorting::after {
+  content: "\f0dc" !important;
+  font-family: "FontAwesome";
+  opacity: 1 !important;
+}
+
+</style>
+
 <script>
 import ApiService from '@/common/services/ApiService.js'
+import isEmpty from 'lodash.isempty'
 
 const LIMIT = 30
 const DEFAULT_ORDERING_STRING = 'aquifer_id'
@@ -109,7 +125,7 @@ export default {
       search: query.search,
       aquifer_id: query.aquifer_id,
       limit: LIMIT,
-      currentPage: undefined,
+      currentPage: query.offset && (query.offset / LIMIT + 1),
       filterParams: Object.assign({}, query),
       response: {},
       aquiferListFields: [
@@ -135,6 +151,10 @@ export default {
   },
   methods: {
     fetchResults () {
+      if (isEmpty(this.query)) {
+        return
+      }
+
       ApiService.query('aquifers/', this.query)
         .then((response) => {
           this.response = response.data
@@ -147,8 +167,8 @@ export default {
     triggerPagination () {
       const i = (this.currentPage || 1) - 1
 
-      this.filterParams.limit = undefined
-      this.filterParams.offset = undefined
+      delete this.filterParams.limit
+      delete this.filterParams.offset
 
       if (i > 0) {
         this.filterParams.limit = LIMIT
@@ -160,10 +180,16 @@ export default {
     triggerReset () {
       this.response = {}
       this.filterParams = {}
+      this.search = undefined
+      this.aquifer_id = undefined
+      this.currentPage = undefined
 
       this.updateQueryParams()
     },
     triggerSearch () {
+      delete this.filterParams.aquifer_id
+      delete this.filterParams.search
+
       if (this.aquifer_id) {
         this.filterParams.aquifer_id = this.aquifer_id
       }
@@ -175,13 +201,13 @@ export default {
       this.updateQueryParams()
     },
     triggerSort () {
+      delete this.filterParams.ordering
+
       let ordering = `${this.sortDesc ? '-' : ''}${this.sortBy}`
 
-      if (ordering === DEFAULT_ORDERING_STRING) {
-        ordering = undefined
+      if (ordering !== DEFAULT_ORDERING_STRING) {
+        this.filterParams.ordering = ordering
       }
-
-      this.filterParams.ordering = ordering
 
       this.updateQueryParams()
     },
