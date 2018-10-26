@@ -39,7 +39,6 @@ pipeline {
     stage('Prepare Templates') {
       steps {
         script {
-          abortAllPreviousBuildInProgress(currentBuild)
           openshift.withCluster() {
             openshift.withProject(TOOLS_PROJECT) {
 
