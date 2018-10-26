@@ -196,6 +196,7 @@ pipeline {
                   wellsearch.json.gz; \
                 python manage.py createinitialrevisions'")
 
+              openshift.withProject(TOOLS_PROJECT) {
                 def token = openshift.selector("secret", "slack").object().data.token.decodeBase64()
                 def message = [:]
                 message.channel = "#gwells"
@@ -204,6 +205,7 @@ pipeline {
                 payload = JsonOutput.toJson(message)
 
                 echo "curl -X POST -d ${payload} https://devopspathfinder.slack.com/services/hooks/jenkins-ci?token=${token}"
+              }
             }
           }
         }
