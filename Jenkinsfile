@@ -173,6 +173,7 @@ pipeline {
               def targetURL = "https://${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}.pathfinder.gov.bc.ca/gwells"
               def ghDeploymentId = new GitHubHelper().createDeployment(this, "pull/${env.CHANGE_ID}/head", ['environment':"${DEV_SUFFIX}", 'task':"deploy:pull:${env.CHANGE_ID}"])
               new GitHubHelper().createDeploymentStatus(this, ghDeploymentId, 'PENDING', ['targetUrl':"${targetURL}"])
+              new GitHubHelper().createCommitStatus(this, "pull/${env.CHANGE_ID}/head", 'PENDING', "${BUILD_URL}", "Deployment to ${DEV_SUFFIX}", "continuous-integration/jenkins/deployment/${DEV_SUFFIX.toLowerCase()}")
 
 
               // monitor the deployment status and wait until deployment is successful
@@ -206,23 +207,24 @@ pipeline {
               // slack & github notifications that a new deployment is ready
               openshift.withProject(TOOLS_PROJECT) {
 
-                // get a slack token
-                def token = openshift.selector("secret", "slack").object().data.token.decodeBase64()
-                token = new String(token)
+                // // get a slack token
+                // def token = openshift.selector("secret", "slack").object().data.token.decodeBase64()
+                // token = new String(token)
 
-                // build a message to send to the channel
-                def message = [:]
-                message.channel = "#gwells"
-                message.text = "A new environment for ${PR_NUM} is ready at ${targetURL}"
-                payload = JsonOutput.toJson(message)
+                // // build a message to send to the channel
+                // def message = [:]
+                // message.channel = "#gwells"
+                // message.text = "A new environment for ${PR_NUM} is ready at ${targetURL}"
+                // payload = JsonOutput.toJson(message)
 
-                sh (
-                  script: """curl -X POST -H "Content-Type: application/json" --data \'${payload}\' https://devopspathfinder.slack.com/services/hooks/jenkins-ci?token=${token}""",
-                  returnStdout: true
-                ).trim()
+                // sh (
+                //   script: """curl -X POST -H "Content-Type: application/json" --data \'${payload}\' https://devopspathfinder.slack.com/services/hooks/jenkins-ci?token=${token}""",
+                //   returnStdout: true
+                // ).trim()
                 
 
                 new GitHubHelper().createDeploymentStatus(this, ghDeploymentId, 'SUCCESS', ['targetUrl':"${targetURL}"])
+                new GitHubHelper().createCommitStatus(this, "pull/${env.CHANGE_ID}/head", 'SUCCESS', "${BUILD_URL}", "Deployment to ${DEV_SUFFIX}", "continuous-integration/jenkins/deployment/${DEV_SUFFIX.toLowerCase()}")
               }
             }
           }
