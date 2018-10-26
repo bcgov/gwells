@@ -140,7 +140,7 @@
       </b-row>
       <b-row>
         <b-col cols="12" lg="4"><span class="font-weight-bold">Drilling method:</span> {{ form.drilling_method }}</b-col>
-        <!-- <b-col cols="12" lg="3"><span class="font-weight-bold">Specify other method:</span> {{ form.other_drilling_method }}</b-col> -->
+        <b-col cols="12" lg="3"><span class="font-weight-bold">Other drilling method:</span> {{ form.other_drilling_method }}</b-col>
       </b-row>
       <b-row>
         <b-col cols="12" lg="4"><span class="font-weight-bold">Orientation of well:</span> {{ form.well_orientation }}</b-col>
@@ -318,11 +318,22 @@
 
     <fieldset class="my-3 detail-section" v-if="sections.wellYield">
       <legend>Well Yield</legend>
-      <b-row>
-        <b-col cols="12" lg="4"><span class="font-weight-bold">Estimation Method:</span> </b-col>
-        <b-col cols="12" lg="4"><span class="font-weight-bold">Estimation Rate:</span> </b-col>
-        <b-col cols="12" lg="4"><span class="font-weight-bold">Estimation Duration:</span></b-col>
-      </b-row>
+
+      <div v-for="(productionTest, index) in form.production_data_set" :key="`ProductionDataSet${index}`">
+        <b-row>
+          <b-col cols="12" lg="4"><span class="font-weight-bold">Estimation Method:</span> {{codeToDescription('yield_estimation_methods', productionTest.yield_estimation_method)}} </b-col>
+          <b-col cols="12" lg="4"><span class="font-weight-bold">Estimation Rate:</span> {{productionTest.yield_estimation_rate}} </b-col>
+          <b-col cols="12" lg="4"><span class="font-weight-bold">Estimation Duration:</span> {{productionTest.yield_estimation_duration}}</b-col>
+        </b-row>
+        <b-row>
+          <b-col cols="12" lg="4"><span class="font-weight-bold">Static Water Level Before Test:</span> {{productionTest.static_level}}</b-col>
+          <b-col cols="12" lg="4"><span class="font-weight-bold">Drawdown:</span>{{productionTest.drawdown}}</b-col>
+        </b-row>
+        <b-row>
+          <b-col cols="12" lg="4"><span class="font-weight-bold">Hydrofracturing Performed:</span> {{productionTest.hydro_fracturing_performed}}</b-col>
+          <b-col cols="12" lg="4"><span class="font-weight-bold">Increase in Yield Due to Hydrofracturing:</span> {{productionTest.hydro_fracturing_yield_increase}}</b-col>
+        </b-row>
+      </div>
     </fieldset>
 
     <fieldset class="my-3 detail-section" v-if="sections.waterQuality">
