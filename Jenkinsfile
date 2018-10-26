@@ -191,7 +191,6 @@ pipeline {
                   aquifers.json \
                   wellsearch.json.gz; \
                 python manage.py createinitialrevisions'")
-
             }
           }
         }
@@ -402,6 +401,18 @@ pipeline {
               }
 
               echo "TEST deployment successful."
+              echo "Loading fixtures"
+              def firstPod = pods.objects()[0].metadata.name
+              openshift.exec(firstPod, "--", "bash -c '\
+                cd /opt/app-root/src/backend; \
+                python manage.py loaddata \
+                  gwells-codetables.json \
+                  wellsearch-codetables.json \
+                  registries-codetables.json \
+                  registries.json \
+                  aquifers.json \
+                  wellsearch.json.gz; \
+                python manage.py createinitialrevisions'")
             }
           }
         }
