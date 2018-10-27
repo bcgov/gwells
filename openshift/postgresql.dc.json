@@ -63,7 +63,7 @@
             "displayName": "Version of PostgreSQL Image",
             "name": "IMAGE_STREAM_VERSION",
             "required": true,
-            "value": "9.5"
+            "value": "9.6"
         },
         {
             "name": "LABEL_APPVER",
