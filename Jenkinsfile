@@ -40,6 +40,12 @@ pipeline {
     stage('Prepare Templates') {
       steps {
         script {
+          echo "Cancelling previous builds..."
+          timeout(10) {
+            abortAllPreviousBuildInProgress(currentBuild)
+          }
+          echo "Previous builds cancelled"
+
           openshift.withCluster() {
             openshift.withProject(TOOLS_PROJECT) {
 
