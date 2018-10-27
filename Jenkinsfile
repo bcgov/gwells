@@ -1,7 +1,7 @@
 #!groovy
 
 import groovy.json.JsonOutput
-import devops.GitHubHelper
+import bcgov.GitHubHelper
 
 pipeline {
   environment {
