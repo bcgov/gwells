@@ -16,6 +16,8 @@ from django.db.models import Prefetch
 from django.http import Http404
 from django.views.generic import DetailView
 
+from django_filters import rest_framework as restfilters
+
 from rest_framework import filters
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -94,6 +96,20 @@ class WellListAPIView(ListAPIView):
     queryset = Well.objects.all()
     pagination_class = APILimitOffsetPagination
     serializer_class = WellListSerializer
+
+    # Allow searching on name fields, names of related companies, etc.
+    filter_backends = (restfilters.DjangoFilterBackend,
+                       filters.SearchFilter, filters.OrderingFilter)
+    ordering = ('well_tag_number',)
+    filter_fields = (
+        'well_tag_number',
+        'identification_plate_number',
+        'owner_full_name',
+        'street_address',
+        'legal_plan',
+        'legal_lot',
+    )
+
 
     def get_queryset(self):
         qs = self.queryset
