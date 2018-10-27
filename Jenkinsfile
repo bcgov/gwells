@@ -1,7 +1,7 @@
 #!groovy
 
 import groovy.json.JsonOutput
-import openshift.groovy.GitHubHelper
+import devops.GitHubHelper
 
 pipeline {
   environment {
