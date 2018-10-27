@@ -1,7 +1,7 @@
 #!groovy
 
 import groovy.json.JsonOutput
-import bcgov.GitHubHelper
+import openshift.groovy.GitHubHelper
 
 pipeline {
   environment {
@@ -207,7 +207,7 @@ pipeline {
             }
           }
         }
-      } 
+      }
     }
 
     stage('API Tests') {
@@ -398,7 +398,7 @@ pipeline {
               // Images are then tagged into the target environment namespace (test or prod)
               openshift.tag("${TOOLS_PROJECT}/gwells-application:${TEST_SUFFIX}", "${TEST_PROJECT}/gwells-${TEST_SUFFIX}:${TEST_SUFFIX}")  // todo: clean up labels/tags
               openshift.tag("${TOOLS_PROJECT}/gwells-postgresql:test", "${TEST_PROJECT}/gwells-postgresql-${TEST_SUFFIX}:${TEST_SUFFIX}")  // todo: clean up labels/tags
-              
+
               def targetTestURL = "https://${APP_NAME}-${TEST_SUFFIX}.pathfinder.gov.bc.ca/gwells"
               def ghDeploymentId = new GitHubHelper().createDeployment(this, "pull/${env.CHANGE_ID}/head", ['environment':"${TEST_SUFFIX}", 'task':"deploy:pull:${env.CHANGE_ID}"])
               new GitHubHelper().createDeploymentStatus(this, ghDeploymentId, 'PENDING', ['targetUrl':"${targetTestURL}"])
@@ -666,7 +666,7 @@ pipeline {
                   script: """curl -X POST -H "Content-Type: application/json" --data \'${payload}\' https://devopspathfinder.slack.com/services/hooks/jenkins-ci?token=${token}""",
                   returnStdout: true
                 ).trim()
-                
+
               }
             }
           }
