@@ -14,13 +14,13 @@
 
 <template>
   <div>
-    <b-card no-body class="p-3 mb-4">
+    <b-card no-body class="p-3 mb-4 container container-wide">
       <api-error v-if="error" :error="error"/>
       <b-alert variant="success" :show="showSaveSuccess">Record successfully updated</b-alert>
 
       <b-container>
         <b-row v-if="!loading" class="border-bottom mb-3 pb-2">
-          <b-col><h5>Aquifer {{record.aquifer_id}} Summary - Edit</h5></b-col>
+          <b-col><h1>Aquifer {{record.aquifer_id}} Summary - Edit</h1></b-col>
         </b-row>
 
         <b-row v-if="loading" class="border-bottom mb-3 pb-2">
@@ -369,7 +369,7 @@ export default {
         .catch(this.handlePatchError)
     },
     view () {
-      this.$router.push({ name: 'view', params: { id: this.id } })
+      this.$router.push({ name: 'aquifers-view', params: { id: this.id } })
     },
     fetch (id = this.id) {
       this.loading = true

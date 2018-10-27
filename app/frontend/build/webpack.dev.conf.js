@@ -18,7 +18,7 @@ const PORT = process.env.PORT && Number(process.env.PORT)
 const devWebpackConfig = merge(baseWebpackConfig, {
   entry: {
     // the current module/app that the dev server should serve
-    submissions: './src/submissions/main.js'
+    gwells: './src/main.js'
   },
   module: {
     rules: utils.styleLoaders({

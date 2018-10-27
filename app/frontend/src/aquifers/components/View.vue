@@ -13,10 +13,10 @@
 */
 
 <template>
-  <b-card no-body class="p-3 mb-4">
+  <b-card class="p-3 mb-4 container container-wide">
     <b-container>
       <b-row class="border-bottom mb-3 pb-2">
-        <b-col><h5 class="pt-2">Aquifer Summary</h5></b-col>
+        <b-col><h1 class="pt-2">Aquifer Summary</h1></b-col>
         <b-col cols="auto">
           <b-button
             variant="default"
@@ -94,7 +94,7 @@ export default {
   },
   methods: {
     edit () {
-      this.$router.push({ name: 'edit', params: { id: this.id } })
+      this.$router.push({ name: 'aquifers-edit', params: { id: this.id } })
     },
     print () {
       window.print()

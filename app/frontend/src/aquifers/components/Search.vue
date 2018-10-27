@@ -13,8 +13,8 @@
 */
 
 <template>
-  <b-card no-body class="p-3 mb-4">
-    <h5>Aquifer Search</h5>
+  <b-card class="p-1 container container-wide">
+    <h1 class="card-title">Aquifer Search</h1>
     <b-form
       v-on:submit.prevent="search(query)"
       v-on:reset="reset">
@@ -49,7 +49,7 @@
       :items="aquiferList"
       :fields="aquiferListFields">
       <template slot="aquifer_id" slot-scope="data">
-        <router-link :to="`${data.value}/`">{{data.value}}</router-link>
+        <router-link :to="{ name: 'aquifers-view', params: { id: data.value }}">{{data.value}}</router-link>
       </template>
     </b-table>
   </b-card>

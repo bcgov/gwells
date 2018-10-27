@@ -10,5 +10,5 @@
   limitations under the License.
  */
 export const SET_KEYCLOAK = 'SET_KEYCLOAK'
-export const SET_CODES = 'SET_CODES'
-export const SET_ERROR = 'SET_ERROR'
+export const SET_CODES = 'SET_SUBMISSION_CODES'
+export const SET_ERROR = 'SET_SUBMISSION_ERROR'

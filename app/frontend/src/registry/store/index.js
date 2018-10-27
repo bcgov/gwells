@@ -9,10 +9,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
  */
-import Vue from 'vue'
-import Vuex from 'vuex'
-import auth from '@/common/store/auth.js'
-import config from '@/common/store/config.js'
+
 import ApiService from '@/common/services/ApiService.js'
 import {
   FETCH_CITY_LIST,
@@ -30,13 +27,7 @@ import {
   SET_DRILLER_OPTIONS,
   SET_LAST_SEARCHED_ACTIVITY } from './mutations.types.js'
 
-Vue.use(Vuex)
-
-export const store = new Vuex.Store({
-  modules: {
-    auth: auth,
-    config: config
-  },
+const registriesStore = {
   state: {
     user: null,
     loading: false,
@@ -212,4 +203,6 @@ export const store = new Vuex.Store({
       return options
     }
   }
-})
+}
+
+export default registriesStore

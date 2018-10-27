@@ -2,7 +2,7 @@
   <header>
     <b-navbar type="dark" class="navbar-expand-lg d-print-block" bg-variant="primary">
       <!-- Navbar content -->
-      <b-container>
+      <b-container class="container-wide">
         <a class="navbar-brand" href="https://www2.gov.bc.ca">
           <img
               class="nav-logo img-fluid d-none d-sm-block"
@@ -37,14 +37,14 @@
     <b-navbar class="bc-nav-links py-0" toggleable="sm" type="dark">
       <b-container fluid>
         <b-collapse class="py-2" is-nav id="nav_collapse">
-          <b-container id="navContainer">
+          <b-container id="navContainer" class="container-wide">
             <b-nav-text class="d-sm-none text-light">Groundwater Wells and Aquifers</b-nav-text>
             <b-navbar-nav class="gwells-nav">
-              <b-nav-item id="ribbon-search" class="navbar-link lvl2-link" href="/gwells">Well Search</b-nav-item>
-              <b-nav-item id="ribbon-aquifers" v-if="show.aquifers" class="navbar-link lvl2-link" href="/gwells/aquifers">Aquifers</b-nav-item>
-              <b-nav-item id="ribbon-groundwaterinfo" class="navbar-link lvl2-link" href="/gwells/groundwater-information">Groundwater Information</b-nav-item>
-              <b-nav-item id="ribbon-registry" class="navbar-link lvl2-link" href="/gwells/registries">Registry</b-nav-item>
-              <b-nav-item class="navbar-link lvl2-link" v-if="show.dataEntry" href="/gwells/submissions">Submit Report</b-nav-item>
+              <b-nav-item id="ribbon-search" class="navbar-link lvl2-link" :to="{ name: 'wells-home'}">Well Search</b-nav-item>
+              <b-nav-item id="ribbon-aquifers" v-if="show.aquifers" class="navbar-link lvl2-link" :to="{ name: 'aquifers-home' }">Aquifers</b-nav-item>
+              <b-nav-item id="ribbon-groundwaterinfo" class="navbar-link lvl2-link" :to="{ name: 'groundwater-information' }">Groundwater Information</b-nav-item>
+              <b-nav-item id="ribbon-registry" class="navbar-link lvl2-link" :to="{ name: 'SearchHome'}">Registry</b-nav-item>
+              <b-nav-item class="navbar-link lvl2-link" v-if="show.dataEntry" :to="{ name: 'SubmissionsHome'}">Submit Report</b-nav-item>
               <b-nav-item id="ribbon-admin" class="navbar-link lvl2-link" v-if="show.admin" href="/gwells/admin">Admin</b-nav-item>
               <b-nav-item class="d-sm-none"><keycloak-auth v-if="auth !== 'hide'" id="keycloak-auth-xs"/></b-nav-item>
             </b-navbar-nav>

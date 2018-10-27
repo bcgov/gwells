@@ -1,7 +1,7 @@
 <template>
-  <div class="card">
+  <div class="p-1 card container container-wide">
     <div class="card-body">
-      <h4 class="card-title">
+      <h1 class="card-title">
         <b-row>
           <b-col lg="12" >Well Activity Submission
             <b-form-group>
@@ -12,7 +12,7 @@
             </b-form-group>
           </b-col>
         </b-row>
-      </h4>
+      </h1>
       <p>Submit activity on a well. <a href="/gwells/">Try a search</a> to see if the well exists in the system before submitting a report.</p>
 
       <!-- Activity submission form -->
@@ -697,42 +697,42 @@ export default {
 </script>
 
 <style lang="scss">
-.slide-leave-active,
-.slide-enter-active {
-  transition: 1s;
-}
-.slide-enter {
-  transform: translate(100%, 0);
-}
-.slide-leave-to {
-  transform: translate(-100%, 0);
-}
-.bounce-enter-active {
-  animation: bounce-in .5s;
-}
-.bounce-leave-active {
-  animation: bounce-out .2s;
-}
-@keyframes bounce-in {
-  0% {
-    transform: scale(0);
+  .slide-leave-active,
+  .slide-enter-active {
+    transition: 1s;
   }
-  50% {
-    transform: scale(1.5);
+  .slide-enter {
+    transform: translate(100%, 0);
   }
-  100% {
-    transform: scale(1);
+  .slide-leave-to {
+    transform: translate(-100%, 0);
   }
-}
-@keyframes bounce-out {
-  100% {
-    transform: scale(0)
+  .bounce-enter-active {
+    animation: bounce-in .5s;
   }
-}
-.input-width-small {
-  max-width: 5rem;
-}
-.input-width-medium {
-  max-width: 10rem;
-}
+  .bounce-leave-active {
+    animation: bounce-out .2s;
+  }
+  @keyframes bounce-in {
+    0% {
+      transform: scale(0);
+    }
+    50% {
+      transform: scale(1.5);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+  @keyframes bounce-out {
+    100% {
+      transform: scale(0)
+    }
+  }
+  .input-width-small {
+    max-width: 5rem;
+  }
+  .input-width-medium {
+    max-width: 10rem;
+  }
 </style>

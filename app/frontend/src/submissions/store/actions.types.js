@@ -9,4 +9,4 @@
   See the License for the specific language governing permissions and
   limitations under the License.
  */
-export const FETCH_CODES = 'FETCH_CODES'
+export const FETCH_CODES = 'FETCH_SUBMISSION_CODES'

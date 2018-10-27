@@ -16,12 +16,14 @@ import Vue from 'vue'
 import Vuex, {mapActions} from 'vuex'
 import BootstrapVue from 'bootstrap-vue'
 import App from './App'
-import router from './router'
+import router from './router.js'
 import { store } from './store'
 import '@/common/assets/css/bootstrap-theme.min.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
+import vueSmoothScroll from 'vue-smoothscroll'
 import vSelect from 'vue-select'
 import FormInput from '@/common/components/FormInput.vue'
+import VueMoment from 'vue-moment'
 import authenticate from '@/common/authenticate.js'
 import {FETCH_CONFIG} from '@/common/store/config.js'
 
@@ -30,6 +32,8 @@ import ApiService from '@/common/services/ApiService.js'
 
 Vue.use(Vuex)
 Vue.use(BootstrapVue)
+Vue.use(vueSmoothScroll)
+Vue.use(VueMoment)
 Vue.component('v-select', vSelect)
 Vue.component('form-input', FormInput)
 
@@ -43,9 +47,7 @@ new Vue({
   el: '#app',
   router,
   store,
-  components: {
-    App
-  },
+  components: { App },
   template: '<App/>',
   methods: {
     ...mapActions([

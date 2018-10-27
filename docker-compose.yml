@@ -19,7 +19,6 @@ services:
         set -x &&
         cd /app/frontend &&
         npm install &&
-        npm run build &&
         npm run ${NPM_CMD:-dev}"
     ports:
       - "8080:8080"
@@ -43,6 +42,7 @@ services:
       ENABLE_DATA_ENTRY: "True"
       ENABLE_GOOGLE_ANALYTICS: "False"
       ENABLE_ADDITIONAL_DOCUMENTS: "False"
+      ENABLE_AQUIFERS_SEARCH: "True"
       POSTGRES_SERVICE_PORT: 5432
       DJANGO_ADMIN_URL: admin
       PYTHONUNBUFFERED: "1"
@@ -60,9 +60,12 @@ services:
             python3 manage.py migrate --noinput &&
             echo Loading fixtures, this may take some time... &&
             python3 manage.py loaddata
-                gwells-codetables.json
-                registries-codetables.json
-                registries.json &&
+              gwells-codetables.json
+              wellsearch-codetables.json
+              registries-codetables.json
+              registries.json
+              aquifers.json
+              wellsearch.json.gz &&
             python3 manage.py createinitialrevisions &&
             python3 manage.py collectstatic --noinput &&
             python3 manage.py runserver 0.0.0.0:8000"

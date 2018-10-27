@@ -5,7 +5,7 @@
     <b-alert
         show
         variant="info"
-        class="container mb-3"
+        class="container container-wide mb-3"
         v-for="(survey, index) in surveys"
         :key="`survey ${index}`">
       <p class="m-0">
@@ -15,44 +15,45 @@
       </p>
     </b-alert>
 
-    <!-- Admin options -->
-    <b-card v-if="userRoles.registry.edit" no-body class="container p-1 mb-3">
-      <b-card-header header-tag="header" class="p-1" role="tab">
-        <b-btn block href="#" v-b-toggle.adminPanel variant="light" class="text-left">Administrator options</b-btn>
-      </b-card-header>
-      <b-collapse visible id="adminPanel">
-        <b-card-body class="pb-1">
-          <b-button
-            class="mb-2"
-            variant="primary"
-            id="addNewEntryButton"
-            :to="{ name: 'PersonAdd' }"
-          >
-            Add new entry
-          </b-button>
-          <b-button
-            class="mb-2"
-            variant="primary"
-            id="manageCompaniesButton"
-            :to="{ name: 'OrganizationEdit' }"
-          >
-            Manage companies
-          </b-button>
-        </b-card-body>
-      </b-collapse>
-    </b-card>
-
     <!-- Main Registries content -->
-    <b-card class="container p-1" title="Register of Well Drillers and Well Pump Installers">
+    <b-card class="container p-1 container-wide">
+      <h1 class="card-title">Search for a Well Driller or Well Pump Installer</h1>
       <p>To update contact information or for general enquiries email <a href="mailto:Groundwater@gov.bc.ca">groundwater@gov.bc.ca</a>.</p>
       <p>
         <a href="https://www2.gov.bc.ca/gov/content/environment/air-land-water/water/groundwater-wells/information-for-well-drillers-well-pump-installers/what-you-need-to-practice-in-bc">
         Learn more about registering as a well driller or well pump installer in B.C.
         </a>
       </p>
+
+      <!-- Admin options -->
+      <b-card v-if="userRoles.registry.edit" no-body class="container container-wide p-1 mb-3">
+        <b-card-header header-tag="header" class="p-1" role="tab">
+          <b-btn block href="#" v-b-toggle.adminPanel variant="light" class="text-left">Administrator options</b-btn>
+        </b-card-header>
+        <b-collapse visible id="adminPanel">
+          <b-card-body class="pb-1">
+            <b-button
+              class="mb-2"
+              variant="primary"
+              id="addNewEntryButton"
+              :to="{ name: 'PersonAdd' }"
+            >
+              Add new entry
+            </b-button>
+            <b-button
+              class="mb-2"
+              variant="primary"
+              id="manageCompaniesButton"
+              :to="{ name: 'OrganizationEdit' }"
+            >
+              Manage companies
+            </b-button>
+          </b-card-body>
+        </b-collapse>
+      </b-card>
+
       <!-- Search options -->
-      <b-card no-body class="p-3 mb-4">
-        <h5>Search for a Well Driller or Well Pump Installer</h5>
+      <div class="p-3 mb-4">
         <b-form @submit.prevent="drillerSearch" @reset.prevent="drillerSearchReset({clearDrillers: true})" id="drillerSearchForm">
           <b-form-row>
             <b-col cols="12">
@@ -134,7 +135,7 @@
             </b-col>
           </b-form-row>
         </b-form>
-      </b-card>
+      </div>
       <!-- Search results table -->
       <div ref="registryTableResults">
         <template v-if="!searchLoading">
