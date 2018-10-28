@@ -18,7 +18,7 @@ const env = process.env.NODE_ENV === 'testing'
 
 const webpackConfig = merge(baseWebpackConfig, {
   entry: {
-    gwells: '.src/main.js'
+    gwells: './src/main.js'
   },
   module: {
     rules: utils.styleLoaders({
