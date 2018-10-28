@@ -1,0 +1,161 @@
+apiVersion: v1
+kind: Template
+metadata:
+  creationTimestamp: null
+  name: jenkins
+labels:
+  template: gwells-http
+objects:
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    creationTimestamp: null
+    labels:
+      shared: true
+    name: rhscl-nodejs-8-rhel7
+  spec:
+    lookupPolicy:
+      local: false
+    tags:
+    - name: 8.1-22
+      from:
+        kind: DockerImage
+        name: 'registry.access.redhat.com/rhscl/nodejs-8-rhel7:1-22'
+      importPolicy: {}
+      referencePolicy:
+        type: Source
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    creationTimestamp: null
+    labels:
+      shared: true
+    name: ${NAME}
+  spec:
+    lookupPolicy:
+      local: false
+#Final ImageStream created by adding the output of the nodejs build in caddy
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    creationTimestamp: null
+    name: ${NAME}-http
+  spec:
+    lookupPolicy:
+      local: false
+- apiVersion: v1
+  kind: BuildConfig
+  metadata:
+    creationTimestamp: null
+    name: ${NAME}-http-${SUFFIX}
+  spec:
+    nodeSelector: null
+    output:
+      to:
+        kind: ImageStreamTag
+        name: ${NAME}-http:${SUFFIX}
+    postCommit: {}
+    resources:
+      requests:
+        cpu: 1
+        memory: 2Gi
+      limits:
+        cpu: 2
+        memory: 2Gi
+    source:
+      git:
+        uri: ${SOURCE_REPOSITORY_URL}
+        ref: ${SOURCE_REPOSITORY_REF}
+      contextDir: 'app/frontend/'
+      type: Git
+    strategy:
+      sourceStrategy:
+        env:
+          - name: GITHUB_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: devhub-gh-token
+                key: GITHUB_TOKEN
+        from:
+          kind: ImageStreamTag
+          name: rhscl-nodejs-8-rhel7:8.1-22
+      type: Source
+    triggers:
+    - type: ConfigChange
+    - imageChange: {}
+      type: ImageChange
+#Chainned build
+- apiVersion: v1
+  kind: BuildConfig
+  metadata:
+    creationTimestamp: null
+    labels:
+      build: ${NAME}-static${SUFFIX}
+    name: ${NAME}-static${SUFFIX}
+  spec:
+    nodeSelector: null
+    output:
+      to:
+        kind: ImageStreamTag
+        name: ${NAME}-static:${VERSION}
+    postCommit: {}
+    resources:
+      requests:
+        cpu: 1
+      limits:
+        cpu: 2
+    source:
+      dockerfile: |-
+        FROM ${NAME}-http:${SUFFIX}
+        #USER 0
+        COPY dist/* /var/www/html/
+        #RUN ls -la /var/www/ && ls -la /var/www/html/
+        #USER 1001
+        CMD ["sh","/tmp/scripts/run"]
+      images:
+        - from:
+            kind: ImageStreamTag
+            name: ${NAME}-http:${SUFFIX}
+          paths:
+            - destinationDir: html
+              sourcePath: /opt/app-root/src/public/app/frontend
+      type: Dockerfile
+    strategy:
+      dockerStrategy:
+        from:
+          kind: ImageStreamTag
+          name: 'bcgov-s2i-caddy:latest'
+          namespace: openshift
+      type: Docker
+    triggers:
+    - imageChange:
+        from:
+          kind: ImageStreamTag
+          name: ${NAME}:${VERSION}
+      type: ImageChange
+    - type: ConfigChange
+    - imageChange: {}
+      type: ImageChange
+parameters:
+- description: A name used for all objects
+  displayName: Name
+  name: NAME
+  required: true
+  value: gwells-http
+- description: A name suffix used for all objects
+  displayName: Suffix
+  name: SUFFIX
+  required: true
+- description: A version used for the image tags
+  displayName: version
+  name: VERSION
+  required: true
+  value: v1.0.0
+- description: SOURCE_REPOSITORY_URL
+  displayName: SOURCE_REPOSITORY_URL
+  name: SOURCE_REPOSITORY_URL
+  required: true
+- description: SOURCE_REPOSITORY_REF
+  displayName: SOURCE_REPOSITORY_REF
+  name: SOURCE_REPOSITORY_REF
+  required: true

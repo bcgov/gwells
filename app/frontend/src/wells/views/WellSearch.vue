@@ -80,8 +80,12 @@
           :items="wellSearch"
           :per-page="perPage"
           :current-page="currentPage"
-        ></b-table>
-            <b-pagination :disabled="isBusy" size="md" :total-rows="numberOfRecords" v-model="currentPage" :per-page="perPage">
+        >
+          <template slot="well_tag_number" slot-scope="data">
+            <router-link :to="{ name: 'wells-detail', params: { id: data.item.well_tag_number} }">{{ data.item.well_tag_number }}</router-link>
+          </template>
+        </b-table>
+        <b-pagination :disabled="isBusy" size="md" :total-rows="numberOfRecords" v-model="currentPage" :per-page="perPage">
     </b-pagination>
       </b-col>
     </b-row>

@@ -8,6 +8,7 @@ import AquiferView from '@/aquifers/components/View'
 import AquiferEdit from '@/aquifers/components/Edit'
 
 import WellSearch from '@/wells/views/WellSearch.vue'
+import WellDetail from '@/wells/views/WellDetail.vue'
 import GroundwaterInformation from '@/wells/views/GroundwaterInformation.vue'
 
 // Registries components
@@ -125,6 +126,11 @@ export default new Router({
       path: '/groundwater-information',
       name: 'groundwater-information',
       component: GroundwaterInformation
+    },
+    {
+      path: '/well/:id',
+      name: 'wells-detail',
+      component: WellDetail
     },
     {
       path: '/',
