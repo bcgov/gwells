@@ -1,11 +1,15 @@
-{$GWELLS_HOST_NAME} {
+0.0.0.0:2015 {
     gzip
-    root /var/www/
-    proxy /gwells/api/ https://{$GWELLS_API_SERVICE} {
-      transparent
-    }
-    rewrite /gwells/ {
+    root /var/www/html
+    rewrite / {
       regexp .*
       to /gwells/
+    }
+}
+
+0.0.0.0:2015/gwells/api {
+    gzip
+    proxy / https://{$GWELLS_API_SERVICE} {
+      transparent
     }
 }

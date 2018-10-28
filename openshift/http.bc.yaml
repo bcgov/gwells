@@ -102,7 +102,7 @@ objects:
       dockerfile: |-
         FROM ${NAME}-builder:${SUFFIX}
         #USER 0
-        ADD dist/* /var/www/html/
+        ADD . /var/www/
         #RUN ls -la /var/www/ && ls -la /var/www/html/
         #USER 1001
         CMD ["sh","/tmp/scripts/run"]
@@ -112,7 +112,7 @@ objects:
             name: ${NAME}-builder:${SUFFIX}
           paths:
             - destinationDir: html
-              sourcePath: /opt/app-root/src/
+              sourcePath: /opt/app-root/src/dist/
       type: Dockerfile
     strategy:
       dockerStrategy:
