@@ -109,10 +109,10 @@ objects:
       images:
         - from:
             kind: ImageStreamTag
-            name: ${NAME}:${SUFFIX}
+            name: ${NAME}-builder:${SUFFIX}
           paths:
             - destinationDir: html
-              sourcePath: /opt/app-root/src/public/app/frontend
+              sourcePath: /opt/app-root/src/app/frontend
       type: Dockerfile
     strategy:
       dockerStrategy:
