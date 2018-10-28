@@ -87,6 +87,8 @@ else
 	echo "---> Pruning the development dependencies"
 	npm prune
 
+  ls && pwd
+
 	# Clear the npm's cache and tmp directories only if they are not a docker volumes
 	NPM_CACHE=$(npm config get cache)
 	if ! mountpoint $NPM_CACHE; then
