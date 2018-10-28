@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Template
 metadata:
   creationTimestamp: null
-  name: jenkins
+  name: gwells-http
 labels:
   template: gwells-http
 objects:
@@ -30,7 +30,7 @@ objects:
     creationTimestamp: null
     labels:
       shared: true
-    name: ${NAME}
+    name: ${NAME}-builder
   spec:
     lookupPolicy:
       local: false
@@ -39,7 +39,7 @@ objects:
   kind: ImageStream
   metadata:
     creationTimestamp: null
-    name: ${NAME}-http
+    name: ${NAME}
   spec:
     lookupPolicy:
       local: false
@@ -47,13 +47,13 @@ objects:
   kind: BuildConfig
   metadata:
     creationTimestamp: null
-    name: ${NAME}-http-${SUFFIX}
+    name: ${NAME}-builder-${SUFFIX}
   spec:
     nodeSelector: null
     output:
       to:
         kind: ImageStreamTag
-        name: ${NAME}-http:${SUFFIX}
+        name: ${NAME}-builder:${SUFFIX}
     postCommit: {}
     resources:
       requests:
@@ -70,12 +70,6 @@ objects:
       type: Git
     strategy:
       sourceStrategy:
-        env:
-          - name: GITHUB_TOKEN
-            valueFrom:
-              secretKeyRef:
-                name: devhub-gh-token
-                key: GITHUB_TOKEN
         from:
           kind: ImageStreamTag
           name: rhscl-nodejs-8-rhel7:8.1-22
@@ -90,14 +84,14 @@ objects:
   metadata:
     creationTimestamp: null
     labels:
-      build: ${NAME}-static${SUFFIX}
-    name: ${NAME}-static${SUFFIX}
+      build: ${NAME}-${SUFFIX}
+    name: ${NAME}-${SUFFIX}
   spec:
     nodeSelector: null
     output:
       to:
         kind: ImageStreamTag
-        name: ${NAME}-static:${VERSION}
+        name: ${NAME}:${VERSION}
     postCommit: {}
     resources:
       requests:
@@ -106,7 +100,7 @@ objects:
         cpu: 2
     source:
       dockerfile: |-
-        FROM ${NAME}-http:${SUFFIX}
+        FROM ${NAME}-builder:${SUFFIX}
         #USER 0
         COPY dist/* /var/www/html/
         #RUN ls -la /var/www/ && ls -la /var/www/html/
@@ -115,7 +109,7 @@ objects:
       images:
         - from:
             kind: ImageStreamTag
-            name: ${NAME}-http:${SUFFIX}
+            name: ${NAME}:${SUFFIX}
           paths:
             - destinationDir: html
               sourcePath: /opt/app-root/src/public/app/frontend
@@ -131,7 +125,7 @@ objects:
     - imageChange:
         from:
           kind: ImageStreamTag
-          name: ${NAME}:${VERSION}
+          name: ${NAME}-builder:${VERSION}
       type: ImageChange
     - type: ConfigChange
     - imageChange: {}
@@ -146,6 +140,7 @@ parameters:
   displayName: Suffix
   name: SUFFIX
   required: true
+  value: sth
 - description: A version used for the image tags
   displayName: version
   name: VERSION
@@ -155,7 +150,9 @@ parameters:
   displayName: SOURCE_REPOSITORY_URL
   name: SOURCE_REPOSITORY_URL
   required: true
+  value: https://github.com/bcgov/gwells.git
 - description: SOURCE_REPOSITORY_REF
   displayName: SOURCE_REPOSITORY_REF
   name: SOURCE_REPOSITORY_REF
   required: true
+  value: refs/heads/steve/spa

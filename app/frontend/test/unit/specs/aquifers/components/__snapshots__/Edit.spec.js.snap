@@ -3,7 +3,7 @@
 exports[`Edit Component Matches the snapshot 1`] = `
 <div>
   <div
-    class="card p-3 mb-4"
+    class="card p-3 mb-4 container container-wide"
   >
     <!---->
      
@@ -18,9 +18,9 @@ exports[`Edit Component Matches the snapshot 1`] = `
         <div
           class="col"
         >
-          <h5>
+          <h1>
             Aquifer 4 Summary - Edit
-          </h5>
+          </h1>
         </div>
       </div>
        

@@ -1,4 +1,4 @@
-import { store } from '@/registry/store'
+import { store } from '@/store'
 import {
   SET_ERROR,
   SET_LOADING,
