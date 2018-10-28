@@ -91,7 +91,7 @@ objects:
     output:
       to:
         kind: ImageStreamTag
-        name: ${NAME}:${VERSION}
+        name: ${NAME}:${SUFFIX}
     postCommit: {}
     resources:
       requests:
@@ -125,7 +125,7 @@ objects:
     - imageChange:
         from:
           kind: ImageStreamTag
-          name: ${NAME}-builder:${VERSION}
+          name: ${NAME}-builder:${SUFFIX}
       type: ImageChange
     - type: ConfigChange
     - imageChange: {}
