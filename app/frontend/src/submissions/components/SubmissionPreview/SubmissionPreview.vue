@@ -104,7 +104,7 @@
                   </tbody>
                 </table>
                 <div>
-                  <span class="font-weight-bold">Description of Well Location:</span>{{ form.well_location_description }}
+                  <span class="font-weight-bold">Description of Well Location:</span> {{ form.well_location_description }}
                 </div>
               </div>
             </b-col>
@@ -121,11 +121,11 @@
             <b-col cols="12" lg="6"><span class="font-weight-bold">Longitude:</span> {{form.longitude}}</b-col>
           </b-row>
           <b-row>
-            <b-col cols="12" lg="4"><span class="font-weight-bold">UTM Easting:</span> {{form.easting}}</b-col>
-            <b-col cols="12" lg="6"><span class="font-weight-bold">UTM Northing:</span> {{form.northing}}</b-col>
+            <b-col cols="12" lg="4"><span class="font-weight-bold">UTM Easting:</span> {{UTM.easting}}</b-col>
+            <b-col cols="12" lg="6"><span class="font-weight-bold">UTM Northing:</span> {{UTM.northing}}</b-col>
           </b-row>
           <b-row>
-            <b-col cols="12" lg="4"><span class="font-weight-bold">Zone:</span> {{form.utm_zone}}</b-col>
+            <b-col cols="12" lg="4"><span class="font-weight-bold">Zone:</span> {{UTM.zone}}</b-col>
             <b-col cols="12" lg="6"><span class="font-weight-bold">Location Accuracy Code:</span> {{form.location_accuracy_code}}</b-col>
           </b-row>
         </b-col>
@@ -136,7 +136,7 @@
       <legend>Method of Drilling</legend>
       <b-row>
         <b-col cols="12" lg="4"><span class="font-weight-bold">Ground elevation:</span> {{ form.ground_elevation }}</b-col>
-        <b-col cols="12" lg="4"><span class="font-weight-bold">Method of determining elevation:</span> {{ form.ground_elevation_method }}</b-col>
+        <b-col cols="12" lg="4"><span class="font-weight-bold">Method of determining elevation:</span> {{ codeToDescription('ground_elevation_methods', form.ground_elevation_method) }}</b-col>
       </b-row>
       <b-row>
         <b-col cols="12" lg="4"><span class="font-weight-bold">Drilling method:</span> {{ form.drilling_method }}</b-col>
@@ -327,7 +327,7 @@
         </b-row>
         <b-row>
           <b-col cols="12" lg="4"><span class="font-weight-bold">Static Water Level Before Test:</span> {{productionTest.static_level}}</b-col>
-          <b-col cols="12" lg="4"><span class="font-weight-bold">Drawdown:</span>{{productionTest.drawdown}}</b-col>
+          <b-col cols="12" lg="4"><span class="font-weight-bold">Drawdown:</span> {{productionTest.drawdown}}</b-col>
         </b-row>
         <b-row>
           <b-col cols="12" lg="4"><span class="font-weight-bold">Hydrofracturing Performed:</span> {{productionTest.hydro_fracturing_performed}}</b-col>
@@ -372,7 +372,7 @@
         <b-col cols="12" lg="4"><span class="font-weight-bold">Artesian Flow:</span> {{ form.artesian_flow }} {{ form.artesian_flow ? 'USGPM': ''}}</b-col>
       </b-row>
       <b-row>
-        <b-col cols="12" lg="4"><span class="font-weight-bold">Depth to Bedrock:</span> {{ form.depth_to_bedrock }} {{ form.depth_to_bedrock ? 'feet':''}}</b-col>
+        <b-col cols="12" lg="4"><span class="font-weight-bold">Depth to Bedrock:</span> {{ form.bedrock_depth }} {{ form.bedrock_depth ? 'feet':''}}</b-col>
         <b-col cols="12" lg="4"><span class="font-weight-bold">Artesian Pressure:</span> {{ form.artesian_pressure }} {{ form.artesian_pressure ? 'feet': ''}}</b-col>
       </b-row>
     </fieldset>
@@ -407,6 +407,7 @@
 </template>
 
 <script>
+import proj4 from 'proj4'
 import { mapGetters } from 'vuex'
 import PreviewMap from '@/submissions/components/SubmissionPreview/PreviewMap.vue'
 import filterBlankRows from '@/common/filterBlankRows'
@@ -443,6 +444,35 @@ export default {
       }
 
       return subclass
+    },
+    UTM () {
+    // converts form lat/long and returns an object containing UTM easting, northing, and zone
+      const utm = {
+        easting: '',
+        northing: '',
+        zone: ''
+      }
+
+      // if lat/long isn't available, return the default values for UTM
+      if (!this.form || !this.form.latitude || !this.form.longitude) {
+        return utm
+      }
+
+      const lat = Number(this.form.latitude)
+      const long = Number(this.form.longitude)
+
+      // determine zone
+      const zone = Math.floor((long + 180) / 6) + 1
+
+      // proj4 coordinate system definitions
+      const utmProjection = `+proj=utm +zone=${zone} +ellps=GRS80 +datum=NAD83 +units=m +no_defs`
+      const coords = proj4(utmProjection, [long, lat])
+
+      utm.easting = parseFloat(String(coords[0])).toFixed(0)
+      utm.northing = parseFloat(String(coords[1])).toFixed(0)
+      utm.zone = zone
+
+      return utm
     },
     ...mapGetters(['codes'])
   }
