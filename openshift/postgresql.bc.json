@@ -1,17 +1,8 @@
 {
     "kind": "Template",
     "apiVersion": "v1",
-    "metadata": {
-        "name": "gwells-postgresql-bc",
-        "creationTimestamp": null
-    },
+    "metadata": {},
     "parameters": [
-        {
-            "name": "NAME_SUFFIX",
-            "displayName": "Name Suffix",
-            "description": "A suffix appended to all objects",
-            "required": true
-        },
         {
             "name": "ENV_NAME",
             "required": true
@@ -22,10 +13,11 @@
             "kind": "ImageStream",
             "apiVersion": "v1",
             "metadata": {
-                "name": "gwells-postgresql${NAME_SUFFIX}",
+                "name": "gwells-postgresql",
                 "creationTimestamp": null,
                 "labels": {
-                    "base-name": "gwells-postgresql"
+                    "base-name": "gwells-postgresql",
+                    "appver": "gwells"
                 },
                 "annotations": {}
             },
@@ -35,13 +27,13 @@
                 },
                 "tags":[
                     {
-                        "name": "${ENV_NAME}",
                         "annotations": null,
                         "from": {
                             "kind": "ImageStreamTag",
-                            "name": "postgresql-oracle-fdw:9.5-2"
+                            "name": "postgresql-oracle-fdw:9.6-1"
                         },
                         "importPolicy": {},
+                        "name": "${ENV_NAME}",
                         "referencePolicy": {
                             "type": "Source"
                         }
