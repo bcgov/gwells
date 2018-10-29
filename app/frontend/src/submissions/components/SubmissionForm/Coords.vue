@@ -35,7 +35,7 @@
                   @blur="freeze('deg')"
                   label="Longitude"
                   hint="Decimal degrees"
-                  v-model.number="longitudeInput"
+                  v-model.number="computedLongitude"
                   :errors="errors['longitude']"
                   :loaded="fieldsLoaded['longitude']"
                 ></form-input>
@@ -107,7 +107,7 @@
                       @focus="unfreeze('dms')"
                       @blur="freeze('dms')"
                       hint="Degrees"
-                      v-model.number="dms.long.deg"
+                      v-model.number="computedLongitudeDeg"
                       :errors="errors['longitude']"
                       :loaded="fieldsLoaded['longitude']"
                     ></form-input>
@@ -280,6 +280,25 @@ export default {
 
       return zones
     },
+    // In the background, longitude is stored as a negative number (West == minus). However, our B.C. based
+    // users are used to ommitting the negative, because it's implicit. As such we need a workaround to
+    // transform the longitude.
+    computedLongitude: {
+      get: function () {
+        return this.transformToPositive(this.longitudeInput)
+      },
+      set: function (value) {
+        this.longitudeInput = this.transformToNegative(value)
+      }
+    },
+    computedLongitudeDeg: {
+      get: function () {
+        return this.transformToPositive(this.dms.long.deg)
+      },
+      set: function (value) {
+        this.dms.long.deg = this.transformToNegative(value)
+      }
+    },
     ...mapGetters(['codes'])
   },
   watch: {
@@ -416,6 +435,14 @@ export default {
     }
   },
   methods: {
+    transformToPositive (value) {
+      // Take a value, if it's a number - make it positive. If it's not a number, leave it alone
+      return value === '' || isNaN(value) || value === null ? value : Math.abs(value)
+    },
+    transformToNegative (value) {
+      // Take a value, if it's a number - make it negative. If it's not a number, leave it alone.
+      return value === '' || isNaN(value) || value === null ? value : Math.abs(value) * -1
+    },
     convertToUTM (long, lat) {
       // converts input coordinates and returns an object containing UTM easting, northing, and zone
       const utm = {
