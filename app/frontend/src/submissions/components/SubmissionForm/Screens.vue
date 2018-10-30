@@ -109,7 +109,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
               <td class="input-width-small py-0">
                 <form-input
                   group-class="my-1"
-                  :id="`screen${index}DepthFrom`"
+                  :id="`screenDepthFrom_${index}`"
                   aria-label="Depth from (feet)"
                   v-model="screens[index].start"
                   :errors="getScreenError(index).start"
@@ -119,7 +119,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
               <td class="input-width-small py-0">
                 <form-input
                   group-class="my-1"
-                  :id="`screen${index}DepthTo`"
+                  :id="`screenDepthTo_${index}`"
                   aria-label="Depth to (feet)"
                   v-model="screens[index].end"
                   :errors="getScreenError(index).end"
@@ -129,7 +129,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
               <td class="input-width-small py-0">
                 <form-input
                   group-class="my-1"
-                  :id="`screen${index}Diameter`"
+                  :id="`screenDiameter_${index}`"
                   aria-label="Diameter (inches)"
                   v-model="screens[index].internal_diameter"
                   :errors="getScreenError(index).internal_diameter"
@@ -139,7 +139,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
               <td class="input-width-small py-0">
                 <form-input
                     group-class="my-1"
-                    :id="`screen${index}Assembly`"
+                    :id="`screenAssemblyType_${index}`"
                     aria-label="Screen Assembly Type"
                     v-model="screens[index].assembly_type"
                     select
@@ -155,7 +155,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 <form-input
                   list="screenSlotSizeList"
                   group-class="my-1"
-                  :id="`screen${index}SlotSize`"
+                  :id="`screenSlotSize_${index}`"
                   aria-label="Screen Slot Size"
                   v-model="screens[index].slot_size"
                   :errors="getScreenError(index).slot_size"

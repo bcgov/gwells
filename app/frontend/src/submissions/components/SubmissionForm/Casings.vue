@@ -14,7 +14,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 <template>
   <fieldset>
     <legend :id="id">Casing Details</legend>
-    <div class="table-responsive">
+    <div class="table-responsive" id="casingTable">
       <table class="table table-sm">
         <thead>
           <tr>
@@ -33,7 +33,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             <td class="pb-0">
               <form-input
                 group-class="my-0"
-                :id="'casing_from_' + index"
+                :id="'casingFrom_' + index"
                 type="number"
                 v-model="casing.start"
                 :errors="getCasingError(index).start"
@@ -42,7 +42,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             <td class="pb-0">
               <form-input
                 group-class="my-0"
-                :id="'casing_to_' + index"
+                :id="'casingTo_' + index"
                 type="number"
                 v-model="casing.end"
                 :errors="getCasingError(index).end"
@@ -95,7 +95,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             <td class="pb-0">
               <form-input
                 group-class="my-0"
-                :id="'diameter_' + index"
+                :id="'casingDiameter_' + index"
                 type="number"
                 v-model="casing.diameter"
                 :errors="getCasingError(index).diameter"
@@ -104,7 +104,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             <td class="pb-0">
               <form-input
                 group-class="my-0"
-                :id="'wall_thickness_' + index"
+                :id="'casingWallThickness_' + index"
                 type="number"
                 v-model="casing.wall_thickness"
                 :errors="getCasingError(index).wall_thickness"
@@ -112,7 +112,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
             </td>
             <td class="pt-0 py-0">
               <b-form-radio-group v-model="casing.drive_shoe"
-                                  :name="'drive_shoe_' + index">
+                                  :name="'drive_shoe_' + index"
+                                  :id="'casingDriveShoe_' + index">
                 <b-form-radio value="False">No</b-form-radio>
                 <b-form-radio value="True">Yes</b-form-radio>
               </b-form-radio-group>

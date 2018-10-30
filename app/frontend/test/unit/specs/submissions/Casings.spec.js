@@ -74,7 +74,7 @@ describe('Casings.vue', () => {
         ]
       }
     })
-    const errMsg = wrapper.find('#casing_from_0InvalidFeedback')
+    const errMsg = wrapper.find('#casingFrom_0InvalidFeedback')
     expect(errMsg.text()).toContain('Test error for start field')
   })
 })
