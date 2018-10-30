@@ -340,6 +340,17 @@ pipeline {
             openshift.withProject(TEST_PROJECT) {
               input "Deploy to staging?"
 
+              echo "Preparing..."
+
+              // Process db and app template into list objects
+              //  - variable substitution
+              echo "Processing build templates"
+              def dbtemplate = openshift.process("-f",
+                "openshift/postgresql.bc.json",
+                "ENV_NAME=${TEST_SUFFIX}"
+              )
+              openshift.apply(dbtemplate)
+
               echo "Updating staging deployment..."
 
               def deployDBTemplate = openshift.process("-f",
