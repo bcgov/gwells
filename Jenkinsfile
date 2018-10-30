@@ -350,7 +350,7 @@ pipeline {
                 "IMAGE_STREAM_NAME=gwells-postgresql-${TEST_SUFFIX}",
                 "IMAGE_STREAM_VERSION=${TEST_SUFFIX}",
                 "POSTGRESQL_DATABASE=gwells",
-                "VOLUME_CAPACITY=1Gi"
+                "VOLUME_CAPACITY=5Gi"
               )
 
               def deployTemplate = openshift.process("-f",
