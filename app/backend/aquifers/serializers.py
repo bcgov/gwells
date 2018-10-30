@@ -16,6 +16,7 @@ from rest_framework import serializers
 
 from aquifers import models
 
+
 class AquiferSerializer(serializers.ModelSerializer):
     """Serialize a aquifer list"""
     demand_description = serializers.SlugRelatedField(
@@ -88,6 +89,8 @@ class AquiferVulnerabilitySerializer(serializers.ModelSerializer):
 
 
 class AquiferSubtypeSerializer(serializers.ModelSerializer):
+    description = serializers.CharField(source='__str__')
+
     class Meta:
         model = models.AquiferSubtype
         fields = (
