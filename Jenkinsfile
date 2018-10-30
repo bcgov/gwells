@@ -115,14 +115,14 @@ pipeline {
           openshift.withCluster() {
             openshift.withProject(DEV_PROJECT) {
               // Process postgres deployment config (sub in vars, create list items)
-              echo " \$ oc process -f openshift/postgresql.dc.json -p DATABASE_SERVICE_NAME=gwells-pgsql-${DEV_SUFFIX}-${PR_NUM} -p IMAGE_STREAM_NAMESPACE='' -p IMAGE_STREAM_NAME=gwells-postgresql-${DEV_SUFFIX}-${PR_NUM} -p IMAGE_STREAM_VERSION=${DEV_SUFFIX} -p LABEL_APPVER=-${DEV_SUFFIX}-${PR_NUM} -p POSTGRESQL_DATABASE=gwells -p VOLUME_CAPACITY=1Gi | oc apply -n moe-gwells-dev -f -"
+              echo " \$ oc process -f openshift/postgresql.dc.json -p DATABASE_SERVICE_NAME=gwells-pgsql-${DEV_SUFFIX}-${PR_NUM} -p IMAGE_STREAM_NAMESPACE='' -p IMAGE_STREAM_NAME=gwells-postgresql-${DEV_SUFFIX}-${PR_NUM} -p IMAGE_STREAM_VERSION=${DEV_SUFFIX} -p NAME_SUFFIX=-${DEV_SUFFIX}-${PR_NUM} -p POSTGRESQL_DATABASE=gwells -p VOLUME_CAPACITY=1Gi | oc apply -n moe-gwells-dev -f -"
               def deployDBTemplate = openshift.process("-f",
                 "openshift/postgresql.dc.json",
                 "DATABASE_SERVICE_NAME=gwells-pgsql-${DEV_SUFFIX}-${PR_NUM}",
                 "IMAGE_STREAM_NAMESPACE=''",
                 "IMAGE_STREAM_NAME=gwells-postgresql-${DEV_SUFFIX}-${PR_NUM}",
                 "IMAGE_STREAM_VERSION=${DEV_SUFFIX}",
-                "LABEL_APPVER=-${DEV_SUFFIX}-${PR_NUM}",
+                "NAME_SUFFIX=-${DEV_SUFFIX}-${PR_NUM}",
                 "POSTGRESQL_DATABASE=gwells",
                 "VOLUME_CAPACITY=1Gi"
               )
@@ -355,7 +355,7 @@ pipeline {
 
               def deployDBTemplate = openshift.process("-f",
                 "openshift/postgresql.dc.json",
-                "LABEL_APPVER=-${TEST_SUFFIX}",
+                "NAME_SUFFIX=-${TEST_SUFFIX}",
                 "DATABASE_SERVICE_NAME=gwells-pgsql-${TEST_SUFFIX}",
                 "IMAGE_STREAM_NAMESPACE=''",
                 "IMAGE_STREAM_NAME=gwells-postgresql-${TEST_SUFFIX}",
@@ -588,7 +588,7 @@ pipeline {
 
               def deployDBTemplate = openshift.process("-f",
                 "openshift/postgresql.dc.json",
-                "LABEL_APPVER=-${PROD_SUFFIX}",
+                "NAME_SUFFIX=-${PROD_SUFFIX}",
                 "DATABASE_SERVICE_NAME=gwells-pgsql-${PROD_SUFFIX}",
                 "IMAGE_STREAM_NAMESPACE=''",
                 "IMAGE_STREAM_NAME=gwells-postgresql-${PROD_SUFFIX}",
