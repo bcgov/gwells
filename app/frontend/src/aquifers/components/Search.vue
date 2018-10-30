@@ -89,7 +89,7 @@
 <style>
 table.b-table > thead > tr > th.sorting::before,
 table.b-table > tfoot > tr > th.sorting::before {
-  display: none;
+  display: none !important;
 }
 
 table.b-table > thead > tr > th.sorting::after,
@@ -151,7 +151,8 @@ export default {
   },
   methods: {
     fetchResults () {
-      if (isEmpty(this.query)) {
+      if (isEmpty(this.query.aquifer_id) && isEmpty(this.query.search)) {
+        this.response = {}
         return
       }
 
@@ -180,9 +181,9 @@ export default {
     triggerReset () {
       this.response = {}
       this.filterParams = {}
-      this.search = undefined
-      this.aquifer_id = undefined
-      this.currentPage = undefined
+      this.search = ''
+      this.aquifer_id = ''
+      this.currentPage = 0
 
       this.updateQueryParams()
     },

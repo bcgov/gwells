@@ -74,6 +74,7 @@ describe('Search Component', () => {
 
   it('form reset resets response and query', () => {
     const wrapper = component()
+    axios.get.mockResolvedValue({})
 
     wrapper.find('#search').setValue('asdf')
     wrapper.find('form').trigger('submit')
