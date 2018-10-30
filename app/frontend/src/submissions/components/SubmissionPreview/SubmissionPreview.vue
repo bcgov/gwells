@@ -112,7 +112,7 @@
         </b-col>
         <b-col cols="12" lg="6" xl="6" offset-xl="2">
           <div>
-            <preview-map :latitude="form.latitude" :longitude="form.longitude"></preview-map>
+            <coords-map :latitude="form.latitude" :longitude="form.longitude" :draggable="false"></coords-map>
           </div>
           <div class="my-3">&nbsp;</div>
           <div><span class="font-weight-bold">Geographic Coordinates - North American Datum of 1983 (NAD 83)</span></div>
@@ -409,14 +409,15 @@
 <script>
 import proj4 from 'proj4'
 import { mapGetters } from 'vuex'
-import PreviewMap from '@/submissions/components/SubmissionPreview/PreviewMap.vue'
+import CoordsMap from '@/submissions/components/SubmissionForm/CoordsMap.vue'
+
 import filterBlankRows from '@/common/filterBlankRows'
 import codeToDescription from '@/common/codeToDescription.js'
 
 export default {
   name: 'SubmissionPreview',
   components: {
-    PreviewMap
+    CoordsMap
   },
   mixins: [filterBlankRows, codeToDescription],
   props: [
