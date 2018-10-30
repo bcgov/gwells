@@ -893,7 +893,7 @@ BEGIN
   FROM wells.gw_aquifer_wells aws INNER JOIN xform_well xform ON aws.well_id = xform.well_id;
 
   -- 2018-SEPT-24 14:59 GW Aquifer app
-  raise notice '...importing gw_aquifer_attrs data';
+  raise notice '...importing gw_aquifer_attrs data (aquifer)';
   INSERT INTO aquifer(
     aquifer_id              
     ,aquifer_name            
@@ -982,7 +982,7 @@ BEGIN
   WHERE  aquifer.aquifer_id = xform.aquifer_id
   AND    xform.mapping_year is not null;
 
-  raise notice '...gw_aquifer_attrs data updated from mapping ';
+  raise notice '...aquifer data updated from mapping spreadsheet';
 
   UPDATE well
   SET    aquifer_id = aws.aquifer_id
@@ -993,6 +993,7 @@ BEGIN
 
   raise notice '...well data updated from gw_aquifer_wells';
 
+  raise notice '...importing hydraulic_property data';
   INSERT INTO hydraulic_property(
     hydraulic_property_guid  
   ,storativity              
@@ -1138,7 +1139,8 @@ BEGIN
   PERFORM populate_xform(_subset_ind);
   TRUNCATE TABLE bcgs_number CASCADE;
   PERFORM migrate_bcgs();
-  TRUNCATE TABLE well CASCADE;
+  -- This truncates 'well' table too
+  TRUNCATE TABLE aquifer CASCADE; 
   PERFORM populate_well();
   PERFORM migrate_screens();
   PERFORM migrate_production();
