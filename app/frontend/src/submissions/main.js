@@ -25,8 +25,6 @@ import FormInput from '@/common/components/FormInput.vue'
 import authenticate from '@/common/authenticate.js'
 import {FETCH_CONFIG} from '@/common/store/config.js'
 
-import 'leaflet/dist/leaflet.css'
-
 // GWELLS js API library (helper methods for working with API)
 import ApiService from '@/common/services/ApiService.js'
 
