@@ -11,10 +11,7 @@
               <b-col cols="12" sm="6" lg="3">
                 <form-input
                   id="latitude"
-                  type="number"
-                  :step="0.1"
-                  :min="48.2"
-                  :max="60"
+                  type="text"
                   label="Latitude"
                   hint="Decimal degrees"
                   @focus="unfreeze('deg')"
@@ -27,10 +24,7 @@
               <b-col cols="12" sm="6" lg="3" offset-lg="2">
                 <form-input
                   id="longitude"
-                  type="number"
-                  :step="0.1"
-                  :min="114"
-                  :max="139.07"
+                  type="text"
                   @focus="unfreeze('deg')"
                   @blur="freeze('deg')"
                   label="Longitude"
@@ -54,10 +48,7 @@
                       @focus="unfreeze('dms')"
                       @blur="freeze('dms')"
                       hint="Degrees"
-                      type="number"
-                      :step="1"
-                      :min="48"
-                      :max="60"
+                      type="text"
                       v-model.number="dms.lat.deg"
                       :loaded="fieldsLoaded['latitude']"
                     ></form-input>
@@ -68,10 +59,7 @@
                       hint="Minutes"
                       @focus="unfreeze('dms')"
                       @blur="freeze('dms')"
-                      type="number"
-                      :step="1"
-                      :min="0"
-                      :max="60"
+                      type="text"
                       v-model.number="dms.lat.min"
                       :errors="errors['latitude']"
                       :loaded="fieldsLoaded['latitude']"
@@ -80,10 +68,7 @@
                   <b-col cols="12" sm="4" class="px-1">
                     <form-input
                       id="latitudeSec"
-                      type="number"
-                      :step="0.1"
-                      :min="0"
-                      :max="60"
+                      type="text"
                       @focus="unfreeze('dms')"
                       @blur="freeze('dms')"
                       hint="Seconds"
@@ -100,10 +85,7 @@
                   <b-col cols="12" sm="4" class="px-2">
                     <form-input
                       id="longitudeDeg"
-                      type="number"
-                      :step="1"
-                      :min="114"
-                      :max="139"
+                      type="text"
                       @focus="unfreeze('dms')"
                       @blur="freeze('dms')"
                       hint="Degrees"
@@ -115,10 +97,7 @@
                   <b-col cols="12" sm="4" class="px-2">
                     <form-input
                       id="longitudeMin"
-                      type="number"
-                      :step="1"
-                      :min="0"
-                      :max="60"
+                      type="text"
                       @focus="unfreeze('dms')"
                       @blur="freeze('dms')"
                       hint="Minutes"
@@ -130,10 +109,7 @@
                   <b-col cols="12" sm="4" class="px-1">
                     <form-input
                       id="longitudeSec"
-                      type="number"
-                      :step="0.1"
-                      :min="0"
-                      :max="60"
+                      type="text"
                       @focus="unfreeze('dms')"
                       @blur="freeze('dms')"
                       hint="Seconds"
@@ -167,8 +143,7 @@
                 <!-- UTM Easting should only allow 6 digits to be entered. -->
                 <form-input
                   id="utmEasting"
-                  type="number"
-                  :step="1"
+                  type="text"
                   label="UTM Easting"
                   v-model.number="utm.easting"
                   @focus="unfreeze('utm')"
@@ -181,8 +156,7 @@
                 <!-- UTM Northing should only allow 7 digits to be entered. -->
                 <form-input
                   id="utmNorthing"
-                  type="number"
-                  :step="1"
+                  type="text"
                   label="UTM Northing"
                   @focus="unfreeze('utm')"
                   @blur="freeze('utm')"
