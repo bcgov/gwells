@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Retrieve Component Matches the snapshot 1`] = `
+exports[`View Component Matches the snapshot 1`] = `
 <div
   class="card p-3 mb-4"
 >
@@ -8,12 +8,14 @@ exports[`Retrieve Component Matches the snapshot 1`] = `
     class="container"
   >
     <div
-      class="row border-bottom mb-3"
+      class="row border-bottom mb-3 pb-2"
     >
       <div
         class="col"
       >
-        <h5>
+        <h5
+          class="pt-2"
+        >
           Aquifer Summary
         </h5>
       </div>
@@ -21,8 +23,10 @@ exports[`Retrieve Component Matches the snapshot 1`] = `
       <div
         class="col-auto"
       >
+        <!---->
+         
         <a
-          class="print fa fa-print fa-lg d-print-none"
+          class="ml-2 print fa fa-print fa-lg d-print-none"
           href="#"
           title="Print"
         />

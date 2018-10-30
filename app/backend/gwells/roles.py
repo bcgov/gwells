@@ -30,6 +30,8 @@ REGISTRIES_AUTHORITY_ROLE = 'registries_statutory_authority'
 REGISTRIES_VIEWER_ROLE = 'registries_viewer'
 WELLS_VIEWER_ROLE = 'wells_viewer'
 WELLS_EDIT_ROLE = 'wells_edit'
+AQUIFERS_VIEWER_ROLE = 'aquifers_view'
+AQUIFERS_EDIT_ROLE = 'aquifers_edit'
 
 # These roles are excluded, as they cannot be mapped to any particular useful groups.
 EXCLUDE = ('idir', 'offline_access', 'admin', 'uma_authorization')

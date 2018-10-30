@@ -146,7 +146,7 @@ DECLARE
     wells.legal_section AS legal_section                                     ,
     wells.legal_township AS legal_township                                   ,
     wells.legal_range AS legal_range                                         ,
-    to_char(wells.pid,''fm000000000'') AS legal_pid                          ,
+    wells.pid AS legal_pid                                                   ,
     wells.well_location AS well_location_description                         ,
     wells.well_identification_plate_no AS identification_plate_number        ,
     wells.diameter AS diameter                                               ,
@@ -287,7 +287,7 @@ BEGIN
      legal_section                      character varying(10),
      legal_township                     character varying(20),
      legal_range                        character varying(10),
-     legal_pid                          character varying(9),
+     legal_pid                          integer,
      well_location_description          character varying(500),
      identification_plate_number        integer,
      diameter                           character varying(9),
@@ -893,7 +893,7 @@ BEGIN
   FROM wells.gw_aquifer_wells aws INNER JOIN xform_well xform ON aws.well_id = xform.well_id;
 
   -- 2018-SEPT-24 14:59 GW Aquifer app
-  raise notice '...importing gw_aquifer_attrs data';
+  raise notice '...importing gw_aquifer_attrs data (aquifer)';
   INSERT INTO aquifer(
     aquifer_id              
     ,aquifer_name            
@@ -982,7 +982,7 @@ BEGIN
   WHERE  aquifer.aquifer_id = xform.aquifer_id
   AND    xform.mapping_year is not null;
 
-  raise notice '...gw_aquifer_attrs data updated from mapping ';
+  raise notice '...aquifer data updated from mapping spreadsheet';
 
   UPDATE well
   SET    aquifer_id = aws.aquifer_id
@@ -993,6 +993,7 @@ BEGIN
 
   raise notice '...well data updated from gw_aquifer_wells';
 
+  raise notice '...importing hydraulic_property data';
   INSERT INTO hydraulic_property(
     hydraulic_property_guid  
   ,storativity              
@@ -1138,7 +1139,8 @@ BEGIN
   PERFORM populate_xform(_subset_ind);
   TRUNCATE TABLE bcgs_number CASCADE;
   PERFORM migrate_bcgs();
-  TRUNCATE TABLE well CASCADE;
+  -- This truncates 'well' table too
+  TRUNCATE TABLE aquifer CASCADE; 
   PERFORM populate_well();
   PERFORM migrate_screens();
   PERFORM migrate_production();

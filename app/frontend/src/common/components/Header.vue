@@ -73,7 +73,7 @@ export default {
       return {
         dataEntry: (!!this.config && this.config.enable_data_entry === true) && this.userRoles.submissions.edit === true,
         admin: adminMeta ? adminMeta.content === 'true' : false,
-        aquifers: false
+        aquifers: !!this.config && this.config.enable_aquifers_search === true
       }
     },
     ...mapGetters(['userRoles', 'config'])

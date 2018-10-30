@@ -63,7 +63,11 @@
             "displayName": "Version of PostgreSQL Image",
             "name": "IMAGE_STREAM_VERSION",
             "required": true,
-            "value": "9.5"
+            "value": "9.6"
+        },
+        {
+            "name": "LABEL_APPVER",
+            "required": true
         }
     ],
     "objects": [
@@ -124,7 +128,8 @@
             "metadata": {
                 "name": "${DATABASE_SERVICE_NAME}",
                 "annotations":{
-                    "template.openshift.io.bcgov/create": "true"
+                    "template.openshift.io.bcgov/create": "true",
+                    "volume.beta.kubernetes.io/storage-provisioner": "kubernetes.io/glusterfs"
                 }
             },
             "spec": {
@@ -135,7 +140,8 @@
                     "requests": {
                         "storage": "${VOLUME_CAPACITY}"
                     }
-                }
+                },
+                "storageClassName": "gluster-file-db"
             }
         },
         {
@@ -145,7 +151,8 @@
                 "name": "${IMAGE_STREAM_NAME}",
                 "creationTimestamp": null,
                 "labels": {
-                    "base-name": "gwells-postgresql"
+                    "base-name": "gwells-postgresql",
+                    "appver": "gwells${LABEL_APPVER}"
                 },
                 "annotations": {}
             },
@@ -175,7 +182,8 @@
                 "template": {
                     "metadata": {
                         "labels": {
-                            "name": "${DATABASE_SERVICE_NAME}"
+                            "name": "${DATABASE_SERVICE_NAME}",
+                            "appver": "gwells${LABEL_APPVER}"
                         }
                     },
                     "spec": {

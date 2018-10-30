@@ -15,12 +15,20 @@
 <template>
   <b-card no-body class="p-3 mb-4">
     <b-container>
-      <b-row class="border-bottom mb-3">
-        <b-col><h5>Aquifer Summary</h5></b-col>
+      <b-row class="border-bottom mb-3 pb-2">
+        <b-col><h5 class="pt-2">Aquifer Summary</h5></b-col>
         <b-col cols="auto">
-          <a href="#" title="Print"
-           v-on:click.prevent="print()"
-           class="print fa fa-print fa-lg d-print-none"/>
+          <b-button
+            variant="default"
+            v-if="userRoles.aquifers.edit"
+            v-on:click.prevent="edit()">
+            <span title="Edit" class="fa fa-edit"/>
+          </b-button>
+          <a class="ml-2 print fa fa-print fa-lg d-print-none"
+            href="#"
+            title="Print"
+            v-on:click.prevent="print()"
+           />
         </b-col>
       </b-row>
 
@@ -68,6 +76,7 @@
 
 <script>
 import ApiService from '@/common/services/ApiService.js'
+import { mapGetters } from 'vuex'
 
 export default {
   props: ['id'],
@@ -77,10 +86,16 @@ export default {
       record: {}
     }
   },
+  computed: {
+    ...mapGetters(['userRoles'])
+  },
   watch: {
     id () { this.fetch() }
   },
   methods: {
+    edit () {
+      this.$router.push({ name: 'edit', params: { id: this.id } })
+    },
     print () {
       window.print()
     },
