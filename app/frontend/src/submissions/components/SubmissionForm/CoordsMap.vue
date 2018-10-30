@@ -6,7 +6,7 @@
 import L from 'leaflet'
 import { tiledMapLayer } from 'esri-leaflet'
 export default {
-  name: 'SingleCoordMap',
+  name: 'CoordsMap',
   props: {
     latitude: {
       type: Number
