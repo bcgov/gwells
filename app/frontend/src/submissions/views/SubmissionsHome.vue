@@ -516,7 +516,14 @@ export default {
         this.formSubmitSuccess = true
         this.resetForm()
       }).catch((error) => {
-        this.errors = error.response.data
+        if (error.response.status === 400) {
+          // Bad request, the response.data will contain information relating to why the request was bad.
+          this.errors = error.response.data
+        } else {
+          // Some other kind of server error. If for example, it's a 500, the response data is not of
+          // much use, so we just grab the status text.
+          this.errors = { 'Server Error': error.response.statusText }
+        }
         this.formSubmitError = true
       }).finally(() => {
         this.formSubmitLoading = false
