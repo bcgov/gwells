@@ -3,7 +3,9 @@
     <div class="card-body">
       <h4 class="card-title">
         <b-row>
-          <b-col lg="12" >Well Activity Submission
+          <b-col lg="12" >
+              <div v-if="activityType === 'STAFF_EDIT'">Well Summary Edit Page</div>
+              <div v-else>Well Activity Submission</div>
             <b-form-group>
               <b-form-radio-group button-variant="outline-primary" size="sm" buttons v-model="formIsFlat" label="Form layout" class="float-right">
                 <b-form-radio v-bind:value="true" id="flat">Single page</b-form-radio>
@@ -13,7 +15,10 @@
           </b-col>
         </b-row>
       </h4>
-      <p>Submit activity on a well. <a href="/gwells/">Try a search</a> to see if the well exists in the system before submitting a report.</p>
+      <div v-if="activityType === 'STAFF_EDIT'">
+        Jump links go here
+      </div>
+      <p v-else>Submit activity on a well. <a href="/gwells/">Try a search</a> to see if the well exists in the system before submitting a report.</p>
 
       <!-- Activity submission form -->
       <b-form @submit.prevent="confirmSubmit">
@@ -448,7 +453,7 @@ export default {
           'comments'
         ],
         STAFF_EDIT: [
-          'activityType'
+          'wellReportStatus'
         ]
       }
     }
