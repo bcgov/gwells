@@ -66,7 +66,7 @@
         </b-form>
       </b-col>
       <b-col cols="12" lg="6">
-        This is a map.
+        <search-map/>
       </b-col>
     </b-row>
     <b-row class="my-5">
@@ -94,8 +94,12 @@
 
 <script>
 import ApiService from '@/common/services/ApiService.js'
+import SearchMap from '@/wells/components/SearchMap.vue'
 export default {
   name: 'WellSearch',
+  components: {
+    'search-map': SearchMap
+  },
   data () {
     return {
       isBusy: false,
