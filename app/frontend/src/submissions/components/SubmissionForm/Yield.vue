@@ -1,5 +1,5 @@
 <template>
-  <fieldset>
+  <fieldset :id="id">
     <legend>Well Yield Estimation</legend>
     <div v-for="(data, index) in productionData" :key="`productionDataSet${index}`">
       <b-row>
@@ -92,6 +92,10 @@ export default {
     fieldsLoaded: {
       type: Object,
       default: () => ({})
+    },
+    id: {
+      type: String,
+      isInput: false
     }
   },
   fields: {

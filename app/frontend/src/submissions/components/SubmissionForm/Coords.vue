@@ -1,7 +1,7 @@
 <template>
   <div>
     <fieldset>
-      <legend>Geographic Coordinates</legend>
+      <legend :id="id">Geographic Coordinates</legend>
       <p>To determine coordinates using a Global Positioning System (GPS), set the datum to North America Datum of 1983 (NAD 83), the current ministry standard for mapping.</p>
       <p>After the GPS coordinates are entered, the map pin can be moved by clicking and dragging it on the map. The GPS coordinates will be updated automatically.</p>
       <b-row>
@@ -228,7 +228,11 @@ export default {
       type: Object,
       default: () => ({})
     },
-    errorCoordsNotProvided: Boolean
+    errorCoordsNotProvided: Boolean,
+    id: {
+      type: String,
+      isInput: false
+    }
   },
   data () {
     return {

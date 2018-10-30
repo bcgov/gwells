@@ -1,6 +1,6 @@
 <template>
   <fieldset>
-    <legend>Water Quality</legend>
+    <legend :id="id">Water Quality</legend>
     <b-row>
       <b-col cols="12" md="6">
         <b-form-group label="Characteristics" id="waterCharacteristicsGroup">
@@ -74,6 +74,10 @@ export default {
     fieldsLoaded: {
       type: Object,
       default: () => ({})
+    },
+    id: {
+      type: String,
+      isInput: false
     }
   },
   fields: {

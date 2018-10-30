@@ -13,6 +13,10 @@ export default {
     },
     longitude: {
       type: Number
+    },
+    id: {
+      type: String,
+      isInput: false
     }
   },
   data () {

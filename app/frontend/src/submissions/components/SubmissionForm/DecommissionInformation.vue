@@ -1,6 +1,6 @@
 <template>
   <fieldset>
-    <legend>Well Decommission Information</legend>
+    <legend :id="id">Well Decommission Information</legend>
     <b-row>
       <b-col cols="12" md="3" lg="2">
         <form-input
@@ -82,6 +82,10 @@ export default {
     fieldsLoaded: {
       type: Object,
       default: () => ({})
+    },
+    id: {
+      type: String,
+      isInput: false
     }
   },
   data () {

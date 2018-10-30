@@ -1,6 +1,6 @@
 <template>
   <fieldset>
-    <legend>Type of Work</legend>
+    <legend :id="id">Type of Work</legend>
     <b-row>
       <b-col cols="12" md="6">
         <b-form-group label="Type of Work *">
@@ -24,7 +24,11 @@ import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 export default {
   mixins: [inputBindingsMixin],
   props: {
-    wellActivityType: String
+    wellActivityType: String,
+    id: {
+      type: String,
+      isInput: false
+    }
   },
   computed: {
     ...mapGetters(['userRoles'])

@@ -16,7 +16,11 @@
         </b-row>
       </h4>
       <div v-if="activityType === 'STAFF_EDIT'">
-        Jump links go here
+        <b-row>
+          <b-col lg="3" v-for="step in formSteps[activityType]" :key='step'>
+            <a :href="'#' + step">{{formStepDescriptions[step] ? formStepDescriptions[step] : step}}</a>
+          </b-col>
+        </b-row>
       </div>
       <p v-else>Submit activity on a well. <a href="/gwells/">Try a search</a> to see if the well exists in the system before submitting a report.</p>
 
@@ -49,6 +53,7 @@
 
         <!-- Type of well -->
         <well-type class="my-3"
+          id="activityType"
           v-if="currentStep === 'wellType' || (formIsFlat && flatForm.wellType)"
           :wellTagNumber.sync="form.well"
           :wellActivityType.sync="activityType"
@@ -66,6 +71,7 @@
 
         <!-- Person responsible for work -->
         <person-responsible class="my-3"
+          id="personResponsible"
           v-if="formStep === 'personResponsible' || (formIsFlat && flatForm.personResponsible)"
           :drillerName.sync="form.driller_name"
           :consultantName.sync="form.consultant_name"
@@ -78,6 +84,7 @@
 
         <!-- Owner information -->
         <owner class="my-3"
+          id="wellOwner"
           v-if="currentStep === 'wellOwner' || (formIsFlat && flatForm.wellOwner)"
           :ownerFullName.sync="form.owner_full_name"
           :ownerMailingAddress.sync="form.owner_mailing_address"
@@ -90,6 +97,7 @@
 
         <!-- Well location -->
         <location class="my-3"
+          id="wellLocation"
           v-if="currentStep === 'wellLocation' || (formIsFlat && flatForm.wellLocation)"
           :ownerMailingAddress.sync="form.owner_mailing_address"
           :ownerProvinceState.sync="form.owner_province_state"
@@ -111,6 +119,7 @@
 
         <!-- Coords -->
         <coords class="my-3"
+          id="wellCoords"
           v-if="currentStep === 'wellCoords' || (formIsFlat && flatForm.wellCoords)"
           :latitude.sync="form.latitude"
           :longitude.sync="form.longitude"
@@ -401,6 +410,28 @@ export default {
       fieldsLoaded: {},
       form: {},
       formOptions: {},
+      formStepDescriptions: {
+        'activityType': 'Type of work',
+        'wellType': 'Well class',
+        'wellOwner': 'Well owner',
+        'wellLocation': 'Well location',
+        'wellCoords': 'Geographic coordinates',
+        'method': 'Method of drilling',
+        'closureDescription': 'Decommission description',
+        'lithology': 'Lithology',
+        'casings': 'Casing details',
+        'backfill': 'Surface seal and backfill information',
+        'liner': 'Liner information',
+        'screens': 'Screen information',
+        'filterPack': 'Filter pack',
+        'wellDevelopment': 'Well development',
+        'wellYield': 'Well yield estimation',
+        'waterQuality': 'Water quality',
+        'wellCompletion': 'Well completion data',
+        'decommissionInformation': 'Well decommission information',
+        'comments': 'Comments',
+        'personResponsible': 'Person Responsible for Work'
+      },
       formSteps: {
         CON: [
           'activityType',
@@ -453,7 +484,25 @@ export default {
           'comments'
         ],
         STAFF_EDIT: [
-          'wellReportStatus'
+          'wellType',
+          'personResponsible',
+          'wellOwner',
+          'wellLocation',
+          'wellCoords',
+          'method',
+          'closureDescription',
+          'lithology',
+          'casings',
+          'backfill',
+          'liner',
+          'screens',
+          'filterPack',
+          'wellDevelopment',
+          'wellYield',
+          'waterQuality',
+          'wellCompletion',
+          'decommissionInformation',
+          'comments'
         ]
       }
     }
@@ -696,6 +745,7 @@ export default {
     }
     if (this.$route.name === 'SubmissionsEdit') {
       this.activityType = 'STAFF_EDIT'
+      this.formIsFlat = true
     }
   }
 }

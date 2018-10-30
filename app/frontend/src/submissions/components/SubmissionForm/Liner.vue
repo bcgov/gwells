@@ -1,6 +1,6 @@
 <template>
   <fieldset>
-    <legend>Liner Information</legend>
+    <legend :id="id">Liner Information</legend>
     <b-row>
         <b-col cols="12" md="6">
           <form-input
@@ -146,6 +146,10 @@ export default {
       type: Object,
       default: () => ({}),
       isInput: true
+    },
+    id: {
+      type: String,
+      isInput: false
     }
   },
   data () {
