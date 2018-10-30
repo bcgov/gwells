@@ -132,7 +132,6 @@ pipeline {
               echo "Processing deployment config for pull request ${PR_NUM}"
               def deployTemplate = openshift.process("-f",
                 "openshift/backend.dc.json",
-                "BUILD_ENV_NAME=${DEV_SUFFIX}",
                 "ENV_NAME=${DEV_SUFFIX}",
                 "HOST=${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}.pathfinder.gov.bc.ca",
                 "NAME_SUFFIX=-${DEV_SUFFIX}-${PR_NUM}"
@@ -357,7 +356,6 @@ pipeline {
               def deployTemplate = openshift.process("-f",
                 "openshift/backend.dc.json",
                 "NAME_SUFFIX=-${TEST_SUFFIX}",
-                "BUILD_ENV_NAME=${TEST_SUFFIX}",
                 "ENV_NAME=${TEST_SUFFIX}",
                 "HOST=${APP_NAME}-${TEST_SUFFIX}.pathfinder.gov.bc.ca",
               )
@@ -573,7 +571,6 @@ pipeline {
               def deployTemplate = openshift.process("-f",
                 "openshift/backend.dc.json",
                 "NAME_SUFFIX=-${PROD_SUFFIX}",
-                "BUILD_ENV_NAME=${PROD_SUFFIX}",
                 "ENV_NAME=${PROD_SUFFIX}",
                 "HOST=${APP_NAME}-${PROD_SUFFIX}.pathfinder.gov.bc.ca",
               )
