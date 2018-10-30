@@ -128,7 +128,7 @@ pipeline {
               )
 
               // Process postgres deployment config (sub in vars, create list items)
-              echo " \$ oc process -f openshift/backend.dc.json -p BUILD_ENV_NAME=${DEV_SUFFIX} -p ENV_NAME=${DEV_SUFFIX} -p NAME_SUFFIX=-${DEV_SUFFIX}-${PR_NUM} | oc apply -n moe-gwells-dev -f -"
+              echo " \$ oc process -f openshift/backend.dc.json -p ENV_NAME=${DEV_SUFFIX} -p NAME_SUFFIX=-${DEV_SUFFIX}-${PR_NUM} | oc apply -n moe-gwells-dev -f -"
               echo "Processing deployment config for pull request ${PR_NUM}"
               def deployTemplate = openshift.process("-f",
                 "openshift/backend.dc.json",
