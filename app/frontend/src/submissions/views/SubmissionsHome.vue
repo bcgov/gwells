@@ -53,8 +53,8 @@
 
         <!-- Type of well -->
         <well-type class="my-3"
-          id="activityType"
           v-if="currentStep === 'wellType' || (formIsFlat && flatForm.wellType)"
+          id="activityType"
           :wellTagNumber.sync="form.well"
           :wellActivityType.sync="activityType"
           :wellClass.sync="form.well_class"
@@ -71,8 +71,8 @@
 
         <!-- Person responsible for work -->
         <person-responsible class="my-3"
-          id="personResponsible"
           v-if="formStep === 'personResponsible' || (formIsFlat && flatForm.personResponsible)"
+          id="personResponsible"
           :drillerName.sync="form.driller_name"
           :consultantName.sync="form.consultant_name"
           :consultantCompany.sync="form.consultant_company"
@@ -84,8 +84,8 @@
 
         <!-- Owner information -->
         <owner class="my-3"
-          id="wellOwner"
           v-if="currentStep === 'wellOwner' || (formIsFlat && flatForm.wellOwner)"
+          id="wellOwner"
           :ownerFullName.sync="form.owner_full_name"
           :ownerMailingAddress.sync="form.owner_mailing_address"
           :ownerProvinceState.sync="form.owner_province_state"
@@ -97,8 +97,8 @@
 
         <!-- Well location -->
         <location class="my-3"
-          id="wellLocation"
           v-if="currentStep === 'wellLocation' || (formIsFlat && flatForm.wellLocation)"
+          id="wellLocation"
           :ownerMailingAddress.sync="form.owner_mailing_address"
           :ownerProvinceState.sync="form.owner_province_state"
           :ownerCity.sync="form.owner_city"
@@ -119,8 +119,8 @@
 
         <!-- Coords -->
         <coords class="my-3"
-          id="wellCoords"
           v-if="currentStep === 'wellCoords' || (formIsFlat && flatForm.wellCoords)"
+          id="wellCoords"
           :latitude.sync="form.latitude"
           :longitude.sync="form.longitude"
         />
@@ -128,7 +128,7 @@
         <!-- Method of Drilling -->
         <method-of-drilling class="my-3"
           v-if="currentStep === 'method' || (formIsFlat && flatForm.method)"
-
+          id="method"
           :groundElevation.sync="form.ground_elevation"
           :groundElevationMethod.sync="form.ground_elevation_method"
           :drillingMethod.sync="form.drilling_method"
@@ -139,6 +139,7 @@
         <!-- Closure/Decommission Description -->
         <closure-description class="my-3"
           v-if="currentStep === 'closureDescription' || (formIsFlat && flatForm.closureDescription)"
+          id="closureDescription"
           :closureDescriptionSet.sync="form.decommission_description_set">
 
         </closure-description>
@@ -146,6 +147,7 @@
         <!-- Lithology -->
         <lithology class="my-3"
           v-if="currentStep === 'lithology' || (formIsFlat && flatForm.lithology)"
+          id="lithology"
           :lithology.sync="form.lithologydescription_set"
         />
 
@@ -153,6 +155,7 @@
         <casings class="my-3"
           :key="`casingsComponent${componentUpdateTrigger}`"
           v-if="currentStep === 'casings' || (formIsFlat && flatForm.casings)"
+          id="casings"
           :casings.sync="form.casing_set"
           :errors="errors"
           :fieldsLoaded="fieldsLoaded"
@@ -161,6 +164,7 @@
         <!-- Surface Seal / Backfill Material -->
         <backfill class="my-3"
           v-if="currentStep === 'backfill' || (formIsFlat && flatForm.backfill)"
+          id="backfill"
           :surfaceSealMaterial.sync="form.surface_seal_material"
           :surfaceSealDepth.sync="form.surface_seal_depth"
           :surfaceSealThickness.sync="form.surface_seal_thickness"
@@ -172,6 +176,7 @@
         <!-- Liner Information -->
         <liner class="my-3"
           v-if="currentStep === 'liner' || (formIsFlat && flatForm.liner)"
+          id="liner"
           :linerMaterial.sync="form.liner_material"
           :linerDiameter.sync="form.liner_diameter"
           :linerThickness.sync="form.liner_thickness"
