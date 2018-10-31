@@ -121,8 +121,8 @@
             <b-col cols="12" lg="6"><span class="font-weight-bold">Longitude:</span> {{form.longitude}}</b-col>
           </b-row>
           <b-row>
-            <b-col cols="12" lg="4"><span class="font-weight-bold">UTM Easting:</span> {{UTM.easting}}</b-col>
-            <b-col cols="12" lg="6"><span class="font-weight-bold">UTM Northing:</span> {{UTM.northing}}</b-col>
+            <b-col cols="12" lg="4"><span class="font-weight-bold">UTM Easting:</span> {{Math.round(UTM.easting)}}</b-col>
+            <b-col cols="12" lg="6"><span class="font-weight-bold">UTM Northing:</span> {{Math.round(UTM.northing)}}</b-col>
           </b-row>
           <b-row>
             <b-col cols="12" lg="4"><span class="font-weight-bold">Zone:</span> {{UTM.zone}}</b-col>
@@ -407,10 +407,9 @@
 </template>
 
 <script>
-import proj4 from 'proj4'
 import { mapGetters } from 'vuex'
 import CoordsMap from '@/submissions/components/SubmissionForm/CoordsMap.vue'
-
+import convertCoordinatesMixin from '@/common/convertCoordinatesMixin.js'
 import filterBlankRows from '@/common/filterBlankRows'
 import codeToDescription from '@/common/codeToDescription.js'
 
@@ -419,7 +418,7 @@ export default {
   components: {
     CoordsMap
   },
-  mixins: [filterBlankRows, codeToDescription],
+  mixins: [filterBlankRows, codeToDescription, convertCoordinatesMixin],
   props: [
     'form',
     'activity',
@@ -448,32 +447,7 @@ export default {
     },
     UTM () {
     // converts form lat/long and returns an object containing UTM easting, northing, and zone
-      const utm = {
-        easting: '',
-        northing: '',
-        zone: ''
-      }
-
-      // if lat/long isn't available, return the default values for UTM
-      if (!this.form || !this.form.latitude || !this.form.longitude) {
-        return utm
-      }
-
-      const lat = Number(this.form.latitude)
-      const long = Number(this.form.longitude)
-
-      // determine zone
-      const zone = Math.floor((long + 180) / 6) + 1
-
-      // proj4 coordinate system definitions
-      const utmProjection = `+proj=utm +zone=${zone} +ellps=GRS80 +datum=NAD83 +units=m +no_defs`
-      const coords = proj4(utmProjection, [long, lat])
-
-      utm.easting = parseFloat(String(coords[0])).toFixed(0)
-      utm.northing = parseFloat(String(coords[1])).toFixed(0)
-      utm.zone = zone
-
-      return utm
+      return this.convertToUTM(Number(this.form.longitude), Number(this.form.latitude))
     },
     ...mapGetters(['codes'])
   }
