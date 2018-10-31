@@ -66,7 +66,7 @@
         </b-form>
       </b-col>
       <b-col cols="12" lg="6">
-        <search-map/>
+        <search-map :latitude="latitude" :longitude="longitude" v-on:coordinate="handleMapCoordinate"/>
       </b-col>
     </b-row>
     <b-row class="my-5">
@@ -106,6 +106,8 @@ export default {
       currentPage: 1,
       perPage: 10,
       numberOfRecords: 0,
+      latitude: null,
+      longitude: null,
 
       // searchParams will be set by searchParamsReset()
       searchParams: {}
@@ -151,6 +153,10 @@ export default {
         owner_full_name: '',
         well_tag_number: ''
       }
+    },
+    handleMapCoordinate (latln) {
+      this.latitude = latln.lat
+      this.longitude = latln.lng
     }
   },
   created () {
