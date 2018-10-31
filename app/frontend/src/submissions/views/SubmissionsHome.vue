@@ -14,14 +14,16 @@
           </b-col>
         </b-row>
       </h1>
-      <p v-if="!preview">Submit activity on a well. <a href="/gwells/">Try a search</a> to see if the well exists in the system before submitting a report.</p>
 
       <!-- Activity submission form -->
       <b-form @submit.prevent="confirmSubmit">
         <div v-if="!preview">
           <!-- Form load/save -->
           <b-row>
-            <b-col class="text-right">
+            <b-col cols="12" lg="8">
+              <p v-if="!preview">Submit activity on a well. <a href="/gwells/">Try a search</a> to see if the well exists in the system before submitting a report.</p>
+            </b-col>
+            <b-col cols="12" lg="4" class="text-right">
               <b-btn size="sm" variant="outline-primary" @click="saveForm">
                 Save
                 <transition name="bounce" mode="out-in">
@@ -36,6 +38,16 @@
               </b-btn>
             </b-col>
           </b-row>
+
+          <!-- Form submission success message -->
+          <b-alert
+              :show="formSubmitSuccess"
+              dismissible
+              @dismissed="formSubmitSuccess=false"
+              variant="success"
+              class="mt-3">
+              Your well record was successfully submitted.
+          </b-alert>
 
           <!-- activity type -->
           <activity-type
@@ -272,18 +284,6 @@
           </b-row>
       </b-form>
 
-      <!-- Form submission success message -->
-      <b-alert
-          :show="formSubmitSuccess"
-          dismissible
-          @dismissed="formSubmitSuccess=false"
-          variant="success"
-          class="mt-3">Report submitted!
-        <a v-if="formSubmitSuccessWellTag" :href="`/gwells/well/${formSubmitSuccessWellTag}`">
-          View well details for well {{formSubmitSuccessWellTag}}
-        </a>
-      </b-alert>
-
       <!-- Form submission error message -->
       <b-alert
           :show="formSubmitError"
@@ -291,6 +291,7 @@
           @dismissed="formSubmitError=false"
           variant="danger"
           class="mt-3">
+          <div>Your well record was not submitted.</div>
         <span v-if="errors && errors.detail">
           {{ errors.detail }}
         </span>
@@ -547,6 +548,11 @@ export default {
         this.formSubmitSuccess = true
         this.formSubmitSuccessWellTag = response.data.well
         this.resetForm()
+        this.preview = false
+        this.step = 1
+        this.$nextTick(function () {
+          window.scrollTo(0, 0)
+        })
       }).catch((error) => {
         this.errors = error.response.data
         this.formSubmitError = true
