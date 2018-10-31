@@ -15,13 +15,13 @@
             <b-btn class="float-right" v-if="preview" @click="handlePreviewBackButton" variant="primary">Back to Edit</b-btn>
           </b-col>
         </b-row>
-        <b-row v-if="activityType === 'STAFF_EDIT'">
+      </h1>
+      <b-row v-if="activityType === 'STAFF_EDIT'">
           <b-col lg="3" v-for="step in formSteps[activityType]" :key='step'>
             <a :href="'#' + step">{{formStepDescriptions[step] ? formStepDescriptions[step] : step}}</a>
           </b-col>
         </b-row>
-      </h1>
-      <p v-if="!preview">Submit activity on a well. <a href="/gwells/">Try a search</a> to see if the well exists in the system before submitting a report.</p>
+      <p v-if="!preview && activityType !== 'STAFF_EDIT'">Submit activity on a well. <a href="/gwells/">Try a search</a> to see if the well exists in the system before submitting a report.</p>
 
       <!-- Activity submission form -->
       <b-form @submit.prevent="confirmSubmit">
