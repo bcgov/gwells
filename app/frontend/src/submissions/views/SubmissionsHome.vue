@@ -4,7 +4,7 @@
       <h1 class="card-title">
         <b-row>
           <b-col cols="12">
-              <div v-if="activityType === 'STAFF_EDIT'">Well Summary Edit Page</div>
+              <div v-if="activityType === 'STAFF_EDIT'">Well Edit Page</div>
               <div v-else>Well Activity Submission <span v-if="preview"> Preview</span></div>
             <b-form-group v-if="activityType !== 'STAFF_EDIT' && !preview">
               <b-form-radio-group button-variant="outline-primary" size="sm" buttons v-model="formIsFlat" label="Form layout" class="float-right">
