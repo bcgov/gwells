@@ -15,6 +15,9 @@
 <template>
   <b-card no-body class="p-3 mb-4">
     <h5>Aquifer Search</h5>
+
+    <router-link v-if="userRoles.aquifers.edit" to="new">Add new Aquifer</router-link>
+
     <b-form
       v-on:submit.prevent="triggerSearch"
       v-on:reset="triggerReset">
@@ -104,6 +107,7 @@ table.b-table > tfoot > tr > th.sorting::after {
 <script>
 import ApiService from '@/common/services/ApiService.js'
 import isEmpty from 'lodash.isempty'
+import { mapGetters } from 'vuex'
 
 const LIMIT = 30
 const DEFAULT_ORDERING_STRING = 'aquifer_id'
@@ -147,7 +151,8 @@ export default {
     aquiferList () { return this.response && this.response.results },
     displayPagination () { return this.aquiferList && (this.response.next || this.response.previous) },
     emptyResults () { return this.response && this.response.count === 0 },
-    query () { return this.$route.query }
+    query () { return this.$route.query },
+    ...mapGetters(['userRoles'])
   },
   methods: {
     fetchResults () {
