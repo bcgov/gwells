@@ -36,7 +36,7 @@ exports[`Search Component Matches the snapshot 1`] = `
           >
             <input
               class="form-control"
-              id="__BVID__11"
+              id="search"
               type="text"
             />
             <!---->
@@ -64,7 +64,7 @@ exports[`Search Component Matches the snapshot 1`] = `
           >
             <input
               class="form-control"
-              id="__BVID__13"
+              id="aquifer_id"
               type="text"
             />
             <!---->
@@ -115,9 +115,9 @@ exports[`Search Component Matches the snapshot 1`] = `
    
   <table
     aria-busy="false"
-    aria-colcount="12"
+    aria-colcount="11"
     aria-rowcount="1"
-    class="table b-table"
+    class="table b-table table-striped"
     id="__BVID__15"
   >
     <!---->
@@ -128,75 +128,92 @@ exports[`Search Component Matches the snapshot 1`] = `
       <tr>
         <th
           aria-colindex="1"
-          class=""
+          aria-label="Click to sort Descending"
+          aria-sort="ascending"
+          class="sorting sorting_asc"
+          tabindex="0"
         >
           Aquifer number
         </th>
         <th
           aria-colindex="2"
-          class=""
+          aria-label="Click to sort Descending"
+          class="sorting"
+          tabindex="0"
         >
           Aquifer name
         </th>
         <th
           aria-colindex="3"
-          class=""
+          aria-label="Click to sort Descending"
+          class="sorting"
+          tabindex="0"
         >
           Descriptive location
         </th>
         <th
           aria-colindex="4"
-          class=""
+          aria-label="Click to sort Descending"
+          class="sorting"
+          tabindex="0"
         >
           Material
         </th>
         <th
           aria-colindex="5"
-          class=""
+          aria-label="Click to sort Descending"
+          class="sorting"
+          tabindex="0"
         >
           Litho stratigraphic unit
         </th>
         <th
           aria-colindex="6"
-          class=""
+          aria-label="Click to sort Descending"
+          class="sorting"
+          tabindex="0"
         >
           Subtype
         </th>
         <th
           aria-colindex="7"
-          class=""
+          aria-label="Click to sort Descending"
+          class="sorting"
+          tabindex="0"
         >
           Vulnerability
         </th>
         <th
           aria-colindex="8"
-          class=""
+          aria-label="Click to sort Descending"
+          class="sorting"
+          tabindex="0"
         >
           Size-km²
         </th>
         <th
           aria-colindex="9"
-          class=""
+          aria-label="Click to sort Descending"
+          class="sorting"
+          tabindex="0"
         >
           Productivity
         </th>
         <th
           aria-colindex="10"
-          class=""
+          aria-label="Click to sort Descending"
+          class="sorting"
+          tabindex="0"
         >
           Demand
         </th>
         <th
           aria-colindex="11"
-          class=""
+          aria-label="Click to sort Descending"
+          class="sorting"
+          tabindex="0"
         >
           Year of mapping
-        </th>
-        <th
-          aria-colindex="12"
-          class=""
-        >
-          Publication status
         </th>
       </tr>
     </thead>
@@ -232,7 +249,9 @@ exports[`Search Component Matches the snapshot 1`] = `
           aria-colindex="4"
           class=""
         >
-          Sand and Gravel
+          
+      Sand and Gravel
+    
         </td>
         <td
           aria-colindex="5"
@@ -244,13 +263,17 @@ exports[`Search Component Matches the snapshot 1`] = `
           aria-colindex="6"
           class=""
         >
-          Unconfined sand and gravel - large river system
+          
+      Unconfined sand and gravel - large river system
+    
         </td>
         <td
           aria-colindex="7"
           class=""
         >
-          High
+          
+      High
+    
         </td>
         <td
           aria-colindex="8"
@@ -262,26 +285,30 @@ exports[`Search Component Matches the snapshot 1`] = `
           aria-colindex="9"
           class=""
         >
-          High
+          
+      High
+    
         </td>
         <td
           aria-colindex="10"
           class=""
-        />
+        >
+          
+      
+    
+        </td>
         <td
           aria-colindex="11"
           class=""
         >
           1993
         </td>
-        <td
-          aria-colindex="12"
-          class=""
-        />
       </tr>
       <!---->
       <!---->
     </tbody>
   </table>
+   
+  <!---->
 </div>
 `;
