@@ -23,13 +23,13 @@
           <b-row>
             <b-col class="text-right">
               <b-btn size="sm" variant="outline-primary" @click="saveForm">
-                Save
+                Save report progress
                 <transition name="bounce" mode="out-in">
                     <i v-show="saveFormSuccess" class="fa fa-check text-success"></i>
                 </transition>
               </b-btn>
               <b-btn size="sm" variant="outline-primary" @click="loadConfirmation" ref="confirmLoadBtn">
-                Load
+                Load saved report
                 <transition name="bounce">
                     <i v-show="loadFormSuccess" class="fa fa-check text-success"></i>
                 </transition>
@@ -158,6 +158,7 @@
 
           <!-- Liner Information -->
           <liner class="my-3"
+            :key="`linerComponent${componentUpdateTrigger}`"
             v-if="currentStep === 'liner' || (formIsFlat && displayFormSection.liner)"
             :linerMaterial.sync="form.liner_material"
             :linerDiameter.sync="form.liner_diameter"
@@ -171,6 +172,7 @@
 
           <!-- Screens -->
           <screens class="my-3"
+            :key="`screensComponent${componentUpdateTrigger}`"
             v-if="currentStep === 'screens' || (formIsFlat && displayFormSection.screens)"
             :screenIntakeMethod.sync="form.screen_intake_method"
             :screenType.sync="form.screen_type"
@@ -501,7 +503,6 @@ export default {
       this.formSteps[activityType].forEach((step) => {
         components[step] = true
       })
-
       return components
     },
     isLoadFormDisabled () {
