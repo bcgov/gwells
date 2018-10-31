@@ -27,7 +27,7 @@
             <b-form-radio
                 v-for="(method, index) in codes.decommission_methods"
                 :key="`decommissionMethodOption${index}`"
-                :value="method.code">{{method.description}}</b-form-radio>
+                :value="method.decommission_method_code">{{method.description}}</b-form-radio>
           </b-form-radio-group>
         </b-form-group>
       </b-col>

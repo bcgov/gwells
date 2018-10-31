@@ -14,9 +14,9 @@ export default {
     longitude: {
       type: Number
     },
-    id: {
-      type: String,
-      isInput: false
+    draggable: {
+      type: Boolean,
+      default: true
     }
   },
   data () {
@@ -64,16 +64,19 @@ export default {
         styles: 'PMBC_Parcel_Fabric_Cadastre_Outlined',
         transparent: true
       }).addTo(this.map)
+      this.createMarker()
     },
     createMarker () {
       if (this.latitude !== null && this.getLongitude() !== null) {
         const latlng = L.latLng(this.latitude, this.getLongitude())
-        this.marker = L.marker(latlng, {draggable: true, autoPan: true})
-        this.marker.on('dragend', (ev) => {
-          this.handleDrag(ev)
-        })
+        this.marker = L.marker(latlng, {draggable: this.draggable, autoPan: true})
+        if (this.draggable) {
+          this.marker.on('dragend', (ev) => {
+            this.handleDrag(ev)
+          })
+        }
         this.marker.addTo(this.map)
-        this.setMarkerPopup()
+        this.setMarkerPopup(this.latitude, this.longitude)
         // The 1st time we create a marker, we jump to a different zoom level.
         this.map.setView(latlng, 13)
       }
