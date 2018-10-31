@@ -16,7 +16,7 @@
           </b-col>
         </b-row>
       </h1>
-      <b-row v-if="activityType === 'STAFF_EDIT'">
+      <b-row v-if="!preview && activityType === 'STAFF_EDIT'">
           <b-col lg="3" v-for="step in formSteps[activityType]" :key='step'>
             <a :href="'#' + step">{{formStepDescriptions[step] ? formStepDescriptions[step] : step}}</a>
           </b-col>
