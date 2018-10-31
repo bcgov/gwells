@@ -6,7 +6,7 @@
           <b-col lg="12" >
               <div v-if="activityType === 'STAFF_EDIT'">Well Summary Edit Page</div>
               <div v-else>Well Activity Submission</div>
-            <b-form-group>
+            <b-form-group v-if="activityType !== 'STAFF_EDIT'">
               <b-form-radio-group button-variant="outline-primary" size="sm" buttons v-model="formIsFlat" label="Form layout" class="float-right">
                 <b-form-radio v-bind:value="true" id="flat">Single page</b-form-radio>
                 <b-form-radio v-bind:value="false">Multi page</b-form-radio>
@@ -28,7 +28,7 @@
       <b-form @submit.prevent="confirmSubmit">
 
         <!-- Form load/save -->
-        <b-row>
+        <b-row v-if="activityType !== 'STAFF_EDIT'">
           <b-col class="text-right">
             <b-btn size="sm" variant="outline-primary" @click="saveForm">
               Save report progress
@@ -48,13 +48,14 @@
         <!-- Type of work performed -->
         <activity-type class="my-3"
           v-if="currentStep === 'activityType' || (formIsFlat && flatForm.activityType)"
+          id="activityType"
           :wellActivityType.sync="activityType"
         />
 
         <!-- Type of well -->
         <well-type class="my-3"
           v-if="currentStep === 'wellType' || (formIsFlat && flatForm.wellType)"
-          id="activityType"
+          id="wellType"
           :wellTagNumber.sync="form.well"
           :wellActivityType.sync="activityType"
           :wellClass.sync="form.well_class"
@@ -190,6 +191,7 @@
         <!-- Screens -->
         <screens class="my-3"
           v-if="currentStep === 'screens' || (formIsFlat && flatForm.screens)"
+          id="screens"
           :screenIntakeMethod.sync="form.screen_intake_method"
           :screenType.sync="form.screen_type"
           :screenMaterial.sync="form.screen_material"
@@ -204,6 +206,7 @@
         <!-- Filter Pack -->
         <filterPack class="my-3"
           v-if="currentStep === 'filterPack' || (formIsFlat && flatForm.filterPack)"
+          id="filterPack"
           :filterPackFrom.sync="form.filter_pack_from"
           :filterPackTo.sync="form.filter_pack_to"
           :filterPackThickness.sync="form.filter_pack_thickness"
@@ -214,6 +217,7 @@
         <!-- Well Development -->
         <development class="my-3"
           v-if="currentStep === 'wellDevelopment' || (formIsFlat && flatForm.wellDevelopment)"
+          id="wellDevelopment"
           :developmentMethod.sync="form.development_method"
           :developmentHours.sync="form.development_hours"
           :developmentNotes.sync="form.development_notes"
@@ -222,12 +226,14 @@
         <!-- Yield (Production Data) -->
         <yield class="my-3"
           v-if="currentStep === 'wellYield' || (formIsFlat && flatForm.wellYield)"
+          id="wellYield"
           :productionData.sync="form.production_data_set"
         />
 
         <!-- Water Quality -->
         <water-quality class="my-3"
           v-if="currentStep === 'waterQuality' || (formIsFlat && flatForm.waterQuality)"
+          id="waterQuality"
           :waterQualityCharacteristics.sync="form.water_quality_characteristics"
           :waterQualityColour.sync="form.water_quality_colour"
           :waterQualityOdour.sync="form.water_quality_odour"
@@ -237,6 +243,7 @@
         <!-- Well Completion Data -->
         <completion class="my-3"
           v-if="currentStep === 'wellCompletion' || (formIsFlat && flatForm.wellCompletion)"
+          id="wellCompletion"
           :totalDepthDrilled.sync="form.total_depth_drilled"
           :finishedWellDepth.sync="form.finished_well_depth"
           :finalCasingStickUp.sync="form.final_casing_stick_up"
@@ -251,6 +258,7 @@
 
         <decommission-information class="my-3"
           v-if="currentStep === 'decommissionInformation' || (formIsFlat && flatForm.decommissionInformation)"
+          id="decommissionInformation"
           :finishedWellDepth.sync="form.finished_well_depth"
           :decommissionReason.sync="form.decommission_reason"
           :decommissionMethod.sync="form.decommission_method"
@@ -262,6 +270,7 @@
         <!-- Comments -->
         <comments class="my-3"
           v-if="currentStep === 'comments' || (formIsFlat && flatForm.comments)"
+          id="comments"
           :comments.sync="form.comments"
           :alternativeSpecsSubmitted.sync="form.alternative_specs_submitted"
         />
