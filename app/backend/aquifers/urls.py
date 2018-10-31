@@ -19,8 +19,8 @@ from aquifers import views
 
 urlpatterns = [
     url(r'^api/v1/aquifers/$',
-        never_cache(views.AquiferListAPIView.as_view()),
-        name='aquifers-list'
+        never_cache(views.AquiferListCreateAPIView.as_view()),
+        name='aquifers-list-create'
         ),
 
     url(r'^api/v1/aquifers/(?P<aquifer_id>[0-9]+)/$',
