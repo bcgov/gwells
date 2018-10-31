@@ -18,7 +18,7 @@ from django.views.generic import TemplateView
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.filters import SearchFilter
+from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.generics import ListAPIView, RetrieveUpdateAPIView
 
 from aquifers import models
@@ -44,10 +44,11 @@ class AquiferListAPIView(ListAPIView):
 
     queryset = models.Aquifer.objects.all()
     serializer_class = serializers.AquiferSerializer
-    filter_backends = (filters.DjangoFilterBackend, SearchFilter)
+    filter_backends = (filters.DjangoFilterBackend, OrderingFilter, SearchFilter)
     filter_fields = ('aquifer_id',)
     search_fields = ('aquifer_name',)
-
+    ordering_fields = '__all__'
+    ordering = ('aquifer_id',)
 
 class AquiferMaterialListAPIView(ListAPIView):
     """List aquifer materials codes
