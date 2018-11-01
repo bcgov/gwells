@@ -118,7 +118,7 @@ export default {
   },
   created () {
     if (!this.closureDescriptionSet.length) {
-      this.closureDescriptionSetInput.push({}, {}, {}, {}, {}, {})
+      this.closureDescriptionSetInput.push({}, {}, {}, {}, {}, {}, {}, {}, {}, {})
     }
   }
 }
