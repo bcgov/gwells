@@ -1,9 +1,18 @@
 <template>
   <div class="card">
     <div class="card-body">
+
+      <!-- Form submission success message -->
+      <b-alert
+          :show="formSubmitSuccess"
+          variant="success"
+          class="mt-3">
+          Your well record was successfully submitted.
+      </b-alert>
+
       <h1 class="card-title">
         <b-row>
-          <b-col cols="12">Well Activity Submission<span v-if="preview"> Preview</span>
+          <b-col cols="12">Well Activity Submission<span v-if="preview && !formSubmitSuccess"> Preview</span>
             <b-form-group v-if="!preview">
               <b-form-radio-group button-variant="outline-primary" size="sm" buttons v-model="formIsFlat" label="Form layout" class="float-right">
                 <b-form-radio v-bind:value="true" id="flat">Single page</b-form-radio>
@@ -39,16 +48,6 @@
               </b-btn>
             </b-col>
           </b-row>
-
-          <!-- Form submission success message -->
-          <b-alert
-              :show="formSubmitSuccess"
-              dismissible
-              @dismissed="formSubmitSuccess=false"
-              variant="success"
-              class="mt-3">
-              Your well record was successfully submitted.
-          </b-alert>
 
           <!-- activity type -->
           <activity-type
@@ -274,14 +273,12 @@
             <b-col>
               <b-btn v-if="step > 1 && !preview && !formIsFlat" @click="step > 1 ? step-- : null" variant="primary">Back</b-btn>
               <b-btn v-if="preview && !formSubmitSuccess" @click="handlePreviewBackButton" variant="primary">Back to Edit</b-btn>
-              <b-btn v-if="preview && formSubmitSuccess" @click="handleExitPreviewAfterSubmit" variant="primary">New Report</b-btn>
-
             </b-col>
             <b-col class="pr-4 text-right">
               <b-btn v-if="step < maxSteps && !formIsFlat && !preview" @click="step++" variant="primary">Next</b-btn>
               <span v-else>
                 <b-btn v-if="!preview" variant="primary" @click="handlePreviewButton">Preview &amp; Submit</b-btn>
-                <b-btn v-if="preview" id="formSubmitButton" type="submit" variant="primary" ref="activitySubmitBtn" :disabled="formSubmitLoading">Submit</b-btn>
+                <b-btn v-if="preview && !formSubmitSuccess" id="formSubmitButton" type="submit" variant="primary" ref="activitySubmitBtn" :disabled="formSubmitLoading">Submit</b-btn>
               </span>
             </b-col>
           </b-row>
@@ -550,6 +547,11 @@ export default {
       ApiService.post(PATH, data).then((response) => {
         this.formSubmitSuccess = true
         this.formSubmitSuccessWellTag = response.data.well
+
+        if (!this.form.well_tag_number) {
+          this.form.well_tag_number = response.data.well
+        }
+
         this.$nextTick(function () {
           window.scrollTo(0, 0)
         })
