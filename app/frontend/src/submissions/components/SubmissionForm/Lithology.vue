@@ -1,6 +1,6 @@
 <template>
   <fieldset>
-    <legend>Lithology</legend>
+    <legend :id="id">Lithology</legend>
     <div class="table-responsive">
       <table class="table table-sm">
         <thead>
@@ -129,6 +129,10 @@ export default {
     fieldsLoaded: {
       type: Object,
       default: () => ({})
+    },
+    id: {
+      type: String,
+      isInput: false
     }
   },
   data () {

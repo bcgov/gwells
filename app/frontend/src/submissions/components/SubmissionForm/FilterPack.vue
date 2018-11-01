@@ -1,6 +1,6 @@
 <template>
   <fieldset>
-    <legend>Filter Pack</legend>
+    <legend :id="id">Filter Pack</legend>
     <b-row>
       <b-col cols="12" md="6" lg="3">
         <form-input
@@ -82,6 +82,10 @@ export default {
     fieldsLoaded: {
       type: Object,
       default: () => ({})
+    },
+    id: {
+      type: String,
+      isInput: false
     }
   },
   fields: {
