@@ -1,6 +1,6 @@
 <template>
   <fieldset>
-    <legend>Comments</legend>
+    <legend :id="id">Comments</legend>
     <b-row>
       <b-col cols="12" md="8">
         <b-form-group label="Comments" id="commentsGroup">
@@ -41,6 +41,10 @@ export default {
     fieldsLoaded: {
       type: Object,
       default: () => ({})
+    },
+    id: {
+      type: String,
+      isInput: false
     }
   },
   fields: {

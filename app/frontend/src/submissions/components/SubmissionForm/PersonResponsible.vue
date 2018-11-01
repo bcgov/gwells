@@ -1,6 +1,6 @@
 <template>
     <fieldset>
-      <legend>Person Responsible for Work</legend>
+      <legend :id="id">Person Responsible for Work</legend>
       <b-row>
         <b-col cols="12" md="12" lg="4">
           <b-form-group
@@ -98,6 +98,10 @@ export default {
     consultantName: String,
     consultantCompany: String,
     drillerSameAsPersonResponsible: Boolean,
+    id: {
+      type: String,
+      isInput: false
+    },
     errors: {
       type: Object,
       default: () => ({}),

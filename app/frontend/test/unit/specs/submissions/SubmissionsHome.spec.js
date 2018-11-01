@@ -15,14 +15,19 @@ const router = new VueRouter()
 describe('SubmissionsHome.vue', () => {
   let actions
   let store
+  let getters
 
   beforeEach(() => {
+    getters = {
+      userRoles: () => ({ wells: { edit: true }, submissions: { edit: true } })
+    }
     actions = {
       [FETCH_CODES]: jest.fn()
     }
     store = new Vuex.Store({
       state: {},
-      actions
+      actions,
+      getters
     })
   })
 

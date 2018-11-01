@@ -435,18 +435,6 @@ pipeline {
               new GitHubHelper().createDeploymentStatus(this, ghDeploymentId, 'SUCCESS', ['targetUrl':"${targetTestURL}"])
 
               echo "TEST deployment successful."
-              echo "Loading fixtures"
-              def firstPod = pods.objects()[0].metadata.name
-              openshift.exec(firstPod, "--", "bash -c '\
-                cd /opt/app-root/src/backend; \
-                python manage.py loaddata \
-                  gwells-codetables.json \
-                  wellsearch-codetables.json \
-                  registries-codetables.json \
-                  registries.json \
-                  aquifers.json \
-                  wellsearch.json.gz; \
-                python manage.py createinitialrevisions'")
             }
           }
         }
@@ -594,7 +582,7 @@ pipeline {
                 "IMAGE_STREAM_NAME=gwells-postgresql-${PROD_SUFFIX}",
                 "IMAGE_STREAM_VERSION=${PROD_SUFFIX}",
                 "POSTGRESQL_DATABASE=gwells",
-                "VOLUME_CAPACITY=2Gi"
+                "VOLUME_CAPACITY=20Gi"
               )
 
               // some objects need to be copied from a base secret or configmap

@@ -1,5 +1,5 @@
 <template>
-  <div class="card">
+  <div class="card" v-if="userRoles.wells.edit || userRoles.submissions.edit">
     <div class="card-body">
 
       <!-- Form submission success message -->
@@ -12,8 +12,10 @@
 
       <h1 class="card-title">
         <b-row>
-          <b-col cols="12">Well Activity Submission<span v-if="preview && !formSubmitSuccess"> Preview</span>
-            <b-form-group v-if="!preview">
+          <b-col cols="12">
+              <div v-if="activityType === 'STAFF_EDIT'">Well Edit Page</div>
+              <div v-else>Well Activity Submission <span v-if="preview && !formSubmitSuccess">Preview</span></div>
+            <b-form-group v-if="activityType !== 'STAFF_EDIT' && !preview">
               <b-form-radio-group button-variant="outline-primary" size="sm" buttons v-model="formIsFlat" label="Form layout" class="float-right">
                 <b-form-radio v-bind:value="true" id="flat">Single page</b-form-radio>
                 <b-form-radio v-bind:value="false">Multi page</b-form-radio>
@@ -24,24 +26,29 @@
           </b-col>
         </b-row>
       </h1>
+      <b-row v-if="!preview && activityType === 'STAFF_EDIT'">
+          <b-col lg="3" v-for="step in formSteps[activityType]" :key='step'>
+            <a :href="'#' + step">{{formStepDescriptions[step] ? formStepDescriptions[step] : step}}</a>
+          </b-col>
+      </b-row>
 
       <!-- Activity submission form -->
       <b-form @submit.prevent="confirmSubmit">
         <div v-if="!preview">
           <!-- Form load/save -->
-          <b-row>
+          <b-row v-if="activityType !== 'STAFF_EDIT'">
             <b-col cols="12" lg="8">
-              <p v-if="!preview">Submit activity on a well. <a href="/gwells/">Try a search</a> to see if the well exists in the system before submitting a report.</p>
+              <p v-if="!preview && activityType !== 'STAFF_EDIT'">Submit activity on a well. <a href="/gwells/">Try a search</a> to see if the well exists in the system before submitting a report.</p>
             </b-col>
             <b-col cols="12" lg="4" class="text-right">
               <b-btn size="sm" variant="outline-primary" @click="saveForm">
-                Save
+                Save report progress
                 <transition name="bounce" mode="out-in">
                     <i v-show="saveFormSuccess" class="fa fa-check text-success"></i>
                 </transition>
               </b-btn>
-              <b-btn size="sm" variant="outline-primary" @click="loadConfirmation" ref="confirmLoadBtn">
-                Load
+              <b-btn size="sm" variant="outline-primary" @click="loadConfirmation" ref="confirmLoadBtn" :disabled="isLoadFormDisabled">
+                Load saved report
                 <transition name="bounce">
                     <i v-show="loadFormSuccess" class="fa fa-check text-success"></i>
                 </transition>
@@ -49,15 +56,17 @@
             </b-col>
           </b-row>
 
-          <!-- activity type -->
-          <activity-type
+          <!-- Type of work performed -->
+          <activity-type class="my-3"
             v-if="currentStep === 'activityType' || (formIsFlat && displayFormSection.activityType)"
+            id="activityType"
             :wellActivityType.sync="activityType"
-          ></activity-type>
+          />
 
           <!-- Type of well -->
           <well-type class="my-3"
             v-if="currentStep === 'wellType' || (formIsFlat && displayFormSection.wellType)"
+            id="wellType"
             :wellTagNumber.sync="form.well"
             :wellActivityType.sync="activityType"
             :wellClass.sync="form.well_class"
@@ -75,6 +84,7 @@
           <!-- Person responsible for work -->
           <person-responsible class="my-3"
             v-if="currentStep === 'personResponsible' || (formIsFlat && displayFormSection.personResponsible)"
+            id="personResponsible"
             :drillerName.sync="form.driller_name"
             :consultantName.sync="form.consultant_name"
             :consultantCompany.sync="form.consultant_company"
@@ -87,6 +97,7 @@
           <!-- Owner information -->
           <owner class="my-3"
             v-if="currentStep === 'wellOwner' || (formIsFlat && displayFormSection.wellOwner)"
+            id="wellOwner"
             :ownerFullName.sync="form.owner_full_name"
             :ownerMailingAddress.sync="form.owner_mailing_address"
             :ownerProvinceState.sync="form.owner_province_state"
@@ -99,6 +110,7 @@
           <!-- Well location -->
           <location class="my-3"
             v-if="currentStep === 'wellLocation' || (formIsFlat && displayFormSection.wellLocation)"
+            id="wellLocation"
             :ownerMailingAddress.sync="form.owner_mailing_address"
             :ownerProvinceState.sync="form.owner_province_state"
             :ownerCity.sync="form.owner_city"
@@ -120,6 +132,7 @@
           <!-- Coords -->
           <coords class="my-3"
             v-if="currentStep === 'wellCoords' || (formIsFlat && displayFormSection.wellCoords)"
+            id="wellCoords"
             :latitude.sync="form.latitude"
             :longitude.sync="form.longitude"
           />
@@ -127,7 +140,7 @@
           <!-- Method of Drilling -->
           <method-of-drilling class="my-3"
             v-if="currentStep === 'method' || (formIsFlat && displayFormSection.method)"
-
+            id="method"
             :groundElevation.sync="form.ground_elevation"
             :groundElevationMethod.sync="form.ground_elevation_method"
             :drillingMethod.sync="form.drilling_method"
@@ -138,6 +151,7 @@
           <!-- Closure/Decommission Description -->
           <closure-description class="my-3"
             v-if="currentStep === 'closureDescription' || (formIsFlat && displayFormSection.closureDescription)"
+            id="closureDescription"
             :closureDescriptionSet.sync="form.decommission_description_set">
 
           </closure-description>
@@ -145,6 +159,7 @@
           <!-- Lithology -->
           <lithology class="my-3"
             v-if="currentStep === 'lithology' || (formIsFlat && displayFormSection.lithology)"
+            id="lithology"
             :lithology.sync="form.lithologydescription_set"
           />
 
@@ -152,6 +167,7 @@
           <casings class="my-3"
             :key="`casingsComponent${componentUpdateTrigger}`"
             v-if="currentStep === 'casings' || (formIsFlat && displayFormSection.casings)"
+            id="casings"
             :casings.sync="form.casing_set"
             :errors="errors"
             :fieldsLoaded="fieldsLoaded"
@@ -160,6 +176,7 @@
           <!-- Surface Seal / Backfill Material -->
           <backfill class="my-3"
             v-if="currentStep === 'backfill' || (formIsFlat && displayFormSection.backfill)"
+            id="backfill"
             :surfaceSealMaterial.sync="form.surface_seal_material"
             :surfaceSealDepth.sync="form.surface_seal_depth"
             :surfaceSealThickness.sync="form.surface_seal_thickness"
@@ -171,6 +188,7 @@
           <!-- Liner Information -->
           <liner class="my-3"
             v-if="currentStep === 'liner' || (formIsFlat && displayFormSection.liner)"
+            id="liner"
             :linerMaterial.sync="form.liner_material"
             :linerDiameter.sync="form.liner_diameter"
             :linerThickness.sync="form.liner_thickness"
@@ -184,6 +202,7 @@
           <!-- Screens -->
           <screens class="my-3"
             v-if="currentStep === 'screens' || (formIsFlat && displayFormSection.screens)"
+            id="screens"
             :screenIntakeMethod.sync="form.screen_intake_method"
             :screenType.sync="form.screen_type"
             :screenMaterial.sync="form.screen_material"
@@ -198,6 +217,7 @@
           <!-- Filter Pack -->
           <filterPack class="my-3"
             v-if="currentStep === 'filterPack' || (formIsFlat && displayFormSection.filterPack)"
+            id="filterPack"
             :filterPackFrom.sync="form.filter_pack_from"
             :filterPackTo.sync="form.filter_pack_to"
             :filterPackThickness.sync="form.filter_pack_thickness"
@@ -208,6 +228,7 @@
           <!-- Well Development -->
           <development class="my-3"
             v-if="currentStep === 'wellDevelopment' || (formIsFlat && displayFormSection.wellDevelopment)"
+            id="wellDevelopment"
             :developmentMethod.sync="form.development_method"
             :developmentHours.sync="form.development_hours"
             :developmentNotes.sync="form.development_notes"
@@ -216,21 +237,24 @@
           <!-- Yield (Production Data) -->
           <yield class="my-3"
             v-if="currentStep === 'wellYield' || (formIsFlat && displayFormSection.wellYield)"
+            id="wellYield"
             :productionData.sync="form.production_data_set"
           />
 
           <!-- Water Quality -->
           <water-quality class="my-3"
             v-if="currentStep === 'waterQuality' || (formIsFlat && displayFormSection.waterQuality)"
+            id="waterQuality"
             :waterQualityCharacteristics.sync="form.water_quality_characteristics"
             :waterQualityColour.sync="form.water_quality_colour"
             :waterQualityOdour.sync="form.water_quality_odour"
             :emsID.sync="form.ems_id"
           />
 
-          <!-- Well Completion Data -->
+            <!-- Well Completion Data -->
           <completion class="my-3"
             v-if="currentStep === 'wellCompletion' || (formIsFlat && displayFormSection.wellCompletion)"
+            id="wellCompletion"
             :totalDepthDrilled.sync="form.total_depth_drilled"
             :finishedWellDepth.sync="form.finished_well_depth"
             :finalCasingStickUp.sync="form.final_casing_stick_up"
@@ -245,6 +269,7 @@
 
           <decommission-information class="my-3"
             v-if="currentStep === 'decommissionInformation' || (formIsFlat && displayFormSection.decommissionInformation)"
+            id="decommissionInformation"
             :finishedWellDepth.sync="form.finished_well_depth"
             :decommissionReason.sync="form.decommission_reason"
             :decommissionMethod.sync="form.decommission_method"
@@ -256,6 +281,7 @@
           <!-- Comments -->
           <comments class="my-3"
             v-if="currentStep === 'comments' || (formIsFlat && displayFormSection.comments)"
+            id="comments"
             :comments.sync="form.comments"
             :alternativeSpecsSubmitted.sync="form.alternative_specs_submitted"
           />
@@ -269,19 +295,19 @@
             :sections="displayFormSection"/>
         </div>
           <!-- Back / Next / Submit controls -->
-          <b-row class="mt-5">
-            <b-col>
-              <b-btn v-if="step > 1 && !preview && !formIsFlat" @click="step > 1 ? step-- : null" variant="primary">Back</b-btn>
-              <b-btn v-if="preview && !formSubmitSuccess" @click="handlePreviewBackButton" variant="primary">Back to Edit</b-btn>
-            </b-col>
-            <b-col class="pr-4 text-right">
-              <b-btn v-if="step < maxSteps && !formIsFlat && !preview" @click="step++" variant="primary">Next</b-btn>
-              <span v-else>
-                <b-btn v-if="!preview" variant="primary" @click="handlePreviewButton">Preview &amp; Submit</b-btn>
-                <b-btn v-if="preview && !formSubmitSuccess" id="formSubmitButton" type="submit" variant="primary" ref="activitySubmitBtn" :disabled="formSubmitLoading">Submit</b-btn>
-              </span>
-            </b-col>
-          </b-row>
+        <b-row class="mt-5">
+          <b-col v-if="!formIsFlat">
+            <b-btn v-if="step > 1 && !preview && !formIsFlat" @click="step > 1 ? step-- : null" variant="primary">Back</b-btn>
+            <b-btn v-if="preview && !formSubmitSuccess" @click="handlePreviewBackButton" variant="primary">Back to Edit</b-btn>
+          </b-col>
+          <b-col class="pr-4 text-right">
+            <b-btn v-if="step < maxSteps && !formIsFlat && !preview" @click="step++" variant="primary">Next</b-btn>
+            <span v-else>
+              <b-btn v-if="preview && !formSubmitSuccess" id="formSubmitButton" type="submit" variant="primary" ref="activitySubmitBtn" :disabled="formSubmitLoading">Submit</b-btn>
+              <b-btn v-if="!preview" variant="primary" @click="handlePreviewButton">Preview &amp; Submit</b-btn>
+            </span>
+          </b-col>
+        </b-row>
       </b-form>
 
       <!-- Form submission error message -->
@@ -419,6 +445,28 @@ export default {
       fieldsLoaded: {},
       form: {},
       formOptions: {},
+      formStepDescriptions: {
+        'activityType': 'Type of work',
+        'wellType': 'Well class',
+        'wellOwner': 'Well owner',
+        'wellLocation': 'Well location',
+        'wellCoords': 'Geographic coordinates',
+        'method': 'Method of drilling',
+        'closureDescription': 'Decommission description',
+        'lithology': 'Lithology',
+        'casings': 'Casing details',
+        'backfill': 'Surface seal and backfill information',
+        'liner': 'Liner information',
+        'screens': 'Screen information',
+        'filterPack': 'Filter pack',
+        'wellDevelopment': 'Well development',
+        'wellYield': 'Well yield estimation',
+        'waterQuality': 'Water quality',
+        'wellCompletion': 'Well completion data',
+        'decommissionInformation': 'Well decommission information',
+        'comments': 'Comments',
+        'personResponsible': 'Person Responsible for Work'
+      },
       formSteps: {
         CON: [
           'activityType',
@@ -472,7 +520,25 @@ export default {
           'comments'
         ],
         STAFF_EDIT: [
-          'activityType'
+          'wellType',
+          'personResponsible',
+          'wellOwner',
+          'wellLocation',
+          'wellCoords',
+          'method',
+          'closureDescription',
+          'lithology',
+          'casings',
+          'backfill',
+          'liner',
+          'screens',
+          'filterPack',
+          'wellDevelopment',
+          'wellYield',
+          'waterQuality',
+          'wellCompletion',
+          'decommissionInformation',
+          'comments'
         ]
       }
     }
@@ -509,7 +575,7 @@ export default {
       // During unit tests, the localStorage object might not exist, so we have to check it's existence.
       return !window.localStorage || (window.localStorage.getItem('savedFormData') === null && !this.hasHadSaveFormSuccess)
     },
-    ...mapGetters(['codes'])
+    ...mapGetters(['codes', 'userRoles'])
   },
   methods: {
     formSubmit () {
@@ -749,6 +815,7 @@ export default {
     }
     if (this.$route.name === 'SubmissionsEdit') {
       this.activityType = 'STAFF_EDIT'
+      this.formIsFlat = true
     }
   }
 }

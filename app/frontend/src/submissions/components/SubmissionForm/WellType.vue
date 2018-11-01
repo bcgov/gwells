@@ -1,6 +1,6 @@
 <template>
     <fieldset>
-      <legend>Well Class</legend>
+      <legend :id="id">Well Class</legend>
       <b-row>
         <b-col cols="12" md="4">
           <b-form-group
@@ -162,6 +162,10 @@ export default {
     fieldsLoaded: {
       type: Object,
       default: () => ({})
+    },
+    id: {
+      type: String,
+      isInput: false
     }
   },
   data () {
