@@ -10,7 +10,8 @@
                 <b-form-radio v-bind:value="false">Multi page</b-form-radio>
               </b-form-radio-group>
             </b-form-group>
-            <b-btn class="float-right" v-if="preview" @click="handlePreviewBackButton" variant="primary">Back to Edit</b-btn>
+            <b-btn class="float-right" v-if="preview && !formSubmitSuccess" @click="handlePreviewBackButton" variant="primary">Back to Edit</b-btn>
+            <b-btn class="float-right" v-if="preview && formSubmitSuccess" @click="handleExitPreviewAfterSubmit" variant="primary">New Report</b-btn>
           </b-col>
         </b-row>
       </h1>
@@ -272,7 +273,9 @@
           <b-row class="mt-5">
             <b-col>
               <b-btn v-if="step > 1 && !preview && !formIsFlat" @click="step > 1 ? step-- : null" variant="primary">Back</b-btn>
-              <b-btn v-if="preview" @click="handlePreviewBackButton" variant="primary">Back to Edit</b-btn>
+              <b-btn v-if="preview && !formSubmitSuccess" @click="handlePreviewBackButton" variant="primary">Back to Edit</b-btn>
+              <b-btn v-if="preview && formSubmitSuccess" @click="handleExitPreviewAfterSubmit" variant="primary">New Report</b-btn>
+
             </b-col>
             <b-col class="pr-4 text-right">
               <b-btn v-if="step < maxSteps && !formIsFlat && !preview" @click="step++" variant="primary">Next</b-btn>
@@ -547,9 +550,6 @@ export default {
       ApiService.post(PATH, data).then((response) => {
         this.formSubmitSuccess = true
         this.formSubmitSuccessWellTag = response.data.well
-        this.resetForm()
-        this.preview = false
-        this.step = 1
         this.$nextTick(function () {
           window.scrollTo(0, 0)
         })
@@ -725,6 +725,12 @@ export default {
       this.$nextTick(function () {
         window.scrollTo(0, 0)
       })
+    },
+    handleExitPreviewAfterSubmit () {
+      this.formSubmitSuccess = false
+      this.resetForm()
+      this.preview = false
+      this.step = 1
     }
   },
   watch: {
