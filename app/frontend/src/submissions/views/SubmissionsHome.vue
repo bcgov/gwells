@@ -7,7 +7,8 @@
           :show="formSubmitSuccess"
           variant="success"
           class="mt-3">
-          Your well record was successfully submitted.
+        <i class="fa fa-2x fa-check-circle text-success mr-2" aria-hidden="true"></i>
+        Your well record was successfully submitted.
       </b-alert>
 
       <h1 class="card-title">
@@ -22,7 +23,7 @@
               </b-form-radio-group>
             </b-form-group>
             <b-btn class="float-right" v-if="preview && !formSubmitSuccess" @click="handlePreviewBackButton" variant="primary">Back to Edit</b-btn>
-            <b-btn class="float-right" v-if="preview && formSubmitSuccess" @click="handleExitPreviewAfterSubmit" variant="primary">New Report</b-btn>
+            <b-btn v-if="preview && formSubmitSuccess" @click="handleExitPreviewAfterSubmit" variant="primary">New Report</b-btn>
           </b-col>
         </b-row>
       </h1>
