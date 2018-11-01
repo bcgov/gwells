@@ -11,6 +11,24 @@
         Your well record was successfully submitted.
       </b-alert>
 
+      <!-- Form submission error message -->
+      <b-alert
+          :show="formSubmitError"
+          dismissible
+          @dismissed="formSubmitError=false"
+          variant="danger"
+          class="mt-3">
+          <div>Your well record was not submitted.</div>
+        <span v-if="errors && errors.detail">
+          {{ errors.detail }}
+        </span>
+        <div v-if="errors && errors != {}">
+          <div v-for="(field, i) in Object.keys(errors)" :key="`submissionError${i}`">
+            {{field | readable}} : <span v-for="(e, j) in errors[field]" :key="`submissionError${i}-${j}`">{{ e }}</span>
+          </div>
+        </div>
+      </b-alert>
+
       <h1 class="card-title">
         <b-row>
           <b-col cols="12">
@@ -311,24 +329,6 @@
         </b-row>
       </b-form>
 
-      <!-- Form submission error message -->
-      <b-alert
-          :show="formSubmitError"
-          dismissible
-          @dismissed="formSubmitError=false"
-          variant="danger"
-          class="mt-3">
-          <div>Your well record was not submitted.</div>
-        <span v-if="errors && errors.detail">
-          {{ errors.detail }}
-        </span>
-        <div v-if="errors && errors != {}">
-          <div v-for="(field, i) in Object.keys(errors)" :key="`submissionError${i}`">
-            {{field | readable}} : <span v-for="(e, j) in errors[field]" :key="`submissionError${i}-${j}`">{{ e }}</span>
-          </div>
-        </div>
-        </b-alert>
-
       <!-- Form submission confirmation -->
       <b-modal
           v-model="confirmSubmitModal"
@@ -625,6 +625,9 @@ export default {
       }).catch((error) => {
         this.errors = error.response.data
         this.formSubmitError = true
+        this.$nextTick(function () {
+          window.scrollTo(0, 0)
+        })
       }).finally(() => {
         this.formSubmitLoading = false
       })
