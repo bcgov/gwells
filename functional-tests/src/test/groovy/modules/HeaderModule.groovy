@@ -24,7 +24,8 @@ class HeaderModule extends Module {
   static content = {
     bcLogo { $('.navbar-brand') }
 
-    loginButton { $('#keycloak-auth #gwells-sso-login') }
+    // non-responsive login button
+    loginButton { $('#keycloak-auth-login-button') }
 
     headerNavigationBar { $('header #navContainer .navbar-nav') }
   }
