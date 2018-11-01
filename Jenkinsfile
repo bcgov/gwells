@@ -115,24 +115,23 @@ pipeline {
           openshift.withCluster() {
             openshift.withProject(DEV_PROJECT) {
               // Process postgres deployment config (sub in vars, create list items)
-              echo " \$ oc process -f openshift/postgresql.dc.json -p DATABASE_SERVICE_NAME=gwells-pgsql-${DEV_SUFFIX}-${PR_NUM} -p IMAGE_STREAM_NAMESPACE='' -p IMAGE_STREAM_NAME=gwells-postgresql-${DEV_SUFFIX}-${PR_NUM} -p IMAGE_STREAM_VERSION=${DEV_SUFFIX} -p LABEL_APPVER=-${DEV_SUFFIX}-${PR_NUM} -p POSTGRESQL_DATABASE=gwells -p VOLUME_CAPACITY=1Gi | oc apply -n moe-gwells-dev -f -"
+              echo " \$ oc process -f openshift/postgresql.dc.json -p DATABASE_SERVICE_NAME=gwells-pgsql-${DEV_SUFFIX}-${PR_NUM} -p IMAGE_STREAM_NAMESPACE='' -p IMAGE_STREAM_NAME=gwells-postgresql-${DEV_SUFFIX}-${PR_NUM} -p IMAGE_STREAM_VERSION=${DEV_SUFFIX} -p NAME_SUFFIX=-${DEV_SUFFIX}-${PR_NUM} -p POSTGRESQL_DATABASE=gwells -p VOLUME_CAPACITY=1Gi | oc apply -n moe-gwells-dev -f -"
               def deployDBTemplate = openshift.process("-f",
                 "openshift/postgresql.dc.json",
                 "DATABASE_SERVICE_NAME=gwells-pgsql-${DEV_SUFFIX}-${PR_NUM}",
                 "IMAGE_STREAM_NAMESPACE=''",
                 "IMAGE_STREAM_NAME=gwells-postgresql-${DEV_SUFFIX}-${PR_NUM}",
                 "IMAGE_STREAM_VERSION=${DEV_SUFFIX}",
-                "LABEL_APPVER=-${DEV_SUFFIX}-${PR_NUM}",
+                "NAME_SUFFIX=-${DEV_SUFFIX}-${PR_NUM}",
                 "POSTGRESQL_DATABASE=gwells",
                 "VOLUME_CAPACITY=1Gi"
               )
 
               // Process postgres deployment config (sub in vars, create list items)
-              echo " \$ oc process -f openshift/backend.dc.json -p BUILD_ENV_NAME=${DEV_SUFFIX} -p ENV_NAME=${DEV_SUFFIX} -p NAME_SUFFIX=-${DEV_SUFFIX}-${PR_NUM} | oc apply -n moe-gwells-dev -f -"
+              echo " \$ oc process -f openshift/backend.dc.json -p ENV_NAME=${DEV_SUFFIX} -p NAME_SUFFIX=-${DEV_SUFFIX}-${PR_NUM} | oc apply -n moe-gwells-dev -f -"
               echo "Processing deployment config for pull request ${PR_NUM}"
               def deployTemplate = openshift.process("-f",
                 "openshift/backend.dc.json",
-                "BUILD_ENV_NAME=${DEV_SUFFIX}",
                 "ENV_NAME=${DEV_SUFFIX}",
                 "HOST=${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}.pathfinder.gov.bc.ca",
                 "NAME_SUFFIX=-${DEV_SUFFIX}-${PR_NUM}"
@@ -341,23 +340,33 @@ pipeline {
             openshift.withProject(TEST_PROJECT) {
               input "Deploy to staging?"
 
+              echo "Preparing..."
+
+              // Process db and app template into list objects
+              //  - variable substitution
+              echo "Processing build templates"
+              def dbtemplate = openshift.process("-f",
+                "openshift/postgresql.bc.json",
+                "ENV_NAME=${TEST_SUFFIX}"
+              )
+              openshift.apply(dbtemplate)
+
               echo "Updating staging deployment..."
 
               def deployDBTemplate = openshift.process("-f",
                 "openshift/postgresql.dc.json",
-                "LABEL_APPVER=-${TEST_SUFFIX}",
+                "NAME_SUFFIX=-${TEST_SUFFIX}",
                 "DATABASE_SERVICE_NAME=gwells-pgsql-${TEST_SUFFIX}",
                 "IMAGE_STREAM_NAMESPACE=''",
                 "IMAGE_STREAM_NAME=gwells-postgresql-${TEST_SUFFIX}",
                 "IMAGE_STREAM_VERSION=${TEST_SUFFIX}",
                 "POSTGRESQL_DATABASE=gwells",
-                "VOLUME_CAPACITY=1Gi"
+                "VOLUME_CAPACITY=5Gi"
               )
 
               def deployTemplate = openshift.process("-f",
                 "openshift/backend.dc.json",
                 "NAME_SUFFIX=-${TEST_SUFFIX}",
-                "BUILD_ENV_NAME=${TEST_SUFFIX}",
                 "ENV_NAME=${TEST_SUFFIX}",
                 "HOST=${APP_NAME}-${TEST_SUFFIX}.pathfinder.gov.bc.ca",
               )
@@ -573,14 +582,13 @@ pipeline {
               def deployTemplate = openshift.process("-f",
                 "openshift/backend.dc.json",
                 "NAME_SUFFIX=-${PROD_SUFFIX}",
-                "BUILD_ENV_NAME=${PROD_SUFFIX}",
                 "ENV_NAME=${PROD_SUFFIX}",
                 "HOST=${APP_NAME}-${PROD_SUFFIX}.pathfinder.gov.bc.ca",
               )
 
               def deployDBTemplate = openshift.process("-f",
                 "openshift/postgresql.dc.json",
-                "LABEL_APPVER=-${PROD_SUFFIX}",
+                "NAME_SUFFIX=-${PROD_SUFFIX}",
                 "DATABASE_SERVICE_NAME=gwells-pgsql-${PROD_SUFFIX}",
                 "IMAGE_STREAM_NAMESPACE=''",
                 "IMAGE_STREAM_NAME=gwells-postgresql-${PROD_SUFFIX}",
@@ -668,6 +676,7 @@ pipeline {
                 message.text = "A new production deployment was rolled out at https://apps.nrs.gov.bc.ca/gwells/"
                 payload = JsonOutput.toJson(message)
 
+                // Approve script here: https://jenkins-moe-gwells-tools.pathfinder.gov.bc.ca/scriptApproval/
                 sh (
                   script: """curl -X POST -H "Content-Type: application/json" --data \'${payload}\' https://devopspathfinder.slack.com/services/hooks/jenkins-ci?token=${token}""",
                   returnStdout: true
