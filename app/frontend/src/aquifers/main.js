@@ -12,22 +12,43 @@
     limitations under the License.
 */
 
+import 'babel-polyfill'
+import {mapActions} from 'vuex'
 import Vue from 'vue'
-import App from './App'
 import BootstrapVue from 'bootstrap-vue'
-import '@/common/assets/css/bootstrap-theme.min.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
-import store from './store'
+
+import {FETCH_CONFIG} from '@/common/store/config.js'
 import ApiService from '@/common/services/ApiService.js'
+import authenticate from '@/common/authenticate.js'
+import '@/common/assets/css/bootstrap-theme.min.css'
+
+import App from './App'
+import router from './router'
+import store from './store'
+import vueSmoothScroll from 'vue-smoothscroll'
 
 ApiService.init()
 
 Vue.use(BootstrapVue)
+Vue.use(vueSmoothScroll)
 
 /* eslint-disable no-new */
 new Vue({
-  el: '#app',
-  store,
   components: { App },
-  template: '<App/>'
+  el: '#app',
+  router,
+  store,
+  template: '<App/>',
+  methods: {
+    ...mapActions([
+      FETCH_CONFIG
+    ])
+  },
+  created () {
+    authenticate.authenticate(store).then(() => {
+      // Auth complete. Do something here if you want.
+    })
+    this.FETCH_CONFIG()
+  }
 })

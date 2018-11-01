@@ -50,15 +50,28 @@ describe('SubmissionsHome.vue', () => {
     expect(actions[FETCH_CODES]).toHaveBeenCalled()
   })
 
-  it('renders components based on the activity selected (Yield exists on construction report, not on decommission report)', () => {
+  it('renders components based on the activity selected (Yield exists on construction report', (done) => {
     const wrapper = shallowMount(SubmissionsHome, {
       localVue,
       store,
       router
     })
-    wrapper.setData({ activityType: 'CON' })
-    expect(wrapper.find(Yield).exists()).toBe(true)
-    wrapper.setData({ activityType: 'DEC' })
-    expect(wrapper.find(Yield).exists()).toBe(false)
+    wrapper.setData({ activityType: 'CON', formIsFlat: true })
+    wrapper.vm.$nextTick(() => {
+      expect(wrapper.find(Yield).exists()).toBe(true)
+      done()
+    })
+  })
+  it('renders components based on the activity selected (Yield does not exist on decommission report)', (done) => {
+    const wrapper = shallowMount(SubmissionsHome, {
+      localVue,
+      store,
+      router
+    })
+    wrapper.setData({ activityType: 'DEC', formIsFlat: true })
+    wrapper.vm.$nextTick(() => {
+      expect(wrapper.find(Yield).exists()).toBe(false)
+      done()
+    })
   })
 })

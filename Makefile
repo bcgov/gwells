@@ -6,13 +6,13 @@
 default: vue
 
 vue: prep
-	NPM_CMD=dev docker-compose up; docker-compose down
+	NPM_CMD=dev docker-compose up -d
 
 api: prep
-	NPM_CMD=build docker-compose up; docker-compose down
+	NPM_CMD=build docker-compose up -d
 
 django: prep
-	NPM_CMD=watch docker-compose up; docker-compose down
+	NPM_CMD=watch docker-compose up -d
 
 
 ###################
@@ -22,6 +22,21 @@ django: prep
 prep:
 	@	docker-compose pull
 	@	docker-compose build
+
+fixtures:
+	@	docker exec -ti gwells_api_1 bash -c " \
+			cd /app/backend; \
+			python manage.py migrate; \
+			python manage.py loaddata gwells-codetables.json; \
+			python manage.py loaddata wellsearch-codetables.json registries-codetables.json; \
+			python manage.py loaddata wellsearch.json.gz registries.json; \
+			python manage.py loaddata aquifers.json; \
+			python manage.py createinitialrevisions \
+		" || \
+			echo "Failed.  Please make sure the API container has had time to start."
+
+down:
+	@	docker-compose down
 
 db-clean:
 	@	docker-compose down || true

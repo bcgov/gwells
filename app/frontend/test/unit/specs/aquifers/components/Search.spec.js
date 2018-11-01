@@ -1,10 +1,14 @@
 import { shallowMount, createLocalVue } from '@vue/test-utils'
 import SearchComponent from '@/aquifers/components/Search.vue'
-import { SEARCH_AQUIFERS, RESET_RESULTS } from '@/aquifers/store/actions.types'
 import Vuex from 'vuex'
+import axios from 'axios'
+import VueRouter from 'vue-router'
+
+jest.mock('axios')
 
 const localVue = createLocalVue()
 localVue.use(Vuex)
+localVue.use(VueRouter)
 
 const aquiferFixture = {
   aquifer_id: '4',
@@ -21,20 +25,25 @@ const aquiferFixture = {
 }
 
 describe('Search Component', () => {
-  const component = ({ getters, actions }) => shallowMount(SearchComponent, {
-    store: new Vuex.Store({
-      getters: Object.assign({
-        aquiferList: () => [],
-        emptyResults: () => false
-      }, getters),
-      actions
-    }),
-    localVue
+  const component = (options) => shallowMount(SearchComponent, {
+    localVue,
+    stubs: ['router-link', 'router-view'],
+    router: new VueRouter(),
+    methods: {
+      scrollToTableTop() {}
+    },
+    ...options
   })
 
   it('Displays a message if no aquifers could be found', () => {
     const wrapper = component({
-      getters: { emptyResults: () => true }
+      computed: {
+        aquiferList() { return [] },
+        emptyResults() { return true }
+      },
+      methods: {
+        fetchResults() {}
+      }
     })
 
     expect(wrapper.text()).toContain('No aquifers could be found')
@@ -42,39 +51,38 @@ describe('Search Component', () => {
 
   it('Matches the snapshot', () => {
     const wrapper = component({
-      getters: { aquiferList: () => [aquiferFixture] }
+      computed: {
+        aquiferList() { return [aquiferFixture] }
+      },
+      methods: {
+        fetchResults() {}
+      }
     })
 
     expect(wrapper.element).toMatchSnapshot()
   })
 
-  it('triggers SEARCH_AQUIFERS when form is submitted', () => {
-    const spy = jest.fn()
-    const wrapper = component({
-      actions: { [SEARCH_AQUIFERS]: spy }
-    })
+  it('search updates route query params', () => {
+    axios.get.mockResolvedValue({})
 
+    const wrapper = component()
+    wrapper.find('#search').setValue('asdf')
     wrapper.find('form').trigger('submit')
-    expect(spy).toHaveBeenCalled()
+
+    expect(axios.get).toHaveBeenCalledWith('aquifers/', {"params": { "search": "asdf" }})
   })
 
-  it('triggers RESET_RESULTS when form is reset', () => {
-    const spy = jest.fn()
-    const wrapper = component({
-      actions: { [RESET_RESULTS]: spy }
-    })
+  it('form reset resets response and query', () => {
+    const wrapper = component()
+    axios.get.mockResolvedValue({})
+
+    wrapper.find('#search').setValue('asdf')
+    wrapper.find('form').trigger('submit')
+
+    expect(wrapper.vm.query.search).toEqual('asdf')
 
     wrapper.find('form').trigger('reset')
-    expect(spy).toHaveBeenCalled()
-  })
 
-  it('resets input values when form is reset', () => {
-    const spy = jest.fn()
-    const wrapper = component({
-      actions: { [RESET_RESULTS]: spy }
-    })
-
-    wrapper.find('form').trigger('reset')
-    expect(spy).toHaveBeenCalled()
+    expect(wrapper.vm.query.search).toEqual(undefined)
   })
 })

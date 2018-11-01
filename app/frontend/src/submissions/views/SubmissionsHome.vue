@@ -1,253 +1,275 @@
 <template>
   <div class="card">
     <div class="card-body">
-      <h4 class="card-title">
+      <h1 class="card-title">
         <b-row>
-          <b-col lg="8">Well Activity Submission</b-col>
-          <b-col lg="4" class="text-right">
-            <b-btn size="sm" :variant="`${formIsFlat ? 'primary':'outline-primary'}`" @click="formIsFlat=true">Flat form</b-btn>
-            <b-btn size="sm" :variant="`${formIsFlat ? 'outline-primary':'primary'}`" @click="formIsFlat=false">Wizard</b-btn>
+          <b-col cols="12">Well Activity Submission<span v-if="preview"> Preview</span>
+            <b-form-group v-if="!preview">
+              <b-form-radio-group button-variant="outline-primary" size="sm" buttons v-model="formIsFlat" label="Form layout" class="float-right">
+                <b-form-radio v-bind:value="true" id="flat">Single page</b-form-radio>
+                <b-form-radio v-bind:value="false">Multi page</b-form-radio>
+              </b-form-radio-group>
+            </b-form-group>
+            <b-btn class="float-right" v-if="preview" @click="handlePreviewBackButton" variant="primary">Back to Edit</b-btn>
           </b-col>
         </b-row>
-      </h4>
-      <p>Submit activity on a well. <a href="/gwells/">Try a search</a> to see if the well exists in the system before submitting a report.</p>
+      </h1>
+      <p v-if="!preview">Submit activity on a well. <a href="/gwells/">Try a search</a> to see if the well exists in the system before submitting a report.</p>
 
       <!-- Activity submission form -->
       <b-form @submit.prevent="confirmSubmit">
+        <div v-if="!preview">
+          <!-- Form load/save -->
+          <b-row>
+            <b-col class="text-right">
+              <b-btn size="sm" variant="outline-primary" @click="saveForm">
+                Save
+                <transition name="bounce" mode="out-in">
+                    <i v-show="saveFormSuccess" class="fa fa-check text-success"></i>
+                </transition>
+              </b-btn>
+              <b-btn size="sm" variant="outline-primary" @click="loadConfirmation" ref="confirmLoadBtn">
+                Load
+                <transition name="bounce">
+                    <i v-show="loadFormSuccess" class="fa fa-check text-success"></i>
+                </transition>
+              </b-btn>
+            </b-col>
+          </b-row>
 
-        <!-- Form load/save -->
-        <b-row>
-          <b-col class="text-right">
-            <b-btn size="sm" variant="outline-primary" @click="saveForm">
-              Save
-              <transition name="bounce" mode="out-in">
-                  <i v-show="saveFormSuccess" class="fa fa-check text-success"></i>
-              </transition>
-            </b-btn>
-            <b-btn size="sm" variant="outline-primary" @click="loadConfirmation" ref="confirmLoadBtn">
-              Load
-              <transition name="bounce">
-                  <i v-show="loadFormSuccess" class="fa fa-check text-success"></i>
-              </transition>
-            </b-btn>
-          </b-col>
-        </b-row>
+          <!-- activity type -->
+          <activity-type
+            v-if="currentStep === 'activityType' || (formIsFlat && displayFormSection.activityType)"
+            :wellActivityType.sync="activityType"
+          ></activity-type>
 
-        <!-- Type of well -->
-        <well-type class="my-3"
-          v-if="currentStep === 'wellType' || (formIsFlat && flatForm.wellType)"
-          :wellTagNumber.sync="form.well"
-          :wellActivityType.sync="activityType"
-          :wellClass.sync="form.well_class"
-          :wellSubclass.sync="form.well_subclass"
-          :intendedWaterUse.sync="form.intended_water_use"
-          :units.sync="units"
-          :idPlateNumber.sync="form.identification_plate_number"
-          :wellPlateAttached.sync="form.well_plate_attached"
-          :workStartDate.sync="form.work_start_date"
-          :workEndDate.sync="form.work_end_date"
-          :errors="errors"
-          :fieldsLoaded="fieldsLoaded"
-        />
+          <!-- Type of well -->
+          <well-type class="my-3"
+            v-if="currentStep === 'wellType' || (formIsFlat && displayFormSection.wellType)"
+            :wellTagNumber.sync="form.well"
+            :wellActivityType.sync="activityType"
+            :wellClass.sync="form.well_class"
+            :wellSubclass.sync="form.well_subclass"
+            :intendedWaterUse.sync="form.intended_water_use"
+            :units.sync="units"
+            :idPlateNumber.sync="form.identification_plate_number"
+            :wellPlateAttached.sync="form.well_plate_attached"
+            :workStartDate.sync="form.work_start_date"
+            :workEndDate.sync="form.work_end_date"
+            :errors="errors"
+            :fieldsLoaded="fieldsLoaded"
+          />
 
-        <!-- Person responsible for work -->
-        <person-responsible class="my-3"
-          v-if="formStep === 2 || formIsFlat"
-          :drillerName.sync="form.driller_name"
-          :consultantName.sync="form.consultant_name"
-          :consultantCompany.sync="form.consultant_company"
-          :personResponsible.sync="form.driller_responsible"
-          :drillerSameAsPersonResponsible.sync="form.meta.drillerSameAsPersonResponsible"
-          :errors="errors"
-          :fieldsLoaded="fieldsLoaded"
-        />
+          <!-- Person responsible for work -->
+          <person-responsible class="my-3"
+            v-if="currentStep === 'personResponsible' || (formIsFlat && displayFormSection.personResponsible)"
+            :drillerName.sync="form.driller_name"
+            :consultantName.sync="form.consultant_name"
+            :consultantCompany.sync="form.consultant_company"
+            :personResponsible.sync="form.driller_responsible"
+            :drillerSameAsPersonResponsible.sync="form.meta.drillerSameAsPersonResponsible"
+            :errors="errors"
+            :fieldsLoaded="fieldsLoaded"
+          />
 
-        <!-- Owner information -->
-        <owner class="my-3"
-          v-if="currentStep === 'wellOwner' || (formIsFlat && flatForm.wellOwner)"
-          :ownerFullName.sync="form.owner_full_name"
-          :ownerMailingAddress.sync="form.owner_mailing_address"
-          :ownerProvinceState.sync="form.owner_province_state"
-          :ownerCity.sync="form.owner_city"
-          :ownerPostalCode.sync="form.owner_postal_code"
-          :errors="errors"
-          :fieldsLoaded="fieldsLoaded"
-        />
+          <!-- Owner information -->
+          <owner class="my-3"
+            v-if="currentStep === 'wellOwner' || (formIsFlat && displayFormSection.wellOwner)"
+            :ownerFullName.sync="form.owner_full_name"
+            :ownerMailingAddress.sync="form.owner_mailing_address"
+            :ownerProvinceState.sync="form.owner_province_state"
+            :ownerCity.sync="form.owner_city"
+            :ownerPostalCode.sync="form.owner_postal_code"
+            :errors="errors"
+            :fieldsLoaded="fieldsLoaded"
+          />
 
-        <!-- Well location -->
-        <location class="my-3"
-          v-if="currentStep === 'wellLocation' || (formIsFlat && flatForm.wellLocation)"
-          :ownerMailingAddress.sync="form.owner_mailing_address"
-          :ownerProvinceState.sync="form.owner_province_state"
-          :ownerCity.sync="form.owner_city"
-          :ownerPostalCode.sync="form.owner_postal_code"
-          :streetAddress.sync="form.street_address"
-          :city.sync="form.city"
-          :legalLot.sync="form.legal_lot"
-          :legalPlan.sync="form.legal_plan"
-          :legalDistrictLot.sync="form.legal_district_lot"
-          :legalBlock.sync="form.legal_block"
-          :legalSection.sync="form.legal_section"
-          :legalTownship.sync="form.legal_township"
-          :legalRange.sync="form.legal_range"
-          :landDistrict.sync="form.land_district"
-          :legalPID.sync="form.legal_pid"
-          :wellLocationDescription.sync="form.well_location_description"
-        />
+          <!-- Well location -->
+          <location class="my-3"
+            v-if="currentStep === 'wellLocation' || (formIsFlat && displayFormSection.wellLocation)"
+            :ownerMailingAddress.sync="form.owner_mailing_address"
+            :ownerProvinceState.sync="form.owner_province_state"
+            :ownerCity.sync="form.owner_city"
+            :ownerPostalCode.sync="form.owner_postal_code"
+            :streetAddress.sync="form.street_address"
+            :city.sync="form.city"
+            :legalLot.sync="form.legal_lot"
+            :legalPlan.sync="form.legal_plan"
+            :legalDistrictLot.sync="form.legal_district_lot"
+            :legalBlock.sync="form.legal_block"
+            :legalSection.sync="form.legal_section"
+            :legalTownship.sync="form.legal_township"
+            :legalRange.sync="form.legal_range"
+            :landDistrict.sync="form.land_district"
+            :legalPID.sync="form.legal_pid"
+            :wellLocationDescription.sync="form.well_location_description"
+          />
 
-        <!-- Coords and Method of Drilling -->
-        <coords class="my-3"
-          v-if="currentStep === 'wellCoords' || (formIsFlat && flatForm.wellCoords)"
-          :latitude.sync="form.latitude"
-          :longitude.sync="form.longitude"
-        />
+          <!-- Coords -->
+          <coords class="my-3"
+            v-if="currentStep === 'wellCoords' || (formIsFlat && displayFormSection.wellCoords)"
+            :latitude.sync="form.latitude"
+            :longitude.sync="form.longitude"
+          />
 
-        <!-- Method of Drilling -->
-        <method-of-drilling class="my-3"
-          v-if="currentStep === 'method' || (formIsFlat && flatForm.method)"
+          <!-- Method of Drilling -->
+          <method-of-drilling class="my-3"
+            v-if="currentStep === 'method' || (formIsFlat && displayFormSection.method)"
 
-          :groundElevation.sync="form.ground_elevation"
-          :groundElevationMethod.sync="form.ground_elevation_method"
-          :drillingMethod.sync="form.drilling_method"
-          :otherDrillingMethod.sync="form.other_drilling_method"
-          :wellOrientation.sync="form.well_orientation"
-        />
+            :groundElevation.sync="form.ground_elevation"
+            :groundElevationMethod.sync="form.ground_elevation_method"
+            :drillingMethod.sync="form.drilling_method"
+            :otherDrillingMethod.sync="form.other_drilling_method"
+            :wellOrientation.sync="form.well_orientation"
+          />
 
-        <!-- Closure/Decommission Description -->
-        <closure-description class="my-3"
-          v-if="currentStep === 'closureDescription' || (formIsFlat && flatForm.closureDescription)"
-          :closureDescriptionSet.sync="form.decommission_description_set">
+          <!-- Closure/Decommission Description -->
+          <closure-description class="my-3"
+            v-if="currentStep === 'closureDescription' || (formIsFlat && displayFormSection.closureDescription)"
+            :closureDescriptionSet.sync="form.decommission_description_set">
 
-        </closure-description>
+          </closure-description>
 
-        <!-- Lithology -->
-        <lithology class="my-3"
-          v-if="currentStep === 'lithology' || (formIsFlat && flatForm.lithology)"
-          :lithology.sync="form.lithologydescription_set"
-        />
+          <!-- Lithology -->
+          <lithology class="my-3"
+            v-if="currentStep === 'lithology' || (formIsFlat && displayFormSection.lithology)"
+            :lithology.sync="form.lithologydescription_set"
+          />
 
-        <!-- Casings -->
-        <casings class="my-3"
-          :key="`casingsComponent${componentUpdateTrigger}`"
-          v-if="currentStep === 'casings' || (formIsFlat && flatForm.casings)"
-          :casings.sync="form.casing_set"
-          :errors="errors"
-          :fieldsLoaded="fieldsLoaded"
-        />
+          <!-- Casings -->
+          <casings class="my-3"
+            :key="`casingsComponent${componentUpdateTrigger}`"
+            v-if="currentStep === 'casings' || (formIsFlat && displayFormSection.casings)"
+            :casings.sync="form.casing_set"
+            :errors="errors"
+            :fieldsLoaded="fieldsLoaded"
+          />
 
-        <!-- Surface Seal / Backfill Material -->
-        <backfill class="my-3"
-          v-if="currentStep === 'backfill' || (formIsFlat && flatForm.backfill)"
-          :surfaceSealMaterial.sync="form.surface_seal_material"
-          :surfaceSealDepth.sync="form.surface_seal_depth"
-          :surfaceSealThickness.sync="form.surface_seal_thickness"
-          :surfaceSealMethod.sync="form.surface_seal_method"
-          :backfillAboveSurfaceSeal.sync="form.backfill_above_surface_seal"
-          :backfillDepth.sync="form.backfill_above_surface_seal_depth"
-        />
+          <!-- Surface Seal / Backfill Material -->
+          <backfill class="my-3"
+            v-if="currentStep === 'backfill' || (formIsFlat && displayFormSection.backfill)"
+            :surfaceSealMaterial.sync="form.surface_seal_material"
+            :surfaceSealDepth.sync="form.surface_seal_depth"
+            :surfaceSealThickness.sync="form.surface_seal_thickness"
+            :surfaceSealMethod.sync="form.surface_seal_method"
+            :backfillAboveSurfaceSeal.sync="form.backfill_above_surface_seal"
+            :backfillDepth.sync="form.backfill_above_surface_seal_depth"
+          />
 
-        <!-- Liner Information -->
-        <liner class="my-3"
-          v-if="currentStep === 'liner' || (formIsFlat && flatForm.liner)"
-          :linerMaterial.sync="form.liner_material"
-          :linerDiameter.sync="form.liner_diameter"
-          :linerThickness.sync="form.liner_thickness"
-          :linerFrom.sync="form.liner_from"
-          :linerTo.sync="form.liner_to"
-          :linerPerforations.sync="form.linerperforation_set"
-          :errors="errors"
-          :fieldsLoaded="fieldsLoaded"
-        />
+          <!-- Liner Information -->
+          <liner class="my-3"
+            v-if="currentStep === 'liner' || (formIsFlat && displayFormSection.liner)"
+            :linerMaterial.sync="form.liner_material"
+            :linerDiameter.sync="form.liner_diameter"
+            :linerThickness.sync="form.liner_thickness"
+            :linerFrom.sync="form.liner_from"
+            :linerTo.sync="form.liner_to"
+            :linerPerforations.sync="form.linerperforation_set"
+            :errors="errors"
+            :fieldsLoaded="fieldsLoaded"
+          />
 
-        <!-- Screens -->
-        <screens class="my-3"
-          v-if="currentStep === 'screens' || (formIsFlat && flatForm.screens)"
-          :screenIntakeMethod.sync="form.screen_intake_method"
-          :screenType.sync="form.screen_type"
-          :screenMaterial.sync="form.screen_material"
-          :otherScreenMaterial.sync="form.other_screen_material"
-          :screenOpening.sync="form.screen_opening"
-          :screenBottom.sync="form.screen_bottom"
-          :screens.sync="form.screen_set"
-          :errors="errors"
-          :fieldsLoaded="fieldsLoaded"
-        />
+          <!-- Screens -->
+          <screens class="my-3"
+            v-if="currentStep === 'screens' || (formIsFlat && displayFormSection.screens)"
+            :screenIntakeMethod.sync="form.screen_intake_method"
+            :screenType.sync="form.screen_type"
+            :screenMaterial.sync="form.screen_material"
+            :otherScreenMaterial.sync="form.other_screen_material"
+            :screenOpening.sync="form.screen_opening"
+            :screenBottom.sync="form.screen_bottom"
+            :screens.sync="form.screen_set"
+            :errors="errors"
+            :fieldsLoaded="fieldsLoaded"
+          />
 
-        <!-- Filter Pack -->
-        <filterPack class="my-3"
-          v-if="currentStep === 'filterPack' || (formIsFlat && flatForm.filterPack)"
-          :filterPackFrom.sync="form.filter_pack_from"
-          :filterPackTo.sync="form.filter_pack_to"
-          :filterPackThickness.sync="form.filter_pack_thickness"
-          :filterPackMaterial.sync="form.filter_pack_material"
-          :filterPackMaterialSize.sync="form.filter_pack_material_size"
-        />
+          <!-- Filter Pack -->
+          <filterPack class="my-3"
+            v-if="currentStep === 'filterPack' || (formIsFlat && displayFormSection.filterPack)"
+            :filterPackFrom.sync="form.filter_pack_from"
+            :filterPackTo.sync="form.filter_pack_to"
+            :filterPackThickness.sync="form.filter_pack_thickness"
+            :filterPackMaterial.sync="form.filter_pack_material"
+            :filterPackMaterialSize.sync="form.filter_pack_material_size"
+          />
 
-        <!-- Well Development -->
-        <development class="my-3"
-          v-if="currentStep === 'wellDevelopment' || (formIsFlat && flatForm.wellDevelopment)"
-          :developmentMethod.sync="form.development_method"
-          :developmentHours.sync="form.development_hours"
-          :developmentNotes.sync="form.development_notes"
-        />
+          <!-- Well Development -->
+          <development class="my-3"
+            v-if="currentStep === 'wellDevelopment' || (formIsFlat && displayFormSection.wellDevelopment)"
+            :developmentMethod.sync="form.development_method"
+            :developmentHours.sync="form.development_hours"
+            :developmentNotes.sync="form.development_notes"
+          />
 
-        <!-- Yield (Production Data) -->
-        <yield class="my-3"
-          v-if="currentStep === 'wellYield' || (formIsFlat && flatForm.wellYield)"
-          :productionData.sync="form.production_data_set"
-        />
+          <!-- Yield (Production Data) -->
+          <yield class="my-3"
+            v-if="currentStep === 'wellYield' || (formIsFlat && displayFormSection.wellYield)"
+            :productionData.sync="form.production_data_set"
+          />
 
-        <!-- Water Quality -->
-        <water-quality class="my-3"
-          v-if="currentStep === 'waterQuality' || (formIsFlat && flatForm.waterQuality)"
-          :waterQualityCharacteristics.sync="form.water_quality_characteristics"
-          :waterQualityColour.sync="form.water_quality_colour"
-          :waterQualityOdour.sync="form.water_quality_odour"
-          :emsID.sync="form.ems_id"
-        />
+          <!-- Water Quality -->
+          <water-quality class="my-3"
+            v-if="currentStep === 'waterQuality' || (formIsFlat && displayFormSection.waterQuality)"
+            :waterQualityCharacteristics.sync="form.water_quality_characteristics"
+            :waterQualityColour.sync="form.water_quality_colour"
+            :waterQualityOdour.sync="form.water_quality_odour"
+            :emsID.sync="form.ems_id"
+          />
 
-        <!-- Well Completion Data -->
-        <completion class="my-3"
-          v-if="currentStep === 'wellCompletion' || (formIsFlat && flatForm.wellCompletion)"
-          :totalDepthDrilled.sync="form.total_depth_drilled"
-          :finishedWellDepth.sync="form.finished_well_depth"
-          :finalCasingStickUp.sync="form.final_casing_stick_up"
-          :bedrockDepth.sync="form.bedrock_depth"
-          :staticWaterLevel.sync="form.static_water_level"
-          :wellYield.sync="form.well_yield"
-          :artesianFlow.sync="form.artesian_flow"
-          :artesianPressure.sync="form.artesian_pressure"
-          :wellCapType.sync="form.well_cap_type"
-          :wellDisinfected.sync="form.well_disinfected"
-        />
+          <!-- Well Completion Data -->
+          <completion class="my-3"
+            v-if="currentStep === 'wellCompletion' || (formIsFlat && displayFormSection.wellCompletion)"
+            :totalDepthDrilled.sync="form.total_depth_drilled"
+            :finishedWellDepth.sync="form.finished_well_depth"
+            :finalCasingStickUp.sync="form.final_casing_stick_up"
+            :bedrockDepth.sync="form.bedrock_depth"
+            :staticWaterLevel.sync="form.static_water_level"
+            :wellYield.sync="form.well_yield"
+            :artesianFlow.sync="form.artesian_flow"
+            :artesianPressure.sync="form.artesian_pressure"
+            :wellCapType.sync="form.well_cap_type"
+            :wellDisinfected.sync="form.well_disinfected"
+          />
 
-        <decommission-information class="my-3"
-          v-if="currentStep === 'decommissionInformation' || (formIsFlat && flatForm.decommissionInformation)"
-          :finishedWellDepth.sync="form.finished_well_depth"
-          :decommissionReason.sync="form.decommission_reason"
-          :decommissionMethod.sync="form.decommission_method"
-          :sealantMaterial.sync="form.sealant_material"
-          :backfillMaterial.sync="form.backfill_material"
-          :decommissionDetails.sync="form.decommission_details"
-        />
+          <decommission-information class="my-3"
+            v-if="currentStep === 'decommissionInformation' || (formIsFlat && displayFormSection.decommissionInformation)"
+            :finishedWellDepth.sync="form.finished_well_depth"
+            :decommissionReason.sync="form.decommission_reason"
+            :decommissionMethod.sync="form.decommission_method"
+            :sealantMaterial.sync="form.sealant_material"
+            :backfillMaterial.sync="form.backfill_material"
+            :decommissionDetails.sync="form.decommission_details"
+          />
 
-        <!-- Comments -->
-        <comments class="my-3"
-          v-if="currentStep === 'comments' || (formIsFlat && flatForm.comments)"
-          :comments.sync="form.comments"
-          :alternativeSpecsSubmitted.sync="form.alternative_specs_submitted"
-        />
+          <!-- Comments -->
+          <comments class="my-3"
+            v-if="currentStep === 'comments' || (formIsFlat && displayFormSection.comments)"
+            :comments.sync="form.comments"
+            :alternativeSpecsSubmitted.sync="form.alternative_specs_submitted"
+          />
+        </div>
 
-        <!-- Back / Next / Submit controls -->
-        <b-row class="mt-5">
-          <b-col v-if="!formIsFlat">
-            <b-btn v-if="step > 1" @click="step > 1 ? step-- : null" variant="primary">Back</b-btn>
-          </b-col>
-          <b-col :class="`pr-4 ${formIsFlat ? '':'text-right'}`">
-            <b-btn v-if="step < maxSteps && !formIsFlat" @click="step++" variant="primary">Next</b-btn>
-            <b-btn v-else id="formSubmitButton" type="submit" variant="primary" ref="activitySubmitBtn" :disabled="formSubmitLoading">Submit</b-btn>
-          </b-col>
-        </b-row>
+        <div v-if="preview">
+          <!-- Preview -->
+          <submission-preview
+            :form="form"
+            :activity="activityType"
+            :sections="displayFormSection"/>
+        </div>
+          <!-- Back / Next / Submit controls -->
+          <b-row class="mt-5">
+            <b-col>
+              <b-btn v-if="step > 1 && !preview && !formIsFlat" @click="step > 1 ? step-- : null" variant="primary">Back</b-btn>
+              <b-btn v-if="preview" @click="handlePreviewBackButton" variant="primary">Back to Edit</b-btn>
+            </b-col>
+            <b-col class="pr-4 text-right">
+              <b-btn v-if="step < maxSteps && !formIsFlat && !preview" @click="step++" variant="primary">Next</b-btn>
+              <span v-else>
+                <b-btn v-if="!preview" variant="primary" @click="handlePreviewButton">Preview &amp; Submit</b-btn>
+                <b-btn v-if="preview" id="formSubmitButton" type="submit" variant="primary" ref="activitySubmitBtn" :disabled="formSubmitLoading">Submit</b-btn>
+              </span>
+            </b-col>
+          </b-row>
       </b-form>
 
       <!-- Form submission success message -->
@@ -256,7 +278,11 @@
           dismissible
           @dismissed="formSubmitSuccess=false"
           variant="success"
-          class="mt-3">Report submitted!</b-alert>
+          class="mt-3">Report submitted!
+        <a v-if="formSubmitSuccessWellTag" :href="`/gwells/well/${formSubmitSuccessWellTag}`">
+          View well details for well {{formSubmitSuccessWellTag}}
+        </a>
+      </b-alert>
 
       <!-- Form submission error message -->
       <b-alert
@@ -316,9 +342,11 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import ApiService from '@/common/services/ApiService.js'
 import { FETCH_CODES } from '../store/actions.types.js'
 import inputFormatMixin from '@/common/inputFormatMixin.js'
+import ActivityType from '@/submissions/components/SubmissionForm/ActivityType.vue'
 import WellType from '@/submissions/components/SubmissionForm/WellType.vue'
 import PersonResponsible from '@/submissions/components/SubmissionForm/PersonResponsible.vue'
 import Owner from '@/submissions/components/SubmissionForm/Owner.vue'
@@ -338,10 +366,13 @@ import Completion from '@/submissions/components/SubmissionForm/Completion.vue'
 import Comments from '@/submissions/components/SubmissionForm/Comments.vue'
 import ClosureDescription from '@/submissions/components/SubmissionForm/ClosureDescription.vue'
 import DecommissionInformation from '@/submissions/components/SubmissionForm/DecommissionInformation.vue'
+import SubmissionPreview from '@/submissions/components/SubmissionPreview/SubmissionPreview.vue'
+import filterBlankRows from '@/common/filterBlankRows.js'
 export default {
   name: 'SubmissionsHome',
-  mixins: [inputFormatMixin],
+  mixins: [inputFormatMixin, filterBlankRows],
   components: {
+    ActivityType,
     WellType,
     PersonResponsible,
     Owner,
@@ -360,18 +391,22 @@ export default {
     Completion,
     Comments,
     ClosureDescription,
-    DecommissionInformation
+    DecommissionInformation,
+    SubmissionPreview
   },
   data () {
     return {
       activityType: 'CON',
-      formIsFlat: true,
+      formIsFlat: false,
+      preview: false,
       units: 'imperial',
       confirmSubmitModal: false,
       formSubmitLoading: false,
       formSubmitSuccess: false,
+      formSubmitSuccessWellTag: null,
       formSubmitError: false,
       saveFormSuccess: false,
+      hasHadSaveFormSuccess: false,
       loadFormSuccess: false,
       confirmLoadModal: false,
       // componentUpdateTrigger can be appended to a component's key. Changing this value will cause
@@ -385,12 +420,13 @@ export default {
       formOptions: {},
       formSteps: {
         CON: [
+          'activityType',
           'wellType',
           'wellOwner',
+          'personResponsible',
           'wellLocation',
           'wellCoords',
           'method',
-          'lithology',
           'casings',
           'backfill',
           'liner',
@@ -403,12 +439,13 @@ export default {
           'comments'
         ],
         ALT: [
+          'activityType',
           'wellType',
           'wellOwner',
+          'personResponsible',
           'wellLocation',
           'wellCoords',
           'method',
-          'lithology',
           'casings',
           'backfill',
           'liner',
@@ -421,8 +458,10 @@ export default {
           'comments'
         ],
         DEC: [
+          'activityType',
           'wellType',
           'wellOwner',
+          'personResponsible',
           'wellLocation',
           'wellCoords',
           'method',
@@ -430,6 +469,9 @@ export default {
           'casings',
           'decommissionInformation',
           'comments'
+        ],
+        STAFF_EDIT: [
+          'activityType'
         ]
       }
     }
@@ -447,9 +489,9 @@ export default {
     currentStep () {
       // the string name of the step corresponding to formStep
       // this will determine which step is currently displayed
-      return this.formSteps[this.activityType][this.formStep - 1]
+      return this.preview ? 'preview' : this.formSteps[this.activityType][this.formStep - 1]
     },
-    flatForm () {
+    displayFormSection () {
       // returns an object describing which components should be displayed
       // when in "flat form" mode
 
@@ -461,7 +503,12 @@ export default {
       })
 
       return components
-    }
+    },
+    isLoadFormDisabled () {
+      // During unit tests, the localStorage object might not exist, so we have to check it's existence.
+      return !window.localStorage || (window.localStorage.getItem('savedFormData') === null && !this.hasHadSaveFormSuccess)
+    },
+    ...mapGetters(['codes'])
   },
   methods: {
     formSubmit () {
@@ -469,8 +516,6 @@ export default {
 
       // delete "meta" data (form input that need not be submitted) stored within form object
       delete data.meta
-
-      data['well_activity_type'] = this.activityType
 
       // replace the "person responsible" object with the person's guid
       if (data.driller_responsible && data.driller_responsible.person_guid) {
@@ -483,12 +528,24 @@ export default {
 
       this.stripBlankStrings(data)
 
+      data.linerperforation_set = this.filterBlankRows(data.linerperforation_set)
+      data.lithologydescription_set = this.filterBlankRows(data.lithologydescription_set)
+      data.production_data_set = this.filterBlankRows(data.production_data_set)
+      data.screen_set = this.filterBlankRows(data.screen_set)
+      data.casing_set = this.filterBlankRows(data.casing_set)
+      data.decommission_description_set = this.filterBlankRows(data.decommission_description_set)
+
       this.formSubmitLoading = true
       this.formSubmitSuccess = false
       this.formSubmitError = false
+      this.formSubmitSuccessWellTag = null
       this.errors = {}
-      ApiService.post('submissions', data).then(() => {
+      // Depending on the type of submission (construction/decommission/alteration/edit) we post to
+      // different endpoints.
+      const PATH = this.codes.activity_types.find((item) => item.code === this.activityType).path
+      ApiService.post(PATH, data).then((response) => {
         this.formSubmitSuccess = true
+        this.formSubmitSuccessWellTag = response.data.well
         this.resetForm()
       }).catch((error) => {
         this.errors = error.response.data
@@ -537,8 +594,8 @@ export default {
         liner_to: null,
         linerperforation_set: [],
         well_location_description: '',
-        latitude: '',
-        longitude: '',
+        latitude: null,
+        longitude: null,
         ground_elevation: null,
         ground_elevation_method: '',
         drilling_method: '',
@@ -603,7 +660,7 @@ export default {
       const data = JSON.stringify(this.form)
       localStorage.setItem('savedFormData', data)
       setTimeout(() => { this.saveFormSuccess = true }, 10)
-      setTimeout(() => { this.saveFormSuccess = false }, 1000)
+      setTimeout(() => { this.saveFormSuccess = false; this.hasHadSaveFormSuccess = true }, 1000)
     },
     loadForm () {
       this.saveStatusReset()
@@ -649,6 +706,18 @@ export default {
         if (formObject[key] === '') {
           delete formObject[key]
         }
+      })
+    },
+    handlePreviewButton () {
+      this.preview = true
+      this.$nextTick(function () {
+        window.scrollTo(0, 0)
+      })
+    },
+    handlePreviewBackButton () {
+      this.preview = false
+      this.$nextTick(function () {
+        window.scrollTo(0, 0)
       })
     }
   },

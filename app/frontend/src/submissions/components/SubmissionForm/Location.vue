@@ -10,21 +10,15 @@
       </b-row>
       <b-row>
         <b-col cols="12" md="6">
-          <b-form-group label="Street address">
-            <v-select
-              v-model="streetAddressInput"
-              id="wellAddressSelect"
-              :filterable="false"
-              taggable
-              :options="wellAddressHints"
-              @search="onWellAddressSearch"
-              :disabled="sameAsOwnerAddress"
-              >
-              <template slot="no-options">
-                &nbsp;
-              </template>
-            </v-select>
-          </b-form-group>
+          <form-input
+            v-model="streetAddressInput"
+            id="wellStreetAddress"
+            type="text"
+            label="Street address"
+            :errors="errors['street_address']"
+            :loaded="fieldsLoaded['street_address']"
+            :disabled="sameAsOwnerAddress"
+          ></form-input>
         </b-col>
       </b-row>
       <b-row>
@@ -183,8 +177,6 @@
     </fieldset>
 </template>
 <script>
-import debounce from 'lodash.debounce'
-import axios from 'axios'
 import { mapGetters } from 'vuex'
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 export default {
@@ -234,30 +226,10 @@ export default {
     ...mapGetters(['codes'])
   },
   watch: {
-    streetAddress (val) {
-      // match against strings that contain two groups of letters/numbers (e.g. "123 Main")
-      if (!(/^(\w+ [ \w]+)/.test(val))) {
-        this.wellAddressHints = []
-      }
-    },
     sameAsOwnerAddress (val) {
       this.streetAddressInput = String(this.ownerMailingAddress)
       this.cityInput = String(this.ownerCity)
     }
-  },
-  methods: {
-    onWellAddressSearch (search, loading) {
-      loading(true)
-      this.wellAddressSearch(loading, search, this)
-    },
-    wellAddressSearch: debounce((loading, search, vm) => {
-      if (/^(\w+ [ \w]+)/.test(search)) {
-        axios.get(`https://geocoder.api.gov.bc.ca/addresses.json?addressString=${escape(search)}&autoComplete=true&maxResults=10&brief=true`).then((response) => {
-          vm.wellAddressHints = response.data.features.map(x => x.properties.fullAddress)
-        })
-      }
-      loading(false)
-    }, 500)
   }
 }
 </script>

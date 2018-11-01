@@ -1,565 +1,229 @@
-// Jenkinsfile (Scripted Pipeline)
+#!groovy
 
-/* Gotchas:
-    - PodTemplate name/label has to be unique to ensure proper caching/validation
-    - https://gist.github.com/matthiasbalke/3c9ecccbea1d460ee4c3fbc5843ede4a
-
-   Libraries:
-    - https://github.com/BCDevOps/jenkins-pipeline-shared-lib
-    - http://github-api.kohsuke.org/apidocs/index.html
-*/
-import hudson.model.Result;
-import jenkins.model.CauseOfInterruption.UserInterruption;
-import org.kohsuke.github.*
-import bcgov.OpenShiftHelper
+import groovy.json.JsonOutput
 import bcgov.GitHubHelper
 
+pipeline {
+  environment {
 
-// Print stack trace of error
-@NonCPS
-private static String stackTraceAsString(Throwable t) {
-    StringWriter sw = new StringWriter();
-    t.printStackTrace(new PrintWriter(sw));
-    return sw.toString()
-}
+    APP_NAME = "gwells"
+    REPOSITORY = 'https://www.github.com/bcgov/gwells.git'
 
+    // TOOLS_PROJECT is where images are built
+    TOOLS_PROJECT = "moe-gwells-tools"
 
-// Notify stage status and pass to Jenkins-GitHub library
-void notifyStageStatus (Map context, String name, String status) {
-    GitHubHelper.createCommitStatus(
-        this,
-        context.pullRequest.head,
-        status,
-        "${env.BUILD_URL}",
-        "Stage '${name}'",
-        "stages/${name.toLowerCase()}"
-    )
-}
+    // DEV_PROJECT is the project where individual development environments are spun up
+    // for example: a pull request PR-999 will result in gwells-dev-pr-999.pathfinder.gov.bc.ca
+    DEV_PROJECT = "moe-gwells-dev"
+    DEV_SUFFIX = "dev"
 
+    // TEST_PROJECT contains the test deployment. The test image is a candidate for promotion to prod.
+    TEST_PROJECT = "moe-gwells-test"
+    TEST_SUFFIX = "staging"
 
-// Check if a stage is enabled (true|false in context)
-boolean isEnabled (Map context, String stageName) {
-    def stageOpt =(context?.stages?:[:])[stageName]
-    return (stageOpt == null || stageOpt == true)
-}
+    // PROD_PROJECT is the prod deployment.
+    // New production images can be deployed by tagging an existing "test" image as "prod".
+    PROD_PROJECT = "moe-gwells-prod"
+    PROD_SUFFIX= "production"
 
+    // PR_NUM is the pull request number e.g. 'pr-4'
+    PR_NUM = "${env.JOB_BASE_NAME}".toLowerCase()
+  }
+  agent any
+  stages {
 
-// Python tests can run early an in the container if Code Quality is disabled
-void unitTestsPython (Map context, boolean isQuick=false) {
-    boolean doCodeQuality = isEnabled( context, 'Code Quality' )
-    if (doCodeQuality && !isQuick) {
-        try {
-            echo "Running tests with artifact stash for SonarQube"
-            sh script: '''#!/usr/bin/container-entrypoint /bin/sh
-                cd /opt/app-root/src/backend
-                DATABASE_ENGINE=sqlite DEBUG=False TEMPLATE_DEBUG=False python manage.py test -c nose.cfg
-            '''
-            sh script: '''#!/usr/bin/container-entrypoint /bin/sh
-                cp /opt/app-root/src/backend/nosetests.xml ./
-                cp /opt/app-root/src/backend/coverage.xml ./
-            '''
-            stash includes: 'nosetests.xml,coverage.xml', name: 'coverage'
-        } finally {
-            stash includes: 'nosetests.xml,coverage.xml', name: 'coverage'
-            junit 'nosetests.xml'
-        }
-    } else if (!doCodeQuality && isQuick){
-        echo "Running short tests w/o artifact stash since SonarQube is disabled"
-        String deploymentConfigName = "gwells${context.deployments['dev'].dcSuffix}"
-        String projectName = context.deployments['dev'].projectName
-        String podName = openshift.withProject(projectName){
-            return openshift.selector('pod', ['deploymentconfig':deploymentConfigName]).objects()[1].metadata.name
-        }
-        sh "oc exec '${podName}' -n '${projectName}' -- bash -c '\
-            cd /opt/app-root/src/backend; \
-            DATABASE_ENGINE=sqlite DEBUG=False TEMPLATE_DEBUG=False python manage.py test -c nose.cfg \
-        '"
-    } else {
-        echo "Python unit tests are being skipped at this stage"
-        echo "doCodeQuality = ${doCodeQuality}"
-        echo "isQuick = ${isQuick}"
-    }
-}
-void unitTestsPythonQuick (Map context) {unitTestsPython (context, true)}
-void unitTestsPythonFull (Map context) {unitTestsPython (context, false)}
+    // the Start Pipeline stage will process and apply OpenShift build templates which will create
+    // buildconfigs and an imagestream for built images.
+    // each pull request gets its own buildconfig but all new builds are pushed to a single imagestream,
+    // to be tagged with the pull request number.
+    // e.g.:  gwells-app:pr-999
+    stage('Prepare Templates') {
+      steps {
+        script {
+          echo "Cancelling previous builds..."
+          timeout(10) {
+            abortAllPreviousBuildInProgress(currentBuild)
+          }
+          echo "Previous builds cancelled"
 
+          openshift.withCluster() {
+            openshift.withProject(TOOLS_PROJECT) {
 
-/* _Stage wrapper:
-    - runs stages against true|false in map context
-    - receives stages defined separately in closures (body)
-    - catches errors and provides output
-*/
-def _stage(String name, Map context, boolean retry=0, boolean withCommitStatus=true, Closure body) {
-    timestamps {
-        echo "Running Stage '${name}'"
-        if (isEnabled(context,name)){
-            stage(name) {
-                waitUntil {
-                    notifyStageStatus(context, name, 'PENDING')
-                    boolean isDone=false
-                    try{
-                        body()
-                        isDone=true
-                        notifyStageStatus(context, name, 'SUCCESS')
-                        echo "Completed Stage '${name}'"
-                    }catch (ex){
-                        notifyStageStatus(context, name, 'FAILURE')
-                        echo "${stackTraceAsString(ex)}"
-                        def inputAction = input(
-                            message: "This step (${name}) has failed. See error above.",
-                            ok: 'Confirm',
-                            parameters: [
-                                choice(
-                                    name: 'action',
-                                    choices: 'Re-run\nIgnore',
-                                    description: 'What would you like to do?'
-                                )
-                            ]
-                        )
-                        if ('Ignore'.equalsIgnoreCase(inputAction)){
-                            isDone=true
-                        }
-                    }
-                    return isDone
-                } //end waitUntil
-            } //end Stage
-        }else{
-            stage(name) {
-                echo 'Skipping'
+              // Process db and app template into list objects
+              //  - variable substitution
+              echo "Processing build templates"
+              def dbtemplate = openshift.process("-f",
+                "openshift/postgresql.bc.json",
+                "ENV_NAME=${DEV_SUFFIX}"
+              )
+              //
+              def buildtemplate = openshift.process("-f",
+                "openshift/backend.bc.json",
+                "ENV_NAME=${DEV_SUFFIX}",
+                "NAME_SUFFIX=-${DEV_SUFFIX}-${PR_NUM}",
+                "APP_IMAGE_TAG=${PR_NUM}",
+                "SOURCE_REPOSITORY_URL=${REPOSITORY}",
+                "SOURCE_REPOSITORY_REF=pull/${CHANGE_ID}/head"
+              )
+
+              // Apply oc list objects
+              //  - add docker image reference as tag in gwells-postgresql
+              echo "Preparing database imagestream"
+              echo " \$ oc process -f openshift/postgresql.bc.json -p ENV_NAME=${DEV_SUFFIX} | oc apply -n moe-gwells-tools -f -"
+              openshift.apply(dbtemplate)
+              //  - add docker image reference as tag in gwells-application
+              //  - create build config
+              echo "Preparing backend imagestream and buildconfig"
+              echo " \$ oc process -f openshift/backend.bc.json -p ENV_NAME=${DEV_SUFFIX} -p NAME_SUFFIX=-${DEV_SUFFIX}-${PR_NUM} -p APP_IMAGE_TAG=${PR_NUM} -p SOURCE_REPOSITORY_URL=${REPOSITORY} -p SOURCE_REPOSITORY_REF=pull/${CHANGE_ID}/head | oc apply -n moe-gwells-tools -f -"
+              openshift.apply(buildtemplate)
             }
+          }
         }
+      }
     }
-}
 
+    // the Build stage runs unit tests and builds files. an image will be outputted to the app's imagestream
+    // builds use the source to image strategy. See /app/.s2i/assemble for image build script
+    stage('Build (with tests)') {
+      steps {
+        script {
+          openshift.withCluster() {
+            openshift.withProject(TOOLS_PROJECT) {
+              echo "Running unit tests and building images..."
+              echo "This may take several minutes. Logs are not forwarded to Jenkins by default (at this time)."
+              echo "Additional logs can be found by monitoring builds in ${TOOLS_PROJECT}"
 
-/* Project and build settings
-   Includes:
-    - build (*.bc) and config templates (*.dc)
-    - stage names and enabled status (true|false)
-*/
-Map context = [
-    'name': 'gwells',
-    'uuid' : "${env.JOB_BASE_NAME}-${env.BUILD_NUMBER}-${env.CHANGE_ID}",
-    'env': [
-        'dev':[:],
-        'test':[
-            'params':[
-                'host':'gwells-test.pathfinder.gov.bc.ca',
-                'DB_PVC_SIZE':'5Gi'
-            ]
-        ],
-        'prod':[
-            'params':[
-                'host':'gwells-prod.pathfinder.gov.bc.ca',
-                'DB_PVC_SIZE':'5Gi'
-            ]
-        ]
-    ],
-    'templates': [
-        'build':[
-            ['file':'openshift/postgresql.bc.json'],
-            ['file':'openshift/backend.bc.json']
-        ],
-        'deployment':[
-            [
-                'file':'openshift/postgresql.dc.json',
-                'params':[
-                    'DATABASE_SERVICE_NAME':'gwells-pgsql${deploy.dcSuffix}',
-                    'IMAGE_STREAM_NAMESPACE':'',
-                    'IMAGE_STREAM_NAME':'gwells-postgresql${deploy.dcSuffix}',
-                    'IMAGE_STREAM_VERSION':'${deploy.envName}',
-                    'POSTGRESQL_DATABASE':'gwells',
-                    'VOLUME_CAPACITY':'${env[DEPLOY_ENV_NAME]?.params?.DB_PVC_SIZE?:"1Gi"}'
-                ]
-            ],
-            [
-                'file':'openshift/backend.dc.json',
-                'params':[
-                    'HOST':'${env[DEPLOY_ENV_NAME]?.params?.host?:("gwells" + deployments[DEPLOY_ENV_NAME].dcSuffix + "-" + deployments[DEPLOY_ENV_NAME].projectName + ".pathfinder.gov.bc.ca")}'
-                ]
-            ]
-        ]
-    ],
-    stages:[
-        'Load Fixtures': true,
-        'API Tests': true,
-        'Functional Tests': true,
-        'Unit Tests': true,
-        'Code Quality': false,
-        'ZAP Security Scan': false
-    ],
-    pullRequest:[
-        'id': env.CHANGE_ID,
-        'head': GitHubHelper.getPullRequestLastCommitId(this)
-    ]
-]
-
-
-/* Jenkins properties can be set on a pipeline-by-pipeline basis
-    See Jenkins' Pipeline Systax for generation
-    Globally equivalent to Jenkins > Manage Jenkins > Configure System
-    https://jenkins.io/doc/pipeline/steps/workflow-multibranch/#properties-set-job-properties
-*/
-properties([
-    buildDiscarder(
-        logRotator(
-            artifactDaysToKeepStr: '',
-            artifactNumToKeepStr: '',
-            daysToKeepStr: '',
-            numToKeepStr: '5'
-        )
-    ),
-    durabilityHint(
-        'PERFORMANCE_OPTIMIZED'
-    ),
-    disableResume()
-])
-
-
-/* Prepare stage
-    - abort any existing builds
-    - echo pull request number
-*/
-stage('Prepare') {
-    abortAllPreviousBuildInProgress(currentBuild)
-}
-
-
-/* Build stage
-    - applying OpenShift build configs
-    - creating OpenShift imagestreams, annotations and builds
-    - build time optimizations (e.g. image reuse, build scheduling/readiness)
-*/
-_stage('Build', context) {
-    node('master') {
-        checkout scm
-        new OpenShiftHelper().build(this, context)
-        if ("master".equalsIgnoreCase(env.CHANGE_TARGET)) {
-            new OpenShiftHelper().prepareForCD(this, context)
-            new OpenShiftHelper().waitUntilEnvironmentIsReady(this, context, 'dev')
+              // Select appropriate buildconfig
+              def appBuild = openshift.selector("bc", "${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}")
+              // temporarily set ENABLE_DATA_ENTRY=True during testing because False currently leads to a failing unit test
+              echo "Building"
+              echo " \$ oc start-build -n moe-gwells-tools ${APP_NAME}-${DEV_SUFFIX}-${PR_NUM} --wait --env=ENABLE_DATA_ENTRY=true --follow=true"
+              appBuild.startBuild("--wait", "--env=ENABLE_DATA_ENTRY=True").logs("-f")
+            }
+          }
         }
-        deleteDir()
+      }
     }
-} //end stage
 
 
-/* Continuous Integration (CI)
-   For feature branches merging into a release branch
-    || Deploy and Load Fixtures (sets isDeployed and isFixtured=true)
-    || Unit tests (sets isUnitTested=true)
-    -> || Python tests
-       || Node tests
-    || ZAP Security Scan (executes on isDeployed)
-    || Functional tests (executes on isFixtured)
-    || API tests (executes on isFixtured)
-    || Code quality (executes on isUnitTested)
-*/
-boolean isDeployed = false
-boolean isFixtured = false
-boolean isUnitTested = false
-parallel (
-    "Deploy and Load Fixtures" : {
+    // the Deploy to Dev stage creates a new dev environment for the pull request (if necessary), tags the newly built
+    // application image into that environment, and monitors the newest deployment for pods/containers to
+    // report back as ready.
+    stage('Deploy to dev') {
+      steps {
+        script {
+          openshift.withCluster() {
+            openshift.withProject(DEV_PROJECT) {
+              // Process postgres deployment config (sub in vars, create list items)
+              echo " \$ oc process -f openshift/postgresql.dc.json -p DATABASE_SERVICE_NAME=gwells-pgsql-${DEV_SUFFIX}-${PR_NUM} -p IMAGE_STREAM_NAMESPACE='' -p IMAGE_STREAM_NAME=gwells-postgresql-${DEV_SUFFIX}-${PR_NUM} -p IMAGE_STREAM_VERSION=${DEV_SUFFIX} -p NAME_SUFFIX=-${DEV_SUFFIX}-${PR_NUM} -p POSTGRESQL_DATABASE=gwells -p VOLUME_CAPACITY=1Gi | oc apply -n moe-gwells-dev -f -"
+              def deployDBTemplate = openshift.process("-f",
+                "openshift/postgresql.dc.json",
+                "DATABASE_SERVICE_NAME=gwells-pgsql-${DEV_SUFFIX}-${PR_NUM}",
+                "IMAGE_STREAM_NAMESPACE=''",
+                "IMAGE_STREAM_NAME=gwells-postgresql-${DEV_SUFFIX}-${PR_NUM}",
+                "IMAGE_STREAM_VERSION=${DEV_SUFFIX}",
+                "NAME_SUFFIX=-${DEV_SUFFIX}-${PR_NUM}",
+                "POSTGRESQL_DATABASE=gwells",
+                "VOLUME_CAPACITY=1Gi"
+              )
 
-        _stage('Deploy', context) {
-            node('master') {
-                new OpenShiftHelper().deploy(this, context, 'dev')
-                String deploymentConfigName = "gwells${context.deployments['dev'].dcSuffix}"
-                String projectName = context.deployments['dev'].projectName
-                openshift.withProject(projectName) {
-                    // get list of pods for the new deployment
-                    def latestDeployment = openshift.selector('dc', deploymentConfigName).object().status.latestVersion
-                    def pods = openshift.selector('pod', [deployment: "${deploymentConfigName}-${latestDeployment}"])
+              // Process postgres deployment config (sub in vars, create list items)
+              echo " \$ oc process -f openshift/backend.dc.json -p ENV_NAME=${DEV_SUFFIX} -p NAME_SUFFIX=-${DEV_SUFFIX}-${PR_NUM} | oc apply -n moe-gwells-dev -f -"
+              echo "Processing deployment config for pull request ${PR_NUM}"
+              def deployTemplate = openshift.process("-f",
+                "openshift/backend.dc.json",
+                "ENV_NAME=${DEV_SUFFIX}",
+                "HOST=${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}.pathfinder.gov.bc.ca",
+                "NAME_SUFFIX=-${DEV_SUFFIX}-${PR_NUM}"
+              )
 
-                    pods.untilEach(1) {
-                        return it.object().status.containerStatuses.every {
-                            it.ready
-                        }
-                    }
+              // some objects need to be copied from a base secret or configmap
+              // these objects have an annotation "as-copy-of" in their object spec (e.g. an object in backend.dc.json)
+              echo "Creating configmaps and secrets objects"
+              List newObjectCopies = []
+
+              for (o in (deployTemplate + deployDBTemplate)) {
+
+                // only perform this operation on objects with 'as-copy-of'
+                def sourceName = o.metadata && o.metadata.annotations && o.metadata.annotations['as-copy-of']
+                if (sourceName && sourceName.length() > 0) {
+                  def selector = openshift.selector("${o.kind}/${sourceName}")
+                  if (selector.count() == 1) {
+
+                    // create a copy of the object and add it to the new list of objects to be applied
+                    Map copiedModel = selector.object(exportable:true)
+                    copiedModel.metadata.name = o.metadata.name
+                    echo "[as-copy-of] Copying ${o.kind} ${o.metadata.name}"
+                    newObjectCopies.add(copiedModel)
+                  }
                 }
-                isDeployed = true
+              }
+
+
+              echo "Applying deployment config for pull request ${PR_NUM} on ${DEV_PROJECT}"
+
+              // apply the templates, which will create new objects or modify existing ones as necessary.
+              // the copies of base objects (secrets, configmaps) are also applied.
+              openshift.apply(deployTemplate).label(['app':"gwells-${DEV_SUFFIX}-${PR_NUM}", 'app-name':"${APP_NAME}", 'env-name':"${DEV_SUFFIX}"], "--overwrite")
+              openshift.apply(deployDBTemplate).label(['app':"gwells-${DEV_SUFFIX}-${PR_NUM}", 'app-name':"${APP_NAME}", 'env-name':"${DEV_SUFFIX}"], "--overwrite")
+              openshift.apply(newObjectCopies).label(['app':"gwells-${DEV_SUFFIX}-${PR_NUM}", 'app-name':"${APP_NAME}", 'env-name':"${DEV_SUFFIX}"], "--overwrite")
+              echo "Successfully applied deployment configs for ${PR_NUM}"
+
+              // promote the newly built image to DEV
+              echo "Tagging new image to DEV imagestream."
+              openshift.tag("${TOOLS_PROJECT}/gwells-application:${PR_NUM}", "${DEV_PROJECT}/gwells-${DEV_SUFFIX}-${PR_NUM}:dev")  // todo: clean up labels/tags
+              openshift.tag("${TOOLS_PROJECT}/gwells-postgresql:dev", "${DEV_PROJECT}/gwells-postgresql-${DEV_SUFFIX}-${PR_NUM}:dev")  // todo: clean up labels/tags
+
+              // post a notification to Github that this pull request is being deployed
+              def targetURL = "https://${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}.pathfinder.gov.bc.ca/gwells"
+              def ghDeploymentId = new GitHubHelper().createDeployment(this, "pull/${env.CHANGE_ID}/head", ['environment':"${DEV_SUFFIX}", 'task':"deploy:pull:${env.CHANGE_ID}"])
+              new GitHubHelper().createDeploymentStatus(this, ghDeploymentId, 'PENDING', ['targetUrl':"${targetURL}"])
+
+              // monitor the deployment status and wait until deployment is successful
+              echo "Waiting for deployment to dev..."
+              def newVersion = openshift.selector("dc", "${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}").object().status.latestVersion
+              def pods = openshift.selector('pod', [deployment: "${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}-${newVersion}"])
+
+              // wait until each container in this deployment's pod reports as ready
+              timeout(15) {
+                pods.untilEach(2) {
+                  return it.object().status.containerStatuses.every {
+                    it.ready
+                  }
+                }
+              }
+
+              echo "Deployment successful!"
+              echo "Loading fixtures"
+              def firstPod = pods.objects()[0].metadata.name
+              openshift.exec(firstPod, "--", "bash -c '\
+                cd /opt/app-root/src/backend; \
+                python manage.py loaddata \
+                  gwells-codetables.json \
+                  wellsearch-codetables.json \
+                  registries-codetables.json \
+                  registries.json \
+                  aquifers.json \
+                  wellsearch.json.gz; \
+                python manage.py createinitialrevisions'")
+
+                new GitHubHelper().createDeploymentStatus(this, ghDeploymentId, 'SUCCESS', ['targetUrl':"${targetURL}"])
+
             }
+          }
         }
+      }
+    }
 
-        _stage('Load Fixtures', context) {
-            node('master'){
-                parallel (
-                    "Load Fixtures": {
-                        String deploymentConfigName = "gwells${context.deployments['dev'].dcSuffix}"
-                        String projectName = context.deployments['dev'].projectName
-                        String podName = openshift.withProject(projectName){
-                            return openshift.selector('pod', ['deploymentconfig':deploymentConfigName]).objects()[0].metadata.name
-                        }
-
-                        /* All of these commands could be run in one go, and be more performant, but then
-                        it becomes difficult to see which on of the steps failed. Instead, each step is
-                        executed by itself. */
-                        sh "oc exec '${podName}' -n '${projectName}' -- bash -c '\
-                            cd /opt/app-root/src/backend; \
-                            python manage.py migrate \
-                        '"
-                        sh "oc exec '${podName}' -n '${projectName}' -- bash -c '\
-                            cd /opt/app-root/src/backend; \
-                            python manage.py loaddata gwells-codetables.json \
-                        '"
-                        sh "oc exec '${podName}' -n '${projectName}' -- bash -c '\
-                            cd /opt/app-root/src/backend; \
-                            python manage.py loaddata wellsearch-codetables.json registries-codetables.json \
-                        '"
-                        sh "oc exec '${podName}' -n '${projectName}' -- bash -c '\
-                            cd /opt/app-root/src/backend; \
-                            python manage.py loaddata wellsearch.json.gz registries.json \
-                        '"
-                        sh "oc exec '${podName}' -n '${projectName}' -- bash -c '\
-                            cd /opt/app-root/src/backend; \
-                            python manage.py loaddata aquifers.json \
-                        '"
-                        sh "oc exec '${podName}' -n '${projectName}' -- bash -c '\
-                            cd /opt/app-root/src/backend; \
-                            python manage.py createinitialrevisions \
-                        '"
-                        isFixtured = true
-                    },
-                    "Unit Tests: Python": {
-                        unitTestsPythonQuick (context)
-                    }
-                )
-            }
-        } //end stage
-    }, //end branch
-    "Unit Tests" : {
-        /* Unit test stage
-            - use Django's manage.py to run python unit tests (w/ nose.cfg)
-            - use 'npm run unit' to run JavaScript unit tests
-            - stash test results for code quality stage
-        */
-        _stage('Unit Tests', context) {
-            podTemplate(
-                label: "node-${context.uuid}",
-                name:"node-${context.uuid}",
+    stage('API Tests') {
+      steps {
+        script {
+          podTemplate(
+                label: "nodejs-${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}",
+                name: "nodejs-${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}",
                 serviceAccount: 'jenkins',
                 cloud: 'openshift',
-                containers: [
-                    containerTemplate(
-                        name: 'jnlp',
-                        image: 'jenkins/jnlp-slave:3.10-1-alpine',
-                        args: '${computer.jnlpmac} ${computer.name}',
-                        resourceRequestCpu: '100m',
-                        resourceLimitCpu: '100m'
-                    ),
-                    containerTemplate(
-                        name: 'app',
-                        image: "docker-registry.default.svc:5000/moe-gwells-tools/gwells${context.buildNameSuffix}:${context.buildEnvName}",
-                        ttyEnabled: true,
-                        command: 'cat',
-                        resourceRequestCpu: '2',
-                        resourceLimitCpu: '2',
-                        resourceRequestMemory: '2.5Gi',
-                        resourceLimitMemory: '2.5Gi'
-                    )
-                ]
-            ) {
-                node("node-${context.uuid}") {
-                    container('app') {
-                        sh script: '''#!/usr/bin/container-entrypoint /bin/sh
-                            printf "Python version: "&& python --version
-                            printf "Pip version:    "&& pip --version
-                            printf "Node version:   "&& node --version
-                            printf "NPM version:    "&& npm --version
-                        '''
-
-                        parallel (
-                            "Unit Tests: Python (w/ ZAP)": {
-                                unitTestsPythonFull (context)
-                            },
-                            "Unit Tests: Node": {
-                                try {
-                                    sh script: '''#!/usr/bin/container-entrypoint /bin/sh
-                                        cd /opt/app-root/src/frontend
-                                        npm test
-                                    '''
-                                } finally {
-                                    if (isEnabled( context, 'Code Quality' )) {
-                                        sh script: '''#!/usr/bin/container-entrypoint /bin/sh
-                                            mkdir -p frontend/test/
-                                            cp -R /opt/app-root/src/frontend/test/unit ./frontend/test/
-                                            cp /opt/app-root/src/frontend/junit.xml ./frontend/
-                                        '''
-                                        archiveArtifacts allowEmptyArchive: true, artifacts: 'frontend/test/unit/**/*'
-                                        stash includes: 'frontend/test/unit/coverage/clover.xml', name: 'nodecoverage'
-                                        stash includes: 'frontend/junit.xml', name: 'nodejunit'
-                                        junit 'frontend/junit.xml'
-                                        publishHTML (
-                                            target: [
-                                                allowMissing: false,
-                                                alwaysLinkToLastBuild: false,
-                                                keepAll: true,
-                                                reportDir: 'frontend/test/unit/coverage/lcov-report/',
-                                                reportFiles: 'index.html',
-                                                reportName: "Node Coverage Report"
-                                            ]
-                                        )
-                                    }
-                                }
-                            } //end branch
-                        ) //end parallel
-                        isUnitTested=true
-                    } //end container
-                } //end node
-            } //end podTemplate
-        } //end stage
-    }, //end branch
-    "ZAP Security Scan": {
-        _stage('ZAP Security Scan', context) {
-            podTemplate(
-                label: "zap-${context.uuid}",
-                name: "zap-${context.uuid}",
-                serviceAccount: "jenkins",
-                cloud: "openshift",
-                containers: [
-                    containerTemplate(
-                        name: 'jnlp',
-                        image: 'docker-registry.default.svc:5000/moe-gwells-dev/owasp-zap-openshift',
-                        resourceRequestCpu: '1',
-                        resourceLimitCpu: '1',
-                        resourceRequestMemory: '4Gi',
-                        resourceLimitMemory: '4Gi',
-                        workingDir: '/home/jenkins',
-                        command: '',
-                        args: '${computer.jnlpmac} ${computer.name}'
-                    )
-                ]
-            ) {
-                node("zap-${context.uuid}") {
-                    //the checkout is mandatory
-                    echo "checking out source"
-                    echo "Build: ${BUILD_ID}"
-                    checkout scm
-                    dir('zap') {
-                        waitUntil {
-                            sleep 5
-                            return isDeployed
-                        }
-                        def retVal = sh (
-                            script: """
-                                set -eux
-                                ./runzap.sh
-                            """
-                        )
-                        publishHTML(
-                            target: [
-                                allowMissing: false,
-                                alwaysLinkToLastBuild: false,
-                                keepAll: true,
-                                reportDir: '/zap/wrk',
-                                reportFiles: 'index.html',
-                                reportName: 'ZAP Full Scan',
-                                reportTitles: 'ZAP Full Scan'
-                            ]
-                        )
-                        echo "Return value is: ${retVal}"
-                    }
-                } //end node
-            } //end podTemplate
-        } //end stage
-    }, //end branch
-    "Functional Tests":{
-        waitUntil {
-            sleep 5
-            return isDeployed
-        }
-        _stage('Functional Tests', context){
-            String baseURL = context.deployments['dev'].environmentUrl.substring(
-                0,
-                context.deployments['dev'].environmentUrl.indexOf('/', 8) + 1
-            )
-            podTemplate(
-                label: "bddstack-${context.uuid}",
-                name: "bddstack-${context.uuid}",
-                serviceAccount: 'jenkins',
-                cloud: 'openshift',
-                containers: [
-                  containerTemplate(
-                     name: 'jnlp',
-                     image: 'docker-registry.default.svc:5000/openshift/jenkins-slave-bddstack',
-                     resourceRequestCpu: '800m',
-                     resourceLimitCpu: '800m',
-                     resourceRequestMemory: '3Gi',
-                     resourceLimitMemory: '3Gi',
-                     workingDir: '/home/jenkins',
-                     command: '',
-                     args: '${computer.jnlpmac} ${computer.name}',
-                     envVars: [
-                         envVar(key:'BASEURL', value: baseURL),
-                         envVar(key:'GRADLE_USER_HOME', value: '/var/cache/artifacts/gradle')
-                     ]
-                  )
-                ],
-                volumes: [
-                    persistentVolumeClaim(
-                        mountPath: '/var/cache/artifacts',
-                        claimName: 'cache',
-                        readOnly: false
-                    )
-                ]
-            ){
-                node("bddstack-${context.uuid}") {
-                    echo "Build: ${BUILD_ID}"
-                    echo "baseURL: ${baseURL}"
-                    checkout scm
-                    dir('functional-tests') {
-                        waitUntil {
-                            sleep 5
-                            return isFixtured
-                        }
-                        String gradleExitCode = "0"
-                        try {
-                            gradleExitCode = sh([
-                                script: "./gradlew chromeHeadlessTest",
-                                returnStdout: true
-                            ]).trim()
-                        } finally {
-                            echo "gradleExitCode: ${gradleExitCode}"
-                            if (gradleExitCode != "0" ) {
-                                archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/geb/**/*'
-                                junit testResults:'build/test-results/**/*.xml', allowEmptyResults:true
-                                publishHTML (
-                                    target: [
-                                        allowMissing: true,
-                                        alwaysLinkToLastBuild: false,
-                                        keepAll: true,
-                                        reportDir: 'build/reports/spock',
-                                        reportFiles: 'index.html',
-                                        reportName: "Test: BDD Spock Report"
-                                    ]
-                                )
-                                publishHTML (
-                                    target: [
-                                        allowMissing: true,
-                                        alwaysLinkToLastBuild: false,
-                                        keepAll: true,
-                                        reportDir: 'build/reports/tests/chromeHeadlessTest',
-                                        reportFiles: 'index.html',
-                                        reportName: "Test: Full Test Report"
-                                    ]
-                                )
-                            }
-                        }
-                    } //end dir
-                } //end node
-            } //end podTemplate
-        } //end stage
-    }, //end branch
-    "API Tests": {
-        _stage('API Tests', context) {
-            waitUntil {
-                sleep 5
-                return isDeployed
-            }
-            podTemplate(
-                label: "nodejs-${context.uuid}",
-                name: "nodejs-${context.uuid}",
-                serviceAccount: 'jenkins',
-                cloud: 'openshift',
+                activeDeadlineSeconds: 1800,
                 containers: [
                     containerTemplate(
                         name: 'jnlp',
@@ -601,16 +265,11 @@ parallel (
                     )
                 ]
             ) {
-                node("nodejs-${context.uuid}") {
+                node("nodejs-${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}") {
                     checkout scm
                     dir('api-tests') {
                         sh 'npm install -g newman'
-                        waitUntil {
-                            sleep 5
-                            return isFixtured
-                        }
-                        String BASEURL = context.deployments['dev'].environmentUrl.substring(0, context.deployments['dev'].environmentUrl.indexOf('/', 8) + 1)
-                        BASEURL += "gwells"
+                        String BASEURL = "https://${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}.pathfinder.gov.bc.ca/gwells"
                         try {
                             sh """
                                 newman run ./registries_api_tests.json \
@@ -647,263 +306,375 @@ parallel (
                                     -r cli,junit,html
                             """
                         } finally {
-                                junit 'newman/*.xml'
-                                publishHTML (
-                                    target: [
-                                        allowMissing: false,
-                                        alwaysLinkToLastBuild: false,
-                                        keepAll: true,
-                                        reportDir: 'newman',
-                                        reportFiles: 'newman*.html',
-                                        reportName: "API Test Report"
-                                    ]
-                                )
-                                stash includes: 'newman/*.xml', name: 'api-tests'
+                          junit 'newman/*.xml'
+                          publishHTML (
+                              target: [
+                                  allowMissing: false,
+                                  alwaysLinkToLastBuild: false,
+                                  keepAll: true,
+                                  reportDir: 'newman',
+                                  reportFiles: 'newman*.html',
+                                  reportName: "API Test Report"
+                              ]
+                          )
+                          stash includes: 'newman/*.xml', name: 'api-tests'
                         }
-                    } // end dir
-                } //end node
-            } //end podTemplate
-        } //end stage
-    }, //end branch
-    "Code Quality": {
-        /* Code quality stage - pipeline step/closure
-        - unstash unit test results (previous stage)
-        - use SonarQube to consume results (*.xml)
-        */
-        _stage('Code Quality', context) {
-            podTemplate(
-                name: "sonar-runner${context.uuid}",
-                label: "sonar-runner${context.uuid}",
+                    }
+                }
+            }
+        }
+      }
+    }
+
+    // the Promote to Test stage allows approving the tagging of the newly built image into the test environment,
+    // which will trigger an automatic deployment of that image.
+    // The deployment configs in the openshift folder are applied first in case there are any changes to the templates.
+    // this stage should only occur when the pull request is being made against the master branch.
+    stage('Deploy image to staging') {
+      when {
+        expression { env.CHANGE_TARGET == 'master' }
+      }
+      steps {
+        script {
+          openshift.withCluster() {
+            openshift.withProject(TEST_PROJECT) {
+              input "Deploy to staging?"
+
+              echo "Preparing..."
+
+              // Process db and app template into list objects
+              //  - variable substitution
+              echo "Processing build templates"
+              def dbtemplate = openshift.process("-f",
+                "openshift/postgresql.bc.json",
+                "ENV_NAME=${TEST_SUFFIX}"
+              )
+              openshift.apply(dbtemplate)
+
+              echo "Updating staging deployment..."
+
+              def deployDBTemplate = openshift.process("-f",
+                "openshift/postgresql.dc.json",
+                "NAME_SUFFIX=-${TEST_SUFFIX}",
+                "DATABASE_SERVICE_NAME=gwells-pgsql-${TEST_SUFFIX}",
+                "IMAGE_STREAM_NAMESPACE=''",
+                "IMAGE_STREAM_NAME=gwells-postgresql-${TEST_SUFFIX}",
+                "IMAGE_STREAM_VERSION=${TEST_SUFFIX}",
+                "POSTGRESQL_DATABASE=gwells",
+                "VOLUME_CAPACITY=5Gi"
+              )
+
+              def deployTemplate = openshift.process("-f",
+                "openshift/backend.dc.json",
+                "NAME_SUFFIX=-${TEST_SUFFIX}",
+                "ENV_NAME=${TEST_SUFFIX}",
+                "HOST=${APP_NAME}-${TEST_SUFFIX}.pathfinder.gov.bc.ca",
+              )
+
+              // some objects need to be copied from a base secret or configmap
+              // these objects have an annotation "as-copy-of" in their object spec (e.g. an object in backend.dc.json)
+              echo "Creating configmaps and secrets objects"
+              List newObjectCopies = []
+
+              // todo: refactor to explicitly copy the objects we need
+              for (o in (deployTemplate + deployDBTemplate)) {
+
+                // only perform this operation on objects with 'as-copy-of'
+                def sourceName = o.metadata && o.metadata.annotations && o.metadata.annotations['as-copy-of']
+                if (sourceName && sourceName.length() > 0) {
+                  def selector = openshift.selector("${o.kind}/${sourceName}")
+                  if (selector.count() == 1) {
+
+                    // create a copy of the object and add it to the new list of objects to be applied
+                    Map copiedModel = selector.object(exportable:true)
+                    copiedModel.metadata.name = o.metadata.name
+                    echo "Copying ${o.kind} ${o.metadata.name}"
+                    newObjectCopies.add(copiedModel)
+                  }
+                }
+              }
+
+              // apply the templates, which will create new objects or modify existing ones as necessary.
+              // the copies of base objects (secrets, configmaps) are also applied.
+              echo "Applying deployment config for pull request ${PR_NUM} on ${TEST_PROJECT}"
+
+              openshift.apply(deployTemplate).label(['app':"gwells-${TEST_SUFFIX}", 'app-name':"${APP_NAME}", 'env-name':"${TEST_SUFFIX}"], "--overwrite")
+              openshift.apply(deployDBTemplate).label(['app':"gwells-${TEST_SUFFIX}", 'app-name':"${APP_NAME}", 'env-name':"${TEST_SUFFIX}"], "--overwrite")
+              openshift.apply(newObjectCopies).label(['app':"gwells-${TEST_SUFFIX}", 'app-name':"${APP_NAME}", 'env-name':"${TEST_SUFFIX}"], "--overwrite")
+              echo "Successfully applied TEST deployment config"
+
+              // promote the newly built image to DEV
+              echo "Tagging new image to TEST imagestream."
+
+              // Application/database images are tagged in the tools imagestream as the new test/prod image
+              openshift.tag("${TOOLS_PROJECT}/gwells-application:${PR_NUM}", "${TOOLS_PROJECT}/gwells-application:${TEST_SUFFIX}")  // todo: clean up labels/tags
+              // openshift.tag("${TOOLS_PROJECT}/gwells-postgresql:test", "${TOOLS_PROJECT}/gwells-postgresql:${TEST_SUFFIX}")
+
+              // Images are then tagged into the target environment namespace (test or prod)
+              openshift.tag("${TOOLS_PROJECT}/gwells-application:${TEST_SUFFIX}", "${TEST_PROJECT}/gwells-${TEST_SUFFIX}:${TEST_SUFFIX}")  // todo: clean up labels/tags
+              openshift.tag("${TOOLS_PROJECT}/gwells-postgresql:test", "${TEST_PROJECT}/gwells-postgresql-${TEST_SUFFIX}:${TEST_SUFFIX}")  // todo: clean up labels/tags
+
+              def targetTestURL = "https://${APP_NAME}-${TEST_SUFFIX}.pathfinder.gov.bc.ca/gwells"
+              def ghDeploymentId = new GitHubHelper().createDeployment(this, "pull/${env.CHANGE_ID}/head", ['environment':"${TEST_SUFFIX}", 'task':"deploy:pull:${env.CHANGE_ID}"])
+              new GitHubHelper().createDeploymentStatus(this, ghDeploymentId, 'PENDING', ['targetUrl':"${targetTestURL}"])
+
+              // monitor the deployment status and wait until deployment is successful
+              echo "Waiting for deployment to TEST..."
+              def newVersion = openshift.selector("dc", "gwells-${TEST_SUFFIX}").object().status.latestVersion
+              def pods = openshift.selector('pod', [deployment: "gwells-${TEST_SUFFIX}-${newVersion}"])
+
+              // wait until at least one pod reports as ready
+              timeout(15) {
+                pods.untilEach(2) {
+                  return it.object().status.containerStatuses.every {
+                    it.ready
+                  }
+                }
+              }
+
+              new GitHubHelper().createDeploymentStatus(this, ghDeploymentId, 'SUCCESS', ['targetUrl':"${targetTestURL}"])
+
+              echo "TEST deployment successful."
+            }
+          }
+        }
+      }
+    }
+
+    stage('API Tests against Staging') {
+      when {
+        expression { env.CHANGE_TARGET == 'master' }
+      }
+      steps {
+        script {
+          podTemplate(
+                label: "nodejs-${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}-${env.CHANGE_ID}",
+                name: "nodejs-${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}-${env.CHANGE_ID}",
                 serviceAccount: 'jenkins',
                 cloud: 'openshift',
-                containers:[
+                activeDeadlineSeconds: 1800,
+                containers: [
                     containerTemplate(
                         name: 'jnlp',
-                        resourceRequestMemory: '4Gi',
-                        resourceLimitMemory: '4Gi',
-                        resourceRequestCpu: '4000m',
-                        resourceLimitCpu: '4000m',
-                        image: 'registry.access.redhat.com/openshift3/jenkins-slave-maven-rhel7:v3.7',
+                        image: 'registry.access.redhat.com/openshift3/jenkins-agent-nodejs-8-rhel7',
+                        resourceRequestCpu: '800m',
+                        resourceLimitCpu: '800m',
+                        resourceRequestMemory: '1Gi',
+                        resourceLimitMemory: '1Gi',
                         workingDir: '/tmp',
+                        command: '',
                         args: '${computer.jnlpmac} ${computer.name}',
                         envVars: [
-                            envVar(key:'GRADLE_USER_HOME', value: '/var/cache/artifacts/gradle')
-                        ]
-                    )
-                ],
-                volumes: [
-                    persistentVolumeClaim(
-                        mountPath: '/var/cache/artifacts',
-                        claimName: 'cache',
-                        readOnly: false
-                    )
-                ]
-            ){
-                node("sonar-runner${context.uuid}") {
-                    //the checkout is mandatory, otherwise code quality check would fail
-                    echo "checking out source"
-                    echo "Build: ${BUILD_ID}"
-                    checkout scm
-
-                    String SONARQUBE_URL = 'https://sonarqube-moe-gwells-tools.pathfinder.gov.bc.ca'
-                    echo "SONARQUBE_URL: ${SONARQUBE_URL}"
-                    waitUntil {
-                        sleep 5
-                        return isUnitTested
-                    }
-                    dir('app') {
-                        unstash 'nodejunit'
-                        unstash 'nodecoverage'
-                    }
-                    dir('sonar-runner') {
-                        unstash 'coverage'
-                        sh script:
-                            """
-                                ./gradlew -q dependencies
-                                ./gradlew sonarqube -Dsonar.host.url=${SONARQUBE_URL} -Dsonar.verbose=true \
-                                    --stacktrace --info  -Dsonar.sources=..
-                            """,
-                            returnStdout: true
-                    }
-                } //end node
-            } //end podTemplate
-        } //end stage
-    } //end branch
-) //end parallel
-
-
-/* Continuous Deployment (CD)
-   For PRs to the master branch, reserved for release branches and hotfixes
-   Iterates through DEV (skipped), TEST and PROD environments
-    - [prompt/stop]
-      || deployment to persistent TEST environment (sets isDeployed=true)
-      || smoke tests (executes on isDeployed)
-    - [prompt/stop]
-      - deployment to persistent PROD environment
-      - GitHub tasks (merge, close PR, deleteproduction branch)
-*/
-for(String envKeyName: context.env.keySet() as String[]){
-    String stageDeployName=envKeyName.toUpperCase()
-
-    if (!"DEV".equalsIgnoreCase(stageDeployName) && "master".equalsIgnoreCase(env.CHANGE_TARGET)) {
-        _stage("Approve - ${stageDeployName}", context) {
-            node('master') {
-                new OpenShiftHelper().waitUntilEnvironmentIsReady(this, context, envKeyName)
-            }
-            def inputResponse = null;
-            try{
-                inputResponse = input(
-                    id: "deploy_${stageDeployName.toLowerCase()}",
-                    message: "Deploy to ${stageDeployName}?",
-                    ok: 'Approve',
-                    submitterParameter: 'approved_by'
-                )
-            }catch(ex){
-                error "Pipeline has been aborted. - ${ex}"
-            }
-            GitHubHelper.getPullRequest(this).comment(
-                "User '${inputResponse}' has approved deployment to '${stageDeployName}'"
-            )
-        }
-
-        isDeployed = false
-        parallel (
-            "Deploy - ${stageDeployName}": {
-                _stage("Deploy - ${stageDeployName}", context) {
-                    node('master') {
-                        new OpenShiftHelper().deploy(this, context, envKeyName)
-                        isDeployed = true
-                    }
-                }
-            },
-            "Smoke Test - ${stageDeployName}": {
-                waitUntil {
-                    sleep 5
-                    return isDeployed
-                }
-                _stage("Smoke Test - ${stageDeployName}", context){
-                    String baseURL = context.deployments[envKeyName].environmentUrl.substring(
-                        0,
-                        context.deployments[envKeyName].environmentUrl.indexOf('/', 8) + 1
-                    )
-                    podTemplate(
-                        label: "bddstack-${context.uuid}",
-                        name: "bddstack-${context.uuid}",
-                        serviceAccount: 'jenkins',
-                        cloud: 'openshift',
-                        containers: [
-                          containerTemplate(
-                             name: 'jnlp',
-                             image: 'docker-registry.default.svc:5000/openshift/jenkins-slave-bddstack',
-                             resourceRequestCpu: '800m',
-                             resourceLimitCpu: '800m',
-                             resourceRequestMemory: '3Gi',
-                             resourceLimitMemory: '3Gi',
-                             workingDir: '/home/jenkins',
-                             command: '',
-                             args: '${computer.jnlpmac} ${computer.name}',
-                             envVars: [
-                                 envVar(key:'BASEURL', value: baseURL),
-                                 envVar(key:'GRADLE_USER_HOME', value: '/var/cache/artifacts/gradle')
-                             ]
-                          )
-                        ],
-                        volumes: [
-                            persistentVolumeClaim(
-                                mountPath: '/var/cache/artifacts',
-                                claimName: 'cache',
-                                readOnly: false
+                            secretEnvVar(
+                                key: 'GWELLS_API_TEST_USER',
+                                secretName: 'apitest-secrets',
+                                secretKey: 'username'
+                            ),
+                            secretEnvVar(
+                                key: 'GWELLS_API_TEST_PASSWORD',
+                                secretName: 'apitest-secrets',
+                                secretKey: 'password'
+                            ),
+                            secretEnvVar(
+                                key: 'GWELLS_API_TEST_AUTH_SERVER',
+                                secretName: 'apitest-secrets',
+                                secretKey: 'auth_server'
+                            ),
+                            secretEnvVar(
+                                key: 'GWELLS_API_TEST_CLIENT_ID',
+                                secretName: 'apitest-secrets',
+                                secretKey: 'client_id'
+                            ),
+                            secretEnvVar(
+                                key: 'GWELLS_API_TEST_CLIENT_SECRET',
+                                secretName: 'apitest-secrets',
+                                secretKey: 'client_secret'
                             )
                         ]
-                    ){
-                        node("bddstack-${context.uuid}") {
-                            echo "Build: ${BUILD_ID}"
-                            echo "baseURL: ${baseURL}"
-                            checkout scm
-                            dir('functional-tests') {
-                                try {
-                                    sh './gradlew -DchromeHeadlessTest.single=WellDetails chromeHeadlessTest'
-                                } finally {
-                                    archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/geb/**/*'
-                                    junit testResults:'build/test-results/**/*.xml', allowEmptyResults:true
-                                    publishHTML (
-                                        target: [
-                                            allowMissing: true,
-                                            alwaysLinkToLastBuild: false,
-                                            keepAll: true,
-                                            reportDir: 'build/reports/spock',
-                                            reportFiles: 'index.html',
-                                            reportName: "Test: BDD Spock Report"
-                                        ]
-                                    )
-                                    publishHTML (
-                                        target: [
-                                            allowMissing: true,
-                                            alwaysLinkToLastBuild: false,
-                                            keepAll: true,
-                                            reportDir: 'build/reports/tests/chromeHeadlessTest',
-                                            reportFiles: 'index.html',
-                                            reportName: "Test: Full Test Report"
-                                        ]
-                                    )
-                                }
-                            } //end dir
-                        } //end node
-                    } //end podTemplate
-                } //end stage
-            }
-        )
-    } //end if
-} // end for
-
-
-/* Cleanup stage - pipeline step/closure
-    - Prompt user to continue
-    - Remove temporary OpenShift resources (moe-gwells-dev)
-    - Merge and delete branches
-*/
-stage('Cleanup') {
-
-    def inputResponse = null
-    String mergeMethod='merge'
-
-    waitUntil {
-        boolean isDone=false
-        try{
-            inputResponse=input(
-                id: 'close_pr',
-                message: "Ready to Accept/Merge (using '${mergeMethod}' method), and Close pull-request #${env.CHANGE_ID}?",
-                ok: 'Yes',
-                submitter: 'authenticated',
-                submitterParameter: 'approver'
-            )
-            echo "inputResponse:${inputResponse}"
-
-            echo "Merging and Closing PR"
-            GitHubHelper.mergeAndClosePullRequest(this, mergeMethod)
-
-            echo "Clearing OpenShift resources"
-            new OpenShiftHelper().cleanup(this, context)
-
-            isDone=true
-        }catch (ex){
-            echo "${stackTraceAsString(ex)}"
-            def inputAction = input(
-                message: "This 'Cleanup' stage has failed. See error above.",
-                ok: 'Confirm',
-                submitter: 'authenticated',
-                parameters: [
-                    choice(
-                        name: 'action',
-                        choices: 'Re-run\nIgnore',
-                        description: 'What would you like to do?'
                     )
                 ]
-            )
-            if ('Ignore'.equalsIgnoreCase(inputAction)){
-                isDone=true
+            ) {
+                node("nodejs-${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}-${env.CHANGE_ID}") {
+                    checkout scm
+                    dir('api-tests') {
+                        sh 'npm install -g newman'
+                        String BASEURL = "https://gwells-${TEST_SUFFIX}.pathfinder.gov.bc.ca/gwells"
+                        try {
+                            sh """
+                                newman run ./registries_api_tests.json \
+                                    --global-var test_user=\$GWELLS_API_TEST_USER \
+                                    --global-var test_password=\$GWELLS_API_TEST_PASSWORD \
+                                    --global-var base_url=${BASEURL} \
+                                    --global-var auth_server=\$GWELLS_API_TEST_AUTH_SERVER \
+                                    --global-var client_id=\$GWELLS_API_TEST_CLIENT_ID \
+                                    --global-var client_secret=\$GWELLS_API_TEST_CLIENT_SECRET \
+                                    -r cli,junit,html
+                                newman run ./wells_api_tests.json \
+                                    --global-var test_user=\$GWELLS_API_TEST_USER \
+                                    --global-var test_password=\$GWELLS_API_TEST_PASSWORD \
+                                    --global-var base_url=${BASEURL} \
+                                    --global-var auth_server=\$GWELLS_API_TEST_AUTH_SERVER \
+                                    --global-var client_id=\$GWELLS_API_TEST_CLIENT_ID \
+                                    --global-var client_secret=\$GWELLS_API_TEST_CLIENT_SECRET \
+                                    -r cli,junit,html
+                                newman run ./submissions_api_tests.json \
+                                    --global-var test_user=\$GWELLS_API_TEST_USER \
+                                    --global-var test_password=\$GWELLS_API_TEST_PASSWORD \
+                                    --global-var base_url=${BASEURL} \
+                                    --global-var auth_server=\$GWELLS_API_TEST_AUTH_SERVER \
+                                    --global-var client_id=\$GWELLS_API_TEST_CLIENT_ID \
+                                    --global-var client_secret=\$GWELLS_API_TEST_CLIENT_SECRET \
+                                    -r cli,junit,html
+                                newman run ./aquifers_api_tests.json \
+                                    --global-var test_user=\$GWELLS_API_TEST_USER \
+                                    --global-var test_password=\$GWELLS_API_TEST_PASSWORD \
+                                    --global-var base_url=${BASEURL} \
+                                    --global-var auth_server=\$GWELLS_API_TEST_AUTH_SERVER \
+                                    --global-var client_id=\$GWELLS_API_TEST_CLIENT_ID \
+                                    --global-var client_secret=\$GWELLS_API_TEST_CLIENT_SECRET \
+                                    -r cli,junit,html
+                            """
+                        } finally {
+                          junit 'newman/*.xml'
+                          publishHTML (
+                              target: [
+                                  allowMissing: false,
+                                  alwaysLinkToLastBuild: false,
+                                  keepAll: true,
+                                  reportDir: 'newman',
+                                  reportFiles: 'newman*.html',
+                                  reportName: "API Test Report"
+                              ]
+                          )
+                          stash includes: 'newman/*.xml', name: 'api-tests'
+                        }
+                    }
+                }
             }
         }
-        return isDone
-    } //end waitUntil
+      }
+    }
+
+
+    stage('Deploy image to Production') {
+      when {
+        expression { env.CHANGE_TARGET == 'master' }
+      }
+      steps {
+        script {
+          openshift.withCluster() {
+            openshift.withProject(PROD_PROJECT) {
+              input "Deploy to production?"
+
+              echo "Updating production deployment..."
+              def deployTemplate = openshift.process("-f",
+                "openshift/backend.dc.json",
+                "NAME_SUFFIX=-${PROD_SUFFIX}",
+                "ENV_NAME=${PROD_SUFFIX}",
+                "HOST=${APP_NAME}-${PROD_SUFFIX}.pathfinder.gov.bc.ca",
+              )
+
+              def deployDBTemplate = openshift.process("-f",
+                "openshift/postgresql.dc.json",
+                "NAME_SUFFIX=-${PROD_SUFFIX}",
+                "DATABASE_SERVICE_NAME=gwells-pgsql-${PROD_SUFFIX}",
+                "IMAGE_STREAM_NAMESPACE=''",
+                "IMAGE_STREAM_NAME=gwells-postgresql-${PROD_SUFFIX}",
+                "IMAGE_STREAM_VERSION=${PROD_SUFFIX}",
+                "POSTGRESQL_DATABASE=gwells",
+                "VOLUME_CAPACITY=20Gi"
+              )
+
+              // some objects need to be copied from a base secret or configmap
+              // these objects have an annotation "as-copy-of" in their object spec (e.g. an object in backend.dc.json)
+              echo "Creating configmaps and secrets objects"
+              List newObjectCopies = []
+
+              for (o in (deployTemplate + deployDBTemplate)) {
+
+                // only perform this operation on objects with 'as-copy-of'
+                def sourceName = o.metadata && o.metadata.annotations && o.metadata.annotations['as-copy-of']
+                if (sourceName && sourceName.length() > 0) {
+                  def selector = openshift.selector("${o.kind}/${sourceName}")
+                  if (selector.count() == 1) {
+
+                    // create a copy of the object and add it to the new list of objects to be applied
+                    Map copiedModel = selector.object(exportable:true)
+                    copiedModel.metadata.name = o.metadata.name
+                    echo "Copying ${o.kind} ${o.metadata.name}"
+                    newObjectCopies.add(copiedModel)
+                  }
+                }
+              }
+
+              // apply the templates, which will create new objects or modify existing ones as necessary.
+              // the copies of base objects (secrets, configmaps) are also applied.
+              echo "Applying deployment config for pull request ${PR_NUM} on ${PROD_PROJECT}"
+
+              openshift.apply(deployTemplate).label(['app':"gwells-${PROD_SUFFIX}", 'app-name':"${APP_NAME}", 'env-name':"${PROD_SUFFIX}"], "--overwrite")
+              openshift.apply(deployDBTemplate).label(['app':"gwells-${PROD_SUFFIX}", 'app-name':"${APP_NAME}", 'env-name':"${PROD_SUFFIX}"], "--overwrite")
+              openshift.apply(newObjectCopies).label(['app':"gwells-${PROD_SUFFIX}", 'app-name':"${APP_NAME}", 'env-name':"${PROD_SUFFIX}"], "--overwrite")
+              echo "Successfully applied production deployment config"
+
+              // promote the newly built image to DEV
+              echo "Tagging new image to production imagestream."
+
+              // Application/database images are tagged in the tools imagestream as the new prod image
+              openshift.tag("${TOOLS_PROJECT}/gwells-application:${PR_NUM}", "${TOOLS_PROJECT}/gwells-application:${PROD_SUFFIX}")  // todo: clean up labels/tags
+
+              // TODO: determine best way to manage database images (at the moment they never change, but we don't want an unforeseen change to impact prod)
+              // openshift.tag("${TOOLS_PROJECT}/gwells-postgresql:prod", "${TOOLS_PROJECT}/gwells-postgresql:${PROD_SUFFIX}")
+
+              // Images are then tagged into the target environment namespace (prod)
+              openshift.tag("${TOOLS_PROJECT}/gwells-application:${PROD_SUFFIX}", "${PROD_PROJECT}/gwells-${PROD_SUFFIX}:${PROD_SUFFIX}")  // todo: clean up labels/tags
+              openshift.tag("${TOOLS_PROJECT}/gwells-postgresql:prod", "${PROD_PROJECT}/gwells-postgresql-${PROD_SUFFIX}:${PROD_SUFFIX}")  // todo: clean up labels/tags
+
+              def targetProdURL = "https://apps.nrs.gov.bc.ca/gwells/"
+              def ghDeploymentId = new GitHubHelper().createDeployment(this, "pull/${env.CHANGE_ID}/head", ['environment':"${PROD_SUFFIX}", 'task':"deploy:pull:${env.CHANGE_ID}"])
+              new GitHubHelper().createDeploymentStatus(this, ghDeploymentId, 'PENDING', ['targetUrl':"${targetProdURL}"])
+
+              // monitor the deployment status and wait until pgsql-${ deployment is successful
+              echo "Waiting for deployment to production..."
+              def newVersion = openshift.selector("dc", "gwells-${PROD_SUFFIX}").object().status.latestVersion
+              def pods = openshift.selector('pod', [deployment: "gwells-${PROD_SUFFIX}-${newVersion}"])
+
+              // wait until pods reports as ready
+              timeout(15) {
+                pods.untilEach(2) {
+                  return it.object().status.containerStatuses.every {
+                    it.ready
+                  }
+                }
+              }
+
+              echo "Production deployment successful."
+              // slack & github notifications that a new deployment is ready
+
+              new GitHubHelper().createDeploymentStatus(this, ghDeploymentId, 'SUCCESS', ['targetUrl':"${targetProdURL}"])
+
+              openshift.withProject(TOOLS_PROJECT) {
+
+                // get a slack token
+                def token = openshift.selector("secret", "slack").object().data.token.decodeBase64()
+                token = new String(token)
+
+                // build a message to send to the channel
+                def message = [:]
+                message.channel = "#gwells"
+                message.text = "A new production deployment was rolled out at https://apps.nrs.gov.bc.ca/gwells/"
+                payload = JsonOutput.toJson(message)
+
+                // Approve script here: https://jenkins-moe-gwells-tools.pathfinder.gov.bc.ca/scriptApproval/
+                sh (
+                  script: """curl -X POST -H "Content-Type: application/json" --data \'${payload}\' https://devopspathfinder.slack.com/services/hooks/jenkins-ci?token=${token}""",
+                  returnStdout: true
+                ).trim()
+
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 }

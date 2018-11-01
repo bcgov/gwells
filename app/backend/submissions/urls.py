@@ -14,19 +14,36 @@
 from django.conf.urls import url
 from django.views.decorators.cache import never_cache
 
-from submissions import views
+from submissions.views import (SubmissionsOptions, SubmissionListAPIView, SubmissionConstructionAPIView,
+                               SubmissionAlterationAPIView, SubmissionDecommissionAPIView,
+                               SubmissionsHomeView, SubmissionGetAPIView, SubmissionStaffEditAPIView
+                               )
 
 
 urlpatterns = [
 
     # Submissions form options
     url(r'^api/v1/submissions/options/$',
-        never_cache(views.SubmissionsOptions.as_view()), name='submissions-options'),
+        never_cache(SubmissionsOptions.as_view()), name='submissions-options'),
 
     # Submissions list
     url(r'^api/v1/submissions/$',
-        never_cache(views.SubmissionListAPIView.as_view()), name='submissions-list'),
+        never_cache(SubmissionListAPIView.as_view()), name='submissions-list'),
+    # Submission
+    url(r'^api/v1/submissions/(?P<filing_number>[0-9]+)$',
+        never_cache(SubmissionGetAPIView.as_view()), name='submissions-get'),
+    # Construction submission
+    url(r'^api/v1/submissions/construction',
+        never_cache(SubmissionConstructionAPIView.as_view()), name='CON'),
+    # Alteration submission
+    url(r'^api/v1/submissions/alteration',
+        never_cache(SubmissionAlterationAPIView.as_view()), name='ALT'),
+    # Decommission submission
+    url(r'^api/v1/submissions/decommission',
+        never_cache(SubmissionDecommissionAPIView.as_view()), name='DEC'),
+    # Edit submission
+    url(r'^api/v1/submissions/staff_edit', never_cache(SubmissionStaffEditAPIView()), name='STAFF_EDIT'),
 
     # Submissions home (loads Submissions application)
-    url(r'^submissions/', views.SubmissionsHomeView.as_view(), name='submissions-home')
+    url(r'^submissions/', SubmissionsHomeView.as_view(), name='submissions-home')
 ]

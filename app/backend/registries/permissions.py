@@ -2,8 +2,10 @@
 Registries view permission classes
 """
 
-from rest_framework.permissions import BasePermission, IsAdminUser, SAFE_METHODS, DjangoModelPermissions
-from gwells.roles import REGISTRIES_ROLES
+from django.db.models import Q
+from rest_framework.permissions import BasePermission, IsAdminUser, SAFE_METHODS, BasePermission
+
+from gwells.roles import REGISTRIES_ADJUDICATOR_ROLE, REGISTRIES_AUTHORITY_ROLE
 
 
 class IsAdminOrReadOnly(IsAdminUser):
@@ -16,11 +18,9 @@ class IsAdminOrReadOnly(IsAdminUser):
         return is_admin or request.method in SAFE_METHODS
 
 
-# TODO: Rename this to RegistriesPermissions!
-class GwellsPermissions(DjangoModelPermissions):
+class RegistriesPermissions(BasePermission):
     """
-    Grants permissions to users based on Django model permissions, with additional check for
-    user's status as GWELLS staff
+    Grants permissions to users based on Django model permissions
     """
 
     def has_permission(self, request, view):
@@ -28,7 +28,5 @@ class GwellsPermissions(DjangoModelPermissions):
         Refuse permission entirely if user is not GWELLS staff, else continue to check model-level permissions
         This is used to refuse permission for viewing data for non-staff (but authenticated) users
         """
-        if not request.user or not request.user.is_authenticated or not request.user.groups.filter(
-                name__in=REGISTRIES_ROLES).exists():
-            return False
-        return super(GwellsPermissions, self).has_permission(request, view)
+        return request.user and request.user.is_authenticated and request.user.groups.filter(
+                Q(name=REGISTRIES_ADJUDICATOR_ROLE) | Q(name=REGISTRIES_AUTHORITY_ROLE)).exists()

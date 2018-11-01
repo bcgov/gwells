@@ -34,6 +34,9 @@ class WellActivityCodeTypeManager(models.Manager):
     def alteration(self):
         return self.get_queryset().get(code='ALT')
 
+    def staff_edit(self):
+        return self.get_queryset().get(code='STAFF_EDIT')
+
 
 class WellActivityCode(AuditModel):
     """

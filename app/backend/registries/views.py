@@ -28,7 +28,7 @@ from rest_framework.response import Response
 from rest_framework.mixins import CreateModelMixin, UpdateModelMixin
 from rest_framework.views import APIView
 from drf_multiple_model.views import ObjectMultipleModelAPIView
-from gwells.roles import REGISTRIES_ROLES
+from gwells.roles import REGISTRIES_VIEWER_ROLE
 from gwells.models import ProvinceStateCode
 from gwells.pagination import APILimitOffsetPagination
 from reversion.models import Version
@@ -46,7 +46,7 @@ from registries.models import (
     RegistriesRemovalReason,
     SubactivityCode,
     WellClassCode)
-from registries.permissions import IsAdminOrReadOnly, GwellsPermissions
+from registries.permissions import IsAdminOrReadOnly, RegistriesPermissions
 from registries.serializers import (
     ApplicationAdminSerializer,
     ApplicationStatusCodeSerializer,
@@ -110,7 +110,7 @@ class OrganizationListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
     Creates a new drilling organization record
     """
 
-    permission_classes = (GwellsPermissions,)
+    permission_classes = (RegistriesPermissions,)
     serializer_class = OrganizationListSerializer
     pagination_class = None
 
@@ -148,7 +148,7 @@ class OrganizationDetailView(RevisionMixin, AuditUpdateMixin, RetrieveUpdateDest
     Removes the specified drilling organization record
     """
 
-    permission_classes = (GwellsPermissions,)
+    permission_classes = (RegistriesPermissions,)
 
     # 'pk' and 'id' have been replaced by 'org_guid' as primary key for Organization model
     lookup_field = "org_guid"
@@ -252,7 +252,7 @@ class PersonListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
     )
 
     # fetch related companies and registration applications (prevent duplicate database trips)
-    queryset = Person.objects.all()
+    queryset = Person.objects.filter(expired_date__isnull=True)
 
     def get_queryset(self):
         """ Returns Person queryset, removing non-active and unregistered drillers for anonymous users """
@@ -274,8 +274,7 @@ class PersonListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
         activity = self.request.query_params.get('activity', None)
         status = self.request.query_params.get('status', None)
 
-        user_is_staff = self.request.user.groups.filter(
-            name__in=REGISTRIES_ROLES).exists()
+        user_is_staff = self.request.user.groups.filter(name=REGISTRIES_VIEWER_ROLE).exists()
 
         if activity:
             if (status == 'P' or not status) and user_is_staff:
@@ -317,7 +316,9 @@ class PersonListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
             # Only show active drillers to non-admin users and public
             qs = qs.filter(
                 Q(registrations__applications__current_status__code='A'),
-                Q(registrations__applications__removal_date__isnull=True))
+                Q(registrations__applications__removal_date__isnull=True),
+                Q()
+            )
 
             registrations_qs = registrations_qs.filter(
                 Q(applications__current_status__code='A'),
@@ -392,7 +393,7 @@ class PersonDetailView(RevisionMixin, AuditUpdateMixin, RetrieveUpdateDestroyAPI
     Removes the specified person record
     """
 
-    permission_classes = (GwellsPermissions,)
+    permission_classes = (RegistriesPermissions,)
     serializer_class = PersonAdminSerializer
 
     # pk field has been replaced by person_guid
@@ -422,7 +423,7 @@ class PersonDetailView(RevisionMixin, AuditUpdateMixin, RetrieveUpdateDestroyAPI
         Returns only registered people (i.e. drillers with active registration) to anonymous users
         """
         qs = self.queryset
-        if not self.request.user.groups.filter(name__in=REGISTRIES_ROLES).exists():
+        if not self.request.user.groups.filter(name=REGISTRIES_VIEWER_ROLE).exists():
             qs = qs.filter(Q(applications__current_status__code='A'),
                            Q(applications__removal_date__isnull=True))
         return qs
@@ -465,7 +466,7 @@ class CitiesListView(ListAPIView):
         will filter for that activity
         """
         qs = self.queryset
-        if not self.request.user.groups.filter(name__in=REGISTRIES_ROLES).exists():
+        if not self.request.user.groups.filter(name=REGISTRIES_VIEWER_ROLE).exists():
             qs = qs.filter(
                 Q(applications__current_status__code='A'),
                 Q(applications__removal_date__isnull=True))
@@ -485,7 +486,7 @@ class RegistrationListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
     Create a new well driller or well pump installer registration record for a person
     """
 
-    permission_classes = (GwellsPermissions,)
+    permission_classes = (RegistriesPermissions,)
     serializer_class = RegistrationAdminSerializer
     queryset = Register.objects.all() \
         .select_related(
@@ -518,7 +519,7 @@ class RegistrationDetailView(RevisionMixin, AuditUpdateMixin, RetrieveUpdateDest
     Removes the specified registration record from the database
     """
 
-    permission_classes = (GwellsPermissions,)
+    permission_classes = (RegistriesPermissions,)
     serializer_class = RegistrationAdminSerializer
     lookup_field = 'register_guid'
     queryset = Register.objects.all() \
@@ -546,7 +547,7 @@ class ApplicationListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
     Creates a new registries application
     """
 
-    permission_classes = (GwellsPermissions,)
+    permission_classes = (RegistriesPermissions,)
     serializer_class = ApplicationAdminSerializer
     queryset = RegistriesApplication.objects.all() \
         .select_related(
@@ -570,7 +571,7 @@ class ApplicationDetailView(RevisionMixin, AuditUpdateMixin, RetrieveUpdateDestr
     Removes the specified drilling application record
     """
 
-    permission_classes = (GwellsPermissions,)
+    permission_classes = (RegistriesPermissions,)
     serializer_class = ApplicationAdminSerializer
     queryset = RegistriesApplication.objects.all() \
         .select_related(
@@ -585,7 +586,7 @@ class OrganizationNameListView(ListAPIView):
     Simple list of organizations with only organization names
     """
 
-    permission_classes = (GwellsPermissions,)
+    permission_classes = (RegistriesPermissions,)
     serializer_class = OrganizationNameListSerializer
     queryset = Organization.objects \
         .filter(expired_date__isnull=True) \
@@ -603,7 +604,7 @@ class PersonNoteListView(AuditCreateMixin, ListCreateAPIView):
     Adds a note record to the specified Person record
     """
 
-    permission_classes = (GwellsPermissions,)
+    permission_classes = (RegistriesPermissions,)
     serializer_class = PersonNoteSerializer
     swagger_schema = None
 
@@ -635,7 +636,7 @@ class PersonNoteDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
     Removes a PersonNote record
     """
 
-    permission_classes = (GwellsPermissions,)
+    permission_classes = (RegistriesPermissions,)
     serializer_class = PersonNoteSerializer
     swagger_schema = None
 
@@ -653,7 +654,7 @@ class OrganizationNoteListView(AuditCreateMixin, ListCreateAPIView):
     Adds a note record to the specified Organization record
     """
 
-    permission_classes = (GwellsPermissions,)
+    permission_classes = (RegistriesPermissions,)
     serializer_class = OrganizationNoteSerializer
     swagger_schema = None
 
@@ -685,7 +686,7 @@ class OrganizationNoteDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView)
     Removes a OrganizationNote record
     """
 
-    permission_classes = (GwellsPermissions,)
+    permission_classes = (RegistriesPermissions,)
     serializer_class = OrganizationNoteSerializer
     swagger_schema = None
 
@@ -699,7 +700,7 @@ class OrganizationHistory(APIView):
     get: returns a history of changes to an Organization model record
     """
 
-    permission_classes = (GwellsPermissions,)
+    permission_classes = (RegistriesPermissions,)
     queryset = Organization.objects.all()
     swagger_schema = None
 
@@ -723,7 +724,7 @@ class PersonHistory(APIView):
     get: returns a history of changes to a Person model record
     """
 
-    permission_classes = (GwellsPermissions,)
+    permission_classes = (RegistriesPermissions,)
     queryset = Person.objects.all()
     swagger_schema = None
 

@@ -22,7 +22,7 @@ from django.db.models import F
 from gwells.models import ProvinceStateCode
 from submissions.models import WellActivityCode
 import submissions.serializers
-from wells.models import Well, ActivitySubmission
+from wells.models import Well, ActivitySubmission, WellStatusCode
 from wells.serializers import WellStackerSerializer
 
 
@@ -65,7 +65,7 @@ class StackWells():
         """
         Using an existing well as a reference, create a legacy well record
         """
-        # TODO: Deal with Lithology, LtsaOwner, LinerPerforation, AquiferWell, Screen etc. (This should
+        # TODO: Deal with Lithology, LtsaOwner, AquiferWell etc. (This should
         # work magically if the serializers are implemented correctly)
         # Serialize the well.
         well_serializer = WellStackerSerializer(well)
@@ -75,12 +75,10 @@ class StackWells():
         data['work_end_date'] = data.pop('construction_end_date', None)
         # Filter out None and '' values, they can interfere with validation.
         data = {k: v for (k, v) in data.items() if v is not None and v != ''}
-        # Specify the submission type as legacy.
-        data['well_activity_type'] = WellActivityCode.types.legacy().code
         # Retain the well reference.
         data['well'] = well.well_tag_number
         # De-serialize the well into a submission.
-        submission_serializer = submissions.serializers.WellSubmissionSerializer(data=data)
+        submission_serializer = submissions.serializers.WellSubmissionLegacySerializer(data=data)
 
         # Validate the data, throwing an exception on error.
         if submission_serializer.is_valid(raise_exception=True):
@@ -136,9 +134,17 @@ class StackWells():
         records = records.order_by(F('work_start_date').asc(nulls_first=True), 'create_date')
         FOREIGN_KEYS = ('casing_set', 'screen_set', 'linerperforation_set', 'decommission_description_set')
         composite = {}
+
+        # Well status is set based on the most recent activity submission.
+        well_status_map = {
+            WellActivityCode.types.construction().code: WellStatusCode.types.construction().well_status_code,
+            WellActivityCode.types.alteration().code: WellStatusCode.types.alteration().well_status_code,
+            WellActivityCode.types.decommission().code: WellStatusCode.types.decommission().well_status_code,
+        }
+
         for submission in records:
             source_target_map = activity_type_map.get(submission.well_activity_type.code, {})
-            serializer = submissions.serializers.WellSubmissionSerializer(submission)
+            serializer = submissions.serializers.WellSubmissionStackerSerializer(submission)
             for source_key, value in serializer.data.items():
                 # We only consider items with values, and keys that are in our target
                 if value:
@@ -148,6 +154,10 @@ class StackWells():
                             composite[target_key] = self._merge_series(composite[source_key], value)
                         else:
                             composite[target_key] = value
+
+            # add a well_status based on the current activity submission
+            composite['well_status'] = well_status_map.get(
+                submission.well_activity_type.code, WellStatusCode.types.other().well_status_code)
 
         # Update the well view
         well_serializer = WellStackerSerializer(well, data=composite, partial=True)
@@ -162,19 +172,19 @@ class StackWells():
         Used to update an existing well record.
         """
         records = ActivitySubmission.objects.filter(well=submission.well)
-        if records.count() > 1 or self._submission_is_construction(submission):
-            # If there's more than one submission, or this is a construction submission, we don't need to
-            # create a legacy well, we can go ahead, iterate though the submission records and update the
-            # well.
+        if records.count() > 1:
+            # If there's more than one submission we don't need to create a legacy well, we can safely
+            # assume that the 1st submission is either a legacy or construction report submission.
             return self._stack(records, submission.well)
         else:
             # If there aren't prior submissions, we may create a legacy record using the current well
             # record.
+            # Edge case of note:
+            # Re. discussion with Lindsay on Oct 15 2018: There may be an instance, where there is a
+            # pre-existing well, and a construct report is submitted. In this instance, we may end up with a
+            # LEGACY record and a CONSTRUCTION record. This is odd, but we don't want to lose the information
+            # stored in the existing well record. It is imerative that we always create a legacy record.
             self._create_legacy_submission(submission.well)
             # We should now have multiple records
             records = ActivitySubmission.objects.filter(well=submission.well)
             return self._stack(records, submission.well)
-
-    def _submission_is_construction(self, submission):
-        construction_code = WellActivityCode.types.construction().code
-        return submission.well_activity_type.code == construction_code

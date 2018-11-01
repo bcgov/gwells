@@ -11,35 +11,30 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
-from rest_framework.permissions import DjangoModelPermissions, BasePermission
-from gwells.roles import WELLS_VIEW_ROLES, WELLS_EDIT_ROLES
+from rest_framework.permissions import BasePermission
+from gwells.roles import WELLS_VIEWER_ROLE, WELLS_EDIT_ROLE
 
 
 class WellsDocumentViewPermissions(BasePermission):
     """
-    Grants permission to view documents to users in a Wells staff group
+    Grants permission to view documents to users with the wells viewer role.
     """
 
     def has_permission(self, request, view):
-        if request.user and request.user.is_authenticated and request.user.groups.filter(
-                name__in=WELLS_VIEW_ROLES).exists():
-            return True
-        return False
+        return request.user and request.user.is_authenticated and\
+            request.user.groups.filter(name=WELLS_VIEWER_ROLE).exists()
 
 
-class WellsEditPermissions(DjangoModelPermissions):
+class WellsEditPermissions(BasePermission):
     """
     Grants permissions to edit wells to users
     """
 
     def has_permission(self, request, view):
         """
-        Refuse permission if user is not in a "Wells" staff group.
-        If user in one of the wells groups, group permissions will dictate (e.g. user is
+        Refuse permission if user is not in an edit group.
+        If user is in the edit group, then group permissions will dictate (e.g. user is
         in a group that has 'add_well' permission)
         """
-        if request.user and request.user.is_authenticated and request.user.groups.filter(
-                name__in=WELLS_EDIT_ROLES).exists():
-            result = super().has_permission(request, view)
-            return result
-        return False
+        return request.user and request.user.is_authenticated and\
+            request.user.groups.filter(name=WELLS_EDIT_ROLE).exists()
