@@ -594,7 +594,7 @@ pipeline {
                 "IMAGE_STREAM_NAME=gwells-postgresql-${PROD_SUFFIX}",
                 "IMAGE_STREAM_VERSION=${PROD_SUFFIX}",
                 "POSTGRESQL_DATABASE=gwells",
-                "VOLUME_CAPACITY=2Gi"
+                "VOLUME_CAPACITY=20Gi"
               )
 
               // some objects need to be copied from a base secret or configmap
