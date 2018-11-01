@@ -1,6 +1,6 @@
 <template>
   <fieldset>
-    <legend>Decommission Description</legend>
+    <legend :id="id">Decommission Description</legend>
     <b-row>
       <b-col cols="12">
         <div class="table-responsive">
@@ -84,7 +84,11 @@ export default {
       default: () => ([])
     },
     errors: Array,
-    fieldsLoaded: Object
+    fieldsLoaded: Object,
+    id: {
+      type: String,
+      isInput: false
+    }
   },
   data () {
     return {}

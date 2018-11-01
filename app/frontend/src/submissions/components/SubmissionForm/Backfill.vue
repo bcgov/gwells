@@ -1,7 +1,7 @@
 <template>
   <div>
     <fieldset>
-      <legend>Surface Seal and Backfill Information</legend>
+      <legend :id="id">Surface Seal and Backfill Information</legend>
       <b-row>
         <b-col cols="12" sm="4" md="3">
           <form-input
@@ -97,6 +97,10 @@ export default {
     fieldsLoaded: {
       type: Object,
       default: () => ({})
+    },
+    id: {
+      type: String,
+      isInput: false
     }
   },
   fields: {
