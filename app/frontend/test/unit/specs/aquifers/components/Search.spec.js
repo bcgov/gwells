@@ -3,6 +3,7 @@ import SearchComponent from '@/aquifers/components/Search.vue'
 import Vuex from 'vuex'
 import axios from 'axios'
 import VueRouter from 'vue-router'
+import auth from '@/common/store/auth.js'
 
 jest.mock('axios')
 
@@ -29,6 +30,9 @@ describe('Search Component', () => {
     localVue,
     stubs: ['router-link', 'router-view'],
     router: new VueRouter(),
+    store: new Vuex.Store({
+      modules: { auth }
+    }),
     methods: {
       scrollToTableTop() {}
     },
