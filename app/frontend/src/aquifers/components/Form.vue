@@ -254,7 +254,6 @@
 
 <script>
 import { isEmpty, mapValues } from 'lodash'
-import ApiService from '@/common/services/ApiService.js'
 import { mapState } from 'vuex'
 
 export default {

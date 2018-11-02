@@ -10,7 +10,7 @@ export default {
     vulnerability_codes: []
   },
   mutations: {
-    addCodes(state, payload) {
+    addCodes (state, payload) {
       state[payload.key] = payload.codeTable
     }
   }

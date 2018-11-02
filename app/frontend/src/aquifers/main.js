@@ -64,5 +64,5 @@ new Vue({
       this.fetchCode('aquifer-codes/demand', 'demand_codes')
       this.fetchCode('aquifer-codes/water-use', 'known_water_use_codes')
     }
-  },
+  }
 })
