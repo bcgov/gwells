@@ -23,37 +23,15 @@
           <b-col><h5>Add new Aquifer</h5></b-col>
         </b-row>
 
-        <aquifer-form :record="record" :fieldErrors="fieldErrors" />
+        <aquifer-form
+          v-on:save="save"
+          v-on:cancel="navigateToView"
+          :record="record"
+          :fieldErrors="fieldErrors"
+          />
 
-        <b-row class="mt-4">
-          <b-col cols="auto">
-            <b-button
-              variant="secondary"
-              v-b-modal.confirmSave>
-              Save
-            </b-button>
-
-            <b-button
-              variant="secondary"
-              v-b-modal.confirmCancel>
-              Cancel
-            </b-button>
-          </b-col>
-        </b-row>
       </b-container>
     </b-card>
-
-    <b-modal
-      v-on:ok="save"
-      id="confirmSave">
-      <p>Are you sure you would like to save this record?</p>
-    </b-modal>
-
-    <b-modal
-      v-on:ok="cancel"
-      id="confirmCancel">
-      <p>Are you sure you want to quit editing this record?</p>
-    </b-modal>
   </div>
 </template>
 
@@ -77,7 +55,7 @@ export default {
     }
   },
   methods: {
-    cancel () {
+    navigateToView () {
       this.$router.push({ name: 'home' })
     },
     handleSuccess ({data}) {

@@ -210,6 +210,38 @@
         </b-form-group>
       </b-col>
     </b-row>
+
+    <b-row class="mt-4">
+      <b-col cols="auto">
+        <b-button
+          variant="default"
+          v-b-modal.confirmCancel>
+          Cancel
+        </b-button>
+
+        <b-button
+          variant="primary"
+          v-b-modal.confirmSave>
+          Save
+        </b-button>
+      </b-col>
+    </b-row>
+
+    <b-modal
+      ok-variant="primary"
+      cancel-variant="default"
+      v-on:ok="$emit('save')"
+      id="confirmSave">
+      <p>Are you sure you would like to save this record?</p>
+    </b-modal>
+
+    <b-modal
+      ok-variant="primary"
+      cancel-variant="default"
+      v-on:ok="$emit('cancel')"
+      id="confirmCancel">
+      <p>Are you sure you want to quit editing this record?</p>
+    </b-modal>
   </b-container>
 </template>
 

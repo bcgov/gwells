@@ -43,37 +43,14 @@
         </b-col>
       </b-row>
 
-      <aquifer-form v-if="editMode" :record="record" :fieldErrors="fieldErrors" showId />
-
-      <b-row v-if="editMode" class="mt-4">
-        <b-col cols="auto">
-          <b-button
-            :disabled="loading"
-            variant="secondary"
-            v-b-modal.confirmSave>
-            Save
-          </b-button>
-
-          <b-button
-            :disabled="loading"
-            variant="secondary"
-            v-b-modal.confirmCancel>
-            Cancel
-          </b-button>
-        </b-col>
-      </b-row>
-
-      <b-modal
-        v-on:ok="save"
-        id="confirmSave">
-        <p>Are you sure you would like to save this record?</p>
-      </b-modal>
-
-      <b-modal
-        v-on:ok="navigateToView"
-        id="confirmCancel">
-        <p>Are you sure you want to quit editing this record?</p>
-      </b-modal>
+      <aquifer-form
+        v-on:save="save"
+        v-on:cancel="navigateToView"
+        :fieldErrors="fieldErrors"
+        :record="record"
+        showId
+        v-if="editMode"
+        />
 
       <dl v-if="viewMode" class="row">
         <dt class="col-sm-2">Aquifer number</dt>

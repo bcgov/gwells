@@ -16,7 +16,12 @@
   <b-card no-body class="p-3 mb-4">
     <h5>Aquifer Search</h5>
 
-    <router-link v-if="userRoles.aquifers.edit" to="new">Add new Aquifer</router-link>
+    <div class="pb-2">
+      <b-button
+        v-on:click="navigateToNew"
+        v-if="userRoles.aquifers.edit"
+        variant="default">Add new Aquifer</b-button>
+    </div>
 
     <b-form
       v-on:submit.prevent="triggerSearch"
@@ -155,6 +160,9 @@ export default {
     ...mapGetters(['userRoles'])
   },
   methods: {
+    navigateToNew () {
+      this.$router.push({ name: 'new' })
+    },
     fetchResults () {
       if (isEmpty(this.query.aquifer_id) && isEmpty(this.query.search)) {
         this.response = {}
