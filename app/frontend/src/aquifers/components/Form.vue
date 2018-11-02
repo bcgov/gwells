@@ -210,45 +210,25 @@
 <script>
 import { isEmpty, mapValues } from 'lodash'
 import ApiService from '@/common/services/ApiService.js'
+import { mapState } from 'vuex'
 
 export default {
-  created () {
-    this.fetchCodes()
-  },
-  data () {
-    return {
-      demand_codes: [],
-      known_water_use_codes: [],
-      material_codes: [],
-      productivity_codes: [],
-      quality_concern_codes: [],
-      subtype_codes: [],
-      vulnerability_codes: []
-    }
-  },
   computed: {
     fieldErrorMessages () {
       return mapValues(this.fieldErrors, (messages) => messages.join(', '))
     },
     fieldHasError () {
       return mapValues(this.fieldErrors, (messages) => isEmpty(messages))
-    }
-  },
-  methods: {
-    fetchCode (code, key) {
-      ApiService.query(code).then((response) => {
-        this[key] = response.data.results
-      })
     },
-    fetchCodes () {
-      this.fetchCode('aquifer-codes/materials', 'material_codes')
-      this.fetchCode('aquifer-codes/quality-concerns', 'quality_concern_codes')
-      this.fetchCode('aquifer-codes/vulnerability', 'vulnerability_codes')
-      this.fetchCode('aquifer-codes/subtypes', 'subtype_codes')
-      this.fetchCode('aquifer-codes/productivity', 'productivity_codes')
-      this.fetchCode('aquifer-codes/demand', 'demand_codes')
-      this.fetchCode('aquifer-codes/water-use', 'known_water_use_codes')
-    }
+    ...mapState('aquiferCodes', [
+      'demand_codes',
+      'known_water_use_codes',
+      'material_codes',
+      'productivity_codes',
+      'quality_concern_codes',
+      'subtype_codes',
+      'vulnerability_codes'
+    ])
   },
   props: {
     fieldErrors: Object,
