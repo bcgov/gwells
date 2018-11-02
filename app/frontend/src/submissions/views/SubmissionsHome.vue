@@ -80,7 +80,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import ApiService from '@/common/services/ApiService.js'
-import { FETCH_CODES } from '../store/actions.types.js'
+import { FETCH_CODES, FETCH_WELL } from '../store/actions.types.js'
 import inputFormatMixin from '@/common/inputFormatMixin.js'
 import SubmissionPreview from '@/submissions/components/SubmissionPreview/SubmissionPreview.vue'
 import filterBlankRows from '@/common/filterBlankRows.js'
@@ -158,25 +158,25 @@ export default {
           'comments'
         ],
         STAFF_EDIT: [
-          'wellType',
-          'personResponsible',
-          'wellOwner',
-          'wellLocation',
-          'wellCoords',
-          'method',
-          'closureDescription',
-          'lithology',
-          'casings',
-          'backfill',
-          'liner',
-          'screens',
-          'filterPack',
-          'wellDevelopment',
-          'wellYield',
-          'waterQuality',
-          'wellCompletion',
-          'decommissionInformation',
-          'comments'
+          // 'wellType',
+          'personResponsible'
+          // 'wellOwner',
+          // 'wellLocation',
+          // 'wellCoords',
+          // 'method',
+          // 'closureDescription',
+          // 'lithology',
+          // 'casings',
+          // 'backfill',
+          // 'liner',
+          // 'screens',
+          // 'filterPack',
+          // 'wellDevelopment',
+          // 'wellYield',
+          // 'waterQuality',
+          // 'wellCompletion',
+          // 'decommissionInformation',
+          // 'comments'
         ]
       }
     }
@@ -195,7 +195,7 @@ export default {
 
       return components
     },
-    ...mapGetters(['codes', 'userRoles'])
+    ...mapGetters(['codes', 'userRoles', 'well'])
   },
   methods: {
     formSubmit () {
@@ -377,6 +377,15 @@ export default {
   watch: {
     activityType () {
       this.resetForm()
+    },
+    well () {
+      if (this.well) {
+        Object.keys(this.well).forEach((key) => {
+          if (key in this.form) {
+            this.form[key] = this.well[key]
+          }
+        })
+      }
     }
   },
   created () {
@@ -389,6 +398,7 @@ export default {
     if (this.$route.name === 'SubmissionsEdit') {
       this.activityType = 'STAFF_EDIT'
       this.formIsFlat = true
+      this.$store.dispatch(FETCH_WELL, this.$route.params.id)
     }
   }
 }

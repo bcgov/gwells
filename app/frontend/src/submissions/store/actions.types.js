@@ -10,3 +10,4 @@
   limitations under the License.
  */
 export const FETCH_CODES = 'FETCH_CODES'
+export const FETCH_WELL = 'FETCH_WELL'

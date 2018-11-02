@@ -17,6 +17,7 @@ from rest_framework import serializers
 from django.db import transaction
 from gwells.models import ProvinceStateCode
 from gwells.serializers import AuditModelSerializer
+from registries.serializers import PersonBasicSerializer
 from wells.models import (
     ActivitySubmission,
     Casing,
@@ -115,6 +116,18 @@ class LinerPerforationSerializer(serializers.ModelSerializer):
         )
 
 
+class WellDetailSerializer(AuditModelSerializer):
+    casing_set = CasingSerializer(many=True)
+    screen_set = ScreenSerializer(many=True)
+    linerperforation_set = LinerPerforationSerializer(many=True)
+    decommission_description_set = DecommissionDescriptionSerializer(many=True)
+    driller_responsible = PersonBasicSerializer()
+
+    class Meta:
+        model = Well
+        fields = '__all__'
+
+
 class WellStackerSerializer(AuditModelSerializer):
 
     casing_set = CasingSerializer(many=True)
@@ -132,7 +145,12 @@ class WellStackerSerializer(AuditModelSerializer):
         # based on this update. Trying to match up individual records and updating them, dealing with
         # removed casing/screen/perforation records etc. etc. is not the responsibility of this section.
         # The composite section is responsible for that.
-        FOREIGN_KEYS = {'casing_set': Casing, 'screen_set': Screen, 'linerperforation_set': LinerPerforation, 'decommission_description_set': DecommissionDescription}
+        FOREIGN_KEYS = {
+            'casing_set': Casing,
+            'screen_set': Screen,
+            'linerperforation_set': LinerPerforation,
+            'decommission_description_set': DecommissionDescription
+        }
         for key in FOREIGN_KEYS.keys():
             for record in getattr(instance, key).all():
                 record.delete()
