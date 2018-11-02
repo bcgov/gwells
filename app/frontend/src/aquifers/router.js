@@ -3,7 +3,6 @@ import VueRouter from 'vue-router'
 
 import Search from './components/Search'
 import View from './components/View'
-import Edit from './components/Edit'
 import New from './components/New'
 
 Vue.use(VueRouter)
@@ -20,20 +19,18 @@ export default new VueRouter({
     {
       path: '/:id(\\d+)',
       component: View,
-      name: 'view',
-      props: true
+      name: 'view'
     },
     {
       path: '/:id/edit',
-      component: Edit,
+      component: View,
       name: 'edit',
-      props: true
+      props: { edit: true }
     },
     {
       path: '/new',
       component: New,
-      name: 'new',
-      props: true
+      name: 'new'
     }
   ]
 })

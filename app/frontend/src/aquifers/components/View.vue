@@ -14,25 +14,68 @@
 
 <template>
   <b-card no-body class="p-3 mb-4">
+    <api-error v-if="error" :error="error"/>
+    <b-alert variant="success" :show="showSaveSuccess">Record successfully updated</b-alert>
+
     <b-container>
-      <b-row class="border-bottom mb-3 pb-2">
+      <b-row v-if="loading" class="border-bottom mb-3 pb-2">
+        <b-col><h5>Loading...</h5></b-col>
+      </b-row>
+
+      <b-row v-if="editMode && !loading" class="border-bottom mb-3 pb-2">
+        <b-col><h5>Aquifer {{record.aquifer_id}} Summary - Edit</h5></b-col>
+      </b-row>
+
+      <b-row v-if="viewMode" class="border-bottom mb-3 pb-2">
         <b-col><h5 class="pt-2">Aquifer Summary</h5></b-col>
         <b-col cols="auto">
           <b-button
             variant="default"
             v-if="userRoles.aquifers.edit"
-            v-on:click.prevent="edit()">
+            v-on:click.prevent="navigateToEdit">
             <span title="Edit" class="fa fa-edit"/>
           </b-button>
           <a class="ml-2 print fa fa-print fa-lg d-print-none"
             href="#"
             title="Print"
-            v-on:click.prevent="print()"
+            v-on:click.prevent="print"
            />
         </b-col>
       </b-row>
 
-      <dl class="row">
+      <aquifer-form v-if="editMode" :record="record" :fieldErrors="fieldErrors" showId />
+
+      <b-row v-if="editMode" class="mt-4">
+        <b-col cols="auto">
+          <b-button
+            :disabled="loading"
+            variant="secondary"
+            v-b-modal.confirmSave>
+            Save
+          </b-button>
+
+          <b-button
+            :disabled="loading"
+            variant="secondary"
+            v-b-modal.confirmCancel>
+            Cancel
+          </b-button>
+        </b-col>
+      </b-row>
+
+      <b-modal
+        v-on:ok="save"
+        id="confirmSave">
+        <p>Are you sure you would like to save this record?</p>
+      </b-modal>
+
+      <b-modal
+        v-on:ok="navigateToView"
+        id="confirmCancel">
+        <p>Are you sure you want to quit editing this record?</p>
+      </b-modal>
+
+      <dl v-if="viewMode" class="row">
         <dt class="col-sm-2">Aquifer number</dt>
         <dd class="col-sm-4">{{record.aquifer_id}}</dd>
         <dt class="col-sm-2">Year of mapping</dt>
@@ -76,24 +119,66 @@
 
 <script>
 import ApiService from '@/common/services/ApiService.js'
+import APIErrorMessage from '@/common/components/APIErrorMessage'
+import AquiferForm from './Form'
 import { mapGetters } from 'vuex'
 
 export default {
-  props: ['id'],
+  components: {
+    'api-error': APIErrorMessage,
+    'aquifer-form': AquiferForm
+  },
+  props: {
+    'edit': Boolean
+  },
   created () { this.fetch() },
   data () {
     return {
-      record: {}
+      error: undefined,
+      fieldErrors: {},
+      loading: false,
+      record: {},
+      showSaveSuccess: false
     }
   },
   computed: {
+    id () { return this.$route.params.id },
+    editMode () { return this.edit },
+    viewMode () { return !this.edit },
     ...mapGetters(['userRoles'])
   },
   watch: {
     id () { this.fetch() }
   },
   methods: {
-    edit () {
+    handleSaveSuccess () {
+      this.navigateToView()
+      this.showSaveSuccess = true
+    },
+    handlePatchError (error) {
+      if (error.response) {
+        if (error.response.status === 400) {
+          this.fieldErrors = error.response.data
+        } else {
+          this.error = error.response
+        }
+      } else {
+        this.error = error.message
+      }
+    },
+    save () {
+      this.showSaveSuccess = false
+      this.fieldErrors = {}
+
+      ApiService.patch('aquifers', this.id, this.record)
+        .then(this.handleSaveSuccess)
+        .catch(this.handlePatchError)
+    },
+    navigateToView () {
+      this.$router.push({ name: 'view', params: { id: this.id } })
+    },
+    navigateToEdit () {
+      this.showSaveSuccess = false
       this.$router.push({ name: 'edit', params: { id: this.id } })
     },
     print () {
