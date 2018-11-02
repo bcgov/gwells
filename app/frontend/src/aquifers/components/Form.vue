@@ -19,6 +19,7 @@
           :invalid-feedback="fieldErrorMessages.aquifer_name"
           :state="fieldHasError.aquifer_name">
             <b-form-input
+              tabindex="1"
               id="aquifer_name"
               type="text"
               v-model="record.aquifer_name"/>
@@ -32,6 +33,7 @@
           :invalid-feedback="fieldErrorMessages.location_description"
           :state="fieldHasError.location_description">
             <b-form-input
+              tabindex="3"
               id="location_description"
               type="text"
               v-model="record.location_description"/>
@@ -45,6 +47,7 @@
           :invalid-feedback="fieldErrorMessages.material"
           :state="fieldHasError.material">
           <b-form-select
+            tabindex="5"
             :options="material_codes"
             id="material"
             text-field="description"
@@ -60,6 +63,7 @@
           :invalid-feedback="fieldErrorMessages.quality_concern"
           :state="fieldHasError.quality_concern">
           <b-form-select
+            tabindex="7"
             id="quality_concern"
             v-model="record.quality_concern"
             :options="quality_concern_codes"
@@ -75,6 +79,7 @@
           :invalid-feedback="fieldErrorMessages.area"
           :state="fieldHasError.area">
           <b-form-input
+            tabindex="9"
             id="area"
             type="text"
             v-model="record.area"/>
@@ -88,10 +93,11 @@
           :invalid-feedback="fieldErrorMessages.known_water_use"
           :state="fieldHasError.known_water_use">
           <b-form-select
+            tabindex="11"
             id="known_water_use"
             v-model="record.known_water_use"
             :options="known_water_use_codes"
-              value-field="code"
+            value-field="code"
             text-field="description"/>
         </b-form-group>
 
@@ -103,6 +109,7 @@
           :invalid-feedback="fieldErrorMessages.notes"
           :state="fieldHasError.notes">
           <b-form-textarea
+            tabindex="13"
             rows="4"
             id="notes"
             v-model="record.notes"/>
@@ -118,6 +125,7 @@
           :invalid-feedback="fieldErrorMessages.mapping_year"
           :state="fieldHasError.mapping_year">
             <b-form-input
+              tabindex="2"
               id="mapping_year"
               type="text"
               v-model="record.mapping_year"/>
@@ -131,6 +139,7 @@
           :invalid-feedback="fieldErrorMessages.litho_stratographic_unit"
           :state="fieldHasError.litho_stratographic_unit">
             <b-form-input
+              tabindex="4"
               id="litho_stratographic_unit"
               type="text"
               v-model="record.litho_stratographic_unit"/>
@@ -144,6 +153,7 @@
           :invalid-feedback="fieldErrorMessages.vulnerability"
           :state="fieldHasError.vulnerability">
           <b-form-select
+            tabindex="6"
             :options="vulnerability_codes"
             id="vulnerability"
             text-field="description"
@@ -159,6 +169,7 @@
           :invalid-feedback="fieldErrorMessages.subtype"
           :state="fieldHasError.subtype">
           <b-form-select
+            tabindex="8"
             id="subtype"
             v-model="record.subtype"
             :options="subtype_codes"
@@ -174,6 +185,7 @@
           :invalid-feedback="fieldErrorMessages.productivity"
           :state="fieldHasError.productivity">
           <b-form-select
+            tabindex="10"
             id="productivity"
             v-model="record.productivity"
             :options="productivity_codes"
@@ -189,6 +201,7 @@
           :invalid-feedback="fieldErrorMessages.demand"
           :state="fieldHasError.demand">
           <b-form-select
+            tabindex="12"
             id="demand"
             v-model="record.demand"
             :options="demand_codes"
