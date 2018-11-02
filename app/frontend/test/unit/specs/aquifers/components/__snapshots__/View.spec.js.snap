@@ -4,9 +4,17 @@ exports[`View Component Matches the snapshot 1`] = `
 <div
   class="card p-3 mb-4"
 >
+  <!---->
+   
+  <!---->
+   
   <div
     class="container"
   >
+    <!---->
+     
+    <!---->
+     
     <div
       class="row border-bottom mb-3 pb-2"
     >
@@ -32,6 +40,8 @@ exports[`View Component Matches the snapshot 1`] = `
         />
       </div>
     </div>
+     
+    <!---->
      
     <dl
       class="row"
