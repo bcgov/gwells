@@ -3,7 +3,6 @@ import Vuex from 'vuex'
 import VueRouter from 'vue-router'
 import SubmissionsHome from '@/submissions/views/SubmissionsHome.vue'
 import Yield from '@/submissions/components/SubmissionForm/Yield.vue'
-// import ActivitySubmissionForm from '@/submissions/components/SubmissionForm/ActivitySubmissionForm.vue'
 
 import { FETCH_CODES } from '@/submissions/store/actions.types.js'
 
