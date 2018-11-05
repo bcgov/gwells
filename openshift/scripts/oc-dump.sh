@@ -18,8 +18,9 @@ IFS=$'\n\t'
 
 # Parameters
 #
-PROJECT=${1:-}
-SAVE_TO=${2:-./${PROJECT}-$( date +%Y-%m-%d-%H%M )}
+PROJECT=$( echo ${1} | cut -d "/" -f 1 )
+DC_NAME=$( echo ${1} | cut -d "/" -f 2 )
+SAVE_TO=${2:-./${DC_NAME}-$( date +%Y-%m-%d-%H%M )}
 
 
 # APP and mode variables
@@ -30,13 +31,13 @@ KEEP_APP_ONLINE=${KEEP_APP_ONLINE:-true}
 
 # Show message if passed any params
 #
-if [ "${#}" -eq 0 ]||[ "${#}" -gt 2 ]
+if [ "${#}" -eq 0 ]||[ "${#}" -gt 2 ]||[ "${PROJECT}" == "${DC_NAME}" ]
 then
 	echo
     echo "Dumps from a GWells database to store locally"
     echo
-	echo "Provide a project name."
-	echo " './oc-dump.sh <project_name> <optional:output_file>'"
+	echo "Provide a target name."
+	echo " './oc-dump.sh <project_name>/<deploymentconfig_name> <optional:output_file>'"
 	echo
 	exit
 fi
@@ -82,7 +83,7 @@ fi
 
 # Identify database and take a backup
 #
-POD_DB=$( oc get pods -n ${PROJECT} -o name | grep -Eo "gwells-pgsql-(test|prod)-[[:digit:]]+-[[:alnum:]]+" )
+POD_DB=$( oc get pods -n ${PROJECT} -o name | grep -Eo "${DC_NAME}-[[:digit:]]+-[[:alnum:]]+" )
 SAVE_FILE=$( basename ${SAVE_TO} )
 SAVE_PATH=$( dirname ${SAVE_TO} )
 mkdir -p ${SAVE_PATH}
