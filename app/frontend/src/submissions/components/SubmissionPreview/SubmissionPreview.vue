@@ -4,7 +4,7 @@
       <b-row>
         <b-col cols="12">
           <div>Well Activity Submission<span v-if="!reportSubmitted"> Preview</span></div>
-          <b-btn v-if="reportSubmitted" @click="$emit('startNewReport')" variant="primary">New Report</b-btn>
+          <b-btn v-if="reportSubmitted" @click="$emit('startNewReport')" variant="primary">Submit New Report</b-btn>
           <b-btn v-else class="float-right" @click="$emit('back')" variant="primary">Back to Edit</b-btn>
         </b-col>
       </b-row>

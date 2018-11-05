@@ -7,8 +7,10 @@
           :show="formSubmitSuccess"
           variant="success"
           class="mt-3">
-        <i class="fa fa-2x fa-check-circle text-success mr-2" aria-hidden="true"></i>
-        Your well record was successfully submitted.
+        <i class="fa fa-2x fa-check-circle text-success mr-2 alert-icon" aria-hidden="true"></i>
+        <div class="alert-message">
+          Your well record was successfully submitted.
+        </div>
       </b-alert>
 
       <!-- Form submission error message -->
@@ -18,13 +20,19 @@
           @dismissed="formSubmitError=false"
           variant="danger"
           class="mt-3">
-          <div>Your well record was not submitted.</div>
-        <span v-if="errors && errors.detail">
-          {{ errors.detail }}
-        </span>
-        <div v-if="errors && errors != {}">
-          <div v-for="(field, i) in Object.keys(errors)" :key="`submissionError${i}`">
-            {{field | readable}} : <span v-for="(e, j) in errors[field]" :key="`submissionError${i}-${j}`">{{ e }}</span>
+
+        <i class="fa fa-2x fa-times-circle text-danger mr-2 alert-icon" aria-hidden="true"></i>
+        <div class="alert-message">
+          <div>
+            Your well record was not submitted.
+          </div>
+          <span v-if="errors && errors.detail">
+            {{ errors.detail }}
+          </span>
+          <div v-if="errors && errors != {}">
+            <div v-for="(field, i) in Object.keys(errors)" :key="`submissionError${i}`">
+              {{field | readable}} : <span v-for="(e, j) in errors[field]" :key="`submissionError${i}-${j}`">{{ e }}</span>
+            </div>
           </div>
         </div>
       </b-alert>
