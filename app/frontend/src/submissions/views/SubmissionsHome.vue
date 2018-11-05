@@ -21,7 +21,9 @@
           :formSteps="formSteps"
           :errors="errors"
           :formIsFlat.sync="formIsFlat"
+          :trackValueChanges="trackValueChanges"
           v-on:preview="handlePreviewButton"
+          v-on:submit_edit="formSubmit"
           v-on:resetForm="resetForm"
           />
 
@@ -80,7 +82,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import ApiService from '@/common/services/ApiService.js'
-import { FETCH_CODES, FETCH_WELL } from '../store/actions.types.js'
+import { FETCH_CODES } from '../store/actions.types.js'
 import inputFormatMixin from '@/common/inputFormatMixin.js'
 import SubmissionPreview from '@/submissions/components/SubmissionPreview/SubmissionPreview.vue'
 import filterBlankRows from '@/common/filterBlankRows.js'
@@ -102,6 +104,7 @@ export default {
       formSubmitSuccessWellTag: null,
       formSubmitError: false,
       sliding: null,
+      trackValueChanges: false,
       errors: {},
       form: {},
       formOptions: {},
@@ -195,11 +198,21 @@ export default {
 
       return components
     },
-    ...mapGetters(['codes', 'userRoles', 'well'])
+    ...mapGetters(['codes', 'userRoles', 'well', 'isAuthenticated'])
   },
   methods: {
     formSubmit () {
       const data = Object.assign({}, this.form)
+      const meta = data.meta
+
+      if (this.activityType === 'STAFF_EDIT') {
+        // Remove any fields that aren't changed
+        Object.keys(data).forEach((key) => {
+          if (key !== 'well' && !(key in meta.valueChanged)) {
+            delete data[key]
+          }
+        })
+      }
 
       // delete "meta" data (form input that need not be submitted) stored within form object
       delete data.meta
@@ -213,14 +226,17 @@ export default {
         data.well = data.well.well_tag_number
       }
 
-      this.stripBlankStrings(data)
+      if (this.activityType !== 'STAFF_EDIT') {
+        // We don't strip blank strings on an edit, someone may be trying to replace a value with a blank value.
+        this.stripBlankStrings(data)
+      }
 
-      data.linerperforation_set = this.filterBlankRows(data.linerperforation_set)
-      data.lithologydescription_set = this.filterBlankRows(data.lithologydescription_set)
-      data.production_data_set = this.filterBlankRows(data.production_data_set)
-      data.screen_set = this.filterBlankRows(data.screen_set)
-      data.casing_set = this.filterBlankRows(data.casing_set)
-      data.decommission_description_set = this.filterBlankRows(data.decommission_description_set)
+      const sets = ['linerperforation_set', 'lithologydescription_set', 'production_data_set', 'screen_set', 'casing_set', 'decommission_description_set']
+      sets.forEach((key) => {
+        if (key in data) {
+          data[key] = this.filterBlankRows(data[key])
+        }
+      })
 
       this.formSubmitLoading = true
       this.formSubmitSuccess = false
@@ -233,9 +249,15 @@ export default {
       ApiService.post(PATH, data).then((response) => {
         this.formSubmitSuccess = true
         this.formSubmitSuccessWellTag = response.data.well
-        this.resetForm()
+        if (this.activityType !== 'STAFF_EDIT') {
+          this.resetForm()
+        }
       }).catch((error) => {
-        this.errors = error.response.data
+        if (error.response.status === 403 || error.response.status === 500) {
+          this.errors = {'Server error': error.response.statusText}
+        } else {
+          this.errors = error.response.data
+        }
         this.formSubmitError = true
       }).finally(() => {
         this.formSubmitLoading = false
@@ -378,12 +400,21 @@ export default {
     activityType () {
       this.resetForm()
     },
-    well () {
-      if (this.well) {
-        Object.keys(this.well).forEach((key) => {
-          if (key in this.form) {
-            this.form[key] = this.well[key]
-          }
+    isAuthenticated () {
+      if (this.isAuthenticated && this.activityType === 'STAFF_EDIT') {
+        ApiService.query(`wells/${this.$route.params.id}`).then((res) => {
+          Object.keys(res.data).forEach((key) => {
+            if (key in this.form) {
+              this.form[key] = res.data[key]
+            }
+          })
+          // Wait for the form update we just did to fire off change events.
+          this.$nextTick(() => {
+            this.form.meta.valueChanged = {}
+            this.trackValueChanges = true
+          })
+        }).catch((e) => {
+          // do something!!!
         })
       }
     }
@@ -398,7 +429,6 @@ export default {
     if (this.$route.name === 'SubmissionsEdit') {
       this.activityType = 'STAFF_EDIT'
       this.formIsFlat = true
-      this.$store.dispatch(FETCH_WELL, this.$route.params.id)
     }
   }
 }

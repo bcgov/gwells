@@ -270,7 +270,12 @@
     />
 
     <!-- Back / Next / Submit controls -->
-    <b-row class="mt-5">
+    <b-row v-if="activityType === 'STAFF_EDIT'" class="mt-5">
+      <b-col class="pr-4 text-right">
+        <b-btn variant="primary" @click="$emit('submit_edit')" :disabled="staffSubmitDisabled">Submit</b-btn>
+      </b-col>
+    </b-row>
+    <b-row v-else class="mt-5">
       <b-col v-if="!formIsFlat">
         <b-btn v-if="step > 1 && !formIsFlat" @click="step > 1 ? step-- : null" variant="primary">Back</b-btn>
       </b-col>
@@ -349,6 +354,10 @@ export default {
     errors: {
       type: Object,
       isInput: false
+    },
+    trackValueChanges: {
+      type: Boolean,
+      isInput: false
     }
   },
   components: {
@@ -380,6 +389,7 @@ export default {
       hasHadSaveFormSuccess: false,
       loadFormSuccess: false,
       confirmLoadModal: false,
+      staffSubmitDisabled: true,
       // componentUpdateTrigger can be appended to a component's key. Changing this value will cause
       // these components to be re-created, allowing the created() and mounted() hooks to re-run.
       componentUpdateTrigger: 0,
@@ -408,6 +418,19 @@ export default {
         'personResponsible': 'Person Responsible for Work'
       }
     }
+  },
+  watch: {
+    // 'form.driller_name': {
+    //   handler (newValue, oldValue) {
+    //     console.log(`${oldValue} => ${newValue}`)
+    //     // Object.keys(newValue).forEach((key) => {
+    //     //   console.log(`${key} : ${oldValue[key]} => ${newValue[key]}`)
+    //     //   if (newValue[key] !== oldValue[key]) {
+    //     //     console.log(`${key} changed from ${oldValue[key]} to ${newValue[key]}`)
+    //     //   }
+    //     // })
+    //   }
+    // }
   },
   computed: {
     formStep () {
@@ -464,6 +487,26 @@ export default {
     saveStatusReset () {
       this.saveFormSuccess = false
       this.loadFormSuccess = false
+    }
+  },
+  beforeCreate () {
+    // We know right from the start if this is going to be a SubmissionsEdit, and then we add watches
+    // on all the form fields.
+    // Unfortunately watches aren't very fast, and there will be a lot of code bloat if we instead
+    // switch to using computed properties, which would be faster. We'd have to add a getter and setter
+    // for every single form field!
+    if (this.$route.name === 'SubmissionsEdit') {
+      Object.keys(this.$options.propsData.form).forEach((key) => {
+        // We have to add the watches in beforeCreate.
+        this.$options.watch[`form.${key}`] = {
+          handler (newValue, oldValue) {
+            if (this.trackValueChanges) {
+              this.staffSubmitDisabled = false
+              this.form.meta.valueChanged[key] = true
+            }
+          }
+        }
+      })
     }
   }
 }

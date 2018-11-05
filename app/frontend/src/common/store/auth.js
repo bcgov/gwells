@@ -13,6 +13,9 @@ const auth = {
     keycloak (state) {
       return state.keycloak
     },
+    isAuthenticated (state) {
+      return state.keycloak && state.keycloak.authenticated === true
+    },
     userRoles (state) {
       if (state.keycloak && state.keycloak.authenticated) {
         // map SSO roles to web app permissions

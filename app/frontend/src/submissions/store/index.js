@@ -14,10 +14,9 @@ import Vuex from 'vuex'
 import auth from '@/common/store/auth.js'
 import config from '@/common/store/config.js'
 import ApiService from '@/common/services/ApiService.js'
-import authenticate from '@/common/authenticate.js'
 
-import { FETCH_CODES, FETCH_WELL } from './actions.types.js'
-import { SET_CODES, SET_ERROR, SET_WELL } from './mutations.types.js'
+import { FETCH_CODES } from './actions.types.js'
+import { SET_CODES, SET_ERROR } from './mutations.types.js'
 
 Vue.use(Vuex)
 
@@ -28,8 +27,7 @@ export const store = new Vuex.Store({
   },
   state: {
     error: null,
-    codes: null,
-    well: null
+    codes: null
   },
   mutations: {
     [SET_ERROR] (state, payload) {
@@ -37,9 +35,6 @@ export const store = new Vuex.Store({
     },
     [SET_CODES] (state, payload) {
       state.codes = payload
-    },
-    [SET_WELL] (state, payload) {
-      state.well = payload
     }
   },
   actions: {
@@ -52,18 +47,6 @@ export const store = new Vuex.Store({
           commit(SET_ERROR, e.response)
         })
       }
-    },
-    [FETCH_WELL] ({commit}, id) {
-      this.state.well = null
-      // Fetch the well, but only after we've authenticated
-      authenticate.authenticate(store).then(() => {
-        // Auth complete, fetch the well
-        ApiService.query(`wells/${id}`).then((res) => {
-          commit(SET_WELL, res.data)
-        }).catch((e) => {
-          commit(SET_ERROR, e.response)
-        })
-      })
     }
   },
   getters: {
@@ -74,9 +57,6 @@ export const store = new Vuex.Store({
     },
     globalError (state) {
       return state.error
-    },
-    well (state) {
-      return state.well
     }
   }
 })

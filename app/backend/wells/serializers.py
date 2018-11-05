@@ -122,6 +122,8 @@ class WellDetailSerializer(AuditModelSerializer):
     linerperforation_set = LinerPerforationSerializer(many=True)
     decommission_description_set = DecommissionDescriptionSerializer(many=True)
     driller_responsible = PersonBasicSerializer()
+    # well vs. well_tag_number ; on submissions, we refer to well
+    well = serializers.IntegerField(source='well_tag_number')
 
     class Meta:
         model = Well

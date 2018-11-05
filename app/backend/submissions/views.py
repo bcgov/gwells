@@ -88,6 +88,7 @@ from submissions.serializers import (
     WellClassCodeSerializer,
     WellSubclassCodeSerializer,
     YieldEstimationMethodCodeSerializer,
+    WellStaffEditSubmissionSerializer,
 )
 
 
@@ -212,6 +213,7 @@ class SubmissionStaffEditAPIView(ListCreateAPIView):
     TODO: Implement this class fully
     """
     model = ActivitySubmission
+    serializer_class = WellStaffEditSubmissionSerializer
     permission_classes = (WellsEditPermissions,)
     queryset = ActivitySubmission.objects.all()
 

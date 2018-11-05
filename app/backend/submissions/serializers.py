@@ -327,6 +327,27 @@ class WellAlterationSubmissionSerializer(WellSubmissionSerializerBase):
         }
 
 
+class WellStaffEditSubmissionSerializer(WellSubmissionSerializerBase):
+
+    well = serializers.PrimaryKeyRelatedField(queryset=Well.objects.all())
+
+    def get_well_activity_type(self):
+        return WellActivityCode.types.staff_edit()
+
+    def get_foreign_keys(self):
+        return {}
+
+    class Meta:
+        model = ActivitySubmission
+        fields = (
+            'well',
+            'driller_name',
+            'consultant_name',
+            'consultant_company',
+            'driller_responsible',
+        )
+
+
 class WellDecommissionSubmissionSerializer(WellSubmissionSerializerBase):
     """ Serializes a well decommission submission. """
 
