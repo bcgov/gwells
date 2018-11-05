@@ -92,8 +92,8 @@ fi
 #
 RESTORE_PATH=$( dirname ${RESTORE} )
 RESTORE_FILE=$( basename ${RESTORE} )
-POD_DB=$( oc get pods -n ${PROJECT} -o name | grep -Eo "${DC_NAME}-[0-9]+-[[:alnum:]]+" )
-oc cp ${RESTORE} "${POD_DB}":/tmp/
+POD_DB=$( oc get pods -n ${PROJECT} -o name | grep -Eo "${DC_NAME}-[[:digit:]]+-[[:alnum:]]+" )
+oc cp ${RESTORE} "${POD_DB}":/tmp/ -n ${PROJECT}
 echo oc exec ${POD_DB} -n ${PROJECT} -- /bin/bash -c 'pg_restore -d '${DB_NAME}' -c /tmp/'${RESTORE_FILE}
 
 
