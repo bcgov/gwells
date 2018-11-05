@@ -3,8 +3,9 @@
     <h1 class="card-title">
       <b-row>
         <b-col cols="12">
-          <div>Well Activity Submission Preview</div>
-          <b-btn class="float-right" @click="$emit('back')" variant="primary">Back to Edit</b-btn>
+          <div>Well Activity Submission<span v-if="!reportSubmitted"> Preview</span></div>
+          <b-btn v-if="reportSubmitted" @click="$emit('startNewReport')" variant="primary">New Report</b-btn>
+          <b-btn v-else class="float-right" @click="$emit('back')" variant="primary">Back to Edit</b-btn>
         </b-col>
       </b-row>
     </h1>
@@ -412,7 +413,7 @@
     </fieldset>
 
     <!-- Back / Next / Submit controls -->
-    <b-row class="mt-5">
+    <b-row v-if="!reportSubmitted" class="mt-5">
       <b-col>
         <b-btn @click="$emit('back')" variant="primary">Back to Edit</b-btn>
       </b-col>
@@ -439,11 +440,12 @@ export default {
   props: [
     'form',
     'activity',
-    'sections'
+    'sections',
+    'reportSubmitted',
+    'formSubmitLoading'
   ],
   data () {
     return {
-      formSubmitLoading: false
     }
   },
   computed: {

@@ -38,6 +38,7 @@
           :sections="displayFormSection"
           :errors="errors"
           :reportSubmitted="formSubmitSuccess"
+          :formSubmitLoading="formSubmitLoading"
           v-on:back="handlePreviewBackButton"
           v-on:startNewReport="handleExitPreviewAfterSubmit"
           />
@@ -101,6 +102,7 @@ export default {
       formSubmitSuccess: false,
       formSubmitSuccessWellTag: null,
       formSubmitError: false,
+      formSubmitLoading: false,
       sliding: null,
       errors: {},
       form: {},
@@ -235,7 +237,7 @@ export default {
         this.formSubmitSuccessWellTag = response.data.well
 
         if (!this.form.well_tag_number) {
-          this.form.well_tag_number = response.data.well
+          this.setWellTagNumber(response.data.well)
         }
 
         this.$nextTick(function () {
@@ -373,6 +375,10 @@ export default {
     },
     handlePreviewButton () {
       this.preview = true
+
+      // clear the error alert (otherwise it looks like there are new errors after clicking preview)
+      this.formSubmitError = false
+
       this.$nextTick(function () {
         window.scrollTo(0, 0)
       })
