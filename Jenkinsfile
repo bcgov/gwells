@@ -20,11 +20,13 @@ pipeline {
     // TEST_PROJECT contains the test deployment. The test image is a candidate for promotion to prod.
     TEST_PROJECT = "moe-gwells-test"
     TEST_SUFFIX = "staging"
+    TEST_HOST=${APP_NAME}-test.pathfinder.gov.bc.ca
 
     // PROD_PROJECT is the prod deployment.
     // New production images can be deployed by tagging an existing "test" image as "prod".
     PROD_PROJECT = "moe-gwells-prod"
     PROD_SUFFIX= "production"
+    PROD_HOST=${APP_NAME}-prod.pathfinder.gov.bc.ca
 
     // PR_NUM is the pull request number e.g. 'pr-4'
     PR_NUM = "${env.JOB_BASE_NAME}".toLowerCase()
@@ -368,7 +370,7 @@ pipeline {
                 "openshift/backend.dc.json",
                 "NAME_SUFFIX=-${TEST_SUFFIX}",
                 "ENV_NAME=${TEST_SUFFIX}",
-                "HOST=${APP_NAME}-test.pathfinder.gov.bc.ca",
+                "HOST=${TEST_HOST}",
               )
 
               // some objects need to be copied from a base secret or configmap
@@ -571,7 +573,7 @@ pipeline {
                 "openshift/backend.dc.json",
                 "NAME_SUFFIX=-${PROD_SUFFIX}",
                 "ENV_NAME=${PROD_SUFFIX}",
-                "HOST=${APP_NAME}-${PROD_SUFFIX}.pathfinder.gov.bc.ca",
+                "HOST=${PROD_HOST}",
               )
 
               def deployDBTemplate = openshift.process("-f",
