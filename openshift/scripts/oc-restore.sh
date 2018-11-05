@@ -18,7 +18,8 @@ IFS=$'\n\t'
 
 # Parameters
 #
-PROJECT=${1:-}
+PROJECT=$( echo ${1} | cut -d "/" -f 1 )
+DC_NAME=$( echo ${1} | cut -d "/" -f 2 )
 RESTORE=${2:-}
 
 
@@ -36,8 +37,8 @@ then
 	echo
     echo "Restores a GWells database from a local file"
     echo
-	echo "Provide a project name."
-	echo " './oc-restore.sh <project_name> <input_file>'"
+	echo "Provide a target name and backup file to restore."
+	echo " './oc-restore.sh <project_name>/<deploymentconfig_name> <input_file>'"
 	echo
 	exit
 fi
@@ -91,9 +92,9 @@ fi
 #
 RESTORE_PATH=$( dirname ${RESTORE} )
 RESTORE_FILE=$( basename ${RESTORE} )
-POD_DB=$( oc get pods -n ${PROJECT} -o name | grep -Eo "postgresql-[0-9]+-[[:alnum:]]+" )
+POD_DB=$( oc get pods -n ${PROJECT} -o name | grep -Eo "${DC_NAME}-[0-9]+-[[:alnum:]]+" )
 oc cp ${RESTORE} "${POD_DB}":/tmp/
-oc exec ${POD_DB} -n ${PROJECT} -- /bin/bash -c 'pg_restore -d '${DB_NAME}' -c /tmp/'${RESTORE_FILE}
+echo oc exec ${POD_DB} -n ${PROJECT} -- /bin/bash -c 'pg_restore -d '${DB_NAME}' -c /tmp/'${RESTORE_FILE}
 
 
 # Take GWells out of maintenance mode and scale back up (deployment config)
