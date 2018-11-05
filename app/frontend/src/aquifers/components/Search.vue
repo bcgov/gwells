@@ -20,7 +20,7 @@
       <b-button
         v-on:click="navigateToNew"
         v-if="userRoles.aquifers.edit"
-        variant="default">Add new Aquifer</b-button>
+        variant="primary">Add new Aquifer</b-button>
     </div>
 
     <b-form
