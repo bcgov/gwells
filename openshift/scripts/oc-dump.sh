@@ -78,7 +78,7 @@ fi
 
 # Make sure $SAVE_TO ends in .gz
 #
-[ "$( echo ${SAVE_TO} | tail -c4 )" == ".pgCustom" ]|| SAVE_TO="${SAVE_TO}.pgCustom"
+[ "$( echo ${SAVE_TO} | tail -c4 )" == ".dump" ]|| SAVE_TO="${SAVE_TO}.dump"
 
 
 # Identify database and take a backup
