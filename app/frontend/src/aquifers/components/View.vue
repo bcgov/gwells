@@ -129,6 +129,7 @@ export default {
   },
   methods: {
     handleSaveSuccess () {
+      this.fetch()
       this.navigateToView()
       this.showSaveSuccess = true
     },
