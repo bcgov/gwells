@@ -25,7 +25,7 @@ pipeline {
     // PROD_PROJECT is the prod deployment.
     // New production images can be deployed by tagging an existing "test" image as "prod".
     PROD_PROJECT = "moe-gwells-prod"
-    PROD_SUFFIX= "production"
+    PROD_SUFFIX = "production"
     PROD_HOST=${APP_NAME}-prod.pathfinder.gov.bc.ca
 
     // PR_NUM is the pull request number e.g. 'pr-4'
@@ -569,12 +569,6 @@ pipeline {
               input "Deploy to production?"
 
               echo "Updating production deployment..."
-              def deployTemplate = openshift.process("-f",
-                "openshift/backend.dc.json",
-                "NAME_SUFFIX=-${PROD_SUFFIX}",
-                "ENV_NAME=${PROD_SUFFIX}",
-                "HOST=${PROD_HOST}",
-              )
 
               def deployDBTemplate = openshift.process("-f",
                 "openshift/postgresql.dc.json",
@@ -585,6 +579,13 @@ pipeline {
                 "IMAGE_STREAM_VERSION=${PROD_SUFFIX}",
                 "POSTGRESQL_DATABASE=gwells",
                 "VOLUME_CAPACITY=20Gi"
+              )
+
+              def deployTemplate = openshift.process("-f",
+                "openshift/backend.dc.json",
+                "NAME_SUFFIX=-${PROD_SUFFIX}",
+                "ENV_NAME=${PROD_SUFFIX}",
+                "HOST=${PROD_HOST}",
               )
 
               // some objects need to be copied from a base secret or configmap
@@ -613,8 +614,8 @@ pipeline {
               // the copies of base objects (secrets, configmaps) are also applied.
               echo "Applying deployment config for pull request ${PR_NUM} on ${PROD_PROJECT}"
 
-              openshift.apply(deployTemplate).label(['app':"gwells-${PROD_SUFFIX}", 'app-name':"${APP_NAME}", 'env-name':"${PROD_SUFFIX}"], "--overwrite")
               openshift.apply(deployDBTemplate).label(['app':"gwells-${PROD_SUFFIX}", 'app-name':"${APP_NAME}", 'env-name':"${PROD_SUFFIX}"], "--overwrite")
+              openshift.apply(deployTemplate).label(['app':"gwells-${PROD_SUFFIX}", 'app-name':"${APP_NAME}", 'env-name':"${PROD_SUFFIX}"], "--overwrite")
               openshift.apply(newObjectCopies).label(['app':"gwells-${PROD_SUFFIX}", 'app-name':"${APP_NAME}", 'env-name':"${PROD_SUFFIX}"], "--overwrite")
               echo "Successfully applied production deployment config"
 
