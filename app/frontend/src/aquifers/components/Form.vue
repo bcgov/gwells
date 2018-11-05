@@ -214,15 +214,15 @@
     <b-row class="mt-4">
       <b-col cols="auto">
         <b-button
-          variant="default"
-          v-b-modal.confirmCancel>
-          Cancel
-        </b-button>
-
-        <b-button
           variant="primary"
           v-b-modal.confirmSave>
           Save
+        </b-button>
+
+        <b-button
+          variant="default"
+          v-b-modal.confirmCancel>
+          Cancel
         </b-button>
       </b-col>
     </b-row>
