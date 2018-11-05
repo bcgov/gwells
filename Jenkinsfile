@@ -368,7 +368,7 @@ pipeline {
                 "openshift/backend.dc.json",
                 "NAME_SUFFIX=-${TEST_SUFFIX}",
                 "ENV_NAME=${TEST_SUFFIX}",
-                "HOST=${APP_NAME}-${TEST_SUFFIX}.pathfinder.gov.bc.ca",
+                "HOST=${APP_NAME}-test.pathfinder.gov.bc.ca",
               )
 
               // some objects need to be copied from a base secret or configmap
