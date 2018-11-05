@@ -16,7 +16,6 @@
   <div>
     <b-card no-body class="p-3 mb-4">
       <api-error v-if="error" :error="error"/>
-      <b-alert variant="success" :show="showSaveSuccess">Record successfully updated</b-alert>
 
       <b-container>
         <b-row class="border-bottom mb-3 pb-2">
@@ -49,9 +48,7 @@ export default {
     return {
       error: undefined,
       fieldErrors: {},
-      loading: false,
-      record: {},
-      showSaveSuccess: false
+      record: {}
     }
   },
   methods: {
