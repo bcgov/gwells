@@ -1,5 +1,13 @@
 <template>
   <div>
+    <h1 class="card-title">
+      <b-row>
+        <b-col cols="12">
+          <div>Well Activity Submission Preview</div>
+          <b-btn class="float-right" @click="$emit('back')" variant="primary">Back to Edit</b-btn>
+        </b-col>
+      </b-row>
+    </h1>
     <fieldset class="my-3 detail-section">
       <legend>Type of Work and Well Class</legend>
       <b-row>
@@ -403,6 +411,15 @@
       </p>
     </fieldset>
 
+    <!-- Back / Next / Submit controls -->
+    <b-row class="mt-5">
+      <b-col>
+        <b-btn @click="$emit('back')" variant="primary">Back to Edit</b-btn>
+      </b-col>
+      <b-col class="pr-4 text-right">
+        <b-btn id="formSubmitButton" type="submit" variant="primary" ref="activitySubmitBtn" :disabled="formSubmitLoading">Submit</b-btn>
+      </b-col>
+    </b-row>
   </div>
 </template>
 
@@ -424,6 +441,11 @@ export default {
     'activity',
     'sections'
   ],
+  data () {
+    return {
+      formSubmitLoading: false
+    }
+  },
   computed: {
     wellSubclass () {
       let subclassCodes = []
