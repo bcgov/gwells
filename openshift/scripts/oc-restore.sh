@@ -26,7 +26,7 @@ RESTORE=${2:-}
 #
 APP_NAME=${APP_NAME:-gwells}
 DB_NAME=${DB_NAME:-${APP_NAME}}
-KEEP_APP_ONLINE=${KEEP_APP_ONLINE:-false}
+KEEP_APP_ONLINE=${KEEP_APP_ONLINE:-true}
 
 
 # Show message if passed any params
