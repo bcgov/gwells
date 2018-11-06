@@ -60,7 +60,7 @@ export default {
           store.commit('SET_KEYCLOAK', instance)
           if (instance.authenticated) {
             // We may have been authenticated, but the token could be expired.
-            instance.updateToken(3600).then(() => {
+            instance.updateToken(60).then(() => {
               // Store the token to avoid future round trips
               this.setLocalToken(instance)
             }).catch(() => {
