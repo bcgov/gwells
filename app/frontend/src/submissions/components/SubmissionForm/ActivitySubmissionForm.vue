@@ -170,6 +170,7 @@
 
     <!-- Liner Information -->
     <liner class="my-3"
+      :key="`linerComponent${componentUpdateTrigger}`"
       v-if="currentStep === 'liner' || (formIsFlat && sections.liner)"
       id="liner"
       :linerMaterial.sync="form.liner_material"
@@ -184,6 +185,7 @@
 
     <!-- Screens -->
     <screens class="my-3"
+      :key="`screensComponent${componentUpdateTrigger}`"
       v-if="currentStep === 'screens' || (formIsFlat && sections.screens)"
       id="screens"
       :screenIntakeMethod.sync="form.screen_intake_method"
