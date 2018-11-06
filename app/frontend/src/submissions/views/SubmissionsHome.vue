@@ -197,7 +197,6 @@ export default {
       this.formSteps[activityType].forEach((step) => {
         components[step] = true
       })
-
       return components
     },
     ...mapGetters(['codes', 'userRoles', 'well', 'isAuthenticated'])
@@ -255,10 +254,13 @@ export default {
           this.resetForm()
         }
       }).catch((error) => {
-        if (error.response.status === 403 || error.response.status === 500) {
-          this.errors = {'Server error': error.response.statusText}
-        } else {
+        if (error.response.status === 400) {
+          // Bad request, the response.data will contain information relating to why the request was bad.
           this.errors = error.response.data
+        } else {
+          // Some other kind of server error. If for example, it's a 500, the response data is not of
+          // much use, so we just grab the status text.
+          this.errors = { 'Server Error': error.response.statusText }
         }
         this.formSubmitError = true
       }).finally(() => {
