@@ -20,13 +20,13 @@ pipeline {
     // TEST_PROJECT contains the test deployment. The test image is a candidate for promotion to prod.
     TEST_PROJECT = "moe-gwells-test"
     TEST_SUFFIX = "staging"
-    TEST_HOST = "${APP_NAME}-test.pathfinder.gov.bc.ca"
+    TEST_HOST = "gwells-test.pathfinder.gov.bc.ca"
 
     // PROD_PROJECT is the prod deployment.
     // New production images can be deployed by tagging an existing "test" image as "prod".
     PROD_PROJECT = "moe-gwells-prod"
     PROD_SUFFIX = "production"
-    PROD_HOST = "${APP_NAME}-prod.pathfinder.gov.bc.ca"
+    PROD_HOST = "gwells-prod.pathfinder.gov.bc.ca"
 
     // PR_NUM is the pull request number e.g. 'pr-4'
     PR_NUM = "${env.JOB_BASE_NAME}".toLowerCase()
