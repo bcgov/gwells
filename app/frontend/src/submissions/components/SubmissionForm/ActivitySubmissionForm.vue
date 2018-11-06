@@ -3,7 +3,7 @@
     <h1 class="card-title">
       <b-row>
         <b-col cols="12">
-          <div v-if="activityType === 'STAFF_EDIT'">Well Edit Page</div>
+          <div v-if="isStaffEdit" id="top">Well Edit Page</div>
           <div v-else>Well Activity Submission</div>
           <b-form-group v-if="activityType !== 'STAFF_EDIT'">
             <b-form-radio-group button-variant="outline-primary" size="sm" buttons v-model="formIsFlatInput" label="Form layout" class="float-right">
@@ -14,15 +14,15 @@
         </b-col>
       </b-row>
     </h1>
-    <b-row v-if="activityType === 'STAFF_EDIT'">
+    <b-row v-if="isStaffEdit">
         <b-col lg="3" v-for="step in formSteps[activityType]" :key='step'>
           <a :href="'#' + step">{{formStepDescriptions[step] ? formStepDescriptions[step] : step}}</a>
         </b-col>
       </b-row>
-    <p v-if="activityType !== 'STAFF_EDIT'">Submit activity on a well. <a href="/gwells/">Try a search</a> to see if the well exists in the system before submitting a report.</p>
+    <p v-if="!isStaffEdit">Submit activity on a well. <a href="/gwells/">Try a search</a> to see if the well exists in the system before submitting a report.</p>
 
     <!-- Form load/save -->
-    <b-row v-if="activityType !== 'STAFF_EDIT'">
+    <b-row v-if="!isStaffEdit">
       <b-col class="text-right">
         <b-btn size="sm" variant="outline-primary" @click="saveForm">
           Save report progress
@@ -75,6 +75,9 @@
       :drillerSameAsPersonResponsible.sync="form.meta.drillerSameAsPersonResponsible"
       :errors="errors"
       :fieldsLoaded="fieldsLoaded"
+      :isStaffEdit="isStaffEdit"
+      :saveDisabled="editSaveDisabled"
+      v-on:save="$emit('submit_edit')"
     />
 
     <!-- Owner information -->
@@ -272,7 +275,7 @@
     <!-- Back / Next / Submit controls -->
     <b-row v-if="activityType === 'STAFF_EDIT'" class="mt-5">
       <b-col class="pr-4 text-right">
-        <b-btn variant="primary" @click="$emit('submit_edit')" :disabled="staffSubmitDisabled">Submit</b-btn>
+        <b-btn variant="primary" @click="$emit('submit_edit')" :disabled="editSaveDisabled">Save</b-btn>
       </b-col>
     </b-row>
     <b-row v-else class="mt-5">
@@ -358,6 +361,10 @@ export default {
     trackValueChanges: {
       type: Boolean,
       isInput: false
+    },
+    formSubmitLoading: {
+      type: Boolean,
+      isInput: false
     }
   },
   components: {
@@ -389,7 +396,7 @@ export default {
       hasHadSaveFormSuccess: false,
       loadFormSuccess: false,
       confirmLoadModal: false,
-      staffSubmitDisabled: true,
+      formValueChanged: false,
       // componentUpdateTrigger can be appended to a component's key. Changing this value will cause
       // these components to be re-created, allowing the created() and mounted() hooks to re-run.
       componentUpdateTrigger: 0,
@@ -450,6 +457,12 @@ export default {
     isLoadFormDisabled () {
       // During unit tests, the localStorage object might not exist, so we have to check it's existence.
       return !window.localStorage || (window.localStorage.getItem('savedFormData') === null && !this.hasHadSaveFormSuccess)
+    },
+    isStaffEdit () {
+      return this.activityType === 'STAFF_EDIT'
+    },
+    editSaveDisabled () {
+      return this.formSubmitLoading || !this.formValueChanged
     }
   },
   methods: {
@@ -501,7 +514,7 @@ export default {
         this.$options.watch[`form.${key}`] = {
           handler (newValue, oldValue) {
             if (this.trackValueChanges) {
-              this.staffSubmitDisabled = false
+              this.formValueChanged = true
               this.form.meta.valueChanged[key] = true
             }
           }

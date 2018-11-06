@@ -22,6 +22,7 @@
           :errors="errors"
           :formIsFlat.sync="formIsFlat"
           :trackValueChanges="trackValueChanges"
+          :formSubmitLoading="formSubmitLoading"
           v-on:preview="handlePreviewButton"
           v-on:submit_edit="formSubmit"
           v-on:resetForm="resetForm"
@@ -102,6 +103,7 @@ export default {
       confirmSubmitModal: false,
       formSubmitSuccess: false,
       formSubmitSuccessWellTag: null,
+      formSubmitLoading: false,
       formSubmitError: false,
       sliding: null,
       trackValueChanges: false,

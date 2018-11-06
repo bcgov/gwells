@@ -19,7 +19,8 @@ describe('SubmissionsHome.vue', () => {
 
   beforeEach(() => {
     getters = {
-      userRoles: () => ({ wells: { edit: true }, submissions: { edit: true } })
+      userRoles: () => ({ wells: { edit: true }, submissions: { edit: true } }),
+      isAuthenticated: () => true
     }
     actions = {
       [FETCH_CODES]: jest.fn()

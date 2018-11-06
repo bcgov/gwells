@@ -1,6 +1,14 @@
 <template>
     <fieldset>
-      <legend :id="id">Person Responsible for Work</legend>
+      <b-row>
+        <b-col cols="12">
+          <legend class="float-left" :id="id">
+            Person Responsible for Work
+            <a href="#top" v-if="isStaffEdit" class="btn btn-primary float-right" role="button">Back to top</a>
+            <b-btn v-if="isStaffEdit" variant="primary" class="float-right mr-2" @click="$emit('save')" :disabled="saveDisabled">Save</b-btn>
+          </legend>
+        </b-col>
+      </b-row>
       <b-row>
         <b-col cols="12" md="12" lg="4">
           <b-form-group
@@ -111,6 +119,14 @@ export default {
       type: Object,
       default: () => ({}),
       inInput: true
+    },
+    isStaffEdit: {
+      type: Boolean,
+      isInput: false
+    },
+    saveDisabled: {
+      type: Boolean,
+      isInput: false
     }
   },
   data () {

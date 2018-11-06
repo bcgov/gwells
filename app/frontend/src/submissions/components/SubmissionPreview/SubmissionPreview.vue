@@ -439,11 +439,11 @@ export default {
   props: [
     'form',
     'activity',
-    'sections'
+    'sections',
+    'formSubmitLoading'
   ],
   data () {
     return {
-      formSubmitLoading: false
     }
   },
   computed: {
