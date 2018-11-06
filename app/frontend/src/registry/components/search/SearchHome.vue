@@ -20,7 +20,7 @@
       <h1 class="card-title">Search for a Well Driller or Well Pump Installer</h1>
       <p>To update contact information or for general enquiries email <a href="mailto:Groundwater@gov.bc.ca">groundwater@gov.bc.ca</a>.</p>
       <p>
-        <a href="https://www2.gov.bc.ca/gov/content/environment/air-land-water/water/groundwater-wells/information-for-well-drillers-well-pump-installers/what-you-need-to-practice-in-bc">
+        <a href="https://www2.gov.bc.ca/gov/content?id=63B6DFF0024949B6867C459C19C23F88">
         Learn more about registering as a well driller or well pump installer in B.C.
         </a>
       </p>

@@ -768,6 +768,7 @@ BEGIN
     casing_to           ,
     diameter            ,
     casing_material_code,
+    casing_code,
     wall_thickness      ,
     drive_shoe          ,
     create_date, update_date, create_user, update_user
@@ -781,8 +782,13 @@ BEGIN
         casings.casing_size               ,
         CASE casings.casing_material_code
           WHEN 'UNK' THEN null
+          WHEN 'STL_PUL_OT' THEN null
           ELSE casings.casing_material_code
         END AS casing_material_code       ,
+        CASE casings.casing_material_code
+          WHEN 'STL_PUL_OT' THEN 'STL_REM'
+          ELSE null
+        END AS casing_code                ,
         casings.casing_wall               ,
         CASE casings.casing_drive_shoe_ind
             WHEN '' THEN null
@@ -893,7 +899,7 @@ BEGIN
   FROM wells.gw_aquifer_wells aws INNER JOIN xform_well xform ON aws.well_id = xform.well_id;
 
   -- 2018-SEPT-24 14:59 GW Aquifer app
-  raise notice '...importing gw_aquifer_attrs data';
+  raise notice '...importing gw_aquifer_attrs data (aquifer)';
   INSERT INTO aquifer(
     aquifer_id              
     ,aquifer_name            
@@ -969,30 +975,38 @@ BEGIN
 
   -- These next 3 lines will be removed once the new Aquifers app is completed (CodeWithUs)
   raise notice '...gw_aquifer_well data imported';
-  SELECT count(*) from aquifer_well into row_count;
+  SELECT count(*) FROM aquifer_well INTO row_count;
   raise notice '% rows loaded into the aquifer_well table',  row_count;
 
   raise notice '...gw_aquifer_attrs data imported';
-  SELECT count(*) from aquifer into row_count;
+  SELECT count(*) FROM aquifer INTO row_count;
   raise notice '% rows loaded into the aquifer table',  row_count;
 
   UPDATE aquifer
   SET    mapping_year = xform.mapping_year
   FROM   xform_aquifers xform
   WHERE  aquifer.aquifer_id = xform.aquifer_id
-  AND    xform.mapping_year is not null;
+  AND    xform.mapping_year IS NOT NULL;
 
-  raise notice '...gw_aquifer_attrs data updated from mapping ';
+  raise notice '...aquifer data updated from mapping spreadsheet';
 
+-- With multiple aquifers per well, we choose the 'last updated' one 
+  WITH best_match AS (
+    SELECT DISTINCT ON (well.well_id)
+    well.well_tag_number,aws.aquifer_id  
+    FROM  wells.gw_aquifer_wells aws,
+          wells.wells_wells well
+    WHERE well.well_id = aws.well_id
+    ORDER BY well.well_id, coalesce(aws.when_updated, aws.when_created) DESC  
+  )
   UPDATE well
-  SET    aquifer_id = aws.aquifer_id
-  FROM   wells.gw_aquifer_wells aws,
-         wells.wells_wells well_legacy -- to get well_tag_number
-  WHERE  well_legacy.well_id = aws.well_id
-  AND    well_legacy.well_tag_number = well.well_tag_number;
+  SET   aquifer_id=best_match.aquifer_id 
+  FROM  best_match
+  WHERE well.well_tag_number=best_match.well_tag_number;
 
-  raise notice '...well data updated from gw_aquifer_wells';
+  raise notice '...well data updated, relating to an aquifer (last update entry only from WELLS.GW_AQUIFER_WELLS)';
 
+  raise notice '...importing hydraulic_property data';
   INSERT INTO hydraulic_property(
     hydraulic_property_guid  
   ,storativity              
@@ -1138,7 +1152,8 @@ BEGIN
   PERFORM populate_xform(_subset_ind);
   TRUNCATE TABLE bcgs_number CASCADE;
   PERFORM migrate_bcgs();
-  TRUNCATE TABLE well CASCADE;
+  -- This truncates 'well' table too
+  TRUNCATE TABLE aquifer CASCADE; 
   PERFORM populate_well();
   PERFORM migrate_screens();
   PERFORM migrate_production();

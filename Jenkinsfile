@@ -1,3 +1,8 @@
+#!groovy
+
+import groovy.json.JsonOutput
+import bcgov.GitHubHelper
+
 pipeline {
   environment {
 
@@ -15,11 +20,13 @@ pipeline {
     // TEST_PROJECT contains the test deployment. The test image is a candidate for promotion to prod.
     TEST_PROJECT = "moe-gwells-test"
     TEST_SUFFIX = "staging"
+    TEST_HOST = "gwells-test.pathfinder.gov.bc.ca"
 
     // PROD_PROJECT is the prod deployment.
     // New production images can be deployed by tagging an existing "test" image as "prod".
     PROD_PROJECT = "moe-gwells-prod"
-    PROD_SUFFIX= "production"
+    PROD_SUFFIX = "production"
+    PROD_HOST = "gwells-prod.pathfinder.gov.bc.ca"
 
     // PR_NUM is the pull request number e.g. 'pr-4'
     PR_NUM = "${env.JOB_BASE_NAME}".toLowerCase()
@@ -35,12 +42,18 @@ pipeline {
     stage('Prepare Templates') {
       steps {
         script {
-          abortAllPreviousBuildInProgress(currentBuild)
+          echo "Cancelling previous builds..."
+          timeout(10) {
+            abortAllPreviousBuildInProgress(currentBuild)
+          }
+          echo "Previous builds cancelled"
+
           openshift.withCluster() {
             openshift.withProject(TOOLS_PROJECT) {
 
               // Process db and app template into list objects
               //  - variable substitution
+              echo "Processing build templates"
               def dbtemplate = openshift.process("-f",
                 "openshift/postgresql.bc.json",
                 "ENV_NAME=${DEV_SUFFIX}"
@@ -104,24 +117,23 @@ pipeline {
           openshift.withCluster() {
             openshift.withProject(DEV_PROJECT) {
               // Process postgres deployment config (sub in vars, create list items)
-              echo " \$ oc process -f openshift/postgresql.dc.json -p DATABASE_SERVICE_NAME=gwells-pgsql-${DEV_SUFFIX}-${PR_NUM} -p IMAGE_STREAM_NAMESPACE='' -p IMAGE_STREAM_NAME=gwells-postgresql-${DEV_SUFFIX}-${PR_NUM} -p IMAGE_STREAM_VERSION=${DEV_SUFFIX} -p LABEL_APPVER=-${DEV_SUFFIX}-${PR_NUM} -p POSTGRESQL_DATABASE=gwells -p VOLUME_CAPACITY=1Gi | oc apply -n moe-gwells-dev -f -"
+              echo " \$ oc process -f openshift/postgresql.dc.json -p DATABASE_SERVICE_NAME=gwells-pgsql-${DEV_SUFFIX}-${PR_NUM} -p IMAGE_STREAM_NAMESPACE='' -p IMAGE_STREAM_NAME=gwells-postgresql-${DEV_SUFFIX}-${PR_NUM} -p IMAGE_STREAM_VERSION=${DEV_SUFFIX} -p NAME_SUFFIX=-${DEV_SUFFIX}-${PR_NUM} -p POSTGRESQL_DATABASE=gwells -p VOLUME_CAPACITY=1Gi | oc apply -n moe-gwells-dev -f -"
               def deployDBTemplate = openshift.process("-f",
                 "openshift/postgresql.dc.json",
                 "DATABASE_SERVICE_NAME=gwells-pgsql-${DEV_SUFFIX}-${PR_NUM}",
                 "IMAGE_STREAM_NAMESPACE=''",
                 "IMAGE_STREAM_NAME=gwells-postgresql-${DEV_SUFFIX}-${PR_NUM}",
                 "IMAGE_STREAM_VERSION=${DEV_SUFFIX}",
-                "LABEL_APPVER=-${DEV_SUFFIX}-${PR_NUM}",
+                "NAME_SUFFIX=-${DEV_SUFFIX}-${PR_NUM}",
                 "POSTGRESQL_DATABASE=gwells",
                 "VOLUME_CAPACITY=1Gi"
               )
 
               // Process postgres deployment config (sub in vars, create list items)
-              echo " \$ oc process -f openshift/backend.dc.json -p BUILD_ENV_NAME=${DEV_SUFFIX} -p ENV_NAME=${DEV_SUFFIX} -p NAME_SUFFIX=-${DEV_SUFFIX}-${PR_NUM} | oc apply -n moe-gwells-dev -f -"
+              echo " \$ oc process -f openshift/backend.dc.json -p ENV_NAME=${DEV_SUFFIX} -p NAME_SUFFIX=-${DEV_SUFFIX}-${PR_NUM} | oc apply -n moe-gwells-dev -f -"
               echo "Processing deployment config for pull request ${PR_NUM}"
               def deployTemplate = openshift.process("-f",
                 "openshift/backend.dc.json",
-                "BUILD_ENV_NAME=${DEV_SUFFIX}",
                 "ENV_NAME=${DEV_SUFFIX}",
                 "HOST=${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}.pathfinder.gov.bc.ca",
                 "NAME_SUFFIX=-${DEV_SUFFIX}-${PR_NUM}"
@@ -164,6 +176,11 @@ pipeline {
               openshift.tag("${TOOLS_PROJECT}/gwells-application:${PR_NUM}", "${DEV_PROJECT}/gwells-${DEV_SUFFIX}-${PR_NUM}:dev")  // todo: clean up labels/tags
               openshift.tag("${TOOLS_PROJECT}/gwells-postgresql:dev", "${DEV_PROJECT}/gwells-postgresql-${DEV_SUFFIX}-${PR_NUM}:dev")  // todo: clean up labels/tags
 
+              // post a notification to Github that this pull request is being deployed
+              def targetURL = "https://${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}.pathfinder.gov.bc.ca/gwells"
+              def ghDeploymentId = new GitHubHelper().createDeployment(this, "pull/${env.CHANGE_ID}/head", ['environment':"${DEV_SUFFIX}", 'task':"deploy:pull:${env.CHANGE_ID}"])
+              new GitHubHelper().createDeploymentStatus(this, ghDeploymentId, 'PENDING', ['targetUrl':"${targetURL}"])
+
               // monitor the deployment status and wait until deployment is successful
               echo "Waiting for deployment to dev..."
               def newVersion = openshift.selector("dc", "${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}").object().status.latestVersion
@@ -187,10 +204,13 @@ pipeline {
                   gwells-codetables.json \
                   wellsearch-codetables.json \
                   registries-codetables.json \
-                  registries.json \
-                  aquifers.json \
-                  wellsearch.json.gz; \
+                  registries_large.json \
+                  aquifers_large.json \
+                  wellsearch_large.json.gz; \
                 python manage.py createinitialrevisions'")
+
+                new GitHubHelper().createDeploymentStatus(this, ghDeploymentId, 'SUCCESS', ['targetUrl':"${targetURL}"])
+
             }
           }
         }
@@ -322,25 +342,35 @@ pipeline {
             openshift.withProject(TEST_PROJECT) {
               input "Deploy to staging?"
 
+              echo "Preparing..."
+
+              // Process db and app template into list objects
+              //  - variable substitution
+              echo "Processing build templates"
+              def dbtemplate = openshift.process("-f",
+                "openshift/postgresql.bc.json",
+                "ENV_NAME=${TEST_SUFFIX}"
+              )
+              openshift.apply(dbtemplate)
+
               echo "Updating staging deployment..."
 
               def deployDBTemplate = openshift.process("-f",
                 "openshift/postgresql.dc.json",
-                "LABEL_APPVER=-${TEST_SUFFIX}",
+                "NAME_SUFFIX=-${TEST_SUFFIX}",
                 "DATABASE_SERVICE_NAME=gwells-pgsql-${TEST_SUFFIX}",
                 "IMAGE_STREAM_NAMESPACE=''",
                 "IMAGE_STREAM_NAME=gwells-postgresql-${TEST_SUFFIX}",
                 "IMAGE_STREAM_VERSION=${TEST_SUFFIX}",
                 "POSTGRESQL_DATABASE=gwells",
-                "VOLUME_CAPACITY=1Gi"
+                "VOLUME_CAPACITY=5Gi"
               )
 
               def deployTemplate = openshift.process("-f",
                 "openshift/backend.dc.json",
                 "NAME_SUFFIX=-${TEST_SUFFIX}",
-                "BUILD_ENV_NAME=${TEST_SUFFIX}",
                 "ENV_NAME=${TEST_SUFFIX}",
-                "HOST=${APP_NAME}-${TEST_SUFFIX}.pathfinder.gov.bc.ca",
+                "HOST=${TEST_HOST}",
               )
 
               // some objects need to be copied from a base secret or configmap
@@ -386,6 +416,10 @@ pipeline {
               openshift.tag("${TOOLS_PROJECT}/gwells-application:${TEST_SUFFIX}", "${TEST_PROJECT}/gwells-${TEST_SUFFIX}:${TEST_SUFFIX}")  // todo: clean up labels/tags
               openshift.tag("${TOOLS_PROJECT}/gwells-postgresql:test", "${TEST_PROJECT}/gwells-postgresql-${TEST_SUFFIX}:${TEST_SUFFIX}")  // todo: clean up labels/tags
 
+              def targetTestURL = "https://${APP_NAME}-${TEST_SUFFIX}.pathfinder.gov.bc.ca/gwells"
+              def ghDeploymentId = new GitHubHelper().createDeployment(this, "pull/${env.CHANGE_ID}/head", ['environment':"${TEST_SUFFIX}", 'task':"deploy:pull:${env.CHANGE_ID}"])
+              new GitHubHelper().createDeploymentStatus(this, ghDeploymentId, 'PENDING', ['targetUrl':"${targetTestURL}"])
+
               // monitor the deployment status and wait until deployment is successful
               echo "Waiting for deployment to TEST..."
               def newVersion = openshift.selector("dc", "gwells-${TEST_SUFFIX}").object().status.latestVersion
@@ -400,19 +434,9 @@ pipeline {
                 }
               }
 
+              new GitHubHelper().createDeploymentStatus(this, ghDeploymentId, 'SUCCESS', ['targetUrl':"${targetTestURL}"])
+
               echo "TEST deployment successful."
-              echo "Loading fixtures"
-              def firstPod = pods.objects()[0].metadata.name
-              openshift.exec(firstPod, "--", "bash -c '\
-                cd /opt/app-root/src/backend; \
-                python manage.py loaddata \
-                  gwells-codetables.json \
-                  wellsearch-codetables.json \
-                  registries-codetables.json \
-                  registries.json \
-                  aquifers.json \
-                  wellsearch.json.gz; \
-                python manage.py createinitialrevisions'")
             }
           }
         }
@@ -545,23 +569,23 @@ pipeline {
               input "Deploy to production?"
 
               echo "Updating production deployment..."
-              def deployTemplate = openshift.process("-f",
-                "openshift/backend.dc.json",
-                "NAME_SUFFIX=-${PROD_SUFFIX}",
-                "BUILD_ENV_NAME=${PROD_SUFFIX}",
-                "ENV_NAME=${PROD_SUFFIX}",
-                "HOST=${APP_NAME}-${PROD_SUFFIX}.pathfinder.gov.bc.ca",
-              )
 
               def deployDBTemplate = openshift.process("-f",
                 "openshift/postgresql.dc.json",
-                "LABEL_APPVER=-${PROD_SUFFIX}",
+                "NAME_SUFFIX=-${PROD_SUFFIX}",
                 "DATABASE_SERVICE_NAME=gwells-pgsql-${PROD_SUFFIX}",
                 "IMAGE_STREAM_NAMESPACE=''",
                 "IMAGE_STREAM_NAME=gwells-postgresql-${PROD_SUFFIX}",
                 "IMAGE_STREAM_VERSION=${PROD_SUFFIX}",
                 "POSTGRESQL_DATABASE=gwells",
-                "VOLUME_CAPACITY=2Gi"
+                "VOLUME_CAPACITY=20Gi"
+              )
+
+              def deployTemplate = openshift.process("-f",
+                "openshift/backend.dc.json",
+                "NAME_SUFFIX=-${PROD_SUFFIX}",
+                "ENV_NAME=${PROD_SUFFIX}",
+                "HOST=${PROD_HOST}",
               )
 
               // some objects need to be copied from a base secret or configmap
@@ -590,8 +614,8 @@ pipeline {
               // the copies of base objects (secrets, configmaps) are also applied.
               echo "Applying deployment config for pull request ${PR_NUM} on ${PROD_PROJECT}"
 
-              openshift.apply(deployTemplate).label(['app':"gwells-${PROD_SUFFIX}", 'app-name':"${APP_NAME}", 'env-name':"${PROD_SUFFIX}"], "--overwrite")
               openshift.apply(deployDBTemplate).label(['app':"gwells-${PROD_SUFFIX}", 'app-name':"${APP_NAME}", 'env-name':"${PROD_SUFFIX}"], "--overwrite")
+              openshift.apply(deployTemplate).label(['app':"gwells-${PROD_SUFFIX}", 'app-name':"${APP_NAME}", 'env-name':"${PROD_SUFFIX}"], "--overwrite")
               openshift.apply(newObjectCopies).label(['app':"gwells-${PROD_SUFFIX}", 'app-name':"${APP_NAME}", 'env-name':"${PROD_SUFFIX}"], "--overwrite")
               echo "Successfully applied production deployment config"
 
@@ -608,6 +632,10 @@ pipeline {
               openshift.tag("${TOOLS_PROJECT}/gwells-application:${PROD_SUFFIX}", "${PROD_PROJECT}/gwells-${PROD_SUFFIX}:${PROD_SUFFIX}")  // todo: clean up labels/tags
               openshift.tag("${TOOLS_PROJECT}/gwells-postgresql:prod", "${PROD_PROJECT}/gwells-postgresql-${PROD_SUFFIX}:${PROD_SUFFIX}")  // todo: clean up labels/tags
 
+              def targetProdURL = "https://apps.nrs.gov.bc.ca/gwells/"
+              def ghDeploymentId = new GitHubHelper().createDeployment(this, "pull/${env.CHANGE_ID}/head", ['environment':"${PROD_SUFFIX}", 'task':"deploy:pull:${env.CHANGE_ID}"])
+              new GitHubHelper().createDeploymentStatus(this, ghDeploymentId, 'PENDING', ['targetUrl':"${targetProdURL}"])
+
               // monitor the deployment status and wait until pgsql-${ deployment is successful
               echo "Waiting for deployment to production..."
               def newVersion = openshift.selector("dc", "gwells-${PROD_SUFFIX}").object().status.latestVersion
@@ -623,7 +651,29 @@ pipeline {
               }
 
               echo "Production deployment successful."
+              // slack & github notifications that a new deployment is ready
 
+              new GitHubHelper().createDeploymentStatus(this, ghDeploymentId, 'SUCCESS', ['targetUrl':"${targetProdURL}"])
+
+              openshift.withProject(TOOLS_PROJECT) {
+
+                // get a slack token
+                def token = openshift.selector("secret", "slack").object().data.token.decodeBase64()
+                token = new String(token)
+
+                // build a message to send to the channel
+                def message = [:]
+                message.channel = "#gwells"
+                message.text = "A new production deployment was rolled out at https://apps.nrs.gov.bc.ca/gwells/"
+                payload = JsonOutput.toJson(message)
+
+                // Approve script here: https://jenkins-moe-gwells-tools.pathfinder.gov.bc.ca/scriptApproval/
+                sh (
+                  script: """curl -X POST -H "Content-Type: application/json" --data \'${payload}\' https://devopspathfinder.slack.com/services/hooks/jenkins-ci?token=${token}""",
+                  returnStdout: true
+                ).trim()
+
+              }
             }
           }
         }

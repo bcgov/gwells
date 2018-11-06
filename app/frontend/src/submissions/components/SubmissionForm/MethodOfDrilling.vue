@@ -1,6 +1,6 @@
 <template>
     <fieldset>
-      <legend>Method of Drilling</legend>
+      <legend :id="id">Method of Drilling</legend>
       <b-row>
         <b-col cols="12" md="6">
           <form-input
@@ -57,8 +57,8 @@
             <b-form-radio-group v-model="wellOrientationInput"
                                 stacked
                                 name="wellOrientationRadio">
-              <b-form-radio value="VERTICAL">Vertical</b-form-radio>
-              <b-form-radio value="HORIZONTAL">Horizontal</b-form-radio>
+              <b-form-radio value="True">Vertical</b-form-radio>
+              <b-form-radio value="False">Horizontal</b-form-radio>
             </b-form-radio-group>
           </b-form-group>
         </b-col>
@@ -85,6 +85,10 @@ export default {
     fieldsLoaded: {
       type: Object,
       default: () => ({})
+    },
+    id: {
+      type: String,
+      isInput: false
     }
   },
   data () {

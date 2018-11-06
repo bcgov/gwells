@@ -13,10 +13,6 @@
             "required": true
         },
         {
-            "name": "BUILD_ENV_NAME",
-            "required": true
-        },
-        {
             "name": "ENV_NAME",
             "required": true
         },

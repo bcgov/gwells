@@ -1,6 +1,6 @@
 <template>
   <fieldset>
-    <legend>Screen Information</legend>
+    <legend :id="id">Screen Information</legend>
     <b-row>
       <b-col cols="12" md="4" lg="3">
         <form-input
@@ -202,6 +202,10 @@ export default {
     fieldsLoaded: {
       type: Object,
       default: () => ({})
+    },
+    id: {
+      type: String,
+      isInput: false
     }
   },
   data () {

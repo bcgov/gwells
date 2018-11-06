@@ -1,6 +1,6 @@
 <template>
   <fieldset>
-    <legend>Well Decommission Information</legend>
+    <legend :id="id">Well Decommission Information</legend>
     <b-row>
       <b-col cols="12" md="3" lg="2">
         <form-input
@@ -27,7 +27,7 @@
             <b-form-radio
                 v-for="(method, index) in codes.decommission_methods"
                 :key="`decommissionMethodOption${index}`"
-                :value="method.code">{{method.description}}</b-form-radio>
+                :value="method.decommission_method_code">{{method.description}}</b-form-radio>
           </b-form-radio-group>
         </b-form-group>
       </b-col>
@@ -82,6 +82,10 @@ export default {
     fieldsLoaded: {
       type: Object,
       default: () => ({})
+    },
+    id: {
+      type: String,
+      isInput: false
     }
   },
   data () {

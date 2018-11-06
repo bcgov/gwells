@@ -66,7 +66,7 @@
             "value": "9.5"
         },
         {
-            "name": "LABEL_APPVER",
+            "name": "NAME_SUFFIX",
             "required": true
         }
     ],
@@ -152,7 +152,7 @@
                 "creationTimestamp": null,
                 "labels": {
                     "base-name": "gwells-postgresql",
-                    "appver": "gwells${LABEL_APPVER}"
+                    "appver": "gwells${NAME_SUFFIX}"
                 },
                 "annotations": {}
             },
@@ -183,7 +183,7 @@
                     "metadata": {
                         "labels": {
                             "name": "${DATABASE_SERVICE_NAME}",
-                            "appver": "gwells${LABEL_APPVER}"
+                            "appver": "gwells${NAME_SUFFIX}"
                         }
                     },
                     "spec": {

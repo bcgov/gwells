@@ -2,7 +2,7 @@ version: '3'
 
 services:
   db:
-    image: postgres:9.6
+    image: postgres:9.5
     environment:
       POSTGRES_USER: gwells
       POSTGRES_PASSWORD: test1
@@ -10,7 +10,7 @@ services:
     volumes:
       - ./.tmp/psql-dev:/var/lib/postgresql
   webapp:
-    image: node:8
+    image: node:8.9.4
     environment:
       DEBUG: "True"
       AXIOS_BASE_URL: http://127.0.0.1:8000/gwells/api/v1/
