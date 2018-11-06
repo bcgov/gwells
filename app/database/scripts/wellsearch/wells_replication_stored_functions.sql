@@ -768,6 +768,7 @@ BEGIN
     casing_to           ,
     diameter            ,
     casing_material_code,
+    casing_code,
     wall_thickness      ,
     drive_shoe          ,
     create_date, update_date, create_user, update_user
@@ -781,8 +782,13 @@ BEGIN
         casings.casing_size               ,
         CASE casings.casing_material_code
           WHEN 'UNK' THEN null
+          WHEN 'STL_PUL_OT' THEN null
           ELSE casings.casing_material_code
         END AS casing_material_code       ,
+        CASE casings.casing_material_code
+          WHEN 'STL_PUL_OT' THEN 'STL_REM'
+          ELSE null
+        END AS casing_code                ,
         casings.casing_wall               ,
         CASE casings.casing_drive_shoe_ind
             WHEN '' THEN null

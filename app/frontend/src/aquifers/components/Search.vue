@@ -102,6 +102,7 @@ table.b-table > tfoot > tr > th.sorting::after {
 </style>
 
 <script>
+import querystring from 'querystring'
 import ApiService from '@/common/services/ApiService.js'
 import isEmpty from 'lodash.isempty'
 
@@ -155,6 +156,9 @@ export default {
         this.response = {}
         return
       }
+
+      // trigger the Google Analytics search event
+      this.triggerAnalyticsSearchEvent(this.query)
 
       ApiService.query('aquifers/', this.query)
         .then((response) => {
@@ -214,6 +218,17 @@ export default {
     },
     updateQueryParams () {
       this.$router.replace({ query: this.filterParams })
+    },
+    triggerAnalyticsSearchEvent (params) {
+      // trigger the search event, sending along the search params as a string
+      if (window.ga) {
+        window.ga('send', {
+          hitType: 'event',
+          eventCategory: 'Button',
+          eventAction: 'AquiferSearch',
+          eventLabel: querystring.stringify(params)
+        })
+      }
     }
   },
   mounted () { this.fetchResults() },

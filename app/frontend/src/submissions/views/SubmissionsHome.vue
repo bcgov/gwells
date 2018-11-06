@@ -2,6 +2,41 @@
   <div class="card" v-if="userRoles.wells.edit || userRoles.submissions.edit">
     <div class="card-body">
 
+      <!-- Form submission success message -->
+      <b-alert
+          :show="formSubmitSuccess"
+          variant="success"
+          class="mt-3">
+        <i class="fa fa-2x fa-check-circle text-success mr-2 alert-icon" aria-hidden="true"></i>
+        <div class="alert-message">
+          Your well record was successfully submitted.
+        </div>
+      </b-alert>
+
+      <!-- Form submission error message -->
+      <b-alert
+          :show="formSubmitError"
+          dismissible
+          @dismissed="formSubmitError=false"
+          variant="danger"
+          class="mt-3">
+
+        <i class="fa fa-2x fa-times-circle text-danger mr-2 alert-icon" aria-hidden="true"></i>
+        <div class="alert-message">
+          <div>
+            Your well record was not submitted.
+          </div>
+          <span v-if="errors && errors.detail">
+            {{ errors.detail }}
+          </span>
+          <div v-if="errors && errors != {}">
+            <div v-for="(field, i) in Object.keys(errors)" :key="`submissionError${i}`">
+              {{field | readable}} : <span v-for="(e, j) in errors[field]" :key="`submissionError${i}-${j}`">{{ e }}</span>
+            </div>
+          </div>
+        </div>
+      </b-alert>
+
       <b-form @submit.prevent="confirmSubmit">
         <!-- if preview === true : Preview -->
         <submission-preview
@@ -10,7 +45,10 @@
           :activity="activityType"
           :sections="displayFormSection"
           :errors="errors"
+          :reportSubmitted="formSubmitSuccess"
+          :formSubmitLoading="formSubmitLoading"
           v-on:back="handlePreviewBackButton"
+          v-on:startNewReport="handleExitPreviewAfterSubmit"
           />
         <!-- if preview === false : Activity submission form -->
         <activity-submission-form
@@ -107,6 +145,7 @@ export default {
       formSubmitSuccessWellTag: null,
       formSubmitLoading: false,
       formSubmitError: false,
+      formSubmitLoading: false,
       sliding: null,
       trackValueChanges: false,
       errors: {},
@@ -256,6 +295,14 @@ export default {
           this.resetForm()
         }
         this.$emit('formSaved')
+
+        if (!this.form.well_tag_number) {
+          this.setWellTagNumber(response.data.well)
+        }
+
+        this.$nextTick(function () {
+          window.scrollTo(0, 0)
+        })
       }).catch((error) => {
         if (error.response.status === 400) {
           // Bad request, the response.data will contain information relating to why the request was bad.
@@ -266,6 +313,9 @@ export default {
           this.errors = { 'Server Error': error.response.statusText }
         }
         this.formSubmitError = true
+        this.$nextTick(function () {
+          window.scrollTo(0, 0)
+        })
       }).finally(() => {
         this.formSubmitLoading = false
       })
@@ -392,12 +442,25 @@ export default {
     },
     handlePreviewButton () {
       this.preview = true
+
+      // clear the error alert (otherwise it looks like there are new errors after clicking preview)
+      this.formSubmitError = false
+
       this.$nextTick(function () {
         window.scrollTo(0, 0)
       })
     },
     handlePreviewBackButton () {
       this.preview = false
+      this.$nextTick(function () {
+        window.scrollTo(0, 0)
+      })
+    },
+    handleExitPreviewAfterSubmit () {
+      this.formSubmitSuccess = false
+      this.resetForm()
+      this.preview = false
+      this.step = 1
       this.$nextTick(function () {
         window.scrollTo(0, 0)
       })

@@ -61,6 +61,7 @@ services:
             echo Loading fixtures, this may take some time... &&
             python3 manage.py loaddata
                 gwells-codetables.json
+                wellsearch-codetables
                 registries-codetables.json
                 registries.json &&
             python3 manage.py createinitialrevisions &&
