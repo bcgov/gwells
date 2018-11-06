@@ -34,7 +34,9 @@
             dismissible
             @dismissed="formSubmitSuccess=false"
             variant="success"
-            class="mt-3">Report submitted!
+            class="mt-3">
+            <span v-if="activityType === 'STAFF_EDIT'">Changes saved</span>
+            <span v-else>Report submitted!</span>
           <a v-if="formSubmitSuccessWellTag" :href="`/gwells/well/${formSubmitSuccessWellTag}`">
             View well details for well {{formSubmitSuccessWellTag}}
           </a>
@@ -413,6 +415,9 @@ export default {
               this.form[key] = res.data[key]
             }
           })
+          if (this.form.driller_responsible && this.form.driller_responsible.name === this.form.driller_name) {
+            this.form.meta.drillerSameAsPersonResponsible = true
+          }
           // Wait for the form update we just did to fire off change events.
           this.$nextTick(() => {
             this.form.meta.valueChanged = {}

@@ -224,7 +224,7 @@
 
     <!-- Yield (Production Data) -->
     <yield class="my-3"
-      v-if="currentStep === 'wellYield' || (formIsFlat && sections.wellYield)"
+      v-if="show.wellYield"
       id="wellYield"
       :productionData.sync="form.production_data_set"
     />
@@ -455,6 +455,12 @@ export default {
     },
     editSaveDisabled () {
       return this.formSubmitLoading || !this.formValueChanged
+    },
+    show () {
+      console.log('MOO MOO', this.currentStep)
+      return {
+        wellYield: this.currentStep === 'wellYield' || (this.formIsFlat && this.sections.wellYield)
+      }
     }
   },
   methods: {
