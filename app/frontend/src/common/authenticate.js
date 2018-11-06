@@ -21,6 +21,19 @@ export default {
     return Vue.prototype.$keycloak
   },
 
+  setLocalToken: function (instance) {
+    localStorage.setItem('token', instance.token)
+    localStorage.setItem('refreshToken', instance.refreshToken)
+    localStorage.setItem('idToken', instance.idToken)
+    ApiService.authHeader('JWT', instance.token)
+  },
+  removeLocalToken: function () {
+    localStorage.removeItem('token')
+    localStorage.removeItem('refreshToken')
+    localStorage.removeItem('idToken')
+    ApiService.authHeader()
+  },
+
   authenticate: function (store) {
     /**
      * authenticates a user and then stores a reference to the keycloak instance in the store
@@ -47,20 +60,23 @@ export default {
           store.commit('SET_KEYCLOAK', instance)
           if (instance.authenticated) {
             // We may have been authenticated, but the token could be expired.
-            if (instance.isTokenExpired(0)) {
-              // The token is expired!
-              result = false // As far as we're concerned, this means authentication failed.
-              localStorage.removeItem('token')
-              localStorage.removeItem('refreshToken')
-              localStorage.removeItem('idToken')
-              ApiService.authHeader()
-            } else {
+            instance.updateToken(60).then(() => {
               // Store the token to avoid future round trips
-              localStorage.setItem('token', instance.token)
-              localStorage.setItem('refreshToken', instance.refreshToken)
-              localStorage.setItem('idToken', instance.idToken)
-              ApiService.authHeader('JWT', instance.token)
-            }
+              this.setLocalToken(instance)
+            }).catch(() => {
+              // The refresh token is expired or was rejected
+              result = false
+              this.removeLocalToken()
+              instance.clearToken()
+            })
+          }
+          instance.onTokenExpired = () => {
+            instance.updateToken().then(() => {
+              this.setLocalToken(instance)
+            }).catch(() => {
+              this.removeLocalToken()
+              instance.clearToken()
+            })
           }
           // We may have failed to authenticate, for many reasons, e.g. - it may be we never logged in,
           // or have an expired token.
