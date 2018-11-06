@@ -88,7 +88,7 @@ SAVE_FILE=$( basename ${SAVE_TO} )
 SAVE_PATH=$( dirname ${SAVE_TO} )
 mkdir -p ${SAVE_PATH}
 oc exec ${POD_DB} -n ${PROJECT} -- /bin/bash -c '\
-  pg_dump -U postgres -d ${POSTGRESQL_DATABASE} -Fc -f /tmp/'${SAVE_FILE}' \
+  pg_dump -U ${POSTGRESQL_USER} -d ${POSTGRESQL_DATABASE} -Fc -f /tmp/'${SAVE_FILE}' \
 	--no-privileges --no-tablespaces --schema=public \
 '
 oc rsync ${POD_DB}:/tmp/${SAVE_FILE} ${SAVE_PATH} -n ${PROJECT} --progress=true --no-perms=true
