@@ -421,7 +421,7 @@
 				"header": [],
 				"body": {},
 				"url": {
-					"raw": "{{base_url}}/api/v1/aquifers/1",
+					"raw": "{{base_url}}/api/v1/aquifers/2000",
 					"host": [
 						"{{base_url}}"
 					],
@@ -429,7 +429,170 @@
 						"api",
 						"v1",
 						"aquifers",
-						"1"
+						"2000"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create a new Aquifer",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "4b3482f3-4ce9-4fb5-ac0c-70ea1ca01999",
+						"type": "text/javascript",
+						"exec": [
+							"var jsonData = pm.response.json()",
+							"",
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.expect(pm.response.code).to.equal(201);",
+							"})",
+							"",
+							"pm.test(\"Person aquifer_name equals name supplied in request\", function () {",
+							"    pm.expect(jsonData.aquifer_name).to.eql(\"Aquifer Name\");",
+							"});",
+							"",
+							"pm.test(\"Person area equals name supplied in request\", function () {",
+							"    pm.expect(jsonData.area).to.eql(\"10.0\");",
+							"});",
+							"",
+							"pm.test(\"Person demand equals name supplied in request\", function () {",
+							"    pm.expect(jsonData.demand).to.eql(\"H\");",
+							"});",
+							"",
+							"pm.test(\"Person known_water_use equals name supplied in request\", function () {",
+							"    pm.expect(jsonData.known_water_use).to.eql(\"M\");",
+							"});",
+							"",
+							"pm.test(\"Person litho_stratographic_unit equals name supplied in request\", function () {",
+							"    pm.expect(jsonData.litho_stratographic_unit).to.eql(\"Aquifer Litho Stratographic Unit\");",
+							"});",
+							"",
+							"pm.test(\"Person location_description equals name supplied in request\", function () {",
+							"    pm.expect(jsonData.location_description).to.eql(\"Location Description\");",
+							"});",
+							"",
+							"pm.test(\"Person mapping_year equals name supplied in request\", function () {",
+							"    pm.expect(jsonData.mapping_year).to.eql(1991);",
+							"});",
+							"",
+							"pm.test(\"Person material equals name supplied in request\", function () {",
+							"    pm.expect(jsonData.material).to.eql(\"B\");",
+							"});",
+							"",
+							"pm.test(\"Person notes equals name supplied in request\", function () {",
+							"    pm.expect(jsonData.notes).to.eql(\"Notes\");",
+							"});",
+							"",
+							"pm.test(\"Person productivity equals name supplied in request\", function () {",
+							"    pm.expect(jsonData.productivity).to.eql(\"H\");",
+							"});",
+							"",
+							"pm.test(\"Person quality_concern equals name supplied in request\", function () {",
+							"    pm.expect(jsonData.quality_concern).to.eql(\"N\");",
+							"});",
+							"",
+							"pm.test(\"Person subtype equals name supplied in request\", function () {",
+							"    pm.expect(jsonData.subtype).to.eql(\"1a\");",
+							"});",
+							"",
+							"pm.test(\"Person vulnerability equals name supplied in request\", function () {",
+							"    pm.expect(jsonData.vulnerability).to.eql(\"H\");",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "JWT {{token}}"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "aquifer_name",
+							"value": "Aquifer Name\n",
+							"type": "text"
+						},
+						{
+							"key": "area",
+							"value": "10",
+							"type": "text"
+						},
+						{
+							"key": "demand",
+							"value": "H",
+							"type": "text"
+						},
+						{
+							"key": "known_water_use",
+							"value": "M",
+							"type": "text"
+						},
+						{
+							"key": "litho_stratographic_unit",
+							"value": "Aquifer Litho Stratographic Unit",
+							"type": "text"
+						},
+						{
+							"key": "location_description",
+							"value": "Location Description",
+							"type": "text"
+						},
+						{
+							"key": "mapping_year",
+							"value": "1991",
+							"type": "text"
+						},
+						{
+							"key": "material",
+							"value": "B",
+							"type": "text"
+						},
+						{
+							"key": "notes",
+							"value": "Notes",
+							"type": "text"
+						},
+						{
+							"key": "productivity",
+							"value": "H",
+							"type": "text"
+						},
+						{
+							"key": "quality_concern",
+							"value": "N",
+							"type": "text"
+						},
+						{
+							"key": "subtype",
+							"value": "1a",
+							"type": "text"
+						},
+						{
+							"key": "vulnerability",
+							"value": "H",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{base_url}}/api/v1/aquifers/",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"aquifers",
+						""
 					]
 				}
 			},
