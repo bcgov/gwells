@@ -1,8 +1,9 @@
-import { shallowMount, createLocalVue } from '@vue/test-utils'
+import { mount, createLocalVue } from '@vue/test-utils'
 import ViewComponent from '@/aquifers/components/View.vue'
 import Vuex from 'vuex'
 import axios from 'axios'
 import auth from '@/common/store/auth.js'
+import aquiferCodes from '@/aquifers/store/codes'
 import VueRouter from 'vue-router'
 
 jest.mock('axios')
@@ -26,28 +27,13 @@ const aquiferFixture = {
 }
 
 describe('View Component', () => {
-  const component = (options) => shallowMount(ViewComponent, {
+  const component = (options) => mount(ViewComponent, {
     localVue,
     router: new VueRouter(),
     store: new Vuex.Store({
-      modules: { auth }
+      modules: { auth, aquiferCodes }
     }),
     ...options
-  })
-
-  it('Matches the snapshot', () => {
-    const wrapper = component({
-      data() {
-        return {
-          record: aquiferFixture
-        }
-      },
-      methods: {
-        fetch() { }
-      }
-    })
-
-    expect(wrapper.element).toMatchSnapshot()
   })
 
   it('queries aquifer on load', () => {
@@ -59,29 +45,101 @@ describe('View Component', () => {
 
     expect(fetch).toHaveBeenCalled()
   })
-/*
-  describe('fetch', () => {
-    it('retrieves and assigns the aquifer to record', (done) => {
-      const data = { a: 1 }
 
-      axios.get.mockResolvedValue({ data })
-
+  describe('View mode', () => {
+    it('matches the snapshot', () => {
       const wrapper = component({
-        created() { },
-        watch: {}
+        data() {
+          return {
+            record: aquiferFixture
+          }
+        },
+        methods: { fetch () {} },
+        propsData: { edit: true }
       })
 
-      wrapper.vm.fetch(10)
+      expect(wrapper.element).toMatchSnapshot()
+    })
+  })
 
-      wrapper.vm.$nextTick(() => {
-        expect(axios.get).toHaveBeenCalledWith('aquifers/10', { "params": undefined })
-        expect(wrapper.vm.record).toEqual(data)
-        done()
+  describe('Edit mode', () => {
+    it('matches the snapshot', () => {
+      const wrapper = component({
+        data() {
+          return {
+            record: aquiferFixture
+          }
+        },
+        methods: { fetch () {} },
+        propsData: { edit: true }
+      })
+
+      expect(wrapper.element).toMatchSnapshot()
+    })
+
+    describe('On save', () => {
+      it('resets showSaveSuccess to false', () => {
+        const wrapper = component({
+          data() {
+            return {
+              record: aquiferFixture,
+              showSaveSuccess: true
+            }
+          },
+          methods: {
+            fetch () {},
+            navigateToView () {}
+          },
+          propsData: { edit: true }
+        })
+
+        axios.patch.mockResolvedValue(true)
+
+        expect(wrapper.vm.showSaveSuccess).toBe(true)
+        wrapper.vm.save()
+        expect(wrapper.vm.showSaveSuccess).toBe(false)
+      })
+
+      it('resets fieldErrors to empty object', () => {
+        const wrapper = component({
+          data() {
+            return {
+              record: aquiferFixture,
+              fieldErrors: { a: ['1'] }
+            }
+          },
+          methods: {
+            fetch () {},
+            navigateToView () {}
+          },
+          propsData: { edit: true }
+        })
+
+        axios.patch.mockResolvedValue(true)
+
+        wrapper.vm.save()
+        expect(wrapper.vm.fieldErrors).toEqual({})
+      })
+
+      it('sends a patch with the contents of record on save', () => {
+        const wrapper = component({
+          methods: {
+            fetch () {},
+            navigateToView () {}
+          },
+          computed: { id () { return 10 } },
+          data() { return { record: aquiferFixture } }
+        })
+
+        axios.patch.mockResolvedValue(true)
+
+        wrapper.vm.save()
+
+        expect(axios.patch).toHaveBeenCalledWith('aquifers/10/', aquiferFixture)
       })
     })
   })
-*/
-  /*
+
   it('displays field errors messages', () => {
     let errorMessage = 'error message'
 
@@ -104,7 +162,9 @@ describe('View Component', () => {
             notes: [errorMessage],
           }
         }
-      }
+      },
+      methods: { fetch () {} },
+      propsData: { edit: true }
     })
 
     expect(wrapper.find('#mapping_year + [role="alert"]').text()).toBe(errorMessage)
@@ -121,16 +181,4 @@ describe('View Component', () => {
     expect(wrapper.find('#known_water_use + [role="alert"]').text()).toBe(errorMessage)
     expect(wrapper.find('#notes + [role="alert"]').text()).toBe(errorMessage)
   })
-
-  describe('save', () => {
-    it('sends a patch with the contents of record on save', () => {
-      const wrapper = component()
-
-      axios.patch.mockResolvedValue(true)
-
-      wrapper.vm.save()
-
-      expect(axios.patch).toHaveBeenCalledWith('aquifers/10/', aquiferFixture)
-    })
-  })*/
 })
