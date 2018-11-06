@@ -1,12 +1,16 @@
 <template>
     <fieldset>
       <b-row>
-        <b-col cols="12">
-          <legend class="float-left" :id="id">
+        <b-col xs="12">
+          <legend :id="id">
             Person Responsible for Work
-            <a href="#top" v-if="isStaffEdit" class="btn btn-primary float-right" role="button">Back to top</a>
-            <b-btn v-if="isStaffEdit" variant="primary" class="float-right mr-2" @click="$emit('save')" :disabled="saveDisabled">Save</b-btn>
           </legend>
+        </b-col>
+        <b-col xs="12">
+          <div class="float-right">
+            <b-btn v-if="isStaffEdit" variant="primary" class="ml-2" @click="$emit('save')" :disabled="saveDisabled">Save</b-btn>
+            <a href="#top" v-if="isStaffEdit">Back to top</a>
+          </div>
         </b-col>
       </b-row>
       <b-row>

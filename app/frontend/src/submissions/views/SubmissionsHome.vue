@@ -168,7 +168,7 @@ export default {
           // 'wellOwner',
           // 'wellLocation',
           // 'wellCoords',
-          // 'method',
+          // 'method'
           // 'closureDescription',
           // 'lithology',
           // 'casings',
@@ -253,6 +253,7 @@ export default {
         if (this.activityType !== 'STAFF_EDIT') {
           this.resetForm()
         }
+        this.$emit('formSaved')
       }).catch((error) => {
         if (error.response.status === 400) {
           // Bad request, the response.data will contain information relating to why the request was bad.

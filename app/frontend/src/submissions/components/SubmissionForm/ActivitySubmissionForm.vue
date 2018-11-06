@@ -429,17 +429,7 @@ export default {
     }
   },
   watch: {
-    // 'form.driller_name': {
-    //   handler (newValue, oldValue) {
-    //     console.log(`${oldValue} => ${newValue}`)
-    //     // Object.keys(newValue).forEach((key) => {
-    //     //   console.log(`${key} : ${oldValue[key]} => ${newValue[key]}`)
-    //     //   if (newValue[key] !== oldValue[key]) {
-    //     //     console.log(`${key} changed from ${oldValue[key]} to ${newValue[key]}`)
-    //     //   }
-    //     // })
-    //   }
-    // }
+    // we need this empty watch section for the code in beforeCreate
   },
   computed: {
     formStep () {
@@ -504,6 +494,10 @@ export default {
       this.loadFormSuccess = false
     }
   },
+  created () {
+    // When the form is saved, reset the formValueChanged variable.
+    this.$parent.$on('formSaved', () => { this.formValueChanged = false })
+  },
   beforeCreate () {
     // We know right from the start if this is going to be a SubmissionsEdit, and then we add watches
     // on all the form fields.
@@ -527,6 +521,6 @@ export default {
 }
 </script>
 
-<style>
+<style lang="css">
 
 </style>
