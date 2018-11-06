@@ -500,7 +500,7 @@ pipeline {
                     checkout scm
                     dir('api-tests') {
                         sh 'npm install -g newman'
-                        String BASEURL = "https://gwells-${TEST_SUFFIX}.pathfinder.gov.bc.ca/gwells"
+                        String BASEURL = "https://${TEST_HOST}"
                         try {
                             sh """
                                 newman run ./registries_api_tests.json \
