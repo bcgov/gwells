@@ -13,14 +13,16 @@
 """
 
 from django.conf.urls import url
-from django.views.decorators.cache import never_cache
+from django.views.decorators.cache import never_cache, cache_page
 
 from aquifers import views
 
+CACHE_TTL = 60*15
+
 urlpatterns = [
     url(r'^api/v1/aquifers/$',
-        never_cache(views.AquiferListAPIView.as_view()),
-        name='aquifers-list'
+        never_cache(views.AquiferListCreateAPIView.as_view()),
+        name='aquifers-list-create'
         ),
 
     url(r'^api/v1/aquifers/(?P<aquifer_id>[0-9]+)/$',
@@ -29,37 +31,37 @@ urlpatterns = [
         ),
 
     url(r'^api/v1/aquifer-codes/materials/$',
-        never_cache(views.AquiferMaterialListAPIView.as_view()),
+        cache_page(CACHE_TTL)(views.AquiferMaterialListAPIView.as_view()),
         name='aquifer-material-list'
         ),
 
     url(r'^api/v1/aquifer-codes/quality-concerns/$',
-        never_cache(views.QualityConcernListAPIView.as_view()),
+        cache_page(CACHE_TTL)(views.QualityConcernListAPIView.as_view()),
         name='quality-concern-list'
         ),
 
     url(r'^api/v1/aquifer-codes/vulnerability/$',
-        never_cache(views.AquiferVulnerabilityListAPIView.as_view()),
+        cache_page(CACHE_TTL)(views.AquiferVulnerabilityListAPIView.as_view()),
         name='aquifer-vulnerability-code-list'
         ),
 
     url(r'^api/v1/aquifer-codes/subtypes/$',
-        never_cache(views.AquiferSubtypeListAPIView.as_view()),
+        cache_page(CACHE_TTL)(views.AquiferSubtypeListAPIView.as_view()),
         name='aquifer-subtype-list'
         ),
 
     url(r'^api/v1/aquifer-codes/productivity/$',
-        never_cache(views.AquiferProductivityListAPIView.as_view()),
+        cache_page(CACHE_TTL)(views.AquiferProductivityListAPIView.as_view()),
         name='aquifer-productivity-code-list'
         ),
 
     url(r'^api/v1/aquifer-codes/demand/$',
-        never_cache(views.AquiferDemandListAPIView.as_view()),
+        cache_page(CACHE_TTL)(views.AquiferDemandListAPIView.as_view()),
         name='aquifer-demand-list'
         ),
 
     url(r'^api/v1/aquifer-codes/water-use/$',
-        never_cache(views.WaterUseListAPIView.as_view()),
+        cache_page(CACHE_TTL)(views.WaterUseListAPIView.as_view()),
         name='aquifer-water-use-code-list'
         ),
 

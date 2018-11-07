@@ -6,6 +6,370 @@
 	},
 	"item": [
 		{
+			"name": "Codes",
+			"item": [
+				{
+					"name": "Aquifer Codes / Water Use List",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "85664ee3-92d9-4510-b7d8-6bd6c44ec870",
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = pm.response.json()",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"})",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{base_url}}/api/v1/aquifer-codes/water-use",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"aquifer-codes",
+								"water-use"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Aquifer Codes / Materials List",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "85664ee3-92d9-4510-b7d8-6bd6c44ec870",
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = pm.response.json()",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"})",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{base_url}}/api/v1/aquifer-codes/materials",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"aquifer-codes",
+								"materials"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Aquifer Codes / Quality Concerns List",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "85664ee3-92d9-4510-b7d8-6bd6c44ec870",
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = pm.response.json()",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"})",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{base_url}}/api/v1/aquifer-codes/quality-concerns",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"aquifer-codes",
+								"quality-concerns"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Aquifer Codes / Vulnerability List",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "85664ee3-92d9-4510-b7d8-6bd6c44ec870",
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = pm.response.json()",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"})",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{base_url}}/api/v1/aquifer-codes/vulnerability",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"aquifer-codes",
+								"vulnerability"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Aquifer Codes / Subtypes List",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "85664ee3-92d9-4510-b7d8-6bd6c44ec870",
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = pm.response.json()",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"})",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{base_url}}/api/v1/aquifer-codes/subtypes",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"aquifer-codes",
+								"subtypes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Aquifer Codes / Productivity List",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "85664ee3-92d9-4510-b7d8-6bd6c44ec870",
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = pm.response.json()",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"})",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{base_url}}/api/v1/aquifer-codes/productivity",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"aquifer-codes",
+								"productivity"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Aquifer Codes / Demand List",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "85664ee3-92d9-4510-b7d8-6bd6c44ec870",
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = pm.response.json()",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"})",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{base_url}}/api/v1/aquifer-codes/demand",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"aquifer-codes",
+								"demand"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Search",
+			"item": [
+				{
+					"name": "Aquifer filter by aquifer_id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "e291aa1f-95f3-4ca8-8e6c-f88b496980ba",
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = pm.response.json()",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"})",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{base_url}}/api/v1/aquifers/?aquifer_id=123",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"aquifers",
+								""
+							],
+							"query": [
+								{
+									"key": "aquifer_id",
+									"value": "123"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Aquifer name search",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "7ab4ef72-57cb-4c27-8b88-2cb379cab83c",
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = pm.response.json()",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"})",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{base_url}}/api/v1/aquifers/?search=asdf",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"aquifers",
+								""
+							],
+							"query": [
+								{
+									"key": "search",
+									"value": "asdf"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "Aquifers List",
 			"event": [
 				{
@@ -44,360 +408,6 @@
 			"response": []
 		},
 		{
-			"name": "Aquifer Codes / Materials List",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "85664ee3-92d9-4510-b7d8-6bd6c44ec870",
-						"type": "text/javascript",
-						"exec": [
-							"var jsonData = pm.response.json()",
-							"",
-							"pm.test(\"Status code is 200\", function () {",
-							"    pm.expect(pm.response.code).to.equal(200);",
-							"})",
-							""
-						]
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [],
-				"body": {},
-				"url": {
-					"raw": "{{base_url}}/api/v1/aquifer-codes/materials",
-					"host": [
-						"{{base_url}}"
-					],
-					"path": [
-						"api",
-						"v1",
-						"aquifer-codes",
-						"materials"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Aquifer Codes / Quality Concerns List",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "85664ee3-92d9-4510-b7d8-6bd6c44ec870",
-						"type": "text/javascript",
-						"exec": [
-							"var jsonData = pm.response.json()",
-							"",
-							"pm.test(\"Status code is 200\", function () {",
-							"    pm.expect(pm.response.code).to.equal(200);",
-							"})",
-							""
-						]
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [],
-				"body": {},
-				"url": {
-					"raw": "{{base_url}}/api/v1/aquifer-codes/quality-concerns",
-					"host": [
-						"{{base_url}}"
-					],
-					"path": [
-						"api",
-						"v1",
-						"aquifer-codes",
-						"quality-concerns"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Aquifer Codes / Vulnerability List",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "85664ee3-92d9-4510-b7d8-6bd6c44ec870",
-						"type": "text/javascript",
-						"exec": [
-							"var jsonData = pm.response.json()",
-							"",
-							"pm.test(\"Status code is 200\", function () {",
-							"    pm.expect(pm.response.code).to.equal(200);",
-							"})",
-							""
-						]
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [],
-				"body": {},
-				"url": {
-					"raw": "{{base_url}}/api/v1/aquifer-codes/vulnerability",
-					"host": [
-						"{{base_url}}"
-					],
-					"path": [
-						"api",
-						"v1",
-						"aquifer-codes",
-						"vulnerability"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Aquifer Codes / Subtypes List",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "85664ee3-92d9-4510-b7d8-6bd6c44ec870",
-						"type": "text/javascript",
-						"exec": [
-							"var jsonData = pm.response.json()",
-							"",
-							"pm.test(\"Status code is 200\", function () {",
-							"    pm.expect(pm.response.code).to.equal(200);",
-							"})",
-							""
-						]
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [],
-				"body": {},
-				"url": {
-					"raw": "{{base_url}}/api/v1/aquifer-codes/subtypes",
-					"host": [
-						"{{base_url}}"
-					],
-					"path": [
-						"api",
-						"v1",
-						"aquifer-codes",
-						"subtypes"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Aquifer Codes / Productivity List",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "85664ee3-92d9-4510-b7d8-6bd6c44ec870",
-						"type": "text/javascript",
-						"exec": [
-							"var jsonData = pm.response.json()",
-							"",
-							"pm.test(\"Status code is 200\", function () {",
-							"    pm.expect(pm.response.code).to.equal(200);",
-							"})",
-							""
-						]
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [],
-				"body": {},
-				"url": {
-					"raw": "{{base_url}}/api/v1/aquifer-codes/productivity",
-					"host": [
-						"{{base_url}}"
-					],
-					"path": [
-						"api",
-						"v1",
-						"aquifer-codes",
-						"productivity"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Aquifer Codes / Demand List",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "85664ee3-92d9-4510-b7d8-6bd6c44ec870",
-						"type": "text/javascript",
-						"exec": [
-							"var jsonData = pm.response.json()",
-							"",
-							"pm.test(\"Status code is 200\", function () {",
-							"    pm.expect(pm.response.code).to.equal(200);",
-							"})",
-							""
-						]
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [],
-				"body": {},
-				"url": {
-					"raw": "{{base_url}}/api/v1/aquifer-codes/demand",
-					"host": [
-						"{{base_url}}"
-					],
-					"path": [
-						"api",
-						"v1",
-						"aquifer-codes",
-						"demand"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Aquifer Codes / Water Use List",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "85664ee3-92d9-4510-b7d8-6bd6c44ec870",
-						"type": "text/javascript",
-						"exec": [
-							"var jsonData = pm.response.json()",
-							"",
-							"pm.test(\"Status code is 200\", function () {",
-							"    pm.expect(pm.response.code).to.equal(200);",
-							"})",
-							""
-						]
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [],
-				"body": {},
-				"url": {
-					"raw": "{{base_url}}/api/v1/aquifer-codes/water-use",
-					"host": [
-						"{{base_url}}"
-					],
-					"path": [
-						"api",
-						"v1",
-						"aquifer-codes",
-						"water-use"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Aquifers Search",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "e291aa1f-95f3-4ca8-8e6c-f88b496980ba",
-						"type": "text/javascript",
-						"exec": [
-							"var jsonData = pm.response.json()",
-							"",
-							"pm.test(\"Status code is 200\", function () {",
-							"    pm.expect(pm.response.code).to.equal(200);",
-							"})",
-							""
-						]
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [],
-				"body": {},
-				"url": {
-					"raw": "{{base_url}}/api/v1/aquifers/?aquifer_id=123",
-					"host": [
-						"{{base_url}}"
-					],
-					"path": [
-						"api",
-						"v1",
-						"aquifers",
-						""
-					],
-					"query": [
-						{
-							"key": "aquifer_id",
-							"value": "123"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Aquifers Filter by aquifer_id",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "7ab4ef72-57cb-4c27-8b88-2cb379cab83c",
-						"type": "text/javascript",
-						"exec": [
-							"var jsonData = pm.response.json()",
-							"",
-							"pm.test(\"Status code is 200\", function () {",
-							"    pm.expect(pm.response.code).to.equal(200);",
-							"})",
-							""
-						]
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [],
-				"body": {},
-				"url": {
-					"raw": "{{base_url}}/api/v1/aquifers/?search=asdf",
-					"host": [
-						"{{base_url}}"
-					],
-					"path": [
-						"api",
-						"v1",
-						"aquifers",
-						""
-					],
-					"query": [
-						{
-							"key": "search",
-							"value": "asdf"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
 			"name": "Aquifer Retrieve",
 			"event": [
 				{
@@ -421,7 +431,7 @@
 				"header": [],
 				"body": {},
 				"url": {
-					"raw": "{{base_url}}/api/v1/aquifers/1",
+					"raw": "{{base_url}}/api/v1/aquifers/2000",
 					"host": [
 						"{{base_url}}"
 					],
@@ -429,11 +439,445 @@
 						"api",
 						"v1",
 						"aquifers",
-						"1"
+						"2000"
 					]
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "Log in",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "46c51db8-8a25-45d5-941f-f55f682ab9b6",
+						"type": "text/javascript",
+						"exec": [
+							"var jsonData = pm.response.json()",
+							"pm.environment.set(\"token\", jsonData.access_token);",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.expect(pm.response.code, \"Login was not successful\").to.equal(200);",
+							"})",
+							"",
+							"pm.test(\"A token was returned\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.access_token, \"a token was not returned\").to.be.ok;",
+							"    pm.expect(jsonData.access_token.length).to.be.above(36);",
+							"});",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "username",
+							"value": "{{test_user}}",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "{{test_password}}",
+							"type": "text"
+						},
+						{
+							"key": "grant_type",
+							"value": "password",
+							"type": "text"
+						},
+						{
+							"key": "client_id",
+							"value": "{{client_id}}",
+							"type": "text"
+						},
+						{
+							"key": "client_secret",
+							"value": "{{client_secret}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{auth_server}}",
+					"host": [
+						"{{auth_server}}"
+					]
+				},
+				"description": "Get token (log in)"
+			},
+			"response": []
+		},
+		{
+			"name": "Create a new Aquifer",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3159a0bc-81fd-490c-b8b6-4eb36f46c5b1",
+						"type": "text/javascript",
+						"exec": [
+							"var jsonData = pm.response.json()",
+							"",
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.expect(pm.response.code).to.equal(201);",
+							"})",
+							"",
+							"pm.test(\"Aquifer aquifer_name equals name supplied in request\", function () {",
+							"    pm.expect(jsonData.aquifer_name).to.eql(\"Aquifer Name\");",
+							"});",
+							"",
+							"pm.test(\"Aquifer area equals name supplied in request\", function () {",
+							"    pm.expect(jsonData.area).to.eql(\"10.0\");",
+							"});",
+							"",
+							"pm.test(\"Aquifer demand equals name supplied in request\", function () {",
+							"    pm.expect(jsonData.demand).to.eql(\"H\");",
+							"});",
+							"",
+							"pm.test(\"Aquifer known_water_use equals name supplied in request\", function () {",
+							"    pm.expect(jsonData.known_water_use).to.eql(\"M\");",
+							"});",
+							"",
+							"pm.test(\"Aquifer litho_stratographic_unit equals name supplied in request\", function () {",
+							"    pm.expect(jsonData.litho_stratographic_unit).to.eql(\"Aquifer Litho Stratographic Unit\");",
+							"});",
+							"",
+							"pm.test(\"Aquifer location_description equals name supplied in request\", function () {",
+							"    pm.expect(jsonData.location_description).to.eql(\"Location Description\");",
+							"});",
+							"",
+							"pm.test(\"Aquifer mapping_year equals name supplied in request\", function () {",
+							"    pm.expect(jsonData.mapping_year).to.eql(1991);",
+							"});",
+							"",
+							"pm.test(\"Aquifer material equals name supplied in request\", function () {",
+							"    pm.expect(jsonData.material).to.eql(\"B\");",
+							"});",
+							"",
+							"pm.test(\"Aquifer notes equals name supplied in request\", function () {",
+							"    pm.expect(jsonData.notes).to.eql(\"Notes\");",
+							"});",
+							"",
+							"pm.test(\"Aquifer productivity equals name supplied in request\", function () {",
+							"    pm.expect(jsonData.productivity).to.eql(\"H\");",
+							"});",
+							"",
+							"pm.test(\"Aquifer quality_concern equals name supplied in request\", function () {",
+							"    pm.expect(jsonData.quality_concern).to.eql(\"N\");",
+							"});",
+							"",
+							"pm.test(\"Aquifer subtype equals name supplied in request\", function () {",
+							"    pm.expect(jsonData.subtype).to.eql(\"1a\");",
+							"});",
+							"",
+							"pm.test(\"Aquifer vulnerability equals name supplied in request\", function () {",
+							"    pm.expect(jsonData.vulnerability).to.eql(\"H\");",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "JWT {{token}}"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "aquifer_name",
+							"value": "Aquifer Name\n",
+							"type": "text"
+						},
+						{
+							"key": "area",
+							"value": "10",
+							"type": "text"
+						},
+						{
+							"key": "demand",
+							"value": "H",
+							"type": "text"
+						},
+						{
+							"key": "known_water_use",
+							"value": "M",
+							"type": "text"
+						},
+						{
+							"key": "litho_stratographic_unit",
+							"value": "Aquifer Litho Stratographic Unit",
+							"type": "text"
+						},
+						{
+							"key": "location_description",
+							"value": "Location Description",
+							"type": "text"
+						},
+						{
+							"key": "mapping_year",
+							"value": "1991",
+							"type": "text"
+						},
+						{
+							"key": "material",
+							"value": "B",
+							"type": "text"
+						},
+						{
+							"key": "notes",
+							"value": "Notes",
+							"type": "text"
+						},
+						{
+							"key": "productivity",
+							"value": "H",
+							"type": "text"
+						},
+						{
+							"key": "quality_concern",
+							"value": "N",
+							"type": "text"
+						},
+						{
+							"key": "subtype",
+							"value": "1a",
+							"type": "text"
+						},
+						{
+							"key": "vulnerability",
+							"value": "H",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{base_url}}/api/v1/aquifers/",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"aquifers",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update existing Aquifer",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "cfe894ea-0d9f-4b92-8857-34eb257915ab",
+						"type": "text/javascript",
+						"exec": [
+							"var jsonData = pm.response.json()",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.expect(pm.response.code).to.equal(200);",
+							"})",
+							"",
+							"pm.test(\"Aquifer aquifer_name equals name supplied in request\", function () {",
+							"    pm.expect(jsonData.aquifer_name).to.eql(\"Aquifer Name\");",
+							"});",
+							"",
+							"pm.test(\"Aquifer area equals name supplied in request\", function () {",
+							"    pm.expect(jsonData.area).to.eql(\"10.0\");",
+							"});",
+							"",
+							"pm.test(\"Aquifer demand equals name supplied in request\", function () {",
+							"    pm.expect(jsonData.demand).to.eql(\"H\");",
+							"});",
+							"",
+							"pm.test(\"Aquifer known_water_use equals name supplied in request\", function () {",
+							"    pm.expect(jsonData.known_water_use).to.eql(\"M\");",
+							"});",
+							"",
+							"pm.test(\"Aquifer litho_stratographic_unit equals name supplied in request\", function () {",
+							"    pm.expect(jsonData.litho_stratographic_unit).to.eql(\"Aquifer Litho Stratographic Unit\");",
+							"});",
+							"",
+							"pm.test(\"Aquifer location_description equals name supplied in request\", function () {",
+							"    pm.expect(jsonData.location_description).to.eql(\"Location Description\");",
+							"});",
+							"",
+							"pm.test(\"Aquifer mapping_year equals name supplied in request\", function () {",
+							"    pm.expect(jsonData.mapping_year).to.eql(1991);",
+							"});",
+							"",
+							"pm.test(\"Aquifer material equals name supplied in request\", function () {",
+							"    pm.expect(jsonData.material).to.eql(\"B\");",
+							"});",
+							"",
+							"pm.test(\"Aquifer notes equals name supplied in request\", function () {",
+							"    pm.expect(jsonData.notes).to.eql(\"Notes\");",
+							"});",
+							"",
+							"pm.test(\"Aquifer productivity equals name supplied in request\", function () {",
+							"    pm.expect(jsonData.productivity).to.eql(\"H\");",
+							"});",
+							"",
+							"pm.test(\"Aquifer quality_concern equals name supplied in request\", function () {",
+							"    pm.expect(jsonData.quality_concern).to.eql(\"N\");",
+							"});",
+							"",
+							"pm.test(\"Aquifer subtype equals name supplied in request\", function () {",
+							"    pm.expect(jsonData.subtype).to.eql(\"1a\");",
+							"});",
+							"",
+							"pm.test(\"Aquifer vulnerability equals name supplied in request\", function () {",
+							"    pm.expect(jsonData.vulnerability).to.eql(\"H\");",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "JWT {{token}}"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "aquifer_name",
+							"value": "Aquifer Name\n",
+							"type": "text"
+						},
+						{
+							"key": "area",
+							"value": "10",
+							"type": "text"
+						},
+						{
+							"key": "demand",
+							"value": "H",
+							"type": "text"
+						},
+						{
+							"key": "known_water_use",
+							"value": "M",
+							"type": "text"
+						},
+						{
+							"key": "litho_stratographic_unit",
+							"value": "Aquifer Litho Stratographic Unit",
+							"type": "text"
+						},
+						{
+							"key": "location_description",
+							"value": "Location Description",
+							"type": "text"
+						},
+						{
+							"key": "mapping_year",
+							"value": "1991",
+							"type": "text"
+						},
+						{
+							"key": "material",
+							"value": "B",
+							"type": "text"
+						},
+						{
+							"key": "notes",
+							"value": "Notes",
+							"type": "text"
+						},
+						{
+							"key": "productivity",
+							"value": "H",
+							"type": "text"
+						},
+						{
+							"key": "quality_concern",
+							"value": "N",
+							"type": "text"
+						},
+						{
+							"key": "subtype",
+							"value": "1a",
+							"type": "text"
+						},
+						{
+							"key": "vulnerability",
+							"value": "H",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{base_url}}/api/v1/aquifers/{{KNOWN_AQUIFER_ID}}/",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"aquifers",
+						"{{KNOWN_AQUIFER_ID}}",
+						""
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "f9450125-5f57-42f0-8051-68351ac89ee4",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "53a4f702-7db1-42f2-9f23-f26312363bee",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "a2df1849-1a25-4497-b5b9-1bd98a4862bb",
+			"key": "KNOWN_AQUIFER_ID",
+			"value": "2000",
+			"type": "string"
 		}
 	]
 }

@@ -162,7 +162,7 @@ class Aquifer(AuditModel):
     This table holds ONLY the aquifers to which we have associated one or more wells.  It is not
     the definitive source of all aquifers in the province. 
     """
-    aquifer_id = models.PositiveIntegerField(
+    aquifer_id = models.AutoField(
         primary_key=True, verbose_name="Aquifer ID Number")
     aquifer_name = models.CharField(max_length=100, blank=True, null=True)
     location_description = models.CharField(
