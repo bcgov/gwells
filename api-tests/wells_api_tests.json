@@ -1,13 +1,12 @@
 {
 	"info": {
-		"_postman_id": "7eaaeefe-0668-4ab7-81c0-1309fea10926",
+		"_postman_id": "4be9ad4a-ce86-484a-80b7-80065a29c930",
 		"name": "GWELLS Well API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
 			"name": "Authentication",
-			"description": "",
 			"item": [
 				{
 					"name": "Log in",
@@ -90,7 +89,6 @@
 		},
 		{
 			"name": "Wells",
-			"description": "",
 			"item": [
 				{
 					"name": "Well list",
@@ -136,6 +134,50 @@
 									"key": "format",
 									"value": "json"
 								}
+							]
+						},
+						"description": "Request a list of wells"
+					},
+					"response": []
+				},
+				{
+					"name": "Well Single Instance Get",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "e76e5334-0099-4e02-acd3-31d8af3fb87d",
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = pm.response.json()",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"})",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "JWT {{token}}"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{base_url}}/api/v1/wells/123",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"wells",
+								"123"
 							]
 						},
 						"description": "Request a list of wells"

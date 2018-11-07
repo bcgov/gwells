@@ -1,9 +1,22 @@
+/*
+Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+*/
 <template>
   <div>
     <h1 class="card-title">
       <b-row>
         <b-col cols="12">
-          <div v-if="activityType === 'STAFF_EDIT'">Well Edit Page</div>
+          <div v-if="isStaffEdit" id="top">Well Edit Page</div>
           <div v-else>Well Activity Submission</div>
           <b-form-group v-if="activityType !== 'STAFF_EDIT'">
             <b-form-radio-group button-variant="outline-primary" size="sm" buttons v-model="formIsFlatInput" label="Form layout" class="float-right">
@@ -14,15 +27,15 @@
         </b-col>
       </b-row>
     </h1>
-    <b-row v-if="activityType === 'STAFF_EDIT'">
+    <b-row v-if="isStaffEdit">
         <b-col lg="3" v-for="step in formSteps[activityType]" :key='step'>
           <a :href="'#' + step">{{formStepDescriptions[step] ? formStepDescriptions[step] : step}}</a>
         </b-col>
       </b-row>
-    <p v-if="activityType !== 'STAFF_EDIT'">Submit activity on a well. <a href="/gwells/">Try a search</a> to see if the well exists in the system before submitting a report.</p>
+    <p v-if="!isStaffEdit">Submit activity on a well. <a href="/gwells/">Try a search</a> to see if the well exists in the system before submitting a report.</p>
 
     <!-- Form load/save -->
-    <b-row v-if="activityType !== 'STAFF_EDIT'">
+    <b-row v-if="!isStaffEdit">
       <b-col class="text-right">
         <b-btn size="sm" variant="outline-primary" @click="saveForm">
           Save report progress
@@ -41,14 +54,14 @@
 
     <!-- Type of work performed -->
     <activity-type class="my-3"
-      v-if="currentStep === 'activityType' || (formIsFlat && sections.activityType)"
+      v-if="showSection('activityType')"
       id="activityType"
       :wellActivityType.sync="activityTypeInput"
     />
 
     <!-- Type of well -->
     <well-type class="my-3"
-      v-if="currentStep === 'wellType' || (formIsFlat && sections.wellType)"
+      v-if="showSection('wellType')"
       id="wellType"
       :wellTagNumber.sync="form.well"
       :wellActivityType.sync="activityType"
@@ -66,7 +79,7 @@
 
     <!-- Person responsible for work -->
     <person-responsible class="my-3"
-      v-if="currentStep === 'personResponsible' || (formIsFlat && sections.personResponsible)"
+      v-if="showSection('personResponsible')"
       id="personResponsible"
       :drillerName.sync="form.driller_name"
       :consultantName.sync="form.consultant_name"
@@ -75,11 +88,14 @@
       :drillerSameAsPersonResponsible.sync="form.meta.drillerSameAsPersonResponsible"
       :errors="errors"
       :fieldsLoaded="fieldsLoaded"
+      :isStaffEdit="isStaffEdit"
+      :saveDisabled="editSaveDisabled"
+      v-on:save="$emit('submit_edit')"
     />
 
     <!-- Owner information -->
     <owner class="my-3"
-      v-if="currentStep === 'wellOwner' || (formIsFlat && sections.wellOwner)"
+      v-if="showSection('wellOwner')"
       id="wellOwner"
       :ownerFullName.sync="form.owner_full_name"
       :ownerMailingAddress.sync="form.owner_mailing_address"
@@ -92,7 +108,7 @@
 
     <!-- Well location -->
     <location class="my-3"
-      v-if="currentStep === 'wellLocation' || (formIsFlat && sections.wellLocation)"
+      v-if="showSection('wellLocation')"
       id="wellLocation"
       :ownerMailingAddress.sync="form.owner_mailing_address"
       :ownerProvinceState.sync="form.owner_province_state"
@@ -114,7 +130,7 @@
 
     <!-- Coords -->
     <coords class="my-3"
-      v-if="currentStep === 'wellCoords' || (formIsFlat && sections.wellCoords)"
+      v-if="showSection('wellCoords')"
       id="wellCoords"
       :latitude.sync="form.latitude"
       :longitude.sync="form.longitude"
@@ -122,7 +138,7 @@
 
     <!-- Method of Drilling -->
     <method-of-drilling class="my-3"
-      v-if="currentStep === 'method' || (formIsFlat && sections.method)"
+      v-if="showSection('method')"
       id="method"
       :groundElevation.sync="form.ground_elevation"
       :groundElevationMethod.sync="form.ground_elevation_method"
@@ -133,7 +149,7 @@
 
     <!-- Closure/Decommission Description -->
     <closure-description class="my-3"
-      v-if="currentStep === 'closureDescription' || (formIsFlat && sections.closureDescription)"
+      v-if="showSection('closureDescription')"
       id="closureDescription"
       :closureDescriptionSet.sync="form.decommission_description_set">
 
@@ -141,7 +157,7 @@
 
     <!-- Lithology -->
     <lithology class="my-3"
-      v-if="currentStep === 'lithology' || (formIsFlat && sections.lithology)"
+      v-if="showSection('lithology')"
       id="lithology"
       :lithology.sync="form.lithologydescription_set"
     />
@@ -149,7 +165,7 @@
     <!-- Casings -->
     <casings class="my-3"
       :key="`casingsComponent${componentUpdateTrigger}`"
-      v-if="currentStep === 'casings' || (formIsFlat && sections.casings)"
+      v-if="showSection('casings')"
       id="casings"
       :casings.sync="form.casing_set"
       :errors="errors"
@@ -158,7 +174,7 @@
 
     <!-- Surface Seal / Backfill Material -->
     <backfill class="my-3"
-      v-if="currentStep === 'backfill' || (formIsFlat && sections.backfill)"
+      v-if="showSection('backfill')"
       id="backfill"
       :surfaceSealMaterial.sync="form.surface_seal_material"
       :surfaceSealDepth.sync="form.surface_seal_depth"
@@ -171,7 +187,7 @@
     <!-- Liner Information -->
     <liner class="my-3"
       :key="`linerComponent${componentUpdateTrigger}`"
-      v-if="currentStep === 'liner' || (formIsFlat && sections.liner)"
+      v-if="showSection('liner')"
       id="liner"
       :linerMaterial.sync="form.liner_material"
       :linerDiameter.sync="form.liner_diameter"
@@ -186,7 +202,7 @@
     <!-- Screens -->
     <screens class="my-3"
       :key="`screensComponent${componentUpdateTrigger}`"
-      v-if="currentStep === 'screens' || (formIsFlat && sections.screens)"
+      v-if="showSection('screens' )"
       id="screens"
       :screenIntakeMethod.sync="form.screen_intake_method"
       :screenType.sync="form.screen_type"
@@ -201,7 +217,7 @@
 
     <!-- Filter Pack -->
     <filterPack class="my-3"
-      v-if="currentStep === 'filterPack' || (formIsFlat && sections.filterPack)"
+      v-if="showSection('filterPack')"
       id="filterPack"
       :filterPackFrom.sync="form.filter_pack_from"
       :filterPackTo.sync="form.filter_pack_to"
@@ -212,7 +228,7 @@
 
     <!-- Well Development -->
     <development class="my-3"
-      v-if="currentStep === 'wellDevelopment' || (formIsFlat && sections.wellDevelopment)"
+      v-if="showSection('wellDevelopment')"
       id="wellDevelopment"
       :developmentMethod.sync="form.development_method"
       :developmentHours.sync="form.development_hours"
@@ -221,14 +237,14 @@
 
     <!-- Yield (Production Data) -->
     <yield class="my-3"
-      v-if="currentStep === 'wellYield' || (formIsFlat && sections.wellYield)"
+      v-if="showSection('wellYield')"
       id="wellYield"
       :productionData.sync="form.production_data_set"
     />
 
     <!-- Water Quality -->
     <water-quality class="my-3"
-      v-if="currentStep === 'waterQuality' || (formIsFlat && sections.waterQuality)"
+      v-if="showSection('waterQuality')"
       id="waterQuality"
       :waterQualityCharacteristics.sync="form.water_quality_characteristics"
       :waterQualityColour.sync="form.water_quality_colour"
@@ -238,7 +254,7 @@
 
       <!-- Well Completion Data -->
     <completion class="my-3"
-      v-if="currentStep === 'wellCompletion' || (formIsFlat && sections.wellCompletion)"
+      v-if="showSection('wellCompletion')"
       id="wellCompletion"
       :totalDepthDrilled.sync="form.total_depth_drilled"
       :finishedWellDepth.sync="form.finished_well_depth"
@@ -253,7 +269,7 @@
     />
 
     <decommission-information class="my-3"
-      v-if="currentStep === 'decommissionInformation' || (formIsFlat && sections.decommissionInformation)"
+      v-if="showSection('decommissionInformation')"
       id="decommissionInformation"
       :finishedWellDepth.sync="form.finished_well_depth"
       :decommissionReason.sync="form.decommission_reason"
@@ -265,14 +281,19 @@
 
     <!-- Comments -->
     <comments class="my-3"
-      v-if="currentStep === 'comments' || (formIsFlat && sections.comments)"
+      v-if="showSection('comments')"
       id="comments"
       :comments.sync="form.comments"
       :alternativeSpecsSubmitted.sync="form.alternative_specs_submitted"
     />
 
     <!-- Back / Next / Submit controls -->
-    <b-row class="mt-5">
+    <b-row v-if="isStaffEdit" class="mt-5">
+      <b-col class="pr-4 text-right">
+        <b-btn variant="primary" @click="$emit('submit_edit')" :disabled="editSaveDisabled">Save</b-btn>
+      </b-col>
+    </b-row>
+    <b-row v-else class="mt-5">
       <b-col v-if="!formIsFlat">
         <b-btn v-if="step > 1 && !formIsFlat" @click="step > 1 ? step-- : null" variant="primary">Back</b-btn>
       </b-col>
@@ -351,6 +372,18 @@ export default {
     errors: {
       type: Object,
       isInput: false
+    },
+    trackValueChanges: {
+      type: Boolean,
+      isInput: false
+    },
+    formSubmitLoading: {
+      type: Boolean,
+      isInput: false
+    },
+    isStaffEdit: {
+      type: Boolean,
+      isInput: false
     }
   },
   components: {
@@ -382,6 +415,7 @@ export default {
       hasHadSaveFormSuccess: false,
       loadFormSuccess: false,
       confirmLoadModal: false,
+      formValueChanged: false,
       // componentUpdateTrigger can be appended to a component's key. Changing this value will cause
       // these components to be re-created, allowing the created() and mounted() hooks to re-run.
       componentUpdateTrigger: 0,
@@ -411,6 +445,9 @@ export default {
       }
     }
   },
+  watch: {
+    // we need this empty watch section for the code in beforeCreate
+  },
   computed: {
     formStep () {
       // the numbered step that the user is on
@@ -429,9 +466,15 @@ export default {
     isLoadFormDisabled () {
       // During unit tests, the localStorage object might not exist, so we have to check it's existence.
       return !window.localStorage || (window.localStorage.getItem('savedFormData') === null && !this.hasHadSaveFormSuccess)
+    },
+    editSaveDisabled () {
+      return this.formSubmitLoading || !this.formValueChanged
     }
   },
   methods: {
+    showSection (stepName) {
+      return this.currentStep === stepName || (this.formIsFlat && stepName in this.sections)
+    },
     saveForm () {
       // saves a copy of form data locally
       this.saveStatusReset()
@@ -467,10 +510,34 @@ export default {
       this.saveFormSuccess = false
       this.loadFormSuccess = false
     }
+  },
+  created () {
+    // When the form is saved, reset the formValueChanged variable.
+    this.$parent.$on('formSaved', () => { this.formValueChanged = false })
+  },
+  beforeCreate () {
+    // We know right from the start if this is going to be a SubmissionsEdit, and then we add watches
+    // on all the form fields.
+    // Unfortunately watches aren't very fast, and there will be a lot of code bloat if we instead
+    // switch to using computed properties, which would be faster. We'd have to add a getter and setter
+    // for every single form field!
+    if (this.$route.name === 'SubmissionsEdit') {
+      Object.keys(this.$options.propsData.form).forEach((key) => {
+        // We have to add the watches in beforeCreate.
+        this.$options.watch[`form.${key}`] = {
+          handler (newValue, oldValue) {
+            if (this.trackValueChanges) {
+              this.formValueChanged = true
+              this.form.meta.valueChanged[key] = true
+            }
+          }
+        }
+      })
+    }
   }
 }
 </script>
 
-<style>
+<style lang="css">
 
 </style>

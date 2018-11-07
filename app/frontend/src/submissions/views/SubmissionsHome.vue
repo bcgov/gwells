@@ -1,3 +1,16 @@
+/*
+Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+*/
 <template>
   <div class="card" v-if="userRoles.wells.edit || userRoles.submissions.edit">
     <div class="card-body">
@@ -8,7 +21,10 @@
           variant="success"
           class="mt-3">
         <i class="fa fa-2x fa-check-circle text-success mr-2 alert-icon" aria-hidden="true"></i>
-        <div class="alert-message">
+        <div v-if="isStaffEdit" class="alert-message">
+          Changes saved.
+        </div>
+        <div v-else class="alert-message">
           Your well record was successfully submitted.
         </div>
       </b-alert>
@@ -23,7 +39,10 @@
 
         <i class="fa fa-2x fa-times-circle text-danger mr-2 alert-icon" aria-hidden="true"></i>
         <div class="alert-message">
-          <div>
+          <div v-if="isStaffEdit">
+            Your changes were not saved.
+          </div>
+          <div v-else>
             Your well record was not submitted.
           </div>
           <span v-if="errors && errors.detail">
@@ -59,7 +78,11 @@
           :formSteps="formSteps"
           :errors="errors"
           :formIsFlat.sync="formIsFlat"
+          :trackValueChanges="trackValueChanges"
+          :formSubmitLoading="formSubmitLoading"
+          :isStaffEdit="isStaffEdit"
           v-on:preview="handlePreviewButton"
+          v-on:submit_edit="formSubmit"
           v-on:resetForm="resetForm"
           />
 
@@ -112,6 +135,7 @@ export default {
       formSubmitError: false,
       formSubmitLoading: false,
       sliding: null,
+      trackValueChanges: false,
       errors: {},
       form: {},
       formOptions: {},
@@ -168,25 +192,7 @@ export default {
           'comments'
         ],
         STAFF_EDIT: [
-          'wellType',
-          'personResponsible',
-          'wellOwner',
-          'wellLocation',
-          'wellCoords',
-          'method',
-          'closureDescription',
-          'lithology',
-          'casings',
-          'backfill',
-          'liner',
-          'screens',
-          'filterPack',
-          'wellDevelopment',
-          'wellYield',
-          'waterQuality',
-          'wellCompletion',
-          'decommissionInformation',
-          'comments'
+          'personResponsible'
         ]
       }
     }
@@ -204,11 +210,24 @@ export default {
       })
       return components
     },
-    ...mapGetters(['codes', 'userRoles'])
+    isStaffEdit () {
+      return this.activityType === 'STAFF_EDIT'
+    },
+    ...mapGetters(['codes', 'userRoles', 'well'])
   },
   methods: {
     formSubmit () {
       const data = Object.assign({}, this.form)
+      const meta = data.meta
+
+      if (this.isStaffEdit) {
+        // Remove any fields that aren't changed
+        Object.keys(data).forEach((key) => {
+          if (key !== 'well' && !(key in meta.valueChanged)) {
+            delete data[key]
+          }
+        })
+      }
 
       // delete "meta" data (form input that need not be submitted) stored within form object
       delete data.meta
@@ -222,14 +241,17 @@ export default {
         data.well = data.well.well_tag_number
       }
 
-      this.stripBlankStrings(data)
+      if (!this.isStaffEdit) {
+        // We don't strip blank strings on an edit, someone may be trying to replace a value with a blank value.
+        this.stripBlankStrings(data)
+      }
 
-      data.linerperforation_set = this.filterBlankRows(data.linerperforation_set)
-      data.lithologydescription_set = this.filterBlankRows(data.lithologydescription_set)
-      data.production_data_set = this.filterBlankRows(data.production_data_set)
-      data.screen_set = this.filterBlankRows(data.screen_set)
-      data.casing_set = this.filterBlankRows(data.casing_set)
-      data.decommission_description_set = this.filterBlankRows(data.decommission_description_set)
+      const sets = ['linerperforation_set', 'lithologydescription_set', 'production_data_set', 'screen_set', 'casing_set', 'decommission_description_set']
+      sets.forEach((key) => {
+        if (key in data) {
+          data[key] = this.filterBlankRows(data[key])
+        }
+      })
 
       this.formSubmitLoading = true
       this.formSubmitSuccess = false
@@ -242,6 +264,10 @@ export default {
       ApiService.post(PATH, data).then((response) => {
         this.formSubmitSuccess = true
         this.formSubmitSuccessWellTag = response.data.well
+        if (!this.isStaffEdit) {
+          this.resetForm()
+        }
+        this.$emit('formSaved')
 
         if (!this.form.well_tag_number) {
           this.setWellTagNumber(response.data.well)
@@ -428,6 +454,24 @@ export default {
     if (this.$route.name === 'SubmissionsEdit') {
       this.activityType = 'STAFF_EDIT'
       this.formIsFlat = true
+
+      ApiService.query(`wells/${this.$route.params.id}`).then((res) => {
+        Object.keys(res.data).forEach((key) => {
+          if (key in this.form) {
+            this.form[key] = res.data[key]
+          }
+        })
+        if (this.form.driller_responsible && this.form.driller_responsible.name === this.form.driller_name) {
+          this.form.meta.drillerSameAsPersonResponsible = true
+        }
+        // Wait for the form update we just did to fire off change events.
+        this.$nextTick(() => {
+          this.form.meta.valueChanged = {}
+          this.trackValueChanges = true
+        })
+      }).catch((e) => {
+        console.error(e)
+      })
     }
   }
 }

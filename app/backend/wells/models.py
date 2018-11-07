@@ -732,6 +732,17 @@ class Well(AuditModel):
                                 verbose_name='Aquifer ID Number')
     tracker = FieldTracker()
 
+    driller_responsible = models.ForeignKey(Person, db_column='driller_responsible_guid',
+                                            on_delete=models.PROTECT,
+                                            verbose_name='Person Responsible for Drilling',
+                                            null=True)
+    driller_name = models.CharField(
+        max_length=200, null=True, verbose_name='Name of Person Who Did the Work')
+    consultant_name = models.CharField(
+        max_length=200, null=True, verbose_name='Consultant Name')
+    consultant_company = models.CharField(
+        max_length=200, null=True, verbose_name='Consultant Company')
+
     class Meta:
         db_table = 'well'
 

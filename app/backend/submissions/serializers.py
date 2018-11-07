@@ -252,6 +252,10 @@ class WellAlterationSubmissionSerializer(WellSubmissionSerializerBase):
             'owner_postal_code',
             'street_address',
             'city',
+            'consultant_company',
+            'consultant_name',
+            'driller_name',
+            'driller_responsible',
             'legal_lot',
             'legal_plan',
             'legal_district_lot',
@@ -321,6 +325,27 @@ class WellAlterationSubmissionSerializer(WellSubmissionSerializerBase):
             'lithologydescription_set': {'required': False},
             'well_activity_type': {'required': False}
         }
+
+
+class WellStaffEditSubmissionSerializer(WellSubmissionSerializerBase):
+
+    well = serializers.PrimaryKeyRelatedField(queryset=Well.objects.all())
+
+    def get_well_activity_type(self):
+        return WellActivityCode.types.staff_edit()
+
+    def get_foreign_keys(self):
+        return {}
+
+    class Meta:
+        model = ActivitySubmission
+        fields = (
+            'well',
+            'driller_name',
+            'consultant_name',
+            'consultant_company',
+            'driller_responsible',
+        )
 
 
 class WellDecommissionSubmissionSerializer(WellSubmissionSerializerBase):
