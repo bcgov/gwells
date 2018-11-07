@@ -56,7 +56,7 @@ stage ( 'run' )
         String POD_APP = sh(
             script:"""
                 oc get pods -n "${PROJECT}" | grep -i "Running" | grep -Eo \
-                    "gwells-(test|prod)-[[:digit:]]+-[[:alnum:]]+" | head -1
+                    "gwells-(staging|production)-[[:digit:]]+-[[:alnum:]]+" | head -1
             """,
             returnStdout:
                 true
@@ -65,7 +65,7 @@ stage ( 'run' )
         // Regex for the deployment config / route name
         String DC_RT = sh(
             script:"""
-                oc get dc -n "${PROJECT}" | grep -Eo "gwells-(test|prod)" | head -1
+                oc get dc -n "${PROJECT}" | grep -Eo "gwells-(staging|production)" | head -1
             """,
             returnStdout:
                 true
