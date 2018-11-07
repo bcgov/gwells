@@ -446,6 +446,83 @@
 			"response": []
 		},
 		{
+			"name": "Log in",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "46c51db8-8a25-45d5-941f-f55f682ab9b6",
+						"type": "text/javascript",
+						"exec": [
+							"var jsonData = pm.response.json()",
+							"pm.environment.set(\"token\", jsonData.access_token);",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.expect(pm.response.code, \"Login was not successful\").to.equal(200);",
+							"})",
+							"",
+							"pm.test(\"A token was returned\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.access_token, \"a token was not returned\").to.be.ok;",
+							"    pm.expect(jsonData.access_token.length).to.be.above(36);",
+							"});",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "username",
+							"value": "{{test_user}}",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "{{test_password}}",
+							"type": "text"
+						},
+						{
+							"key": "grant_type",
+							"value": "password",
+							"type": "text"
+						},
+						{
+							"key": "client_id",
+							"value": "{{client_id}}",
+							"type": "text"
+						},
+						{
+							"key": "client_secret",
+							"value": "{{client_secret}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{auth_server}}",
+					"host": [
+						"{{auth_server}}"
+					]
+				},
+				"description": "Get token (log in)"
+			},
+			"response": []
+		},
+		{
 			"name": "Create a new Aquifer",
 			"event": [
 				{
@@ -797,7 +874,7 @@
 	],
 	"variable": [
 		{
-			"id": "4c9f0e79-117d-4a7a-bb23-1a6f19b72236",
+			"id": "a2df1849-1a25-4497-b5b9-1bd98a4862bb",
 			"key": "KNOWN_AQUIFER_ID",
 			"value": "2000",
 			"type": "string"
