@@ -54,14 +54,11 @@ class WellDetailView(DetailView):
 
 
 class WellDetail(RetrieveAPIView):
-    # This class created originally to assist in API testing, consider modification if using for
-    # other purposes!
-    permission_classes = (DjangoModelPermissionsOrAnonReadOnly, WellsEditPermissions)
-
+    """
+    Return well detail.
+    This view is open to all, and has no permissions.
+    """
     def get_serializer(self, data):
-        # Depending on your permissions, we return a different set of data
-        if self.request.user.groups.filter(name=WELLS_EDIT_ROLE).exists():
-            return WellDetailSerializer(data)
         return WellDetailSerializer(data)
 
     queryset = Well.objects.all()

@@ -30,28 +30,28 @@ describe('ActivitySubmissionForm.vue', () => {
       }
     })
     wrapper.vm.$nextTick(() => {
-      expect(wrapper.vm.show.wellYield).toBe(true)
+      expect(wrapper.vm.showSection('wellYield')).toBe(true)
       done()
     })
   })
-  // it('renders components based on the activity selected (Yield does not exist on decommission report)', (done) => {
-  //   const wrapper = shallowMount(ActivitySubmissionForm, {
-  //     localVue,
-  //     router,
-  //     propsData: {
-  //       sections: { },
-  //       currentStep: null,
-  //       form: {},
-  //       activityType: 'DEC',
-  //       formSteps: {
-  //         DEC: ['something', 'wellYield']
-  //       },
-  //       formIsFlat: true
-  //     }
-  //   })
-  //   wrapper.vm.$nextTick(() => {
-  //     expect(wrapper.vm.show.wellYield).toBe(false)
-  //     done()
-  //   })
-  // })
+  it('renders components based on the activity selected (Yield does not exist on decommission report)', (done) => {
+    const wrapper = shallowMount(ActivitySubmissionForm, {
+      localVue,
+      router,
+      propsData: {
+        sections: { },
+        currentStep: null,
+        form: {},
+        activityType: 'DEC',
+        formSteps: {
+          DEC: ['something']
+        },
+        formIsFlat: true
+      }
+    })
+    wrapper.vm.$nextTick(() => {
+      expect(wrapper.vm.showSection('wellYield')).toBe(false)
+      done()
+    })
+  })
 })

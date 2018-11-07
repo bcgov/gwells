@@ -1,3 +1,16 @@
+/*
+Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+*/
 <template>
   <div class="card" v-if="userRoles.wells.edit || userRoles.submissions.edit">
     <div class="card-body">
@@ -8,7 +21,10 @@
           variant="success"
           class="mt-3">
         <i class="fa fa-2x fa-check-circle text-success mr-2 alert-icon" aria-hidden="true"></i>
-        <div class="alert-message">
+        <div v-if="isStaffEdit" class="alert-message">
+          Changes saved.
+        </div>
+        <div v-else class="alert-message">
           Your well record was successfully submitted.
         </div>
       </b-alert>
@@ -61,41 +77,11 @@
           :formIsFlat.sync="formIsFlat"
           :trackValueChanges="trackValueChanges"
           :formSubmitLoading="formSubmitLoading"
+          :isStaffEdit="isStaffEdit"
           v-on:preview="handlePreviewButton"
           v-on:submit_edit="formSubmit"
           v-on:resetForm="resetForm"
           />
-
-        <!-- Form submission success message -->
-        <b-alert
-            :show="formSubmitSuccess"
-            dismissible
-            @dismissed="formSubmitSuccess=false"
-            variant="success"
-            class="mt-3">
-            <span v-if="activityType === 'STAFF_EDIT'">Changes saved</span>
-            <span v-else>Report submitted!</span>
-          <a v-if="formSubmitSuccessWellTag" :href="`/gwells/well/${formSubmitSuccessWellTag}`">
-            View well details for well {{formSubmitSuccessWellTag}}
-          </a>
-        </b-alert>
-
-        <!-- Form submission error message -->
-        <b-alert
-            :show="formSubmitError"
-            dismissible
-            @dismissed="formSubmitError=false"
-            variant="danger"
-            class="mt-3">
-          <span v-if="errors && errors.detail">
-            {{ errors.detail }}
-          </span>
-          <div v-if="errors && errors != {}">
-            <div v-for="(field, i) in Object.keys(errors)" :key="`submissionError${i}`">
-              {{field | readable}} : <span v-for="(e, j) in errors[field]" :key="`submissionError${i}-${j}`">{{ e }}</span>
-            </div>
-          </div>
-        </b-alert>
 
         <!-- Form submission confirmation -->
         <b-modal
@@ -143,7 +129,6 @@ export default {
       confirmSubmitModal: false,
       formSubmitSuccess: false,
       formSubmitSuccessWellTag: null,
-      formSubmitLoading: false,
       formSubmitError: false,
       formSubmitLoading: false,
       sliding: null,
@@ -204,25 +189,7 @@ export default {
           'comments'
         ],
         STAFF_EDIT: [
-          // 'wellType',
           'personResponsible'
-          // 'wellOwner',
-          // 'wellLocation',
-          // 'wellCoords',
-          // 'method'
-          // 'closureDescription',
-          // 'lithology',
-          // 'casings',
-          // 'backfill',
-          // 'liner',
-          // 'screens',
-          // 'filterPack',
-          // 'wellDevelopment',
-          // 'wellYield',
-          // 'waterQuality',
-          // 'wellCompletion',
-          // 'decommissionInformation',
-          // 'comments'
         ]
       }
     }
@@ -240,14 +207,17 @@ export default {
       })
       return components
     },
-    ...mapGetters(['codes', 'userRoles', 'well', 'isAuthenticated'])
+    isStaffEdit () {
+      return this.activityType === 'STAFF_EDIT'
+    },
+    ...mapGetters(['codes', 'userRoles', 'well'])
   },
   methods: {
     formSubmit () {
       const data = Object.assign({}, this.form)
       const meta = data.meta
 
-      if (this.activityType === 'STAFF_EDIT') {
+      if (this.isStaffEdit) {
         // Remove any fields that aren't changed
         Object.keys(data).forEach((key) => {
           if (key !== 'well' && !(key in meta.valueChanged)) {
@@ -268,7 +238,7 @@ export default {
         data.well = data.well.well_tag_number
       }
 
-      if (this.activityType !== 'STAFF_EDIT') {
+      if (!this.isStaffEdit) {
         // We don't strip blank strings on an edit, someone may be trying to replace a value with a blank value.
         this.stripBlankStrings(data)
       }
@@ -291,7 +261,7 @@ export default {
       ApiService.post(PATH, data).then((response) => {
         this.formSubmitSuccess = true
         this.formSubmitSuccessWellTag = response.data.well
-        if (this.activityType !== 'STAFF_EDIT') {
+        if (!this.isStaffEdit) {
           this.resetForm()
         }
         this.$emit('formSaved')
@@ -469,27 +439,6 @@ export default {
   watch: {
     activityType () {
       this.resetForm()
-    },
-    isAuthenticated () {
-      if (this.isAuthenticated && this.activityType === 'STAFF_EDIT') {
-        ApiService.query(`wells/${this.$route.params.id}`).then((res) => {
-          Object.keys(res.data).forEach((key) => {
-            if (key in this.form) {
-              this.form[key] = res.data[key]
-            }
-          })
-          if (this.form.driller_responsible && this.form.driller_responsible.name === this.form.driller_name) {
-            this.form.meta.drillerSameAsPersonResponsible = true
-          }
-          // Wait for the form update we just did to fire off change events.
-          this.$nextTick(() => {
-            this.form.meta.valueChanged = {}
-            this.trackValueChanges = true
-          })
-        }).catch((e) => {
-          // do something!!!
-        })
-      }
     }
   },
   created () {
@@ -502,6 +451,24 @@ export default {
     if (this.$route.name === 'SubmissionsEdit') {
       this.activityType = 'STAFF_EDIT'
       this.formIsFlat = true
+
+      ApiService.query(`wells/${this.$route.params.id}`).then((res) => {
+        Object.keys(res.data).forEach((key) => {
+          if (key in this.form) {
+            this.form[key] = res.data[key]
+          }
+        })
+        if (this.form.driller_responsible && this.form.driller_responsible.name === this.form.driller_name) {
+          this.form.meta.drillerSameAsPersonResponsible = true
+        }
+        // Wait for the form update we just did to fire off change events.
+        this.$nextTick(() => {
+          this.form.meta.valueChanged = {}
+          this.trackValueChanges = true
+        })
+      }).catch((e) => {
+        console.error(e)
+      })
     }
   }
 }
