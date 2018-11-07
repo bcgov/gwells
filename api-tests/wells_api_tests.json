@@ -154,14 +154,6 @@
 									"pm.test(\"Status code is 200\", function () {",
 									"    pm.expect(pm.response.code).to.equal(200);",
 									"})",
-									"",
-									"pm.test(\"driller_responsible is an object with name and guid\", function() {",
-									"    pm.expect('name' in jsonData['driller_responsible']).to.be.true",
-									"})",
-									"",
-									"pm.test(\"driller_responsible is an object with name and guid\", function() {",
-									"    pm.expect('person_guid' in jsonData['driller_responsible']).to.be.true",
-									"})",
 									""
 								]
 							}
