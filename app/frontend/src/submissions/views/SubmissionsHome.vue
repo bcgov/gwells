@@ -39,7 +39,10 @@ Licensed under the Apache License, Version 2.0 (the "License");
 
         <i class="fa fa-2x fa-times-circle text-danger mr-2 alert-icon" aria-hidden="true"></i>
         <div class="alert-message">
-          <div>
+          <div v-if="isStaffEdit">
+            Your changes were not saved.
+          </div>
+          <div v-else>
             Your well record was not submitted.
           </div>
           <span v-if="errors && errors.detail">
