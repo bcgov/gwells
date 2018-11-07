@@ -58,7 +58,7 @@ class WellDetailView(DetailView):
 class WellDetail(RetrieveAPIView):
     # This class created originally to assist in API testing, consider modification if using for
     # other purposes!
-    permission_classes = (DjangoModelPermissionsOrAnonReadOnly, WellsEditPermissions)
+    permission_classes = (DjangoModelPermissionsOrAnonReadOnly,)
     serializer_class = WellStackerSerializer
     queryset = Well.objects.all()
     lookup_field = 'well_tag_number'
@@ -109,7 +109,6 @@ class WellListAPIView(ListAPIView):
         'legal_plan',
         'legal_lot',
     )
-
 
     def get_queryset(self):
         qs = self.queryset

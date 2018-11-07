@@ -9,7 +9,7 @@
       </div>
     </div>
     <div v-else>
-      <div class="row no-gutters mt-3">
+      <div class="row no-gutters">
         <div class="col-md-12">
           <!-- public documents -->
           <div v-if="error">
@@ -26,8 +26,8 @@
         </div>
       </div>
       <div class="row no-gutters" v-if="userRoles.wells.view">
-        <div class="col-md-12">
-          <h4>Internal documentation - authorized access only</h4>
+        <div class="col-md-12 mt-2">
+          <div class="font-weight-bold">Internal documentation - authorized access only</div>
             <div v-if="error">
               {{error}}
             </div>
@@ -50,6 +50,11 @@ import ApiService from '@/common/services/ApiService.js'
 import { mapGetters } from 'vuex'
 
 export default {
+  props: {
+    well: {
+      required: true
+    }
+  },
   data () {
     return {
       loading: true,
@@ -61,31 +66,31 @@ export default {
     // This is not ideal. If you are authorized, we need to show you a different set of wells, however,
     // auth is happening asynchronously somewhere else on the page.
     keycloak: function () {
-      if (this.wellTag) {
-        ApiService.query('wells/' + this.wellTag + '/files').then((response) => {
-          this.files = response.data
-        }).catch((e) => {
-          console.error(e)
-          this.error = 'Unable to retrieve file list.'
-        }).finally(() => {
-          this.loading = false
-        })
+      if (this.well) {
+        this.loadFiles()
       }
     }
   },
   computed: {
-    ...mapGetters(['userRoles', 'keycloak']),
-    wellTag () {
-      const wellMeta = document.head.querySelector('meta[name="well.tag_number"]')
-      if (wellMeta) {
-        return wellMeta.content
-      }
-      return null
+    ...mapGetters(['userRoles', 'keycloak'])
+  },
+  methods: {
+    loadFiles () {
+      ApiService.query('wells/' + this.well + '/files').then((response) => {
+        this.files = response.data
+      }).catch((e) => {
+        console.error(e)
+        this.error = 'Unable to retrieve file list.'
+      }).finally(() => {
+        this.loading = false
+      })
     }
+  },
+  created () {
+    this.loadFiles()
   }
 }
 </script>
 
 <style lang="scss">
-@import url('https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
 </style>
