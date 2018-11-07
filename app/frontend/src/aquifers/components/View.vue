@@ -33,7 +33,7 @@
             variant="default"
             v-if="userRoles.aquifers.edit"
             v-on:click.prevent="navigateToEdit">
-            <span title="Edit" class="fa fa-edit"/>
+            <span title="Edit" class="fa fa-edit"/> Edit
           </b-button>
           <a class="ml-2 print fa fa-print fa-lg d-print-none"
             href="#"
