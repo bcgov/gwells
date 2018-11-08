@@ -47,12 +47,12 @@
                                             "bash",
                                             "-c",
                                             "
-                                            psql --version; \
-                                            mkdir -p /pgsql-backup/gwells-pgsql-production; \
-                                            echo Dump Command: pg_dump -U ${PGUSER} -Fc -f /pgsql-backup/gwells-pgsql-production/$(date +%Y-%m-%d-%H%M).dump --no-privileges --no-tablespaces --schema=public ${PGDATABASE} && \
-                                            pg_dump -U ${PGUSER} -Fc -f /pgsql-backup/gwells-pgsql-production/$(date +%Y-%m-%d-%H%M).dump --no-privileges --no-tablespaces --schema=public ${PGDATABASE} && \
-                                            ls /pgsql-backup/gwells-pgsql-production/*.dump -1pr | tail -n +11 | xargs -r rm --; \
-                                            ls -lh /pgsql-backup/gwells-pgsql-production/
+                                              psql --version; \
+                                              mkdir -p /pgsql-backup/gwells-pgsql-production; \
+                                              echo Dump Command: pg_dump -U ${PGUSER} -Fc -f /pgsql-backup/gwells-pgsql-production/$(date +%Y-%m-%d-%H%M).dump --no-privileges --no-tablespaces --schema=public ${PGDATABASE}; \
+                                              pg_dump -U ${PGUSER} -Fc -f /pgsql-backup/gwells-pgsql-production/$(date +%Y-%m-%d-%H%M).dump --no-privileges --no-tablespaces --schema=public ${PGDATABASE} && \
+                                              ls /pgsql-backup/gwells-pgsql-production/*.dump -1pr | tail -n +11 | xargs -r rm --; \
+                                              ls -lh /pgsql-backup/gwells-pgsql-production/ \
                                             "
                                         ],
                                         "env": [
