@@ -173,7 +173,6 @@ class StackTest(TestCase):
 
     fixtures = ['wellsearch-codetables.json', ]
 
-
     def setUp(self):
         self.driller = Person.objects.create(
             first_name='Bobby',

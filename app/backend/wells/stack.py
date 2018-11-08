@@ -143,6 +143,9 @@ class StackWells():
         }
 
         for submission in records:
+            # BUGGGGG - When it's an EDIT_RECORD, we don't care about the work_start_date !!!
+            print('submission: create_date: {} ; work_start_date: {}'.format(
+                submission.create_date, submission.work_start_date))
             source_target_map = activity_type_map.get(submission.well_activity_type.code, {})
             serializer = submissions.serializers.WellSubmissionStackerSerializer(submission)
             for source_key, value in serializer.data.items():
@@ -158,6 +161,8 @@ class StackWells():
             # add a well_status based on the current activity submission
             composite['well_status'] = well_status_map.get(
                 submission.well_activity_type.code, WellStatusCode.types.other().well_status_code)
+        
+        print('composite: {}'.format(composite))
 
         # Update the well view
         well_serializer = WellStackerSerializer(well, data=composite, partial=True)
