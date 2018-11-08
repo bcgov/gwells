@@ -46,7 +46,14 @@
                                         "command": [
                                             "bash",
                                             "-c",
-                                            "set -x; psql --version \u0026\u0026 mkdir -p /pgsql-backup/gwells-pgsql-production \u0026\u0026 pg_dump -Fc gwells \u003e /pgsql-backup/gwells-pgsql-production/$(date +%Y-%m-%d-%H%M ).bak \u0026\u0026 ls /pgsql-backup/gwells-pgsql-production/*.bak -1pr | tail -n +11 | xargs -r rm -- \u0026\u0026 ls -lah /pgsql-backup/gwells-pgsql-production/"
+                                            "
+                                              set -x; \
+                                              psql --version && \
+                                              mkdir -p /pgsql-backup/gwells-pgsql-production && \
+                                              pg_dump -Fc gwells > /pgsql-backup/gwells-pgsql-production/$(date +%Y-%m-%d-%H%M ).bak && \
+                                              ls /pgsql-backup/gwells-pgsql-production/*.bak -1pr | tail -n +11 | xargs -r rm -- && \
+                                              ls -lah /pgsql-backup/gwells-pgsql-production/ \
+                                            "
                                         ],
                                         "env": [
                                             {
