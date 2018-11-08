@@ -308,13 +308,14 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "74cf621d-6689-43e8-be83-f6b1cb4d5d0a",
+										"id": "4c4a1015-b29c-4fc3-8579-29b9e8dac3c8",
 										"type": "text/javascript",
 										"exec": [
 											"var jsonData = pm.response.json();",
 											"",
 											"pm.environment.set(\"well_tag_number\", jsonData.well);",
 											"pm.environment.set('filing_number', jsonData.filing_number)",
+											"var created_driller_guid = pm.environment.get('created_driller_guid')",
 											"",
 											"pm.test(\"Status code is 201\", function () {",
 											"   pm.expect(pm.response.code).to.equal(201);",
@@ -322,6 +323,22 @@
 											"",
 											"pm.test(\"Expect well record to be created\", function() {",
 											"    pm.expect(jsonData.well).to.be.ok;",
+											"})",
+											"",
+											"pm.test(\"Expect driller_responsible to be returned\", function() {",
+											"    pm.expect(jsonData.consultant_company).to.equal(\"Inc & Inc\")",
+											"})",
+											"",
+											"pm.test(\"Expect consultant_name to be returned\", function() {",
+											"    pm.expect(jsonData.consultant_name).to.equal(\"Bobothy\")",
+											"})",
+											"",
+											"pm.test(\"Expect driller_name to be returned\", function() {",
+											"    pm.expect(jsonData.driller_name).to.equal(\"Jimithy\")",
+											"})",
+											"",
+											"pm.test(\"Expect driller_responsible to be returned\", function() {",
+											"    pm.expect(jsonData.driller_responsible).to.equal(created_driller_guid)",
 											"})",
 											""
 										]
@@ -337,48 +354,12 @@
 									},
 									{
 										"key": "Content-Type",
-										"value": "application/x-www-form-urlencoded"
+										"value": "application/json"
 									}
 								],
 								"body": {
-									"mode": "urlencoded",
-									"urlencoded": [
-										{
-											"key": "driller_responsible",
-											"value": "{{created_driller_guid}}",
-											"type": "text"
-										},
-										{
-											"key": "work_end_date",
-											"value": "2018-07-02",
-											"type": "text"
-										},
-										{
-											"key": "owner_full_name",
-											"value": "Holly Homeowner",
-											"type": "text"
-										},
-										{
-											"key": "work_start_date",
-											"value": "2018-07-01",
-											"type": "text"
-										},
-										{
-											"key": "owner_province_state",
-											"value": "BC",
-											"type": "text"
-										},
-										{
-											"key": "owner_mailing_address",
-											"value": "321 Main Street",
-											"type": "text"
-										},
-										{
-											"key": "owner_city",
-											"value": "Anytown",
-											"type": "text"
-										}
-									]
+									"mode": "raw",
+									"raw": "{\n\t\"driller_responsible\": \"{{created_driller_guid}}\",\n\t\"driller_name\": \"Jimithy\",\n\t\"consultant_name\": \"Bobothy\",\n\t\"consultant_company\": \"Inc & Inc\",\n\t\"work_end_date\": \"2018-07-10\",\n\t\"owner_full_name\": \"Holly Homeowner\",\n\t\"work_start_date\": \"2018-07-01\",\n\t\"owner_province_state\": \"BC\",\n\t\"owner_mailing_address\": \"321 Main Street\",\n\t\"owner_city\": \"Anytown\"\n}"
 								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/submissions/construction?format=json",
@@ -408,10 +389,11 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "8cda82f1-4f66-419a-9d79-636186a44b6c",
+										"id": "7eb46403-4d9e-40c9-b32c-bde682037045",
 										"type": "text/javascript",
 										"exec": [
 											"var jsonData = pm.response.json();",
+											"var created_driller_guid = pm.environment.get('created_driller_guid')",
 											"",
 											"pm.test(\"Status code is 200\", function () {",
 											"   pm.expect(pm.response.code).to.equal(200);",
@@ -427,6 +409,15 @@
 											"",
 											"pm.test(\"Expect linerperforation to be empty\", function() {",
 											"    pm.expect(jsonData.linerperforation_set.length).to.equal(0);",
+											"})",
+											"",
+											"pm.test(\"driller_responsible is an object with name and guid\", function() {",
+											"    pm.expect('name' in jsonData['driller_responsible']).to.be.true",
+											"})",
+											"",
+											"pm.test(\"driller_responsible is an object with name and guid\", function() {",
+											"    pm.expect('person_guid' in jsonData['driller_responsible']).to.be.true",
+											"    pm.expect(jsonData.driller_responsible.person_guid).to.equal(created_driller_guid)",
 											"})"
 										]
 									}
@@ -2082,23 +2073,12 @@
 									},
 									{
 										"key": "Content-Type",
-										"value": "application/x-www-form-urlencoded"
+										"value": "application/json"
 									}
 								],
 								"body": {
-									"mode": "urlencoded",
-									"urlencoded": [
-										{
-											"key": "well",
-											"value": "{{well_tag_number}}",
-											"type": "text"
-										},
-										{
-											"key": "consultant_name",
-											"value": "John Mann",
-											"type": "text"
-										}
-									]
+									"mode": "raw",
+									"raw": "{\n\t\"well\": {{well_tag_number}},\n\t\"consultant_name\": \"John Mann\"\n}"
 								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/submissions/staff_edit?format=json",
