@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "f986d626-d0a1-42fe-b758-762529ccedb1",
+		"_postman_id": "3d69ef7c-a30f-42a5-a557-2caa5b78504b",
 		"name": "GWELLS Aquifers",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -30,7 +30,10 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
 							"raw": "{{base_url}}/api/v1/aquifer-codes/water-use",
 							"host": [
@@ -68,7 +71,10 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
 							"raw": "{{base_url}}/api/v1/aquifer-codes/materials",
 							"host": [
@@ -106,7 +112,10 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
 							"raw": "{{base_url}}/api/v1/aquifer-codes/quality-concerns",
 							"host": [
@@ -144,7 +153,10 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
 							"raw": "{{base_url}}/api/v1/aquifer-codes/vulnerability",
 							"host": [
@@ -182,7 +194,10 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
 							"raw": "{{base_url}}/api/v1/aquifer-codes/subtypes",
 							"host": [
@@ -220,7 +235,10 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
 							"raw": "{{base_url}}/api/v1/aquifer-codes/productivity",
 							"host": [
@@ -258,7 +276,10 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
 							"raw": "{{base_url}}/api/v1/aquifer-codes/demand",
 							"host": [
@@ -301,7 +322,10 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
 							"raw": "{{base_url}}/api/v1/aquifers/?aquifer_id=123",
 							"host": [
@@ -345,7 +369,10 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
 							"raw": "{{base_url}}/api/v1/aquifers/?search=asdf",
 							"host": [
@@ -391,7 +418,10 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"body": {},
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
 				"url": {
 					"raw": "{{base_url}}/api/v1/aquifers/",
 					"host": [
@@ -402,44 +432,6 @@
 						"v1",
 						"aquifers",
 						""
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Aquifer Retrieve",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "768133b0-7dd6-4197-97ca-ddca5cb1743f",
-						"type": "text/javascript",
-						"exec": [
-							"var jsonData = pm.response.json()",
-							"",
-							"pm.test(\"Status code is 200\", function () {",
-							"    pm.expect(pm.response.code).to.equal(200);",
-							"})",
-							""
-						]
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [],
-				"body": {},
-				"url": {
-					"raw": "{{base_url}}/api/v1/aquifers/2000",
-					"host": [
-						"{{base_url}}"
-					],
-					"path": [
-						"api",
-						"v1",
-						"aquifers",
-						"2000"
 					]
 				}
 			},
@@ -528,10 +520,11 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "3159a0bc-81fd-490c-b8b6-4eb36f46c5b1",
+						"id": "8f3aa783-2831-40f6-a4f9-3ccf241c44aa",
 						"type": "text/javascript",
 						"exec": [
 							"var jsonData = pm.response.json()",
+							"pm.environment.set(\"aquifer_id\", jsonData.aquifer_id);",
 							"",
 							"pm.test(\"Status code is 201\", function () {",
 							"    pm.expect(pm.response.code).to.equal(201);",
@@ -680,6 +673,47 @@
 						"v1",
 						"aquifers",
 						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Aquifer Retrieve",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "768133b0-7dd6-4197-97ca-ddca5cb1743f",
+						"type": "text/javascript",
+						"exec": [
+							"var jsonData = pm.response.json()",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.expect(pm.response.code).to.equal(200);",
+							"})",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{base_url}}/api/v1/aquifers/{{aquifer_id}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"aquifers",
+						"{{aquifer_id}}"
 					]
 				}
 			},
