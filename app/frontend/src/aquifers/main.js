@@ -13,7 +13,7 @@
 */
 
 import 'babel-polyfill'
-import {mapActions} from 'vuex'
+import {mapActions, mapMutations} from 'vuex'
 import Vue from 'vue'
 import BootstrapVue from 'bootstrap-vue'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
@@ -40,15 +40,29 @@ new Vue({
   router,
   store,
   template: '<App/>',
-  methods: {
-    ...mapActions([
-      FETCH_CONFIG
-    ])
-  },
   created () {
     authenticate.authenticate(store).then(() => {
       // Auth complete. Do something here if you want.
     })
     this.FETCH_CONFIG()
+    this.fetchCodes()
+  },
+  methods: {
+    ...mapMutations('aquiferCodes', ['addCodes']),
+    ...mapActions([FETCH_CONFIG]),
+    fetchCode (codePath, key) {
+      ApiService.query(codePath).then((response) => {
+        this.addCodes({key, codeTable: response.data.results})
+      })
+    },
+    fetchCodes () {
+      this.fetchCode('aquifer-codes/materials', 'material_codes')
+      this.fetchCode('aquifer-codes/quality-concerns', 'quality_concern_codes')
+      this.fetchCode('aquifer-codes/vulnerability', 'vulnerability_codes')
+      this.fetchCode('aquifer-codes/subtypes', 'subtype_codes')
+      this.fetchCode('aquifer-codes/productivity', 'productivity_codes')
+      this.fetchCode('aquifer-codes/demand', 'demand_codes')
+      this.fetchCode('aquifer-codes/water-use', 'known_water_use_codes')
+    }
   }
 })

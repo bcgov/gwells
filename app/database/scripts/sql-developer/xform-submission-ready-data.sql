@@ -135,7 +135,12 @@ When converting instance data...
 OPEN_HOLE & UNK (else all)goes to OTHER
 
 "6815ce226c1411e7907ba6006ad3dba0","STEEL","Steel","N","10"
-"6815d0ca6c1411e7907ba6006ad3dba0","STL_PUL_OT","Steel Pulled Out","N","20"
+
+Monday Novembrer 5th, 2018 GW: Note that the following line is obsolete.
+  ./gwells/app/backend/wells/migrations/0022_update_casing_material_code.py
+  has supersede this:
+  "6815d0ca6c1411e7907ba6006ad3dba0","STL_PUL_OT","Steel Pulled Out","N","20"
+
 "6815d5f26c1411e7907ba6006ad3dba0","PLASTIC","Plastic","N","30"
 "6815d7a06c1411e7907ba6006ad3dba0","CEMENT","Cement","N","40"
 "6815d8906c1411e7907ba6006ad3dba0","OTHER","Other","N","50"

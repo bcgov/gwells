@@ -206,7 +206,8 @@ class WellConstructionSubmissionSerializer(WellSubmissionSerializerBase):
                   'water_quality_colour', 'water_quality_odour', 'ems_id', 'total_depth_drilled',
                   'finished_well_depth', 'final_casing_stick_up', 'bedrock_depth', 'static_water_level',
                   'well_yield', 'artesian_flow', 'artesian_pressure', 'well_cap_type', 'well_disinfected',
-                  'comments', 'alternative_specs_submitted')
+                  'comments', 'alternative_specs_submitted', 'consultant_company', 'consultant_name',
+                  'driller_name', 'driller_responsible',)
         extra_kwargs = {
             # TODO: reference appropriate serializer as above
             'lithologydescription_set': {'required': False},
@@ -252,6 +253,10 @@ class WellAlterationSubmissionSerializer(WellSubmissionSerializerBase):
             'owner_postal_code',
             'street_address',
             'city',
+            'consultant_company',
+            'consultant_name',
+            'driller_name',
+            'driller_responsible',
             'legal_lot',
             'legal_plan',
             'legal_district_lot',
@@ -321,6 +326,27 @@ class WellAlterationSubmissionSerializer(WellSubmissionSerializerBase):
             'lithologydescription_set': {'required': False},
             'well_activity_type': {'required': False}
         }
+
+
+class WellStaffEditSubmissionSerializer(WellSubmissionSerializerBase):
+
+    well = serializers.PrimaryKeyRelatedField(queryset=Well.objects.all())
+
+    def get_well_activity_type(self):
+        return WellActivityCode.types.staff_edit()
+
+    def get_foreign_keys(self):
+        return {}
+
+    class Meta:
+        model = ActivitySubmission
+        fields = (
+            'well',
+            'driller_name',
+            'consultant_name',
+            'consultant_company',
+            'driller_responsible',
+        )
 
 
 class WellDecommissionSubmissionSerializer(WellSubmissionSerializerBase):

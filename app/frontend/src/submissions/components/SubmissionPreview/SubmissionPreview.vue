@@ -1,5 +1,27 @@
+/*
+Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+*/
 <template>
   <div>
+    <h1 class="card-title">
+      <b-row>
+        <b-col cols="12">
+          <div>Well Activity Submission<span v-if="!reportSubmitted"> Preview</span></div>
+          <b-btn v-if="reportSubmitted" @click="$emit('startNewReport')" variant="primary">Submit New Report</b-btn>
+          <b-btn v-else class="float-right" @click="$emit('back')" variant="primary">Back to Edit</b-btn>
+        </b-col>
+      </b-row>
+    </h1>
     <fieldset class="my-3 detail-section">
       <legend>Type of Work and Well Class</legend>
       <b-row>
@@ -403,6 +425,15 @@
       </p>
     </fieldset>
 
+    <!-- Back / Next / Submit controls -->
+    <b-row v-if="!reportSubmitted" class="mt-5">
+      <b-col>
+        <b-btn @click="$emit('back')" variant="primary">Back to Edit</b-btn>
+      </b-col>
+      <b-col class="pr-4 text-right">
+        <b-btn id="formSubmitButton" type="submit" variant="primary" ref="activitySubmitBtn" :disabled="formSubmitLoading">Submit</b-btn>
+      </b-col>
+    </b-row>
   </div>
 </template>
 
@@ -422,8 +453,14 @@ export default {
   props: [
     'form',
     'activity',
-    'sections'
+    'sections',
+    'reportSubmitted',
+    'formSubmitLoading'
   ],
+  data () {
+    return {
+    }
+  },
   computed: {
     wellSubclass () {
       let subclassCodes = []

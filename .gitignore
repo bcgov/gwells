@@ -159,7 +159,7 @@ sonar-runner/.classpath
 
 # DB
 *.dmp
-*.pgCustom
+*.dump
 .tmp/
 
 # Exceptions

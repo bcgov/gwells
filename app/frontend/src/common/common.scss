@@ -66,3 +66,14 @@ div.dropdown-toggle::after {
   border-bottom: 1px solid #e5e5e5;
   font-size: 21px;
 }
+
+.alert .alert-icon {
+  display:table-cell;
+  vertical-align: middle;
+}
+
+.alert .alert-message {
+  padding-left: 10px;
+  display:table-cell;
+  vertical-align: middle;
+}

@@ -2,7 +2,6 @@ import { shallowMount, createLocalVue } from '@vue/test-utils'
 import Vuex from 'vuex'
 import VueRouter from 'vue-router'
 import SubmissionsHome from '@/submissions/views/SubmissionsHome.vue'
-import Yield from '@/submissions/components/SubmissionForm/Yield.vue'
 
 import { FETCH_CODES } from '@/submissions/store/actions.types.js'
 
@@ -15,14 +14,19 @@ const router = new VueRouter()
 describe('SubmissionsHome.vue', () => {
   let actions
   let store
+  let getters
 
   beforeEach(() => {
+    getters = {
+      userRoles: () => ({ wells: { edit: true }, submissions: { edit: true } })
+    }
     actions = {
       [FETCH_CODES]: jest.fn()
     }
     store = new Vuex.Store({
       state: {},
-      actions
+      actions,
+      getters
     })
   })
 
@@ -48,30 +52,5 @@ describe('SubmissionsHome.vue', () => {
       sync: false
     })
     expect(actions[FETCH_CODES]).toHaveBeenCalled()
-  })
-
-  it('renders components based on the activity selected (Yield exists on construction report', (done) => {
-    const wrapper = shallowMount(SubmissionsHome, {
-      localVue,
-      store,
-      router
-    })
-    wrapper.setData({ activityType: 'CON', formIsFlat: true })
-    wrapper.vm.$nextTick(() => {
-      expect(wrapper.find(Yield).exists()).toBe(true)
-      done()
-    })
-  })
-  it('renders components based on the activity selected (Yield does not exist on decommission report)', (done) => {
-    const wrapper = shallowMount(SubmissionsHome, {
-      localVue,
-      store,
-      router
-    })
-    wrapper.setData({ activityType: 'DEC', formIsFlat: true })
-    wrapper.vm.$nextTick(() => {
-      expect(wrapper.find(Yield).exists()).toBe(false)
-      done()
-    })
   })
 })

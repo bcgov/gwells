@@ -8,6 +8,12 @@ exports[`Search Component Matches the snapshot 1`] = `
     Aquifer Search
   </h5>
    
+  <div
+    class="pb-2"
+  >
+    <!---->
+  </div>
+   
   <form
     class=""
   >
@@ -18,19 +24,19 @@ exports[`Search Component Matches the snapshot 1`] = `
         class="col-md-4 col-12"
       >
         <fieldset
-          aria-labelledby="__BVID__10__BV_label_"
+          aria-labelledby="__BVID__14__BV_label_"
           class="b-form-group form-group"
-          id="__BVID__10"
+          id="__BVID__14"
           role="group"
         >
           <legend
             class="col-form-label pt-0"
-            id="__BVID__10__BV_label_"
+            id="__BVID__14__BV_label_"
           >
             Aquifer name
           </legend>
           <div
-            aria-labelledby="__BVID__10__BV_label_"
+            aria-labelledby="__BVID__14__BV_label_"
             class=""
             role="group"
           >
@@ -46,19 +52,19 @@ exports[`Search Component Matches the snapshot 1`] = `
         </fieldset>
          
         <fieldset
-          aria-labelledby="__BVID__12__BV_label_"
+          aria-labelledby="__BVID__16__BV_label_"
           class="b-form-group form-group"
-          id="__BVID__12"
+          id="__BVID__16"
           role="group"
         >
           <legend
             class="col-form-label pt-0"
-            id="__BVID__12__BV_label_"
+            id="__BVID__16__BV_label_"
           >
             Aquifer number
           </legend>
           <div
-            aria-labelledby="__BVID__12__BV_label_"
+            aria-labelledby="__BVID__16__BV_label_"
             class=""
             role="group"
           >
@@ -83,7 +89,7 @@ exports[`Search Component Matches the snapshot 1`] = `
       >
         <fieldset
           class="b-form-group form-group"
-          id="__BVID__14"
+          id="__BVID__18"
           role="group"
         >
           <!---->
@@ -118,7 +124,7 @@ exports[`Search Component Matches the snapshot 1`] = `
     aria-colcount="11"
     aria-rowcount="1"
     class="table b-table table-striped"
-    id="__BVID__15"
+    id="__BVID__19"
   >
     <!---->
     <!---->

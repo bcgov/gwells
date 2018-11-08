@@ -15,6 +15,14 @@
 <template>
   <b-card no-body class="p-3 mb-4">
     <h5>Aquifer Search</h5>
+
+    <div class="pb-2">
+      <b-button
+        v-on:click="navigateToNew"
+        v-if="userRoles.aquifers.edit"
+        variant="primary">Add new Aquifer</b-button>
+    </div>
+
     <b-form
       v-on:submit.prevent="triggerSearch"
       v-on:reset="triggerReset">
@@ -102,8 +110,10 @@ table.b-table > tfoot > tr > th.sorting::after {
 </style>
 
 <script>
+import querystring from 'querystring'
 import ApiService from '@/common/services/ApiService.js'
 import isEmpty from 'lodash.isempty'
+import { mapGetters } from 'vuex'
 
 const LIMIT = 30
 const DEFAULT_ORDERING_STRING = 'aquifer_id'
@@ -147,14 +157,21 @@ export default {
     aquiferList () { return this.response && this.response.results },
     displayPagination () { return this.aquiferList && (this.response.next || this.response.previous) },
     emptyResults () { return this.response && this.response.count === 0 },
-    query () { return this.$route.query }
+    query () { return this.$route.query },
+    ...mapGetters(['userRoles'])
   },
   methods: {
+    navigateToNew () {
+      this.$router.push({ name: 'new' })
+    },
     fetchResults () {
       if (isEmpty(this.query.aquifer_id) && isEmpty(this.query.search)) {
         this.response = {}
         return
       }
+
+      // trigger the Google Analytics search event
+      this.triggerAnalyticsSearchEvent(this.query)
 
       ApiService.query('aquifers/', this.query)
         .then((response) => {
@@ -214,6 +231,17 @@ export default {
     },
     updateQueryParams () {
       this.$router.replace({ query: this.filterParams })
+    },
+    triggerAnalyticsSearchEvent (params) {
+      // trigger the search event, sending along the search params as a string
+      if (window.ga) {
+        window.ga('send', {
+          hitType: 'event',
+          eventCategory: 'Button',
+          eventAction: 'AquiferSearch',
+          eventLabel: querystring.stringify(params)
+        })
+      }
     }
   },
   mounted () { this.fetchResults() },

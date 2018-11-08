@@ -56,7 +56,7 @@ stage ( 'run' )
         String POD_APP = sh(
             script:"""
                 oc get pods -n "${PROJECT}" | grep -i "Running" | grep -Eo \
-                    "gwells-(test|prod)-[[:digit:]]+-[[:alnum:]]+" | head -1
+                    "gwells-(staging|production)-[[:digit:]]+-[[:alnum:]]+" | head -1
             """,
             returnStdout:
                 true
@@ -65,7 +65,7 @@ stage ( 'run' )
         // Regex for the deployment config / route name
         String DC_RT = sh(
             script:"""
-                oc get dc -n "${PROJECT}" | grep -Eo "gwells-(test|prod)" | head -1
+                oc get dc -n "${PROJECT}" | grep -Eo "gwells-(staging|production)" | head -1
             """,
             returnStdout:
                 true
@@ -89,23 +89,17 @@ stage ( 'run' )
 
                 echo "Scaling down and starting maintenance mode"
                 sh """
-                    oc patch route "${DC_RT}" -n "${PROJECT}" -p \
+                    oc patch route gwells-production -n "${PROJECT}" -p \
                         '{ "spec": { "to": { "name": "proxy-caddy"}, "port": { "targetPort": "2015-tcp" }}}'
 
                     oc scale dc "${DC_RT}" --timeout=5s --replicas=0 -n "${PROJECT}"
                 """
 
-                echo "Disabling logging"
+                echo "Vacuuming database"
                 sh """
                     oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
                         'psql -t -d gwells -c \
                             "VACUUM FULL;"'
-                    oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
-                        'psql -t -d gwells -c \
-                            "ALTER USER \\"\${POSTGRESQL_USER}\\" SET log_statement TO \\"none\\";"'
-                    oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
-                        'psql -t -d gwells -c \
-                            "ALTER USER \\"\${POSTGRESQL_USER}\\" SET log_min_duration_statement TO 10000;"'
                 """
 
                 echo "Running replication step 1/2"
@@ -120,16 +114,6 @@ stage ( 'run' )
                     oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
                         'psql -t -d gwells -U "\${POSTGRESQL_USER}" -c \
                             "SELECT db_replicate_step2 ();"'
-                """
-
-                echo "Re-enabling logging"
-                sh """
-                    oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
-                        'psql -t -d gwells -c \
-                            "ALTER USER \\"\${POSTGRESQL_USER}\\" SET log_statement TO \\"all\\";"'
-                    oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
-                        'psql -t -d gwells -c \
-                            "ALTER USER \\"\${POSTGRESQL_USER}\\" SET log_min_duration_statement TO -1;"'
                 """
 
                 // If there are enough wells to assume success, scale up app and leave maintenance mode
@@ -147,7 +131,7 @@ stage ( 'run' )
                     sh """
                         oc scale dc "${DC_RT}" --timeout=5s --replicas=1 -n "${PROJECT}"
                         sleep 30
-                        oc patch route "${DC_RT}" -n "${PROJECT}" -p \
+                        oc patch route gwells-production -n "${PROJECT}" -p \
                             '{ "spec": { "to": { "name": "${DC_RT}" }, "port": { "targetPort": "web" }}}'
                     """
                 } else {

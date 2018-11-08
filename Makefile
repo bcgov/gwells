@@ -29,7 +29,7 @@ fixtures:
 			python manage.py migrate; \
 			python manage.py loaddata gwells-codetables.json; \
 			python manage.py loaddata wellsearch-codetables.json registries-codetables.json; \
-			python manage.py loaddata wellsearch.json.gz registries.json; \
+			python manage.py loaddata wellsearch.json registries.json; \
 			python manage.py loaddata aquifers.json; \
 			python manage.py createinitialrevisions \
 		" || \

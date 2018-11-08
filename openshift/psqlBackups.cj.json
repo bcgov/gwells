@@ -7,14 +7,14 @@
             "kind": "CronJob",
             "apiVersion": "batch/v1beta1",
             "metadata": {
-                "name": "gwells-pgsql-backup-prod",
+                "name": "gwells-pgsql-backup-production",
                 "creationTimestamp": null,
                 "labels": {
-                    "run": "gwells-pgsql-backup-prod"
+                    "run": "gwells-pgsql-backup-production"
                 }
             },
             "spec": {
-                "schedule": "0 * * * *",
+                "schedule": "45 10 * * *",
                 "concurrencyPolicy": "Replace",
                 "suspend": false,
                 "jobTemplate": {
@@ -27,7 +27,7 @@
                             "metadata": {
                                 "creationTimestamp": null,
                                 "labels": {
-                                    "run": "gwells-pgsql-backup-prod"
+                                    "run": "gwells-pgsql-backup-production"
                                 }
                             },
                             "spec": {
@@ -35,29 +35,36 @@
                                     {
                                         "name": "backup",
                                         "persistentVolumeClaim": {
-                                            "claimName": "gwells-pgsql-prod-backup"
+                                            "claimName": "gwells-pgsql-production-backup"
                                         }
                                     }
                                 ],
                                 "containers": [
                                     {
-                                        "name": "gwells-pgsql-backup-prod",
+                                        "name": "gwells-pgsql-backup-production",
                                         "image": "docker-registry.default.svc:5000/openshift/postgresql:9.5",
                                         "command": [
                                             "bash",
                                             "-c",
-                                            "set -x; psql --version \u0026\u0026 mkdir -p /pgsql-backup/gwells-pgsql-prod \u0026\u0026 pg_dump -Fc gwells \u003e /pgsql-backup/gwells-pgsql-prod/$(date +%Y-%m-%d-%H%M ).bak \u0026\u0026 ls /pgsql-backup/gwells-pgsql-prod/*.bak -1pr | tail -n +11 | xargs -r rm -- \u0026\u0026 ls -lah /pgsql-backup/gwells-pgsql-prod/"
+                                            "
+                                              psql --version; \
+                                              mkdir -p /pgsql-backup/gwells-pgsql-production; \
+                                              echo Dump Command: pg_dump -U ${PGUSER} -Fc -f /pgsql-backup/gwells-pgsql-production/$(date +%Y-%m-%d-%H%M).dump --no-privileges --no-tablespaces --schema=public ${PGDATABASE}; \
+                                              pg_dump -U ${PGUSER} -Fc -f /pgsql-backup/gwells-pgsql-production/$(date +%Y-%m-%d-%H%M).dump --no-privileges --no-tablespaces --schema=public ${PGDATABASE} && \
+                                              ls /pgsql-backup/gwells-pgsql-production/*.dump -1pr | tail -n +11 | xargs -r rm --; \
+                                              ls -lh /pgsql-backup/gwells-pgsql-production/ \
+                                            "
                                         ],
                                         "env": [
                                             {
                                                 "name": "PGHOST",
-                                                "value": "gwells-pgsql-prod"
+                                                "value": "gwells-pgsql-production"
                                             },
                                             {
                                                 "name": "PGDATABASE",
                                                 "valueFrom": {
                                                     "secretKeyRef": {
-                                                        "name": "gwells-pgsql-prod",
+                                                        "name": "gwells-pgsql-production",
                                                         "key": "database-name"
                                                     }
                                                 }
@@ -66,7 +73,7 @@
                                                 "name": "PGUSER",
                                                 "valueFrom": {
                                                     "secretKeyRef": {
-                                                        "name": "gwells-pgsql-prod",
+                                                        "name": "gwells-pgsql-production",
                                                         "key": "database-user"
                                                     }
                                                 }
@@ -75,7 +82,7 @@
                                                 "name": "PGPASSWORD",
                                                 "valueFrom": {
                                                     "secretKeyRef": {
-                                                        "name": "gwells-pgsql-prod",
+                                                        "name": "gwells-pgsql-production",
                                                         "key": "database-password"
                                                     }
                                                 }
