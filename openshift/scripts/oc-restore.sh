@@ -88,13 +88,25 @@ then
 fi
 
 
-# Identify database and take a backup
+# Copy dump into pod
 #
 RESTORE_PATH=$( dirname ${RESTORE} )
 RESTORE_FILE=$( basename ${RESTORE} )
 POD_DB=$( oc get pods -n ${PROJECT} -o name | grep -Eo "${DC_NAME}-[[:digit:]]+-[[:alnum:]]+" )
 oc cp ${RESTORE} "${POD_DB}":/tmp/ -n ${PROJECT}
-echo oc exec ${POD_DB} -n ${PROJECT} -- /bin/bash -c 'pg_restore -d '${DB_NAME}' -c /tmp/'${RESTORE_FILE}
+
+
+# Drop tables and functions from ./db-drops.sql
+#
+while read c
+do
+	oc exec ${POD_DB} -n ${PROJECT} -- /bin/bash -c "psql -d ${DB_NAME} -U \${POSTGRESQL_USER} -c \"${c}\""
+done < db-drops.sql
+
+
+# Restore database dump
+#
+oc exec ${POD_DB} -n ${PROJECT} -- /bin/bash -c "pg_restore -d ${DB_NAME} -U \${POSTGRESQL_USER} --no-owner -c /tmp/${RESTORE_FILE}"
 
 
 # Take GWells out of maintenance mode and scale back up (deployment config)
