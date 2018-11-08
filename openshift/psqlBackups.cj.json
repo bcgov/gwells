@@ -14,7 +14,7 @@
                 }
             },
             "spec": {
-                "schedule": "0 * * * *",
+                "schedule": "45 10 * * *",
                 "concurrencyPolicy": "Replace",
                 "suspend": false,
                 "jobTemplate": {
