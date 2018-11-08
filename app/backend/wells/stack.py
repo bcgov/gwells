@@ -130,8 +130,27 @@ class StackWells():
         target_keys = WellStackerSerializer().get_fields().keys()
 
         # Iterate through all the submission records
-        # Order by work_start_date, and where that's not availble, or null, fall back to the create date
-        records = records.order_by(F('work_start_date').asc(nulls_first=True), 'create_date')
+        # We can't strictly order by the create date, we need to consider that construction/legacy well
+        # submission have to go 1st - in the following order:
+        # 1: legacy submissions
+        #   1.1: reason: Scenario. There is an existing well, a construction submission comes in, we have
+        #           to create a legacy submission to retain the wells information, and apply the
+        #           construction on top of that.
+        # 2: construction submissions
+        #   2.1: reason: A well should ideally always start with a construction submission. See 1.1 for
+        #           the exception to this rule.
+        # 3: create_date
+        #   3.1 reason: Submissions need to be considered in order.
+        #   3.2 exceptions: It may be, that two alterations are capture in the incorrect order. Logically,
+        #           the record dated earlier by the "work_start_date" should be considered 1st, and should
+        #           be captured 1st. We do however not have control over the order in which records are
+        #           captured. WE CURRENTLY DO NOT HANDLE THIS EXCEPTION. It is important that and EDIT be
+        #           processed ONLY based on it's create_date, not it's work_start_date.
+        records = records.order_by('create_date')
+        records = sorted(records, key=lambda record:
+                         (record.well_activity_type.code != WellActivityCode.types.legacy().code,
+                          record.well_activity_type.code != WellActivityCode.types.construction().code,
+                          record.create_date))
         FOREIGN_KEYS = ('casing_set', 'screen_set', 'linerperforation_set', 'decommission_description_set')
         composite = {}
 
@@ -143,9 +162,6 @@ class StackWells():
         }
 
         for submission in records:
-            # BUGGGGG - When it's an EDIT_RECORD, we don't care about the work_start_date !!!
-            print('submission: create_date: {} ; work_start_date: {}'.format(
-                submission.create_date, submission.work_start_date))
             source_target_map = activity_type_map.get(submission.well_activity_type.code, {})
             serializer = submissions.serializers.WellSubmissionStackerSerializer(submission)
             for source_key, value in serializer.data.items():
@@ -161,8 +177,6 @@ class StackWells():
             # add a well_status based on the current activity submission
             composite['well_status'] = well_status_map.get(
                 submission.well_activity_type.code, WellStatusCode.types.other().well_status_code)
-        
-        print('composite: {}'.format(composite))
 
         # Update the well view
         well_serializer = WellStackerSerializer(well, data=composite, partial=True)

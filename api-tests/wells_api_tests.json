@@ -146,7 +146,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "e76e5334-0099-4e02-acd3-31d8af3fb87d",
+								"id": "ebc2262c-3d93-4e5f-aa48-4904501c525a",
 								"type": "text/javascript",
 								"exec": [
 									"var jsonData = pm.response.json()",
@@ -169,7 +169,7 @@
 						],
 						"body": {},
 						"url": {
-							"raw": "{{base_url}}/api/v1/wells/123",
+							"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}",
 							"host": [
 								"{{base_url}}"
 							],
@@ -177,7 +177,7 @@
 								"api",
 								"v1",
 								"wells",
-								"123"
+								"{{well_tag_number}}"
 							]
 						},
 						"description": "Request a list of wells"
