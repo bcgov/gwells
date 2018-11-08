@@ -89,7 +89,7 @@ stage ( 'run' )
 
                 echo "Scaling down and starting maintenance mode"
                 sh """
-                    oc patch route gwells-prod -n "${PROJECT}" -p \
+                    oc patch route gwells-production -n "${PROJECT}" -p \
                         '{ "spec": { "to": { "name": "proxy-caddy"}, "port": { "targetPort": "2015-tcp" }}}'
 
                     oc scale dc "${DC_RT}" --timeout=5s --replicas=0 -n "${PROJECT}"
@@ -131,7 +131,7 @@ stage ( 'run' )
                     sh """
                         oc scale dc "${DC_RT}" --timeout=5s --replicas=1 -n "${PROJECT}"
                         sleep 30
-                        oc patch route gwells-prod -n "${PROJECT}" -p \
+                        oc patch route gwells-production -n "${PROJECT}" -p \
                             '{ "spec": { "to": { "name": "${DC_RT}" }, "port": { "targetPort": "web" }}}'
                     """
                 } else {
