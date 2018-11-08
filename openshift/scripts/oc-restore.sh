@@ -18,9 +18,10 @@ IFS=$'\n\t'
 
 # Parameters
 #
-PROJECT=$( echo ${1} | cut -d "/" -f 1 )
-DC_NAME=$( echo ${1} | cut -d "/" -f 2 )
+TARGET=${1:-}
 RESTORE=${2:-}
+PROJECT=$( echo ${TARGET} | cut -d "/" -f 1 )
+DC_NAME=$( echo ${TARGET} | cut -d "/" -f 2 )
 
 
 # APP and mode variables
@@ -106,7 +107,7 @@ done < db-drops.sql
 
 # Restore database dump
 #
-oc exec ${POD_DB} -n ${PROJECT} -- /bin/bash -c "pg_restore -d ${DB_NAME} -U \${POSTGRESQL_USER} --no-owner -c /tmp/${RESTORE_FILE}"
+oc exec ${POD_DB} -n ${PROJECT} -- /bin/bash -c "pg_restore -d ${DB_NAME} -U \${POSTGRESQL_USER} --no-owner /tmp/${RESTORE_FILE}"
 
 
 # Take GWells out of maintenance mode and scale back up (deployment config)
@@ -122,7 +123,9 @@ fi
 # Summarize
 #
 echo
+echo "Name: ${DC_NAME}"
+echo "Proj: ${PROJECT}"
 echo "DB:   ${DB_NAME}"
 echo "Size: $( du -h ${RESTORE} | awk '{ print $1 }' )"
-echo "Name: ${RESTORE}"
+echo "File: ${RESTORE}"
 echo
