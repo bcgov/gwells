@@ -18,7 +18,8 @@ IFS=$'\n\t'
 
 # Parameters
 #
-PROJECT=${1:-}
+PROJECT=$( echo ${1} | cut -d "/" -f 1 )
+DC_NAME=$( echo ${1} | cut -d "/" -f 2 )
 RESTORE=${2:-}
 
 
@@ -26,7 +27,7 @@ RESTORE=${2:-}
 #
 APP_NAME=${APP_NAME:-gwells}
 DB_NAME=${DB_NAME:-${APP_NAME}}
-KEEP_APP_ONLINE=${KEEP_APP_ONLINE:-false}
+KEEP_APP_ONLINE=${KEEP_APP_ONLINE:-true}
 
 
 # Show message if passed any params
@@ -36,8 +37,8 @@ then
 	echo
     echo "Restores a GWells database from a local file"
     echo
-	echo "Provide a project name."
-	echo " './oc-restore.sh <project_name> <input_file>'"
+	echo "Provide a target name and backup file to restore."
+	echo " './oc-restore.sh <project_name>/<deploymentconfig_name> <input_file>'"
 	echo
 	exit
 fi
@@ -87,13 +88,25 @@ then
 fi
 
 
-# Identify database and take a backup
+# Copy dump into pod
 #
 RESTORE_PATH=$( dirname ${RESTORE} )
 RESTORE_FILE=$( basename ${RESTORE} )
-POD_DB=$( oc get pods -n ${PROJECT} -o name | grep -Eo "postgresql-[0-9]+-[[:alnum:]]+" )
-oc cp ${RESTORE} "${POD_DB}":/tmp/
-oc exec ${POD_DB} -n ${PROJECT} -- /bin/bash -c 'pg_restore -d '${DB_NAME}' -c /tmp/'${RESTORE_FILE}
+POD_DB=$( oc get pods -n ${PROJECT} -o name | grep -Eo "${DC_NAME}-[[:digit:]]+-[[:alnum:]]+" )
+oc cp ${RESTORE} "${POD_DB}":/tmp/ -n ${PROJECT}
+
+
+# Drop tables and functions from ./db-drops.sql
+#
+while read c
+do
+	oc exec ${POD_DB} -n ${PROJECT} -- /bin/bash -c "psql -d ${DB_NAME} -U \${POSTGRESQL_USER} -c \"${c}\""
+done < db-drops.sql
+
+
+# Restore database dump
+#
+oc exec ${POD_DB} -n ${PROJECT} -- /bin/bash -c "pg_restore -d ${DB_NAME} -U \${POSTGRESQL_USER} --no-owner -c /tmp/${RESTORE_FILE}"
 
 
 # Take GWells out of maintenance mode and scale back up (deployment config)
