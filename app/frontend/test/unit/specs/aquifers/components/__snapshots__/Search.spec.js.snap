@@ -7,7 +7,7 @@ exports[`Search Component Matches the snapshot 1`] = `
   <h5>
     Aquifer Search
   </h5>
-   
+    
   <div
     class="pb-2"
   >

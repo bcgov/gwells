@@ -263,11 +263,15 @@ export default {
   created () {
     // Fetch current surveys and add 'aquifer' surveys (if any) to this.surveys to be displayed
     ApiService.query('surveys/').then((response) => {
-      response.data.forEach((survey) => {
-        if (survey.survey_page === 'a') {
-          this.surveys.push(survey)
-        }
-      })
+      if (response.data) {
+        response.data.forEach((survey) => {
+          if (survey.survey_page === 'a') {
+            this.surveys.push(survey)
+          }
+        })
+      }
+    }).catch((e) => {
+      console.error(e)
     })
   },
   mounted () { this.fetchResults() },
