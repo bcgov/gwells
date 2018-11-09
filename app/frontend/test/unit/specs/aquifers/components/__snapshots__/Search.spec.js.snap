@@ -42,7 +42,7 @@ exports[`Search Component Matches the snapshot 1`] = `
           >
             <input
               class="form-control"
-              id="search"
+              id="aquifers-name"
               type="text"
             />
             <!---->
@@ -70,7 +70,7 @@ exports[`Search Component Matches the snapshot 1`] = `
           >
             <input
               class="form-control"
-              id="aquifer_id"
+              id="aquifers-number"
               type="text"
             />
             <!---->
@@ -99,6 +99,7 @@ exports[`Search Component Matches the snapshot 1`] = `
           >
             <button
               class="btn btn-primary"
+              id="aquifers-search"
               type="submit"
             >
               Search
@@ -124,7 +125,7 @@ exports[`Search Component Matches the snapshot 1`] = `
     aria-colcount="11"
     aria-rowcount="1"
     class="table b-table table-striped"
-    id="__BVID__19"
+    id="aquifers-results"
   >
     <!---->
     <!---->

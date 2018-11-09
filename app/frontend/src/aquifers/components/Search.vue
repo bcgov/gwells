@@ -30,13 +30,13 @@
         <b-col cols="12" md="4">
           <b-form-group label="Aquifer name">
             <b-form-input
-              id="search"
+              id="aquifers-name"
               type="text"
               v-model="search"/>
           </b-form-group>
           <b-form-group label="Aquifer number">
             <b-form-input
-              id="aquifer_id"
+              id="aquifers-number"
               type="text"
               v-model="aquifer_id"/>
           </b-form-group>
@@ -45,7 +45,7 @@
       <b-form-row>
         <b-col>
           <b-form-group>
-            <b-button variant="primary" type="submit">Search</b-button>
+            <b-button variant="primary" type="submit" id="aquifers-search">Search</b-button>
             <b-button variant="default" type="reset">Reset</b-button>
           </b-form-group>
         </b-col>
@@ -53,6 +53,7 @@
     </b-form>
 
     <b-table
+      id="aquifers-results"
       :fields="aquiferListFields"
       :items="aquiferList"
       :show-empty="emptyResults"

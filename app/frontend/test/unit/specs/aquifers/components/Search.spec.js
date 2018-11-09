@@ -84,7 +84,7 @@ describe('Search Component', () => {
     axios.get.mockResolvedValue({})
 
     const wrapper = component()
-    wrapper.find('#search').setValue('asdf')
+    wrapper.find('#aquifers-name').setValue('asdf')
     wrapper.find('form').trigger('submit')
 
     expect(axios.get).toHaveBeenCalledWith('aquifers/', {"params": { "search": "asdf" }})
@@ -94,7 +94,7 @@ describe('Search Component', () => {
     const wrapper = component()
     axios.get.mockResolvedValue({})
 
-    wrapper.find('#search').setValue('asdf')
+    wrapper.find('#aquifers-name').setValue('asdf')
     wrapper.find('form').trigger('submit')
 
     expect(wrapper.vm.query.search).toEqual('asdf')
