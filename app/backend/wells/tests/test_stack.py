@@ -173,7 +173,6 @@ class StackTest(TestCase):
 
     fixtures = ['wellsearch-codetables.json', ]
 
-
     def setUp(self):
         self.driller = Person.objects.create(
             first_name='Bobby',
@@ -278,7 +277,7 @@ class StackTest(TestCase):
         # There should be two submissions at this point.
         # Submission 1: A legacy well submission generated using the original well record.
         # Submission 2: The submission for an alteration.
-        self.assertEqual(submissions.count(), 2, "It is expected that a legacy submission be created")        
+        self.assertEqual(submissions.count(), 2, "It is expected that a legacy submission be created")
         self.assertEqual(new_full_name, well.owner_full_name)
         # Test that all foreign key sets have also been copied
         self.assertEqual(submissions[0].casing_set.count(), 2, "It is expected that the casings on the "
@@ -301,6 +300,9 @@ class StackTest(TestCase):
 
     def test_construction_submission_to_legacy_well(self):
         # The well already exists, and we're applying a construction submission to it.
+        # We're expecting a legacy record to be created, since we don't want to lose and information
+        # that may already be in the well. Furthermore, we expect the construction submission to be applied
+        # AFTER the legacy submission when stacking.
         original_full_name = 'Bob'
         new_full_name = 'Jimbo'
         # This is the original well record.
@@ -404,3 +406,33 @@ class StackTest(TestCase):
         Well.objects.get(well_tag_number=well.well_tag_number)
         self.assertEqual(start_date, well.decommission_start_date)
         self.assertEqual(end_date, well.decommission_end_date)
+
+    def test_edit_comes_after_construction(self):
+        # Stacking only works when done in the correct order. It's important that construction/legacy
+        # submissions get processed 1st, and that alterations and edits get stacked on top of that.
+        # In this case, we're creating a construction, and then applying an edit. We need to check
+        # that the edit is applied over the construction.
+        original_full_name = 'Bob'
+        new_full_name = 'Jimbo'
+        # Create a construction submission.
+        submission = ActivitySubmission.objects.create(
+            owner_full_name=original_full_name,
+            work_start_date=date(2018, 1, 1),
+            work_end_date=date(2018, 2, 1),
+            driller_responsible=self.driller,
+            owner_province_state=self.province,
+            well_activity_type=WellActivityCode.types.construction()
+            )
+        stacker = StackWells()
+        well = stacker.process(submission.filing_number)
+
+        # Create an edit submission.
+        submission = ActivitySubmission.objects.create(
+            owner_full_name=new_full_name,
+            well=well,
+            well_activity_type=WellActivityCode.types.staff_edit()
+        )
+        stacker = StackWells()
+        well = stacker.process(submission.filing_number)
+
+        self.assertEqual(new_full_name, well.owner_full_name)

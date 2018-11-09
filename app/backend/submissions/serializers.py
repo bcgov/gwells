@@ -206,7 +206,8 @@ class WellConstructionSubmissionSerializer(WellSubmissionSerializerBase):
                   'water_quality_colour', 'water_quality_odour', 'ems_id', 'total_depth_drilled',
                   'finished_well_depth', 'final_casing_stick_up', 'bedrock_depth', 'static_water_level',
                   'well_yield', 'artesian_flow', 'artesian_pressure', 'well_cap_type', 'well_disinfected',
-                  'comments', 'alternative_specs_submitted')
+                  'comments', 'alternative_specs_submitted', 'consultant_company', 'consultant_name',
+                  'driller_name', 'driller_responsible',)
         extra_kwargs = {
             # TODO: reference appropriate serializer as above
             'lithologydescription_set': {'required': False},

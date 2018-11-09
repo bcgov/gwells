@@ -34,7 +34,7 @@ class SearchSpecs extends BaseSpec {
       setWellTagOrIdentificationPlateNumber(123)
     when: 'I click the Search button'
       clickSearchButton()
-    then: 'The search is executed and a list of results is displayed'
+    then: 'The search is executed and a table containing at least 1 matching result is displayed'
       foundSearchResults()
   }
 
