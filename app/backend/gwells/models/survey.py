@@ -27,11 +27,13 @@ class Survey(AuditModel):
     WELL = 'w'
     REGISTRY = 'r'
     SEARCH = 's'
+    AQUIFER = 'a'
 
     SURVEY_PAGE_CHOICES = (
         (WELL, "well"),
         (REGISTRY, "registry"),
-        (SEARCH, "search")
+        (SEARCH, "search"),
+        (AQUIFER, "aquifer")
     )
 
     survey_guid = models.UUIDField(
@@ -63,11 +65,13 @@ class OnlineSurvey(models.Model):
     WELL = 'w'
     REGISTRY = 'r'
     SEARCH = 's'
+    AQUIFER = 'a'
 
     SURVEY_PAGE_CHOICES = (
         (WELL, "well"),
         (REGISTRY, "registry"),
-        (SEARCH, "search")
+        (SEARCH, "search"),
+        (AQUIFER, "aquifer")
     )
     survey_guid = models.UUIDField(
         primary_key=True, default=uuid.uuid4, editable=False)
