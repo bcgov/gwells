@@ -16,6 +16,20 @@
   <b-card no-body class="p-3 mb-4">
     <h5>Aquifer Search</h5>
 
+    <!-- Active surveys -->
+    <b-alert
+        show
+        variant="info"
+        class="container mb-3"
+        v-for="(survey, index) in surveys"
+        :key="`survey ${index}`">
+      <p class="m-0">
+        <a :href="survey.survey_link">
+          {{ survey.survey_introduction_text }}
+        </a>
+      </p>
+    </b-alert>
+
     <div class="pb-2">
       <b-button
         v-on:click="navigateToNew"
@@ -150,7 +164,8 @@ export default {
         { key: 'productivity', label: 'Productivity', sortable: true },
         { key: 'demand', label: 'Demand', sortable: true },
         { key: 'mapping_year', label: 'Year of mapping', sortable: true }
-      ]
+      ],
+      surveys: []
     }
   },
   computed: {
@@ -243,6 +258,16 @@ export default {
         })
       }
     }
+  },
+  created () {
+    // Fetch current surveys and add 'aquifer' surveys (if any) to this.surveys to be displayed
+    ApiService.query('surveys/').then((response) => {
+      response.data.forEach((survey) => {
+        if (survey.survey_page === 'a') {
+          this.surveys.push(survey)
+        }
+      })
+    })
   },
   mounted () { this.fetchResults() },
   watch: {
