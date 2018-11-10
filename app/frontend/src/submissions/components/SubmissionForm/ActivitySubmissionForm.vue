@@ -20,8 +20,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
           <div v-else>Well Activity Submission</div>
           <b-form-group v-if="activityType !== 'STAFF_EDIT'">
             <b-form-radio-group button-variant="outline-primary" size="sm" buttons v-model="formIsFlatInput" label="Form layout" class="float-right">
-              <b-form-radio v-bind:value="true" id="flat">Single page</b-form-radio>
-              <b-form-radio v-bind:value="false">Multi page</b-form-radio>
+              <b-form-radio v-bind:value="true" id="singleSubmissionPage">Single page</b-form-radio>
+              <b-form-radio v-bind:value="false" id="multiSubmissionPage">Multi page</b-form-radio>
             </b-form-radio-group>
           </b-form-group>
         </b-col>
@@ -298,9 +298,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <b-btn v-if="step > 1 && !formIsFlat" @click="step > 1 ? step-- : null" variant="primary">Back</b-btn>
       </b-col>
       <b-col class="pr-4 text-right">
-        <b-btn v-if="step < maxSteps && !formIsFlat" @click="step++" variant="primary">Next</b-btn>
+        <b-btn v-if="step < maxSteps && !formIsFlat" @click="step++" variant="primary" id="nextSubmissionStep">Next</b-btn>
         <span v-else>
-          <b-btn variant="primary" @click="$emit('preview')">Preview &amp; Submit</b-btn>
+          <b-btn variant="primary" @click="$emit('preview')" id="formPreviewButton">Preview &amp; Submit</b-btn>
         </span>
       </b-col>
     </b-row>
