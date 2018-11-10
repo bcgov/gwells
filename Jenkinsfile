@@ -206,7 +206,7 @@ pipeline {
                   registries-codetables.json \
                   registries.json \
                   aquifers.json \
-                  wellsearch.json.gz; \
+                  wellsearch.json; \
                 python manage.py createinitialrevisions'")
 
                 new GitHubHelper().createDeploymentStatus(this, ghDeploymentId, 'SUCCESS', ['targetUrl':"${targetURL}"])
