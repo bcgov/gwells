@@ -1519,20 +1519,91 @@
 							"response": []
 						},
 						{
+							"name": "Create new driller",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "bd75139a-e3d4-4e57-9eca-568872d2b9dc",
+										"type": "text/javascript",
+										"exec": [
+											"( function() {",
+											"    pm.test(\"Successful POST request\", function () {",
+											"        pm.expect(pm.response.code).to.be.oneOf([201,202]);",
+											"    });",
+											"    ",
+											"    var jsonData = pm.response.json()",
+											"    pm.environment.set(\"created_driller_guid\", jsonData.person_guid);",
+											"})();",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "first_name",
+											"value": "Bobby",
+											"type": "text"
+										},
+										{
+											"key": "surname",
+											"value": "Driller",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/drillers/?format=json",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"drillers",
+										""
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json"
+										}
+									]
+								},
+								"description": "Create a new driller to be registered"
+							},
+							"response": []
+						},
+						{
 							"name": "Alteration - Person Responsible",
 							"event": [
 								{
 									"listen": "test",
 									"script": {
-										"id": "04b44964-a1eb-420a-950a-b6a0b5c69cab",
+										"id": "0b7855ea-c33f-45a0-912c-9a02fc8077d2",
 										"type": "text/javascript",
 										"exec": [
 											"var jsonData = pm.response.json();",
+											"var created_driller_guid = pm.environment.get('created_driller_guid');",
 											"var fields = {",
 											"    \"consultant_company\": \"John Company\",",
 											"\t\"consultant_name\": \"John Consultant\",",
 											"\t\"driller_name\": \"John Person\",",
-											"\t\"driller_responsible\": \"518edfd5-d459-437a-b94a-803029de406f\"",
+											"\t\"driller_responsible\": created_driller_guid",
 											"}",
 											"",
 											"pm.environment.set('filing_number', jsonData.filing_number)",
@@ -1572,7 +1643,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n\t\"well\": {{well_tag_number}},\n\t\"consultant_company\": \"John Company\",\n\t\"consultant_name\": \"John Consultant\",\n\t\"driller_name\": \"John Person\",\n\t\"driller_responsible\": \"518edfd5-d459-437a-b94a-803029de406f\"\n}"
+									"raw": "{\n\t\"well\": {{well_tag_number}},\n\t\"consultant_company\": \"John Company\",\n\t\"consultant_name\": \"John Consultant\",\n\t\"driller_name\": \"John Person\",\n\t\"driller_responsible\": \"{{created_driller_guid}}\"\n}"
 								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/submissions/alteration",
@@ -1596,10 +1667,11 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "8d349c2a-7753-4baa-ba43-cac3e642a3d8",
+										"id": "027d3bd1-6dcc-4552-99da-324c714df9d0",
 										"type": "text/javascript",
 										"exec": [
 											"var jsonData = pm.response.json();",
+											"var created_driller_guid = pm.environment.get('created_driller_guid');",
 											"var fields = {",
 											"    \"consultant_company\": \"John Company\",",
 											"\t\"consultant_name\": \"John Consultant\",",
@@ -1620,7 +1692,7 @@
 											"})",
 											"",
 											"pm.test('driller_responsible returned', function() {",
-											"    pm.expect(jsonData.driller_responsible.person_guid).to.equal(\"518edfd5-d459-437a-b94a-803029de406f\")",
+											"    pm.expect(jsonData.driller_responsible.person_guid).to.equal(created_driller_guid)",
 											"})",
 											"",
 											"",

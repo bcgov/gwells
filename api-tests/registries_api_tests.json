@@ -1,17 +1,15 @@
 {
 	"info": {
-		"_postman_id": "1ab0d6b2-a821-4bd5-be73-ef33597c8aa9",
-		"name": "GWELLS API remote",
+		"_postman_id": "050f7138-bc27-4b73-9e23-30500331ba5e",
+		"name": "GWELLS Registries API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
 			"name": "Authenticated user",
-			"description": null,
 			"item": [
 				{
 					"name": "Log in",
-					"description": null,
 					"item": [
 						{
 							"name": "Log in",
@@ -95,7 +93,6 @@
 				},
 				{
 					"name": "Organizations",
-					"description": "Tests for organizations endpoint\n/registries/organizations/",
 					"item": [
 						{
 							"name": "Company create new",
@@ -1137,11 +1134,11 @@
 							"response": []
 						}
 					],
+					"description": "Tests for organizations endpoint\n/registries/organizations/",
 					"_postman_isSubFolder": true
 				},
 				{
 					"name": "Drillers",
-					"description": "Tests for drillers endpoint\n/registries/drillers/",
 					"item": [
 						{
 							"name": "Driller get options",
@@ -2739,11 +2736,11 @@
 							"response": []
 						}
 					],
+					"description": "Tests for drillers endpoint\n/registries/drillers/",
 					"_postman_isSubFolder": true
 				},
 				{
 					"name": "Registrations",
-					"description": "Well driller or well pump installer registration records for individuals",
 					"item": [
 						{
 							"name": "Create new driller",
@@ -4160,6 +4157,7 @@
 							"response": []
 						}
 					],
+					"description": "Well driller or well pump installer registration records for individuals",
 					"_postman_isSubFolder": true
 				}
 			]
