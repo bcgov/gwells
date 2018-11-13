@@ -18,7 +18,7 @@
     <b-alert
         show
         variant="info"
-        class="container mb-3"
+        class="mb-3"
         v-for="(survey, index) in surveys"
         :key="`survey ${index}`">
       <p class="m-0">
