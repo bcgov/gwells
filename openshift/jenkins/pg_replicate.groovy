@@ -10,7 +10,7 @@
 
 
 // Project name (moe-gwells-test|moe-gwells-prod)
-String PROJECT = 'moe-gwells-test'
+String PROJECT = 'moe-gwells-prod'
 
 // Minimum well count for success
 int WELL_CHECK = 100000
@@ -89,7 +89,7 @@ stage ( 'run' )
 
                 echo "Scaling down and starting maintenance mode"
                 sh """
-                    oc patch route gwells-staging -n "${PROJECT}" -p \
+                    oc patch route "${DC_RT}" -n "${PROJECT}" -p \
                         '{ "spec": { "to": { "name": "proxy-caddy"}, "port": { "targetPort": "2015-tcp" }}}'
 
                     oc scale dc "${DC_RT}" --timeout=5s --replicas=0 -n "${PROJECT}"
