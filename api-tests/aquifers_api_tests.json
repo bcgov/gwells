@@ -726,7 +726,6 @@
 					"listen": "test",
 					"script": {
 						"id": "cfe894ea-0d9f-4b92-8857-34eb257915ab",
-						"type": "text/javascript",
 						"exec": [
 							"var jsonData = pm.response.json()",
 							"",
@@ -785,7 +784,8 @@
 							"pm.test(\"Aquifer vulnerability equals name supplied in request\", function () {",
 							"    pm.expect(jsonData.vulnerability).to.eql(\"H\");",
 							"});"
-						]
+						],
+						"type": "text/javascript"
 					}
 				}
 			],
@@ -868,7 +868,7 @@
 					]
 				},
 				"url": {
-					"raw": "{{base_url}}/api/v1/aquifers/{{KNOWN_AQUIFER_ID}}/",
+					"raw": "{{base_url}}/api/v1/aquifers/{{aquifer_id}}/",
 					"host": [
 						"{{base_url}}"
 					],
@@ -876,7 +876,7 @@
 						"api",
 						"v1",
 						"aquifers",
-						"{{KNOWN_AQUIFER_ID}}",
+						"{{aquifer_id}}",
 						""
 					]
 				}
