@@ -89,7 +89,7 @@ stage ( 'run' )
 
                 echo "Scaling down and starting maintenance mode"
                 sh """
-                    oc patch route gwells-production -n "${PROJECT}" -p \
+                    oc patch route "${DC_RT}" -n "${PROJECT}" -p \
                         '{ "spec": { "to": { "name": "proxy-caddy"}, "port": { "targetPort": "2015-tcp" }}}'
 
                     oc scale dc "${DC_RT}" --timeout=5s --replicas=0 -n "${PROJECT}"
@@ -127,11 +127,35 @@ stage ( 'run' )
                 ).trim()
                 if ( WELL_COUNT > WELL_CHECK ){
                     echo WELL_COUNT +" > "+ WELL_CHECK
-                    echo "Scaling down and leaving maintenance mode"
+                    echo "Scaling up and leaving maintenance mode"
+                    // Scale back up
                     sh """
-                        oc scale dc "${DC_RT}" --timeout=5s --replicas=1 -n "${PROJECT}"
-                        sleep 30
-                        oc patch route gwells-production -n "${PROJECT}" -p \
+                        oc scale dc "${DC_RT}" --timeout=5s --replicas=2 -n "${PROJECT}"
+                    """
+
+                    // Wait until pods are ready
+                    pipeline {
+                        script {
+                            openshift.withCluster() {
+                                openshift.withProject(PROJECT) {
+                                    def newVersion = openshift.selector("dc", "${DC_RT}").object().status.latestVersion
+                                    def pods = openshift.selector('pod', [deployment: "${DC_RT}-${newVersion}"])
+                                    echo "kind: ${pods.kind}"
+                                    timeout(5) {
+                                        pods.untilEach(2) {
+                                            return it.object().status.containerStatuses.every {
+                                                it.ready
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // Turn off maintenance mode
+                    sh """
+                        oc patch route ${DC_RT} -n "${PROJECT}" -p \
                             '{ "spec": { "to": { "name": "${DC_RT}" }, "port": { "targetPort": "web" }}}'
                     """
                 } else {
