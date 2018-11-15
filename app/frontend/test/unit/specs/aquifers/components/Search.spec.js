@@ -48,19 +48,20 @@ describe('Search Component', () => {
       modules: { auth }
     }),
     methods: {
-      scrollToTableTop() {}
+      scrollToTableTop () {}
     },
     ...options
   })
 
   it('Displays a message if no aquifers could be found', () => {
+    axios.get.mockResolvedValue({})
     const wrapper = component({
       computed: {
-        aquiferList() { return [] },
-        emptyResults() { return true }
+        aquiferList () { return [] },
+        emptyResults () { return true }
       },
       methods: {
-        fetchResults() {}
+        fetchResults () {}
       }
     })
 
@@ -70,10 +71,10 @@ describe('Search Component', () => {
   it('Matches the snapshot', () => {
     const wrapper = component({
       computed: {
-        aquiferList() { return [aquiferFixture] }
+        aquiferList () { return [aquiferFixture] }
       },
       methods: {
-        fetchResults() {}
+        fetchResults () {}
       }
     })
 
@@ -84,17 +85,17 @@ describe('Search Component', () => {
     axios.get.mockResolvedValue({})
 
     const wrapper = component()
-    wrapper.find('#search').setValue('asdf')
+    wrapper.find('#aquifers-name').setValue('asdf')
     wrapper.find('form').trigger('submit')
 
-    expect(axios.get).toHaveBeenCalledWith('aquifers/', {"params": { "search": "asdf" }})
+    expect(axios.get).toHaveBeenCalledWith('aquifers/', {'params': { 'search': 'asdf' }})
   })
 
   it('form reset resets response and query', () => {
     const wrapper = component()
     axios.get.mockResolvedValue({})
 
-    wrapper.find('#search').setValue('asdf')
+    wrapper.find('#aquifers-name').setValue('asdf')
     wrapper.find('form').trigger('submit')
 
     expect(wrapper.vm.query.search).toEqual('asdf')

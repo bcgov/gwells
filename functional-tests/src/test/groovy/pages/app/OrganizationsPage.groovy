@@ -62,10 +62,11 @@ class OrganizationsPage extends BaseAppPage {
 
   // Update/Delete company
   void selectCompany(String regex) {
+    // Expand the search dropdown
     selectCompanySearchField.click()
-
     interact {
       waitFor {
+        // wait for the dropdown to populate and click the element in the list with the matching text
         moveToElement(selectCompanyDropdown.$('li', text:~"$regex")).click()
       }
     }

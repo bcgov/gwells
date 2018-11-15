@@ -17,6 +17,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 
       <!-- Form submission success message -->
       <b-alert
+          id="submissionSuccessAlert"
           :show="formSubmitSuccess"
           variant="success"
           class="mt-3">
@@ -37,7 +38,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           variant="danger"
           class="mt-3">
 
-        <i class="fa fa-2x fa-times-circle text-danger mr-2 alert-icon" aria-hidden="true"></i>
+        <i class="fa fa-2x fa-exclamation-circle text-danger mr-2 alert-icon" aria-hidden="true"></i>
         <div class="alert-message">
           <div v-if="isStaffEdit">
             Your changes were not saved.
