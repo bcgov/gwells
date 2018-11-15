@@ -10,7 +10,7 @@
 
 
 // Project name (moe-gwells-test|moe-gwells-prod)
-String PROJECT = 'moe-gwells-prod'
+String PROJECT = 'moe-gwells-test'
 
 // Minimum well count for success
 int WELL_CHECK = 100000
@@ -120,7 +120,7 @@ stage ( 'run' )
                 int WELL_COUNT = sh(
                     script:"""
                         oc exec "${POD_DB}" -n "${PROJECT}" -- /bin/bash -c \
-                        'psql -t -d gwells -U "\${POSTGRESQL_USER}" -c "SELECT count(*) from well;"'
+                            'psql -t -d gwells -U "\${POSTGRESQL_USER}" -c "SELECT count(*) from well;"'
                     """,
                     returnStdout:
                         true
@@ -128,36 +128,39 @@ stage ( 'run' )
                 if ( WELL_COUNT > WELL_CHECK ){
                     echo WELL_COUNT +" > "+ WELL_CHECK
                     echo "Scaling up and leaving maintenance mode"
-                    // Scale back up
-                    sh """
-                        oc scale dc "${DC_RT}" --timeout=5s --replicas=2 -n "${PROJECT}"
-                    """
 
-                    // Wait until pods are ready
                     pipeline {
                         script {
                             openshift.withCluster() {
                                 openshift.withProject(PROJECT) {
-                                    def newVersion = openshift.selector("dc", "${DC_RT}").object().status.latestVersion
-                                    def pods = openshift.selector('pod', [deployment: "${DC_RT}-${newVersion}"])
-                                    echo "kind: ${pods.kind}"
-                                    timeout(5) {
-                                        pods.untilEach(2) {
-                                            return it.object().status.containerStatuses.every {
-                                                it.ready
+                                    def dc = openshift.selector("dc", "${DC_RT}")
+                                    def newVersion = dc.object().status.latestVersion
+
+                                    stage ('Scaling Up') {
+                                        // Scale app back up
+                                        dc.scale("--replicas=2","--timeout=5m")
+
+                                        // Wait until instances are ready
+                                        def pods = openshift.selector('pod', [deployment: "${DC_RT}-${newVersion}"])
+                                        timeout(5) {
+                                            pods.untilEach(2) {
+                                                return it.object().status.containerStatuses.every {
+                                                    it.ready
+                                                }
                                             }
                                         }
+                                    }
+
+                                    stage ('Maintenance Off') {
+                                        // Turn off maintenance mode
+                                        def route = openshift.selector("route", "${DC}")
+                                        def patch = '\'{"spec": {"to": {"name": "' + "${DC}" + '"}, "port": {"targetPort": "web" }}}\''
+                                        route.patch( patch )
                                     }
                                 }
                             }
                         }
                     }
-
-                    // Turn off maintenance mode
-                    sh """
-                        oc patch route ${DC_RT} -n "${PROJECT}" -p \
-                            '{ "spec": { "to": { "name": "${DC_RT}" }, "port": { "targetPort": "web" }}}'
-                    """
                 } else {
                     echo WELL_COUNT +" <= 100000, well count too low"
                 }
