@@ -124,16 +124,21 @@ class SubmissionGetAPIView(RetrieveAPIView):
     queryset = ActivitySubmission.objects.all()
     model = ActivitySubmission
     lookup_field = 'filing_number'
+    serializer_class = WellSubmissionListSerializer
 
-    def get_serializer(self, data):
+    def get_serializer(self, *args, **kwargs):
+        serializer_class = self.get_serializer_class()
+        kwargs['context'] = self.get_serializer_context()
+
+        # There are different serializers; which one is used depends on well_activity_type
         if data.well_activity_type.code == WellActivityCode.types.construction().code:
-            return WellConstructionSubmissionSerializer(data)
+            serializer_class = WellConstructionSubmissionSerializer
         elif data.well_activity_type.code == WellActivityCode.types.alteration().code:
-            return WellAlterationSubmissionSerializer(data)
+            serializer_class = WellAlterationSubmissionSerializer
         elif data.well_activity_type.code == WellActivityCode.types.decommission().code:
-            return WellDecommissionSubmissionSerializer(data)
-        else:
-            return WellSubmissionListSerializer(data)
+            serializer_class = WellDecommissionSubmissionSerializer
+
+        return serializer_class(*args, **kwargs)
 
 
 class SubmissionListAPIView(ListAPIView):
