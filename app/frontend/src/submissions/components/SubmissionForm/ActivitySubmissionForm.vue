@@ -102,8 +102,13 @@ Licensed under the Apache License, Version 2.0 (the "License");
       :ownerProvinceState.sync="form.owner_province_state"
       :ownerCity.sync="form.owner_city"
       :ownerPostalCode.sync="form.owner_postal_code"
+      :ownerEmail.sync="form.owner_email"
+      :ownerTel.sync="form.owner_tel"
       :errors="errors"
       :fieldsLoaded="fieldsLoaded"
+      :isStaffEdit="isStaffEdit"
+      :saveDisabled="editSaveDisabled"
+      v-on:save="$emit('submit_edit')"
     />
 
     <!-- Well location -->
