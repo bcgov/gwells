@@ -58,9 +58,7 @@ class WellDetail(RetrieveAPIView):
     Return well detail.
     This view is open to all, and has no permissions.
     """
-
-    def get_serializer(self, data):
-        return WellDetailSerializer(data)
+    serializer_class = WellDetailSerializer
 
     queryset = Well.objects.all()
     lookup_field = 'well_tag_number'
