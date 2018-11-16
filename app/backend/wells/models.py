@@ -495,6 +495,9 @@ class Well(AuditModel):
         verbose_name='Province', null=True)
     owner_postal_code = models.CharField(
         max_length=10, blank=True, verbose_name='Postal Code')
+    owner_email = models.EmailField(null=True, blank=True, verbose_name='Email address')
+    owner_tel = models.CharField(
+        null=True, blank=True, max_length=15, verbose_name='Telephone number')
 
     well_class = models.ForeignKey(WellClassCode, null=True, db_column='well_class_code',
                                    on_delete=models.CASCADE, verbose_name='Well Class')
@@ -924,6 +927,9 @@ class ActivitySubmission(AuditModel):
         null=True)
     owner_postal_code = models.CharField(
         max_length=10, blank=True, verbose_name='Postal Code')
+    owner_email = models.EmailField(null=True, blank=True, verbose_name='Email address')
+    owner_tel = models.CharField(
+        null=True, blank=True, max_length=15, verbose_name='Telephone number')
 
     street_address = models.CharField(
         max_length=100, blank=True, verbose_name='Street Address')
