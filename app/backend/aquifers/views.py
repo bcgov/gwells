@@ -16,10 +16,14 @@ from django.shortcuts import render
 from django_filters import rest_framework as filters
 from django.views.generic import TemplateView
 
+from drf_yasg.utils import swagger_auto_schema
+
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveUpdateAPIView
+
+from gwells.documents import MinioClient
 
 from aquifers import models
 from aquifers import serializers
@@ -121,3 +125,22 @@ class WaterUseListAPIView(ListAPIView):
 class AquiferHomeView(TemplateView):
     """Loads the html file containing the Aquifer web app"""
     template_name = 'aquifers/aquifers.html'
+
+
+class ListFiles(APIView):
+    """
+    List documents associated with an aquifer
+
+    get: list files found for the aquifer identified in the uri
+    """
+
+    @swagger_auto_schema(auto_schema=None)
+    def get(self, request, aquifer_id):
+
+        client = MinioClient(
+            request=request, disable_private=True)
+
+        documents = client.get_documents(
+            int(aquifer_id), resource="aquifer", include_private=False)
+
+        return Response(documents)

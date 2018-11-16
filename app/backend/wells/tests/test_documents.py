@@ -13,7 +13,7 @@
 """
 import collections
 from django.test import TestCase
-from wells.documents import MinioClient
+from gwells.documents import MinioClient
 
 
 class DocumentTests(TestCase):
