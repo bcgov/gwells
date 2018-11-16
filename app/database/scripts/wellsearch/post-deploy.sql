@@ -338,7 +338,7 @@ COMMENT ON COLUMN registries_proof_of_age_code.update_date IS 'Date and time (UT
 COMMENT ON COLUMN registries_proof_of_age_code.update_user IS 'The user who last updated this record in the database.';
 COMMENT ON COLUMN registries_register.create_date IS 'Date and time (UTC) when the physical record was created in the database.';
 COMMENT ON COLUMN registries_register.create_user IS 'The user who created this record in the database.';
-COMMENT ON COLUMN registries_register.registration_no IS 'Unique number assigned to the well driller or well pump installer upon registration. Format used: certification type yymmddsequence where sequence is two digits starting with 01 for the first person registered in alphabetical order for that day, and certification type would be 'WD' well driller and 'WPI' for well pump installer. E.g. WD 18031001';
+COMMENT ON COLUMN registries_register.registration_no IS 'Unique number assigned to the well driller or well pump installer upon registration. Format used: certification type yymmddsequence where sequence is two digits starting with 01 for the first person registered in alphabetical order for that day, and certification type would be ''WD'' well driller and ''WPI'' for well pump installer. E.g. WD 18031001';
 COMMENT ON COLUMN registries_register.update_date IS 'Date and time (UTC) when the physical record was updated in the database.  It will be the same as the create_date until the record is first updated after creation.';
 COMMENT ON COLUMN registries_register.update_user IS 'The user who last updated this record in the database.';
 COMMENT ON COLUMN registries_register_note.create_date IS 'Date and time (UTC) when the physical record was created in the database.';
