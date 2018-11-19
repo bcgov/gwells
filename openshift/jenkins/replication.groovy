@@ -50,11 +50,10 @@ pipeline {
                         openshift.withProject(PROJECT) {
                             echo "Saving vars and checking db"
                             def dcDb   = openshift.selector("dc", "${DB_NAME}")
-                            def dcDbV  = dcDb.object().status.latestVersion
-                            def dbPods = openshift.selector('pod', [deployment: "${DB_NAME}-${dcDbV}"])
-                            def dbPod0 = dbPods.objects()[0].metadata.name
+                            def latest = dcDb.object().status.latestVersion
+                            def dbPods = openshift.selector('pod', [deployment: "${DB_NAME}-${latest}"])
                             DB_STAT = openshift.exec(
-                                dbPod0,
+                                dbPods.objects()[0].metadata.name,
                                 "--",
                                 "bash -c '\
                                     psql -d gwells -c \"SELECT 1 AS online FROM WELLS.WELLS_WELLS LIMIT 1;\" \
@@ -78,7 +77,7 @@ pipeline {
                             def dcApp = openshift.selector("dc", "${APP_NAME}")
                             dcApp.scale("--replicas=0","--timeout=5s")
 
-                            // Point route to maintenance screen (temporarily using minio)
+                            // Point route to maintenance screen
                             def route = openshift.selector("route", "${APP_NAME}")
                             def patch = '\'{"spec": { \
                                 "to": {"name": "' + "${MNT_NAME}"+ '"}, \
@@ -99,11 +98,10 @@ pipeline {
                     openshift.withCluster() {
                         openshift.withProject(PROJECT) {
                             def dcDb   = openshift.selector("dc", "${DB_NAME}")
-                            def dcDbV  = dcDb.object().status.latestVersion
-                            def dbPods = openshift.selector('pod', [deployment: "${DB_NAME}-${dcDbV}"])
-                            def dbPod0 = dbPods.objects()[0].metadata.name
+                            def latest = dcDb.object().status.latestVersion
+                            def dbPods = openshift.selector('pod', [deployment: "${DB_NAME}-${latest}"])
                             openshift.exec(
-                                dbPod0,
+                                dbPods.objects()[0].metadata.name,
                                 "--",
                                 "bash -c '\
                                     psql -t -d gwells -c \"VACUUM FULL;\" \
@@ -123,13 +121,12 @@ pipeline {
                     openshift.withCluster() {
                         openshift.withProject(PROJECT) {
                             def dcDb   = openshift.selector("dc", "${DB_NAME}")
-                            def dcDbV  = dcDb.object().status.latestVersion
-                            def dbPods = openshift.selector('pod', [deployment: "${DB_NAME}-${dcDbV}"])
-                            def dbPod0 = dbPods.objects()[0].metadata.name
+                            def latest = dcDb.object().status.latestVersion
+                            def dbPods = openshift.selector('pod', [deployment: "${DB_NAME}-${latest}"])
                             openshift.exec(
-                                dbPod0,
+                                dbPods.objects()[0].metadata.name,
                                 "--",
-                                "bash -c '\
+                                "echo bash -c '\
                                     psql -t -d gwells -U \${POSTGRESQL_USER} -c \
                                         \"SELECT db_replicate_step1(_subset_ind=>false);\" \
                                 '"
@@ -148,13 +145,12 @@ pipeline {
                     openshift.withCluster() {
                         openshift.withProject(PROJECT) {
                             def dcDb   = openshift.selector("dc", "${DB_NAME}")
-                            def dcDbV  = dcDb.object().status.latestVersion
-                            def dbPods = openshift.selector('pod', [deployment: "${DB_NAME}-${dcDbV}"])
-                            def dbPod0 = dbPods.objects()[0].metadata.name
+                            def latest = dcDb.object().status.latestVersion
+                            def dbPods = openshift.selector('pod', [deployment: "${DB_NAME}-${latest}"])
                             openshift.exec(
-                                dbPod0,
+                                dbPods.objects()[0].metadata.name,
                                 "--",
-                                "bash -c '\
+                                "echo bash -c '\
                                     psql -t -d gwells -U \${POSTGRESQL_USER} -c \
                                         \"SELECT db_replicate_step2();\" \
                                 '"
@@ -162,7 +158,7 @@ pipeline {
 
                             // Get a count of wells, ensure >= WELL_CHECK
                             WELL_COUNT = openshift.exec(
-                                dbPod0,
+                                dbPods.objects()[0].metadata.name,
                                 "--",
                                 "bash -c '\
                                     psql -t -d gwells -U \${POSTGRESQL_USER} -c \
@@ -170,14 +166,11 @@ pipeline {
                                             | grep -Eo \"[[:digit:]]*\" \
                                 '"
                             ).out.trim()
+
+                            // Make sure there are enough well results
                             WELL_RESULT = sh(
                                 script: """
-                                    if [ ${WELL_COUNT} -gt ${WELL_CHECK} ]
-                                    then
-                                        echo "true"
-                                    else
-                                        echo "false"
-                                    fi
+                                    [ ${WELL_COUNT} -lt ${WELL_CHECK} ] || echo "true"
                                 """,
                                 returnStdout: true
                             ).trim()
@@ -199,8 +192,8 @@ pipeline {
                             dcApp.scale("--replicas=2","--timeout=10m")
 
                             // Wait until pods are ready
-                            def newVersion = dcApp.object().status.latestVersion
-                            def pods = openshift.selector('pod', [deployment: "${APP_NAME}-${newVersion}"])
+                            def latest = dcApp.object().status.latestVersion
+                            def pods = openshift.selector('pod', [deployment: "${APP_NAME}-${latest}"])
                             timeout(5) {
                                 pods.untilEach(2) {
                                     return it.object().status.containerStatuses.every {
@@ -225,11 +218,11 @@ pipeline {
             steps {
                 script {
                     if (DB_STAT != 'online'){
-                        echo "Database not accessible, replication skipped"
+                        echo "Replication skipped.  Database not accessible."
                     } else if (WELL_RESULT != 'true'){
-                        echo "Well count below ${WELL_CHECK}"
+                        echo "Application offline.  Well count: ${WELL_COUNT}, min: ${WELL_CHECK}."
                     } else {
-                        echo "Replication complete!  Well check: ${WELL_CHECK}"
+                        echo "Replication complete!  Well count: ${WELL_COUNT}."
                     }
                 }
             }
