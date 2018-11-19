@@ -23,27 +23,22 @@ properties(
 )
 
 
-// String APP_DC = 'gwells-dev-pr-1022'
 pipeline {
     environment {
         // Project name (moe-gwells-test|moe-gwells-prod)
         String PROJECT = 'moe-gwells-dev'
 
-        // Deployment configs
-        String APP_DC = 'gwells-dev-pr-1022'
-        String DB_DC  = 'gwells-pgsql-dev-pr-1022'
-
-        // Routes and ports
+        // Names, routes and ports
+        String DB_NAME  = 'gwells-pgsql-dev-pr-1022'
         String APP_NAME = 'gwells-dev-pr-1022'
         String APP_PORT = 'web'
         String MNT_NAME = 'gwells-minio'
         String MNT_PORT = '9000-tcp'
 
-        // Minimum well count for success
-        int WELL_CHECK = 100000
-
         // Checks
         String DB_STAT = ""
+        Integer WELL_COUNT = 0
+        Integer WELL_CHECK = 100000
     }
     agent none
     stages {
@@ -53,9 +48,9 @@ pipeline {
                     openshift.withCluster() {
                         openshift.withProject(PROJECT) {
                             echo "Saving vars and checking db"
-                            def dcDb   = openshift.selector("dc", "${DB_DC}")
+                            def dcDb   = openshift.selector("dc", "${DB_NAME}")
                             def dcDbV  = dcDb.object().status.latestVersion
-                            def dbPods = openshift.selector('pod', [deployment: "${DB_DC}-${dcDbV}"])
+                            def dbPods = openshift.selector('pod', [deployment: "${DB_NAME}-${dcDbV}"])
                             def dbPod0 = dbPods.objects()[0].metadata.name
                             DB_STAT = openshift.exec(
                                 dbPod0,
@@ -72,18 +67,18 @@ pipeline {
         }
         stage('App Down') {
             when {
-                expression { DB_STAT == 'online' }
+                expression {DB_STAT == 'online'}
             }
             steps {
                 script {
                     openshift.withCluster() {
                         openshift.withProject(PROJECT) {
                             // Scale app down
-                            def dcApp = openshift.selector("dc", "${APP_DC}")
+                            def dcApp = openshift.selector("dc", "${APP_NAME}")
                             dcApp.scale("--replicas=0","--timeout=5s")
 
                             // Point route to maintenance screen (temporarily using minio)
-                            def route = openshift.selector("route", "${APP_DC}")
+                            def route = openshift.selector("route", "${APP_NAME}")
                             def patch = '\'{"spec": { \
                                 "to": {"name": "' + "${MNT_NAME}"+ '"}, \
                                 "port": {"targetPort": "' + "${MNT_PORT}" + '"} \
@@ -94,32 +89,102 @@ pipeline {
                 }
             }
         }
-        stage('Do Stuff') {
+        stage('Vacuum Db') {
             when {
-                expression { DB_STAT == 'online' }
+                expression {DB_STAT == 'online'}
             }
             steps {
                 script {
-                    echo "This is where the exciting stuff happens"
-                    sleep 30
+                    openshift.withCluster() {
+                        openshift.withProject(PROJECT) {
+                            def dcDb   = openshift.selector("dc", "${DB_NAME}")
+                            def dcDbV  = dcDb.object().status.latestVersion
+                            def dbPods = openshift.selector('pod', [deployment: "${DB_NAME}-${dcDbV}"])
+                            def dbPod0 = dbPods.objects()[0].metadata.name
+                            openshift.exec(
+                                dbPod0,
+                                "--",
+                                "bash -c '\
+                                    psql -t -d gwells -c \"VACUUM FULL;\" \
+                                '"
+                            )
+                        }
+                    }
+                }
+            }
+        }
+        stage('Replicate 1/2') {
+            when {
+                expression {DB_STAT == 'online'}
+            }
+            steps {
+                script {
+                    openshift.withCluster() {
+                        openshift.withProject(PROJECT) {
+                            def dcDb   = openshift.selector("dc", "${DB_NAME}")
+                            def dcDbV  = dcDb.object().status.latestVersion
+                            def dbPods = openshift.selector('pod', [deployment: "${DB_NAME}-${dcDbV}"])
+                            def dbPod0 = dbPods.objects()[0].metadata.name
+                            openshift.exec(
+                                dbPod0,
+                                "--",
+                                "bash -c '\
+                                    psql -t -d gwells -U \${POSTGRESQL_USER} -c \"SELECT db_replicate_step1(_subset_ind=>false);\" \
+                                '"
+                            )
+                        }
+                    }
+                }
+            }
+        }
+        stage('Replicate 2/2') {
+            when {
+                expression {DB_STAT == 'online'}
+            }
+            steps {
+                script {
+                    openshift.withCluster() {
+                        openshift.withProject(PROJECT) {
+                            def dcDb   = openshift.selector("dc", "${DB_NAME}")
+                            def dcDbV  = dcDb.object().status.latestVersion
+                            def dbPods = openshift.selector('pod', [deployment: "${DB_NAME}-${dcDbV}"])
+                            def dbPod0 = dbPods.objects()[0].metadata.name
+                            openshift.exec(
+                                dbPod0,
+                                "--",
+                                "bash -c '\
+                                    psql -t -d gwells -U \${POSTGRESQL_USER} -c \"SELECT db_replicate_step2();\" \
+                                '"
+                            )
+
+                            // Get a count of wells
+                            WELL_COUNT = openshift.exec(
+                                dbPod0,
+                                "--",
+                                "bash -c '\
+                                    psql -t -d gwells -U \${POSTGRESQL_USER} -c \"SELECT count(*) from well;\" \
+                                '"
+                            ).out.trim()
+                        }
+                    }
                 }
             }
         }
         stage('App Up') {
             when {
-                expression { DB_STAT == 'online' }
+                expression {DB_STAT == 'online' && WELL_COUNT > WELL_CHECK}
             }
             steps {
                 script {
                     openshift.withCluster() {
                         openshift.withProject(PROJECT) {
                             // Scale app up
-                            def dcApp = openshift.selector("dc", "${APP_DC}")
+                            def dcApp = openshift.selector("dc", "${APP_NAME}")
                             dcApp.scale("--replicas=2","--timeout=10m")
 
                             // Wait until pods are ready
                             def newVersion = dcApp.object().status.latestVersion
-                            def pods = openshift.selector('pod', [deployment: "${APP_DC}-${newVersion}"])
+                            def pods = openshift.selector('pod', [deployment: "${APP_NAME}-${newVersion}"])
                             timeout(5) {
                                 pods.untilEach(2) {
                                     return it.object().status.containerStatuses.every {
@@ -129,7 +194,7 @@ pipeline {
                             }
 
                             // Point route to app
-                            def route = openshift.selector("route", "${APP_DC}")
+                            def route = openshift.selector("route", "${APP_NAME}")
                             def patch = '\'{"spec": { \
                                 "to": {"name": "' + "${APP_NAME}"+ '"}, \
                                 "port": {"targetPort": "' + "${APP_PORT}" + '" } \
@@ -142,7 +207,7 @@ pipeline {
         }
         stage('Notify') {
             when {
-                expression { DB_STAT != 'online' }
+                expression {DB_STAT != 'online'}
             }
             steps {
                 script {
