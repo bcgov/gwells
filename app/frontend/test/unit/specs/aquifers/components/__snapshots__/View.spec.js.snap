@@ -57,9 +57,9 @@ exports[`View Component Edit mode matches the snapshot 1`] = `
           </div>
            
           <div
-            aria-labelledby="__BVID__47__BV_label_"
+            aria-labelledby="__BVID__49__BV_label_"
             class="b-form-group form-group"
-            id="__BVID__47"
+            id="__BVID__49"
             role="group"
           >
             <div
@@ -68,7 +68,7 @@ exports[`View Component Edit mode matches the snapshot 1`] = `
               <label
                 class="col-sm-4 col-form-label"
                 for="aquifer_name"
-                id="__BVID__47__BV_label_"
+                id="__BVID__49__BV_label_"
               >
                 Aquifer name
               </label>
@@ -90,9 +90,9 @@ exports[`View Component Edit mode matches the snapshot 1`] = `
           </div>
            
           <div
-            aria-labelledby="__BVID__49__BV_label_"
+            aria-labelledby="__BVID__51__BV_label_"
             class="b-form-group form-group"
-            id="__BVID__49"
+            id="__BVID__51"
             role="group"
           >
             <div
@@ -101,7 +101,7 @@ exports[`View Component Edit mode matches the snapshot 1`] = `
               <label
                 class="col-sm-4 col-form-label"
                 for="location_description"
-                id="__BVID__49__BV_label_"
+                id="__BVID__51__BV_label_"
               >
                 Descriptive location
               </label>
@@ -123,9 +123,9 @@ exports[`View Component Edit mode matches the snapshot 1`] = `
           </div>
            
           <div
-            aria-labelledby="__BVID__51__BV_label_"
+            aria-labelledby="__BVID__53__BV_label_"
             class="b-form-group form-group"
-            id="__BVID__51"
+            id="__BVID__53"
             role="group"
           >
             <div
@@ -134,7 +134,7 @@ exports[`View Component Edit mode matches the snapshot 1`] = `
               <label
                 class="col-sm-4 col-form-label"
                 for="material"
-                id="__BVID__51__BV_label_"
+                id="__BVID__53__BV_label_"
               >
                 Material type
               </label>
@@ -154,9 +154,9 @@ exports[`View Component Edit mode matches the snapshot 1`] = `
           </div>
            
           <div
-            aria-labelledby="__BVID__53__BV_label_"
+            aria-labelledby="__BVID__55__BV_label_"
             class="b-form-group form-group"
-            id="__BVID__53"
+            id="__BVID__55"
             role="group"
           >
             <div
@@ -165,7 +165,7 @@ exports[`View Component Edit mode matches the snapshot 1`] = `
               <label
                 class="col-sm-4 col-form-label"
                 for="quality_concern"
-                id="__BVID__53__BV_label_"
+                id="__BVID__55__BV_label_"
               >
                 Quality concerns
               </label>
@@ -185,9 +185,9 @@ exports[`View Component Edit mode matches the snapshot 1`] = `
           </div>
            
           <div
-            aria-labelledby="__BVID__55__BV_label_"
+            aria-labelledby="__BVID__57__BV_label_"
             class="b-form-group form-group"
-            id="__BVID__55"
+            id="__BVID__57"
             role="group"
           >
             <div
@@ -196,7 +196,7 @@ exports[`View Component Edit mode matches the snapshot 1`] = `
               <label
                 class="col-sm-4 col-form-label"
                 for="area"
-                id="__BVID__55__BV_label_"
+                id="__BVID__57__BV_label_"
               >
                 Size (km²)
               </label>
@@ -218,9 +218,9 @@ exports[`View Component Edit mode matches the snapshot 1`] = `
           </div>
            
           <div
-            aria-labelledby="__BVID__57__BV_label_"
+            aria-labelledby="__BVID__59__BV_label_"
             class="b-form-group form-group"
-            id="__BVID__57"
+            id="__BVID__59"
             role="group"
           >
             <div
@@ -229,7 +229,7 @@ exports[`View Component Edit mode matches the snapshot 1`] = `
               <label
                 class="col-sm-4 col-form-label"
                 for="known_water_use"
-                id="__BVID__57__BV_label_"
+                id="__BVID__59__BV_label_"
               >
                 Type of known water use
               </label>
@@ -249,9 +249,9 @@ exports[`View Component Edit mode matches the snapshot 1`] = `
           </div>
            
           <div
-            aria-labelledby="__BVID__59__BV_label_"
+            aria-labelledby="__BVID__61__BV_label_"
             class="b-form-group form-group"
-            id="__BVID__59"
+            id="__BVID__61"
             role="group"
           >
             <div
@@ -260,7 +260,7 @@ exports[`View Component Edit mode matches the snapshot 1`] = `
               <label
                 class="col-sm-4 col-form-label"
                 for="notes"
-                id="__BVID__59__BV_label_"
+                id="__BVID__61__BV_label_"
               >
                 Comments
               </label>
@@ -286,9 +286,9 @@ exports[`View Component Edit mode matches the snapshot 1`] = `
           class="col-md-6"
         >
           <div
-            aria-labelledby="__BVID__61__BV_label_"
+            aria-labelledby="__BVID__63__BV_label_"
             class="b-form-group form-group"
-            id="__BVID__61"
+            id="__BVID__63"
             role="group"
           >
             <div
@@ -297,7 +297,7 @@ exports[`View Component Edit mode matches the snapshot 1`] = `
               <label
                 class="col-sm-4 col-form-label"
                 for="mapping_year"
-                id="__BVID__61__BV_label_"
+                id="__BVID__63__BV_label_"
               >
                 Year of mapping
               </label>
@@ -319,9 +319,9 @@ exports[`View Component Edit mode matches the snapshot 1`] = `
           </div>
            
           <div
-            aria-labelledby="__BVID__63__BV_label_"
+            aria-labelledby="__BVID__65__BV_label_"
             class="b-form-group form-group"
-            id="__BVID__63"
+            id="__BVID__65"
             role="group"
           >
             <div
@@ -330,7 +330,7 @@ exports[`View Component Edit mode matches the snapshot 1`] = `
               <label
                 class="col-sm-4 col-form-label"
                 for="litho_stratographic_unit"
-                id="__BVID__63__BV_label_"
+                id="__BVID__65__BV_label_"
               >
                 Litho stratigraphic unit
               </label>
@@ -352,9 +352,9 @@ exports[`View Component Edit mode matches the snapshot 1`] = `
           </div>
            
           <div
-            aria-labelledby="__BVID__65__BV_label_"
+            aria-labelledby="__BVID__67__BV_label_"
             class="b-form-group form-group"
-            id="__BVID__65"
+            id="__BVID__67"
             role="group"
           >
             <div
@@ -363,7 +363,7 @@ exports[`View Component Edit mode matches the snapshot 1`] = `
               <label
                 class="col-sm-4 col-form-label"
                 for="vulnerability"
-                id="__BVID__65__BV_label_"
+                id="__BVID__67__BV_label_"
               >
                 Vulnerability
               </label>
@@ -383,9 +383,9 @@ exports[`View Component Edit mode matches the snapshot 1`] = `
           </div>
            
           <div
-            aria-labelledby="__BVID__67__BV_label_"
+            aria-labelledby="__BVID__69__BV_label_"
             class="b-form-group form-group"
-            id="__BVID__67"
+            id="__BVID__69"
             role="group"
           >
             <div
@@ -394,7 +394,7 @@ exports[`View Component Edit mode matches the snapshot 1`] = `
               <label
                 class="col-sm-4 col-form-label"
                 for="subtype"
-                id="__BVID__67__BV_label_"
+                id="__BVID__69__BV_label_"
               >
                 Subtype
               </label>
@@ -414,9 +414,9 @@ exports[`View Component Edit mode matches the snapshot 1`] = `
           </div>
            
           <div
-            aria-labelledby="__BVID__69__BV_label_"
+            aria-labelledby="__BVID__71__BV_label_"
             class="b-form-group form-group"
-            id="__BVID__69"
+            id="__BVID__71"
             role="group"
           >
             <div
@@ -425,7 +425,7 @@ exports[`View Component Edit mode matches the snapshot 1`] = `
               <label
                 class="col-sm-4 col-form-label"
                 for="productivity"
-                id="__BVID__69__BV_label_"
+                id="__BVID__71__BV_label_"
               >
                 Productivity
               </label>
@@ -445,9 +445,9 @@ exports[`View Component Edit mode matches the snapshot 1`] = `
           </div>
            
           <div
-            aria-labelledby="__BVID__71__BV_label_"
+            aria-labelledby="__BVID__73__BV_label_"
             class="b-form-group form-group"
-            id="__BVID__71"
+            id="__BVID__73"
             role="group"
           >
             <div
@@ -456,7 +456,7 @@ exports[`View Component Edit mode matches the snapshot 1`] = `
               <label
                 class="col-sm-4 col-form-label"
                 for="demand"
-                id="__BVID__71__BV_label_"
+                id="__BVID__73__BV_label_"
               >
                 Demand
               </label>
@@ -641,6 +641,14 @@ exports[`View Component Edit mode matches the snapshot 1`] = `
     </div>
      
     <!---->
+     
+    <h5
+      class="mt-3 border-bottom"
+    >
+      Documentation
+    </h5>
+     
+    <aquifer-documents-stub />
   </div>
 </div>
 `;
@@ -702,9 +710,9 @@ exports[`View Component View mode matches the snapshot 1`] = `
           </div>
            
           <div
-            aria-labelledby="__BVID__11__BV_label_"
+            aria-labelledby="__BVID__12__BV_label_"
             class="b-form-group form-group"
-            id="__BVID__11"
+            id="__BVID__12"
             role="group"
           >
             <div
@@ -713,7 +721,7 @@ exports[`View Component View mode matches the snapshot 1`] = `
               <label
                 class="col-sm-4 col-form-label"
                 for="aquifer_name"
-                id="__BVID__11__BV_label_"
+                id="__BVID__12__BV_label_"
               >
                 Aquifer name
               </label>
@@ -735,9 +743,9 @@ exports[`View Component View mode matches the snapshot 1`] = `
           </div>
            
           <div
-            aria-labelledby="__BVID__13__BV_label_"
+            aria-labelledby="__BVID__14__BV_label_"
             class="b-form-group form-group"
-            id="__BVID__13"
+            id="__BVID__14"
             role="group"
           >
             <div
@@ -746,7 +754,7 @@ exports[`View Component View mode matches the snapshot 1`] = `
               <label
                 class="col-sm-4 col-form-label"
                 for="location_description"
-                id="__BVID__13__BV_label_"
+                id="__BVID__14__BV_label_"
               >
                 Descriptive location
               </label>
@@ -768,9 +776,9 @@ exports[`View Component View mode matches the snapshot 1`] = `
           </div>
            
           <div
-            aria-labelledby="__BVID__15__BV_label_"
+            aria-labelledby="__BVID__16__BV_label_"
             class="b-form-group form-group"
-            id="__BVID__15"
+            id="__BVID__16"
             role="group"
           >
             <div
@@ -779,7 +787,7 @@ exports[`View Component View mode matches the snapshot 1`] = `
               <label
                 class="col-sm-4 col-form-label"
                 for="material"
-                id="__BVID__15__BV_label_"
+                id="__BVID__16__BV_label_"
               >
                 Material type
               </label>
@@ -799,9 +807,9 @@ exports[`View Component View mode matches the snapshot 1`] = `
           </div>
            
           <div
-            aria-labelledby="__BVID__17__BV_label_"
+            aria-labelledby="__BVID__18__BV_label_"
             class="b-form-group form-group"
-            id="__BVID__17"
+            id="__BVID__18"
             role="group"
           >
             <div
@@ -810,7 +818,7 @@ exports[`View Component View mode matches the snapshot 1`] = `
               <label
                 class="col-sm-4 col-form-label"
                 for="quality_concern"
-                id="__BVID__17__BV_label_"
+                id="__BVID__18__BV_label_"
               >
                 Quality concerns
               </label>
@@ -830,9 +838,9 @@ exports[`View Component View mode matches the snapshot 1`] = `
           </div>
            
           <div
-            aria-labelledby="__BVID__19__BV_label_"
+            aria-labelledby="__BVID__20__BV_label_"
             class="b-form-group form-group"
-            id="__BVID__19"
+            id="__BVID__20"
             role="group"
           >
             <div
@@ -841,7 +849,7 @@ exports[`View Component View mode matches the snapshot 1`] = `
               <label
                 class="col-sm-4 col-form-label"
                 for="area"
-                id="__BVID__19__BV_label_"
+                id="__BVID__20__BV_label_"
               >
                 Size (km²)
               </label>
@@ -863,9 +871,9 @@ exports[`View Component View mode matches the snapshot 1`] = `
           </div>
            
           <div
-            aria-labelledby="__BVID__21__BV_label_"
+            aria-labelledby="__BVID__22__BV_label_"
             class="b-form-group form-group"
-            id="__BVID__21"
+            id="__BVID__22"
             role="group"
           >
             <div
@@ -874,7 +882,7 @@ exports[`View Component View mode matches the snapshot 1`] = `
               <label
                 class="col-sm-4 col-form-label"
                 for="known_water_use"
-                id="__BVID__21__BV_label_"
+                id="__BVID__22__BV_label_"
               >
                 Type of known water use
               </label>
@@ -894,9 +902,9 @@ exports[`View Component View mode matches the snapshot 1`] = `
           </div>
            
           <div
-            aria-labelledby="__BVID__23__BV_label_"
+            aria-labelledby="__BVID__24__BV_label_"
             class="b-form-group form-group"
-            id="__BVID__23"
+            id="__BVID__24"
             role="group"
           >
             <div
@@ -905,7 +913,7 @@ exports[`View Component View mode matches the snapshot 1`] = `
               <label
                 class="col-sm-4 col-form-label"
                 for="notes"
-                id="__BVID__23__BV_label_"
+                id="__BVID__24__BV_label_"
               >
                 Comments
               </label>
@@ -931,9 +939,9 @@ exports[`View Component View mode matches the snapshot 1`] = `
           class="col-md-6"
         >
           <div
-            aria-labelledby="__BVID__25__BV_label_"
+            aria-labelledby="__BVID__26__BV_label_"
             class="b-form-group form-group"
-            id="__BVID__25"
+            id="__BVID__26"
             role="group"
           >
             <div
@@ -942,7 +950,7 @@ exports[`View Component View mode matches the snapshot 1`] = `
               <label
                 class="col-sm-4 col-form-label"
                 for="mapping_year"
-                id="__BVID__25__BV_label_"
+                id="__BVID__26__BV_label_"
               >
                 Year of mapping
               </label>
@@ -964,9 +972,9 @@ exports[`View Component View mode matches the snapshot 1`] = `
           </div>
            
           <div
-            aria-labelledby="__BVID__27__BV_label_"
+            aria-labelledby="__BVID__28__BV_label_"
             class="b-form-group form-group"
-            id="__BVID__27"
+            id="__BVID__28"
             role="group"
           >
             <div
@@ -975,7 +983,7 @@ exports[`View Component View mode matches the snapshot 1`] = `
               <label
                 class="col-sm-4 col-form-label"
                 for="litho_stratographic_unit"
-                id="__BVID__27__BV_label_"
+                id="__BVID__28__BV_label_"
               >
                 Litho stratigraphic unit
               </label>
@@ -997,9 +1005,9 @@ exports[`View Component View mode matches the snapshot 1`] = `
           </div>
            
           <div
-            aria-labelledby="__BVID__29__BV_label_"
+            aria-labelledby="__BVID__30__BV_label_"
             class="b-form-group form-group"
-            id="__BVID__29"
+            id="__BVID__30"
             role="group"
           >
             <div
@@ -1008,7 +1016,7 @@ exports[`View Component View mode matches the snapshot 1`] = `
               <label
                 class="col-sm-4 col-form-label"
                 for="vulnerability"
-                id="__BVID__29__BV_label_"
+                id="__BVID__30__BV_label_"
               >
                 Vulnerability
               </label>
@@ -1028,9 +1036,9 @@ exports[`View Component View mode matches the snapshot 1`] = `
           </div>
            
           <div
-            aria-labelledby="__BVID__31__BV_label_"
+            aria-labelledby="__BVID__32__BV_label_"
             class="b-form-group form-group"
-            id="__BVID__31"
+            id="__BVID__32"
             role="group"
           >
             <div
@@ -1039,7 +1047,7 @@ exports[`View Component View mode matches the snapshot 1`] = `
               <label
                 class="col-sm-4 col-form-label"
                 for="subtype"
-                id="__BVID__31__BV_label_"
+                id="__BVID__32__BV_label_"
               >
                 Subtype
               </label>
@@ -1059,9 +1067,9 @@ exports[`View Component View mode matches the snapshot 1`] = `
           </div>
            
           <div
-            aria-labelledby="__BVID__33__BV_label_"
+            aria-labelledby="__BVID__34__BV_label_"
             class="b-form-group form-group"
-            id="__BVID__33"
+            id="__BVID__34"
             role="group"
           >
             <div
@@ -1070,7 +1078,7 @@ exports[`View Component View mode matches the snapshot 1`] = `
               <label
                 class="col-sm-4 col-form-label"
                 for="productivity"
-                id="__BVID__33__BV_label_"
+                id="__BVID__34__BV_label_"
               >
                 Productivity
               </label>
@@ -1090,9 +1098,9 @@ exports[`View Component View mode matches the snapshot 1`] = `
           </div>
            
           <div
-            aria-labelledby="__BVID__35__BV_label_"
+            aria-labelledby="__BVID__36__BV_label_"
             class="b-form-group form-group"
-            id="__BVID__35"
+            id="__BVID__36"
             role="group"
           >
             <div
@@ -1101,7 +1109,7 @@ exports[`View Component View mode matches the snapshot 1`] = `
               <label
                 class="col-sm-4 col-form-label"
                 for="demand"
-                id="__BVID__35__BV_label_"
+                id="__BVID__36__BV_label_"
               >
                 Demand
               </label>
@@ -1286,6 +1294,14 @@ exports[`View Component View mode matches the snapshot 1`] = `
     </div>
      
     <!---->
+     
+    <h5
+      class="mt-3 border-bottom"
+    >
+      Documentation
+    </h5>
+     
+    <aquifer-documents-stub />
   </div>
 </div>
 `;
