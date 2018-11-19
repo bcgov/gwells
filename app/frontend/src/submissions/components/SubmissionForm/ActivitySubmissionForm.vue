@@ -150,6 +150,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
       :drillingMethod.sync="form.drilling_method"
       :otherDrillingMethod.sync="form.other_drilling_method"
       :wellOrientation.sync="form.well_orientation"
+      :isStaffEdit="isStaffEdit"
+      :saveDisabled="editSaveDisabled"
+      v-on:save="$emit('submit_edit')"
     />
 
     <!-- Closure/Decommission Description -->

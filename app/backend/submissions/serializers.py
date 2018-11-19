@@ -357,6 +357,11 @@ class WellStaffEditSubmissionSerializer(WellSubmissionSerializerBase):
             'owner_postal_code',
             'owner_email',
             'owner_tel',
+            'ground_elevation',
+            'ground_elevation_method',
+            'drilling_method',
+            'other_drilling_method',
+            'well_orientation',
         )
 
 

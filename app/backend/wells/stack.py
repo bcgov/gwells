@@ -166,7 +166,8 @@ class StackWells():
             serializer = submissions.serializers.WellSubmissionStackerSerializer(submission)
             for source_key, value in serializer.data.items():
                 # We only consider items with values, and keys that are in our target
-                if value:
+                # an exception is STAFF_EDIT submissions (we need to be able to accept empty values)
+                if value or submission.well_activity_type.code == 'STAFF_EDIT':
                     target_key = source_target_map.get(source_key, source_key)
                     if target_key in target_keys:
                         if target_key in composite and target_key in FOREIGN_KEYS:

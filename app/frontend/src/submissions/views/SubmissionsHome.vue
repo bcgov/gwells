@@ -194,7 +194,8 @@ export default {
         ],
         STAFF_EDIT: [
           'personResponsible',
-          'wellOwner'
+          'wellOwner',
+          'method'
         ]
       }
     }
@@ -342,6 +343,7 @@ export default {
         ground_elevation: null,
         ground_elevation_method: '',
         drilling_method: '',
+        other_drilling_method: '',
         well_orientation: '',
         lithologydescription_set: [],
         surface_seal_material: '',
