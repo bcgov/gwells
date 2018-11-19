@@ -1,6 +1,6 @@
 #!groovy
 
-// Cron job for postgres vacuum and replication
+// Cron job for postgres vacuum and replication of Wells data
 //
 //  Setup in Jenkins:
 //  > Folder > New Item > Pipeline
@@ -8,7 +8,7 @@
 //    SCM: Git
 //      Repository URL: https://github.com/bcgov/gwells
 //      Branches to build: */master
-//      Script path: scripts/Jenkinsfiles/pg_replicate
+//      Script path: scripts/Jenkinsfiles/wells_replication
 
 
 // Cronjob time (in UTC)
@@ -26,17 +26,18 @@ properties(
 pipeline {
     environment {
         // Project name (moe-gwells-test|moe-gwells-prod)
-        String PROJECT = 'moe-gwells-dev'
+        String PROJECT = 'moe-gwells-test'
 
         // Names, routes and ports
-        String DB_NAME  = 'gwells-pgsql-dev-pr-1022'
-        String APP_NAME = 'gwells-dev-pr-1022'
+        String DB_NAME  = 'gwells-pgsql-staging'
+        String APP_NAME = 'gwells-staging'
         String APP_PORT = 'web'
-        String MNT_NAME = 'gwells-minio'
-        String MNT_PORT = '9000-tcp'
+        String MNT_NAME = 'proxy-caddy'
+        String MNT_PORT = '2015-tcp'
 
         // Checks
         String DB_STAT = ""
+        String WELL_RESULT = ""
         Integer WELL_COUNT = 0
         Integer WELL_CHECK = 100000
     }
@@ -129,7 +130,8 @@ pipeline {
                                 dbPod0,
                                 "--",
                                 "bash -c '\
-                                    psql -t -d gwells -U \${POSTGRESQL_USER} -c \"SELECT db_replicate_step1(_subset_ind=>false);\" \
+                                    psql -t -d gwells -U \${POSTGRESQL_USER} -c \
+                                        \"SELECT db_replicate_step1(_subset_ind=>false);\" \
                                 '"
                             )
                         }
@@ -153,18 +155,32 @@ pipeline {
                                 dbPod0,
                                 "--",
                                 "bash -c '\
-                                    psql -t -d gwells -U \${POSTGRESQL_USER} -c \"SELECT db_replicate_step2();\" \
+                                    psql -t -d gwells -U \${POSTGRESQL_USER} -c \
+                                        \"SELECT db_replicate_step2();\" \
                                 '"
                             )
 
-                            // Get a count of wells
+                            // Get a count of wells, ensure >= WELL_CHECK
                             WELL_COUNT = openshift.exec(
                                 dbPod0,
                                 "--",
                                 "bash -c '\
-                                    psql -t -d gwells -U \${POSTGRESQL_USER} -c \"SELECT count(*) from well;\" \
+                                    psql -t -d gwells -U \${POSTGRESQL_USER} -c \
+                                        \"SELECT count(*) from well;\" \
+                                            | grep -Eo \"[[:digit:]]*\" \
                                 '"
                             ).out.trim()
+                            WELL_RESULT = sh(
+                                script: """
+                                    if [ ${WELL_COUNT} -gt ${WELL_CHECK} ]
+                                    then
+                                        echo "true"
+                                    else
+                                        echo "false"
+                                    fi
+                                """,
+                                returnStdout: true
+                            ).trim()
                         }
                     }
                 }
@@ -172,7 +188,7 @@ pipeline {
         }
         stage('App Up') {
             when {
-                expression {DB_STAT == 'online' && WELL_COUNT > WELL_CHECK}
+                expression {DB_STAT == 'online' && WELL_RESULT == 'true'}
             }
             steps {
                 script {
@@ -206,12 +222,15 @@ pipeline {
             }
         }
         stage('Notify') {
-            when {
-                expression {DB_STAT != 'online'}
-            }
             steps {
                 script {
-                    echo "Database is offline, no action taken"
+                    if (DB_STAT != 'online'){
+                        echo "Database not accessible, replication skipped"
+                    } else if (WELL_RESULT != 'true'){
+                        echo "Well count below ${WELL_CHECK}"
+                    } else {
+                        echo "Replication complete!  Well check: ${WELL_CHECK}"
+                    }
                 }
             }
         }
