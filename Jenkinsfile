@@ -328,6 +328,56 @@ pipeline {
       }
     }
 
+    // Functional tests using BDD Stack
+    // See https://github.com/BCDevOps/BDDStack
+    stage('Functional Tests') {
+        steps {
+            script {
+                openshift.withCluster() {
+                    openshift.withProject(DEV_PROJECT) {
+                        echo "Functional Testing"
+                        podTemplate(
+                            label: 'bddstack',
+                            name: 'bddstack',
+                            serviceAccount: 'jenkins',
+                            cloud: 'openshift',
+                            containers: [
+                                containerTemplate(
+                                    name: 'jnlp',
+                                    image: '172.50.0.2:5000/openshift/jenkins-slave-bddstack',
+                                    resourceRequestCpu: '500m',
+                                    resourceLimitCpu: '1000m',
+                                    resourceRequestMemory: '1Gi',
+                                    resourceLimitMemory: '4Gi',
+                                    workingDir: '/home/jenkins',
+                                    command: '',
+                                    args: '${computer.jnlpmac} ${computer.name}'
+                                )
+                            ]
+                        ) {
+                            node('bddstack') {
+                                stage('Functional Test') {
+                                    //the checkout is mandatory, otherwise functional test would fail
+                                    echo "checking out source"
+                                    checkout scm
+                                    dir('functional-tests') {
+                                        try {
+                                            sh './gradlew --debug --stacktrace chromeHeadlessTest'
+                                        } finally {
+                                            archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
+                                            archiveArtifacts allowEmptyArchive: true, artifacts: 'build/test-results/**/*'
+                                            junit 'build/test-results/**/*.xml'
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     // the Promote to Test stage allows approving the tagging of the newly built image into the test environment,
     // which will trigger an automatic deployment of that image.
     // The deployment configs in the openshift folder are applied first in case there are any changes to the templates.
