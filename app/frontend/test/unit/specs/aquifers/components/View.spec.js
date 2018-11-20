@@ -47,6 +47,7 @@ describe('View Component', () => {
     store: new Vuex.Store({
       modules: { auth, aquiferCodes }
     }),
+    stubs: ['aquifer-documents'],
     ...options
   })
 
@@ -63,7 +64,7 @@ describe('View Component', () => {
   describe('View mode', () => {
     it('matches the snapshot', () => {
       const wrapper = component({
-        data() {
+        data () {
           return {
             record: aquiferFixture
           }
@@ -79,7 +80,7 @@ describe('View Component', () => {
   describe('Edit mode', () => {
     it('matches the snapshot', () => {
       const wrapper = component({
-        data() {
+        data () {
           return {
             record: aquiferFixture
           }
@@ -94,7 +95,7 @@ describe('View Component', () => {
     describe('On save', () => {
       it('resets showSaveSuccess to false', () => {
         const wrapper = component({
-          data() {
+          data () {
             return {
               record: aquiferFixture,
               showSaveSuccess: true
@@ -116,7 +117,7 @@ describe('View Component', () => {
 
       it('resets fieldErrors to empty object', () => {
         const wrapper = component({
-          data() {
+          data () {
             return {
               record: aquiferFixture,
               fieldErrors: { a: ['1'] }
@@ -142,7 +143,7 @@ describe('View Component', () => {
             navigateToView () {}
           },
           computed: { id () { return 10 } },
-          data() { return { record: aquiferFixture } }
+          data () { return { record: aquiferFixture } }
         })
 
         axios.patch.mockResolvedValue(true)
@@ -158,7 +159,7 @@ describe('View Component', () => {
     let errorMessage = 'error message'
 
     const wrapper = component({
-      data() {
+      data () {
         return {
           fieldErrors: {
             mapping_year: [errorMessage],
@@ -173,7 +174,7 @@ describe('View Component', () => {
             area: [errorMessage],
             demand: [errorMessage],
             known_water_use: [errorMessage],
-            notes: [errorMessage],
+            notes: [errorMessage]
           }
         }
       },

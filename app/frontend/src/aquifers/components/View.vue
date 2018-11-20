@@ -83,6 +83,8 @@
         <dt class="col-sm-2">Demand</dt>
         <dd class="col-sm-4">{{record.demand_description}}</dd>
       </dl>
+      <h5 class="mt-3 border-bottom">Documentation</h5>
+      <aquifer-documents :aquifer="id"></aquifer-documents>
     </b-container>
   </b-card>
 </template>
@@ -98,12 +100,14 @@
 import ApiService from '@/common/services/ApiService.js'
 import APIErrorMessage from '@/common/components/APIErrorMessage'
 import AquiferForm from './Form'
+import Documents from './Documents.vue'
 import { mapGetters } from 'vuex'
 
 export default {
   components: {
     'api-error': APIErrorMessage,
-    'aquifer-form': AquiferForm
+    'aquifer-form': AquiferForm,
+    'aquifer-documents': Documents
   },
   props: {
     'edit': Boolean

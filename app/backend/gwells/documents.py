@@ -28,7 +28,8 @@ class MinioClient():
 
     Requires environment variables:
         S3_HOST: hostname for public document storage
-        S3_ROOT_BUCKET: public document storage bucket
+        S3_ROOT_BUCKET: public Wells document storage bucket
+        S3_AQUIFER_BUCKET: public Aquifers document storage buck
         MINIO_ACCESS_KEY: private storage account
         MINIO_SECRET_KEY: private storage secret
         S3_PRIVATE_HOST: private storage host (must be specified even if same as public storage)
@@ -51,6 +52,7 @@ class MinioClient():
             self.public_host = get_env_variable('S3_HOST', strict=True)
             self.public_bucket = get_env_variable(
                 'S3_ROOT_BUCKET', strict=True)
+            self.public_aquifers_bucket = get_env_variable('S3_AQUIFER_BUCKET', default_value="aquifer-docs")
             self.public_access_key = get_env_variable(
                 'S3_PUBLIC_ACCESS_KEY', warn=False)
             self.public_secret_key = get_env_variable(
@@ -116,13 +118,20 @@ class MinioClient():
         )
         return urls
 
-    def get_documents(self, well_tag_number: int, include_private=False):
-        """Retrieves a list of available documents for a given well tag number"""
+    def get_documents(self, document_id: int, resource='well', include_private=False):
+        """Retrieves a list of available documents for a well or aquifer"""
 
         # prefix well tag numbers with a 6 digit "folder" id
         # e.g. WTA 23456 goes into prefix 020000/
-        prefix = str(str('{:0<6}'.format('{:0>2}'.format(well_tag_number//10000))) + '/WTN ' +
-                     str(well_tag_number) + '_')
+
+        public_bucket = self.public_bucket
+        prefix = str(str('{:0<6}'.format('{:0>2}'.format(document_id//10000))) + '/WTN ' +
+                     str(document_id) + '_')
+
+        if resource == 'aquifer':
+            prefix = str(str('{:0<5}'.format('{:0>3}'.format(document_id//100))) + '/AQ_' +
+                         str('{:0<5}'.format('{:0>5}'.format(document_id))) + '_')
+            public_bucket = self.public_aquifers_bucket
 
         objects = {}
 
@@ -132,7 +141,7 @@ class MinioClient():
             try:
                 pub_objects = self.create_url_list(
                     self.public_client.list_objects(
-                        self.public_bucket, prefix=prefix, recursive=True),
+                        public_bucket, prefix=prefix, recursive=True),
                     self.public_host)
             except:
                 logger.error(
