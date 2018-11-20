@@ -244,9 +244,9 @@ pipeline {
                                 containerTemplate(
                                     name: 'jnlp',
                                     image: '172.50.0.2:5000/openshift/jenkins-slave-bddstack',
-                                    resourceRequestCpu: '500m',
-                                    resourceLimitCpu: '1000m',
-                                    resourceRequestMemory: '1Gi',
+                                    resourceRequestCpu: '800m',
+                                    resourceLimitCpu: '800m',
+                                    resourceRequestMemory: '4Gi',
                                     resourceLimitMemory: '4Gi',
                                     workingDir: '/home/jenkins',
                                     command: '',
@@ -261,7 +261,7 @@ pipeline {
                                     checkout scm
                                     dir('functional-tests') {
                                         try {
-                                            sh './gradlew --debug --stacktrace chromeHeadlessTest'
+                                            sh './gradlew chromeHeadlessTest'
                                         } finally {
                                             archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
                                             archiveArtifacts allowEmptyArchive: true, artifacts: 'build/test-results/**/*'
