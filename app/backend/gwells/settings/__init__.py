@@ -307,3 +307,6 @@ class DisableMigrations(object):
         return None
 if get_env_variable('DISABLE_MIGRATIONS', None, strict=False, warn=False) == 'DISABLE_MIGRATIONS':
     MIGRATION_MODULES = DisableMigrations()
+
+SECURE_SSL_REDIRECT = bool(int(os.environ.get('SECURE_SSL_REDIRECT', 0)))
+USE_X_FORWARDED_HOST = SECURE_SSL_REDIRECT
