@@ -25,10 +25,10 @@ class CommonLinkModule extends Module {
   /**
    * Attempts to find and click a link on the page.
    *
-   * @param a map of attributes of the desired anchor tag. eg: [text:'footer link text']. (required)
-   * @param a selector to narrow the search space. (required)
+   * @param anchorText the text of the anchor tag to be clicked. (required)
+   * @param parentSelector a parent selector to narrow the search space which improves performance. (required)
    */
-  void clickPageLink(Map<String, Object> itemSelector, Navigator parentSelector) {
-    parentSelector.$(itemSelector, 'a').click()
+  void clickPageLink(String anchorText, Navigator parentSelector) {
+    parentSelector.$('a', text:"$anchorText").click()
   }
 }

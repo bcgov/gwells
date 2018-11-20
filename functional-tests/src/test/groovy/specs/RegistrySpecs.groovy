@@ -16,11 +16,9 @@ package specs
 
 import pages.RegistryPage
 
-import spock.lang.Timeout
 import spock.lang.Title
 import spock.lang.Narrative
 
-@Timeout(300)
 @Title('Groundwater Well Registry Tests')
 @Narrative('''As a user, I want to search the registry of well operators.''')
 class RegistrySpecs extends LoggedInSpec {

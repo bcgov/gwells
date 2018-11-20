@@ -28,7 +28,7 @@ trait Login implements Users {
    * @param a Map containing username and password keys. eg: [username:'someUsername', password:'somePassword']
    */
   void login(Map user) {
-    to HomePage // TODO 1/2 find way to not hardcode HomePage, if possible, and allow any page
+    to HomePage // TODO 1/2 find way to not hardcode HomePage, if possible, and allow any page?
 
     headerModule.loginButton.click()
 
@@ -43,7 +43,7 @@ trait Login implements Users {
   }
 
   void logInAsAdminUser() {
-    login(getUserOne())
+    login(getAdminUser())
   }
 
   void logInAsViewerUser() {

@@ -20,12 +20,10 @@ import pages.OrganizationsAddModal
 import pages.ConfirmUpdateModal
 import pages.ConfirmDeleteModal
 
-import spock.lang.Timeout
 import spock.lang.Title
 import spock.lang.Narrative
 import spock.lang.Stepwise
 
-@Timeout(300)
 @Stepwise
 @Title('Groundwater Well Organizations Tests')
 @Narrative('''As an admin user, I want to add, update, and delete organizations (companies).''')
