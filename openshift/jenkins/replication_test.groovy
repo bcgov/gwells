@@ -16,7 +16,7 @@ properties(
     [
         pipelineTriggers(
             [
-                cron( 'H 11 * * 1-6' )
+                cron( 'H 9 * * 1-6' )
             ]
         )
     ]
@@ -126,7 +126,7 @@ pipeline {
                             openshift.exec(
                                 dbPods.objects()[0].metadata.name,
                                 "--",
-                                "echo bash -c '\
+                                "bash -c '\
                                     psql -t -d gwells -U \${POSTGRESQL_USER} -c \
                                         \"SELECT db_replicate_step1(_subset_ind=>false);\" \
                                 '"
@@ -150,7 +150,7 @@ pipeline {
                             openshift.exec(
                                 dbPods.objects()[0].metadata.name,
                                 "--",
-                                "echo bash -c '\
+                                "bash -c '\
                                     psql -t -d gwells -U \${POSTGRESQL_USER} -c \
                                         \"SELECT db_replicate_step2();\" \
                                 '"
