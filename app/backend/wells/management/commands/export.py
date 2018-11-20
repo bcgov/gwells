@@ -14,7 +14,7 @@ from wells.models import Well, LithologyDescription, Casing, Screen, ProductionD
 class Command(BaseCommand):
 
     def export(self, workbook, gwells_zip, worksheet_name, cursor):
-        worksheet = workbook.add_worksheet(worksheet_name)
+        # worksheet = workbook.add_worksheet(worksheet_name)
         csv_file = '{}.csv'.format(worksheet_name)
         if os.path.exists(csv_file):
             os.remove(csv_file)
@@ -24,7 +24,7 @@ class Command(BaseCommand):
             values = []
             # Write the headings
             for index, field in enumerate(cursor.description):
-                worksheet.write(0, index, '{}'.format(field.name))
+                # worksheet.write(0, index, '{}'.format(field.name))
                 values.append(field.name)
             csvwriter.writerow(values)
 
@@ -40,9 +40,9 @@ class Command(BaseCommand):
                 if num_values > 1:
                     # We always have a well_tag_number, but if that's all we have, then just skip this record
                     row_index += 1
-                    for col, value in enumerate(values):
-                        if value:
-                            worksheet.write(row_index, col, value)
+                    # for col, value in enumerate(values):
+                    #     if value:
+                    #         worksheet.write(row_index, col, value)
                     csvwriter.writerow(values)
         gwells_zip.write(csv_file)
 
@@ -58,7 +58,10 @@ class Command(BaseCommand):
  observation_well_number, obs_well_status_code, water_supply_system_name,
  water_supply_system_well_name,
  street_address, city, legal_lot, legal_plan, legal_district_lot, legal_block,
- legal_section, legal_township, legal_range, legal_pid, well_location_description,
+ legal_section, legal_township, legal_range,
+ land_district_code,
+ legal_pid,
+ well_location_description,
  latitude, longitude, utm_zone_code, utm_northing, utm_easting,
  utm_accuracy_code, bcgs_id,
  construction_start_date, construction_end_date, alteration_start_date,
@@ -66,7 +69,9 @@ class Command(BaseCommand):
  driller_name, consultant_name, consultant_company,
  diameter, total_depth_drilled, finished_well_depth, final_casing_stick_up,
  bedrock_depth, ground_elevation, ground_elevation_method_code, static_water_level,
- well_yield, artesian_flow, artesian_pressure, well_cap_type, well_disinfected,
+ well_yield,
+ well_yield_unit_code,
+ artesian_flow, artesian_pressure, well_cap_type, well_disinfected,
  drilling_method_code, other_drilling_method, well_orientation,
  alternative_specs_submitted,
  surface_seal_material_code, surface_seal_method_code, surface_seal_length,
@@ -76,18 +81,17 @@ class Command(BaseCommand):
  liner_from, liner_to,
  screen_intake_method_code, screen_type_code, screen_material_code,
  other_screen_material,
- screen_opening_code, screen_bottom_code, other_screen_bottom, filter_pack_from,
- filter_pack_to, filter_pack_material_code, filter_pack_material_size_code,
+ screen_opening_code, screen_bottom_code, other_screen_bottom, development_method_code,
+ filter_pack_from,
+ filter_pack_to, filter_pack_material_code,
+ filter_pack_thickness,
+ filter_pack_material_size_code,
  development_hours, development_notes,
  water_quality_colour, water_quality_odour, ems_id,
  decommission_reason, decommission_method_code, decommission_details, sealant_material,
  backfill_material,
  comments, aquifer_id,
- land_district_code,
  drilling_company.drilling_company_code,
- filter_pack_thickness,
- development_method_code,
- well_yield_unit_code,
  ems,
  aquifer_id,
  registries_person.surname as driller_responsible
@@ -151,31 +155,32 @@ class Command(BaseCommand):
         if os.path.exists(zip_filename):
             os.remove(zip_filename)
         with zipfile.ZipFile(zip_filename, 'w') as gwells_zip:
-            spreadsheet_filename = 'wells.xlsx'
+            spreadsheet_filename = 'gwells.xlsx'
             if os.path.exists(spreadsheet_filename):
                 os.remove(spreadsheet_filename)
-            with xlsxwriter.Workbook(spreadsheet_filename) as workbook:
-                # Well
-                with connection.cursor() as cursor:
-                    cursor.execute(well_sql)
-                    self.export(workbook, gwells_zip, 'well', cursor)
-                # Lithology
-                with connection.cursor() as cursor:
-                    cursor.execute(lithology_sql)
-                    self.export(workbook, gwells_zip, 'lithology', cursor)
-                # Casing
-                with connection.cursor() as cursor:
-                    cursor.execute(casing_sql)
-                    self.export(workbook, gwells_zip, 'casing', cursor)
-                # Screen
-                with connection.cursor() as cursor:
-                    cursor.execute(screen_sql)
-                    self.export(workbook, gwells_zip, 'screen', cursor)
-                # Production
-                with connection.cursor() as cursor:
-                    cursor.execute(production_sql)
-                    self.export(workbook, gwells_zip, 'production', cursor)
-                # Perforation
-                with connection.cursor() as cursor:
-                    cursor.execute(perforation_sql)
-                    self.export(workbook, gwells_zip, 'perforation', cursor)
+            workbook = None
+            # with xlsxwriter.Workbook(spreadsheet_filename) as workbook:
+            # Well
+            with connection.cursor() as cursor:
+                cursor.execute(well_sql)
+                self.export(workbook, gwells_zip, 'well', cursor)
+            # Lithology
+            with connection.cursor() as cursor:
+                cursor.execute(lithology_sql)
+                self.export(workbook, gwells_zip, 'lithology', cursor)
+            # Casing
+            with connection.cursor() as cursor:
+                cursor.execute(casing_sql)
+                self.export(workbook, gwells_zip, 'casing', cursor)
+            # Screen
+            with connection.cursor() as cursor:
+                cursor.execute(screen_sql)
+                self.export(workbook, gwells_zip, 'screen', cursor)
+            # Production
+            with connection.cursor() as cursor:
+                cursor.execute(production_sql)
+                self.export(workbook, gwells_zip, 'production', cursor)
+            # Perforation
+            with connection.cursor() as cursor:
+                cursor.execute(perforation_sql)
+                self.export(workbook, gwells_zip, 'perforation', cursor)
