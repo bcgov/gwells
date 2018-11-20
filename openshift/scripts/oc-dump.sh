@@ -18,8 +18,9 @@ IFS=$'\n\t'
 
 # Parameters
 #
-PROJECT=$( echo ${1} | cut -d "/" -f 1 )
-DC_NAME=$( echo ${1} | cut -d "/" -f 2 )
+TARGET=${1:-""}
+PROJECT=$( echo ${TARGET} | cut -d "/" -f 1 )
+DC_NAME=$( echo ${TARGET} | cut -d "/" -f 2 )
 SAVE_TO=${2:-./${DC_NAME}-$( date +%Y-%m-%d-%H%M )}
 
 
