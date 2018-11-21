@@ -539,6 +539,24 @@
                                         }
                                     },
                                     {
+                                        "name": "S3_PUBLIC_ACCESS_KEY",
+                                        "valueFrom": {
+                                            "secretKeyRef": {
+                                                "name": "minio-access-parameters${NAME_SUFFIX}",
+                                                "key": "S3_PUBLIC_ACCESS_KEY"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "S3_PUBLIC_SECRET_KEY",
+                                        "valueFrom": {
+                                            "secretKeyRef": {
+                                                "name": "minio-access-parameters${NAME_SUFFIX}",
+                                                "key": "S3_PUBLIC_SECRET_KEY"
+                                            }
+                                        }
+                                    },
+                                    {
                                         "name": "S3_HOST",
                                         "valueFrom": {
                                             "secretKeyRef": {
