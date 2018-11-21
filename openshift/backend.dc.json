@@ -58,7 +58,9 @@
                 "MINIO_ACCESS_KEY": null,
                 "MINIO_SECRET_KEY": null,
                 "S3_HOST": null,
-                "S3_ROOT_BUCKET": null
+                "S3_ROOT_BUCKET": null,
+                "S3_PUBLIC_ACCESS_KEY": null,
+                "S3_PUBLIC_SECRET_KEY": null
             }
         },
         {

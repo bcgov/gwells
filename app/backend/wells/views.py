@@ -77,10 +77,10 @@ class ListExtracts(APIView):
     """
     @swagger_auto_schema(auto_schema=None)
     def get(self, request):
-        host = get_env_variable('S3_PRIVATE_HOST')
+        host = get_env_variable('S3_HOST')
         minioClient = Minio(host,
-                            access_key=get_env_variable('MINIO_ACCESS_KEY'),
-                            secret_key=get_env_variable('MINIO_SECRET_KEY'),
+                            access_key=get_env_variable('S3_PUBLIC_ACCESS_KEY'),
+                            secret_key=get_env_variable('S3_PUBLIC_SECRET_KEY'),
                             secure=True)
         objects = minioClient.list_objects(get_env_variable('S3_WELL_EXPORT_BUCKET'))
         urls = list(

@@ -33,10 +33,10 @@ class Command(BaseCommand):
                 os.remove(filename)
         logger.info('export complete')
 
-    def upload_files(self, zip_filename, spreadsheet_filename):        
-        minioClient = Minio(get_env_variable('S3_PRIVATE_HOST'),
-                            access_key=get_env_variable('MINIO_ACCESS_KEY'),
-                            secret_key=get_env_variable('MINIO_SECRET_KEY'),
+    def upload_files(self, zip_filename, spreadsheet_filename):
+        minioClient = Minio(get_env_variable('S3_HOST'),
+                            access_key=get_env_variable('S3_PUBLIC_ACCESS_KEY'),
+                            secret_key=get_env_variable('S3_PUBLIC_SECRET_KEY'),
                             secure=True)
         for filename in (zip_filename, spreadsheet_filename):
             logger.info('uploading {}'.format(filename))
