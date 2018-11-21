@@ -1,6 +1,7 @@
 import csv
 import zipfile
 import os
+import logging
 
 from django.core.management.base import BaseCommand
 from django.db import models
@@ -15,24 +16,30 @@ from wells.models import Well, LithologyDescription, Casing, Screen, ProductionD
 # Run from command line :
 # python manage.py export
 
+logger = logging.getLogger(__name__)
+
 
 class Command(BaseCommand):
 
     def handle(self, *args, **options):
+        logger.info('starting export')
         zip_filename = 'gwells.zip'
         spreadsheet_filename = 'gwells.xlsx'
         self.generate_files(zip_filename, spreadsheet_filename)
         self.upload_files(zip_filename, spreadsheet_filename)
+        logger.info('cleaning up')
         for filename in (zip_filename, spreadsheet_filename):
             if os.path.exists(filename):
                 os.remove(filename)
+        logger.info('export complete')
 
-    def upload_files(self, zip_filename, spreadsheet_filename):
+    def upload_files(self, zip_filename, spreadsheet_filename):        
         minioClient = Minio(get_env_variable('S3_PRIVATE_HOST'),
                             access_key=get_env_variable('MINIO_ACCESS_KEY'),
                             secret_key=get_env_variable('MINIO_SECRET_KEY'),
                             secure=True)
         for filename in (zip_filename, spreadsheet_filename):
+            logger.info('uploading {}'.format(filename))
             with open(filename, 'rb') as file_data:
                 file_stat = os.stat(filename)
                 # Do we need to remove the existing files 1st?
@@ -42,6 +49,7 @@ class Command(BaseCommand):
                                        file_stat.st_size)
 
     def export(self, workbook, gwells_zip, worksheet_name, cursor):
+        logger.info('exporting {}'.format(worksheet_name))
         worksheet = workbook.add_worksheet(worksheet_name)
         csv_file = '{}.csv'.format(worksheet_name)
         if os.path.exists(csv_file):
@@ -211,4 +219,3 @@ class Command(BaseCommand):
                 with connection.cursor() as cursor:
                     cursor.execute(perforation_sql)
                     self.export(workbook, gwells_zip, 'perforation', cursor)
-
