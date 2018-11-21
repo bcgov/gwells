@@ -20,6 +20,8 @@ class RegistryPage extends BaseAppPage {
   static content = {
     pageTitle { $('main h4') }
 
+    bodyContent { $('#main-content .card-body') }
+
     addNewEntryButton(required:false) { $('#addNewEntryButton') }
     manageCompaniesButton(required:false) { $('#manageCompaniesButton') }
 

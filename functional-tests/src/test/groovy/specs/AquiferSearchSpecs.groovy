@@ -16,11 +16,9 @@ package specs
 
 import pages.AquifersPage
 
-import spock.lang.Timeout
 import spock.lang.Title
 import spock.lang.Narrative
 
-@Timeout(300)
 @Title('Groundwater Well Aquifer Search Tests')
 @Narrative('''As a public user, I want to search for existing aquifers.''')
 class AquiferSearchSpecs extends BaseSpec {

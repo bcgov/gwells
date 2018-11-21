@@ -15,6 +15,7 @@
 package specs
 
 import pages.HomePage
+import pages.AquifersPage
 import pages.InformationPage
 import pages.RegistryPage
 import pages.SubmissionsPage
@@ -36,55 +37,97 @@ class FlowSpecs extends BaseSpec {
   void 'Navigate Page from: HomePage, click header Link: #TextSelector, Assert Page: #AssertPage'() {
     given: 'I start on the HomePage'
       to HomePage
-    when: 'I click on the header link with label: #TextSelector.text'
+    when: 'I click on the header link with label: #TextSelector'
       headerModule.clickMenuItem(TextSelector)
     then: 'I arrive on the #AssertPage.getSimpleName()'
       at AssertPage
     where:
-      TextSelector                       || AssertPage
-      [ text:'Well Search' ]             || HomePage
-      [ text:'Groundwater Information' ] || InformationPage
-      [ text:'Registry' ]                || RegistryPage
-      //TODO requires being logged - move to auth flow specs? [ text:'Submit Report' ]           || SubmissionsPage
+      TextSelector              || AssertPage
+      'Well Search'             || HomePage
+      'Aquifers'                || AquifersPage
+      'Groundwater Information' || InformationPage
+      'Registry'                || RegistryPage
+      //TODO requires being logged - move to auth flow specs? 'Submit Report'           || SubmissionsPage
   }
 
   @Unroll
   void 'Navigate Page from: HomePage, click page Link: #TextSelector, Assert Page: #AssertPage'() {
     given: 'I start on the HomePage'
       to HomePage
-    when: 'I click on the page link with label: #TextSelector.text'
+    when: 'I click on the page link with label: #TextSelector'
       commonModule.clickPageLink(TextSelector, bodyContent)
     then: 'I arrive on the #AssertPage.getSimpleName()'
       at AssertPage
     where:
-      TextSelector                         || AssertPage
-      [ text:'B.C. Water Resource Atlas' ] || new ExternalLinkPage('WRBC', 'maps\\.gov\\.bc\\.ca.*wrbc')
-      [ text:'iMapBC' ]                    || new ExternalLinkPage('iMapBC', 'maps\\.gov\\.bc\\.ca.*imap4m')
+      TextSelector                || AssertPage
+      'B.C. Water Resource Atlas' || new ExternalLinkPage('WRBC', 'maps\\.gov\\.bc\\.ca.*wrbc')
+      'iMapBC'                    || new ExternalLinkPage('iMapBC', 'maps\\.gov\\.bc\\.ca.*imap4m')
+  }
+
+  @Unroll
+  void 'Navigate Page from: InformationPage, click page Link: #TextSelector, Assert Page: #AssertPage'() {
+    given: 'I start on the InformationPage'
+      to InformationPage
+    when: 'I click on the page link with label: #TextSelector'
+      commonModule.clickPageLink(TextSelector, bodyContent)
+    then: 'I arrive on the #AssertPage.getSimpleName()'
+      at AssertPage
+    where:
+      TextSelector                || AssertPage
+      'groundwater wells in B.C.' || new ExternalLinkPage('Groundwater Wells & Aquifers - Province of British Columbia',
+                                                          'www2\\.gov\\.bc\\.ca.*groundwater-wells-aquifers')
+      'Aquifers and the provincial observation well network' || new ExternalLinkPage(
+                                                                'Understanding Aquifers - Province of British Columbia',
+                                                                'www2\\.gov\\.bc\\.ca.*understanding-aquifers')
+      'Data and mapping tools'    || new ExternalLinkPage('Water Data & Tools - Province of British Columbia',
+                                                          'www2\\.gov\\.bc\\.ca.*water-data-tools')
+      'B.C. Water Resource Atlas' || new ExternalLinkPage('WRBC', 'maps\\.gov\\.bc\\.ca.*wrbc')
+      'iMapBC'                    || new ExternalLinkPage('iMapBC', 'maps\\.gov\\.bc\\.ca.*imap4m')
+      'DataBC datasets'           || new ExternalLinkPage('Datasets - Data Catalogue',
+                                                          'catalogue\\.data\\.gov\\.bc\\.ca.*dataset.*groundwater')
+      'FrontCounterBC location'   || new ExternalLinkPage('Locations - Natural Resource Online Services',
+                                                          'portal\\.nrs\\.gov\\.bc\\.ca.*locations')
+  }
+
+  @Unroll
+  void 'Navigate Page from: RegistryPage, click page Link: #TextSelector, Assert Page: #AssertPage'() {
+    given: 'I start on the RegistryPage'
+      to RegistryPage
+    when: 'I click on the page link with label: #TextSelector'
+      commonModule.clickPageLink(TextSelector, bodyContent)
+    then: 'I arrive on the #AssertPage.getSimpleName()'
+      at AssertPage
+    where:
+      TextSelector                                                                    || AssertPage
+      'Learn more about registering as a well driller or well pump installer in B.C.' || new ExternalLinkPage(
+                            'Register as a Water Well Driller or Pump Installer in B.C. - Province of British Columbia',
+                            'www2\\.gov\\.bc\\.ca.*what-you-need-to-practice-in-bc')
   }
 
   @Unroll
   void 'Navigate Page from: HomePage, click footer Link: #TextSelector, Assert Page: #AssertPage'() {
     given: 'I start on the HomePage'
       to HomePage
-    when: 'I click on the footer link with label: #TextSelector.text'
+    when: 'I click on the footer link with label: #TextSelector'
       footerModule.clickMenuItem(TextSelector)
     then: 'I arrive on the #AssertPage.getSimpleName()'
       at AssertPage
     where:
-      TextSelector               || AssertPage
-      [ text:'Home' ]            || new ExternalLinkPage('B\\.C\\. Homepage - Province of British Columbia',
-                                                         'www2\\.gov\\.bc\\.ca')
-      [ text:'About gov.bc.ca' ] || new ExternalLinkPage('About gov.bc.ca - Province of British Columbia',
-                                                         'www2\\.gov\\.bc\\.ca.*about')
-      [ text:'Disclaimer' ]      || new ExternalLinkPage('Disclaimer - Province of British Columbia',
-                                                         'www2\\.gov\\.bc\\.ca.*disclaimer')
-      [ text:'Privacy' ]         || new ExternalLinkPage('B\\.C\\. Government Website Privacy Statement - Province of \
-                                                          British Columbia', 'www2\\.gov\\.bc\\.ca.*privacy')
-      [ text:'Accessibility' ]   || new ExternalLinkPage('Web Accessibility - Province of British Columbia',
-                                                         'www2\\.gov\\.bc\\.ca.*accessibility')
-      [ text:'Copyright' ]       || new ExternalLinkPage('Copyright - Province of British Columbia',
-                                                         'www2\\.gov\\.bc\\.ca.*copyright')
-      [ text:'Contact Us' ]      || new ExternalLinkPage('Contact Us - Province of British Columbia',
-                                                         'www2\\.gov\\.bc\\.ca.*contact')
+      TextSelector      || AssertPage
+      'Home'            || new ExternalLinkPage('B\\.C\\. Homepage - Province of British Columbia',
+                                                'www2\\.gov\\.bc\\.ca')
+      'About gov.bc.ca' || new ExternalLinkPage('About gov.bc.ca - Province of British Columbia',
+                                                'www2\\.gov\\.bc\\.ca.*about')
+      'Disclaimer'      || new ExternalLinkPage('Disclaimer - Province of British Columbia',
+                                                'www2\\.gov\\.bc\\.ca.*disclaimer')
+      'Privacy'         || new ExternalLinkPage(
+                                        'B\\.C\\. Government Website Privacy Statement - Province of British Columbia',
+                                        'www2\\.gov\\.bc\\.ca.*privacy')
+      'Accessibility'   || new ExternalLinkPage('Web Accessibility - Province of British Columbia',
+                                                'www2\\.gov\\.bc\\.ca.*accessibility')
+      'Copyright'       || new ExternalLinkPage('Copyright - Province of British Columbia',
+                                                'www2\\.gov\\.bc\\.ca.*copyright')
+      'Contact Us'      || new ExternalLinkPage('Contact Us - Province of British Columbia',
+                                                'www2\\.gov\\.bc\\.ca.*contact')
   }
 }

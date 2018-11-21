@@ -18,12 +18,10 @@ import pages.SubmissionsPage
 import pages.SubmissionsPreviewPage
 import pages.SubmissionsConfirmSubmitModal
 
-import spock.lang.Timeout
 import spock.lang.Title
 import spock.lang.Narrative
 import spock.lang.Stepwise
 
-@Timeout(300)
 @Stepwise
 @Title('Groundwater Well Submissions Tests')
 @Narrative('''As a submission user, I want to create a new well submission report.''')
