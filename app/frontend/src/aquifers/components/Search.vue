@@ -102,8 +102,13 @@
       </b-table>
 
       <b-container v-if="displayPagination">
-        <b-row align-h="end">
-          <b-pagination :total-rows="response.count" :per-page="limit" v-model="currentPage" />
+        <b-row>
+          <b-col>
+            Showing {{ displayOffset }} to {{ displayPageLength }} of {{ response.count }}
+          </b-col>
+          <b-col>
+            <b-pagination :total-rows="response.count" :per-page="limit" v-model="currentPage" />
+          </b-col>
         </b-row>
       </b-container>
 
@@ -124,6 +129,9 @@ table.b-table > tfoot > tr > th.sorting::after {
   opacity: 1 !important;
 }
 
+ul.pagination {
+  justify-content: end;
+}
 </style>
 
 <script>
@@ -172,6 +180,15 @@ export default {
     }
   },
   computed: {
+    offset () { return parseInt(this.$route.query.offset, 10) || 0 },
+    displayOffset () { return this.offset + 1 },
+    displayPageLength () {
+      if (!this.response) {
+        return undefined
+      }
+
+      return this.offset + this.response.results.length
+    },
     aquiferList () { return this.response && this.response.results },
     displayPagination () { return this.aquiferList && (this.response.next || this.response.previous) },
     emptyResults () { return this.response && this.response.count === 0 },
