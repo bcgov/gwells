@@ -233,10 +233,10 @@ pipeline {
         steps {
             script {
                 openshift.withCluster() {
-                    openshift.withProject(DEV_PROJECT) {
+                    openshift.withProject(TOOLS_PROJECT) {
                         echo "Functional Testing"
                         podTemplate(
-                            label: 'bddstack',
+                            label: "bddstack-${DEV_SUFFIX}-${PR_NUM}-${env.JOB_BASE_NAME}-${env.CHANGE_ID}",
                             name: 'bddstack',
                             serviceAccount: 'jenkins',
                             cloud: 'openshift',
@@ -254,7 +254,7 @@ pipeline {
                                 )
                             ]
                         ) {
-                            node("bddstack-${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}-${env.CHANGE_ID}") {
+                            node("bddstack-${DEV_SUFFIX}-${PR_NUM}-${env.JOB_BASE_NAME}-${env.CHANGE_ID}") {
                                 stage('Functional Tests') {
                                     //the checkout is mandatory, otherwise functional test would fail
                                     echo "checking out source"
