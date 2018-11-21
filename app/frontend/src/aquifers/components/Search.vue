@@ -38,6 +38,12 @@
           variant="primary">Add new Aquifer</b-button>
       </div>
 
+      <b-alert
+        :show="noSearchCriteriaError"
+        variant="danger">
+        At least one search field is required
+      </b-alert>
+
       <b-form
         v-on:submit.prevent="triggerSearch"
         v-on:reset="triggerReset">
@@ -176,7 +182,8 @@ export default {
         { key: 'demand', label: 'Demand', sortable: true },
         { key: 'mapping_year', label: 'Year of mapping', sortable: true }
       ],
-      surveys: []
+      surveys: [],
+      noSearchCriteriaError: false
     }
   },
   computed: {
@@ -236,7 +243,7 @@ export default {
       this.search = ''
       this.aquifer_id = ''
       this.currentPage = 0
-
+      this.noSearchCriteriaError = false
       this.updateQueryParams()
     },
     triggerSearch () {
@@ -250,6 +257,10 @@ export default {
       if (this.search) {
         this.filterParams.search = this.search
       }
+
+      this.noSearchCriteriaError =
+        this.filterParams.aquifer_id == undefined &&
+        this.filterParams.search == undefined
 
       this.updateQueryParams()
     },
