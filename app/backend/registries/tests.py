@@ -683,7 +683,11 @@ class APIFilteringPaginationTests(APITestCase):
             registries_activity_code="PUMP",
             description="pump installer",
             display_order="2")
-
+        self.subactivity_pump = SubactivityCode.objects.create(
+            registries_activity=self.activity_pump,
+            registries_subactivity_code='PUMPINST',
+            description='Pump Installer',
+            display_order=4)
         # Create registered driller 1
         self.driller = Person.objects.create(
             first_name='Wendy', surname="Well")
@@ -697,6 +701,7 @@ class APIFilteringPaginationTests(APITestCase):
             registries_subactivity_code='WAT',
             description='water',
             display_order=1)
+
         self.app = RegistriesApplication.objects.create(
             registration=self.registration,
             current_status=self.status_active,
@@ -737,6 +742,31 @@ class APIFilteringPaginationTests(APITestCase):
             name="Big Time Drilling Company",
             province_state=self.province)
 
+        # driller approved for one activity, removed for another
+        self.partially_approved_driller = Person.objects.create(
+            first_name="Billy", surname="Partially Approved"
+        )
+        self.partially_approved_drill_registration = Register.objects.create(
+            person=self.partially_approved_driller,
+            registries_activity=self.activity_drill,
+            registration_no="P9999999"
+        )
+        self.partially_approved_drill_app = RegistriesApplication.objects.create(
+            registration=self.partially_approved_drill_registration,
+            current_status=self.status_inactive,
+            subactivity=self.subactivity
+        )
+        self.partially_approved_pump_registration = Register.objects.create(
+            person=self.partially_approved_driller,
+            registries_activity=self.activity_pump,
+            registration_no="P9999991"
+        )
+        self.partially_approved_drill_app = RegistriesApplication.objects.create(
+            registration=self.partially_approved_pump_registration,
+            current_status=self.status_active,
+            subactivity=self.subactivity_pump
+        )
+
     def test_user_cannot_see_unregistered_person_in_list(self):
         url = reverse('person-list')
         response = self.client.get(url, format='json')
@@ -747,6 +777,7 @@ class APIFilteringPaginationTests(APITestCase):
         # Johnny is in database but is not registered, so make sure he's not in the publicly available list.
         self.assertNotContains(response, 'Johnny')
         self.assertNotContains(response, self.unregistered_driller.person_guid)
+        self.assertNotContains(response, self.partially_approved_driller.person_guid)
 
     def test_user_cannot_retrieve_unregistered_person(self):
         """ unauthorized request to person detail view. Note: now always returns 401 if not staff. """
@@ -781,6 +812,7 @@ class APIFilteringPaginationTests(APITestCase):
         self.assertNotContains(response, 'Johnny')
         self.assertNotContains(response, self.driller2.person_guid)
         self.assertNotContains(response, self.unregistered_driller.person_guid)
+        self.assertNotContains(response, self.partially_approved_driller.person_guid)
 
     def test_search_for_registration_number(self):
         url = reverse('person-list') + '?search=' + \
