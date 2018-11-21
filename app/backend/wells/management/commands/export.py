@@ -6,15 +6,43 @@ from django.core.management.base import BaseCommand
 from django.db import models
 from django.db import connection
 
+from minio import Minio
 import xlsxwriter
 
+from gwells.settings.base import get_env_variable
 from wells.models import Well, LithologyDescription, Casing, Screen, ProductionData, Perforation
+
+# Run from command line :
+# python manage.py export
 
 
 class Command(BaseCommand):
 
+    def handle(self, *args, **options):
+        zip_filename = 'gwells.zip'
+        spreadsheet_filename = 'gwells.xlsx'
+        self.generate_files(zip_filename, spreadsheet_filename)
+        self.upload_files(zip_filename, spreadsheet_filename)
+        for filename in (zip_filename, spreadsheet_filename):
+            if os.path.exists(filename):
+                os.remove(filename)
+
+    def upload_files(self, zip_filename, spreadsheet_filename):
+        minioClient = Minio(get_env_variable('S3_PRIVATE_HOST'),
+                            access_key=get_env_variable('MINIO_ACCESS_KEY'),
+                            secret_key=get_env_variable('MINIO_SECRET_KEY'),
+                            secure=True)
+        for filename in (zip_filename, spreadsheet_filename):
+            with open(filename, 'rb') as file_data:
+                file_stat = os.stat(filename)
+                # Do we need to remove the existing files 1st?
+                minioClient.put_object(get_env_variable('S3_WELL_EXPORT_BUCKET'),
+                                       filename,
+                                       file_data,
+                                       file_stat.st_size)
+
     def export(self, workbook, gwells_zip, worksheet_name, cursor):
-        # worksheet = workbook.add_worksheet(worksheet_name)
+        worksheet = workbook.add_worksheet(worksheet_name)
         csv_file = '{}.csv'.format(worksheet_name)
         if os.path.exists(csv_file):
             os.remove(csv_file)
@@ -24,7 +52,7 @@ class Command(BaseCommand):
             values = []
             # Write the headings
             for index, field in enumerate(cursor.description):
-                # worksheet.write(0, index, '{}'.format(field.name))
+                worksheet.write(0, index, '{}'.format(field.name))
                 values.append(field.name)
             csvwriter.writerow(values)
 
@@ -40,13 +68,15 @@ class Command(BaseCommand):
                 if num_values > 1:
                     # We always have a well_tag_number, but if that's all we have, then just skip this record
                     row_index += 1
-                    # for col, value in enumerate(values):
-                    #     if value:
-                    #         worksheet.write(row_index, col, value)
+                    for col, value in enumerate(values):
+                        if value:
+                            worksheet.write(row_index, col, value)
                     csvwriter.writerow(values)
         gwells_zip.write(csv_file)
+        if os.path.exists(csv_file):
+            os.remove(csv_file)
 
-    def handle(self, *args, **options):
+    def generate_files(self, zip_filename, spreadsheet_filename):
         #######
         # WELL
         #######
@@ -151,36 +181,34 @@ class Command(BaseCommand):
  perforation
  order by well_tag_number""")
 
-        zip_filename = 'gwells.zip'
         if os.path.exists(zip_filename):
             os.remove(zip_filename)
         with zipfile.ZipFile(zip_filename, 'w') as gwells_zip:
-            spreadsheet_filename = 'gwells.xlsx'
             if os.path.exists(spreadsheet_filename):
                 os.remove(spreadsheet_filename)
-            workbook = None
-            # with xlsxwriter.Workbook(spreadsheet_filename) as workbook:
-            # Well
-            with connection.cursor() as cursor:
-                cursor.execute(well_sql)
-                self.export(workbook, gwells_zip, 'well', cursor)
-            # Lithology
-            with connection.cursor() as cursor:
-                cursor.execute(lithology_sql)
-                self.export(workbook, gwells_zip, 'lithology', cursor)
-            # Casing
-            with connection.cursor() as cursor:
-                cursor.execute(casing_sql)
-                self.export(workbook, gwells_zip, 'casing', cursor)
-            # Screen
-            with connection.cursor() as cursor:
-                cursor.execute(screen_sql)
-                self.export(workbook, gwells_zip, 'screen', cursor)
-            # Production
-            with connection.cursor() as cursor:
-                cursor.execute(production_sql)
-                self.export(workbook, gwells_zip, 'production', cursor)
-            # Perforation
-            with connection.cursor() as cursor:
-                cursor.execute(perforation_sql)
-                self.export(workbook, gwells_zip, 'perforation', cursor)
+            with xlsxwriter.Workbook(spreadsheet_filename) as workbook:
+                # Well
+                with connection.cursor() as cursor:
+                    cursor.execute(well_sql)
+                    self.export(workbook, gwells_zip, 'well', cursor)
+                # Lithology
+                with connection.cursor() as cursor:
+                    cursor.execute(lithology_sql)
+                    self.export(workbook, gwells_zip, 'lithology', cursor)
+                # Casing
+                with connection.cursor() as cursor:
+                    cursor.execute(casing_sql)
+                    self.export(workbook, gwells_zip, 'casing', cursor)
+                # Screen
+                with connection.cursor() as cursor:
+                    cursor.execute(screen_sql)
+                    self.export(workbook, gwells_zip, 'screen', cursor)
+                # Production
+                with connection.cursor() as cursor:
+                    cursor.execute(production_sql)
+                    self.export(workbook, gwells_zip, 'production', cursor)
+                # Perforation
+                with connection.cursor() as cursor:
+                    cursor.execute(perforation_sql)
+                    self.export(workbook, gwells_zip, 'perforation', cursor)
+

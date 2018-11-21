@@ -1,4 +1,5 @@
 {% extends 'gwells/base.html' %} {% load crispy_forms_tags %}
+{% load render_bundle from webpack_loader %}
 
 {% block meta %}{{ block.super }}{% endblock %}
 {% block title %}Search{% endblock %}
@@ -41,6 +42,8 @@
             <li><a href="http://maps.gov.bc.ca/ess/hm/wrbc/" id="BCWRAtlas">B.C. Water Resource Atlas</a></li>
             <li><a href="http://maps.gov.bc.ca/ess/hm/imap4m/" id="iMapBC">iMapBC</a></li>
         </ul>
+        <div id="exports"></div>
+        {% render_bundle 'exports' 'js' %}
     </div>
     <div class="col-md-6">
         <div aria-label="A map associated with GWELLS Search. All well information in this map is accessible via the table of well results that opens below the search form when a search succeeds." id="search-map"></div>

@@ -21,6 +21,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
     footer: './src/footer/main.js',
     registry: './src/registry/main.js',
     documents: './src/wells/documents.js',
+    exports: './src/wells/exports.js',
     summary: './src/wells/summary.js',
     submissions: './src/submissions/main.js',
     aquifers: './src/aquifers/main.js'
@@ -107,6 +108,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         'registry',
         'summary',
         'documents',
+        'exports',
         'submissions',
         'footer'
       ],
