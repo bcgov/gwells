@@ -106,6 +106,7 @@
                 "ENABLE_GOOGLE_ANALYTICS": null,
                 "S3_PRIVATE_BUCKET": null,
                 "S3_PRIVATE_HOST": null,
+                "S3_WELL_EXPORT_BUCKET": null,
                 "SSO_AUDIENCE": null,
                 "SSO_AUTH_HOST":  null,
                 "SSO_CLIENT": null,
@@ -558,6 +559,15 @@
                                         "valueFrom": {
                                             "configMapKeyRef": {
                                                 "key": "S3_PRIVATE_HOST",
+                                                "name": "gwells-global-config${NAME_SUFFIX}"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "S3_WELL_EXPORT_BUCKET",
+                                        "valueFrom": {
+                                            "configMapKeyRef": {
+                                                "key": "S3_WELL_EXPORT_BUCKET",
                                                 "name": "gwells-global-config${NAME_SUFFIX}"
                                             }
                                         }
