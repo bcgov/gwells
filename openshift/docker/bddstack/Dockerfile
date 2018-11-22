@@ -41,6 +41,8 @@ RUN yum repolist > /dev/null && \
     if [ ! -d /home/jenkins/.pki ] ; then mkdir /home/jenkins/.pki; fi && \
     chmod 777 /home/jenkins/.pki
 
+RUN yum update google-chrome-stable
+
 ENV OPENSHIFT_JENKINS_JVM_ARCH=x86_64
 
 USER 1001
