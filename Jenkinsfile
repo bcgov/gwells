@@ -685,7 +685,7 @@ pipeline {
                 script {
                     _openshift(env.STAGE_NAME, TOOLS_PROJECT) {
                         String BASE_URL = "https://${TEST_HOST}/gwells/"
-                        def result = functionalTest ('TEST - Smoke Tests', BASE_URL, TEST_SUFFIX, 'AquiferSearchSpecs')
+                        def result = functionalTest ('TEST - Smoke Tests', BASE_URL, TEST_SUFFIX, 'SearchSpecs')
                     }
                 }
             }
@@ -860,7 +860,7 @@ pipeline {
                 script {
                     _openshift(env.STAGE_NAME, TOOLS_PROJECT) {
                         String BASE_URL = "https://${DEMO_HOST}/gwells/"
-                        def result = functionalTest ('DEMO - Smoke Tests', BASE_URL, DEMO_SUFFIX, 'AquiferSearchSpecs')
+                        def result = functionalTest ('DEMO - Smoke Tests', BASE_URL, DEMO_SUFFIX, 'SearchSpecs')
                     }
                 }
             }
@@ -1018,7 +1018,7 @@ pipeline {
                 script {
                     _openshift(env.STAGE_NAME, TOOLS_PROJECT) {
                         String BASE_URL = "https://${PROD_HOST}/gwells/"
-                        def result = functionalTest ('PROD - Smoke Tests', BASE_URL, PROD_SUFFIX, 'AquiferSearchSpecs')
+                        def result = functionalTest ('PROD - Smoke Tests', BASE_URL, PROD_SUFFIX, 'SearchSpecs')
                     }
                 }
             }
