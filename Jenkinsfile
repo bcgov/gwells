@@ -420,6 +420,15 @@ pipeline {
               def ghDeploymentId = new GitHubHelper().createDeployment(this, "pull/${env.CHANGE_ID}/head", ['environment':"${TEST_SUFFIX}", 'task':"deploy:pull:${env.CHANGE_ID}"])
               new GitHubHelper().createDeploymentStatus(this, ghDeploymentId, 'PENDING', ['targetUrl':"${targetTestURL}"])
 
+              // Create cronjob for well export
+              def cronTemplate = openshift.process("-f",
+                "openshift/export-wells.cj.json",
+                "ENV_NAME=-${TEST_SUFFIX}",
+                "PROJECT=${TEST_PROJECT}",
+                "TAG=${TEST_SUFFIX}"
+              )
+              openshift.apply(cronTemplate).label(['app':"gwells-${TEST_SUFFIX}", 'app-name':"${APP_NAME}", 'env-name':"${TEST_SUFFIX}"], "--overwrite")
+
               // monitor the deployment status and wait until deployment is successful
               echo "Waiting for deployment to TEST..."
               def newVersion = openshift.selector("dc", "gwells-${TEST_SUFFIX}").object().status.latestVersion
@@ -635,6 +644,15 @@ pipeline {
               def targetProdURL = "https://apps.nrs.gov.bc.ca/gwells/"
               def ghDeploymentId = new GitHubHelper().createDeployment(this, "pull/${env.CHANGE_ID}/head", ['environment':"${PROD_SUFFIX}", 'task':"deploy:pull:${env.CHANGE_ID}"])
               new GitHubHelper().createDeploymentStatus(this, ghDeploymentId, 'PENDING', ['targetUrl':"${targetProdURL}"])
+
+              // Create cronjob for well export
+              def cronTemplate = openshift.process("-f",
+                "openshift/export-wells.cj.json",
+                "ENV_NAME=-${PROD_SUFFIX}",
+                "PROJECT=${PROD_PROJECT}",
+                "TAG=${PROD_SUFFIX}"
+              )
+              openshift.apply(cronTemplate).label(['app':"gwells-${PROD_SUFFIX}", 'app-name':"${APP_NAME}", 'env-name':"${PROD_SUFFIX}"], "--overwrite")
 
               // monitor the deployment status and wait until pgsql-${ deployment is successful
               echo "Waiting for deployment to production..."
