@@ -259,8 +259,8 @@ export default {
       }
 
       this.noSearchCriteriaError =
-        this.filterParams.aquifer_id == undefined &&
-        this.filterParams.search == undefined
+        this.filterParams.aquifer_id === undefined &&
+        this.filterParams.search === undefined
 
       this.updateQueryParams()
     },
