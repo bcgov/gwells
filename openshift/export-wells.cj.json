@@ -23,7 +23,7 @@
             "containers": [
               {
                 "name": "export",
-                "image": "docker-registry.default.svc:5000/${PROJECT}/gwells-${ENV_NAME}:${ENV_NAME}",
+                "image": "docker-registry.default.svc:5000/${PROJECT}/gwells-${ENV_NAME}",
                 "command": ["python", "backend/manage.py", "export"],
                 "env": [
                   {
