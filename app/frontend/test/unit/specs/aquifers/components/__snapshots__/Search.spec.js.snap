@@ -16,6 +16,8 @@ exports[`Search Component Matches the snapshot 1`] = `
       <!---->
     </div>
      
+    <!---->
+     
     <form
       class=""
     >
@@ -25,34 +27,6 @@ exports[`Search Component Matches the snapshot 1`] = `
         <div
           class="col-md-4 col-12"
         >
-          <fieldset
-            aria-labelledby="__BVID__14__BV_label_"
-            class="b-form-group form-group"
-            id="__BVID__14"
-            role="group"
-          >
-            <legend
-              class="col-form-label pt-0"
-              id="__BVID__14__BV_label_"
-            >
-              Aquifer name
-            </legend>
-            <div
-              aria-labelledby="__BVID__14__BV_label_"
-              class=""
-              role="group"
-            >
-              <input
-                class="form-control"
-                id="aquifers-name"
-                type="text"
-              />
-              <!---->
-              <!---->
-              <!---->
-            </div>
-          </fieldset>
-           
           <fieldset
             aria-labelledby="__BVID__16__BV_label_"
             class="b-form-group form-group"
@@ -80,6 +54,34 @@ exports[`Search Component Matches the snapshot 1`] = `
               <!---->
             </div>
           </fieldset>
+           
+          <fieldset
+            aria-labelledby="__BVID__18__BV_label_"
+            class="b-form-group form-group"
+            id="__BVID__18"
+            role="group"
+          >
+            <legend
+              class="col-form-label pt-0"
+              id="__BVID__18__BV_label_"
+            >
+              Aquifer name
+            </legend>
+            <div
+              aria-labelledby="__BVID__18__BV_label_"
+              class=""
+              role="group"
+            >
+              <input
+                class="form-control"
+                id="aquifers-name"
+                type="text"
+              />
+              <!---->
+              <!---->
+              <!---->
+            </div>
+          </fieldset>
         </div>
       </div>
        
@@ -91,7 +93,7 @@ exports[`Search Component Matches the snapshot 1`] = `
         >
           <fieldset
             class="b-form-group form-group"
-            id="__BVID__18"
+            id="__BVID__20"
             role="group"
           >
             <!---->
