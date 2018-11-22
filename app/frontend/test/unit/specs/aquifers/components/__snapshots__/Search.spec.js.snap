@@ -320,7 +320,23 @@ exports[`Search Component Matches the snapshot 1`] = `
       </tbody>
     </table>
      
-    <!---->
+    <div
+      class="container"
+    >
+      <div
+        class="row"
+      >
+        <div
+          class="col"
+        >
+          
+          Showing 1 to 0 of 
+        
+        </div>
+         
+        <!---->
+      </div>
+    </div>
   </div>
 </div>
 `;
