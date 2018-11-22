@@ -41,7 +41,7 @@
       <b-alert
         :show="noSearchCriteriaError"
         variant="danger">
-        At least one search field is required
+        <i class="fa fa-exclamation-circle"/>&nbsp;&nbsp;At least one search field is required
       </b-alert>
 
       <b-form
@@ -107,12 +107,12 @@
         </template>
       </b-table>
 
-      <b-container v-if="displayPagination">
+      <b-container v-if="aquiferList && !emptyResults">
         <b-row>
           <b-col>
             Showing {{ displayOffset }} to {{ displayPageLength }} of {{ response.count }}
           </b-col>
-          <b-col>
+          <b-col v-if="displayPagination">
             <b-pagination :total-rows="response.count" :per-page="limit" v-model="currentPage" />
           </b-col>
         </b-row>
