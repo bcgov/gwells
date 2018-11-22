@@ -243,7 +243,7 @@ pipeline {
                             containers: [
                                 containerTemplate(
                                     name: 'jnlp',
-                                    image: '172.50.0.2:5000/openshift/jenkins-slave-bddstack',
+                                    image: 'docker-registry.default.svc:5000/moe-gwells-tools/bddstack',
                                     resourceRequestCpu: '800m',
                                     resourceLimitCpu: '800m',
                                     resourceRequestMemory: '4Gi',
@@ -255,18 +255,16 @@ pipeline {
                             ]
                         ) {
                             node("bddstack-${DEV_SUFFIX}-${PR_NUM}-${env.JOB_BASE_NAME}-${env.CHANGE_ID}") {
-                                stage('Functional Tests') {
-                                    //the checkout is mandatory, otherwise functional test would fail
-                                    echo "checking out source"
-                                    checkout scm
-                                    dir('functional-tests') {
-                                        try {
-                                            sh './gradlew chromeHeadlessTest'
-                                        } finally {
-                                            archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
-                                            archiveArtifacts allowEmptyArchive: true, artifacts: 'build/test-results/**/*'
-                                            junit 'build/test-results/**/*.xml'
-                                        }
+                                //the checkout is mandatory, otherwise functional test would fail
+                                echo "checking out source"
+                                checkout scm
+                                dir('functional-tests') {
+                                    try {
+                                        sh './gradlew chromeHeadlessTest'
+                                    } finally {
+                                        archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
+                                        archiveArtifacts allowEmptyArchive: true, artifacts: 'build/test-results/**/*'
+                                        junit 'build/test-results/**/*.xml'
                                     }
                                 }
                             }
