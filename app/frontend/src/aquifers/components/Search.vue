@@ -49,17 +49,17 @@
         v-on:reset="triggerReset">
         <b-form-row>
           <b-col cols="12" md="4">
-            <b-form-group label="Aquifer name">
-              <b-form-input
-                id="aquifers-name"
-                type="text"
-                v-model="search"/>
-            </b-form-group>
             <b-form-group label="Aquifer number">
               <b-form-input
                 id="aquifers-number"
                 type="text"
                 v-model="aquifer_id"/>
+            </b-form-group>
+            <b-form-group label="Aquifer name">
+              <b-form-input
+                id="aquifers-name"
+                type="text"
+                v-model="search"/>
             </b-form-group>
           </b-col>
         </b-form-row>
