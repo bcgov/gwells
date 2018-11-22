@@ -29,10 +29,11 @@
     </b-alert>
 
     <b-card no-body class="p-3 mb-4">
-      <h5>Aquifer Search</h5>
+      <h4>Aquifer Search</h4>
 
       <div class="pb-2">
         <b-button
+          id="aquifers-add"
           v-on:click="navigateToNew"
           v-if="userRoles.aquifers.edit"
           variant="primary">Add new Aquifer</b-button>

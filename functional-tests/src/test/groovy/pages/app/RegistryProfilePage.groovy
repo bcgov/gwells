@@ -18,28 +18,27 @@ package pages
  * Well Operator profile page.
  */
 class RegistryProfilePage extends BaseAppPage {
-  static at = { verifyProfilePage() }
+  static at = {
+    browser.getCurrentUrl() =~ /\/registries\/people\/[a-z0-9\-]+$/ &&
+    pageTitle.text() == "$firstName $surName"
+  }
   static content = {
     pageTitle { $('main h4') }
   }
 
-  private final String surname
-  private final String firstname
+  private final String surName
+  private final String firstName
 
   /**
    * Constructor.
    *
-   * Uses the well oeprator's first and last name to at check the page, as the title is based on the operator's name.
+   * Uses the well operator's first and last name to-at check the page, as the title is based on the operator's name.
    *
-   * @param String the well operator surname (required)
-   * @param String the well operator firstname (required)
+   * @param String the well operator surName (required)
+   * @param String the well operator firstName (required)
    */
-  RegistryProfilePage(String surname, String firstname) {
-    this.surname = surname
-    this.firstname = firstname
-  }
-
-  Boolean verifyProfilePage() {
-    browser.getCurrentUrl() =~ /\/registries\/people\/[a-z0-9\-]+$/ && pageTitle.text() == "$firstname $surname"
+  RegistryProfilePage(String surName, String firstName) {
+    this.surName = surName
+    this.firstName = firstName
   }
 }
