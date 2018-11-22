@@ -423,7 +423,7 @@ pipeline {
               // Create cronjob for well export
               def cronTemplate = openshift.process("-f",
                 "openshift/export-wells.cj.json",
-                "ENV_NAME=-${TEST_SUFFIX}",
+                "ENV_NAME=${TEST_SUFFIX}",
                 "PROJECT=${TEST_PROJECT}",
                 "TAG=${TEST_SUFFIX}"
               )
@@ -648,7 +648,7 @@ pipeline {
               // Create cronjob for well export
               def cronTemplate = openshift.process("-f",
                 "openshift/export-wells.cj.json",
-                "ENV_NAME=-${PROD_SUFFIX}",
+                "ENV_NAME=${PROD_SUFFIX}",
                 "PROJECT=${PROD_PROJECT}",
                 "TAG=${PROD_SUFFIX}"
               )
