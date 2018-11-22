@@ -152,6 +152,7 @@ export default {
           'casings',
           'backfill',
           'liner',
+          'lithology',
           'screens',
           'filterPack',
           'wellDevelopment',
@@ -512,7 +513,7 @@ export default {
   }
 }
 .input-width-small {
-  max-width: 5rem;
+  max-width: 3rem;
 }
 .input-width-medium {
   max-width: 10rem;
