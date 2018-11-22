@@ -37,16 +37,16 @@ Licensed under the Apache License, Version 2.0 (the "License");
           <template v-for="(row, index) in lithology.length">
             <tr  :key="`lithology row ${index}`" :id="`lithologyRow${index}`">
               <td class="input-width-small">
-                <form-input :id="`lithologyDepthFrom${index}`" aria-label="Depth from (feet)" v-model="lithology[index].from" group-class="mt-1 mb-0"/>
+                <form-input :id="`lithologyDepthFrom${index}`" aria-label="Depth from (feet)" v-model="lithology[index].lithology_from" group-class="mt-1 mb-0"/>
               </td>
               <td class="input-width-small">
-                <form-input :id="`lithologyDepthTo${index}`" aria-label="Depth to (feet)" v-model="lithology[index].to" group-class="mt-1 mb-0"/>
+                <form-input :id="`lithologyDepthTo${index}`" aria-label="Depth to (feet)" v-model="lithology[index].lithology_to" group-class="mt-1 mb-0"/>
               </td>
               <td>
                 <form-input :id="`lithologyDescription${index}`" aria-label="Description" v-model="lithology[index].lithology_raw_data" group-class="mt-1 mb-0"></form-input>
               </td>
               <td class="input-width-small">
-                <form-input :id="`lithologyFlowEstimate${index}`" aria-label="Water bearing flow" v-model="lithology[index].water_bearing_flow" group-class="mt-1 mb-0"></form-input>
+                <form-input :id="`lithologyFlowEstimate${index}`" aria-label="Water bearing flow" v-model="lithology[index].water_bearing_estimated_flow" group-class="mt-1 mb-0"></form-input>
               </td>
               <td class="pt-1 input-width-small">
                 <b-btn size="sm" variant="primary" @click="removeRowIfOk(index)" :id="`removeRowButton${index}`" class="mt-2"><i class="fa fa-minus-square-o"></i> Remove</b-btn>

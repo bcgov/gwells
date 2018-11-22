@@ -176,21 +176,18 @@ Licensed under the Apache License, Version 2.0 (the "License");
           striped
           small
           bordered
-          :items="filterBlankRows(form.lithology_set)"
+          :items="filterBlankRows(form.lithologydescription_set)"
           show-empty
           :fields="[
             'from',
             'to',
-            'primary',
-            'secondary',
-            'bedrock',
-            'descriptor',
-            'colour',
-            'hardness',
-            'moisture',
-            'water_bearing_flow',
-            'observations'
-          ]"></b-table>
+            'visual_description',
+            'water_bearing_estimated_flow',
+          ]">
+          <template slot="visual_description" slot-scope="data">{{data.item.lithology_raw_data}}</template>
+          <template slot="from" slot-scope="data">{{data.item.lithology_from}}</template>
+          <template slot="to" slot-scope="data">{{data.item.lithology_to}}</template>
+        </b-table>
       </div>
     </fieldset>
 

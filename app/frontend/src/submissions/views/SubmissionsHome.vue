@@ -266,9 +266,7 @@ export default {
       ApiService.post(PATH, data).then((response) => {
         this.formSubmitSuccess = true
         this.formSubmitSuccessWellTag = response.data.well
-        if (!this.isStaffEdit) {
-          this.resetForm()
-        }
+
         this.$emit('formSaved')
 
         if (!this.form.well_tag_number) {
