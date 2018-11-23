@@ -242,8 +242,8 @@ pipeline {
                             cloud: 'openshift',
                             containers: [
                                 containerTemplate(
-                                    name: 'jnlp',
-                                    image: 'docker-registry.default.svc:5000/moe-gwells-tools/bddstack',
+                                    name: 'bddstack',
+                                    image: 'docker-registry.default.svc:5000/moe-gwells-tools/bddstack:latest',
                                     resourceRequestCpu: '800m',
                                     resourceLimitCpu: '800m',
                                     resourceRequestMemory: '4Gi',
