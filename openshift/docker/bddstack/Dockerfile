@@ -35,13 +35,11 @@ RUN yum repolist > /dev/null && \
     yum install -y --setopt=tsflags=nodocs $INSTALL_PKGS && \
     rpm -V $INSTALL_PKGS && \
     yum clean all -y && \
-    wget https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm && \
-    yum -y localinstall google-chrome-stable_current_x86_64.rpm && \
+    wget hhttp://dl.google.com/linux/chrome/rpm/stable/x86_64/google-chrome-stable-70.0.3538.110-1.x86_64.rpm && \
+    yum -y localinstall google-chrome-stable*.rpm && \
     rm google-chrome-stable_current_x86_64.rpm && \
     if [ ! -d /home/jenkins/.pki ] ; then mkdir /home/jenkins/.pki; fi && \
     chmod 777 /home/jenkins/.pki
-
-RUN yum update google-chrome-stable
 
 ENV OPENSHIFT_JENKINS_JVM_ARCH=x86_64
 
