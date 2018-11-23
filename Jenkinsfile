@@ -237,7 +237,7 @@ pipeline {
                         echo "Functional Testing"
                         podTemplate(
                             label: "bddstack-${DEV_SUFFIX}-${PR_NUM}-${env.JOB_BASE_NAME}-${env.CHANGE_ID}",
-                            name: 'bddstack',
+                            name: 'bddstack-${DEV_SUFFIX}-${PR_NUM}-${env.JOB_BASE_NAME}-${env.CHANGE_ID}',
                             serviceAccount: 'jenkins',
                             cloud: 'openshift',
                             containers: [
