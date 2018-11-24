@@ -235,6 +235,7 @@ pipeline {
                 openshift.withCluster() {
                     openshift.withProject(TOOLS_PROJECT) {
                         echo "Functional Testing"
+                        String baseURL = "https://${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}.pathfinder.gov.bc.ca/gwells"
                         podTemplate(
                             label: "bddstack-${DEV_SUFFIX}-${PR_NUM}-${env.JOB_BASE_NAME}-${env.CHANGE_ID}",
                             name: "bddstack2-${DEV_SUFFIX}-${PR_NUM}-${env.JOB_BASE_NAME}-${env.CHANGE_ID}",
@@ -250,12 +251,23 @@ pipeline {
                                     resourceLimitMemory: '4Gi',
                                     workingDir: '/home/jenkins',
                                     command: '',
-                                    args: '${computer.jnlpmac} ${computer.name}'
+                                    args: '${computer.jnlpmac} ${computer.name}',
+                                    envVars: [
+                                        envVar(key:'BASEURL', value: baseURL),
+                                        envVar(key:'GRADLE_USER_HOME', value: '/var/cache/artifacts/gradle')
+                                    ]
+                                )
+                            ],
+                            volumes: [
+                                persistentVolumeClaim(
+                                    mountPath: '/var/cache/artifacts',
+                                    claimName: 'cache',
+                                    readOnly: false
                                 )
                             ]
                         ) {
                             node("bddstack-${DEV_SUFFIX}-${PR_NUM}-${env.JOB_BASE_NAME}-${env.CHANGE_ID}") {
-                                //the checkout is mandatory, otherwise functional test would fail
+                                //the checkout is mandatory, otherwise functional tests would fail
                                 echo "checking out source"
                                 checkout scm
                                 dir('functional-tests') {
