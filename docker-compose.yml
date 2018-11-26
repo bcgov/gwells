@@ -65,7 +65,7 @@ services:
               registries-codetables.json
               registries.json
               aquifers.json
-              wellsearch.json.gz &&
+              wellsearch &&
             python3 manage.py createinitialrevisions &&
             python3 manage.py collectstatic --noinput &&
             python3 manage.py runserver 0.0.0.0:8000"
