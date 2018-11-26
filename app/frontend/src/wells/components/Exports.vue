@@ -13,7 +13,7 @@
 */
 
 <template>
-  <div v-if="files">
+  <div v-if="files && files.length > 0">
     <p class="font-weight-bold">Download all wells</p>
     <ul>
       <li v-for="file in files" :key="file.name"><a :href="file.url">Well extract ({{file.description}})</a> ({{format_size(file.size)}}) - {{format_date(file.last_modified)}}</li>

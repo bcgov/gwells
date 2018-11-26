@@ -9,7 +9,7 @@ from django.db import models
 from django.db import connection
 
 from minio import Minio
-from openpyxl import Workbook
+from xlsxwriter import Workbook
 
 from gwells.settings.base import get_env_variable
 
@@ -50,7 +50,7 @@ class Command(BaseCommand):
 
     def export(self, workbook, gwells_zip, worksheet_name, cursor):
         logger.info('exporting {}'.format(worksheet_name))
-        worksheet = workbook.create_sheet(worksheet_name)
+        worksheet = workbook.add_worksheet(worksheet_name)
         csv_file = '{}.csv'.format(worksheet_name)
         if os.path.exists(csv_file):
             os.remove(csv_file)
@@ -60,8 +60,8 @@ class Command(BaseCommand):
             values = []
             # Write the headings
             for index, field in enumerate(cursor.description):
+                worksheet.write(0, index, '{}'.format(field.name))
                 values.append(field.name)
-            worksheet.append(values)
             csvwriter.writerow(values)
 
             # Write the values
@@ -84,8 +84,12 @@ class Command(BaseCommand):
                     else:
                         values.append(value)
                 if num_values > 1:
+                    # We always have a well_tag_number, but if that's all we have, then just skip this record
+                    row_index += 1
+                    for col, value in enumerate(values):
+                        if value:
+                            worksheet.write(row_index, col, value)
                     csvwriter.writerow(values)
-                    worksheet.append(values)
         gwells_zip.write(csv_file)
         if os.path.exists(csv_file):
             os.remove(csv_file)
@@ -200,29 +204,28 @@ class Command(BaseCommand):
         with zipfile.ZipFile(zip_filename, 'w') as gwells_zip:
             if os.path.exists(spreadsheet_filename):
                 os.remove(spreadsheet_filename)
-            workbook = Workbook(write_only=True)
-            # Well
-            with connection.cursor() as cursor:
-                cursor.execute(well_sql)
-                self.export(workbook, gwells_zip, 'well', cursor)
-            # Lithology
-            with connection.cursor() as cursor:
-                cursor.execute(lithology_sql)
-                self.export(workbook, gwells_zip, 'lithology', cursor)
-            # Casing
-            with connection.cursor() as cursor:
-                cursor.execute(casing_sql)
-                self.export(workbook, gwells_zip, 'casing', cursor)
-            # Screen
-            with connection.cursor() as cursor:
-                cursor.execute(screen_sql)
-                self.export(workbook, gwells_zip, 'screen', cursor)
-            # Production
-            with connection.cursor() as cursor:
-                cursor.execute(production_sql)
-                self.export(workbook, gwells_zip, 'production', cursor)
-            # Perforation
-            with connection.cursor() as cursor:
-                cursor.execute(perforation_sql)
-                self.export(workbook, gwells_zip, 'perforation', cursor)
-            workbook.save(filename=spreadsheet_filename)
+            with Workbook(spreadsheet_filename) as workbook:            
+                # Well
+                with connection.cursor() as cursor:
+                    cursor.execute(well_sql)
+                    self.export(workbook, gwells_zip, 'well', cursor)
+                # Lithology
+                with connection.cursor() as cursor:
+                    cursor.execute(lithology_sql)
+                    self.export(workbook, gwells_zip, 'lithology', cursor)
+                # Casing
+                with connection.cursor() as cursor:
+                    cursor.execute(casing_sql)
+                    self.export(workbook, gwells_zip, 'casing', cursor)
+                # Screen
+                with connection.cursor() as cursor:
+                    cursor.execute(screen_sql)
+                    self.export(workbook, gwells_zip, 'screen', cursor)
+                # Production
+                with connection.cursor() as cursor:
+                    cursor.execute(production_sql)
+                    self.export(workbook, gwells_zip, 'production', cursor)
+                # Perforation
+                with connection.cursor() as cursor:
+                    cursor.execute(perforation_sql)
+                    self.export(workbook, gwells_zip, 'perforation', cursor)
