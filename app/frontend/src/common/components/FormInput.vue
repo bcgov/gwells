@@ -38,6 +38,8 @@
         :max="max"
         :min="min"
         :maxlength="maxlength"
+        :formatter="formatter"
+        :lazy-formatter="lazyFormatter"
         @input="updateValue($event)"
         @focus.native="$emit('focus', true)"
         @blur.native="$emit('blur', true)"
@@ -94,6 +96,8 @@ export default {
     valueField: String,
     textField: String,
     placeholder: String,
+    formatter: Function,
+    lazyFormatter: Boolean,
     loaded: {
       required: false
     } // if changed to true, change contextual state temporarily (e.g. flash green on valid input)

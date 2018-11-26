@@ -194,7 +194,9 @@ export default {
           'comments'
         ],
         STAFF_EDIT: [
-          'personResponsible'
+          'personResponsible',
+          'wellOwner',
+          'method'
         ]
       }
     }
@@ -315,6 +317,8 @@ export default {
         owner_city: '',
         owner_province_state: '',
         owner_postal_code: '',
+        owner_email: '',
+        owner_tel: '',
         street_address: '', // this is the street address of the well location
         city: '', // well location city
         legal_lot: '',
@@ -338,6 +342,7 @@ export default {
         ground_elevation: null,
         ground_elevation_method: '',
         drilling_method: '',
+        other_drilling_method: '',
         well_orientation: '',
         lithologydescription_set: [],
         surface_seal_material: '',

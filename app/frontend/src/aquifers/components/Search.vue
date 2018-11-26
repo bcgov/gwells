@@ -38,22 +38,28 @@
           variant="primary">Add new Aquifer</b-button>
       </div>
 
+      <b-alert
+        :show="noSearchCriteriaError"
+        variant="danger">
+        <i class="fa fa-exclamation-circle"/>&nbsp;&nbsp;At least one search field is required
+      </b-alert>
+
       <b-form
         v-on:submit.prevent="triggerSearch"
         v-on:reset="triggerReset">
         <b-form-row>
           <b-col cols="12" md="4">
-            <b-form-group label="Aquifer name">
-              <b-form-input
-                id="aquifers-name"
-                type="text"
-                v-model="search"/>
-            </b-form-group>
             <b-form-group label="Aquifer number">
               <b-form-input
                 id="aquifers-number"
                 type="text"
                 v-model="aquifer_id"/>
+            </b-form-group>
+            <b-form-group label="Aquifer name">
+              <b-form-input
+                id="aquifers-name"
+                type="text"
+                v-model="search"/>
             </b-form-group>
           </b-col>
         </b-form-row>
@@ -101,9 +107,14 @@
         </template>
       </b-table>
 
-      <b-container v-if="displayPagination">
-        <b-row align-h="end">
-          <b-pagination :total-rows="response.count" :per-page="limit" v-model="currentPage" />
+      <b-container v-if="aquiferList && !emptyResults">
+        <b-row>
+          <b-col>
+            Showing {{ displayOffset }} to {{ displayPageLength }} of {{ response.count }}
+          </b-col>
+          <b-col v-if="displayPagination">
+            <b-pagination :total-rows="response.count" :per-page="limit" v-model="currentPage" />
+          </b-col>
         </b-row>
       </b-container>
 
@@ -124,6 +135,9 @@ table.b-table > tfoot > tr > th.sorting::after {
   opacity: 1 !important;
 }
 
+ul.pagination {
+  justify-content: end;
+}
 </style>
 
 <script>
@@ -168,10 +182,20 @@ export default {
         { key: 'demand', label: 'Demand', sortable: true },
         { key: 'mapping_year', label: 'Year of mapping', sortable: true }
       ],
-      surveys: []
+      surveys: [],
+      noSearchCriteriaError: false
     }
   },
   computed: {
+    offset () { return parseInt(this.$route.query.offset, 10) || 0 },
+    displayOffset () { return this.offset + 1 },
+    displayPageLength () {
+      if (!this.response) {
+        return undefined
+      }
+
+      return this.offset + this.response.results.length
+    },
     aquiferList () { return this.response && this.response.results },
     displayPagination () { return this.aquiferList && (this.response.next || this.response.previous) },
     emptyResults () { return this.response && this.response.count === 0 },
@@ -219,7 +243,7 @@ export default {
       this.search = ''
       this.aquifer_id = ''
       this.currentPage = 0
-
+      this.noSearchCriteriaError = false
       this.updateQueryParams()
     },
     triggerSearch () {
@@ -233,6 +257,10 @@ export default {
       if (this.search) {
         this.filterParams.search = this.search
       }
+
+      this.noSearchCriteriaError =
+        this.filterParams.aquifer_id === undefined &&
+        this.filterParams.search === undefined
 
       this.updateQueryParams()
     },

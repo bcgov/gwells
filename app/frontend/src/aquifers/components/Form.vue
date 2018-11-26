@@ -62,7 +62,7 @@
           :state="fieldHasError.material">
           <b-form-select
             tabindex="5"
-            :options="material_codes"
+            :options="[''].concat(material_codes)"
             id="material"
             text-field="description"
             v-model="record.material"
@@ -80,7 +80,7 @@
             tabindex="7"
             id="quality_concern"
             v-model="record.quality_concern"
-            :options="quality_concern_codes"
+            :options="[''].concat(quality_concern_codes)"
             value-field="code"
             text-field="description"/>
         </b-form-group>
@@ -110,7 +110,7 @@
             tabindex="11"
             id="known_water_use"
             v-model="record.known_water_use"
-            :options="known_water_use_codes"
+            :options="[''].concat(known_water_use_codes)"
             value-field="code"
             text-field="description"/>
         </b-form-group>
@@ -168,7 +168,7 @@
           :state="fieldHasError.vulnerability">
           <b-form-select
             tabindex="6"
-            :options="vulnerability_codes"
+            :options="[''].concat(vulnerability_codes)"
             id="vulnerability"
             text-field="description"
             v-model="record.vulnerability"
@@ -186,7 +186,7 @@
             tabindex="8"
             id="subtype"
             v-model="record.subtype"
-            :options="subtype_codes"
+            :options="[''].concat(subtype_codes)"
             value-field="code"
             text-field="description"/>
         </b-form-group>
@@ -202,7 +202,7 @@
             tabindex="10"
             id="productivity"
             v-model="record.productivity"
-            :options="productivity_codes"
+            :options="[''].concat(productivity_codes)"
             value-field="code"
             text-field="description"/>
         </b-form-group>
@@ -218,7 +218,7 @@
             tabindex="12"
             id="demand"
             v-model="record.demand"
-            :options="demand_codes"
+            :options="[''].concat(demand_codes)"
             value-field="code"
             text-field="description"/>
         </b-form-group>

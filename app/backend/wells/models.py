@@ -494,7 +494,10 @@ class Well(AuditModel):
         ProvinceStateCode, db_column='province_state_code', on_delete=models.CASCADE, blank=True,
         verbose_name='Province', null=True)
     owner_postal_code = models.CharField(
-        max_length=10, blank=True, verbose_name='Postal Code')
+        max_length=10, blank=True, null=True, verbose_name='Postal Code')
+    owner_email = models.EmailField(null=True, blank=True, verbose_name='Email address')
+    owner_tel = models.CharField(
+        null=True, blank=True, max_length=15, verbose_name='Telephone number')
 
     well_class = models.ForeignKey(WellClassCode, null=True, db_column='well_class_code',
                                    on_delete=models.CASCADE, verbose_name='Well Class')
@@ -512,29 +515,29 @@ class Well(AuditModel):
                                         verbose_name='Licenced Status')
 
     street_address = models.CharField(
-        max_length=100, blank=True, verbose_name='Street Address')
-    city = models.CharField(max_length=50, blank=True,
+        max_length=100, blank=True, null=True, verbose_name='Street Address')
+    city = models.CharField(max_length=50, blank=True, null=True,
                             verbose_name='Town/City')
-    legal_lot = models.CharField(max_length=10, blank=True, verbose_name='Lot')
+    legal_lot = models.CharField(max_length=10, blank=True, null=True, verbose_name='Lot')
     legal_plan = models.CharField(
-        max_length=20, blank=True, verbose_name='Plan')
+        max_length=20, blank=True, null=True, verbose_name='Plan')
     legal_district_lot = models.CharField(
-        max_length=20, blank=True, verbose_name='District Lot')
+        max_length=20, blank=True, null=True, verbose_name='District Lot')
     legal_block = models.CharField(
-        max_length=10, blank=True, verbose_name='Block')
+        max_length=10, blank=True, null=True, verbose_name='Block')
     legal_section = models.CharField(
-        max_length=10, blank=True, verbose_name='Section')
+        max_length=10, blank=True, null=True, verbose_name='Section')
     legal_township = models.CharField(
-        max_length=20, blank=True, verbose_name='Township')
+        max_length=20, blank=True, null=True, verbose_name='Township')
     legal_range = models.CharField(
-        max_length=10, blank=True, verbose_name='Range')
+        max_length=10, blank=True, null=True, verbose_name='Range')
     land_district = models.ForeignKey(LandDistrictCode, db_column='land_district_code',
                                       on_delete=models.CASCADE, blank=True, null=True,
                                       verbose_name='Land District')
     legal_pid = models.PositiveIntegerField(blank=True, null=True,
                                             verbose_name='Property Identification Description (PID)')
     well_location_description = models.CharField(
-        max_length=500, blank=True, verbose_name='Description of Well Location')
+        max_length=500, blank=True, null=True, verbose_name='Description of Well Location')
 
     construction_start_date = models.DateField(
         null=True, verbose_name="Construction Start Date")
@@ -615,14 +618,14 @@ class Well(AuditModel):
                                         on_delete=models.CASCADE, blank=True, null=True,
                                         verbose_name='Material')
     other_screen_material = models.CharField(
-        max_length=50, blank=True, verbose_name='Specify Other Screen Material')
+        max_length=50, blank=True, null=True, verbose_name='Specify Other Screen Material')
     screen_opening = models.ForeignKey(ScreenOpeningCode, db_column='screen_opening_code',
                                        on_delete=models.CASCADE, blank=True, null=True,
                                        verbose_name='Opening')
     screen_bottom = models.ForeignKey(ScreenBottomCode, db_column='screen_bottom_code',
                                       on_delete=models.CASCADE, blank=True, null=True, verbose_name='Bottom')
     other_screen_bottom = models.CharField(
-        max_length=50, blank=True, verbose_name='Specify Other Screen Bottom')
+        max_length=50, blank=True, null=True, verbose_name='Specify Other Screen Bottom')
 
     filter_pack_from = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True,
                                            verbose_name='Filter Pack From',
@@ -648,15 +651,15 @@ class Well(AuditModel):
                                             verbose_name='Development Total Duration',
                                             validators=[MinValueValidator(Decimal('0.00'))])
     development_notes = models.CharField(
-        max_length=255, blank=True, verbose_name='Development Notes')
+        max_length=255, blank=True, null=True, verbose_name='Development Notes')
 
     water_quality_characteristics = models.ManyToManyField(
         WaterQualityCharacteristic, db_table='well_water_quality', blank=True,
         verbose_name='Obvious Water Quality Characteristics')
     water_quality_colour = models.CharField(
-        max_length=60, blank=True, verbose_name='Water Quality Colour')
+        max_length=60, blank=True, null=True, verbose_name='Water Quality Colour')
     water_quality_odour = models.CharField(
-        max_length=60, blank=True, verbose_name='Water Quality Odour')
+        max_length=60, blank=True, null=True, verbose_name='Water Quality Odour')
 
     total_depth_drilled = models.DecimalField(
         max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Total Depth Drilled')
@@ -735,13 +738,13 @@ class Well(AuditModel):
     driller_responsible = models.ForeignKey(Person, db_column='driller_responsible_guid',
                                             on_delete=models.PROTECT,
                                             verbose_name='Person Responsible for Drilling',
-                                            null=True)
+                                            null=True, blank=True)
     driller_name = models.CharField(
-        max_length=200, null=True, verbose_name='Name of Person Who Did the Work')
+        max_length=200, blank=True, null=True, verbose_name='Name of Person Who Did the Work')
     consultant_name = models.CharField(
-        max_length=200, null=True, verbose_name='Consultant Name')
+        max_length=200, blank=True, null=True, verbose_name='Consultant Name')
     consultant_company = models.CharField(
-        max_length=200, null=True, verbose_name='Consultant Company')
+        max_length=200, blank=True, null=True, verbose_name='Consultant Company')
 
     class Meta:
         db_table = 'well'
@@ -887,7 +890,7 @@ class ActivitySubmission(AuditModel):
     well_activity_type = models.ForeignKey(
         WellActivityCode, db_column='well_activity_code', on_delete=models.CASCADE,
         verbose_name='Type of Work')
-    well_class = models.ForeignKey(WellClassCode, null=True, db_column='well_class_code',
+    well_class = models.ForeignKey(WellClassCode, blank=True, null=True, db_column='well_class_code',
                                    on_delete=models.CASCADE, verbose_name='Well Class')
     well_subclass = models.ForeignKey(WellSubclassCode, db_column='well_subclass_guid',
                                       on_delete=models.CASCADE, blank=True, null=True,
@@ -902,11 +905,11 @@ class ActivitySubmission(AuditModel):
                                             verbose_name='Person Responsible for Drilling',
                                             blank=True, null=True)
     driller_name = models.CharField(
-        max_length=200, blank=True, verbose_name='Name of Person Who Did the Work')
+        max_length=200, blank=True, null=True, verbose_name='Name of Person Who Did the Work')
     consultant_name = models.CharField(
-        max_length=200, blank=True, verbose_name='Consultant Name')
+        max_length=200, blank=True, null=True, verbose_name='Consultant Name')
     consultant_company = models.CharField(
-        max_length=200, blank=True, verbose_name='Consultant Company')
+        max_length=200, blank=True, null=True, verbose_name='Consultant Company')
     # Work start & end date should be required fields on all submissions, but for legacy well
     # information this may not be available, so we can't enforce this on a database level.
     work_start_date = models.DateField(
@@ -915,45 +918,47 @@ class ActivitySubmission(AuditModel):
         verbose_name='Work End Date', null=True, blank=True)
 
     owner_full_name = models.CharField(
-        max_length=200, verbose_name='Owner Name', null=True)
+        max_length=200, verbose_name='Owner Name', blank=True, null=True)
     owner_mailing_address = models.CharField(
-        max_length=100, verbose_name='Mailing Address', blank=True)
-    owner_city = models.CharField(max_length=100, verbose_name='Town/City', blank=True)
+        max_length=100, verbose_name='Mailing Address', blank=True, null=True)
+    owner_city = models.CharField(max_length=100, verbose_name='Town/City', blank=True, null=True)
     owner_province_state = models.ForeignKey(
-        ProvinceStateCode, db_column='province_state_code', on_delete=models.CASCADE, verbose_name='Province',
-        null=True)
+        ProvinceStateCode, db_column='province_state_code', on_delete=models.CASCADE, verbose_name='Province', blank=True, null=True)
     owner_postal_code = models.CharField(
-        max_length=10, blank=True, verbose_name='Postal Code')
+        max_length=10, blank=True, null=True, verbose_name='Postal Code')
+    owner_email = models.EmailField(null=True, blank=True, verbose_name='Email address')
+    owner_tel = models.CharField(
+        null=True, blank=True, max_length=15, verbose_name='Telephone number')
 
     street_address = models.CharField(
-        max_length=100, blank=True, verbose_name='Street Address')
-    city = models.CharField(max_length=50, blank=True,
+        max_length=100, blank=True, null=True, verbose_name='Street Address')
+    city = models.CharField(max_length=50, blank=True, null=True,
                             verbose_name='Town/City')
-    legal_lot = models.CharField(max_length=10, blank=True, verbose_name='Lot')
+    legal_lot = models.CharField(max_length=10, blank=True, null=True, verbose_name='Lot')
     legal_plan = models.CharField(
-        max_length=20, blank=True, verbose_name='Plan')
+        max_length=20, blank=True, null=True, verbose_name='Plan')
     legal_district_lot = models.CharField(
-        max_length=20, blank=True, verbose_name='District Lot')
+        max_length=20, blank=True, null=True, verbose_name='District Lot')
     legal_block = models.CharField(
-        max_length=10, blank=True, verbose_name='Block')
+        max_length=10, blank=True, null=True, verbose_name='Block')
     legal_section = models.CharField(
-        max_length=10, blank=True, verbose_name='Section')
+        max_length=10, blank=True, null=True, verbose_name='Section')
     legal_township = models.CharField(
-        max_length=20, blank=True, verbose_name='Township')
+        max_length=20, blank=True, null=True, verbose_name='Township')
     legal_range = models.CharField(
-        max_length=10, blank=True, verbose_name='Range')
+        max_length=10, blank=True, null=True, verbose_name='Range')
     land_district = models.ForeignKey(LandDistrictCode, db_column='land_district_code',
                                       on_delete=models.CASCADE, blank=True, null=True,
                                       verbose_name='Land District')
     legal_pid = models.PositiveIntegerField(
         blank=True, null=True, verbose_name='PID')
     well_location_description = models.CharField(
-        max_length=500, blank=True, verbose_name='Well Location Description')
+        max_length=500, blank=True, null=True, verbose_name='Well Location Description')
 
     identification_plate_number = models.PositiveIntegerField(
         blank=True, null=True, verbose_name='Identification Plate Number')
     well_plate_attached = models.CharField(
-        max_length=500, blank=True, verbose_name='Well Identification Plate Is Attached')
+        max_length=500, blank=True, null=True, verbose_name='Well Identification Plate Is Attached')
 
     latitude = models.DecimalField(
         max_digits=8, decimal_places=6, blank=True, null=True)
@@ -969,13 +974,13 @@ class ActivitySubmission(AuditModel):
                                         on_delete=models.CASCADE, blank=True, null=True,
                                         verbose_name='Drilling Method')
     other_drilling_method = models.CharField(
-        max_length=50, blank=True, verbose_name='Specify Other Drilling Method')
+        max_length=50, blank=True, null=True, verbose_name='Specify Other Drilling Method')
     well_orientation = models.BooleanField(default=True, verbose_name='Orientation of Well', choices=(
         (True, 'vertical'), (False, 'horizontal')))
     water_supply_system_name = models.CharField(
-        max_length=50, blank=True, verbose_name='Water Supply System Name')
+        max_length=50, blank=True, null=True, verbose_name='Water Supply System Name')
     water_supply_system_well_name = models.CharField(
-        max_length=50, blank=True, verbose_name='Water Supply System Well Name')
+        max_length=50, blank=True, null=True, verbose_name='Water Supply System Well Name')
 
     surface_seal_material = models.ForeignKey(SurfaceSealMaterialCode, db_column='surface_seal_material_code',
                                               on_delete=models.CASCADE, blank=True, null=True,
@@ -989,7 +994,7 @@ class ActivitySubmission(AuditModel):
                                             on_delete=models.CASCADE, blank=True, null=True,
                                             verbose_name='Surface Seal Installation Method')
     backfill_above_surface_seal = models.CharField(
-        max_length=250, blank=True, verbose_name='Backfill Material Above Surface Seal')
+        max_length=250, blank=True, null=True, verbose_name='Backfill Material Above Surface Seal')
     backfill_above_surface_seal_depth = models.DecimalField(
         max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Backfill Depth')
 
@@ -1017,7 +1022,7 @@ class ActivitySubmission(AuditModel):
                                         on_delete=models.CASCADE, blank=True, null=True,
                                         verbose_name='Material')
     other_screen_material = models.CharField(
-        max_length=50, blank=True, verbose_name='Specify Other Screen Material')
+        max_length=50, blank=True, null=True, verbose_name='Specify Other Screen Material')
     screen_opening = models.ForeignKey(ScreenOpeningCode, db_column='screen_opening_code',
                                        on_delete=models.CASCADE, blank=True, null=True,
                                        verbose_name='Opening')
@@ -1025,7 +1030,7 @@ class ActivitySubmission(AuditModel):
                                       on_delete=models.CASCADE, blank=True, null=True,
                                       verbose_name='Bottom')
     other_screen_bottom = models.CharField(
-        max_length=50, blank=True, verbose_name='Specify Other Screen Bottom')
+        max_length=50, blank=True, null=True, verbose_name='Specify Other Screen Bottom')
 
     filter_pack_from = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True,
                                            verbose_name='Filter Pack From',
@@ -1051,15 +1056,15 @@ class ActivitySubmission(AuditModel):
                                             verbose_name='Development Total Duration',
                                             validators=[MinValueValidator(Decimal('0.00'))])
     development_notes = models.CharField(
-        max_length=255, blank=True, verbose_name='Development Notes')
+        max_length=255, blank=True, null=True, verbose_name='Development Notes')
 
     water_quality_characteristics = models.ManyToManyField(
         WaterQualityCharacteristic, db_table='activity_submission_water_quality', blank=True,
         verbose_name='Obvious Water Quality Characteristics')
     water_quality_colour = models.CharField(
-        max_length=60, blank=True, verbose_name='Water Quality Colour')
+        max_length=60, blank=True, null=True, verbose_name='Water Quality Colour')
     water_quality_odour = models.CharField(
-        max_length=60, blank=True, verbose_name='Water Quality Odour')
+        max_length=60, blank=True, null=True, verbose_name='Water Quality Odour')
 
     total_depth_drilled = models.DecimalField(
         max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Total Depth Drilled')
@@ -1078,25 +1083,25 @@ class ActivitySubmission(AuditModel):
     artesian_pressure = models.DecimalField(
         max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Artesian Pressure')
     well_cap_type = models.CharField(
-        max_length=40, blank=True, verbose_name='Well Cap Type')
+        max_length=40, blank=True, null=True, verbose_name='Well Cap Type')
     well_disinfected = models.BooleanField(
         default=False, verbose_name='Well Disinfected?', choices=((False, 'No'), (True, 'Yes')))
 
-    comments = models.CharField(max_length=3000, blank=True)
+    comments = models.CharField(max_length=3000, blank=True, null=True)
     alternative_specs_submitted = models.BooleanField(
         default=False, verbose_name='Alternative specs submitted (if required)')
 
     well_yield_unit = models.ForeignKey(
         WellYieldUnitCode, db_column='well_yield_unit_code', on_delete=models.CASCADE, blank=True, null=True)
     # want to be integer in future
-    diameter = models.CharField(max_length=9, blank=True)
-    ems_id = models.CharField(max_length=30, blank=True)
+    diameter = models.CharField(max_length=9, blank=True, null=True)
+    ems_id = models.CharField(max_length=30, blank=True, null=True)
 
     # Decommission info
     decommission_reason = models.CharField(
         max_length=250, blank=True, null=True, verbose_name="Reason for Decommission")
     decommission_method = models.ForeignKey(
-        DecommissionMethodCode, db_column='decommission_method_code', blank=True, null="True",
+        DecommissionMethodCode, db_column='decommission_method_code', blank=True, null=True,
         verbose_name="Method of Decommission")
     sealant_material = models.CharField(
         max_length=100, blank=True, null=True, verbose_name="Sealant Material")

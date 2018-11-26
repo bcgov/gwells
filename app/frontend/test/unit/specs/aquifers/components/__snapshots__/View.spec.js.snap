@@ -145,7 +145,11 @@ exports[`View Component Edit mode matches the snapshot 1`] = `
                   class="form-control custom-select"
                   id="material"
                   tabindex="5"
-                />
+                >
+                  <option
+                    value=""
+                  />
+                </select>
                 <!---->
                 <!---->
                 <!---->
@@ -176,7 +180,11 @@ exports[`View Component Edit mode matches the snapshot 1`] = `
                   class="form-control custom-select"
                   id="quality_concern"
                   tabindex="7"
-                />
+                >
+                  <option
+                    value=""
+                  />
+                </select>
                 <!---->
                 <!---->
                 <!---->
@@ -240,7 +248,11 @@ exports[`View Component Edit mode matches the snapshot 1`] = `
                   class="form-control custom-select"
                   id="known_water_use"
                   tabindex="11"
-                />
+                >
+                  <option
+                    value=""
+                  />
+                </select>
                 <!---->
                 <!---->
                 <!---->
@@ -374,7 +386,11 @@ exports[`View Component Edit mode matches the snapshot 1`] = `
                   class="form-control custom-select"
                   id="vulnerability"
                   tabindex="6"
-                />
+                >
+                  <option
+                    value=""
+                  />
+                </select>
                 <!---->
                 <!---->
                 <!---->
@@ -405,7 +421,11 @@ exports[`View Component Edit mode matches the snapshot 1`] = `
                   class="form-control custom-select"
                   id="subtype"
                   tabindex="8"
-                />
+                >
+                  <option
+                    value=""
+                  />
+                </select>
                 <!---->
                 <!---->
                 <!---->
@@ -436,7 +456,11 @@ exports[`View Component Edit mode matches the snapshot 1`] = `
                   class="form-control custom-select"
                   id="productivity"
                   tabindex="10"
-                />
+                >
+                  <option
+                    value=""
+                  />
+                </select>
                 <!---->
                 <!---->
                 <!---->
@@ -467,7 +491,11 @@ exports[`View Component Edit mode matches the snapshot 1`] = `
                   class="form-control custom-select"
                   id="demand"
                   tabindex="12"
-                />
+                >
+                  <option
+                    value=""
+                  />
+                </select>
                 <!---->
                 <!---->
                 <!---->
@@ -798,7 +826,11 @@ exports[`View Component View mode matches the snapshot 1`] = `
                   class="form-control custom-select"
                   id="material"
                   tabindex="5"
-                />
+                >
+                  <option
+                    value=""
+                  />
+                </select>
                 <!---->
                 <!---->
                 <!---->
@@ -829,7 +861,11 @@ exports[`View Component View mode matches the snapshot 1`] = `
                   class="form-control custom-select"
                   id="quality_concern"
                   tabindex="7"
-                />
+                >
+                  <option
+                    value=""
+                  />
+                </select>
                 <!---->
                 <!---->
                 <!---->
@@ -893,7 +929,11 @@ exports[`View Component View mode matches the snapshot 1`] = `
                   class="form-control custom-select"
                   id="known_water_use"
                   tabindex="11"
-                />
+                >
+                  <option
+                    value=""
+                  />
+                </select>
                 <!---->
                 <!---->
                 <!---->
@@ -1027,7 +1067,11 @@ exports[`View Component View mode matches the snapshot 1`] = `
                   class="form-control custom-select"
                   id="vulnerability"
                   tabindex="6"
-                />
+                >
+                  <option
+                    value=""
+                  />
+                </select>
                 <!---->
                 <!---->
                 <!---->
@@ -1058,7 +1102,11 @@ exports[`View Component View mode matches the snapshot 1`] = `
                   class="form-control custom-select"
                   id="subtype"
                   tabindex="8"
-                />
+                >
+                  <option
+                    value=""
+                  />
+                </select>
                 <!---->
                 <!---->
                 <!---->
@@ -1089,7 +1137,11 @@ exports[`View Component View mode matches the snapshot 1`] = `
                   class="form-control custom-select"
                   id="productivity"
                   tabindex="10"
-                />
+                >
+                  <option
+                    value=""
+                  />
+                </select>
                 <!---->
                 <!---->
                 <!---->
@@ -1120,7 +1172,11 @@ exports[`View Component View mode matches the snapshot 1`] = `
                   class="form-control custom-select"
                   id="demand"
                   tabindex="12"
-                />
+                >
+                  <option
+                    value=""
+                  />
+                </select>
                 <!---->
                 <!---->
                 <!---->
