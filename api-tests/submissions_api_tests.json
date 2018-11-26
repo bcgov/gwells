@@ -436,49 +436,8 @@
 									}
 								],
 								"body": {
-									"mode": "urlencoded",
-									"urlencoded": [
-										{
-											"key": "well_activity_type",
-											"value": "CON",
-											"type": "text"
-										},
-										{
-											"key": "driller_responsible",
-											"value": "{{created_driller_guid}}",
-											"type": "text"
-										},
-										{
-											"key": "work_end_date",
-											"value": "2018-07-02",
-											"type": "text"
-										},
-										{
-											"key": "owner_full_name",
-											"value": "Holly Homeowner",
-											"type": "text"
-										},
-										{
-											"key": "work_start_date",
-											"value": "2018-07-01",
-											"type": "text"
-										},
-										{
-											"key": "owner_province_state",
-											"value": "BC",
-											"type": "text"
-										},
-										{
-											"key": "owner_mailing_address",
-											"value": "321 Main Street",
-											"type": "text"
-										},
-										{
-											"key": "owner_city",
-											"value": "Anytown",
-											"type": "text"
-										}
-									]
+									"mode": "raw",
+									"raw": ""
 								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}",
@@ -539,49 +498,8 @@
 									}
 								],
 								"body": {
-									"mode": "urlencoded",
-									"urlencoded": [
-										{
-											"key": "well_activity_type",
-											"value": "CON",
-											"type": "text"
-										},
-										{
-											"key": "driller_responsible",
-											"value": "{{created_driller_guid}}",
-											"type": "text"
-										},
-										{
-											"key": "work_end_date",
-											"value": "2018-07-02",
-											"type": "text"
-										},
-										{
-											"key": "owner_full_name",
-											"value": "Holly Homeowner",
-											"type": "text"
-										},
-										{
-											"key": "work_start_date",
-											"value": "2018-07-01",
-											"type": "text"
-										},
-										{
-											"key": "owner_province_state",
-											"value": "BC",
-											"type": "text"
-										},
-										{
-											"key": "owner_mailing_address",
-											"value": "321 Main Street",
-											"type": "text"
-										},
-										{
-											"key": "owner_city",
-											"value": "Anytown",
-											"type": "text"
-										}
-									]
+									"mode": "raw",
+									"raw": ""
 								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/submissions/{{filing_number}}",
@@ -763,49 +681,8 @@
 									}
 								],
 								"body": {
-									"mode": "urlencoded",
-									"urlencoded": [
-										{
-											"key": "well_activity_type",
-											"value": "CON",
-											"type": "text"
-										},
-										{
-											"key": "driller_responsible",
-											"value": "{{created_driller_guid}}",
-											"type": "text"
-										},
-										{
-											"key": "work_end_date",
-											"value": "2018-07-02",
-											"type": "text"
-										},
-										{
-											"key": "owner_full_name",
-											"value": "Holly Homeowner",
-											"type": "text"
-										},
-										{
-											"key": "work_start_date",
-											"value": "2018-07-01",
-											"type": "text"
-										},
-										{
-											"key": "owner_province_state",
-											"value": "BC",
-											"type": "text"
-										},
-										{
-											"key": "owner_mailing_address",
-											"value": "321 Main Street",
-											"type": "text"
-										},
-										{
-											"key": "owner_city",
-											"value": "Anytown",
-											"type": "text"
-										}
-									]
+									"mode": "raw",
+									"raw": ""
 								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}",
@@ -980,49 +857,8 @@
 									}
 								],
 								"body": {
-									"mode": "urlencoded",
-									"urlencoded": [
-										{
-											"key": "well_activity_type",
-											"value": "CON",
-											"type": "text"
-										},
-										{
-											"key": "driller_responsible",
-											"value": "{{created_driller_guid}}",
-											"type": "text"
-										},
-										{
-											"key": "work_end_date",
-											"value": "2018-07-02",
-											"type": "text"
-										},
-										{
-											"key": "owner_full_name",
-											"value": "Holly Homeowner",
-											"type": "text"
-										},
-										{
-											"key": "work_start_date",
-											"value": "2018-07-01",
-											"type": "text"
-										},
-										{
-											"key": "owner_province_state",
-											"value": "BC",
-											"type": "text"
-										},
-										{
-											"key": "owner_mailing_address",
-											"value": "321 Main Street",
-											"type": "text"
-										},
-										{
-											"key": "owner_city",
-											"value": "Anytown",
-											"type": "text"
-										}
-									]
+									"mode": "raw",
+									"raw": ""
 								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}",
@@ -1106,7 +942,6 @@
 									"listen": "test",
 									"script": {
 										"id": "3737032f-d35f-4597-a306-133d74120ae4",
-										"type": "text/javascript",
 										"exec": [
 											"var jsonData = pm.response.json();",
 											"",
@@ -1114,7 +949,8 @@
 											"   pm.expect(pm.response.code).to.equal(400);",
 											"})",
 											""
-										]
+										],
+										"type": "text/javascript"
 									}
 								}
 							],
@@ -1132,7 +968,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n\t\"well_activity_type\": \"CON\",\n\t\"owner_full_name\": \"Bob\",\n\t\"owner_mailing_address\": \"123 Place\",\n\t\"owner_city\": \"Victoria\",\n\t\"owner_province_state\": \"BC\",\n\t\"liner_diameter\": 1,\n\t\"liner_from\": 0,\n\t\"liner_material\": \"PVC\",\n\t\"liner_thickness\": 2,\n\t\"liner_to\": 3,\n\t\"linerperforation_set\": [\n\t\t{\n\t\t}\n\t]\n}"
+									"raw": "{\n\t\"well_activity_type\": \"CON\",\n\t\"owner_full_name\": \"Bob\",\n\t\"owner_mailing_address\": \"123 Place\",\n\t\"owner_city\": \"Victoria\",\n\t\"owner_province_state\": \"BC\",\n\t\"liner_diameter\": 1,\n\t\"liner_from\": 0,\n\t\"liner_material\": \"PVC\",\n\t\"liner_thickness\": 2,\n\t\"liner_to\": 3,\n\t\"linerperforation_set\": [\n\t\t{}\n\t]\n}"
 								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/submissions/construction?format=json",
@@ -1163,7 +999,6 @@
 									"listen": "test",
 									"script": {
 										"id": "77ba3bf1-a4ad-476e-bd9a-c67bf0e7a34c",
-										"type": "text/javascript",
 										"exec": [
 											"var jsonData = pm.response.json();",
 											"",
@@ -1179,10 +1014,11 @@
 											"    pm.expect(jsonData.screen_set.length).to.equal(0);",
 											"})",
 											"",
-											"pm.test(\"Expect linerperforation to be empty\", function() {",
+											"pm.test(\"Expect linerperforation to still have one value\", function() {",
 											"    pm.expect(jsonData.linerperforation_set.length).to.equal(1);",
 											"})"
-										]
+										],
+										"type": "text/javascript"
 									}
 								}
 							],
@@ -1199,49 +1035,8 @@
 									}
 								],
 								"body": {
-									"mode": "urlencoded",
-									"urlencoded": [
-										{
-											"key": "well_activity_type",
-											"value": "CON",
-											"type": "text"
-										},
-										{
-											"key": "driller_responsible",
-											"value": "{{created_driller_guid}}",
-											"type": "text"
-										},
-										{
-											"key": "work_end_date",
-											"value": "2018-07-02",
-											"type": "text"
-										},
-										{
-											"key": "owner_full_name",
-											"value": "Holly Homeowner",
-											"type": "text"
-										},
-										{
-											"key": "work_start_date",
-											"value": "2018-07-01",
-											"type": "text"
-										},
-										{
-											"key": "owner_province_state",
-											"value": "BC",
-											"type": "text"
-										},
-										{
-											"key": "owner_mailing_address",
-											"value": "321 Main Street",
-											"type": "text"
-										},
-										{
-											"key": "owner_city",
-											"value": "Anytown",
-											"type": "text"
-										}
-									]
+									"mode": "raw",
+									"raw": ""
 								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}",
@@ -1362,49 +1157,8 @@
 									}
 								],
 								"body": {
-									"mode": "urlencoded",
-									"urlencoded": [
-										{
-											"key": "well_activity_type",
-											"value": "CON",
-											"type": "text"
-										},
-										{
-											"key": "driller_responsible",
-											"value": "{{created_driller_guid}}",
-											"type": "text"
-										},
-										{
-											"key": "work_end_date",
-											"value": "2018-07-02",
-											"type": "text"
-										},
-										{
-											"key": "owner_full_name",
-											"value": "Holly Homeowner",
-											"type": "text"
-										},
-										{
-											"key": "work_start_date",
-											"value": "2018-07-01",
-											"type": "text"
-										},
-										{
-											"key": "owner_province_state",
-											"value": "BC",
-											"type": "text"
-										},
-										{
-											"key": "owner_mailing_address",
-											"value": "321 Main Street",
-											"type": "text"
-										},
-										{
-											"key": "owner_city",
-											"value": "Anytown",
-											"type": "text"
-										}
-									]
+									"mode": "raw",
+									"raw": ""
 								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}",
@@ -1458,49 +1212,8 @@
 									}
 								],
 								"body": {
-									"mode": "urlencoded",
-									"urlencoded": [
-										{
-											"key": "well_activity_type",
-											"value": "CON",
-											"type": "text"
-										},
-										{
-											"key": "driller_responsible",
-											"value": "{{created_driller_guid}}",
-											"type": "text"
-										},
-										{
-											"key": "work_end_date",
-											"value": "2018-07-02",
-											"type": "text"
-										},
-										{
-											"key": "owner_full_name",
-											"value": "Holly Homeowner",
-											"type": "text"
-										},
-										{
-											"key": "work_start_date",
-											"value": "2018-07-01",
-											"type": "text"
-										},
-										{
-											"key": "owner_province_state",
-											"value": "BC",
-											"type": "text"
-										},
-										{
-											"key": "owner_mailing_address",
-											"value": "321 Main Street",
-											"type": "text"
-										},
-										{
-											"key": "owner_city",
-											"value": "Anytown",
-											"type": "text"
-										}
-									]
+									"mode": "raw",
+									"raw": ""
 								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/submissions/{{filing_number}}",
@@ -1717,7 +1430,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n\t\"well\": {{well_tag_number}},\n\t\"consultant_company\": \"John Company\",\n\t\"consultant_name\": \"John Consultant\",\n\t\"driller_name\": \"John Person\",\n\t\"driller_responsible\": \"518edfd5-d459-437a-b94a-803029de406f\"\n}"
+									"raw": ""
 								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}",
@@ -1840,49 +1553,8 @@
 									}
 								],
 								"body": {
-									"mode": "urlencoded",
-									"urlencoded": [
-										{
-											"key": "well_activity_type",
-											"value": "CON",
-											"type": "text"
-										},
-										{
-											"key": "driller_responsible",
-											"value": "{{created_driller_guid}}",
-											"type": "text"
-										},
-										{
-											"key": "work_end_date",
-											"value": "2018-07-02",
-											"type": "text"
-										},
-										{
-											"key": "owner_full_name",
-											"value": "Holly Homeowner",
-											"type": "text"
-										},
-										{
-											"key": "work_start_date",
-											"value": "2018-07-01",
-											"type": "text"
-										},
-										{
-											"key": "owner_province_state",
-											"value": "BC",
-											"type": "text"
-										},
-										{
-											"key": "owner_mailing_address",
-											"value": "321 Main Street",
-											"type": "text"
-										},
-										{
-											"key": "owner_city",
-											"value": "Anytown",
-											"type": "text"
-										}
-									]
+									"mode": "raw",
+									"raw": ""
 								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}",
@@ -1940,49 +1612,8 @@
 									}
 								],
 								"body": {
-									"mode": "urlencoded",
-									"urlencoded": [
-										{
-											"key": "well_activity_type",
-											"value": "CON",
-											"type": "text"
-										},
-										{
-											"key": "driller_responsible",
-											"value": "{{created_driller_guid}}",
-											"type": "text"
-										},
-										{
-											"key": "work_end_date",
-											"value": "2018-07-02",
-											"type": "text"
-										},
-										{
-											"key": "owner_full_name",
-											"value": "Holly Homeowner",
-											"type": "text"
-										},
-										{
-											"key": "work_start_date",
-											"value": "2018-07-01",
-											"type": "text"
-										},
-										{
-											"key": "owner_province_state",
-											"value": "BC",
-											"type": "text"
-										},
-										{
-											"key": "owner_mailing_address",
-											"value": "321 Main Street",
-											"type": "text"
-										},
-										{
-											"key": "owner_city",
-											"value": "Anytown",
-											"type": "text"
-										}
-									]
+									"mode": "raw",
+									"raw": ""
 								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/submissions/{{filing_number}}",
@@ -2118,7 +1749,6 @@
 									"listen": "test",
 									"script": {
 										"id": "d810c676-8904-437e-8c93-3ea1d36e1bd1",
-										"type": "text/javascript",
 										"exec": [
 											"var jsonData = pm.response.json();",
 											"",
@@ -2132,7 +1762,8 @@
 											"})",
 											"",
 											""
-										]
+										],
+										"type": "text/javascript"
 									}
 								}
 							],
@@ -2150,7 +1781,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n\t\"well\": {{well_tag_number}},\n\t\"consultant_name\": \"John Mann\"\n}"
+									"raw": "{\n\t\"well\": {{well_tag_number}},\n\t\"consultant_name\": \"John Mann\",\n\t\"owner_full_name\": \"Buddy\"\n}"
 								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/submissions/staff_edit?format=json",
@@ -2181,7 +1812,6 @@
 									"listen": "test",
 									"script": {
 										"id": "a7b16fb6-1b37-44b8-96b7-118759edb19b",
-										"type": "text/javascript",
 										"exec": [
 											"var jsonData = pm.response.json()",
 											"",
@@ -2192,8 +1822,17 @@
 											"pm.test(\"Expect consultant name to be updated\", function() {",
 											"    pm.expect(jsonData['consultant_name']).to.equal('John Mann')",
 											"})",
+											"",
+											"pm.test(\"Expect owner name to be updated\", function() {",
+											"    pm.expect(jsonData['owner_full_name']).to.equal('Buddy')",
+											"})",
+											"",
+											"pm.test(\"Expect owner city to NOT be updated\", function() {",
+											"    pm.expect(jsonData['owner_city']).to.equal('Anytown')",
+											"})",
 											""
-										]
+										],
+										"type": "text/javascript"
 									}
 								}
 							],
@@ -2205,7 +1844,10 @@
 										"value": "JWT {{token}}"
 									}
 								],
-								"body": {},
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}",
 									"host": [
@@ -2400,49 +2042,8 @@
 							}
 						],
 						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "well_activity_type",
-									"value": "CON",
-									"type": "text"
-								},
-								{
-									"key": "driller_responsible",
-									"value": "{{created_driller_guid}}",
-									"type": "text"
-								},
-								{
-									"key": "work_end_date",
-									"value": "2018-07-02",
-									"type": "text"
-								},
-								{
-									"key": "owner_full_name",
-									"value": "Holly Homeowner",
-									"type": "text"
-								},
-								{
-									"key": "work_start_date",
-									"value": "2018-07-01",
-									"type": "text"
-								},
-								{
-									"key": "owner_province_state",
-									"value": "BC",
-									"type": "text"
-								},
-								{
-									"key": "owner_mailing_address",
-									"value": "321 Main Street",
-									"type": "text"
-								},
-								{
-									"key": "owner_city",
-									"value": "Anytown",
-									"type": "text"
-								}
-							]
+							"mode": "raw",
+							"raw": ""
 						},
 						"url": {
 							"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}",
@@ -2565,49 +2166,8 @@
 							}
 						],
 						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "well_activity_type",
-									"value": "CON",
-									"type": "text"
-								},
-								{
-									"key": "driller_responsible",
-									"value": "{{created_driller_guid}}",
-									"type": "text"
-								},
-								{
-									"key": "work_end_date",
-									"value": "2018-07-02",
-									"type": "text"
-								},
-								{
-									"key": "owner_full_name",
-									"value": "Holly Homeowner",
-									"type": "text"
-								},
-								{
-									"key": "work_start_date",
-									"value": "2018-07-01",
-									"type": "text"
-								},
-								{
-									"key": "owner_province_state",
-									"value": "BC",
-									"type": "text"
-								},
-								{
-									"key": "owner_mailing_address",
-									"value": "321 Main Street",
-									"type": "text"
-								},
-								{
-									"key": "owner_city",
-									"value": "Anytown",
-									"type": "text"
-								}
-							]
+							"mode": "raw",
+							"raw": ""
 						},
 						"url": {
 							"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}",
@@ -2737,49 +2297,8 @@
 							}
 						],
 						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "well_activity_type",
-									"value": "CON",
-									"type": "text"
-								},
-								{
-									"key": "driller_responsible",
-									"value": "{{created_driller_guid}}",
-									"type": "text"
-								},
-								{
-									"key": "work_end_date",
-									"value": "2018-07-02",
-									"type": "text"
-								},
-								{
-									"key": "owner_full_name",
-									"value": "Holly Homeowner",
-									"type": "text"
-								},
-								{
-									"key": "work_start_date",
-									"value": "2018-07-01",
-									"type": "text"
-								},
-								{
-									"key": "owner_province_state",
-									"value": "BC",
-									"type": "text"
-								},
-								{
-									"key": "owner_mailing_address",
-									"value": "321 Main Street",
-									"type": "text"
-								},
-								{
-									"key": "owner_city",
-									"value": "Anytown",
-									"type": "text"
-								}
-							]
+							"mode": "raw",
+							"raw": ""
 						},
 						"url": {
 							"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}",
