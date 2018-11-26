@@ -75,6 +75,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
       :workEndDate.sync="form.work_end_date"
       :errors="errors"
       :fieldsLoaded="fieldsLoaded"
+      :isStaffEdit="isStaffEdit"
+      :saveDisabled="editSaveDisabled"
+      v-on:save="$emit('submit_edit')"
     />
 
     <!-- Person responsible for work -->
@@ -131,6 +134,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
       :landDistrict.sync="form.land_district"
       :legalPID.sync="form.legal_pid"
       :wellLocationDescription.sync="form.well_location_description"
+      :isStaffEdit="isStaffEdit"
+      :saveDisabled="editSaveDisabled"
+      v-on:save="$emit('submit_edit')"
     />
 
     <!-- Coords -->
@@ -139,6 +145,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
       id="wellCoords"
       :latitude.sync="form.latitude"
       :longitude.sync="form.longitude"
+      :isStaffEdit="isStaffEdit"
+      :saveDisabled="editSaveDisabled"
+      v-on:save="$emit('submit_edit')"
     />
 
     <!-- Method of Drilling -->
@@ -159,6 +168,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
     <closure-description class="my-3"
       v-if="showSection('closureDescription')"
       id="closureDescription"
+      :isStaffEdit="isStaffEdit"
+      :saveDisabled="editSaveDisabled"
+      v-on:save="$emit('submit_edit')"
       :closureDescriptionSet.sync="form.decommission_description_set">
 
     </closure-description>
@@ -168,6 +180,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
       v-if="showSection('lithology')"
       id="lithology"
       :lithology.sync="form.lithologydescription_set"
+      :isStaffEdit="isStaffEdit"
+      :saveDisabled="editSaveDisabled"
+      v-on:save="$emit('submit_edit')"
     />
 
     <!-- Casings -->
@@ -178,6 +193,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
       :casings.sync="form.casing_set"
       :errors="errors"
       :fieldsLoaded="fieldsLoaded"
+      :isStaffEdit="isStaffEdit"
+      :saveDisabled="editSaveDisabled"
+      v-on:save="$emit('submit_edit')"
     />
 
     <!-- Surface Seal / Backfill Material -->
@@ -190,6 +208,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
       :surfaceSealMethod.sync="form.surface_seal_method"
       :backfillAboveSurfaceSeal.sync="form.backfill_above_surface_seal"
       :backfillDepth.sync="form.backfill_above_surface_seal_depth"
+      :isStaffEdit="isStaffEdit"
+      :saveDisabled="editSaveDisabled"
+      v-on:save="$emit('submit_edit')"
     />
 
     <!-- Liner Information -->
@@ -205,6 +226,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
       :linerPerforations.sync="form.linerperforation_set"
       :errors="errors"
       :fieldsLoaded="fieldsLoaded"
+      :isStaffEdit="isStaffEdit"
+      :saveDisabled="editSaveDisabled"
+      v-on:save="$emit('submit_edit')"
     />
 
     <!-- Screens -->
@@ -221,6 +245,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
       :screens.sync="form.screen_set"
       :errors="errors"
       :fieldsLoaded="fieldsLoaded"
+      :isStaffEdit="isStaffEdit"
+      :saveDisabled="editSaveDisabled"
+      v-on:save="$emit('submit_edit')"
     />
 
     <!-- Filter Pack -->
@@ -232,6 +259,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
       :filterPackThickness.sync="form.filter_pack_thickness"
       :filterPackMaterial.sync="form.filter_pack_material"
       :filterPackMaterialSize.sync="form.filter_pack_material_size"
+      :isStaffEdit="isStaffEdit"
+      :saveDisabled="editSaveDisabled"
+      v-on:save="$emit('submit_edit')"
     />
 
     <!-- Well Development -->
@@ -241,6 +271,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
       :developmentMethod.sync="form.development_method"
       :developmentHours.sync="form.development_hours"
       :developmentNotes.sync="form.development_notes"
+      :isStaffEdit="isStaffEdit"
+      :saveDisabled="editSaveDisabled"
+      v-on:save="$emit('submit_edit')"
     />
 
     <!-- Yield (Production Data) -->
@@ -248,6 +281,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
       v-if="showSection('wellYield')"
       id="wellYield"
       :productionData.sync="form.production_data_set"
+      :isStaffEdit="isStaffEdit"
+      :saveDisabled="editSaveDisabled"
+      v-on:save="$emit('submit_edit')"
     />
 
     <!-- Water Quality -->
@@ -258,6 +294,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
       :waterQualityColour.sync="form.water_quality_colour"
       :waterQualityOdour.sync="form.water_quality_odour"
       :emsID.sync="form.ems_id"
+      :isStaffEdit="isStaffEdit"
+      :saveDisabled="editSaveDisabled"
+      v-on:save="$emit('submit_edit')"
     />
 
       <!-- Well Completion Data -->
@@ -274,6 +313,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
       :artesianPressure.sync="form.artesian_pressure"
       :wellCapType.sync="form.well_cap_type"
       :wellDisinfected.sync="form.well_disinfected"
+      :isStaffEdit="isStaffEdit"
+      :saveDisabled="editSaveDisabled"
+      v-on:save="$emit('submit_edit')"
     />
 
     <decommission-information class="my-3"
@@ -285,6 +327,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
       :sealantMaterial.sync="form.sealant_material"
       :backfillMaterial.sync="form.backfill_material"
       :decommissionDetails.sync="form.decommission_details"
+      :isStaffEdit="isStaffEdit"
+      :saveDisabled="editSaveDisabled"
+      v-on:save="$emit('submit_edit')"
     />
 
     <!-- Comments -->
@@ -293,6 +338,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
       id="comments"
       :comments.sync="form.comments"
       :alternativeSpecsSubmitted.sync="form.alternative_specs_submitted"
+      :isStaffEdit="isStaffEdit"
+      :saveDisabled="editSaveDisabled"
+      v-on:save="$emit('submit_edit')"
     />
 
     <!-- Back / Next / Submit controls -->

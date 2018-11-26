@@ -219,6 +219,8 @@ class WellListSerializer(serializers.ModelSerializer):
             "surface_seal_length",
             "surface_seal_thickness",
             "surface_seal_method",
+            # "surface_seal_depth",
+            # "backfill_above_surface_seal_depth",
             "backfill_type",
             "backfill_depth",
             "liner_material",

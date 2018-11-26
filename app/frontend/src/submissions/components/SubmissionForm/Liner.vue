@@ -13,7 +13,17 @@ Licensed under the Apache License, Version 2.0 (the "License");
 */
 <template>
   <fieldset>
-    <legend :id="id">Liner Information</legend>
+    <b-row>
+      <b-col cols="12" lg="6">
+        <legend :id="id">Liner Information</legend>
+      </b-col>
+      <b-col cols="12" lg="6">
+        <div class="float-right">
+          <b-btn v-if="isStaffEdit" variant="primary" class="ml-2" @click="$emit('save')" :disabled="saveDisabled">Save</b-btn>
+          <a href="#top" v-if="isStaffEdit">Back to top</a>
+        </div>
+      </b-col>
+    </b-row>
     <b-row>
         <b-col cols="12" md="6">
           <form-input
@@ -145,10 +155,10 @@ export default {
   mixins: [inputBindingsMixin],
   props: {
     linerMaterial: String,
-    linerDiameter: Number,
-    linerThickness: Number,
-    linerFrom: Number,
-    linerTo: Number,
+    linerDiameter: null,
+    linerThickness: null,
+    linerFrom: null,
+    linerTo: null,
     linerPerforations: Array,
     errors: {
       type: Object,
@@ -162,6 +172,14 @@ export default {
     },
     id: {
       type: String,
+      isInput: false
+    },
+    isStaffEdit: {
+      type: Boolean,
+      isInput: false
+    },
+    saveDisabled: {
+      type: Boolean,
       isInput: false
     }
   },
