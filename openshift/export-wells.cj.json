@@ -25,7 +25,7 @@
                 "name": "export"
             },
             "spec": {
-                "schedule": "* 11 * * *",
+                "schedule": "1 11 * * *",
                 "concurrencyPolicy": "Forbid",
                 "jobTemplate": {
                     "spec": {
