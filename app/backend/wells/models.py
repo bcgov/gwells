@@ -13,8 +13,6 @@
 """
 from django.db import models
 
-from model_utils import FieldTracker
-
 from django.db import models
 from django.core.validators import MinValueValidator
 from decimal import Decimal
@@ -675,7 +673,7 @@ class Well(AuditModel):
         max_length=80, blank=True, null=True, verbose_name='Water Supply System Well Name')
     static_water_level = models.DecimalField(
         max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Static Water Level (BTOC)')
-    well_yield = models.DecimalField(
+    well_yieldz = models.DecimalField(
         max_digits=8, decimal_places=3, blank=True, null=True, verbose_name='Estimated Well Yield')
     artesian_flow = models.DecimalField(
         max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Artesian Flow')
@@ -732,7 +730,6 @@ class Well(AuditModel):
     ems_id = models.CharField(max_length=30, blank=True, null=True)
     aquifer = models.ForeignKey(Aquifer, db_column='aquifer_id', on_delete=models.PROTECT, blank=True, null=True,
                                 verbose_name='Aquifer ID Number')
-    tracker = FieldTracker()
 
     driller_responsible = models.ForeignKey(Person, db_column='driller_responsible_guid',
                                             on_delete=models.PROTECT,
@@ -814,7 +811,6 @@ class LtsaOwner(AuditModel):
     postal_code = models.CharField(
         max_length=10, blank=True, verbose_name='Postal Code')
 
-    tracker = FieldTracker()
 
     class Meta:
         db_table = 'ltsa_owner'
@@ -1108,8 +1104,6 @@ class ActivitySubmission(AuditModel):
         max_length=100, blank=True, null=True, verbose_name="Backfill Material")
     decommission_details = models.CharField(
         max_length=250, blank=True, null=True, verbose_name="Decommission Details")
-
-    tracker = FieldTracker()
 
     class Meta:
         db_table = 'activity_submission'
