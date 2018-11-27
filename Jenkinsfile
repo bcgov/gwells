@@ -237,8 +237,8 @@ pipeline {
                         echo "Functional Testing"
                         String baseURL = "https://${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}.pathfinder.gov.bc.ca/gwells"
                         podTemplate(
-                            label: "bddstack-${DEV_SUFFIX}-${PR_NUM}-${env.JOB_BASE_NAME}-${env.CHANGE_ID}",
-                            name: "bddstack2-${DEV_SUFFIX}-${PR_NUM}-${env.JOB_BASE_NAME}-${env.CHANGE_ID}",
+                            label: "bddstack-${DEV_SUFFIX}-${PR_NUM}-${env.JOB_BASE_NAME}",
+                            name: "bddstack-${DEV_SUFFIX}-${PR_NUM}-${env.JOB_BASE_NAME}",
                             serviceAccount: 'jenkins',
                             cloud: 'openshift',
                             containers: [
@@ -266,7 +266,7 @@ pipeline {
                                 )
                             ]
                         ) {
-                            node("bddstack-${DEV_SUFFIX}-${PR_NUM}-${env.JOB_BASE_NAME}-${env.CHANGE_ID}") {
+                            node("bddstack-${DEV_SUFFIX}-${PR_NUM}-${env.JOB_BASE_NAME}") {
                                 //the checkout is mandatory, otherwise functional tests would fail
                                 echo "checking out source"
                                 checkout scm
