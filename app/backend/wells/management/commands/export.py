@@ -11,6 +11,8 @@ from django.db import connection
 from minio import Minio
 from openpyxl import Workbook
 from openpyxl.utils import get_column_letter
+from openpyxl.styles import Font
+from openpyxl.worksheet.write_only import WriteOnlyCell
 
 from gwells.settings.base import get_env_variable
 
@@ -59,11 +61,19 @@ class Command(BaseCommand):
             csvwriter = csv.writer(csvfile, dialect='excel')
 
             values = []
+            cells = []
             # Write the headings
             for index, field in enumerate(cursor.description):
                 values.append(field.name)
+                cell = WriteOnlyCell(worksheet, value=field.name)
+                cell.font = Font(bold=True)
+                cells.append(cell)
             columns = len(values)
-            worksheet.append(values)
+
+            for index, value in enumerate(values):
+                worksheet.column_dimensions[get_column_letter(index+1)].width = len(value) + 2
+
+            worksheet.append(cells)
             csvwriter.writerow(values)
 
             # Write the values
@@ -90,8 +100,10 @@ class Command(BaseCommand):
                     row_index += 1
                     csvwriter.writerow(values)
                     worksheet.append(values)
-        filter_reference = 'A1:{}{}'.format(get_column_letter(columns), row_index+1)
-        worksheet.auto_filter.ref = filter_reference
+
+            filter_reference = 'A1:{}{}'.format(get_column_letter(columns), row_index+1)
+            worksheet.auto_filter.ref = filter_reference
+
         gwells_zip.write(csv_file)
         if os.path.exists(csv_file):
             os.remove(csv_file)
