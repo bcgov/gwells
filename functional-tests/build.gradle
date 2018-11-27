@@ -15,12 +15,11 @@ ext {
         groovyVersion = '2.4.15'
         gebVersion = '2.2'
         seleniumVersion = '3.14.0'
-        chromeDriverVersion = '2.42'
+        chromeDriverVersion = '2.44'
         geckoDriverVersion = '0.21.0'
         ieDriverVersion = '3.14.0'
         edgeDriverVersion = '3.14.0'
         safariDriverVersion = '3.14.0'
-
         spockCoreVersion = '1.1-groovy-2.4'
         spockReportsVersion = '1.6.1'
         slf4jApiVersion = '1.7.25'
