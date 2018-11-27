@@ -215,7 +215,7 @@ class Command(BaseCommand):
 
         if os.path.exists(zip_filename):
             os.remove(zip_filename)
-        with zipfile.ZipFile(zip_filename, 'w', compression=zipfile.ZIP_LZMA) as gwells_zip:
+        with zipfile.ZipFile(zip_filename, 'w', compression=zipfile.ZIP_DEFLATED) as gwells_zip:
             if os.path.exists(spreadsheet_filename):
                 os.remove(spreadsheet_filename)
             workbook = Workbook(write_only=True)
