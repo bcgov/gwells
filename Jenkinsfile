@@ -237,8 +237,8 @@ pipeline {
                         echo "Functional Testing"
                         String baseURL = "https://${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}.pathfinder.gov.bc.ca/gwells"
                         podTemplate(
-                            label: "bddstack-${DEV_SUFFIX}-${PR_NUM}-${env.JOB_BASE_NAME}",
-                            name: "bddstack-${DEV_SUFFIX}-${PR_NUM}-${env.JOB_BASE_NAME}",
+                            label: "bddstack-${DEV_SUFFIX}-${PR_NUM}",
+                            name: "bddstack-${DEV_SUFFIX}-${PR_NUM}",
                             serviceAccount: 'jenkins',
                             cloud: 'openshift',
                             containers: [
@@ -266,17 +266,21 @@ pipeline {
                                 )
                             ]
                         ) {
-                            node("bddstack-${DEV_SUFFIX}-${PR_NUM}-${env.JOB_BASE_NAME}") {
+                            node("bddstack-${DEV_SUFFIX}-${PR_NUM}") {
                                 //the checkout is mandatory, otherwise functional tests would fail
                                 echo "checking out source"
                                 checkout scm
                                 dir('functional-tests') {
                                     try {
-                                        sh './gradlew chromeHeadlessTest --stacktrace'
-                                    } finally {
-                                        archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
-                                        archiveArtifacts allowEmptyArchive: true, artifacts: 'build/test-results/**/*'
-                                        junit 'build/test-results/**/*.xml'
+                                        try {
+                                            sh './gradlew chromeHeadlessTest --stacktrace'
+                                        } finally {
+                                            archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
+                                            archiveArtifacts allowEmptyArchive: true, artifacts: 'build/test-results/**/*'
+                                            junit 'build/test-results/**/*.xml'
+                                        }
+                                    } catch (error) {
+                                        echo error
                                     }
                                 }
                             }
