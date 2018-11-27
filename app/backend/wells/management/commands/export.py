@@ -10,6 +10,7 @@ from django.db import connection
 
 from minio import Minio
 from openpyxl import Workbook
+from openpyxl.utils import get_column_letter
 
 from gwells.settings.base import get_env_variable
 
@@ -61,6 +62,7 @@ class Command(BaseCommand):
             # Write the headings
             for index, field in enumerate(cursor.description):
                 values.append(field.name)
+            columns = len(values)
             worksheet.append(values)
             csvwriter.writerow(values)
 
@@ -84,8 +86,12 @@ class Command(BaseCommand):
                     else:
                         values.append(value)
                 if num_values > 1:
+                    # We always have a well_tag_number, but if that's all we have, then just skip this record
+                    row_index += 1
                     csvwriter.writerow(values)
                     worksheet.append(values)
+        filter_reference = 'A1:{}{}'.format(get_column_letter(columns), row_index+1)
+        worksheet.auto_filter.ref = filter_reference
         gwells_zip.write(csv_file)
         if os.path.exists(csv_file):
             os.remove(csv_file)
