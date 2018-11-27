@@ -1,13 +1,12 @@
----
-kind: Template
 apiVersion: v1
-metadata: {}
+kind: Template
+metadata:
+  name: bddstack
 objects:
-- kind: ImageStream
-  apiVersion: v1
+- apiVersion: v1
+  kind: ImageStream
   metadata:
     name: jenkins-slave-base-rhel7
-    creationTimestamp:
     labels:
       build: bddstack
     annotations:
@@ -22,169 +21,28 @@ objects:
       from:
         kind: DockerImage
         name: registry.access.redhat.com/openshift3/jenkins-slave-base-rhel7
-      generation:
-      importPolicy: {}
-      referencePolicy:
-        type: ''
-  status:
-    dockerImageRepository: ''
-- kind: ImageStream
-  apiVersion: v1
-  metadata:
-    name: ---
-    kind: Template
-    apiVersion: v1
-    metadata: {}
-    objects:
-    - kind: ImageStream
-      apiVersion: v1
-      metadata:
-        name: jenkins-slave-base-rhel7
-        creationTimestamp:
-        labels:
-          build: bddstack
-        annotations:
-          openshift.io/generated-by: OpenShiftNewBuild
-      spec:
-        lookupPolicy:
-          local: false
-        tags:
-        - name: latest
-          annotations:
-            openshift.io/imported-from: registry.access.redhat.com/openshift3/jenkins-slave-base-rhel7
-          from:
-            kind: DockerImage
-            name: registry.access.redhat.com/openshift3/jenkins-slave-base-rhel7
-          generation:
-          importPolicy: {}
-          referencePolicy:
-            type: ''
-      status:
-        dockerImageRepository: ''
-    - kind: ImageStream
-      apiVersion: v1
-      metadata:
-        name: bddstack
-        creationTimestamp:
-        labels:
-          build: bddstack
-        annotations:
-          openshift.io/generated-by: OpenShiftNewBuild
-      spec:
-        lookupPolicy:
-          local: false
-      status:
-        dockerImageRepository: ''
-    - kind: BuildConfig
-      apiVersion: v1
-      metadata:
-        name: bddstack
-        creationTimestamp:
-        labels:
-          build: bddstack
-        annotations:
-          openshift.io/generated-by: OpenShiftNewBuild
-      spec:
-        triggers:
-        - type: ConfigChange
-        - type: ImageChange
-          imageChange: {}
-        source:
-          type: Dockerfile
-          dockerfile: |
-            # https://github.com/BCDevOps/BDDStack
-            FROM registry.access.redhat.com/openshift3/jenkins-slave-base-rhel7
-
-            EXPOSE 8080
-
-            ENV PATH=$HOME/.local/bin/:$PATH \
-                LC_ALL=en_US.UTF-8 \
-                LANG=en_US.UTF-8
-
-            ENV SUMMARY="Jenkins slave with chrome and firefox installed for use with functional/BDD tests that use BDDStack." \
-                DESCRIPTION="Jenkins pipeline slave with chrome and firefox for testing application with headless browser. (aka 'BDDStack')"
-
-            LABEL summary="$SUMMARY" \
-                  description="$DESCRIPTION" \
-                  io.k8s.description="$DESCRIPTION" \
-                  io.k8s.display-name="Jenkins-Pipeline-BDDStack" \
-                  io.openshift.expose-services="8080:http" \
-                  io.openshift.tags="builder,jenkins-jnlp-chrome,jenkins-jnlp-firefox,jenkins-jnlp" \
-                  release="1"
-
-            # NOTES:
-            # We need to call 2 (!) yum commands before being able to enable repositories properly
-            # This is a workaround for https://bugzilla.redhat.com/show_bug.cgi?id=1479388
-            # Chrome install info: https://access.redhat.com/discussions/917293
-            RUN yum repolist > /dev/null && \
-                yum install -y yum-utils && \
-                yum-config-manager --disable \* &> /dev/null && \
-                yum-config-manager --enable rhel-server-rhscl-7-rpms && \
-                yum-config-manager --enable rhel-7-server-rpms && \
-                yum-config-manager --enable rhel-7-server-optional-rpms && \
-                yum-config-manager --enable rhel-7-server-fastrack-rpms && \
-                UNINSTALL_PKGS="java-1.8.0-openjdk-headless.i686" &&\
-                INSTALL_PKGS="redhat-lsb libXScrnSaver gdk-pixbuf2 xorg-x11-server-Xvfb wget firefox" && \
-                yum remove -y $UNINSTALL_PKGS &&\
-                yum install -y --setopt=tsflags=nodocs $INSTALL_PKGS && \
-                rpm -V $INSTALL_PKGS && \
-                yum clean all -y && \
-                wget https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm && \
-                yum -y localinstall google-chrome-stable_current_x86_64.rpm && \
-                rm google-chrome-stable_current_x86_64.rpm && \
-                if [ ! -d /home/jenkins/.pki ] ; then mkdir /home/jenkins/.pki; fi && \
-                chmod 777 /home/jenkins/.pki
-
-            RUN yum update google-chrome-stable
-            RUN yum info google-chrome-stable
-
-            ENV OPENSHIFT_JENKINS_JVM_ARCH=x86_64
-
-            USER 1001
-        strategy:
-          type: Docker
-          dockerStrategy:
-            from:
-              kind: ImageStreamTag
-              name: jenkins-slave-base-rhel7:latest
-            env:
-              - OPENSHIFT_JENKINS_JVM_ARCH: "x86_64"
-        output:
-          to:
-            kind: ImageStreamTag
-            name: bddstack:latest
-        resources: {}
-        postCommit: {}
-        nodeSelector:
-      status:
-        lastVersion: 0
-
-    creationTimestamp:
-    labels:
-      build: bddstack
-    annotations:
-      openshift.io/generated-by: OpenShiftNewBuild
-  spec:
-    lookupPolicy:
-      local: false
-  status:
-    dockerImageRepository: ''
-- kind: BuildConfig
-  apiVersion: v1
+- apiVersion: v1
+  kind: ImageStream
   metadata:
     name: bddstack
-    creationTimestamp:
     labels:
       build: bddstack
     annotations:
       openshift.io/generated-by: OpenShiftNewBuild
+- apiVersion: v1
+  kind: BuildConfig
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewBuild
+    labels:
+      build: bddstack
+    name: bddstack
   spec:
-    triggers:
-    - type: ConfigChange
-    - type: ImageChange
-      imageChange: {}
+    output:
+      to:
+        kind: ImageStreamTag
+        name: bddstack:latest
     source:
-      type: Dockerfile
       dockerfile: |
         # https://github.com/BCDevOps/BDDStack
         FROM registry.access.redhat.com/openshift3/jenkins-slave-base-rhel7
@@ -235,18 +93,17 @@ objects:
         ENV OPENSHIFT_JENKINS_JVM_ARCH=x86_64
 
         USER 1001
+      type: Dockerfile
     strategy:
-      type: Docker
       dockerStrategy:
+        env:
+        - name: OPENSHIFT_JENKINS_JVM_ARCH
+          value: x86_64
         from:
           kind: ImageStreamTag
           name: jenkins-slave-base-rhel7:latest
-    output:
-      to:
-        kind: ImageStreamTag
-        name: bddstack:latest
-    resources: {}
-    postCommit: {}
-    nodeSelector:
-  status:
-    lastVersion: 0
+      type: Docker
+    triggers:
+    - type: ConfigChange
+    - imageChange: {}
+      type: ImageChange
