@@ -272,7 +272,7 @@ pipeline {
                                 checkout scm
                                 dir('functional-tests') {
                                     try {
-                                        sh './gradlew chromeHeadlessTest'
+                                        sh './gradlew chromeHeadlessTest --stacktrace'
                                     } finally {
                                         archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
                                         archiveArtifacts allowEmptyArchive: true, artifacts: 'build/test-results/**/*'
