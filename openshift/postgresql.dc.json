@@ -63,8 +63,20 @@
             "displayName": "Version of PostgreSQL Image",
             "name": "IMAGE_STREAM_VERSION",
             "required": true,
-            "value": "9.5"
+            "value": "9.6"
         },
+        {
+            "description": "Indicator to enable pgcrypto extension (provided out-of-the-box with PostgreSQL).",
+            "displayName": "Flag to enable pgcrypto PostgreSQL extension.",
+            "name": "PGCRYPTO_EXTENSION",
+            "value": "Y"
+        },
+        {
+            "description": "Indicator to enable postgis extension (from official PostgeSQL YUM repo).",
+            "displayName": "Flag to enable postgis PostgreSQL extension.",
+            "name": "POSTGIS_EXTENSION",
+            "value": "Y"
+        },          
         {
             "name": "NAME_SUFFIX",
             "required": true
@@ -262,6 +274,14 @@
                                         "name": "FDW_SCHEMA",
                                         "value": "wells"
                                     },
+                                    {
+                                        "name": "PGCRYPTO_EXTENSION",
+                                        "value": "Y"
+                                    },
+                                    {
+                                        "name": "POSTGIS_EXTENSION",
+                                        "value": "Y"
+                                    },                                    
                                     {
                                         "name": "PGOPTIONS",
                                         "value": "-c maintenance_work_mem=128MB"

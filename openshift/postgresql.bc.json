@@ -30,7 +30,7 @@
                         "annotations": null,
                         "from": {
                             "kind": "ImageStreamTag",
-                            "name": "postgresql-oracle-fdw:9.5-2"
+                            "name": "postgis-oracle-fdw:96-24-1"
                         },
                         "importPolicy": {},
                         "name": "${ENV_NAME}",
