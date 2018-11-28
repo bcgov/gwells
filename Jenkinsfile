@@ -3,6 +3,13 @@
 import groovy.json.JsonOutput
 import bcgov.GitHubHelper
 
+
+// _Stage wrapper:
+def _stage(String name, Closure body) {
+    echo "Running Stage '${name}'"
+}
+
+
 pipeline {
   environment {
 
@@ -33,6 +40,16 @@ pipeline {
   }
   agent any
   stages {
+
+    stage('Testing') {
+        steps {
+            script {
+                _stage(env.STAGE_NAME){
+                    echo "Stage body - testing"
+                }
+            }
+        }
+    }
 
     // the Start Pipeline stage will process and apply OpenShift build templates which will create
     // buildconfigs and an imagestream for built images.
