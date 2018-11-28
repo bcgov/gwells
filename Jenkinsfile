@@ -38,36 +38,38 @@ private static String stackTraceAsString(Throwable t) {
 
 // _Stage wrapper
 def _stage(String name, Closure body) {
-    echo "Running Stage '${name}'"
-    waitUntil {
-        notifyStageStatus(name, 'PENDING')
-        boolean isDone=false
-        try{
-            body()
-            isDone=true
-            notifyStageStatus(name, 'SUCCESS')
-            echo "Completed Stage '${name}'"
-        }catch (error){
-            notifyStageStatus(name, 'FAILURE')
-            echo "This is where the errors go!"
-            echo "${stackTraceAsString(error)}"
-            def inputAction = input(
-                message: "This step (${name}) has failed. See error above.",
-                ok: 'Confirm',
-                parameters: [
-                    choice(
-                        name: 'action',
-                        choices: 'Re-run\nIgnore',
-                        description: 'What would you like to do?'
-                    )
-                ]
-            )
-            if ('Ignore'.equalsIgnoreCase(inputAction)){
+    script {
+        echo "Running Stage '${name}'"
+        waitUntil {
+            notifyStageStatus(name, 'PENDING')
+            boolean isDone=false
+            try{
+                body()
                 isDone=true
+                notifyStageStatus(name, 'SUCCESS')
+                echo "Completed Stage '${name}'"
+            }catch (error){
+                notifyStageStatus(name, 'FAILURE')
+                echo "This is where the errors go!"
+                echo "${stackTraceAsString(error)}"
+                def inputAction = input(
+                    message: "This step (${name}) has failed. See error above.",
+                    ok: 'Confirm',
+                    parameters: [
+                        choice(
+                            name: 'action',
+                            choices: 'Re-run\nIgnore',
+                            description: 'What would you like to do?'
+                        )
+                    ]
+                )
+                if ('Ignore'.equalsIgnoreCase(inputAction)){
+                    isDone=true
+                }
             }
-        }
-        return isDone
-    } //end waitUntil
+            return isDone
+        } //end waitUntil
+    } //end script
 }
 
 
@@ -104,10 +106,8 @@ pipeline {
 
     stage('Testing') {
         steps {
-            script {
-                _stage(env.STAGE_NAME){
-                    echo "Stage body - testing"
-                }
+            _stage(env.STAGE_NAME) {
+                echo "Stage body - testing"
             }
         }
     }
