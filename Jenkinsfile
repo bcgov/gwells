@@ -18,12 +18,28 @@ void notifyStageStatus (String name, String status) {
 
 
 // Create deployment status and pass to Jenkins-GitHub library
-void createDeploymentStatus (String name, String status, String targetURL) {
+void createDeploymentStatus (String suffix, String status, String targetURL) {
+    def ghDeploymentId = new GitHubHelper().createDeployment(
+        this,
+        "pull/${env.CHANGE_ID}/head",
+        [
+            'environment':"${suffix}",
+            'task':"deploy:pull:${env.CHANGE_ID}"
+        ]
+    )
+
     new GitHubHelper().createDeploymentStatus(
         this,
         ghDeploymentId,
         "${status}",
-        ['targetUrl':"${targetURL}"])
+        ['targetUrl':"${targetURL}"]
+    )
+
+    if ('SUCCESS'.equalsIgnoreCase("${status}")) {
+        echo "${suffix} deployment successful!"
+    } else if ('PENDING'.equalsIgnoreCase("${status}")){
+        echo "${suffix} deployment pending."
+    }
 }
 
 
@@ -245,8 +261,7 @@ pipeline {
 
                         // post a notification to Github that this pull request is being deployed
                         def targetURL = "https://${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}.pathfinder.gov.bc.ca/gwells"
-                        def ghDeploymentId = new GitHubHelper().createDeployment(this, "pull/${env.CHANGE_ID}/head", ['environment':"${DEV_SUFFIX}", 'task':"deploy:pull:${env.CHANGE_ID}"])
-                        new GitHubHelper().createDeploymentStatus(this, ghDeploymentId, 'PENDING', ['targetUrl':"${targetURL}"])
+                        createDeploymentStatus(DEV_SUFFIX, 'PENDING', targetURL)
 
                         // monitor the deployment status and wait until deployment is successful
                         echo "Waiting for deployment to dev..."
@@ -279,14 +294,8 @@ pipeline {
                                 python manage.py createinitialrevisions \
                             '"
                         )
-                        new GitHubHelper().createDeploymentStatus(
-                            this,
-                            ghDeploymentId,
-                            'SUCCESS',
-                            [
-                                'targetUrl': "${targetURL}"
-                            ]
-                        )
+
+                        createDeploymentStatus(DEV_SUFFIX, 'SUCCESS', targetURL)
                     }
                 }
             }
@@ -579,15 +588,7 @@ pipeline {
                         )  // todo: clean up labels/tags
 
                         def targetTestURL = "https://${APP_NAME}-${TEST_SUFFIX}.pathfinder.gov.bc.ca/gwells"
-                        def ghDeploymentId = new GitHubHelper().createDeployment(
-                            this,
-                            "pull/${env.CHANGE_ID}/head",
-                            [
-                                'environment':"${TEST_SUFFIX}",
-                                'task':"deploy:pull:${env.CHANGE_ID}"
-                            ]
-                        )
-                        new GitHubHelper().createDeploymentStatus(this, ghDeploymentId, 'PENDING', ['targetUrl':"${targetTestURL}"])
+                        createDeploymentStatus(TEST_SUFFIX, 'PENDING', targetTestURL)
 
                         // Create cronjob for well export
                         def cronTemplate = openshift.process("-f",
@@ -619,8 +620,7 @@ pipeline {
                             }
                         }
 
-                        new GitHubHelper().createDeploymentStatus(this, ghDeploymentId, 'SUCCESS', ['targetUrl':"${targetTestURL}"])
-
+                        createDeploymentStatus(TEST_SUFFIX, 'SUCCESS', targetTestURL)
                         echo "TEST deployment successful."
                     }
                 }
@@ -846,22 +846,7 @@ pipeline {
                         )  // todo: clean up labels/tags
 
                         def targetProdURL = "https://apps.nrs.gov.bc.ca/gwells/"
-                        def ghDeploymentId = new GitHubHelper().createDeployment(
-                            this,
-                            "pull/${env.CHANGE_ID}/head",
-                            [
-                                'environment':"${PROD_SUFFIX}",
-                                'task':"deploy:pull:${env.CHANGE_ID}"
-                            ]
-                        )
-                        new GitHubHelper().createDeploymentStatus(
-                            this,
-                            ghDeploymentId,
-                            'PENDING',
-                            [
-                                'targetUrl':"${targetProdURL}"
-                            ]
-                        )
+                        createDeploymentStatus(PROD_SUFFIX, 'PENDING', targetProdURL)
 
                         // Create cronjob for well export
                         def cronTemplate = openshift.process("-f",
@@ -894,20 +879,12 @@ pipeline {
                         }
 
                         echo "Production deployment successful."
-                        // slack & github notifications that a new deployment is ready
-
-                        new GitHubHelper().createDeploymentStatus(
-                            this,
-                            ghDeploymentId,
-                            'SUCCESS',
-                            [
-                                'targetUrl':"${targetProdURL}"
-                            ]
-                        )
+                        createDeploymentStatus(PROD_SUFFIX, 'SUCCESS', targetProdURL)
                     }
                 } //end script
             } //end steps
         } //end stage
+
 
         stage('Slack Notify') {
             when {
