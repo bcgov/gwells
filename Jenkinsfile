@@ -197,25 +197,93 @@ pipeline {
 
               echo "Deployment successful!"
               echo "Loading fixtures"
-              def firstPod = pods.objects()[0].metadata.name
-              openshift.exec(firstPod, "--", "bash -c '\
-                cd /opt/app-root/src/backend; \
-                python manage.py loaddata \
+              openshift.exec(
+                pods.objects()[0].metadata.name,
+                "--",
+                "bash -c '\
+                  cd /opt/app-root/src/backend; \
+                  python manage.py loaddata \
                   gwells-codetables.json \
                   wellsearch-codetables.json \
                   registries-codetables.json \
                   registries.json \
                   aquifers.json \
                   wellsearch.json; \
-                python manage.py createinitialrevisions'")
-
-                new GitHubHelper().createDeploymentStatus(this, ghDeploymentId, 'SUCCESS', ['targetUrl':"${targetURL}"])
-
+                  python manage.py createinitialrevisions \
+                '"
+              )
+              new GitHubHelper().createDeploymentStatus(
+                this,
+                ghDeploymentId,
+                'SUCCESS',
+                [
+                  'targetUrl': "${targetURL}"
+                ]
+              )
             }
           }
         }
       }
     }
+
+
+    // // Functional tests using BDD Stack
+    // // See https://github.com/BCDevOps/BDDStack
+    // stage('Functional Tests') {
+    //     steps {
+    //         script {
+    //             openshift.withCluster() {
+    //                 openshift.withProject(TOOLS_PROJECT) {
+    //                     echo "Functional Testing"
+    //                     String baseURL = "https://${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}.pathfinder.gov.bc.ca/gwells"
+    //                     podTemplate(
+    //                         label: "bddstack-${DEV_SUFFIX}-${PR_NUM}",
+    //                         name: "bddstack-${DEV_SUFFIX}-${PR_NUM}",
+    //                         serviceAccount: 'jenkins',
+    //                         cloud: 'openshift',
+    //                         containers: [
+    //                             containerTemplate(
+    //                                 name: 'jnlp',
+    //                                 image: 'docker-registry.default.svc:5000/moe-gwells-tools/bddstack:latest',
+    //                                 resourceRequestCpu: '800m',
+    //                                 resourceLimitCpu: '800m',
+    //                                 resourceRequestMemory: '4Gi',
+    //                                 resourceLimitMemory: '4Gi',
+    //                                 workingDir: '/home/jenkins',
+    //                                 command: '',
+    //                                 args: '${computer.jnlpmac} ${computer.name}',
+    //                                 envVars: [
+    //                                     envVar(key:'BASEURL', value: baseURL),
+    //                                     envVar(key:'GRADLE_USER_HOME', value: '/var/cache/artifacts/gradle')
+    //                                 ]
+    //                             )
+    //                         ]
+    //                     ) {
+    //                         node("bddstack-${DEV_SUFFIX}-${PR_NUM}") {
+    //                             //the checkout is mandatory, otherwise functional tests would fail
+    //                             echo "checking out source"
+    //                             checkout scm
+    //                             dir('functional-tests') {
+    //                                 try {
+    //                                     try {
+    //                                         sh './gradlew chromeHeadlessTest'
+    //                                     } finally {
+    //                                         archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
+    //                                         archiveArtifacts allowEmptyArchive: true, artifacts: 'build/test-results/**/*'
+    //                                         junit 'build/test-results/**/*.xml'
+    //                                     }
+    //                                 } catch (error) {
+    //                                     echo error
+    //                                 }
+    //                             }
+    //                         }
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
+
 
     stage('API Tests') {
       steps {
