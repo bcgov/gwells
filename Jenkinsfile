@@ -36,39 +36,43 @@ private static String stackTraceAsString(Throwable t) {
 }
 
 
-// _Stage wrapper
-def _stage(String name, Closure body) {
+// OpenShift wrapper
+def _openshift(String name, String project, Closure body) {
     script {
-        echo "Running Stage '${name}'"
-        waitUntil {
-            notifyStageStatus(name, 'PENDING')
-            boolean isDone=false
-            try{
-                body()
-                isDone=true
-                notifyStageStatus(name, 'SUCCESS')
-                echo "Completed Stage '${name}'"
-            }catch (error){
-                notifyStageStatus(name, 'FAILURE')
-                echo "This is where the errors go!"
-                echo "${stackTraceAsString(error)}"
-                def inputAction = input(
-                    message: "This step (${name}) has failed. See error above.",
-                    ok: 'Confirm',
-                    parameters: [
-                        choice(
-                            name: 'action',
-                            choices: 'Re-run\nIgnore',
-                            description: 'What would you like to do?'
+        openshift.withCluster() {
+            openshift.withProject(project) {
+                echo "Running Stage '${name}'"
+                waitUntil {
+                    notifyStageStatus(name, 'PENDING')
+                    boolean isDone=false
+                    try{
+                        body()
+                        isDone=true
+                        notifyStageStatus(name, 'SUCCESS')
+                        echo "Completed Stage '${name}'"
+                    }catch (error){
+                        notifyStageStatus(name, 'FAILURE')
+                        echo "This is where the errors go!"
+                        echo "${stackTraceAsString(error)}"
+                        def inputAction = input(
+                            message: "This step (${name}) has failed. See error above.",
+                            ok: 'Confirm',
+                            parameters: [
+                                choice(
+                                    name: 'action',
+                                    choices: 'Re-run\nIgnore',
+                                    description: 'What would you like to do?'
+                                )
+                            ]
                         )
-                    ]
-                )
-                if ('Ignore'.equalsIgnoreCase(inputAction)){
-                    isDone=true
-                }
-            }
-            return isDone
-        } //end waitUntil
+                        if ('Ignore'.equalsIgnoreCase(inputAction)){
+                            isDone=true
+                        }
+                    }
+                    return isDone
+                } //end waitUntil
+            } //end openshift.withProject
+        } //end openshift.withCluster
     } //end script
 }
 
@@ -106,7 +110,7 @@ pipeline {
 
     stage('Testing') {
         steps {
-            _stage(env.STAGE_NAME) {
+            _openshift(env.STAGE_NAME, TOOLS_PROJECT) {
                 echo "Stage body - testing"
             }
         }
@@ -126,8 +130,7 @@ pipeline {
           }
           echo "Previous builds cancelled"
 
-          openshift.withCluster() {
-            openshift.withProject(TOOLS_PROJECT) {
+          _openshift(env.STAGE_NAME, TOOLS_PROJECT){
 
               // Process db and app template into list objects
               //  - variable substitution
@@ -156,7 +159,7 @@ pipeline {
               echo "Preparing backend imagestream and buildconfig"
               echo " \$ oc process -f openshift/backend.bc.json -p ENV_NAME=${DEV_SUFFIX} -p NAME_SUFFIX=-${DEV_SUFFIX}-${PR_NUM} -p APP_IMAGE_TAG=${PR_NUM} -p SOURCE_REPOSITORY_URL=${REPOSITORY} -p SOURCE_REPOSITORY_REF=pull/${CHANGE_ID}/head | oc apply -n moe-gwells-tools -f -"
               openshift.apply(buildtemplate)
-            }
+
           }
         }
       }
