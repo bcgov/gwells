@@ -244,7 +244,6 @@ pipeline {
                             }
                         }
 
-
                         echo "Applying deployment config for pull request ${PR_NUM} on ${DEV_PROJECT}"
 
                         // apply the templates, which will create new objects or modify existing ones as necessary.
@@ -276,8 +275,18 @@ pipeline {
                                 }
                             }
                         }
+                    }
+                } //end script
+            } //end steps
+        } //end stage
 
-                        echo "Deployment successful!"
+        stage('Load Fixtures') {
+            steps {
+                script {
+                    _openshift(env.STAGE_NAME, DEV_PROJECT) {
+                        def newVersion = openshift.selector("dc", "${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}").object().status.latestVersion
+                        def pods = openshift.selector('pod', [deployment: "${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}-${newVersion}"])
+
                         echo "Loading fixtures"
                         openshift.exec(
                             pods.objects()[0].metadata.name,
@@ -621,7 +630,6 @@ pipeline {
                         }
 
                         createDeploymentStatus(TEST_SUFFIX, 'SUCCESS', targetTestURL)
-                        echo "TEST deployment successful."
                     }
                 }
             }
@@ -878,7 +886,6 @@ pipeline {
                             }
                         }
 
-                        echo "Production deployment successful."
                         createDeploymentStatus(PROD_SUFFIX, 'SUCCESS', targetProdURL)
                     }
                 } //end script
