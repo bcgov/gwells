@@ -4,9 +4,70 @@ import groovy.json.JsonOutput
 import bcgov.GitHubHelper
 
 
-// _Stage wrapper:
+// Notify stage status and pass to Jenkins-GitHub library
+void notifyStageStatus (String name, String status) {
+    GitHubHelper.createCommitStatus(
+        this,
+        GitHubHelper.getPullRequestLastCommitId(this),
+        status,
+        "${env.BUILD_URL}",
+        "Stage '${name}'",
+        "stages/${name.toLowerCase()}"
+    )
+}
+
+
+// Create deployment status and pass to Jenkins-GitHub library
+void createDeploymentStatus (String name, String status, String targetURL) {
+    new GitHubHelper().createDeploymentStatus(
+        this,
+        ghDeploymentId,
+        "${status}",
+        ['targetUrl':"${targetURL}"])
+}
+
+
+// Print stack trace of error
+@NonCPS
+private static String stackTraceAsString(Throwable t) {
+    StringWriter sw = new StringWriter();
+    t.printStackTrace(new PrintWriter(sw));
+    return sw.toString()
+}
+
+
+// _Stage wrapper
 def _stage(String name, Closure body) {
     echo "Running Stage '${name}'"
+    waitUntil {
+        notifyStageStatus(name, 'PENDING')
+        boolean isDone=false
+        try{
+            body()
+            isDone=true
+            notifyStageStatus(name, 'SUCCESS')
+            echo "Completed Stage '${name}'"
+        }catch (error){
+            notifyStageStatus(name, 'FAILURE')
+            echo "This is where the errors go!"
+            echo "${stackTraceAsString(error)}"
+            def inputAction = input(
+                message: "This step (${name}) has failed. See error above.",
+                ok: 'Confirm',
+                parameters: [
+                    choice(
+                        name: 'action',
+                        choices: 'Re-run\nIgnore',
+                        description: 'What would you like to do?'
+                    )
+                ]
+            )
+            if ('Ignore'.equalsIgnoreCase(inputAction)){
+                isDone=true
+            }
+        }
+        return isDone
+    } //end waitUntil
 }
 
 
