@@ -1,26 +1,13 @@
+# Build config for Jenkins BDDStack functional testing
+#
+# Process this file, creating or replacing imagestreams and builds
+# $ oc process -f openshift/bddstack.bc.yaml | oc [create|replace] -n <PROJECT> -f -
+#
 apiVersion: v1
 kind: Template
 metadata:
   name: bddstack
 objects:
-- apiVersion: v1
-  kind: ImageStream
-  metadata:
-    name: jenkins-slave-base-rhel7
-    labels:
-      build: bddstack
-    annotations:
-      openshift.io/generated-by: OpenShiftNewBuild
-  spec:
-    lookupPolicy:
-      local: false
-    tags:
-    - name: latest
-      annotations:
-        openshift.io/imported-from: registry.access.redhat.com/openshift3/jenkins-slave-base-rhel7
-      from:
-        kind: DockerImage
-        name: registry.access.redhat.com/openshift3/jenkins-slave-base-rhel7
 - apiVersion: v1
   kind: ImageStream
   metadata:
@@ -84,15 +71,12 @@ objects:
             wget https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm && \
             yum -y localinstall google-chrome-stable_current_x86_64.rpm && \
             rm google-chrome-stable_current_x86_64.rpm && \
-            if [ ! -d /home/jenkins/.pki ] ; then mkdir /home/jenkins/.pki; fi && \
-            chmod 777 /home/jenkins/.pki
-
-        RUN yum update google-chrome-stable
-        RUN yum info google-chrome-stable
-
-        ENV OPENSHIFT_JENKINS_JVM_ARCH=x86_64
+            mkdir -p /home/jenkins/.pki && \
+            chmod 777 /home/jenkins/.pki && \
+            yum info google-chrome-stable
 
         USER 1001
+
       type: Dockerfile
     strategy:
       dockerStrategy:
