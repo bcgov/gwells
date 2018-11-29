@@ -68,10 +68,9 @@ def _openshift(String name, String project, Closure body) {
                         echo "Completed Stage '${name}'"
                     }catch (error){
                         notifyStageStatus(name, 'FAILURE')
-                        echo "This is where the errors go!"
                         echo "${stackTraceAsString(error)}"
                         def inputAction = input(
-                            message: "This step (${name}) has failed. See error above.",
+                            message: "This step (${name}) has failed. See related messages.",
                             ok: 'Confirm',
                             parameters: [
                                 choice(
@@ -86,17 +85,17 @@ def _openshift(String name, String project, Closure body) {
                         }
                     }
                     return isDone
-                } //end waitUntil
-            } //end openshift.withProject
-        } //end openshift.withCluster
-    } //end script
+                }
+            }
+        }
+    }
 }
 
 
 pipeline {
     environment {
 
-    APP_NAME = "gwells"
+        APP_NAME = "gwells"
         REPOSITORY = 'https://www.github.com/bcgov/gwells.git'
 
         // TOOLS_PROJECT is where images are built
@@ -276,9 +275,9 @@ pipeline {
                             }
                         }
                     }
-                } //end script
-            } //end steps
-        } //end stage
+                }
+            }
+        }
 
         stage('Load Fixtures') {
             steps {
@@ -303,7 +302,7 @@ pipeline {
                                 python manage.py createinitialrevisions \
                             '"
                         )
-
+                        def targetURL = "https://${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}.pathfinder.gov.bc.ca/gwells"
                         createDeploymentStatus(DEV_SUFFIX, 'SUCCESS', targetURL)
                     }
                 }
@@ -888,9 +887,9 @@ pipeline {
 
                         createDeploymentStatus(PROD_SUFFIX, 'SUCCESS', targetProdURL)
                     }
-                } //end script
-            } //end steps
-        } //end stage
+                }
+            }
+        }
 
 
         stage('Slack Notify') {
@@ -920,8 +919,8 @@ pipeline {
                             ).trim()
                         }
                     }
-                } //end script
-            } //end steps
-        } //end stage
-    } //end stages
-} //end pipeline
+                }
+            }
+        }
+    }
+}
