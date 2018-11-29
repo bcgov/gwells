@@ -673,7 +673,7 @@ class Well(AuditModel):
         max_length=80, blank=True, null=True, verbose_name='Water Supply System Well Name')
     static_water_level = models.DecimalField(
         max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Static Water Level (BTOC)')
-    well_yieldz = models.DecimalField(
+    well_yield = models.DecimalField(
         max_digits=8, decimal_places=3, blank=True, null=True, verbose_name='Estimated Well Yield')
     artesian_flow = models.DecimalField(
         max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Artesian Flow')
