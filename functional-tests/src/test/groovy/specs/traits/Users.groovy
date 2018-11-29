@@ -19,7 +19,7 @@ package traits
  */
 trait Users {
   Map env = System.getenv()
-  Map getUserOne() {
+  Map getAdminUser() {
     [username:env['GWELLS_USERNAME'], password:env['GWELLS_PASSWORD']]
   }
 

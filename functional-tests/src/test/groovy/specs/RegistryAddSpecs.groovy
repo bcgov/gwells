@@ -18,11 +18,9 @@ import pages.RegistryPage
 import pages.RegistryAddPage
 import pages.RegistryProfilePage
 
-import spock.lang.Timeout
 import spock.lang.Title
 import spock.lang.Narrative
 
-@Timeout(300)
 @Title('Groundwater Well Registry Add Tests')
 @Narrative('''As an admin user, I want to register a new well operator.''')
 class RegistryAddSpecs extends LoggedInSpec {

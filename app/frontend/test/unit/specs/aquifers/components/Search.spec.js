@@ -71,7 +71,9 @@ describe('Search Component', () => {
   it('Matches the snapshot', () => {
     const wrapper = component({
       computed: {
-        aquiferList () { return [aquiferFixture] }
+        aquiferList () { return [aquiferFixture] },
+        emptyResults () { return false },
+        displayPageLength () { return 0 }
       },
       methods: {
         fetchResults () {}
@@ -88,7 +90,7 @@ describe('Search Component', () => {
     wrapper.find('#aquifers-name').setValue('asdf')
     wrapper.find('form').trigger('submit')
 
-    expect(axios.get).toHaveBeenCalledWith('aquifers/', {'params': { 'search': 'asdf' }})
+    expect(axios.get).toHaveBeenCalledWith('aquifers/', { 'params': { 'search': 'asdf' } })
   })
 
   it('form reset resets response and query', () => {
