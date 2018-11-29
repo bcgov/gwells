@@ -892,35 +892,35 @@ pipeline {
         }
 
 
-        stage('Slack Notify') {
-            when {
-                expression { env.CHANGE_TARGET == 'master' }
-            }
-            steps {
-                script {
-                    _openshift(env.STAGE_NAME, PROD_PROJECT) {
-
-                        _openshift(env.STAGE_NAME, TOOLS_PROJECT) {
-
-                            // get a slack token
-                            def token = openshift.selector("secret", "slack").object().data.token.decodeBase64()
-                            token = new String(token)
-
-                            // build a message to send to the channel
-                            def message = [:]
-                            message.channel = "#gwells"
-                            message.text = "A new production deployment was rolled out at https://apps.nrs.gov.bc.ca/gwells/"
-                            payload = JsonOutput.toJson(message)
-
-                            // Approve script here: https://jenkins-moe-gwells-tools.pathfinder.gov.bc.ca/scriptApproval/
-                            sh (
-                                script: """curl -X POST -H "Content-Type: application/json" --data \'${payload}\' https://devopspathfinder.slack.com/services/hooks/jenkins-ci?token=${token}""",
-                                returnStdout: true
-                            ).trim()
-                        }
-                    }
-                }
-            }
-        }
+        // stage('Slack Notify') {
+        //     when {
+        //         expression { env.CHANGE_TARGET == 'master' }
+        //     }
+        //     steps {
+        //         script {
+        //             _openshift(env.STAGE_NAME, PROD_PROJECT) {
+        //
+        //                 _openshift(env.STAGE_NAME, TOOLS_PROJECT) {
+        //
+        //                     // get a slack token
+        //                     def token = openshift.selector("secret", "slack").object().data.token.decodeBase64()
+        //                     token = new String(token)
+        //
+        //                     // build a message to send to the channel
+        //                     def message = [:]
+        //                     message.channel = "#gwells"
+        //                     message.text = "A new production deployment was rolled out at https://apps.nrs.gov.bc.ca/gwells/"
+        //                     payload = JsonOutput.toJson(message)
+        //
+        //                     // Approve script here: https://jenkins-moe-gwells-tools.pathfinder.gov.bc.ca/scriptApproval/
+        //                     sh (
+        //                         script: """curl -X POST -H "Content-Type: application/json" --data \'${payload}\' https://devopspathfinder.slack.com/services/hooks/jenkins-ci?token=${token}""",
+        //                         returnStdout: true
+        //                     ).trim()
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
     }
 }
