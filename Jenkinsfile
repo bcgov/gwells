@@ -12,7 +12,7 @@ void notifyStageStatus (String name, String status) {
         status,
         "${env.BUILD_URL}",
         "Stage '${name}'",
-        "stage/${name.toLowerCase()}"
+        "Stage: ${name}"
     )
 }
 
