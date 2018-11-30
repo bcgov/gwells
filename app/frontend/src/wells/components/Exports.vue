@@ -16,7 +16,9 @@
   <div v-if="files && files.length > 0">
     <p class="font-weight-bold">Download all wells</p>
     <ul>
-      <li v-for="file in files" :key="file.name"><a :href="file.url">Well extract ({{file.description}})</a> ({{format_size(file.size)}}) - {{format_date(file.last_modified)}}</li>
+      <li v-for="file in files" :key="file.name">
+        <a :href="file.url" v-on:click="handleDownloadClick(file)">Well extract ({{file.description}})</a> ({{format_size(file.size)}}) - {{format_date(file.last_modified)}}
+      </li>
     </ul>
   </div>
 </template>
@@ -43,7 +45,18 @@ export default {
       return theDate.toLocaleString('en-CA', {year: 'numeric', month: 'long', day: 'numeric'})
     },
     format_size (size) {
-      return `${Math.floor(size / 1024 / 1024)} MB`
+      // If the size is really small, this would go to zero if rounded down - so we rather round up.
+      return `${Math.ceil(size / 1024 / 1024)} MB`
+    },
+    handleDownloadClick (file) {
+      if (window.ga) {
+        window.ga('send', {
+          hitType: 'event',
+          eventCategory: 'Button',
+          eventAction: 'WellExtract',
+          eventLabel: file.description
+        })
+      }
     }
   }
 }
