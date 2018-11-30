@@ -287,7 +287,7 @@ pipeline {
                         def pods = openshift.selector('pod', [deployment: "${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}-${newVersion}"])
 
                         echo "Loading fixtures"
-                        openshift.exec(
+                        def ocoutput = openshift.exec(
                             pods.objects()[0].metadata.name,
                             "--",
                             "bash -c '\
@@ -298,7 +298,16 @@ pipeline {
                                 registries-codetables.json \
                                 registries.json \
                                 aquifers.json \
-                                wellsearch.json; \
+                                wellsearch.json \
+                            '"
+                        )
+                        echo "Load Fixtures results: "+ ocoutput.actions[0].out
+
+                        openshift.exec(
+                            pods.objects()[0].metadata.name,
+                            "--",
+                            "bash -c '\
+                                cd /opt/app-root/src/backend; \
                                 python manage.py createinitialrevisions \
                             '"
                         )
