@@ -19,6 +19,12 @@ from gwells.models import ProvinceStateCode
 from gwells.serializers import AuditModelSerializer
 from django.db import transaction
 import wells.stack
+
+from gwells.models.lithology import (
+    LithologyColourCode, LithologyHardnessCode,
+    LithologyMaterialCode, BedrockMaterialCode,
+    LithologyMoistureCode, SurficialMaterialCode)
+
 from wells.models import Well, ActivitySubmission, WellActivityCode
 from wells.serializers import (
     CasingSerializer,
@@ -644,3 +650,47 @@ class DecommissionMaterialCodeSerializer(serializers.ModelSerializer):
     class Meta:
         model = DecommissionMaterialCode
         fields = ('code', 'description')
+
+
+class LithologyHardnessSerializer(serializers.ModelSerializer):
+    """Serializes lithology hardness options"""
+
+    class Meta:
+        model = LithologyHardnessCode
+        fields = (
+            'lithology_hardness_code',
+            'description'
+        )
+
+
+class LithologyColourSerializer(serializers.ModelSerializer):
+    """Serializes lithology colour options"""
+
+    class Meta:
+        model = LithologyColourCode
+        fields = (
+            'lithology_colour_code',
+            'description'
+        )
+
+
+class LithologyMaterialSerializer(serializers.ModelSerializer):
+    """Serializes lithology material options"""
+
+    class Meta:
+        model = LithologyMaterialCode
+        fields = (
+            'lithology_material_code',
+            'description'
+        )
+
+
+class LithologyMoistureSerializer(serializers.ModelSerializer):
+    """Serializes lithology moisture options"""
+
+    class Meta:
+        model = LithologyMoistureCode
+        fields = (
+            'lithology_moisture_code',
+            'description'
+        )

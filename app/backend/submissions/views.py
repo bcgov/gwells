@@ -23,6 +23,10 @@ from gwells.urls import app_root
 from gwells.pagination import APILimitOffsetPagination
 from wells.permissions import WellsEditPermissions
 from gwells.models import ProvinceStateCode
+from gwells.models.lithology import (
+    LithologyColourCode, LithologyHardnessCode,
+    LithologyMaterialCode, BedrockMaterialCode,
+    LithologyMoistureCode, SurficialMaterialCode)
 from gwells.serializers import ProvinceStateCodeSerializer
 from wells.models import (
     ActivitySubmission,
@@ -69,6 +73,10 @@ from submissions.serializers import (
     IntendedWaterUseCodeSerializer,
     LandDistrictSerializer,
     LinerMaterialCodeSerializer,
+    LithologyHardnessSerializer,
+    LithologyColourSerializer,
+    LithologyMaterialSerializer,
+    LithologyMoistureSerializer,
     ScreenIntakeMethodSerializer,
     SurfaceSealMaterialCodeSerializer,
     SurfaceSealMethodCodeSerializer,
@@ -291,6 +299,11 @@ class SubmissionsOptions(APIView):
         water_quality_colours = WaterQualityColourSerializer(
             instance=WaterQualityColour.objects.all(), many=True)
 
+        lithology_hardness = LithologyHardnessSerializer(instance=LithologyHardnessCode.objects.all(), many=True)
+        lithology_colours = LithologyColourSerializer(instance=LithologyColourCode.objects.all(), many=True)
+        lithology_materials = LithologyMaterialSerializer(instance=LithologyMaterialCode.objects.all(), many=True)
+        lithology_moisture = LithologyMoistureSerializer(instance=LithologyMoistureCode.objects.all(), many=True)
+
         root = urljoin('/', app_root, 'api/v1/')
         for item in activity_codes.data:
             if item['code'] not in ('LEGACY'):
@@ -323,8 +336,28 @@ class SubmissionsOptions(APIView):
         options["yield_estimation_methods"] = yield_estimation_methods.data
         options["water_quality_characteristics"] = water_quality_characteristics.data
         options["water_quality_colours"] = water_quality_colours.data
+        options["lithology_hardness_codes"] = lithology_hardness.data
+        options["lithology_colours"] = lithology_colours.data
+        options["lithology_materials"] = lithology_materials.data
+        options["lithology_moisture_codes"] = lithology_moisture.data
 
         return Response(options)
+
+
+class SoilParsingView(APIView):
+    """
+    Takes a lithology description inputted by a user and returns a list of valid soil types
+    Used to transform free-form input into standardized terms
+    """
+
+    # def post(self, request, *args, **kwargs):
+    #     """accepts a "description" string and parses it for valid soil terms"""
+    #     description = request.data['description']
+    #     if not description:
+    #         return Response(data="missing required description field", status.HTTP_400_BAD_REQUEST)
+        
+        
+
 
 
 class SubmissionsHomeView(TemplateView):

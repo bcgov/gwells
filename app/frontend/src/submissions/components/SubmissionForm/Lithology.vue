@@ -25,17 +25,29 @@ Licensed under the Apache License, Version 2.0 (the "License");
               <div>To</div><div>ft (bgl)</div>
             </th>
             <th class="font-weight-normal">
-              Visual Description
+              Description
             </th>
-            <th class="font-weight-normal input-width-small">
+            <th class="font-weight-normal">
+              Materials
+            </th>
+            <th class="font-weight-normal">
+              Moisture
+            </th>
+            <th class="font-weight-normal">
+              Colour
+            </th>
+            <th class="font-weight-normal">
+              Hardness
+            </th>
+            <th class="font-weight-normal input-width-medium">
               Water Bearing Flow Estimate (USGPM)
             </th>
-            <th class="input-width-small"></th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
           <template v-for="(row, index) in lithology.length">
-            <tr  :key="`lithology row ${index}`" :id="`lithologyRow${index}`">
+            <tr :key="`lithology row ${index}`" :id="`lithologyRow${index}`">
               <td class="input-width-small">
                 <form-input :id="`lithologyDepthFrom${index}`" aria-label="Depth from (feet)" v-model="lithology[index].lithology_from" group-class="mt-1 mb-0"/>
               </td>
@@ -45,10 +57,41 @@ Licensed under the Apache License, Version 2.0 (the "License");
               <td>
                 <form-input :id="`lithologyDescription${index}`" aria-label="Description" v-model="lithology[index].lithology_raw_data" group-class="mt-1 mb-0"></form-input>
               </td>
+              <td>
+                <div class="material-badges">
+                  <b-badge variant="light" class="font-weight-normal">Clay</b-badge>
+                  <b-badge variant="light" class="font-weight-normal">Gravel</b-badge>
+                  <b-badge variant="light" class="font-weight-normal">Sand</b-badge>
+                </div>
+              </td>
               <td class="input-width-small">
+                <!-- <form-input
+                    :id="`lithologyMoisture${index}`"
+                    aria-label="Moisture"
+                    select
+                    :options="codes.lithology_moisture_codes"
+                    text-field="description"
+                    value-field="lithology_moisture_code"
+                    v-model="lithology[index].lithology_moisture"
+                    group-class="mt-1 mb-0"></form-input> -->
+                  <div class="material-badges">
+                    <b-badge variant="light" class="font-weight-normal">Wet</b-badge>
+                  </div>
+              </td>
+              <td>
+                  <div class="material-badges">
+                    <b-badge variant="light" class="font-weight-normal">Reddish-brown</b-badge>
+                  </div>
+              </td>
+              <td>
+                  <div class="material-badges">
+                    <b-badge variant="light" class="font-weight-normal">Dense</b-badge>
+                  </div>
+              </td>
+              <td>
                 <form-input :id="`lithologyFlowEstimate${index}`" aria-label="Water bearing flow" v-model="lithology[index].water_bearing_estimated_flow" group-class="mt-1 mb-0"></form-input>
               </td>
-              <td class="pt-1 input-width-small">
+              <td class="pt-1">
                 <b-btn size="sm" variant="primary" @click="removeRowIfOk(index)" :id="`removeRowButton${index}`" class="mt-2"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
               </td>
             </tr>
@@ -145,5 +188,7 @@ export default {
 </script>
 
 <style lang="scss">
-
+.material-badges {
+  font-size: 1.3rem;
+}
 </style>
