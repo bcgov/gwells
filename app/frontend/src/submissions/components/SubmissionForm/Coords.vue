@@ -189,6 +189,20 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 ></form-input>
               </b-col>
             </b-row>
+            <b-row v-if="isStaffEdit">
+              <b-col>
+                <form-input
+                  id="coordinateAcquisitionCode"
+                  select
+                  :options="codes.coordinate_acquisition_codes"
+                  label="Coordinate Acquisition"
+                  v-model="coordinateAcquisitionCodeInput"
+                  text-field="description"
+                  value-field="code"
+                  :loaded="fieldsLoaded['coordinateAcquisitionCode']"
+                ></form-input>
+              </b-col>
+            </b-row>
           </b-card>
         </b-col>
         <b-col sm="12" md="6">
@@ -217,6 +231,7 @@ export default {
   props: {
     latitude: null,
     longitude: null,
+    coordinateAcquisitionCode: null,
     errors: {
       type: Object,
       default: () => ({})
@@ -246,7 +261,7 @@ export default {
       lock: {
         utm: true,
         dms: true,
-        deg: true
+        deg: false
       },
       utm: {
         easting: null,
@@ -293,7 +308,6 @@ export default {
           'name': i
         })
       }
-
       return zones
     },
     // In the background, longitude is stored as a negative number (West == minus). However, our B.C. based
@@ -374,9 +388,10 @@ export default {
             this.resetDMS()
             return null
           }
-          const { easting, northing, zone } = this.convertToUTM(this.longitudeInput, latitude)
+          latitude = Number(latitude)
+          const { easting, northing, zone } = this.convertToUTM(Number(this.longitudeInput), Number(latitude))
 
-          this.updateDMS(this.convertToDMS(this.longitudeInput), this.convertToDMS(latitude))
+          this.updateDMS(this.convertToDMS(Number(this.longitudeInput)), this.convertToDMS(Number(latitude)))
           this.updateUTM(easting, northing, zone)
         }
       }
@@ -390,10 +405,10 @@ export default {
             this.resetDMS()
             return null
           }
+          long = Number(long)
+          const { easting, northing, zone } = this.convertToUTM(long, Number(this.latitudeInput))
 
-          const { easting, northing, zone } = this.convertToUTM(long, this.latitudeInput)
-
-          this.updateDMS(this.convertToDMS(long), this.convertToDMS(this.latitudeInput))
+          this.updateDMS(this.convertToDMS(long), this.convertToDMS(Number(this.latitudeInput)))
           this.updateUTM(easting, northing, zone)
         }
       }
