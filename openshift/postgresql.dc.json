@@ -6,7 +6,7 @@
     },
     "metadata": {
         "creationTimestamp": null,
-        "name": "gwells-postgresql-dc"
+        "name": "gwells-postgis-dc"
     },
     "parameters": [
         {
@@ -59,12 +59,24 @@
             "value": "1Gi"
         },
         {
-            "description": "Version of PostgreSQL image to be used (9.2, 9.4, 9.5 or latest).",
+            "description": "Version of PostgreSQL image to be used (9.5 or 9.6).",
             "displayName": "Version of PostgreSQL Image",
             "name": "IMAGE_STREAM_VERSION",
             "required": true,
-            "value": "9.5"
+            "value": "9.6"
         },
+        {
+            "description": "Indicator to enable pgcrypto extension (provided out-of-the-box with PostgreSQL).",
+            "displayName": "Flag to enable pgcrypto PostgreSQL extension.",
+            "name": "PGCRYPTO_EXTENSION",
+            "value": "Y"
+        },
+        {
+            "description": "Indicator to enable postgis extension (from official PostgeSQL YUM repo).",
+            "displayName": "Flag to enable postgis PostgreSQL extension.",
+            "name": "POSTGIS_EXTENSION",
+            "value": "Y"
+        },            
         {
             "name": "NAME_SUFFIX",
             "required": true
@@ -151,7 +163,7 @@
                 "name": "${IMAGE_STREAM_NAME}",
                 "creationTimestamp": null,
                 "labels": {
-                    "base-name": "gwells-postgresql",
+                    "base-name": "gwells-postgis",
                     "appver": "gwells${NAME_SUFFIX}"
                 },
                 "annotations": {}
@@ -262,6 +274,14 @@
                                         "name": "FDW_SCHEMA",
                                         "value": "wells"
                                     },
+                                    {
+                                        "name": "PGCRYPTO_EXTENSION",
+                                        "value": "Y"
+                                    },
+                                    {
+                                        "name": "POSTGIS_EXTENSION",
+                                        "value": "Y"
+                                    },                                    
                                     {
                                         "name": "PGOPTIONS",
                                         "value": "-c maintenance_work_mem=128MB"

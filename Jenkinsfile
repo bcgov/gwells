@@ -199,12 +199,12 @@ pipeline {
                 script {
                     _openshift(env.STAGE_NAME, DEV_PROJECT) {
                         // Process postgres deployment config (sub in vars, create list items)
-                        echo " \$ oc process -f openshift/postgresql.dc.json -p DATABASE_SERVICE_NAME=gwells-pgsql-${DEV_SUFFIX}-${PR_NUM} -p IMAGE_STREAM_NAMESPACE='' -p IMAGE_STREAM_NAME=gwells-postgresql-${DEV_SUFFIX}-${PR_NUM} -p IMAGE_STREAM_VERSION=${DEV_SUFFIX} -p NAME_SUFFIX=-${DEV_SUFFIX}-${PR_NUM} -p POSTGRESQL_DATABASE=gwells -p VOLUME_CAPACITY=1Gi | oc apply -n moe-gwells-dev -f -"
+                        echo " \$ oc process -f openshift/postgresql.dc.json -p DATABASE_SERVICE_NAME=gwells-pgsql-${DEV_SUFFIX}-${PR_NUM} -p IMAGE_STREAM_NAMESPACE='' -p IMAGE_STREAM_NAME=gwells-postgis-${DEV_SUFFIX}-${PR_NUM} -p IMAGE_STREAM_VERSION=${DEV_SUFFIX} -p NAME_SUFFIX=-${DEV_SUFFIX}-${PR_NUM} -p POSTGRESQL_DATABASE=gwells -p VOLUME_CAPACITY=1Gi | oc apply -n moe-gwells-dev -f -"
                         def deployDBTemplate = openshift.process("-f",
                             "openshift/postgresql.dc.json",
                             "DATABASE_SERVICE_NAME=gwells-pgsql-${DEV_SUFFIX}-${PR_NUM}",
                             "IMAGE_STREAM_NAMESPACE=''",
-                            "IMAGE_STREAM_NAME=gwells-postgresql-${DEV_SUFFIX}-${PR_NUM}",
+                            "IMAGE_STREAM_NAME=gwells-postgis-${DEV_SUFFIX}-${PR_NUM}",
                             "IMAGE_STREAM_VERSION=${DEV_SUFFIX}",
                             "NAME_SUFFIX=-${DEV_SUFFIX}-${PR_NUM}",
                             "POSTGRESQL_DATABASE=gwells",
@@ -255,7 +255,7 @@ pipeline {
                         // promote the newly built image to DEV
                         echo "Tagging new image to DEV imagestream."
                         openshift.tag("${TOOLS_PROJECT}/gwells-application:${PR_NUM}", "${DEV_PROJECT}/gwells-${DEV_SUFFIX}-${PR_NUM}:dev")  // todo: clean up labels/tags
-                        openshift.tag("${TOOLS_PROJECT}/gwells-postgresql:dev", "${DEV_PROJECT}/gwells-postgresql-${DEV_SUFFIX}-${PR_NUM}:dev")  // todo: clean up labels/tags
+                        openshift.tag("${TOOLS_PROJECT}/gwells-postgresql:dev", "${DEV_PROJECT}/gwells-postgis-${DEV_SUFFIX}-${PR_NUM}:dev")  // todo: clean up labels/tags
 
                         // post a notification to Github that this pull request is being deployed
                         def targetURL = "https://${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}.pathfinder.gov.bc.ca/gwells"
@@ -518,7 +518,7 @@ pipeline {
                             "NAME_SUFFIX=-${TEST_SUFFIX}",
                             "DATABASE_SERVICE_NAME=gwells-pgsql-${TEST_SUFFIX}",
                             "IMAGE_STREAM_NAMESPACE=''",
-                            "IMAGE_STREAM_NAME=gwells-postgresql-${TEST_SUFFIX}",
+                            "IMAGE_STREAM_NAME=gwells-postgis-${TEST_SUFFIX}",
                             "IMAGE_STREAM_VERSION=${TEST_SUFFIX}",
                             "POSTGRESQL_DATABASE=gwells",
                             "VOLUME_CAPACITY=5Gi"
@@ -600,8 +600,8 @@ pipeline {
                             "${TEST_PROJECT}/gwells-${TEST_SUFFIX}:${TEST_SUFFIX}"
                         )  // todo: clean up labels/tags
                         openshift.tag(
-                            "${TOOLS_PROJECT}/gwells-postgresql:test",
-                            "${TEST_PROJECT}/gwells-postgresql-${TEST_SUFFIX}:${TEST_SUFFIX}"
+                            "${TOOLS_PROJECT}/gwells-postgis:test",
+                            "${TEST_PROJECT}/gwells-postgis-${TEST_SUFFIX}:${TEST_SUFFIX}"
                         )  // todo: clean up labels/tags
 
                         def targetTestURL = "https://${APP_NAME}-${TEST_SUFFIX}.pathfinder.gov.bc.ca/gwells"
@@ -774,7 +774,7 @@ pipeline {
                             "NAME_SUFFIX=-${PROD_SUFFIX}",
                             "DATABASE_SERVICE_NAME=gwells-pgsql-${PROD_SUFFIX}",
                             "IMAGE_STREAM_NAMESPACE=''",
-                            "IMAGE_STREAM_NAME=gwells-postgresql-${PROD_SUFFIX}",
+                            "IMAGE_STREAM_NAME=gwells-postgis-${PROD_SUFFIX}",
                             "IMAGE_STREAM_VERSION=${PROD_SUFFIX}",
                             "POSTGRESQL_DATABASE=gwells",
                             "VOLUME_CAPACITY=20Gi"
@@ -858,7 +858,7 @@ pipeline {
                         )  // todo: clean up labels/tags
                         openshift.tag(
                             "${TOOLS_PROJECT}/gwells-postgresql:prod",
-                            "${PROD_PROJECT}/gwells-postgresql-${PROD_SUFFIX}:${PROD_SUFFIX}"
+                            "${PROD_PROJECT}/gwells-postgis-${PROD_SUFFIX}:${PROD_SUFFIX}"
                         )  // todo: clean up labels/tags
 
                         def targetProdURL = "https://apps.nrs.gov.bc.ca/gwells/"
