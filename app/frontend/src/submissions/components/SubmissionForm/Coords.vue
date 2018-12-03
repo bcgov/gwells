@@ -192,7 +192,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </b-card>
         </b-col>
         <b-col sm="12" md="6">
-          <coords-map :latitude="latitudeInput" :longitude="longitudeInput" v-on:coordinate="handleMapCoordinate"/>
+          <coords-map :latitude="Number(latitudeInput)" :longitude="Number(longitudeInput)" v-on:coordinate="handleMapCoordinate"/>
         </b-col>
       </b-row>
 
@@ -270,6 +270,13 @@ export default {
         }
       },
       latitudeDMSValidation: false
+    }
+  },
+  created () {
+    if (this.latitude || this.longitude) {
+      // If we're loaded with a latitude and longitude, trigger an update so that degree,minute,second
+      // and East/Northing get populated.
+      this.handleMapCoordinate({lng: Number(this.longitude), lat: Number(this.latitude)})
     }
   },
   computed: {
