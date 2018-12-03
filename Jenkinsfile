@@ -155,7 +155,7 @@ pipeline {
                         )
 
                         // Apply oc list objects
-                        //  - add docker image reference as tag in gwells-postgresql
+                        //  - add docker image reference as tag in gwells-postgis
                         echo "Preparing database imagestream"
                         echo " \$ oc process -f openshift/postgresql.bc.json -p ENV_NAME=${DEV_SUFFIX} | oc apply -n moe-gwells-tools -f -"
                         openshift.apply(dbtemplate)
@@ -255,7 +255,7 @@ pipeline {
                         // promote the newly built image to DEV
                         echo "Tagging new image to DEV imagestream."
                         openshift.tag("${TOOLS_PROJECT}/gwells-application:${PR_NUM}", "${DEV_PROJECT}/gwells-${DEV_SUFFIX}-${PR_NUM}:dev")  // todo: clean up labels/tags
-                        openshift.tag("${TOOLS_PROJECT}/gwells-postgresql:dev", "${DEV_PROJECT}/gwells-postgis-${DEV_SUFFIX}-${PR_NUM}:dev")  // todo: clean up labels/tags
+                        openshift.tag("${TOOLS_PROJECT}/gwells-postgis:dev", "${DEV_PROJECT}/gwells-postgis-${DEV_SUFFIX}-${PR_NUM}:dev")  // todo: clean up labels/tags
 
                         // post a notification to Github that this pull request is being deployed
                         def targetURL = "https://${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}.pathfinder.gov.bc.ca/gwells"
@@ -592,7 +592,7 @@ pipeline {
                             "${TOOLS_PROJECT}/gwells-application:${PR_NUM}",
                             "${TOOLS_PROJECT}/gwells-application:${TEST_SUFFIX}"
                         )  // todo: clean up labels/tags
-                        // openshift.tag("${TOOLS_PROJECT}/gwells-postgresql:test", "${TOOLS_PROJECT}/gwells-postgresql:${TEST_SUFFIX}")
+                        // openshift.tag("${TOOLS_PROJECT}/gwells-postgis:test", "${TOOLS_PROJECT}/gwells-postgis:${TEST_SUFFIX}")
 
                         // Images are then tagged into the target environment namespace (test or prod)
                         openshift.tag(
@@ -849,7 +849,7 @@ pipeline {
                         )  // todo: clean up labels/tags
 
                         // TODO: determine best way to manage database images (at the moment they never change, but we don't want an unforeseen change to impact prod)
-                        // openshift.tag("${TOOLS_PROJECT}/gwells-postgresql:prod", "${TOOLS_PROJECT}/gwells-postgresql:${PROD_SUFFIX}")
+                        // openshift.tag("${TOOLS_PROJECT}/gwells-postgis:prod", "${TOOLS_PROJECT}/gwells-postgis:${PROD_SUFFIX}")
 
                         // Images are then tagged into the target environment namespace (prod)
                         openshift.tag(
@@ -857,7 +857,7 @@ pipeline {
                             "${PROD_PROJECT}/gwells-${PROD_SUFFIX}:${PROD_SUFFIX}"
                         )  // todo: clean up labels/tags
                         openshift.tag(
-                            "${TOOLS_PROJECT}/gwells-postgresql:prod",
+                            "${TOOLS_PROJECT}/gwells-postgis:prod",
                             "${PROD_PROJECT}/gwells-postgis-${PROD_SUFFIX}:${PROD_SUFFIX}"
                         )  // todo: clean up labels/tags
 
