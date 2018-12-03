@@ -740,8 +740,7 @@ pipeline {
         }
 
 
-        // Functional tests using BDD Stack
-        // See https://github.com/BCDevOps/BDDStack
+        // Single functional test
         stage('TEST - Smoke Tests') {
             when {
                 expression { env.CHANGE_TARGET == 'master' }
@@ -939,6 +938,68 @@ pipeline {
                         }
 
                         createDeploymentStatus(PROD_SUFFIX, 'SUCCESS', targetProdURL)
+                    }
+                }
+            }
+        }
+
+
+        // Single functional test
+        stage('PROD - Smoke Tests') {
+            when {
+                expression { env.CHANGE_TARGET == 'master' }
+            }
+            steps {
+                script {
+                    _openshift(env.STAGE_NAME, TOOLS_PROJECT) {
+                        echo "Functional Testing"
+                        String baseURL = "https://${PROD_HOST}/gwells"
+                        podTemplate(
+                            label: "bddstack-${PR_NUM}",
+                            name: "bddstack-${PR_NUM}",
+                            serviceAccount: 'jenkins',
+                            cloud: 'openshift',
+                            containers: [
+                                containerTemplate(
+                                    name: 'jnlp',
+                                    image: 'docker-registry.default.svc:5000/moe-gwells-tools/bddstack:latest',
+                                    resourceRequestCpu: '800m',
+                                    resourceLimitCpu: '800m',
+                                    resourceRequestMemory: '4Gi',
+                                    resourceLimitMemory: '4Gi',
+                                    workingDir: '/home/jenkins',
+                                    command: '',
+                                    args: '${computer.jnlpmac} ${computer.name}',
+                                    envVars: [
+                                        envVar(key:'BASEURL', value: baseURL),
+                                        envVar(key:'GRADLE_USER_HOME', value: '/var/cache/artifacts/gradle'),
+                                        envVar(key:'OPENSHIFT_JENKINS_JVM_ARCH', value: 'x86_64')
+                                    ]
+                                )
+                            ],
+                            volumes: [
+                                persistentVolumeClaim(
+                                    mountPath: '/var/cache/artifacts',
+                                    claimName: 'cache',
+                                    readOnly: false
+                                )
+                            ]
+                        ) {
+                            node("bddstack-${PR_NUM}") {
+                                //the checkout is mandatory, otherwise functional tests would fail
+                                echo "checking out source"
+                                checkout scm
+                                dir('functional-tests') {
+                                    try {
+                                        sh './gradlew -DchromeHeadlessTest.single=SearchSpecs chromeHeadlessTest'
+                                    } finally {
+                                        archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
+                                        archiveArtifacts allowEmptyArchive: true, artifacts: 'build/test-results/**/*'
+                                        junit 'build/test-results/**/*.xml'
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
