@@ -18,6 +18,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 <script>
 import L from 'leaflet'
 import { tiledMapLayer } from 'esri-leaflet'
+
 export default {
   name: 'CoordsMap',
   props: {
@@ -36,6 +37,11 @@ export default {
     return {
       map: null
     }
+  },
+  beforeCreate () {
+    // If lat/long aren't numbers, try to make them numbers.
+    this.$options.propsData['latitude'] = Number(this.$options.propsData['latitude'])
+    this.$options.propsData['longitude'] = Number(this.$options.propsData['longitude'])
   },
   mounted () {
     // There seems to be an issue loading leaflet immediately on mount, we use nextTick to ensure

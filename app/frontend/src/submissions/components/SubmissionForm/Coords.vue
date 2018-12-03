@@ -272,6 +272,13 @@ export default {
       latitudeDMSValidation: false
     }
   },
+  created () {
+    if (this.latitude || this.longitude) {
+      // If we're loaded with a latitude and longitude, trigger an update so that degree,minute,second
+      // and East/Northing get populated.
+      this.handleMapCoordinate({lng: Number(this.longitude), lat: Number(this.latitude)})
+    }
+  },
   computed: {
     // BC is covered by UTM zones 7 through 11
     utmZones () {
