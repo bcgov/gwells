@@ -769,7 +769,8 @@ pipeline {
                                     args: '${computer.jnlpmac} ${computer.name}',
                                     envVars: [
                                         envVar(key:'BASEURL', value: baseURL),
-                                        envVar(key:'GRADLE_USER_HOME', value: '/var/cache/artifacts/gradle')
+                                        envVar(key:'GRADLE_USER_HOME', value: '/var/cache/artifacts/gradle'),
+                                        envVar(key:'OPENSHIFT_JENKINS_JVM_ARCH', value: 'x86_64')
                                     ]
                                 )
                             ],
@@ -787,7 +788,7 @@ pipeline {
                                 checkout scm
                                 dir('functional-tests') {
                                     try {
-                                        sh './gradlew -DchromeHeadlessTest.single=WellDetails chromeHeadlessTest'
+                                        sh './gradlew -DchromeHeadlessTest.single=SearchSpecs chromeHeadlessTest'
                                     } finally {
                                         archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
                                         archiveArtifacts allowEmptyArchive: true, artifacts: 'build/test-results/**/*'
