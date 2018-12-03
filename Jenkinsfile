@@ -772,6 +772,13 @@ pipeline {
                                         envVar(key:'GRADLE_USER_HOME', value: '/var/cache/artifacts/gradle')
                                     ]
                                 )
+                            ],
+                            volumes: [
+                                persistentVolumeClaim(
+                                    mountPath: '/var/cache/artifacts',
+                                    claimName: 'cache',
+                                    readOnly: false
+                                )
                             ]
                         ) {
                             node("bddstack-${PR_NUM}") {
