@@ -13,10 +13,10 @@
             "kind": "ImageStream",
             "apiVersion": "v1",
             "metadata": {
-                "name": "gwells-postgresql",
+                "name": "gwells-postgis",
                 "creationTimestamp": null,
                 "labels": {
-                    "base-name": "gwells-postgresql",
+                    "base-name": "gwells-postgis",
                     "appver": "gwells"
                 },
                 "annotations": {}
@@ -30,7 +30,7 @@
                         "annotations": null,
                         "from": {
                             "kind": "ImageStreamTag",
-                            "name": "postgresql-oracle-fdw:9.5-2"
+                            "name": "postgis-oracle-fdw:96-24-1"
                         },
                         "importPolicy": {},
                         "name": "${ENV_NAME}",
