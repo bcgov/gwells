@@ -13,8 +13,6 @@
 """
 from django.db import models
 
-from model_utils import FieldTracker
-
 from django.db import models
 from django.core.validators import MinValueValidator
 from decimal import Decimal
@@ -702,7 +700,7 @@ class Well(AuditModel):
 
     observation_well_status = models.ForeignKey(
         ObsWellStatusCode, db_column='obs_well_status_code', blank=True, null="True",
-        verbose_name="Observation Well Status")
+        verbose_name="Observation Well Status", on_delete=models.PROTECT)
 
     ems = models.CharField(max_length=10, blank=True, null=True,
                            verbose_name="Environmental Monitoring System (EMS) ID")
@@ -715,14 +713,14 @@ class Well(AuditModel):
         blank=True, null=True, verbose_name="UTM Easting")
     utm_accuracy_code = models.CharField(
         max_length=10, blank=True, null=True, verbose_name="Location Accuracy Code")
-    bcgs_id = models.ForeignKey(BCGS_Numbers, db_column='bcgs_id', on_delete=models.CASCADE,
-                                blank=True, null=True, verbose_name="BCGS Mapsheet Number")
+    bcgs_id = models.ForeignKey(BCGS_Numbers, db_column='bcgs_id',
+                                blank=True, null=True, verbose_name="BCGS Mapsheet Number", on_delete=models.PROTECT)
 
     decommission_reason = models.CharField(
         max_length=250, blank=True, null=True, verbose_name="Reason for Decommission")
     decommission_method = models.ForeignKey(
         DecommissionMethodCode, db_column='decommission_method_code', blank=True, null="True",
-        verbose_name="Method of Decommission")
+        verbose_name="Method of Decommission", on_delete=models.PROTECT)
     sealant_material = models.CharField(
         max_length=100, blank=True, null=True, verbose_name="Sealant Material")
     backfill_material = models.CharField(
@@ -730,10 +728,8 @@ class Well(AuditModel):
     decommission_details = models.CharField(
         max_length=250, blank=True, null=True, verbose_name="Decommission Details")
     ems_id = models.CharField(max_length=30, blank=True, null=True)
-    aquifer = models.ForeignKey(Aquifer, db_column='aquifer_id',
-                                on_delete=models.CASCADE, blank=True, null=True,
+    aquifer = models.ForeignKey(Aquifer, db_column='aquifer_id', on_delete=models.PROTECT, blank=True, null=True,
                                 verbose_name='Aquifer ID Number')
-    tracker = FieldTracker()
 
     driller_responsible = models.ForeignKey(Person, db_column='driller_responsible_guid',
                                             on_delete=models.PROTECT,
@@ -815,7 +811,6 @@ class LtsaOwner(AuditModel):
     postal_code = models.CharField(
         max_length=10, blank=True, verbose_name='Postal Code')
 
-    tracker = FieldTracker()
 
     class Meta:
         db_table = 'ltsa_owner'
@@ -1102,15 +1097,13 @@ class ActivitySubmission(AuditModel):
         max_length=250, blank=True, null=True, verbose_name="Reason for Decommission")
     decommission_method = models.ForeignKey(
         DecommissionMethodCode, db_column='decommission_method_code', blank=True, null=True,
-        verbose_name="Method of Decommission")
+        verbose_name="Method of Decommission", on_delete=models.PROTECT)
     sealant_material = models.CharField(
         max_length=100, blank=True, null=True, verbose_name="Sealant Material")
     backfill_material = models.CharField(
         max_length=100, blank=True, null=True, verbose_name="Backfill Material")
     decommission_details = models.CharField(
         max_length=250, blank=True, null=True, verbose_name="Decommission Details")
-
-    tracker = FieldTracker()
 
     class Meta:
         db_table = 'activity_submission'
@@ -1224,7 +1217,7 @@ class ProductionData(AuditModel):
         blank=True, null=True, validators=[MinValueValidator(Decimal('0.01'))])
     well_yield_unit = models.ForeignKey(
         WellYieldUnitCode, db_column='well_yield_unit_code', blank=True,
-        null=True)
+        null=True, on_delete=models.PROTECT)
     static_level = models.DecimalField(
         max_digits=7, decimal_places=2, verbose_name='SWL Before Test',
         blank=True, null=True, validators=[MinValueValidator(Decimal('0.0'))])
