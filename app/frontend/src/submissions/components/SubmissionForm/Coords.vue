@@ -14,7 +14,17 @@ Licensed under the Apache License, Version 2.0 (the "License");
 <template>
   <div>
     <fieldset>
-      <legend :id="id">Geographic Coordinates</legend>
+      <b-row>
+        <b-col cols="12" lg="6">
+          <legend :id="id">Geographic Coordinates</legend>
+        </b-col>
+        <b-col cols="12" lg="6">
+          <div class="float-right">
+            <b-btn v-if="isStaffEdit" variant="primary" class="ml-2" @click="$emit('save')" :disabled="saveDisabled">Save</b-btn>
+            <a href="#top" v-if="isStaffEdit">Back to top</a>
+          </div>
+        </b-col>
+      </b-row>
       <p>To determine coordinates using a Global Positioning System (GPS), set the datum to North America Datum of 1983 (NAD 83), the current ministry standard for mapping.</p>
       <p>After the GPS coordinates are entered, the map pin can be moved by clicking and dragging it on the map. The GPS coordinates will be updated automatically.</p>
       <b-row>
@@ -205,8 +215,8 @@ export default {
   name: 'Coords',
   mixins: [inputBindingsMixin, convertCoordinatesMixin],
   props: {
-    latitude: Number,
-    longitude: Number,
+    latitude: null,
+    longitude: null,
     errors: {
       type: Object,
       default: () => ({})
@@ -218,6 +228,14 @@ export default {
     errorCoordsNotProvided: Boolean,
     id: {
       type: String,
+      isInput: false
+    },
+    isStaffEdit: {
+      type: Boolean,
+      isInput: false
+    },
+    saveDisabled: {
+      type: Boolean,
       isInput: false
     }
   },
