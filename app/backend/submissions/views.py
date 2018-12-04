@@ -343,23 +343,6 @@ class SubmissionsOptions(APIView):
 
         return Response(options)
 
-
-class SoilParsingView(APIView):
-    """
-    Takes a lithology description inputted by a user and returns a list of valid soil types
-    Used to transform free-form input into standardized terms
-    """
-
-    # def post(self, request, *args, **kwargs):
-    #     """accepts a "description" string and parses it for valid soil terms"""
-    #     description = request.data['description']
-    #     if not description:
-    #         return Response(data="missing required description field", status.HTTP_400_BAD_REQUEST)
-        
-        
-
-
-
 class SubmissionsHomeView(TemplateView):
     """Loads the html file containing the Submissions web app"""
     template_name = 'submissions/submissions.html'
