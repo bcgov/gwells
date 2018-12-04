@@ -18,6 +18,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 <script>
 import L from 'leaflet'
 import { tiledMapLayer } from 'esri-leaflet'
+
 export default {
   name: 'CoordsMap',
   props: {
