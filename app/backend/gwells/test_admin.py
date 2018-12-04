@@ -71,31 +71,16 @@ class AdminTestCase(TestCase):
 
     def test_unauthorized_user_admin_view(self):
         # setup
-        username = 'admin'
-        password = 'admin'
-        email = 'admin@admin.com'
+        username = 'notadmin'
+        password = 'notadmin'
+        email = 'notadmin@example.com'
         self.user = User.objects.create_user(username=username, password=password, email=email)
+
         self.client.login(username=username, password=password)
 
         # test
-        # default django behaviour is to redirect to login.
-        # TODO: provide a 403
         response = self.client.get(reverse('site_admin'))
-        self.assertEqual(response.status_code, HTTPStatus.FOUND)
-        url_components = urlparse(response.url)
-        self.assertEqual(url_components.path, reverse('admin:login'))
-
-        query = parse_qsl(url_components.query)
-        self.assertEqual(len(query), 1)
-
-        arg_tuple = query[0]
-        self.assertEqual(len(arg_tuple), 2)
-        self.assertEqual(arg_tuple[0], 'next')
-        self.assertEqual(arg_tuple[1], reverse('site_admin'))
-
-        # teardown
-        self.client.logout()
-        self.user.delete()
+        self.assertNotEqual(response.status_code, HTTPStatus.OK)
 
     def test_authorized_user_admin_view(self):
         # setup

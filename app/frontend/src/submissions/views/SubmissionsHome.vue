@@ -195,9 +195,18 @@ export default {
           'comments'
         ],
         STAFF_EDIT: [
-          'personResponsible',
+          'wellType',
           'wellOwner',
-          'method'
+          'personResponsible',
+          'wellLocation',
+          'wellCoords',
+          'method',
+          'backfill',
+          'liner',
+          'filterPack',
+          'wellDevelopment',
+          'waterQuality',
+          'comments'
         ]
       }
     }

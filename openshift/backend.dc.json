@@ -58,7 +58,9 @@
                 "MINIO_ACCESS_KEY": null,
                 "MINIO_SECRET_KEY": null,
                 "S3_HOST": null,
-                "S3_ROOT_BUCKET": null
+                "S3_ROOT_BUCKET": null,
+                "S3_PUBLIC_ACCESS_KEY": null,
+                "S3_PUBLIC_SECRET_KEY": null
             }
         },
         {
@@ -106,6 +108,7 @@
                 "ENABLE_GOOGLE_ANALYTICS": null,
                 "S3_PRIVATE_BUCKET": null,
                 "S3_PRIVATE_HOST": null,
+                "S3_WELL_EXPORT_BUCKET": null,
                 "SSO_AUDIENCE": null,
                 "SSO_AUTH_HOST":  null,
                 "SSO_CLIENT": null,
@@ -536,6 +539,24 @@
                                         }
                                     },
                                     {
+                                        "name": "S3_PUBLIC_ACCESS_KEY",
+                                        "valueFrom": {
+                                            "secretKeyRef": {
+                                                "name": "minio-access-parameters${NAME_SUFFIX}",
+                                                "key": "S3_PUBLIC_ACCESS_KEY"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "S3_PUBLIC_SECRET_KEY",
+                                        "valueFrom": {
+                                            "secretKeyRef": {
+                                                "name": "minio-access-parameters${NAME_SUFFIX}",
+                                                "key": "S3_PUBLIC_SECRET_KEY"
+                                            }
+                                        }
+                                    },
+                                    {
                                         "name": "S3_HOST",
                                         "valueFrom": {
                                             "secretKeyRef": {
@@ -558,6 +579,15 @@
                                         "valueFrom": {
                                             "configMapKeyRef": {
                                                 "key": "S3_PRIVATE_HOST",
+                                                "name": "gwells-global-config${NAME_SUFFIX}"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "S3_WELL_EXPORT_BUCKET",
+                                        "valueFrom": {
+                                            "configMapKeyRef": {
+                                                "key": "S3_WELL_EXPORT_BUCKET",
                                                 "name": "gwells-global-config${NAME_SUFFIX}"
                                             }
                                         }

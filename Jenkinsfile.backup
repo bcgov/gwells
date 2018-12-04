@@ -1,3 +1,5 @@
+#!groovy
+
 // Jenkinsfile (Scripted Pipeline)
 
 /* Gotchas:

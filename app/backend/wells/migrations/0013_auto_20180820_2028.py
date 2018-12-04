@@ -3,9 +3,11 @@
 from __future__ import unicode_literals
 
 from django.db import migrations, models
+from django.conf import settings
 
 
 class Migration(migrations.Migration):
+    atomic = settings.DATABASES.get('default').get('engine') == 'django.db.backends.postgresql'
 
     dependencies = [
         ('wells', '0012_load_water_quality_codes'),

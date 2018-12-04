@@ -11,6 +11,7 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
+from urllib.parse import quote
 
 from django.db.models import Prefetch
 from django.http import Http404
@@ -24,11 +25,14 @@ from rest_framework.permissions import DjangoModelPermissionsOrAnonReadOnly
 
 from drf_yasg.utils import swagger_auto_schema
 
+from minio import Minio
+
 from gwells import settings
 from gwells.documents import MinioClient
 from gwells.models import Survey
 from gwells.roles import WELLS_VIEWER_ROLE, WELLS_EDIT_ROLE
 from gwells.pagination import APILimitOffsetPagination
+from gwells.settings.base import get_env_variable
 
 from wells.models import Well
 from wells.serializers import WellListSerializer, WellTagSearchSerializer, WellDetailSerializer
@@ -62,6 +66,45 @@ class WellDetail(RetrieveAPIView):
 
     queryset = Well.objects.all()
     lookup_field = 'well_tag_number'
+
+
+class ListExtracts(APIView):
+    """
+    List well extracts
+
+    get: list well extracts
+    """
+    @swagger_auto_schema(auto_schema=None)
+    def get(self, request):
+        host = get_env_variable('S3_HOST')
+        minioClient = Minio(host,
+                            access_key=get_env_variable('S3_PUBLIC_ACCESS_KEY'),
+                            secret_key=get_env_variable('S3_PUBLIC_SECRET_KEY'),
+                            secure=True)
+        objects = minioClient.list_objects(get_env_variable('S3_WELL_EXPORT_BUCKET'))
+        urls = list(
+            map(
+                lambda document: {
+                    'url': 'https://{}/{}/{}'.format(host,
+                                                     quote(document.bucket_name),
+                                                     quote(document.object_name)),
+                    'name': document.object_name,
+                    'size': document.size,
+                    'last_modified': document.last_modified,
+                    'description': self.create_description(document.object_name)
+                }, objects)
+        )
+        return Response(urls)
+
+    def create_description(self, name):
+        extension = name[name.rfind('.')+1:]
+        print(extension)
+        if extension == 'zip':
+            return 'ZIP, CSV'
+        elif extension == 'xlsx':
+            return 'XLSX'
+        else:
+            return None
 
 
 class ListFiles(APIView):
