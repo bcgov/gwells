@@ -13,7 +13,17 @@ Licensed under the Apache License, Version 2.0 (the "License");
 */
 <template>
   <fieldset>
-    <legend :id="id">Comments</legend>
+    <b-row>
+      <b-col cols="12" lg="6">
+        <legend :id="id">Comments</legend>
+      </b-col>
+      <b-col cols="12" lg="6">
+        <div class="float-right">
+          <b-btn v-if="isStaffEdit" variant="primary" class="ml-2" @click="$emit('save')" :disabled="saveDisabled">Save</b-btn>
+          <a href="#top" v-if="isStaffEdit">Back to top</a>
+        </div>
+      </b-col>
+    </b-row>
     <b-row>
       <b-col cols="12" md="8">
         <b-form-group label="Comments" id="commentsGroup">
@@ -30,8 +40,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
 
           <b-form-checkbox id="alternativeSpecsCheckbox"
                 v-model="alternativeSpecsSubmittedInput"
-                value="True"
-                unchecked-value="False">
+                :value="true"
+                :unchecked-value="false">
             Alternative specs submitted (if required)
           </b-form-checkbox>
       <!-- </b-col>
@@ -46,7 +56,7 @@ export default {
   mixins: [inputBindingsMixin],
   props: {
     comments: String,
-    alternativeSpecsSubmitted: String,
+    alternativeSpecsSubmitted: null,
     errors: {
       type: Object,
       default: () => ({})
@@ -57,6 +67,14 @@ export default {
     },
     id: {
       type: String,
+      isInput: false
+    },
+    isStaffEdit: {
+      type: Boolean,
+      isInput: false
+    },
+    saveDisabled: {
+      type: Boolean,
       isInput: false
     }
   },

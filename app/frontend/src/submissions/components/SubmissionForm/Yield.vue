@@ -13,7 +13,17 @@ Licensed under the Apache License, Version 2.0 (the "License");
 */
 <template>
   <fieldset :id="id">
-    <legend>Well Yield Estimation</legend>
+      <b-row>
+        <b-col cols="12" lg="6">
+          <legend :id="id">Yield</legend>
+        </b-col>
+        <b-col cols="12" lg="6">
+          <div class="float-right">
+            <b-btn v-if="isStaffEdit" variant="primary" class="ml-2" @click="$emit('save')" :disabled="saveDisabled">Save</b-btn>
+            <a href="#top" v-if="isStaffEdit">Back to top</a>
+          </div>
+        </b-col>
+      </b-row>
     <div v-for="(data, index) in productionData" :key="`productionDataSet${index}`">
       <b-row>
         <b-col cols="12" md="4" lg="3">
@@ -108,6 +118,14 @@ export default {
     },
     id: {
       type: String,
+      isInput: false
+    },
+    isStaffEdit: {
+      type: Boolean,
+      isInput: false
+    },
+    saveDisabled: {
+      type: Boolean,
       isInput: false
     }
   },
