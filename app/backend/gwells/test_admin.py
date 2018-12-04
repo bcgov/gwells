@@ -69,6 +69,18 @@ class AdminTestCase(TestCase):
         self.assertEqual(arg_tuple[0], 'next')
         self.assertEqual(arg_tuple[1], reverse('site_admin'))
 
+    def test_unauthorized_user_admin_view(self):
+        # setup
+        username = 'notadmin'
+        password = 'notadmin'
+        email = 'notadmin@example.com'
+        self.user = User.objects.create_user(username=username, password=password, email=email)
+
+        self.client.login(username=username, password=password)
+
+        # test
+        response = self.client.get(reverse('site_admin'))
+        self.assertNotEqual(response.status_code, HTTPStatus.OK)
 
     def test_authorized_user_admin_view(self):
         # setup
