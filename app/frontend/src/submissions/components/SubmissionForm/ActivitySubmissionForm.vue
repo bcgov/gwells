@@ -561,13 +561,15 @@ export default {
       // saves a copy of form data locally
       this.saveStatusReset()
       const data = JSON.stringify(this.form)
-      localStorage.setItem('savedFormData', data)
+      if (window.localStorage) {
+        window.localStorage.setItem('savedFormData', data)
+      }
       setTimeout(() => { this.saveFormSuccess = true }, 10)
       setTimeout(() => { this.saveFormSuccess = false; this.hasHadSaveFormSuccess = true }, 1000)
     },
     loadForm () {
       this.saveStatusReset()
-      const storedData = localStorage.getItem('savedFormData')
+      const storedData = window.localStorage ? localStorage.getItem('savedFormData') : null
       if (storedData) {
         this.$emit('resetForm')
 
