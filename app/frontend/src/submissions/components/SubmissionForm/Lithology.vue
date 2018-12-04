@@ -55,13 +55,19 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 <form-input :id="`lithologyDepthTo${index}`" aria-label="Depth to (feet)" v-model="lithology[index].lithology_to" group-class="mt-1 mb-0"/>
               </td>
               <td>
-                <form-input :id="`lithologyDescription${index}`" aria-label="Description" v-model="lithology[index].lithology_raw_data" group-class="mt-1 mb-0"></form-input>
+                <form-input
+                    :id="`lithologyDescription${index}`"
+                    aria-label="Description"
+                    v-model="lithology[index].lithology_raw_data"
+                    group-class="mt-1 mb-0"
+                    @input="parseDescription(index, $event)"
+                ></form-input>
               </td>
               <td>
                 <div class="material-badges">
-                  <b-badge variant="light" class="font-weight-normal">Clay</b-badge>
-                  <b-badge variant="light" class="font-weight-normal">Gravel</b-badge>
-                  <b-badge variant="light" class="font-weight-normal">Sand</b-badge>
+                  <b-badge v-for="(soil, j) in lithSoils[index]" variant="light" class="font-weight-normal" :key="`soilTerm-${index}-${j}`">
+                    {{ soil }}
+                  </b-badge>
                 </div>
               </td>
               <td class="input-width-small">
@@ -74,19 +80,19 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     value-field="lithology_moisture_code"
                     v-model="lithology[index].lithology_moisture"
                     group-class="mt-1 mb-0"></form-input> -->
-                  <div class="material-badges">
+                  <!-- <div class="material-badges">
                     <b-badge variant="light" class="font-weight-normal">Wet</b-badge>
-                  </div>
+                  </div> -->
               </td>
               <td>
-                  <div class="material-badges">
+                  <!-- <div class="material-badges">
                     <b-badge variant="light" class="font-weight-normal">Reddish-brown</b-badge>
-                  </div>
+                  </div> -->
               </td>
               <td>
-                  <div class="material-badges">
+                  <!-- <div class="material-badges">
                     <b-badge variant="light" class="font-weight-normal">Dense</b-badge>
-                  </div>
+                  </div> -->
               </td>
               <td>
                 <form-input :id="`lithologyFlowEstimate${index}`" aria-label="Water bearing flow" v-model="lithology[index].water_bearing_estimated_flow" group-class="mt-1 mb-0"></form-input>
@@ -121,6 +127,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
 <script>
 import { mapGetters } from 'vuex'
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
+import Lithology from '@/submissions/components/lithology.js'
+
 export default {
   name: 'Lithology',
   mixins: [inputBindingsMixin],
@@ -145,7 +153,8 @@ export default {
   data () {
     return {
       confirmRemoveModal: false,
-      rowIndexToRemove: null
+      rowIndexToRemove: null,
+      lithSoils: []
     }
   },
   computed: {
@@ -176,6 +185,10 @@ export default {
     focusRemoveModal () {
       // Focus the "cancel" button in the confirm remove popup.
       this.$refs.cancelRemoveBtn.focus()
+    },
+    parseDescription (index, value) {
+      const soils = new Lithology(value)
+      this.lithSoils[index] = soils.parseSoilTerms()
     }
   },
   created () {

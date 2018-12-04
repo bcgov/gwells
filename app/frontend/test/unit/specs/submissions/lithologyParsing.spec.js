@@ -1,17 +1,29 @@
 import Lithology from '@/submissions/components/lithology.js'
 
-describe('Lithology', () => {
-  it('Splits up a string into words', () => {
-    const desc1 = new Lithology('sand, gravelly, some silt')
+describe('Lithology.js', () => {
+  it('parses and sorts soil/rock terms', () => {
+    // all of these cases will be checked
+    // running parseSoilTerms() on the test string should result in the 'want' array
+    const cases = [
+      { test: 'wet gravel', want: ['gravel'] },
+      { test: 'compact silty sand, some clay, wet', want: ['sand', 'silt', 'clay'] },
+      { test: 'water bearing sands, trace gravel, loose', want: ['sand', 'gravel'] },
+      { test: 'silty sand and gravel', want: ['sand', 'gravel', 'silt'] },
+      { test: 'sand and gravel, silty', want: ['sand', 'gravel', 'silt'] },
+      { test: 'silty SAND and GRAVEL', want: ['sand', 'gravel', 'silt'] }
 
-    // some input comes with a variety of punctuation
-    const desc2 = new Lithology('Sand&gravel/silt,,,clay')
+    ]
 
-    expect(desc1.splitWords().length).toBe(4)
-    expect(desc2.splitWords().length).toBe(4)
-    expect(desc2.splitWords()[0]).toBe('Sand')
-    expect(desc2.splitWords()[1]).toBe('gravel')
-    expect(desc2.splitWords()[2]).toBe('silt')
-    expect(desc2.splitWords()[3]).toBe('clay')
+    // loop through each test case
+    for (let i = 0; i < cases.length; i++) {
+      const lith = new Lithology(cases[i].test)
+      const soils = lith.parseSoilTerms()
+
+      // test that each array has the same members in the same order
+      for (let j = 0; j < cases[i].want.length; j++) {
+        expect(soils[j]).toBe(cases[i].want[j])
+      }
+      expect(soils.length).toBe(cases[i].want.length)
+    }
   })
 })
