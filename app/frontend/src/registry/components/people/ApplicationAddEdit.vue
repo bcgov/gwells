@@ -300,7 +300,8 @@ export default {
     }
   },
   created () {
-    this.FETCH_DRILLER_OPTIONS()
+    // NOTE: temporarily disabled
+    // this.FETCH_DRILLER_OPTIONS()
   }
 }
 </script>
